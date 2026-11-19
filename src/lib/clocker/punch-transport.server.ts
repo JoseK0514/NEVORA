@@ -38,16 +38,16 @@ function failed(error:unknown){
  return json({state:status===503?'unavailable':status===401?'identity_required':'rejected',code:safe.code,error:safe.message},status);
 }
 export async function handleClockerPunch(request:Request,locationKey:string,deps:PunchTransportDeps):Promise<Response>{
- if(deps.enabled!==true)return json({state:'disabled',error:'Time punches are not enabled in this environment.'},503);
- const origin=clockerOriginFailure(request.headers,deps.security);if(origin)return json({state:'unavailable',error:origin.error},origin.status);
+ if(deps.enabled!==true)return json({state:'disabled',code:'PUNCHES_DISABLED',error:'Time punches are not enabled in this environment.'},503);
+ const origin=clockerOriginFailure(request.headers,deps.security);if(origin)return json({state:'unavailable',code:origin.code,error:origin.error},origin.status);
  if(request.method!=='POST'||request.headers.get('x-nevora-clocker')!=='1'||
-  request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')return json({error:'Open Clocker directly on this site.'},403);
+  request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')return json({code:'ORIGIN_REJECTED',error:'Open Clocker directly on this site.'},403);
  if(locationKey.length>64||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(locationKey))return failed(new ClockerPunchError('INVALID_INPUT'));
  let data:Input;try{data=await input(request);}catch{return failed(new ClockerPunchError('INVALID_INPUT'));}
  try{
   const credential=deps.cookies.get(clockerCookieNames(deps.security.production).device)?.value??'';
   const device=await authenticateClockerDevice({credential,locationKey},deps.executor);
-  if(!device)return json({state:'device_required',error:'Reconnect this tablet before recording time.'},401);
+  if(!device)return json({state:'device_required',code:'DEVICE_REQUIRED',error:'Reconnect this tablet before recording time.'},401);
   const key=deps.key??readPinKey();
   const identity=await readClockerIdentity(device.proof,deps.cookies.get(pinCookieName(deps.security.production))?.value??'',key,deps.executor);
   if(!identity)return failed(new ClockerPunchError('AUTH_REQUIRED'));

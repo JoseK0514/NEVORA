@@ -1,6 +1,7 @@
+import {assertWorkforcePermission,workforcePermissionStatements} from '../workforce/authority.server';
 import {neonNotificationExecutor} from './sql-executor';
 export {neonNotificationExecutor} from './sql-executor';
-import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
+import {assertOperationalAccess,operationalScopeStatements,OperationalAuthorizationError} from '../company-access/operational-scope.server';
 import type {OperationalFootprint} from '../company-access/model';
 import { currentCalloutReleaseSql } from './shift-change-release';
 import type { AssignmentOrigin } from '../domain';
@@ -81,6 +82,7 @@ export type WeekMutationBatch = {
     publishWeekStarts?: readonly string[];
     revisionSourceId?: string;
     affectedLocationId?: string;
+    publicationLocationId?: string;
     /** Publish changes (Jose, 2026-10-29): manual edits to a published week write
      * the live rows plus held-edit history only. No revision, calendar capture,
      * supersede or notification until the Owner taps Publish changes. Draft-only
@@ -94,11 +96,35 @@ export type PendingEditKind = 'CREATE' | 'UPDATE' | 'DELETE' | 'COPY';
  * publishWeekStarts entry) and a week never captured snapshot the whole live
  * week. Every other writer patches the latest revision with only its own
  * published change, so held manual edits keep waiting (Jose, 2026-10-29). */
-type WeekProjection = { latest?: GuardedWeekState['revisions'][number]; previous: PublishedShiftSnapshot[]; current: PublishedShiftSnapshot[]; mode: 'SNAPSHOT' | 'PATCH' };
-function weekProjection(state: GuardedWeekState, batch: WeekMutationBatch, week: string): WeekProjection {
+type WeekProjection = { latest?: GuardedWeekState['revisions'][number]; previous: PublishedShiftSnapshot[]; current: PublishedShiftSnapshot[]; mode: 'SNAPSHOT' | 'PATCH'; movedShiftIds?: Set<string> };
+function weekProjection(state: GuardedWeekState, batch: WeekMutationBatch, week: string, ownerPublication = false): WeekProjection {
     const latest = state.revisions.filter(r => r.weekStart === week).at(-1);
     const previous = latest?.shifts ?? [];
     const live = publishedShifts(batch.afterSchedules, batch.afterShifts, week);
+    if (batch.publishWeekStarts?.includes(week) && batch.publicationLocationId) {
+        const locationId = batch.publicationLocationId;
+        const captured = new Map(previous.map(shift => [shift.sourceShiftId, shift]));
+        const movedShiftIds = new Set(batch.afterShifts.filter(shift => {
+            const before = captured.get(shift.sourceShiftId);
+            return shift.weekStart === week && before && before.locationId !== shift.locationId &&
+                (before.locationId === locationId || shift.locationId === locationId);
+        }).map(shift => shift.sourceShiftId));
+        const liveIds = new Set(live.map(shift => shift.sourceShiftId));
+        // An Owner publishes both ends of a move together. When the destination
+        // is a draft, publishing that location makes its replacement available.
+        if ((movedShiftIds.size && (!ownerPublication || [...movedShiftIds].some(id => !liveIds.has(id)))) ||
+            (!latest && state.schedules.some(s => s.weekStart === week && s.locationId !== locationId && s.status === 'PUBLISHED'))) {
+            throw new OperationalAuthorizationError();
+        }
+        const current = [
+            ...previous.filter(shift => shift.locationId !== locationId && (!shift.sourceShiftId || !movedShiftIds.has(shift.sourceShiftId))),
+            ...live.filter(shift => shift.locationId === locationId || (shift.sourceShiftId && movedShiftIds.has(shift.sourceShiftId))).map(shift => {
+                const before = captured.get(shift.sourceShiftId);
+                return before && canonicalKey(before) === canonicalKey(shift) ? before : shift;
+            }),
+        ];
+        return { latest, previous, current, mode: 'PATCH', movedShiftIds };
+    }
     if (!latest || batch.publishWeekStarts?.includes(week)) return { latest, previous, current: live, mode: 'SNAPSHOT' };
     return { latest, previous, current: patchPublishedProjection(previous, publishedShifts(state.schedules, state.shifts, week), live), mode: 'PATCH' };
 }
@@ -189,7 +215,7 @@ function operationalWriteFootprint(state:GuardedWeekState,batch:WeekMutationBatc
  // validation. A deferred manual edit writes none, so held edits elsewhere in
  // the week never widen a location-scoped draft edit; any other writer patches
  // only its own change, so only that change can require COMPANY here.
- if(!batch.deferPublication)for(const week of new Set([...state.schedules,...batch.afterSchedules].map(s=>s.weekStart))){
+ if(!company&&!batch.deferPublication)for(const week of new Set([...state.schedules,...batch.afterSchedules].map(s=>s.weekStart))){
   const {latest,previous,current}=weekProjection(state,batch,week);
   if((latest||batch.afterSchedules.some(s=>s.weekStart===week&&s.status==='PUBLISHED'))
    &&JSON.stringify(canonicalShifts(previous))!==JSON.stringify(canonicalShifts(current)))company=true;
@@ -312,7 +338,10 @@ function supersedePersonalStatements(week: string, employeeId: string, environme
 }
 /** The only publication/write protocol. Ordinary callers rebuild a conflicted
  * whole batch at most three times; gap repairs require an explicit fresh review. */
-type ManagementWeekAuthority = { sourceType: 'MANAGER_MUTATION' | 'PUBLISH'; proof: SessionMutationProof } | { sourceType: 'EXCHANGE' | 'CALLOUT'; proof?: never };
+type ManagementWeekAuthority =
+    | { sourceType: 'MANAGER_MUTATION'; proof: SessionMutationProof }
+    | { sourceType: 'PUBLISH'; proof: SessionMutationProof; publicationLocationId?: string }
+    | { sourceType: 'EXCHANGE' | 'CALLOUT'; proof?: never };
 /**
  * Commit business statements, publication snapshots, calendar removals and
  * notification intents atomically. The builder runs outside the SQL transaction
@@ -329,7 +358,10 @@ export async function commitPublishedWeekChange(input: ManagementWeekAuthority &
     build: (snapshot: GuardedWeekState, config: NotificationConfig) => WeekMutationBatch;
 }, executor: SqlExecutor = neonNotificationExecutor()): Promise<WeekMutationResult> {
     if (input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') assertManagementProof(input.proof, input.actorEmployeeId);
-    if(input.sourceType==='PUBLISH'||input.coverageRepairReview!==undefined)await assertOperationalAccess(input.proof!,{kind:'COMPANY'},executor);
+    const publicationAdmission = input.sourceType === 'PUBLISH'
+        ? await assertWorkforcePermission(input.proof, 'PUBLISH_SCHEDULE', input.publicationLocationId ? [input.publicationLocationId] : null, executor)
+        : null;
+    if(input.coverageRepairReview!==undefined)await assertOperationalAccess(input.proof!,{kind:'COMPANY'},executor);
     const weeks = [...new Set(input.weekStarts)].sort();
     if (!weeks.length)
         return {
@@ -360,7 +392,8 @@ export async function commitPublishedWeekChange(input: ManagementWeekAuthority &
                 committed: false, revisions: []
             };
         if(input.sourceType==='MANAGER_MUTATION')await assertOperationalAccess(input.proof,operationalWriteFootprint(state,batch,input.coverageRepairReview!==undefined).footprint,executor);
-        const {guards,statements,revisions}=preparePublishedWeekChange({...input,state,batch,config,schedulingSource:read.source,observedAt:read.read_at});
+        const {guards,statements,revisions}=preparePublishedWeekChange({...input,state,batch,config,
+            publicationAuthority:publicationAdmission?.authority,schedulingSource:read.source,observedAt:read.read_at});
         try {
             await executor.transaction([...guards,...statements]);
             return {
@@ -384,6 +417,7 @@ export type PublishedChangePlanInput = ManagementWeekAuthority & {
     suppressPublicationEventEmployeeIds?:readonly string[]; revisionWeekStarts?:readonly string[]; state: GuardedWeekState; batch: WeekMutationBatch; config: NotificationConfig; observedAt: string;
     schedulingSource?: GenerationSource;
     coverageRepairReview?: string;
+    publicationAuthority?: string;
 };
 export type PreparedPublishedChange = { guards: SqlStatement[]; statements: SqlStatement[]; revisions: PublicationRevision[] };
 /**
@@ -396,6 +430,16 @@ export type PreparedPublishedChange = { guards: SqlStatement[]; statements: SqlS
 export function preparePublishedWeekChange(input: PublishedChangePlanInput): PreparedPublishedChange {
  const {state,batch,config}=input;
  const weeks=[...new Set(input.weekStarts)].sort();
+ const locationId = input.sourceType === 'PUBLISH' ? input.publicationLocationId : undefined;
+ const ownerPublication = input.sourceType === 'PUBLISH' && input.proof.employee.role === 'OWNER';
+ if (batch.publicationLocationId !== locationId || (locationId &&
+   (batch.affectedLocationId !== locationId || batch.afterShifts !== state.shifts &&
+    JSON.stringify(batch.afterShifts) !== JSON.stringify(state.shifts) ||
+    batch.afterSchedules.some(s => s.locationId !== locationId &&
+      JSON.stringify(s) !== JSON.stringify(state.schedules.find(before => before.id === s.id))) ||
+    state.schedules.some(s => s.locationId !== locationId && !batch.afterSchedules.some(after => after.id === s.id))))) {
+  throw new OperationalAuthorizationError();
+ }
  const operational=operationalWriteFootprint(state,batch,input.sourceType==='PUBLISH'||input.coverageRepairReview!==undefined);
         // Draft -> published and held edits become NEW commitments even when the
         // live row is unchanged by this batch. Compare the actual next projection
@@ -404,7 +448,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
         const newlyPublished = new Set<string>();
         if (!batch.deferPublication) for (const week of weeks) {
             if (input.revisionWeekStarts && !input.revisionWeekStarts.includes(week)) continue;
-            const {previous,current} = weekProjection(state,batch,week);
+            const {previous,current} = weekProjection(state,batch,week,ownerPublication);
             for (const next of current) if (next.sourceShiftId && assignmentDiffers(previous.find(s=>s.sourceShiftId===next.sourceShiftId),next)) newlyPublished.add(next.sourceShiftId);
         }
         validatePublicationRestrictions(state,batch,newlyPublished);
@@ -461,7 +505,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
             },
             ...((input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') ? managementSessionStatements(input.proof, input.actorEmployeeId) : []),
         ];
-        const stamp:SqlStatement=input.sourceType==='MANAGER_MUTATION'?{text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=ANY($1::text[])`,values:[operational.scheduleIds]}:{text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[])`,values:[weeks]};
+        const stamp:SqlStatement=locationId ? {text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[]) AND location_id=$2`,values:[weeks,locationId]} : input.sourceType==='MANAGER_MUTATION'?{text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=ANY($1::text[])`,values:[operational.scheduleIds]}:{text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[])`,values:[weeks]};
         const statements: SqlStatement[] = [
             {
                 text: `SELECT (CASE WHEN ${notificationStateSql} = $2::jsonb THEN '1' ELSE 'schedule_week_version_conflict' END)::integer AS guarded`, values: [weeks, JSON.stringify(state)]
@@ -483,12 +527,23 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
                 })))]
         });
         const revisions: PublicationRevision[] = [];
+        const revisedLocations = new Set<string>();
+        let crossLocationPublication = false;
         // Held manual edits: live rows plus history, nothing published or sent.
         if (batch.deferPublication) statements.push(...pendingEditStatements(state, batch, weeks, config.workspace!.id, input.actorEmployeeId));
         for (const week of batch.deferPublication ? [] : weeks) {
             if(input.revisionWeekStarts && !input.revisionWeekStarts.includes(week))continue;
-            const {latest,previous,current,mode} = weekProjection(state, batch, week);
+            const {latest,previous,current,mode,movedShiftIds} = weekProjection(state, batch, week, ownerPublication);
+            if (movedShiftIds?.size) crossLocationPublication = true;
             const changedActual = JSON.stringify(canonicalShifts(previous)) !== JSON.stringify(canonicalShifts(current));
+            if (input.sourceType === 'MANAGER_MUTATION' && changedActual) {
+                const other = new Map(current.flatMap(shift => shift.sourceShiftId ? [[shift.sourceShiftId, shift] as const] : []));
+                const old = new Map(previous.flatMap(shift => shift.sourceShiftId ? [[shift.sourceShiftId, shift] as const] : []));
+                for (const shift of [...previous, ...current]) {
+                    const id = shift.sourceShiftId;
+                    if (!id || canonicalKey(other.get(id)) !== canonicalKey(old.get(id))) revisedLocations.add(shift.locationId);
+                }
+            }
             if (!batch.publishWeekStarts?.includes(week) && !changedActual)
                 continue;
             // Draft-only writes never publish or create a historical revision.
@@ -508,8 +563,6 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
         EXISTS(SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}),sh.position_id,(SELECT p.name FROM positions p WHERE p.id=sh.position_id)
         FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.week_start=$2 AND s.status='PUBLISHED'`, values: [revision.id, week]
             });
-            // The whole live week is now published, held edits included.
-            statements.push({text:`UPDATE schedule_pending_edits SET published_revision_id=$1,published_at=$2::timestamptz WHERE week_start=$3::date AND published_revision_id IS NULL`,values:[revision.id,revision.createdAt,week]});
             } else {
             // Built from values: the latest captured week plus only this batch's
             // own change, never the live week (which may hold unpublished edits).
@@ -523,6 +576,11 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
                     position_id: s.positionId || null, position_name: s.positionName ?? null, captured: previous.includes(s) })))]
             });
             }
+            if (mode === 'SNAPSHOT' || locationId) statements.push({
+                text: `UPDATE schedule_pending_edits SET published_revision_id=$1,published_at=$2::timestamptz
+                  WHERE week_start=$3::date AND published_revision_id IS NULL AND ($4::text IS NULL OR location_id=$4 OR shift_id=ANY($5::text[]))`,
+                values:[revision.id,revision.createdAt,week,locationId ?? null,[...(movedShiftIds ?? [])]]
+            });
             // Reference previous own published facts atomically, including a
             // callout release. No schedule body is copied into calendar state.
             statements.push({text:'SELECT calendar_capture_removals($1)',values:[revision.id]});
@@ -545,14 +603,25 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
         }
  // Publication, history and notification DML may wait after initial authorization.
  // Recheck wall-clock validity before this SAME transaction can commit.
- if(revisions.length){
+ if(revisions.length&&!locationId){
   stamp.text=`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[])`;
   stamp.values=[weeks];
  }
- if (input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') {
+ if (input.sourceType === 'PUBLISH') {
+  const scope = workforcePermissionStatements(input.proof, config.workspace!, 'PUBLISH_SCHEDULE',
+    locationId && !crossLocationPublication ? [locationId] : null, input.publicationAuthority);
+  guards.push(...scope);
+  statements.push(...scope);
+ } else if (input.sourceType === 'MANAGER_MUTATION') {
   const footprint:OperationalFootprint=revisions.length?{kind:'COMPANY'}:operational.footprint;
   guards.push(...operationalScopeStatements(input.proof,config.workspace!,footprint));
   statements.push(...operationalScopeStatements(input.proof,config.workspace!,footprint));
+  if (revisions.length) {
+   const publication = workforcePermissionStatements(input.proof, config.workspace!, 'PUBLISH_SCHEDULE',
+     revisedLocations.size ? [...revisedLocations] : null);
+   guards.push(...publication);
+   statements.push(...publication);
+  }
  }
  return {guards,statements,revisions};
 }

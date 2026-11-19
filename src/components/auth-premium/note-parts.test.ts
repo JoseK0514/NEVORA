@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 import { AUTH_COPY } from "@/lib/auth-copy";
 import { NOTE_TITLE_MAX, noteParts } from "./note-parts";
 

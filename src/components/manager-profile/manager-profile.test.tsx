@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { parseManagerProfile, type ManagerProfileSnapshot } from './contract';
 import { ALERT_TOPIC_COUNT, ManagerProfileView, managerAccess, type ManagerProfileIdentity } from './manager-profile-live';
 

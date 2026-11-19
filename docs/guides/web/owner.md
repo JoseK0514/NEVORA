@@ -13,6 +13,11 @@ new-company admission defaults closed; provisioning needs its own explicit
 configuration and authorization. A signup page alone does not establish
 availability.
 
+A new business that is admitted to signup confirms its email from the link
+NEVORA sends, enters the business, first location and Owner details, waits while
+the workplace is prepared, then chooses the Owner password on the new
+workplace's own address. Sign in there with the sign-in ID shown at the end.
+
 Settings includes these current destinations:
 
 | Area | What to review |
@@ -195,8 +200,54 @@ For Rondo, use the separate [Rondo guide](rondo.md). For technical operations or
 privacy fulfillment, use the [operations guide](operations.md).
 
 
-## Local business evidence backend
+## Business records, when enabled
 
-The local default-off finance/sales backend supports Owner-reviewed JSON/explicit CSV versions and account/location coverage maps, exact finance/sales reads and original-operation recovery. Claude owns its separate B2 interface; no new screen or real provider connection is claimed. Full review and explicit publication are required before Rondo may use a source. An Owner-declared perimeter cannot prove omitted accounts do not exist, and shared cash cannot be allocated to locations. See the technical handoff for the current bounded scope.
+Open **AI manager → Business records**. Add a JSON file or explicitly map a CSV,
+review every bounded row and the server's findings, and acknowledge the exact
+version before **Publish for Rondo**. **Main records** reviews the account and
+location perimeter; **Check figures** reads the eligible published records for the
+chosen period. These controls depend on the existing default-off feature flags;
+this source guide does not establish hosted activation or an accounting connector.
+An Owner-declared perimeter cannot prove no account is missing, and shared cash
+cannot be allocated to locations. Receivables are not cash and net receipts are
+not profit. An unconfirmed change keeps its original reference: check that change,
+even after a conflict, instead of creating a replacement.
 
-See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
+## Import pay and export paid time
+
+On **Review payroll**, **Import pay** opens file selection, exact person matching,
+amount review and confirmation. An untouched supported CSV is retained exactly.
+Re-matched or corrected CSV data is saved as the reviewed structured amounts;
+keep the original file separately when the confirmation says it is not retained.
+Choices for people omitted from a file do not replace the server's reviewed
+period population or create persisted employment facts. Resolve a population
+refusal on **Who's included** and review again.
+
+**Paid time export** requires a current reviewed population and finalized cards.
+Decide each recorded break explicitly; a recorded label does not establish paid
+or unpaid treatment. Review the planned whole-person batches, recover an uncertain
+batch using its original identity, and confirm the period only after every batch
+and the server manifest reconcile. A saved file is not a provider submission or
+payment. This guided export uses the exact neutral format. It does not offer
+a saved rounding profile; values requiring rounding are refused. Payroll treatment
+and legal suitability remain employer review matters.
+
+Private import drafts, break choices, plans and CSV replies clear when their
+current view expires, you step away, or access ends. Read current access again
+and re-upload an unsaved file. An uncertain save retains only its original
+request for checking or an unchanged retry; do not start a replacement while it
+is unresolved. Downloading a batch checks current access with the server again.
+
+## Agreed scheduling times
+
+From a person's Team page, **When they can be scheduled** shows current and future
+agreements and change requests. Management-agreed restrictions are enforceable;
+availability preferences remain separate. Review the effective Monday and changed
+days before saving or deciding a request. A missing legacy agreement does not mean
+an explicit unrestricted agreement.
+
+## Tablet setup and uncertain punches
+
+Open **Clocker tablets** to register a tablet. The setup card offers a QR code, **Copy link** and **Show code**; use the link only on the intended tablet. The person holding it must tap to connect it. The code works once for 15 minutes. Browser and Home Screen app cookies can differ, so check registration in the actual kiosk you will use.
+
+A retained punch may say **not confirmed yet**. **Check if it saved** checks its original reference; **Send it again** retains that reference. **See current status** is a separate current observation. **Ask Owner to check** and **Check your last punch** are recovery routes. A failed check or a disabled service is not proof that a previous punch was never recorded. Offline punches are not queued automatically.

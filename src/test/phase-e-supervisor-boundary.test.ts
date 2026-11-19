@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 
 const runner = resolve('scripts/phase-e-owned.mjs');
 const fixture = resolve('src/test/fixtures/phase-e-supervisor-boundary.mjs');

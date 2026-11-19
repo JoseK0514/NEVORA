@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { periodInsights } from './insights';
 import type { PeriodReports } from './project';
 

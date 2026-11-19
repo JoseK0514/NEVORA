@@ -3,7 +3,7 @@ import { Client } from 'pg';
 import { createHash, randomBytes } from 'node:crypto';
 import { readFileSync, writeFileSync, lstatSync, realpathSync } from 'node:fs';
 import { resolve, join } from 'node:path';
-import { expect } from 'vitest';
+import { expect } from '@rstest/core';
 import { hashPassword } from './password';
 import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from '../tenancy/runtime/catalog-fence.server';
 

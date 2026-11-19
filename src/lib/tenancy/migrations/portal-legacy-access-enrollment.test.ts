@@ -1,7 +1,7 @@
 // UNEXECUTED prospective regression source. Actual imported module, no VM/private
 // extraction, native SQL mocks, manufactured issued plan or authority constructor.
-import {describe,it,expect,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {describe,it,expect,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import {enrollCapturedLegacyPortalAccessOnOwnedInstaller,isPortalLegacyEnrollmentFailure} from './portal-legacy-access-enrollment.server';
 import type {Client} from 'pg';
 import type {EmployeeNumberInstallerExecutionWitness} from './employee-number-enrollment-binding.server';

@@ -1,7 +1,7 @@
 // Owner early clock-in grace, end to end on owned loopback PostgreSQL with fictional people only: the Owner-only writer,
 // the punch reading the persisted grace on the server, fail-closed reads, stale-grace fencing and immutable history.
 import { randomUUID } from 'node:crypto';
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { createPunchFixture } from './clocker-punch-fixture';
 import { ClockerPunchService } from '../../lib/clocker/punches.server';
 import { readClockerScheduleGrace, saveClockerScheduleGrace } from '../../lib/clocker/schedule-grace.server';

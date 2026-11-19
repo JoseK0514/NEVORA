@@ -1,9 +1,9 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe,it,expect,vi} from 'vitest';
+import {describe,it,expect,rs} from '@rstest/core';
 import {projectCompanyPolicyHistory} from '../lib/business-improvements/company-policies/history';
 import {policyUIRows,policyUISettings} from '../test/fixtures/company-policy-history-ui';
 import {CompanyPolicyEditor,buildPolicySettings,CurrentPolicyRules} from './company-policy-editor';
-vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
+rs.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
 const locations=[{id:'loc-1',name:'Northside',active:true}];
 const render=(rows=policyUIRows())=>renderToStaticMarkup(<CompanyPolicyEditor history={projectCompanyPolicyHistory(rows)} locations={locations} timeZone="America/Puerto_Rico"/>);
 describe('Owner policy history display',()=>{

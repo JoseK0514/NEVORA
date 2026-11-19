@@ -1,4 +1,5 @@
-import {readCompanyResult} from '../company-access/company-result.server';
+import { correctionFootprintCtes, missingChain } from '../time-corrections/footprint.server';
+import {assertWorkforcePermission,listWorkforcePermissions,workforcePermissionStatements} from '../workforce/authority.server';
 import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import {correctionAuthority} from '../time-corrections/authority.server';
 import {delegatedRecoveryScope} from '../time-corrections/delegated-authority.server';
@@ -26,22 +27,6 @@ import { getWorkspace, workspaceReadGuard } from './workspaces';
 
 const selfRoles = ['EMPLOYEE','LEAD'] as const;
 const managerRoles = ['OWNER','MANAGER'] as const;
-
-// The connected approved missing-time chain is scoped before traversal. UNION
-// de-duplicates ancestors/descendants; unrelated missing intervals never join.
-const missingChain=(workspace:string,employee:string,kind:string,request:string)=>`WITH RECURSIVE chain AS (
-  SELECT a.id,a.request_id,a.supersedes_adjustment_id
-  FROM time_correction_adjustments a
-  WHERE ${kind}='MISSING_ENTRY' AND a.kind='MISSING_ENTRY'
-    AND a.workspace_id=${workspace} AND a.employee_id=${employee}
-    AND (a.request_id=${request} OR a.id=(SELECT captured.base_adjustment_id FROM time_correction_requests captured
-      WHERE captured.id=${request} AND captured.workspace_id=${workspace} AND captured.employee_id=${employee}))
-  UNION
-  SELECT a.id,a.request_id,a.supersedes_adjustment_id
-  FROM time_correction_adjustments a JOIN chain c
-    ON a.supersedes_adjustment_id=c.id OR c.supersedes_adjustment_id=a.id
-  WHERE a.kind='MISSING_ENTRY' AND a.workspace_id=${workspace} AND a.employee_id=${employee}
-)`;
 
 // Existing canonical views supply effective time. History is scoped to this
 // employee/workspace/recorded target; limits are disclosed, never completeness.
@@ -210,27 +195,7 @@ FROM observed o`;
 // capture every relevant location before the public last-five decision projection.
 const internalCorrectionJoins = `
 LEFT JOIN LATERAL (
-  WITH relevant_requests AS MATERIALIZED (
-    SELECT h.* FROM time_correction_requests h
-    WHERE h.workspace_id=r.workspace_id AND h.employee_id=r.employee_id
-      AND (h.id=r.id OR (h.kind=r.kind
-        AND h.time_entry_id IS NOT DISTINCT FROM r.time_entry_id
-        AND h.break_entry_id IS NOT DISTINCT FROM r.break_entry_id
-        AND (r.kind<>'MISSING_ENTRY'
-          OR h.base_adjustment_id IN (${missingChain('r.workspace_id','r.employee_id','r.kind','r.id')} SELECT id FROM chain)
-          OR h.id IN (${missingChain('r.workspace_id','r.employee_id','r.kind','r.id')} SELECT request_id FROM chain))))
-  ), relevant_adjustments AS MATERIALIZED (
-    SELECT a.* FROM time_correction_adjustments a
-    WHERE a.workspace_id=r.workspace_id AND a.employee_id=r.employee_id
-      AND (a.request_id IN (SELECT id FROM relevant_requests)
-        OR a.id IN (${missingChain('r.workspace_id','r.employee_id','r.kind','r.id')} SELECT id FROM chain))
-  ), location_ids AS (
-    SELECT location_id AS id FROM relevant_requests
-    UNION SELECT source_snapshot->>'locationId' FROM relevant_requests
-    UNION SELECT location_id FROM relevant_adjustments
-    UNION SELECT source_snapshot->>'locationId' FROM relevant_adjustments
-    UNION SELECT t.location_id FROM time_entries t WHERE t.id=r.time_entry_id
-  )
+  WITH ${correctionFootprintCtes}
   SELECT jsonb_build_object(
     'id',r.id::text,'workspaceId',r.workspace_id,'employeeId',r.employee_id,
     'kind',r.kind,'status',CASE latest.event_kind WHEN 'APPROVED' THEN 'APPROVED' WHEN 'REJECTED' THEN 'REJECTED' ELSE 'PENDING' END,
@@ -277,7 +242,9 @@ const managerSqlFor = (includeInternalCapture = false) => `WITH observed AS MATE
     ORDER BY e.revision DESC
     LIMIT 1
   ) latest ON true
-  WHERE r.workspace_id=$1
+  WHERE r.workspace_id=$1 AND ($4::text[] IS NULL OR (
+    $4::text[] @> ARRAY(WITH ${correctionFootprintCtes} SELECT id FROM location_ids WHERE id IS NOT NULL)
+  ))
   ORDER BY r.created_at,r.id
 ), rows AS MATERIALIZED (
   SELECT (${publicRequestJson('r')} ||
@@ -347,7 +314,7 @@ export async function readEmployeeTimeCorrections(
     const snapshot=parseEmployeeTimeCorrections(row.snapshot);
     return snapshot.state==='ready'?{...snapshot,authority:correctionAuthority(proof)}:snapshot;
   } catch (error) {
-    if (isManagementAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
+    if (isManagementAuthorizationError(error) || isOperationalAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
     if (schemaMissing(error)) return {state:'unavailable',reason:'schema_missing'};
     return {state:'unavailable',reason:'read_failed'};
   }
@@ -382,6 +349,7 @@ async function readManagerTimeCorrectionsCore(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),
   capture?: (value: CorrectionActionCapture) => void,
+  allowEmptyWithoutGrant = false,
 ): Promise<ManagerTimeCorrections> {
   try { assertManagementProof(proof,proof?.employee?.id); }
   catch { return {state:'unavailable',reason:'access_denied'}; }
@@ -389,16 +357,27 @@ async function readManagerTimeCorrectionsCore(
     return {state:'unavailable',reason:'access_denied'};
   }
   try {
-    const workspace=await getWorkspace(executor);
+    const {access, permissions}=await listWorkforcePermissions(proof,executor);
+    const workspace=access.workspace;
+    const permitted = proof.employee.role === 'OWNER' ? null : permissions
+      .filter(grant => grant.permission === 'REVIEW_TIME_EXCEPTION').map(grant => grant.locationId);
+    if (permitted?.length === 0) {
+      if (!allowEmptyWithoutGrant) return {state:'unavailable',reason:'access_denied'};
+      const validForMs = Math.floor(access.validForMs - Math.max(0,Date.now()-Date.parse(access.observedAt)));
+      return validForMs > 0
+        ? {state:'ready',observedAt:access.observedAt,timeZone:workspace.timeZone,requests:[],validForMs,authority:correctionAuthority(proof)}
+        : {state:'unavailable',reason:'access_denied'};
+    }
+    const permissionGuard=workforcePermissionStatements(proof,workspace,'REVIEW_TIME_EXCEPTION',permitted,access.authority);
     const guards=[
       ...workspaceReadGuard(workspace),
       {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
-      ...managementSessionStatements(proof,proof.employee.id,managerRoles),
+      ...permissionGuard,
     ];
     const result=await executor.transaction([
       ...guards,
-      {text:capture ? managerSqlFor(true) : managerSql,values:[workspace.id,proof.employee.id,workspace.timeZone]},
-      ...managementSessionStatements(proof,proof.employee.id,managerRoles),
+      {text:capture ? managerSqlFor(true) : managerSql,values:[workspace.id,proof.employee.id,workspace.timeZone,permitted]},
+      ...permissionGuard,
     ]);
     const pages=result[guards.length];
     const complete=assembleCompleteReadPages(pages,'requests',CORRECTION_READ_PAGE_SIZE);
@@ -415,21 +394,27 @@ async function readManagerTimeCorrectionsCore(
       WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role IN ('OWNER','MANAGER') AND s.expires_at>clock_timestamp()`,
       values:[proof.sessionTokenHash,proof.employee.id,source.state==='ready'?source.observedAt:null]});
     if(!final)return {state:'unavailable',reason:'access_denied'};
-    const remaining=final.validForMs-Math.ceil(performance.now()-started);
+    await assertWorkforcePermission(proof,'REVIEW_TIME_EXCEPTION',permitted,executor,access);
+    const remaining=Math.min(final.validForMs-Math.ceil(performance.now()-started),
+      access.validForMs-(Date.now()-Date.parse(access.observedAt)));
     if(source.state!=='ready'||remaining<1)return {state:'unavailable',reason:'read_failed'};
     if (capture) capture(parseCorrectionActionCapture(assembleCompleteReadPages(pages,'internalCapture',CORRECTION_READ_PAGE_SIZE).rows,
       source, workspace.id, proof.employee.id, remaining));
     return {...source,validForMs:remaining,authority:correctionAuthority(proof)};
   } catch (error) {
-    if (isManagementAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
+    if (isManagementAuthorizationError(error) || isOperationalAuthorizationError(error)) return {state:'unavailable',reason:'access_denied'};
     if (schemaMissing(error)) return {state:'unavailable',reason:'schema_missing'};
     return {state:'unavailable',reason:'read_failed'};
   }
 }
 
 // Public DTO/parser unchanged; the new internal reader is not a F10 authority boundary.
-export async function readManagerTimeCorrections(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<ManagerTimeCorrections> {
- return readCompanyResult(proof,()=>readManagerTimeCorrectionsCore(proof,executor),executor);
+export async function readManagerTimeCorrections(
+  proof: SessionMutationProof,
+  executor: SqlExecutor = neonNotificationExecutor(),
+  { allowEmptyWithoutGrant = false } = {},
+): Promise<ManagerTimeCorrections> {
+ return readManagerTimeCorrectionsCore(proof,executor,undefined,allowEmptyWithoutGrant);
 }
 export async function readManagerTimeCorrectionsWithInternalCapture(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
  const retained: {capture: CorrectionActionCapture | null} = {capture:null};

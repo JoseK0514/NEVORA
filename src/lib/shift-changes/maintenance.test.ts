@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { fictionalSnapshot, fictionalTerms } from '../../test/fixtures/shift-changes';
 import { projectShiftChangeState, planShiftChangeMaintenance, type MaintenanceSnapshot } from './maintenance';
 import { notificationPolicyFor } from '../notifications/policy';

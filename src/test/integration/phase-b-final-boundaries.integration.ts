@@ -1,19 +1,19 @@
 import {getShiftForManagement} from '../../lib/data/schedules';
 import { Client } from 'pg';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 import type { SessionMutationProof } from '../../lib/shift-changes/types';
 
 // Framework SQL transport only; product repositories, guards, planner and SQL are real.
-const context = vi.hoisted(() => ({ executor: null as SqlExecutor | null }));
-vi.mock('@/lib/db', () => {
+const context = rs.hoisted(() => ({ executor: null as SqlExecutor | null }));
+rs.mock('@/lib/db', () => {
   const statement = (text: string, values: readonly unknown[] = []) => ({ statement: { text, values }, then: (yes: (rows: unknown[]) => unknown, no: (error: unknown) => unknown) => context.executor!.query({ text, values }).then(yes, no) });
   const tagged = Object.assign((strings: TemplateStringsArray, ...values: unknown[]) => statement(strings.reduce((text, part, index) => text + (index ? '$' + index : '') + part, ''), values), {
     query: statement, transaction: (queries: { statement: SqlStatement }[]) => context.executor!.transaction(queries.map(query => query.statement)),
   });
   return { getDb: () => tagged, queryRows: (rows: unknown) => rows };
 });
-vi.mock('@/lib/data/notification-transactions', async original => ({ ...await original<Record<string, unknown>>(), neonNotificationExecutor: () => context.executor! }));
+rs.mock('@/lib/data/notification-transactions',  () => ({ ...rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions'), neonNotificationExecutor: () => context.executor! }));
 import { createDisposableFoundationDatabase } from './local-postgres';
 import {installFixtureCompanyAccess} from './fixture-company-access';
 import { ensureSchedule, insertShift, updateShift, deleteShift } from '../../lib/data/schedules';

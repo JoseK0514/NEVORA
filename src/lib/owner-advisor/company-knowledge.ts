@@ -69,6 +69,7 @@ export function parseKnowledgeCommand(value: unknown): KnowledgeCommand {
 export const knowledgeSourceHref = (documentId: string, versionId: string) => `/api/owner/advisor/knowledge/entries/${documentId}/versions/${versionId}`;
 export function knowledgeExcerpt(body: string, query: string, maxBytes: number) {
   if (!Number.isSafeInteger(maxBytes) || maxBytes < 1 || maxBytes > knowledgeLimits.contextBytes) return fail();
+  if (Buffer.byteLength(body, 'utf8') <= maxBytes) return { text: body, start: 0, end: body.length, complete: true };
   const lower = body.toLocaleLowerCase(), words = query.match(/[\p{L}\p{N}]{3,}/gu) ?? [];
   const match = words.map(word => lower.indexOf(word.toLocaleLowerCase())).find(index => index >= 0) ?? 0;
   let start = Math.max(0, match - Math.min(256, Math.floor(maxBytes / 4)));

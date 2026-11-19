@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {requestShift, validateRequestFacts, type ActionRequestFacts} from './request-facts';
 import {calloutCoverText, coverOutcome, coverOutcomeText, lateText, otherShiftLine, shiftText, swapShifts} from './request-details';
 import {reviewCopy} from '@/components/review-details/copy';

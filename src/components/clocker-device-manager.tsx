@@ -297,7 +297,7 @@ export function ClockerDevicesUnavailable({ lang = 'en' }: { lang?: ClockerOwner
     <div className="ck-stack"><BCard label={t.loadFailedTitle}>
       <BState kind="failed" alert title={t.loadFailedTitle} line={t.loadFailedBody}>
         {/* A retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript. */}
-        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- see above: a full reload, so every read runs again */}
+        {/* eslint-disable-next-line next-preserved/no-html-link-for-pages -- see above: a full reload, so every read runs again */}
         <a className="b-btn b-btn--teal" href="/app/settings/clocker">{t.tryAgain}</a>
       </BState>
     </BCard></div>

@@ -2,7 +2,7 @@
 // Root must supply the existing exact leased PG18.4 fixture after independent
 // custody validation, real original 0001-0026 source objects and safe NOLOGIN
 // reader. No SQL/resources on import. No root/proof TRUE stub or fake rows.
-import { describe,it,expect } from 'vitest';
+import { describe,it,expect } from '@rstest/core';
 import type { Client } from 'pg';
 import { readFileSync } from 'node:fs';
 import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';

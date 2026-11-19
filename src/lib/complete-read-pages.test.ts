@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {assembleCompleteReadPages as assemble} from './complete-read-pages';
 const observedAt='2026-11-10T12:00:00Z';
 const source=[{observedAt,totalRows:3,pageIndex:0,cards:[{id:'A'},{id:'B'}]}, {observedAt,totalRows:3,pageIndex:1,cards:[{id:'C'}]}];

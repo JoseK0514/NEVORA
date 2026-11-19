@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 import type { SqlStatement } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
-vi.mock('server-only', () => ({}));
-vi.mock('./notification-transactions', () => ({ neonNotificationExecutor: vi.fn() }));
-vi.mock('./workspaces', () => ({
-  getWorkspace: vi.fn(async () => ({ id: 'ws-1', name: 'Fictional', timeZone: 'America/Puerto_Rico', active: true, createdAt: 'c', updatedAt: 'u' })),
-  workspaceReadGuard: vi.fn(() => [{ text: 'workspace guard', values: [] }]),
+rs.mock('server-only', () => ({}));
+rs.mock('./notification-transactions', () => ({ neonNotificationExecutor: rs.fn() }));
+rs.mock('./workspaces', () => ({
+  getWorkspace: rs.fn(async () => ({ id: 'ws-1', name: 'Fictional', timeZone: 'America/Puerto_Rico', active: true, createdAt: 'c', updatedAt: 'u' })),
+  workspaceReadGuard: rs.fn(() => [{ text: 'workspace guard', values: [] }]),
 }));
 import { managerLocationsSql, managerScopeStatements, readManagerScopeStorage } from './manager-location-scope.server';
 import { readToday } from './today.server';
@@ -27,11 +27,11 @@ function fakeExecutor(installed: number, snapshot: unknown, failure?: unknown) {
   return {
     transactions,
     executor: {
-      query: vi.fn(async (statement: SqlStatement) => {
+      query: rs.fn(async (statement: SqlStatement) => {
         if (!statement.text.includes('pg_catalog.pg_class')) throw Error('unexpected query');
         return [{ installed }] as never[];
       }),
-      transaction: vi.fn(async (statements: readonly SqlStatement[]) => {
+      transaction: rs.fn(async (statements: readonly SqlStatement[]) => {
         transactions.push([...statements]);
         if (failure) throw failure;
         return statements.map(s => (s.text.includes('jsonb_build_object(\'observedAt\'') ? [{ snapshot }] : [{}]));
@@ -42,7 +42,7 @@ function fakeExecutor(installed: number, snapshot: unknown, failure?: unknown) {
 const readStatement = (statements: SqlStatement[]) => statements.find(s => s.text.includes('scope AS MATERIALIZED'))!;
 const sentinel = (value: string) => Object.assign(new Error(`invalid input syntax for type integer: "${value}"`), { code: '22P02' });
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => { rs.clearAllMocks(); });
 
 describe('manager location scope SQL', () => {
   it('legacy storage reads every workspace location and still types the actor parameter', () => {

@@ -18,9 +18,20 @@ notifications have separate availability and acceptance. See the
    activation is unconfirmed, ask them to check account status; try normal
    sign-in with your known ID before requesting another invitation.
 
+Choose at least 15 characters. Long passphrases and spaces are welcome; you do
+not need a prescribed mix of symbols, numbers or capital letters. Common or known
+breached values and passwords based on your Employee ID or company name are
+refused with a specific reason. Existing passwords keep working, with no scheduled
+password changes. New or reset passwords follow these rules.
+
 Keep your invitation, password, recovery code and passkeys private. Use the
-sign-in help/recovery flow if needed. Your manager can help through an authorized
+**Forgot password?** to request a reset link. Open it on **Choose a new password**, enter and confirm a new phrase, then choose **Save new password**. Your manager can help through an authorized
 recovery process without learning your password.
+
+Opening another reset link in the same tab clears the earlier password draft.
+An earlier request's delayed reply cannot finish the new link's screen. If an
+earlier reset was not confirmed, check sign-in with that password before asking
+for another code; leaving its screen does not undo an issued reset.
 
 ## Find your work
 
@@ -116,3 +127,11 @@ use its recovery/check control before repeating it. Use **More → Help** for
 technical support; contact your employer for work decisions. Include a safe page
 description and approximate time, without passwords, codes, bank details or pay
 documents.
+
+## View or request agreed times
+
+From **Availability**, open **Agreed times** to see the management agreement in
+effect, future versions and your requests. **Ask to change it** submits a request;
+it does not approve or activate the requested change. The agreement and your
+availability preferences are separate. A Lead follows the same personal workflow.
+If a save is unconfirmed, check the original action before sending a new request.

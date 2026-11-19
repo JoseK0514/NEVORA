@@ -1,5 +1,5 @@
 import {fixtureProof} from './shift-change-api';
-import { beforeAll, afterAll, beforeEach, expect, it } from 'vitest';
+import { beforeAll, afterAll, beforeEach, expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { reviewTimeOffRequest } from './management-api';
 import { createTimeOffRequest } from './self-service-api';
@@ -52,6 +52,12 @@ it('outbox failure rolls back Time Off and permits a later retry of the same ide
 });
 it('replay after an actual manager decision retains the decision and does not emit pending again',async()=>{
  await createTimeOffRequest(request,database.executor);
+ await q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id)
+   VALUES('legacy-owner','Fictional','Owner','NONE','OWNER','loc-1');
+   INSERT INTO workforce_permission_revisions
+     (workspace_id,employee_id,location_id,permission,revision,role_generation,granted,actor_employee_id)
+   SELECT workspace_id,employee_id,'loc-1','APPROVE_LEAVE',1,generation,true,'legacy-owner'
+   FROM operational_subject_versions WHERE employee_id='legacy-manager'`);
  expect(await reviewTimeOffRequest({requestId:request.requestId,managerId:'legacy-manager',status:'APPROVED'},database.executor)).toBe(true);
  const before=await q('SELECT * FROM notifications ORDER BY id');
  await createTimeOffRequest(request,database.executor);

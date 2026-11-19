@@ -1,14 +1,14 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import NotFound from "./not-found";
 
-const route = vi.hoisted(() => ({ path: "/nope" }));
-const language = vi.hoisted(() => ({ lang: "en" as "en" | "es" }));
+const route = rs.hoisted(() => ({ path: "/nope" }));
+const language = rs.hoisted(() => ({ lang: "en" as "en" | "es" }));
 beforeEach(() => { route.path = "/nope"; language.lang = "en"; });
-vi.mock("next/navigation", () => ({ usePathname: () => route.path }));
-vi.mock("@/lib/auth-lang.server", () => ({ readAuthLang: async () => language.lang }));
-vi.mock("next/link", () => ({
+rs.mock("next/navigation", () => ({ usePathname: () => route.path }));
+rs.mock("@/lib/auth-lang.server", () => ({ readAuthLang: async () => language.lang }));
+rs.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children),
 }));
 

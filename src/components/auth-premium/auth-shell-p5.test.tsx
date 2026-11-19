@@ -1,9 +1,10 @@
+import * as rstestImportedActual0 from "@/lib/legal/policies" with { rstest: 'importActual' };
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it,vi} from 'vitest';
-vi.mock('@/components/mobile-access/config.server',()=>({mobileAccessEnabled:()=>false}));
-vi.mock('@/lib/legal/policies',async original=>({...(await original<typeof import('@/lib/legal/policies')>()),policiesVisible:()=>true}));
+import {expect,it,rs} from '@rstest/core';
+rs.mock('@/components/mobile-access/config.server',()=>({mobileAccessEnabled:()=>false}));
+rs.mock('@/lib/legal/policies',() => ({...(rstestImportedActual0),policiesVisible:()=>true}));
 import {AUTH_COPY} from '@/lib/auth-copy';
 import {AuthBackNav} from './auth-back-nav';
 import {QuietAuthShell} from './auth-shell';

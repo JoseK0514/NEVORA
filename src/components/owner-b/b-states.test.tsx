@@ -4,11 +4,11 @@ import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
-vi.mock("./owner-b.css", () => ({}));
-vi.mock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+rs.mock("./owner-b.css", () => ({}));
+rs.mock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
 
 import { BHero, BLoadingScreen, BState, BStateScreen } from "./b-kit";
 import { BOfflineContext } from "./b-offline";

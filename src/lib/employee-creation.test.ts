@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {creationKey,creationPayload,parseEmployeeCreation,type EmployeeCreationSnapshot,type CreationDraft} from './employee-creation';
 const fields={sourceShiftId:'own-shift',sourceEpisodeId:'11111111-1111-4111-8111-111111111111',sourceTermsFingerprint:'v1:'+'a'.repeat(64)};
 const target={id:'peer-shift',person:'Blair C.',date:'2026-11-04',startTime:'22:00',endTime:'06:00',location:'West',position:'Support',lead:false,fields:{targetShiftId:'peer-shift',targetEpisodeId:'22222222-2222-4222-8222-222222222222',targetTermsFingerprint:'v1:'+'b'.repeat(64)}};

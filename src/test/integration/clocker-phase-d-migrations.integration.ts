@@ -1,9 +1,9 @@
 import {readFile} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import {it,expect} from 'vitest';
-import {createPunchFixture} from './clocker-punch-fixture';
+import {it,expect} from '@rstest/core';
+import {createPunchFixture,reviewHistoricalTimeCorrection} from './clocker-punch-fixture';
 import {ClockerPunchService} from '../../lib/clocker/punches.server';
-import {submitTimeCorrection,reviewTimeCorrection} from '../../lib/time-corrections/service';
+import {submitTimeCorrection} from '../../lib/time-corrections/service';
 import {readTimecards} from '../../lib/timecards/service';
 it('D8 upgrades the frozen D2 schema without changing actual punches, breaks, receipts, PINs, credentials or approved corrections',async()=>{
  const f=await createPunchFixture({breaks:true,migrationStage:'phase-d2',companyAccess:true});
@@ -14,7 +14,7 @@ it('D8 upgrades the frozen D2 schema without changing actual punches, breaks, re
   const service=new ClockerPunchService(f.key,f.db.executor),identity=await f.identity();
   for(const action of ['CLOCK_IN','START_BREAK','END_BREAK','CLOCK_OUT'] as const){const view=await service.read(identity.proof),s=view.snapshot;await service.execute(identity.proof,{commandId:randomUUID(),verificationId:view.verificationId,action,expected:{revision:s.revision,timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null},...(action==='START_BREAK'?{breakType:{id:f.breakType!.id,version:f.breakType!.version}}:{})});}
   const employee={...proof,employee:{...proof.employee,id:'c34-a',role:'EMPLOYEE' as const},sessionTokenHash:'b'.repeat(64)};
-  const correction=await submitTimeCorrection(employee,{operationId:randomUUID(),kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:'2026-09-28T12:00:00Z',proposedEndAt:'2026-09-28T13:00:00Z',reason:'Fictional preserved D2 adjustment'},f.db.executor);if(correction.status!=='pending')throw Error('Fixture correction');expect((await reviewTimeCorrection(proof,{operationId:randomUUID(),requestId:correction.requestId,expectedRevision:correction.revision,decision:'APPROVE'},f.db.executor)).status).toBe('approved');
+  const correction=await submitTimeCorrection(employee,{operationId:randomUUID(),kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:'2026-09-28T12:00:00Z',proposedEndAt:'2026-09-28T13:00:00Z',reason:'Fictional preserved D2 adjustment'},f.db.executor);if(correction.status!=='pending')throw Error('Fixture correction');expect((await reviewHistoricalTimeCorrection(f,{operationId:randomUUID(),requestId:correction.requestId,expectedRevision:correction.revision,decision:'APPROVE'})).status).toBe('approved');
   const tables=['employees','employee_credentials','employee_sessions','employee_location_eligibility','employee_clocker_pins','clocker_devices','clocker_device_credentials','time_entries','break_entries','clocker_command_ledger','time_correction_requests','time_correction_adjustments','time_correction_events'];
   const snapshot=async()=>Promise.all(tables.map(table=>f.q(`SELECT to_jsonb(t) AS row FROM ${table} t ORDER BY to_jsonb(t)::text`)));
   const before=await snapshot();

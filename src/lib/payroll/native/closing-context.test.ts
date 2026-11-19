@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import { calculateNativePayroll } from './calculate';
 import { classifyRecordedTime, HOUR } from './time';
 import { input, entry } from './fixtures.test-support';

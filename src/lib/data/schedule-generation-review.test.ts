@@ -1,9 +1,9 @@
-import { beforeEach,expect,it,vi } from 'vitest';
+import { beforeEach,expect,it,rs } from '@rstest/core';
 import { automaticWeek } from '../../test/fixtures/automatic-week';
 import { generationNeedKey } from '../scheduling/generation-claims';
-const f=vi.hoisted(()=>({snapshot:vi.fn(),statuses:vi.fn()}));
-vi.mock('./schedule-generation-snapshot',()=>({readGenerationSnapshot:f.snapshot,readGenerationReviewSnapshot:f.snapshot}));
-vi.mock('./schedules',()=>({listScheduleStatuses:f.statuses}));
+const f=rs.hoisted(()=>({snapshot:rs.fn(),statuses:rs.fn()}));
+rs.mock('./schedule-generation-snapshot',()=>({readGenerationSnapshot:f.snapshot,readGenerationReviewSnapshot:f.snapshot}));
+rs.mock('./schedules',()=>({listScheduleStatuses:f.statuses}));
 import { getScheduleGenerationReview } from './schedule-generation-review';
 beforeEach(()=>{f.statuses.mockResolvedValue([]);f.snapshot.mockResolvedValue({input:automaticWeek(),source:{secret:'PRIVATE'}});});
 it('returns actual current configured coverage without planning or raw source',async()=>{const review=await getScheduleGenerationReview({workspaceId:'work',actorEmployeeId:'manager',weekStart:'2026-10-05',locationScope:{kind:'ALL'}});expect(review).toMatchObject({editable:true,attempted:1,needsSetup:0,coverage:{percentage:0,requiredMinutes:480}});expect(JSON.stringify(review)).not.toContain('PRIVATE');});

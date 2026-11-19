@@ -1,4 +1,4 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
@@ -9,10 +9,10 @@ import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
 import {createPayrollExport,readExportProfiles,saveExportProfile} from '../../lib/payroll-export/service';
 import {neutralProfile} from '../../lib/payroll-export/model';
 import {readPeriodCloseHistory,readPeriodClose,savePeriodPopulation,preparePeriodManifest,readPeriodArtifact,recordPeriodHandoff} from '../../lib/period-close/service';
-const ctx=vi.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/auth/session',()=>({getSession:async()=>ctx.proof?.employee??null,requireSessionMutationProof:async()=>ctx.proof}));
-vi.mock('@/lib/db',()=>{
+const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/auth/session',()=>({getSession:async()=>ctx.proof?.employee??null,requireSessionMutationProof:async()=>ctx.proof}));
+rs.mock('@/lib/db',()=>{
  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>ctx.ex!.query({text,values}).then(yes,no)});
  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((text,part,i)=>text+(i?'$'+i:'')+part,''),values),{query:statement,transaction:(queries:{statement:SqlStatement}[])=>ctx.ex!.transaction(queries.map(q=>q.statement))});return {getDb:()=>tagged,queryRows:(rows:unknown)=>rows};
 });
@@ -46,7 +46,7 @@ async function setup(){const f=await companyAccessFixture();ctx.ex=f.db.executor
  const handoff=await recordPeriodHandoff(f.manager,handoffInput,f.db.executor);expect(handoff).toMatchObject({providerVerified:false});
  return {...f,profileInput,profile,exportInput,exported,populationInput,population,manifestInput,manifest,handoffInput};
  }catch(error){await f.db.dispose();throw error;}}
-async function close(f:Fixture){ctx.ex=null;ctx.proof=null;vi.unstubAllEnvs();await f.db.dispose();}
+async function close(f:Fixture){ctx.ex=null;ctx.proof=null;rs.unstubAllEnvs();await f.db.dispose();}
 async function denied(work:()=>Promise<unknown>){let error:unknown;try{await work();}catch(e){error=e;}expect(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)).toBe(true);}
 async function snapshot(f:Fixture){return f.q(`SELECT jsonb_build_object('profiles',(SELECT jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text) FROM payroll_export_profile_revisions t),'exports',(SELECT jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text) FROM payroll_export_receipts t),'populations',(SELECT jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text) FROM payroll_period_populations t),'manifests',(SELECT jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text) FROM payroll_period_manifests t),'events',(SELECT jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text) FROM payroll_period_events t)) AS state`);}
 const cases=[
@@ -95,7 +95,7 @@ it.each(['revoked','role cycle','unassigned'] as const)('all export/period servi
 });
 const request=(path:string,header:string,body:unknown)=>new Request('http://127.0.0.1'+path,{method:'POST',headers:{[header]:'1','x-nevora-actor':'manager','content-type':'application/json',origin:'http://127.0.0.1'},body:JSON.stringify(body)});
 it('actual legacy export/period APIs deny restricted reads, writes, CSV and stored artifacts',async()=>{
- const f=await setup();try{vi.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');
+ const f=await setup();try{rs.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');
   const calls=[()=>profilesGET(new Request('http://127.0.0.1/api/payroll-export/profiles',{headers:{'x-nevora-payroll-export':'1'}})),()=>profilesPOST(request('/api/payroll-export/profiles','x-nevora-payroll-export',f.profileInput)),()=>exportPOST(request('/api/payroll-export','x-nevora-payroll-export',f.exportInput)),()=>periodPOST(request('/api/period-close','x-nevora-period-close',{action:'READ',command:period})),()=>artifactGET(new Request('http://127.0.0.1/api/period-close/artifact?id='+f.manifest.id+'&format=csv')),()=>periodPOST(request('/api/period-close','x-nevora-period-close',{action:'POPULATION',command:f.populationInput})),()=>periodPOST(request('/api/period-close','x-nevora-period-close',{action:'MANIFEST',command:f.manifestInput})),()=>periodPOST(request('/api/period-close','x-nevora-period-close',{action:'HANDOFF',command:f.handoffInput}))];
   for(const call of calls)expect((await call()).status).toBe(200);
   await choose(f,'LOCATIONS');const before=await snapshot(f);

@@ -1,7 +1,7 @@
 import { parseNativeWorkweekPolicy } from "./workweek-policy";
 import { validateNativeMinimumWage } from "./minimum-wage";
 import { Temporal } from "@js-temporal/polyfill";
-import type { NativeConfiguration, NativeProfileCommand, NativeWageProfile, NativeTaxProfile, NativeYtd, NativeAuthorizedDeduction } from "./contracts";
+import type { NativeConfiguration, NativeProfileCommand, NativeWageProfile, WageTerms, NativeTaxProfile, NativeYtd, NativeAuthorizedDeduction } from "./contracts";
 import { PayrollError, uuid } from "../model";
 import { hourlyRate, minor } from "./money";
 import { validateEmployerCoverage } from "./obligations";
@@ -88,6 +88,14 @@ export function parseDeduction(v: unknown): NativeAuthorizedDeduction {
     check((d.legalBasis === "PR_LAW_17_5_C" && d.method === "FIXED" && d.employerContributionCode === null) || (d.legalBasis === "PR_LAW_17_5_G" && code(d.employerContributionCode)));
     return structuredClone(v) as NativeAuthorizedDeduction;
 }
+export function checkWageIntervals(wages: WageTerms[]) {
+    check(new Set(wages.map(w => w.id)).size === wages.length);
+    for (let i = 0; i < wages.length; i++)
+        for (let j = i + 1; j < wages.length; j++) {
+            const a = wages[i], b = wages[j];
+            check(!a.locationIds.some(id => b.locationIds.includes(id)) || (a.effectiveTo !== null && Temporal.Instant.compare(a.effectiveTo, b.effectiveFrom) <= 0) || (b.effectiveTo !== null && Temporal.Instant.compare(b.effectiveTo, a.effectiveFrom) <= 0));
+        }
+}
 /** Validate attested same-employer cent balances and gross-minus-deductions = net.
  * Wage bases cannot exceed gross; this parser does not prove attestation provenance
  * or project later immutable ledger heads, which the protected source capture owns. */
@@ -120,13 +128,8 @@ export function parseConfiguration(v: unknown): NativeConfiguration {
     check(c.schema === "NEVORA_NATIVE_CONFIGURATION_V1" && text(c.employeeId, 200));
     check(Array.isArray(c.wages) && c.wages.length > 0 && c.wages.length <= 100 && Array.isArray(c.deductions) && c.deductions.length <= 90);
     const wages = (c.wages as unknown[]).map(parseWage);
-    check(new Set(wages.map(w => w.id)).size === wages.length);
+    checkWageIntervals(wages);
     check(wages.every(w => !w.workweekPolicy || w.workweekPolicy.employeeId === c.employeeId));
-    for (let i = 0; i < wages.length; i++)
-        for (let j = i + 1; j < wages.length; j++) {
-            const a = wages[i], b = wages[j];
-            check(!a.locationIds.some(id => b.locationIds.includes(id)) || (a.effectiveTo !== null && Temporal.Instant.compare(a.effectiveTo, b.effectiveFrom) <= 0) || (b.effectiveTo !== null && Temporal.Instant.compare(b.effectiveTo, a.effectiveFrom) <= 0));
-        }
     if (c.tax !== null)
         parseTax(c.tax);
     const deductions = (c.deductions as unknown[]).map(parseDeduction);

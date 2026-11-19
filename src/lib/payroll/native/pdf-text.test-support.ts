@@ -1,5 +1,5 @@
 import { PDFArray, PDFDocument, PDFRawStream, StandardFonts, decodePDFRawStream } from "pdf-lib";
-import { expect } from "vitest";
+import { expect } from '@rstest/core';
 
 /* Reads the text runs pdf-lib wrote into a v2 document, for the pay statement and company summary tests. */
 export type PdfText = { text: string; x: number; y: number; size: number; bold: boolean };

@@ -1,6 +1,6 @@
 
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {MessageInbox,MessageDetail,MessageRecovery} from './messages-view';
 const noop=()=>{};
 const item={id:'own',label:'Schedule update',at:'2026-10-27T13:00:00Z',href:'/app/notifications/open?notificationId=own',reviewState:'unread' as const,actionState:'required' as const};

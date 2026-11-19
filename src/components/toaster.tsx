@@ -47,7 +47,7 @@ function ToastItem({ item, onClose }: { item: Toast; onClose: (id: number) => vo
     const visibility = () => (document.hidden ? pause() : run());
     document.addEventListener("visibilitychange", visibility);
     return () => { pause(); document.removeEventListener("visibilitychange", visibility); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line hooks-preserved/exhaustive-deps
   }, []);
   // Phase 9 (Nov 18, 2026): the done mark for a result (a bold check in a green-50 circle), the information glyph in
   // teal-50 for a note; bold, never filled (b-foundation.css draws the circle and Direction B's surface).

@@ -1,8 +1,8 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 import {EventEmitter} from 'node:events';
-const forbidden = vi.hoisted(() => vi.fn(() => {throw Error('Real network forbidden in native transport tests');}));
-vi.mock('node:https', () => ({request: forbidden}));
-vi.mock('node:http2', () => ({connect: forbidden}));
+const forbidden = rs.hoisted(() => rs.fn(() => {throw Error('Real network forbidden in native transport tests');}));
+rs.mock('node:https', () => ({request: forbidden}));
+rs.mock('node:http2', () => ({connect: forbidden}));
 async function api() {
   const m = await import('./transport').catch(() => ({}));
   expect(m).toHaveProperty('createNodeNativeTransport');
@@ -12,12 +12,12 @@ const apns = 'https://api.sandbox.push.apple.com/3/device/a1b2';
 const fcm = 'https://fcm.googleapis.com/v1/projects/fictional-test/messages:send';
 const details = (endpoint = apns) => ({endpoint, headers: {'content-type': 'application/json', authorization: 'bearer fictional-not-a-credential'}, body: Buffer.from('{}')});
 function fixture(kind: 'http2' | 'https') {
-  const response = Object.assign(new EventEmitter(), {statusCode: 200, headers: {} as Record<string, string>, destroy: vi.fn()});
-  const stream = Object.assign(new EventEmitter(), {end: vi.fn(), destroy: vi.fn()});
-  const client = Object.assign(new EventEmitter(), {request: vi.fn(() => stream), destroy: vi.fn()});
+  const response = Object.assign(new EventEmitter(), {statusCode: 200, headers: {} as Record<string, string>, destroy: rs.fn()});
+  const stream = Object.assign(new EventEmitter(), {end: rs.fn(), destroy: rs.fn()});
+  const client = Object.assign(new EventEmitter(), {request: rs.fn(() => stream), destroy: rs.fn()});
   let respond!: (response: unknown) => void;
-  const httpsRequest = vi.fn((_url: unknown, _options: unknown, callback: (response: unknown) => void) => {respond = callback; return stream;});
-  const http2Connect = vi.fn(() => client);
+  const httpsRequest = rs.fn((_url: unknown, _options: unknown, callback: (response: unknown) => void) => {respond = callback; return stream;});
+  const http2Connect = rs.fn(() => client);
   return {response, stream, client, httpsRequest, http2Connect,
     headers(values: Record<string, string | number> = {':status': 200}) {
       if (kind === 'http2') stream.emit('response', values);
@@ -31,7 +31,7 @@ async function transport(f: ReturnType<typeof fixture>) {
   const m = await api();
   return m.createNodeNativeTransport({http2Connect: f.http2Connect, httpsRequest: f.httpsRequest} as unknown as Parameters<typeof m.createNodeNativeTransport>[0]);
 }
-afterEach(() => {vi.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
+afterEach(() => {rs.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
 for (const kind of ['http2', 'https'] as const) {
   const endpoint = kind === 'http2' ? apns : fcm;
   it(`${kind}: uses the fixed TLS POST target and bounded successful response`, async () => {
@@ -61,9 +61,9 @@ for (const kind of ['http2', 'https'] as const) {
     f.stream.emit('error', Error('fictional secret provider diagnostics')); f.end();
   });
   it(`${kind}: times out a stalled header/body stream with one total deadline`, async () => {
-    const f = fixture(kind), run = await transport(f); vi.useFakeTimers();
+    const f = fixture(kind), run = await transport(f); rs.useFakeTimers();
     const pending = run(details(endpoint), new AbortController().signal), assertion = expect(pending).rejects.toThrow('transport_timeout');
-    f.headers(); f.chunk(Buffer.from('{')); await vi.advanceTimersByTimeAsync(8001); await assertion;
+    f.headers(); f.chunk(Buffer.from('{')); await rs.advanceTimersByTimeAsync(8001); await assertion;
     expect(f.stream.destroy).toHaveBeenCalled();
   });
   it(`${kind}: rejects oversized declared/streamed bodies and oversized response headers`, async () => {

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {weekendBurden,compareWeekendRotation,type WeekendHistory} from './weekend-rotation';
 import {automaticWeek,automaticAssignment} from '../../../test/fixtures/automatic-week';
 import {applyRestrictionCommand,emptyRestrictionDocument} from '../restrictions';

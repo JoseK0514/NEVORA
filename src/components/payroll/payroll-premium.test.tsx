@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { PayrollRunsResponse } from '@/lib/payroll/contracts';
 import type { OpenPayPeriod } from '@/lib/payroll/pay-calendar.server';
@@ -9,12 +9,12 @@ import { problemsMessage } from './form-keys';
 import { onlyB, withoutB } from '../owner-b/test-support';
 
 // Owner premium (Oct 31) presentation only: next-step labels, unpaid periods first, Pay history identity, tabs.
-const boundary = vi.hoisted(() => ({ data: null as PayrollRunsResponse | null, statements: [] as unknown[] }));
-vi.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',
+const boundary = rs.hoisted(() => ({ data: null as PayrollRunsResponse | null, statements: [] as unknown[] }));
+rs.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',
   usePayrollResource: (path: string) => ({ loading: false, error: '', data: path === '/api/payroll/portal-statements' ? { version: 'PAYROLL_PORTAL_STATEMENTS_V1', statements: boundary.statements } : boundary.data, reload: async () => {} }),
   usePayrollOperation: () => ({ busy: false, pending: null, resuming: false, message: '', error: '', revisionConflict: false, submit: async () => {}, receipt: null }),
 }));
-vi.mock('next/navigation', () => ({ usePathname: () => '/app/payroll', useRouter: () => ({ push: () => {}, replace: () => {} }) }));
+rs.mock('next/navigation', () => ({ usePathname: () => '/app/payroll', useRouter: () => ({ push: () => {}, replace: () => {} }) }));
 
 const current: OpenPayPeriod = { period: { startDate: '2026-10-05', endDate: '2026-10-11' }, payday: '2099-10-16', frequency: 'WEEKLY' } as OpenPayPeriod;
 const missing = { period: { startDate: '2026-09-21', endDate: '2026-09-27' }, payday: '2026-09-29', settingsRevision: 1, state: 'MISSING', issues: [] };

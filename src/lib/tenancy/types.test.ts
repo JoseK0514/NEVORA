@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import type { CalendarReadProof, ClockerProof, PortalProof, ProvisionerScope, TenantProof, WorkerProof } from './types';
 
 // These compile-time regressions reject public construction and scope crossover.

@@ -1,23 +1,23 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
-import {companyAccessFixture} from './company-access-fixture';
+import {companyAccessFixture,grantFixtureWorkforcePermission} from './company-access-fixture';
 import {readOwnerOperationalScope,assignOperationalScope,readOperationalAuthority} from '../../lib/company-access/operational-scope.server';
 import {readOperationalShiftEditor} from '../../lib/company-access/operational-read.server';
-const ctx=vi.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/db',()=>{
+const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/db',()=>{
  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>ctx.ex!.query({text,values}).then(yes,no)});
  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((text,part,i)=>text+(i?'$'+i:'')+part,''),values),{query:statement,transaction:(queries:{statement:SqlStatement}[])=>ctx.ex!.transaction(queries.map(q=>q.statement))});
  return {getDb:()=>tagged,queryRows:(rows:unknown)=>rows};
 });
 
-vi.mock('../../lib/auth/session',()=>({requireSessionMutationProof:async()=>ctx.proof}));
-vi.mock('../../lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>ctx.proof!.employee}));
-vi.mock('next/cache',()=>({revalidatePath:()=>{}}));
-vi.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('Owned redirect'),{destination});}}));
-vi.mock('../../lib/data/notification-transactions',async original=>({...await original<typeof import('../../lib/data/notification-transactions')>(),neonNotificationExecutor:()=>ctx.ex!}));
+rs.mock('../../lib/auth/session',()=>({requireSessionMutationProof:async()=>ctx.proof}));
+rs.mock('../../lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>ctx.proof!.employee}));
+rs.mock('next/cache',()=>({revalidatePath:()=>{}}));
+rs.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('Owned redirect'),{destination});}}));
+rs.mock('../../lib/data/notification-transactions', ()=>({...rs.requireActual<typeof import('../../lib/data/notification-transactions')>('../../lib/data/notification-transactions'),neonNotificationExecutor:()=>ctx.ex!}));
 import {createShiftAction,updateShiftAction,deleteShiftAction,publishScheduleAction} from '../../app/app/schedule/actions';
 type ReadObserver=(statement:SqlStatement,rows:unknown[],contract:unknown[]|undefined)=>void|Promise<void>;
 /** Observe completed real reads before returning their rows to the action.
@@ -168,7 +168,7 @@ for(const method of ['create','update'] as const)for(const loss of ['STABLE','LO
  }finally{await close(f);}
 });
 for(const loss of ['STABLE','LOCATIONS','REVOKE','REGRANT','REVISION'] as const)it(`publish readiness ${loss} cannot release a stale private warning flag`,async()=>{
- const f=await neutralFixture('create');try{await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('publish-warning','action-a','TARGET','2026-10-12','10:00','11:00')");const before=await business(f),base=f.db.executor;let hit=false;
+ const f=await neutralFixture('create');try{await grantFixtureWorkforcePermission(f,'PUBLISH_SCHEDULE','loc-1');await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('publish-warning','action-a','TARGET','2026-10-12','10:00','11:00')");const before=await business(f),base=f.db.executor;let hit=false;
  ctx.ex=observeReads(base,async(s,rows,contract)=>{
   if(!hit&&s.text.includes('FROM shifts sh')&&s.values[0]==='2026-10-12'){
    requireReadContract(contract);

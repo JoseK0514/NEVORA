@@ -1,9 +1,9 @@
 // SOURCE PREPARATION ONLY. UNEXECUTED; root may adopt as a NEW test file.
 // Native query source observations do not authorize an installer or PortalProof.
-import { describe,it,expect,vi } from 'vitest';
+import { describe,it,expect,rs } from '@rstest/core';
 import { readFileSync } from 'node:fs';
 import { PORTAL_CONTROLLED_INSTALL_CAPTURE_SQL } from './portal-native-installation-capture.server';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 const source=()=>readFileSync('src/lib/tenancy/runtime/portal-native-installation-producer.server.ts','utf8');
 describe('finite current-source enrollment source contract; no native authority',()=>{
  it('retains the exact native graph prefix before enrollment',()=>{

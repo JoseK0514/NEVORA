@@ -1,3 +1,4 @@
+import { releaseTestReport } from './lib/release-test-report.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {join,basename} from 'node:path';
@@ -29,6 +30,7 @@ export function step4RuntimeHashes(custody){
  return Object.fromEntries(Object.entries(custody.hashes).filter(([name])=>['src/','public/','services/','db/'].some(prefix=>name.startsWith(prefix))||['package.json','package-lock.json','tsconfig.json','next-env.d.ts','next.config.ts'].includes(name)));
 }
 export function verifyStep4Evidence({custody,source,report,vitest,cluster,packets,inventory,transportSource,typesSource}){
+ vitest=releaseTestReport(vitest,source);
  assert.match(custody.checkpoint,/^[a-f0-9]{40}$/);assert.match(custody.tree,/^[a-f0-9]{40}$/);assert.equal(custody.sourceClean,true);
  assert.equal(vitest.success,true);for(const [key,value]of Object.entries({numTotalTests:1,numPassedTests:1,numFailedTests:0,numPendingTests:0,numTodoTests:0}))assert.equal(vitest[key],value,key);
  assert.equal(vitest.testResults.length,1);const execution=vitest.testResults[0];assert.equal(execution.name,join(source,step4Fixture));assert.equal(execution.status,'passed');assert.equal(execution.assertionResults.length,1);assert.equal(execution.assertionResults[0].status,'passed');assert.equal(execution.assertionResults[0].fullName,step4TestName);

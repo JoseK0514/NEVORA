@@ -69,23 +69,22 @@ export function useLeaveGuard(active: boolean) {
   }, [active]);
 }
 
-/* Work in progress stays in this tab's memory when the page is left and reopened (never in browser storage: it holds
- * pay amounts). It is dropped half an hour after the page is left, and at once on reload or sign-out. */
-const held = new Map<string, { value: unknown; expiry: ReturnType<typeof setTimeout> | null }>();
-const KEEP_MS = 30 * 60 * 1000;
-export function useHeld<T>(key: string, initial: () => T): [T, (next: T | ((value: T) => T)) => void, () => void] {
+/* Cross-mount memory contains only the caller's minimal unresolved-command
+ * custody. Private drafts, plans, names and CSV replies are never cached. */
+const held = new Map<string, { value: unknown; owner:symbol }>();
+export function useHeld<T>(key: string, initial: () => T, keep:(value:T)=>T): [T, (next: T | ((value: T) => T)) => void, () => void] {
   const [value, setValue] = useState<T>(() => (held.get(key)?.value as T | undefined) ?? initial());
-  const latest = useRef(value);
+  const latest = useRef(value),mounted=useRef(false),owner=useRef(Symbol('payroll-flow'));
   useEffect(() => {
-    const kept = held.get(key);
-    if (kept?.expiry) { clearTimeout(kept.expiry); kept.expiry = null; }
-    return () => { const mine = held.get(key); if (mine) mine.expiry = setTimeout(() => { if (held.get(key) === mine) held.delete(key); }, KEEP_MS); };
-  }, [key]);
+    const mine=owner.current;mounted.current=true;held.set(key,{value:keep(latest.current),owner:mine});
+    return () => {mounted.current=false;latest.current=keep(latest.current);if(held.get(key)?.owner===mine)held.set(key,{value:latest.current,owner:mine});};
+  }, [key,keep]);
   const set = useCallback((next: T | ((value: T) => T)) => {
+    if(!mounted.current&&held.get(key)?.owner!==owner.current)return;
     const resolved = typeof next === "function" ? (next as (value: T) => T)(latest.current) : next;
-    latest.current = resolved; held.set(key, { value: resolved, expiry: null }); setValue(resolved);
-  }, [key]);
-  const drop = useCallback(() => { held.delete(key); }, [key]);
+    latest.current = mounted.current?resolved:keep(resolved);held.set(key,{value:keep(latest.current),owner:owner.current});if(mounted.current)setValue(latest.current);
+  }, [key,keep]);
+  const drop = useCallback(() => { if(held.get(key)?.owner===owner.current)held.delete(key); }, [key]);
   return [value, set, drop];
 }
 

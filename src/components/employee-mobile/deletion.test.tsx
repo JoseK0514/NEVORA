@@ -1,8 +1,8 @@
-import {describe,expect,it,vi} from 'vitest';
+import {describe,expect,it,rs} from '@rstest/core';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-vi.mock('@/app/app/account/delete/actions',()=>({requestAccountDeletion:vi.fn()}));
-vi.mock('@/app/login/actions',()=>({logout:vi.fn()}));
+rs.mock('@/app/app/account/delete/actions',()=>({requestAccountDeletion:rs.fn()}));
+rs.mock('@/app/login/actions',()=>({logout:rs.fn()}));
 import {EmployeeDeletionView,receivedAt,type DeletionView} from './deletion';
 import type {DeletionFormState} from '@/app/app/account/delete/actions';
 import {onlyB,withoutB} from '../owner-b/test-support';

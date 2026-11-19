@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { parseCommand, parseTool } from "./contracts";
 it("admits a selected-date joint comparison without allowing business actions or compute overrides", () => {
   const tool = { name: "coverage_plan", args: { date: "2026-10-05" } };

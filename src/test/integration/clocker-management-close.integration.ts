@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import {afterEach,beforeEach,expect,it} from 'vitest';
+import {afterEach,beforeEach,expect,it} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readManagementCloseContext,closeManagedTimeEntry} from '../../lib/management-close/service.server';
 import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/company-access/operational-scope.server';

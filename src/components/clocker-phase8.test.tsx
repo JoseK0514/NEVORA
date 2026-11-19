@@ -1,5 +1,5 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {CLOCKER_COPY,clockerKeepNames,clockerText} from './clocker-copy';
 import {ClockerPresentation} from './clocker-language';
 import {ClockerRecoveryHelp,ClockerRecoveryLink,type ClockerReviewRequest} from './clocker-recovery';
@@ -55,11 +55,11 @@ it('keeps a quoted button name on one line, in the tablet’s language',()=>{
  expect(clockerKeepNames('Tap Send it again. It won’t record twice.',['Send it again'])).toBe('Tap Send it again. It won’t record twice.');
  expect(clockerKeepNames(clockerText('es','Your last punch still isn’t confirmed. Tap Send it again. It won’t record twice.'),[clockerText('es','Send it again')])).toContain('Toca Enviar de nuevo.');
 });
-afterEach(()=>{vi.unstubAllGlobals();});
+afterEach(()=>{rs.unstubAllGlobals();});
 it('keeps the error screen’s band clock when the date formatter itself is what failed',()=>{
  const at=new Date(2026,10,17,13,5);
  expect(clockerFallbackClock(at,'en').time).toBe('1:05');
- vi.stubGlobal('Intl',{...Intl,DateTimeFormat:function(){throw new Error('broken');}});
+ rs.stubGlobal('Intl',{...Intl,DateTimeFormat:function(){throw new Error('broken');}});
  expect(clockerFallbackClock(at,'en')).toEqual({time:'1:05',period:'PM',date:null});
  expect(clockerFallbackClock(at,'es')).toEqual({time:'1:05',period:'p. m.',date:null});
 });

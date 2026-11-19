@@ -1,10 +1,10 @@
 // Local regressions using real issuers/builders/executor; fictional wire
 // observations do not prove native authority, enrollment or source freshness.
 import { readFileSync } from 'node:fs';
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
-const transport = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn(), runtime: vi.fn() }));
-vi.mock('../db', () => ({ getTenantRuntimeDb: transport.runtime }));
+import { beforeEach, afterEach, describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
+const transport = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn(), runtime: rs.fn() }));
+rs.mock('../db', () => ({ getTenantRuntimeDb: transport.runtime }));
 import { resolvePortalRequestProof, resolvePortalProof, resolveCalendarReadProof,
   getTenantProofFacts, compileTenantProofExecutionPayload } from './resolve.server';
 import { createTenantExecutor } from './executor.server';
@@ -80,13 +80,13 @@ function hostile(target: object) {
   return { value: new Proxy(target, { get: hit, getPrototypeOf: hit, ownKeys: hit, getOwnPropertyDescriptor: hit }), calls: () => calls };
 }
 beforeEach(() => {
-  vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T12:00:30Z'));
+  rs.useFakeTimers(); rs.setSystemTime(new Date('2026-10-09T12:00:30Z'));
   transport.query.mockReset(); transport.transaction.mockReset(); transport.runtime.mockReset();
   transport.runtime.mockReturnValue(transport);
   transport.query.mockImplementation((text: string, values: readonly unknown[]) => ({ text, values,
     then() { throw Error('lazy query awaited outside owning batch'); } }));
 });
-afterEach(() => vi.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 
 describe('private versioned Portal current-source transport', () => {
   it('retains the full exact native snapshot only in the private execution payload', async () => {
@@ -338,7 +338,7 @@ describe('private versioned Portal current-source transport', () => {
     }
   });
   it('rejects expired private identity even if the matching native snapshot is retained', async () => {
-    const issued = await proof(); vi.setSystemTime(new Date('2026-10-09T12:03:00Z'));
+    const issued = await proof(); rs.setSystemTime(new Date('2026-10-09T12:03:00Z'));
     expect(() => compileTenantProofExecutionPayload(issued)).toThrow('tenant_proof_denied');
   });
   it('preserves native-permitted inactive historical membership without deriving per-operation authority', async () => {

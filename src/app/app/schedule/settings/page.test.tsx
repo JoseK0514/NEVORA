@@ -1,6 +1,6 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import ScheduleSettingsPage from "./page";
 import { listLocations } from "@/lib/data/employees";
 import { listLocationStaffingSettings } from "@/lib/data/schedule-health";
@@ -15,55 +15,52 @@ import {
 } from "../../../../test/fixtures/fuel-scheduling-rules";
 import { calculateScheduleHealth } from "../../../../lib/scheduling/schedule-health";
 
-const access=vi.hoisted(()=>({denied:false}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
-vi.mock("@/lib/data/workspaces",()=>({getWorkspace:vi.fn(async()=>({timeZone:"America/Puerto_Rico"}))}));
-vi.mock("@/lib/data/week-settings",()=>({getWeekSettings:vi.fn(async()=>({availabilityDeadline:"2030-10-04T13:00:00.000Z"}))}));
-vi.mock("../actions",()=>({setAvailabilityDeadlineAction:vi.fn()}));
-vi.mock("@/lib/data/positions",()=>({listPositions:async()=>[]}));
-vi.mock("@/lib/data/shift-change-policy",()=>({readShiftChangePolicy:async()=>null}));
-vi.mock("@/lib/data/notification-transactions",()=>({neonNotificationExecutor:()=>({})}));
-vi.mock("@/components/configuration-form",()=>import("../../../../components/configuration-form"));
-vi.mock("@/components/position-quota-fields",()=>import("../../../../components/position-quota-fields"));
-vi.mock("@/lib/auth/permissions", () => ({
+const access=rs.hoisted(()=>({denied:false}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+rs.mock("@/lib/data/workspaces",()=>({getWorkspace:rs.fn(async()=>({timeZone:"America/Puerto_Rico"}))}));
+rs.mock("@/lib/data/week-settings",()=>({getWeekSettings:rs.fn(async()=>({availabilityDeadline:"2030-10-04T13:00:00.000Z"}))}));
+rs.mock("../actions",()=>({setAvailabilityDeadlineAction:rs.fn()}));
+rs.mock("@/lib/data/positions",()=>({listPositions:async()=>[]}));
+rs.mock("@/lib/data/shift-change-policy",()=>({readShiftChangePolicy:async()=>null}));
+rs.mock("@/lib/data/notification-transactions",()=>({neonNotificationExecutor:()=>({})}));
+
+
+rs.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
-  requireRoles: vi.fn(async()=>({id:"reviewer",role:"MANAGER"})),
+  requireRoles: rs.fn(async()=>({id:"reviewer",role:"MANAGER"})),
 }));
-vi.mock(
-  "@/components/page-header",
-  () => import("../../../../components/page-header"),
-);
-vi.mock("@/lib/date-utils", () => import("../../../../lib/date-utils"));
-vi.mock("@/lib/data/employees", () => ({
-  listLocations: vi.fn(async () => fuelRuleLocations),
+
+
+rs.mock("@/lib/data/employees", () => ({
+  listLocations: rs.fn(async () => fuelRuleLocations),
 }));
-vi.mock("@/lib/data/schedule-health", () => ({
-  listLocationStaffingSettings: vi.fn(),
-  listEmployeeHourTargets: vi.fn(async () => []),
-  listCoverageWindows: vi.fn(async () => fuelRuleCoverageWindows),
+rs.mock("@/lib/data/schedule-health", () => ({
+  listLocationStaffingSettings: rs.fn(),
+  listEmployeeHourTargets: rs.fn(async () => []),
+  listCoverageWindows: rs.fn(async () => fuelRuleCoverageWindows),
 }));
-vi.mock("@/app/app/schedule/settings/actions", () => ({
-  saveScheduleHealthSettingsAction: vi.fn(),
-  saveScheduleHealthSettingsFormAction: vi.fn(),
-  addCoverageWindowFormAction: vi.fn(),
-  replaceCoverageWindowPositionRequirementsAction: vi.fn(),
-  addCoverageWindowAction: vi.fn(),
-  deleteCoverageWindowAction: vi.fn(),
+rs.mock("@/app/app/schedule/settings/actions", () => ({
+  saveScheduleHealthSettingsAction: rs.fn(),
+  saveScheduleHealthSettingsFormAction: rs.fn(),
+  addCoverageWindowFormAction: rs.fn(),
+  replaceCoverageWindowPositionRequirementsAction: rs.fn(),
+  addCoverageWindowAction: rs.fn(),
+  deleteCoverageWindowAction: rs.fn(),
   saveShiftChangePolicyAction:async()=>({status:'conflict'}),
 }));
-vi.mock("next/link", () => ({
+rs.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) =>
     createElement("a", { href, ...props }, children),
 }));
 
 beforeEach(() => {
   access.denied=false;
-  vi.mocked(requireRoles).mockResolvedValue({id:"reviewer",role:"MANAGER",firstName:"QA",lastName:"Reviewer",primaryLocationId:"loc-1"});
-  vi.mocked(listEmployeeHourTargets).mockResolvedValue([]);
-  vi.mocked(listCoverageWindows).mockResolvedValue(fuelRuleCoverageWindows);
-  vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(location => ({ ...location, updatedAt: '2030-10-01 00:00:00+00' })));
-  vi.mocked(listLocationStaffingSettings).mockResolvedValue(
+  rs.mocked(requireRoles).mockResolvedValue({id:"reviewer",role:"MANAGER",firstName:"QA",lastName:"Reviewer",primaryLocationId:"loc-1"});
+  rs.mocked(listEmployeeHourTargets).mockResolvedValue([]);
+  rs.mocked(listCoverageWindows).mockResolvedValue(fuelRuleCoverageWindows);
+  rs.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(location => ({ ...location, updatedAt: '2030-10-01 00:00:00+00' })));
+  rs.mocked(listLocationStaffingSettings).mockResolvedValue(
     fuelRuleStaffing.map((s, i) => ({ ...s, locationName: `Fuel ${i + 1}` })),
   );
 });
@@ -94,9 +91,9 @@ it("labels staffing and Lead controls separately while retaining submitted field
 });
 
 it("gives empty staffing and employee groups actionable setup paths without creating defaults", async () => {
-  vi.mocked(listLocations).mockResolvedValue([]);
-  vi.mocked(listLocationStaffingSettings).mockResolvedValue([]);
-  vi.mocked(listCoverageWindows).mockResolvedValue([]);
+  rs.mocked(listLocations).mockResolvedValue([]);
+  rs.mocked(listLocationStaffingSettings).mockResolvedValue([]);
+  rs.mocked(listCoverageWindows).mockResolvedValue([]);
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(html).toContain('href="/app/settings/locations"');
   expect(html).toContain('href="/app/employees"');
@@ -105,7 +102,7 @@ it("gives empty staffing and employee groups actionable setup paths without crea
 });
 
 it("retains editable zero and blank hour values and an employee fragment destination", async () => {
-  vi.mocked(listEmployeeHourTargets).mockResolvedValue([{
+  rs.mocked(listEmployeeHourTargets).mockResolvedValue([{
     employeeId: "TEAM-1", employeeName: "Avery Chen", role: "EMPLOYEE",
     primaryLocationId: "loc-1", targetWeeklyHours: undefined, maximumWeeklyHours: 0,
     eligibleLocationIds: ["loc-1"], positionIds: [],
@@ -127,7 +124,7 @@ it("retains Owner policy editing and Manager read-only policy access", async () 
   const manager = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(manager).toContain('How trades and coverage work');
   expect(manager).not.toContain('Save trade policy');
-  vi.mocked(requireRoles).mockResolvedValue({id:"reviewer",role:"OWNER",firstName:"QA",lastName:"Reviewer",primaryLocationId:"loc-1"});
+  rs.mocked(requireRoles).mockResolvedValue({id:"reviewer",role:"OWNER",firstName:"QA",lastName:"Reviewer",primaryLocationId:"loc-1"});
   const owner = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(owner).toContain('Save trade policy');
   expect(owner).toContain('Save coverage policy');
@@ -149,7 +146,7 @@ it("resolves staffing, selector and expected-period labels from the same canonic
 });
 
 it("renders configured staffing and Lead values rather than hardcoding business defaults", async () => {
-  vi.mocked(listLocationStaffingSettings).mockResolvedValue([
+  rs.mocked(listLocationStaffingSettings).mockResolvedValue([
     {
       ...fuelRuleStaffing[0],
       minimumStaffPerShift: 3,
@@ -288,30 +285,30 @@ it("keeps FUEL – 2 staff isolated from FUEL – 110 during the confirmed weeke
   expect(health.hourBalances.map((b) => b.scheduledHours)).toEqual([7, 7]);
 });
 
-it('unconfigured staffing displays a blank explicit required Lead choice',async()=>{vi.mocked(listLocationStaffingSettings).mockResolvedValue([{locationId:'new',locationName:'New',minimumStaffPerShift:null,requiresDesignatedLead:null}]);const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toMatch(/select[^>]*name="lead-choice-new"[^>]*required/);expect(html).toMatch(/<option value="" disabled="" selected="">Choose<\/option><option value="true">Required<\/option>/);expect(html).not.toMatch(/name="staffing-new"[^>]*value="[0-9]/);});
+it('unconfigured staffing displays a blank explicit required Lead choice',async()=>{rs.mocked(listLocationStaffingSettings).mockResolvedValue([{locationId:'new',locationName:'New',minimumStaffPerShift:null,requiresDesignatedLead:null}]);const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toMatch(/select[^>]*name="lead-choice-new"[^>]*required/);expect(html).toMatch(/<option value="" disabled="" selected="">Choose<\/option><option value="true">Required<\/option>/);expect(html).not.toMatch(/name="staffing-new"[^>]*value="[0-9]/);});
 
 it("preserves configured customer location names without Fuel-specific normalization", async () => {
-  vi.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(l => ({...l, updatedAt: '2030-10-01 00:00:00+00', shortName: l.id === "loc-1" ? "FUEL - 2" : "Northside West"})));
+  rs.mocked(listLocations).mockResolvedValue(fuelRuleLocations.map(l => ({...l, updatedAt: '2030-10-01 00:00:00+00', shortName: l.id === "loc-1" ? "FUEL - 2" : "Northside West"})));
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));
   expect(html).toContain("FUEL - 2");
   expect(html).toContain("Northside West");
   expect(html).not.toContain("FUEL – 2");
 });
 
-vi.mock('@/lib/data/shift-change-policy',()=>({readShiftChangePolicy:async()=>null}));
-vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
-vi.mock('@/components/shift-change-policy-fields',()=>import('../../../../components/shift-change-policy-fields'));
-vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
+rs.mock('@/lib/data/shift-change-policy',()=>({readShiftChangePolicy:async()=>null}));
+rs.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
 
-it('does not load global scheduling rules after a current-source denial (presentation boundary)',async()=>{access.denied=true;vi.mocked(listLocationStaffingSettings).mockClear();vi.mocked(listLocations).mockClear();const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toContain('<h1>Scheduling rules</h1>');expect(listLocationStaffingSettings).not.toHaveBeenCalled();expect(listLocations).not.toHaveBeenCalled();});
+rs.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
+
+it('does not load global scheduling rules after a current-source denial (presentation boundary)',async()=>{access.denied=true;rs.mocked(listLocationStaffingSettings).mockClear();rs.mocked(listLocations).mockClear();const html=renderToStaticMarkup(await ScheduleSettingsPage({searchParams:Promise.resolve({})}));expect(html).toContain('<h1>Scheduling rules</h1>');expect(listLocationStaffingSettings).not.toHaveBeenCalled();expect(listLocations).not.toHaveBeenCalled();});
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
-vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
 it('does not read the workspace or availability deadline after current-source denial', async () => {
   access.denied = true;
-  vi.mocked(getWorkspace).mockClear();
-  vi.mocked(getWeekSettings).mockClear();
+  rs.mocked(getWorkspace).mockClear();
+  rs.mocked(getWeekSettings).mockClear();
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({week: "2030-10-07"})}));
   expect(html).toContain('<h1>Scheduling rules</h1>');
   expect(html).not.toContain('name="availabilityDeadline"');

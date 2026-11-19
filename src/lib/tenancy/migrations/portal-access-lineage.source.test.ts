@@ -1,8 +1,8 @@
 // UNEXECUTED source declarations only; not PostgreSQL or authority behavior.
 import {existsSync,readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
-import {describe,it,expect,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {describe,it,expect,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import {INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL} from '../runtime/catalog-fence.server';
 import {lexSql} from '../inventory/sql-lexer';
 import {tokenizeDdl} from '../inventory/ddl';

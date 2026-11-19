@@ -1,10 +1,11 @@
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 
 // Mount the actual component's effect without adding a DOM dependency. Native
 // popover event timing and pointer focus are verified separately in both engines.
-const hooks = vi.hoisted(() => ({ effects: [] as (() => void | (() => void))[] }));
-vi.mock("react", async original => ({
-  ...await original<Record<string, unknown>>(),
+const hooks = rs.hoisted(() => ({ effects: [] as (() => void | (() => void))[] }));
+rs.mock("react",  () => ({
+  ...rstestOriginal0,
   useEffect: (effect: () => void | (() => void)) => { hooks.effects.push(effect); },
   useRef: (current: unknown) => ({ current }),
   useState: (initial: unknown) => [initial, () => {}],
@@ -52,16 +53,16 @@ beforeEach(() => {
   });
   // Object.assign evaluates accessors; keep activeElement live like the browser.
   Object.defineProperty(document, "activeElement", { get: () => active });
-  vi.stubGlobal("document", document);
-  vi.stubGlobal("window", Object.assign(new EventTarget(), {
+  rs.stubGlobal("document", document);
+  rs.stubGlobal("window", Object.assign(new EventTarget(), {
     isSecureContext: false, matchMedia: () => ({ matches: false }),
   }));
-  vi.stubGlobal("navigator", { userAgent: "Unit focus fixture", platform: "", maxTouchPoints: 0 });
-  vi.stubGlobal("HTMLElement", TestElement);
-  vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => { frames.push(callback); return frames.length; });
-  vi.stubGlobal("fetch", async () => ({ ok: true, json: async () => ({ supported: false, enabled: false, configurationAvailable: false, testAllowed: false }) }));
+  rs.stubGlobal("navigator", { userAgent: "Unit focus fixture", platform: "", maxTouchPoints: 0 });
+  rs.stubGlobal("HTMLElement", TestElement);
+  rs.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => { frames.push(callback); return frames.length; });
+  rs.stubGlobal("fetch", async () => ({ ok: true, json: async () => ({ supported: false, enabled: false, configurationAvailable: false, testAllowed: false }) }));
 });
-afterEach(() => { dispose?.(); dispose = undefined; vi.unstubAllGlobals(); });
+afterEach(() => { dispose?.(); dispose = undefined; rs.unstubAllGlobals(); });
 function flushFrames() { const pending = frames.splice(0); for (const frame of pending) frame(0); }
 function mount() {
   const view = PortalDeviceSetup({ role: "EMPLOYEE" });

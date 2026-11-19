@@ -41,7 +41,7 @@
 :is(#c-root, html) .oa .oa-facts { margin: 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 500; color: var(--b-grey); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 :is(#c-root, html) .oa .oa-quiet { color: var(--b-grey); font-weight: 400; }
 :is(#c-root, html) .oa .oa-plain { white-space: pre-wrap; overflow-wrap: anywhere; }
-:is(#c-root, html) .oa .oa-digest { word-break: break-all; letter-spacing: 0.01em; }
+:is(#c-root, html) .oa .oa-digest { color: var(--b-ink2); word-break: break-all; letter-spacing: 0.01em; }
 :is(#c-root, html) .oa .oa-sub { margin: 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 700; color: var(--b-ink); letter-spacing: -0.005em; overflow-wrap: anywhere; }
 :is(#c-root, html) .oa .oa-sub--minor { margin-top: var(--b-space-8); font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); }
 :is(#c-root, html) .oa .oa-sub:focus { outline: none; }

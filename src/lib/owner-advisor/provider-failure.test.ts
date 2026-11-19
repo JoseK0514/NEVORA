@@ -1,4 +1,4 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {AdvisorProviderFailure,rejectedProviderResponse,logProviderFailure} from './provider-failure.server';
 
 it.each([
@@ -14,7 +14,7 @@ it.each([
 });
 
 it('abandons a stalled rejected body within the diagnostic deadline',async()=>{
- const cancel=vi.fn();
+ const cancel=rs.fn();
  const start=performance.now();
  const error=await rejectedProviderResponse(new Response(new ReadableStream({cancel}),{status:400}),new AbortController().signal);
  expect(error).toMatchObject({providerStatus:400,providerHint:'unknown'});
@@ -23,7 +23,7 @@ it('abandons a stalled rejected body within the diagnostic deadline',async()=>{
 });
 
 it('retains no raw error fields and logs only fixed diagnostics',()=>{
- const warn=vi.spyOn(console,'warn').mockImplementation(()=>{});
+ const warn=rs.spyOn(console,'warn').mockImplementation(()=>{});
  try{
   const error=new AdvisorProviderFailure(400,'secret-key' as never);
   Object.assign(error,{providerHint:'private source',providerStatus:999,upstream:'secret-key'});

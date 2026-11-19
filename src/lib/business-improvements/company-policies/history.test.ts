@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { projectCompanyPolicyHistory, type StoredPolicyRevision } from "./history";
 const rule = { thresholdMinutes: 7, comparison: "GT", effectiveFrom: "2030-10-01T00:00:00Z" };
 const row = (revision: number, settings: unknown, locationId: string | null = null): StoredPolicyRevision => ({ operationId: `11111111-1111-4111-8111-${String(revision).padStart(12, "0")}`, revision, locationId, changedAt: rule.effectiveFrom, changedKeys: ["attendance.lateness"], settings });

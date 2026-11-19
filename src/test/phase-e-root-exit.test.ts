@@ -2,7 +2,7 @@ import {spawnSync} from 'node:child_process';
 import {mkdtempSync,rmSync,writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 
 const runner=resolve('scripts/phase-e-owned.mjs');
 type Mode='exit-23'|'exit-0'|'failed-observer'|'missing-marker'|'observer-stderr'|'zombie-stderr';

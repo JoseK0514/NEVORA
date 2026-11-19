@@ -1,18 +1,18 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 
-const auth = vi.hoisted(() => ({ role: "EMPLOYEE", proof: vi.fn() }));
-vi.mock("@/lib/auth/session", () => ({
+const auth = rs.hoisted(() => ({ role: "EMPLOYEE", proof: rs.fn() }));
+rs.mock("@/lib/auth/session", () => ({
   requireSessionMutationProof: auth.proof,
 }));
-vi.mock("next/navigation", () => ({
+rs.mock("next/navigation", () => ({
   redirect: (destination: string) => { throw new Error(`redirect:${destination}`); },
 }));
 
-vi.mock("@/lib/workspace-presentation/current.server", () => ({ currentPresentation: async () => ({ modules: { timeOff: true, marketplace: true, payStatements: true } }) }));
-const data = vi.hoisted(() => ({ requests: [] as unknown[] | Error }));
-vi.mock("@/lib/data/requests", () => ({ listEmployeeTimeOffRequests: async () => { if (data.requests instanceof Error) throw data.requests; return data.requests; } }));
-vi.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ timeZone: "America/Puerto_Rico" }) }));
+rs.mock("@/lib/workspace-presentation/current.server", () => ({ currentPresentation: async () => ({ modules: { timeOff: true, marketplace: true, payStatements: true } }) }));
+const data = rs.hoisted(() => ({ requests: [] as unknown[] | Error }));
+rs.mock("@/lib/data/requests", () => ({ listEmployeeTimeOffRequests: async () => { if (data.requests instanceof Error) throw data.requests; return data.requests; } }));
+rs.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ timeZone: "America/Puerto_Rico" }) }));
 
 import RequestsHubPage from "./page";
 import { onlyB, withoutB } from "@/components/owner-b/test-support";

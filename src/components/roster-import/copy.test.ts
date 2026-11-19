@@ -1,5 +1,5 @@
 // Owner roster import: English and Spanish say the same things in the same shape.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { parseRosterTable } from "@/lib/onboarding/roster";
 import { rosterImportCopy } from "./copy";
 import { headerField, REQUIRED_FIELDS } from "./table";

@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
-const db = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
-vi.mock('../db', () => ({ getDb: vi.fn(()=>{throw Error('legacy proof transport forbidden');}), getTenantRuntimeDb: () => db }));
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
+const db = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn() }));
+rs.mock('../db', () => ({ getDb: rs.fn(()=>{throw Error('legacy proof transport forbidden');}), getTenantRuntimeDb: () => db }));
 import { resolvePortalProof, resolveCalendarReadProof } from './resolve.server';
 import type { PortalProof } from './types';
-const path = './query-contract';
-const contract: typeof import('./query-contract') | null = await import(path).catch(() => null);
+
+const contract: typeof import('./query-contract') | null = await import('./query-contract').catch(() => null);
 const digest = 'a'.repeat(64);
 const facts = (workspaceId = 'tenant-a') => ({ authorityCurrent: true, kind: 'PORTAL', workspaceId,
   workspaceVersion: '2026-10-08 10:00:00.123456+00', workspaceIncarnation: '1',
@@ -21,7 +21,7 @@ async function proof(workspaceId = 'tenant-a') {
   return result.proof;
 }
 beforeEach(() => {
-  vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T12:00:00Z'));
+  rs.useFakeTimers(); rs.setSystemTime(new Date('2026-10-09T12:00:00Z'));
   db.query.mockReset(); db.transaction.mockReset();
   // These are lazy transport plans, not proof constructors or database effects.
   // Awaiting a plan outside the resolver's one owning transaction must fail.
@@ -114,7 +114,7 @@ describe('closed tenant statement contract', () => {
   });
   it('rejects expiry at compilation rather than relying on builder-time identity alone', async () => {
     const p = await proof(), statement = contract?.workspaceSnapshot(p);
-    vi.setSystemTime(new Date('2026-10-09T12:01:00Z'));
+    rs.setSystemTime(new Date('2026-10-09T12:01:00Z'));
     expect(() => contract!.compileTenantStatement(p, statement!)).toThrow('tenant_proof_denied');
   });
   it('rejects malformed or foreign rows rather than coercing an unavailable result to empty', async () => {

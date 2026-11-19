@@ -1,5 +1,5 @@
-import {expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import * as service from './service.server';
 import type {SessionMutationProof} from '../shift-changes/types';
 const proof:SessionMutationProof={employee:{id:'self',firstName:'Fictional',lastName:'Self',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};

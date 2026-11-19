@@ -1,6 +1,6 @@
 // Phase 7: the one exit every sheet, dialog and toast shares (kit/overlay-exit.ts).
 import {renderToStaticMarkup} from 'react-dom/server';
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, rs} from '@rstest/core';
 import {cancelOverlayExit, closeDialogWithExit, OVERLAY_EXIT_MS, overlayExitMs, useExitHold, useExitValue} from './overlay-exit';
 
 /** The parts of a dialog the helper touches. */
@@ -18,12 +18,12 @@ function fakeDialog(open = true) {
 }
 const asDialog = (dialog: ReturnType<typeof fakeDialog>) => dialog as unknown as HTMLDialogElement;
 function device({reduce = false, overlay = true}: {reduce?: boolean; overlay?: boolean}) {
-  vi.stubGlobal('window', {matchMedia: (query: string) => ({matches: reduce && query.includes('reduce')})});
-  vi.stubGlobal('CSS', {supports: (property: string) => overlay && property === 'overlay'});
+  rs.stubGlobal('window', {matchMedia: (query: string) => ({matches: reduce && query.includes('reduce')})});
+  rs.stubGlobal('CSS', {supports: (property: string) => overlay && property === 'overlay'});
 }
 
-beforeEach(() => { vi.useFakeTimers(); });
-afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
+beforeEach(() => { rs.useFakeTimers(); });
+afterEach(() => { rs.useRealTimers(); rs.unstubAllGlobals(); });
 
 describe('closeDialogWithExit', () => {
   it('has no exit without a window, and none under reduced motion', () => {
@@ -42,9 +42,9 @@ describe('closeDialogWithExit', () => {
     expect(closeDialogWithExit(asDialog(dialog))).toBe(true);
     expect(dialog.open).toBe(false);
     expect(dialog.hasAttribute('data-closing')).toBe(true);
-    vi.advanceTimersByTime(OVERLAY_EXIT_MS - 1);
+    rs.advanceTimersByTime(OVERLAY_EXIT_MS - 1);
     expect(dialog.hasAttribute('data-closing')).toBe(true);
-    vi.advanceTimersByTime(1);
+    rs.advanceTimersByTime(1);
     expect(dialog.hasAttribute('data-closing')).toBe(false);
     expect(dialog.closes).toBe(1);
   });
@@ -54,7 +54,7 @@ describe('closeDialogWithExit', () => {
     expect(closeDialogWithExit(asDialog(dialog))).toBe(false);
     expect(dialog.open).toBe(true);
     expect(dialog.hasAttribute('data-closing')).toBe(true);
-    vi.advanceTimersByTime(OVERLAY_EXIT_MS);
+    rs.advanceTimersByTime(OVERLAY_EXIT_MS);
     expect(dialog.open).toBe(false);
     expect(dialog.hasAttribute('data-closing')).toBe(false);
   });
@@ -63,7 +63,7 @@ describe('closeDialogWithExit', () => {
     const dialog = fakeDialog();
     expect(closeDialogWithExit(asDialog(dialog), true)).toBe(false);
     expect(dialog.open).toBe(true);
-    vi.advanceTimersByTime(OVERLAY_EXIT_MS);
+    rs.advanceTimersByTime(OVERLAY_EXIT_MS);
     expect(dialog.open).toBe(false);
   });
   it('forgets an exit when the sheet opens again', () => {
@@ -72,7 +72,7 @@ describe('closeDialogWithExit', () => {
     closeDialogWithExit(asDialog(dialog));
     cancelOverlayExit(asDialog(dialog));
     expect(dialog.hasAttribute('data-closing')).toBe(false);
-    vi.advanceTimersByTime(OVERLAY_EXIT_MS * 2);
+    rs.advanceTimersByTime(OVERLAY_EXIT_MS * 2);
     expect(dialog.open).toBe(true);
     expect(dialog.closes).toBe(0);
   });

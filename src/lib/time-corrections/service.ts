@@ -1,3 +1,5 @@
+import {assertIndependentReview,assertWorkforcePermission,listWorkforcePermissions,workforcePermissionStatements} from '../workforce/authority.server';
+import {correctionFootprintGuard,correctionReviewSubjectSql,type CorrectionReviewSubject} from './footprint.server';
 import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import { createHash } from 'node:crypto';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
@@ -208,7 +210,7 @@ export async function submitDelegatedTimeCorrection(
 }
 
 /**
- * Review the displayed request revision under current company-wide management
+ * Review the displayed request revision under current worksite-specific
  * authority. The source pre-read selects lock identities only; ordered employee
  * locks and the database command recheck lifecycle/source rules in the transaction.
  * Approval records an adjustment through SQL rather than rewriting raw punches.
@@ -226,26 +228,27 @@ export async function reviewTimeCorrection(
   if (!['OWNER', 'MANAGER'].includes(proof.employee.role)) return { status: 'unavailable' };
   const command = parseCorrectionReviewCommand(input);
 
-  let workspace;
-  let authority:string;
-  try {
-    const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor);
-    workspace=access.workspace;authority=access.authority;
-  } catch {
-    return { status: 'unavailable' };
-  }
-  let source: { employeeId: string; workspaceId: string } | undefined;
-  try {
-    [source] = await executor.query<{ employeeId: string; workspaceId: string }>({
-      text: 'SELECT employee_id AS "employeeId",workspace_id AS "workspaceId" FROM time_correction_requests WHERE id=$1::uuid',
-      values: [command.requestId],
-    });
-  } catch {
-    return { status: 'unavailable' };
-  }
-  if (!source || source.workspaceId !== workspace.id) return { status: 'unavailable' };
-
   const actor = proof.employee.id;
+  let access: Awaited<ReturnType<typeof assertWorkforcePermission>>;
+  let source: CorrectionReviewSubject;
+  try {
+    const admission = await listWorkforcePermissions(proof, executor);
+    if (proof.employee.role !== 'OWNER' && !admission.permissions.some(g => g.permission === 'REVIEW_TIME_EXCEPTION')) {
+      return { status: 'unavailable' };
+    }
+    const [subject] = await executor.query<CorrectionReviewSubject>({
+      text: correctionReviewSubjectSql, values: [command.requestId, admission.access.workspace.id],
+    });
+    if (!subject) return { status: 'unavailable' };
+    source = subject;
+    access = await assertWorkforcePermission(proof, 'REVIEW_TIME_EXCEPTION', source.locationIds, executor, admission.access);
+    // The canonical SQL also enforces independent review.
+    try { assertIndependentReview(actor, subject.employeeId, subject.requestedByEmployeeId); }
+    catch { return { status: 'blocked', reason: 'self_review' }; }
+  } catch {
+    return { status: 'unavailable' };
+  }
+  const { workspace, authority } = access;
   const employeeIds = [...new Set([actor, source.employeeId])].sort();
   const operationHash = fingerprint(command);
   const call: SqlStatement = {
@@ -260,12 +263,16 @@ export async function reviewTimeCorrection(
       operationHash,
     ],
   };
+  const scope = [
+    correctionFootprintGuard(command.requestId, workspace.id, source),
+    ...workforcePermissionStatements(proof, workspace, 'REVIEW_TIME_EXCEPTION', source.locationIds, authority),
+  ];
   const statements: SqlStatement[] = [
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE', values: [employeeIds] },
-    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
+    ...scope,
     call,
-    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
+    ...scope,
   ];
   return transactResult(statements, command.operationId, executor);
 }

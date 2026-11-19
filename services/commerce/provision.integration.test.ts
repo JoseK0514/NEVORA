@@ -1,6 +1,6 @@
 import { readBillingOwnerBinding } from "../../src/lib/commerce/owner-binding";
 import { dropTestDatabase } from "./test-database";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from '@rstest/core';
 import { Pool } from "pg";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";

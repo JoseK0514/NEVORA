@@ -1,5 +1,5 @@
 import {createHash,randomUUID} from 'node:crypto';
-import {beforeAll,afterAll,expect,it,vi} from 'vitest';
+import {beforeAll,afterAll,expect,it,rs} from '@rstest/core';
 import {createDisposableExchangeDatabase,createDisposableFoundationDatabase} from './local-postgres';
 import {initializeCompanyAccessOwnedFixture} from './company-access-owned-app-fixture';
 import {verifyPassword} from '../../lib/auth/password';
@@ -8,8 +8,8 @@ import {readPeriodClose} from '../../lib/period-close/service';
 import {source,readRun} from '../../lib/payroll/service';
 import {document,statements} from '../../lib/payroll/access';
 import type {OwnedDatabaseIdentity} from './owned-pg-transport';
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/db',()=>({getDb:()=>{throw Error('Fixture must use the explicit owned executor');},queryRows:(r:unknown)=>r}));
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/db',()=>({getDb:()=>{throw Error('Fixture must use the explicit owned executor');},queryRows:(r:unknown)=>r}));
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 let fixture:Awaited<ReturnType<typeof initializeCompanyAccessOwnedFixture>>;
 let identity:OwnedDatabaseIdentity;

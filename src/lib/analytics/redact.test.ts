@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { publicAnalyticsUrl, redactAnalyticsEvent } from "./redact";
 
 const origin = "https://nevora.example";
@@ -6,7 +6,7 @@ const origin = "https://nevora.example";
 describe("publicAnalyticsUrl", () => {
   it.each([
     "/", "/login", "/activate", "/forgot-access", "/reset-access", "/welcome",
-    "/privacy", "/terms", "/support", "/account-deletion", "/access-help", "/access-help/sign-in",
+    "/privacy", "/terms", "/support", "/account-deletion", "/access-help", "/access-help/sign-in", "/onboarding", "/onboarding/verify",
   ])("counts the public page %s", (path) => {
     expect(publicAnalyticsUrl(origin + path)).toBe(origin + path);
   });
@@ -15,12 +15,13 @@ describe("publicAnalyticsUrl", () => {
     expect(publicAnalyticsUrl(`${origin}/reset-access?code=123456&returnTo=%2Fapp%2Femployees%2FE-1#step`)).toBe(`${origin}/reset-access`);
     expect(publicAnalyticsUrl(`${origin}/activate/?token=secret`)).toBe(`${origin}/activate`);
     expect(publicAnalyticsUrl(`${origin}/?utm_source=flyer`)).toBe(`${origin}/`);
+    expect(publicAnalyticsUrl(`${origin}/onboarding/verify?lang=es#proof=secret`)).toBe(`${origin}/onboarding/verify`);
   });
 
   it.each([
     "/app", "/app/employees/E-1001", "/app/schedule?week=2026-11-16", "/clocker/loc-1",
     "/api/healthz", "/healthz", "/ui-preview/home", "/dev-inspect", "/access-help/../app",
-    "/access-help/Topic", "/login/extra", "/privacy.json",
+    "/access-help/Topic", "/login/extra", "/privacy.json", "/onboarding/activate", "/onboarding/other",
   ])("never reports the non-public path %s", (path) => {
     expect(publicAnalyticsUrl(origin + path)).toBeNull();
   });

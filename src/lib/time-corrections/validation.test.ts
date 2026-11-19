@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { parseCorrectionRequestCommand, parseCorrectionReviewCommand } from './validation';
 
 describe('D2 correction command validation', () => {

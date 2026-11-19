@@ -1,18 +1,19 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import * as rstestOriginal0 from "@/lib/data/workspaces" with { rstest: 'importActual' };
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
-const state=vi.hoisted(()=>({role:'OWNER',lang:'en',session:vi.fn(),path:'/app/billing',workspace:vi.fn()}));
-vi.mock('@/lib/auth/session',()=>({requireSession:state.session}));
-vi.mock('@/lib/auth-lang.server',()=>({readAuthLang:async()=>state.lang}));
-vi.mock('@/lib/payroll/service',()=>({payrollFeatureEnabled:()=>true}));
-vi.mock('@/lib/data/workspaces',async original=>({...await original<typeof import('@/lib/data/workspaces')>(),getWorkspace:state.workspace}));
-vi.mock('next/navigation',()=>({notFound:()=>{throw Error('not_found');},usePathname:()=>state.path}));
+const state=rs.hoisted(()=>({role:'OWNER',lang:'en',session:rs.fn(),path:'/app/billing',workspace:rs.fn()}));
+rs.mock('@/lib/auth/session',()=>({requireSession:state.session}));
+rs.mock('@/lib/auth-lang.server',()=>({readAuthLang:async()=>state.lang}));
+rs.mock('@/lib/payroll/service',()=>({payrollFeatureEnabled:()=>true}));
+rs.mock('@/lib/data/workspaces', ()=>({...rstestOriginal0,getWorkspace:state.workspace}));
+rs.mock('next/navigation',()=>({notFound:()=>{throw Error('not_found');},usePathname:()=>state.path}));
 import BillingPage,{generateMetadata} from '@/app/app/billing/page';
 import PausedPage from '@/app/clocker/access/paused/page';
 import {billingDestination} from './billing';
 import {accessNotice,contactLabel,unreachableNotice} from './copy';
 import {clockerReturnPath} from '@/lib/commerce/recovery-routes';
 import {CommerceRecoveryBoundary} from '@/lib/commerce/recovery-boundary';
-beforeEach(()=>{vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.role='OWNER';state.lang='en';state.path='/app/billing';state.session.mockReset().mockImplementation(async()=>({id:'fictional',role:state.role}));state.workspace.mockReset().mockResolvedValue({timeZone:'America/Puerto_Rico'});});
+beforeEach(()=>{rs.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.role='OWNER';state.lang='en';state.path='/app/billing';state.session.mockReset().mockImplementation(async()=>({id:'fictional',role:state.role}));state.workspace.mockReset().mockResolvedValue({timeZone:'America/Puerto_Rico'});});
 it('keeps Owner billing status loading until an authenticated current read completes',async()=>{
  const html=renderToStaticMarkup(await BillingPage());expect(html).toContain('Checking workplace access');expect(html).toContain('disabled');expect(html).not.toContain('Active employees');
 });
@@ -20,13 +21,13 @@ it.each(['EMPLOYEE','LEAD','MANAGER'])('does not mount private billing reads or 
  state.role=role;const html=renderToStaticMarkup(await BillingPage());expect(html).toContain('Ask your workplace Owner');expect(html).not.toContain('Open billing in Velani');expect(html).not.toContain('Checking workplace access');expect(html).toContain('/app/my-pay');
 });
 it('requires the session before billing presentation and denies disabled commerce',async()=>{
- state.session.mockRejectedValueOnce(Error('signed_out'));await expect(BillingPage()).rejects.toThrow('signed_out');vi.stubEnv('NEVORA_COMMERCE_ENABLED','false');await expect(BillingPage()).rejects.toThrow('not_found');
+ state.session.mockRejectedValueOnce(Error('signed_out'));await expect(BillingPage()).rejects.toThrow('signed_out');rs.stubEnv('NEVORA_COMMERCE_ENABLED','false');await expect(BillingPage()).rejects.toThrow('not_found');
 });
 it.each(['//evil.invalid','https://evil.invalid','/clocker/main?private=1','/clocker/main#hash','/clocker/../app','/clocker/access/paused','/clocker/'+ 'a'.repeat(65),['/clocker/main']])('rejects an unbounded Clocker return path %j',value=>expect(clockerReturnPath(value)).toBeNull());
 it.each(['/clocker/main','/clocker/friends-aguada'])('preserves exact safe Clocker return %s',value=>expect(clockerReturnPath(value)).toBe(value));
 it('keeps the public tablet recovery screen free of private status and arbitrary query content',async()=>{
  const html=renderToStaticMarkup(await PausedPage({searchParams:Promise.resolve({reason:'billing_status_unavailable',from:'https://evil.invalid/private',secret:'must-not-echo'})}));
- expect(html).toContain('Access could not be checked');expect(html).toContain('Open billing on your own device.');expect(html).not.toContain('/login');expect(html).not.toContain('Try Clocker again');expect(html).not.toContain('evil.invalid');expect(html).not.toContain('must-not-echo');expect(state.session).not.toHaveBeenCalled();
+ expect(html).toContain('Access could not be checked');expect(html).toContain('Open billing on your own device.');expect(html).not.toContain('/login');expect(html).not.toContain('>Try again</a>');expect(html).not.toContain('evil.invalid');expect(html).not.toContain('must-not-echo');expect(state.session).not.toHaveBeenCalled();
 });
 it('uses Spanish copy without exposing a billing-status payload on the tablet',async()=>{
  state.lang='es';const html=renderToStaticMarkup(await PausedPage({searchParams:Promise.resolve({from:'/clocker/main'})}));expect(html).toContain('>Intentar de nuevo</a>');expect(html).toContain('href="/clocker/main"');expect(html).not.toContain('Active employees');
@@ -60,7 +61,7 @@ it.each(['en','es'] as const)('tells a non-Owner in %s when the billing check it
 });
 it('titles the tab by what the page returns',async()=>{
  expect((await generateMetadata()).title).toBe('Workplace billing');state.lang='es';expect((await generateMetadata()).title).toBe('Facturación del negocio');
- vi.stubEnv('NEVORA_COMMERCE_ENABLED','false');expect(await generateMetadata()).toEqual({title:'Page not found',robots:{index:false,follow:false},referrer:'no-referrer'});
+ rs.stubEnv('NEVORA_COMMERCE_ENABLED','false');expect(await generateMetadata()).toEqual({title:'Page not found',robots:{index:false,follow:false},referrer:'no-referrer'});
 });
 const paused={state:'restricted',reason:null,activeEmployees:4,employeeLimit:15} as const;
 it('gives one sentence per reason access is paused, in both languages',()=>{
@@ -83,4 +84,4 @@ it('explains the bare headcount: upgrade or deactivate up to 30 people, a quote 
  expect(contactLabel('en')).toBe('Email support@thevelani.com');expect(contactLabel('es')).toBe('Escribir a support@thevelani.com');
 });
 
-afterEach(()=>vi.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });

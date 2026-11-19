@@ -1,11 +1,11 @@
 // Phase 8 (review B #20): an Owner's or Manager's My pay. The days to the scheduled payday are plain grey text, and no
 // statements yet is the kit's empty state card with the grey tray, in the page's existing words.
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 
-const resource = vi.hoisted(() => ({ value: { data: { statements: [] as unknown[] } as unknown, loading: false, error: null as string | null, reload: () => undefined } }));
-vi.mock('./api', () => ({ readStatements: vi.fn() }));
-vi.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'signed-out', usePayrollResource: () => resource.value }));
+const resource = rs.hoisted(() => ({ value: { data: { statements: [] as unknown[] } as unknown, loading: false, error: null as string | null, reload: () => undefined } }));
+rs.mock('./api', () => ({ readStatements: rs.fn() }));
+rs.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'signed-out', usePayrollResource: () => resource.value }));
 const { QuietMyPay } = await import('./my-pay');
 
 const nextPay = { payday: '2026-11-27', daysUntil: 10, period: { startDate: '2026-11-16', endDate: '2026-11-22' }, timeZone: 'America/Puerto_Rico' };

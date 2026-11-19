@@ -1,5 +1,5 @@
 // U01 import: parsing glue, matching, corrections to the cent, the request, and what happens when the team changes.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import fixtures from "../../../docs/handoffs/2026-11-16-backend-phase2-finance-fixtures.json";
 import { parseImport, totals } from "@/lib/payroll/model";
 import { payrollCsvRows } from "@/lib/payroll/csv-import";

@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { parseCommand, type ToolCall, type ToolResult } from "./contracts";
 import { investigate } from "./loop.server";
 import { ownerCoveragePlan } from "@/test/fixtures/owner-coverage-plan";

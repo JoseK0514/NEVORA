@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import {installFixtureCompanyAccess} from './fixture-company-access';
 import { updatePosition } from '../../lib/data/positions';

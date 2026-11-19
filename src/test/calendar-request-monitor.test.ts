@@ -1,5 +1,5 @@
 import { runInNewContext } from 'node:vm';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { CALENDAR_READ_PATH, pendingReads, calendarTrace, installCalendarFetchObservation, type CalendarTrace } from './integration/calendar-request-monitor';
 
 const id = '11111111-1111-4111-8111-111111111111';

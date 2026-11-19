@@ -6,6 +6,7 @@
  * unconfirmed save is looked up at GET /api/payroll/receipts before anything else. The work lives in this tab's memory
  * (flow-kit.tsx useHeld), never in browser storage. */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {readOperationalNavigation} from "@/components/company-access/commands";
 import type { PayrollRun } from "@/lib/payroll/contracts";
 import { readRuns, readSettings } from "@/components/payroll/api";
 import { payrollImportCopy, type PayrollImportLang } from "./copy";
@@ -13,14 +14,16 @@ import { FlowHead, OfflineNote, Skeleton, StepActions, StopCard, dayText, downlo
 import { correct, freezeImport, initialMatches, isCorrection, periodMismatch, planImport, readImportFile, reconcile, reviewAmounts, reviewMatches, starterCsv, validReason, validSourceText, PEOPLE_MAX,
   type AmountField, type Corrections, type Dispositions, type FileProblem, type FileRow, type ImportDraft, type ImportSource, type Matches, type RosterPerson, type Snapshot, type SourceChange } from "./import-model";
 import { AddFileStep, ChangedNotice, ConfirmStep, MatchStep, ResultStep, ReviewStep } from "./import-views";
-import { IDLE, classifyPayrollAnswer, classifyReceiptLook, holdsCustody, writeReducer, type PayrollReceiptLike, type WriteEvent, type WriteState } from "./recovery";
+import { IDLE, retireWrite, classifyPayrollAnswer, classifyReceiptLook, holdsCustody, writeReducer, type PayrollReceiptLike, type WriteEvent, type WriteState } from "./recovery";
 
+const foreground=()=>document.visibilityState!=="hidden"&&navigator.onLine&&document.hasFocus();
 const TITLE_ID = "payroll-import-title", HEADING_ID = "payroll-import-step";
 type Work = {
   step: 1 | 2 | 3 | 4 | 5; draft: ImportDraft | null; problem: FileProblem | null; source: ImportSource; reason: string;
   matches: Matches; dispositions: Dispositions; corrections: Corrections; write: WriteState<PayrollReceiptLike>; changes: SourceChange[]; snapshot: Snapshot | null; sentPeople: number;
 };
 const emptyWork = (): Work => ({ step: 1, draft: null, problem: null, source: { sourceName: "", sourceReference: "" }, reason: "", matches: {}, dispositions: {}, corrections: {}, write: IDLE, changes: [], snapshot: null, sentPeople: 0 });
+function retireWork(work:Work):Work{const write=retireWrite(work.write);return {...emptyWork(),...(holdsCustody(write)?{step:5,write,sentPeople:work.sentPeople}:{})};}
 type Loaded = { state: "loading" } | { state: "failed"; why: "network" | "denied" | "signed_out" } | { state: "ready"; run: PayrollRun | null; roster: RosterPerson[] };
 
 /** One same-origin payroll request. Status 0 when no answer arrived. */
@@ -36,7 +39,7 @@ async function ask(path: string, body?: string): Promise<{ status: number; body:
 
 export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }: { lang?: PayrollImportLang; runId: string | null; recoveryScope: string; actorId: string }) {
   const copy = payrollImportCopy[lang], referenceKey = `nevora-payroll-operation:${recoveryScope}`;
-  const [work, setWork, dropWork] = useHeld<Work>(`import:${actorId}:${runId ?? ""}`, emptyWork);
+  const [work, setWork, dropWork] = useHeld<Work>(`import:${recoveryScope}:${actorId}:${runId ?? ""}`, emptyWork,retireWork);
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" }), [reading, setReading] = useState(false), [editing, setEditing] = useState<{ index: number; field: AmountField } | null>(null);
   const [otherPending, setOtherPending] = useState(false), [touched, setTouched] = useState(false);
   const offline = useOffline(), latest = useRef(work);
@@ -46,35 +49,46 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
   // A finished import has nothing to come back to.
   useEffect(() => () => { if (latest.current.write.phase === "saved") dropWork(); }, [dropWork]);
 
-  const load = useCallback(async () => {
-    const [runs, settings] = await Promise.all([ask("/api/payroll/runs"), ask("/api/payroll/settings")]);
-    const status = [runs.status, settings.status];
-    if (status.includes(401)) { setLoaded({ state: "failed", why: "signed_out" }); return; }
-    if (status.includes(403)) { setLoaded({ state: "failed", why: "denied" }); return; }
-    try {
-      if (runs.status !== 200 || settings.status !== 200) throw new Error("unavailable");
-      const run = readRuns(runs.body).runs.find(item => item.id === runId) ?? null;
-      const roster = readSettings(settings.body).employees.map(person => ({ id: person.id, name: person.name, active: person.active }));
-      setLoaded({ state: "ready", run, roster });
-      const now = latest.current, after: Snapshot = { roster, run };
-      // Before anything is sent, a change underneath is told and the work is carried over. Once a request is out its
-      // bytes are fixed, so nothing here touches it.
-      if (now.write.phase !== "idle" && now.write.phase !== "refused") return;
-      if (!now.snapshot) { setWork(value => ({ ...value, snapshot: after })); return; }
-      const result = reconcile(now.snapshot, after, now.matches, now.dispositions);
-      setWork(value => ({ ...value, snapshot: after, matches: result.matches, dispositions: result.dispositions, changes: result.changes.length ? result.changes : value.changes }));
-    } catch {
-      // Keep what is on screen when a refresh fails; only a first load shows the failure.
-      setLoaded(value => value.state === "ready" ? value : { state: "failed", why: "network" });
-    }
-  }, [runId, setWork]);
-  useEffect(() => {
-    let active = true;
-    queueMicrotask(() => { if (active) void load(); });
-    const again = () => { if (document.visibilityState === "visible" && navigator.onLine) void load(); };
-    window.addEventListener("online", again); document.addEventListener("visibilitychange", again);
-    return () => { active = false; window.removeEventListener("online", again); document.removeEventListener("visibilitychange", again); };
-  }, [load]);
+  const active=useRef(false),focused=useRef(true),generation=useRef(0),readSequence=useRef(0),validUntil=useRef(0);
+  const timers=useRef<{end?:ReturnType<typeof setTimeout>;renew?:ReturnType<typeof setTimeout>}>({});
+  const hasLease=()=>active.current&&focused.current&&foreground()&&performance.now()<validUntil.current;
+  const cancelRead=useCallback(()=>{generation.current++;readSequence.current++;validUntil.current=0;clearTimeout(timers.current.end);clearTimeout(timers.current.renew);timers.current={};},[]);
+  const retire=useCallback(()=>{
+    cancelRead();
+    const next=retireWork(latest.current);latest.current=next;setWork(next);setLoaded({state:"loading"});setEditing(null);setReading(false);setTouched(false);
+  },[cancelRead,setWork]);
+  const load=useCallback(async function loadImport(){
+    if(!active.current||!focused.current||!foreground())return;
+    const sequence=++readSequence.current,began=performance.now();
+    const [runs,settings,authority]=await Promise.all([ask("/api/payroll/runs"),ask("/api/payroll/settings"),fetch("/api/company-access/operational-authority",{cache:"no-store",credentials:"same-origin",headers:{"x-nevora-company-access":"1"}}).then(async response=>({status:response.status,body:await response.json()})).catch(()=>({status:0,body:null}))]);
+    if(!active.current||!focused.current||sequence!==readSequence.current||!foreground())return;
+    const status=[runs.status,settings.status,authority.status];
+    if(status.includes(401)||status.includes(403)){retire();setLoaded({state:"failed",why:status.includes(401)?"signed_out":"denied"});return;}
+    try{
+      if(runs.status!==200||settings.status!==200||authority.status!==200)throw Error("unavailable");
+      const access=readOperationalNavigation(authority.body);if(access.state!=="ready"||access.employeeId!==actorId)throw Error("unavailable");
+      const deadline=began+access.validForMs,remaining=deadline-performance.now();if(remaining<=0)throw Error("expired");
+      const run=readRuns(runs.body).runs.find(item=>item.id===runId)??null;
+      const roster=readSettings(settings.body).employees.map(person=>({id:person.id,name:person.name,active:person.active}));
+      clearTimeout(timers.current.end);clearTimeout(timers.current.renew);validUntil.current=deadline;
+      timers.current.end=setTimeout(()=>{retire();setLoaded({state:"failed",why:"network"});},remaining);
+      timers.current.renew=setTimeout(()=>void loadImport(),remaining*.7);
+      setLoaded({state:"ready",run,roster});
+      const now=latest.current,after:Snapshot={roster,run};
+      if(now.write.phase!=="idle"&&now.write.phase!=="refused")return;
+      if(!now.snapshot){setWork(value=>({...value,snapshot:after}));return;}
+      const result=reconcile(now.snapshot,after,now.matches,now.dispositions);
+      setWork(value=>({...value,snapshot:after,matches:result.matches,dispositions:result.dispositions,changes:result.changes.length?result.changes:value.changes}));
+    }catch{retire();setLoaded({state:"failed",why:"network"});}
+  },[actorId,runId,retire,setWork]);
+  useEffect(()=>{
+    active.current=true;focused.current=foreground();queueMicrotask(()=>{if(active.current)void load();});
+    const away=()=>{focused.current=false;retire();};
+    const back=()=>{if(foreground()){focused.current=true;void load();}};
+    const visible=()=>document.visibilityState==="hidden"?away():back();
+    window.addEventListener("blur",away);window.addEventListener("offline",away);window.addEventListener("pagehide",away);window.addEventListener("focus",back);window.addEventListener("online",back);window.addEventListener("pageshow",back);document.addEventListener("visibilitychange",visible);
+    return()=>{active.current=false;cancelRead();window.removeEventListener("blur",away);window.removeEventListener("offline",away);window.removeEventListener("pagehide",away);window.removeEventListener("focus",back);window.removeEventListener("online",back);window.removeEventListener("pageshow",back);document.removeEventListener("visibilitychange",visible);};
+  },[load,retire,cancelRead]);
   // Another payroll action whose result is still unknown (recorded by Review payroll) comes first.
   useEffect(() => {
     queueMicrotask(() => { try { const stored = localStorage.getItem(referenceKey); setOtherPending(!!stored && !("custody" in latest.current.write && latest.current.write.custody.key === stored)); } catch { /* storage is optional here */ } });
@@ -89,15 +103,17 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
   const frozen = useMemo(() => plan && run ? freezeImport(run, plan, "00000000-0000-4000-8000-000000000000", work.reason) : null, [plan, run, work.reason]);
 
   const go = (step: Work["step"]) => { setEditing(null); setWork(value => ({ ...value, step })); };
-  const apply = useCallback((event: WriteEvent<PayrollReceiptLike>) => setWork(value => ({ ...value, write: writeReducer(value.write, event) })), [setWork]);
+  const apply=useCallback((event:WriteEvent<PayrollReceiptLike>)=>{const next={...latest.current,write:writeReducer(latest.current.write,event)};latest.current=next;setWork(next);},[setWork]);
   const release = (key: string) => { try { if (localStorage.getItem(referenceKey) === key) localStorage.removeItem(referenceKey); } catch { /* nothing to release */ } };
 
   async function chooseFile(file: File) {
+    if(!hasLease()){retire();return;}const current=generation.current;
     setReading(true); setTouched(false);
     let text = "";
     const known = /\.(csv|json)$/i.test(file.name), small = file.size <= 524_288;
     try { if (known && small) text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(await file.arrayBuffer()); }
-    catch { setReading(false); setWork(value => ({ ...value, problem: { code: "unreadable" } })); focusError(); return; }
+    catch { if(current!==generation.current||!hasLease())return;setReading(false); setWork(value => ({ ...value, problem: { code: "unreadable" } })); focusError(); return; }
+    if(current!==generation.current||!hasLease())return;
     const result = readImportFile({ name: file.name, size: file.size, text });
     setReading(false);
     if (!result.ok) { setWork(value => ({ ...value, problem: result.problem })); focusError(); return; }
@@ -106,10 +122,12 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
       source: next.json ? { sourceName: next.json.sourceName, sourceReference: next.json.sourceReference } : value.source }));
   }
   const focusError = () => requestAnimationFrame(() => document.querySelector<HTMLElement>(".pim [data-pim-error]")?.focus());
-  const starter = () => download(starterCsv(roster), "text/csv;charset=utf-8", "nevora-pay-import-starter.csv");
+  const starter=async()=>{const current=generation.current;const response=await ask("/api/payroll/settings");if(current!==generation.current||!hasLease())return;if(response.status!==200){retire();void load();return;}try{const people=readSettings(response.body).employees.map(person=>({id:person.id,name:person.name,active:person.active}));download(starterCsv(people),"text/csv;charset=utf-8","nevora-pay-import-starter.csv");}catch{retire();}};
 
   async function post(custody: { key: string; body: string }) {
+    const current=generation.current;
     const answer = await ask("/api/payroll/runs", custody.body), result = classifyPayrollAnswer(answer.status, answer.body, custody.key);
+    if(current!==generation.current||!hasLease()){apply({type:"unknown"});return;}
     if (result.kind === "saved") { release(custody.key); apply({ type: "saved", receipt: result.receipt }); }
     else if (result.kind === "refused") { release(custody.key); apply({ type: "refused", reason: result.code, detail: result.issues.join(" ") }); void load(); }
     else if (result.kind === "denied") { release(custody.key); apply({ type: "refused", reason: result.signedOut ? "SIGNED_OUT" : "DENIED" }); }
@@ -118,22 +136,26 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
   }
   function save() {
     if (!run || !plan || holdsCustody(work.write)) return;
+    if(!hasLease()){retire();return;}
     const key = crypto.randomUUID(), body = freezeImport(run, plan, key, work.reason).body, custody = { key, body };
     try { localStorage.setItem(referenceKey, key); } catch { /* this page still holds the request */ }
-    setWork(value => ({ ...value, step: 5, sentPeople: plan.people, changes: [], write: writeReducer(value.write.phase === "refused" ? IDLE : value.write, { type: "send", custody }) }));
+    const next={...latest.current,step:5 as const,sentPeople:plan.people,changes:[],write:writeReducer(latest.current.write.phase==="refused"?IDLE:latest.current.write,{type:"send",custody})};latest.current=next;setWork(next);
     void post(custody);
   }
   async function check() {
     const write = latest.current.write;
     if (write.phase !== "unknown") return;
+    if(!hasLease()){retire();return;}const current=generation.current;
     apply({ type: "check" });
     const answer = await ask(`/api/payroll/receipts?operationId=${encodeURIComponent(write.custody.key)}`), look = classifyReceiptLook(answer.status, answer.body, write.custody.key);
+    if(current!==generation.current||!hasLease()){apply({type:"check_failed"});return;}
     if (look.kind === "saved") { release(write.custody.key); apply({ type: "saved", receipt: look.receipt }); }
     else apply({ type: look.kind === "none" ? "no_receipt" : "check_failed" });
   }
   function resend() {
     const write = latest.current.write;
     if (write.phase !== "unknown") return;
+    if(!hasLease()){retire();return;}
     // The original bytes and key, exactly as first sent.
     apply({ type: "send", custody: write.custody }); void post(write.custody);
   }
@@ -165,7 +187,7 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
     {work.changes.length && step < 5 ? <ChangedNotice copy={copy} changes={work.changes} onDismiss={() => setWork(value => ({ ...value, changes: [] }))} /> : null}
   </>;
 
-  if (step === 1 || !draft || !matchReview || !amountReview) return frame(1, null, <>
+  if (!custody && (step === 1 || !draft || !matchReview || !amountReview)) return frame(1, null, <>
     {notices}
     <AddFileStep copy={copy} headingId={HEADING_ID} periodLabel={periodLabel} draft={draft} problem={work.problem} reading={reading} source={work.source} correction={correction} reason={work.reason}
       sourceErrors={touched && draft?.kind === "csv" ? sourceBad : undefined} reasonError={touched && correction && !validReason(work.reason)} mismatch={mismatch}
@@ -173,7 +195,7 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
     <StepActions id="pim-s1" primary={{ label: a.next, why: why1, onClick: () => go(2), onBlocked: () => setTouched(true) }} secondary={{ label: copy.common.cancel, href: back.href }} />
   </>);
 
-  if (step === 2) return frame(2, () => go(1), <>
+  if (step === 2 && draft && matchReview) return frame(2, () => go(1), <>
     {notices}
     <MatchStep copy={copy} lang={lang} headingId={HEADING_ID} review={matchReview} roster={roster} onStarter={starter}
       onMatch={(row: FileRow, personId) => setWork(value => ({ ...value, matches: { ...value.matches, [row.index]: personId } }))}
@@ -182,7 +204,7 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
       secondary={{ label: copy.common.back, onClick: () => go(1) }} />
   </>);
 
-  if (step === 3) return frame(3, () => go(2), <>
+  if (step === 3 && draft && amountReview && matchReview) return frame(3, () => go(2), <>
     {notices}
     <ReviewStep copy={copy} lang={lang} headingId={HEADING_ID} review={amountReview} rows={draft.rows} editing={editing} onEdit={setEditing}
       onCorrect={(row, field, minor) => setWork(value => ({ ...value, corrections: correct(value.corrections, row, field, minor) }))} />
@@ -190,13 +212,13 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
       secondary={{ label: copy.common.back, onClick: () => go(2) }} />
   </>);
 
-  if (step === 4 && plan && run) return frame(4, () => go(3), <>
+  if (step === 4 && plan && run && draft && amountReview) return frame(4, () => go(3), <>
     {notices}
     <ConfirmStep copy={copy} lang={lang} headingId={HEADING_ID} plan={plan} review={amountReview} draft={draft} source={work.source} periodLabel={periodLabel} paydayLabel={paydayLabel} correction={correction} reason={work.reason} tooBig={frozen?.tooBig} />
     <StepActions id="pim-s4" primary={{ label: correction ? copy.imp.confirm.saveCorrection : copy.imp.confirm.save, onClick: save,
       why: offline ? copy.common.offlineLine : frozen?.tooBig ? copy.imp.confirm.tooBig : !amountReview.ready ? copy.imp.review.blocked(amountReview.unbalanced) : why1 }} secondary={{ label: copy.common.back, onClick: () => go(3) }} />
   </>);
-  if (step === 4) return frame(3, () => go(2), <StopCard kind="paused" title={copy.imp.changed.title} line={copy.imp.match.blocked(matchReview.unmatched, matchReview.twice, matchReview.undecided)} action={{ label: copy.imp.result.fix.match, onClick: () => go(2) }} />);
+  if (step === 4 && matchReview) return frame(3, () => go(2), <StopCard kind="paused" title={copy.imp.changed.title} line={copy.imp.match.blocked(matchReview.unmatched, matchReview.twice, matchReview.undecided)} action={{ label: copy.imp.result.fix.match, onClick: () => go(2) }} />);
 
   return frame(5, null, <>
     <p className="c-sr" role="status" aria-live="polite">{copy.common.stepOf(5, copy.imp.steps.length, copy.imp.steps[4])}</p>

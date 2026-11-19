@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { decideCelebration, type CelebrationRequest } from './celebrations';
 
 const fresh = { sessionUsed: false, seenKeys: new Set<string>() };

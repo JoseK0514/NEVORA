@@ -1,25 +1,25 @@
-import { afterEach, expect, it, vi } from "vitest";
-const mocks = vi.hoisted(() => ({
-  service: vi.fn(async (..._args: unknown[]) => ({ state: "ready" })),
+import { afterEach, expect, it, rs } from '@rstest/core';
+const mocks = rs.hoisted(() => ({
+  service: rs.fn(async (..._args: unknown[]) => ({ state: "ready" })),
 }));
-vi.mock("@/lib/auth/session", () => ({
+rs.mock("@/lib/auth/session", () => ({
   getSession: async () => ({ id: "owner", role: "OWNER" }),
   requireSessionMutationProof: async () => ({
     employee: { id: "owner", role: "OWNER" },
   }),
 }));
-vi.mock("@/lib/data/sql-executor", () => ({
+rs.mock("@/lib/data/sql-executor", () => ({
   neonNotificationExecutor: () => ({}),
 }));
-vi.mock("./service.server", () => ({ advisorService: mocks.service }));
+rs.mock("./service.server", () => ({ advisorService: mocks.service }));
 import { POST } from "@/app/api/owner/advisor/route";
 import { AdvisorProviderFailure } from "./provider-failure.server";
 afterEach(() => {
-  vi.restoreAllMocks();
+  rs.restoreAllMocks();
   mocks.service.mockClear();
 });
 it("logs safe provider diagnosis without adding upstream metadata to the public response", async () => {
-  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  const warn = rs.spyOn(console, "warn").mockImplementation(() => {});
   mocks.service.mockRejectedValueOnce(new AdvisorProviderFailure(400, "safety_filter"));
   const request = new Request("http://localhost/api/owner/advisor", { method: "POST",
     headers: { "x-nevora-owner-advisor": "1", "content-type": "application/json", origin: "http://localhost" }, body: "{}" });
@@ -30,7 +30,7 @@ it("logs safe provider diagnosis without adding upstream metadata to the public 
 });
 function openRequest(signal?: AbortSignal) {
   let streamController!: ReadableStreamDefaultController<Uint8Array>;
-  const cancel = vi.fn();
+  const cancel = rs.fn();
   const body = new ReadableStream<Uint8Array>({
     start(controller) {
       streamController = controller;
@@ -91,7 +91,7 @@ it("cancels an open JSON body on request abort before any service side effect", 
 });
 it("starts the single deadline at entry and cancels an open body when it expires", async () => {
   const deadline = new AbortController();
-  const timeout = vi
+  const timeout = rs
     .spyOn(AbortSignal, "timeout")
     .mockReturnValue(deadline.signal);
   const f = openRequest();
@@ -113,7 +113,7 @@ it("starts the single deadline at entry and cancels an open body when it expires
 });
 it("passes the same entry deadline to subsequent service work", async () => {
   const deadline = new AbortController();
-  vi.spyOn(AbortSignal, "timeout").mockReturnValue(deadline.signal);
+  rs.spyOn(AbortSignal, "timeout").mockReturnValue(deadline.signal);
   const request = new Request("http://localhost/api/owner/advisor", {
     method: "POST",
     headers: {

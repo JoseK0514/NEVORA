@@ -2,7 +2,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {resolve,relative,isAbsolute,join} from 'node:path';
 import {Client} from 'pg';
 import {randomUUID} from 'node:crypto';
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {source,sourceSql,sourceGuard,newRun,saveSettings,command,runs,type Source} from '../../lib/payroll/service';
 import {guarded,hash,statement as q,workspaceSql} from '../../lib/payroll/store';
@@ -18,13 +18,13 @@ let f:Awaited<ReturnType<typeof createPunchFixture>>,workspaceId:string;
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 const owner:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstName:'Owner',lastName:'Fictional',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 beforeEach(async()=>{
- vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');f=await createPunchFixture();
+ rs.stubEnv('NEVORA_PAYROLL_ENABLED','true');f=await createPunchFixture();
  // Existing provider-import fixture: current Company authority without native amount capture.
  await f.q(await readFile('db/migrations/0032_company_access_invitations.sql','utf8'));
  [{id:workspaceId}]=await f.q<{id:string}>('SELECT id FROM workspaces WHERE singleton');
  await saveSettings(owner,{action:'SAVE_SETTINGS',operationId:randomUUID(),expectedRevision:0,effectiveFrom:'2026-01-01',reason:'Fictional source qualification',preferences:{companyName:'Fictional source company',language:'en',currency:'USD',schedule:{frequency:'WEEKLY',anchorDate:'2026-09-21',paydayOffsetDays:2},rules:[],automation:{prepare:false,publish:false,reminders:false,reminderLeadDays:[]},bankProfile:'NEUTRAL_UNVERIFIED'}},f.db.executor);
 });
-afterEach(async()=>{await f?.db.dispose();vi.unstubAllEnvs();});
+afterEach(async()=>{await f?.db.dispose();rs.unstubAllEnvs();});
 async function roster(total:number){
  await f.q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id,active)
   SELECT 'R15-'||lpad(n::text,4,'0'),'Retained','Fictional '||n,'r15-'||n,'EMPLOYEE','loc-1',n%2=0 FROM generate_series(4,$1::integer) n`,[total]);

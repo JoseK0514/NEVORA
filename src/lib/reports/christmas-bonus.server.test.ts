@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { bonusYear } from './christmas-bonus';
 import { readChristmasBonusReport } from './christmas-bonus.server';

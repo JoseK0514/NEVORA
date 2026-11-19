@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { PDFDocument } from 'pdf-lib';
 import { generatePdfs } from '../documents';
 import { nativeEmployeePresentation } from './document-mapping';

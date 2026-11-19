@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 async function api() {
   const implementation = await import('./generation-claims').catch(() => ({}));
   expect(implementation).toHaveProperty('validateGenerationClaims');

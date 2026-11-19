@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { presetPeriods } from "./reports";
 
 it("offers this week so far first, then last week and the last 30 days (MK5, PD4)", () => {

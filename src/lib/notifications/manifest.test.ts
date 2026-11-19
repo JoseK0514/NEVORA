@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 
-vi.mock('server-only',()=>({}));
-vi.mock('@/components/app-shell', () => ({ AppShell: () => null }));
-vi.mock('@/lib/notifications/config', () => import('./config'));
-vi.mock('@/lib/auth/session', () => ({ requireSession: vi.fn() }));
+rs.mock('server-only',()=>({}));
+rs.mock('@/components/app-shell', () => ({ AppShell: () => null }));
+
+rs.mock('@/lib/auth/session', () => ({ requireSession: rs.fn() }));
 
 it('manifest_preserves_portal_identity', async () => {
   expect(existsSync('src/lib/notifications/manifest.ts')).toBe(true);
@@ -71,4 +71,4 @@ it('preserves the official NEVORA source and uses its derived compact symbol', (
   expect([wordmark.readUInt32BE(16), wordmark.readUInt32BE(20)]).toEqual([907, 122]);
 });
 
-vi.mock('@/lib/data/workspaces', () => ({getWorkspace:async()=>({name:'Northside Services',timeZone:'America/New_York'})}));
+rs.mock('@/lib/data/workspaces', () => ({getWorkspace:async()=>({name:'Northside Services',timeZone:'America/New_York'})}));

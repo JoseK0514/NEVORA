@@ -1,4 +1,4 @@
-import { it, expect } from "vitest";
+import { it, expect } from '@rstest/core';
 import { aggregateGenerationRejections } from "./explanations";
 it("counts distinct rejected people per code rather than failed candidates", () => {
   const issue = {

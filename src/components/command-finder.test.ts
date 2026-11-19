@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {finderMatches, finderStatus} from './command-finder';
 
 it('status precedence: offline, then unavailable, then loading, then "No matches." only once people loaded', () => {

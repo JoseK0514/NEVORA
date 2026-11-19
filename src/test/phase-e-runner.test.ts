@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, 
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it } from '@rstest/core';
 
 const runner = resolve('scripts/phase-e-owned.mjs');
 const browserRunner = resolve('scripts/phase-e-browser-qa.mjs');
@@ -41,7 +41,7 @@ function fixture(childExit = 0) {
   put(root, 'vitest.phase-e-integration.config.mts', 'export default {};\n');
   for (const suite of sqlSuites) put(root, `src/test/integration/phase-e-${suite === 'assignments' ? 'published-assignments' : suite}.integration.ts`, '/* fictional runner boundary fixture */\n');
   // This executable boundary verifies dispatch, env and lifecycle, not feature acceptance.
-  put(root, 'node_modules/vitest/vitest.mjs', `import fs from 'node:fs';import {resolve} from 'node:path';
+  put(root, 'scripts/run-rstest.mjs', `import fs from 'node:fs';import {resolve} from 'node:path';
 const a=process.argv.slice(2), output=a[a.indexOf('--outputFile')+1];
 fs.appendFileSync(${JSON.stringify(trace)},JSON.stringify({args:a,suite:process.env.PHASE_E_SQL_SUITE,url:process.env.FUEL_TEST_DATABASE_URL,owner:process.env.PHASE_E_OWNER_ID,provider:process.env.PUSH_DELIVERY_ENABLED,database:process.env.DATABASE_URL})+'\\n');
 if(${childExit})process.exit(${childExit});
@@ -53,6 +53,12 @@ fs.writeFileSync(output,JSON.stringify({success:true,numTotalTests:1,numPassedTe
   execFileSync('git', ['-c', 'user.name=Fictional QA', '-c', 'user.email=qa@example.invalid', 'commit', '-qm', 'fixture'], { cwd: root });
   const sha = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
   return { root, evidence, trace, env: environment({ NEVORA_TEST_PG_BIN: bin, PHASE_E_EXPECTED_SHA: sha, PHASE_E_EVIDENCE_DIR: evidence }) };
+}
+
+function commitFixtureRunnerChange(f: ReturnType<typeof fixture>) {
+  execFileSync('git', ['add', 'scripts/run-rstest.mjs'], {cwd: f.root});
+  execFileSync('git', ['-c', 'user.name=Fictional QA', '-c', 'user.email=qa@example.invalid', 'commit', '-qm', 'select fictional runner'], {cwd: f.root});
+  f.env.PHASE_E_EXPECTED_SHA = execFileSync('git', ['rev-parse', 'HEAD'], {cwd: f.root, encoding: 'utf8'}).trim();
 }
 
 it('rejects_DATABASE_URL before starting any owned process', () => {
@@ -158,7 +164,8 @@ it('absent SQL suites fail before PostgreSQL setup', () => {
 });
 it('refuses teardown if the invocation ownership marker is replaced', () => {
   const f = fixture();
-  put(f.root, 'node_modules/vitest/vitest.mjs', `import fs from 'node:fs';const owner=JSON.parse(fs.readFileSync(process.env.PHASE_E_OWNERSHIP_FILE));owner.ownerId='0'.repeat(32);fs.writeFileSync(process.env.PHASE_E_OWNERSHIP_FILE,JSON.stringify(owner));process.exit(17);`);
+  put(f.root, 'scripts/run-rstest.mjs', `import fs from 'node:fs';const owner=JSON.parse(fs.readFileSync(process.env.PHASE_E_OWNERSHIP_FILE));owner.ownerId='0'.repeat(32);fs.writeFileSync(process.env.PHASE_E_OWNERSHIP_FILE,JSON.stringify(owner));process.exit(17);`);
+  commitFixtureRunnerChange(f);
   const result = invoke(['sql', '--suite', 'assignments'], f.env, f.root);
   expect(result.status).toBe(17); expect(result.stderr).toContain('refusing teardown');
   expect(readFileSync(f.trace, 'utf8')).not.toContain('STOP');
@@ -174,7 +181,8 @@ it('rejects zero executed tests and skipped SQL tests even when the child exits 
     { success: true, numTotalTests: 0, numPassedTests: 0, numPendingTests: 0, testResults: [] },
     { success: true, numTotalTests: 1, numPassedTests: 0, numPendingTests: 1, testResults: [{ assertionResults: [{ status: 'pending' }] }] },
   ]) {
-    const f = fixture(); put(f.root, 'node_modules/vitest/vitest.mjs', `import fs from 'node:fs';const a=process.argv;fs.writeFileSync(a[a.indexOf('--outputFile')+1],JSON.stringify(${JSON.stringify(report)}));`);
+    const f = fixture(); put(f.root, 'scripts/run-rstest.mjs', `import fs from 'node:fs';const a=process.argv;fs.writeFileSync(a[a.indexOf('--outputFile')+1],JSON.stringify(${JSON.stringify(report)}));`);
+    commitFixtureRunnerChange(f);
     const result = invoke(['sql', '--suite', 'assignments'], f.env, f.root);
     expect(result.status).not.toBe(0); expect(result.stderr).toContain('executed');
   }
@@ -256,8 +264,9 @@ it.each(['manifest', 'ownership'])('evidence acceptance rejects modified %s cust
 });
 it('rejects a successful unrelated SQL fixture during execution', () => {
   const f = fixture();
-  const child = readFileSync(join(f.root, 'node_modules/vitest/vitest.mjs'), 'utf8').replace("a.find(value=>value.endsWith('.integration.ts'))", "'src/test/integration/phase-e-home.integration.ts'");
-  put(f.root, 'node_modules/vitest/vitest.mjs', child);
+  const child = readFileSync(join(f.root, 'scripts/run-rstest.mjs'), 'utf8').replace("a.find(value=>value.endsWith('.integration.ts'))", "'src/test/integration/phase-e-home.integration.ts'");
+  put(f.root, 'scripts/run-rstest.mjs', child);
+  commitFixtureRunnerChange(f);
   const result = invoke(['sql', '--suite', 'assignments'], f.env, f.root);
   expect(result.status).not.toBe(0); expect(result.stderr).toContain('owning fixture');
 });

@@ -1,5 +1,5 @@
 // The tablet setup link (Phase 6, JR-26): the code rides in the fragment, never in the query string.
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {isSetupCode, setupCodeFromHash, setupLink} from './clocker-setup-link';
 
 const raw = `nev_enr_${'ab'.repeat(32)}`;

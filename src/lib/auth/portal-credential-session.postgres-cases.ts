@@ -5,7 +5,7 @@
 // Real Node scrypt and genuine admitted original verifier are mandatory. Fixture
 // transport barriers may pause/drop ACKs AFTER real native execution; they may
 // never substitute SQL rows, password outcomes, an authority flag or a witness.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import type { Client } from 'pg';
 import { createHash } from 'node:crypto';
 import { hashPassword, verifyPassword } from '@/lib/auth/password';

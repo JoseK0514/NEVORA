@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { beforeEach, afterEach, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, expect, it, rs } from '@rstest/core';
 import {commerceGate,resetCommerceAccessCache} from '../../lib/commerce/access';
 import {handleClockerSetup} from '../../lib/clocker/setup.server';
 import type {SqlExecutor} from '../../lib/notifications/types';
@@ -15,7 +15,7 @@ beforeEach(async()=>{
  jar=new Map([['nevora_clocker',f.devices[0].credential],['nevora_clocker_identity',identity.token]]);
  service=new ClockerPunchService(f.key,f.db.executor);
 });
-afterEach(async()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();resetCommerceAccessCache();if(f)await f.db.dispose();});
+afterEach(async()=>{rs.unstubAllGlobals();rs.unstubAllEnvs();resetCommerceAccessCache();if(f)await f.db.dispose();});
 async function command(action:PunchAction='CLOCK_IN'):Promise<PunchCommand>{
  const v=await service.read(proof),s=v.snapshot;
  return {...(action==='START_BREAK'?{breakType:{id:f.breakType!.id,version:f.breakType!.version}}:{}),commandId:randomUUID(),action,verificationId:v.verificationId,expected:{revision:s.revision,timeEntryId:s.entry?.id??null,timeEntryVersion:s.entry?.version??null,breakEntryId:s.break?.id??null,breakEntryVersion:s.break?.version??null}};
@@ -29,7 +29,7 @@ function call(body:object,headers:Record<string,string>={},enabled=true,location
 }
 it('is disabled by default without touching punch data',async()=>{
  const response=await call({operation:'execute',command:await command()}, {},false);
- expect(response.status).toBe(503);expect(await response.json()).toMatchObject({state:'disabled'});
+ expect(response.status).toBe(503);expect(await response.json()).toMatchObject({state:'disabled',code:'PUNCHES_DISABLED'});
  expect(await f.q('SELECT * FROM clocker_command_ledger')).toEqual([]);
 });
 it('returns real state and committed receipts without credential or employee identity fields',async()=>{
@@ -53,7 +53,8 @@ it('returns the same receipt for an identical repeated HTTP command',async()=>{
 });
 it.each(['origin','header','content-type','fetch-site'])('blocks unsafe %s requests before punch writes',async kind=>{
  const headers:Record<string,string>=kind==='origin'?{origin:'https://evil.invalid'}:kind==='header'?{'X-Nevora-Clocker':'0'}:kind==='content-type'?{'Content-Type':'text/plain'}:{'Sec-Fetch-Site':'cross-site'};
- expect((await call({operation:'execute',command:await command()},headers)).status).toBe(403);
+ const response=await call({operation:'execute',command:await command()},headers);
+ expect(response.status).toBe(403);expect(await response.json()).toMatchObject({code:'ORIGIN_REJECTED'});
  expect(await f.q('SELECT * FROM clocker_command_ledger')).toEqual([]);
 });
 it.each(['employeeId','locationId','deviceId','timestamp','pin'])('rejects forged %s command authority',async field=>{
@@ -67,7 +68,8 @@ it.each([{operation:'delete'}, {operation:'state',employeeId:'c34-b'}, {operatio
 it('requires both the enrolled device and current PIN identity',async()=>{
  const c=await command();jar.delete('nevora_clocker_identity');
  expect((await call({operation:'execute',command:c})).status).toBe(401);
- jar.clear();expect((await call({operation:'state'})).status).toBe(401);
+ jar.clear();const response=await call({operation:'state'});expect(response.status).toBe(401);
+ expect(await response.json()).toMatchObject({state:'device_required',code:'DEVICE_REQUIRED'});
  expect(await f.q('SELECT * FROM time_entries')).toEqual([]);
 });
 it('a wrong-location request cannot write against another tablet binding',async()=>{
@@ -134,10 +136,10 @@ it('receipt reconciliation binds the response to the fresh screen verification',
 
 // Jose's November12 policy: finish a recorded pre-expiry shift; no new clock-in.
 function trialAuthority(extra:Record<string,unknown>={}){
- vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');vi.stubEnv('NEVORA_WORKSPACE_MODE','single_company');
- vi.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://billing.example.test');vi.stubEnv('NEVORA_COMMERCE_INSTALLATION_ID','owned-trial');vi.stubEnv('NEVORA_COMMERCE_INSTANCE_SECRET','a'.repeat(43));
+ rs.stubEnv('NEVORA_COMMERCE_ENABLED','true');rs.stubEnv('NEVORA_WORKSPACE_MODE','single_company');
+ rs.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://billing.example.test');rs.stubEnv('NEVORA_COMMERCE_INSTALLATION_ID','owned-trial');rs.stubEnv('NEVORA_COMMERCE_INSTANCE_SECRET','a'.repeat(43));
  const value={state:'restricted',operational:false,reason:'trial_ended',trialEndsAt:new Date().toISOString(),validUntil:Date.now()+10000,...extra};
- vi.stubGlobal('fetch',vi.fn(async()=>Response.json(value)));resetCommerceAccessCache();return value;
+ rs.stubGlobal('fetch',rs.fn(async()=>Response.json(value)));resetCommerceAccessCache();return value;
 }
 async function trialCall(body:object){
  const denied=await commerceGate('/api/clocker/2/punch','POST');return denied??call(body);
@@ -179,7 +181,7 @@ it('trial grant cannot clock in after expiry even when its operational validUnti
  expect((await call({operation:'execute',command:next})).status).toBe(503);expect(await f.q('SELECT * FROM time_entries')).toEqual([]);
 });
 it('trial expiry authority outage retains recorded work without permitting an action',async()=>{
- await call({operation:'execute',command:await command()});const c=await command('CLOCK_OUT');trialAuthority();vi.stubGlobal('fetch',vi.fn(async()=>{throw Error('Owned commerce outage');}));resetCommerceAccessCache();
+ await call({operation:'execute',command:await command()});const c=await command('CLOCK_OUT');trialAuthority();rs.stubGlobal('fetch',rs.fn(async()=>{throw Error('Owned commerce outage');}));resetCommerceAccessCache();
  expect((await trialCall({operation:'execute',command:c})).status).toBe(503);expect((await call({operation:'execute',command:c})).status).toBe(503);
  expect(await f.q('SELECT clock_out_at FROM time_entries')).toEqual([{clock_out_at:null}]);
 });

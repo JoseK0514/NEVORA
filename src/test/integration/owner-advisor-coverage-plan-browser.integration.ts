@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { createRequire } from "node:module";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -72,11 +72,11 @@ it("compares real joint day plans with discoverable keyboard review and private 
         await page.getByRole("button", { name: "Sign in", exact: true }).click();
         await page.waitForURL(origin + "/app");
         await page.locator(".app-shell.nevora-portal").waitFor();await page.waitForFunction(() => document.querySelector(".portal-notification-bell")?.getAttribute("data-state") === "ready");
-        const advisorEntry=page.locator("main").getByRole("link",{name:"AI manager",exact:true});
+        await page.locator('a[href="/app/more"]:visible').first().click();await page.waitForURL(origin+"/app/more");const advisorEntry=page.locator("main").getByRole("link",{name:"Rondo AI",exact:true});
         await advisorEntry.evaluate((el:HTMLElement)=>el.scrollIntoView({block:"center",inline:"nearest"}));
         const entryTarget=await advisorEntry.evaluate((el:HTMLElement)=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,hit=document.elementFromPoint(x,y);return {width:innerWidth,height:innerHeight,rect:r.toJSON(),owned:hit===el||(hit!==null&&el.contains(hit))};});
         await writeFile(resolve(evidence,engine+"-entry-pointer.json"),JSON.stringify(entryTarget,null,2));
-        expect(entryTarget.owned,"Ordinary scrolling must expose the real AI manager link to pointer input").toBe(true);
+        expect(entryTarget.owned,"Ordinary scrolling must expose the real Rondo AI link to pointer input").toBe(true);
         await advisorEntry.click();
         await page.waitForURL(origin + "/app/ai-manager");
         const compare = page.getByRole("button", { name: "Compare day plans", exact: true });
@@ -126,8 +126,8 @@ it("compares real joint day plans with discoverable keyboard review and private 
         for (const width of [320, 390, 1440]) {
           await page.setViewportSize({ width, height: 844 });
           const layout = await page.evaluate(() => ({ overflow: document.documentElement.scrollWidth > innerWidth,
-            shortTargets: [...document.querySelectorAll<HTMLElement>(".oa-answer summary, #oa-coverage-date, .oa-section form button")].filter(el => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height < 44).map(el => ({ text: el.textContent, height: el.getBoundingClientRect().height })) }));
-          const audit = await page.evaluate("axe.run('.oa-content', {runOnly: {type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa']}})");
+            shortTargets: [...document.querySelectorAll<HTMLElement>(".oa-answer summary, #oa-coverage-date, .oa form button")].filter(el => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height < 44).map(el => ({ text: el.textContent, height: el.getBoundingClientRect().height })) }));
+          const audit = await page.evaluate("axe.run('.oa', {runOnly: {type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa']}})");
           await writeFile(resolve(evidence, `${engine}-${width}-audit.json`), JSON.stringify({ layout, audit }, null, 2));
           await page.screenshot({ path: resolve(evidence, `${engine}-${width}.png`), fullPage: true });
           expect(layout.overflow).toBe(false); expect(layout.shortTargets).toEqual([]); expect(audit.violations).toEqual([]);

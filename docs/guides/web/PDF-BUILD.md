@@ -13,7 +13,7 @@ evidence or local-reference bytes that differ from its recorded commit.
 From the repository root, using the existing pinned browser runtime:
 
 ```sh
-node scripts/manuals/build-manuals.mjs --date 2026-11-11
+node scripts/manuals/build-manuals.mjs --date 2026-11-17
 node scripts/manuals/check-manuals.mjs
 ```
 

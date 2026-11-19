@@ -115,7 +115,9 @@ test('published policy validates the three allowed heads and detects recreated o
   const actual=new Map(i.sources.filter(source=>!source.archiveRef).map(source=>[source.branch,source.sha]));
   const archives=new Map(i.sources.filter(source=>source.archiveRef).map(source=>[source.archiveRef,source.sha]));
   assert.deepEqual(compareSources(i,actual,()=>true,archives),[]);
-  for(const name of ['AI-owner','claude/employee-mobile-phase2-20261027','codex/release1-db-rehearsal-20261101']) {
+  const live=new Map(published.sources.filter(source=>!source.archiveRef).map(source=>[source.branch,source.sha]));
+  assert.deepEqual(compareSources(published,live,()=>true,archives),[]);
+  for(const name of ['AI-owner','claude/employee-mobile-phase2-20261027','codex/release1-db-rehearsal-20261101','codex/nevora-password-emails-20261117','nevora-30-day-phase']) {
     const retired=i.sources.find(source=>source.branch===name);
     assert.ok(retired?.archiveRef,`Missing recoverable archive for ${name}`);
     actual.set(name,retired.sha);

@@ -165,13 +165,13 @@ export function NativeDeviceSettings({ page = false }: { page?: boolean }) {
     }, []);
     const reviewing = review && review === snapshot.generation;
     useEffect(() => { if (reviewing || recover)
-        { const confirm = find('[data-native-confirm]'); confirm?.focus(); confirm?.scrollIntoView({ block: 'center' }); } }, [reviewing, recover]); // eslint-disable-line react-hooks/exhaustive-deps -- find reads the current DOM
+        { const confirm = find('[data-native-confirm]'); confirm?.focus(); confirm?.scrollIntoView({ block: 'center' }); } }, [reviewing, recover]); // eslint-disable-line hooks-preserved/exhaustive-deps -- find reads the current DOM
     useEffect(()=>{
         if(!actionPending.current||paused||['pending','loading'].includes(snapshot.state))return;
         actionPending.current=false;
         const heading=find('[data-native-status]');
         heading?.focus();heading?.scrollIntoView({block:'nearest'});
-    },[snapshot.state,paused]); // eslint-disable-line react-hooks/exhaustive-deps -- find reads the current DOM
+    },[snapshot.state,paused]); // eslint-disable-line hooks-preserved/exhaustive-deps -- find reads the current DOM
     const view = { snapshot, paused, review, recover,
         onEnable: () => { actionPending.current = true; void client.current?.enable(); },
         onRefresh: () => { setPaused(false); void client.current?.start(); },

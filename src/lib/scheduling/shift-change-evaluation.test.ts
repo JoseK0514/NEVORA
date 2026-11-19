@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { fictionalSnapshot, fictionalTerms, configured } from '../../test/fixtures/shift-changes';
 import { automaticAssignment } from '../../test/fixtures/automatic-week';
 import { evaluateShiftChange } from './shift-change-evaluation';

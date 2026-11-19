@@ -1,4 +1,4 @@
-import { it, expect } from "vitest";
+import { it, expect } from '@rstest/core';
 import { managerScopeSql, payrollObjectScopeSql } from "./scope";
 import type { SessionMutationProof } from "../../shift-changes/types";
 const proof: SessionMutationProof = { employee: { id: "M1", role: "MANAGER", firstName: "QA", lastName: "Manager", primaryLocationId: "L1" }, sessionTokenHash: "a".repeat(64) };

@@ -1,15 +1,16 @@
+import * as rstestImportedActual0 from "react" with { rstest: 'importActual' };
 // U11 (Nov 17, 2026): the Owner's deletion form when the server answers LAST_OWNER, beside the outcomes it already had.
 // The action's own behaviour (no request, no session ended on this refusal; the password-proven status check after a lost
 // reply; the same DEL-… request for a duplicate) is the server's and is covered by actions.test.ts and requests.server.test.ts.
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import type { DeletionFormState } from "@/app/app/account/delete/actions";
 
-const control = vi.hoisted(() => ({ state: { kind: "idle" } as unknown }));
-vi.mock("react", async original => ({ ...(await original<typeof import("react")>()), useActionState: () => [control.state, () => {}, false] }));
-vi.mock("@/app/app/account/delete/actions", () => ({ requestAccountDeletion: async () => ({ kind: "idle" }) }));
-vi.mock("@/app/login/actions", () => ({ logout: async () => {} }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push() {}, replace() {}, refresh() {} }), usePathname: () => "/app/account/delete", useSearchParams: () => new URLSearchParams() }));
+const control = rs.hoisted(() => ({ state: { kind: "idle" } as unknown }));
+rs.mock("react", () => ({ ...(rstestImportedActual0), useActionState: () => [control.state, () => {}, false] }));
+rs.mock("@/app/app/account/delete/actions", () => ({ requestAccountDeletion: async () => ({ kind: "idle" }) }));
+rs.mock("@/app/login/actions", () => ({ logout: async () => {} }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ push() {}, replace() {}, refresh() {} }), usePathname: () => "/app/account/delete", useSearchParams: () => new URLSearchParams() }));
 
 import { AccountDeletionForm } from "./account-deletion-form";
 import { ACCESS_COPY } from "./access-recovery/copy";

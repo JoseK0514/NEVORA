@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { readFile } from 'node:fs/promises';
 import { createDisposableExchangeDatabase } from './local-postgres';
 

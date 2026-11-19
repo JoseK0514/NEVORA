@@ -1,5 +1,5 @@
 // U01: one write whose answer may not arrive. The contract's own fixtures feed the classifiers.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import fixtures from "../../../docs/handoffs/2026-11-16-backend-phase2-finance-fixtures.json";
 import { IDLE, classifyExportAnswer, classifyPayrollAnswer, classifyReceiptLook, holdsCustody, sendGuard, writeReducer, type WriteState } from "./recovery";
 
@@ -74,8 +74,8 @@ describe("answers from the payroll routes", () => {
     expect(classifyPayrollAnswer(503, fixtures.imports.recovery.unknownResponse, original.key)).toEqual({ kind: "unknown" });
     expect(classifyPayrollAnswer(0, undefined, original.key)).toEqual({ kind: "unknown" });
     expect(classifyPayrollAnswer(500, { error: "ANYTHING" }, original.key)).toEqual({ kind: "unknown" });
-    expect(classifyPayrollAnswer(403, {}, original.key)).toEqual({ kind: "denied", signedOut: false });
-    expect(classifyPayrollAnswer(401, {}, original.key)).toEqual({ kind: "denied", signedOut: true });
+    expect(classifyPayrollAnswer(403, {}, original.key)).toEqual({ kind: "unknown" });
+    expect(classifyPayrollAnswer(401, {}, original.key)).toEqual({ kind: "unknown" });
   });
   it("reads a receipt look-up: found, not there yet, or not readable", () => {
     expect(classifyReceiptLook(200, fixtures.imports.recovery.receiptRead, original.key).kind).toBe("saved");

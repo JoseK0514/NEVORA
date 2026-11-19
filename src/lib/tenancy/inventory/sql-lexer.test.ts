@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { lexSql } from './sql-lexer';
 
 describe('lossless SQL lexical journal', () => {

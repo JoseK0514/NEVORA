@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
-vi.mock("next/link", () => ({ default: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => <a href={href} {...props}>{children}</a> }));
-vi.mock("./owner-b.css", () => ({}));
+import { describe, expect, it, rs } from '@rstest/core';
+rs.mock("next/link", () => ({ default: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => <a href={href} {...props}>{children}</a> }));
+rs.mock("./owner-b.css", () => ({}));
 import type { BillingSnapshot } from "@/lib/commerce/billing-snapshot";
 import type { CommerceStatus } from "@/lib/commerce/status";
 import { BillingNoticeView } from "./billing-notice-card";

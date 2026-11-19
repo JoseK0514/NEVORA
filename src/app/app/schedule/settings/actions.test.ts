@@ -1,16 +1,17 @@
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
 import { managementProof } from '../../../../test/fixtures/management';
-import { beforeEach, expect, it, vi } from "vitest";
-const mocks = vi.hoisted(() => ({
+import { beforeEach, expect, it, rs } from '@rstest/core';
+const mocks = rs.hoisted(() => ({
   role: "MANAGER",
   unconfigured: false,
   recoveryRole: "MANAGER",
   signedOut: false,
-  deleteWindow: vi.fn(),
-  saveSettings: vi.fn(),
-  createWindow: vi.fn(),
-  replaceQuotas: vi.fn(),
+  deleteWindow: rs.fn(),
+  saveSettings: rs.fn(),
+  createWindow: rs.fn(),
+  replaceQuotas: rs.fn(),
 }));
-vi.mock("@/lib/auth/permissions", () => ({
+rs.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
   requireRoles: async (roles: string[]) => {
     if (mocks.signedOut) throw new Error("redirect:/login");
@@ -18,17 +19,14 @@ vi.mock("@/lib/auth/permissions", () => ({
     return {id:"trusted-manager",role:mocks.recoveryRole};
   },
 }));
-vi.mock(
-  "@/lib/scheduling/periods",
-  () => import("../../../../lib/scheduling/periods"),
-);
-vi.mock("next/navigation", () => ({
+
+rs.mock("next/navigation", () => ({
   redirect: (path: string) => {
     throw new Error(`redirect:${path}`);
   },
 }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
-vi.mock("@/lib/data/schedule-health", () => ({
+rs.mock("next/cache", () => ({ revalidatePath: rs.fn() }));
+rs.mock("@/lib/data/schedule-health", () => ({
   listLocationStaffingSettings: async () => [
     {
       locationId: "loc-1",
@@ -55,7 +53,7 @@ function form(target = "24", maximum = "40") {
   return data;
 }
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   mocks.role = "MANAGER";
   mocks.unconfigured = false;
   mocks.recoveryRole = "MANAGER";
@@ -226,10 +224,10 @@ it("configured checkbox explicitly supports false through its form-presence mark
   ], proof: managementProof("trusted-manager", mocks.role as "OWNER" | "MANAGER") }));
 });
 
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>managementProof('trusted-manager', mocks.role as 'OWNER'|'MANAGER'|'EMPLOYEE'|'LEAD')}));
-vi.mock('@/lib/shift-changes/policy-form',()=>import('../../../../lib/shift-changes/policy-form'));
-vi.mock('@/lib/data/shift-change-policy',()=>({saveShiftChangePolicy:vi.fn()}));
-vi.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>managementProof('trusted-manager', mocks.role as 'OWNER'|'MANAGER'|'EMPLOYEE'|'LEAD')}));
+
+rs.mock('@/lib/data/shift-change-policy',()=>({saveShiftChangePolicy:rs.fn()}));
+rs.mock('@/lib/data/notification-transactions',()=>({neonNotificationExecutor:()=>({})}));
 
 function deleteForm() { const data = new FormData(); data.set('windowId','window'); return data; }
 const managementDenied = () => Object.assign(new Error('invalid input syntax for type integer: "management_authorization"'), {code:'22P02'});
@@ -250,4 +248,4 @@ it.each([
 
 // Unit-only admission I/O; real Company/current-scope behavior and rollback are
 // exercised in company-access-configuration.integration.ts.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'w',name:'Fictional',active:true,timeZone:'America/New_York',createdAt:'',updatedAt:'version'}})}));
+rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rstestOriginal0,assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'w',name:'Fictional',active:true,timeZone:'America/New_York',createdAt:'',updatedAt:'version'}})}));

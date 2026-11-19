@@ -1,5 +1,5 @@
 /** Fictional wire transcripts against real owned PostgreSQL/service; no model call. */
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from "node:crypto";
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { ownerDecision } from "@/test/fixtures/owner-decision";
@@ -9,7 +9,7 @@ import type { Transport } from "./loop.server";
 
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
 beforeEach(async () => { f = await companyAccessFixture(); });
-afterEach(async () => { try { await f?.db.dispose(); } finally { vi.unstubAllEnvs(); } });
+afterEach(async () => { try { await f?.db.dispose(); } finally { rs.unstubAllEnvs(); } });
 const base = "https://br-fictional-intelligence-api.ai.us-east-2.aws.neon.tech";
 const env = { NEVORA_OWNER_ADVISOR_ENABLED: "true", NEVORA_OWNER_ADVISOR_DATA_APPROVED: "true", NEVORA_OWNER_ADVISOR_PROVIDER: "neon", NEVORA_OWNER_ADVISOR_API_STYLE: "chat_completions", NEVORA_OWNER_ADVISOR_MODEL: "explicit-fictional-catalog-model", NEVORA_OWNER_ADVISOR_DAILY_LIMIT: "1", NEON_AI_GATEWAY_BASE_URL: base, NEON_AI_GATEWAY_TOKEN: "fictional-no-credential" };
 const signal = () => new AbortController().signal;
@@ -41,7 +41,7 @@ it("investigates through Neon chat format, retains private goals, replays exactl
   await advisorService(f.owner, f.db.executor, env, signal(), { op: "notebook", requestId: randomUUID(), expectedRevision: 0, change: { kind: "save_goal", goalId, text: "Preserve coverage without weakening another location" } });
   await advisorService(f.owner, f.db.executor, env, signal(), { op: "notebook", requestId: randomUUID(), expectedRevision: 1, change: { kind: "save_task", taskId, objective: "Review the published shift", notes: "Compare current publication rather than trust old chat", state: "open", focus: { kind: "general" } } });
   const before = await businessState(), bodies: Record<string, unknown>[] = [];
-  const transport = vi.fn<Transport>(async (url, init) => {
+  const transport = rs.fn<Transport>(async (url, init) => {
     expect(url).toBe(base + "/v1/chat/completions");
     bodies.push(JSON.parse(String(init.body)));
     if (bodies.length === 1) return chat({ id: "published", name: "published_staffing", args: { date: "2026-10-22" } });
@@ -108,7 +108,7 @@ it("rejects notebook changes during decision inference under the original settle
 });
 
 it("keeps provider/data approval and Owner admission required before the new protocol can spend", async () => {
-  const transport = vi.fn<Transport>(async () => chat({ id: "decision", name: "review_decision", args: ownerDecision() }));
+  const transport = rs.fn<Transport>(async () => chat({ id: "decision", name: "review_decision", args: ownerDecision() }));
   await expect(advisorService(f.manager, f.db.executor, env, signal(), command(), transport)).rejects.toThrow();
   await expect(advisorService(f.owner, f.db.executor, { ...env, NEVORA_OWNER_ADVISOR_DATA_APPROVED: "false" }, signal(), command(), transport)).rejects.toThrow("unavailable");
   await expect(advisorService(f.owner, f.db.executor, { ...env, NEVORA_OWNER_ADVISOR_API_STYLE: "automatic" }, signal(), command(), transport)).rejects.toThrow("unavailable");
@@ -127,7 +127,7 @@ it("preserves original cancellation/failure settlement for a stalled chat transp
 });
 
 it("resumes a period task in English, rereads changed records in Spanish and rejects the older decision evidence", async () => {
-  vi.stubEnv("NEVORA_PAYROLL_ENABLED", "false");
+  rs.stubEnv("NEVORA_PAYROLL_ENABLED", "false");
   await f.q("INSERT INTO clocker_devices(id,location_id,name) VALUES('intelligence-device','loc-1','Fictional fixture device')");
   const taskId = randomUUID();
   await advisorService(f.owner, f.db.executor, env, signal(), { op: "notebook", requestId: randomUUID(), expectedRevision: 0,

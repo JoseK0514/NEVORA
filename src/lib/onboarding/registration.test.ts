@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {digestOnboardingProof,sealOnboardingValue,openOnboardingValue,newOnboardingToken} from './crypto.server';
 import {verificationDelivery} from './verification-delivery.server';
 import {fakeInvitationSmtp} from '@/test/integration/company-access-smtp.test-support';

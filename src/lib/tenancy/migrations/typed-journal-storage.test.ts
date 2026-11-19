@@ -1,4 +1,4 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect} from '@rstest/core';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {getOwnershipRegistry,canonicalOwnershipJson as canonical} from './ownership';
@@ -172,7 +172,7 @@ describe('genuine typed journal descriptor prerequisite, pure only',()=>{
 });
 
 import {Client} from 'pg';
-import {beforeAll,afterAll} from 'vitest';
+import {beforeAll,afterAll} from '@rstest/core';
 import {realpathSync,lstatSync,statSync,appendFileSync,writeFileSync} from 'node:fs';
 import {join,isAbsolute,sep} from 'node:path';
 import {createHash} from 'node:crypto';

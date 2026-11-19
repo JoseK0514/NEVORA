@@ -71,6 +71,14 @@ export function writeReducer<R>(state: WriteState<R>, event: WriteEvent<R>): Wri
 /** True while leaving the page would lose the one safe way to learn the result. */
 export const holdsCustody = <R,>(state: WriteState<R>) => state.phase === "sending" || state.phase === "checking" || state.phase === "unknown" || state.phase === "blocked";
 
+/** Retiring display authority keeps only unresolved original command custody.
+ * Neither a saved CSV/receipt nor editable private work may cross this boundary. */
+export function retireWrite<R>(state:WriteState<R>):WriteState<R>{
+ if(!holdsCustody(state)||!('custody' in state))return IDLE;
+ if(state.phase==='blocked')return {phase:'blocked',custody:state.custody,reason:state.reason};
+ return {phase:'unknown',custody:state.custody,seen:'nothing'};
+}
+
 const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
 
 export type PayrollReceiptLike = { operationId: string; action: string; runId?: string; revision?: number };
@@ -83,7 +91,8 @@ export type PayrollAnswer =
 
 /** POST /api/payroll/runs. `status` 0 means no answer arrived. Anything not named by the contract stays unknown. */
 export function classifyPayrollAnswer(status: number, body: unknown, key: string): PayrollAnswer {
-  if (status === 401 || status === 403) return { kind: "denied", signedOut: status === 401 };
+  // A commit can precede a denied reconciliation read; retain the original write identity.
+  if (status === 401 || status === 403) return { kind: "unknown" };
   if (status >= 200 && status < 300) {
     const receipt = record(body) && record(body.receipt) ? body.receipt : null;
     return receipt && receipt.operationId === key && typeof receipt.action === "string" ? { kind: "saved", receipt: receipt as PayrollReceiptLike } : { kind: "unknown" };

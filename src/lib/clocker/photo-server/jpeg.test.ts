@@ -1,4 +1,4 @@
-import { beforeAll, expect, it } from 'vitest';
+import { beforeAll, expect, it } from '@rstest/core';
 import sharp from 'sharp';
 import { validatePunchJpeg } from './jpeg';
 import { decodePunchJpeg } from './decode';

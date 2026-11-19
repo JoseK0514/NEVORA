@@ -1,4 +1,4 @@
-import { describe,expect,it } from 'vitest';
+import { describe,expect,it } from '@rstest/core';
 import { destinationForSource, safeNotificationOpenPath, safeReturnTo } from './destinations';
 import type { RecipientAccess,SourceSnapshot } from './types';
 const recipient:RecipientAccess={employeeId:'a',role:'EMPLOYEE',active:true,allowedLocationIds:['2']};

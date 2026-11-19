@@ -1,25 +1,25 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 
-const f = vi.hoisted(() => ({ statuses: [] as { locationId: string; status: string }[], warnings: {} as Record<string, boolean>, denied: false, pending: null as unknown }));
-vi.mock("next/link", () => ({ default: ({ children, prefetch: _p, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", props, children) }));
-vi.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => ({ employee: { id: "QAOWNER", role: "OWNER" } }) }));
-vi.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["OWNER", "MANAGER"], requireRoles: async () => ({ id: "QAOWNER", role: "OWNER" }) }));
-vi.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ id: "w", timeZone: "America/Puerto_Rico" }) }));
-vi.mock("@/lib/business-time", () => ({ businessDate: () => "2026-10-30" }));
-vi.mock("@/lib/company-access/operational-scope.server", () => ({ withOperationalCompany: async (_proof: unknown, load: () => Promise<unknown>) => f.denied ? { state: "unavailable", reason: "access_denied" } : { state: "ready", data: await load(), authority: "fixture", observedAt: "2026-10-30T12:00:00Z", validForMs: 15000 } }));
-vi.mock("@/components/company-access/scoped-read-frame", () => ({ ScopedReadFrame: ({ children }: { children: React.ReactNode }) => children }));
-vi.mock("@/components/company-access/operational-unavailable", () => ({ OperationalUnavailable: ({ title }: { title: string }) => createElement("p", null, title) }));
-vi.mock("@/components/schedule-generation-controls", () => ({ ScheduleGenerationControls: () => createElement("div", null, "Build week") }));
-vi.mock("@/components/schedule-copy-form", () => ({ ScheduleCopyForm: ({ label, command }: { label: string; command: { kind: string; weekStart: string } }) => createElement("button", { "data-kind": command.kind, "data-week": command.weekStart }, label) }));
-vi.mock("@/lib/data/employees", () => ({ listLocations: async () => [{ id: "loc-1", shortName: "Condado" }, { id: "loc-2", shortName: "Dorado" }, { id: "loc-3", shortName: "Hato Rey" }] }));
-vi.mock("@/lib/data/schedules", () => ({ listScheduleStatuses: async () => f.statuses, listWeekShifts: async () => [{ locationId: "loc-1", isCalloutApproved: false }, { locationId: "loc-1", isCalloutApproved: false }, { locationId: "loc-2", isCalloutApproved: false }] }));
-vi.mock("@/lib/data/schedule-generation-review", () => ({ getScheduleGenerationReview: async () => ({ editable: true, attempted: 0, needsSetup: 0, coverage: null, exclusions: [] }) }));
-vi.mock("@/lib/data/schedule-publication-review", () => ({ getSchedulePublishReadiness: async (_week: string, id: string) => ({ hasWarnings: !!f.warnings[id], coverageGaps: f.warnings[id] ? 2 : 0, missingLeadBlocks: 0, underTargetCount: 0, overTargetCount: 0, unconfiguredTargetCount: 0 }) }));
-vi.mock("./actions", () => ({ publishDraftsAction: async () => {} }));
-vi.mock("../actions", () => ({ publishScheduleChangesAction: async () => {} }));
-vi.mock("@/lib/company-access/operational-read.server", () => ({ readSchedulePendingChanges: async () => f.pending ? { state: "ready", data: f.pending } : { state: "unavailable", reason: "read_failed" } }));
+const f = rs.hoisted(() => ({ statuses: [] as { locationId: string; status: string }[], warnings: {} as Record<string, boolean>, denied: false, pending: null as unknown }));
+rs.mock("next/link", () => ({ default: ({ children, prefetch: _p, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", props, children) }));
+rs.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => ({ employee: { id: "QAOWNER", role: "OWNER" } }) }));
+rs.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["OWNER", "MANAGER"], requireRoles: async () => ({ id: "QAOWNER", role: "OWNER" }) }));
+rs.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ id: "w", timeZone: "America/Puerto_Rico" }) }));
+rs.mock("@/lib/business-time", () => ({ businessDate: () => "2026-10-30" }));
+rs.mock("@/lib/company-access/operational-scope.server", () => ({ withOperationalCompany: async (_proof: unknown, load: () => Promise<unknown>) => f.denied ? { state: "unavailable", reason: "access_denied" } : { state: "ready", data: await load(), authority: "fixture", observedAt: "2026-10-30T12:00:00Z", validForMs: 15000 } }));
+rs.mock("@/components/company-access/scoped-read-frame", () => ({ ScopedReadFrame: ({ children }: { children: React.ReactNode }) => children }));
+rs.mock("@/components/company-access/operational-unavailable", () => ({ OperationalUnavailable: ({ title }: { title: string }) => createElement("p", null, title) }));
+rs.mock("@/components/schedule-generation-controls", () => ({ ScheduleGenerationControls: () => createElement("div", null, "Build week") }));
+rs.mock("@/components/schedule-copy-form", () => ({ ScheduleCopyForm: ({ label, command }: { label: string; command: { kind: string; weekStart: string } }) => createElement("button", { "data-kind": command.kind, "data-week": command.weekStart }, label) }));
+rs.mock("@/lib/data/employees", () => ({ listLocations: async () => [{ id: "loc-1", shortName: "Condado" }, { id: "loc-2", shortName: "Dorado" }, { id: "loc-3", shortName: "Hato Rey" }] }));
+rs.mock("@/lib/data/schedules", () => ({ listScheduleStatuses: async () => f.statuses, listWeekShifts: async () => [{ locationId: "loc-1", isCalloutApproved: false }, { locationId: "loc-1", isCalloutApproved: false }, { locationId: "loc-2", isCalloutApproved: false }] }));
+rs.mock("@/lib/data/schedule-generation-review", () => ({ getScheduleGenerationReview: async () => ({ editable: true, attempted: 0, needsSetup: 0, coverage: null, exclusions: [] }) }));
+rs.mock("@/lib/data/schedule-publication-review", () => ({ getSchedulePublishReadiness: async (_week: string, id: string) => ({ hasWarnings: !!f.warnings[id], coverageGaps: f.warnings[id] ? 2 : 0, missingLeadBlocks: 0, underTargetCount: 0, overTargetCount: 0, unconfiguredTargetCount: 0 }) }));
+rs.mock("./actions", () => ({ publishDraftsAction: async () => {} }));
+rs.mock("../actions", () => ({ publishScheduleChangesAction: async () => {} }));
+rs.mock("@/lib/company-access/operational-read.server", () => ({ readSchedulePendingChanges: async () => f.pending ? { state: "ready", data: f.pending } : { state: "unavailable", reason: "read_failed" } }));
 const value = (startTime: string, endTime: string) => ({ employeeId: "e1", employeeName: "Dana Kim", locationId: "loc-1", date: "2026-11-03", startTime, endTime, positionId: null, positionName: null, isDesignatedLead: false, notes: null });
 const pendingData = (canPublish = true) => ({ weekStart: "2026-11-02", hasPendingChanges: true, pendingCount: 2, neverCaptured: false, latestRevision: null, canPublish, truncated: false,
   locations: [{ locationId: "loc-1", locationName: "Condado", pendingCount: 2 }],

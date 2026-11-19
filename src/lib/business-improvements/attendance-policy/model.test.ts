@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 const get = async () => {
   const m = await import("./model").catch(() => null);
   expect(m?.evaluateConfiguredDetectors).toBeTypeOf("function");

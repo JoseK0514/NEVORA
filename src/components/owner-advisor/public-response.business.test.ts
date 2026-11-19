@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { parseAnswer } from "./public-response";
 import { calculateFinance } from "@/lib/owner-advisor/business/finance";
 import { calculateSales } from "@/lib/owner-advisor/business/sales";

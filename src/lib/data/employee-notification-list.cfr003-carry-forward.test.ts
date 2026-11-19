@@ -1,11 +1,11 @@
-import {expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import {readEmployeeNotificationList,notificationReadManifest} from './employee-notification-list.server';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
 const proof={employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)} as SessionMutationProof;
 it('requires explicit environment independently of push and rejects forged/management proof before reads',async()=>{
- const db={query:vi.fn(),transaction:vi.fn()} as unknown as SqlExecutor;
+ const db={query:rs.fn(),transaction:rs.fn()} as unknown as SqlExecutor;
  expect(await readEmployeeNotificationList(proof,undefined,db)).toEqual({state:'unavailable',reason:'read_failed'});
  expect(await readEmployeeNotificationList({...proof,sessionTokenHash:'forged'},'test',db)).toEqual({state:'unavailable',reason:'access_denied'});
  expect(await readEmployeeNotificationList({...proof,employee:{...proof.employee,role:'OWNER'}},'test',db)).toEqual({state:'unavailable',reason:'access_denied'});
@@ -19,8 +19,8 @@ it('closed manifest rejects unknown/mutation/multi-statement/changed parameter q
  expect(()=>replay.identify({text:'SELECT id FROM locations WHERE id=ANY($1::text[]) AND active=true',values:[undefined]})).toThrow();
 });
 it('applies owned SQL/abort budgets before the initial workspace read',async()=>{
- const query=vi.fn(async()=>{throw Error('Unbounded query must not run');});
- const transaction=vi.fn(async()=>[]);
+ const query=rs.fn(async()=>{throw Error('Unbounded query must not run');});
+ const transaction=rs.fn(async()=>[]);
  await readEmployeeNotificationList(proof,'test',{query,transaction} as SqlExecutor);
  expect(query).not.toHaveBeenCalled();
  expect(transaction).toHaveBeenCalledWith(expect.arrayContaining([expect.objectContaining({text:"SET LOCAL statement_timeout='2500ms'"})]),expect.any(AbortSignal));

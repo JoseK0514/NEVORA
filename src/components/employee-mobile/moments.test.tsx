@@ -1,11 +1,11 @@
 // Phase 7 (moments): the Employee's results follow the server's reply. "Sent" is not "approved"; a closed request, a
 // refusal and an unknown result never borrow the success mark.
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, scroll: _scroll, ...rest }: { href: string; children: React.ReactNode; prefetch?: boolean; scroll?: boolean }) => <a href={href} {...rest}>{children}</a> }));
-vi.mock("next/navigation", () => ({ usePathname: () => "/app/exchange", useRouter: () => ({ refresh() {}, push() {}, replace() {} }), useSearchParams: () => new URLSearchParams() }));
-vi.mock("@/app/app/exchange/actions", () => ({ shiftChangeAction: async () => ({ status: "unavailable" }), reconcileShiftChangeAction: async () => null }));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, scroll: _scroll, ...rest }: { href: string; children: React.ReactNode; prefetch?: boolean; scroll?: boolean }) => <a href={href} {...rest}>{children}</a> }));
+rs.mock("next/navigation", () => ({ usePathname: () => "/app/exchange", useRouter: () => ({ refresh() {}, push() {}, replace() {} }), useSearchParams: () => new URLSearchParams() }));
+rs.mock("@/app/app/exchange/actions", () => ({ shiftChangeAction: async () => ({ status: "unavailable" }), reconcileShiftChangeAction: async () => null }));
 
 import { Pickup } from "./requests";
 import { CreationView } from "./creation-view";

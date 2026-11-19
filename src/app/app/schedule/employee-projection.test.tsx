@@ -1,4 +1,4 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { ScheduleShiftForm, type ScheduleShiftFormProps } from '@/components/schedule-shift-form';
 import { findElementProps } from '@/test/react-props.test-support';
 import type { Employee } from '@/lib/domain';
@@ -6,7 +6,7 @@ import {ScopedReadFrame,type ScopedObservation} from '@/components/company-acces
 import Edit from './edit/page';
 import Add from './new/page';
 
-const fixture = vi.hoisted(() => ({ selected: 'ACTIVE', denied: false }));
+const fixture = rs.hoisted(() => ({ selected: 'ACTIVE', denied: false }));
 const employees: Employee[] = [
   { id: 'ACTIVE', firstName: 'Active', lastName: 'Person', role: 'MANAGER', active: true,
     positionIds: ['P1'], phone: '555-private-active', email: 'active@private.invalid', primaryLocationId: 'L1', eligibleLocationIds: ['L1','L2'] },
@@ -15,20 +15,20 @@ const employees: Employee[] = [
   { id: 'UNRELATED', firstName: 'Unrelated', lastName: 'Inactive', role: 'EMPLOYEE', active: false,
     positionIds: [], phone: '555-private-unrelated', email: 'unrelated@private.invalid', primaryLocationId: 'L1', eligibleLocationIds: ['L1'] },
 ];
-vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER','MANAGER'], requireRoles: async () => ({ id: 'M', role: 'MANAGER' }) }));
-vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => ({ employee: { id: 'M', role: 'MANAGER' }, sessionTokenHash: 'a'.repeat(64) }) }));
-vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ id: 'W', timeZone: 'America/Puerto_Rico' }) }));
-vi.mock('@/lib/company-access/operational-scope.server', () => ({
+rs.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER','MANAGER'], requireRoles: async () => ({ id: 'M', role: 'MANAGER' }) }));
+rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => ({ employee: { id: 'M', role: 'MANAGER' }, sessionTokenHash: 'a'.repeat(64) }) }));
+rs.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ id: 'W', timeZone: 'America/Puerto_Rico' }) }));
+rs.mock('@/lib/company-access/operational-scope.server', () => ({
   readOperationalAuthority: async () => ({ state: 'ready', scope: { mode: 'COMPANY' } }),
   withOperationalCompany: async (_proof: unknown, load: () => Promise<unknown>) => fixture.denied
     ? { state: 'unavailable', reason: 'access_denied' }
     : { state: 'ready', data: await load(), authority: 'authority', observedAt: '2026-11-10T12:00:00Z', validForMs: 15000 },
 }));
-vi.mock('@/lib/data/employees', () => ({ listEmployees: async () => employees, listLocations: async () => [{ id: 'L1', shortName: 'Main', active: true }] }));
-vi.mock('@/lib/data/positions', () => ({ listPositions: async () => [{ id: 'P1', name: 'Support', active: true }] }));
-vi.mock('@/lib/data/schedules', () => ({ getShiftForManagement: async () => ({ id: 'SHIFT', employeeId: fixture.selected, employeeName: 'Retained person', locationId: 'L1', weekStart: '2026-11-09', date: '2026-11-10', startTime: '08:00', endTime: '16:00' }) }));
-vi.mock('@/app/app/schedule/actions', () => ({ createShiftAction: vi.fn(), updateShiftAction: vi.fn(), deleteShiftAction: vi.fn() }));
-vi.mock('@/lib/company-access/operational-read.server', () => ({ readOperationalShiftEditor: async () => { throw Error('Unexpected scoped reader'); }, readSchedulePendingChanges: async () => null }));
+rs.mock('@/lib/data/employees', () => ({ listEmployees: async () => employees, listLocations: async () => [{ id: 'L1', shortName: 'Main', active: true }] }));
+rs.mock('@/lib/data/positions', () => ({ listPositions: async () => [{ id: 'P1', name: 'Support', active: true }] }));
+rs.mock('@/lib/data/schedules', () => ({ getShiftForManagement: async () => ({ id: 'SHIFT', employeeId: fixture.selected, employeeName: 'Retained person', locationId: 'L1', weekStart: '2026-11-09', date: '2026-11-10', startTime: '08:00', endTime: '16:00' }) }));
+rs.mock('@/app/app/schedule/actions', () => ({ createShiftAction: rs.fn(), updateShiftAction: rs.fn(), deleteShiftAction: rs.fn() }));
+rs.mock('@/lib/company-access/operational-read.server', () => ({ readOperationalShiftEditor: async () => { throw Error('Unexpected scoped reader'); }, readSchedulePendingChanges: async () => null }));
 beforeEach(() => { fixture.selected = 'ACTIVE'; fixture.denied = false; });
 
 const active = { id: 'ACTIVE', firstName: 'Active', lastName: 'Person', role: 'MANAGER', active: true, positionIds: ['P1'] };

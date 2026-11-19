@@ -1,3 +1,6 @@
+import { randomUUID } from 'node:crypto';
+import { applyWorkforceCommand } from '../../lib/workforce/settings.server';
+import type { WorkforcePermission } from '../../lib/workforce/permissions';
 import {readFile} from 'node:fs/promises';
 import {createDisposableFoundationDatabase,createDisposableExchangeDatabase} from './local-postgres';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
@@ -24,4 +27,17 @@ export async function companyAccessFixture(options:{database?:'foundation'|'exch
   const proof=(id:'owner'|'manager'):SessionMutationProof=>({employee:{id,firstName:id,lastName:'QA',role:id==='owner'?'OWNER':'MANAGER',primaryLocationId:'loc-1'},sessionTokenHash:(id==='owner'?'a':'b').repeat(64)});
   return {db,q,sqlFailures,owner:proof('owner'),manager:proof('manager')};
  }catch(e){await db.dispose();throw e;}
+}
+
+export async function grantFixtureWorkforcePermission(
+ f: Awaited<ReturnType<typeof companyAccessFixture>>,
+ permission: WorkforcePermission,
+ ...locationIds: string[]
+) {
+ for (const locationId of locationIds) {
+  const result = await applyWorkforceCommand(f.owner, {
+   kind:'PERMISSION',operationId:randomUUID(),employeeId:f.manager.employee.id,locationId,permission,granted:true,expectedRevision:0,
+  },f.db.executor);
+  if (result.state !== 'saved') throw Error('Unable to grant fixture workforce permission');
+ }
 }

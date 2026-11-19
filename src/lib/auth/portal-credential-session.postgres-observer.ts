@@ -2,7 +2,7 @@
 // Observe actual PG CommandComplete/ReadyForQuery; never replace SQL rows or scrypt.
 import { createRequire } from 'node:module';
 import { Client } from 'pg';
-import { expect } from 'vitest';
+import { expect } from '@rstest/core';
 import type { PortalCredentialNativeCommand, PortalCredentialNativeFault } from './portal-credential-session.postgres-cases';
 type QueryState={text:string;_result:{command:string|null};handleError:(error:Error,connection:object)=>void};
 type QueryPrototype={handleReadyForQuery:(this:QueryState,connection:object)=>void;handleError:(this:QueryState,error:Error,connection:object)=>void};

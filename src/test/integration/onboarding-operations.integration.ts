@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {randomUUID,randomBytes,createHash} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
 import {Client} from 'pg';

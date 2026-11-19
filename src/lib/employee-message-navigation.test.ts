@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {safeMessageDestination} from './employee-message-navigation';
 it('admits only canonical local notification destinations including exact request fragments',()=>{
  expect(safeMessageDestination('/app/updates/11111111-1111-4111-8111-111111111111')).toBe(true);

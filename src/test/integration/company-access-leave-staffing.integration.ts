@@ -1,7 +1,7 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
-vi.mock('server-only',()=>({}));
-import {companyAccessFixture} from './company-access-fixture';
+rs.mock('server-only',()=>({}));
+import {companyAccessFixture,grantFixtureWorkforcePermission} from './company-access-fixture';
 import {createTimeOffRequest,reviewTimeOffRequest} from '../../lib/data/requests';
 import {publishScheduleChanges} from '../../lib/data/publication-revisions';
 import {readLeaveStaffing} from '../../lib/time-off-staffing/service.server';
@@ -12,6 +12,7 @@ let f:Awaited<ReturnType<typeof companyAccessFixture>>,employee:SessionMutationP
 const selector={weekStart:'2030-10-07'};
 beforeEach(async()=>{
  f=await companyAccessFixture();requestId=randomUUID();
+ await grantFixtureWorkforcePermission(f,'APPROVE_LEAVE','loc-1','loc-2');
  employee={employee:{...f.manager.employee,id:'target',role:'EMPLOYEE'},sessionTokenHash:'d'.repeat(64)};
  await f.q(`INSERT INTO employee_location_eligibility VALUES('target','loc-1'),('target','loc-2');
  INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'target',clock_timestamp()+interval '1 hour');

@@ -1,10 +1,10 @@
 // Phase 7 (moments): payroll results use the shared done state with no flourish, in the hook's existing words, and a
 // queued action never borrows the success mark.
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a> }));
-vi.mock("@/components/toaster", () => ({ toast: () => {} }));
+rs.mock("next/link", () => ({ default: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a> }));
+rs.mock("@/components/toaster", () => ({ toast: () => {} }));
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 

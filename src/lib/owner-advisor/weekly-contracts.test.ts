@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { parseWeeklyCommand, parseWeeklyScope, parseWeeklyToolArgs } from './weekly-contracts';
 
 const requestId = 'c74f4629-9643-4a81-9247-8fb757c7c38f';

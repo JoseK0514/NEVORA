@@ -1,7 +1,7 @@
-import {beforeAll,afterAll,beforeEach,afterEach,it,expect,vi} from 'vitest';
+import {beforeAll,afterAll,beforeEach,afterEach,it,expect,rs} from '@rstest/core';
 import {createHash,randomUUID} from 'node:crypto';
-const cookies=vi.hoisted(()=>({values:new Map<string,{name:string;value:string}>(),get(name:string){return this.values.get(name);},getAll(name?:string){return [...this.values.values()].filter(v=>!name||v.name===name);},set(name:string,value:string){this.values.set(name,{name,value});},delete(name:string){this.values.delete(name);}}));
-vi.mock('next/headers',()=>({cookies:async()=>cookies,headers:async()=>new Headers()}));
+const cookies=rs.hoisted(()=>({values:new Map<string,{name:string;value:string}>(),get(name:string){return this.values.get(name);},getAll(name?:string){return [...this.values.values()].filter(v=>!name||v.name===name);},set(name:string,value:string){this.values.set(name,{name,value});},delete(name:string){this.values.delete(name);}}));
+rs.mock('next/headers',()=>({cookies:async()=>cookies,headers:async()=>new Headers()}));
 import {ownedWorkspaceFixture} from './onboarding-workspace-fixture';
 import {withWorkspaceBinding} from '@/lib/workspace-routing/context.server';
 import {getWorkspaceDb} from '@/lib/workspace-routing/transport.server';
@@ -35,10 +35,10 @@ beforeAll(async()=>{
 });
 afterAll(async()=>{await f?.close();});
 beforeEach(()=>{
- for(const [key,value] of Object.entries({NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_PORTAL_BASE_DOMAIN:f.config.portalBaseDomain,NEVORA_CONTROL_DATABASE_URL:f.control.connectionUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:f.config.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:f.config.tokenKey,NEVORA_ONBOARDING_ENABLED:'false'}))vi.stubEnv(key,value);
+ for(const [key,value] of Object.entries({NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_PORTAL_BASE_DOMAIN:f.config.portalBaseDomain,NEVORA_CONTROL_DATABASE_URL:f.control.connectionUrl,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:f.config.encryptionKey,NEVORA_WORKSPACE_TOKEN_SECRET:f.config.tokenKey,NEVORA_ONBOARDING_ENABLED:'false'}))rs.stubEnv(key,value);
  cookies.values.clear();
 });
-afterEach(()=>vi.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 function request(origin:string,path:string,marker:string,body:unknown,extra:Record<string,string>={}){return new Request(origin+path,{method:'POST',headers:{host:new URL(origin).host,origin,'content-type':'application/json',[marker]:'1',...extra},body:JSON.stringify(body)});}
 it('reads the same employee ID from its own database and rejects copied session cookies even with identical stored inner hashes',async()=>{
  const [a,b]=f.companies;
@@ -80,7 +80,7 @@ it('rejects a copied Clocker device cookie at the real PIN endpoint',async()=>{
  const result=await withWorkspaceBinding(b.binding,()=>pin(request(b.origin,'/api/clocker/main/pin','x-nevora-clocker',{action:'status'}),{params:Promise.resolve({location:'main'})}));expect(result.status).toBe(401);expect(await result.json()).toMatchObject({state:'device_required'});
 });
 it('rejects a copied passkey flow cookie at the real verification endpoint',async()=>{
- const [a,b]=f.companies;vi.stubEnv('NEXT_PUBLIC_NEVORA_PASSKEYS','on');cookies.set('nevora_pk_login',sealWorkspaceToken(a.binding,'PASSKEY_LOGIN',inner,Date.now()+60000));
+ const [a,b]=f.companies;rs.stubEnv('NEXT_PUBLIC_NEVORA_PASSKEYS','on');cookies.set('nevora_pk_login',sealWorkspaceToken(a.binding,'PASSKEY_LOGIN',inner,Date.now()+60000));
  const result=await withWorkspaceBinding(b.binding,()=>passkey(request(b.origin,'/api/auth/passkey/login/verify','x-nevora-passkey',{response:{}})));expect(result.status).toBe(404);
 });
 it('does not accept another company session or a native marker as native sign-in authority',async()=>{

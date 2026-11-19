@@ -1,10 +1,10 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it,vi} from 'vitest';
-const state=vi.hoisted(()=>({lang:'en' as 'en'|'es',keptId:null as string|null}));
-vi.mock('next/headers',()=>({cookies:async()=>({get:(name:string)=>name==='nv-login-id'&&state.keptId!==null?{value:state.keptId}:undefined})}));
-vi.mock('@/lib/auth-lang.server',()=>({readAuthLang:async()=>state.lang}));
-vi.mock('@/lib/data/workspaces',()=>({getPublicWorkspaceName:async()=>'Fictional workspace'}));
-vi.mock('@/app/login/actions',()=>({login:async()=>{}}));
+import {expect,it,rs} from '@rstest/core';
+const state=rs.hoisted(()=>({lang:'en' as 'en'|'es',keptId:null as string|null}));
+rs.mock('next/headers',()=>({cookies:async()=>({get:(name:string)=>name==='nv-login-id'&&state.keptId!==null?{value:state.keptId}:undefined})}));
+rs.mock('@/lib/auth-lang.server',()=>({readAuthLang:async()=>state.lang}));
+rs.mock('@/lib/data/workspaces',()=>({getPublicWorkspaceName:async()=>'Fictional workspace'}));
+rs.mock('@/app/login/actions',()=>({login:async()=>{}}));
 import LoginPage from './page';
 import {BGlyph} from '@/components/owner-b/b-kit';
 

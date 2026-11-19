@@ -1,5 +1,5 @@
 /** Explicit fictional-only paid evaluation. Normal tests never discover this file. */
-import { beforeAll, beforeEach, afterAll, afterEach, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, afterAll, afterEach, expect, it, rs } from '@rstest/core';
 import { execFileSync } from "node:child_process";
 import { readFile, writeFile, rename } from "node:fs/promises";
 import { resolve, join, isAbsolute } from "node:path";
@@ -57,7 +57,7 @@ beforeAll(async () => {
   evidence = resolve(requestedEvidence);
   if (evidence === process.cwd() || evidence.startsWith(process.cwd() + "/")) throw Error("Evidence must remain outside checkout");
   await claimEvaluationEvidence(evidence, execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(), dryRun);
-  vi.stubEnv("NEVORA_PAYROLL_ENABLED", "false");
+  rs.stubEnv("NEVORA_PAYROLL_ENABLED", "false");
   if (dryRun) {
     pilot = { ...PILOT, credential: "fictional-dry-run-not-a-provider-key", ledgerPath };
     transport = async () => Response.json({ output: [{ type: "message", role: "assistant", content: [{ type: "output_text", text: "SYNTHETIC PREFLIGHT: no model call or semantic assessment." }] }] });
@@ -84,7 +84,7 @@ beforeAll(async () => {
 });
 beforeEach(async () => { f = await companyAccessFixture(); });
 afterEach(async () => { await f?.db.dispose(); });
-afterAll(async () => { try { if (pilot) await persist(); } finally { vi.unstubAllEnvs(); } });
+afterAll(async () => { try { if (pilot) await persist(); } finally { rs.unstubAllEnvs(); } });
 
 it.each(scenarios)("captures actual service judgment separately from scripted preflight: $id", async scenario => {
   const setup = await seedResilienceScenario(f, scenario);

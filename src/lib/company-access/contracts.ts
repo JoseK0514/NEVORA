@@ -4,7 +4,7 @@ import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import type * as M from './model';
 import type * as I from '@/lib/auth/invitations/model';
 export type InvitationDelivery = {
-  send(input: { registeredEmail: string; employeeId?:string; proof: string; expiresAt: string }): Promise<{ providerAccepted: true }>;
+  send(input: { registeredEmail: string; employeeId?:string; proof: string; expiresAt: string; companyName?:string; firstName?:string|null; timeZone?:string }): Promise<{ providerAccepted: true }>;
 };
 export type CompanyAccessBackend = {
   readOwnerOperationalScope(proof: SessionMutationProof, employeeId: string, executor?: SqlExecutor): Promise<M.OperationalRead<M.OwnerOperationalScopeData>>;

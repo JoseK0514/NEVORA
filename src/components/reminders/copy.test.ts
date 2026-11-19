@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {reminderAfter, reminderCopy, reminderTime, reminderWhen} from './copy';
 
 const sample = (value: unknown): string => (typeof value === 'function' ? String((value as (...args: unknown[]) => string)('Ana Colon', 'X')) : String(value));

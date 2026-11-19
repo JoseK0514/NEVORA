@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { Client } from 'pg';
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { createPunchFixture } from './clocker-punch-fixture';
 import { registerClockerDevice, renameClockerDevice, revokeClockerDevice, rotateClockerDevice, redeemClockerEnrollment } from '../../lib/clocker/devices.server';
 import { updateEmployeeProfile, saveEmployeeSchedulingProfile } from '../../lib/data/employees';

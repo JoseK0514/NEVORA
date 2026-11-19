@@ -1,9 +1,9 @@
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe,it,expect,vi} from 'vitest';
+import {describe,it,expect,rs} from '@rstest/core';
 import {AssistedRecovery} from './assisted-recovery';
 import {AccountRecovery} from './account-recovery';
-vi.stubGlobal('React',React);
+rs.stubGlobal('React',React);
 const props={hydrated:true,busy:false,message:'',issued:null,onSubmit:()=>{},onStartAgain:()=>{}};
 
 describe('Assisted recovery workflow presentation',()=>{

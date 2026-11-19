@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { timeZoneLabel } from './time-zone-label';
 it('names a zone by its place, never the raw identifier', () => {
   expect(timeZoneLabel('America/Puerto_Rico')).toBe('Puerto Rico time');

@@ -1,8 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from "@rstest/core";
 
-const route = vi.hoisted(() => ({ path: "/app/settings/clocker/matching" as string | null }));
-vi.mock("next/navigation", () => ({ usePathname: () => route.path }));
+const route = rs.hoisted(() => ({ path: "/app/settings/clocker/matching" as string | null }));
+rs.mock("next/navigation", () => ({ usePathname: () => route.path }));
 
 import { ClosedSettingsTitle } from "./owner-only-title";
 

@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { WorkflowResults, WorkflowControls } from "./workflows";
 import { parseAnswer } from "./public-response";

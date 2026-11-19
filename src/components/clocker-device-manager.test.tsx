@@ -1,13 +1,15 @@
+import * as rstestImportedActual0 from "react" with { rstest: 'importActual' };
+import * as rstestImportedActual1 from "../app/app/settings/wave-c-form" with { rstest: 'importActual' };
 // Clocker tablets (Phase 6): the list with honest states, the setup code as a QR code, adding a tablet in two steps, and
 // the sheet that renames, replaces or removes one. The interaction tests drive the component's own handlers with hooks
 // held here (the project has no DOM test environment). Fictional tablets only.
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-const hooks = vi.hoisted(() => ({ on: false, server: false, states: [] as unknown[], refs: [] as { current: unknown }[], effects: [] as (() => void | (() => void))[], s: 0, r: 0 }));
-vi.mock('react', async original => {
-  const react = await original<typeof import('react')>();
+const hooks = rs.hoisted(() => ({ on: false, server: false, states: [] as unknown[], refs: [] as { current: unknown }[], effects: [] as (() => void | (() => void))[], s: 0, r: 0 }));
+rs.mock('react', () => {
+  const react = rstestImportedActual0;
   return { ...react,
     useState: (initial: unknown) => {
       if (!hooks.on) return react.useState(initial);
@@ -23,9 +25,9 @@ vi.mock('react', async original => {
     },
   };
 });
-const toast = vi.hoisted(() => vi.fn());
-vi.mock('./toaster', () => ({ toast }));
-vi.mock('../app/app/settings/wave-c-form', async original => ({ ...await original<Record<string, unknown>>(), lockPageScroll: () => () => {} }));
+const toast = rs.hoisted(() => rs.fn());
+rs.mock('./toaster', () => ({ toast }));
+rs.mock('../app/app/settings/wave-c-form', () => ({ ...rstestImportedActual1, lockPageScroll: () => () => {} }));
 import { ClockerDeviceManager, ClockerDevicesUnavailable, ClockerSetupTicket, tabletLine } from './clocker-device-manager';
 import { CorpButton } from './corp/corp';
 import { QuietSheet } from './quiet/quiet-sheet';
@@ -43,7 +45,7 @@ const device = (id: string, state: ClockerDeviceView['state'], locationId = 'mai
   id, name: id, locationId, state, version: 7, lastSeenAt: null, enrollmentExpiresAt: null, ...extra,
 });
 const render = (devices: ClockerDeviceView[], available = locations, lang: 'en' | 'es' = 'en') => renderToStaticMarkup(createElement(ClockerDeviceManager, {
-  initialDevices: devices, locations: available, shortNames, timeZone: 'America/Puerto_Rico', action: vi.fn(), lang,
+  initialDevices: devices, locations: available, shortNames, timeZone: 'America/Puerto_Rico', action: rs.fn(), lang,
 }));
 const code = `nev_enr_${'ab'.repeat(32)}`;
 const tablets: ClockerDeviceView[] = [
@@ -138,7 +140,7 @@ describe('the page', () => {
 
 describe('the issued setup code', () => {
   const ticket = (lang: 'en' | 'es' = 'en', added = true) => renderToStaticMarkup(createElement(ClockerSetupTicket, { name: 'Patio tablet', place: 'Calle Loíza', clockerKey: 'calle-loiza', code,
-    expiresAt: '2026-11-17T20:05:00.000Z', timeZone: 'America/Puerto_Rico', added, onDone: vi.fn(), lang, origin: 'https://work.example.test' }));
+    expiresAt: '2026-11-17T20:05:00.000Z', timeZone: 'America/Puerto_Rico', added, onDone: rs.fn(), lang, origin: 'https://work.example.test' }));
   it('draws the kiosk link as a QR code, with the three steps and how long it is good', () => {
     const html = ticket();
     expect(html).toMatch(/<svg[^>]*role="img"[^>]*aria-label="Setup code for Patio tablet, as a QR code"/);
@@ -185,7 +187,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
   class FakeFormData { private values = new Map<string, string>(); constructor(form?: { fields?: Record<string, string> }) { for (const [key, value] of Object.entries(form?.fields ?? {})) this.values.set(key, value); }
     set(key: string, value: string) { this.values.set(key, value); } get(key: string) { return this.values.get(key) ?? null; } keys() { return this.values.keys(); } }
   let nameValue = '';
-  const requestSubmit = vi.fn();
+  const requestSubmit = rs.fn();
   const fakeForm = {
     querySelector: (selector: string) => {
       const match = selector === '[data-autofocus]' ? all(tree).find(node => node.props['data-autofocus'] !== undefined) : undefined;
@@ -197,7 +199,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
   let tree: unknown;
   let devices: ClockerDeviceView[] = [];
   let available = locations;
-  let action: ReturnType<typeof vi.fn<(form: FormData) => Promise<ClockerOwnerResult>>>;
+  let action: ReturnType<typeof rs.fn<(form: FormData) => Promise<ClockerOwnerResult>>>;
   function draw() {
     hooks.s = 0; hooks.r = 0; hooks.effects = [];
     tree = ClockerDeviceManager({ initialDevices: devices, locations: available, shortNames, timeZone: 'America/Puerto_Rico', action });
@@ -213,7 +215,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
   const has = (label: string) => !!find(label);
   /** The sheet's own submit (a row can carry a button with the same words). */
   const sheetSubmit = () => all(draw().find(node => node.type === 'form')).find(node => isButton(node) && node.props.type === 'submit')!;
-  const row = { focus: vi.fn(), isConnected: true };
+  const row = { focus: rs.fn(), isConnected: true };
   const press = (label: string) => { button(label).onClick({ currentTarget: row }); return settle(); };
   const sheet = () => { const nodes = draw(); return { title: text(nodes.find(node => node.props.id === 'clocker-dialog-title')), body: text(nodes.find(node => node.props.id === 'clocker-dialog-text')),
     open: !!nodes.find(node => node.type === 'form'), sheetOpen: nodes.find(node => node.type === QuietSheet)?.props.open }; };
@@ -226,13 +228,13 @@ describe('the sheet and the code, driven through the component’s handlers', ()
   const inState = (value: string) => JSON.stringify(hooks.states).includes(value);
   beforeEach(() => {
     hooks.on = true; hooks.server = false; hooks.states = []; hooks.refs = [{ current: fakeForm }]; focused.length = 0; row.focus.mockClear(); requestSubmit.mockClear(); toast.mockClear();
-    devices = tablets; available = locations; nameValue = ''; action = vi.fn();
-    vi.stubGlobal('requestAnimationFrame', (callback: () => void) => { callback(); return 0; });
-    vi.stubGlobal('window', Object.assign(new EventTarget(), { setTimeout, clearTimeout }));
-    vi.stubGlobal('HTMLInputElement', FakeInput);
-    vi.stubGlobal('FormData', FakeFormData);
+    devices = tablets; available = locations; nameValue = ''; action = rs.fn();
+    rs.stubGlobal('requestAnimationFrame', (callback: () => void) => { callback(); return 0; });
+    rs.stubGlobal('window', Object.assign(new EventTarget(), { setTimeout, clearTimeout }));
+    rs.stubGlobal('HTMLInputElement', FakeInput);
+    rs.stubGlobal('FormData', FakeFormData);
   });
-  afterEach(() => { hooks.on = false; vi.unstubAllGlobals(); });
+  afterEach(() => { hooks.on = false; rs.unstubAllGlobals(); });
 
   it('Add a tablet is step 1 of 2: a name and a location, then the code for the tablet as step 2', async () => {
     press('Add tablet');
@@ -273,7 +275,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
 
   it('the code leaves the page the moment it expires', async () => {
     const timers: (() => void)[] = [];
-    vi.stubGlobal('window', Object.assign(new EventTarget(), { setTimeout: (fn: () => void) => { timers.push(fn); return 1; }, clearTimeout() {} }));
+    rs.stubGlobal('window', Object.assign(new EventTarget(), { setTimeout: (fn: () => void) => { timers.push(fn); return 1; }, clearTimeout() {} }));
     action.mockResolvedValue({ ok: true, device: { ...tablets[1], state: 'PENDING' }, setup: { code, expiresAt: '2030-01-01T00:00:00.000Z' } });
     press('Get a setup code for Patio tablet'); await submit();
     hooks.effects[1]?.(); expect(timers).toHaveLength(1);

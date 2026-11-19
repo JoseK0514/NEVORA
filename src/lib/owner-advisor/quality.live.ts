@@ -1,5 +1,5 @@
 /** Explicit fictional-only evaluation. Never part of ordinary/hosted test discovery. */
-import { beforeAll, beforeEach, afterEach, afterAll, expect, it } from "vitest";
+import { beforeAll, beforeEach, afterEach, afterAll, expect, it } from '@rstest/core';
 import { execFileSync } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";

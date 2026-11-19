@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createPunchFixture } from './clocker-punch-fixture';
 import { ClockerPunchService } from '../../lib/clocker/punches.server';
 import { randomUUID } from 'node:crypto';

@@ -65,7 +65,7 @@ export function ClockerShell({ locationLabel, timeZone, deviceName, status, chil
             <span className={styles.label}>{t("Time clock")}</span>
           </span>
           {brand?.logoUrl ? <span className={styles.companyLogo}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- an immutable, same-origin asset already sized for the chip */}
+            {/* eslint-disable-next-line next-preserved/no-img-element -- an immutable, same-origin asset already sized for the chip */}
             <img src={brand.logoUrl} alt={t('Company logo')} decoding="async"/>
           </span> : workspaceName ? <span className={`${styles.workspace} ${styles.glass}`}>{workspaceName}</span> : null}
         </header>

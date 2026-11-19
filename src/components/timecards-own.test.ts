@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {ownApprover} from './timecards-own';
 
 describe('who approves the viewer’s own timecard (MG-004)', () => {

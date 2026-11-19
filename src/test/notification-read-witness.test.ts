@@ -1,7 +1,7 @@
 import {EventEmitter} from 'node:events';
 import {runInNewContext} from 'node:vm';
 import {resolve} from 'node:path';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 const {observeNotificationReadWitness}=await import(resolve('scripts/notification-read-witness.mjs'));
 async function fixture({hold=false}={}){
  const nativeResponse=Promise.withResolvers<{status:number}>();

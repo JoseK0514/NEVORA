@@ -1,5 +1,5 @@
 // These vectors call the real public projector. No mocked policy or private helper.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { projectActivity } from './project';
 import type { ActivityProjectionInput, ActivityRecordObservation } from './types';
 

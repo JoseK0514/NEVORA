@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseStripeWebhook,projectsStripeEvent} from './stripe-webhook';
 const secret='whsec_fictional_risk_validation';
 function read(object:unknown,live=false,type='charge.dispute.created'){

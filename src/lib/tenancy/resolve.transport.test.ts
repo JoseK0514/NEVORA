@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { afterEach, beforeEach, describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
 // Installed SDK and native-type parsers; every HTTP request is intercepted.
 // This tests serialized local transport only, never Neon or held-lock authority.
@@ -51,12 +51,12 @@ function factsResponse(query: Query) {
   return rows([field('facts', 3802)], [[JSON.stringify(factsOverride === undefined ? contract.facts : factsOverride)]]);
 }
 beforeEach(() => {
-  vi.resetModules(); vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T12:00:00Z'));
+  rs.resetModules(); rs.useFakeTimers(); rs.setSystemTime(new Date('2026-10-09T12:00:00Z'));
   requests.length = 0; fenceResponse = null; roleResponse = null; factsOverride = undefined; sqlFailure = false; transactionGate = null; cardinalityDelta = 0;
-  vi.stubEnv('DATABASE_URL', 'postgresql://fictional_legacy:fictional_password@ep-fictional-legacy.us-east-1.aws.neon.tech/fictional_fixture');
-  vi.stubEnv('NEVORA_APP_DATABASE_URL', 'postgresql://fictional_app:fictional_password@ep-fictional-app.us-east-1.aws.neon.tech/fictional_fixture');
-  vi.stubEnv('NEVORA_WORKER_DATABASE_URL', 'postgresql://fictional_worker:fictional_password@ep-fictional-worker.us-east-1.aws.neon.tech/fictional_fixture');
-  vi.stubGlobal('fetch', vi.fn(async (url: string, options: RequestInit) => {
+  rs.stubEnv('DATABASE_URL', 'postgresql://fictional_legacy:fictional_password@ep-fictional-legacy.us-east-1.aws.neon.tech/fictional_fixture');
+  rs.stubEnv('NEVORA_APP_DATABASE_URL', 'postgresql://fictional_app:fictional_password@ep-fictional-app.us-east-1.aws.neon.tech/fictional_fixture');
+  rs.stubEnv('NEVORA_WORKER_DATABASE_URL', 'postgresql://fictional_worker:fictional_password@ep-fictional-worker.us-east-1.aws.neon.tech/fictional_fixture');
+  rs.stubGlobal('fetch', rs.fn(async (url: string, options: RequestInit) => {
     if (!/^https:\/\/api\.us-east-1\.aws\.neon\.tech\/sql$/.test(String(url))) throw Error('Unexpected mocked transport URL');
     const body: Body = JSON.parse(String(options.body)); requests.push({ body, options });
     // Before-code RED can expose the old direct query without fixture failure.
@@ -75,7 +75,7 @@ beforeEach(() => {
     return new Response(JSON.stringify({ results }), { status: 200 });
   }));
 });
-afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); vi.useRealTimers(); });
+afterEach(() => { rs.unstubAllGlobals(); rs.unstubAllEnvs(); rs.useRealTimers(); });
 describe('installed SDK owning resolver catalog-fence serialization', () => {
   it.each(cases)('serializes $seam with dedicated $role, first fence, fresh lookup and final role in one batch', async contract => {
     const resolver = await import('./resolve.server');
@@ -139,7 +139,7 @@ describe('installed SDK owning resolver catalog-fence serialization', () => {
     expect(requests).toHaveLength(3); expect(requests.every(r => r.body.queries?.length === 3)).toBe(true);
   });
   it.each([['portal', 'NEVORA_APP_DATABASE_URL'], ['worker', 'NEVORA_WORKER_DATABASE_URL']] as const)('does not substitute another configured URL for missing $0 transport', async (seam, key) => {
-    vi.stubEnv(key, ''); const resolver = await import('./resolve.server'); const contract = cases.find(c => c.seam === seam)!;
+    rs.stubEnv(key, ''); const resolver = await import('./resolve.server'); const contract = cases.find(c => c.seam === seam)!;
     expect(await contract.run(resolver)).toEqual({ status: 'UNAVAILABLE' }); expect(requests).toHaveLength(0);
   });
   it('denies invalid inputs without any SDK request or transaction', async () => {

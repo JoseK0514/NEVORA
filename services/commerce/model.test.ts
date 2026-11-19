@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { accessAt, parseSignup, planFor } from "./model";
 const start = Date.parse("2026-11-07T12:00:00Z");
 const base = {
@@ -71,11 +71,17 @@ describe("signup validation", () => {
   });
   it("rejects oversized credentials and control characters before password hashing", () => {
     expect(() =>
-      parseSignup({ ...input, password: "x".repeat(257) }),
+      parseSignup({ ...input, password: "x".repeat(1025) }),
     ).toThrow();
     expect(() =>
       parseSignup({ ...input, businessName: "Bad\nName" }),
     ).toThrow();
     expect(() => parseSignup({ ...input, employeeCount: 99 })).toThrow();
   });
+  it('returns stable enrollment reasons rather than a generic password failure',()=>{
+    for(const [password,reason] of [['short phrase','too_short'],['qwertyuiopasdfgh','breached'],['Example Shop2026!','company_name']] as const){
+      try{parseSignup({...input,password});throw Error('Expected rejection');}catch(error){expect(error).toMatchObject({code:'invalid_password',passwordReason:reason});}
+    }
+  });
+
 });

@@ -1,4 +1,4 @@
-import {beforeEach,afterEach,it,expect} from 'vitest';
+import {beforeEach,afterEach,it,expect} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readEmployeeSchedule} from '../../lib/data/employee-schedule';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';

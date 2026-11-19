@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 import { answerText, dayFacts, managerRondoUrl, minutesText, parseManagerRondo, readManagerRondo } from "./manager-client";
 
 // Fictional values (Northside QA Workforce). Shapes follow docs/handoffs/2026-11-18-rondo-manager-ui-contract.md.

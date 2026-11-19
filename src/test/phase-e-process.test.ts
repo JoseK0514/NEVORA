@@ -2,14 +2,18 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 
 const runner = resolve('scripts/phase-e-owned.mjs');
 /** Container PID 1 may retain an exited orphan as a zombie. kill(pid,0)
  * reports that PID exists, not that it can execute. Require positive zombie
  * evidence; failed observations and live processes still fail this check. */
 function processHasStopped(pid:number):boolean {
-  try{process.kill(pid,0);}catch(error){if((error as NodeJS.ErrnoException).code==='ESRCH')return true;throw error;}
+  // Rstest protects its worker PID from process.kill calls. Probe from a
+  // separate process so signal zero still exercises the real OS operation.
+  const probe=spawnSync(process.execPath,['-e','try { process.kill(Number(process.argv[1]), 0); } catch (error) { if (error.code === "ESRCH") process.exit(3); throw error; }',String(pid)],{encoding:'utf8',timeout:2000});
+  if(probe.status===3)return true;
+  if(probe.status!==0)throw Error(probe.stderr || 'Process probe failed');
   const observed=spawnSync('ps',['-p',String(pid),'-o','stat='],{encoding:'utf8',timeout:2000});
   return !observed.error&&observed.status===0&&/^Z/.test(observed.stdout.trim());
 }
@@ -94,7 +98,7 @@ it('refuses a resource registration for an unrelated process', () => {
     const result = spawnSync(process.execPath, ['--input-type=module', '-e', script], { encoding: 'utf8', timeout: 5000 });
     expect(result.status, result.stderr).toBe(0);
     const supervised = JSON.parse(result.stdout); expect(supervised.status).not.toBe(0); expect(supervised.resources).toEqual([]);
-    expect(() => process.kill(process.pid, 0)).not.toThrow();
+    expect(processHasStopped(process.pid)).toBe(false);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 

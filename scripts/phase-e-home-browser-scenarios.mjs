@@ -1,4 +1,4 @@
-import {waitForPortalReady} from './browser-render-readiness.mjs';
+import {waitForPortalReady,waitForControlPaint} from './browser-render-readiness.mjs';
 import {measureRenderedContrast} from './browser-contrast.mjs';
 import {fulfillHeldResponse} from './browser-held-response.mjs';
 import {safeLoginServerRequests,safeEvaluationFailure} from './release-browser-diagnostics.mjs';
@@ -48,19 +48,43 @@ export function installHomeHeldObserver(fresh){
 // it re-reads when the app returns to the front and marks itself aria-busy while a read is in flight.
 // Ready only when the released status matches and no read is in flight (not a still-loading or still-refreshing frame).
 const TIME_STATUS={OFF_CLOCK:{label:'Right now',pill:null,big:'Not clocked in'},CLOCKED_IN:{label:'Current shift',pill:'Clocked in',big:null},ON_BREAK:{label:'Current shift',pill:'On break',big:null}};
+// The delivered off-clock label gains an amber elapsed hint while a published
+// shift is under way. That hint does not represent an open recorded punch.
+export const OFF_CLOCK_STATUS_TEXT=/^Not clocked in(?: · (?:(?:[0-9]|[1-5][0-9]) min|[1-9][0-9]* h))?$/;
 export async function waitForRecordedTimeReady(page, expectedState){
- const ready=await page.waitForFunction(({expected,status})=>{
+ const ready=await page.waitForFunction(({expected,status,offClockPattern})=>{
   const time=document.querySelector('.c-hours[data-hours-view="records"]');
   if(!time||time.getAttribute('data-hours-state')!=='ready'||time.getAttribute('aria-busy')!=='false')return false;
   const b=time.querySelector('#b-hours-now');
-  if(b?.getClientRects().length){const pill=b.querySelector('.b-card__h .b-chip')?.textContent;return b.querySelector('h2')?.textContent==='Right now'&&pill===(expected==='OFF_CLOCK'?'Not clocked in':status.pill)?{state:expected,view:'time',settled:true}:false;}
+  if(b?.getClientRects().length){const node=b.querySelector('.b-card__h :is(.b-chip,.b-status)'),pill=node?.textContent??'';const matches=expected==='OFF_CLOCK'?new RegExp(offClockPattern).test(pill)&&(pill==='Not clocked in'||node?.getAttribute('data-dot')==='amber'):pill===status.pill;return b.querySelector('h2')?.textContent==='Right now'&&matches?{state:expected,view:'time',settled:true}:false;}
   const card=time.querySelector('#hours-now');if(!card)return false;
   const label=card.querySelector('.c-card__label')?.textContent??null,pill=card.querySelector('.c-card__aside .c-pill')?.textContent??null;
   if(label!==status.label||pill!==status.pill)return false;
   if(status.big!==null&&card.querySelector('.c-big')?.textContent!==status.big)return false;
   return {state:expected,view:'time',settled:true};
- },{expected:expectedState,status:TIME_STATUS[expectedState]});
+ },{expected:expectedState,status:TIME_STATUS[expectedState],offClockPattern:OFF_CLOCK_STATUS_TEXT.source});
  try{return await ready.jsonValue();}finally{await ready.dispose();}
+}
+
+// Observe creation in the browser, before native fetch forwards the request.
+// Playwright's request event can be delivered after pagehide aborted a request
+// that was already created. Keep those Node events as diagnostics, not a clock.
+export function installTimeReadStartObserver(){
+ const original=window.fetch,starts=[];let count=0;
+ function observed(...args){
+  let path;try{const input=args[0];path=new URL(typeof input==='string'||input instanceof URL?String(input):input.url,location.href).pathname;}catch{return Reflect.apply(original,this,args);}
+  if(path==='/api/employee/home'||path==='/api/employee/my-time'||path.startsWith('/api/employee/hours/')){
+   count++;if(starts.length<200)starts.push({sequence:count,at:Date.now(),endpoint:path.endsWith('/home')?'home':path.endsWith('/my-time')?'my-time':'hours'});
+  }
+  return Reflect.apply(original,this,args);
+ }
+ window.fetch=observed;
+ window.__homeTimeReadStarts={snapshot:()=>({count,starts:[...starts],truncated:count>starts.length}),stop:()=>{if(window.fetch!==observed)return false;window.fetch=original;return true;}};
+}
+export function assertNoTimeReadAfterPause(before,paused){
+ assert(Number.isSafeInteger(before.browserRequestCount)&&before.browserRequestCount>0,'A real browser read must precede pagehide');
+ assert(Number.isSafeInteger(paused.browserRequestCount),'Paused browser read count is required');
+ assert.equal(paused.browserRequestCount,before.browserRequestCount,'Pagehide clearing must not require a new Home or Time request');
 }
 
 // Actual authenticated persisted Task11 Home journeys with canonical communication sources.
@@ -96,14 +120,20 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const todoName=()=>todo().evaluate(card=>{const title=document.getElementById(card.getAttribute('aria-labelledby')??'')?.cloneNode(true);title?.querySelector('.b-pill')?.remove();return card.getAttribute('aria-label')??title?.textContent??null;});
  const todoTitle=()=>todo().locator(':is(#employee-home-todo-label,#b-home-todo-h)');
  const rowLimit=width>=1024?5:3;
- const overflowCount=async expected=>{const badge=todo().locator('#b-home-todo-h .b-pill');if(await badge.count())assert.equal(await badge.textContent(),String(expected));else assert.equal((await seeAll().textContent()).trim(),`See all ${expected}`);};
+ const overflowCount=async (expected,read)=>{const badge=todo().locator('#b-home-todo-h .b-pill');if(await badge.count()){
+  // Task completeness belongs to the canonical read, including publication coverage. A known row count is a lower
+  // bound when those facts are partial or absent; require the qualification instead of accepting either label.
+  const exact=read.tasks?.state==='complete'&&read.tasks.counts!==null;
+  if(read.tasks?.state==='partial')assert.equal(read.tasks.counts,null,'Partial task facts cannot claim an exact total');
+  assert.equal((await badge.textContent()).replace(/\s+/g,' ').trim(),exact?String(expected):`At least ${expected}`);
+ }else assert.equal((await seeAll().textContent()).trim(),`See all ${expected}`);};
  const seeAll=()=>todo().getByRole('link',{name:/^(See all \d+|See all notifications)$/});
  const items=()=>todo().locator('li > :is(a.c-row,a.b-row):visible, li > .b-row > a.b-row__hit:visible').filter({hasNotText:/^See all \d+$/});
  const allSet=()=>page.getByText('You’re all set. Nothing needs you right now.',{exact:true}).filter({visible:true});
  const shownHrefs=async()=>items().evaluateAll(es=>es.map(e=>e.getAttribute('href')));
  // Clock status (Time tab). Phones show the Right now pill; wider layouts the My time status word.
  const clockedIn=()=>page.locator('main').getByText(/^Clocked in$/).filter({visible:true});
- const offClock=()=>page.locator('main :is(#hours-now,#b-hours-now):visible').getByText('Not clocked in',{exact:true});
+ const offClock=()=>page.locator('main :is(#hours-now,#b-hours-now):visible').getByText(OFF_CLOCK_STATUS_TEXT);
  const timePaused=()=>page.locator('.c-hours[data-hours-view="records"][data-hours-state="paused"]');
  const navLink=href=>page.locator(`.mobile-nav a[href="${href}"]:visible, nav[aria-label="Primary navigation"] a[href="${href}"]:visible`).first();
  const openTime=async expected=>{await navLink('/app/my-time').click();await page.waitForURL(u=>u.pathname==='/app/my-time');const time=await waitForRecordedTimeReady(page,expected);assert.equal(await next().count(),0,'Leaving Home unmounts its private shift card');return time;};
@@ -212,7 +242,11 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await next().getByText('On shift now',{exact:true}).filter({visible:true}).waitFor();
  assert.equal(homeResponse.state,'partial');assert.equal(homeResponse.allSet,false);assert.equal(homeResponse.snapshot.sources.communications.state,'complete');assert.equal(homeResponse.snapshot.nextShift.shiftId,scenario.sourceId);assert.equal(homeResponse.snapshot.currentShift.shiftId,label+'-ongoing');
  assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert.equal(await page.getByRole('heading',{level:1,name:'Welcome back, QA '+label,exact:true}).count(),1);assert.equal(homeResponse.snapshot.publicationState,'partial');assert.equal(await page.locator('[data-home-state="ready"]').count(),1,'complete source reads are ready while the publication note explains unpublished locations');
- const publicationNote=page.locator('.employee-home :is(.c-note,.b-note,.eb-cardnote):visible').filter({hasText:/published this week yet\. Shifts shown are published\.$/});assert(await publicationNote.isVisible());assert(await next().evaluate((card,note)=>!!(card.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING),await publicationNote.elementHandle()),'The publication note follows the shift card');assert.equal(await allSet().count(),0);
+ const {currentShift,nextShift,unpublishedLocations}=homeResponse.snapshot;
+ assert.equal(currentShift.locationLabel,nextShift.locationLabel);
+ assert.equal(unpublishedLocations.length,1);
+ const publicationText=`Your ${currentShift.locationLabel} shifts are published. ${unpublishedLocations[0]} hasn’t published this week yet.`;
+ const publicationNote=page.locator('.employee-home :is(.c-note,.b-note,.eb-cardnote):visible').filter({hasText:publicationText});assert.equal((await publicationNote.innerText()).trim(),publicationText);assert(await publicationNote.isVisible());assert(await next().evaluate((card,note)=>!!(card.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING),await publicationNote.elementHandle()),'The publication note follows the shift card');assert.equal(await allSet().count(),0);
  assert.equal(await page.getByText('Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.',{exact:true}).count(),0,'an unpublished location is explained by publication state, not a failed read');
  assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('On shift now',{exact:true}).filter({visible:true}).isVisible());assert.equal(await assignments().count(),1);
  const hierarchy=await page.locator(HOME_SHIFT_CARD+',:is(#employee-home-todo,#b-home-todo):visible').evaluateAll(es=>({tops:es.map(e=>e.getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
@@ -224,7 +258,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   const expected=actionHrefs(homeResponse);
   assert(await todo().isVisible());assert.equal(await todoName(),'Things to do');assert.equal(await todoTitle().count(),1,'One thing to do is its own card; several share the Things to do header');
   assert.deepEqual(await shownHrefs(),expected.slice(0,rowLimit));assert.equal(await seeAll().count(),expected.length>3?1:0);
-  if(expected.length>3){assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(expected.length);}
+  if(expected.length>3){assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(expected.length,homeResponse);}
   details.homeDisclosures.push({kind:'actions',rows:expected.length,hasOverflow:expected.length>3,seeAll:expected.length>3});
  }
  for(const item of homeResponse.snapshot.attention.filter(item=>!item.required&&!item.actionable))assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0,'Informational updates are read in Notifications');
@@ -306,7 +340,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   assert.deepEqual(actionRows.filter(href=>!overflowPublished.some(published=>href==='/app/updates/'+published.result.id)),overflowEvidence.baseline.hrefs.actions);
   for(const published of overflowPublished){const canonical=actual.snapshot.attention.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id);assert.equal(canonical.length,1);assert.equal(canonical[0].required,true);assert.equal(canonical[0].ref.version,published.result.version);assert.equal(canonical[0].href,'/app/updates/'+published.result.id);}
   assert.deepEqual(await shownHrefs(),actionRows.slice(0,rowLimit));assert.equal(await todoName(),'Things to do');assert.equal(await todoName(),'Things to do');
-  assert.equal(await seeAll().count(),1);assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(actionRows.length);
+  assert.equal(await seeAll().count(),1);assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(actionRows.length,actual);
   assert.equal(await items().count(),rowLimit);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
   await shot('actions-overflow');
   overflowEvidence.phase='native-keyboard';
@@ -322,6 +356,12 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   overflowEvidence.phase='notifications-list';
   // The Employee messages reader and visible Notifications title are current at every width.
   await page.waitForFunction(()=>document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready');await page.getByRole('heading',{name:'Notifications',exact:true,level:1}).waitFor();
+  // Repeated notifications are grouped on the approved screen. Open the groups before checking each actual notification.
+  overflowEvidence.notificationGroupsOpened=await page.locator('main button.eb-fold[aria-expanded="false"]:visible').count();
+  for(const group of await page.locator('main button.eb-fold:visible').all()){
+   if(await group.getAttribute('aria-expanded')==='false'){await group.focus();await page.keyboard.press('Enter');}
+   assert.equal(await group.getAttribute('aria-expanded'),'true');
+  }
   overflowEvidence.notificationRows=await page.locator('main :is(a.em-notif-row,a.eb-notif):visible').evaluateAll(rows=>rows.map(row=>row.id));page.off('response',notificationRead);
   overflowEvidence.notificationRowsSql=await q("SELECT id,source_kind,due_at<=clock_timestamp() AS due,expires_at>clock_timestamp() AS current,environment,cancelled_at IS NULL AS active FROM notifications WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 30",[actor]);
   const notices=[];
@@ -350,7 +390,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='keyboard';await page.locator('h1:visible').click();const link=assignments().first(),tab=nativeTab;let reached=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));details.linkTarget=await link.evaluate(measurePointerTarget,44);assert(details.linkTarget.meetsMinimum,'Shift details must retain a real44px pointer target: '+JSON.stringify(details.linkTarget));
- const measureContrast=()=>link.evaluate(measureRenderedContrast);details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
+ const measureContrast=async()=>{await waitForControlPaint(link);return link.evaluate(measureRenderedContrast);};details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
  // Re-anchored clock recovery: Home has no clock panel, so its keyboard route to recorded time is the Time tab.
  // Phones: the tab bar follows main (forward Tab). Wider layouts: the sidebar precedes main (reverse Tab).
  const myTime=navLink('/app/my-time');const timeKey=await page.locator('.mobile-nav').isVisible()?tab:nativeBackTab;await page.locator('h1:visible').click();let clockFocus=false;
@@ -401,7 +441,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='late-time';
  // Re-anchored: clock status lives on the Time tab, so its own private read is held there.
  const timeView=(await openTime('CLOCKED_IN')).view;
- const timeEvidence={view:timeView,requests:[]};details.lateTime=timeEvidence;
+ const timeEvidence={view:timeView,requests:[]};details.lateTime=timeEvidence;await page.evaluate(installTimeReadStartObserver);
  const timeRequest=(event,request)=>{const path=new URL(request.url()).pathname;if(path==='/api/employee/home'||path==='/api/employee/my-time'||path.startsWith('/api/employee/hours/'))timeEvidence.requests.push({event,endpoint:path.endsWith('/home')?'home':path.endsWith('/my-time')?'my-time':'hours',at:Date.now()});};
  const timeStarted=request=>timeRequest('request',request),timeFailed=request=>timeRequest('failed',request),timeFinished=request=>timeRequest('finished',request);
  page.on('request',timeStarted);page.on('requestfailed',timeFailed);page.on('requestfinished',timeFinished);
@@ -410,17 +450,18 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   await refreshTime(timeView);await time.seen;
   await q("UPDATE time_entries SET clock_out_at=clock_timestamp(),status='CLOCKED_OUT' WHERE id=$1",[label+'-time']);
   timeEvidence.beforeDispatch={requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};assert(timeEvidence.beforeDispatch.requestCount>0,'The refresh issued its held read before pagehide');
-  timeEvidence.afterDispatch=await page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),time:document.querySelector('.c-hours')?.getAttribute('data-hours-state')??null};});
+  timeEvidence.afterDispatch=await page.evaluate(()=>{const before=window.__homeTimeReadStarts.snapshot();window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),before,browserRequestCount:window.__homeTimeReadStarts.snapshot().count,time:document.querySelector('.c-hours')?.getAttribute('data-hours-state')??null};});
+  timeEvidence.beforeDispatch.browserRequestCount=timeEvidence.afterDispatch.before.count;assertNoTimeReadAfterPause(timeEvidence.beforeDispatch,timeEvidence.afterDispatch);
   // Synthetic lifecycle dispatch returns before React necessarily commits its
   // invalidated state. Keep the old response held until that commit is visible.
   await timePaused().waitFor({timeout:15000});assert.equal(await clockedIn().count(),0);
-  timeEvidence.pausedCommit={at:Date.now(),clockedInCount:await clockedIn().count(),requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};
-  assert.equal(timeEvidence.pausedCommit.requestCount,timeEvidence.beforeDispatch.requestCount,'Pagehide clearing must not require a new Home or Time request');
+  timeEvidence.pausedCommit={at:Date.now(),clockedInCount:await clockedIn().count(),requestCount:timeEvidence.requests.filter(item=>item.event==='request').length,browserRequestCount:await page.evaluate(()=>window.__homeTimeReadStarts.snapshot().count)};
+  assertNoTimeReadAfterPause(timeEvidence.beforeDispatch,timeEvidence.pausedCommit);
   time.release();await time.done;assert.equal(time.failure,undefined);timeEvidence.heldOutcome=time.outcome;
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
   assert.equal(await timePaused().count(),1);assert.equal(await clockedIn().count(),0);
-  timeEvidence.afterHeldSettled={at:Date.now(),state:'paused',clockedInCount:0};
- }finally{time.release();await time.done;await page.unroute(time.path,time.handler);page.off('request',timeStarted);page.off('requestfailed',timeFailed);page.off('requestfinished',timeFinished);await writeFile(join(evidenceDirectory,`home-held-time-${engine}-${width}.json`),JSON.stringify(timeEvidence,null,2));}
+  timeEvidence.afterHeldSettled={at:Date.now(),state:'paused',clockedInCount:0,browserRequestCount:await page.evaluate(()=>window.__homeTimeReadStarts.snapshot().count)};assertNoTimeReadAfterPause(timeEvidence.beforeDispatch,timeEvidence.afterHeldSettled);
+ }finally{time.release();await time.done;await page.unroute(time.path,time.handler);timeEvidence.browserReadStarts=await page.evaluate(()=>{const observer=window.__homeTimeReadStarts,snapshot=observer.snapshot(),restored=observer.stop();delete window.__homeTimeReadStarts;return {...snapshot,nativeFetchRestored:restored};});assert(timeEvidence.browserReadStarts.nativeFetchRestored,'Restore the exact native fetch after observation');page.off('request',timeStarted);page.off('requestfailed',timeFailed);page.off('requestfinished',timeFinished);await writeFile(join(evidenceDirectory,`home-held-time-${engine}-${width}.json`),JSON.stringify(timeEvidence,null,2));}
  await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));details.timeAfterClockOut=await waitForRecordedTimeReady(page,'OFF_CLOCK');assert(await offClock().first().isVisible());await openHome();checks.push('H07 held actual Time read after pagehide/unmount cannot restore old Clocked In on the Time tab; fresh re-entry reflects persisted clock-out');
  stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await leaving.seen;await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');const leavingNavigation=await page.goto(app.url+'/app/requests/hub',{waitUntil:'domcontentloaded'});assert(leavingNavigation?.ok());await page.getByRole('heading',{name:'Requests',exact:true}).waitFor();leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator(HOME_SHIFT_CARD+' a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
  if(width===390){

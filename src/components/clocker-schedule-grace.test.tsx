@@ -2,12 +2,12 @@
 // whole-minute rule the form applies before the server checks it again.
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, rs} from '@rstest/core';
 import {ClockerGraceSettings, graceDraftValid} from './clocker-schedule-grace';
 import {englishIn} from './clocker-owner-copy.testkit';
 
 const render = (minutes = 0, lang: 'en' | 'es' = 'en') => renderToStaticMarkup(createElement(ClockerGraceSettings,
-  {initial: {earlyClockInGraceMinutes: minutes, version: minutes ? 1 : 0}, saveAction: vi.fn(), readAction: vi.fn(), lang}));
+  {initial: {earlyClockInGraceMinutes: minutes, version: minutes ? 1 : 0}, saveAction: rs.fn(), readAction: rs.fn(), lang}));
 
 describe('Shift matching', () => {
   it('labels the field and says what it does, that paid time is unchanged and that 0 is strict', () => {

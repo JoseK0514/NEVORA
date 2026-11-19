@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { calculateNativePayroll } from './calculate';
 import { classifyRecordedTime } from './time';
 import { OWNER_PAYROLL_POLICY, OWNER_PAYROLL_POLICY_SHA256, SUPERSEDED_OWNER_PAYROLL_POLICY_CIVIL_MIDNIGHT, SUPERSEDED_OWNER_PAYROLL_POLICY_CIVIL_MIDNIGHT_SHA256 } from './provisional-policy';

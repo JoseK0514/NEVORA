@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {parseEmployeeTimeCorrections,parseManagerTimeCorrections} from './read-model';
 
 const context={state:'confirmed',sourceKind:'ADJUSTMENT',startAt:'2030-10-07T12:15:00Z',endAt:'2030-10-07T15:45:00Z',totalDecisions:1,decisions:[{

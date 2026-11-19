@@ -1,8 +1,8 @@
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {BlockView} from './legal-document';
-vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
+rs.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
 // B7 wording (NV-021): the fixture uses the current link name, "Forgot password?".
 const block={p:[{href:'/privacy',text:'Privacy Policy'},{href:'/terms',text:'Terms of Use'},{href:'/support',text:'Support'},{href:'/account-deletion',text:'Account deletion'},{href:'/forgot-access',text:'Forgot password?'},{href:'mailto:support@example.invalid',text:'Email'}]};
 it('contextual Employee policy links use fixed protected destinations without changing public defaults',()=>{

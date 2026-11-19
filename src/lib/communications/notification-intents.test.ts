@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {buildNotificationIntents} from '../notifications/recipients';
 import {destinationForSource,safeReturnTo} from '../notifications/destinations';
 import {buildPushEnvelope} from '../notifications/payloads';

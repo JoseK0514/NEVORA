@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { parseTool } from '../contracts';
 import { parseDecisionMetrics, renderDecisionMetric } from '../decision-metrics';
 import { fictionalBusinessScope } from '@/test/fixtures/rondo-business';

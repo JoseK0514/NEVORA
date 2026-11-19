@@ -1,6 +1,6 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { ActionItem } from "@/lib/action-center/project";
@@ -8,9 +8,9 @@ import { needsYou } from "@/lib/action-center/needs-you";
 import {reviewFacts} from '@/lib/action-center/review-facts';
 import { onlyB, withoutB } from "./owner-b/test-support";
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
 // The kit's "Couldn't load · Try again" refreshes the page through the router when no retry is given.
-vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {}, push: () => {}, replace: () => {} }), usePathname: () => "/app" }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {}, push: () => {}, replace: () => {} }), usePathname: () => "/app" }));
 const { OwnerHomeCorp } = await import("./owner-home-corp");
 
 const shift = (id: string, status: TodayShift["status"]): TodayShift => ({

@@ -1,6 +1,6 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import { parseActionCenter } from "@/lib/action-center/project";
@@ -15,10 +15,10 @@ import { Explain } from "./explain";
 
 /* Phase 4 package D (U03, U09): the screens' states on fictional data. Home and Things to do render their Direction B
  * screen and the older corporate cards in one tree, so "every Home shows the same count" is checked on both. */
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {}, push: () => {}, replace: () => {} }), usePathname: () => "/app" }));
-vi.mock("@/app/app/requests/actions", () => ({ reviewTimeOffAction: async () => {} }));
-vi.mock("@/components/leave-staffing/use-leave-staffing", () => ({ useLeaveStaffing: () => ({ state: { status: "loading" } }) }));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {}, push: () => {}, replace: () => {} }), usePathname: () => "/app" }));
+rs.mock("@/app/app/requests/actions", () => ({ reviewTimeOffAction: async () => {} }));
+rs.mock("@/components/leave-staffing/use-leave-staffing", () => ({ useLeaveStaffing: () => ({ state: { status: "loading" } }) }));
 const { OwnerHomeCorp } = await import("../owner-home-corp");
 const { ThingsToDoPage } = await import("../manager-inbox-corp");
 const { CorpReportsView } = await import("../reports");

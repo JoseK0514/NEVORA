@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -12,7 +12,7 @@ import {
 import { hashPassword } from "../../lib/auth/password";
 import { fictionalProfile } from "../fixtures/shift-changes";
 // Each engine owns its fixture and the unchanged per-test budget, including cleanup.
-it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned PostgreSQL and Next in %s", { concurrent: false }, async (engine) => {
+it.sequential.each(["chromium", "webkit"] as const)("checks Owner Rondo AI against owned PostgreSQL and Next in %s", async (engine) => {
   const evidence = process.env.NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE;
   if (!evidence) throw Error("Explicit external evidence directory required");
   await mkdir(evidence, { recursive: true });
@@ -195,13 +195,13 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
             if (actor !== "QAOWNER") {
               expect(
                 await page
-                  .getByRole("link", { name: "AI manager", exact: true })
+                  .getByRole("link", { name: "Rondo AI", exact: true })
                   .count(),
               ).toBe(0);
               const denialPage=await context.newPage();observedPages.push(denialPage);instrumentPage(denialPage);
               await denialPage.goto(origin + "/app/ai-manager");
               expect(await denialPage.getByLabel("Your question").count()).toBe(0);
-              expect(await page.getByRole("link",{name:"AI manager",exact:true}).count()).toBe(0);
+              expect(await page.getByRole("link",{name:"Rondo AI",exact:true}).count()).toBe(0);
               const api = await context.request.get(
                 origin + "/api/owner/advisor",
                 { headers: { "x-nevora-owner-advisor": "1" } },
@@ -212,12 +212,12 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
               const beforeNotifications = await app.database.executor.query({ text: "SELECT count(*)::int n FROM notifications", values: [] });
               await app.database.executor.query({ text: "DELETE FROM owner_advisor_briefing_reviews WHERE owner_id='QAOWNER'", values: [] });
               await page
-                .locator("main")
-                .getByRole("link", { name: "AI manager", exact: true })
+                .locator("#desktop-primary-navigation")
+                .getByRole("link", { name: "Rondo AI", exact: true })
                 .click();
               await page.waitForURL(origin + "/app/ai-manager");
               await page
-                .getByText("Your AI manager isn’t connected yet.", {
+                .getByText("Answers to typed questions are off", {
                   exact: true,
                 })
                 .waitFor();
@@ -284,7 +284,7 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
               // independently of the earlier 08:00–12:00 proposal fixture and the ordering of loc-2 issues.
               await app.database.executor.query({ text: "UPDATE location_coverage_windows SET start_time='00:00',end_time='24:00' WHERE location_id='loc-1'", values: [] });
               await page.reload();
-              await page.getByText('Your AI manager isn’t connected yet.', { exact: true }).waitFor();
+              await page.getByText('Answers to typed questions are off', { exact: true }).waitFor();
               const attention = page.getByRole("region", { name: "Needs your attention", exact: true });
               await attention.getByRole("heading", { name: "Needs your attention", exact: true }).waitFor();
               const firstIssue = attention.locator("ol > li").filter({ hasText: "Main Office" });
@@ -377,7 +377,7 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
                 .waitFor();
               await page.reload();
               await page
-                .getByText("Your AI manager isn’t connected yet.", {
+                .getByText("Answers to typed questions are off", {
                   exact: true,
                 })
                 .waitFor();
@@ -518,7 +518,7 @@ it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned 
                 window.dispatchEvent(new Event("focus")),
               );
               await page
-                .getByText("Your AI manager isn’t connected yet.", {
+                .getByText("Answers to typed questions are off", {
                   exact: true,
                 })
                 .waitFor();

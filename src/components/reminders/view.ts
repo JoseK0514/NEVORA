@@ -31,7 +31,7 @@ export function reminderLine(state: ReminderState, options: {lang?: ReminderLang
     case 'unknown':
       return {kind: 'text', tone: 'amber', busy: state.looking, action: 'check', actionLabel: state.looking ? t.looking : t.checkAgain,
         text: state.note === 'access' ? t.unknownAccess : state.note === 'still' ? t.unknownStill : t.unknown};
-    case 'not_sent': return {kind: 'text', tone: 'grey', text: t.notSent, action: 'again', actionLabel: t.sendAgain};
+    case 'not_sent': return {kind: 'text', tone: 'amber', text: t.notSent, action: 'again', actionLabel: t.sendAgain};
     case 'error': return {kind: 'text', tone: 'amber', text: t.error, action: 'retry', actionLabel: t.tryAgain, detail: state.reference ? t.reference(state.reference) : undefined};
   }
 }

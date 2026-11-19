@@ -1,10 +1,10 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import { CoverageAssistant, type CoverageAssistantProps } from "./coverage-assistant";
 
-const linkState = vi.hoisted(() => ({ pending: false }));
-vi.mock("next/link", () => ({ useLinkStatus: () => linkState, default: ({ href, children, prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => { void prefetch; return createElement("a", { href, ...props }, children); } }));
+const linkState = rs.hoisted(() => ({ pending: false }));
+rs.mock("next/link", () => ({ useLinkStatus: () => linkState, default: ({ href, children, prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => { void prefetch; return createElement("a", { href, ...props }, children); } }));
 
 const props: CoverageAssistantProps = {
   date: "2026-10-12", startTime: "08:00", endTime: "16:00", locationName: "Main Office",

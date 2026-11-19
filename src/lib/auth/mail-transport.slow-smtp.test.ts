@@ -1,5 +1,5 @@
 import {createServer,type Socket} from 'node:net';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {validatedMailTransport} from './mail-transport.server';
 
 it('bounds a real slowly progressing SMTP conversation even while each exchange stays below the idle timeout',async()=>{

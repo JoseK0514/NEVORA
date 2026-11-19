@@ -1,11 +1,11 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {Client} from 'pg';
 import {randomUUID,randomBytes} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import {issued,ownedPassword,type ClaimFixture} from './company-access-claim.test-support';
 import {claimInvitation} from '../../lib/auth/invitations/claim.server';
 import {issueOrRevokeInvitation,readInvitationStatus,invitationProofDigest,invitationEmailFingerprint} from '../../lib/auth/invitations/service.server';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 async function wait(f:ClaimFixture,pattern:string){
  const end=Date.now()+3500;while(Date.now()<end){const [r]=await f.q<{waiting:boolean}>("SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE $1) AS waiting",[pattern]);if(r.waiting)return;await new Promise(r=>setTimeout(r,10));}throw Error('Actual claim SQL wait not observed');
 }

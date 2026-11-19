@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { payrollReviewIssues, payrollReviewState } from "./payroll-review-copy";
 
 it("explains why an open period cannot be closed without exposing an engine code", () => {

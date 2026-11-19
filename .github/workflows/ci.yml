@@ -236,7 +236,8 @@ jobs:
         env:
           NEVORA_READINESS_UI_EVIDENCE: ${{ runner.temp }}/readiness-ui
           NEVORA_READINESS_MATRIX_EVIDENCE: ${{ runner.temp }}/readiness-matrix
-        run: node scripts/payroll-postgres.mjs vitest.all-ui-browser.config.mts src/test/integration/readiness-ui-browser.integration.ts src/test/integration/readiness-shift-concurrency-browser.integration.ts
+          NEVORA_ALL_UI_BROWSER_EVIDENCE: ${{ runner.temp }}/claude-ui-joined
+        run: node scripts/payroll-postgres.mjs vitest.all-ui-browser.config.mts src/test/integration/readiness-ui-browser.integration.ts src/test/integration/readiness-shift-concurrency-browser.integration.ts src/test/integration/claude-ui-joined-browser.integration.ts
       - name: Verify management browser source and closure
         if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
         env:
@@ -264,6 +265,10 @@ jobs:
             ${{ runner.temp }}/readiness-matrix/*.png
             ${{ runner.temp }}/readiness-matrix/**/source-manifest.json
             ${{ runner.temp }}/readiness-matrix/**/ownership.json
+            ${{ runner.temp }}/claude-ui-joined/**/joined-report.json
+            ${{ runner.temp }}/claude-ui-joined/**/*.png
+            ${{ runner.temp }}/claude-ui-joined/**/source-manifest.json
+            ${{ runner.temp }}/claude-ui-joined/**/ownership.json
           if-no-files-found: error
           retention-days: 14
 

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { afterEach, beforeEach, describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
 // Installed SDK 1.1.0 and real serialization/parsers; every HTTP call is
 // intercepted here. This is a local wire contract, never actual Neon proof.
@@ -32,12 +32,12 @@ let fenceFailure = false;
 let fenceResponse: ReturnType<typeof result> | null = null;
 let fenceGate: Promise<void> | null = null;
 beforeEach(() => {
-  vi.resetModules(); vi.useFakeTimers(); vi.setSystemTime(new Date('2026-10-09T12:00:00Z'));
+  rs.resetModules(); rs.useFakeTimers(); rs.setSystemTime(new Date('2026-10-09T12:00:00Z'));
   requests.length = 0; databaseFailure = false; finalRoleFailure = false; fenceFailure = false; fenceResponse = null; fenceGate = null;
-  vi.stubEnv('DATABASE_URL', 'postgresql://fictional_resolver:fictional_password@ep-fictional-resolver.us-east-1.aws.neon.tech/fictional_fixture');
-  vi.stubEnv('NEVORA_APP_DATABASE_URL', 'postgresql://fictional_app:fictional_password@ep-fictional-app.us-east-1.aws.neon.tech/fictional_fixture');
-  vi.stubEnv('NEVORA_WORKER_DATABASE_URL', 'postgresql://fictional_worker:fictional_password@ep-fictional-worker.us-east-1.aws.neon.tech/fictional_fixture');
-  vi.stubGlobal('fetch', vi.fn(async (url: string, options: RequestInit) => {
+  rs.stubEnv('DATABASE_URL', 'postgresql://fictional_resolver:fictional_password@ep-fictional-resolver.us-east-1.aws.neon.tech/fictional_fixture');
+  rs.stubEnv('NEVORA_APP_DATABASE_URL', 'postgresql://fictional_app:fictional_password@ep-fictional-app.us-east-1.aws.neon.tech/fictional_fixture');
+  rs.stubEnv('NEVORA_WORKER_DATABASE_URL', 'postgresql://fictional_worker:fictional_password@ep-fictional-worker.us-east-1.aws.neon.tech/fictional_fixture');
+  rs.stubGlobal('fetch', rs.fn(async (url: string, options: RequestInit) => {
     if (!/^https:\/\/api\.us-east-1\.aws\.neon\.tech\/sql$/.test(String(url))) throw Error('Unexpected mocked transport URL');
     const body: Request = JSON.parse(String(options.body)); requests.push({ url: String(url), body, options });
     if (!body.queries) throw Error('Unexpected standalone query');
@@ -68,7 +68,7 @@ beforeEach(() => {
     return new Response(JSON.stringify({ results }), { status: 200 });
   }));
 });
-afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); vi.useRealTimers(); });
+afterEach(() => { rs.unstubAllGlobals(); rs.unstubAllEnvs(); rs.useRealTimers(); });
 async function modules() {
   const resolver = await import('./resolve.server');
   const contract = await import('./query-contract');
@@ -115,7 +115,7 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
     if (resolved.status !== 'ALLOW') throw Error('fictional worker resolver fixture');
     const compiled = Object.freeze({ name: 'FICTIONAL_WORKER_DISPATCH_ONLY', text: 'SELECT 1 AS fictional_dispatch',
       values: Object.freeze([]), decode: (rows: unknown) => rows });
-    const compile = vi.spyOn(contract, 'compileTenantStatement').mockReturnValue(compiled);
+    const compile = rs.spyOn(contract, 'compileTenantStatement').mockReturnValue(compiled);
     try {
       await expect(executor.createTenantExecutor(resolved.proof).query({} as never)).resolves.toEqual([{ fictional_dispatch: 1 }]);
       expect(requests).toHaveLength(2);
@@ -181,7 +181,7 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
     expect(requests).toHaveLength(2);
   });
   it('does not reuse a configured bootstrap/legacy URL when a dedicated runtime URL is missing', async () => {
-    vi.stubEnv('NEVORA_APP_DATABASE_URL', '');
+    rs.stubEnv('NEVORA_APP_DATABASE_URL', '');
     const { getTenantRuntimeDb } = await import('../db');
     expect(() => getTenantRuntimeDb('APP')).toThrow('tenant_runtime_not_configured');
     expect(requests).toHaveLength(0);
@@ -197,13 +197,13 @@ describe('installed Neon SDK local HTTP serialization contract', () => {
 
 describe('installed SDK resolver configuration isolation',()=>{
  it('returns unavailable with zero HTTP when APP is absent despite configured legacy and WORKER URLs',async()=>{
-  vi.stubEnv('NEVORA_APP_DATABASE_URL','');
+  rs.stubEnv('NEVORA_APP_DATABASE_URL','');
   const resolver=await import('./resolve.server');
   expect(await resolver.resolvePortalProof('tenant-aa',digest)).toEqual({status:'UNAVAILABLE'});
   expect(requests).toHaveLength(0);
  });
  it('returns unavailable with zero HTTP when WORKER is absent despite configured legacy and APP URLs',async()=>{
-  vi.stubEnv('NEVORA_WORKER_DATABASE_URL','');
+  rs.stubEnv('NEVORA_WORKER_DATABASE_URL','');
   const resolver=await import('./resolve.server');
   expect(await resolver.resolveWorkerProof({workerId:'worker-a',credentialDigest:digest,environment:'test'},
    {deliveryId:'delivery-a',generation:'generation-a',leaseToken:'fictional-lease-token-a'})).toEqual({status:'UNAVAILABLE'});

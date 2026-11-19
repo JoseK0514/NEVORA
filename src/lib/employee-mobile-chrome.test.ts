@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {employeeMobileChrome} from './employee-mobile-chrome';
 import {mobileTabsForRole} from './navigation';
 import type {PayrollCapabilities} from './payroll/contracts';

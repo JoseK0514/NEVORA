@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {readOnboardingConfig,readSignupOrigin} from './config.server';
 import {approvedCapabilityNames} from '../../../services/hosted/neon/capabilities';
 const key=Buffer.alloc(32,7).toString('base64url');

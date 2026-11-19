@@ -1,9 +1,9 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 import {onRequestError} from './instrumentation';
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => { rs.restoreAllMocks(); });
 it('records the framework route template and digest without request paths or headers', async () => {
-  const sink = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const sink = rs.spyOn(console, 'error').mockImplementation(() => {});
   await onRequestError(Object.assign(new Error('secret'), {digest: '90210'}), {
     path: '/api/people/private-person?token=private-token', method: 'POST',
     headers: {authorization: 'Bearer private-token', cookie: 'private-cookie', 'x-request-id': 'private-id'},

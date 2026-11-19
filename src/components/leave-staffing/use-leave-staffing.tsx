@@ -36,7 +36,7 @@ export function useLeaveStaffing(selection:StaffingSelection|null){
   const current=()=>{if(document.visibilityState==='visible'&&navigator.onLine)c.start();else c.pause();},pause=()=>c.pause();
   window.addEventListener('focus',current);window.addEventListener('online',current);window.addEventListener('offline',pause);window.addEventListener('pagehide',pause);document.addEventListener('visibilitychange',current);current();
   return()=>{c.stop();controller.current=null;window.removeEventListener('focus',current);window.removeEventListener('online',current);window.removeEventListener('offline',pause);window.removeEventListener('pagehide',pause);document.removeEventListener('visibilitychange',current);};
- // eslint-disable-next-line react-hooks/exhaustive-deps -- key carries authority and selection
+ // eslint-disable-next-line hooks-preserved/exhaustive-deps -- key carries authority and selection
  },[key]);
  // No authority (signed out) or nothing to check: unavailable, never "no conflicts".
  return useMemo(()=>({state:key?state:{status:'unavailable',denied:false} as StaffingState,refresh:()=>{setState({status:'loading'});controller.current?.refresh();}}),[key,state]);

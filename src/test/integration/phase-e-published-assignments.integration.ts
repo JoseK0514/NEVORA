@@ -1,4 +1,4 @@
-import {afterEach,beforeEach,expect,it} from 'vitest';
+import {afterEach,beforeEach,expect,it} from '@rstest/core';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {seedOwnedApp} from './owned-app-fixture';

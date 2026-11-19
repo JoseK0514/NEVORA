@@ -1,12 +1,13 @@
+import * as rstestImportedActual0 from "react" with { rstest: 'importActual' };
 // One person's Clocker PIN (Phase 6): the form, the one error style, the result, and a save that can't be confirmed.
 // The interaction tests drive the component's own handlers with hooks held here (the project has no DOM environment).
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, rs} from '@rstest/core';
 import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 
-const hooks = vi.hoisted(() => ({on: false, states: [] as unknown[], refs: [] as {current: unknown}[], s: 0, r: 0}));
-vi.mock('react', async original => {
-  const react = await original<typeof import('react')>();
+const hooks = rs.hoisted(() => ({on: false, states: [] as unknown[], refs: [] as {current: unknown}[], s: 0, r: 0}));
+rs.mock('react', () => {
+  const react = rstestImportedActual0;
   return {...react,
     useState: (initial: unknown) => {
       if (!hooks.on) return react.useState(initial);
@@ -18,7 +19,7 @@ vi.mock('react', async original => {
     useEffect: (effect: () => void, deps?: unknown[]) => {if (!hooks.on) return react.useEffect(effect, deps);},
   };
 });
-vi.mock('next/link', () => ({default: ({href, children, ...props}: ComponentProps<'a'>) => createElement('a', {href, ...props}, children)}));
+rs.mock('next/link', () => ({default: ({href, children, ...props}: ComponentProps<'a'>) => createElement('a', {href, ...props}, children)}));
 import {ClockerPinForm} from './clocker-pin-form';
 import {ClockerPinClosed, ClockerPinEditor} from './clocker-pin-editor';
 import {englishIn} from './clocker-owner-copy.testkit';
@@ -37,7 +38,7 @@ function all(value: unknown): Node[] { if (Array.isArray(value)) return value.fl
 const text = (node: unknown): string => Array.isArray(node) ? node.map(text).join('') : typeof node === 'string' || typeof node === 'number' ? String(node) : isNode(node) ? text(node.props.children) : '';
 
 describe('first paint', () => {
-  const editor = (version: number, lang: 'en' | 'es' = 'en', origin: 'person' | 'pins' = 'person') => renderToStaticMarkup(createElement(ClockerPinEditor, {employeeId: 'QA-1', name: 'Maria Rivera', initialVersion: version, action: vi.fn(), checkStatus: vi.fn(), lang, origin}));
+  const editor = (version: number, lang: 'en' | 'es' = 'en', origin: 'person' | 'pins' = 'person') => renderToStaticMarkup(createElement(ClockerPinEditor, {employeeId: 'QA-1', name: 'Maria Rivera', initialVersion: version, action: rs.fn(), checkStatus: rs.fn(), lang, origin}));
   it('set: who it is for, two masked four-digit fields that are never password fields, and one filled Save', () => {
     const html = editor(0);
     expect(html).toContain('Set a PIN for Maria Rivera'); expect(html).toContain('4 digits. Each person needs their own.');
@@ -66,13 +67,13 @@ describe('first paint', () => {
 describe('saving, driven through the form’s handlers', () => {
   class FakeFormData { values = new Map<string, string>(); constructor(form?: {fields?: Record<string, string>}) { for (const [key, value] of Object.entries(form?.fields ?? {})) this.values.set(key, value); }
     set(key: string, value: string) { this.values.set(key, value); } get(key: string) { return this.values.get(key) ?? null; } delete(key: string) { this.values.delete(key); } }
-  let action: ReturnType<typeof vi.fn<(data: FormData) => Promise<PinActionResult>>>;
-  let checkStatus: ReturnType<typeof vi.fn<(data: FormData) => Promise<PinSaveStatus>>>;
+  let action: ReturnType<typeof rs.fn<(data: FormData) => Promise<PinActionResult>>>;
+  let checkStatus: ReturnType<typeof rs.fn<(data: FormData) => Promise<PinSaveStatus>>>;
   let lang: 'en' | 'es' = 'en';
   let tree: unknown;
-  const confirmField = {value: '', focus: vi.fn()};
+  const confirmField = {value: '', focus: rs.fn()};
   function draw() { hooks.s = 0; hooks.r = 0; tree = expand(ClockerPinForm({employeeId: 'QA-1', name: 'Maria Rivera', initialVersion: 0, action, checkStatus, origin: 'pins', lang})); return all(tree); }
-  const reset = vi.fn();
+  const reset = rs.fn();
   async function submit(pin: string, confirmPin: string) {
     const form = draw().find(node => node.type === 'form')!;
     const sent: FakeFormData[] = []; action.mockImplementation(async data => { sent.push(Object.assign(new FakeFormData(), {values: new Map((data as unknown as FakeFormData).values)})); return (action as unknown as {result: PinActionResult}).result; });
@@ -84,10 +85,10 @@ describe('saving, driven through the form’s handlers', () => {
   const button = (label: string) => all(tree).find(node => (node.type === 'button' || node.type === 'a' || typeof node.type === 'object') && text(node) === label);
   beforeEach(() => {
     hooks.on = true; hooks.states = []; hooks.refs = []; lang = 'en'; reset.mockClear(); confirmField.value = '1234'; confirmField.focus.mockClear();
-    action = vi.fn(); checkStatus = vi.fn();
-    vi.stubGlobal('FormData', FakeFormData); vi.stubGlobal('crypto', {randomUUID: () => '4a9c7ed1-9b42-4dc0-8847-324d7ade7832'});
+    action = rs.fn(); checkStatus = rs.fn();
+    rs.stubGlobal('FormData', FakeFormData); rs.stubGlobal('crypto', {randomUUID: () => '4a9c7ed1-9b42-4dc0-8847-324d7ade7832'});
   });
-  afterEach(() => { hooks.on = false; vi.unstubAllGlobals(); });
+  afterEach(() => { hooks.on = false; rs.unstubAllGlobals(); });
 
   it('two different PINs send nothing: the one error style under the second field, which is cleared', async () => {
     draw(); hooks.refs[2] = {current: confirmField};

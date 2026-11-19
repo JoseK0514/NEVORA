@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {centralBillingApiOrigin} from './central-billing-config';
 const staging={NODE_ENV:'production',NEVORA_COMMERCE_ENABLED:'true',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_NEON_BRANCH_ID:'br-fixture',NEVORA_COMMERCE_API_ORIGIN:'https://br-fixture-commerceapi.compute.c-15.us-east-1.aws.neon.tech'};
 it('selects only the explicit existing isolated branch API, without reading credentials',()=>expect(centralBillingApiOrigin(staging)).toBe(staging.NEVORA_COMMERCE_API_ORIGIN));

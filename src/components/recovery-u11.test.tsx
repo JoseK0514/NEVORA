@@ -1,6 +1,6 @@
 // U11 (Nov 17, 2026): every recovery state in English and Spanish. The request and reset contracts themselves (fields,
 // lengths, the hedged acceptance, the proof's custody) are covered by account-recovery.test.tsx and are not touched here.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { RecoveryRequest } from "./recovery-request";
 import { RecoveryReset } from "./recovery-reset";
@@ -83,7 +83,7 @@ describe.each(["en", "es"] as const)("new password in %s", lang => {
 
   it("the form: step 3, the code, two passwords and the live checks", () => {
     const html = reset(lang);
-    for (const line of [step(lang, 3), t.recoveryCode, t.newPassword, t.atLeast8, t.resetPassword]) expect(html).toContain(line);
+    for (const line of [step(lang, 3), t.recoveryCode, t.newPassword, t.atLeast15, t.resetPassword]) expect(html).toContain(line);
     expect(html).toMatch(/<span class="q-auth__invalid"><svg[^>]*width="16" height="16"[^>]*>.*?<\/svg><span id="reset-proof-invalid"><\/span><\/span>/);
   });
 

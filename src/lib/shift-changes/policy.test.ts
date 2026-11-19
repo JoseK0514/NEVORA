@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { evaluateRequestDeadlines, resolveOperationalRuleProfile, resolveShiftChangePolicy } from './policy';
 import type { DeadlineInput } from './types';
 const input: DeadlineInput = {stage:'SUBMIT',now:'2026-10-05T09:00:00Z',earliestShiftStart:'2026-10-06T10:00:00Z',currentSubmissionAdvanceMinutes:1440,currentCompletionAdvanceMinutes:120,recordedCompletionDeadline:null};

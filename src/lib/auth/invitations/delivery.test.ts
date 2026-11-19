@@ -1,8 +1,21 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomBytes} from 'node:crypto';
 import {fakeInvitationSmtp} from '@/test/integration/company-access-smtp.test-support';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {invitationDelivery} from './delivery.server';
+
+it('PB-022 sends bilingual HTML and plain text through real owned SMTP with company and issued expiry',async()=>{
+ const smtp=await fakeInvitationSmtp();try{
+  const expiresAt=new Date(Date.now()+7*86400000).toISOString();
+  await invitationDelivery(smtp.env)!.send({registeredEmail:'target@example.invalid',employeeId:'FICTIONAL-EMPLOYEE',proof:randomBytes(32).toString('base64url'),expiresAt,companyName:'Harbor Studio',firstName:'Avery',timeZone:'America/Puerto_Rico'});
+  expect(smtp.messages).toHaveLength(1);
+  const mail=smtp.messages[0].replace(/=\r\n/g,'').replace(/=3D/g,'=');
+  expect(mail).toContain('multipart/alternative');expect(mail).toContain('text/plain');expect(mail).toContain('text/html');
+  expect(mail).toContain('Harbor Studio');expect(mail).toContain('lang="en"');expect(mail).toContain('lang="es"');
+  expect(mail).toContain('FICTIONAL-EMPLOYEE');expect(mail).toContain('/activate#proof=');
+  expect(mail).not.toContain('Your Owner invited');
+ }finally{await smtp.close();}
+});
 
 it('actual configurable invitation transport sends only the registered recipient and a fragment proof through owned SMTP',async()=>{
  const smtp=await fakeInvitationSmtp();
@@ -41,5 +54,12 @@ it('classifies a staging-recipient refusal as definitely failed without opening 
   const sender=invitationDelivery({...smtp.env,NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_STAGING_EMAIL_RECIPIENT:'approved@example.invalid'})!;
   await expect(sender.send({registeredEmail:'other@example.invalid',proof:randomBytes(32).toString('base64url'),expiresAt:new Date(Date.now()+900000).toISOString()})).rejects.toMatchObject({deliveryState:'FAILED'});
   expect(smtp.connections).toBe(0);expect(smtp.messages.length).toBe(0);
+ }finally{await smtp.close();}
+});
+
+it('classifies a rendering failure before SMTP as FAILED without opening a connection',async()=>{
+ const smtp=await fakeInvitationSmtp();try{
+  await expect(invitationDelivery(smtp.env)!.send({registeredEmail:'target@example.invalid',proof:randomBytes(32).toString('base64url'),expiresAt:new Date(Date.now()+900000).toISOString(),companyName:'Fictional Shop',timeZone:'Invalid/Zone'})).rejects.toMatchObject({deliveryState:'FAILED'});
+  expect(smtp.connections).toBe(0);expect(smtp.messages).toHaveLength(0);
  }finally{await smtp.close();}
 });

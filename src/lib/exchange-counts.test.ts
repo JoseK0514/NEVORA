@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {projectExchangeCounts,parseExchangeCounts} from './exchange-counts';
 import type {ExchangeRecord} from './data/exchanges';
 const row=(over:Partial<ExchangeRecord>={})=>({kind:'COVERAGE',status:'OPEN',requestedByEmployeeId:'peer',targetEmployeeId:null,actionable:true,requestRevision:1,sourceShift:{locationId:'a'},targetShift:null,...over}) as ExchangeRecord;

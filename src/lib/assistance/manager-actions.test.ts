@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { buildManagerActionItems } from "./manager-actions";
 import { parseCoverageRepairLocator } from '../scheduling/coverage-repair';
 

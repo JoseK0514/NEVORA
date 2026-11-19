@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { BUSINESS_VALIDATION_CODES, BUSINESS_VALIDATION_FIELDS } from "@/lib/owner-advisor/business/contracts";
 import { uiCatalog, uiFullRead, uiIds, uiNow } from "@/test/fixtures/rondo-business-ui";
@@ -8,7 +8,7 @@ import {
 } from "./business-page";
 import { BUSINESS_COPY, type BusinessLang } from "./copy";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }) }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }) }));
 
 // Fictional data only. Each state is rendered from the same parsed shapes the page gets from the API.
 const wire = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
@@ -199,9 +199,11 @@ describe("problems and recovery", () => {
   it("still isn't called failed when the check finds no receipt, and offers no resend once the exact command is gone", () => {
     const still = card({ meta, payload, status: "unconfirmed" });
     expect(still).toContain("No confirmation yet. It may still go through.");
-    expect(still).toContain("Stop checking");
+    expect(still).not.toContain("Stop checking");
+    expect(still).toContain("Check again");
+    expect(card({ meta, payload: null, status: "unconfirmed" })).not.toContain("Stop checking");
     const reloaded = card({ meta, payload: null, status: "uncertain" });
-    expect(reloaded).toContain("Check it, then look at the list before adding it again.");
+    expect(reloaded).toContain("Keep this change’s reference and check again. Do not add it as a new change while it is unconfirmed.");
     expect(reloaded).not.toContain("Send again");
     expect(card({ meta, payload: null, status: "checking" })).toContain("Checking your change");
     expect(card({ meta, payload: null, status: "foreign" })).toContain("It was made under another sign-in.");

@@ -1,6 +1,6 @@
 import {createHash, createPublicKey, generateKeyPairSync, sign} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 
 // Catch missing verification/binding/schema checks. Expected bytes are written
 // independently of the production serializer; signing uses real ephemeral keys.

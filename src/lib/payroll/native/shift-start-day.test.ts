@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { calculateNativePayroll } from './calculate';
 import { classifyRecordedTime, HOUR, ns } from './time';
 import { input, entry } from './fixtures.test-support';

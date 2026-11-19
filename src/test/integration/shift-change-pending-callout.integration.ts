@@ -1,7 +1,7 @@
 import { updateShift } from './management-api';
 import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';
-import { afterAll, beforeAll, expect, it } from 'vitest';
+import { afterAll, beforeAll, expect, it } from '@rstest/core';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { fixtureShift, proof, seedShiftChanges } from './shift-change-fixture';
 import { executeShiftChange } from '../../lib/data/shift-changes';

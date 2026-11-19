@@ -1,18 +1,23 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 
-const f = vi.hoisted(() => ({ warnings: {} as Record<string, boolean>, published: [] as string[], deniedAfter: false, events: [] as string[] }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
-vi.mock("next/navigation", () => ({ redirect: (url: string) => { throw Object.assign(new Error("redirect"), { url }); } }));
-vi.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => ({ employee: { id: "QAOWNER", role: "OWNER" } }) }));
-vi.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["OWNER", "MANAGER"], requireRoles: async () => ({ id: "QAOWNER", role: "OWNER" }) }));
-vi.mock("@/lib/data/schedule-publication-review", () => ({ getSchedulePublishReadiness: async (_week: string, locationId: string) => ({ hasWarnings: !!f.warnings[locationId] }) }));
-vi.mock("@/lib/data/publication-revisions", () => ({ publishScheduleWithRevision: async ({ locationId }: { locationId: string }) => { f.events.push(`publish:${locationId}`); f.published.push(locationId); return { published: true }; } }));
-vi.mock("@/lib/company-access/operational-scope.server", () => ({
-  assertOperationalAccess: async () => { f.events.push("admit"); return { scope: { mode: "COMPANY" } }; },
-  assertOriginalOperationalAccess: async () => { f.events.push("recheck"); if (f.deniedAfter) throw Object.assign(new Error("denied"), { denied: true }); },
+const f = rs.hoisted(() => ({ warnings: {} as Record<string, boolean>, published: [] as string[], deniedAfter: false, events: [] as string[] }));
+rs.mock("next/cache", () => ({ revalidatePath: rs.fn() }));
+rs.mock("next/navigation", () => ({ redirect: (url: string) => { throw Object.assign(new Error("redirect"), { url }); } }));
+rs.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => ({ employee: { id: "QAOWNER", role: "OWNER" } }) }));
+rs.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["OWNER", "MANAGER"], requireRoles: async () => ({ id: "QAOWNER", role: "OWNER" }) }));
+rs.mock("@/lib/data/schedule-publication-review", () => ({ getSchedulePublishReadiness: async (_week: string, locationId: string) => ({ hasWarnings: !!f.warnings[locationId] }) }));
+rs.mock("@/lib/data/publication-revisions", () => ({ publishScheduleWithRevision: async ({ locationId }: { locationId: string }) => { f.events.push(`publish:${locationId}`); f.published.push(locationId); return { published: true }; } }));
+rs.mock("@/lib/company-access/operational-scope.server", () => ({
   isOperationalAuthorizationError: (error: unknown) => !!(error as { denied?: boolean })?.denied,
 }));
-vi.mock("@/lib/data/management-session", () => ({ isManagementAuthorizationError: () => false }));
+rs.mock("@/lib/workforce/authority.server", () => ({
+  assertWorkforcePermission: async (_proof:unknown, _permission:unknown, _ids:unknown, _executor:unknown, original:unknown) => {
+    f.events.push(original ? "recheck" : "admit");
+    if (original && f.deniedAfter) throw Object.assign(new Error("denied"), { denied: true });
+    return {scope:{mode:"COMPANY"}};
+  },
+}));
+rs.mock("@/lib/data/management-session", () => ({ isManagementAuthorizationError: () => false }));
 const { publishDraftsAction } = await import("./actions");
 
 const form = (locations: string[], confirm = false) => { const data = new FormData(); data.set("weekStart", "2026-10-26"); for (const id of locations) data.append("locationId", id); if (confirm) data.set("confirmWarnings", "yes"); return data; };

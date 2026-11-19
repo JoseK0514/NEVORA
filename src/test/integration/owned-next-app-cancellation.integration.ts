@@ -1,6 +1,6 @@
 // Adversarial cancellation of the owned Next fixture (item G). A successful start/teardown does not certify these:
 // abort once the Next process exists, and abort when teardown must be refused because ownership changed.
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {randomBytes} from 'node:crypto';
 import {mkdtemp,readFile,writeFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';

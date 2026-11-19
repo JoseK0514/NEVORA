@@ -1,10 +1,10 @@
-import {beforeEach,describe,expect,it,vi} from 'vitest';
+import {beforeEach,describe,expect,it,rs} from '@rstest/core';
 import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
 import type {SessionEmployee} from '@/lib/auth/session';
-const f=vi.hoisted(()=>({session:null as SessionEmployee|null,executor:null as SqlExecutor|null}));
-vi.mock('@/lib/auth/session',()=>({getSession:async()=>f.session,requireSessionMutationProof:async()=>({employee:f.session,sessionTokenHash:'a'.repeat(64)})}));
-vi.mock('@/lib/data/notification-transactions',async()=>{
- const actual=await vi.importActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions');
+const f=rs.hoisted(()=>({session:null as SessionEmployee|null,executor:null as SqlExecutor|null}));
+rs.mock('@/lib/auth/session',()=>({getSession:async()=>f.session,requireSessionMutationProof:async()=>({employee:f.session,sessionTokenHash:'a'.repeat(64)})}));
+rs.mock('@/lib/data/notification-transactions',()=>{
+ const actual=rs.requireActual<typeof import("@/lib/data/notification-transactions")>("@/lib/data/notification-transactions");
  return {...actual,neonNotificationExecutor:()=>f.executor};
 });
 import {adpRunColumns,neutralProfile} from '@/lib/payroll-export/model';
@@ -80,4 +80,4 @@ describe('NVA-001 profile API with real parser/service and fictional SQL transpo
 
 // Business-unit admission I/O only; real current Company enforcement and API
 // scope/lifecycle/receipt vectors run in company-access-period-export SQL.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({workspace:{id:'W',name:'Fictional Company',timeZone:'America/Puerto_Rico',active:true,createdAt:'2026-01-01T00:00:00Z',updatedAt:'2026-01-01T00:00:00Z'},authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));
+rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rs.requireActual<typeof import("@/lib/company-access/operational-scope.server")>("@/lib/company-access/operational-scope.server"),assertOperationalAccess:async()=>({workspace:{id:'W',name:'Fictional Company',timeZone:'America/Puerto_Rico',active:true,createdAt:'2026-01-01T00:00:00Z',updatedAt:'2026-01-01T00:00:00Z'},authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));

@@ -1,12 +1,12 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {AUTH_COPY} from '@/lib/auth-copy';
-const state=vi.hoisted(()=>({lang:'en' as 'en'|'es',session:null as string|null,to:''}));
-vi.mock('next/headers',()=>({cookies:async()=>({get:(name:string)=>name==='fuel_session'&&state.session!==null?{value:state.session}:undefined})}));
-vi.mock('next/navigation',()=>({redirect:(to:string)=>{state.to=to;throw new Error('redirect:'+to);}}));
-vi.mock('@/lib/auth-lang.server',()=>({readAuthLang:async()=>state.lang}));
-vi.mock('@/lib/data/workspaces',()=>({getPublicWorkspaceName:async()=>'Fictional workspace'}));
-vi.mock('@/app/login/actions',()=>({login:async()=>{}}));
+const state=rs.hoisted(()=>({lang:'en' as 'en'|'es',session:null as string|null,to:''}));
+rs.mock('next/headers',()=>({cookies:async()=>({get:(name:string)=>name==='fuel_session'&&state.session!==null?{value:state.session}:undefined})}));
+rs.mock('next/navigation',()=>({redirect:(to:string)=>{state.to=to;throw new Error('redirect:'+to);}}));
+rs.mock('@/lib/auth-lang.server',()=>({readAuthLang:async()=>state.lang}));
+rs.mock('@/lib/data/workspaces',()=>({getPublicWorkspaceName:async()=>'Fictional workspace'}));
+rs.mock('@/app/login/actions',()=>({login:async()=>{}}));
 import LoginPage from './page';
 import Home from '../page';
 

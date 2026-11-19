@@ -7,7 +7,7 @@ import { buildPublishReadiness } from '../scheduling/publish-readiness';
 import { weekDates } from '../date-utils';
 
 /** The management page and first publication submission review the same facts. */
-export async function getSchedulePublishReadiness(weekStart: string, locationId: string) {
+export async function getSchedulePublishReadiness(weekStart: string, locationId: string, scoped = false) {
   const [shifts, employees, staffing, targets, coverageWindows] =
       await Promise.all([
         listWeekShifts({ weekStart, byBusinessWorkweek: true }),
@@ -20,7 +20,7 @@ export async function getSchedulePublishReadiness(weekStart: string, locationId:
   const targetMap = new Map(
     targets.map((target) => [target.employeeId, target.targetWeeklyHours]),
   );
-  const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved);
+  const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved && (!scoped || shift.locationId === locationId));
   const health = calculateScheduleHealth({
     positions: await listPositions({includeInactive:true}),
     shifts: effectiveShifts.map((shift) => ({
@@ -34,14 +34,14 @@ export async function getSchedulePublishReadiness(weekStart: string, locationId:
       positionId: shift.positionId,
       isDesignatedLead: shift.isDesignatedLead,
     })),
-    locations: staffing.map((setting) => ({
+    locations: staffing.filter(setting => !scoped || setting.locationId === locationId).map((setting) => ({
       id: setting.locationId,
       name: setting.locationName,
       minimumStaffPerShift: setting.minimumStaffPerShift,
       requiresDesignatedLead: setting.requiresDesignatedLead,
     })),
     employees: employees
-      .filter((employee) => employee.active)
+      .filter((employee) => employee.active && (!scoped || employee.eligibleLocationIds.includes(locationId)))
       .map((employee) => ({
         id: employee.id,
         name: `${employee.firstName} ${employee.lastName}`,
@@ -51,7 +51,7 @@ export async function getSchedulePublishReadiness(weekStart: string, locationId:
         active: employee.active,
         targetWeeklyHours: targetMap.get(employee.id),
       })),
-    coverageWindows,
+    coverageWindows: scoped ? coverageWindows.filter(window => window.locationId === locationId) : coverageWindows,
     weekDates: weekDates(weekStart),
   });
 

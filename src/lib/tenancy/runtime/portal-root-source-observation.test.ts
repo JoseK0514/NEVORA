@@ -1,7 +1,7 @@
 // No mocks, proof constructors, native invocation or installation approval.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { CANONICAL_PORTAL_CAPABILITY_RULE_OBSERVATIONS } from '../../capabilities/policy';
 import type { UserRole } from '../../domain';
 import { comparePortalRootStartupSources, inspectPresentedPortalRootSources } from './portal-root-source-observation';

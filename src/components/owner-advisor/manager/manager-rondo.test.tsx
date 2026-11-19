@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Answer, ClosedCard, ManagerRondo, WeekCard } from "./manager-rondo";
 

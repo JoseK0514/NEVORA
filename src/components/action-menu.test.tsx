@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { renderToStaticMarkup } from "react-dom/server";
 import Link from "next/link";
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 
 const componentPath = fileURLToPath(new URL("./action-menu.tsx", import.meta.url));
 const cssPath = fileURLToPath(new URL("../app/globals.css", import.meta.url));

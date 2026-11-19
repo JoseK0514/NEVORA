@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import {beforeEach,afterEach,expect,it} from 'vitest';
+import {beforeEach,afterEach,expect,it} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {ClockerPunchService} from '../../lib/clocker/punches.server';
 import {handleClockerReviewRequest} from '../../lib/clocker/review-transport.server';

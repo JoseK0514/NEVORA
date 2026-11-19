@@ -1,12 +1,12 @@
-import {beforeEach,describe,expect,it,vi} from 'vitest';
+import {beforeEach,describe,expect,it,rs} from '@rstest/core';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import type {PayrollStatementsResponse} from '@/lib/payroll/contracts';
 import type {PayView} from './pay';
 import {onlyB,withoutB} from '../owner-b/test-support';
 
-const route=vi.hoisted(()=>({search:''}));
-vi.mock('next/navigation',()=>({useSearchParams:()=>new URLSearchParams(route.search)}));
+const route=rs.hoisted(()=>({search:''}));
+rs.mock('next/navigation',()=>({useSearchParams:()=>new URLSearchParams(route.search)}));
 const {CorpPayView}=await import('./pay-corp');
 
 type Statement=PayrollStatementsResponse['statements'][number];

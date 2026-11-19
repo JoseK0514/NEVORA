@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import * as contracts from './contracts';
 const api = contracts as unknown as Record<string, unknown>;
 

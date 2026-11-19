@@ -1,13 +1,13 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children) }));
-vi.mock("next/image", () => ({ default: () => null }));
-vi.mock("next/navigation", () => ({ notFound: () => { throw new Error("NEXT_NOT_FOUND"); } }));
-vi.mock("@/components/brand-mark", () => ({ BrandMark: () => null, BrandWordmark: () => null }));
-vi.mock("@/app/app/account/delete/actions", () => ({ requestAccountDeletion: vi.fn() }));
-vi.mock("@/app/login/actions", () => ({ logout: vi.fn() }));
+rs.mock("next/link", () => ({ default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children) }));
+rs.mock("next/image", () => ({ default: () => null }));
+rs.mock("next/navigation", () => ({ notFound: () => { throw new Error("NEXT_NOT_FOUND"); } }));
+rs.mock("@/components/brand-mark", () => ({ BrandMark: () => null, BrandWordmark: () => null }));
+rs.mock("@/app/app/account/delete/actions", () => ({ requestAccountDeletion: rs.fn() }));
+rs.mock("@/app/login/actions", () => ({ logout: rs.fn() }));
 import PrivacyPage from "./privacy/page";
 import TermsPage from "./terms/page";
 import SupportPage from "./support/page";
@@ -17,12 +17,12 @@ import { BrandLegal } from "@/components/brand-legal";
 import { AccountDeletionForm } from "@/components/account-deletion-form";
 import { POLICY_FACTS } from "@/lib/legal/policies";
 
-const language = vi.hoisted(() => ({ lang: "en" as "en" | "es" }));
-vi.mock("@/lib/auth-lang.server", () => ({ readAuthLang: async () => language.lang }));
+const language = rs.hoisted(() => ({ lang: "en" as "en" | "es" }));
+rs.mock("@/lib/auth-lang.server", () => ({ readAuthLang: async () => language.lang }));
 const pages = [["Privacy Policy", PrivacyPage], ["Terms of Use", TermsPage], ["Support", SupportPage], ["Delete your NEVORA account", AccountDeletionPage]] as const;
 /** Support and Account deletion follow the sign-in language, so they are async server components (inspection Nov 14, 2026). */
 const render = async (Page: () => unknown) => renderToStaticMarkup(await Page() as Parameters<typeof renderToStaticMarkup>[0]);
-afterEach(() => { vi.unstubAllEnvs(); language.lang = "en"; });
+afterEach(() => { rs.unstubAllEnvs(); language.lang = "en"; });
 
 describe("public policy pages", () => {
   it.each(pages)("%s reads without signing in, links the other pages and shows unresolved facts plainly", async (title, Page) => {
@@ -148,7 +148,7 @@ describe("public policy pages", () => {
   });
 
   it.each(pages)("%s is published in production now that every fact is confirmed", async (title, Page) => {
-    vi.stubEnv("VERCEL_ENV", "production");
+    rs.stubEnv("VERCEL_ENV", "production");
     expect(await render(Page)).toContain(`<h1 id="legal-title">${title}</h1>`);
   });
 
@@ -174,7 +174,7 @@ describe("public policy pages", () => {
   });
 
   it("the sign-in footer and Profile link the policies and Delete my account in production", () => {
-    vi.stubEnv("VERCEL_ENV", "production");
+    rs.stubEnv("VERCEL_ENV", "production");
     expect(renderToStaticMarkup(createElement(BrandLegal))).toContain('href="/privacy"');
     expect(renderToStaticMarkup(createElement(AccountPrivacyLinks))).toContain('href="/app/account/delete"');
   });

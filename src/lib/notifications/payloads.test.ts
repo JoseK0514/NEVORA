@@ -1,4 +1,4 @@
-import { describe,expect,it } from 'vitest';
+import { describe,expect,it } from '@rstest/core';
 import { buildPushEnvelope, REQUEST_PUSH_KINDS } from './payloads';
 import type { NotificationIntent } from './types';
 const intent:NotificationIntent={id:'abcdefab-abcd-4bcd-8bcd-abcdefabcdef',employeeId:'Medical Name',type:'SCHEDULE_CHANGED',title:'PIN 1234',body:'Medical Name medical note earnings $500',actionHref:'https://evil.test',eventKey:'private-key',environment:'test',source:{kind:'SCHEDULE',id:'week',version:'v1'},effectiveVersion:'v1',purpose:'EVENT',urgency:'normal',dueAt:'2026-10-05T12:00:00Z',expiresAt:'2026-10-06T12:00:00Z'};

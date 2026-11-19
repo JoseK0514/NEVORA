@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from '@rstest/core';
 import { parseNativeProfileCommand } from "./model";
 import { input } from "./fixtures.test-support";
 import { fictionalWorkweekPolicy } from "./workweek-fixtures.test-support";

@@ -1,10 +1,10 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { Today, TodayShift } from "@/lib/today/project";
 
-vi.mock("next/link", () => ({ default: ({ children, prefetch: _p, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", props, children) }));
+rs.mock("next/link", () => ({ default: ({ children, prefetch: _p, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", props, children) }));
 const { WhosWorkingView } = await import("./whos-working-corp");
 
 const person = (id: string, clockInAt: string, extra: Partial<Extract<ClockMonitor, { state: "ready" }>["employees"][number]> = {}) => ({ timeEntryId: `t-${id}`, employeeId: id, employeeName: `Person ${id}`, locationId: "l1", locationName: "Condado", deviceId: "d", clockInAt, state: "ON_FLOOR" as const, elapsedMinutes: 60, breakElapsedMinutes: null, positionName: null, scheduleMatch: "MATCHED" as const, ...extra });

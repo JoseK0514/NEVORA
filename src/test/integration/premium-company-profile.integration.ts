@@ -1,7 +1,7 @@
-import { it, expect, vi } from 'vitest';
+import { it, expect, rs } from '@rstest/core';
 import { randomBytes } from 'node:crypto';
 import { Client } from 'pg';
-vi.mock('server-only', () => ({}));
+rs.mock('server-only', () => ({}));
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { readCompanyInput, setupCompany } from '../../../scripts/company-setup';
 import { fixtureProof } from './shift-change-api';

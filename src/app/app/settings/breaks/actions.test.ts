@@ -1,12 +1,12 @@
-import { beforeEach, expect, it, vi } from 'vitest';
-const m=vi.hoisted(()=>({proof:vi.fn(),headers:vi.fn(),save:vi.fn()}));
-vi.mock('server-only',()=>({}));
-vi.mock('next/headers',()=>({headers:m.headers}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:m.proof}));
-vi.mock('@/lib/clocker/break-types.server',()=>({saveBreakType:m.save,BreakTypeError:class extends Error{constructor(public code:string){super('Safe catalog error');}}}));
+import { beforeEach, expect, it, rs } from '@rstest/core';
+const m=rs.hoisted(()=>({proof:rs.fn(),headers:rs.fn(),save:rs.fn()}));
+rs.mock('server-only',()=>({}));
+rs.mock('next/headers',()=>({headers:m.headers}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:m.proof}));
+rs.mock('@/lib/clocker/break-types.server',()=>({saveBreakType:m.save,BreakTypeError:class extends Error{constructor(public code:string){super('Safe catalog error');}}}));
 import { saveBreakTypeAction } from './actions';
 const form=(extra:Record<string,string|undefined>={})=>{const data=new FormData();for(const [key,value] of Object.entries({id:'',expectedVersion:'0',name:'Rest',category:'REST',targetMinutes:'15',active:'true',...extra}))if(value!==undefined)data.set(key,value);return data;};
-beforeEach(()=>{vi.clearAllMocks();m.proof.mockResolvedValue({employee:{id:'owner',role:'OWNER'},sessionTokenHash:'a'.repeat(64)});m.headers.mockResolvedValue(new Headers({host:'localhost:3000',origin:'http://localhost:3000'}));m.save.mockResolvedValue({id:'new',name:'Rest',category:'REST',targetMinutes:15,active:true,version:1});});
+beforeEach(()=>{rs.clearAllMocks();m.proof.mockResolvedValue({employee:{id:'owner',role:'OWNER'},sessionTokenHash:'a'.repeat(64)});m.headers.mockResolvedValue(new Headers({host:'localhost:3000',origin:'http://localhost:3000'}));m.save.mockResolvedValue({id:'new',name:'Rest',category:'REST',targetMinutes:15,active:true,version:1});});
 it('derives Owner proof on the server and parses an optional reference duration',async()=>{
  expect(await saveBreakTypeAction(form({targetMinutes:''}))).toMatchObject({ok:true});
  expect(m.save).toHaveBeenCalledWith({employeeId:'owner',sessionTokenHash:'a'.repeat(64)}, {name:'Rest',category:'REST',targetMinutes:null,active:true,expectedVersion:0});

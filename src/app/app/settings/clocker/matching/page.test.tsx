@@ -1,15 +1,15 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
-const mocks = vi.hoisted(() => ({ role: vi.fn(), read: vi.fn() }));
-vi.mock('@/lib/auth/permissions', () => ({ requireRoles: mocks.role }));
-vi.mock('./actions', () => ({ readClockerGraceAction: mocks.read, saveClockerGraceAction: vi.fn() }));
-vi.mock('@/components/clocker-owner-b.css', () => ({}));
-vi.mock('@/components/clocker-schedule-grace.css', () => ({}));
-vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }), usePathname: () => '/app/settings/clocker/matching' }));
+const mocks = rs.hoisted(() => ({ role: rs.fn(), read: rs.fn() }));
+rs.mock('@/lib/auth/permissions', () => ({ requireRoles: mocks.role }));
+rs.mock('./actions', () => ({ readClockerGraceAction: mocks.read, saveClockerGraceAction: rs.fn() }));
+rs.mock('@/components/clocker-owner-b.css', () => ({}));
+rs.mock('@/components/clocker-schedule-grace.css', () => ({}));
+rs.mock('next/navigation', () => ({ useRouter: () => ({ refresh: rs.fn() }), usePathname: () => '/app/settings/clocker/matching' }));
 import ClockerMatchingPage from './page';
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   mocks.role.mockResolvedValue({ role: 'OWNER' });
   mocks.read.mockResolvedValue({ state: 'available', setting: { earlyClockInGraceMinutes: 10, version: 2 } });
 });

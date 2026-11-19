@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {projectReports} from './project';
 import {projectTimecard} from '../timecards/project';
 import {makeAttendanceSource,makeRecordedEntry} from '../../test/fixtures/attendance-exceptions';

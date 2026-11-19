@@ -142,7 +142,17 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const refreshProfile=()=>page.evaluate(()=>window.dispatchEvent(new Event('storage')));
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
  async function accessibility(name){
-  const expectedTitle={'Requests hub':'Requests · NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];assert(expectedTitle,'Known page title contract');await page.waitForFunction(title=>document.title===title,expectedTitle);if(name==='Requests hub'&&phone){await page.locator('[data-requests-state="ready"]').waitFor({state:'attached'});await page.locator('#b-requests-title').waitFor();}const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;
+  const expectedTitle={'Requests hub':'Requests · NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];
+  assert(expectedTitle,'Known page title contract');
+  await page.waitForFunction(title=>document.title===title,expectedTitle);
+  if(name==='Requests hub'){
+   // The live employee view replaces the server placeholder on tablets and desktops as well as phones.
+   await page.locator('[data-requests-state="ready"]').waitFor({state:'attached'});
+   await page.locator('#b-requests-title').waitFor();
+   await page.locator('#b-requests-decided').getByRole('link',{name:'See all decided requests',exact:true}).waitFor();
+   await page.waitForFunction(()=>!document.documentElement.hasAttribute('data-c-arrived'));
+  }
+  const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;
   // Audit the settled tab bar: a tab's pressed/pending opacity transition is a frame of motion, not its colour.
   // A tapped tab also keeps the browser's :active state for a few hundred milliseconds after the tap (Chromium holds it
   // past a quick second tap elsewhere), and while it is pressed the tab dims to .64 by design (Signature press feedback,
@@ -261,7 +271,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
    await page.goBack();await page.waitForURL(u=>u.pathname===moreFrom);await settle();
    checks.push('More page reached by native Enter with explicit row order; Back returns');
   }else{await nav('/app/profile',true);checks.push('Native keyboard desktop account-menu Profile navigation and focus handoff');}
-  stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);const profileAlerts=page.locator('main a[href="/app/profile/device-alerts"]');assert.equal(await profileAlerts.count(),actualRole==='LEAD'?1:0,'Only the current Lead profile supplies the Calendar and alerts entry');assert.equal(await profileAlerts.filter({visible:true}).count(),actualRole==='LEAD'&&width>=768?1:0,'The Lead entry is visible only in the desktop/tablet card; its destination still reports disabled workplace alerts');await bounds();await screenshot('profile');await accessibility('Profile');
+  stage='layout';await nav('/app/profile');await ready('profile');assert.equal(await page.locator('#portal-device-settings').count(),0);const profileAlerts=page.locator('main a[href="/app/profile/device-alerts"]');assert.equal(await profileAlerts.count(),1,'Employee and Lead profiles supply the Calendar and alerts entry');assert.equal(await profileAlerts.filter({visible:true}).count(),width>=768?1:0,'The entry is visible only in the desktop/tablet card; its destination still reports disabled workplace alerts');await bounds();await screenshot('profile');await accessibility('Profile');
   // Board E-Profile: device alerts are their own page (opened from Notifications' Settings when the workplace has alerts).
   // With push off it says so and keeps notifications in NEVORA.
   await page.goto(app.url+'/app/profile/device-alerts');await settle();
@@ -423,7 +433,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
     await form().getByRole('alert').filter({hasText:'Choose an end date on or after the start date.'}).waitFor();await settle();page.off('request',observeInvalid);
     assert.equal(invalidPosts,0,'Invalid dates never reach the server');assert(await form().locator('[name="endDate"]').evaluate(field=>field===document.activeElement&&field.getAttribute('aria-invalid')==='true'));
     assert.deepEqual(await q("SELECT id FROM time_off_requests WHERE employee_id=$1 AND start_date=$2",[actor,scenario.targetDate]),[]);
-    const submitTimeOff=async(day)=>{await openTimeOffForm();await form().locator('[name="startDate"]').fill(day);await form().locator('[name="endDate"]').fill(day);await form().getByRole('button',{name:'Send request',exact:true}).click();await page.getByRole('heading',{name:'Request recorded',exact:true}).waitFor();await actionsSettled();return new URL(await page.getByRole('link',{name:'View my request',exact:true}).getAttribute('href'),app.url).searchParams.get('requestId');};
+    const submitTimeOff=async(day)=>{await openTimeOffForm();await form().locator('[name="startDate"]').fill(day);await form().locator('[name="endDate"]').fill(day);await form().getByRole('button',{name:'Send request',exact:true}).click();await page.getByRole('heading',{name:'Request sent',exact:true}).waitFor();await actionsSettled();return new URL(await page.getByRole('link',{name:'View my request',exact:true}).getAttribute('href'),app.url).searchParams.get('requestId');};
     created=await submitTimeOff(scenario.sourceDate);const pending=await q('SELECT id,employee_id,status FROM time_off_requests WHERE id=$1',[created]);assert.deepEqual(pending,[{id:created,employee_id:actor,status:'PENDING'}]);const intents=await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[created]);assert(intents.length>0,'Actual canonical notifications outbox exists');
     // Stable-ID replay: the first send commits on the server but its response is lost; the page keeps the original
     // submission, and Check submission status replays that same request ID.
@@ -434,7 +444,7 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
      const check=page.getByRole('button',{name:'Check submission status',exact:true});await check.waitFor();
      const replayed=await q("SELECT id,status FROM time_off_requests WHERE employee_id=$1 AND start_date=$2",[actor,scenario.targetDate]);assert.equal(replayed.length,1,'The lost response still committed once');
      const replayIntents=await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[replayed[0].id]);
-     await check.click();await page.getByRole('heading',{name:'Request recorded',exact:true}).waitFor();await actionsSettled();
+     await check.click();await page.getByRole('heading',{name:'Request sent',exact:true}).waitFor();await actionsSettled();
      assert.equal(new URL(await page.getByRole('link',{name:'View my request',exact:true}).getAttribute('href'),app.url).searchParams.get('requestId'),replayed[0].id,'Replay resolves to the original request ID');
      assert.deepEqual(await q("SELECT id,status FROM time_off_requests WHERE employee_id=$1 AND start_date=$2",[actor,scenario.targetDate]),[{id:replayed[0].id,status:'PENDING'}]);
      assert.deepEqual(await q("SELECT id FROM notifications WHERE source_kind='TIME_OFF' AND source_id=$1 ORDER BY id",[replayed[0].id]),replayIntents);

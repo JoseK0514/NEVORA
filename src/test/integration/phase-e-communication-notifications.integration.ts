@@ -1,5 +1,5 @@
 import {readFile} from 'node:fs/promises';
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {createECDH,randomUUID} from 'node:crypto';
 import {createDisposableNotificationDatabase} from './local-postgres';
 import {previewCommunicationAudience,executeCommunicationCommand,readCommunication} from '../../lib/communications/service.server';
@@ -35,7 +35,7 @@ async function worker(){
  const subscriptions=sqlSubscriptionRepository(db.executor);expect((await subscriptions.enroll(enrollment)).state).toBe('active');
  const material=encryptSubscriptionMaterial({endpoint:'https://fcm.googleapis.com/fcm/send/QA-never-contact',expirationTime:null,keys:{p256dh:pair.getPublicKey().toString('base64url'),auth:Buffer.alloc(16,2).toString('base64url')}},key,enrollment);await q('UPDATE push_subscriptions SET encrypted_material=$1',[material]);
  const config={...readNotificationConfig({PUSH_ENVIRONMENT:'test',PUSH_SUBSCRIPTION_ENCRYPTION_KEY:key.toString('base64url')}),featureEnabled:true,deliveryEnabled:true,testDeliveryEnabled:true,testAccountIds:['employee'],policy:notificationPolicyFor(fixtureTimeZone)};
- const send=vi.fn(async()=>({kind:'accepted' as const}));
+ const send=rs.fn(async()=>({kind:'accepted' as const}));
  const deps:WorkerDeps={config,clock:()=>new Date(),executor:db.executor,subscriptions,deliveries:sqlDeliveryRepository('test',db.executor),state:sqlNotificationStateRepository(db.executor),sender:{send}};
  return {deps,send};
 }

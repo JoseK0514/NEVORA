@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {waitForFreshHome,waitForRecordedTimeReady,installHomeHeldObserver} from './phase-e-home-browser-scenarios.mjs';
+import {waitForFreshHome,waitForRecordedTimeReady,installHomeHeldObserver,assertNoTimeReadAfterPause,installTimeReadStartObserver} from './phase-e-home-browser-scenarios.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 
 // A scheduling fixture for the actual H06 helper, not product/SQL evidence.
@@ -12,6 +12,10 @@ const evidence=externalEvidence(source,process.env.HOME_READINESS_EVIDENCE_DIR);
 await writeFile(join(evidence,'source-manifest.json'),JSON.stringify(custody,null,2));
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'));
 const playwright=runtime('playwright');assert.equal(runtime('playwright/package.json').version,'1.62.1');
+// Node request notifications can arrive after the browser has already started
+// and aborted the read. The browser's creation boundary determines causality.
+assert.doesNotThrow(()=>assertNoTimeReadAfterPause({requestCount:3,browserRequestCount:4},{requestCount:4,browserRequestCount:4}),'Delayed delivery of a pre-pagehide request is not a new read');
+assert.throws(()=>assertNoTimeReadAfterPause({requestCount:3,browserRequestCount:3},{requestCount:3,browserRequestCount:4}),assert.AssertionError,'A real new browser read must fail even before Node receives its request event');
 const results=[];
 for(const engine of ['chromium','webkit']){
  const browser=await playwright[engine].launch({headless:true});let context;
@@ -58,11 +62,35 @@ for(const engine of ['chromium','webkit']){
   await page.evaluate(()=>{document.querySelector('.c-hours').setAttribute('aria-busy','false');});
   await recordedWaiting;assert.deepEqual(result.recordedResolved,{state:'OFF_CLOCK',view:'time',settled:true});
   // The released B view must be read, even when hidden legacy markup disagrees.
-  await page.setContent('<main class="c-hours" data-hours-view="records" data-hours-state="ready" aria-busy="true"><section id="hours-now" style="display:none"><h2 class="c-card__label">Right now</h2><p class="c-big">Not clocked in</p></section><section id="b-hours-now"><div class="b-card__h"><h2>Right now</h2><span class="b-chip">Clocked in</span></div></section></main>');
+  await page.setContent('<main class="c-hours" data-hours-view="records" data-hours-state="ready" aria-busy="true"><section id="hours-now" style="display:none"><h2 class="c-card__label">Right now</h2><p class="c-big">Not clocked in</p></section><section id="b-hours-now"><div class="b-card__h"><h2>Right now</h2><span class="b-status">Clocked in</span></div></section></main>');
   let bSettled=false;const bWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(()=>{bSettled=true;});await render();assert.equal(bSettled,false);
   await page.evaluate(()=>document.querySelector('.c-hours').setAttribute('aria-busy','false'));await render();assert.equal(bSettled,false,'A hidden legacy off-clock card cannot authorize the visible Clocked in view');
-  await page.evaluate(()=>document.querySelector('#b-hours-now .b-chip').textContent='Not clocked in');await bWaiting;assert.equal(bSettled,true);
-  result.recordedReadiness.push({phase:'Visible B status matches the fresh released read; hidden legacy status cannot pass',settled:bSettled});result.status='passed';
+  await page.evaluate(()=>document.querySelector('#b-hours-now .b-status').textContent='Not clocked in');await bWaiting;assert.equal(bSettled,true);
+  result.recordedReadiness.push({phase:'Visible B status matches the fresh released read; hidden legacy status cannot pass',settled:bSettled});
+  // After a real clock-out during a scheduled shift, the delivered status also
+  // says how long the shift has been under way. It remains OFF_CLOCK. Invalid
+  // text, a clocked-in status, paused data and an in-flight read must still wait.
+  await page.setContent('<main class="c-hours" data-hours-view="records" data-hours-state="ready" aria-busy="false"><section id="b-hours-now"><div class="b-card__h"><h2>Right now</h2><span class="b-status" data-dot="green">Clocked in</span></div></section></main>');
+  let elapsedSettled=false;const elapsedWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(value=>{elapsedSettled=true;result.elapsedRecordedResult=value;});
+  await render();assert.equal(elapsedSettled,false,'An old Clocked in status must remain refused');
+  await page.evaluate(()=>{const status=document.querySelector('.b-status');status.textContent='Not clocked in · unknown';status.dataset.dot='amber';});await render();assert.equal(elapsedSettled,false,'An unknown off-clock duration cannot authorize readiness');
+  await page.evaluate(()=>{const status=document.querySelector('.b-status');status.textContent='Not clocked in · 1 h';status.dataset.dot='green';});await render();assert.equal(elapsedSettled,false,'The elapsed not-clocked-in hint is amber, not a recorded green clock-in');
+  await page.evaluate(()=>{document.querySelector('.b-status').dataset.dot='amber';document.querySelector('.c-hours').dataset.hoursState='paused';});await render();assert.equal(elapsedSettled,false,'Paused data cannot authorize the elapsed status');
+  await page.evaluate(()=>{const time=document.querySelector('.c-hours');time.dataset.hoursState='ready';time.setAttribute('aria-busy','true');});await render();assert.equal(elapsedSettled,false,'A current read must settle before its elapsed status is admitted');
+  await page.evaluate(()=>document.querySelector('.c-hours').setAttribute('aria-busy','false'));await elapsedWaiting;assert.deepEqual(result.elapsedRecordedResult,{state:'OFF_CLOCK',view:'time',settled:true});
+  result.recordedReadiness.push({phase:'Settled OFF_CLOCK can include the delivered amber elapsed hint; stale and malformed states remain refused',settled:elapsedSettled});
+  // A real forwarded fetch starts before pagehide, while this fixture holds its
+  // Node notification. Delivering that notification afterward is not a new read.
+  await page.route('https://owned.invalid/**',route=>route.fulfill({status:200,headers:{'access-control-allow-origin':'*','content-type':'application/json'},body:'{"owned":true}'}));
+  let delivered=0;const pending=[];const lateNotification=request=>{if(new URL(request.url()).pathname.startsWith('/api/employee/hours/'))pending.push(()=>delivered++);};page.on('request',lateNotification);
+  await page.evaluate(installTimeReadStartObserver);
+  const forwarded=await page.evaluate(async()=>{const response=await fetch('https://owned.invalid/api/employee/hours/records/overview');return response.json();});assert.deepEqual(forwarded,{owned:true});
+  const before={requestCount:delivered,browserRequestCount:await page.evaluate(()=>window.__homeTimeReadStarts.snapshot().count)};assert.equal(before.requestCount,0);assert.equal(before.browserRequestCount,1);
+  await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));for(const deliver of pending.splice(0))deliver();
+  const paused={requestCount:delivered,browserRequestCount:await page.evaluate(()=>window.__homeTimeReadStarts.snapshot().count)};assert.equal(paused.requestCount,1);assertNoTimeReadAfterPause(before,paused);
+  await page.evaluate(async()=>{await fetch('https://owned.invalid/api/employee/hours/records/overview');});
+  const newRead={requestCount:delivered,browserRequestCount:await page.evaluate(()=>window.__homeTimeReadStarts.snapshot().count)};assert.equal(newRead.requestCount,paused.requestCount,'The new Node notification remains held');assert.equal(newRead.browserRequestCount,2);assert.throws(()=>assertNoTimeReadAfterPause(paused,newRead),assert.AssertionError,'A real post-pagehide fetch cannot pass merely because Node has not received its event');
+  result.readStartBoundary={before,paused,newRead,observer:await page.evaluate(()=>{const observer=window.__homeTimeReadStarts,snapshot=observer.snapshot(),nativeFetchRestored=observer.stop();delete window.__homeTimeReadStarts;return {...snapshot,nativeFetchRestored};})};assert(result.readStartBoundary.observer.nativeFetchRestored);page.off('request',lateNotification);await page.unroute('https://owned.invalid/**');result.status='passed';
  }catch(error){result.failure={name:error.name,message:error instanceof assert.AssertionError?error.message:'Controlled readiness fixture failed'};process.exitCode=1;}
  finally{await context?.close();await browser.close();result.browserClosed=!browser.isConnected();await writeFile(join(evidence,'readiness-report.json'),JSON.stringify(results,null,2));}
 }

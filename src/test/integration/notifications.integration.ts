@@ -1,13 +1,13 @@
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {isAbsolute,relative,resolve,join} from 'node:path';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import { fixtureProof } from './shift-change-api';
 import { publishScheduleWithRevision, reviewTimeOffRequest, setAvailabilityDeadline } from './management-api';
 import { configureFictionalShiftChanges } from './shift-change-api';
 import { notificationPolicyFor as fixturePolicyFor } from '../../lib/notifications/policy';
 const fixtureNotificationPolicy=fixturePolicyFor('America/Puerto_Rico');
-import { beforeAll, afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, afterAll, beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { createECDH, createHash, randomUUID } from 'node:crypto';
 import { Client } from 'pg';
 import { createDisposableNotificationDatabase } from './local-postgres';
@@ -28,12 +28,12 @@ import { readNotificationConfig as readRuntimeConfig } from '../../lib/notificat
 import { replaceWeeklyAvailability } from './self-service-api';
 import { runDispatch, type WorkerDeps } from '../../lib/notifications/worker';
 import { runReminders } from '../../lib/notifications/reminders';
-import type { NotificationIntent, SqlExecutor, InstallationProof } from '../../lib/notifications/types';
+import type { NotificationIntent, SqlExecutor, SqlStatement, InstallationProof } from '../../lib/notifications/types';
 
 // Substitute the SQL transport only. Tagged statements remain lazy until the
 // original production transaction submits its exact ordered batch to PostgreSQL.
-const transport = vi.hoisted(() => ({ executor: null as SqlExecutor | null }));
-vi.mock('../../lib/db', () => {
+const transport = rs.hoisted(() => ({ executor: null as SqlExecutor | null }));
+rs.mock('../../lib/db', () => {
   const statement = (text: string, values: readonly unknown[] = []) => ({ statement: { text, values }, then: (yes: (rows: unknown[]) => unknown, no: (error: unknown) => unknown) => transport.executor!.query({ text, values }).then(yes, no) });
   const tagged = Object.assign((strings: TemplateStringsArray, ...values: unknown[]) => statement(strings.reduce((text, part, index) => text + (index ? '$' + index : '') + part, ''), values), {
     query: statement,
@@ -68,9 +68,9 @@ async function delivery(overrides: Partial<NotificationIntent> = {}) {
   await sqlDeliveryRepository('test', db).materialize([value.id]);
   return value;
 }
-function onceBeforeTransaction(action: () => Promise<unknown>): SqlExecutor {
+function onceBeforeTransaction(action: () => Promise<unknown>, matches: (statements: readonly SqlStatement[]) => boolean = () => true): SqlExecutor {
   let first = true;
-  return { query: (s, signal) => db.query(s, signal), transaction: async (statements, signal) => { if (first) { first = false; await action(); } return db.transaction(statements, signal); } };
+  return { query: (s, signal) => db.query(s, signal), transaction: async (statements, signal) => { if (first && matches(statements)) { first = false; await action(); } return db.transaction(statements, signal); } };
 }
 beforeAll(async () => { database = await createDisposableNotificationDatabase(); db = database.executor; transport.executor = db; }, 30000);
 afterAll(async () => { await database?.dispose(); });
@@ -86,6 +86,12 @@ beforeEach(async () => {
   await sql(`INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES ('QA-sh1','QA-s1','QA-E','2030-10-11','09:00','17:00'),('QA-sh2','QA-s2','QA-F','2030-10-12','09:00','17:00')`);
   // Explicit legacy Manager/Owner census precedes current enforcement.
   await sql(await readFile('db/migrations/0032_company_access_invitations.sql','utf8'));
+  await sql(`INSERT INTO workforce_permission_revisions
+    (workspace_id,employee_id,location_id,permission,revision,role_generation,granted,actor_employee_id)
+    SELECT v.workspace_id,v.employee_id,l.id,p.permission,1,v.generation,true,'QA-O'
+    FROM operational_subject_versions v JOIN locations l ON l.workspace_id=v.workspace_id
+    CROSS JOIN (VALUES ('PUBLISH_SCHEDULE'),('APPROVE_LEAVE')) p(permission)
+    WHERE v.employee_id='QA-M' AND l.id IN ('loc-1','loc-2')`);
 });
 
 it('bounds concurrent queue claims and records FIFO urgent backlog without a provider send',async()=>{
@@ -132,7 +138,7 @@ describe('actual ordered publication and request SQL', () => {
       await holder.query('BEGIN');await holder.query(change);
       // Attach the rejection handler immediately while observing the actual wait.
       pending=publish().then(value=>({value}),error=>({error}));
-      await vi.waitFor(async()=>{expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND pid<>pg_backend_pid()")).not.toHaveLength(0);},{timeout:3000,interval:20});
+      await rs.waitFor(async()=>{expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND pid<>pg_backend_pid()")).not.toHaveLength(0);},{timeout:3000,interval:20});
       await holder.query('COMMIT');
       expect(await pending).toHaveProperty('error');
       expect((await sql("SELECT status FROM schedules WHERE id='QA-s1'"))[0].status).toBe('DRAFT');
@@ -148,7 +154,7 @@ describe('actual ordered publication and request SQL', () => {
     } finally { await sql('ALTER TABLE notifications DROP CONSTRAINT qa_reject_intent'); }
   });
   it('failed_mutation_has_no_notification', async () => {
-    expect(await reviewTimeOffRequest({ requestId: 'QA-missing', managerId: 'QA-M', status: 'APPROVED' }, db)).toBe(false);
+    await expect(reviewTimeOffRequest({ requestId: 'QA-missing', managerId: 'QA-M', status: 'APPROVED' }, db)).rejects.toThrow(/operational_authorization/);
     await expect(createTimeOffRequest({ employeeId: 'QA-E', startDate: '2030-10-12', endDate: '2030-10-11' }, db)).rejects.toThrow();
     expect(await count('notifications')).toBe(0);
   });
@@ -157,7 +163,7 @@ describe('actual ordered publication and request SQL', () => {
     const racing = onceBeforeTransaction(async () => {
       await commitPublishedWeekChange({ weekStarts: [week], actorEmployeeId: 'QA-M',proof:await fixtureProof(db,'QA-M'), sourceType: 'MANAGER_MUTATION', build: s => ({ statements: [{ text: `UPDATE shifts SET start_time='10:00' WHERE id='QA-sh1'`, values: [] }], afterSchedules: s.schedules, afterShifts: s.shifts.map(sh => sh.sourceShiftId === 'QA-sh1' ? { ...sh, startTime: '10:00' } : sh) }) }, db);
       await publish('loc-2');
-    });
+    }, statements => statements.some(statement => statement.text.includes('AS guarded_after')));
     expect((await publish('loc-1', racing)).published).toBe(true);
     const state = await readNotificationWeekState([week], db);
     expect(state.revisions).toHaveLength(2);
@@ -601,7 +607,7 @@ describe('real SQL worker recovery with a no-network sender', () => {
     expect(jar.has('fuel_session')).toBe(false);
     expect(await sql('SELECT 1 FROM employee_sessions WHERE token_hash=$1', [sessionA])).toHaveLength(0);
     expect((await sql('SELECT status FROM push_subscriptions WHERE id=$1', [before.id]))[0].status).toBe('active');
-    const send = vi.fn(async () => ({ kind: 'accepted' as const })); deps.sender = { send };
+    const send = rs.fn(async () => ({ kind: 'accepted' as const })); deps.sender = { send };
     await runDispatch({ mode: 'all', deps });
     const [after] = await sql('SELECT status,generation,encrypted_material,session_hash FROM push_subscriptions WHERE id=$1', [before.id]);
     expect(after).toEqual({ status: 'detached', generation: expect.any(String), encrypted_material: null, session_hash: sessionA });
@@ -641,7 +647,7 @@ describe('real SQL worker recovery with a no-network sender', () => {
       expectedGeneration: String(before.generation), expiresAt: null });
     try {
       await locked;
-      const send = vi.fn(async () => ({ kind: 'accepted' as const })); deps.sender = { send };
+      const send = rs.fn(async () => ({ kind: 'accepted' as const })); deps.sender = { send };
       // Retry mode runs cleanup even without a new-intent scan. The locked row is
       // skipped instead of waiting on or detaching its now-current association.
       await runDispatch({ mode: 'retry', deps });
@@ -722,7 +728,7 @@ describe('original shift review concurrency',()=>{
   try{
    await holder.query('BEGIN');await holder.query("UPDATE shifts SET notes='Concurrent fictional edit' WHERE id='QA-sh1'");
    pending=edit(version).then(value=>({value}),error=>({error}));
-   await vi.waitFor(async()=>expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock'")).not.toHaveLength(0),{timeout:3000,interval:20});
+   await rs.waitFor(async()=>expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock'")).not.toHaveLength(0),{timeout:3000,interval:20});
    await holder.query('COMMIT');expect(await pending).toMatchObject({error:{code:'SHIFT_REVIEW_CONFLICT'}});
   }finally{await holder.query('ROLLBACK');await holder.end();await pending;}
   const fresh=await review();expect(await edit(fresh)).toBe(true);
@@ -749,7 +755,7 @@ it.each(['update','delete'] as const)('original review %s fence pins the shift u
   pending=(kind==='delete'?reviewedDeleteShift('QA-sh1',proof,ex,version):reviewedUpdateShift({proof,actorEmployeeId:'QA-M',shiftId:'QA-sh1',expectedReviewVersion:version,employeeId:'QA-E',date:'2030-10-11',startTime:'09:00',endTime:'17:00',notes:'Manager reviewed note'},ex)).then(value=>({value}),error=>({error}));
   await Promise.race([guarded,pending.then(()=>{throw Error('Review fence not reached');})]);
   raw=sql("UPDATE shifts SET notes='Concurrent writer after manager' WHERE id='QA-sh1'");
-  await vi.waitFor(async()=>expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'UPDATE shifts SET notes=%'")).not.toHaveLength(0),{timeout:1500,interval:20});
+  await rs.waitFor(async()=>expect(await sql("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'UPDATE shifts SET notes=%'")).not.toHaveLength(0),{timeout:1500,interval:20});
   release();expect(await pending).toMatchObject({value:true});await raw;
  }finally{release();await pending;await raw;await client.end();}
 });

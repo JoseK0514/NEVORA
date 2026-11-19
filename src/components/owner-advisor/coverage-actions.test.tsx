@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { ownerCoverageAction } from "@/test/fixtures/owner-coverage-action";
 import { CoverageActionPanel } from "./coverage-actions";

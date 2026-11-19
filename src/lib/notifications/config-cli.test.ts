@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { spawnSync } from 'node:child_process';
 
 it('loads the real notification CLI modules through the declared server entry without a top-level-await CommonJS failure', () => {

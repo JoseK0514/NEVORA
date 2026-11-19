@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { AdvisorScreen } from "./advisor";
 import { initialView } from "./controller";
@@ -30,7 +30,7 @@ const snapshot = parseSnapshot({
   validForMs: 15000,
 });
 it("offers both explicit workflows without a provider and renders server-owned exact proposals", () => {
-  const html = renderToStaticMarkup(<AdvisorScreen view={{ ...initialView, loading: false, snapshot, answer: {
+  const html = renderToStaticMarkup(<AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }} view={{ ...initialView, loading: false, snapshot, answer: {
     text: "Prepared options", sources: [], proposals: [{ employeeName: "Fictional Ana", locationId: "L1", locationName: "North", date: "2026-10-22", startTime: "08:00", endTime: "12:00", positionName: "Barista", isDesignatedLead: false, scheduledHours: 12, targetHours: 20, publication: "DRAFT", review: "abc123" }],
   } }} actions={actions} />);
   expect(html).toContain("Prepare coverage options");
@@ -42,12 +42,12 @@ it("offers both explicit workflows without a provider and renders server-owned e
 it("renders loading and error without exposing prior data", () => {
   expect(
     renderToStaticMarkup(
-      <AdvisorScreen view={initialView} actions={actions} />,
+      <AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }} view={initialView} actions={actions} />,
     ),
   ).toContain("Loading your briefing");
   expect(
     renderToStaticMarkup(
-      <AdvisorScreen
+      <AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }}
         view={{ ...initialView, loading: false, message: "Access ended" }}
         actions={actions}
       />,
@@ -56,7 +56,7 @@ it("renders loading and error without exposing prior data", () => {
 });
 it("renders disconnected disabled Ask, escaped historical text and labeled editable fields", () => {
   const html = renderToStaticMarkup(
-    <AdvisorScreen
+    <AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }}
       view={{ ...initialView, loading: false, snapshot }}
       actions={actions}
     />,
@@ -72,7 +72,7 @@ it("renders disconnected disabled Ask, escaped historical text and labeled edita
 });
 it("renders busy cancellation and answer sources separately from historical context", () => {
   const html = renderToStaticMarkup(
-    <AdvisorScreen
+    <AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }}
       view={{
         ...initialView,
         snapshot: { ...snapshot, connection: "available" },
@@ -106,10 +106,10 @@ it("dates comparison staleness by its observation instead of the currently visib
   const coverage={view:{stage:"saved" as const,result:receipt,acknowledged:false,message:"",lastSavedAt:receipt.receipt!.savedAt},actions:coverageActions};
   const plans=ownerCoveragePlan();plans.observedAt="2026-10-30T12:02:00Z";
   const answer={text:"Compare current plans",sources:[],coveragePlans:plans};
-  const fresh=renderToStaticMarkup(<AdvisorScreen view={{...initialView,snapshot,answer}} actions={actions} coverage={coverage}/>);
+  const fresh=renderToStaticMarkup(<AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }} view={{...initialView,snapshot,answer}} actions={actions} coverage={coverage}/>);
   expect(fresh).not.toContain("This comparison predates your save");
   plans.observedAt="2026-10-30T12:00:00Z";
-  const earlier=renderToStaticMarkup(<AdvisorScreen view={{...initialView,snapshot,answer}} actions={actions} coverage={{...coverage,view:{...coverage.view,stage:"review",result:ownerCoverageAction()}}}/>);
+  const earlier=renderToStaticMarkup(<AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }} view={{...initialView,snapshot,answer}} actions={actions} coverage={{...coverage,view:{...coverage.view,stage:"review",result:ownerCoverageAction()}}}/>);
   expect(earlier).toContain("This comparison predates your save");
   expect(earlier).toContain("From an earlier comparison");
 });
@@ -131,7 +131,7 @@ describe("a business citation in an answer", async () => {
   it("is a real button in the answer's sources once the parser accepted its evidence; other sources stay links", () => {
     const parsed = parseAnswer(wire({ state: "answered", authority: "owner", observedAt, validForMs: 15000,
       answer: { text: "Sales held steady.", sources: [source, { label: "Schedule", href: "/app/schedule?week=2026-11-09", observedAt }], businessEvidence: [uiEvidence("SALES")] } }));
-    const html = renderToStaticMarkup(<AdvisorScreen view={{ ...initialView, loading: false, snapshot, answer: parsed.answer }} actions={actions} />);
+    const html = renderToStaticMarkup(<AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }} view={{ ...initialView, loading: false, snapshot, answer: parsed.answer }} actions={actions} />);
     const button = /<button[^>]*class="be-cite"[^>]*>/.exec(html)?.[0] ?? "";
     expect(button).toContain('type="button"');
     expect(button).toContain('aria-expanded="false"');

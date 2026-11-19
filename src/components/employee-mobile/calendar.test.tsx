@@ -1,5 +1,5 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import type {ReactElement} from 'react';
 import {CalendarSubscriptionView} from '../calendar-subscription-panel';
 import {onlyB,withoutB} from '../owner-b/test-support';

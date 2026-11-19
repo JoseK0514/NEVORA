@@ -1,12 +1,12 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
-const fixture = vi.hoisted(() => ({ role: "EMPLOYEE" }));
-vi.mock("next/navigation", () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); }, usePathname: () => "/app/restricted", useRouter: () => ({ refresh: () => undefined }) }));
-vi.mock("@/lib/auth/session", () => ({ requireSession: async () => ({ id: "fictional", role: fixture.role, firstName: "Sam", lastName: "Cruz", primaryLocationId: "loc-1" }) }));
-vi.mock("@/lib/auth/permissions", () => import("../../../lib/auth/permissions"));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+const fixture = rs.hoisted(() => ({ role: "EMPLOYEE" }));
+rs.mock("next/navigation", () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); }, usePathname: () => "/app/restricted", useRouter: () => ({ refresh: () => undefined }) }));
+rs.mock("@/lib/auth/session", () => ({ requireSession: async () => ({ id: "fictional", role: fixture.role, firstName: "Sam", lastName: "Cruz", primaryLocationId: "loc-1" }) }));
+
 
 import RestrictedPage, { generateMetadata } from "./page";
 import { MANAGER_ROLES, RESTRICTED_PATH, requireRoles } from "@/lib/auth/permissions";

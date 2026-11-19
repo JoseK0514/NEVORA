@@ -1,25 +1,26 @@
+import * as rstestOriginal0 from "@/lib/workspace-presentation/service" with { rstest: 'importActual' };
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {beforeEach,expect,it,vi} from 'vitest';
+import {beforeEach,expect,it,rs} from '@rstest/core';
 import type {ExchangeShift} from '../../../../lib/data/exchanges';
 import SwapPage from './page';
 import {SwapPageContent} from '../../../../components/swap-page-content';
 import {findElementProps} from '../../../../test/react-props.test-support';
-vi.mock('@/lib/workspace-presentation/service', async importOriginal => ({ ...(await importOriginal<typeof import('@/lib/workspace-presentation/service')>()), readActivePresentation: async () => ({ style: undefined, tokens: null, logoAssetId: null, revision: 0, words: 'standard' as const, modules: (await import('@/lib/workspace-presentation/modules')).ALL_MODULES_ON }) })); // no saved settings: every module on
-const state=vi.hoisted(()=>({source:null as ExchangeShift|null,target:null as ExchangeShift|null,sourceChange:{} as Partial<ExchangeShift>,targetChange:{} as Partial<ExchangeShift>,sourceFingerprintChange:false,refuse:null as null|string}));
-vi.mock('@/lib/auth/permissions',()=>({requireSelfService:async()=>({id:'self',role:'EMPLOYEE'})}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)})}));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
-vi.mock('@/lib/business-time',()=>import('../../../../lib/business-time'));
-vi.mock('@/lib/date-utils',()=>import('../../../../lib/date-utils'));
-vi.mock('@/components/nav-icon',()=>({NavIcon:()=>null}));
-vi.mock('@/components/shift-slot',()=>import('../../../../components/shift-slot'));
-vi.mock('@/components/reviewed-swap-form',()=>import('../../../../components/reviewed-swap-form'));
-vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:vi.fn(),reconcileShiftChangeAction:vi.fn()}));
-vi.mock('next/navigation',()=>({redirect:(p:string)=>{throw Error('redirect:'+p);},useRouter:()=>({refresh:vi.fn()})}));
-vi.mock('next/link',()=>({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
-vi.mock('@/lib/data/exchanges',()=>({getPublishedShift:async()=>state.source,listSwapTargets:async()=>state.target?[state.target]:[]}));
-vi.mock('@/lib/data/shift-change-snapshot',()=>({readShiftChangeTerms:async(_proof:unknown,_source:string,target?:string)=>({source:material({...state.source!,...state.sourceChange}),sourceTermsFingerprint:target&&state.sourceFingerprintChange?'v1:source-replaced':'v1:source',target:target?material({...state.target!,...state.targetChange}):null,targetTermsFingerprint:target?'v1:target':null})}));
+rs.mock('@/lib/workspace-presentation/service',  () => ({ ...(rstestOriginal0), readActivePresentation: async () => ({ style: undefined, tokens: null, logoAssetId: null, revision: 0, words: 'standard' as const, modules: (await import('@/lib/workspace-presentation/modules')).ALL_MODULES_ON }) })); // no saved settings: every module on
+const state=rs.hoisted(()=>({source:null as ExchangeShift|null,target:null as ExchangeShift|null,sourceChange:{} as Partial<ExchangeShift>,targetChange:{} as Partial<ExchangeShift>,sourceFingerprintChange:false,refuse:null as null|string}));
+rs.mock('@/lib/auth/permissions',()=>({requireSelfService:async()=>({id:'self',role:'EMPLOYEE'})}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'self',role:'EMPLOYEE'},sessionTokenHash:'a'.repeat(64)})}));
+rs.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
+
+
+rs.mock('@/components/nav-icon',()=>({NavIcon:()=>null}));
+
+
+rs.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:rs.fn(),reconcileShiftChangeAction:rs.fn()}));
+rs.mock('next/navigation',()=>({redirect:(p:string)=>{throw Error('redirect:'+p);},useRouter:()=>({refresh:rs.fn()})}));
+rs.mock('next/link',()=>({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
+rs.mock('@/lib/data/exchanges',()=>({getPublishedShift:async()=>state.source,listSwapTargets:async()=>state.target?[state.target]:[]}));
+rs.mock('@/lib/data/shift-change-snapshot',()=>({readShiftChangeTerms:async(_proof:unknown,_source:string,target?:string)=>({source:material({...state.source!,...state.sourceChange}),sourceTermsFingerprint:target&&state.sourceFingerprintChange?'v1:source-replaced':'v1:source',target:target?material({...state.target!,...state.targetChange}):null,targetTermsFingerprint:target?'v1:target':null})}));
 function material(s:ExchangeShift){return {timeZone:s.timeZone,termsRevision:s.termsRevision,shiftId:s.id,scheduleId:s.scheduleId,employeeId:s.employeeId,locationId:s.locationId,weekStart:s.weekStart,date:s.date,startTime:s.startTime,endTime:s.endTime,positionId:s.positionId??null,isDesignatedLead:!!s.isDesignatedLead,assignmentEpisodeId:s.assignmentEpisodeId};}
 beforeEach(()=>{state.source={timeZone:'America/Puerto_Rico',termsRevision:1,assignmentEpisodeId:'episode-source',id:'source',scheduleId:'schedule',employeeId:'self',employeeName:'Fictional Employee',locationId:'loc',locationName:'North',weekStart:'2035-10-01',date:'2035-10-03',startTime:'08:00',endTime:'16:00',positionId:'cashier',positionName:'Cashier',isDesignatedLead:true};state.target={...state.source,id:'target',assignmentEpisodeId:'episode-target',employeeId:'other',employeeName:'Fictional Partner',date:'2035-10-04',startTime:'10:00',endTime:'18:00'};state.sourceChange={};state.targetChange={};state.sourceFingerprintChange=false;});
 const render=async(mode?:string)=>renderToStaticMarkup(await SwapPage({searchParams:Promise.resolve({sourceShiftId:'source',...(mode?{mode}:{})})}));
@@ -51,7 +52,7 @@ it('keeps explicit selection and a safe coverage path when there are no targets'
   expect(empty).not.toContain('/app/exchange/callout');
 });
 
-vi.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:async()=>state.refuse?{allowed:false,notice:state.refuse}:{allowed:true,notice:null}}));
+rs.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:async()=>state.refuse?{allowed:false,notice:state.refuse}:{allowed:true,notice:null}}));
 it('opened without choosing a shift returns to Shift requests with no false error (inspection Oct 24)',async()=>{
  await expect(SwapPage({searchParams:Promise.resolve({})})).rejects.toThrow(/^redirect:\/app\/schedule\?intent=swap$/);
 });

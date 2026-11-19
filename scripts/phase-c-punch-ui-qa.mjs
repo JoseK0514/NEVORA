@@ -1,3 +1,4 @@
+import {registerTestTablet, saveClockerPin} from './clocker-browser-setup.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createRequire} from 'node:module';
@@ -28,11 +29,13 @@ async function context(browser,viewport={width:1024,height:768}){
 async function goto(page,path){const r=await page.goto(app.url+path,{waitUntil:'networkidle'});assert.equal(r.status(),200,'Working route '+path);}
 async function login(c){const p=await c.newPage();await goto(p,'/login');await p.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
  await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);return p;}
-async function savePin(p,id,pin){await goto(p,`/app/employees/${id}/clocker-pin`);await p.getByLabel('New PIN',{exact:true}).fill(pin);await p.getByLabel('Confirm PIN',{exact:true}).fill(pin);const save=p.getByRole('button',{name:'Save',exact:true});assert.equal(await save.getAttribute('form'),'clocker-pin-form');await save.click();await p.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
+async function savePin(page,id,pin){
+ await goto(page,`/app/employees/${id}/clocker-pin`);
+ await saveClockerPin(page,pin);
+}
 async function enroll(owner,p,name){
- await goto(owner,'/app/settings/clocker');await owner.getByRole('button',{name:'Add tablet',exact:true}).click();
- const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Add tablet',exact:true}).waitFor();await d.getByLabel('Tablet name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Get setup code',exact:true}).click();await d.waitFor({state:'hidden'});
- const displayedSetup=owner.getByRole('textbox',{name:/^Setup code · expires /});assert.equal(await displayedSetup.getAttribute('readonly'),'');const code=await displayedSetup.inputValue();assert(code);
+ await goto(owner,'/app/settings/clocker');
+ const code=await registerTestTablet(owner,name);
  await goto(p,'/clocker/2');await p.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();await p.evaluate(()=>document.fonts.ready);await shot(p,name.includes('Second')?'second-tablet-setup':name.split(' ')[0]+'-setup');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect tablet',exact:true}).click();await idle(p);
 }
 async function editBreak(owner,name,category,minutes){
@@ -67,7 +70,7 @@ async function journalPending(p){return p.evaluate(()=>new Promise((resolve,reje
  r.onsuccess=()=>{const db=r.result;if(!db.objectStoreNames.contains('pending')){db.close();resolve(null);return;}const all=db.transaction('pending','readonly').objectStore('pending').getAll();
   all.onsuccess=()=>{db.close();const slots=all.result.filter(slot=>slot.location==='2');slots.length>1?reject(Error('More than one pending slot')):resolve(slots.length?JSON.stringify(slots[0].pending):null);};all.onerror=()=>{db.close();reject(Error('Journal read failed'));};};}));}
 // Since 37b8c20c an obsolete pending action asks for an explicit review of the current status, recording nothing, before any new action.
-async function reviewObsolete(p,expected){const review=p.getByRole('button',{name:'Review current status',exact:true});await review.waitFor();assert.equal(await count(),expected);await review.click();await review.waitFor({state:'detached'});assert.equal(await count(),expected);}
+async function reviewObsolete(p,expected){const review=p.getByRole('button',{name:'See current status',exact:true});await review.waitFor();assert.equal(await count(),expected);await review.click();await review.waitFor({state:'detached'});assert.equal(await count(),expected);}
 async function done(p){await p.getByRole('button',{name:'Done',exact:true}).click();await idle(p);}
 async function success(p,action){await p.getByRole('heading',{name:action+' recorded',exact:true}).waitFor();}
 async function count(){return Number((await q('SELECT count(*)::int AS n FROM clocker_command_ledger'))[0].n);}
@@ -120,7 +123,7 @@ try{
   await done(t);await verify(t);await startBreak(t);await success(t,'Break start');await done(t);
   await verify(t);await t.getByRole('button',{name:'End break',exact:true}).waitFor();await shot(t,engine+'-on-break');
   await t.getByRole('button',{name:'End break',exact:true}).click();await success(t,'Break end');await done(t);
-  await verify(t);await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Cancel clock-out',exact:true}).click();
+  await verify(t);await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Stay clocked in',exact:true}).click();
   assert.equal(await count(),before+3);await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Confirm clock out',exact:true}).click();await success(t,'Clock out');await done(t);
   assert.equal(await count(),before+4);checked(engine+': all four transitions persist; canceled Clock out does not write');
   // A lost response must not create a replacement command, even after a page reload.
@@ -130,14 +133,14 @@ try{
    if(!dropped&&route.request().postDataJSON()?.operation==='execute'){dropped=true;lostCommand=route.request().postDataJSON().command;const response=await route.fetch();assert.equal(response.status(),200);await route.abort('failed');}
    else await route.continue();
   });
-  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('button',{name:'Check action status',exact:true}).waitFor();assert(dropped);
+  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('button',{name:'Check if it saved',exact:true}).waitFor();assert(dropped);
   assert.equal(await t.getByRole('button',{name:'Clock in',exact:true}).count(),0);
   const stored=await journalPending(t);assert(stored);assertPrivateClockInRecovery(stored,lostCommand);
   await t.unroute('**/api/clocker/2/punch');await t.reload();await idle(t);await verify(t,'3579',undefined,'PUNCH-B');
-  await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Check action status',exact:true}).count(),0);assert.equal(await journalPending(t),stored);
+  await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Check if it saved',exact:true}).count(),0);assert.equal(await journalPending(t),stored);
   checked(engine+': another employee has their own clock path while the prior intent remains intact');
   await t.getByRole('button',{name:'Done',exact:true}).click();await verify(t);
-  await t.getByRole('button',{name:'Check action status',exact:true}).click();await success(t,'Clock in');assert.equal(await count(),before+5);await done(t);
+  await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await success(t,'Clock in');assert.equal(await count(),before+5);await done(t);
   checked(engine+': lost committed response survives reload and re-PIN without duplicate time');
   // Two real tablets start from the same employee revision. Only one transition can win.
   const second=await context(browser),t2=await second.newPage();t2.setDefaultTimeout(15000);t2.on('pageerror',e=>capture('second-tablet',e));
@@ -145,7 +148,7 @@ try{
   await t.getByRole('button',{name:'Start break',exact:true}).waitFor();await t2.getByRole('button',{name:'Clock out',exact:true}).waitFor();
   await startBreak(t);await success(t,'Break start');
   await t2.getByRole('button',{name:'Clock out',exact:true}).click();await t2.getByRole('button',{name:'Confirm clock out',exact:true}).click();
-  await t2.getByRole('button',{name:'Check action status',exact:true}).waitFor();await t2.getByRole('button',{name:'Check action status',exact:true}).click();
+  await t2.getByRole('button',{name:'Check if it saved',exact:true}).waitFor();await t2.getByRole('button',{name:'Check if it saved',exact:true}).click();
   await reviewObsolete(t2,before+6);
   await t2.getByRole('button',{name:'End break',exact:true}).waitFor();assert.equal(await count(),before+6);checked(engine+': stale second-tablet action refreshes without silently clocking out');
   await t2.getByRole('button',{name:'Clock out',exact:true}).click();await t2.getByText('This will also end your current break.',{exact:true}).waitFor();
@@ -155,17 +158,17 @@ try{
   // Explicit retry of a never-delivered command retains its original ID and payload.
   await verify(t);await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();let blocked=false;
   await t.route('**/api/clocker/2/punch',async route=>{if(!blocked&&route.request().postDataJSON()?.operation==='execute'){blocked=true;await route.abort('failed');}else await route.continue();});
-  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('button',{name:'Check action status',exact:true}).waitFor();
+  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('button',{name:'Check if it saved',exact:true}).waitFor();
   const pending=await journalPending(t);assert(pending);await t.unroute('**/api/clocker/2/punch');
-  await t.getByRole('button',{name:'Check action status',exact:true}).click();await t.getByRole('button',{name:'Retry same action',exact:true}).waitFor();
+  await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await t.getByRole('button',{name:'Send it again',exact:true}).waitFor();
   assert.equal(await journalPending(t),pending);
-  await t.getByRole('button',{name:'Retry same action',exact:true}).click();await success(t,'Clock in');assert.equal(await count(),before+8);checked(engine+': explicit same-command retry after a failed connection');await done(t);
+  await t.getByRole('button',{name:'Send it again',exact:true}).click();await success(t,'Clock in');assert.equal(await count(),before+8);checked(engine+': explicit same-command retry after a failed connection');await done(t);
   // Current verification expiry must block the visible action, not record time.
   await verify(t);await t.getByRole('button',{name:'Start break',exact:true}).waitFor();
   await q("UPDATE clocker_pin_sessions SET expires_at=clock_timestamp()-interval '1 second'");
-  await startBreak(t);await t.getByRole('heading',{name:'Verify your PIN again',exact:true}).waitFor();
+  await startBreak(t);await t.getByRole('heading',{name:'Enter your PIN again',exact:true}).waitFor();
   assert.equal(await count(),before+8);checked(engine+': expired verification never creates a time record');
-  await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);await t.getByRole('button',{name:'Check action status',exact:true}).click();await reviewObsolete(t,before+8);await t.getByRole('button',{name:'Start break',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Retry same action',exact:true}).count(),0);await startBreak(t);await success(t,'Break start');await done(t);
+  await t.getByRole('button',{name:'Start over',exact:true}).click();await verify(t);await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,before+8);await t.getByRole('button',{name:'Start break',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Send it again',exact:true}).count(),0);await startBreak(t);await success(t,'Break start');await done(t);
   // Responsive controls, keyboard confirmation and clear identity on Escape.
   for(const width of [320,375,390,430,768,1024,1440]){
    await t.setViewportSize({width,height:width<500?844:width===768?1024:900});await verify(t);await t.getByRole('button',{name:'End break',exact:true}).waitFor();
@@ -186,20 +189,20 @@ try{
   diagnostic.phase('continue','before');await verify(t,'2468',diagnostic);diagnostic.phase('continue','after');await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   await diagnostic.close();currentPinDiagnostic=undefined;
   await t.evaluate(()=>{window.__restoreStorage=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(){throw new DOMException('Test storage denial','QuotaExceededError');};});
-  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'Browser storage needed',exact:true}).waitFor();assert.equal(await count(),guardStart);
+  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'This tablet can’t save punches',exact:true}).waitFor();assert.equal(await count(),guardStart);
   await t.evaluate(()=>{IDBObjectStore.prototype.put=window.__restoreStorage;delete window.__restoreStorage;});
-  await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await idle(t);checked(engine+': blocked browser recovery storage prevents the request entirely');
+  await t.getByRole('button',{name:'Done',exact:true}).click();await idle(t);checked(engine+': blocked browser recovery storage prevents the request entirely');
   // A second tab changes the shared HttpOnly cookie. The old screen must not act as that employee.
   await verify(t);await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   const tab=await tablet.newPage();await goto(tab,'/clocker/2');await verify(tab,'3579',undefined,'PUNCH-B');await tab.getByRole('button',{name:'Clock in',exact:true}).waitFor();
-  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'Verify your PIN again',exact:true}).waitFor();assert.equal(await count(),guardStart);
-  await done(tab);await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);
-  await t.getByRole('button',{name:'Check action status',exact:true}).click();await reviewObsolete(t,guardStart);await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Retry same action',exact:true}).count(),0);await t.getByRole('button',{name:'Clock in',exact:true}).click();await success(t,'Clock in');await done(t);
+  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'Enter your PIN again',exact:true}).waitFor();assert.equal(await count(),guardStart);
+  await done(tab);await t.getByRole('button',{name:'Start over',exact:true}).click();await verify(t);
+  await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,guardStart);await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Send it again',exact:true}).count(),0);await t.getByRole('button',{name:'Clock in',exact:true}).click();await success(t,'Clock in');await done(t);
   assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id='PUNCH-B'"))[0].n,0);
   await verify(t);await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Confirm clock out',exact:true}).click();await success(t,'Clock out');await done(t);
   await tab.close();checked(engine+': a stale tab cannot clock a newly verified different employee');
   await t.route('**/api/clocker/2/punch',route=>route.request().postDataJSON()?.operation==='state'?route.abort('failed'):route.continue());
-  await verify(t);await t.getByRole('heading',{name:'Clock state unavailable',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Clock in',exact:true}).count(),0);await shot(t,engine+'-unavailable');
+  await verify(t);await t.getByRole('heading',{name:'We couldn’t load your time',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Clock in',exact:true}).count(),0);await shot(t,engine+'-unavailable');
   await t.unroute('**/api/clocker/2/punch');await t.getByRole('button',{name:'Try again',exact:true}).click();await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();await done(t);
   checked(engine+': an unavailable clock read never displays a false off-clock action');
   // C5 and the tablet run through one canonical engine, including real Owner edits.
@@ -214,9 +217,9 @@ try{
   }
   await t.getByRole('button',{name:'Start break',exact:true}).click();
   await editBreak(ownerPage,'Meal reference','MEAL',30);
-  await t.getByRole('button',{name:'Start Fixture rest',exact:true}).click();await t.getByRole('button',{name:'Check action status',exact:true}).waitFor();
+  await t.getByRole('button',{name:'Start Fixture rest',exact:true}).click();await t.getByRole('button',{name:'Check if it saved',exact:true}).waitFor();
   assert.equal(await count(),typedStart+1,'A changed type cannot record from a stale choice');
-  await t.getByRole('button',{name:'Check action status',exact:true}).click();await reviewObsolete(t,typedStart+1);await t.getByRole('button',{name:'Start break',exact:true}).click();
+  await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,typedStart+1);await t.getByRole('button',{name:'Start break',exact:true}).click();
   assert.equal(await t.getByRole('button',{name:'Start Fixture rest',exact:true}).count(),0);
   await t.getByRole('button',{name:'Start Meal reference',exact:true}).click();await success(t,'Break start');await done(t);
   checked(engine+': stale break selection rejects safely, then requires an explicit current type');
@@ -226,7 +229,7 @@ try{
   const captured=(await q("SELECT break_type_snapshot AS settings FROM break_entries b JOIN time_entries t ON t.id=b.time_entry_id WHERE t.employee_id='PUNCH-A' ORDER BY b.break_start_at DESC LIMIT 1"))[0].settings;
   assert.equal(captured.name,'Meal reference');assert.equal(captured.category,'MEAL');assert.equal(captured.targetMinutes,30);
   await shot(t,engine+'-historical-break-settings');await t.getByRole('button',{name:'End break',exact:true}).click();await success(t,'Break end');await done(t);
-  await verify(t);await t.getByText('No break types are configured. Ask your Owner to add one.',{exact:true}).waitFor();
+  await verify(t);await t.getByText('There are no breaks to choose here yet. Ask your Owner to add one.',{exact:true}).waitFor();
   assert.equal(await t.getByRole('button',{name:'Start break',exact:true}).count(),0);
   await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Confirm clock out',exact:true}).click();await success(t,'Clock out');await done(t);
   assert.equal(await count(),typedStart+4);checked(engine+': archived types preserve captured settings, allow End Break and never invent a new type');

@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { createRequire } from "node:module";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -37,11 +37,11 @@ it("reviews exact coverage, blocks stale saves, recovers a real lost reply and v
           await route.continue();
         });
         page.on("pageerror",(error:Error)=>errors.push(engine+":"+phase+":"+error.message));page.setDefaultTimeout(20000);
-        await page.goto(origin+"/login");await page.getByLabel("Employee ID",{exact:true}).fill("QAOWNER");await page.getByLabel("Password",{exact:true}).fill(TEST_PASSWORD);await page.getByRole("button",{name:"Sign in",exact:true}).click();await page.waitForURL(origin+"/app");await page.locator(".app-shell.nevora-portal").waitFor();await page.waitForFunction(() => document.querySelector(".portal-notification-bell")?.getAttribute("data-state") === "ready");const advisorEntry=page.locator("main").getByRole("link",{name:"AI manager",exact:true});
+        await page.goto(origin+"/login");await page.getByLabel("Employee ID",{exact:true}).fill("QAOWNER");await page.getByLabel("Password",{exact:true}).fill(TEST_PASSWORD);await page.getByRole("button",{name:"Sign in",exact:true}).click();await page.waitForURL(origin+"/app");await page.locator(".app-shell.nevora-portal").waitFor();await page.waitForFunction(() => document.querySelector(".portal-notification-bell")?.getAttribute("data-state") === "ready");await page.locator('a[href="/app/more"]:visible').first().click();await page.waitForURL(origin+"/app/more");const advisorEntry=page.locator("main").getByRole("link",{name:"Rondo AI",exact:true});
         await advisorEntry.evaluate((el:HTMLElement)=>el.scrollIntoView({block:"center",inline:"nearest"}));
         const entryTarget=await advisorEntry.evaluate((el:HTMLElement)=>{const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,hit=document.elementFromPoint(x,y);return {width:innerWidth,height:innerHeight,rect:r.toJSON(),owned:hit===el||(hit!==null&&el.contains(hit))};});
         await writeFile(resolve(evidence,engine+"-entry-pointer.json"),JSON.stringify(entryTarget,null,2));
-        expect(entryTarget.owned,"Ordinary scrolling must expose the real AI manager link to pointer input").toBe(true);
+        expect(entryTarget.owned,"Ordinary scrolling must expose the real Rondo AI link to pointer input").toBe(true);
         await advisorEntry.click();await page.waitForURL(origin+"/app/ai-manager");
         await page.getByRole("button",{name:"Compare day plans",exact:true}).waitFor();
         const date=index===0?"2030-10-07":"2030-10-14";
@@ -82,15 +82,15 @@ it("reviews exact coverage, blocks stale saves, recovers a real lost reply and v
         await page.evaluate(axe);
         for(const width of [320,390,430,1440]){
           await page.setViewportSize({width,height:844});
-          const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,shortTargets:[...document.querySelectorAll<HTMLElement>(".oa-draft-panel button,.oa-draft-consent")].filter(el=>el.getBoundingClientRect().height<44).map(el=>el.textContent)}));
-          const audit=await page.evaluate("axe.run('.oa-draft-panel',{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}})");
+          const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,shortTargets:[...document.querySelectorAll<HTMLElement>(".oa-draft button,.oa-draft-consent")].filter(el=>el.getBoundingClientRect().height<44).map(el=>el.textContent)}));
+          const audit=await page.evaluate("axe.run('.oa-draft',{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}})");
           await writeFile(resolve(evidence,`${engine}-${width}-audit.json`),JSON.stringify({layout,audit},null,2));await panel.screenshot({path:resolve(evidence,`${engine}-${width}-review.png`)});
           expect(layout.overflow).toBe(false);expect(layout.shortTargets).toEqual([]);expect(audit.violations).toEqual([]);
         }
         await page.setViewportSize({width:390,height:844});
-        await page.evaluate(()=>{const nodes=[...document.querySelectorAll<HTMLElement>(".oa-draft-panel,.oa-draft-panel *")];const sizes=nodes.map(el=>({el,size:parseFloat(getComputedStyle(el).fontSize),line:parseFloat(getComputedStyle(el).lineHeight)}));for(const row of sizes){row.el.dataset.originalStyle=row.el.getAttribute("style")??"";row.el.style.fontSize=`${row.size*2}px`;if(Number.isFinite(row.line))row.el.style.lineHeight=`${row.line*2}px`;}});
+        await page.evaluate(()=>{const nodes=[...document.querySelectorAll<HTMLElement>(".oa-draft,.oa-draft *")];const sizes=nodes.map(el=>({el,size:parseFloat(getComputedStyle(el).fontSize),line:parseFloat(getComputedStyle(el).lineHeight)}));for(const row of sizes){row.el.dataset.originalStyle=row.el.getAttribute("style")??"";row.el.style.fontSize=`${row.size*2}px`;if(Number.isFinite(row.line))row.el.style.lineHeight=`${row.line*2}px`;}});
         expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await panel.screenshot({path:resolve(evidence,`${engine}-390-text200.png`)});
-        await page.evaluate(()=>document.querySelectorAll<HTMLElement>(".oa-draft-panel,.oa-draft-panel *").forEach(el=>{el.setAttribute("style",el.dataset.originalStyle??"");delete el.dataset.originalStyle;}));
+        await page.evaluate(()=>document.querySelectorAll<HTMLElement>(".oa-draft,.oa-draft *").forEach(el=>{el.setAttribute("style",el.dataset.originalStyle??"");delete el.dataset.originalStyle;}));
         checks.push(engine+": 320/390/430/1440 and 200% review text; real long/untrusted names safely escaped; targets >=44px; zero automated accessibility violations");
         phase="real commit and dropped response";dropNextSave=true;await confirmWithKeyboard();await panel.getByRole("button",{name:"Check original request",exact:true}).waitFor();expect(committedBeforeLoss).toBe(true);
         expect(await q("SELECT count(*)::int n FROM shifts WHERE date=$1",[date])).toEqual([{n:2}]);

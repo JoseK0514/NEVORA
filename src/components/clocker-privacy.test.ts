@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {privateScreenWindow,privateScreenRemaining,verifiedDeadline,continuationFor,resumeContinuation} from './clocker-privacy';
 import type {ClockView} from '../lib/clocker/punch-client';
 const now=Date.parse('2026-10-27T12:00:00Z');

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { migrationBody, readCompanyInput, readOwnerLocations, readSetupTarget } from './company-setup';
 
 const env = {
@@ -24,7 +24,7 @@ describe('single-company setup input', () => {
     expect(() => readCompanyInput({ ...env, COMPANY_LOCATION_NAME: 'Harbor\nStudio' })).toThrow();
   });
   it('rejects invalid owner details without printing secret input', () => {
-    expect(() => readCompanyInput({ ...env, BOOTSTRAP_PASSWORD: 'short' })).toThrow('at least 8');
+    expect(() => readCompanyInput({ ...env, BOOTSTRAP_PASSWORD: 'short' })).toThrow('at least 15');
     expect(() => readCompanyInput({ ...env, BOOTSTRAP_PHONE: '12' })).toThrow('ten-digit');
     expect(() => readCompanyInput({ ...env, BOOTSTRAP_EMAIL: 'bad email' })).toThrow('email address');
   });

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {takeActivationFragment,ActivationInvitationView,readActivationResult} from './activation-invitation';
 
@@ -31,6 +31,12 @@ it('does not offer another potentially completed activation after an uncertain o
 
 it.each([{state:['activated']},{state:'activated',proof:'private'},{state:'other'},null])('rejects malformed/expanded public result envelopes before using them',value=>{expect(()=>readActivationResult(value)).toThrow();});
 it('accepts the own login ID only in the exact confirmed-success envelope',()=>{expect(readActivationResult({state:'activated',employeeId:'OWN-FIXTURE-ID'})).toEqual({state:'activated',employeeId:'OWN-FIXTURE-ID'});});
+it('accepts only recognized password rejection reasons and preserves a usable invitation form',()=>{
+ expect(readActivationResult({state:'invalid',passwordReason:'breached'})).toEqual({state:'invalid',passwordReason:'breached'});
+ expect(()=>readActivationResult({state:'invalid',passwordReason:'untrusted value'})).toThrow();
+ const html=renderToStaticMarkup(<ActivationInvitationView phase="ready" passwordReason="breached" lang="es" loginHref="/login" onSubmit={()=>{}}/>);
+ expect(html).toContain('filtración conocida');expect(html).toContain('<form');expect(html).toContain('minLength="15"');
+});
 it.each([{state:'activated'},{state:'activated',employeeId:''},{state:'activated',employeeId:['OWN-FIXTURE-ID']},{state:'invalid',employeeId:'OWN-FIXTURE-ID'},{state:'unavailable',employeeId:'OWN-FIXTURE-ID'},{state:'outcome_unknown',employeeId:'OWN-FIXTURE-ID'}])('rejects missing success identity and any failure identity',value=>{expect(()=>readActivationResult(value)).toThrow();});
 it('keeps a confirmed recipient ID visible until explicit normal sign-in',()=>{const html=renderToStaticMarkup(<ActivationInvitationView phase="activated" employeeId="OWN-FIXTURE-ID" loginHref="/login?activated=1" onSubmit={()=>{}}/>);expect(html).toContain('OWN-FIXTURE-ID');expect(html).toContain('Continue to sign in');expect(html).toContain('href="/login?activated=1"');});
 // Inspection Nov 14, 2026.
@@ -57,3 +63,7 @@ it('the success card leads with a done mark and says to save the ID (PB-003, JR-
  expect(html).toContain('<p class="q-help" id="activation-employee-id-note">Save this ID. You sign in with it.</p>');
 });
 it('offers Owner-assisted login-ID/status recovery for an unknown outcome',()=>{const html=renderToStaticMarkup(<ActivationInvitationView phase="outcome_unknown" loginHref="/login" onSubmit={()=>{}}/>);expect(html).toContain('confirm your account status and Employee ID');expect(html).not.toContain('type="submit"');});
+it('reports only the current mismatch without a stale policy message or duplicate error ID',()=>{
+ const html=renderToStaticMarkup(<ActivationInvitationView phase="ready" mismatch passwordReason="breached" loginHref="/login" onSubmit={()=>{}}/>);
+ const ids=[...html.matchAll(/ id="([^"]+)"/g)].map(m=>m[1]);expect(new Set(ids).size).toBe(ids.length);expect(html).not.toContain('known breach');
+});

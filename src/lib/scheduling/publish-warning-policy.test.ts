@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import type { PublishWarningSnapshot, PublishWarningCommand, PublishWarningReviewRecord, PublishOperationRecord } from './publish-warning-policy';
 import { buildPublishReadiness } from './publish-readiness';
 import { validateShift, type ValidateShiftInput } from './validate-shift';
 
-const modulePath = './publish-warning-policy';
-const implementation: typeof import('./publish-warning-policy') | null = await import(modulePath).catch(() => null);
+
+const implementation: typeof import('./publish-warning-policy') | null = await import('./publish-warning-policy').catch(() => null);
 const review = (snapshot: unknown) => implementation?.preparePublishWarningReview(snapshot);
 const decide = (input: unknown) => implementation?.evaluatePublishWarningPolicy(input);
 const NOW = '2026-10-09T12:00:00Z';

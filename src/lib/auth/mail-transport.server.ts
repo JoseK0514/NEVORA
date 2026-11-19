@@ -19,7 +19,7 @@ export function validatedMailTransport(env:Record<string,string|undefined>=proce
   const transport=nodemailer.createTransport({host,port,secure:port===465,requireTLS:!local&&port!==465,
    ...(local?{}:{auth:{user:env.NEVORA_RECOVERY_SMTP_USER!,pass:env.NEVORA_RECOVERY_SMTP_PASSWORD!}}),
    connectionTimeout:5000,greetingTimeout:5000,socketTimeout:5000,logger:false,debug:false,disableFileAccess:true,disableUrlAccess:true,maxRecipients:1});
-  return {origin:origin.origin,async sendRegistered(email:string,subject:string,text:string) {
+  return {origin:origin.origin,async sendRegistered(email:string,subject:string,text:string,html?:string) {
    if(!validRegisteredEmail(email))throw Error('Invalid registered channel');
    if(approvedRecipient&&email.toLowerCase()!==approvedRecipient)throw new StagingRecipientDenied();
    // Socket inactivity limits do not bound a progressing SMTP conversation.
@@ -29,7 +29,7 @@ export function validatedMailTransport(env:Record<string,string|undefined>=proce
     const deadline=new Promise<never>((_,reject)=>{
      timer=setTimeout(()=>reject(Object.assign(new Error('Email delivery outcome is unknown'),{code:'smtp_deadline_exceeded'})),15000);
     });
-    return await Promise.race([deadline,Promise.resolve().then(()=>transport.sendMail({from,to:email,subject,text,disableFileAccess:true,disableUrlAccess:true}))]);
+    return await Promise.race([deadline,Promise.resolve().then(()=>transport.sendMail({from,to:email,subject,text,...(html?{html}:{}),disableFileAccess:true,disableUrlAccess:true}))]);
    }finally{if(timer!==undefined)clearTimeout(timer);}
   }};
  } catch {return null;}

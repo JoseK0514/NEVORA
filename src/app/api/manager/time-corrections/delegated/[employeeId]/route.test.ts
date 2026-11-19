@@ -1,15 +1,15 @@
-import {beforeEach,expect,it,vi} from 'vitest';
-const mocks=vi.hoisted(()=>({session:vi.fn(),binding:vi.fn(),read:vi.fn(),submit:vi.fn()}));
-vi.mock('@/lib/auth/session',()=>({getSession:mocks.session}));
-vi.mock('@/lib/time-corrections/authority.server',()=>({matchesCorrectionAuthority:mocks.binding}));
-vi.mock('@/lib/data/time-corrections',()=>({getDelegatedTimeCorrections:mocks.read,submitManagerDelegatedTimeCorrection:mocks.submit}));
+import {beforeEach,expect,it,rs} from '@rstest/core';
+const mocks=rs.hoisted(()=>({session:rs.fn(),binding:rs.fn(),read:rs.fn(),submit:rs.fn()}));
+rs.mock('@/lib/auth/session',()=>({getSession:mocks.session}));
+rs.mock('@/lib/time-corrections/authority.server',()=>({matchesCorrectionAuthority:mocks.binding}));
+rs.mock('@/lib/data/time-corrections',()=>({getDelegatedTimeCorrections:mocks.read,submitManagerDelegatedTimeCorrection:mocks.submit}));
 import {GET,POST} from './route';
 const origin='https://nevora.invalid',url=origin+'/api/manager/time-corrections/delegated/WORKER';
 const headers={'x-nevora-time-correction':'1','x-nevora-actor':'OWNER','x-nevora-correction-authority':'a'.repeat(64),'content-type':'application/json',origin};
 const context={params:Promise.resolve({employeeId:'WORKER'})};
 const command={operationId:'11111111-1111-4111-8111-111111111111',kind:'MISSING_ENTRY',locationId:'L1',proposedStartAt:'2026-11-01T10:00:00Z',proposedEndAt:'2026-11-01T12:00:00Z',reason:'Confirmed work for separate review.'};
 const post=(body:unknown=command,overrides:Record<string,string>={})=>new Request(url,{method:'POST',headers:{...headers,...overrides},body:JSON.stringify(body)});
-beforeEach(()=>{vi.resetAllMocks();mocks.session.mockResolvedValue({id:'OWNER',role:'OWNER'});mocks.binding.mockResolvedValue(true);mocks.read.mockResolvedValue({state:'ready',employeeId:'WORKER'});mocks.submit.mockResolvedValue({status:'pending',operationId:command.operationId,requestId:command.operationId,revision:1});});
+beforeEach(()=>{rs.resetAllMocks();mocks.session.mockResolvedValue({id:'OWNER',role:'OWNER'});mocks.binding.mockResolvedValue(true);mocks.read.mockResolvedValue({state:'ready',employeeId:'WORKER'});mocks.submit.mockResolvedValue({status:'pending',operationId:command.operationId,requestId:command.operationId,revision:1});});
 it.each(['OWNER','MANAGER'])('admits %s through the distinct target-bound read/write and marks responses private',async role=>{
  mocks.session.mockResolvedValue({id:'OWNER',role});const get=await GET(new Request(url,{headers}),context),response=await POST(post(),context);expect(get.status).toBe(200);expect(response.status).toBe(202);expect(response.headers.get('cache-control')).toContain('no-store');expect(response.headers.get('vary')).toBe('Cookie');expect(mocks.read).toHaveBeenCalledWith('WORKER');expect(mocks.submit).toHaveBeenCalledWith('WORKER',expect.objectContaining({operationId:command.operationId}));
 });

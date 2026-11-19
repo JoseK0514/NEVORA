@@ -1,4 +1,4 @@
-import { it, expect } from "vitest";
+import { it, expect } from '@rstest/core';
 import { newRun } from "../service";
 import { buildNativeRunCandidate, type NativePreparationFacts } from "./preparation";
 import { input } from "./fixtures.test-support";

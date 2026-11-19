@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, expect, it } from 'vitest';
+import { afterAll, beforeAll, expect, it } from '@rstest/core';
 import { createRequire } from 'node:module';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -53,7 +53,7 @@ it.each(['chromium', 'webkit'])('%s manages and withdraws exact company knowledg
     await page.goto(origin + '/login'); await page.getByLabel('Employee ID', { exact: true }).fill('QAOWNER');
     await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(origin + '/app');
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.locator('#desktop-primary-navigation').getByRole('link', { name: 'AI manager', exact: true }).click();
+    await page.locator('#desktop-primary-navigation').getByRole('link', { name: 'Rondo AI', exact: true }).click();
     await page.waitForURL(origin + '/app/ai-manager'); await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('main').getByRole('link', { name: 'Company knowledge', exact: true }).click();
     await page.waitForURL(origin + '/app/ai-manager/knowledge'); await page.getByRole('link', { name: 'Add document', exact: true }).waitFor();

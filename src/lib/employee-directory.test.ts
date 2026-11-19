@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import type { Employee, Location } from "./domain";
 import { filterDirectoryEmployees, hasDirectoryFilters, readDirectoryFilters } from "./employee-directory";
 

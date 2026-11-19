@@ -1,7 +1,7 @@
 import {createHash,randomUUID} from 'node:crypto';
 import {OperationalAuthorizationError,isOperationalAuthorizationError} from '../../lib/company-access/operational-scope.server';
 import {isManagementAuthorizationError} from '../../lib/data/management-session';
-import {afterEach,beforeEach,describe,expect,it} from 'vitest';
+import {afterEach,beforeEach,describe,expect,it} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
 import {createPayrollExport,readExportProfiles,saveExportProfile,type ExportCommand} from '../../lib/payroll-export/service';

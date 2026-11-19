@@ -70,6 +70,9 @@ async function runtimeRoles(client:BootstrapClient,spec:PendingCompanySpec){
   if(role===spec.app){
    await client.query(`GRANT EXECUTE ON FUNCTION public.nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text), public.nevora_submit_delegated_time_correction(uuid,text,text,text,text,text,text,text,timestamptz,timestamptz,text,text,uuid,integer) TO ${role.name}`);
    await client.query(`REVOKE UPDATE,DELETE,TRUNCATE ON management_time_closes FROM ${role.name}`);
+   await client.query(`REVOKE UPDATE,DELETE ON workforce_permission_revisions,planning_calendar_revisions,pto_policy_revisions,pto_ledger,workforce_setting_operations FROM ${role.name};
+     REVOKE INSERT,UPDATE,DELETE ON workforce_permissions_current,pto_policies_current FROM ${role.name}`);
+   await client.query(`REVOKE UPDATE,DELETE ON user_language_preferences FROM ${role.name}; GRANT UPDATE(language) ON user_language_preferences TO ${role.name}`);
    await client.query(`GRANT EXECUTE ON FUNCTION nevora_management_close_source(text,text),nevora_management_close(text,text,text,text,text,text,uuid,text,timestamptz,text,text) TO ${role.name}`);
   }
   if(role===spec.app)await client.query(`REVOKE DELETE ON conversation_streams,conversations,conversation_members FROM ${role.name}; REVOKE UPDATE,DELETE ON conversation_messages,conversation_events,conversation_operations FROM ${role.name}`);

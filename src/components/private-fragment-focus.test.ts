@@ -1,9 +1,9 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 
 // Exercise the real hook's effect lifecycle; native visibility/focus is also
 // covered by the held Attendance read in the owned Phase D browser scenario.
-const hooks=vi.hoisted(()=>({effects:[] as (()=>(()=>void)|void)[],ref:{current:''}}));
-vi.mock('react',()=>({
+const hooks=rs.hoisted(()=>({effects:[] as (()=>(()=>void)|void)[],ref:{current:''}}));
+rs.mock('react',()=>({
  useEffect:(effect:()=>(()=>void)|void)=>hooks.effects.push(effect),
  useRef:()=>hooks.ref,
 }));
@@ -13,8 +13,8 @@ let frames:Map<number,FrameRequestCallback>,sequence:number,dispose:(()=>void)|v
 let active:object,body:object,target:ReturnType<typeof row>;
 let rows:Map<string,ReturnType<typeof row>>,observers:TestResizeObserver[];
 function row(){
- const element={visible:false,isConnected:true,focus:vi.fn(()=>{if(element.visible&&element.isConnected)active=element;}),
-  scrollIntoView:vi.fn(),getClientRects:()=>element.visible&&element.isConnected?[{}]:[]};
+ const element={visible:false,isConnected:true,focus:rs.fn(()=>{if(element.visible&&element.isConnected)active=element;}),
+  scrollIntoView:rs.fn(),getClientRects:()=>element.visible&&element.isConnected?[{}]:[]};
  return element;
 }
 class TestResizeObserver{
@@ -28,14 +28,14 @@ function resize(){observers.filter(observer=>observer.connected).forEach(observe
 function useMount(ready=true){usePrivateFragmentFocus('correction-',ready);return hooks.effects.at(-1)!();}
 beforeEach(()=>{
  hooks.effects=[];hooks.ref.current='';frames=new Map();sequence=0;observers=[];body={};active=body;target=row();rows=new Map([['correction-fixture',target]]);
- vi.stubGlobal('window',Object.assign(new EventTarget(),{location:{hash:'#correction-fixture'}}));
- vi.stubGlobal('document',{getElementById:(id:string)=>rows.get(id)??null,get activeElement(){return active;}});
- vi.stubGlobal('requestAnimationFrame',(callback:FrameRequestCallback)=>{frames.set(++sequence,callback);return sequence;});
- vi.stubGlobal('cancelAnimationFrame',(id:number)=>frames.delete(id));
- vi.stubGlobal('ResizeObserver',TestResizeObserver);
- vi.stubGlobal('getComputedStyle',()=>({visibility:'visible'}));
+ rs.stubGlobal('window',Object.assign(new EventTarget(),{location:{hash:'#correction-fixture'}}));
+ rs.stubGlobal('document',{getElementById:(id:string)=>rows.get(id)??null,get activeElement(){return active;}});
+ rs.stubGlobal('requestAnimationFrame',(callback:FrameRequestCallback)=>{frames.set(++sequence,callback);return sequence;});
+ rs.stubGlobal('cancelAnimationFrame',(id:number)=>frames.delete(id));
+ rs.stubGlobal('ResizeObserver',TestResizeObserver);
+ rs.stubGlobal('getComputedStyle',()=>({visibility:'visible'}));
 });
-afterEach(()=>{dispose?.();dispose=undefined;vi.unstubAllGlobals();});
+afterEach(()=>{dispose?.();dispose=undefined;rs.unstubAllGlobals();});
 
 it('waits for a ready but display-hidden row to render before consuming its focus intent',()=>{
  dispose=useMount();flush();expect(active).toBe(body);expect(target.focus).not.toHaveBeenCalled();

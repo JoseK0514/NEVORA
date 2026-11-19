@@ -37,5 +37,5 @@ export default async function AiManagerPage() {
     authority.scope?.mode !== "COMPANY"
   )
     notFound();
-  return <OwnerAdvisor />;
+  return <OwnerAdvisor tools={{ weekly: flags.ownerAdvisorWeekly, knowledge: flags.ownerAdvisorKnowledge, business: flags.ownerAdvisorBusinessImports }} />;
 }

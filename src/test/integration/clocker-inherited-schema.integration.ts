@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 it('adds punch revisions and immutable receipts without rewriting legacy time or breaks',async()=>{
  const db=await createDisposableFoundationDatabase({mode:'phase-c-base'});

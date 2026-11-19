@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { DEFAULT_TOKENS } from "./derive";
 import { inspectLogo, LOGO_MAX_BYTES } from "./logo";
 import { DEFAULT_BRAND, brandSettings, mergeSettings, parseLogoCommand, parsePresentationCommand, presentationCommandHash, readSettings, storedBrand, storedModules } from "./model";

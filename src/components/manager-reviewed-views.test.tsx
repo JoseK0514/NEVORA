@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, rs } from '@rstest/core';
 import { buildActionIntelligence } from '../lib/action-center/intelligence';
 import type { ActionFact, ActionIntelligenceInput, ActionIntelligenceResult, SourceKey } from '../lib/action-center/intelligence';
 import { preparePublishWarningReview } from '../lib/scheduling/publish-warning-policy';
@@ -53,7 +53,7 @@ function intelligence(withRow = true): ActionIntelligenceResult {
 }
 function actionProps(snapshot = intelligence()): ReviewedActionIntelligenceViewProps {
   return { observation: { binding: viewer(), snapshot }, expected: viewer(), sourceCurrent: true,
-    connection: 'ready', weekStart: WEEK, expectedLocationIds: ['a'], now: NOW, onRefresh: vi.fn(), onRetrySource: vi.fn(), onExpand: vi.fn() };
+    connection: 'ready', weekStart: WEEK, expectedLocationIds: ['a'], now: NOW, onRefresh: rs.fn(), onRetrySource: rs.fn(), onExpand: rs.fn() };
 }
 function actionHtml(props: ReviewedActionIntelligenceViewProps) {
   const html = renderToStaticMarkup(createElement(ReviewedActionIntelligenceView, props));
@@ -98,7 +98,7 @@ function publishProps(r = review()): ReviewedPublishWarningViewProps {
     review: { reviewId: r.reviewId, fingerprint: r.fingerprint, selection: { ...r.selection } } };
   return { expected: structuredClone(binding), observation: { binding: structuredClone(binding), result: { state: 'review', review: r } },
     sourceCurrent: true, connection: 'ready', now: NOW, reason: { binding: structuredClone(binding), value: '  Reviewed coverage  ' },
-    onReasonChange: vi.fn(), onPublishIntent: vi.fn(), onReturnToReview: vi.fn() };
+    onReasonChange: rs.fn(), onPublishIntent: rs.fn(), onReturnToReview: rs.fn() };
 }
 function publishHtml(props: ReviewedPublishWarningViewProps) {
   const html = renderToStaticMarkup(createElement(ReviewedPublishWarningView, props));
@@ -276,7 +276,7 @@ describe('Unused F2 reviewed view binds controlled state without constructing co
     child.onConfirm!({ choice: 'PUBLISH_WITH_WARNINGS', reason: 'Reviewed coverage' });
     expect(props.onPublishIntent).toHaveBeenCalledWith({ binding: original, choice: 'PUBLISH_WITH_WARNINGS', reason: 'Reviewed coverage' });
     child.onReturnToReview!(); expect(props.onReturnToReview).toHaveBeenCalledWith(original);
-    const intent = vi.mocked(props.onPublishIntent!).mock.calls[0][0];
+    const intent = rs.mocked(props.onPublishIntent!).mock.calls[0][0];
     expect(Object.keys(intent).sort()).toEqual(['binding', 'choice', 'reason']);
     expect(intent.binding).not.toBe(original); expect(intent.binding.viewer).not.toBe(props.expected.viewer);
     expect(intent.binding.review.selection).not.toBe(props.expected.review.selection);

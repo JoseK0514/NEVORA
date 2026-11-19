@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { laborBudgetReadiness, parseLaborPlanningInputs } from "./model";
 const rates = [
   {

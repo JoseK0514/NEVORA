@@ -1,6 +1,15 @@
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+import * as actualAuthority from '@/lib/workforce/authority.server' with { rstest: 'importActual' };
+rs.mock('@/lib/workforce/authority.server', () => ({ ...actualAuthority,
+  assertWorkforcePermission: async (_proof: unknown, permission: string, ids: string[] | null) => {
+    expect(permission).toBe('PUBLISH_SCHEDULE');
+    access.footprints.push(ids ? {kind:'LOCATIONS',locationIds:ids} : {kind:'COMPANY'});
+    return { authority: 'a'.repeat(64) };
+  },
+}));
 import { managementProof, schedulingSourceFixture } from '../../test/fixtures/management';
 import { assignmentFacts } from './assignment-facts.test-support';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { publishScheduleChanges } from './publication-revisions';
 import { commitPublishedWeekChange, pendingPublicationChanges, patchPublishedProjection, type GuardedWeekState } from './notification-transactions';
 import { insertShiftAtLocation } from './schedules';
@@ -9,8 +18,8 @@ import type { OperationalFootprint } from '../company-access/model';
 
 // Publish changes (Jose, 2026-10-29): held manual edits publish once, on
 // Publish changes; a swap/callout in that week publishes only its own change.
-const access = vi.hoisted(() => ({ footprints: [] as unknown[] }));
-vi.mock('@/lib/company-access/operational-scope.server', async original => ({ ...await original<Record<string, unknown>>(),
+const access = rs.hoisted(() => ({ footprints: [] as unknown[] }));
+rs.mock('@/lib/company-access/operational-scope.server',  () => ({ ...rstestOriginal0,
   assertOperationalAccess: async (_proof: unknown, footprint: unknown) => { access.footprints.push(footprint); return { scope: { mode: 'COMPANY', locationIds: [] }, workspace: { id: 'test-workspace', name: 'Fictional', active: true, timeZone: 'America/Puerto_Rico', createdAt: '', updatedAt: '2030-01-01 00:00:00.123456+00' } }; } }));
 
 const week = '2030-10-07';
@@ -26,14 +35,14 @@ function heldWeek(): GuardedWeekState {
 function recorder(initial: GuardedWeekState) {
   const batches: SqlStatement[][] = [];
   const executor: SqlExecutor = {
-    query: vi.fn(async statement => statement.text.startsWith('SELECT id, name, time_zone') ? [{ id: 'test-workspace', name: 'Test', active: true, timeZone: 'America/Puerto_Rico', createdAt: '', updatedAt: '2030-01-01 00:00:00.123456+00' }]
+    query: rs.fn(async statement => statement.text.startsWith('SELECT id, name, time_zone') ? [{ id: 'test-workspace', name: 'Test', active: true, timeZone: 'America/Puerto_Rico', createdAt: '', updatedAt: '2030-01-01 00:00:00.123456+00' }]
       : statement.text.includes('AS state') ? [{ state: structuredClone(initial), source: schedulingSourceFixture(initial), read_at: '2030-10-07 12:00:00.654321+00' }] : []) as SqlExecutor['query'],
-    transaction: vi.fn(async statements => { batches.push([...statements]); return statements.map(() => []); }),
+    transaction: rs.fn(async statements => { batches.push([...statements]); return statements.map(() => []); }),
   };
   return { executor, batches };
 }
 const events = (batch: SqlStatement[]) => batch.filter(s => s.text.includes('INSERT INTO notifications') && s.values[12] === 'EVENT').map(s => s.values[1]);
-beforeEach(() => { vi.stubEnv('PUSH_ENVIRONMENT', 'test'); access.footprints.length = 0; });
+beforeEach(() => { rs.stubEnv('PUSH_ENVIRONMENT', 'test'); access.footprints.length = 0; });
 
 it('reports pending changes by canonical comparison, including a notes-only edit', () => {
   const state = heldWeek();
@@ -54,7 +63,7 @@ it('Publish changes writes one whole-week revision, one diff notification set an
   expect(capture.text).toContain('FROM shifts sh JOIN schedules s');
   const mark = texts.findIndex(t => t.includes('UPDATE schedule_pending_edits SET published_revision_id'));
   expect(mark).toBeGreaterThan(texts.indexOf(capture.text));
-  expect(batch[mark].values).toEqual([result.revision!.id, result.revision!.createdAt, week]);
+  expect(batch[mark].values).toEqual([result.revision!.id, result.revision!.createdAt, week, null, []]);
   // Only E's shift changed, so only E is told; F's unchanged shift sends nothing.
   expect(events(batch)).toEqual(['E']);
   expect(access.footprints).toContainEqual({ kind: 'COMPANY' });

@@ -130,7 +130,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
         setMessage('No receipt is available yet. Check this same reference again; the action has not been confirmed.');
       }
     } catch (failure) {
-      if (failure instanceof PayrollRequestError && [401, 403].includes(failure.status)) { setReceipt(null); finish(id); await reload(); }
+      if (failure instanceof PayrollRequestError && [401, 403].includes(failure.status)) { setReceipt(null); setUnconfirmed(true); await reload(); }
       setError(failure instanceof Error ? failure.message : 'The action reference could not be checked.');
     } finally { inFlight.current = false; setBusy(false); }
   }, [finish, reload, inlineResult]);
@@ -158,7 +158,8 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
         setMessage('This reference remains unconfirmed. Check the original action before reconstructing it again; a recorded reference cannot accept changed details.');
         await reload();
       }
-      else if (failure instanceof PayrollRequestError && [400, 401, 403, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409); finish(next.operationId); await reload(); }
+      else if (failure instanceof PayrollRequestError && [401, 403].includes(failure.status)) { setUnconfirmed(true); setRetryAvailable(true); await reload(); }
+      else if (failure instanceof PayrollRequestError && [400, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409); finish(next.operationId); await reload(); }
       else setRetryAvailable(true);
       setError(failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'The action response was interrupted. Check its reference.');
     } finally { inFlight.current = false; setBusy(false); }

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import {
   BUSINESS_ERROR_CODES, BUSINESS_FINDING_CODES, BUSINESS_QUALIFIER_CODES, BUSINESS_SCENARIO_UNAVAILABLE_CODES, BUSINESS_UNAVAILABLE_CODES, BUSINESS_VALIDATION_CODES, BUSINESS_VALIDATION_FIELDS,
 } from "@/lib/owner-advisor/business/contracts";

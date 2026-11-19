@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import references from './federal-employee-fixtures.test-support.json';
 import { fica2026 } from './rules/pr-2026';
 import { calculateNativePayroll } from './calculate';

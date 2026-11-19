@@ -7,6 +7,7 @@
  * only when POST /api/period-close (MANIFEST) answers for exactly these batches. The plan lives in this tab's memory. */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { PayrollExportBatchError, paidExportBatchProgress, planPaidExportBatches, type PaidExportBatchPlan } from "@/lib/payroll-export/batches";
+import {parseExportCommand} from "@/lib/payroll-export/command";
 import { verifyExportReply } from "@/lib/payroll-export/client";
 import { parseCurrentTimecards } from "@/lib/timecards/client";
 import type { Period } from "@/lib/timecards/project";
@@ -15,14 +16,16 @@ import { batchStatus, breakGate, describePlan, exportReadiness, finishState, kee
   type BatchState, type Decisions, type ExportSource } from "./export-model";
 import { BreaksStep, ExportChangedNotice, FinishStep, PlanStep, RunStep } from "./export-views";
 import { type StepAction, FlowHead, OfflineNote, Skeleton, StepActions, StopCard, download, periodText, useHeld, useLeaveGuard, useOffline, useStepFocus } from "./flow-kit";
-import { IDLE, classifyExportAnswer, holdsCustody, writeReducer, type Custody, type WriteEvent, type WriteState } from "./recovery";
+import { IDLE, EXPORT_REFUSALS, retireWrite, classifyExportAnswer, holdsCustody, writeReducer, type Custody, type WriteEvent, type WriteState, type ExportRefusal } from "./recovery";
 
+const foreground=()=>document.visibilityState!=="hidden"&&navigator.onLine&&document.hasFocus();
 const TITLE_ID = "paid-export-title", HEADING_ID = "paid-export-step";
 type Work = {
   step: 1 | 2 | 3 | 4; decisions: Decisions; plan: PaidExportBatchPlan | null; planFor: string | null; planProblem: "tooBig" | "coverage" | null;
   states: Record<string, BatchState>; record: WriteState<unknown>; changed: number | null; source: string | null;
 };
 const emptyWork = (): Work => ({ step: 1, decisions: {}, plan: null, planFor: null, planProblem: null, states: {}, record: IDLE, changed: null, source: null });
+function retireWork(work:Work):Work{return {...emptyWork(),states:Object.fromEntries(Object.entries(work.states).map(([key,state])=>[key,retireWrite(state)]).filter(([,state])=>holdsCustody(state as WriteState<unknown>))),record:retireWrite(work.record)};}
 type Loaded = { state: "loading" } | { state: "failed"; why: "network" | "denied" | "signed_out" } | { state: "ready"; source: ExportSource };
 
 async function post(path: string, headers: Record<string, string>, body: string): Promise<{ status: number; body: unknown }> {
@@ -36,44 +39,71 @@ async function post(path: string, headers: Record<string, string>, body: string)
 
 export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, timeZone }: { lang?: PayrollImportLang; actorId: string; workspaceId: string; period: Period; timeZone: string }) {
   const copy = payrollImportCopy[lang];
-  const [work, setWork, dropWork] = useHeld<Work>(`export:${actorId}:${period.startDate}:${period.endDate}`, emptyWork);
+  const [work, setWork, dropWork] = useHeld<Work>(`export:${workspaceId}:${actorId}:${period.startDate}:${period.endDate}`, emptyWork,retireWork);
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" }), [busy, setBusy] = useState(false);
   const offline = useOffline(), latest = useRef(work), running = useRef(false);
   useEffect(() => { latest.current = work; }, [work]);
+  const active = useRef(false), focused = useRef(true), readSequence = useRef(0), validUntil = useRef(0),generation=useRef(0);
+  const expiry = useRef<ReturnType<typeof setTimeout> | null>(null),renewal=useRef<ReturnType<typeof setTimeout>|null>(null);
+  const cancelRead = useCallback(() => {
+    generation.current++;readSequence.current++; validUntil.current = 0;
+    if (expiry.current) clearTimeout(expiry.current);
+    expiry.current = null;if(renewal.current)clearTimeout(renewal.current);renewal.current=null;
+  }, []);
+  const pausePrivate=useCallback(()=>{cancelRead();const next=retireWork(latest.current);latest.current=next;setWork(next);setLoaded({state:"loading"});},[cancelRead,setWork]);
+  const hasLease = () => active.current && focused.current && foreground() && performance.now() < validUntil.current;
   const started = Object.keys(work.states).length > 0;
   const unresolved = Object.values(work.states).some(holdsCustody) || holdsCustody(work.record);
   useLeaveGuard(unresolved || (started && work.record.phase !== "saved"));
   useStepFocus(`${work.step}:${work.record.phase}`, HEADING_ID);
   useEffect(() => () => { if (latest.current.record.phase === "saved") dropWork(); }, [dropWork]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async function loadExport() {
+    if (!active.current || !focused.current || !foreground()) return;
+    const sequence = ++readSequence.current, began = performance.now();
     const [close, time] = await Promise.all([
       post("/api/period-close", { "x-nevora-period-close": "1", "x-nevora-actor": actorId }, JSON.stringify({ action: "READ", command: period })),
       post("/api/timecards", { "x-nevora-timecards": "1", "x-nevora-actor": actorId }, JSON.stringify(period)),
     ]);
+    if (!active.current || !focused.current || sequence !== readSequence.current || !foreground()) return;
     const status = [close.status, time.status];
-    if (status.includes(401)) { setLoaded({ state: "failed", why: "signed_out" }); return; }
-    if (status.includes(403)) { setLoaded({ state: "failed", why: "denied" }); return; }
+    if (status.includes(401)) { pausePrivate(); setLoaded({ state: "failed", why: "signed_out" }); return; }
+    if (status.includes(403)) { pausePrivate(); setLoaded({ state: "failed", why: "denied" }); return; }
     try {
       const read = close.status === 200 ? parsePeriodRead(close.body, period) : null;
       if (!read || time.status !== 200) throw new Error("unavailable");
-      const source: ExportSource = { read, cards: parseCurrentTimecards(time.body, period).cards }, key = sourceKey(source), now = latest.current;
+      const parsed = parseCurrentTimecards(time.body, period), deadline = began + parsed.validForMs;
+      const remaining = deadline - performance.now();
+      if (remaining < 1) throw new Error("Expired timecard read");
+      const source: ExportSource = { read, cards: parsed.cards }, key = sourceKey(source), now = latest.current;
+      // Starting a new read never cancels the old deadline. Only a completed paired read can renew it.
+      if (expiry.current) clearTimeout(expiry.current);
+      validUntil.current = deadline;
+      expiry.current = setTimeout(() => { if (active.current){pausePrivate();setLoaded({state:"failed",why:"network"});} }, remaining);
+      if(renewal.current)clearTimeout(renewal.current);renewal.current=setTimeout(()=>void loadExport(),remaining*.7);
       setLoaded({ state: "ready", source });
       // Once a batch is out the plan is fixed: a newer read is shown for names only and never changes the plan.
       if (Object.keys(now.states).length || now.source === key) return;
       // The timecards or the people changed before anything was sent: keep every choice whose break is still there.
       const ready = exportReadiness(source), kept = "included" in ready ? keepDecisions(periodBreaks(ready.included, period), now.decisions) : { decisions: now.decisions, dropped: 0 };
       setWork(value => ({ ...value, source: key, decisions: kept.decisions, plan: null, planFor: null, planProblem: null, step: value.source && value.step > 1 ? 1 : value.step, changed: value.source ? kept.dropped : null }));
-    } catch { setLoaded(value => value.state === "ready" ? value : { state: "failed", why: "network" }); }
-  }, [actorId, period, setWork]);
+    } catch { pausePrivate(); setLoaded({ state: "failed", why: "network" }); }
+  }, [actorId, period, setWork, pausePrivate]);
   useEffect(() => {
-    let active = true;
-    queueMicrotask(() => { if (active) void load(); });
-    const again = () => { if (document.visibilityState === "visible" && navigator.onLine) void load(); };
-    const poll = setInterval(again, 30_000);
-    window.addEventListener("online", again); document.addEventListener("visibilitychange", again);
-    return () => { active = false; clearInterval(poll); window.removeEventListener("online", again); document.removeEventListener("visibilitychange", again); };
-  }, [load]);
+    active.current = true; focused.current = foreground();
+    queueMicrotask(() => { if (active.current) void load(); });
+    const hide = (event?: Event) => { if (event?.type === "blur" && event.target !== window) return; focused.current = false; pausePrivate(); };
+    const again = () => { if (foreground()) { focused.current = true; void load(); } };
+    const visible = () => document.visibilityState === "hidden" ? hide() : again();
+
+    window.addEventListener("online", again); window.addEventListener("focus", again); window.addEventListener("pageshow", again);
+    window.addEventListener("offline", hide); window.addEventListener("blur", hide); window.addEventListener("pagehide", hide); document.addEventListener("visibilitychange", visible);
+    return () => {
+      active.current = false;cancelRead();
+      window.removeEventListener("online", again); window.removeEventListener("focus", again); window.removeEventListener("pageshow", again);
+      window.removeEventListener("offline", hide); window.removeEventListener("blur", hide); window.removeEventListener("pagehide", hide); document.removeEventListener("visibilitychange", visible);
+    };
+  }, [load, pausePrivate, cancelRead]);
 
   const source = loaded.state === "ready" ? loaded.source : null;
   const ready = useMemo(() => source ? exportReadiness(source) : null, [source]);
@@ -90,7 +120,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     if (work.step !== 2 || started || !source || !gate.ready || gate.overLimit || work.planFor === planKey) return;
     let active = true;
     void planPaidExportBatches(planInput(source, included, people, work.decisions, { planId: crypto.randomUUID(), actorId, workspaceId }))
-      .then(next => { if (active) setWork(value => ({ ...value, plan: next, planFor: planKey, planProblem: null })); })
+      .then(next => { if (active&&hasLease()) setWork(value => ({ ...value, plan: next, planFor: planKey, planProblem: null })); })
       .catch(failure => { if (active) setWork(value => ({ ...value, plan: null, planFor: planKey, planProblem: failure instanceof PayrollExportBatchError && failure.reason === "EMPLOYEE_EXCEEDS_COMMAND_LIMIT" ? "tooBig" : "coverage" })); });
     return () => { active = false; };
   }, [work.step, work.planFor, work.decisions, started, source, gate.ready, gate.overLimit, planKey, included, people, actorId, workspaceId, setWork]);
@@ -105,14 +135,17 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
 
   /** Send one batch's stored body, exactly as planned, and settle its state from the verified reply. */
   async function sendBatch(current: PaidExportBatchPlan, key: string): Promise<boolean> {
+    if (!hasLease()) { pausePrivate(); return false; }
     const batch = current.batches.find(item => item.command.operationId === key);
     if (!batch) return false;
+    const currentGeneration=generation.current;
     const custody: Custody = { key, body: batch.body };
     if (applyBatch(key, { type: "send", custody }).phase !== "sending") return false;
     const answer = await post("/api/payroll-export", { "x-nevora-payroll-export": "1", "x-nevora-actor": current.actorId }, batch.body), result = classifyExportAnswer(answer.status, answer.body);
+    if(currentGeneration!==generation.current||!hasLease()){applyBatch(key,{type:"unknown"});return false;}
     if (result.kind === "generated") {
       // A reply counts only when its CSV, both fingerprints and the workplace are the ones this batch asked for.
-      try { const verified = await verifyExportReply(result.reply, batch.command); if (verified.model.workspaceId !== current.workspaceId) throw new Error("foreign"); applyBatch(key, { type: "saved", receipt: result.reply }); return true; }
+      try { const verified = await verifyExportReply(result.reply, batch.command); if (verified.model.workspaceId !== current.workspaceId) throw new Error("foreign");if(currentGeneration!==generation.current||!hasLease()){applyBatch(key,{type:"unknown"});return false;} applyBatch(key, { type: "saved", receipt: result.reply }); return true; }
       catch { applyBatch(key, { type: "unknown" }); return false; }
     }
     if (result.kind === "refused") applyBatch(key, { type: "refused", reason: result.reason });
@@ -125,6 +158,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   async function run(only?: string) {
     const current = latest.current.plan;
     if (!current || running.current) return;
+    if (!hasLease()) { pausePrivate(); return; }
     running.current = true; setBusy(true);
     try {
       if (only) await sendBatch(current, only);
@@ -138,17 +172,21 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   async function confirm() {
     const current = latest.current.plan;
     if (!current || running.current) return;
+    if (!hasLease()) { pausePrivate(); return; }
     const replies = current.batches.map(batch => { const state = latest.current.states[batch.command.operationId]; return state?.phase === "saved" ? state.receipt : null; });
     if (replies.includes(null)) return;
+    const currentGeneration=generation.current;
     running.current = true; setBusy(true);
     try {
       const progress = await paidExportBatchProgress(current, replies).catch(() => null);
+      if (currentGeneration!==generation.current||!hasLease()) { pausePrivate(); return; }
       if (progress?.state !== "READY_FOR_MANIFEST") { setWork(value => ({ ...value, record: { phase: "blocked", custody: { key: current.planId, body: "" }, reason: "conflict" } })); return; }
       const custody: Custody = latest.current.record.phase === "unknown" ? latest.current.record.custody : { key: current.planId, body: JSON.stringify(current.manifestRequest) };
       const sending = writeReducer(latest.current.record, { type: "send", custody });
       if (sending.phase !== "sending") return;
-      setWork(value => ({ ...value, record: sending }));
+      latest.current={...latest.current,record:sending};setWork(latest.current);
       const answer = await post("/api/period-close", { "x-nevora-period-close": "1", "x-nevora-actor": current.actorId }, custody.body);
+      if(currentGeneration!==generation.current||!hasLease())return;
       const body = answer.body as { state?: unknown; result?: unknown } | undefined;
       const event: WriteEvent<unknown> = answer.status === 200 && body?.state === "ready" && manifestMatches(body.result, current) ? { type: "saved", receipt: body.result }
         : answer.status === 401 || answer.status === 403 ? { type: "blocked", reason: answer.status === 401 ? "signed_out" : "denied" }
@@ -156,9 +194,50 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
       setWork(value => ({ ...value, record: writeReducer(sending, event) }));
     } finally { running.current = false; setBusy(false); }
   }
-  function downloadBatch(key: string) {
-    const state = work.states[key], reply = state?.phase === "saved" ? state.receipt as { export?: { csv?: string } } : null;
-    if (reply?.export?.csv) download(reply.export.csv, "text/csv;charset=utf-8", `nevora-paid-time-${period.startDate}-${key.slice(0, 8)}.csv`);
+  async function downloadBatch(key:string){
+    if(!hasLease()){pausePrivate();return;}
+    const currentGeneration=generation.current,batch=latest.current.plan?.batches.find(batch=>batch.command.operationId===key);
+    if(!batch||latest.current.states[key]?.phase!=="saved")return;
+    // Replay the immutable original command: the server rechecks current company
+    // authority and verifies the stored artifact before returning any bytes.
+    const answer=await post("/api/payroll-export",{"x-nevora-payroll-export":"1","x-nevora-actor":actorId},batch.body);
+    if(currentGeneration!==generation.current||!hasLease())return;
+    if(answer.status!==200){pausePrivate();void load();return;}
+    try{const verified=await verifyExportReply(answer.body,batch.command);if(verified.model.workspaceId!==workspaceId)throw Error("foreign");if(currentGeneration!==generation.current||!hasLease())return;download(verified.csv,"text/csv;charset=utf-8",`nevora-paid-time-${period.startDate}-${key.slice(0,8)}.csv`);}catch{pausePrivate();}
+  }
+  async function recoverOriginal(key:string,manifest=false){
+    if(running.current||!hasLease())return;
+    const original=manifest?latest.current.record:latest.current.states[key];
+    if(!original||original.phase!=="unknown")return;
+    const currentGeneration=generation.current,custody=original.custody;
+    const settle=(event:WriteEvent<unknown>)=>{
+      if(!manifest){applyBatch(key,event);return;}
+      const record=writeReducer(latest.current.record,event);
+      latest.current={...latest.current,record};setWork(latest.current);
+    };
+    settle({type:"send",custody});running.current=true;setBusy(true);
+    try{
+      const answer=await post(manifest?"/api/period-close":"/api/payroll-export",{[manifest?"x-nevora-period-close":"x-nevora-payroll-export"]:"1","x-nevora-actor":actorId},custody.body);
+      if(currentGeneration!==generation.current||!hasLease())return;
+      if(answer.status===401||answer.status===403){pausePrivate();void load();return;}
+      let confirmed=false;
+      if(manifest){
+        const body=answer.body as {state?:string;result?:{state?:string;id?:string}}|null;
+        confirmed=answer.status===200&&body?.state==="ready"&&body.result?.state==="MANIFEST_PREPARED"&&body.result.id===custody.key;
+        if(!confirmed)settle(answer.status===400&&body?.state==="invalid"?{type:"refused",reason:"INVALID"}:answer.status===409&&body?.state==="conflict"?{type:"blocked",reason:"conflict"}:{type:"unknown"});
+      }else{
+        const result=classifyExportAnswer(answer.status,answer.body);
+        if(result.kind==="generated"){
+          const verified=await verifyExportReply(result.reply,parseExportCommand(JSON.parse(custody.body)));
+          confirmed=verified.model.workspaceId===workspaceId;
+          if(!confirmed)throw Error("foreign");
+        }else settle(result.kind==="refused"?{type:"refused",reason:result.reason}:result.kind==="conflict"?{type:"blocked",reason:"conflict"}:result.kind==="already_generated"?{type:"blocked",reason:"duplicate"}:{type:"unknown"});
+      }
+      if(!confirmed||currentGeneration!==generation.current||!hasLease())return;
+      setWork(value=>{const states={...value.states};if(!manifest)delete states[key];return {...value,states,record:manifest?IDLE:value.record};});
+      void load();
+    }catch{if(currentGeneration===generation.current&&hasLease())settle({type:"unknown"});}
+    finally{running.current=false;setBusy(false);}
   }
 
   const exportsHref = `/app/payroll-export?start=${period.startDate}&end=${period.endDate}`, back = { href: exportsHref, label: copy.common.timeExports };
@@ -172,6 +251,18 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   if (loaded.state === "failed") return frame(0, null, loaded.why === "network"
     ? <StopCard kind={offline ? "offline" : "failed"} alert title={offline ? copy.common.offlineTitle : copy.common.loadFailedTitle} line={offline ? copy.common.offlineLine : copy.common.loadFailedLine} action={{ label: copy.common.tryAgain, onClick: () => { setLoaded({ state: "loading" }); void load(); } }} />
     : <StopCard title={loaded.why === "denied" ? copy.common.deniedTitle : copy.common.signedOutTitle} line={loaded.why === "denied" ? copy.common.deniedLine : copy.common.signedOutLine} action={loaded.why === "denied" ? { label: copy.exp.finish.openExports, href: exportsHref } : { label: copy.common.signIn, href: "/login" }} />);
+  if(!work.plan&&(Object.keys(work.states).length||work.record.phase!=="idle")){
+    const recovery=(key:string,state:WriteState<unknown>,manifest=false)=>{
+      const stopped=state.phase==="blocked"||state.phase==="refused";
+      const refusal=state.phase==="refused"&&(state.reason==="INVALID"||(EXPORT_REFUSALS as readonly string[]).includes(state.reason))?copy.exp.run.refusal[state.reason as ExportRefusal]:null;
+      const line=manifest?(stopped?copy.exp.finish.refusedLine:copy.exp.finish.unknownLine):refusal??(state.phase==="blocked"?(state.reason==="duplicate"?copy.exp.run.duplicateLine:copy.exp.run.conflictLine):copy.exp.run.unknownLine);
+      return <StopCard key={key} kind={state.phase==="refused"?"failed":"paused"} alert title={stopped?copy.exp.run.status.blocked:copy.exp.run.status.unknown} line={line}
+        action={stopped?{label:copy.exp.finish.openExports,href:exportsHref}:{label:manifest?copy.exp.finish.check:copy.exp.run.checkBatch,busy,onClick:()=>void recoverOriginal(key,manifest)}}>
+        {"custody" in state?<p className="pim-receipt"><code>{state.custody.key.slice(0,8)}</code></p>:null}
+      </StopCard>;
+    };
+    return frame(0,null,<>{Object.entries(work.states).map(([key,state])=>recovery(key,state))}{work.record.phase!=="idle"?recovery("manifest",work.record,true):null}</>);
+  }
   if (ready && "hold" in ready && !started) {
     const hold = ready.hold, href = hold.kind === "notFinalized" ? `/app/timecards?start=${period.startDate}&end=${period.endDate}` : hold.kind === "tooManyPeople" ? "/app/payroll" : hold.kind === "alreadyComplete" ? exportsHref : `${exportsHref}#who-is-included`;
     return frame(0, null, <StopCard kind="paused" title={copy.exp.hold.title(hold)} line={copy.exp.hold.line(hold)} action={{ label: copy.exp.hold.action(hold), href }} />);

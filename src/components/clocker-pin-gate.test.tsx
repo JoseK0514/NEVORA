@@ -1,12 +1,12 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {ClockerPresentation} from './clocker-language';
 import {ClockerPinGate,PinRequestError,requestPin} from './clocker-pin-gate';
 
-afterEach(()=>vi.unstubAllGlobals());
-const reply=(status:number,body:object)=>vi.fn(async()=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}}));
+afterEach(()=>{ rs.unstubAllGlobals(); });
+const reply=(status:number,body:object)=>rs.fn(async()=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}}));
 const failure=async(status:number,body:object)=>{
- vi.stubGlobal('fetch',reply(status,body));
+ rs.stubGlobal('fetch',reply(status,body));
  return requestPin('main',{action:'verify',employeeId:'AB12',pin:'2468'}).then(()=>{throw Error('expected a failure');},(error:unknown)=>error as PinRequestError);
 };
 
@@ -25,7 +25,7 @@ it('asks for the Employee ID in Spanish on a Spanish tablet',()=>{
  expect(html).toContain('Ingresa tu ID de empleado');expect(html).toContain('¿No sabes tu ID de empleado? Pregúntale a tu gerente.');expect(html).not.toContain('Employee ID');
 });
 it('sends the Employee ID with the PIN and uses the verify reply without a status request',async()=>{
- const fetch=reply(200,{state:'verified',firstName:'Ana',expiresAt:'2026-11-14T12:00:00.000Z'});vi.stubGlobal('fetch',fetch);
+ const fetch=reply(200,{state:'verified',firstName:'Ana',expiresAt:'2026-11-14T12:00:00.000Z'});rs.stubGlobal('fetch',fetch);
  await expect(requestPin('main office',{action:'verify',employeeId:'AB12',pin:'2468'})).resolves.toEqual({state:'verified',firstName:'Ana',expiresAt:'2026-11-14T12:00:00.000Z'});
  expect(fetch).toHaveBeenCalledTimes(1);
  const [url,init]=fetch.mock.calls[0] as unknown as [string,RequestInit];

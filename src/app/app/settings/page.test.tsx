@@ -1,18 +1,19 @@
-import {beforeEach,it,expect,vi} from 'vitest';
+import * as rstestOriginal0 from "react";
+import {beforeEach,it,expect,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
-const payroll = vi.hoisted(() => ({ enabled: false, canConfigure: false }));
-vi.mock('@/lib/auth/permissions',()=>({requireRoles:vi.fn()}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'fictional-owner',role:'OWNER'}})}));
-vi.mock('@/lib/payroll/service',()=>({payrollFeatureEnabled:()=>payroll.enabled,readPayrollCapabilities:async()=>({enabled:payroll.enabled,canConfigure:payroll.canConfigure})}));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'w',name:'Fictional Workspace',timeZone:'America/Puerto_Rico',active:true})}));
-vi.mock('@/components/kit/kit',()=>import('../../../components/kit/kit'));
-vi.mock('next/link',async()=>{const {createElement}=await import('react');return {default:({href,children,prefetch:_p,...props}:{href:string;children?:React.ReactNode;prefetch?:boolean})=>createElement('a',{href,...props},children)};});
-const reads=vi.hoisted(()=>({devices:[] as {state:string}[],breaks:[] as {active:boolean}[]}));
-vi.mock('@/lib/data/employees',()=>({listLocations:async()=>[{id:'l1'},{id:'l2'}]}));
-vi.mock('@/lib/data/positions',()=>({listPositions:async()=>[{id:'p1'}]}));
-vi.mock('@/lib/clocker/break-types.server',()=>({listBreakTypes:async()=>reads.breaks}));
-vi.mock('@/lib/clocker/devices.server',()=>({listClockerDevices:async()=>reads.devices}));
-vi.mock('@/lib/workspace-presentation/current.server',()=>({currentPresentation:async()=>({words:'standard',modules:undefined})}));
+const payroll = rs.hoisted(() => ({ enabled: false, canConfigure: false }));
+rs.mock('@/lib/auth/permissions',()=>({requireRoles:rs.fn()}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'fictional-owner',role:'OWNER'}})}));
+rs.mock('@/lib/payroll/service',()=>({payrollFeatureEnabled:()=>payroll.enabled,readPayrollCapabilities:async()=>({enabled:payroll.enabled,canConfigure:payroll.canConfigure})}));
+rs.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'w',name:'Fictional Workspace',timeZone:'America/Puerto_Rico',active:true})}));
+
+rs.mock('next/link',()=>{const {createElement}=rstestOriginal0;return {default:({href,children,prefetch:_p,...props}:{href:string;children?:React.ReactNode;prefetch?:boolean})=>createElement('a',{href,...props},children)};});
+const reads=rs.hoisted(()=>({devices:[] as {state:string}[],breaks:[] as {active:boolean}[]}));
+rs.mock('@/lib/data/employees',()=>({listLocations:async()=>[{id:'l1'},{id:'l2'}]}));
+rs.mock('@/lib/data/positions',()=>({listPositions:async()=>[{id:'p1'}]}));
+rs.mock('@/lib/clocker/break-types.server',()=>({listBreakTypes:async()=>reads.breaks}));
+rs.mock('@/lib/clocker/devices.server',()=>({listClockerDevices:async()=>reads.devices}));
+rs.mock('@/lib/workspace-presentation/current.server',()=>({currentPresentation:async()=>({words:'standard',modules:undefined})}));
 import SettingsPage from './page';
 import {requireRoles} from '@/lib/auth/permissions';
 beforeEach(()=>{payroll.enabled=false;payroll.canConfigure=false;reads.devices=[];reads.breaks=[];});
@@ -76,7 +77,7 @@ it.each([[false,false],[true,false],[true,true]])('payroll configuration require
 });
 
 it('requires Owner authorization before returning any settings content',async()=>{
- const guard=vi.mocked(requireRoles);
+ const guard=rs.mocked(requireRoles);
  guard.mockClear();
  const denied=new Error('fictional authorization refusal');
  guard.mockRejectedValueOnce(denied);
@@ -87,7 +88,7 @@ it('requires Owner authorization before returning any settings content',async()=
 // Review Nov 14 (AR-13, JR-4): the subscription has a row in Company, only where this deployment has billing on.
 it('lists Plan and billing in Company only while billing is on for this deployment',async()=>{
  expect(renderToStaticMarkup(await SettingsPage())).not.toContain('href="/app/billing"');
- vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');
+ rs.stubEnv('NEVORA_COMMERCE_ENABLED','true');
  try{
   const html=renderToStaticMarkup(await SettingsPage());
   expect(html.match(/<a href="\/app\/billing" class="c-row c-row--one"/g)).toHaveLength(1);
@@ -95,5 +96,5 @@ it('lists Plan and billing in Company only while billing is on for this deployme
   // It sits in Company, after Company policies and before Scheduling.
   expect(html.indexOf('href="/app/settings/company-policies"')).toBeLessThan(html.indexOf('href="/app/billing"'));
   expect(html.indexOf('href="/app/billing"')).toBeLessThan(html.indexOf('href="/app/settings/positions"'));
- }finally{vi.unstubAllEnvs();}
+ }finally{rs.unstubAllEnvs();}
 });

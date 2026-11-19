@@ -1,11 +1,11 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {commerceGate,resetCommerceAccessCache} from './access';
-afterEach(()=>{vi.unstubAllEnvs();resetCommerceAccessCache();});
+afterEach(()=>{rs.unstubAllEnvs();resetCommerceAccessCache();});
 function enable(){
- vi.stubEnv('NEVORA_COMMERCE_ENABLED','true');
- vi.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://billing.example.test');
- vi.stubEnv('NEVORA_COMMERCE_INSTALLATION_ID','fictional');
- vi.stubEnv('NEVORA_COMMERCE_INSTANCE_SECRET','a'.repeat(43));
+ rs.stubEnv('NEVORA_COMMERCE_ENABLED','true');
+ rs.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://billing.example.test');
+ rs.stubEnv('NEVORA_COMMERCE_INSTALLATION_ID','fictional');
+ rs.stubEnv('NEVORA_COMMERCE_INSTANCE_SECRET','a'.repeat(43));
 }
 const restricted=async()=>Response.json({state:'restricted',operational:false,validUntil:Date.now()+10000});
 it.each(['restricted','unavailable'])('retains the exact tablet path through a %s pause',async state=>{

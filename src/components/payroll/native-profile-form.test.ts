@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { parseNativeProfileCommand } from '@/lib/payroll/native/model';
 import { input } from '@/lib/payroll/native/fixtures.test-support';
 import * as form from './native-profile-form';

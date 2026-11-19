@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {validateShift,type ValidateShiftInput} from './validate-shift';
 import {applyRestrictionCommand,emptyRestrictionDocument} from './restrictions';
 import {automaticWeek} from '../../test/fixtures/automatic-week';

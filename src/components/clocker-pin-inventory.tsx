@@ -54,6 +54,6 @@ export function ClockerPinInventory({statuses,details={},lang='en'}:{statuses:Ow
 export function ClockerPinsUnavailable({lang='en'}:{lang?:ClockerOwnerLang}){
  const t=clockerOwnerCopy[lang];
  return <div className="ck-stack"><BCard label={t.pinsLoadFailedTitle}><BState kind="failed" alert title={t.pinsLoadFailedTitle} line={t.pinsLoadFailedBody}>
-  {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- a retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript */}
+  {/* eslint-disable-next-line next-preserved/no-html-link-for-pages -- a retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript */}
   <a className="b-btn b-btn--teal" href="/app/settings/clocker/pins">{t.tryAgain}</a></BState></BCard></div>;
 }

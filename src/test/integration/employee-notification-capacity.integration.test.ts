@@ -1,6 +1,6 @@
 import {randomUUID} from 'node:crypto';
-import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {afterEach,beforeEach,describe,expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {readEmployeeNotificationList} from '../../lib/data/employee-notification-list.server';
 import {attentionSourceVersion} from '../../lib/data/employee-attention-receipts.server';

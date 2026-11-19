@@ -1,10 +1,11 @@
+import * as rstestImportedActual0 from "react" with { rstest: 'importActual' };
 // Clocker recovery (Phase 6): one designed answer for each result of checking a code, and each state of the help
 // requests list. The states are set directly in hooks held here; clocker-recovery-review.test.tsx covers the reads.
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, rs} from '@rstest/core';
 
-const hooks = vi.hoisted(() => ({states: [] as unknown[], refs: [] as {current: unknown}[], s: 0, r: 0, server: false}));
-vi.mock('react', async original => ({
-  ...await original<Record<string, unknown>>(),
+const hooks = rs.hoisted(() => ({states: [] as unknown[], refs: [] as {current: unknown}[], s: 0, r: 0, server: false}));
+rs.mock('react', () => ({
+  ...rstestImportedActual0,
   useState: (initial: unknown) => {const index = hooks.s++; if (!(index in hooks.states)) hooks.states[index] = initial; return [hooks.states[index], (value: unknown) => {hooks.states[index] = value;}];},
   useRef: (initial: unknown) => {const index = hooks.r++; return hooks.refs[index] ??= {current: initial};},
   useEffect: () => {},
@@ -37,13 +38,13 @@ function review(state: RecoveryReview | null, options: {loading?: boolean; inval
   hooks.s = 0; hooks.r = 0; hooks.states = [code, state !== null || !!options.loading, state, !!options.loading, options.invalid ?? ''];
   return expand(ClockerRecoveryReview({actorId: 'QAOWNER', timeZone: 'America/Puerto_Rico', lang: options.lang}), [ClockerOwnerRequests]);
 }
-function requests(state: OwnerReviewRequestsResult | null, loading = false, lang: ClockerOwnerLang = 'en', onSelect = vi.fn()) {
+function requests(state: OwnerReviewRequestsResult | null, loading = false, lang: ClockerOwnerLang = 'en', onSelect = rs.fn()) {
   hooks.s = 0; hooks.r = 0; hooks.states = [state, loading];
   return expand(ClockerOwnerRequests({actorId: 'QAOWNER', timeZone: 'America/Puerto_Rico', onSelect, lang}));
 }
 const card = (tree: unknown, kind: string) => all(tree).find(node => node.props.className === 'b-statecard' && node.props['data-kind'] === kind);
-beforeEach(() => { hooks.states = []; hooks.refs = []; hooks.server = false; vi.stubGlobal('window', new EventTarget()); vi.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible'})); vi.stubGlobal('navigator', {onLine: true}); });
-afterEach(() => vi.unstubAllGlobals());
+beforeEach(() => { hooks.states = []; hooks.refs = []; hooks.server = false; rs.stubGlobal('window', new EventTarget()); rs.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible'})); rs.stubGlobal('navigator', {onLine: true}); });
+afterEach(() => {rs.unstubAllGlobals();});
 
 describe('checking a code', () => {
   it('before any check: what the page is for, one field with its label and help, one filled button', () => {
@@ -104,7 +105,7 @@ describe('help requests', () => {
   const ana = {requestId: 'r-1', commandId: code, requesterId: 'a', requesterName: 'Ana Colon', deviceName: 'Front counter tablet', locationName: 'Calle Loíza', requestedAt: '2026-11-17T20:01:00.000000Z'};
   const luis = {...ana, requestId: 'r-2', commandId: null, requesterName: 'Luis Torres'};
   it('each person is a row: who, where and when, a tinted Check and a quiet Fix in Timecards', () => {
-    const onSelect = vi.fn(), tree = requests(page([ana, luis]), false, 'en', onSelect);
+    const onSelect = rs.fn(), tree = requests(page([ana, luis]), false, 'en', onSelect);
     expect(text(tree)).toContain('Ana Colon'); expect(text(tree)).toContain('Calle Loíza · Front counter tablet');
     const check = all(tree).find(node => node.props['aria-label'] === 'Check Ana Colon’s saved punch')!;
     expect(check.props.className).toBe('b-btn b-btn--ghost'); (check.props.onClick as () => void)(); expect(onSelect).toHaveBeenCalledWith(code);

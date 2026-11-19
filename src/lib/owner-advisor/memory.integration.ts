@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from "node:crypto";
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { parseMemoryCommand } from "./memory";
@@ -100,7 +100,7 @@ it.each(["intent", "decision"] as const)("rejects %s renewal when server read/ap
     await f.q("UPDATE workspaces SET time_zone='America/Puerto_Rico' WHERE singleton=true");
     const memory = new AdvisorMemory(new AdvisorStore(f.owner, await admitOwner(f.owner, f.db.executor), f.db.executor));
     const created = "2026-11-01T00:00:00.000Z", before = "2027-10-31T23:59:59.999Z", after = "2027-11-01T00:00:00.001Z";
-    const clock = vi.spyOn(memory, "clock").mockResolvedValue(created);
+    const clock = rs.spyOn(memory, "clock").mockResolvedValue(created);
     const change = kind === "intent" ? { ...save().change, effectiveDate: "2026-11-01", expiryDate: "2027-10-31" } : { kind: "save_decision", decisionId: id, summary: "Original decision", course: "Review", reason: "Owner choice", focus: { kind: "general" }, decisionDate: "2026-11-01", expiryDate: "2027-10-31" };
     const cmd = (revision: number, value = change) => parseMemoryCommand({ op: "memory", requestId: randomUUID(), expectedRevision: revision, change: value });
     await memory.save(cmd(0));

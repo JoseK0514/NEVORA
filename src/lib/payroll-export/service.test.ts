@@ -1,5 +1,6 @@
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
 import {createHash} from 'node:crypto';
-import {describe,expect,it,vi} from 'vitest';
+import {describe,expect,it,rs} from '@rstest/core';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
 import {neutralProfile} from './model';
@@ -149,4 +150,4 @@ describe('NVA-001 real export-service validation boundaries',()=>{
 
 // Current Company/lifecycle/receipt/rollback behavior uses owned real SQL in
 // company-access-period-export.integration.ts; retain real guard assembly here.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({workspace,authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));
+rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rstestOriginal0,assertOperationalAccess:async()=>({workspace,authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));

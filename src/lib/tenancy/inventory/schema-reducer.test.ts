@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from '@rstest/core';
 import { reduceExplicitSchema } from './schema-reducer';
 import type { SchemaFold, SchemaInput } from './schema-reducer';
 import { loadPinnedMigrations } from './source';

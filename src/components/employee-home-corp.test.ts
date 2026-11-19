@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {weekShiftAhead} from './employee-home-corp';
 
 // Finding (Oct 31): Upcoming listed Friday's 10:00 AM – 6:00 PM shift at 7:45 PM the same evening.

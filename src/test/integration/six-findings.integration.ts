@@ -1,7 +1,7 @@
-vi.mock("server-only", () => ({}));
+rs.mock("server-only", () => ({}));
 import {readFile} from "node:fs/promises";
 import { createHash } from "node:crypto";
-import { afterAll, beforeAll, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, expect, it, rs } from '@rstest/core';
 import { createDisposableFoundationDatabase } from "./local-postgres";
 import {
   listTemplateShifts,

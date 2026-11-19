@@ -1,13 +1,13 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {billingRefusal,createCentralBillingClient,parseBillingCatalog,parseCentralStatus,publicBillingApiOrigin,stripeBillingDestination,takeBillingFragment} from './central-billing';
 const proof='a'.repeat(43),token='b'.repeat(43),operation='12121212-1212-4212-8212-121212121212',origin='http://127.0.0.1:39991';
 const catalog={currency:'usd',trialDays:30,plans:[{key:'small',employees:15,amount:1900},{key:'team',employees:30,amount:2900}]};
 const status={state:'paid',operational:true,trialEndsAt:null,paidThrough:'2026-12-01T00:00:00.000Z',graceEndsAt:null,plan:'small',employeeLimit:15,activeEmployees:4,reason:null,billing:true,export:true,businessName:'Fictional business',applicationUrl:'https://fixture.example.invalid',timeZone:'America/Puerto_Rico'};
 const json=(value:unknown,status=200)=>Response.json(value,{status});
-function fixture(){let stamp=Date.parse('2026-11-13T00:00:00Z');const transport=vi.fn(async(url:string,_init:RequestInit):Promise<Response>=>url.endsWith('/exchange')?json({accessToken:token,expiresIn:28800}):url.endsWith('/status')?json(status):url.endsWith('/plans')?json(catalog):json({url:'https://checkout.stripe.com/c/pay/fictional'}));const key=vi.fn(()=>operation);const client=createCentralBillingClient(origin,transport,key,()=>stamp);return {client,transport,key,advance:(ms:number)=>{stamp+=ms;}};}
-afterEach(()=>vi.useRealTimers());
+function fixture(){let stamp=Date.parse('2026-11-13T00:00:00Z');const transport=rs.fn(async(url:string,_init:RequestInit):Promise<Response>=>url.endsWith('/exchange')?json({accessToken:token,expiresIn:28800}):url.endsWith('/status')?json(status):url.endsWith('/plans')?json(catalog):json({url:'https://checkout.stripe.com/c/pay/fictional'}));const key=rs.fn(()=>operation);const client=createCentralBillingClient(origin,transport,key,()=>stamp);return {client,transport,key,advance:(ms:number)=>{stamp+=ms;}};}
+afterEach(()=>{ rs.useRealTimers(); });
 it('takes only a canonical handoff and scrubs even an invalid or retired fragment',()=>{
- for(const hash of ['#handoff='+proof,'#handoff=short','#token='+proof,'#handoff='+proof+'&other=private']){const scrub=vi.fn();expect(takeBillingFragment({hash,pathname:'/pages/plans',search:''},scrub)).toBe(hash==='#handoff='+proof?proof:null);expect(scrub).toHaveBeenCalledExactlyOnceWith('/pages/plans');}
+ for(const hash of ['#handoff='+proof,'#handoff=short','#token='+proof,'#handoff='+proof+'&other=private']){const scrub=rs.fn();expect(takeBillingFragment({hash,pathname:'/pages/plans',search:''},scrub)).toBe(hash==='#handoff='+proof?proof:null);expect(scrub).toHaveBeenCalledExactlyOnceWith('/pages/plans');}
 });
 it.each(['https://evil.invalid','https://br-fixture-commerceapi.compute.c-15.us-east-1.aws.neon.tech/path','https://user:secret@br-fixture-commerceapi.compute.c-15.us-east-1.aws.neon.tech','http://192.168.0.2:3000'])('rejects an untrusted public API origin %s',value=>expect(publicBillingApiOrigin(value)).toBeNull());
 it('exchanges once and sends bearer only on authenticated requests, without cookies or redirects',async()=>{
@@ -49,7 +49,7 @@ it.each([['active'],{},'',123,'x'.repeat(101),'active\n'].map(subscriptionStatus
  expect(()=>parseCentralStatus({...status,subscriptionStatus,billingAction:null})).toThrow();
 });
 
-it('refuses selector-bearing handoffs and removes query and fragment material from the address bar',()=>{for(const search of ['?handoff='+proof,'?customer=fictional','?lang=es']){const scrub=vi.fn();expect(takeBillingFragment({hash:'#handoff='+proof,pathname:'/pages/plans',search},scrub)).toBeNull();expect(scrub).toHaveBeenCalledExactlyOnceWith('/pages/plans');}});
+it('refuses selector-bearing handoffs and removes query and fragment material from the address bar',()=>{for(const search of ['?handoff='+proof,'?customer=fictional','?lang=es']){const scrub=rs.fn();expect(takeBillingFragment({hash:'#handoff='+proof,pathname:'/pages/plans',search},scrub)).toBeNull();expect(scrub).toHaveBeenCalledExactlyOnceWith('/pages/plans');}});
 it.each([[409,'idempotency_conflict','conflict','changed'],[409,'billing_operation_pending','conflict','pending'],[409,'checkout_pending','conflict','pending'],[409,'billing_operation_reconciliation_required','conflict','review'],[409,'legacy_operation_reconciliation_required','conflict','review'],[409,'checkout_expired','conflict','expired'],[409,'billing_operation_expired','conflict','expired'],[400,'assisted_quote_required','refused','quote'],[409,'plan_employee_limit','conflict','employees'],[409,'use_billing_portal','conflict','manage'],[409,'subscription_sync_pending','conflict','syncing']] as const)('names the refusal for %i %s without releasing the original request',async(status,code,kind,refusal)=>{
  const f=fixture();await f.client.enter(proof);f.transport.mockResolvedValueOnce(json({error:{code}},status));
  expect(await f.client.action('checkout','en')).toEqual({kind,refusal});expect(f.client.hasPending()).toBe(true);expect(f.key).toHaveBeenCalledTimes(1);

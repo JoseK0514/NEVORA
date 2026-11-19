@@ -1,5 +1,5 @@
 import {createECDH,createHash,randomUUID} from 'node:crypto';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {companyAccessFixture} from './company-access-fixture';
 import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {notificationIntentStatements} from '../../lib/data/notifications';
@@ -11,8 +11,8 @@ import {runDispatch} from '../../lib/notifications/worker';
 import {runReminders} from '../../lib/notifications/reminders';
 import {loadWorkspaceNotificationConfig} from '../../lib/notifications/config';
 import type {NotificationIntent,SqlExecutor,SqlStatement} from '../../lib/notifications/types';
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/db',()=>({getDb:()=>{throw Error('Review regression requires its owned executor');},queryRows:(r:unknown)=>r}));
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/db',()=>({getDb:()=>{throw Error('Review regression requires its owned executor');},queryRows:(r:unknown)=>r}));
 type Fixture=Awaited<ReturnType<typeof setup>>;
 async function setup(){const f=await companyAccessFixture();try{await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'target',clock_timestamp()+interval '1 hour');INSERT INTO employee_location_eligibility(employee_id,location_id) SELECT e.id,l.id FROM employees e CROSS JOIN locations l WHERE e.id IN('target','manager')");const requestId=randomUUID();await f.q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status) VALUES($1,'target','2035-10-02','2035-10-03','APPROVED')",[requestId]);return {...f,requestId};}catch(error){await f.db.dispose();throw error;}}
 async function choose(f:Fixture,employeeId:string,mode:'LOCATIONS'|'REVOKE'){

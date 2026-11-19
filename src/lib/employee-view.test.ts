@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseEmployeeView} from './employee-view';
 const base={state:'ready',kind:'profile',observedAt:'2026-10-08T12:00:00Z',validForMs:45000,profile:{name:'Avery QA',role:'Employee',workspace:'Fictional',timeZone:'America/Puerto_Rico',locations:['Main']}};
 it('accepts only minimized profile/current-source DTOs and honest bounded coverage',()=>{

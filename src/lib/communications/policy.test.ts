@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {canAuthorCommunication as allow} from './policy';
 const team={type:'TODAYS_TEAM',scope:{kind:'TODAYS_TEAM',locationId:'loc-1',businessDate:'2030-10-07'},title:'Today',body:'Operational',acknowledgement:'OPTIONAL',expiresAt:null};
 const assignment={employeeId:'employee',workspaceId:'workspace-fuel',locationId:'loc-1',sourceShiftId:'shift',assignmentEpisodeId:'episode',termsFingerprint:'terms',published:true,released:false,startAt:'2030-10-07T02:00:00Z',endAt:'2030-10-07T06:00:00Z'};

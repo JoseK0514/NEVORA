@@ -1,4 +1,4 @@
-import { beforeAll,afterAll,describe,it,expect } from 'vitest';
+import { beforeAll,afterAll,describe,it,expect } from '@rstest/core';
 import { Client } from 'pg';
 import { readFileSync,realpathSync } from 'node:fs';
 import { createHash } from 'node:crypto';

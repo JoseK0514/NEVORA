@@ -1,5 +1,5 @@
 import {assignmentFacts} from './assignment-facts.test-support';
-import { vi } from 'vitest';
+import { rs } from '@rstest/core';
 import type { GuardedWeekState } from './notification-transactions';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 export const week = '2030-10-07';
@@ -18,8 +18,8 @@ export function fixture(kind: 'TIME_OFF' | 'EXCHANGE' | 'CALLOUT', status = 'PEN
   Object.assign(row, { source_shift_id: 's1', source_schedule_id: 'a', source_employee_id: 'E', source_employee_name: 'Employee', source_location_id: 'L', source_location_name: 'Location', source_week_start: week, source_date: '2030-10-11', source_start_time: '09:00', source_end_time: '17:00', source_is_designated_lead: true });
   const batches: SqlStatement[][] = [];
   const executor: SqlExecutor = {
-    query: vi.fn(async statement => statement.text.includes('AS state') ? [{ state: structuredClone(state), read_at: '2030-10-07 12:00:00.123456+00' }] : statement.text.includes('FROM workspaces') ? [{id:'northside',name:'Northside',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}] : statement.text.includes('AS "allowedLocationIds"') ? fixtureRecipients : [row]) as SqlExecutor['query'],
-    transaction: vi.fn(async statements => { batches.push([...statements]); return statements.map(() => []); }),
+    query: rs.fn(async statement => statement.text.includes('AS state') ? [{ state: structuredClone(state), read_at: '2030-10-07 12:00:00.123456+00' }] : statement.text.includes('FROM workspaces') ? [{id:'northside',name:'Northside',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}] : statement.text.includes('AS "allowedLocationIds"') ? fixtureRecipients : [row]) as SqlExecutor['query'],
+    transaction: rs.fn(async statements => { batches.push([...statements]); return statements.map(() => []); }),
   };
   return { row, state, batches, executor };
 }

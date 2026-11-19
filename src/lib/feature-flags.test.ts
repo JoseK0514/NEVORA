@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {readFeatureFlags} from './feature-flags';
 import {FEATURE_FLAGS} from './feature-flags';
 import {readFileSync} from 'node:fs';

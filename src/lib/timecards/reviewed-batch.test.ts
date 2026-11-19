@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseTimecardsResponse,type TimecardItem} from './read-model';
 import {batchExclusion,reviewTimecards,reviewIsCurrent,runReviewedBatch} from './reviewed-batch';
 import type {TimecardCommand} from './service';

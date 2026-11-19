@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, expect, it, rs } from '@rstest/core';
 
-const db = vi.hoisted(() => ({ getDb: vi.fn() }));
-vi.mock("@/lib/db", () => db);
-afterEach(() => db.getDb.mockClear());
+const db = rs.hoisted(() => ({ getDb: rs.fn() }));
+rs.mock("@/lib/db", () => db);
+afterEach(() => {db.getDb.mockClear();});
 
 it("answers liveness without caching or reading the database", async () => {
   const { GET, HEAD } = await import("./route");

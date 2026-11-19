@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { parseKnowledgeCommand, knowledgeDigest, knowledgeExcerpt, knowledgeSourceHref, knowledgeLimits } from './company-knowledge';
 const id = '11111111-1111-4111-8111-111111111111';
 const draft = () => ({ op: 'draft_document', requestId: id, expectedRevision: 0, documentId: null, title: 'Opening procedure', locale: 'en', category: 'operations', body: 'Open at 08:00.\r\nCheck the recorded roster.', sourceName: 'opening.md' });
@@ -48,6 +48,8 @@ it('returns a true bounded Unicode excerpt with original offsets and honest omis
   expect(result.complete).toBe(false);
   expect(Buffer.from(result.text).toString('utf8')).toBe(result.text);
   expect(knowledgeExcerpt('Complete document.', '', 80)).toMatchObject({ text: 'Complete document.', complete: true });
+  const brief = 'Previous context. '.repeat(20) + 'Clocker en español.';
+  expect(knowledgeExcerpt(brief, 'Clocker', 4096)).toEqual({ text: brief, start: 0, end: brief.length, complete: true });
   expect(knowledgeLimits.sources).toBe(6);
   expect(knowledgeSourceHref(id, id)).toBe(`/api/owner/advisor/knowledge/entries/${id}/versions/${id}`);
 });

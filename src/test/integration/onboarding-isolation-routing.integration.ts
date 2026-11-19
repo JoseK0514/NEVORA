@@ -2,7 +2,7 @@ import{Pool}from'pg';
 import{randomBytes}from'node:crypto';
 import{configureCommerceControlReader}from'../../../services/hosted/neon/control-reader';
 import{createControlStore}from'@/lib/onboarding/control-store.server';
-import {beforeAll,afterAll,describe,it,expect,vi} from 'vitest';
+import {beforeAll,afterAll,describe,it,expect,rs} from '@rstest/core';
 import {ownedWorkspaceFixture,type OwnedCompany} from './onboarding-workspace-fixture';
 import {resolveWorkspaceBinding} from '@/lib/workspace-routing/resolver.server';
 import {getWorkspaceDb} from '@/lib/workspace-routing/transport.server';
@@ -14,7 +14,7 @@ import {queryRows} from '@/lib/db';
 describe('actual A/B PostgreSQL routing behind the installed Neon HTTP protocol',()=>{
  let fixture:Awaited<ReturnType<typeof ownedWorkspaceFixture>>,companies:OwnedCompany[],control:Awaited<ReturnType<typeof ownedWorkspaceFixture>>['control'],store:Awaited<ReturnType<typeof ownedWorkspaceFixture>>['store'],config:Awaited<ReturnType<typeof ownedWorkspaceFixture>>['config'],map:Awaited<ReturnType<typeof ownedWorkspaceFixture>>['map'];
  beforeAll(async()=>{fixture=await ownedWorkspaceFixture();({companies,control,store,config,map}=fixture);});
- afterAll(async()=>{await fixture?.close();vi.unstubAllEnvs();});
+ afterAll(async()=>{await fixture?.close();rs.unstubAllEnvs();});
  it('limits the real commerce authority reader to current test APP custody and keeps A/B routing intact',async()=>{
   const role='nv_control_commerce_'+randomBytes(12).toString('hex'),password=randomBytes(24).toString('hex');
   await control.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'`);
@@ -30,7 +30,7 @@ describe('actual A/B PostgreSQL routing behind the installed Neon HTTP protocol'
  it('returns different actual rows for identical employee IDs under simultaneous A/B traffic',async()=>{const read=async(c:typeof companies[number])=>(await getWorkspaceDb(c.binding).query<{label:string}>({text:'SELECT label FROM employees WHERE id=$1',values:['EMP-1']}))[0].label;const r=await Promise.all(Array.from({length:20},(_,i)=>read(companies[i%2])));expect(r.filter((x,i)=>x!==(i%2?'Company B':'Company A'))).toEqual([]);});
  it('keeps genuine SDK transaction writes in their selected business',async()=>{const [a,b]=companies;await getWorkspaceDb(a.binding).transaction([{text:'INSERT INTO employees VALUES($1,$2)',values:['EMP-2','Only A']}]);expect((await b.db.pool.query('SELECT count(*)::int n FROM employees WHERE id=$1',['EMP-2'])).rows[0].n).toBe(0);});
  it('routes existing application adapters through separate concurrent callback contexts without DATABASE_URL',async()=>{
-  vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');expect(process.env.DATABASE_URL).toBeUndefined();
+  rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');expect(process.env.DATABASE_URL).toBeUndefined();
   const results=await Promise.all(companies.map(c=>withWorkspaceBinding(c.binding,async()=>{
    const raw=queryRows(await applicationSql().query('SELECT label FROM employees WHERE id=$1',['EMP-1']));
    const batch=await neonNotificationExecutor().transaction([{text:'SELECT label FROM employees WHERE id=$1',values:['EMP-1']}]);
@@ -69,10 +69,10 @@ describe('actual A/B PostgreSQL routing behind the installed Neon HTTP protocol'
    const text="SELECT timestamptz '2026-11-10 12:34:56.123456+00'::text AS token,current_setting('TimeZone') AS zone,current_setting('DateStyle') AS style,current_setting('transaction_isolation') AS isolation";
    let rows;
    if(mode.startsWith('isolated'))rows=await getWorkspaceDb(mode==='isolated_worker'?await resolveWorkspaceBinding({origin:a.origin},store,config,'WORKER'):a.binding).query({text,values:[]});
-   else {vi.stubEnv('NEVORA_WORKSPACE_MODE','single_company');vi.stubEnv('DATABASE_URL',a.uri);rows=mode==='single_executor'?await neonNotificationExecutor().query({text,values:[]}):await applicationSql().query(text);}
+   else {rs.stubEnv('NEVORA_WORKSPACE_MODE','single_company');rs.stubEnv('DATABASE_URL',a.uri);rows=mode==='single_executor'?await neonNotificationExecutor().query({text,values:[]}):await applicationSql().query(text);}
    expect(rows).toEqual([{token:'2026-11-10 12:34:56.123456+00',zone:'UTC',style:'ISO, YMD',isolation:'read committed'}]);
    expect((await pool.query("SELECT current_setting('TimeZone') AS zone,current_setting('DateStyle') AS style")).rows[0]).toEqual(raw);
-  }finally{map.set(uri,originalPool);await pool.end();vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');vi.stubEnv('DATABASE_URL',undefined);}
+  }finally{map.set(uri,originalPool);await pool.end();rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');rs.stubEnv('DATABASE_URL',undefined);}
  });
  it('rolls back a real business write when its body changes the SQL session contract',async()=>{
   const a=companies[0];
@@ -101,10 +101,10 @@ describe('actual A/B PostgreSQL routing behind the installed Neon HTTP protocol'
   const a=companies[0],{createHash}=await import('node:crypto'),{createLogoutDeps,terminatePortalSession}=await import('@/lib/notifications/logout'),{readNotificationConfig}=await import('@/lib/notifications/config'),{createInstallationProof,sealInstallationProof,INSTALLATION_COOKIE}=await import('@/lib/notifications/installation');
   await a.db.pool.query('CREATE TABLE IF NOT EXISTS employee_sessions(token_hash text PRIMARY KEY)');await a.db.pool.query('GRANT SELECT,DELETE ON employee_sessions TO '+a.role);const token='fictional-logout-'+mode,hash=createHash('sha256').update(token).digest('hex');await a.db.pool.query('INSERT INTO employee_sessions VALUES($1)',[hash]);
   const key=Buffer.alloc(32,19),proof=createInstallationProof('test'),values=new Map([['fuel_session',token],[INSTALLATION_COOKIE,sealInstallationProof(proof,key)]]),cookies={get:(name:string)=>values.has(name)?{value:values.get(name)!}:undefined,set:(name:string,value:string)=>{values.set(name,value);},delete:(name:string)=>{values.delete(name);}},configuration=readNotificationConfig({PUSH_ENVIRONMENT:'test',FUEL_PORTAL_ORIGIN:a.origin,PUSH_SUBSCRIPTION_ENCRYPTION_KEY:key.toString('base64url')});
-  vi.stubEnv('NEVORA_WORKSPACE_MODE',mode);if(mode==='single_company')vi.stubEnv('DATABASE_URL',a.uri);
+  rs.stubEnv('NEVORA_WORKSPACE_MODE',mode);if(mode==='single_company')rs.stubEnv('DATABASE_URL',a.uri);
   const run=async()=>{const deps={...createLogoutDeps(configuration),subscriptions:()=>{throw Error('Fictional independent push cleanup outage');}};expect(await terminatePortalSession({sessionToken:token,installation:proof,cookies,deps})).toEqual({state:'pending'});};
   try{if(mode==='isolated')await withWorkspaceBinding(a.binding,run);else await run();expect(values.has('fuel_session')).toBe(false);expect((await a.db.pool.query('SELECT count(*)::int AS n FROM employee_sessions WHERE token_hash=$1',[hash])).rows[0].n).toBe(0);}
-  finally{vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');vi.stubEnv('DATABASE_URL',undefined);}
+  finally{rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');rs.stubEnv('DATABASE_URL',undefined);}
  });
  it('rechecks workspace incarnation after a restore rather than reusing a stale transport binding',async()=>{const a=companies[0];await control.pool.query('UPDATE nevora_onboarding.workspace_registry SET incarnation=incarnation+1,revision=revision+1 WHERE id=$1',[a.id]);await expect(getWorkspaceDb(a.binding).query({text:'SELECT label FROM employees',values:[]})).rejects.toThrow();});
 });

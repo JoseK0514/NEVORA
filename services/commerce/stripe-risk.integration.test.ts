@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
-import {afterEach,beforeEach,describe,expect,it} from 'vitest';
+import {afterEach,beforeEach,describe,expect,it} from '@rstest/core';
 import {CommerceStore} from './store';
 import {StripeBilling} from './stripe';
 import {workerOnce} from './worker';

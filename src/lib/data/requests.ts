@@ -1,6 +1,8 @@
 import { databaseDate as dateValue } from './database-date';
 import {Temporal} from '@js-temporal/polyfill';
-import {assertOperationalAccess} from '../company-access/operational-scope.server';
+import {admitLeaveReview,workforceLeaveFootprintSql} from '../workforce/leave-authority.server';
+import {listWorkforcePermissions,workforcePermissionStatements} from '../workforce/authority.server';
+import type {OperationalRead} from '../company-access/model';
 import { randomUUID } from "node:crypto";
 import {queryRows} from "@/lib/db";
 import {applicationSql} from "@/lib/data/app-sql";
@@ -26,6 +28,9 @@ export type TimeOffListItem = {
   createdAt: string;
   /** When the request was decided or withdrawn (the employee's own requests only). */
   reviewedAt?: string;
+  cancelledAt?: string;
+  ptoPolicyId?: string;
+  ptoMinutes?: number;
   /** The manager who decided it; absent for a withdrawal (the employee reviewed it themself). */
   reviewerName?: string;
 };
@@ -47,6 +52,8 @@ function mapRequest(row: unknown): TimeOffListItem {
     reason: item.reason ? String(item.reason) : undefined,
     status: item.status as RequestStatus,
     createdAt:Temporal.Instant.from(item.created_at instanceof Date?item.created_at.toISOString():String(item.created_at)).toString(),
+    ...(item.pto_policy_id ? { ptoPolicyId: String(item.pto_policy_id), ptoMinutes: Number(item.pto_minutes) } : {}),
+    ...(item.cancelled_at ? { cancelledAt: new Date(String(item.cancelled_at)).toISOString() } : {}),
     ...(item.reviewed_at ? { reviewedAt: item.reviewed_at instanceof Date ? item.reviewed_at.toISOString() : String(item.reviewed_at) } : {}),
     ...(item.reviewer_name ? { reviewerName: String(item.reviewer_name) } : {}),
   };
@@ -74,7 +81,7 @@ export async function listEmployeeTimeOffRequests(employeeId: string, executor?:
        r.reason,
        r.status,
        r.created_at,
-       r.reviewed_at,
+       r.reviewed_at, r.cancelled_at, r.pto_policy_id, r.pto_minutes,
        -- Jose, 2026-10-19: the employee's timeline names who decided their own request. A withdrawal is
        -- reviewed by the employee themself, so it carries no reviewer name.
        CASE WHEN r.reviewed_by IS NOT NULL AND r.reviewed_by <> r.employee_id
@@ -135,6 +142,51 @@ export async function listTeamTimeOffRequests(status: "PENDING" | "APPROVED" | "
   return rows.map(mapRequest);
 }
 
+/** The review queue uses the same complete location footprint as decisions. */
+export async function listWorkforceLeave(
+  proof: SessionMutationProof,
+  status: RequestStatus,
+  executor: SqlExecutor = neonNotificationExecutor(),
+): Promise<OperationalRead<TimeOffListItem[]>> {
+  try {
+    const { access, permissions } = await listWorkforcePermissions(proof, executor);
+    const { workspace, authority, observedAt } = access;
+    const ids = proof.employee.role === 'OWNER' ? null : permissions
+      .filter(grant => grant.permission === 'APPROVE_LEAVE').map(grant => grant.locationId);
+    if (ids?.length === 0) return {state:'unavailable',reason:'access_denied'};
+    const permission = workforcePermissionStatements(proof, workspace, 'APPROVE_LEAVE', ids, authority);
+    const guards = [
+      ...workspaceReadGuard(workspace),
+      {text:'SELECT id FROM employees WHERE id=$1 FOR SHARE',values:[proof.employee.id]},
+      ...permission,
+    ];
+    const result = await executor.transaction([
+      ...guards,
+      {
+        text: `SELECT r.*,concat_ws(' ',e.first_name,e.last_name) AS employee_name,
+          CASE WHEN r.reviewed_by<>r.employee_id THEN concat_ws(' ',rv.first_name,rv.last_name) END AS reviewer_name
+          FROM time_off_requests r JOIN employees e ON e.id=r.employee_id JOIN locations home ON home.id=e.primary_location_id
+          LEFT JOIN employees rv ON rv.id=r.reviewed_by
+          WHERE home.workspace_id=$1 AND r.status=$2 AND r.employee_id<>$3
+            AND ($4::text[] IS NULL OR ($4::text[] @> (${workforceLeaveFootprintSql})))
+          ORDER BY CASE WHEN $2='PENDING' THEN r.start_date END,
+            CASE WHEN $2<>'PENDING' THEN r.start_date END DESC,r.created_at DESC,r.id LIMIT 1001`,
+        values: [workspace.id, status, proof.employee.id, ids],
+      },
+      ...permission,
+    ]);
+    const rows = result[guards.length];
+    if (rows.length > 1000) return {state:'unavailable',reason:'source_limit'};
+    const validForMs = Math.floor(access.validForMs - Math.max(0, Date.now() - Date.parse(observedAt)));
+    if (validForMs <= 0) return {state:'unavailable',reason:'source_changed'};
+    return { state:'ready',data:rows.map(mapRequest),authority,observedAt,validForMs,
+      coverage: ids ? {kind:'LOCATIONS',locationIds:ids} : {kind:'COMPANY',locationIds:[]} };
+  } catch (error) {
+    return {state:'unavailable',reason:error instanceof Error && /operational_authorization|management_authorization/.test(error.message)
+      ? 'access_denied' : 'read_failed'};
+  }
+}
+
 /**
  * Create an own pending request and its outbox intents atomically. A repeated
  * request ID is accepted only when an authorized read matches the same employee
@@ -150,6 +202,7 @@ export async function createTimeOffRequest(input: {
   startTime?: string;
   endTime?: string;
   reason?: string;
+  ptoPolicyId?: string;
   admission?: readonly SqlStatement[];
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   assertManagementProof(input.proof, input.employeeId);
@@ -161,9 +214,14 @@ export async function createTimeOffRequest(input: {
     admission: input.admission,
     after: requestSnapshot('TIME_OFF', { id, employeeId: input.employeeId, employeeName: '', startDate: input.startDate, endDate: input.endDate, startTime: input.startTime, endTime: input.endTime, reason: input.reason, status: 'PENDING', createdAt }),
     mutation: {
-      text: `INSERT INTO time_off_requests (id, employee_id, start_date, end_date, start_time, end_time, reason, created_at)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (id) DO NOTHING RETURNING id`,
-      values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null,createdAt],
+      text: input.ptoPolicyId
+        ? `INSERT INTO time_off_requests (id,employee_id,start_date,end_date,start_time,end_time,reason,created_at,pto_policy_id)
+            SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9 WHERE NOT EXISTS (SELECT 1 FROM time_off_requests WHERE id=$1)
+            ON CONFLICT (id) DO NOTHING RETURNING id`
+        : `INSERT INTO time_off_requests (id, employee_id, start_date, end_date, start_time, end_time, reason, created_at)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (id) DO NOTHING RETURNING id`,
+      values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null,createdAt,
+        ...(input.ptoPolicyId ? [input.ptoPolicyId] : [])],
     },
   }, executor);
   if (!committed) {
@@ -181,8 +239,9 @@ export async function createTimeOffRequest(input: {
         AND start_date=$3::date AND end_date=$4::date
         AND start_time IS NOT DISTINCT FROM $5::time
         AND end_time IS NOT DISTINCT FROM $6::time
-        AND reason IS NOT DISTINCT FROM $7::text`,
-      values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null],
+        AND reason IS NOT DISTINCT FROM $7::text
+        AND (to_jsonb(time_off_requests)->>'pto_policy_id') IS NOT DISTINCT FROM $8::text`,
+      values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null,input.ptoPolicyId?.toLowerCase() ?? null],
       },
     ];
     const receipts = await executor.transaction([...statements, ...authority()]);
@@ -191,27 +250,34 @@ export async function createTimeOffRequest(input: {
   }
 }
 
-/** Decide only a still-pending request under current company authority; concurrent terminal transitions return false. */
+/** Decide a pending request or cancel an approval, under its full captured footprint. */
 export async function reviewTimeOffRequest(input: {
   requestId: string;
   managerId: string;
   proof: SessionMutationProof;
-  status: "APPROVED" | "DENIED";
+  status: "APPROVED" | "DENIED" | "CANCELLED";
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   assertManagementProof(input.proof,input.managerId);
-  await assertOperationalAccess(input.proof,{kind:'COMPANY'},executor);
-  const [row] = await executor.query({ text: 'SELECT * FROM time_off_requests WHERE id=$1', values: [input.requestId] });
+  const admission = await admitLeaveReview(input.proof, input.requestId, executor);
+  if (!admission) return false;
+  const [row] = await executor.query<Record<string, unknown>>({ text: 'SELECT * FROM time_off_requests WHERE id=$1 AND employee_id=$2', values: [input.requestId, admission.employeeId] });
   if (!row) return false;
   const before = mapRequest(row);
-  if (before.status !== 'PENDING') return false;
+  const cancelling = input.status === 'CANCELLED';
+  if (before.status !== (cancelling ? 'APPROVED' : 'PENDING')) {
+    return cancelling && before.status === 'CANCELLED' && row.cancelled_by === input.managerId;
+  }
   return commitRequestTransition({
     before: requestSnapshot('TIME_OFF', before),
     after: requestSnapshot('TIME_OFF', { ...before, status: input.status }),
     actorEmployeeId: input.managerId,
     managementProof: input.proof,
     mutation: {
-      text: `UPDATE time_off_requests SET status=$3, reviewed_by=$2, reviewed_at=now()
-        WHERE id=$1 AND status='PENDING' AND employee_id=$4 RETURNING id`,
+      text: cancelling
+        ? `UPDATE time_off_requests SET status=$3,cancelled_by=$2,cancelled_at=clock_timestamp()
+            WHERE id=$1 AND status='APPROVED' AND employee_id=$4 RETURNING id`
+        : `UPDATE time_off_requests SET status=$3,reviewed_by=$2,reviewed_at=clock_timestamp()
+            WHERE id=$1 AND status='PENDING' AND employee_id=$4 RETURNING id`,
       values: [input.requestId,input.managerId,input.status,before.employeeId],
     },
   }, executor);

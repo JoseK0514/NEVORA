@@ -1,16 +1,16 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { DocumentLink } from './payroll-ui';
 import { MyPay } from './my-pay';
 import { PayrollRuns } from './payroll-runs';
 import { nativeRun, statement } from './native-ui-fixture.test-support';
 
-const boundary = vi.hoisted(() => ({ loading: false, error: '', statements: [] as unknown[], runs: [] as unknown[] }));
-vi.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',
+const boundary = rs.hoisted(() => ({ loading: false, error: '', statements: [] as unknown[], runs: [] as unknown[] }));
+rs.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',
   usePayrollResource: (path: string) => ({ data: path === '/api/payroll/runs' ? { version: 'PAYROLL_API_V1', capabilities: { enabled: true, canConfigure: true, canReview: true, canApprove: true, internalCalculatorAvailable: true }, runs: boundary.runs, jobs: [] } : { statements: boundary.statements }, loading: boundary.loading, error: boundary.error, reload: async () => {} }),
   usePayrollOperation: () => ({ busy: false, pending: null, resuming: false, message: '', error: '', revisionConflict: false, submit: async () => {}, receipt: null }),
 }));
-vi.mock('next/navigation', () => ({ usePathname: () => '/app/payroll/history', useRouter: () => ({ push: () => {}, replace: () => {} }) }));
+rs.mock('next/navigation', () => ({ usePathname: () => '/app/payroll/history', useRouter: () => ({ push: () => {}, replace: () => {} }) }));
 beforeEach(() => { boundary.loading = false; boundary.error = ''; boundary.statements = [statement]; boundary.runs = [nativeRun({ status: 'APPROVED', documents: [statement], correctionOf: 'fictional-original', nativeCorrection: { rootRunId: 'fictional-original', reason: 'Fictional payroll correction' } })]; });
 
 describe('private employee statement presentation', () => {

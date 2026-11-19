@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {deriveReadiness} from './readiness.server';
 import setupFixture from './fixtures/v1/setup-state.json';
 import readinessCases from './fixtures/v1/readiness-cases.json';

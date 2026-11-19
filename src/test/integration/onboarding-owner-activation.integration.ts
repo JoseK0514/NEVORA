@@ -1,4 +1,4 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {onboardingJourneyFixture} from './onboarding-journey-fixture';
 import {requestOwnerBootstrapGrant,runOwnerActivationWorker,activateInitialOwner} from '@/lib/onboarding/owner-activation.server';
@@ -28,7 +28,7 @@ it('rejects expired and explicitly revoked grants before any credential is creat
  for(const update of ["expires_at=clock_timestamp()-interval '1 second'",'revoked_at=clock_timestamp()']){const f=await onboardingJourneyFixture();try{const c=await f.createCompany(),{proof}=await c.grant();await c.resource.db.pool.query('UPDATE onboarding_owner_grants SET '+update);expect((await activateInitialOwner(c.binding,command(proof))).state).toBe('invalid');expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM employee_credentials')).rows[0].n).toBe(0);}finally{await f.close();}}
 });
 it('rechecks email, employment and grant authority after real scrypt completes and honors interruption',async()=>{
- for(const mode of ['email','abort']){const f=await onboardingJourneyFixture();const real=passwords.hashPassword;let spy:ReturnType<typeof vi.spyOn>|undefined;try{const c=await f.createCompany(),{proof}=await c.grant(),abort=new AbortController();spy=vi.spyOn(passwords,'hashPassword').mockImplementation(async p=>{const hash=await real(p);if(mode==='email')await c.resource.db.pool.query("UPDATE employees SET email='changed@example.invalid',updated_at=clock_timestamp() WHERE id='OWNER-1'");else abort.abort();return hash;});expect((await activateInitialOwner(c.binding,command(proof),getWorkspaceDb(c.binding),abort.signal)).state).toBe('invalid');expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM employee_credentials')).rows[0].n).toBe(0);}finally{spy?.mockRestore();await f.close();}}
+ for(const mode of ['email','abort']){const f=await onboardingJourneyFixture();const real=passwords.hashPassword;let spy:ReturnType<typeof rs.spyOn>|undefined;try{const c=await f.createCompany(),{proof}=await c.grant(),abort=new AbortController();spy=rs.spyOn(passwords,'hashPassword').mockImplementation(async p=>{const hash=await real(p);if(mode==='email')await c.resource.db.pool.query("UPDATE employees SET email='changed@example.invalid',updated_at=clock_timestamp() WHERE id='OWNER-1'");else abort.abort();return hash;});expect((await activateInitialOwner(c.binding,command(proof),getWorkspaceDb(c.binding),abort.signal)).state).toBe('invalid');expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM employee_credentials')).rows[0].n).toBe(0);}finally{spy?.mockRestore();await f.close();}}
 });
 it('refuses the other actual company host, restored incarnation and fabricated bindings',async()=>{
  const f=await onboardingJourneyFixture();try{const a=await f.createCompany('alpha','a@example.invalid'),b=await f.createCompany('beta','b@example.invalid'),{proof}=await a.grant();expect((await activateInitialOwner(b.binding,command(proof))).state).toBe('invalid');expect((await activateInitialOwner({} as never,command(proof),getWorkspaceDb(b.binding))).state).toBe('unavailable');await a.resource.db.pool.query('UPDATE onboarding_workspace_identity SET incarnation=2');expect((await activateInitialOwner(a.binding,command(proof))).state).toBe('unavailable');expect((await b.resource.db.pool.query('SELECT count(*)::int n FROM employee_credentials')).rows[0].n).toBe(0);
@@ -52,7 +52,7 @@ it('recovers the anchor-first/control-second activation gap without resetting cr
  }finally{await f.close();}
 });
 it('rechecks Owner role during a simultaneous scrypt-bound claim and limits live-grant CPU admission',async()=>{
- const f=await onboardingJourneyFixture();const real=passwords.hashPassword;let spy:ReturnType<typeof vi.spyOn>|undefined;try{const c=await f.createCompany(),{proof}=await c.grant();spy=vi.spyOn(passwords,'hashPassword').mockImplementation(async p=>{const hash=await real(p);await c.resource.db.pool.query("UPDATE employees SET role='EMPLOYEE' WHERE id='OWNER-1'");return hash;});expect((await activateInitialOwner(c.binding,command(proof))).state).toBe('invalid');spy.mockRestore();await c.resource.db.pool.query("UPDATE employees SET role='OWNER'");await c.resource.db.pool.query('UPDATE onboarding_owner_grants SET claim_attempts=10');expect((await activateInitialOwner(c.binding,command(proof))).state).toBe('limited');expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM employee_credentials')).rows[0].n).toBe(0);}finally{spy?.mockRestore();await f.close();}
+ const f=await onboardingJourneyFixture();const real=passwords.hashPassword;let spy:ReturnType<typeof rs.spyOn>|undefined;try{const c=await f.createCompany(),{proof}=await c.grant();spy=rs.spyOn(passwords,'hashPassword').mockImplementation(async p=>{const hash=await real(p);await c.resource.db.pool.query("UPDATE employees SET role='EMPLOYEE' WHERE id='OWNER-1'");return hash;});expect((await activateInitialOwner(c.binding,command(proof))).state).toBe('invalid');spy.mockRestore();await c.resource.db.pool.query("UPDATE employees SET role='OWNER'");await c.resource.db.pool.query('UPDATE onboarding_owner_grants SET claim_attempts=10');expect((await activateInitialOwner(c.binding,command(proof))).state).toBe('limited');expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM employee_credentials')).rows[0].n).toBe(0);}finally{spy?.mockRestore();await f.close();}
 });
 it('uses real HTTP grant and activation boundaries without issuing an assumed browser session',async()=>{
  const {ownerActivationHttpHandlers}=await import('@/lib/onboarding/owner-activation-http.server');const f=await onboardingJourneyFixture();try{const c=await f.createCompany(),handlers=ownerActivationHttpHandlers({config:f.config,store:f.store});
@@ -75,4 +75,27 @@ it('skips ten expired pending registrations and fairly rotates live activation w
   await f.db.pool.query('UPDATE nevora_onboarding.provisioning_operations SET not_before=clock_timestamp()');
   const second=await runOwnerActivationWorker({store:f.store,config:f.config,connect:f.provider.connect});expect(second.state).toBe('pending');expect(second.operationId).not.toBe(first.operationId);
  }finally{await f.close();}
+});
+
+it.each([['twelve chars','too_short'],['qwertyuiopasdfgh','breached'],['Fictional fictional-north2026!','company_name']] as const)('PB-026 keeps the initial Owner grant usable after refusing %s',async(candidate,passwordReason)=>{
+ const f=await onboardingJourneyFixture();try{
+  const c=await f.createCompany(),{proof}=await c.grant();
+  expect(await activateInitialOwner(c.binding,{...command(proof),password:candidate})).toEqual({state:'invalid',passwordReason});
+  expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM employee_credentials')).rows[0].n).toBe(0);
+  expect((await c.resource.db.pool.query('SELECT consumed_at FROM onboarding_owner_grants')).rows[0].consumed_at).toBeNull();
+  expect((await activateInitialOwner(c.binding,command(proof))).state).toBe('activated');
+ }finally{await f.close();}
+});
+
+it('rolls back an initial Owner credential if company policy context changes during hashing',async()=>{
+ const f=await onboardingJourneyFixture(),real=passwords.hashPassword;let spy:ReturnType<typeof rs.spyOn>|undefined;
+ try{
+  const c=await f.createCompany(),{proof}=await c.grant(),cmd={...command(proof),password:'Renamed Fictional Workspace'};
+  spy=rs.spyOn(passwords,'hashPassword').mockImplementation(async value=>{const encoded=await real(value);await c.resource.db.pool.query("UPDATE workspaces SET name=$1,updated_at=clock_timestamp()",[cmd.password]);return encoded;});
+  expect((await activateInitialOwner(c.binding,cmd)).state).toBe('unavailable');spy.mockRestore();
+  expect((await c.resource.db.pool.query('SELECT count(*)::int n FROM employee_credentials')).rows[0].n).toBe(0);
+  expect((await c.resource.db.pool.query('SELECT consumed_at FROM onboarding_owner_grants')).rows[0].consumed_at).toBeNull();
+  expect(await activateInitialOwner(c.binding,{...command(proof),password:cmd.password})).toEqual({state:'invalid',passwordReason:'company_name'});
+  expect((await activateInitialOwner(c.binding,command(proof))).state).toBe('activated');
+ }finally{spy?.mockRestore();await f.close();}
 });

@@ -29,7 +29,7 @@ export function DateField({ id, label, value, onChange, min, required, disabled,
 /* Prepare your next step: two checks that read current records and work without an AI connection. Each is its own small
  * form (the same fields, names, limits and commands as before): its fields on one line when the card is wide enough,
  * then its buttons. */
-export function WorkflowControls({ date, disabled, inspect }: { date: string; disabled: boolean; inspect: (tool: Inspection) => void }) {
+export function WorkflowControls({ date, disabled, inspect, weeklyEnabled }: { weeklyEnabled?: boolean; date: string; disabled: boolean; inspect: (tool: Inspection) => void }) {
   const [coverageDate, setCoverageDate] = useState(date);
   const [startDate, setStartDate] = useState(date);
   const [endDate, setEndDate] = useState(date);
@@ -38,6 +38,7 @@ export function WorkflowControls({ date, disabled, inspect }: { date: string; di
   return <CorpSection id="oa-workflows" label="Prepare your next step">
     <CorpCard as="div"><CorpBody>
       <p className="oa-lede">Use current records to prepare a review. These checks work without an AI connection and do not save business changes.</p>
+      {weeklyEnabled && <p><CorpButtonLink href="/app/ai-manager/weekly" kind="secondary" size="md">Where are we short this week?</CorpButtonLink></p>}
       <div className="oa-checks">
         <form className="oa-check" aria-labelledby="oa-check-coverage" onSubmit={e => { e.preventDefault(); inspect({ name: "coverage_proposals", args: { date: coverageDate } }); }}>
           <h3 className="oa-sub" id="oa-check-coverage">Coverage on a date</h3>

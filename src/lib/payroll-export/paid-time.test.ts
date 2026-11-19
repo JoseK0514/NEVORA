@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {adpRunColumns,canonicalPayrollExport,mappedPayrollCsv,neutralPaidProfile,neutralProfile} from './model';
 import type {TimecardEntry,Period} from '../timecards/project';
 

@@ -1,12 +1,12 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {companyAccessFixture} from './company-access-fixture';
-const context=vi.hoisted(()=>({executor:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
-vi.mock('server-only',()=>({}));
-vi.mock('../../lib/auth/session',()=>({getSession:async()=>context.proof?.employee??null,requireSessionMutationProof:async()=>{if(!context.proof)throw Error('No session');return context.proof;}}));
-vi.mock('../../lib/data/sql-executor',()=>({neonNotificationExecutor:()=>{if(!context.executor)throw Error('Missing owned executor');return context.executor;}}));
+const context=rs.hoisted(()=>({executor:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
+rs.mock('server-only',()=>({}));
+rs.mock('../../lib/auth/session',()=>({getSession:async()=>context.proof?.employee??null,requireSessionMutationProof:async()=>{if(!context.proof)throw Error('No session');return context.proof;}}));
+rs.mock('../../lib/data/sql-executor',()=>({neonNotificationExecutor:()=>{if(!context.executor)throw Error('Missing owned executor');return context.executor;}}));
 import {GET as authority} from '../../app/api/company-access/operational-authority/route';
 import {GET,POST} from '../../app/api/company-access/operational-scopes/[employeeId]/route';
 it('Owner route assigns scope from current versions, own authority is minimal and a Manager cannot grant or inspect Owner controls',async()=>{

@@ -1,4 +1,4 @@
-import {afterAll, beforeAll, beforeEach, expect, it} from 'vitest';
+import {afterAll, beforeAll, beforeEach, expect, it} from '@rstest/core';
 import {createHash, generateKeyPairSync, randomUUID, sign} from 'node:crypto';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';

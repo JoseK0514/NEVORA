@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {createReminderStore, reminderKey} from './store';
 import {lookupFlow, sendFlow} from './flows';
 import type {ReminderOutcome, ReminderTarget} from './machine';

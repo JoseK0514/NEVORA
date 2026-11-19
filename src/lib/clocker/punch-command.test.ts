@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { parsePunchCommand } from './punch-command';
 const valid=()=>({commandId:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',action:'CLOCK_IN',verificationId:'a'.repeat(64),
  expected:{revision:0,timeEntryId:null,timeEntryVersion:null,breakEntryId:null,breakEntryVersion:null}});

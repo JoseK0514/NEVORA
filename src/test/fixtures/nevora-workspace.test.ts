@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createNorthsideFixture, createOneLocationFixture, createFiveLocationFixture, createTwentyLocationFixture } from './nevora-workspace';
 it('supports unrelated customer catalogs at one, five and twenty locations', () => {
   for (const [factory, count] of [[createOneLocationFixture, 1], [createFiveLocationFixture, 5], [createTwentyLocationFixture, 20]] as const) {

@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {QuestionIcon} from '@phosphor-icons/react/dist/ssr/Question';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';

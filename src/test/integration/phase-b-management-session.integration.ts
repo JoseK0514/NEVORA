@@ -1,19 +1,19 @@
 import { createHash } from 'node:crypto';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '../../lib/notifications/types';
 
-const context = vi.hoisted(() => ({ executor: null as SqlExecutor | null, cookies: new Map<string, string>() }));
-vi.mock('@/lib/db', () => {
+const context = rs.hoisted(() => ({ executor: null as SqlExecutor | null, cookies: new Map<string, string>() }));
+rs.mock('@/lib/db', () => {
   const statement = (text: string, values: readonly unknown[] = []) => ({ statement: { text, values }, then: (yes: (rows: unknown[]) => unknown, no: (error: unknown) => unknown) => context.executor!.query({ text, values }).then(yes, no) });
   const tagged = Object.assign((strings: TemplateStringsArray, ...values: unknown[]) => statement(strings.reduce((text, part, index) => text + (index ? '$' + index : '') + part, ''), values), {
     query: statement, transaction: (queries: { statement: SqlStatement }[]) => context.executor!.transaction(queries.map(query => query.statement)),
   });
   return { getDb: () => tagged, queryRows: (rows: unknown) => rows };
 });
-vi.mock('next/headers', () => ({ cookies: async () => ({ get: (name: string) => context.cookies.has(name) ? { value: context.cookies.get(name)! } : undefined }) }));
-vi.mock('@/lib/data/notification-transactions', async original => ({ ...await original<Record<string, unknown>>(), neonNotificationExecutor: () => context.executor! }));
-vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
-vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
+rs.mock('next/headers', () => ({ cookies: async () => ({ get: (name: string) => context.cookies.has(name) ? { value: context.cookies.get(name)! } : undefined }) }));
+rs.mock('@/lib/data/notification-transactions',  () => ({ ...rs.requireActual<typeof import('@/lib/data/notification-transactions')>('@/lib/data/notification-transactions'), neonNotificationExecutor: () => context.executor! }));
+rs.mock('next/cache', () => ({ revalidatePath: rs.fn() }));
+rs.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
 import { createDisposableFoundationDatabase } from './local-postgres';
 import {installFixtureCompanyAccess} from './fixture-company-access';
 import * as actions from '../../app/app/settings/actions';

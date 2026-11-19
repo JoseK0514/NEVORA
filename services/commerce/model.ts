@@ -1,3 +1,5 @@
+import type {PasswordRejection} from '../../src/lib/auth/password-requirements';
+import {passwordRejection} from '../../src/lib/auth/password-policy';
 import { validateWorkspaceProfile } from "../../src/lib/workspace/validation";
 import type { CommerceReason } from "../../src/lib/commerce/status";
 export const DAY = 86_400_000;
@@ -6,6 +8,7 @@ export class CommerceError extends Error {
     readonly code: string,
     readonly status = 400,
     readonly operationState?: 'refused',
+    readonly passwordReason?: PasswordRejection,
   ) {
     super(code);
   }
@@ -83,12 +86,9 @@ export function parseSignup(value: unknown): Signup {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     throw new CommerceError("invalid_email");
   const password = input.password;
-  if (
-    typeof password !== "string" ||
-    password.length < 12 ||
-    password.length > 256
-  )
-    throw new CommerceError("invalid_password");
+  if (typeof password !== 'string') throw new CommerceError('invalid_password');
+  const reason=passwordRejection(password,{employeeId:'OWNER',companyName:text('businessName',160)});
+  if(reason)throw new CommerceError('invalid_password',400,undefined,reason);
   const phone = text("phone", 32)
     .replace(/[^0-9]/g, "")
     .replace(/^1(?=\d{10}$)/, "");

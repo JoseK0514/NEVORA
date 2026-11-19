@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { deriveDeviceState, readDismissal, saveDismissal, ownPublicationChanges } from './device-state';
 const capabilities = { secure: true, serviceWorker: true, push: true, notifications: true, requiresStandalone: false, installPrompt: false };
 const server = { supported: true, enabled: false, configurationAvailable: true, testAllowed: false, dismissalScope: 'opaque-scope' };

@@ -1,4 +1,4 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect} from '@rstest/core';
 import {readOnboardingJson,onboardingJson,validateOnboardingWrite} from './http.server';
 import {publicOnboardingConfig} from './registration-http.server';
 import {onboardingTestConfig} from '@/test/integration/onboarding-test-config';

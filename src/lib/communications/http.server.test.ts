@@ -1,12 +1,12 @@
-import {beforeEach,expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
-vi.mock('../data/employee-message-module.server',()=>({employeeUpdatesExecutor:async()=>undefined}));
-const mocks=vi.hoisted(()=>({session:vi.fn(),proof:vi.fn(),list:vi.fn(),read:vi.fn(),preview:vi.fn(),execute:vi.fn(),lookup:vi.fn()}));
-vi.mock('../auth/session',()=>({getSession:mocks.session,requireSessionMutationProof:mocks.proof}));
-vi.mock('./service.server',()=>({communicationAuthority:()=> 'a'.repeat(64),listEmployeeCommunications:mocks.list,readCommunication:mocks.read,previewCommunicationAudience:mocks.preview,executeCommunicationCommand:mocks.execute,findCommunicationOperation:mocks.lookup}));
+import {beforeEach,expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
+rs.mock('../data/employee-message-module.server',()=>({employeeUpdatesExecutor:async()=>undefined}));
+const mocks=rs.hoisted(()=>({session:rs.fn(),proof:rs.fn(),list:rs.fn(),read:rs.fn(),preview:rs.fn(),execute:rs.fn(),lookup:rs.fn()}));
+rs.mock('../auth/session',()=>({getSession:mocks.session,requireSessionMutationProof:mocks.proof}));
+rs.mock('./service.server',()=>({communicationAuthority:()=> 'a'.repeat(64),listEmployeeCommunications:mocks.list,readCommunication:mocks.read,previewCommunicationAudience:mocks.preview,executeCommunicationCommand:mocks.execute,findCommunicationOperation:mocks.lookup}));
 function request(method='GET',body:unknown=undefined,headers:Record<string,string>={}){return new Request('https://nevora.invalid/api/employee/communications',{method,headers:{'X-Nevora-Communication':'1','X-Nevora-Communication-Authority':'a'.repeat(64),'Origin':'https://nevora.invalid','Content-Type':'application/json',...headers},...(body===undefined?{}:{body:JSON.stringify(body)})});}
 async function handle(request:Request,mode:'EMPLOYEE'|'MANAGER'='EMPLOYEE',action:'list'|'command'|'preview'|'read'|'operation'='list',id?:string){const m=await import('./http.server').catch(()=>null);expect(m?.communicationHttp).toBeTypeOf('function');return m!.communicationHttp(request,mode,action,id);}
-beforeEach(()=>{vi.resetAllMocks();mocks.session.mockResolvedValue({id:'self',role:'EMPLOYEE'});mocks.proof.mockResolvedValue({employee:{id:'self',role:'EMPLOYEE'}});mocks.list.mockResolvedValue({state:'complete',items:[]});mocks.execute.mockResolvedValue({status:'committed'});});
+beforeEach(()=>{rs.resetAllMocks();mocks.session.mockResolvedValue({id:'self',role:'EMPLOYEE'});mocks.proof.mockResolvedValue({employee:{id:'self',role:'EMPLOYEE'}});mocks.list.mockResolvedValue({state:'complete',items:[]});mocks.execute.mockResolvedValue({status:'committed'});});
 it('authorized list stays private and cannot select another employee',async()=>{
  const r=await handle(request());expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toBe('no-store, private');expect(r.headers.get('referrer-policy')).toBe('no-referrer');
  const selected=new Request('https://nevora.invalid/api/employee/communications?employeeId=other',{headers:{'X-Nevora-Communication':'1','X-Nevora-Communication-Authority':'a'.repeat(64)}});expect((await handle(selected)).status).toBe(400);

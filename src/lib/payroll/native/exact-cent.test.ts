@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { calculateNativePayroll } from './calculate';
 import { prIncomeWithholding } from './rules/pr-2026';
 import { input, entry } from './fixtures.test-support';

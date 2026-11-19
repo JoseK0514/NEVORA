@@ -1,9 +1,9 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from "@rstest/core";
 import { bonusYear, type BonusRow, type ChristmasBonusReport } from "@/lib/reports/christmas-bonus";
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _p, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _p, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
 const { ChristmasBonusView } = await import("./christmas-bonus-report");
 
 const MINUTE = BigInt(60_000_000_000);

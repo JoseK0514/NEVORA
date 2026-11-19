@@ -1,20 +1,20 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {Pool} from 'pg';
 import {createCommerce} from './service';
 import {CommerceStore,type Business} from './store';
 import {CommerceError} from './model';
 import {billingActorHash} from './billing-operations';
 const pools:Pool[]=[];
-afterEach(async()=>{vi.restoreAllMocks();await Promise.all(pools.splice(0).map(p=>p.end()));});
+afterEach(async()=>{rs.restoreAllMocks();await Promise.all(pools.splice(0).map(p=>p.end()));});
 function setup(path='/v1/plan-change'){
  const id='11111111-1111-4111-8111-111111111111';
  const b:Business={id,state:'ready',email:'owner@example.invalid',profile:{email:'owner@example.invalid'},planKey:'small',trialStart:null,trialEnd:null,paidThrough:null,pastDueSince:null,subscriptionStatus:'active',customerId:'cus_fictional',subscriptionId:'sub_fictional',employeeCount:7,enrollmentSource:'onboarding',incarnation:'1',slotId:id,origin:'https://company.example.test'};
  const owner={businessId:id,installationId:id,incarnation:'1',employeeId:'owner',sessionTokenHash:'a'.repeat(64),generation:'1'};
  const pool=new Pool({connectionString:'postgresql://fictional@127.0.0.1:1/catalog'});pools.push(pool);
  const store=new CommerceStore(pool,Buffer.alloc(32,7),'onboarding');
- const session=vi.spyOn(store,'session').mockResolvedValue(id);vi.spyOn(store,'tokenOwner').mockResolvedValue(owner);const business=vi.spyOn(store,'business').mockImplementation(async()=>({...b}));vi.spyOn(store,'rate').mockResolvedValue(undefined);
- const billing={checkout:vi.fn(async()=>'https://checkout.stripe.com/fictional'),portal:vi.fn(async()=>'https://billing.stripe.com/fictional'),webhook:vi.fn(),planChange:vi.fn(async()=>({url:'https://billing.stripe.com/fictional',plan:'team' as const,effective:'after_payment' as const}))};
- const headcount=vi.fn(async()=>7);
+ const session=rs.spyOn(store,'session').mockResolvedValue(id);rs.spyOn(store,'tokenOwner').mockResolvedValue(owner);const business=rs.spyOn(store,'business').mockImplementation(async()=>({...b}));rs.spyOn(store,'rate').mockResolvedValue(undefined);
+ const billing={checkout:rs.fn(async()=>'https://checkout.stripe.com/fictional'),portal:rs.fn(async()=>'https://billing.stripe.com/fictional'),webhook:rs.fn(),planChange:rs.fn(async()=>({url:'https://billing.stripe.com/fictional',plan:'team' as const,effective:'after_payment' as const}))};
+ const headcount=rs.fn(async()=>7);
  const service=createCommerce({store,origin:'https://billing.example.test',allowedOrigins:['https://www.thevelani.com'],provisioningMode:'onboarding',headcount,billing});
  const send=(body:unknown=path==='/v1/plan-change'?{plan:'team',lang:'es'}:{lang:'es'},headers:Record<string,string>={})=>service(new Request('https://billing.example.test'+path,{method:path==='/v1/status'?'GET':'POST',headers:{origin:'https://www.thevelani.com','content-type':'application/json',authorization:'Bearer '+ 'k'.repeat(43),'idempotency-key':'22222222-2222-4222-8222-222222222222',...headers},...(path==='/v1/status'?{}:{body:JSON.stringify(body)})}),'127.0.0.1');
  return {b,owner,store,session,business,billing,headcount,send};

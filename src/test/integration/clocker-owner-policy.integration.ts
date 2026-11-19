@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {companyAccessFixture} from './company-access-fixture';
 import {readEmployeeClockerPin,setEmployeeClockerPin} from '../../lib/clocker/pins.server';
 import {readClockerRecoveryReview} from '../../lib/clocker/recovery-review.server';

@@ -1,4 +1,4 @@
-import { it, expect } from "vitest";
+import { it, expect } from '@rstest/core';
 import {
   automaticWeek,
   automaticAssignment as shift,

@@ -1,7 +1,7 @@
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {readFile} from 'node:fs/promises';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {CLOCKER_COPY,CLOCKER_PUNCH_ERRORS,CLOCKER_PUNCH_ERROR_FALLBACK,CLOCKER_PIN_ERROR_FALLBACK,clockerOthersSavedText,clockerPinErrorKey,clockerPunchErrorKey,clockerText,clockerUnconfirmedText} from './clocker-copy';
 import {CLOCKER_TRANSPORT_ERRORS} from '../lib/clocker/transport-errors';
 import {ClockerPresentation} from './clocker-language';
@@ -11,7 +11,7 @@ import {ClockerPaused} from './clocker-paused';
 import {ClockerNotFoundBody} from '../app/clocker/[location]/not-found-body';
 
 /* Phase 6 (Nov 17, 2026): the kiosk's clock-in flow. The kiosk is bilingual on screen, so these render both languages. */
-vi.mock('next/link',()=>({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
+rs.mock('next/link',()=>({default:({href,children,...props}:ComponentProps<'a'>)=>createElement('a',{href,...props},children)}));
 const source=(file:string)=>readFile(new URL(file,import.meta.url),'utf8');
 const KIOSK_FILES=['clocker-shell.tsx','clocker-pin-gate.tsx','clocker-punch-panel.tsx','clocker-recovery.tsx','clocker-receipt.tsx','clocker-fallback.tsx','clocker-paused.tsx','clocker-photo/punch-photo-flow.tsx','clocker-photo/photo-notice.tsx','../app/clocker/[location]/not-found-body.tsx'];
 

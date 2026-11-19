@@ -2,7 +2,7 @@
 // band, the legacy buttons).
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 
 const root = join(__dirname, '..', '..');
 const SHEETS = [

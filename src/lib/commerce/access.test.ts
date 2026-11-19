@@ -1,14 +1,14 @@
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, expect, it, rs } from '@rstest/core';
 import { commerceGate, resetCommerceAccessCache } from "./access";
 afterEach(() => {
-  vi.unstubAllEnvs();
+  rs.unstubAllEnvs();
   resetCommerceAccessCache();
 });
 const enable = () => {
-  vi.stubEnv("NEVORA_COMMERCE_ENABLED", "true");
-  vi.stubEnv("NEVORA_COMMERCE_API_ORIGIN", "https://billing.example.test");
-  vi.stubEnv("NEVORA_COMMERCE_INSTALLATION_ID", "slot-a");
-  vi.stubEnv("NEVORA_COMMERCE_INSTANCE_SECRET", "a".repeat(43));
+  rs.stubEnv("NEVORA_COMMERCE_ENABLED", "true");
+  rs.stubEnv("NEVORA_COMMERCE_API_ORIGIN", "https://billing.example.test");
+  rs.stubEnv("NEVORA_COMMERCE_INSTALLATION_ID", "slot-a");
+  rs.stubEnv("NEVORA_COMMERCE_INSTANCE_SECRET", "a".repeat(43));
 };
 it("leaves unenrolled existing installations unchanged without contacting commerce", async () => {
   expect(

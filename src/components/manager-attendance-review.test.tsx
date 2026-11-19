@@ -1,11 +1,11 @@
 import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import { OPEN_ENTRY_REVIEW_LIMIT_HOURS } from '@/lib/attendance/project';
 import type { Observation } from '@/lib/attendance/types';
 import { AttendanceReviewSurface } from './manager-attendance-review';
 
-vi.mock('next/link', () => ({
+rs.mock('next/link', () => ({
   default: ({ href, children, ...props }: ComponentProps<'a'>) =>
     createElement('a', { href, ...props }, children),
 }));

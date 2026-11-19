@@ -140,32 +140,33 @@ export async function recordPublishedWeekRevision(input: {
 export async function publishScheduleWithRevision(input: {
   locationId: string; weekStart: string; managerId: string; proof: SessionMutationProof;
 }, executor?: SqlExecutor): Promise<{ published: boolean; revision?: PublicationRevision }> {
-  const result = await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.managerId,proof:input.proof,sourceType:'PUBLISH',
+  const result = await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.managerId,proof:input.proof,sourceType:'PUBLISH',publicationLocationId:input.locationId,
     build: state => {
       const schedule=state.schedules.find(s=>s.locationId===input.locationId && s.weekStart===input.weekStart);
       if (!schedule) return {statements:[],afterSchedules:state.schedules,afterShifts:state.shifts};
       return {statements:[{text:`UPDATE schedules SET status='PUBLISHED',published_by=$2,published_at=now() WHERE id=$1`,values:[schedule.id,input.managerId]}],
-        afterSchedules:state.schedules.map(s=>s.id===schedule.id?{...s,status:'PUBLISHED'}:s),afterShifts:state.shifts,publishWeekStarts:[input.weekStart],revisionSourceId:schedule.id,affectedLocationId:input.locationId};
+        afterSchedules:state.schedules.map(s=>s.id===schedule.id?{...s,status:'PUBLISHED'}:s),afterShifts:state.shifts,publishWeekStarts:[input.weekStart],revisionSourceId:schedule.id,affectedLocationId:input.locationId,publicationLocationId:input.locationId};
     }},executor);
   return {published:result.committed,...(result.revisions[0]?{revision:result.revisions[0]}:{})};
 }
 
-/**
- * Publish changes (Jose, 2026-10-29): publish every held edit in the week at
- * once. Writes ONE PUBLISH revision of the whole live week (all locations; the
- * revision always covers the week, so this needs COMPANY scope like any
- * publication), ONE diff-based notification set against the latest revision,
- * and marks the week's held-edit history published, all in one transaction.
- * A week with nothing pending commits nothing and returns published:false.
- * Publishing a Draft location keeps using publishScheduleWithRevision.
- */
+/** Release held edits for one authorized location, or use the Owner's whole-week command. */
 export async function publishScheduleChanges(input: {
-  weekStart: string; managerId: string; proof: SessionMutationProof;
+  weekStart: string; managerId: string; proof: SessionMutationProof; locationId?: string;
 }, executor?: SqlExecutor): Promise<{ published: boolean; revision?: PublicationRevision }> {
-  const result = await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.managerId,proof:input.proof,sourceType:'PUBLISH',
+  const result = await commitPublishedWeekChange({
+    weekStarts:[input.weekStart],actorEmployeeId:input.managerId,proof:input.proof,sourceType:'PUBLISH',
+    publicationLocationId:input.locationId,
     build: state => {
-      if (!pendingPublicationChanges(state, input.weekStart).hasPendingChanges) return {statements:[],afterSchedules:state.schedules,afterShifts:state.shifts};
-      return {statements:[{text:'SELECT 1 AS publish_changes',values:[]}],afterSchedules:state.schedules,afterShifts:state.shifts,publishWeekStarts:[input.weekStart]};
+      const pending = pendingPublicationChanges(state, input.weekStart);
+      const locationId = input.locationId;
+      const eligible = locationId
+        ? pending.changes.some(change => [change.before?.locationId, change.after?.locationId].includes(locationId)) ||
+          (!pending.latest && state.schedules.some(s => s.weekStart === input.weekStart && s.locationId === locationId && s.status === 'PUBLISHED'))
+        : pending.hasPendingChanges;
+      if (!eligible) return {statements:[],afterSchedules:state.schedules,afterShifts:state.shifts};
+      return {statements:[{text:'SELECT 1 AS publish_changes',values:[]}],afterSchedules:state.schedules,afterShifts:state.shifts,
+        publishWeekStarts:[input.weekStart],affectedLocationId:locationId,publicationLocationId:locationId};
     }},executor);
   return {published:result.committed&&result.revisions.length>0,...(result.revisions[0]?{revision:result.revisions[0]}:{})};
 }

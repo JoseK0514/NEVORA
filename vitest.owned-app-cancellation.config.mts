@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import {defineConfig} from 'vitest/config';
+import {defineConfig} from './vitest.shared.mts';
 import {employeeMobileProjects} from './vitest.employee-mobile-communications.config.mts';
 // Adversarial owned-fixture cancellation (forced abort after start; refused teardown after an ownership change).
 export default projectConfig('owned-app-cancellation', defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects:employeeMobileProjects([

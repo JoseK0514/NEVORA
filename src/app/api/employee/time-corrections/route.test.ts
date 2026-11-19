@@ -1,9 +1,9 @@
-vi.mock('@/lib/time-corrections/authority.server',()=>({matchesCorrectionAuthority:mocks.binding}));
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+rs.mock('@/lib/time-corrections/authority.server',()=>({matchesCorrectionAuthority:mocks.binding}));
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 
-const mocks = vi.hoisted(() => ({ binding:vi.fn(),session:vi.fn(), read:vi.fn(), submit:vi.fn() }));
-vi.mock('@/lib/auth/session', () => ({ getSession:mocks.session }));
-vi.mock('@/lib/data/time-corrections', () => ({
+const mocks = rs.hoisted(() => ({ binding:rs.fn(),session:rs.fn(), read:rs.fn(), submit:rs.fn() }));
+rs.mock('@/lib/auth/session', () => ({ getSession:mocks.session }));
+rs.mock('@/lib/data/time-corrections', () => ({
   getEmployeeTimeCorrections:mocks.read,
   submitEmployeeTimeCorrection:mocks.submit,
 }));
@@ -22,7 +22,7 @@ const command=()=>({
 
 describe('D2 employee correction API boundary',()=>{
  beforeEach(()=>{
-  vi.resetAllMocks();
+  rs.resetAllMocks();
   mocks.binding.mockImplementation(async(binding:string|null)=>binding==='a'.repeat(64));
   mocks.session.mockResolvedValue({id:'self',role:'EMPLOYEE'});
   mocks.read.mockResolvedValue({state:'ready',observedAt:'2030-10-07T16:10:00Z',timeZone:'America/Puerto_Rico',locations:[],requests:[]});

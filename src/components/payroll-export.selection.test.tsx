@@ -1,8 +1,9 @@
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
 import type {ReactElement,ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
-const host=vi.hoisted(()=>({cursor:0,mounted:false,slots:[] as {value:unknown}[],effects:[] as (()=>void|(()=>void))[]}));
-vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('react'),
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
+const host=rs.hoisted(()=>({cursor:0,mounted:false,slots:[] as {value:unknown}[],effects:[] as (()=>void|(()=>void))[]}));
+rs.mock('react',()=>({...rstestOriginal0,
  useState:(initial:unknown)=>{const i=host.cursor++;const slot=host.slots[i]??(host.slots[i]={value:typeof initial==='function'?(initial as ()=>unknown)():initial});return [slot.value,(next:unknown)=>{slot.value=typeof next==='function'?(next as (old:unknown)=>unknown)(slot.value):next;}];},
  useRef:(initial:unknown)=>{const i=host.cursor++;return (host.slots[i]??(host.slots[i]={value:{current:initial}})).value;},
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
@@ -19,10 +20,10 @@ function labelText(value:ReactNode):string{if(typeof value==='string'||typeof va
 const controlName=(node:ReactElement<Record<string,unknown>>)=>typeof node.props['aria-label']==='string'?node.props['aria-label']:labelText(node.props.children as ReactNode);
 function control(test:(n:ReactElement<Record<string,unknown>>)=>boolean){const n=nodes(render()).find(test);if(!n)throw Error('Missing rendered control');return n.props;}
 const click=(label:string)=>(control(n=>n.type==='button'&&controlName(n)===label).onClick as ()=>unknown)();
-const flush=()=>vi.advanceTimersByTimeAsync(0);
-async function mount(cards=[card('E1'),card('DRAFT',false)],validForMs=45000){vi.stubGlobal('fetch',async(path:string)=>path==='/api/timecards'?Response.json({state:'ready',observedAt:'2026-09-29T12:00:00Z',validForMs,cards}):Response.json({state:'ready',profiles:[]}));render();host.mounted=true;cleanup=host.effects[0]();await flush();}
-beforeEach(()=>{host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});vi.stubGlobal('window',new EventTarget());vi.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));vi.stubGlobal('navigator',{onLine:true});});
-afterEach(()=>{cleanup?.();cleanup=undefined;vi.unstubAllGlobals();vi.useRealTimers();});
+const flush=()=>rs.advanceTimersByTimeAsync(0);
+async function mount(cards=[card('E1'),card('DRAFT',false)],validForMs=45000){rs.stubGlobal('fetch',async(path:string)=>path==='/api/timecards'?Response.json({state:'ready',observedAt:'2026-09-29T12:00:00Z',validForMs,cards}):Response.json({state:'ready',profiles:[]}));render();host.mounted=true;cleanup=host.effects[0]();await flush();}
+beforeEach(()=>{host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];rs.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});rs.stubGlobal('window',new EventTarget());rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));rs.stubGlobal('navigator',{onLine:true});});
+afterEach(()=>{cleanup?.();cleanup=undefined;rs.unstubAllGlobals();rs.useRealTimers();});
 it('deliberately selects only visible finalized cards and exposes the exclusion count',async()=>{
  await mount();expect(html()).toContain('0 selected');click('Select visible finalized timecards');expect(html()).toContain('1 selected');expect(html()).toContain('1 not finalized');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE E1').checked).toBe(true);expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE DRAFT').checked).toBe(false);
@@ -34,7 +35,7 @@ it('selects at most 100 visible finalized cards and explicitly reports overflow'
 });
 it('refresh and expiry remove the convenience selection with protected private data',async()=>{
  await mount(undefined,1000);click('Select visible finalized timecards');window.dispatchEvent(new Event('pageshow'));await flush();expect(html()).toContain('0 selected');
- click('Select visible finalized timecards');vi.stubGlobal('fetch',()=>new Promise<Response>(()=>{}));await vi.advanceTimersByTimeAsync(1001);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Select visible finalized timecards');
+ click('Select visible finalized timecards');rs.stubGlobal('fetch',()=>new Promise<Response>(()=>{}));await rs.advanceTimersByTimeAsync(1001);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Select visible finalized timecards');
 });
 
 it('guides recorded approval and reviewed zero-time finalization separately while preserving finalized-only selection',async()=>{

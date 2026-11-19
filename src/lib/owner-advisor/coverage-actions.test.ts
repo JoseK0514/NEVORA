@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { parseCommand, parseTool } from "./contracts";
 const id = "10000000-0000-4000-8000-000000000001";
 const term = { employeeId: "ana", locationId: "north", startTime: "08:00", endTime: "12:00", positionId: null, isDesignatedLead: false };

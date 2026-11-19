@@ -1,4 +1,4 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {createHash,createHmac} from 'node:crypto';
 import type {Pool} from 'pg';
 import {CommerceStore,type Business} from './store';
@@ -8,14 +8,14 @@ const id='11111111-1111-4111-8111-111111111111',company='https://alpha.portal-st
 const key=Buffer.alloc(32,7),secret=Buffer.alloc(32,8).toString('base64url'),serviceKey=Buffer.alloc(32,9).toString('base64url');
 const business={id,slotId:id,incarnation:'1'} as Business;
 const owner={businessId:id,installationId:id,incarnation:'1',employeeId:'OWNER1',sessionTokenHash:'a'.repeat(64),generation:'1'};
-afterEach(()=>{vi.unstubAllEnvs();vi.unstubAllGlobals();});
+afterEach(()=>{rs.unstubAllEnvs();rs.unstubAllGlobals();});
 function setup(enabled=true){
- for(const [name,value] of Object.entries({NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_COMPANY_GATEWAY_ORIGIN:enabled?gateway:'',NEVORA_COMMERCE_COMPANY_GATEWAY_KEY:enabled?serviceKey:''}))vi.stubEnv(name,value);
+ for(const [name,value] of Object.entries({NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_COMPANY_GATEWAY_ORIGIN:enabled?gateway:'',NEVORA_COMMERCE_COMPANY_GATEWAY_KEY:enabled?serviceKey:''}))rs.stubEnv(name,value);
  // SQL selection/encryption already has owned-Postgres coverage; this port gives
  // the real installation functions one retained binding for transport checks.
  const pool={query:async()=>({rowCount:1,rows:[{id,origin:company,instance_secret:seal(secret,key,'instance:'+id)}]})} as unknown as Pool;
  const store=new CommerceStore(pool,key,'onboarding'),requests:Request[]=[];
- vi.stubGlobal('fetch',async(input:RequestInfo|URL,init?:RequestInit)=>{const request=new Request(input,init);requests.push(request);const path=new URL(request.url).pathname;return Response.json(path.endsWith('/facts')?{businessId:id,installationId:id,employeeCount:7}:path.endsWith('/owner')?{valid:true,...owner}:{state:'applied'});});
+ rs.stubGlobal('fetch',async(input:RequestInfo|URL,init?:RequestInit)=>{const request=new Request(input,init);requests.push(request);const path=new URL(request.url).pathname;return Response.json(path.endsWith('/facts')?{businessId:id,installationId:id,employeeCount:7}:path.endsWith('/owner')?{valid:true,...owner}:{state:'applied'});});
  return {store,requests};
 }
 it('keeps the existing direct company transport when no staging bridge is configured',async()=>{
@@ -36,5 +36,5 @@ it.each([
  {NEVORA_COMMERCE_COMPANY_GATEWAY_ORIGIN:'https://foreign.invalid'},
  {NEVORA_COMMERCE_COMPANY_GATEWAY_ORIGIN:'https://br-other-commerceauthority.compute.c-15.us-east-1.aws.neon.tech'},
 ])('fails before network work for an incomplete or out-of-scope bridge: %j',async patch=>{
- const {store,requests}=setup();for(const [name,value] of Object.entries(patch))vi.stubEnv(name,value);await expect(readInstallationHeadcount(store,business)).rejects.toMatchObject({code:'installation_transport_unavailable'});expect(requests.length).toBe(0);
+ const {store,requests}=setup();for(const [name,value] of Object.entries(patch))rs.stubEnv(name,value);await expect(readInstallationHeadcount(store,business)).rejects.toMatchObject({code:'installation_transport_unavailable'});expect(requests.length).toBe(0);
 });

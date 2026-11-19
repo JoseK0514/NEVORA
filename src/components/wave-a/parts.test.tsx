@@ -4,7 +4,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 import { BGlyph, type BMeaning } from "@/components/owner-b/b-kit";
 import { Notice as WaveCNotice } from "@/app/app/settings/wave-c-kit";
 import { Status } from "@/components/kit/kit";

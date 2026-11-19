@@ -1,8 +1,8 @@
 import {randomUUID} from 'node:crypto';
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
 import {readChristmasBonusReport} from '../../lib/reports/christmas-bonus.server';
 import {bonusYear} from '../../lib/reports/christmas-bonus';

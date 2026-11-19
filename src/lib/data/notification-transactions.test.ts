@@ -1,6 +1,7 @@
-import { beforeEach, expect, it, vi } from 'vitest';
-const driver = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
-vi.mock('../db', async original => ({ ...await original<typeof import('../db')>(), getDb: () => driver }));
+import * as rstestOriginal0 from "../db" with { rstest: 'importActual' };
+import { beforeEach, expect, it, rs } from '@rstest/core';
+const driver = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn() }));
+rs.mock('../db',  () => ({ ...rstestOriginal0, getDb: () => driver }));
 async function adapter() {
   const implementation = await import('./notification-transactions').catch(() => ({}));
   expect(implementation).toHaveProperty('neonNotificationExecutor');

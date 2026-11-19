@@ -1,15 +1,15 @@
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {beforeEach,expect,it,vi} from 'vitest';
+import {beforeEach,expect,it,rs} from '@rstest/core';
 
-const m=vi.hoisted(()=>({role:'MANAGER',denied:false,workspace:vi.fn(async()=>({timeZone:'America/Puerto_Rico'}))}));
-vi.mock('@/lib/auth/permissions',()=>({requireRoles:async()=>({id:'reviewer',role:m.role})}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:m.role},sessionTokenHash:'fixture'})}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async()=>m.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:null,authority:'fictional-authority',observedAt:'2026-10-20T12:00:00.000Z',validForMs:15000}}));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:m.workspace}));
-vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
-vi.mock('@/components/account-recovery',()=>({AccountRecovery:({employeeId,from,timeZone}:{employeeId?:string;from?:string;timeZone?:string})=>createElement('div',{'data-recovery':'account','data-employee':employeeId,'data-from':from,'data-zone':timeZone})}));
-vi.mock('@/components/clocker-recovery-review',()=>({ClockerRecoveryReview:({from,timeZone}:{from?:string;timeZone?:string})=>createElement('div',{'data-recovery':'clocker','data-from':from,'data-zone':timeZone})}));
+const m=rs.hoisted(()=>({role:'MANAGER',denied:false,workspace:rs.fn(async()=>({timeZone:'America/Puerto_Rico'}))}));
+rs.mock('@/lib/auth/permissions',()=>({requireRoles:async()=>({id:'reviewer',role:m.role})}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:m.role},sessionTokenHash:'fixture'})}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async()=>m.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:null,authority:'fictional-authority',observedAt:'2026-10-20T12:00:00.000Z',validForMs:15000}}));
+rs.mock('@/lib/data/workspaces',()=>({getWorkspace:m.workspace}));
+rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+rs.mock('@/components/account-recovery',()=>({AccountRecovery:({employeeId,from,timeZone}:{employeeId?:string;from?:string;timeZone?:string})=>createElement('div',{'data-recovery':'account','data-employee':employeeId,'data-from':from,'data-zone':timeZone})}));
+rs.mock('@/components/clocker-recovery-review',()=>({ClockerRecoveryReview:({from,timeZone}:{from?:string;timeZone?:string})=>createElement('div',{'data-recovery':'clocker','data-from':from,'data-zone':timeZone})}));
 
 import AccountRecoveryPage from '../account-recovery/page';
 import ClockerRecoveryPage from '../clocker-recovery/page';

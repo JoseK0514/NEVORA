@@ -1,4 +1,4 @@
-import {beforeAll,afterAll,beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
+import {beforeAll,afterAll,beforeEach,afterEach,describe,it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {freshOnboardingControl} from './onboarding-fixture';
 import {onboardingTestConfig} from './onboarding-test-config';
@@ -15,9 +15,9 @@ describe('actual control-database verified registration',()=>{
  beforeAll(async()=>{fixture=await freshOnboardingControl();store=createControlStore(fixture.pool);});
  afterAll(async()=>{await fixture?.close();});
  beforeEach(async()=>{mail.length=0;await fixture.pool.query('TRUNCATE nevora_onboarding.registrations,nevora_onboarding.admission_counters,nevora_onboarding.email_subjects CASCADE');});
- afterEach(()=>vi.unstubAllEnvs());
+ afterEach(()=>{ rs.unstubAllEnvs(); });
  it('HTTP registration gives unrelated edge addresses separate durable network budgets without persisting IPs',async()=>{
-  vi.stubEnv('VERCEL','1');const c={...config,verificationBucketLimit:2};const h=registrationHttpHandlers({config:c,store,delivery,admission:{mode:'open'}});
+  rs.stubEnv('VERCEL','1');const c={...config,verificationBucketLimit:2};const h=registrationHttpHandlers({config:c,store,delivery,admission:{mode:'open'}});
   const request=(email:string,ip:string,spoof='198.51.100.99')=>h.request(new Request(c.signupOrigin+'/api/onboarding/registrations',{method:'POST',headers:{origin:c.signupOrigin,'content-type':'application/json','x-vercel-forwarded-for':ip,'x-forwarded-for':spoof},body:JSON.stringify(command(email))}));
   expect((await request('one@example.invalid','203.0.113.1')).status).toBe(202);
   expect((await request('two@example.invalid','203.0.113.2')).status).toBe(202);
@@ -30,7 +30,7 @@ describe('actual control-database verified registration',()=>{
   expect(JSON.stringify(counters.rows)).not.toMatch(/203\.0\.113|198\.51\.100/);expect(await limited.text()).not.toMatch(/203\.0\.113|198\.51\.100/);
  });
  it('HTTP registration retains a shared conservative budget when edge identity is unavailable',async()=>{
-  vi.stubEnv('VERCEL','0');const c={...config,verificationBucketLimit:2};const h=registrationHttpHandlers({config:c,store,delivery,admission:{mode:'open'}});
+  rs.stubEnv('VERCEL','0');const c={...config,verificationBucketLimit:2};const h=registrationHttpHandlers({config:c,store,delivery,admission:{mode:'open'}});
   const results=[];for(let i=1;i<=3;i++)results.push(await h.request(new Request(c.signupOrigin+'/api/onboarding/registrations',{method:'POST',headers:{origin:c.signupOrigin,'content-type':'application/json','x-vercel-forwarded-for':'203.0.113.'+i,'x-forwarded-for':'198.51.100.'+i},body:JSON.stringify(command('owner'+i+'@example.invalid'))})));
   expect(results.map(r=>r.status)).toEqual([202,202,429]);expect(mail).toHaveLength(2);
   expect((await fixture.pool.query("SELECT count(*)::int n FROM nevora_onboarding.admission_counters WHERE kind='IP'")).rows[0].n).toBe(1);

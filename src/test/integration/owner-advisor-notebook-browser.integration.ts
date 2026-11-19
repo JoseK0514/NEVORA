@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { randomUUID } from "node:crypto";
 import { createRequire } from "node:module";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -42,7 +42,7 @@ it("persists private goals and tasks through the real Owner app, preserves delib
         await page.getByRole("button", { name: "Sign in", exact: true }).click();
         await page.waitForURL(origin + "/app");
         await page.locator(".app-shell.nevora-portal").waitFor();await page.waitForFunction(() => document.querySelector(".portal-notification-bell")?.getAttribute("data-state") === "ready");
-        await page.locator("main").getByRole("link", { name: "AI manager", exact: true }).click();
+        await page.locator("#desktop-primary-navigation").getByRole("link", { name: "Rondo AI", exact: true }).click();
         await page.waitForURL(origin + "/app/ai-manager");
         await page.getByRole("button", { name: "Add goal", exact: true }).waitFor();
         expect(await page.getByRole("button", { name: "Ask", exact: true }).isDisabled()).toBe(true);
@@ -176,7 +176,7 @@ it("persists private goals and tasks through the real Owner app, preserves delib
             overflow: document.documentElement.scrollWidth > innerWidth,
             shortTargets: [...document.querySelectorAll<HTMLElement>(".oa-notebook button,.oa-notebook summary")].filter(el => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height < 44).map(el => ({ text: el.textContent, height: el.getBoundingClientRect().height })),
           }));
-          const audit = await page.evaluate("axe.run('.oa-content', {runOnly: {type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa']}})");
+          const audit = await page.evaluate("axe.run('.oa', {runOnly: {type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa']}})");
           await writeFile(resolve(evidence, `${engine}-${width}-audit.json`), JSON.stringify({ layout, audit }, null, 2));
           await page.screenshot({ path: resolve(evidence, `${engine}-${width}.png`), fullPage: true });
           expect(layout.overflow, `${engine}/${width} overflow`).toBe(false);

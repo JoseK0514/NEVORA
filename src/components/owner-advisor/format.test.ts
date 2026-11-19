@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from "@rstest/core";
 import { attentionDetail, clockRange, dayText, periodText, stateText, whenText } from "./format";
 
 it("says the server's attention sentences with correct plurals and a 12-hour clock, and leaves others exactly as written", () => {

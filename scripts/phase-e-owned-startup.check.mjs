@@ -16,12 +16,12 @@ test('real owned PostgreSQL starts over TCP under a long evidence path and fully
   const root = mkdtempSync(join(evidence, 'long-owned-startup-'));
   const fixture = join(root, 'fixture'), logs = join(root, 'external-evidence-' + 'long-path-'.repeat(12));
   mkdirSync(join(fixture, 'src/test/integration'), { recursive: true });
-  mkdirSync(join(fixture, 'node_modules/vitest'), { recursive: true });
+  mkdirSync(join(fixture, 'scripts'), { recursive: true });
   mkdirSync(logs);
   writeFileSync(join(fixture, '.gitignore'), 'node_modules/\n');
   writeFileSync(join(fixture, 'vitest.phase-e-integration.config.mts'), 'export default {};\n');
   writeFileSync(join(fixture, 'src/test/integration/phase-e-published-assignments.integration.ts'), '/* Harness startup boundary only; no E feature test. */\n');
-  writeFileSync(join(fixture, 'node_modules/vitest/vitest.mjs'), `import assert from 'node:assert/strict';import fs from 'node:fs';import {createRequire} from 'node:module';import {resolve} from 'node:path';
+  writeFileSync(join(fixture, 'scripts/run-rstest.mjs'), `import assert from 'node:assert/strict';import fs from 'node:fs';import {createRequire} from 'node:module';import {resolve} from 'node:path';
 const owner=JSON.parse(fs.readFileSync(process.env.PHASE_E_OWNERSHIP_FILE,'utf8'));
 const {Client}=createRequire(${JSON.stringify(join(source, 'package.json'))})('pg');const client=new Client({host:'127.0.0.1',port:owner.port,user:'nevora_e',database:'postgres',connectionTimeoutMillis:3000});await client.connect();
 try{const result=await client.query("SELECT current_setting('unix_socket_directories') AS sockets,host(inet_server_addr()) AS address");fs.writeFileSync(${JSON.stringify(join(root, 'tcp-query.log'))},JSON.stringify(result.rows));assert.deepEqual(result.rows,[{sockets:'',address:'127.0.0.1'}]);}finally{await client.end();}

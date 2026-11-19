@@ -1,5 +1,5 @@
 import {accessTargetHeights} from "./access-target-geometry";
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {createRequire} from 'node:module';
 import {resolve,join} from 'node:path';
 import {mkdir,writeFile} from 'node:fs/promises';
@@ -24,13 +24,17 @@ it('keeps one mobile Access presentation in short touch landscape and preserves 
      expect((await page.goto(app.url+path))?.status()).toBe(200);await page.locator('#mobile-access-page').waitFor();await page.locator('.ma-header:visible').waitFor();if(['/login','/forgot-access','/reset-access','/activate'].includes(path))await page.locator('.ma-card:visible').waitFor();if(path==='/activate'){await page.locator('.ma-card .ma-actions a[href="/access-help/invitation"]:visible').waitFor();await page.locator('.ma-outside a[href="/login"]:visible').waitFor();}
      if(path==='/reset-access')await page.locator('.ma-card #reset-proof:not(:disabled)').waitFor();
      await page.evaluate(({theme,scale}:{theme:string;scale:number})=>{localStorage.setItem('nv-theme',theme);document.documentElement.dataset.theme=theme;(window as Window&{__nvApplyTheme?:()=>void}).__nvApplyTheme?.();document.documentElement.style.fontSize=scale+'%';scrollTo(0,0);},{theme,scale});
+     // The public header/card may precede the page's hydrated heading. Require
+     // the operative heading before taking the unchanged one-page geometry sample.
+     await page.getByRole('heading',{level:1}).filter({visible:true}).waitFor();
      const sample=await page.evaluate(()=>{
       const visible=(selector:string)=>[...document.querySelectorAll<HTMLElement>(selector)].filter(el=>el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden');
       const heading=visible('h1')[0]?.getBoundingClientRect(),primary=visible('.ma-actions > .q-btn')[0]?.getBoundingClientRect();
       return {coarse:matchMedia('(pointer:coarse)').matches,overflow:Math.max(0,document.documentElement.scrollWidth-innerWidth),mobileHeaders:visible('.ma-header').length,desktopHeaders:visible('.ma-desktop').length,cards:visible('.ma-card').length,cardBorder:parseFloat(getComputedStyle(visible('.ma-card')[0]??document.body).borderTopWidth),cardShadow:getComputedStyle(visible('.ma-card')[0]??document.body).boxShadow,forms:visible('form').length,headings:visible('h1').length,headingTop:heading?.top,headingBottom:heading?.bottom,primaryBottom:primary?.bottom,targets:visible('.ma-language,.q-btn').map(el=>el.getBoundingClientRect().height),windowError:document.documentElement.dataset.accessWindowError==='true'};
      });
-     // Phase 5's one card rule (DESIGN.MD): alternatives are text links under the card (nav.q-auth__links), not second buttons; they are counted and held to the same 44px.
-     sample.targets=await page.locator('.ma-language:visible,.q-btn:visible,.q-auth__links a:visible').evaluateAll(accessTargetHeights);
+     // Phase5 keeps recovery/sign-in help as text links; they are still required interactive targets.
+     const targets=page.locator('.ma-language:visible,.q-btn:visible,.q-auth__links a:visible');
+     sample.targets=await targets.evaluateAll(accessTargetHeights);
      measurements.push({engine,theme,scale,path,...sample});
      const check=(ok:boolean,reason:string)=>{if(!ok)failures.push({engine,theme,scale,path,reason,sample});};
      check(sample.coarse,'Native pointer must be coarse');check(sample.overflow<=1,'No sideways document scroll');check(sample.mobileHeaders===1&&sample.desktopHeaders===0,'Exactly one mobile header');check(sample.headings===1&&sample.forms<=1,'One operative page and at most one form');check(!sample.windowError,'No window exceptions');
@@ -47,7 +51,15 @@ it('keeps one mobile Access presentation in short touch landscape and preserves 
      const fields=path==='/login'?[['login-employee-id','FICTIONAL-ROTATION'],['login-password','Unsent fixture only 123!']]:[['recovery-employee-id','FICTIONAL-ROTATION'],['recovery-email','rotation@example.invalid']];
      for(const [id,value]of fields)await page.locator('#'+id).fill(value);
      for(const viewport of [{width:844,height:390},{width:1440,height:900},{width:320,height:844},{width:390,height:844}]){
-      await page.setViewportSize(viewport);await expect.poll(()=>page.evaluate(()=>{const card=document.querySelector<HTMLElement>('.ma-card');if(!card)return false;const style=getComputedStyle(card);return parseFloat(style.borderTopWidth)>=1||style.boxShadow!=='none';}),{timeout:2000}).toBe(viewport.width<=767||viewport.height<=500).catch(()=>{failures.push({engine,path,viewport,reason:'Form presentation did not follow rotation'});});
+      await page.setViewportSize(viewport);
+      try {
+       await expect.poll(()=>page.evaluate(()=>{
+        const card=document.querySelector<HTMLElement>('.ma-card');if(!card)return false;
+        const style=getComputedStyle(card);return parseFloat(style.borderTopWidth)>=1||style.boxShadow!=='none';
+       }),{timeout:2000}).toBe(viewport.width<=767||viewport.height<=500);
+      } catch {
+       failures.push({engine,path,viewport,reason:'Form presentation did not follow rotation'});
+      }
       for(const [id,value]of fields){expect(await page.locator('#'+id).count()).toBe(1);expect(await page.locator('#'+id).inputValue()).toBe(value);}
       expect(await page.locator('form:visible').count()).toBe(1);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);rotations.push({engine,path,viewport,fieldsPreserved:true});
      }

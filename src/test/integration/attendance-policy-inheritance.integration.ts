@@ -1,7 +1,7 @@
-vi.mock("server-only", () => ({}));
+rs.mock("server-only", () => ({}));
 import {readFile} from "node:fs/promises";
 import { randomUUID } from "node:crypto";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { createDisposableFoundationDatabase } from "./local-postgres";
 import type { SessionMutationProof } from "../../lib/shift-changes/types";
 import type { SqlExecutor } from "../../lib/notifications/types";

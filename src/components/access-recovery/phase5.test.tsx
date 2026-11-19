@@ -1,5 +1,5 @@
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { AUTH_COPY, authMessage, type AuthLang } from "@/lib/auth-copy";
 import { MOBILE_ACCESS_COPY } from "@/components/mobile-access/copy";
@@ -18,7 +18,7 @@ import { BGlyph } from "@/components/owner-b/b-kit";
 const saysNote = (html: string, message: string) => { const { title, body } = noteParts(message); if (title) expect(html).toContain(`<p class="b-callout__t">${title}</p>`); if (body) expect(html).toContain(body); };
 const glyph = (meaning: Parameters<typeof BGlyph>[0]["meaning"]) => renderToStaticMarkup(<BGlyph meaning={meaning} />);
 
-vi.stubGlobal("React", React);
+rs.stubGlobal("React", React);
 
 /* Phase 5, package B (Nov 17, 2026): one word for the task ("reset"), imperative titles, the accepted link, the password
  * pair, the one-line finish, the helper's reset link, and the phone pages with the same guidance as every other width.
@@ -132,13 +132,13 @@ describe("PB-016 and PB-037: the password pair", () => {
       expect(html).not.toContain("placeholder=");
       const [first, second] = html.split(`<label for="${prefix}-confirm-password">`);
       // The length rule is the first field's helper; the match is the second field's.
-      expect(first).toContain(`<span class="ar-rule" id="${prefix}-password-hint" data-state="idle"><span class="ar-rule__mark" aria-hidden="true"><span class="ar-rule__dot"></span></span><span>${t.atLeast8}</span></span>`);
+      expect(first).toContain(`<span class="ar-rule" id="${prefix}-password-hint" data-state="idle"><span class="ar-rule__mark" aria-hidden="true"><span class="ar-rule__dot"></span></span><span>${t.atLeast15}</span></span>`);
       expect(first).not.toContain(t.activation.passwordsMatch);
       expect(second).toContain(`<span class="ar-rule" id="${prefix}-confirm-password-hint" data-state="idle">`);
       // Phase 8: before the two match, the second rule is a requirement, never the statement that they match.
       expect(second).toContain(t.activation.sameAsNew);
       expect(second).not.toContain(t.activation.passwordsMatch);
-      expect(second).not.toContain(t.atLeast8);
+      expect(second).not.toContain(t.atLeast15);
       expect(html).toMatch(new RegExp(`<input id="${prefix}-password"[^>]*aria-describedby="${prefix}-password-hint ${prefix}-password-invalid"`));
       expect(html).toMatch(new RegExp(`<input id="${prefix}-confirm-password"[^>]*aria-describedby="${prefix}-confirm-password-hint ${prefix}-confirm-password-invalid"`));
       expect(html.match(/autoComplete="new-password"/g)).toHaveLength(2);
@@ -149,7 +149,7 @@ describe("PB-016 and PB-037: the password pair", () => {
       expect(html).toMatch(new RegExp(`id="${prefix}-confirm-password"[^>]*enterKeyHint="go"`));
       expect(html.match(new RegExp(`<button type="button" class="q-in__eye" aria-pressed="false" aria-controls="${prefix}-password ${prefix}-confirm-password" aria-label="${t.showPassword}">`, "g"))).toHaveLength(2);
       // Neither line ends in a full stop, and the rules are not a live region: nothing is read out on every key.
-      expect(t.atLeast8).not.toMatch(/\.$/);
+      expect(t.atLeast15).not.toMatch(/\.$/);
       expect(t.activation.passwordsMatch).not.toMatch(/\.$/);
       expect(t.activation.sameAsNew).not.toMatch(/\.$/);
       expect(html).not.toMatch(/class="ar-rule"[^>]*aria-live/);
@@ -221,7 +221,7 @@ describe("the phone pages (mobile access) carry the same guidance", () => {
   it.each(LANGS)("new password in %s: the step, the accepted link, each refusal with its next step, and the finish", lang => {
     const t = MOBILE_ACCESS_COPY[lang], u = ACCESS_COPY[lang].recovery, a = AUTH_COPY[lang];
     const linked = phoneReset(lang, { linkProof: true });
-    for (const line of [step(lang, 3), t.resetTitle, a.reset.linkAccepted, t.useDifferentCode, a.atLeast8, t.resetPassword]) expect(linked).toContain(line);
+    for (const line of [step(lang, 3), t.resetTitle, a.reset.linkAccepted, t.useDifferentCode, a.atLeast15, t.resetPassword]) expect(linked).toContain(line);
     expect(linked).toContain('class="q-fl ma-link-proof ar-off"');
     expect(phoneReset(lang)).not.toContain("ar-accepted");
     const refused = phoneReset(lang, { message: INVALID });

@@ -2,7 +2,7 @@ import {spawnSync} from 'node:child_process';
 import {existsSync,mkdtempSync,readFileSync,rmSync,writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 
 const runner=resolve('scripts/phase-e-owned.mjs');
 type Mode='exec-clean-exit'|'registered-exec'|'registration-after-exec'|'root-exit'|'forced-root'|'changed-root'|'root-marker-lost'|'member-marker-lost'|'recycled-member'|'reparented-member';

@@ -1,4 +1,4 @@
-import {describe,it,expect,beforeAll,afterAll} from 'vitest';
+import {describe,it,expect,beforeAll,afterAll} from '@rstest/core';
 import {Client} from 'pg';
 import {readFileSync,realpathSync,lstatSync,statSync,appendFileSync,writeFileSync} from 'node:fs';
 import {resolve,join,isAbsolute,sep} from 'node:path';

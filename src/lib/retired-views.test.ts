@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { retiredViewDestination } from "./retired-views";
 
 it("sends the old Home schedule to /app/schedule with its week, day, location and person", () => {

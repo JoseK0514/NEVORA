@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 
 // Inspection Oct 24: each notification row links to /app/notifications/open, a route handler that marks the item
 // opened and redirects. Next prefetched those links and the handler correctly refused (three 404s per visit).

@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "@rstest/core";
 import { BCallout, BCard, BChip, BCount, BEmail, BGlyph, BIcon, BList, BRow, BStatusText, type BMeaning, type BTone } from "./b-kit";
 
 const html = (node: React.ReactElement) => renderToStaticMarkup(node);

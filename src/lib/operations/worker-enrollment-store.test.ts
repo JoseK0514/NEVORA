@@ -1,4 +1,4 @@
-import {beforeAll,expect,it,vi} from 'vitest';
+import {beforeAll,expect,it,rs} from '@rstest/core';
 import {generateKeyPairSync} from 'node:crypto';
 import {workerRecipientFingerprint} from './worker-enrollment';
 import {parseWorkerEnrollmentRequest,processWorkerEnrollmentOnce,workerEnrollmentRequestHash,type WorkerEnrollmentRequest} from './worker-enrollment-store';
@@ -21,7 +21,7 @@ it('never stores a private recipient key in the public request, and rejects extr
  expect(()=>parseWorkerEnrollmentRequest({...request,registryRevision:'01'})).toThrow(/^worker_enrollment_invalid$/);
 });
 it('rejects empty, duplicate, excessive or unbound requests before opening a database connection',async()=>{
- const connect=vi.fn(async()=>{throw Error('must_not_connect');}),db={connect},binding={id:request.enrollmentId,requestHash:workerEnrollmentRequestHash(request)},root=Buffer.alloc(32,1).toString('base64url'),workerRoot=Buffer.alloc(32,2).toString('base64url');
+ const connect=rs.fn(async()=>{throw Error('must_not_connect');}),db={connect},binding={id:request.enrollmentId,requestHash:workerEnrollmentRequestHash(request)},root=Buffer.alloc(32,1).toString('base64url'),workerRoot=Buffer.alloc(32,2).toString('base64url');
  for(const selected of [[],[binding,binding],[binding,binding,binding],[{...binding,requestHash:'invalid'}]])await expect(processWorkerEnrollmentOnce(db,selected,request.issuerSourceSha,root,workerRoot,async()=>{throw Error('must_not_probe');})).rejects.toThrow(/^worker_enrollment_invalid$/);
  await expect(processWorkerEnrollmentOnce(db,[binding],request.issuerSourceSha,root,root,async()=>{throw Error('must_not_probe');})).rejects.toThrow(/^worker_enrollment_invalid$/);expect(connect).not.toHaveBeenCalled();
 });

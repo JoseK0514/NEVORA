@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { createHash, randomBytes } from "node:crypto";
 import { writeFile } from "node:fs/promises";
 import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON } from "@simplewebauthn/server";
@@ -12,7 +12,7 @@ it("completes discoverable passkey sign-in through a real owned Next HTTP runtim
   try {
     const q = (text: string, values: unknown[] = []) => app.database.executor.query({ text, values });
     const session = randomBytes(32).toString("base64url");
-    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('PK-NETWORK','Fictional','Network','5550199','EMPLOYEE','loc-1'); INSERT INTO employee_credentials(employee_id,password_hash) VALUES('PK-NETWORK','fictional-network-hash')");
+    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('PK-NETWORK','Fictional','Network','5550199','EMPLOYEE','loc-1'); INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('PK-NETWORK','fictional-network-hash',false)");
     await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'PK-NETWORK',clock_timestamp()+interval '1 hour')",
       [createHash("sha256").update(session).digest("hex")]);
     const origin = app.url.replace("127.0.0.1", "localhost"), jar = new Map([["fuel_session", session]]);

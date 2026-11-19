@@ -1,3 +1,4 @@
+import {isPasswordTooLong,passwordLength,MIN_PASSWORD_CHARACTERS} from './password-requirements';
 import 'server-only';
 import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import {createHash,randomBytes} from 'node:crypto';
@@ -9,12 +10,15 @@ import {assertManagementProof} from '../data/management-session';
 import {hashPassword,verifyPassword} from './password';
 import {loginIdPauseRelease} from './login-limits.server';
 import {reportHandledServerError} from '../server-error';
+import {passwordRejection} from './password-policy';
+import type {PasswordRejection} from './password-requirements';
+import type {AccountEmailContext} from './account-email-copy';
 import type {ReviewedLoginCredential} from './session-issuance';
 const hash=(value:string)=>createHash('sha256').update(value).digest('hex');
 const safeId=(v:string)=>v.trim().length>0&&v.trim().length<=200&&!/[\u0000-\u001f\u007f]/.test(v);
 const unavailable={state:'unavailable' as const};
 /** `notifyReset` tells the account's registered email that its password was just changed (optional for older senders). */
-export type RecoveryDelivery={send:(email:string,proof:string)=>Promise<void>;notifyReset?:(email:string)=>Promise<void>};
+export type RecoveryDelivery={send:(email:string,proof:string,context?:AccountEmailContext)=>Promise<void>;notifyReset?:(email:string,context?:AccountEmailContext)=>Promise<void>};
 function issueStatement(tokenHash:string,employeeId:string,email:string|null,actor:string|null,note:string|null,workspaceId:string):SqlStatement{
  return {text:`INSERT INTO password_recovery_proofs(token_hash,employee_id,credential_updated_at,employee_updated_at,method,actor_employee_id,attestation,expires_at)
   SELECT $1,e.id,c.password_updated_at,e.updated_at,CASE WHEN $4::text IS NULL THEN 'EMAIL' ELSE 'ASSISTED' END,$4,$5,clock_timestamp()+interval '15 minutes'
@@ -22,7 +26,7 @@ function issueStatement(tokenHash:string,employeeId:string,email:string|null,act
   WHERE upper(e.id)=upper($2) AND e.active AND l.workspace_id=$7 AND ($3::text IS NULL OR lower(trim(e.email))=lower($3))
    AND ($4::text IS NOT NULL OR COALESCE((SELECT attempts FROM password_recovery_limits WHERE scope='global' AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900)),0)<300)
    AND ($4::text IS NOT NULL OR COALESCE((SELECT attempts FROM password_recovery_limits WHERE scope=$6 AND bucket=floor(EXTRACT(epoch FROM clock_timestamp())/900)),0)<3)
-  RETURNING employee_id AS "employeeId",eXpires_at::text AS "expiresAt",(SELECT email FROM employees WHERE id=employee_id) AS email`,values:[tokenHash,employeeId,email,actor,note,hash(employeeId.toUpperCase()),workspaceId]};
+  RETURNING employee_id AS "employeeId",eXpires_at::text AS "expiresAt",(SELECT email FROM employees WHERE id=employee_id) AS email,(SELECT first_name FROM employees WHERE id=employee_id) AS "firstName"`,values:[tokenHash,employeeId,email,actor,note,hash(employeeId.toUpperCase()),workspaceId]};
 }
 /** Called after the public response. Known/unknown/inactive/unconfigured cases
  * share the response; no existence/channel information crosses that boundary. */
@@ -45,8 +49,8 @@ export async function requestPasswordRecovery(employeeId:string,email:string,del
     {text:`INSERT INTO password_recovery_limits(scope,bucket,attempts) SELECT 'global',${bucket},1 WHERE ${issued} ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1`,values:[hash(token)]},
     {text:`INSERT INTO password_recovery_limits(scope,bucket,attempts) SELECT $2,${bucket},1 WHERE ${issued} ON CONFLICT(scope,bucket) DO UPDATE SET attempts=password_recovery_limits.attempts+1`,values:[hash(token),hash(id.toUpperCase())]});
   }
-  const results=await executor.transaction(statements),issued=results[issueAt]?.[0] as {email:string}|undefined;
-  if(delivery&&issued?.email)await delivery.send(issued.email,token);
+  const results=await executor.transaction(statements),issued=results[issueAt]?.[0] as {email:string;firstName:string;expiresAt:string}|undefined;
+  if(delivery&&issued?.email)await delivery.send(issued.email,token,{companyName:workspace.name,firstName:issued.firstName,expiresAt:issued.expiresAt,timeZone:workspace.timeZone});
  }catch{ /* Public response never reveals account existence or mail/SQL errors. */ }
 }
 /** Issue a short-lived recovery bearer after current Company access and target
@@ -97,8 +101,10 @@ export async function issueInitialPasswordReplacement(employeeId:string,reviewed
  * so later lifecycle/password changes invalidate it. Push detachment/cancellation
  * commits with the reset; the optional registered-email notice is best effort
  * after commit. Clocker device/PIN proofs and operational records are untouched. */
-export async function resetPasswordWithProof(token:string,password:string,executor:SqlExecutor=neonNotificationExecutor(),delivery:RecoveryDelivery|null=null):Promise<{state:'reset'|'invalid'|'unavailable'}>{
- if(!/^[A-Za-z0-9_-]{43}$/.test(token)||Buffer.from(token,'base64url').length!==32||Buffer.from(token,'base64url').toString('base64url')!==token||password.length<8||password.length>1024)return {state:'invalid'};
+export async function resetPasswordWithProof(token:string,password:string,executor:SqlExecutor=neonNotificationExecutor(),delivery:RecoveryDelivery|null=null):Promise<{state:'reset'|'invalid'|'unavailable';passwordReason?:PasswordRejection}>{
+ if(!/^[A-Za-z0-9_-]{43}$/.test(token)||Buffer.from(token,'base64url').length!==32||Buffer.from(token,'base64url').toString('base64url')!==token)return {state:'invalid'};
+ if(isPasswordTooLong(password))return {state:'invalid',passwordReason:'too_long'};
+ if(passwordLength(password)<MIN_PASSWORD_CHARACTERS)return {state:'invalid',passwordReason:'too_short'};
  try{
   const tokenHash=hash(token),globalScope=hash('NEVORA password reset limit global v1');
   // Only codes that exist are counted (10 tries per code, 250 resets per 15 minutes overall), so random codes from
@@ -112,10 +118,12 @@ export async function resetPasswordWithProof(token:string,password:string,execut
      AND COALESCE((SELECT attempts FROM password_recovery_limits WHERE scope=$1 AND bucket=${bucket}),0)<=10 AS allowed`,values:[tokenHash,globalScope]},
   ]);
   if(!(limits.at(-1)?.[0] as {allowed:boolean}|undefined)?.allowed)return {state:'invalid'};
-  const newHash=await hashPassword(password),workspace=await getWorkspace(executor);
-  const rows=await executor.query<{employeeId:string;method:string;passwordHash:string;mustChange:boolean}>({text:'SELECT p.employee_id AS "employeeId",p.method,c.password_hash AS "passwordHash",c.must_change_password AS "mustChange" FROM password_recovery_proofs p JOIN employee_credentials c ON c.employee_id=p.employee_id WHERE p.token_hash=$1',values:[tokenHash]});
+  const workspace=await getWorkspace(executor);
+  const rows=await executor.query<{employeeId:string;method:string;passwordHash:string;mustChange:boolean}>({text:'SELECT p.employee_id AS "employeeId",p.method,c.password_hash AS "passwordHash",c.must_change_password AS "mustChange" FROM password_recovery_proofs p JOIN employee_credentials c ON c.employee_id=p.employee_id JOIN employees e ON e.id=p.employee_id JOIN locations l ON l.id=e.primary_location_id WHERE p.token_hash=$1 AND l.workspace_id=$2 AND e.active AND p.used_at IS NULL AND p.retired_at IS NULL AND p.expires_at>clock_timestamp() AND p.credential_updated_at=c.password_updated_at AND p.employee_updated_at=e.updated_at',values:[tokenHash,workspace.id]});
   if(!rows[0])return {state:'invalid'};const employeeId=rows[0].employeeId;
-  if((rows[0].mustChange||rows[0].method==='INITIAL_PASSWORD')&&await verifyPassword(password,rows[0].passwordHash))return {state:'invalid'};
+  const passwordReason=passwordRejection(password,{employeeId,companyName:workspace.name});if(passwordReason)return {state:'invalid',passwordReason};
+  if((rows[0].mustChange||rows[0].method==='INITIAL_PASSWORD')&&await verifyPassword(password,rows[0].passwordHash))return {state:'invalid',passwordReason:'temporary_password'};
+  const newHash=await hashPassword(password);
   const statements:SqlStatement[]=[...workspaceReadGuard(workspace),
    {text:'SELECT id FROM employees WHERE id=$1 FOR UPDATE',values:[employeeId]},
    {text:'SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR UPDATE',values:[employeeId]},
@@ -131,11 +139,11 @@ export async function resetPasswordWithProof(token:string,password:string,execut
    {text:"UPDATE push_subscriptions SET status='detached',generation=gen_random_uuid()::text,encrypted_material=NULL,updated_at=clock_timestamp() WHERE employee_id=$1 AND status='active'",values:[employeeId]},
    {text:"UPDATE push_deliveries SET status='cancelled',lease_token=NULL,lease_expires_at=NULL,updated_at=clock_timestamp() WHERE subscription_id IN (SELECT id FROM push_subscriptions WHERE employee_id=$1) AND status IN ('queued','retry_pending','processing')",values:[employeeId]},
   ];
-  const results=await executor.transaction([...statements,{text:"SELECT NULLIF(trim(email),'') AS email FROM employees WHERE id=$1",values:[employeeId]}]);
+  const results=await executor.transaction([...statements,{text:`SELECT NULLIF(trim(email),'') AS email,first_name AS "firstName" FROM employees WHERE id=$1`,values:[employeeId]}]);
   // The person hears about the change on their registered email, whoever asked for the reset. Best effort: the reset
   // has already happened, and every session was ended with it.
-  const email=(results.at(-1)?.[0] as {email:string|null}|undefined)?.email;
-  if(email&&delivery?.notifyReset)await delivery.notifyReset(email).catch(()=>undefined);
+  const contact=results.at(-1)?.[0] as {email:string|null;firstName:string}|undefined;
+  if(contact?.email&&delivery?.notifyReset)await delivery.notifyReset(contact.email,{companyName:workspace.name,firstName:contact.firstName,timeZone:workspace.timeZone}).catch(()=>undefined);
   return {state:'reset'};
  }catch(error){
   if(error instanceof Error&&error.message.includes('recovery_proof_invalid'))return {state:'invalid'};

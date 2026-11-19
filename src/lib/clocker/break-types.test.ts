@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { validateBreakType, breakProgress } from './break-types';
 const valid={name:'Rest break',category:'REST',targetMinutes:15,active:true};
 it('normalizes an operational name and accepts an optional target',()=>{

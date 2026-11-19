@@ -1,10 +1,10 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import {issued} from './company-access-claim.test-support';
 import {invitationEmailFingerprint} from '../../lib/auth/invitations/service.server';
 import {clearTerminalInvitationDigests} from '../../lib/auth/invitations/claim.server';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 it('digest maintenance clears deterministic capped batches while preserving recent/current custody, metadata, events and all counters',async()=>{
  const f=await companyAccessFixture();try{
   await f.q(`INSERT INTO company_invitations(workspace_id,id,employee_id,revision,target_version,email_fingerprint,issuer_employee_id,issuer_generation,proof_digest,issued_at,expires_at,retired_at,retired_reason)

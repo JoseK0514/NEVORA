@@ -32,10 +32,11 @@ const starters = [
   "What could go wrong with this plan?",
 ];
 /** Rondo's three other pages, as rows with their glyphs (the band no longer carries floating pills). */
-const TOOLS: { href: string; title: string; icon: ReactNode }[] = [
-  { href: "/app/ai-manager/weekly", title: "Weekly plan", icon: <CalendarDotsIcon weight="bold" /> },
-  { href: "/app/ai-manager/knowledge", title: "Company knowledge", icon: <BookOpenTextIcon weight="bold" /> },
-  { href: "/app/ai-manager/business", title: "Business records", icon: <CashRegisterIcon weight="bold" /> },
+type GuidedTools = { weekly: boolean; knowledge: boolean; business: boolean };
+const TOOLS: { key: keyof GuidedTools; href: string; title: string; icon: ReactNode }[] = [
+  { key: "weekly", href: "/app/ai-manager/weekly", title: "Weekly plan", icon: <CalendarDotsIcon weight="bold" /> },
+  { key: "knowledge", href: "/app/ai-manager/knowledge", title: "Company knowledge", icon: <BookOpenTextIcon weight="bold" /> },
+  { key: "business", href: "/app/ai-manager/business", title: "Business records", icon: <CashRegisterIcon weight="bold" /> },
 ];
 /** `evidence`: the answer's checked business evidence. A business citation that has some opens its figures as a card;
  * every other source, and a business citation without evidence, stays the plain link. */
@@ -63,9 +64,10 @@ function Sources({ sources, evidence, clock = {} }: { sources: AdvisorSource[]; 
  * first. Presentation only: every handler, request, field, limit and privacy rule is the one the page had. */
 export function AdvisorScreen({
   view,
-  actions, coverage,
+  actions, coverage, tools,
 }: {
   view: AdvisorView;
+  tools: GuidedTools;
   coverage?: { view: CoverageActionView; actions: Pick<ReturnType<typeof createCoverageActionController>, "acknowledge" | "save" | "recover" | "check" | "dismiss"> };
   actions: {
     editQuestion: (s: string) => void;
@@ -113,13 +115,13 @@ export function AdvisorScreen({
         </CorpCard>
       ) : (
         <div className="oa-layout">
-          <nav className="oa-tools" aria-label="Rondo AI tools">
+          {TOOLS.some(tool => tools[tool.key]) && <nav className="oa-tools" aria-label="Rondo AI tools">
             <CorpCard as="div">
               <CorpRows>
-                {TOOLS.map(tool => <li key={tool.href}><CorpRow one href={tool.href} icon={tool.icon} title={tool.title} /></li>)}
+                {TOOLS.filter(tool => tools[tool.key]).map(tool => <li key={tool.href}><CorpRow one href={tool.href} icon={tool.icon} title={tool.title} /></li>)}
               </CorpRows>
             </CorpCard>
-          </nav>
+          </nav>}
           <div className="oa-main">
             {current.attention && <AttentionSection briefing={current.attention} disabled={disabled} saving={view.busy === "review"} review={(id, disposition) => actions.reviewItem?.(id, disposition)} refresh={actions.refresh} clock={clock} />}
             <CorpSection id="oa-briefing" label="Live briefing"
@@ -147,7 +149,7 @@ export function AdvisorScreen({
                 <Sources sources={current.briefing.sources} clock={clock} />
               </CorpCard>
             </CorpSection>
-            <WorkflowControls date={workDate} disabled={disabled} inspect={tool => actions.inspect?.(tool)} />
+            <WorkflowControls weeklyEnabled={tools.weekly} date={workDate} disabled={disabled} inspect={tool => actions.inspect?.(tool)} />
             {coverage && <CoverageActionPanel view={coverage.view} actions={coverage.actions} />}
             <CorpSection id="oa-conversation" label="Conversation">
               <CorpCard as="div">
@@ -300,7 +302,7 @@ export function AdvisorScreen({
     </CorpPage>
   );
 }
-export function OwnerAdvisor() {
+export function OwnerAdvisor({ tools }: { tools: GuidedTools }) {
   const [view, setView] = useState<AdvisorView>(initialView);
   const ref = useRef<ReturnType<typeof createAdvisorController> | null>(null);
   const [coverageView, setCoverageView] = useState<CoverageActionView>({stage:"idle",result:null,acknowledged:false,message:"",lastSavedAt:null});
@@ -332,6 +334,7 @@ export function OwnerAdvisor() {
   }, []);
   return (
     <AdvisorScreen
+      tools={tools}
       view={view}
       coverage={{ view: coverageView, actions: {
         acknowledge: value => coverageRef.current?.acknowledge(value),

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { managementNavigationGroups, navigationForRole, sidebarActiveHref, sidebarNavigation } from "./navigation";
 import { ALL_MODULES_ON } from "./workspace-presentation/modules";
 

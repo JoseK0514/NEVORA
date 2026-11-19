@@ -1,12 +1,12 @@
 import { createElement, type ComponentProps } from "react";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from "@rstest/core";
 import { EyeIcon } from "@phosphor-icons/react/dist/ssr/Eye";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 
-vi.mock("next/link", () => ({ default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children) }));
-vi.mock("next/navigation", () => ({ usePathname: () => "/login" }));
+rs.mock("next/link", () => ({ default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children) }));
+rs.mock("next/navigation", () => ({ usePathname: () => "/login" }));
 
 import { AUTH_COPY } from "@/lib/auth-copy";
 import { ACCESS_COPY } from "@/components/access-recovery/copy";

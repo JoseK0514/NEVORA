@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { reviewOperationsCase, type CaseBinding } from './case-readiness';
 
 const now = '2026-11-11T12:10:00.000Z';

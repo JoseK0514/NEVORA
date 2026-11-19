@@ -1,5 +1,5 @@
 /** Owned SQL preflight; scripted/deterministic evidence is not model quality. */
-import { afterEach,beforeEach,expect,it } from 'vitest';
+import { afterEach,beforeEach,expect,it } from '@rstest/core';
 import { companyAccessFixture } from '@/test/integration/company-access-fixture';
 import { seedPartnerFixture } from '@/test/integration/owner-advisor-partner-fixture';
 import { resilienceBusinessSnapshot } from '@/test/integration/owner-advisor-resilience-fixture';

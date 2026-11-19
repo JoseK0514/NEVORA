@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, rs } from '@rstest/core';
 import { existsSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { createHash, randomBytes } from 'node:crypto';
@@ -172,7 +172,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed constraint successor with 
     if (!client) throw Error('Owned client unavailable');
     const expectedFenceGeneration = await unarmedFence();
     const native = client.query.bind(client); let commits = 0;
-    const spy = vi.spyOn(client, 'query');
+    const spy = rs.spyOn(client, 'query');
     spy.mockImplementation((async (...args: unknown[]) => {
       const q = args[0], text = typeof q === 'string' ? q : q && typeof q === 'object' ? (q as { text?: unknown }).text : undefined;
       if (typeof text === 'string' && text.trim().toUpperCase() === 'COMMIT') { commits++; if (referenceSql) await sameSnapshotSql(native); }
@@ -577,7 +577,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL18 typed constraint successor with 
     const calls: { protocol: unknown; queries: string[] }[] = [];
     const recheck = async (protocol?: Readonly<{ manifestDigest: string; actor: string | null }>) => {
       const queries: string[] = [], native = Client.prototype.query.bind(c);
-      const spy = vi.spyOn(c, 'query').mockImplementation(((...args: unknown[]) => {
+      const spy = rs.spyOn(c, 'query').mockImplementation(((...args: unknown[]) => {
         const value = args[0]; queries.push(typeof value === 'string' ? value : (value as { text: string }).text);
         return Reflect.apply(native, c, args);
       }) as Client['query']);

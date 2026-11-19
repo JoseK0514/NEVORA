@@ -1,5 +1,5 @@
 import {sourceFixture} from './test-source';
-import {describe,it,expect,vi} from 'vitest';
+import {describe,it,expect,rs} from '@rstest/core';
 import Stripe from 'stripe';
 import {createWebhookHandler,createScheduledHandler,hostedEnvironmentBound,UNUSABLE_DATABASE_URL,observedFetch,type HostedRole} from './handlers';
 const secret='whsec_hosted_fixture';
@@ -44,10 +44,10 @@ describe('Neon sandbox webhook boundary',()=>{
  ])('fails closed for disabled or excessive-capability configuration %j',async patch=>{let writes=0;const h=createWebhookHandler({...env,...patch},async()=>{writes++;});expect((await h(webhook())).status).toBe(503);expect(writes).toBe(0);});
  it('does not expose database/provider errors',async()=>{const r=await createWebhookHandler(env,async()=>{throw Error('private fixture credential');})(webhook());expect(r.status).toBe(503);expect(await r.text()).not.toContain('private fixture credential');});
  it('bounds a caller that stops sending the signed body',async()=>{
-  vi.useFakeTimers();let writes=0;
+  rs.useFakeTimers();let writes=0;
   try{const input=new Request('https://fictional.invalid/webhooks/stripe',{method:'POST',headers:{'stripe-signature':'fixture'},body:new ReadableStream(),duplex:'half'} as RequestInit);
-   const pending=createWebhookHandler(env,async()=>{writes++;})(input);await vi.advanceTimersByTimeAsync(10000);const r=await pending;expect(r.status).toBe(408);expect(writes).toBe(0);
-  }finally{vi.useRealTimers();}
+   const pending=createWebhookHandler(env,async()=>{writes++;})(input);await rs.advanceTimersByTimeAsync(10000);const r=await pending;expect(r.status).toBe(408);expect(writes).toBe(0);
+  }finally{rs.useRealTimers();}
  });
 });
 const {STRIPE_WEBHOOK_SECRET:_receiverSecret,...workerEnv}=env;
@@ -87,7 +87,7 @@ describe('explicit production signup provisioner profile',()=>{
   for(const role of ['commercequeue','commercereconcile','stripewebhook','commerceapi','commerceauthority','workforcemonitor'] as const)expect(hostedEnvironmentBound(trial,role)).toBe(false);
  });
  it('records only bounded production task and HTTP outcome fields',async()=>{
-  const lines:string[]=[];const log=vi.spyOn(console,'info').mockImplementation((line:string)=>{lines.push(line);});
+  const lines:string[]=[];const log=rs.spyOn(console,'info').mockImplementation((line:string)=>{lines.push(line);});
   try{
    const handler=createScheduledHandler('provisioner',production,async()=>({state:'completed',private:'fictional-private-payload'}));
    await observedFetch('provisioner',handler,production)(tick('provisioner',{trigger:{type:'schedule',id:'trigger-fixture',name:'nevora-production-provisioner'}}));

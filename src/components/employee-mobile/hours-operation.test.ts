@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {HoursCorrectionOperation} from './hours-operation';
 import type {HoursCorrectionPayload} from '@/lib/employee-hours';
 const payload=():HoursCorrectionPayload=>({basis:'a'.repeat(32),command:{operationId:'c3849d11-f86e-4f08-8b90-84a8e2053290',kind:'MISSING_ENTRY',locationId:'loc-1',proposedStartAt:'2026-10-26T13:00:00Z',proposedEndAt:'2026-10-26T21:00:00Z',reason:'Forgot to clock in'}});
