@@ -15,7 +15,7 @@ it('defines an exact release PostgreSQL gate for non-Clocker integration suites'
   expect(gate).toContain('ref: ${{ github.event.pull_request.head.sha || github.sha }}');
   // On pull_request, github.sha is GitHub's synthetic merge commit; every checkout and receipt must name the PR head.
   expect(workflow).not.toContain('${{ github.sha }}');
-  expect(workflow).toContain('branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]');
+  expect(workflow).toContain('branches: [development, main, claude-codex-collab-nevora, "phase-c/**", "release/**", "codex/verify-preview-33"]');
 });
 
 it('release PostgreSQL runner includes every omitted critical SQL suite', async () => {

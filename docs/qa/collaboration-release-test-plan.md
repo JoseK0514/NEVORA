@@ -196,6 +196,8 @@ The two local onboarding timeouts passed in separate owned PostgreSQL runs at th
 
 The candidate's inventory records the observed collaboration head and retains its held status. Use the existing `candidate/backend-completion/**` tag workflow to verify the new commit while preserving the branch head recorded by that inventory check.
 
+On candidate `58be11dc`, GitHub passed the revised Owner Advisor business-answer test in Chromium and WebKit, full onboarding backend, and Mobile Access. The wider Owner Advisor gate recorded Chromium timeouts in business lifetime and weekly plan setup. CI validation found the old branch-list assertion and stale guide bindings. Keep these results attached to that tag when verifying its successor. [Candidate CI](https://github.com/JoseK0514/NEVORA/actions/runs/44633079927) · [Mobile Access](https://github.com/JoseK0514/NEVORA/actions/runs/44633079836)
+
 ```bash
 NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE="$NEVORA_QA_ROOT/owner-advisor" \
   node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts \
