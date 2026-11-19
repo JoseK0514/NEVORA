@@ -1,4 +1,8 @@
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import { readPortalLanguage } from "@/lib/activation/language.server";
+import { listEmployees } from "@/lib/data/employees";
+import { ownerNames } from "@/components/owner-only-notice";
+import { permissionCopy } from "@/components/workforce/permission-copy";
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import { TimeOffReviewActions } from "@/components/time-off-review-actions";
@@ -74,6 +78,11 @@ function sentLabel(createdAt: string | undefined, timeZone: string) {
 /** F6 / Release 1 (board O-RequestDetail): one request on its own page. Who asked (Waiting), the dates and their note, that
  * week's schedule, who else is off then, and Decline / Approve. Back names where the manager came from; the decision
  * returns there (D-5). */
+/* SCRUM-215 (contract: Team Time Off): an approval larger than the person's balance leaves the request waiting. A refused
+ * or stale decision names both causes: the request changed, or it reaches a location outside this Manager's grant. */
+const PTO_BALANCE = "Not approved. This request needs more paid time off than the person has left, so it’s still waiting. Decline it, or ask an Owner to adjust the balance first.";
+const REVIEW_REFUSED = "That decision wasn’t saved. The request may have changed, or it covers a location where an Owner decides time off. Check it and decide again, or ask an Owner.";
+
 function FocusedReview({ request, origin, error, others, timeZone }: { request: PendingRequest; origin: Origin; error?: string; others: DecidedRequest[] | null; timeZone: string }) {
   const week = weekStartFor(request.startDate);
   const dates = requestDates(request);
@@ -86,7 +95,7 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
     <CorpNav back={backTo(origin)} title="Time-off request" titleId="request-nav-title" phoneOnly />
     {/* Closing F1 (NV-268): the card below names the person, so the band doesn't repeat it. */}
     <CorpTitle id="request-title" title="Time-off request" wide />
-    {error ? <p className="c-error" role="alert">The request may have changed. Check it and decide again.</p> : null}
+    {error ? <p className="c-error" role="alert">{error === "pto-balance" ? PTO_BALANCE : "The request may have changed. Check it and decide again."}</p> : null}
     {/* Review B6 (NV-093): one request card: who and its amber Waiting status, the dates, their note and when it was sent,
       * then that week's schedule and who else is off as rows of the same card. */}
     <CorpCard ariaLabel={`Time off for ${request.employeeName}`}>
@@ -140,7 +149,16 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
   const proof = await requireSessionMutationProof();
   const source=await listWorkforceLeave(proof, selected.status);
-  if(source.state==='unavailable')return <OperationalUnavailable title="Team time off unavailable" reason={source.reason} scoped/>;
+  if(source.state==='unavailable'){
+    // SCRUM-215: a Manager refused here lacks the Approve time off grant at every location they manage; say so and who decides.
+    let closed:{title:string;line:string;lang:'en'|'es'}|undefined;
+    if(source.reason==='access_denied'&&proof.employee.role==='MANAGER'){
+      let lang:'en'|'es'='en';try{lang=(await readPortalLanguage(proof)).language;}catch{/* English */}
+      const owners=await listEmployees().then(list=>ownerNames(list.filter(e=>e.role==='OWNER'&&e.active!==false).map(e=>`${e.firstName} ${e.lastName}`.trim()))).catch(()=>null);
+      const words=permissionCopy(lang);closed={title:words.leaveDeniedTitle,line:words.leaveDenied(owners??(lang==='es'?'Un dueño':'An Owner')),lang};
+    }
+    return <OperationalUnavailable title="Team time off unavailable" reason={source.reason} scoped closed={closed}/>;
+  }
   const requests=source.data;
 
   const focused = selected.status === "PENDING" && requestId ? requests.find(request => request.id === requestId) : undefined;
@@ -174,7 +192,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
       {/* R12: the kit's segmented control (its thumb slides once the round-2 kit lands). */}
       <CorpSegments label="Time off sections" items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, current: selected.id === item.id,
         label: item.id === "pending" && waiting ? `Waiting (${waiting})` : item.label }))} />
-      {error ? <p className="q-error q-first" role="alert">That decision wasn’t saved. The request may have changed; check it and decide again.</p> : null}
+      {error ? <p className="q-error q-first" role="alert">{error === "pto-balance" ? PTO_BALANCE : REVIEW_REFUSED}</p> : null}
       {reviewed ? <p className="q-help q-first" role="status">Decision saved.</p> : null}
       {/* Closing F1 (NV-077): each waiting row carries the staffing check and the compact Decline / Approve, as on Things to
         do (this replaces Release 1's "no decision in the list"; the row still opens the request with its shifts). */}

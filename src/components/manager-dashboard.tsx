@@ -5,7 +5,7 @@ import { WhosWorkingCorp } from "./whos-working-corp";
 import { TeamOverviewCorp } from "./team/team-overview";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
 import {HomeActionCenterProvider} from './manager-action-center';
-import {OwnerSetupCorpLive} from './owner-setup-card';
+import {FirstWeekSetupCard} from './first-week-setup';
 import {OwnerBillingNotice} from './owner-b/billing-notice-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
 import { durationSentence } from "@/lib/duration-format";
@@ -69,6 +69,8 @@ export type DashboardRevisionItem = {
 } | null;
 
 type Props = {
+  /** SCRUM-218: the language of the Owner's first-week setup card (the rest of Home is English today). */
+  setupLang?: 'en' | 'es';
   /** MK1: the next payday from My pay's pay schedule, for Home's Coming up row. */
   nextPay?: NextPay;
   payrollStatus?: HomePayrollStatus | null;
@@ -251,7 +253,7 @@ function PremiumOverview(props: Props) {
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
   return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
     owner={props.role === 'OWNER'} initialItems={props.managerActions}>
-    <PremiumHomeLive {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={props.role === 'OWNER' ? <OwnerSetupCorpLive locationCount={props.totalLocations} payroll={!!props.payrollStatus}/> : null}
+    <PremiumHomeLive {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={props.role === 'OWNER' ? <FirstWeekSetupCard lang={props.setupLang}/> : null} setupCard setupHoldsItems={false}
       billing={props.role === 'OWNER' ? <OwnerBillingNotice timeZone={props.timeZone}/> : null} />
   </SharedHomeRead>;
 }

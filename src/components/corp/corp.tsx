@@ -34,8 +34,9 @@ const withCount = (label: ReactNode, count?: ReactNode) => count === undefined |
   ? countLabel(label) : <>{label}<CorpCount>{count}</CorpCount></>;
 
 /** A page on the grey canvas: 16px gutters, 12px between cards. */
-export function CorpPage({ children, label, labelledBy, className }: { children: ReactNode; label?: string; labelledBy?: string; className?: string }) {
-  return <div className={className ? `c-page ${className}` : "c-page"} data-nv-page="" data-corp="" aria-label={label} aria-labelledby={labelledBy}>{children}</div>;
+/** `lang`: a page (or card) written in another language than the document's (SCRUM-214/215 screens in Spanish). */
+export function CorpPage({ children, label, labelledBy, className, lang }: { children: ReactNode; label?: string; labelledBy?: string; className?: string; lang?: string }) {
+  return <div className={className ? `c-page ${className}` : "c-page"} data-nv-page="" data-corp="" aria-label={label} aria-labelledby={labelledBy} lang={lang}>{children}</div>;
 }
 
 /** The page title (round 2, R1/R4): 24/30 600 on a phone, 28/34 on tablets and desktop, in a 40px title row at the same
@@ -53,13 +54,13 @@ export function CorpTitle({ title, sub, actions, id, wide, subAside, focusTarget
 /** A white card. With a label it opens with a 44px header row (label left; a link, pill or text right). `count` follows the
  * label as "Label N" (Nov 1 upscale). `failed`: part of the card's data didn't load, so the header's right side says
  * "Couldn't load · Try again" (Try again refreshes the page's data) in place of `aside`. */
-export function CorpCard({ label, count, aside, children, footer, id, ariaLabel, alert, failed, as = "section" }: {
-  label?: ReactNode; count?: ReactNode; aside?: ReactNode; children?: ReactNode; footer?: ReactNode; id?: string; ariaLabel?: string; alert?: boolean; failed?: boolean; as?: "section" | "div";
+export function CorpCard({ label, count, aside, children, footer, id, ariaLabel, alert, failed, as = "section", lang }: {
+  label?: ReactNode; count?: ReactNode; aside?: ReactNode; children?: ReactNode; footer?: ReactNode; id?: string; ariaLabel?: string; alert?: boolean; failed?: boolean; as?: "section" | "div"; lang?: string;
 }) {
   const headingId = id && label ? `${id}-label` : undefined;
   const Tag = as;
   const right = failed ? <CorpLoadFailed /> : aside;
-  return <Tag id={id} className={alert ? "c-card c-card--alert" : "c-card"} aria-labelledby={ariaLabel ? undefined : headingId} aria-label={ariaLabel}>
+  return <Tag id={id} className={alert ? "c-card c-card--alert" : "c-card"} aria-labelledby={ariaLabel ? undefined : headingId} aria-label={ariaLabel} lang={lang}>
     {label ? <div className="c-card__head"><h2 className="c-card__label" id={headingId}>{withCount(label, count)}</h2>{right ? <div className="c-card__aside">{right}</div> : null}</div> : null}
     {children}
     {footer ? <div className="c-card__foot">{footer}</div> : null}

@@ -222,3 +222,24 @@
   /* Final regression review #7: Availability draws its faces as the quiet list's .q-av (32px); they take the same 36px lead. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) #availability-people .q-row--av > .q-av:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex: none !important; width: 36px !important; height: 36px !important; border-radius: 18px !important; }
 }
+
+/* SCRUM-218 (Nov 19, 2026): first-week setup, the Owner's setup slot. A five-part track under the heading, then the five
+ * steps as the kit's rows, each opening its workflow: a done step is a green check with its "Complete" label, the next
+ * step a teal ring named "Next step", later steps a grey ring with "To do". The loading card is the same shape. */
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-count { font-variant-numeric: tabular-nums; white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup :is(.fw-track, .fw-skel__track) { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--b-space-4); margin: 0 var(--b-inset) var(--b-space-8); height: 6px; }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-track__seg { border-radius: var(--b-radius-pill); background: var(--b-line); }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-track__seg[data-done] { background: var(--b-green); }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-mark { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--b-line); color: var(--b-grey); font-size: 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-mark[data-next] { background: var(--b-teal-50, var(--b-line)); color: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-mark[data-done] { background: var(--b-green-50, var(--b-line)); color: var(--b-green); }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-mark svg { width: 16px; height: 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel { display: flex; flex-direction: column; padding-bottom: var(--b-space-12); }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__track { border-radius: var(--b-radius-pill); background: var(--b-line); }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__row { display: flex; align-items: center; gap: var(--b-space-12); min-height: 56px; padding: 0 var(--b-inset); }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__bar { display: block; height: 12px; border-radius: var(--b-radius-pill); background: var(--b-line); }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__bar--dot { flex: none; width: 32px; height: 32px; border-radius: 50%; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .app-shell[data-nv-b] #fw-setup :is(.fw-track, .fw-skel__track) { margin-left: var(--b-inset-wide); margin-right: var(--b-inset-wide); }
+  :is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__row { padding: 0 var(--b-inset-wide); }
+}

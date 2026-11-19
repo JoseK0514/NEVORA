@@ -18,6 +18,7 @@ import {EmployeeDashboard} from '@/components/employee-dashboard';
 import type {HomeWeek} from '@/components/employee-home-quiet';
 import {readEmployeeWeeklyReview} from '@/lib/data/employee-weekly-review.server';
 import {ManagerDashboard,type ManagerDashboardView} from '@/components/manager-dashboard';
+import {readPortalLanguage} from '@/lib/activation/language.server';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {homeAuthority} from '@/lib/data/employee-home.server';
 import {isManagerRole} from '@/lib/auth/permissions';
@@ -110,8 +111,12 @@ export default async function DashboardPage({
   // MK1: Home's "Next payday" row, from the date My pay shows (none when pay statements are off or there's no schedule).
   const nextPay=view==='overview'&&modules.payStatements?await readNextPay(workspace.timeZone):null;
   const payrollStatus=session.role==='OWNER'&&view==='overview'&&modules.payStatements&&readFeatureFlags(process.env).payroll?await readHomePayrollStatus(proof):null;
+  // SCRUM-218: the Owner's first-week setup card speaks the Owner's portal language (saved choice, then this device's).
+  let setupLang:'en'|'es'='en';
+  if(session.role==='OWNER'&&view==='overview'){try{setupLang=(await readPortalLanguage(proof)).language;}catch{/* English */}}
   return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={scopedObservation(source.state==='ready'?source:null)}>
     <ManagerDashboard
+      setupLang={setupLang}
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}
       correctionAuthority={reviewAuthority}

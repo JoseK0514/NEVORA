@@ -30,6 +30,9 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
 import { formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
 import "../../settings/settings-corp.css";
+import { PlanningWeekFields } from "@/components/workforce/planning-week";
+import { WEEKDAYS } from "@/components/workforce/weekdays";
+import { readWorkforceSettings } from "@/lib/workforce/settings.server";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
 export const metadata = { title: "Scheduling rules" };
@@ -62,6 +65,8 @@ export default async function ScheduleSettingsPage({ searchParams }: {
     return {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions,workspace,weekStart,weekSettings};
   });
   if(source.state==='unavailable')return <OperationalUnavailable title="Scheduling rules unavailable" reason={source.reason}/>;
+  // SCRUM-215: the planning calendar, through the same read GET /api/workforce/settings uses. A failed read shows the row as unavailable.
+  const calendar=await readWorkforceSettings(await requireSessionMutationProof()).then(settings=>settings.calendar).catch(()=>null);
   const {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions,workspace,weekStart,weekSettings}=source.data;
   const weekOrder = [1, 2, 3, 4, 5, 6, 0];
   const coverageGroups = [...new Set(coverageWindows.map(window => window.locationId))].map(locationId => {
@@ -109,6 +114,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
           : params.error === "invalid_staffing" ? "Minimum staff must be a whole number from 1 to 100, and each new location needs a lead choice."
           : params.error === "invalid_hours" ? "Targets and maximums must be from 0 to 168 hours."
           : params.error === "duplicate_window" ? "That coverage period already exists."
+          : params.error === "ACCESS_DENIED" ? "That change isn’t part of your access. Ask an Owner to make it."
           : "Enter a day, a start and end time, and staff numbers if you need them."}</p> : null}
       {params.deadlineSaved ? <p className="q-help q-first form-success" role="status">Availability deadline saved.</p> : null}
       {params.saved ? <p className="q-help q-first form-success" role="status">Scheduling rules saved.</p> : null}
@@ -193,6 +199,14 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                 </ul>
               </details>
             ))}
+          </div>
+        </details>
+        {/* SCRUM-215: the planner's seven-day window (planning calendar). Owners change it; Managers read it. */}
+        <details className="q-details q-rule" open={params.open === "week" || undefined}>
+          <Summary title="Week starts on" detail="The days Schedule shows together" value={calendar ? WEEKDAYS.en[calendar.startsOn] : "Unavailable"} />
+          <div className="q-rule__body" id="rules-week-start">
+            {calendar ? <PlanningWeekFields startsOn={calendar.startsOn} revision={calendar.revision} canEdit={session.role === "OWNER"} owner="An Owner" />
+              : <p className="q-error" role="alert">Couldn’t load this setting. Reload the page to try again.</p>}
           </div>
         </details>
         <details className="q-details q-rule" open={open.deadline || undefined}>
