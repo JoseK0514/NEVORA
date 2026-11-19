@@ -3,7 +3,7 @@ import {Client} from 'pg';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
-import {companyAccessFixture} from './company-access-fixture';
+import {companyAccessFixture,grantFixtureWorkforcePermission} from './company-access-fixture';
 import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {mutateTimecard,readTimecards} from '../../lib/timecards/service';
 import {submitTimeCorrection,reviewTimeCorrection} from '../../lib/time-corrections/service';
@@ -25,6 +25,7 @@ async function choose(f:Awaited<ReturnType<typeof companyAccessFixture>>,mode:'C
  expect((await assignOperationalScope(f.owner,'manager',mode==='REVOKE'?{...base,action:'REVOKE'}:{...base,action:'ASSIGN',scope:mode==='COMPANY'?{mode,locationIds:[]}:{mode,locationIds:['loc-1']}},f.db.executor)).state).toBe('saved');
 }
 async function setup(){const f=await companyAccessFixture();ctx.ex=f.db.executor;ctx.proof=f.manager;try{
+ await grantFixtureWorkforcePermission(f,'REVIEW_TIME_EXCEPTION','loc-2');
  await f.q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('review-private-b','Private B','Employee','NONE','EMPLOYEE','loc-2');
  INSERT INTO employee_location_eligibility VALUES('target','loc-1'),('target','loc-2');
  INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'target',clock_timestamp()+interval '1 hour');
