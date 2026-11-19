@@ -64,7 +64,7 @@ export async function runScenario({app,page,context,engine,width,evidenceDirecto
  const confirmChange=async kind=>{const before=await operationCount();const group=panel.getByRole('group',{name:kind==='Reset'?'Get a new calendar link?':'Turn off your calendar link?',exact:true});await group.waitFor();assert.equal(await operationCount(),before,'Confirmation precedes the calendar mutation');await group.getByRole('button',{name:kind==='Reset'?'Get a new link':'Turn off link',exact:true}).click();};
  // The status pill names the link's state (Off, Active, Revoked) once the current status is read.
  const pills={none:'Off',active:'Active',revoked:'Turned off'};
- const state=async kind=>{await page.locator(`[data-calendar-setting][data-calendar-state="${kind}"]`).waitFor({state:'attached'});await panel.locator('.c-card__aside .c-pill,.b-card__h .b-chip').first().getByText(pills[kind],{exact:true}).waitFor();};
+ const state=async kind=>{await page.locator(`[data-calendar-setting][data-calendar-state="${kind}"]`).waitFor({state:'attached'});await panel.locator('.c-card__aside .c-pill,.b-card__h :is(.b-chip,.b-status)').first().getByText(pills[kind],{exact:true}).waitFor();};
  const noUrl=async()=>assert.equal(await panel.locator('textarea').count(),0);
  let firstUrl,secondUrl,firstBody;
  // This non-secret probe MUST run before any real test capability is issued.
