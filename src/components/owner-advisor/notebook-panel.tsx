@@ -147,8 +147,8 @@ export function NotebookPanel({ notebook, date, disabled, change, selectTask, in
         Saved goals or tasks changed elsewhere. Your draft is preserved. Review the current saved items above before replacing them.
       </BCallout>}
       <div className="oa-acts oa-acts--end">
-        <CorpButton kind="secondary" size="md" className={quiet} disabled={disabled} onClick={() => setDraft(null)}>Discard edit</CorpButton>
         <CorpButton type="submit" kind="secondary" size="md" className="b-rowact b-rowact--go" disabled={disabled || stale}>{goalDraft ? "Save goal" : "Save task"}</CorpButton>
+        <CorpButton kind="secondary" size="md" className={quiet} disabled={disabled} onClick={() => setDraft(null)}>Discard edit</CorpButton>
       </div>
     </form>}
   </div>;
