@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
+import {useCallback,useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {RecoveryRequest} from './recovery-request';
 import {AssistedRecovery} from './assisted-recovery';
 import {RecoveryReset} from './recovery-reset';
@@ -28,15 +28,24 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
  const proofInput=useRef<HTMLInputElement>(null);
  const incomingProof=useRef<string|null>(null);
  const generation=useRef(0),active=useRef<AbortController|null>(null),sending=useRef(false);
+ const retire=useCallback(()=>{
+  generation.current++;active.current?.abort();active.current=null;
+  setIssued(null);setMessage('');setReference(null);setBusy(false);sending.current=false;
+ },[]);
  useEffect(()=>{
-  const receiveProof=()=>{if(kind!=='reset')return;const token=new URLSearchParams(window.location.hash.slice(1)).get('proof');if(!token)return;setLinkProof(isPublicAccountProof(token));incomingProof.current=token;setDone(false);setMessage('');if(proofInput.current){proofInput.current.value=token;incomingProof.current=null;}history.replaceState(null,'',window.location.pathname);};
+  const receiveProof=()=>{if(kind!=='reset')return;const token=new URLSearchParams(window.location.hash.slice(1)).get('proof');if(!token)return;
+   // A new link owns a new observer and draft. Aborting A does not prove its
+   // already-issued command was undone; even an unabortable late reply is fenced.
+   retire();proofInput.current?.form?.reset();
+   setLinkProof(isPublicAccountProof(token));incomingProof.current=token;setDone(false);
+   if(proofInput.current){proofInput.current.value=token;incomingProof.current=null;}history.replaceState(null,'',window.location.pathname);};
   const frame=requestAnimationFrame(receiveProof);window.addEventListener('hashchange',receiveProof);
   const stop=()=>{generation.current++;active.current?.abort();};
-  const clear=()=>{stop();setIssued(null);setMessage('');setReference(null);setBusy(false);sending.current=false;};
+  const clear=retire;
   const hidden=()=>{if(document.visibilityState==='hidden')clear();};
   window.addEventListener('pagehide',clear);window.addEventListener('offline',clear);if(kind==='assisted')window.addEventListener('blur',clear);document.addEventListener('visibilitychange',hidden);
   return()=>{stop();cancelAnimationFrame(frame);window.removeEventListener('hashchange',receiveProof);window.removeEventListener('pagehide',clear);window.removeEventListener('offline',clear);window.removeEventListener('blur',clear);document.removeEventListener('visibilitychange',hidden);};
- },[kind,actorId,mobileAccess]);
+ },[kind,actorId,mobileAccess,retire]);
  useEffect(()=>{if(!issued)return;const timer=setTimeout(()=>{setIssued(null);setMessage('This code expired. Verify identity again before issuing another.');},Math.max(0,Date.parse(issued.expiresAt)-Date.now()));return()=>clearTimeout(timer);},[issued]);
  async function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();if(sending.current)return;
@@ -63,6 +72,6 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
  }
  if(kind==='request')return <RecoveryRequest workspaceName={workspaceName} supportReference={reference} onReview={()=>{setDone(false);setMessage('');setReference(null);}} draft={requestDraft} mobileAccess={mobileAccess} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
  if(kind==='assisted')return <AssistedRecovery supportReference={reference} hydrated={hydrated} busy={busy} message={message} issued={issued} employeeId={employeeId} from={from} timeZone={timeZone} pins={pins} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');setReference(null);}}/>;
- return <RecoveryReset workspaceName={workspaceName} supportReference={reference} mobileAccess={mobileAccess} linkProof={linkProof} onDifferentCode={()=>{setLinkProof(false);if(proofInput.current){proofInput.current.value='';proofInput.current.focus();}}} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
+ return <RecoveryReset workspaceName={workspaceName} supportReference={reference} mobileAccess={mobileAccess} linkProof={linkProof} onDifferentCode={()=>{retire();proofInput.current?.form?.reset();setLinkProof(false);if(proofInput.current){proofInput.current.value='';proofInput.current.focus();}}} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
   proofRef={input=>{proofInput.current=input;if(input&&incomingProof.current){input.value=incomingProof.current;incomingProof.current=null;}}}/>;
 }
