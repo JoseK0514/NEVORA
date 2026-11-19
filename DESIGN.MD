@@ -658,6 +658,23 @@ item names the lines it supersedes; line numbers are from the file before this s
   - *Private and short-lived.* A Rondo read stays on screen only for the lease the server gives it, renews while the
     page is in front, and hides when the person switches away ("Details hidden", "Show again").
   - *Kit.* A kit button (`b-btn`) never shows the browser's outset border on a corporate-kit page.
+- **Audit fixes (Nov 19, 2026; see `docs/product/review-2026-11-19-audit/README.md`).** From the desktop and mobile defect
+  audit of `bc75950a8`.
+  - *Clocker on short screens.* A landscape screen under 32 lines of text tall (512px at the default size, 600px wide and
+    up: a phone held sideways) keeps the side band, narrower (240 to 340px) and tighter, so the location, date, state,
+    time zone and tablet name stay in view; a name too long even for that scrolls inside the band and is never clipped.
+    Its PIN step puts the keypad beside the field, its message and Continue. A short phone (under 48 lines tall) tightens
+    the band and the card so the PIN step fits a 568px screen, and opening the PIN step scrolls just far enough to show
+    Continue. Keys and buttons keep the 56px floor; the tab order is unchanged.
+  - *Facts lines are never cut.* A row's facts line built from parts (place · state · last used) wraps between its parts
+    at every width; the two-line clamp under 360px does not apply to it.
+  - *Whole names in the schedule grid.* A person's name wraps in full in the Owner and Manager grids at every width, and a
+    long name makes its row taller. No ellipsis and no name that only a mouse tooltip shows.
+  - *A decision whose answer is lost.* Decline and Approve for time off (the request page, the Waiting list, Things to
+    do) never fall through to "Nothing was changed". The buttons step aside for an amber note: "Your decision isn’t
+    confirmed yet" / "The answer didn’t arrive, so it may already be saved. Check the request before you decide again."
+    with one check. The request's page then reads "Already approved" or "Already declined" with who and when, or the
+    buttons return under "This request is still waiting. Decide again."
 
 ## Previous direction (October 20, 2026; superseded)
 

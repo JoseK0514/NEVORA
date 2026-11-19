@@ -183,6 +183,9 @@ None blocks integration. Each report has its full list.
   the corporate kit) are `aae7c32fc`, built on `f9171d7c`; guide text `97c61303`, guides rebuilt in `513396a3`:
   [Rondo AI UI](../2026-11-18-claude-rondo-ai-ui.md). Joining it with Codex's candidate `21fd1235` conflicts in 15 files;
   the note lists them.
+- The Nov 19 desktop and mobile defect audit of `bc75950a8` (NV-AUDIT-01 to 05: Clocker PIN step and band on short
+  screens, tablet rows at 320px, whole names in the schedule grid, a lost time-off decision): UI fixes, before and
+  after evidence in Chromium and WebKit: [audit fixes](../../product/review-2026-11-19-audit/README.md).
 - The Support reference is switched on (`5cc1c838` and before, by the backend session), so the U11 note above is
   out of date.
 
