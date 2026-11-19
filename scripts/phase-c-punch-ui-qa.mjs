@@ -166,7 +166,7 @@ try{
   await q("UPDATE clocker_pin_sessions SET expires_at=clock_timestamp()-interval '1 second'");
   await startBreak(t);await t.getByRole('heading',{name:'Enter your PIN again',exact:true}).waitFor();
   assert.equal(await count(),before+8);checked(engine+': expired verification never creates a time record');
-  await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,before+8);await t.getByRole('button',{name:'Start break',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Send it again',exact:true}).count(),0);await startBreak(t);await success(t,'Break start');await done(t);
+  await t.getByRole('button',{name:'Start over',exact:true}).click();await verify(t);await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,before+8);await t.getByRole('button',{name:'Start break',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Send it again',exact:true}).count(),0);await startBreak(t);await success(t,'Break start');await done(t);
   // Responsive controls, keyboard confirmation and clear identity on Escape.
   for(const width of [320,375,390,430,768,1024,1440]){
    await t.setViewportSize({width,height:width<500?844:width===768?1024:900});await verify(t);await t.getByRole('button',{name:'End break',exact:true}).waitFor();
@@ -189,12 +189,12 @@ try{
   await t.evaluate(()=>{window.__restoreStorage=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(){throw new DOMException('Test storage denial','QuotaExceededError');};});
   await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'This tablet can’t save right now',exact:true}).waitFor();assert.equal(await count(),guardStart);
   await t.evaluate(()=>{IDBObjectStore.prototype.put=window.__restoreStorage;delete window.__restoreStorage;});
-  await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await idle(t);checked(engine+': blocked browser recovery storage prevents the request entirely');
+  await t.getByRole('button',{name:'Done',exact:true}).click();await idle(t);checked(engine+': blocked browser recovery storage prevents the request entirely');
   // A second tab changes the shared HttpOnly cookie. The old screen must not act as that employee.
   await verify(t);await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   const tab=await tablet.newPage();await goto(tab,'/clocker/2');await verify(tab,'3579',undefined,'PUNCH-B');await tab.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'Enter your PIN again',exact:true}).waitFor();assert.equal(await count(),guardStart);
-  await done(tab);await t.getByRole('button',{name:'Return to PIN',exact:true}).click();await verify(t);
+  await done(tab);await t.getByRole('button',{name:'Start over',exact:true}).click();await verify(t);
   await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,guardStart);await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();assert.equal(await t.getByRole('button',{name:'Send it again',exact:true}).count(),0);await t.getByRole('button',{name:'Clock in',exact:true}).click();await success(t,'Clock in');await done(t);
   assert.equal((await q("SELECT count(*)::int AS n FROM time_entries WHERE employee_id='PUNCH-B'"))[0].n,0);
   await verify(t);await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Confirm clock out',exact:true}).click();await success(t,'Clock out');await done(t);
