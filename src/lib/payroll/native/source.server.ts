@@ -146,6 +146,8 @@ export async function captureNativePayroll(seed: {
             const revision = database.profiles.find(e => e.employeeId === member.employeeId);
             if (!revision)
                 throw Error('WAGE_PROFILE_REQUIRED');
+            if (revision.wages.some(w => w.standardContextAttested === false))
+                throw Error('WAGE_CONTEXT_ATTESTATION_REQUIRED');
             const configuration = parseConfiguration({ schema: revision.schema, employeeId: revision.employeeId, wages: revision.wages, tax: revision.tax, deductions: revision.deductions, ...(revision.calculationPolicyReference !== undefined ? { calculationPolicyReference: revision.calculationPolicyReference } : {}) });
             usesOwnerPayrollPolicy({ ...configuration, payday: run.payday });
             // Wage/other fractions remain guarded; PR additionally permits only the explicit scoped professional binding.

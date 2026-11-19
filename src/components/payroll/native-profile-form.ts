@@ -1,5 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill';
-import type { NativeConfiguration, NativeYtd, NativeTaxProfile, NativeAuthorizedDeduction } from '@/lib/payroll/native/contracts';
+import type { NativeConfiguration, StoredConfiguration, NativeYtd, NativeTaxProfile, NativeAuthorizedDeduction } from '@/lib/payroll/native/contracts';
 import type { NativeWorkweekPolicy } from '@/lib/payroll/native/workweek-policy';
 import { dollarsToMinor } from './money';
 
@@ -28,7 +28,7 @@ function policy(f:FormData,employeeId:string,previous:NativeWorkweekPolicy|null)
   const startTime=kind==='STATUTORY_DEFAULT'?'00:01':text(f,'policyClock','the documented workweek time'); if(!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(startTime)) throw Error('Enter the documented time as HH:mm.');
   return {version:'PR_WORKWEEK_POLICY_V1',id:previous?.id??text(f,'policyId'),revision:(previous?.revision??0)+1,employeeId,effectiveFrom:instant(f,'policyFrom'),effectiveTo:end(f,'policyTo',true),boundary:{weekday:weekday as 1|2|3|4|5|6|7,startTime,timeZone:'America/Puerto_Rico'},federalWorkweek:'SAME_VERIFIED_BOUNDARY',federalEvidenceReference:text(f,'federalEvidence','the federal week evidence reference'),origin};
 }
-export function profileFromForm(f:FormData,employeeId:string,previous:NativeConfiguration|null):NativeConfiguration {
+export function profileFromForm(f:FormData,employeeId:string,previous:StoredConfiguration|null):NativeConfiguration {
   const wageIds=list(f,'wageId'); if(!wageIds.length) throw Error('Add an effective wage.');
   const wages=wageIds.map(id=>{ const p=`wage.${id}.`, before=previous?.wages.find(w=>w.id===id);
     const scoped=new FormData();for(const [key,value] of f)if(key.startsWith(p))scoped.append(key.slice(p.length),value);

@@ -230,7 +230,12 @@ export type NativeConfiguration = {
     tax: NativeTaxProfile | null;
     deductions: NativeAuthorizedDeduction[];
 };
-export type NativeConfigurationRevision = NativeConfiguration & {
+export type WageTerms = Pick<NativeWageProfile, 'id' | 'effectiveFrom' | 'effectiveTo' | 'locationIds' | 'hourlyRateMinor'>;
+/** The wage editor can record a rate before the other native payroll facts are known. */
+export type StoredWage = WageTerms & Partial<NativeWageProfile> &
+    Pick<NativeWageProfile, 'revision' | 'breakRules' | 'standardContextAttested' | 'evidenceReference'>;
+export type StoredConfiguration = Omit<NativeConfiguration, 'wages'> & { wages: StoredWage[] };
+export type NativeConfigurationRevision = StoredConfiguration & {
     revision: number;
     actorId: string;
     reason: string;
