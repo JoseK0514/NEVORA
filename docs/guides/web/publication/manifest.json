@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-18",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "7078d749f35fd2088ca0b1b5f2739eb425f3b4bc",
-  "applicationHash": "b5ee1590545ae0686e43b895bc0b8639a14a4c363288b7d381bfa74d247dfac6",
+  "sourceSha": "6559f2054dd070eff11f2b4e4c97b55a1938995d",
+  "applicationHash": "f752489ed0c9021b1366b90216002f00a9e816f48dcc0af10eaa0b08e0373131",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "8799983c53c4af7debb08cab54b6337c35f3a7dbe1abcb3f8c218c9c400a7e53"
@@ -107,7 +107,7 @@
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "d6841fdcb0529ec26bf994eea8e8b92a568ea5fa84a41c43483072a1f0b4c62f"
+          "sha256": "783a6544739355a11307fad005cf5680c446d29a8ee966b02779a7646282788a"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -204,7 +204,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "bd158a2a51dd3e78e380cb4aded819ab49de162c9901b224041133424d58f2c3",
+        "sha256": "2c8b030c44456fd930864bbe0a8355a3fb1ad2733221da4e23900ce549ebb491",
         "pageCount": 5
       }
     },
@@ -327,7 +327,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "8f44f3c28f69498daf44c3d56c91367be270b3a5831214bdfa10e81b315037c5",
+        "sha256": "ed590367193b499406fa8af1c8eb4927629d7c7b0e50fd3fe38169ac976f721b",
         "pageCount": 3
       }
     },
@@ -422,7 +422,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "492d307b8d9e6a6b6513b925726f1d87ed6453d449e291c54bc383dd5ad7dc00",
+        "sha256": "b52ec2f0b5678b1f3f423547ef510bbcc08681a93932b1821753ec58ada7c7b2",
         "pageCount": 3
       }
     },
@@ -565,7 +565,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "09df959cc5c78f57d03e5045837ddae8303c4f90309a44468a4a0bbc222fdf75",
+        "sha256": "8d5b65e8db9db904ecc9d58ed9837fda0b1e73dd46be1a8306933bcdbe3add8c",
         "pageCount": 4
       }
     },
@@ -595,7 +595,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "3b5c808812ffbc766c0043be243d22707aefd372193d61223fce0da62bb112e3"
+          "sha256": "6248eaa1f4da998a054cb158d48d62b094aa9edec12ae62b9640c97ec2965448"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -683,7 +683,7 @@
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "d6841fdcb0529ec26bf994eea8e8b92a568ea5fa84a41c43483072a1f0b4c62f"
+          "sha256": "783a6544739355a11307fad005cf5680c446d29a8ee966b02779a7646282788a"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -808,7 +808,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "28ac5105371cec28e4c271509d169d76c74e898d4da5dfc60ea1b222cf6b6690",
+        "sha256": "21a7f462e4e7cd0b351551ad8903f9e9c05d08a3608ab74f342a3506cb68a605",
         "pageCount": 6
       }
     },
@@ -914,7 +914,7 @@
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "d6841fdcb0529ec26bf994eea8e8b92a568ea5fa84a41c43483072a1f0b4c62f"
+          "sha256": "783a6544739355a11307fad005cf5680c446d29a8ee966b02779a7646282788a"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -983,7 +983,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "71fdd7fa487ffa40cb730ba3408c84b45ae9044c33d142a1a5ada493c26cd928",
+        "sha256": "a6810df53a7586886e2b3bad0983c7112b2a5ff4cacbe9902a500955a5a1ac77",
         "pageCount": 6
       }
     }
