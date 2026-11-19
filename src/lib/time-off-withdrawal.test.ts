@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseWithdrawalCommand} from './time-off-withdrawal';
 const id='dc6b44c9-6e3f-4f0e-890c-328067ebfe9e';
 it('binds withdrawal to exactly one immutable request and rejects mutable payload or changed identity',()=>{

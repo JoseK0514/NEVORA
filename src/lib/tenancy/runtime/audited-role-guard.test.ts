@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { lexSql } from '../inventory/sql-lexer';
 import { tokenizeDdl } from '../inventory/ddl';
 const source = readFileSync(resolve('src/lib/tenancy/runtime/audited-role-guard.sql'), 'utf8');

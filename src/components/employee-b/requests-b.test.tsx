@@ -1,9 +1,9 @@
-import {beforeEach, expect, it, vi} from 'vitest';
+import {beforeEach, expect, it, rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
-const fixture = vi.hoisted(() => ({read: null as unknown, paused: false}));
-vi.mock('@/app/app/exchange/actions', () => ({shiftChangeAction: vi.fn(), reconcileShiftChangeAction: vi.fn()}));
-vi.mock('@/app/app/employee-planning/actions', () => ({saveEmployeePlanningAction: vi.fn(), checkEmployeePlanningAction: vi.fn()}));
-vi.mock('../employee-mobile/use-planning', () => ({usePlanning: () => ({state: {snapshot: fixture.read ? {state: 'ready'} : null, paused: fixture.paused, refreshing: !fixture.read && !fixture.paused}, read: fixture.read, refresh: () => {}, accept: () => {}, allowed: () => true, live: {current: null}})}));
+const fixture = rs.hoisted(() => ({read: null as unknown, paused: false}));
+rs.mock('@/app/app/exchange/actions', () => ({shiftChangeAction: rs.fn(), reconcileShiftChangeAction: rs.fn()}));
+rs.mock('@/app/app/employee-planning/actions', () => ({saveEmployeePlanningAction: rs.fn(), checkEmployeePlanningAction: rs.fn()}));
+rs.mock('../employee-mobile/use-planning', () => ({usePlanning: () => ({state: {snapshot: fixture.read ? {state: 'ready'} : null, paused: fixture.paused, refreshing: !fixture.read && !fixture.paused}, read: fixture.read, refresh: () => {}, accept: () => {}, allowed: () => true, live: {current: null}})}));
 import {RequestsHubB, bTone} from './requests-b';
 import {exchangeChip} from './exchange-b';
 import {timeOffRange, timeOffSpan} from './timeoff-b';
@@ -22,7 +22,7 @@ it('reads a time-off request as its dates over its days and length, in today’s
   expect(timeOffRange(request('b', 'PENDING', '2026-10-30', '2026-11-02'))).toBe('Oct 30 – Nov 2');
   expect(timeOffRange(request('c', 'PENDING', '2026-11-13', '2026-11-13'))).toBe('Nov 13');
   expect(timeOffSpan(request('c', 'PENDING', '2026-11-13', '2026-11-13'))).toBe('Fri · All day');
-  expect(timeOffSpan(request('d', 'PENDING', '2026-11-13', '2026-11-13', ['09:00', '12:00']))).toBe('Fri · Part of day · 9:00 AM – 12:00 PM');
+  expect(timeOffSpan(request('d', 'PENDING', '2026-11-13', '2026-11-13', ['09:00', '12:00']))).toBe('Fri · 9:00 AM – 12:00 PM');
 });
 
 it('maps today’s request tones to the B chips and says when a swap waits on you', () => {
@@ -49,8 +49,9 @@ it('draws Time off’s list on the phone with the same rows, links and empty wor
   const html = plain(renderToStaticMarkup(<EmployeeTimeOff authority="a" selection="list" filter="waiting"/>)), b = onlyB(html);
   expect(b).toContain('>Time off</h1>');expect(b).toContain('aria-current="page" href="/app/requests"');expect(b).toContain(`href="/app/requests?requestId=${PENDING}"`);
   expect(b).toContain('aria-hidden="true">·</span>Thu – Sat</span>');expect(b).toContain('<span class="b-sr">, </span>3 days</span>');expect(b).toContain('href="/app/requests?tab=new"');
-  // Review B1 (NV-280): the Waiting tab shows no Waiting chip on its rows; the row's name still ends ", Waiting".
-  expect(b).not.toContain('b-chip--amber">Waiting<');expect(b).toContain('3 days, Waiting"');
+  // Phase 4 (EM-023): a waiting row ends with the amber Waiting chip, and the Waiting tab carries its count.
+  expect(b).toContain('b-chip--amber">Waiting<');expect(b).toContain('3 days, Waiting"');
+  expect(b).toContain('Waiting<span class="eb-segn"><span class="b-sr">, </span>1</span>');expect(b).toContain('>Decided</a>');
   expect(b).toContain('Open a request to see its details or withdraw it.');
   expect(withoutB(html)).toContain('c-meta">Waiting<');
   fixture.read = {view: 'timeoff', enabled: true, timeZone: 'America/New_York', data: {requests: []}};
@@ -64,6 +65,10 @@ it('keeps one request form in the page, drawn as the phone screen’s card, and 
   expect(html.match(/<form/g)).toHaveLength(1);expect(html).toContain('class="tof-form b-keep"');expect(b).not.toContain('<form');
   expect(b).toContain('>Request time off</h1>');expect(b).toContain('>Cancel</a>');expect(b).toContain('class="eb-form"');
   expect(html).toMatch(/<textarea[^>]*name="note"[^>]*maxLength="250"/);expect(html).toContain('Your manager approves it');
+  // Phase 9 (spec 2.2): the approval note is the kit's teal callout with the wait glyph (HourglassMedium, a title over its
+  // line), with no circle in a tint.
+  expect(html).toContain('<div class="eb-tof-approve"><div class="b-callout" data-tone="teal"><span class="b-callout__ic" aria-hidden="true">');
+  expect(html).toContain('<p class="b-callout__t">Your manager approves it</p><div class="b-callout__b">Keep your scheduled shifts until it is approved.</div>');
   expect(html).toContain('Your manager needs to approve this request. Keep your scheduled shifts until it is approved.');
   expect(html).toMatch(/<button class="c-btn c-btn--full" type="submit">Send request</);
 });

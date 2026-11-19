@@ -1,5 +1,5 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {clockerText,CLOCKER_COPY} from './clocker-copy';
 import {ClockerPresentation,ClockerText} from './clocker-language';
 import {ClockerReceipt,clockTime} from './clocker-receipt';
@@ -9,7 +9,7 @@ it('translates complete visible and accessible phrases, retaining interpolation'
 // Direction B (Nov 8, 2026) is the only Clocker presentation: the NEVORA_CLOCKER_UI_V2 switch and the Signature look were
 // retired, so this replaces the old "legacy presentation when V2 is off" check with the single kiosk's markers.
 it('renders the one Direction B kiosk: band, workspace chip without a logo, no retired V2 marker',()=>{const html=renderToStaticMarkup(<ClockerShell locationLabel="Office" timeZone="UTC" status="setup" workspaceName="Northside Café">Task</ClockerShell>);expect(html).toContain('data-clocker-kiosk=""');expect(html).toContain('Northside Café');expect(html).not.toContain('data-clocker-v2');expect(html).not.toContain('data-mobile-clocker');});
-it('shows the company logo chip instead of the workspace name when a logo is set',()=>{const html=renderToStaticMarkup(<ClockerShell locationLabel="Office" timeZone="UTC" status="connected" workspaceName="Northside Café" brand={{logoUrl:'/brand/logo.png'}}>Task</ClockerShell>);expect(html).toContain('src="/brand/logo.png"');expect(html).not.toContain('Northside Café');expect(html).toContain('Tablet registered');});
+it('shows the company logo chip instead of the workspace name when a logo is set',()=>{const html=renderToStaticMarkup(<ClockerShell locationLabel="Office" timeZone="UTC" status="connected" workspaceName="Northside Café" brand={{logoUrl:'/brand/logo.png'}}>Task</ClockerShell>);expect(html).toContain('src="/brand/logo.png"');expect(html).not.toContain('Northside Café');expect(html).toContain('Tablet connected');});
 it('scopes the approved shell, retains custom brand and translates setup semantics',()=>{const html=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerShell locationLabel="Office" timeZone="Asia/Tokyo" status="setup" brand={{style:{'--clocker-accent':'#662288'}}}>Task</ClockerShell></ClockerPresentation>);expect(html).toContain('data-clocker-kiosk=""');expect(html).toContain('lang="es"');expect(html).toContain('--clocker-accent:#662288');expect(html).toContain('Ir al registro de tiempo');expect(html).not.toContain('Tablet connected');});
 it('setup uses one complete language and truthful disabled timekeeping',()=>{const html=renderToStaticMarkup(<ClockerSetup initialLocale="es" locationKey="2" locationLabel="Office" timeZone="UTC"/>);expect(html).toContain('Configura esta tableta');expect(html).toContain('Código de configuración');expect(html).not.toContain('clocker-es');expect(html).not.toContain('Marcar entrada');});
 
@@ -57,9 +57,12 @@ it('orders the receipt date for each language and writes one Saved sentence',()=
  expect(clockTime(at,'America/Puerto_Rico','en-US')).toBe('Nov 9 · 10:47 PM');
  expect(clockTime(at,'America/Puerto_Rico','es-PR')).toMatch(/^9 nov\.? · 10:47\sp\.\sm\.$/);
  const es=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerReceipt action="CLOCK_IN" performedAt={at} commandId="c1" timeZone="America/Puerto_Rico" locale="es-PR" firstName="Ana"/></ClockerPresentation>);
- expect(es).toContain('Que tengas un buen turno, Ana.');expect(es).toMatch(/Registrado <time[^>]*>[^<]*p\.\sm\.<\/time> Esta pantalla se borra en 8 segundos\./);
+ expect(es).toContain('Que tengas un buen turno, Ana.');expect(es).toMatch(/Guardado el <time[^>]*>[^<]*p\.\sm\.<\/time> <span[^>]*>Se borra en 8 segundos\.<\/span>/);
  const en=renderToStaticMarkup(<ClockerReceipt action="CLOCK_OUT" performedAt={new Date().toISOString()} timeZone="UTC" locale="en-US" firstName="James"/>);
- expect(en).toMatch(/Saved <time[^>]*>\d{1,2}:\d{2}\s[AP]M<\/time>\. This screen clears in 8 seconds\./);expect(en).toContain('See you next time, James.');expect(en).not.toContain('Reference');
+ expect(en).toMatch(/Saved at <time[^>]*>\d{1,2}:\d{2}\s[AP]M<\/time>\. <span[^>]*>This screen clears in 8 seconds\.<\/span>/);
+ // Phase 8 (#11, #26): "Saved at" today, and in Spanish "a las" or "a la 1:05" with the short clear line.
+ const today=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerReceipt action="CLOCK_IN" performedAt={new Date().toISOString()} timeZone="UTC" locale="es-PR" firstName="Ana"/></ClockerPresentation>);
+ expect(today).toMatch(/Guardado a las? <time[^>]*>\d{1,2}:\d{2}\sp?a?\.\sm\.<\/time> <span[^>]*>Se borra en 8 segundos\.<\/span>/);expect(en).toContain('See you next time, James.');expect(en).not.toContain('Reference');
 });
 it.each([
  ['This punch reference belongs to a different punch. Ask your manager to check it.','Esta referencia pertenece a otra marcación. Pide a tu gerente que la revise.'],
@@ -109,19 +112,21 @@ it('gives a next step when punches are not enabled',()=>{
 it('renders the kiosk error and loading screens without a sign-in link',async()=>{
  const {ClockerErrorScreen,ClockerLoadingScreen}=await import('./clocker-fallback');
  const error=renderToStaticMarkup(<ClockerErrorScreen retry={()=>{}}/>);
- expect(error).toContain('data-clocker-kiosk=""');expect(error).toContain('lang="en"');expect(error).toContain('Something went wrong. Try again.');
- expect(error).toContain('If it keeps happening, ask a manager to record your time.');expect(error).toMatch(/<button[^>]*>.*Try again<\/button>/);
+ expect(error).toContain('data-clocker-kiosk=""');expect(error).toContain('lang="en"');expect(error).toContain('The time clock hit a problem');
+ // Phase 8 (#18, #28): the band keeps its clock, and the line under the heading is the one alert (no hidden copy).
+ expect(error).toContain('<time class=');expect(error).toMatch(/<p role="alert"[^>]*>Tap Try\u00a0again\. If it happens again, ask a manager to record your time\.<\/p>/);expect(error.match(/role="alert"/g)).toHaveLength(1);
+ expect(error).toMatch(/<button[^>]*>.*Try again<\/button>/);
  expect(error).not.toContain('<a ');expect(error).not.toMatch(/sign in/i);
  const loading=renderToStaticMarkup(<ClockerLoadingScreen/>);
  expect(loading).toContain('data-clocker-kiosk=""');expect(loading).toContain('aria-busy="true"');expect(loading).toContain('Checking this tablet…');expect(loading).not.toContain('<a ');
- expect(clockerText('es','Something went wrong. Try again.')).toBe('Algo salió mal. Inténtalo de nuevo.');
- expect(clockerText('es','If it keeps happening, ask a manager to record your time.')).toBe('Si sigue pasando, pide a un gerente que registre tu tiempo.');
+ expect(clockerText('es','The time clock hit a problem')).toBe('El registro de tiempo tuvo un problema');
+ expect(clockerText('es','Tap Try again. If it happens again, ask a manager to record your time.')).toBe('Toca Intentar de nuevo. Si vuelve a pasar, pide a un gerente que registre tu tiempo.');
 });
 // Nov 14 inspection (RA-13, JR-12): the paused page speaks the tablet's language and never offers sign-in on the tablet.
 it('renders the paused page in the given language with billing on the Owner’s own device',async()=>{
  const {ClockerPaused}=await import('./clocker-paused');
  const en=renderToStaticMarkup(<ClockerPaused from="/clocker/main" unavailable={false} initialLocale="en"/>);
- expect(en).toContain('lang="en"');expect(en).toContain('Clocker access is paused');expect(en).toContain('Open billing on your own device. This tablet starts working again when billing is settled.');
+ expect(en).toContain('lang="en"');expect(en).toContain('This time clock is paused');expect(en).toMatch(/<a [^>]*href="\/clocker\/main"[^>]*>Try again<\/a>/);expect(en).not.toContain('>Clocker<');expect(en).toContain('Open billing on your own device. This tablet starts working again when billing is settled.');
  expect(en).toContain('href="/clocker/main"');expect(en).not.toContain('/login');expect(en).not.toContain('Owner sign in');
  const es=renderToStaticMarkup(<ClockerPaused from={null} unavailable initialLocale="es"/>);
  expect(es).toContain('lang="es"');expect(es).toContain('No se puede comprobar el acceso');expect(es).toContain('Abre la facturación en tu propio dispositivo.');

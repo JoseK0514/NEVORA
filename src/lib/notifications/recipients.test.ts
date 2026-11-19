@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { buildNotificationIntents } from './recipients';
 import { DEFAULT_NOTIFICATION_POLICY as policy, planReminder } from './policy';
 import type { SourceSnapshot, ScheduleSourceSnapshot, RecipientAccess } from './types';

@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {unconfiguredPhotoPolicy} from '../photo-server/validation';
 import {photoSettingsDraft,photoSettingsUpdate,verifySavedPhotoPolicy} from './settings';
 

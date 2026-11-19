@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {coreCommandFromForm,createCommandFromForm,readInvitationStatus,readInvitationResult,readScopeResult,readEmployeeResult,readOperationalNavigation} from './commands';
 const operationId='d56eb98d-27d9-49c0-a214-937c596929ed';
 const employee={id:'E1',firstName:'A',lastName:'B',phone:'7875550100',email:'a@example.invalid',role:'EMPLOYEE' as const,active:true,primaryLocationId:'L1',eligibleLocationIds:['L1'],positionIds:[],updatedAt:'2026-10-14 12:00:00+00'};
@@ -23,3 +23,24 @@ it('rejects malformed scope and employee receipts instead of displaying success'
 const authority={state:'ready',employeeId:'M1',role:'MANAGER',source:'LEGACY_ADOPTION',scope:{mode:'COMPANY',locationIds:[]},scopeRevision:1,authority:'fictional',locations:[],observedAt:'2026-10-14T12:00:00Z',validForMs:15000};
 it.each([0,15001,Infinity,'15000',NaN])('does not accept an invalid navigation lifetime',validForMs=>{expect(()=>readOperationalNavigation({...authority,validForMs})).toThrow();});
 it('preserves an authorized Company location catalog without imposing selected-scope limits',()=>{const locations=Array.from({length:101},(_,i)=>({id:'L'+i,name:'Workplace '+i,shortName:'Place '+i}));const result=readOperationalNavigation({...authority,locations});expect(result.state==='ready'&&result.locations).toEqual(locations);});
+// Employment dates (migration 0068): optional, informational, and never a lifecycle change.
+function withDates(values:{hireDate?:string;terminationDate?:string;birthDate?:string},role='EMPLOYEE'){const f=fields(role);f.set('hireDate',values.hireDate??'');f.set('terminationDate',values.terminationDate??'');f.set('birthDate',values.birthDate??'');return f;}
+it('sends all three dates from the edit sheet, blanks as null, and keeps the account status as it was',()=>{
+ const c=coreCommandFromForm(withDates({hireDate:'2015-03-02',terminationDate:'2026-06-30'}),employee,null,'MANAGER',null,operationId);
+ expect(c.employmentDates).toEqual({hireDate:'2015-03-02',terminationDate:'2026-06-30',birthDate:null});
+ // A termination date is a record only: the command still carries the active status the form was opened with.
+ expect(c.profile.active).toBe(true);expect(c.managerTransitionScope).toBeUndefined();
+ expect(coreCommandFromForm(withDates({}),employee,null,'OWNER',null,operationId).employmentDates).toEqual({hireDate:null,terminationDate:null,birthDate:null});
+});
+it('leaves stored dates alone when the form has no date fields (Deactivate and Reactivate)',()=>{
+ expect(coreCommandFromForm(fields(),employee,null,'OWNER',null,operationId)).not.toHaveProperty('employmentDates');
+});
+it('refuses impossible dates and a termination before the hire date before sending',()=>{
+ expect(()=>coreCommandFromForm(withDates({birthDate:'2026-02-30'}),employee,null,'OWNER',null,operationId)).toThrow(/real dates/);
+ expect(()=>coreCommandFromForm(withDates({hireDate:'2020-05-10',terminationDate:'2020-05-09'}),employee,null,'OWNER',null,operationId)).toThrow(/before the hire date/);
+});
+it('adds dates to a new employee only when one is entered',()=>{
+ expect(createCommandFromForm(withDates({}),'OWNER',null,operationId)).not.toHaveProperty('employmentDates');
+ expect(createCommandFromForm(fields(),'OWNER',null,operationId)).not.toHaveProperty('employmentDates');
+ expect(createCommandFromForm(withDates({hireDate:'2017-01-26',birthDate:'2001-07-04'}),'MANAGER',null,operationId).employmentDates).toEqual({hireDate:'2017-01-26',terminationDate:null,birthDate:'2001-07-04'});
+});

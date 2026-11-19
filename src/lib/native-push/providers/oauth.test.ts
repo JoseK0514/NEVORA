@@ -1,14 +1,14 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 import {generateKeyPairSync, verify} from 'node:crypto';
 import type {NativeTransportRequest} from './transport';
-const forbidden = vi.hoisted(() => vi.fn(() => {throw Error('Real network forbidden in native OAuth tests');}));
-vi.mock('node:https', () => ({request: forbidden}));
-vi.mock('node:http2', () => ({connect: forbidden}));
+const forbidden = rs.hoisted(() => rs.fn(() => {throw Error('Real network forbidden in native OAuth tests');}));
+rs.mock('node:https', () => ({request: forbidden}));
+rs.mock('node:http2', () => ({connect: forbidden}));
 async function api() {const m = await import('./oauth').catch(() => ({})); expect(m).toHaveProperty('createGoogleAccessTokenSupplier'); return m as typeof import('./oauth');}
 const pair = generateKeyPairSync('rsa', {modulusLength: 2048});
 const now = new Date('2030-01-01T12:00:00.000Z');
 const config = {clientEmail: 'native-qa@fictional-test.iam.gserviceaccount.com', keyId: 'a'.repeat(40), privateKey: pair.privateKey, clock: () => new Date(now)};
-afterEach(() => {vi.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
+afterEach(() => {rs.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
 it('mints a real RS256 scoped JWT only to the fixed OAuth endpoint and caches the short-lived token', async () => {
   const m = await api(), requests: NativeTransportRequest[] = []; let elapsed = 0;
   const accessToken = m.createGoogleAccessTokenSupplier({...config, clock: () => new Date(now.getTime() + elapsed)}, async request => {
@@ -27,7 +27,7 @@ it('mints a real RS256 scoped JWT only to the fixed OAuth endpoint and caches th
   elapsed = 59 * 60000; await accessToken(new AbortController().signal); expect(requests).toHaveLength(2);
 });
 it.each([null, {...config, privateKey: pair.publicKey}, {...config, clientEmail: 'person@foreign.example'}, {...config, keyId: 'bad'}])('rejects missing or malformed service-account configuration before IO', async cfg => {
-  const transport = vi.fn(); await expect((await api()).createGoogleAccessTokenSupplier(cfg, transport)(new AbortController().signal)).rejects.toThrow('provider_configuration');
+  const transport = rs.fn(); await expect((await api()).createGoogleAccessTokenSupplier(cfg, transport)(new AbortController().signal)).rejects.toThrow('provider_configuration');
   expect(transport).not.toHaveBeenCalled();
 });
 it.each([
@@ -37,7 +37,7 @@ it.each([
   {access_token: 'bad\r\nfictional', token_type: 'Bearer', expires_in: 3600},
   {access_token: 'fictional-token', token_type: 'Other', expires_in: 3600},
 ])('rejects malformed successful OAuth responses without caching them', async body => {
-  const transport = vi.fn(async () => ({statusCode: 200, body: Buffer.from(JSON.stringify(body))}));
+  const transport = rs.fn(async () => ({statusCode: 200, body: Buffer.from(JSON.stringify(body))}));
   const supplier = (await api()).createGoogleAccessTokenSupplier(config, transport);
   await expect(supplier(new AbortController().signal)).rejects.toThrow('provider_response');
   await expect(supplier(new AbortController().signal)).rejects.toThrow('provider_response'); expect(transport).toHaveBeenCalledTimes(2);
@@ -53,14 +53,14 @@ it('does not let raw transport or credential diagnostics escape the token-suppli
 });
 it('bounds a stalled token exchange and refuses to cache its late result', async () => {
   const m = await api(); let resolve!: (value: {statusCode: number; body: Buffer}) => void;
-  const transport = vi.fn<import('./transport').NativeTransport>()
+  const transport = rs.fn<import('./transport').NativeTransport>()
     .mockImplementationOnce(() => new Promise<{statusCode: number; body: Buffer}>(yes => {resolve = yes;}))
     .mockResolvedValueOnce({statusCode: 200, body: Buffer.from('{"access_token":"fictional-fresh-token","token_type":"Bearer","expires_in":3600}')});
-  const supplier = m.createGoogleAccessTokenSupplier(config, transport); vi.useFakeTimers();
+  const supplier = m.createGoogleAccessTokenSupplier(config, transport); rs.useFakeTimers();
   const pending = supplier(new AbortController().signal), assertion = expect(pending).rejects.toThrow('transport_timeout');
-  await vi.advanceTimersByTimeAsync(8001); await assertion;
+  await rs.advanceTimersByTimeAsync(8001); await assertion;
   resolve({statusCode: 200, body: Buffer.from('{"access_token":"fictional-late-token","token_type":"Bearer","expires_in":3600}')});
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   const controller = new AbortController(); controller.abort(); await expect(supplier(controller.signal)).rejects.toThrow('transport_timeout');
   expect(transport).toHaveBeenCalledOnce();
   expect(await supplier(new AbortController().signal)).toBe('fictional-fresh-token');

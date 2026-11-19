@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import * as policy from './policy';
 import { CAPABILITIES } from './types';
 import type { Capability } from './types';

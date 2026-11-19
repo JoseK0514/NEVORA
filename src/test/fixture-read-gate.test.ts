@@ -1,6 +1,6 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {fixtureReadGate} from './integration/fixture-read-gate';
-afterEach(()=>vi.useRealTimers());
+afterEach(()=>{ rs.useRealTimers(); });
 const deferred=()=>{let resolve!:()=>void;const promise=new Promise<void>(ready=>resolve=ready);return{promise,resolve};};
 it('drains an active read before mutation and queues new reads until publication completes',async()=>{
  const first=deferred(),mutation=deferred(),events:string[]=[],gate=fixtureReadGate();
@@ -15,6 +15,6 @@ it('retains read errors and releases later reads after a failed fixture update',
  await expect(gate.mutate(async()=>{throw failure;},15000)).rejects.toBe(failure);expect(await gate.read(async()=>123)).toBe(123);
 });
 it('refuses to mutate when existing reads miss the unchanged deadline',async()=>{
- vi.useFakeTimers();const hold=deferred(),gate=fixtureReadGate();const running=gate.read(()=>hold.promise);const update=vi.fn(async()=>{});
- const assertion=expect(gate.mutate(update,15000)).rejects.toThrow('did not drain');await vi.advanceTimersByTimeAsync(15000);await assertion;expect(update).not.toHaveBeenCalled();hold.resolve();await running;
+ rs.useFakeTimers();const hold=deferred(),gate=fixtureReadGate();const running=gate.read(()=>hold.promise);const update=rs.fn(async()=>{});
+ const assertion=expect(gate.mutate(update,15000)).rejects.toThrow('did not drain');await rs.advanceTimersByTimeAsync(15000);await assertion;expect(update).not.toHaveBeenCalled();hold.resolve();await running;
 });

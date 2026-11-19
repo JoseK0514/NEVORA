@@ -1,8 +1,8 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {createClockerPhotoTransport,type PhotoFetcher} from './transport';
 const command={commandId:'90ef3e34-415b-4513-bb06-6017d35367e3',verificationId:'a'.repeat(64)};
 it('fences upload with its detached original policy and persisted assistance versions',async()=>{
- const request=vi.fn<PhotoFetcher>(async()=>Response.json({state:'stored'}));const snapshot={policyVersion:2,profileVersion:3};
+ const request=rs.fn<PhotoFetcher>(async()=>Response.json({state:'stored'}));const snapshot={policyVersion:2,profileVersion:3};
  const transport=createClockerPhotoTransport('fictional-location',request,snapshot);snapshot.profileVersion=999;
  await transport.upload(command,new Blob(['synthetic'],{type:'image/jpeg'}),new AbortController().signal);
  const options=request.mock.calls[0][1];const headers=new Headers(options.headers);
@@ -11,7 +11,7 @@ it('fences upload with its detached original policy and persisted assistance ver
  expect(options.body).toBeInstanceOf(Blob);
 });
 it('keeps capture upload inactive without a verified snapshot while preserving protected status and exception requests',async()=>{
- const request=vi.fn<PhotoFetcher>(async()=>Response.json({state:'missing'}));const transport=createClockerPhotoTransport('fictional-location',request);
+ const request=rs.fn<PhotoFetcher>(async()=>Response.json({state:'missing'}));const transport=createClockerPhotoTransport('fictional-location',request);
  expect(()=>transport.upload(command,new Blob(['synthetic'],{type:'image/jpeg'}),new AbortController().signal)).toThrow();expect(request).not.toHaveBeenCalled();
  await transport.reportMissing({...command,code:'PHOTO_ALTERNATIVE'},new AbortController().signal);
  expect(JSON.parse(String(request.mock.calls[0][1].body))).toEqual({operation:'missing',command:{...command,code:'PHOTO_ALTERNATIVE'}});

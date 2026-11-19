@@ -1,7 +1,7 @@
 import {executeManagerReminder,findManagerReminderOperation,readManagerReminderEligibility} from '../../lib/manager-reminders/service.server';
 import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {readFile} from 'node:fs/promises';
-import {afterEach,beforeEach,expect,it} from 'vitest';
+import {afterEach,beforeEach,expect,it} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
@@ -251,6 +251,24 @@ it('Phase 4 eligibility preserves activation hold without a queue or operation e
  try{
   await q("DO $$ BEGIN EXECUTE format('COMMENT ON DATABASE %I IS %L',current_database(),'phase4-held'); END $$");
   expect(await readManagerReminderEligibility(owner,c,db.executor)).toEqual({status:'held',reason:'activation_held'});
+  expect(await q("SELECT count(*)::int AS n FROM notifications WHERE purpose='REMINDER'")).toEqual([{n:0}]);
+  expect(await q('SELECT count(*)::int AS n FROM employee_attention_operations')).toEqual([{n:0}]);
+ }finally{await q(restore.sql);}
+});
+it('U10 a reminder pressed under the activation hold answers held, also when the hold starts between the read and the write',async()=>{
+ const c=await managerReminderFixture('AVAILABILITY');
+ const [restore]=await q("SELECT format('COMMENT ON DATABASE %I IS %L',datname,shobj_description(oid,'pg_database')) AS sql FROM pg_database WHERE datname=current_database()") as {sql:string}[];
+ const hold=()=>q("DO $$ BEGIN EXECUTE format('COMMENT ON DATABASE %I IS %L',current_database(),'phase4-held'); END $$");
+ try{
+  await hold();
+  expect(await executeManagerReminder(owner,c,db.executor)).toEqual({status:'held',reason:'activation_held'});
+  await q(restore.sql);
+  // The hold begins after the source read, just before the queue write: the write's own guard refuses it.
+  const racing={...db.executor,transaction:async(statements:Parameters<typeof db.executor.transaction>[0],signal?:AbortSignal)=>{
+   if(statements.some(s=>s.text.includes('manager-reminder-operation:')))await hold();
+   return db.executor.transaction(statements,signal);
+  }};
+  expect(await executeManagerReminder(owner,{...c,operationId:randomUUID()},racing)).toEqual({status:'held',reason:'activation_held'});
   expect(await q("SELECT count(*)::int AS n FROM notifications WHERE purpose='REMINDER'")).toEqual([{n:0}]);
   expect(await q('SELECT count(*)::int AS n FROM employee_attention_operations')).toEqual([{n:0}]);
  }finally{await q(restore.sql);}

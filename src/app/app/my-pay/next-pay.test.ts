@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import type { SqlExecutor, SqlStatement } from '@/lib/notifications/types';
 import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import type { PayrollSettingsRevision } from '@/lib/payroll/contracts';
 import * as reader from './next-pay';
 
-const { currentPayPeriod } = vi.hoisted(() => ({currentPayPeriod: vi.fn()}));
-vi.mock('@/lib/payroll/pay-calendar.server', () => ({ currentPayPeriod }));
+const { currentPayPeriod } = rs.hoisted(() => ({currentPayPeriod: rs.fn()}));
+rs.mock('@/lib/payroll/pay-calendar.server', () => ({ currentPayPeriod }));
 const proof: SessionMutationProof = {employee: {id: 'QAOWNER', firstName: 'Fictional', lastName: 'Owner', role: 'OWNER', primaryLocationId: 'loc-1'}, sessionTokenHash: 'a'.repeat(64)};
 const revision = (effectiveFrom = '2026-10-19', anchorDate = effectiveFrom, frequency = 'WEEKLY'): PayrollSettingsRevision => ({
   revision: 1, effectiveFrom, reason: 'Fixture', actorId: 'QAOWNER', createdAt: '2026-10-01T00:00:00Z',
@@ -31,11 +31,11 @@ function fixture(row: unknown = historyRow(), fail?: 'load' | 'final' | 'session
   };
   return {ex, statements};
 }
-beforeEach(() => { vi.stubEnv('NEVORA_PAYROLL_ENABLED', 'true'); });
-afterEach(() => { vi.unstubAllEnvs(); vi.useRealTimers(); vi.clearAllMocks(); });
+beforeEach(() => { rs.stubEnv('NEVORA_PAYROLL_ENABLED', 'true'); });
+afterEach(() => { rs.unstubAllEnvs(); rs.useRealTimers(); rs.clearAllMocks(); });
 
 it('keeps the current future payday independent from an older missing preparation period', async () => {
-  vi.useFakeTimers(); vi.setSystemTime(new Date('2026-11-02T12:00:00Z'));
+  rs.useFakeTimers(); rs.setSystemTime(new Date('2026-11-02T12:00:00Z'));
   currentPayPeriod.mockResolvedValue({payday: '2026-11-10'});
   const {ex, statements} = fixture();
   expect(await reader.readNextPay('America/Puerto_Rico')).toEqual({payday: '2026-11-10', daysUntil: 8});
@@ -48,7 +48,7 @@ it('keeps the current future payday independent from an older missing preparatio
   expect(statements.some(s => /FROM payroll_documents|FROM payroll_jobs/.test(s.text))).toBe(false);
 });
 it('keeps personal next-pay upcoming only when its payday has passed', async () => {
-  vi.useFakeTimers(); vi.setSystemTime(new Date('2026-11-02T12:00:00Z'));
+  rs.useFakeTimers(); rs.setSystemTime(new Date('2026-11-02T12:00:00Z'));
   currentPayPeriod.mockResolvedValue({payday: '2026-11-01'});
   expect(await reader.readNextPay('America/Puerto_Rico')).toBeNull();
 });
@@ -79,7 +79,7 @@ it.each(['MANAGER', 'LEAD', 'EMPLOYEE'] as const)('does not read company history
   expect(statements).toEqual([]);
 });
 it('does not query payroll history when the feature is disabled', async () => {
-  vi.stubEnv('NEVORA_PAYROLL_ENABLED', 'false');
+  rs.stubEnv('NEVORA_PAYROLL_ENABLED', 'false');
   const {ex, statements} = fixture();
   expect(await reader.readHomePayrollStatus(proof, ex)).toBeNull();
   expect(statements).toEqual([]);

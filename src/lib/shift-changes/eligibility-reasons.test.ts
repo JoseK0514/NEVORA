@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { eligibilityReasons, REASON_TEXT, refusalLines } from './eligibility-reasons';
 import type { ShiftChangeIssue } from './types';
 

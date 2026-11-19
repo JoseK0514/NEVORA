@@ -1,7 +1,7 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
+rs.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
 import {ActionCenterSurface,mobileActionDetail} from './manager-action-center';
 import {parseActionCenter,type ActionCenter} from '../lib/action-center/project';
 const ready:Extract<ActionCenter,{state:'ready'}>={state:'ready',observedAt:'2026-10-07T12:00:00Z',validForMs:45000,weekStart:'2026-10-05',counts:{total:25,scheduling:25,requests:0,timekeeping:0},limitedAttendance:false,items:Array.from({length:25},(_,i)=>({id:'A'+i,type:'AVAILABILITY_MISSING',category:'scheduling',priority:'MISSING_INPUT',title:'Availability needed',detail:'Fictional employee '+i,href:'/app/availability?week=2026-10-05'}))};
@@ -74,7 +74,7 @@ function display(snapshot: ActionIntelligenceResult | null, changes: Partial<Act
   const renderer: unknown = Reflect.get(managerSurfaces, 'ActionIntelligenceSurface');
   expect(renderer, 'isolated F1 renderer must be implemented').toBeTypeOf('function');
   const props: ActionIntelligenceSurfaceProps = { snapshot, connection: 'ready', expectedViewId: 'view-5',
-    weekStart: '2026-10-05', now: intelligenceNow, onRefresh: vi.fn(), onRetrySource: vi.fn(), ...changes };
+    weekStart: '2026-10-05', now: intelligenceNow, onRefresh: rs.fn(), onRetrySource: rs.fn(), ...changes };
   return renderToStaticMarkup(createElement(renderer as (props: ActionIntelligenceSurfaceProps) => React.ReactNode, props));
 }
 function expectNoPrivateActions(html: string) {

@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { SwapShiftSummary, swapTimeLabel } from './swap-shift-summary';
 import type { ExchangeShift } from '@/lib/data/exchanges';
 

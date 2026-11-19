@@ -1,8 +1,8 @@
-import {beforeEach,describe,expect,it,vi} from 'vitest';
+import {beforeEach,describe,expect,it,rs} from '@rstest/core';
 
-const mocks=vi.hoisted(()=>({session:vi.fn(),read:vi.fn()}));
-vi.mock('@/lib/auth/session',()=>({getSession:mocks.session}));
-vi.mock('@/lib/data/attendance-review',()=>({getAttendanceReview:mocks.read}));
+const mocks=rs.hoisted(()=>({session:rs.fn(),read:rs.fn()}));
+rs.mock('@/lib/auth/session',()=>({getSession:mocks.session}));
+rs.mock('@/lib/data/attendance-review',()=>({getAttendanceReview:mocks.read}));
 
 import {GET} from './route';
 
@@ -27,7 +27,7 @@ const ready=()=>({
 
 describe('D1.2 manager attendance API boundary',()=>{
   beforeEach(()=>{
-    vi.resetAllMocks();
+    rs.resetAllMocks();
     mocks.session.mockResolvedValue({
       id:'owner',
       firstName:'Owner',

@@ -1,18 +1,18 @@
 import { createHash } from "node:crypto";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
-const deps = vi.hoisted(() => ({ query: vi.fn(), session: vi.fn(), isolated: vi.fn() }));
-vi.mock("@/lib/commerce/isolated-connection.server", () => ({ isolatedCommerceConnection: deps.isolated }));
-vi.mock("@/lib/data/app-sql", () => ({
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
+const deps = rs.hoisted(() => ({ query: rs.fn(), session: rs.fn(), isolated: rs.fn() }));
+rs.mock("@/lib/commerce/isolated-connection.server", () => ({ isolatedCommerceConnection: deps.isolated }));
+rs.mock("@/lib/data/app-sql", () => ({
   applicationSql: () => ({ query: deps.query }),
 }));
-vi.mock("@/lib/db", () => ({
+rs.mock("@/lib/db", () => ({
   getDb: () => ({ query: deps.query }),
   queryRows: (value: unknown) => value,
 }));
-vi.mock("@/lib/auth/session", () => ({
+rs.mock("@/lib/auth/session", () => ({
   readSessionMutationProof: deps.session,
 }));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
+rs.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
 import { GET } from "./route";
 const id = "22222222-2222-4222-8222-222222222222",
   secret = "a".repeat(43);
@@ -49,17 +49,17 @@ const request = (headers: HeadersInit = {}) =>
   new Request("https://company.example.test/api/commerce/status", { headers });
 function expectPresentation(value:Record<string,unknown>){const {observedAt,validForMs,notice,...status}=value;expect(notice).toMatchObject({kind:'PAYMENT_FAILED',href:'/app/billing'});expect(status).toEqual({...presentation(),timeZone:'America/Puerto_Rico'});expect(typeof observedAt).toBe('string');expect(new Date(String(observedAt)).toISOString()).toBe(observedAt);expect(validForMs).toBeGreaterThan(0);expect(validForMs).toBeLessThanOrEqual(15000);}
 beforeEach(() => {
-  vi.stubEnv("NEVORA_COMMERCE_ENABLED", "true");
-  vi.stubEnv("NEVORA_COMMERCE_API_ORIGIN", "https://billing.example.test");
-  vi.stubEnv("NEVORA_COMMERCE_INSTALLATION_ID", "slot-a");
-  vi.stubEnv("NEVORA_COMMERCE_INSTANCE_SECRET", secret);
-  vi.stubEnv("FUEL_PORTAL_ORIGIN", "https://company.example.test");
+  rs.stubEnv("NEVORA_COMMERCE_ENABLED", "true");
+  rs.stubEnv("NEVORA_COMMERCE_API_ORIGIN", "https://billing.example.test");
+  rs.stubEnv("NEVORA_COMMERCE_INSTALLATION_ID", "slot-a");
+  rs.stubEnv("NEVORA_COMMERCE_INSTANCE_SECRET", secret);
+  rs.stubEnv("FUEL_PORTAL_ORIGIN", "https://company.example.test");
   deps.query.mockReset().mockResolvedValue(binding());
   deps.session.mockReset().mockResolvedValue({
     sessionTokenHash: "f".repeat(64),
     employee: { id: "OWNER", role: "OWNER" },
   });
-  vi.stubGlobal(
+  rs.stubGlobal(
     "fetch",
     async (url: string | URL | Request, options?: RequestInit) => {
       if (
@@ -74,19 +74,19 @@ beforeEach(() => {
   );
 });
 afterEach(() => {
-  vi.restoreAllMocks();
-  vi.unstubAllEnvs();
-  vi.unstubAllGlobals();
+  rs.restoreAllMocks();
+  rs.unstubAllEnvs();
+  rs.unstubAllGlobals();
 });
 it("uses the current isolated company origin instead of a shared portal setting", async () => {
-  vi.stubEnv("NEVORA_WORKSPACE_MODE", "isolated");
-  vi.stubEnv("FUEL_PORTAL_ORIGIN", "https://different.example.test");
+  rs.stubEnv("NEVORA_WORKSPACE_MODE", "isolated");
+  rs.stubEnv("FUEL_PORTAL_ORIGIN", "https://different.example.test");
   deps.isolated.mockResolvedValue({origin:"https://billing.example.test",companyOrigin:"https://company.example.test",installationId:"slot-a",businessId:id,secret,assertCurrent:async()=>{}});
   expect((await GET(request())).status).toBe(200);
 });
 it("rejects an insecure configured company origin in production", async () => {
-  vi.stubEnv("NODE_ENV","production");
-  vi.stubEnv("FUEL_PORTAL_ORIGIN","http://company.example.test");
+  rs.stubEnv("NODE_ENV","production");
+  rs.stubEnv("FUEL_PORTAL_ORIGIN","http://company.example.test");
   expect((await GET(new Request("http://company.example.test/api/commerce/status"))).status).toBe(403);
 });
 it("denies a changed Owner generation after the remote status read", async () => {
@@ -95,17 +95,17 @@ it("denies a changed Owner generation after the remote status read", async () =>
   expect((await GET(request())).status).toBe(403);
 });
 it("denies a different installation even when its business ID matches", async () => {
-  vi.stubGlobal("fetch",async()=>Response.json({...authority(),installationId:"foreign-installation"}));
+  rs.stubGlobal("fetch",async()=>Response.json({...authority(),installationId:"foreign-installation"}));
   expect((await GET(request())).status).toBe(503);
 });
 it("denies authority that expires during the final Owner binding lookup", async () => {
-  let now=Date.now();vi.spyOn(Date,"now").mockImplementation(()=>now);
+  let now=Date.now();rs.spyOn(Date,"now").mockImplementation(()=>now);
   deps.query.mockResolvedValueOnce(binding()).mockImplementationOnce(async()=>{now+=60001;return binding();});
   expect((await GET(request())).status).toBe(503);
 });
 it('reduces the private display lifetime by time spent in the final Owner lookup',async()=>{
- let now=Date.now();vi.spyOn(Date,'now').mockImplementation(()=>now);
- vi.stubGlobal('fetch',async()=>Response.json({...authority(),validUntil:now+500}));
+ let now=Date.now();rs.spyOn(Date,'now').mockImplementation(()=>now);
+ rs.stubGlobal('fetch',async()=>Response.json({...authority(),validUntil:now+500}));
  deps.query.mockResolvedValueOnce(binding()).mockImplementationOnce(async()=>{now+=400;return binding();});
  const result=await GET(request());expect(result.status).toBe(200);expect((await result.json()).validForMs).toBe(100);
 });
@@ -185,7 +185,7 @@ it("rechecks current Owner authority after the network request", async () => {
   expect(await result.json()).toEqual({ error: { code: "owner_required" } });
 });
 it("rejects a central status for another business", async () => {
-  vi.stubGlobal("fetch", async () =>
+  rs.stubGlobal("fetch", async () =>
     Response.json({
       ...authority(),
       businessId: "33333333-3333-4333-8333-333333333333",
@@ -198,13 +198,13 @@ it.each([
   { graceEndsAt: "tomorrow" },
   { reason: "arbitrary_provider_error" },
 ])("fails closed on an invalid presentation %j", async (invalid) => {
-  vi.stubGlobal("fetch", async () =>
+  rs.stubGlobal("fetch", async () =>
     Response.json({ ...authority(), ...invalid }),
   );
   expect((await GET(request())).status).toBe(503);
 });
 it("reports authority outages without asking the Owner to pay", async () => {
-  vi.stubGlobal("fetch", async () => {
+  rs.stubGlobal("fetch", async () => {
     throw Error("offline");
   });
   const result = await GET(request());
@@ -215,7 +215,7 @@ it("reports authority outages without asking the Owner to pay", async () => {
 });
 it("reads fresh status instead of sharing a previous billing presentation", async () => {
   expect((await GET(request())).status).toBe(200);
-  vi.stubGlobal("fetch", async () =>
+  rs.stubGlobal("fetch", async () =>
     Response.json({
       ...authority(),
       state: "restricted",
@@ -230,13 +230,13 @@ it("reads fresh status instead of sharing a previous billing presentation", asyn
   });
 });
 it("keeps existing unenrolled installations off", async () => {
-  vi.stubEnv("NEVORA_COMMERCE_ENABLED", "false");
+  rs.stubEnv("NEVORA_COMMERCE_ENABLED", "false");
   expect((await GET(request())).status).toBe(404);
 });
 
 it('records a caught unexpected failure without logging request or provider secrets', async () => {
-  const sink = vi.spyOn(console, 'error').mockImplementation(() => {});
-  vi.stubGlobal('fetch', async () => {throw Object.assign(new Error('private-provider-token'), {code: '08006'});});
+  const sink = rs.spyOn(console, 'error').mockImplementation(() => {});
+  rs.stubGlobal('fetch', async () => {throw Object.assign(new Error('private-provider-token'), {code: '08006'});});
   const response = await GET(request({authorization: 'Bearer private-request-token'}));
   expect(response.status).toBe(503);
   expect(sink).toHaveBeenCalledTimes(1);
@@ -245,7 +245,7 @@ it('records a caught unexpected failure without logging request or provider secr
 });
 
 it('does not report an expected unauthenticated read as a server failure', async () => {
-  const sink = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const sink = rs.spyOn(console, 'error').mockImplementation(() => {});
   deps.session.mockResolvedValue(null);
   expect((await GET(request())).status).toBe(401);
   expect(sink).not.toHaveBeenCalled();

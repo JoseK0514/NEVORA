@@ -1,4 +1,4 @@
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, expect, it, rs } from '@rstest/core';
 import { createAdvisorController, type AdvisorView } from "./controller";
 const snap = () => ({
   state: "ready",
@@ -15,9 +15,9 @@ const snap = () => ({
   observedAt: new Date().toISOString(),
   validForMs: 15000,
 });
-afterEach(() => vi.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it("inspects without a provider, fences the result with fresh access and retires it on pause", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   const calls: string[] = [];
   const c = createAdvisorController(v => { state = v; }, async (_url, init) => {
@@ -25,14 +25,14 @@ it("inspects without a provider, fences the result with fresh access and retires
     const snapshot = { ...snap(), connection: "unavailable" };
     return Response.json(init?.method === "POST" ? { state: "answered", answer: { text: "Prepared coverage", sources: [], proposals: [] }, authority: snapshot.authority, observedAt: snapshot.observedAt, validForMs: 15000 } : snapshot);
   });
-  c.start(); await vi.advanceTimersByTimeAsync(0);
+  c.start(); await rs.advanceTimersByTimeAsync(0);
   await c.inspect({ name: "coverage_proposals", args: { date: "2026-10-22" } });
   expect(calls).toEqual(["GET", "POST", "GET"]);
   expect(state?.answer?.proposals).toEqual([]);
   c.pause(); expect(state?.answer).toBeNull(); c.stop();
 });
 it("refreshes before expiry without replacing dirty priorities, then retires private data and ignores late replies", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   let delayed: ((v: Response) => void) | undefined;
   let reads = 0;
@@ -45,22 +45,22 @@ it("refreshes before expiry without replacing dirty priorities, then retires pri
     },
   );
   c.start();
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   expect(state?.snapshot).not.toBeNull();
   c.editPriorities("draft");
-  await vi.advanceTimersByTimeAsync(9000);
+  await rs.advanceTimersByTimeAsync(9000);
   expect(reads).toBe(2);
   expect(state?.priorities).toBe("draft");
-  await vi.advanceTimersByTimeAsync(9000);
+  await rs.advanceTimersByTimeAsync(9000);
   c.pause();
   delayed?.(Response.json(snap()));
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   expect(state?.snapshot).toBeNull();
   expect(state?.answer).toBeNull();
   c.stop();
 });
 it("does not retry uncertain requests and requires a successful history refresh", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   let posts = 0;
   let failReads = false;
@@ -77,7 +77,7 @@ it("does not retry uncertain requests and requires a successful history refresh"
     },
   );
   c.start();
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   c.editQuestion("Investigate");
   await c.ask();
   expect(posts).toBe(1);
@@ -88,7 +88,7 @@ it("does not retry uncertain requests and requires a successful history refresh"
   c.stop();
 });
 it("renders a successful 20-second investigation only after a fresh authority read", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   let finish: ((r: Response) => void) | undefined;
   let reads = 0;
@@ -101,10 +101,10 @@ it("renders a successful 20-second investigation only after a fresh authority re
     },
   );
   c.start();
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   c.editQuestion("Investigate");
   const pending = c.ask();
-  await vi.advanceTimersByTimeAsync(20000);
+  await rs.advanceTimersByTimeAsync(20000);
   const before = reads;
   finish?.(
     Response.json({
@@ -120,7 +120,7 @@ it("renders a successful 20-second investigation only after a fresh authority re
   c.stop();
 });
 it("fences an old profile read completing after a save and retains the saved edit", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   let old: ((r: Response) => void) | undefined;
   let reads = 0;
@@ -148,18 +148,18 @@ it("fences an old profile read completing after a save and retains the saved edi
     },
   );
   c.start();
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   c.editPriorities("new");
-  await vi.advanceTimersByTimeAsync(9000);
+  await rs.advanceTimersByTimeAsync(9000);
   await c.save();
   old?.(Response.json(snap()));
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   expect(state?.priorities).toBe("new");
   expect(state?.snapshot?.profile.revision).toBe(2);
   c.stop();
 });
 it("does not restore a late answer after signout retirement and stop", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   let finish: ((r: Response) => void) | undefined;
   const c = createAdvisorController(
@@ -170,7 +170,7 @@ it("does not restore a late answer after signout retirement and stop", async () 
         : Response.json(snap()),
   );
   c.start();
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   c.editQuestion("Private question");
   const pending = c.ask();
   c.pause();
@@ -189,7 +189,7 @@ it("does not restore a late answer after signout retirement and stop", async () 
   expect(state?.question).toBe("");
 });
 it("does not clear network uncertainty with a read begun before the failed operation", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   let old: ((r: Response) => void) | undefined;
   let reads = 0;
@@ -204,18 +204,18 @@ it("does not clear network uncertainty with a read begun before the failed opera
     },
   );
   c.start();
-  await vi.advanceTimersByTimeAsync(0);
-  await vi.advanceTimersByTimeAsync(9000);
+  await rs.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(9000);
   c.editQuestion("Investigate");
   await c.ask();
   old?.(Response.json(snap()));
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   expect(reads).toBe(3);
   expect(state?.uncertain).toBe(true);
   c.stop();
 });
 it("does not regress a newer saved revision observed by the post-save authority read", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   let saved = false;
   const c = createAdvisorController(
@@ -239,7 +239,7 @@ it("does not regress a newer saved revision observed by the post-save authority 
     },
   );
   c.start();
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   c.editPriorities("mine");
   await c.save();
   expect(state?.snapshot?.profile.revision).toBe(3);
@@ -248,7 +248,7 @@ it("does not regress a newer saved revision observed by the post-save authority 
   c.stop();
 });
 it("requires explicit review when a refresh observes a changed revision before Save", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   let revision = 1;
   let savedText = "original";
@@ -273,7 +273,7 @@ it("requires explicit review when a refresh observes a changed revision before S
     },
   );
   c.start();
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   c.editPriorities("my unsaved edit");
   revision = 2;
   savedText = "other saved edit";
@@ -298,7 +298,7 @@ it("requires explicit review when a refresh observes a changed revision before S
   c.stop();
 });
 it("a review acknowledges only that revision and another refresh requires review again", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   let state: AdvisorView | undefined;
   let revision = 1;
   const posts: unknown[] = [];
@@ -320,7 +320,7 @@ it("a review acknowledges only that revision and another refresh requires review
     },
   );
   c.start();
-  await vi.advanceTimersByTimeAsync(0);
+  await rs.advanceTimersByTimeAsync(0);
   c.editPriorities("my draft");
   revision = 2;
   await c.refresh();

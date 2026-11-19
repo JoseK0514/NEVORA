@@ -1,4 +1,4 @@
-import {afterEach,beforeEach,expect,it} from 'vitest';
+import {afterEach,beforeEach,expect,it} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {createPunchFixture} from '../../test/integration/clocker-punch-fixture';
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';

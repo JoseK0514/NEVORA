@@ -1,8 +1,11 @@
 "use client";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { durationTotal } from "@/lib/duration-format";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
-import { ClockCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ClockCounterClockwise";
+import { ClockUserIcon } from "@phosphor-icons/react/dist/ssr/ClockUser";
+import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
+import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { CORP_NO_VALUE } from "@/components/corp/corp";
 import { percentText } from "@/components/coverage-minutes/coverage-minutes";
 import type { CoverageMinutes, MinuteObligation } from "@/lib/scheduling/coverage-minutes";
@@ -11,13 +14,22 @@ import { gapRow } from "@/components/manager-inbox-corp";
 import { ATTENDANCE_WORDS, itemPerson, presentItem, splitNoClockIn } from "@/lib/action-center/present";
 import { isStaffingRepair, minutesText, repairWhen } from "@/lib/time-off-staffing/present";
 import { actionCenterNavigation } from "@/components/action-center-navigation";
-import { isOwnReview, type NeedsYou } from "@/lib/action-center/needs-you";
+import type { NeedsYou } from "@/lib/action-center/needs-you";
+import { needsYouTotal, paydayReview } from "@/lib/action-center/review-routing";
+import { lateText } from "@/lib/action-center/request-details";
+import { reviewCopy } from "@/components/review-details/copy";
+import { Explain } from "@/components/review-details/explain";
 import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
-import type { ClockMonitor } from "@/lib/time-clock";
+import type { ClockMonitor, ClockMonitorEmployee } from "@/lib/time-clock";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
 import { HomeSetupProgress } from "@/components/owner-setup-card";
-import { BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, BWhen, partOfDay, type BLiveItem } from "./b-kit";
+import type { HomePayrollStatus } from "@/lib/payroll/backlog-read";
+import { payDay, periodRange } from "@/components/payroll/payroll-format";
+import { keepWhole } from "@/lib/keep-whole";
+import { workCopy } from "@/components/employee-b/work-copy";
+import { notClockedInText } from "@/components/team-live";
+import { BAvatar, BButtonLink, BCard, BChip, BGlyph, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, BStatusText, BWhen, partOfDay, type BLiveItem } from "./b-kit";
 
 /* Direction B, Owner and Manager Home on a phone (mock screen "Owner · Home"). The same reads as the corporate Home: Today's
  * shifts and the clock-in monitor for the live figures, the shared needs-you read for the sentence, the card and the count,
@@ -41,6 +53,9 @@ export type HomeBProps = {
   today: Today | null; monitor: ClockMonitor | null; monitorPending: boolean; offline: boolean;
   value: NeedsYou | null; connection: ActionCenterConnection; timecards: ActionItem[]; timecardsReady: boolean; businessDay?: string;
   nextPay?: NextPay; setup?: ReactNode; billing?: ReactNode; dateLabel: string; summary: string; week?: HomeBWeek; greeting: string;
+  /** Phase 8 (a.md #5): the Owner's payroll preparation facts Home already reads (the oldest period whose scheduled
+   * payday passed with no payroll, a schedule that needs review), so Home never looks calm while Payroll is red. */
+  payrollStatus?: HomePayrollStatus | null;
   /** Closing F1 (NV-123): Things to do's fresh read, for the failed card's Try again. */
   onRetry?: () => void;
 };
@@ -53,8 +68,8 @@ const people = (shifts: TodayShift[]) => new Set(shifts.map(shift => shift.emplo
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const utc = (date: string) => new Date(`${date}T12:00:00Z`);
 const fmt = (date: string, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", ...options }).format(utc(date));
+const t = reviewCopy();
 const nextDay = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
-const periodEnd = (item: ActionItem) => { try { return new URL(item.href, "https://nevora.invalid").searchParams.get("end"); } catch { return null; } };
 // Review B7 (NV-068): a period total is whole hours ("511 h"), through the shared formatter.
 const hoursText = (hours: number) => durationTotal(hours * 60).replace(" ", "\u00a0");
 const firstNames = (names: string[]) => names.length <= 2 ? names.join(", ") : `${names.slice(0, 2).join(", ")} +${names.length - 2}`;
@@ -63,9 +78,14 @@ const shortRange = (start: string, end: string) => start === end ? fmt(start, { 
 const requestKind: Partial<Record<ActionItem["type"], string>> = { TIME_OFF: "Time-off request", EXCHANGE: "Shift request", CALLOUT: "Can’t-work request" };
 // Phase 3 (OW-002): a request row's title is the person; the line under it says the kind and the dates.
 const requestWord: Partial<Record<ActionItem["type"], string>> = { TIME_OFF: "Time off", EXCHANGE: "Shift swap", CALLOUT: "Can’t work" };
+/** Phase 4 (U09): a shift request says what it is from the typed kind; a cover request is never called a swap. */
+const kindWord = (item: ActionItem) => item.type === "EXCHANGE" && item.request?.exchangeKind === "COVERAGE" ? t.coverRequest : requestWord[item.type];
 /** Phase 3 (MG-011): On now shows up to six people. */
 const ON_NOW_ROWS = 6;
 const clockText = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+/** Phase 8 (a.md #11, #36): Team's live word, and Employee Home's sentence for a punch that runs past the shift's end. */
+const CLOCKED_IN = "Clocked in";
+const stillOn = (time: string | null) => time ? workCopy().stillClockedIn(time) : "Still clocked in";
 
 export function HomeB(props: HomeBProps) {
   const { today, monitor, monitorPending, value, offline, connection } = props;
@@ -77,12 +97,14 @@ export function HomeB(props: HomeBProps) {
   const checking = !ready || (monitorPending && !open && ready.counts.clockedIn > 0);
   // Jose's attendance words (Nov 11, 2026): a shift in progress with no punch is "Not clocked in"; "Missed" is only a shift
   // that ended with no punch. The tile is the live figure, so it reads "Missed" only when nobody is waiting to clock in.
-  // "Not clocked in" fills a phone tile's one line, so it carries no dot (the label would run into the next tile at 320px).
   const noClockIn = value ? splitNoClockIn(value.noClockIn) : null;
   const missedOnly = !!noClockIn && !noClockIn.running.length && noClockIn.ended.length > 0;
-  const attendance: BLiveItem = !noClockIn ? { label: ATTENDANCE_WORDS.notClockedIn, value: CORP_NO_VALUE }
+  // Phase 4 (U03): with today's clock-ins unread the figure is unknown ("—"), never a zero. Phase 8 (a.md #16): someone
+  // waiting to clock in is the amber dot, as an open shift is; on narrow phones the dots sit beside the figures instead
+  // (owner-b-home.css), so the label keeps its one line.
+  const attendance: BLiveItem = !noClockIn || today?.state === "unavailable" ? { label: ATTENDANCE_WORDS.notClockedIn, value: CORP_NO_VALUE }
     : missedOnly ? { label: ATTENDANCE_WORDS.missed, dot: "warn", value: noClockIn.ended.length, href: "/app/inbox#todo-missed", aria: `Missed clock-ins: ${noClockIn.ended.length}` }
-    : { label: ATTENDANCE_WORDS.notClockedIn, value: noClockIn.running.length, href: "/app/inbox#todo-not-clocked-in",
+    : { label: ATTENDANCE_WORDS.notClockedIn, dot: noClockIn.running.length ? "warn" : undefined, value: noClockIn.running.length, href: "/app/inbox#todo-not-clocked-in",
       aria: `Not clocked in: ${noClockIn.running.length}${noClockIn.ended.length ? `. Missed clock-ins: ${noClockIn.ended.length}` : ""}` };
   // BR-16 with the backend's clockerRegistered (Nov 15, 2026): while no time clock tablet is registered, the two attendance
   // tiles would report punches that can't happen yet, so one tile says the time clock isn't set up. Registration is a
@@ -92,7 +114,10 @@ export function HomeB(props: HomeBProps) {
   const clockTile: BLiveItem = { label: "Time clock", value: "Not set up", ...(props.setup ? { href: "/app/settings/clocker", aria: "Time clock not set up. Set up your time clock" } : {}) };
   const first = props.week?.firstName ?? props.greeting.replace(/^Welcome back,\s*/, "");
   const eyebrow = `${partOfDay(ready?.timeZone)}, ${first}`;
-  const title = value ? value.count === 0 ? "You’re all set" : `${plural(value.count, "thing needs", "things need")} you`
+  // Phase 4 (U03): the count with its completeness. With today's clock-ins unread (or review facts missing) the count is
+  // a lower bound: the title says "At least N", and a zero is never "You’re all set".
+  const total = value ? needsYouTotal(value, { clockInsUnavailable: today?.state === "unavailable" }) : null;
+  const title = value && total ? value.count === 0 ? total.exact ? "You’re all set" : t.notAllChecked : t.needYou(value.count, total.exact)
     : offline ? "You’re offline" : connection === "paused" ? "Paused while you’re away" : "Checking today…";
   const gapRows = ready && gaps ? gaps.map(item => gapRow(item, ready.timeZone, ready.today)) : [];
   const openHref = gaps?.length === 1 && gapRows[0] ? gapRows[0].href : "/app/schedule";
@@ -119,9 +144,10 @@ export function HomeB(props: HomeBProps) {
         {props.billing ?? null}
         {props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
         <NeedsYouCard {...props} gapRows={gapRows} openHref={openHref} />
-        {ready ? <OnNow shifts={ready.shifts} timeZone={ready.timeZone} /> : null}
+        {ready ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} /> : null}
       </div>
       <div className="b-home-col b-home-col--b">
+        <PayrollNotice status={props.payrollStatus} />
         <PaydayTile {...props} />
         {props.week ? <ThisWeek week={props.week} today={ready?.today ?? props.businessDay} /> : null}
       </div>
@@ -139,9 +165,10 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   const rows: ReactNode[] = [];
   if (gapRows.length) {
     const next = gapRows[0];
+    // Phase 8 (b.md #46): a row's button is the tinted pill, as on Things to do; the filled teal stays the page's one main action.
     rows.push(<BRow key="gaps" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={`Cover ${plural(gapRows.length, "open shift", "open shifts")}`}
       sub={<>{`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}`}<BWhen text={next.title} /></>} href={openHref} label={`Open shifts, ${gapRows.length}`}
-      trail={<BButtonLink href={next.href} label={`Find cover: ${next.title}`}>Find cover</BButtonLink>} />);
+      trail={<BButtonLink href={next.href} kind="ghost" label={`Find cover: ${next.title}`}>Find cover</BButtonLink>} />);
   }
   // Nov 9, 2026: approved leave over a published shift: "Fill Maria Rivera’s shift" (one) or "Fill 2 shifts for approved
   // leave", opening the schedule with the person and the repair (or Things to do's Shifts to fill for several).
@@ -154,21 +181,32 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
       label={repairs.length === 1 ? `${shown.title}, ${repairWhen(first)}` : `Shifts to fill for approved time off, ${repairs.length}`} />);
   }
   // One row for shifts in progress with no punch ("Not clocked in") and one for shifts that ended with none ("Missed").
+  // Phase 8 (a.md #13): the row's title is the person (or the people); the line under it says what and when, in Jose's
+  // attendance words, with the shift's start or end when it is one person.
   const noClockIn = splitNoClockIn(value.noClockIn);
+  const zone = today?.state === "ready" ? today.timeZone : undefined;
+  // The second part of the line stays whole ("shift ended 11:30 PM"), so a narrow phone breaks only after " · ".
+  const at = (iso: string) => zone ? clockText(iso, zone).replace(" ", "\u00a0") : null;
+  const whole = (text: string) => text.replace(/ /g, "\u00a0");
   if (noClockIn.running.length) {
-    const names = noClockIn.running.map(shift => shift.employeeName);
-    rows.push(<BRow key="not-clocked-in" lead={<BAvatar name={names[0]} ring="late" />} title={`${noClockIn.running.length}\u00a0not clocked in`} sub={firstNames(names)}
+    const names = noClockIn.running.map(shift => shift.employeeName), began = noClockIn.running.length === 1 ? at(noClockIn.running[0].startAt) : null;
+    // Premium pass FA (final verification A #19, B #25): a row that names several people leads with what they share, the
+    // amber attendance circle (a person and a clock), not the first person's face alone; one person keeps their face.
+    rows.push(<BRow key="not-clocked-in" lead={names.length > 1 ? <BIcon tone="amber"><ClockUserIcon weight="bold" /></BIcon> : <BAvatar name={names[0]} ring="late" />} title={firstNames(names)}
+      sub={noClockIn.running.length > 1 ? `${ATTENDANCE_WORDS.notClockedIn} \u00b7 ${noClockIn.running.length}\u00a0people` : began ? `${ATTENDANCE_WORDS.notClockedIn}\u00a0\u00b7 ${whole(`shift began ${began}`)}` : ATTENDANCE_WORDS.notClockedIn}
       href="/app/inbox#todo-not-clocked-in" label={`${ATTENDANCE_WORDS.notClockedIn}: ${names.join(", ")}`} />);
   }
   if (noClockIn.ended.length) {
-    const names = noClockIn.ended.map(shift => shift.employeeName);
-    rows.push(<BRow key="missed" lead={<BAvatar name={names[0]} ring="late" />} title={plural(noClockIn.ended.length, "missed clock-in", "missed clock-ins")} sub={firstNames(names)}
+    const names = noClockIn.ended.map(shift => shift.employeeName), ended = noClockIn.ended.length === 1 ? at(noClockIn.ended[0].endAt) : null;
+    rows.push(<BRow key="missed" lead={names.length > 1 ? <BIcon tone="amber"><ClockUserIcon weight="bold" /></BIcon> : <BAvatar name={names[0]} ring="late" />} title={firstNames(names)}
+      sub={noClockIn.ended.length > 1 ? plural(noClockIn.ended.length, "missed clock-in", "missed clock-ins") : ended ? `Missed clock-in\u00a0\u00b7 ${whole(`shift ended ${ended}`)}` : "Missed clock-in"}
       href="/app/inbox#todo-missed" label={`Missed clock-ins: ${names.join(", ")}`} />);
   }
   // Phase 3 (MG-005): corrections that wait on this person are part of the count, so they have their row here.
+  // Premium pass FA (coordinator, with FC): fixing time is the pencil on every page and for every role.
   if (value.corrections.length) {
     const names = value.corrections.map(item => item.detail.split(" · ")[0]?.trim()).filter((name): name is string => !!name);
-    rows.push(<BRow key="corrections" lead={<BIcon tone="amber"><ClockCounterClockwiseIcon weight="bold" /></BIcon>} title={plural(value.corrections.length, "time correction", "time corrections")}
+    rows.push(<BRow key="corrections" lead={<BIcon tone="amber"><PencilSimpleIcon weight="bold" /></BIcon>} title={plural(value.corrections.length, "time correction", "time corrections")}
       sub={firstNames(names)} href="/app/inbox#todo-corrections" label={`Time corrections to review, ${value.corrections.length}${names.length ? `: ${names.join(", ")}` : ""}`} />);
   }
   const requests = [...value.now.filter(item => item.category === "requests"), ...value.requests];
@@ -179,41 +217,88 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
     // (OW-002, OW-007): the person is the title, the kind and the dates are the line under it, and every lead is 36px.
     const who = person && facts?.counterpartName ? `${person} ⇄ ${facts.counterpartName}` : person;
     const spoken = person && facts?.counterpartName ? `${person} and ${facts.counterpartName}` : person;
-    const kind = requestWord[item.type];
+    const kind = kindWord(item);
     rows.push(<BRow key={item.id} lead={person ? <BAvatar name={person} /> : <BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>}
       title={who ?? requestKind[item.type] ?? item.title} sub={[who ? kind : null, facts ? shortRange(facts.startDate, facts.endDate) : null].filter(Boolean).join(" · ") || undefined}
       href={facts?.reviewHref ?? "/app/inbox#todo-requests"} label={`${requestKind[item.type] ?? item.title}${spoken ? `, ${spoken}` : ""}`} />);
   }
   const others = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !isStaffingRepair(item));
-  if (rows.length < NEEDS_ROWS && others.length) rows.push(<BRow key="others" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold" /></BIcon>}
+  // Phase 9 (spec 3.2): these wait on this person, so the circle is amber, with the timecards' Clock (it was a grey calendar).
+  if (rows.length < NEEDS_ROWS && others.length) rows.push(<BRow key="others" lead={<BIcon tone="amber"><ClockIcon weight="bold" /></BIcon>}
     title={plural(others.length, "item to review", "items to review")} sub="Time corrections and timecards" href="/app/inbox#todo-review" />);
-  return <BCard title="Things to do" count={value.count} id="b-home-needs" link={{ href: "/app/inbox", label: "See all", aria: "See all things to do" }}>
+  // Phase 4 (U03): a lower bound reads "At least N" in the count pill, and an empty card with a source unread says what
+  // could not be checked instead of "Nothing needs you".
+  const total = needsYouTotal(value, { clockInsUnavailable: today?.state === "unavailable" });
+  const count = total.exact ? value.count : value.count ? t.atLeast(value.count) : undefined;
+  return <BCard title="Things to do" count={count} id="b-home-needs" link={{ href: "/app/inbox", label: "See all", aria: "See all things to do" }}>
     {rows.length ? <BList label="Things to do">{rows.slice(0, NEEDS_ROWS)}</BList>
-      : <p className="b-state">{today?.state === "unavailable" ? "Clock-ins can’t be checked right now." : "Nothing needs you right now."}</p>}
+      : <p className="b-state">{total.clockInsUnchecked ? "Clock-ins can’t be checked right now." : total.exact ? "Nothing needs you right now." : t.notAllCheckedLine}</p>}
+    {rows.length && !total.exact ? <p className="b-card__note b-home-partial" role="note">{total.clockInsUnchecked ? t.clockInsUnchecked : t.correctionsUnchecked(total.uncheckedReviews)}</p> : null}
   </BCard>;
 }
 
 /** Phase 3 (MG-011, OW-031): who is working right now, from Today's shifts (the read Home already has). People on the
  * clock first (a late arrival says so in Jose's words), then people whose shift began with no clock-in. No estimate: a
  * shift that hasn't started isn't listed, and when nobody is on the card says so and names the next start. */
-function OnNow({ shifts, timeZone }: { shifts: TodayShift[]; timeZone: string }) {
+function OnNow({ shifts, open, timeZone, observedAt }: { shifts: TodayShift[]; open: ClockMonitorEmployee[] | null; timeZone: string; observedAt: string }) {
   const byStart = (a: TodayShift, b: TodayShift) => a.startAt.localeCompare(b.startAt) || a.employeeName.localeCompare(b.employeeName);
   const seen = new Set<string>();
   const once = (shift: TodayShift) => seen.has(shift.employeeId) ? false : (seen.add(shift.employeeId), true);
   const on = [...shifts.filter(working).sort(byStart), ...shifts.filter(shift => shift.status === "not_clocked_in").sort(byStart)].filter(once);
+  // A real clock-in can have no scheduled match. Keep that person visible, with the actual start only;
+  // a matching Today row remains the single row for that person. Retired monitor data supplies no extras.
+  const extra = (open ?? []).filter(person => !seen.has(person.employeeId)).filter(person => (seen.add(person.employeeId), true))
+    .sort((a, b) => a.clockInAt.localeCompare(b.clockInAt) || a.employeeName.localeCompare(b.employeeName));
+  const total = on.length + extra.length;
   const next = shifts.filter(shift => shift.status === "upcoming" || shift.status === "starting").sort(byStart)[0];
   const places = new Set(shifts.map(shift => shift.locationName)).size > 1;
   return <BCard title="On now" id="b-home-on" link={{ href: "/app?view=attendance", label: "See everyone", aria: "See everyone working today" }}>
-    {on.length ? <BList label="On now">{on.slice(0, ON_NOW_ROWS).map(shift => {
+    {total ? <BList label="On now">{[...on.map(shift => {
       const waiting = shift.status === "not_clocked_in";
-      const state = waiting ? ATTENDANCE_WORDS.notClockedIn : shift.status === "on_break" ? "On break" : shift.late ? ATTENDANCE_WORDS.late : "Working";
+      // Phase 8 (a.md #36): someone still on the clock after their shift ended says so in amber, in the words Employee
+      // Home uses ("Still clocked in since 9:02 AM"); that matters more than how late they arrived.
+      const over = shift.status === "clocked_in" && Date.parse(observedAt) > Date.parse(shift.endAt);
+      // Phase 9 (spec 3.1): the normal states are quiet grey words ("Clocked in" with the green live dot, "On break"); only
+      // an exception is a chip, amber with the live dot, and "Not clocked in" says for how long, as Team does.
+      const exception = waiting ? notClockedInText(Math.floor((Date.parse(observedAt) - Date.parse(shift.startAt)) / 60_000))
+        : over ? (shift.firstClockInAt ? stillOn(clockText(shift.firstClockInAt, timeZone)) : stillOn(null))
+        : shift.status !== "on_break" && shift.late ? lateText(shift, ATTENDANCE_WORDS.late, t) : null;
+      const state = exception ?? (shift.status === "on_break" ? "On break" : CLOCKED_IN);
       const when = `${clockText(shift.startAt, timeZone)} – ${clockText(shift.endAt, timeZone)}`;
-      return <BRow key={shift.id} lead={<BAvatar name={shift.employeeName} ring={waiting || shift.late ? "late" : "on"} />} title={shift.employeeName}
-        sub={places ? `${when} · ${shift.locationName}` : when} end={<BChip tone={waiting || shift.late ? "amber" : shift.status === "on_break" ? "grey" : "green"}>{state}</BChip>}
+      return <BRow key={shift.id} lead={<BAvatar name={shift.employeeName} ring={waiting || shift.late || over ? "late" : "on"} />} title={shift.employeeName}
+        sub={keepWhole(places ? `${when} · ${shift.locationName}` : when)}
+        end={exception ? <BChip tone="amber" dot>{exception}</BChip> : <BStatusText dot={shift.status === "on_break" ? undefined : "green"}>{state}</BStatusText>}
         label={`${shift.employeeName}, ${state}, ${when}${places ? `, ${shift.locationName}` : ""}`} />;
-    })}</BList>
+    }), ...extra.map(person => <BRow key={`clock:${person.timeEntryId}`} lead={<BAvatar name={person.employeeName} ring="on" />} title={person.employeeName}
+      sub={keepWhole(`Clocked in ${clockText(person.clockInAt, timeZone)} · ${person.locationName}`)}
+      end={<BStatusText dot={person.state === "ON_BREAK" ? undefined : "green"}>{person.state === "ON_BREAK" ? "On break" : CLOCKED_IN}</BStatusText>} />)].slice(0, ON_NOW_ROWS)}</BList>
       : <p className="b-state">{next ? `Nobody is working right now. Next shift starts ${clockText(next.startAt, timeZone)}.` : "Nobody is working right now."}</p>}
-    {on.length > ON_NOW_ROWS ? <p className="b-on-more">{`+${on.length - ON_NOW_ROWS} more`}</p> : null}
+    {/* Premium pass FA (final verification A #22, B #25): the people the card leaves out are one teal action to the list of
+      * everyone, on the rows' text edge (it was grey "+1 more" text that did nothing). */}
+    {total > ON_NOW_ROWS ? <Link className="b-on-more" href="/app?view=attendance" aria-label={`See ${total - ON_NOW_ROWS} more working today`}>{`See ${total - ON_NOW_ROWS} more`}</Link> : null}
+  </BCard>;
+}
+
+/** Phase 8 (a.md #5): what Payroll says in red, said on Home in Payroll's own words, from the preparation facts Home
+ * already reads: the oldest pay period whose scheduled payday passed with no payroll, with Payroll's own button ("Prepare
+ * Nov 2–8") to the same place. A schedule that needs review and a status that couldn't be read say so in the words the
+ * corporate Home used; nothing here is new payroll copy. Nothing shows when payroll is up to date or isn't this person's. */
+function PayrollNotice({ status }: { status?: HomePayrollStatus | null }) {
+  if (!status) return null;
+  // Phase 9 (spec 2.2): one glyph per meaning. A status that couldn't be read is not known (Question), never the triangle,
+  // which is amber's "check"; a period with no payroll stops payroll (red, WarningCircle).
+  if (status.state === "unavailable") return <BCard label="Payroll"><div className="b-notice"><BIcon tone="grey"><BGlyph meaning="unknown" /></BIcon>
+    <span className="b-notice__tx"><span className="b-notice__t">Payroll</span><span className="b-notice__s">Payroll status isn’t available right now</span></span></div>
+    <div className="b-home-paygo"><BButtonLink href="/app/payroll" kind="ghost" full>Open payroll</BButtonLink></div></BCard>;
+  const fact = status.overdue ?? status.reviewRequired;
+  if (!fact) return null;
+  const range = periodRange(fact.period.startDate, fact.period.endDate);
+  const overdue = !!status.overdue;
+  return <BCard label={overdue ? "Pay periods with no payroll" : "Payroll schedule needs review"}><div className="b-notice"><BIcon tone={overdue ? "red" : "amber"}><BGlyph meaning={overdue ? "stop" : "check"} /></BIcon>
+    <span className="b-notice__tx"><span className="b-notice__t">{overdue ? `${range} has no payroll` : "Payroll schedule needs review"}</span>
+      <span className="b-notice__s">{keepWhole(overdue ? `Scheduled payday was ${payDay(fact.payday)}` : `Pay period ${range} · Scheduled payday ${payDay(fact.payday)}`)}</span></span></div>
+    <div className="b-home-paygo">{overdue ? <BButtonLink href={`/app/payroll/prepare#unpaid-${fact.period.startDate}`} kind="teal" full label={`Prepare ${range}`}>{`Prepare ${range}`}</BButtonLink>
+      : <BButtonLink href="/app/payroll" kind="ghost" full>Open payroll</BButtonLink>}</div>
   </BCard>;
 }
 
@@ -223,31 +308,39 @@ function OnNow({ shifts, timeZone }: { shifts: TodayShift[]; timeZone: string })
  * who can't open Payroll (a Manager, or an Owner without payroll) gets the same tile framed around their own job,
  * approving timecards: what is waiting or the day approval opens leads, payday is the detail, and the white button
  * shows only when there is something to approve today. */
-function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDay, week }: HomeBProps) {
+function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDay, week, payrollStatus }: HomeBProps) {
   if (!nextPay) return null;
-  const mine = timecards.filter(item => !isOwnReview(item)), own = timecards.length - mine.length;
-  const ends = mine.map(periodEnd);
-  const closedEnds = businessDay ? ends.filter((end): end is string => !!end && end < businessDay) : [];
-  const closed = closedEnds.length;
-  // "10 of 11" when the eleventh is the reviewer's own card for a period that has ended.
-  const ownClosed = businessDay ? timecards.filter(item => isOwnReview(item)).map(periodEnd).filter(end => !!end && end < businessDay).length : 0;
-  const openEnd = businessDay ? [...ends, nextPay.period?.endDate].filter((end): end is string => !!end && end >= businessDay).sort()[0] : undefined;
+  // Phase 4 (U03): one count for every Home and every width (paydayReview): the cards this person may review whose pay
+  // period has ended, from the server's typed review facts. A card another reviewer approves is named on its own line
+  // and never counted; cards whose facts are missing make the count a lower bound ("At least 2").
+  const review = paydayReview(timecards, businessDay, nextPay.period?.endDate);
+  const closed = review.toReview, apart = review.otherReviewer + review.unknown, several = review.periods.length > 1;
+  const openEnd = review.openEnd;
   const away = nextPay.daysUntil <= 0 ? "Today" : nextPay.daysUntil === 1 ? "Tomorrow" : `In ${nextPay.daysUntil} days`;
   const href = week?.payrollHref ?? "/app/timecards";
   const payday = fmt(nextPay.payday, { weekday: "long", month: "short", day: "numeric" });
+  const routed = timecardsReady ? <>
+    {review.otherReviewer ? <div className="b-ink__m b-ink__own">{review.otherReviewer === 1 && review.own === 1 ? t.otherReviewerYours : t.otherReviewerCount(review.otherReviewer)}</div> : null}
+    {review.unknown ? <div className="b-ink__m b-ink__own">{t.uncheckedCount(review.unknown)}</div> : null}
+  </> : null;
   if (href !== "/app/payroll") {
     const opens = openEnd ? nextDay(openEnd) : undefined;
     const untilOpen = opens && businessDay ? Math.round((Date.parse(`${opens}T12:00:00Z`) - Date.parse(`${businessDay}T12:00:00Z`)) / 86_400_000) : null;
-    const paydayLine = `Payday ${fmt(nextPay.payday, { weekday: "short", month: "short", day: "numeric" })}`;
+    // Phase 8 (a.md #15, b.md #34): a date from the pay schedule is the "Scheduled payday" (DESIGN, payroll scope wording).
+    const paydayLine = keepWhole(`Scheduled payday ${fmt(nextPay.payday, { weekday: "short", month: "short", day: "numeric" })}`);
     const view = !timecardsReady ? { big: "Timecards", detail: connection === "loading" || connection === "reconnecting" ? "Checking…" : "Not available right now", chip: null, go: false }
-      : closed ? { big: `${closed}\u00a0to approve`, detail: `${ownClosed ? `${closed} of ${closed + ownClosed} timecards` : plural(closed, "timecard", "timecards")} · ${new Set(closedEnds).size > 1 ? "Pay periods ended" : "Pay period ended"}`, chip: "Open now", go: true }
+      : closed ? { big: t.toApprove(closed, review.exact), detail: `${apart ? `${closed} of ${closed + apart} timecards` : plural(closed, "timecard", "timecards")} · ${several ? "Pay periods ended" : "Pay period ended"}`, chip: "Open now", go: true }
+      // Cards whose review facts are missing are not "none waiting": the tile says they could not be checked.
+      : review.unknown ? { big: "Timecards", detail: "Pay period ended", chip: null, go: true }
       : opens ? { big: `Opens ${fmt(opens, { weekday: "short", month: "short", day: "numeric" })}`, detail: "Timecard approval", chip: untilOpen === null ? null : untilOpen <= 0 ? "Today" : untilOpen === 1 ? "Tomorrow" : `In ${untilOpen} days`, go: false }
       : { big: "None waiting", detail: "Timecards", chip: null, go: false };
     return <BInk label="Timecards">
-      <div className="b-ink__top"><span className="b-ink__k">Timecards</span>{view.chip ? <span className={view.go ? "b-ink__due" : "b-ink__due b-ink__due--ok"}>{view.chip}</span> : null}</div>
+      {/* Phase 9 (spec 3.1): "Open now" is the one state here that asks for something, so it keeps its chip; when approval
+        * opens ("Tomorrow", "In 3 days") is a time fact, grey header text. */}
+      <div className="b-ink__top"><span className="b-ink__k">Timecards</span>{view.chip ? <span className={view.go ? "b-ink__due" : "b-ink__due b-ink__due--when"}>{view.chip}</span> : null}</div>
       <div className="b-ink__big">{view.big}</div>
       <div className="b-ink__r2"><span>{view.detail}</span><span>{paydayLine}</span></div>
-      {own && view.go ? <div className="b-ink__m b-ink__own">An Owner approves your timecard</div> : null}
+      {routed}
       {view.go ? <BButtonLink href={href} kind="white" full label="Review timecards">Review timecards</BButtonLink>
         : <BButtonLink href={href} kind="glass" full label="See this week’s hours">See this week’s hours</BButtonLink>}
     </BInk>;
@@ -256,16 +349,24 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     // Review B2 (NV-007): the line says the state, never "Ready now" for work nobody has reviewed. Nov 14, 2026 inspection
     // (BR-7): this counts only cards whose pay period has ended, and says so, since Things to do also lists the cards of the
     // period still open (its rows carry the same words, "Pay period ended" and "Pay period still open").
-    : closed ? { title: `${plural(closed, "timecard", "timecards")} to review`, detail: new Set(closedEnds).size > 1 ? "Pay periods ended" : "Pay period ended", done: false }
+    // Phase 8 (a.md #5): the counted cards belong to a period that ended, not to the payday above, so one period is named.
+    : closed ? { title: t.toReview(closed, review.exact), detail: several || !review.periods[0] ? "Pay periods ended" : keepWhole(`Pay period ${periodLabel(review.periods[0].startDate, review.periods[0].endDate)} ended`), done: false }
+    : review.unknown ? { title: "Timecards", detail: "Pay period ended", done: false }
     : openEnd ? { title: "Approve timecards", detail: `From ${fmt(nextDay(openEnd), { weekday: "short", month: "short", day: "numeric" })}`, done: false }
     : { title: "Timecards", detail: "None waiting", done: true };
-  return <BInk label="Payday">
-    <div className="b-ink__top"><span className="b-ink__k">Payday</span><span className={closed ? "b-ink__due" : "b-ink__due b-ink__due--ok"}>{away}</span></div>
+  // Phase 8 (a.md #5): while a period with no payroll leads the column (PayrollNotice), its Prepare is the column's one
+  // strong action and this tile's button steps back to glass.
+  const behind = payrollStatus?.state === "ready" && !!payrollStatus.overdue;
+  return <BInk label="Scheduled payday">
+    {/* Phase 9 (spec 3.1): how far away payday is ("In 9 days") is a time fact, so it is grey header text, not a chip; what
+      * waits on this person is the line under the date ("11 timecards to review"). */}
+    <div className="b-ink__top"><span className="b-ink__k">Scheduled payday</span><span className="b-ink__due b-ink__due--when">{away}</span></div>
     <div className="b-ink__big">{payday}</div>
     {nextPay.period ? <div className="b-ink__m">Pay period {periodLabel(nextPay.period.startDate, nextPay.period.endDate)}</div> : null}
     {/* Review B2 (NV-007): the three unlabelled segments never lit, so they are gone; the line below says where payroll is. */}
     <div className="b-ink__r2"><span>{step.title}</span><span>{step.detail}</span></div>
-    <BButtonLink href={href} kind="white" full label={href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}>{href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}</BButtonLink>
+    {routed}
+    <BButtonLink href={href} kind={behind ? "glass" : "white"} full label={href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}>{href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}</BButtonLink>
   </BInk>;
 }
 
@@ -273,15 +374,19 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
  * 336 h". Positions and Lead follow only when the workplace requires them; what isn't required is not mentioned. The
  * figures are the schedule health read's (percentText is the shared rounding); nothing is recomputed. */
 function CoverageLine({ coverage }: { coverage: CoverageMinutes }) {
-  if (coverage.state === "not_configured") return <div className="b-cov" role="group" aria-label="Covered this week"><span className="b-cov__k">Staffing</span><span className="b-cov__d">Not set up</span></div>;
+  // Phase 4 (U09): the figure says what it measures. With no staffing needs there is no percentage, and the line says
+  // "No staffing needs set" (never 0% or 100%). The explanation opens under the line.
+  const explain = <Explain text={t.staffingExplain} label={t.explain} />;
+  if (coverage.state === "not_configured" || coverage.staffing.percent === null) return <div className="b-cov" role="group" aria-label="Covered this week"><span className="b-cov__k">Staffing</span><span className="b-cov__d">{t.noNeeds}</span>{explain}</div>;
   const extra: [string, MinuteObligation][] = ([["Positions", coverage.positions], ["Lead", coverage.lead]] as [string, MinuteObligation][]).filter(([, value]) => value.required !== 0);
-  const staffing = coverage.staffing, percent = staffing.percent === null ? null : Math.max(0, Math.min(100, staffing.percent));
-  const detail = staffing.required === 0 ? "Nothing required" : `${minutesText(staffing.covered)} of ${minutesText(staffing.required)}`;
+  const staffing = coverage.staffing, percent = Math.max(0, Math.min(100, coverage.staffing.percent));
+  const detail = `${minutesText(staffing.covered)} of ${minutesText(staffing.required)}`;
   return <div className="b-cov" role="group" aria-label="Covered this week">
-    <span className="b-cov__k" data-short={percent !== null && percent < 100 || undefined}>Staffing <b className="c-num">{percentText(staffing)}</b></span>
-    {percent !== null ? <span className="b-cov__bar" aria-hidden="true"><i style={{ width: `${percent}%` }} data-short={percent < 100 || undefined} /></span> : null}
+    <span className="b-cov__k" data-short={percent < 100 || undefined}>Staffing <b className="c-num">{percentText(staffing)}</b></span>
+    <span className="b-cov__bar" aria-hidden="true"><i style={{ width: `${percent}%` }} data-short={percent < 100 || undefined} /></span>
     <span className="b-cov__d c-num">{detail}</span>
     {extra.map(([name, value]) => <span key={name} className="b-cov__d c-num">{`${name} ${percentText(value)}`}</span>)}
+    {explain}
   </div>;
 }
 

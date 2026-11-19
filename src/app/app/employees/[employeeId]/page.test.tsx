@@ -1,31 +1,31 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 
-const m = vi.hoisted(() => ({
+const m = rs.hoisted(() => ({
   actorRole: "MANAGER",
   employeeRole: "EMPLOYEE",
-  profileUnavailable:false, invitation:vi.fn(), hours:vi.fn(),
+  profileUnavailable:false, invitation:rs.fn(), hours:rs.fn(), profileOptions:[] as unknown[],
 }));
 
-vi.mock("next/link", () => ({
+rs.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
     createElement("a", { href, ...props }, children),
 }));
-vi.mock("next/navigation", () => ({
+rs.mock("next/navigation", () => ({
   notFound: () => { throw new Error("notFound"); },
 }));
-vi.mock("@/lib/auth/permissions", () => ({
+rs.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
   requireRoles: async () => ({ id: "actor", role: m.actorRole }),
 }));
-vi.mock("@/lib/auth/session", () => ({
+rs.mock("@/lib/auth/session", () => ({
   requireSessionMutationProof: async () => ({
     employee: { id: "actor", role: m.actorRole },
     sessionTokenHash: "a".repeat(64),
   }),
 }));
-vi.mock("@/lib/data/employees", () => {
+rs.mock("@/lib/data/employees", () => {
   const employee = () => ({
     id: "worker",
     firstName: "Sam",
@@ -47,25 +47,25 @@ vi.mock("@/lib/data/employees", () => {
     ],
   };
 });
-vi.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
-vi.mock("@/lib/data/shift-change-views", () => ({ readOperationalRuleProfileView: async () => null }));
-vi.mock("@/lib/employee-display", () => ({
+rs.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
+rs.mock("@/lib/data/shift-change-views", () => ({ readOperationalRuleProfileView: async () => null }));
+rs.mock("@/lib/employee-display", () => ({
   employeeInitials: () => "SR",
   employeeRoleLabel: (role: string) => role,
 }));
-vi.mock("@/lib/phone", () => ({ formatPhoneNumber: (value: string) => value, normalizePhoneNumber: (value: string) => value }));
-vi.mock("@/components/page-header", () => ({ PageHeader: ({ title }: { title: string }) => createElement("h1", null, title) }));
-vi.mock("@/components/employee-core-profile-form", () => ({
-  EmployeeCoreProfileForm: ({ownerScope,more}:{ownerScope?:{scopeRevision:number};more?:React.ReactNode}) => createElement("div", { "data-testid": "employee-core-form", "data-scope-revision":ownerScope?.scopeRevision??"none" }, "Employee details", more),
+rs.mock("@/lib/phone", () => ({ formatPhoneNumber: (value: string) => value, normalizePhoneNumber: (value: string) => value }));
+rs.mock("@/components/page-header", () => ({ PageHeader: ({ title }: { title: string }) => createElement("h1", null, title) }));
+rs.mock("@/components/employee-core-profile-form", () => ({
+  EmployeeCoreProfileForm: ({ownerScope,more,employmentDates}:{ownerScope?:{scopeRevision:number};more?:React.ReactNode;employmentDates?:{hireDate:string|null;birthDate:string|null}}) => createElement("div", { "data-testid": "employee-core-form", "data-scope-revision":ownerScope?.scopeRevision??"none", "data-hire":employmentDates?.hireDate, "data-birth":employmentDates?.birthDate }, "Employee details", more),
   EmployeeStatusForm: ({employee}:{employee:{firstName:string}}) => createElement("button", { "data-testid": "employee-status-form" }, `Deactivate ${employee.firstName}`),
   SheetField: ({label,href}:{label:string;href:string}) => createElement("a", { href }, label),
 }));
-vi.mock("@/components/employee-scheduling-fields", () => ({ EmployeeSchedulingFields: () => null }));
-vi.mock("@/components/configuration-form", () => ({ ConfigurationForm: ({ children }: { children: React.ReactNode }) => createElement("form", null, children) }));
-vi.mock("@/components/operational-rule-fields", () => ({ OperationalRuleFields: () => null }));
-vi.mock("../actions", () => ({
-  saveEmployeeCoreProfileAction: vi.fn(),
-  saveEmployeeSchedulingProfileAction: vi.fn(),
+rs.mock("@/components/employee-scheduling-fields", () => ({ EmployeeSchedulingFields: () => null }));
+rs.mock("@/components/configuration-form", () => ({ ConfigurationForm: ({ children }: { children: React.ReactNode }) => createElement("form", null, children) }));
+rs.mock("@/components/operational-rule-fields", () => ({ OperationalRuleFields: () => null }));
+rs.mock("../actions", () => ({
+  saveEmployeeCoreProfileAction: rs.fn(),
+  saveEmployeeSchedulingProfileAction: rs.fn(),
 }));
 
 import EmployeeProfilePage from "./page";
@@ -104,6 +104,16 @@ it('shows the person’s hours, opens their own availability and their location�
   expect(await overview()).toContain('<span class="c-title__sub">Sign-in active</span>');
   m.invitation.mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'v',eligibility:'NO_EMAIL',registeredEmailMasked:null,invitationRevision:0,invitation:null,delivery:'UNAVAILABLE',allowedCommands:[],retryAfterMs:null});
   expect(await overview()).toContain('<span class="c-title__sub">No email, can’t sign in</span>');
+});
+
+it('says a scheduled figure is not available, and why, when the schedule read was incomplete (Phase 8, a.md #31)', async () => {
+  m.hours.mockReset().mockResolvedValue({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},
+    data:{employeeId:'worker',today:'2026-10-14',weekStart:'2026-10-12',timeZone:'America/Puerto_Rico',scheduledTodayMinutes:null,scheduledWeekMinutes:null,workedWeekMinutes:null,workedBasis:'EFFECTIVE_ELAPSED_INCLUDING_BREAKS'}});
+  const html = renderToStaticMarkup(await EmployeeProfilePage({ params: Promise.resolve({ employeeId: "worker" }) }));
+  expect(html).toMatch(/Scheduled today<\/span><span class="c-row__detail"><span>The whole schedule couldn’t be read<\/span><\/span><\/span><span class="c-row__value c-row__value--soft">Not available</);
+  expect(html).toMatch(/Scheduled this week<\/span><span class="c-row__detail"><span>The whole schedule couldn’t be read<\/span><\/span><\/span><span class="c-row__value c-row__value--soft">Not available</);
+  // The place is the title's own element, so the phone layer's 13px pull never clips its first letter (a.md #3).
+  expect(html).toMatch(/<span class="c-row__title c-row__title--b"><span>[^<]+<\/span><\/span>/);
 });
 
 it('keeps the person page when the hours read fails or is refused, and reads hours for the overview only', async () => {
@@ -172,20 +182,22 @@ it('offers account recovery for this employee and links missing hour settings to
  expect(html).toContain('href="/app/schedule/settings#target-worker"');
 });
 // Server composition tests; actual mounted finite-body behavior is checked separately.
-const operationalPageFixture=vi.hoisted(()=>({denied:false}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
-vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+const operationalPageFixture=rs.hoisted(()=>({denied:false}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
 beforeEach(()=>{operationalPageFixture.denied=false;});
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('current company-wide management access');expect(html).not.toContain('Sam');expect(html).not.toContain('employee-core-profile-form');});
 
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmployeeHours:m.hours,readOperationalEmployeeProfile:async()=>{
+rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmployeeHours:m.hours,readOperationalEmployeeProfile:async(_proof:unknown,_id:unknown,_ex:unknown,options?:{employmentDates?:boolean})=>{
+ m.profileOptions.push(options);
  if(m.profileUnavailable)return {state:'unavailable',reason:'source_changed'};
  const source=await import('@/lib/data/employees'),profile=await source.getEmployeeManagementProfile('worker'),locations=await source.listLocations();
- return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{profile,locations,ownerScope:m.actorRole==='OWNER'?{employeeId:'worker',employeeUpdatedAt:'2026-10-05 12:00:00+00',role:m.employeeRole,active:true,roleGeneration:'9',scopeRevision:7,scopeState:'UNASSIGNED',scope:null}:null}};
+ return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{profile,locations,ownerScope:m.actorRole==='OWNER'?{employeeId:'worker',employeeUpdatedAt:'2026-10-05 12:00:00+00',role:m.employeeRole,active:true,roleGeneration:'9',scopeRevision:7,scopeState:'UNASSIGNED',scope:null}:null,
+  ...(options?.employmentDates?{employmentDates:{hireDate:'2016-08-01',terminationDate:null,birthDate:'1995-04-12'}}:{})}};
 }}));
-vi.mock('@/lib/auth/invitations/service.server',()=>({readInvitationStatus:m.invitation}));
+rs.mock('@/lib/auth/invitations/service.server',()=>({readInvitationStatus:m.invitation}));
 it('mounts real Owner invitation and scope controls with the coherent profile context',async()=>{
  m.actorRole='OWNER';m.employeeRole='MANAGER';const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'}),searchParams:Promise.resolve({edit:'1'})}));
  expect(html).toContain('data-scope-revision="7"');expect(m.invitation).toHaveBeenCalledOnce();
@@ -198,4 +210,14 @@ it('does not request or render Owner invitation/scope controls for a Manager',as
 });
 it('withholds the profile and Owner controls when the coherent read changed',async()=>{
  m.actorRole='OWNER';m.profileUnavailable=true;const html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('Employee profile unavailable');expect(html).not.toContain('Sam');expect(m.invitation).not.toHaveBeenCalled();
+});
+
+it('reads employment dates only for the edit sheet and never shows them on the overview or Access pages',async()=>{
+ m.actorRole='MANAGER';m.employeeRole='EMPLOYEE';m.profileOptions.length=0;
+ const overview=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));
+ const access=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'}),searchParams:Promise.resolve({view:'access'})}));
+ const edit=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'}),searchParams:Promise.resolve({edit:'1'})}));
+ expect(m.profileOptions).toEqual([{employmentDates:false},{employmentDates:false},{employmentDates:true}]);
+ for(const html of [overview,access])expect(html).not.toMatch(/1995-04-12|2016-08-01|data-birth|data-hire/);
+ expect(edit).toContain('data-hire="2016-08-01" data-birth="1995-04-12"');
 });

@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { requestSnapshot } from './request-notifications';
 import { buildNotificationIntents } from '../notifications/recipients';
 import { notificationPolicyFor } from '../notifications/policy';

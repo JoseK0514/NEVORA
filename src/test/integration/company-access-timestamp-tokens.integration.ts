@@ -1,10 +1,10 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import {companyAccessFixture} from './company-access-fixture';
 import {issued,ownedPassword} from './company-access-claim.test-support';
 import {claimInvitation} from '../../lib/auth/invitations/claim.server';
 import * as passwords from '../../lib/auth/password';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 /** Model pre/post-rollout session defaults with actual SQL, never rewrite stored
  * invitation versions or guess how a historical locale encoded its text. */
 function formatted(ex:SqlExecutor,zone:string,style:string):SqlExecutor{
@@ -17,7 +17,7 @@ it('keeps an existing UTC/ISO invitation usable under the canonical source sessi
 it('fails closed for a persisted noncanonical invitation version and supports explicit Owner reissue without rewriting its old version',async()=>{
  const f=await companyAccessFixture();try{
   const legacy=formatted(f.db.executor,'Pacific/Honolulu','SQL, DMY'),old=await issued({...f,db:{...f.db,executor:legacy}}),[stored]=await f.q<{target_version:string}>('SELECT target_version FROM company_invitations WHERE id=$1',[old.receipt.invitationId]);
-  const canonical=formatted(f.db.executor,'UTC','ISO, YMD'),hash=vi.spyOn(passwords,'hashPassword');
+  const canonical=formatted(f.db.executor,'UTC','ISO, YMD'),hash=rs.spyOn(passwords,'hashPassword');
   try{expect(await claimInvitation(old.proof,ownedPassword,canonical)).toEqual({state:'invalid'});expect(hash).not.toHaveBeenCalled();}finally{hash.mockRestore();}
   expect(await f.q("SELECT count(*)::int AS n FROM employee_credentials WHERE employee_id='target'")).toEqual([{n:0}]);
   const fresh=await issued({...f,db:{...f.db,executor:canonical}});expect(fresh.proof).not.toBe(old.proof);expect(await claimInvitation(old.proof,ownedPassword,canonical)).toEqual({state:'invalid'});expect(await claimInvitation(fresh.proof,ownedPassword,canonical)).toEqual({state:'activated',employeeId:'target'});

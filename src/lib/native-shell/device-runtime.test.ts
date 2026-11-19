@@ -1,6 +1,6 @@
-import { it, expect, vi, afterEach } from 'vitest';
+import { it, expect, rs, afterEach } from '@rstest/core';
 import { nativeDeviceRuntime } from './device-runtime';
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { rs.unstubAllGlobals(); });
 it('iOS and Android use closed versioned messages and drop retired replies', async () => {
     const bodies: string[] = [];
     let answer!: (value: object) => void;
@@ -11,7 +11,7 @@ it('iOS and Android use closed versioned messages and drop retired replies', asy
     runtime.close();
     await expect(pending).rejects.toThrow('retired');
     answer({ version: 1, id: message.id, state: 'ready', nonce: crypto.randomUUID() });
-    const port = { postMessage: vi.fn(), onmessage: null as null | ((event: {
+    const port = { postMessage: rs.fn(), onmessage: null as null | ((event: {
             data: string;
         }) => void) }, android = nativeDeviceRuntime({ nevoraCapabilities: port } as unknown as Window), request = android.request('hello');
     const sent = JSON.parse(port.postMessage.mock.calls[0][0]);
@@ -20,10 +20,10 @@ it('iOS and Android use closed versioned messages and drop retired replies', asy
     android.close();
 });
 it('browser API has fixed endpoints and bounds/cancels oversized replies', async () => {
-    vi.stubGlobal('AbortSignal', {}); // iOS16 has neither any nor timeout.
-    const cancel = vi.fn();
-    const fetch = vi.fn<typeof globalThis.fetch>(async () => new Response(new ReadableStream({ start(c) { c.enqueue(new Uint8Array(4097)); }, cancel }), { headers: { 'Content-Type': 'application/json' } }));
-    vi.stubGlobal('fetch', fetch);
+    rs.stubGlobal('AbortSignal', {}); // iOS16 has neither any nor timeout.
+    const cancel = rs.fn();
+    const fetch = rs.fn<typeof globalThis.fetch>(async () => new Response(new ReadableStream({ start(c) { c.enqueue(new Uint8Array(4097)); }, cancel }), { headers: { 'Content-Type': 'application/json' } }));
+    rs.stubGlobal('fetch', fetch);
     const runtime = nativeDeviceRuntime({} as Window);
     await expect(runtime.api('status', { keyFingerprint: 'public' }, new AbortController().signal)).rejects.toThrow('large');
     expect(cancel).toHaveBeenCalled();
@@ -31,7 +31,7 @@ it('browser API has fixed endpoints and bounds/cancels oversized replies', async
     expect(fetch.mock.calls[0][1]).toMatchObject({ method: 'POST', credentials: 'same-origin', redirect: 'error' });
 });
 it('mounted Android settings share replies without cancelling each other', async () => {
-    const port = { postMessage: vi.fn(), onmessage: null as null | ((event: {
+    const port = { postMessage: rs.fn(), onmessage: null as null | ((event: {
             data: string;
         }) => void) }, host = { nevoraCapabilities: port } as unknown as Window;
     const first = nativeDeviceRuntime(host), second = nativeDeviceRuntime(host), a = first.request('hello'), b = second.request('hello');

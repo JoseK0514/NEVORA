@@ -40,6 +40,11 @@
   --b-press-scale: 0.96; --b-dur-press: 150ms; --b-ease-out: ease-out;
   /* motion (Phase 1 names): 150ms for press, hover and every exit, 300ms for an entrance, all ease-out */
   --b-dur-hover: 150ms; --b-dur-exit: 150ms; --b-dur-enter: 300ms;
+  /* Phase 7 (Nov 17, 2026): the scrim under a sheet, the press tint (4% ink on white; 8% of a control's own text colour on
+   * the band and on tabs), the loading shimmer (one pass, and how long loading lasts before it first moves) and one
+   * turn of the spinner. */
+  --b-scrim: rgb(10 24 23 / 0.32); --b-press-tint: rgb(16 24 32 / 0.04); --b-press-tint-own: color-mix(in srgb, currentColor 8%, transparent);
+  --b-dur-shimmer: 1600ms; --b-delay-shimmer: 300ms; --b-dur-spin: 800ms;
   /* shape and targets */
   --b-radius-card: 22px; --b-radius-pill: 999px; --b-radius-field: 14px; --b-radius-small: 10px;
   --b-target: 44px; --b-target-touch: 48px;
@@ -72,6 +77,22 @@
   --b-space-24: 24px; --b-space-32: 32px; --b-space-40: 40px; --b-space-48: 48px; --b-space-64: 64px;
   /* the three named insets (horizontal only): phone page gutter, card and row inset, wide card and row inset */
   --b-gutter: 14px; --b-inset: 18px; --b-inset-wide: 22px;
+  /* Phase 9 (Nov 18, 2026): one status label, one note, one icon scale, one button ladder.
+   * Edges: each tone's own ink mixed 16% over its tint, so a chip or a callout is a crisp shape on white (the tints are
+   * 1.10–1.14:1 against white) and keeps an edge in High Contrast. Decorative: the words carry the meaning. */
+  --b-teal-edge: #C5DEDB; --b-amber-edge: #EBD8C0; --b-red-edge: #F1CCC8; --b-green-edge: #C7DED1; --b-quiet-edge: #D4D6D8;
+  /* one chip (22px, 8px sides, a 6px live dot) and one inline count (20px, the segmented control's count) */
+  --b-chip-h: 22px; --b-chip-px: 8px; --b-chip-dot: 6px; --b-count-h: 20px;
+  /* one optical size per icon role: in a chip, inline beside text, a row lead or callout, a control, a state card,
+   * the phone tab bar, a finish */
+  --b-ic-chip: 12px; --b-ic-inline: 16px; --b-ic-lead: 18px; --b-ic-control: 20px; --b-ic-state: 22px; --b-ic-tab: 24px; --b-ic-finish: 28px;
+  /* the button ladder: compact (card headers), regular (rows, state cards, footers), the band from 768px (40px on a
+   * phone's band), full width */
+  --b-btn-h-compact: 36px; --b-btn-h: 44px; --b-btn-h-band: 48px; --b-btn-h-full: 52px;
+  /* the white thumb of a segmented control and a switch's knob: the one shadow colour */
+  --b-shadow-thumb: 0 1px 2px rgb(16 40 38 / 0.10), 0 2px 6px rgb(16 40 38 / 0.16);
+  /* menus (F3) and the toast */
+  --b-radius-menu: 16px;
   /* the desktop and tablet frame (Phase 2, Nov 15, 2026). Three content widths: work pages fill the grid up to
    * --b-frame-wide; pages opened from them read in one --b-frame-read column; a form's field block stops at --b-frame-form. */
   --b-frame-wide: 1080px; --b-frame-read: 812px; --b-frame-form: 560px;

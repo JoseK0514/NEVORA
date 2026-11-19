@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from '@rstest/core';
 import type { SessionMutationProof } from '../../lib/shift-changes/types';
 import { reviewTimeCorrection, submitTimeCorrection, type CorrectionMutationResult } from '../../lib/time-corrections/service';
 import { readEmployeeTimeCorrections, readManagerTimeCorrections } from '../../lib/data/time-corrections.server';

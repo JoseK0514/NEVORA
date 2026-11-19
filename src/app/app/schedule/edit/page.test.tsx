@@ -1,24 +1,24 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { shiftDurationLabel } from "./shift-edit-timing";
 
-const mocks = vi.hoisted(() => ({
-  roles: vi.fn(),
-  shift: vi.fn(),
-  employees: vi.fn(),
-  locations: vi.fn(),
-  positions: vi.fn(),
-  redirect: vi.fn((href: string) => { throw new Error(href); }),
+const mocks = rs.hoisted(() => ({
+  roles: rs.fn(),
+  shift: rs.fn(),
+  employees: rs.fn(),
+  locations: rs.fn(),
+  positions: rs.fn(),
+  redirect: rs.fn((href: string) => { throw new Error(href); }),
 }));
-vi.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.roles, MANAGER_ROLES: ["OWNER", "MANAGER"] }));
-vi.mock("@/lib/data/schedules", () => ({ getShiftForManagement: mocks.shift }));
-vi.mock("@/lib/data/employees", () => ({ listEmployees: mocks.employees, listLocations: mocks.locations }));
-vi.mock("@/lib/data/positions", () => ({ listPositions: mocks.positions }));
-vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
-vi.mock("@/app/app/schedule/actions", () => ({ updateShiftAction: vi.fn(), deleteShiftAction: vi.fn() }));
+rs.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.roles, MANAGER_ROLES: ["OWNER", "MANAGER"] }));
+rs.mock("@/lib/data/schedules", () => ({ getShiftForManagement: mocks.shift }));
+rs.mock("@/lib/data/employees", () => ({ listEmployees: mocks.employees, listLocations: mocks.locations }));
+rs.mock("@/lib/data/positions", () => ({ listPositions: mocks.positions }));
+rs.mock("next/navigation", () => ({ redirect: mocks.redirect }));
+rs.mock("@/app/app/schedule/actions", () => ({ updateShiftAction: rs.fn(), deleteShiftAction: rs.fn() }));
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   mocks.roles.mockResolvedValue({ id: "OWNER", role: "OWNER" });
   mocks.shift.mockResolvedValue({ id: "test-shift", employeeId: "AVERY", employeeName: "Avery Rivera", locationId: "main", weekStart: "2026-10-12", date: "2026-10-14", startTime: "08:00", endTime: "16:00", notes: "Opening team", isDesignatedLead: true, positionId: "support" });
   mocks.employees.mockResolvedValue([{ id: "AVERY", firstName: "Avery", lastName: "Rivera", active: true, role: "LEAD", positionIds: ["support"] }]);
@@ -87,18 +87,18 @@ it("uses the canonical nominal shift period for fractional, overnight, midnight,
 });
 
 // Server composition tests; actual mounted finite-body behavior is checked separately.
-const operationalPageFixture=vi.hoisted(()=>({denied:false,scoped:false,saveAvailability:'available'}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({readOperationalAuthority:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,locations:[{id:'main',name:'Managed location',shortName:'Managed'}],scope:{mode:operationalPageFixture.scoped?'LOCATIONS':'COMPANY',locationIds:operationalPageFixture.scoped?['main']:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
-vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+const operationalPageFixture=rs.hoisted(()=>({denied:false,scoped:false,saveAvailability:'available'}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({readOperationalAuthority:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,locations:[{id:'main',name:'Managed location',shortName:'Managed'}],scope:{mode:operationalPageFixture.scoped?'LOCATIONS':'COMPANY',locationIds:operationalPageFixture.scoped?['main']:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
 beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;operationalPageFixture.saveAvailability='available';});
 
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('current company-wide management access');expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(html).not.toContain('name="shiftId"');});
 
-const held=vi.hoisted(()=>({read:vi.fn()}));
-vi.mock('@/lib/company-access/operational-read.server',()=>({readSchedulePendingChanges:held.read,readOperationalShiftEditor:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['main']},data:{weekStart:'2026-10-12',locationId:'main',shift:{id:'test-shift',scheduleId:'week',employeeId:'AVERY',employeeName:'Avery Rivera',locationId:'main',weekStart:'2026-10-12',date:'2026-10-14',startTime:'16:00',endTime:'24:00',positionId:'support',notes:'Scoped note',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:operationalPageFixture.saveAvailability==='requires_company'?'PUBLISHED':'DRAFT'},employeeOptions:[{id:'AVERY',name:'Avery Rivera',positionIds:['support']}],positionOptions:[{id:'support',name:'Support'}],sourceVersion:'fixture',saveAvailability:operationalPageFixture.saveAvailability}})}));
+const held=rs.hoisted(()=>({read:rs.fn()}));
+rs.mock('@/lib/company-access/operational-read.server',()=>({readSchedulePendingChanges:held.read,readOperationalShiftEditor:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['main']},data:{weekStart:'2026-10-12',locationId:'main',shift:{id:'test-shift',scheduleId:'week',employeeId:'AVERY',employeeName:'Avery Rivera',locationId:'main',weekStart:'2026-10-12',date:'2026-10-14',startTime:'16:00',endTime:'24:00',positionId:'support',notes:'Scoped note',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:operationalPageFixture.saveAvailability==='requires_company'?'PUBLISHED':'DRAFT'},employeeOptions:[{id:'AVERY',name:'Avery Rivera',positionIds:['support']}],positionOptions:[{id:'support',name:'Support'}],sourceVersion:'fixture',saveAvailability:operationalPageFixture.saveAvailability}})}));
 it('uses the actual minimal manual editor for scoped drafts without global employee catalogs',async()=>{
  operationalPageFixture.scoped=true;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('Edit draft shift');expect(html).toContain('name="endTime" value="24:00"');expect(html).toContain('Review deletion');expect(html).not.toContain('Delete this draft shift');expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(mocks.locations).not.toHaveBeenCalled();
 });

@@ -21,6 +21,7 @@ import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck"
 import { DeviceTabletIcon } from "@phosphor-icons/react/dist/ssr/DeviceTablet";
 import { PasswordIcon } from "@phosphor-icons/react/dist/ssr/Password";
 import { CameraIcon } from "@phosphor-icons/react/dist/ssr/Camera";
+import { ClockCountdownIcon } from "@phosphor-icons/react/dist/ssr/ClockCountdown";
 import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import { CurrencyDollarIcon } from "@phosphor-icons/react/dist/ssr/CurrencyDollar";
 import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
@@ -58,7 +59,7 @@ export default async function SettingsPage() {
   const count = (value: number | null | undefined) => value === null || value === undefined ? undefined : value === 0 ? "None yet" : String(value);
   // Review B1 (NV-247): something waiting ("1 not set up") reads amber; plain counts stay grey.
   // Review B5 (NV-099): every navigation row leads with its Phosphor bold icon in a tinted circle, as on More, Team and Time.
-  const icons: Record<string, ReactNode> = { "/app/settings/workspace": <BuildingsIcon weight="bold" />, "/app/settings/locations": <MapPinIcon weight="bold" />, "/app/settings/branding": <PaintBrushIcon weight="bold" />, "/app/settings/features": <ToggleRightIcon weight="bold" />, "/app/settings/company-policies": <ScrollIcon weight="bold" />, "/app/settings/positions": <BriefcaseIcon weight="bold" />, "/app/settings/breaks": <CoffeeIcon weight="bold" />, "/app/schedule/settings": <CalendarCheckIcon weight="bold" />, "/app/settings/clocker": <DeviceTabletIcon weight="bold" />, "/app/settings/clocker/pins": <PasswordIcon weight="bold" />, "/app/settings/clocker/photos": <CameraIcon weight="bold" />, "/app/clocker-recovery?from=settings": <ArrowCounterClockwiseIcon weight="bold" />, "/app/settings/payroll": <CurrencyDollarIcon weight="bold" />, "/app/billing": <CreditCardIcon weight="bold" /> };
+  const icons: Record<string, ReactNode> = { "/app/settings/workspace": <BuildingsIcon weight="bold" />, "/app/settings/locations": <MapPinIcon weight="bold" />, "/app/settings/branding": <PaintBrushIcon weight="bold" />, "/app/settings/features": <ToggleRightIcon weight="bold" />, "/app/settings/company-policies": <ScrollIcon weight="bold" />, "/app/settings/positions": <BriefcaseIcon weight="bold" />, "/app/settings/breaks": <CoffeeIcon weight="bold" />, "/app/schedule/settings": <CalendarCheckIcon weight="bold" />, "/app/settings/clocker": <DeviceTabletIcon weight="bold" />, "/app/settings/clocker/pins": <PasswordIcon weight="bold" />, "/app/settings/clocker/photos": <CameraIcon weight="bold" />, "/app/settings/clocker/matching": <ClockCountdownIcon weight="bold" />, "/app/clocker-recovery?from=settings": <ArrowCounterClockwiseIcon weight="bold" />, "/app/settings/payroll": <CurrencyDollarIcon weight="bold" />, "/app/billing": <CreditCardIcon weight="bold" /> };
   const row = (href: string, title: string, value?: string | number | null, tone: "soft" | "amber" = "soft") => pathEnabled(href, presentation.modules)
     // Review B5 (NV-247, NV-260): something waiting is an amber chip, not grey or amber text.
     ? <li key={href}><CorpRow href={href} title={title} icon={icons[href]} one value={tone === "amber" || value === null || value === undefined ? undefined : typeof value === "number" ? count(value) : value} valueTone="soft"
@@ -91,6 +92,7 @@ export default async function SettingsPage() {
           {row("/app/settings/clocker", "Clocker tablets", tablets, waiting ? "amber" : "soft")}
           {row("/app/settings/clocker/pins", "Clocker PINs")}
           {row("/app/settings/clocker/photos", "Punch photos")}
+          {row("/app/settings/clocker/matching", "Shift matching")}
           {/* Team's "Clocker PIN" row used to open this by mistake (A2); its place is with the other Clocker tools. */}
           {row("/app/clocker-recovery?from=settings", "Clocker recovery")}
         </CorpRows>

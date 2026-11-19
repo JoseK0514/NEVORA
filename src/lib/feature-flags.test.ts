@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {readFeatureFlags} from './feature-flags';
 import {FEATURE_FLAGS} from './feature-flags';
 import {readFileSync} from 'node:fs';
@@ -30,6 +30,12 @@ it('keeps business imports and model retrieval independent and explicitly off by
   expect(readFeatureFlags({})).toMatchObject({ownerAdvisorBusinessImports:false,ownerAdvisorBusinessRetrieval:false});
   expect(readFeatureFlags({NEVORA_OWNER_ADVISOR_BUSINESS_IMPORTS_ENABLED:'true'})).toMatchObject({ownerAdvisor:false,ownerAdvisorBusinessImports:true,ownerAdvisorBusinessRetrieval:false});
   expect(readFeatureFlags({NEVORA_OWNER_ADVISOR_BUSINESS_RETRIEVAL_ENABLED:'true'})).toMatchObject({ownerAdvisorBusinessImports:false,ownerAdvisorBusinessRetrieval:true});
+});
+
+it('keeps public-page analytics independent and off by default', () => {
+  expect(readFeatureFlags({})).toMatchObject({webAnalytics:false});
+  expect(readFeatureFlags({NEVORA_WEB_ANALYTICS_ENABLED:'true'})).toMatchObject({webAnalytics:true,ownerAdvisor:false,commerce:false});
+  expect(readFeatureFlags({NEVORA_WEB_ANALYTICS_ENABLED:'1'})).toMatchObject({webAnalytics:false});
 });
 
 it('ships an explicit disabled example for every registered opt-in gate', () => {

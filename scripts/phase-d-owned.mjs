@@ -6,14 +6,14 @@ import {createServer} from 'node:net';
 import {randomBytes} from 'node:crypto';
 if(process.env.DATABASE_URL)throw new Error('Unset DATABASE_URL before owned Phase D verification.');
 const mode=process.argv[2]??'timecards';
-const modes={migrations:['node_modules/vitest/vitest.mjs','run','--config','vitest.clocker-integration.config.mts','src/test/integration/clocker-phase-d-migrations.integration.ts'],timecards:['node_modules/vitest/vitest.mjs','run','--config','vitest.timecards-integration.config.mts'],
-  schedule:['node_modules/vitest/vitest.mjs','run','--config','vitest.employee-schedule-integration.config.mts'],
-  recovery:['node_modules/vitest/vitest.mjs','run','--config','vitest.clocker-recovery-integration.config.mts'],
-  account:['node_modules/vitest/vitest.mjs','run','--config','vitest.account-recovery-integration.config.mts'],
-  actions:['node_modules/vitest/vitest.mjs','run','--config','vitest.action-center-integration.config.mts'],
-  corrections:['node_modules/vitest/vitest.mjs','run','--config','vitest.corrections-integration.config.mts'],
-  payroll:['node_modules/vitest/vitest.mjs','run','--config','vitest.payroll-export-integration.config.mts'],
-  reports:['node_modules/vitest/vitest.mjs','run','--config','vitest.reports-integration.config.mts'],
+const modes={migrations:['scripts/run-rstest.mjs','run','--config','vitest.clocker-integration.config.mts','src/test/integration/clocker-phase-d-migrations.integration.ts'],timecards:['scripts/run-rstest.mjs','run','--config','vitest.timecards-integration.config.mts'],
+  schedule:['scripts/run-rstest.mjs','run','--config','vitest.employee-schedule-integration.config.mts'],
+  recovery:['scripts/run-rstest.mjs','run','--config','vitest.clocker-recovery-integration.config.mts'],
+  account:['scripts/run-rstest.mjs','run','--config','vitest.account-recovery-integration.config.mts'],
+  actions:['scripts/run-rstest.mjs','run','--config','vitest.action-center-integration.config.mts'],
+  corrections:['scripts/run-rstest.mjs','run','--config','vitest.corrections-integration.config.mts'],
+  payroll:['scripts/run-rstest.mjs','run','--config','vitest.payroll-export-integration.config.mts'],
+  reports:['scripts/run-rstest.mjs','run','--config','vitest.reports-integration.config.mts'],
   remediation:['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d-remediation-qa.mjs'],
   browser:['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/phase-d-browser-qa.mjs']};
 if(!Object.hasOwn(modes,mode))throw new Error('Unknown owned Phase D test mode');

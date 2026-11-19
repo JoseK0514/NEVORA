@@ -1,9 +1,9 @@
-import { afterAll, beforeAll, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, expect, it, rs } from '@rstest/core';
 import { randomUUID } from 'node:crypto';
 import type { OwnedPgTransport } from './owned-pg-transport';
-vi.mock('server-only', () => ({}));
+rs.mock('server-only', () => ({}));
 let transport: OwnedPgTransport;
-vi.mock('@/lib/db', () => ({ getDb: () => transport, queryRows: (rows: unknown) => rows }));
+rs.mock('@/lib/db', () => ({ getDb: () => transport, queryRows: (rows: unknown) => rows }));
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { createOwnedPgTransport } from './owned-pg-transport';
 import { seedOwnedApp } from './owned-app-fixture';

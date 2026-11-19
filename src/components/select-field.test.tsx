@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 
 const componentPath = fileURLToPath(new URL("./select-field.tsx", import.meta.url));
 

@@ -1,4 +1,5 @@
 // Client-safe invitation metadata. Bearer proof/password never belong in these DTOs.
+import type {PasswordRejection} from '../password-requirements';
 import type { AccessFailure } from '@/lib/company-access/model';
 export type InvitationCommand =
  |{action:'ISSUE';operationId:string;expectedEmployeeVersion:string;expectedInvitationRevision:number}
@@ -6,7 +7,8 @@ export type InvitationCommand =
 /** Own login identity is disclosed only after a known successful credential commit. */
 export type ActivationResult =
  |{state:'activated';employeeId:string}
- |{state:'invalid'|'unavailable'|'outcome_unknown'};
+ |{state:'invalid';passwordReason?:PasswordRejection}
+ |{state:'unavailable'|'outcome_unknown'};
 export type InvitationStatusResult =
   | { state:'ready'; employeeId:string;employeeVersion:string;
       eligibility:'INVITABLE'|'NO_EMAIL'|'ALREADY_ACTIVATED'|'INACTIVE'|'SELF_ISSUE_DENIED';

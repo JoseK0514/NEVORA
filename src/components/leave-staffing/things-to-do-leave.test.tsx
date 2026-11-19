@@ -1,11 +1,11 @@
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import type {ActionCenter,ActionItem} from '../../lib/action-center/project';
 import {staffingRepairActions} from '../../lib/time-off-staffing/actions';
 
-vi.mock('next/link',()=>({default:({children,prefetch:_prefetch,...props}:ComponentProps<'a'>&{prefetch?:boolean})=>createElement('a',props,children)}));
-vi.mock('next/navigation',()=>({useRouter:()=>({refresh(){}})}));
+rs.mock('next/link',()=>({default:({children,prefetch:_prefetch,...props}:ComponentProps<'a'>&{prefetch?:boolean})=>createElement('a',props,children)}));
+rs.mock('next/navigation',()=>({useRouter:()=>({refresh(){}})}));
 const {ThingsToDoPage,groupThingsToDo}=await import('../manager-inbox-corp');
 
 const repair=staffingRepairActions([{id:'LEAVE_STAFFING:r1:s1',requestId:'r1',state:'repair_required',employeeId:'e1',employeeName:'Maria Rivera',ownerEmployeeId:null,reviewedAt:null,

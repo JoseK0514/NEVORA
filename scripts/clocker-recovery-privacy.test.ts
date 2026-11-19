@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {assertPrivateClockInRecovery} from './clocker-recovery-privacy';
 import {makePunchCommand,readSubjectPendingPunch,saveSubjectPendingPunch,type ClockView} from '../src/lib/clocker/punch-client';
 

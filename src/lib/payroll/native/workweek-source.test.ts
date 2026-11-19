@@ -1,5 +1,5 @@
-import { it, expect, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { it, expect, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import { nativeSourceRequest, nativeDatabaseFactsQuery } from './source.server';
 import { input } from './fixtures.test-support';
 import { fictionalWorkweekPolicy } from './workweek-fixtures.test-support';

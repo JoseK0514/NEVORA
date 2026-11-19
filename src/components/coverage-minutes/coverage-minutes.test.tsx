@@ -1,5 +1,5 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {CoverageFigures,percentText} from './coverage-minutes';
 import {summarizeCoverageMinutes} from '@/lib/scheduling/coverage-minutes';
 
@@ -13,14 +13,15 @@ it('shows staffing, positions and lead apart from canonical coverage minutes, ne
  expect(html).toContain('Lead 0% 0 min of 4 h');
  expect(html).not.toMatch(/12 h|1200|125%/);
 });
-it('says "—" with no denominator and "Not set up" when coverage isn’t configured, never 0% or 100%',()=>{
+it('says "—" with no denominator and "No staffing needs set" when coverage isn’t configured, never 0% or 100%',()=>{
  expect(percentText({required:0,covered:0,percent:null})).toBe('—');
  const html=text(renderToStaticMarkup(<CoverageFigures coverage={{state:'ready',staffing:{required:480,covered:480,percent:100},positions:{required:0,covered:0,percent:null},lead:{required:0,covered:0,percent:null}}}/>));
  // Review B2 (NV-108): obligations nobody set up fold into one line instead of dash tiles.
  expect(html).toContain('Positions and leads aren’t required');
  expect(html).not.toContain('No positions required');
  const none=text(renderToStaticMarkup(<CoverageFigures coverage={summarizeCoverageMinutes([],false)}/>));
- expect(none).toBe('Coverage this week Not set up');
+ // Phase 4 (U09): no staffing needs is said in words, with what the figure would measure one control away.
+ expect(none.startsWith('Coverage this week No staffing needs set')).toBe(true);
  expect(none).not.toMatch(/%/);
 });
 it('never rounds a shortfall up to 100% or a sliver down to 0%',()=>{

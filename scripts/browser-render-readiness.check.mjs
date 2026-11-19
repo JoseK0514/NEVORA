@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
-import {waitForCalendarCopyReady,waitForReviewedTimeOff,restoreSheetMotion,waitForDisclosureReady} from './browser-render-readiness.mjs';
+import {waitForCalendarCopyReady,waitForReviewedTimeOff,restoreSheetMotion,waitForDisclosureReady,waitForControlPaint} from './browser-render-readiness.mjs';
+import {measureRenderedContrast} from './browser-contrast.mjs';
 import {captureSource,assertSourceUnchanged,externalEvidence} from './phase-e-owned.mjs';
 
 const source=resolve(process.cwd()),custody=captureSource(source,process.env.PHASE_E_EXPECTED_SHA);
@@ -18,6 +19,19 @@ for(const engine of ['chromium','webkit']){
   const result={engine,reducedMotion,status:'failed',observations:[]};results.push(result);let context;
   try{
    context=await browser.newContext({viewport:{width:320,height:1000},reducedMotion});const page=await context.newPage();page.setDefaultTimeout(15000);
+   await page.setContent('<style>@keyframes entrance{from{opacity:0;filter:blur(4px)}to{opacity:1;filter:blur(0)}}section{background:black;animation:entrance 300ms linear both paused}a{color:white}</style><section><a href="#next">Shift details</a></section>');
+   const paint=page.locator('a');let paintSettled=false;
+   await assert.rejects(paint.evaluate(measureRenderedContrast),/Unsupported compositing/);
+   const waitingPaint=waitForControlPaint(paint).then(()=>{paintSettled=true;});
+   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+   assert.equal(paintSettled,false,'A visible control with paused ancestor motion is not ready');
+   await page.evaluate(()=>document.querySelector('section').getAnimations()[0].finish());await waitingPaint;
+   assert.equal((await paint.evaluate(measureRenderedContrast)).ratio,21,'Completed real CSS motion is measured at its retained identity blur');
+   await page.evaluate(()=>{document.querySelector('section').style.animation='none';document.querySelector('section').style.opacity='.5';});
+   await waitForControlPaint(paint);await assert.rejects(paint.evaluate(measureRenderedContrast),/Unsupported compositing/);
+   await page.evaluate(()=>{document.querySelector('section').style.opacity='';document.querySelector('section').style.animation='entrance 1s linear infinite';});
+   await assert.rejects(waitForControlPaint(paint,100),/Timeout|original deadline/,'Infinite motion never becomes accepted paint');
+   result.observations.push({phase:'Real ancestor motion blocks measurement; completion preserves21:1; permanent opacity and infinite motion remain refused',paintSettled});
    await page.setContent('<style>@keyframes moving{from{transform:translateY(24px)}to{transform:translateY(0)}}button{animation:moving 1s linear both paused}@media(prefers-reduced-motion:reduce){button{animation-duration:1ms}}</style><section data-calendar-setting><button>Copy calendar link</button><div tabindex="-1"><p role="status">Link copied.</p></div></section>');
    await page.evaluate(()=>{window.fixtureClicks=0;document.querySelector('button').addEventListener('click',()=>window.fixtureClicks++);});
    let settled=false;const waiting=waitForCalendarCopyReady(page,'Link copied.').then(()=>{settled=true;});

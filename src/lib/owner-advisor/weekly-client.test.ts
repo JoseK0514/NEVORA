@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import {
   PENDING_STORAGE_NAME, WEEKLY_HEADER, applyCommand, clearPending, clockText, createWeeklyClient, hours, loadPending, parseWeeklyResult, savePending, weekText, type PendingApply,
 } from "./weekly-client";
@@ -134,7 +134,7 @@ describe("a pending approval across a reload", () => {
 describe("transport", () => {
   const command = { op: "check_week_plan" as const, requestId: OP, reviewId: REVIEW };
   it("posts the exact command with the adviser header, same-origin", async () => {
-    const fetcher = vi.fn(async () => new Response(JSON.stringify(result()), { status: 200 }));
+    const fetcher = rs.fn(async () => new Response(JSON.stringify(result()), { status: 200 }));
     const outcome = await createWeeklyClient(fetcher)(command);
     expect(outcome.kind).toBe("result");
     const [url, init] = fetcher.mock.calls[0] as unknown as [string, RequestInit];

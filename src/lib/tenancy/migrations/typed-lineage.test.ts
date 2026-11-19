@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { decodeTypedMigrationWireValue, TYPED_MIGRATION_SOURCE_TYPES, projectTypedMigrationWireValueToLegacy, type TypedMigrationWireValue } from './typed-wire';
 import { parseLosslessJsonWire } from './lossless-json';
 import { parseLosslessTextArrayWire } from './lossless-array';

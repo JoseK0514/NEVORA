@@ -10,10 +10,14 @@
  * corrections and what follows wait, so they don't jump down when the review arrives, and a linked correction is revealed
  * and focused in its final place (IS-RC-ATTENDANCE-RECOVERY-01, carried over from the earlier attendance view). A failed or
  * focused review keeps its recovery visible. */
-:is(#c-root, html) .c-who .c-who__review:has(.attendance-review[data-attendance-state="loading"]):not(:focus-within) :is(.attendance-review-footer, .attendance-review > details, .manager-corrections, .manager-corrections ~ *) { display: none; }
+:is(#c-root, html) .c-who .c-who__review:has(.attendance-review[data-attendance-state="loading"]):not(:focus-within) :is(.c-arev__foot, .c-arev__compare, .manager-corrections, .manager-corrections ~ *) { display: none; }
 /* Round 2: pressed and hover rows come from the kit. */
 :is(#c-root, html) .c-who .c-who__more:active { opacity: .55; }
 /* A narrow phone: a row's detail takes a second line instead of being cut. */
 @media (max-width: 389px) {
   :is(#c-root, html) .c-who .c-row__detail > span:first-child { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 }
+/* Review 30 (D29): a row's name and its red "No clock-out after 12 hours" chip share the first line with 8px between them; a
+ * long name sends the chip under it. The folded "Clock-ins to check" row carries its count the same way. */
+:is(#c-root, html) .c-who .c-row__title:has(> .c-who__name) { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; row-gap: 4px; white-space: normal; overflow: visible; }
+:is(#c-root, html) .c-who .c-row__title > .c-who__name { min-width: 0; }

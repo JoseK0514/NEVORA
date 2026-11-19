@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 
 export const migrationPath = 'db/migrations/0011_clocker_devices.sql';

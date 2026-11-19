@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, rs } from '@rstest/core';
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { deviceName, fromBase64url, offerDismissedRecently, passkeysFlagOn, toBase64url } from "./client";
@@ -7,14 +7,14 @@ import { PasskeySection } from "@/components/passkeys/passkey-section";
 import { AUTH_COPY } from "@/lib/auth-copy";
 import { PASSKEY_COPY } from "./copy";
 
-afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
+afterEach(() => { rs.unstubAllEnvs(); rs.unstubAllGlobals(); });
 
 describe("Face ID / passkeys client", () => {
   it("is off unless NEXT_PUBLIC_NEVORA_PASSKEYS=on, and renders nothing on the server either way", () => {
     expect(passkeysFlagOn()).toBe(false);
     expect(renderToStaticMarkup(createElement(PasskeySlot, { t: AUTH_COPY.en }))).toBe("");
     expect(renderToStaticMarkup(createElement(PasskeySection))).toBe("");
-    vi.stubEnv("NEXT_PUBLIC_NEVORA_PASSKEYS", "on");
+    rs.stubEnv("NEXT_PUBLIC_NEVORA_PASSKEYS", "on");
     expect(passkeysFlagOn()).toBe(true);
     // The sign-in button waits for the browser (WebAuthn support), so the server render stays empty.
     expect(renderToStaticMarkup(createElement(PasskeySlot, { t: AUTH_COPY.en }))).toBe("");
@@ -36,7 +36,7 @@ describe("Face ID / passkeys client", () => {
 
   it("remembers Not now for 30 days", () => {
     const store = new Map<string, string>();
-    vi.stubGlobal("localStorage", { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => store.set(k, v) });
+    rs.stubGlobal("localStorage", { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => store.set(k, v) });
     const now = Date.UTC(2026, 9, 20);
     expect(offerDismissedRecently(now)).toBe(false);
     store.set("nv-passkey-offer-dismissed", String(now));

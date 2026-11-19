@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {billingNotice} from './billing-notice';
 import type {CommerceStatus} from './status';
 const now=Date.parse('2030-01-01T00:00:00Z'),day=86400000;

@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { parseTool } from "./contracts";
 it("admits a bounded operational history read and rejects extra fields and invalid periods", () => {
   expect(() => parseTool("operational_insights", JSON.stringify({ startDate: "2026-10-01", endDate: "2026-10-31" }))).not.toThrow();

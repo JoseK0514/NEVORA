@@ -1,5 +1,5 @@
 import {projectConfig} from './vitest.shared.mts';
-import {defineConfig} from 'vitest/config';
+import {defineConfig} from './vitest.shared.mts';
 export default projectConfig('capacity-completeness-integration', defineConfig({
  test:{include:[
   'src/test/integration/clocker-capacity-completeness.integration.ts',

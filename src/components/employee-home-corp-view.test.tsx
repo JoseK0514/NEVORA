@@ -1,5 +1,5 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {projectEmployeeHome, HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../lib/employee-home/types';
 import {EmployeeHomeCorpView, homeTodoRows} from './employee-home-corp';
@@ -74,4 +74,31 @@ it('M7: Coming up lists the next three shifts across the week boundary in place 
   expect(phoneText.match(/Confirm next week’s schedule/g)).toHaveLength(1);expect(phoneText).toContain('Nov 2 – 8 · 5 shifts');expect(phoneText).not.toContain('Oct 26');
   expect(phone).toContain('href="/app/schedule?week=2026-11-02&amp;day=2026-11-03&amp;shift=s-3"');expect(phoneText).toContain('Welcome back, Alexandra');
   expect(phone).not.toContain('ma-onboarding');expect(phone).not.toMatch(/id="(home-shift|home-upcoming|employee-home-todo)"/);
+});
+
+it('Phase 4 (U03): the count is a lower bound and all-clear is withheld unless the read is complete', () => {
+  const todo = confirm('2026-11-02');
+  const info: AttentionItem = {...confirm('2026-11-09'), required: false, actionable: false};
+  const view = (home: ReturnType<typeof projectEmployeeHome>, status: 'ready' | 'partial' = 'ready') => renderToStaticMarkup(<EmployeeHomeCorpView home={home} status={status} refreshing={false} onRetry={() => {}} ownTimeSlot={null}
+    displayName="Alexandra" timeZone={zone} workspaceName="Isla Verde Cafés" week={week} intro={null}/>);
+  // Complete: the exact count, and the server's all-clear when nothing at all is waiting.
+  const complete = projectEmployeeHome(snapshot([todo]));
+  expect(complete.state === 'ready' && complete.tasks?.counts).toEqual({total: 1, required: 1, actionable: 1, requiredHeld: 0, informational: 0});
+  expect(onlyB(view(complete))).toContain('Things to do<span class="b-pill">1</span>');
+  expect(text(view(projectEmployeeHome(snapshot())))).toContain('You’re all set. Nothing needs you right now.');
+  // Information only: nothing to do, but the server's allSet is false, so it is not "You're all set".
+  const informed = view(projectEmployeeHome(snapshot([info])));
+  expect(text(informed)).toContain('Nothing to do right now.'); expect(text(informed)).not.toContain('You’re all set');
+  // An older payload without task facts: unknown, so the count is "At least" and all-clear needs the server's allSet.
+  const legacy = {...complete}; if ('tasks' in legacy) delete legacy.tasks;
+  expect(onlyB(view(legacy))).toContain('Things to do<span class="b-pill">At least 1</span>');
+  // A partial read (one source failed): the observed row is a lower bound, never zero and never all-set.
+  const failed = snapshot([todo]); failed.sources = {...failed.sources, [HOME_SOURCES[0]]: {state: 'unavailable', observedAt: at, version: null, reason: 'read_failed'}} as HomeSnapshot['sources'];
+  const partial = projectEmployeeHome(failed);
+  expect(partial.state === 'partial' && partial.tasks).toMatchObject({state: 'partial', counts: null, observedCounts: {total: 1}});
+  const shown = view(partial, 'partial');
+  expect(onlyB(shown)).toContain('Things to do<span class="b-pill">At least 1</span>');
+  expect(text(shown)).not.toContain('You’re all set');
+  const none = snapshot(); none.sources = failed.sources;
+  expect(text(view(projectEmployeeHome(none), 'partial'))).not.toMatch(/You’re all set|Nothing to do right now/);
 });

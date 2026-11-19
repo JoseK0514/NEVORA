@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from 'node:crypto';
 import { Client } from 'pg';
 import type { SqlExecutor } from '@/lib/notifications/types';
@@ -11,8 +11,8 @@ import { BusinessStore } from './store.server';
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
 const env = { NEVORA_OWNER_ADVISOR_ENABLED: 'true', NEVORA_OWNER_ADVISOR_BUSINESS_IMPORTS_ENABLED: 'true', NEVORA_OWNER_ADVISOR_BUSINESS_RETRIEVAL_ENABLED: 'true' };
 const signal = () => new AbortController().signal;
-beforeEach(async () => { f = await companyAccessFixture(); vi.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No external requests')); });
-afterEach(async () => { vi.restoreAllMocks(); await f?.db.dispose(); });
+beforeEach(async () => { f = await companyAccessFixture(); rs.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No external requests')); });
+afterEach(async () => { rs.restoreAllMocks(); await f?.db.dispose(); });
 const call = (value?: unknown, ex = f.db.executor, settings: Record<string,string|undefined> = env, proof = f.owner) => businessSourceService(proof, ex, settings, signal(), value);
 const draft = (input = fictionalBusinessInput()) => ({ op: 'stage_source_version', requestId: randomUUID(), format: 'JSON', input });
 const query = () => ({ window: { ...businessJanuary }, selection: { kind: 'PRIMARY_PERIMETER' }, locationScope: { kind: 'ALL' }, temporalUse: 'HISTORICAL', scenario: null });

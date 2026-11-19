@@ -7,16 +7,16 @@ import { ACCOUNT_DELETION, SUPPORT_EMAIL, type PolicySection } from "@/lib/legal
  * them (the app itself is in English for now). */
 const mail = { href: `mailto:${SUPPORT_EMAIL}`, text: SUPPORT_EMAIL };
 
-type DeletionCopy = { metaTitle: string; back: string; start: string; title: string; summary: string; sections: PolicySection[] };
+type DeletionCopy = { metaTitle: string; back: string; start: string; title: string; /** Under the title (Phase 5, PB-024). */ sub: string; summary: string; sections: PolicySection[] };
 
 const en: DeletionCopy = {
   metaTitle: "Account deletion · NEVORA", back: "Sign in", start: "Start deletion request",
-  title: ACCOUNT_DELETION.title, summary: ACCOUNT_DELETION.summary, sections: ACCOUNT_DELETION.sections,
+  title: ACCOUNT_DELETION.title, sub: "How to delete your account and what happens to your records.", summary: ACCOUNT_DELETION.summary, sections: ACCOUNT_DELETION.sections,
 };
 
 const es: DeletionCopy = {
   metaTitle: "Eliminar cuenta · NEVORA", back: "Iniciar sesión", start: "Iniciar solicitud de eliminación",
-  title: "Elimina tu cuenta de NEVORA",
+  title: "Elimina tu cuenta de NEVORA", sub: "Cómo eliminar tu cuenta y qué pasa con tus registros.",
   summary: "Puedes pedirnos que eliminemos tu cuenta de NEVORA y la información vinculada a ella, en la aplicación o en la web.",
   sections: [
     { heading: "En la aplicación o en la web", blocks: [

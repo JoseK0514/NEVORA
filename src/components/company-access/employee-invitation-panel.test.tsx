@@ -1,6 +1,6 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe,expect,it,vi} from 'vitest';
-vi.mock('next/link',()=>({default:({href,children,...props}:{href:string;children:React.ReactNode})=><a href={href} {...props}>{children}</a>}));
+import {describe,expect,it,rs} from '@rstest/core';
+rs.mock('next/link',()=>({default:({href,children,...props}:{href:string;children:React.ReactNode})=><a href={href} {...props}>{children}</a>}));
 import {EmployeeInvitationPanel} from './employee-invitation-panel';
 import type {InvitationStatusResult} from '@/lib/auth/invitations/model';
 

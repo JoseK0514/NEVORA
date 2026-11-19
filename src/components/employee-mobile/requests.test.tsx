@@ -1,7 +1,7 @@
 
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
-vi.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:vi.fn(),reconcileShiftChangeAction:vi.fn()}));
+rs.mock('@/app/app/exchange/actions',()=>({shiftChangeAction:rs.fn(),reconcileShiftChangeAction:rs.fn()}));
 import {Pickup,ResponsiveEmployeeRequests,IncomingRequestSection} from './requests';
 import {PickupOperation} from './pickup-operation';
 import {onlyB,withoutB} from '../owner-b/test-support';
@@ -10,7 +10,7 @@ it('incoming failure is distinct from a verified zero and retains retry and a re
  expect(failed).toContain('couldn’t be checked');expect(failed).toContain('Try again');expect(failed).toContain('/app/exchange?tab=foryou');
  expect(renderToStaticMarkup(<IncomingRequestSection count={0} onRetry={()=>{}}/>)).toBe('');
  const one=renderToStaticMarkup(<IncomingRequestSection count={1} onRetry={()=>{}}/>),many=renderToStaticMarkup(<IncomingRequestSection count={2} onRetry={()=>{}}/>);
- expect(one).toContain('A teammate requested a swap');expect(many).toContain('2 swaps need your answer');
+ expect(one).toContain('Swap request waiting for you');expect(many).toContain('2 swaps need your answer');
  expect(one).not.toContain('couldn’t be checked');
 });
 it('keeps the original desktop page as the direct child so inherited layout selectors retain ownership',()=>{

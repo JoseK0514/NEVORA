@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {createHomeSqlDiagnostic} from './integration/owned-home-diagnostics';
 
 it('records bounded assignment/final-read evidence without SQL, parameters, raw rows or errors',()=>{

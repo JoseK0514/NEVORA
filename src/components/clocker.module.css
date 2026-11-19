@@ -2,7 +2,8 @@
  * presentation: a teal band with the wordmark, the workspace (or the company logo), the live clock as its large figure,
  * the location and date, and the tablet status; the task is one lifted white card. Light only. Inter (the kiosk's own
  * bundled copy). Phosphor bold icons; every headline status icon is a 64px ring: red stop, amber wait or check, green done,
- * teal information. Touch targets 48px+; keypad keys 76px (landscape) to 96px (portrait). A company brand (B1) may set the
+ * teal information. Touch targets 56px+ (Phase 6, Nov 17, 2026; they were 48px+); keypad keys 56px (a small landscape
+ * tablet) to 96px (portrait). A company brand (B1) may set the
  * four --clocker-* accent tokens; the band stays NEVORA teal. */
 @font-face { font-family: 'Nevora Clocker'; src: url('/fonts/clocker/inter-variable.ttf') format('truetype'); font-weight: 100 900; font-display: swap; }
 
@@ -60,7 +61,11 @@
   background: radial-gradient(70% 90% at 100% 0%, rgb(63 179 168 / .40) 0%, transparent 55%), radial-gradient(70% 80% at 0% 100%, rgb(5 48 46 / .85) 0%, transparent 70%), linear-gradient(165deg, #0E7A74 0%, #0B6E69 42%, #06403C 100%); } /* Clocker keeps its approved band glow (Jose, Clocker round 2); NV-115 left for his call. */
 .band::after { content: ""; position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(rgb(255 255 255 / .045) 1px, transparent 1px); background-size: 100% 28px;
   -webkit-mask-image: linear-gradient(transparent, #000 45%, transparent); mask-image: linear-gradient(transparent, #000 45%, transparent); pointer-events: none; }
-.glass { background: var(--b-glass); box-shadow: inset 0 0 0 1px var(--b-glass-edge); }
+.glass { background: linear-gradient(var(--b-glass), var(--b-glass)), rgb(5 48 46 / .32); box-shadow: inset 0 0 0 1px var(--b-glass-edge); }
+/* Premium pass (Nov 18, 2026): the band's glow is lightest at its top right, where the portrait band puts the workspace
+ * pill, and the band's bare teal there already measures under 4.5:1 with white words. The kiosk's glass keeps its white
+ * tint and edge over a veil of the band's own deep teal (the band's dark stop), so white words on every pill read at 4.5:1
+ * or more at both tablet sizes (measured on the lightest fill pixel; listed in p9/fe.md). */
 .brand { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
 .wordmark { display: grid; gap: 6px; }
 .logo { display: block; height: 18px; color: var(--b-on-band); line-height: 0; }
@@ -72,19 +77,28 @@
 .when { margin: auto 0; min-width: 0; }
 /* Digits plus the day period fit the band's content width in English and Spanish ("10:43 p. m."): about 2.7em of digits
  * plus 88px for the gap, the period and a safety margin. */
-.clock { display: flex; align-items: baseline; gap: 10px; margin: 0; font-size: clamp(3.5rem, calc((100cqi - 88px) / 2.7), 8.25rem); line-height: .95; font-weight: 600; letter-spacing: -.05em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.clock > span { font-size: var(--b-fs-display); letter-spacing: -.01em; font-weight: 600; color: var(--b-on-band-2); } /* Review F3 (NV-003): the band's two whites only. */
+.clock { display: flex; align-items: baseline; gap: 10px; margin: 0; font-size: clamp(56px, calc((100cqi - 88px) / 2.7), 8.25rem); line-height: .95; font-weight: 600; letter-spacing: -.05em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.clock > span { font-size: min(var(--b-fs-display), .4em); letter-spacing: -.01em; font-weight: 600; color: var(--b-on-band-2); } /* Review F3 (NV-003): the band's two whites only. */
+/* Review 30 (D34): the clock's floor is in px and the day period follows the figure (at most .4 of it), so a larger text
+ * size can't push "11:25 AM" past the band (at 200% the 3.5rem floor made the figure 112px in a 297px band and cut the
+ * "M"). At the default size both resolve to what they were (56px; 30px beside a figure of 75px or more). */
 .under { display: flex; flex-direction: column; align-items: flex-start; gap: var(--b-space-12); margin-top: 18px; }
 .location { display: inline-flex; align-items: center; gap: var(--b-space-8); max-width: 100%; min-height: 36px; margin: 0; padding: 6px var(--b-gutter) 6px var(--b-space-12); border-radius: var(--b-radius-pill); font-size: .9375rem; line-height: 1.3; font-weight: 600; }
 .location span { min-width: 0; overflow-wrap: anywhere; }
+/* Premium pass (#16): the pin grows with the text (16px at the default size). */
+.location > svg { width: max(16px, 1.0667em); height: max(16px, 1.0667em); }
 .date { margin: 0; font-size: var(--b-fs-title); line-height: 1.3; font-weight: 500; color: var(--b-on-band-2); }
 .foot { display: flex; flex-direction: column; gap: 14px; }
 .status { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; row-gap: var(--b-space-2); align-items: center; padding: var(--b-space-12) var(--b-space-16); border-radius: 18px; }
 .dot { width: 8px; height: 8px; border-radius: 4px; background: rgb(255 255 255 / .6); }
 .status[data-tone=ok] .dot { background: #7EF0C7; box-shadow: 0 0 0 3px rgb(126 240 199 / .25); }
 .status[data-tone=attn] .dot { background: #FFC46B; box-shadow: 0 0 0 3px rgb(255 196 107 / .25); }
+/* Premium pass (#3): an outage that stops every punch is red on the card, so the band's dot is the coral stop tone. */
+.status[data-tone=stop] .dot { background: var(--b-coral); box-shadow: 0 0 0 3px color-mix(in srgb, var(--b-coral) 30%, transparent); }
 .statusLabel { font-size: var(--b-fs-body-sm); font-weight: 600; }
-.zone { grid-column: 2; font-size: .8125rem; color: var(--b-on-band); overflow-wrap: anywhere; }
+.zone, .device { grid-column: 2; font-size: .8125rem; color: var(--b-on-band); overflow-wrap: anywhere; }
+/* Phase 8 (#9): in landscape the tablet's name takes its own line under the time zone, so a long Spanish zone line never
+ * splits the name. */
 .powered { font-size: .8125rem; color: var(--b-on-band); }
 
 .task { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center;
@@ -94,18 +108,22 @@
 
 /* Portrait tablets and phones: the band across the top fills the space above; the card sits low, toward the hand. */
 @media (orientation: portrait), (max-width: 699px) {
-  /* Keys grow with the screen's height: about 84px at 1024 tall, 96px from about 1080. */
-  .page { --ck-btn: 64px; --ck-keyh: clamp(72px, calc((100dvh - 740px) / 4), 96px); }
+  /* Keys grow with the screen's height, up to 96px. Premium pass (#11): the PIN step's other parts (the band, whose clock
+   * is 13.5vw, the card's title, field, message slot, Continue and language switch, and the 32px under the card) take
+   * about 670px plus 12.8vw, so four rows of keys get the rest: 64px at 768x1024 (the card ended at the window's edge with
+   * 72px keys), about 84px at 834x1112, 96px from about 1180 tall. Never under the 56px floor. */
+  .page { --ck-btn: 64px; --ck-keyh: clamp(56px, calc((100dvh - 12.8vw - 670px) / 4), 96px); }
   .frame { flex-direction: column; }
   .band { flex: 1 1 auto; gap: 0; padding: max(26px, env(safe-area-inset-top)) max(36px, env(safe-area-inset-right)) 84px max(36px, env(safe-area-inset-left)); }
   .brand { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--b-space-16); }
   .when { margin: auto 0; padding: var(--b-space-20) 0 0; }
-  .clock { font-size: clamp(4.5rem, 13.5vw, 7.5rem); }
+  .clock { font-size: clamp(72px, 13.5vw, 7.5rem); }
   .under { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
   .date { font-size: 1.125rem; }
   .foot { margin-top: 14px; flex-direction: row; justify-content: flex-end; }
   .status { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: var(--b-space-8) var(--b-space-16); border-radius: var(--b-radius-pill); }
-  .zone::before { content: "· "; }
+  /* Phase 8 (#25): every separator has the same 10px on each side (the flex gap before, the margin after). */
+  .zone::before, .device::before { content: "·"; margin-inline-end: 10px; }
   .powered { display: none; }
   .task { flex: 0 0 auto; align-items: flex-end; margin-top: -64px; z-index: 1;
     padding: 0 max(32px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(32px, env(safe-area-inset-left)); }
@@ -113,7 +131,7 @@
 }
 /* Phones (someone may open the link on one): a compact band and a full-width card. */
 @media (max-width: 599px) {
-  .page { --ck-btn: 52px; --ck-keyh: 56px; }
+  .page { --ck-btn: 56px; --ck-keyh: 56px; }
   .band { flex: 0 0 auto; padding: max(18px, env(safe-area-inset-top)) var(--b-space-20) 60px; }
   .when { padding-top: var(--b-space-12); }
   .under { margin-top: 10px; }
@@ -123,23 +141,29 @@
   .keys { gap: 10px; margin-top: var(--b-space-12); }
   .logo { height: 15px; }
   .workspace { min-height: 30px; padding: var(--b-space-4) var(--b-space-12); font-size: .8125rem; }
-  .clock { font-size: 4rem; }
-  .clock > span { font-size: var(--b-fs-title); }
+  .clock { font-size: clamp(48px, calc((100cqi - 88px) / 2.7), 4rem); }
+  .clock > span { font-size: min(var(--b-fs-title), .4em); }
   .date { font-size: 1rem; }
-  .zone { display: none; }
+  .zone, .device { display: none; }
   .task { margin-top: -44px; padding: 0 max(14px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
   .card { padding: var(--b-space-24) var(--b-space-20) var(--b-space-20); }
 }
-/* Short landscape screens keep the clock and card in view. */
-@media (orientation: landscape) and (max-height: 700px) and (min-width: 700px) {
-  .page { --ck-keyh: 64px; --ck-btn: 52px; }
-  .clock { font-size: clamp(3.5rem, calc((100cqi - 88px) / 2.7), 6rem); }
+/* Short landscape screens keep the clock and card in view. Phase 6: this starts just under 768px (it was 700px), because
+ * the PIN step is exactly as tall as a 768px screen: a tablet whose browser or status bar takes any of that height had to
+ * scroll to reach Continue. At 768px and taller nothing changes. */
+/* Review 30 (D35): the height is counted in lines of the reader's text (47.9375em is 767px at the default 16px), so at a
+ * larger text size a 768px-tall tablet takes this layout too and the PIN step still fits. */
+@media (orientation: landscape) and (max-height: 47.9375em) and (min-width: 700px) {
+  .page { --ck-keyh: 64px; --ck-btn: 56px; }
+  .clock { font-size: clamp(56px, calc((100cqi - 88px) / 2.7), 6rem); }
   .card { padding: 22px 26px var(--b-space-20); }
 }
 /* Landscape: the band holds the screen's height, so content growing in the card (the saved-action help) never moves the
  * clock (Nov 10 review, NV-185). */
 @media (orientation: landscape) and (min-width: 700px) {
   .band { position: sticky; top: 0; align-self: flex-start; height: 100dvh; }
+  /* The 56px language switch and back arrow (Phase 6) add 8px to the PIN step; the task area gives them back. */
+  .task { padding-top: max(24px, env(safe-area-inset-top)); padding-bottom: max(24px, env(safe-area-inset-bottom)); }
 }
 
 /* ---------- card content ---------- */
@@ -163,19 +187,25 @@
 .content[data-align=center] > .ring { margin-inline: auto; }
 
 /* Messages under a field or heading, with a clear icon. */
-.msg { display: flex; align-items: flex-start; gap: var(--b-space-8); margin: 10px 0 0; font-size: .9375rem; line-height: 1.4; font-weight: 600; color: var(--ck-red); text-align: left; overflow-wrap: anywhere; }
+.msg { display: flex; align-items: flex-start; gap: var(--b-space-8); margin: 10px 0 0; font-size: .9375rem; line-height: 1.4; font-weight: 600; color: var(--ck-red); text-align: left; overflow-wrap: anywhere; text-wrap: pretty; }
 .msg > svg { margin-top: 1px; }
 .msg[data-tone=amber] { color: var(--ck-amber); }
 .msg[data-tone=teal] { color: var(--ck-focus); font-weight: 500; }
 .msg[data-tone=grey] { color: var(--ck-grey); font-weight: 500; }
-.content[data-align=center] > .msg { justify-content: center; text-align: center; }
-/* In-context notices on the ready screens (soft box, information). */
-.note { display: flex; gap: var(--b-space-12); align-items: flex-start; margin: var(--b-space-16) 0 0; padding: 14px var(--b-space-16); border-radius: var(--b-radius-field); background: var(--ck-canvas); color: var(--ck-ink2); font-size: .9375rem; line-height: 1.45; text-align: left; overflow-wrap: anywhere; }
-.note > svg { margin-top: 1px; color: var(--ck-grey); }
-.note[data-tone=amber] { background: var(--ck-amber-wash); color: var(--ck-amber-ink); }
+/* Phase 8 (#12): a centred message is one centred paragraph whose icon leads its first line, so on two lines the icon still
+ * belongs to the text (it floated beside a centred block before). */
+.content[data-align=center] > .msg, .pinMsg, .pinMsg > .msg { display: block; text-align: center; }
+.content[data-align=center] > .msg > svg, .pinMsg > .msg > svg { display: inline-block; margin: 0 6px 0 0; vertical-align: -3px; }
+/* In-context notices on the ready screens. Premium pass (spec 3.2, #22): the product's callout anatomy by tone, a tint with
+ * a 1px edge in its tone, the tone's glyph, an ink title and an ink2 body. Teal information, amber check, red stop. */
+.note { display: flex; gap: var(--b-space-12); align-items: flex-start; margin: var(--b-space-16) 0 0; padding: 14px var(--b-space-16); border-radius: var(--b-radius-field); background: var(--b-teal-50); box-shadow: inset 0 0 0 1px var(--b-teal-edge); color: var(--ck-ink2); font-size: .9375rem; line-height: 1.45; text-align: left; overflow-wrap: anywhere; }
+.note > svg { margin-top: 1px; color: var(--ck-focus); }
+.note[data-tone=amber] { background: var(--ck-amber-wash); box-shadow: inset 0 0 0 1px var(--b-amber-edge); }
 .note[data-tone=amber] > svg { color: var(--ck-amber); }
-.note p { margin: 0; }
-.note strong { display: block; margin-bottom: var(--b-space-2); font-weight: 700; }
+.note[data-tone=red] { background: var(--ck-red-wash); box-shadow: inset 0 0 0 1px var(--b-red-edge); }
+.note[data-tone=red] > svg { color: var(--ck-red); }
+.note p { margin: 0; text-wrap: pretty; }
+.note strong { display: block; margin-bottom: var(--b-space-2); font-weight: 600; color: var(--ck-ink); text-wrap: balance; }
 
 /* Buttons: 56px pills (64px in portrait), press scale .96, hover only on hover-capable screens. */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: var(--ck-btn); padding: var(--b-space-12) var(--b-space-24); border: 0; border-radius: var(--b-radius-pill);
@@ -195,12 +225,17 @@
 }
 .stack { display: grid; gap: var(--b-space-12); width: 100%; margin-top: 22px; }
 .links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 var(--b-space-24); margin-top: 10px; }
-.link { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 48px; padding: 0 6px; border: 0; border-radius: var(--b-radius-pill); background: transparent; color: var(--ck-focus);
-  font-size: var(--b-fs-body); font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
+.link { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 56px; padding: 0 6px; border: 0; border-radius: var(--b-radius-pill); background: transparent; color: var(--ck-focus);
+  font-size: var(--b-fs-body); font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; min-width: 56px; }
 .link:disabled { color: var(--ck-grey); cursor: not-allowed; }
 /* Leaving beside a state's own actions: a text link in the same stack, so every gap is 12px (NV-184). */
 .stack > .link { justify-self: center; }
-.clears { margin: var(--b-space-4) 0 0; font-size: var(--b-fs-meta); line-height: 1.35; color: var(--ck-grey); text-align: center; }
+.clears { margin: var(--b-space-4) 0 0; font-size: var(--b-fs-meta); line-height: 1.35; color: var(--ck-grey); text-align: center; text-wrap: balance; }
+/* Premium pass (#20): under a 56px button the line keeps the stack's own 12px, so it no longer crowds the button. */
+.stack + .clears { margin-top: var(--b-space-12); }
+/* A result line in a stack (the help's "Request sent"): one centred paragraph whose icon leads its first line. */
+.stack > .msg { display: block; max-width: 40ch; margin: 0 auto; text-align: center; }
+.stack > .msg > svg { display: inline-block; margin: 0 6px 0 0; vertical-align: -3px; }
 .busy { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px 0 0; font-size: .875rem; color: var(--ck-grey); }
 .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #D5DADC; border-top-color: var(--ck-focus); animation: ckSpin .9s linear infinite; }
 /* Continue while the PIN is checked: the busy state sits where the user pressed (NV-179). */
@@ -209,23 +244,33 @@
 @keyframes ckSpin { to { transform: rotate(360deg); } }
 
 /* Language switch (the existing English/Spanish choice, remembered per tablet). */
-.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 48px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-pill); background: var(--ck-soft); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
+.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-pill); background: var(--ck-soft); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
 .lang:active { transform: scale(var(--b-press-scale)); }
+/* The same switch on a page outside the kiosk frame (the paused page and the Clocker's not-found page): a white pill that
+ * reads on the teal band and on the canvas, with a ring that shows on both. It reads only the shared tokens. */
+.langSolid { display: inline-flex; align-items: center; gap: 7px; flex: none; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-pill); background: #FFFFFF; color: var(--b-ink);
+  box-shadow: 0 0 0 1px rgb(var(--b-shadow-rgb) / .08), 0 1px 2px rgb(var(--b-shadow-rgb) / .06); font: inherit; font-size: .9375rem; line-height: 1.25; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.langSolid svg { display: block; flex: none; color: var(--b-teal); }
+.langSolid.langSolid:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; box-shadow: 0 0 0 6px var(--b-focus); }
 
 /* ---------- setup ---------- */
 .field { display: grid; gap: var(--b-space-8); margin-top: var(--b-space-20); font-size: .875rem; font-weight: 600; color: var(--ck-ink2); text-align: left; }
 .field textarea { width: 100%; min-height: 96px; resize: none; padding: 14px var(--b-space-16); border: 0; border-radius: var(--b-radius-field); background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--ck-field);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9375rem; font-weight: 400; line-height: 1.45; color: var(--ck-ink); word-break: break-all; }
+  font-family: inherit; font-size: .9375rem; font-weight: 500; line-height: 1.45; color: var(--ck-ink); word-break: break-all; } /* one face on the kiosk (#9) */
 /* The ring is a shadow, which forced colours drop; the transparent outline is what Windows High Contrast paints (RA-17). */
 .field textarea:focus { outline: 2px solid transparent; outline-offset: 2px; box-shadow: inset 0 0 0 2px var(--ck-focus); }
 .field textarea[aria-invalid=true] { box-shadow: inset 0 0 0 2px var(--ck-red); }
-.hint { margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: 1.4; font-weight: 400; color: var(--ck-grey); text-align: left; }
+.hint { margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: 1.4; font-weight: 400; color: var(--ck-grey); text-align: left; text-wrap: pretty; }
 .form { width: 100%; margin: 0; }
 .form fieldset { display: grid; gap: 0; border: 0; padding: 0; margin: 0; min-width: 0; }
 .form .btn { margin-top: 18px; }
 .meta { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-12); width: 100%; margin-top: 14px; }
-.meta p { margin: 0; font-size: var(--b-fs-meta); line-height: 1.4; color: var(--ck-grey); max-width: 26ch; text-align: left; }
+.meta p { margin: 0; font-size: var(--b-fs-meta); line-height: 1.4; color: var(--ck-grey); max-width: 26ch; text-align: left; text-wrap: pretty; }
 .meta[data-align=center] { justify-content: center; }
+/* On the ID and PIN steps the language switch is the footer's only control and keeps its place at the right (#14). */
+.meta[data-align=end] { justify-content: flex-end; }
+/* A field's help, under the field (premium pass, #14): the ID step's and the PIN step's, in the same quiet grey. */
+.fieldHelp { margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: 1.4; color: var(--ck-grey); text-align: center; text-wrap: balance; }
 
 /* ---------- PIN ---------- */
 .pin { position: relative; width: 100%; height: 60px; margin: var(--b-space-20) 0 0; border-radius: var(--b-radius-field); background: var(--ck-canvas); box-shadow: inset 0 0 0 2px var(--ck-field); }
@@ -242,7 +287,12 @@
 .pin[data-shake=b] { animation: ckShakeB 220ms ease-in-out 1; }
 @keyframes ckShakeA { 0%, 100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
 @keyframes ckShakeB { 0%, 100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
-.pinMsg { justify-content: center; min-height: 2.8em; margin-top: var(--b-space-8); text-align: center; }
+/* The slot under the PIN field (NV-177, NV-180): two lines of a message are always reserved, so a wrong PIN never moves the
+ * keypad. Premium pass (#14): the field's help holds it until a refusal takes it. */
+.pinMsg { min-height: 2.8em; margin-top: var(--b-space-8); font-size: .9375rem; }
+.pinMsg > .msg { margin: 0; font-size: 1em; }
+.pinMsg > .msg:empty { display: none; }
+.pinMsg > .fieldHelp { margin: 0; }
 .keys { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--b-space-12); width: 100%; margin-top: var(--b-space-16); }
 .key { display: grid; place-items: center; height: var(--ck-keyh); padding: 0; border: 0; border-radius: var(--b-radius-card); background: var(--ck-key); color: var(--ck-ink); box-shadow: inset 0 0 0 1px var(--ck-field);
   font-size: var(--b-fs-display); line-height: 1; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color 90ms ease, box-shadow 90ms ease; }
@@ -256,8 +306,8 @@
  * tablet's keyboard. IDs compare in capitals, so the field shows capitals. On the PIN step a back arrow beside the heading
  * returns to it; the arrow is placed over the heading's row, so the keypad keeps its place. */
 .head { position: relative; width: 100%; }
-.head[data-back] .title { padding: 0 52px; }
-.back { position: absolute; left: -6px; top: 50%; width: 48px; height: 48px; margin-top: -24px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ck-ink2); cursor: pointer; }
+.head[data-back] .title { padding: 0 56px; }
+.back { position: absolute; left: -8px; top: 50%; width: 56px; height: 56px; margin-top: -28px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ck-ink2); cursor: pointer; }
 .back:active:not(:disabled) { background: var(--ck-key); }
 @media (hover: hover) { .back:hover:not(:disabled) { background: var(--ck-key); } }
 .back:disabled { color: var(--ck-grey); cursor: not-allowed; }
@@ -267,13 +317,12 @@
 .idEntry input:focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: inset 0 0 0 2px var(--ck-focus), 0 0 0 4px rgb(11 110 105 / .18); }
 .pinForm fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .pinForm .continue { margin-top: var(--b-space-16); }
-.blocked { display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; margin: var(--b-space-20) 0 0; padding: 26px var(--b-inset-wide) 22px; border-radius: 18px; background: var(--ck-canvas); }
-.blocked .ring { margin: 0 0 var(--b-space-12); }
-.blocked .smsg { margin-top: 0; }
-.blocked .btn { margin-top: 18px; }
-.blocked .btn[data-kind=secondary] { background: #FFFFFF; box-shadow: inset 0 0 0 1.5px var(--ck-line); }
+/* A blocked ID or PIN step (premium pass, #5): the same anatomy as every state card, ring, title, message, one button and
+ * the "clears" line, all on the white card (the grey inset with its off-scale 18px corner is gone). */
+.blocked { display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; margin: 0; }
+.blocked .btn { margin-top: 22px; }
 /* The blocked state's instruction (who can fix it), under its message (NV-051). */
-.blockedHint { margin: var(--b-space-8) auto 0; max-width: 36ch; font-size: .9375rem; line-height: 1.45; color: var(--ck-ink2); text-wrap: pretty; }
+.blockedHint { margin: var(--b-space-8) auto 0; max-width: 42ch; font-size: .9375rem; line-height: 1.45; color: var(--ck-ink2); text-wrap: balance; }
 .blocked .clears { margin-top: var(--b-space-12); }
 
 /* The privacy reminder: a dark pill over the bottom of the task area. */
@@ -281,18 +330,17 @@
   padding: 10px 10px 10px var(--b-space-16); border-radius: var(--b-radius-card); background: var(--b-ink); color: #FFFFFF; box-shadow: 0 18px 40px -16px rgb(0 0 0 / .5); text-align: left; }
 .privacy p { flex: 1 1 auto; min-width: 9ch; margin: 0; font-size: .9375rem; font-weight: 600; line-height: 1.35; }
 .privacy .count { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: .9375rem; font-weight: 700; font-variant-numeric: tabular-nums; box-shadow: inset 0 0 0 3px #FFC46B; }
-.privacy .btn { width: auto; min-height: 48px; padding: 0 var(--b-inset); font-size: .9375rem; background: #FFFFFF; color: #0B3B38; flex: none; }
+.privacy .btn { width: auto; min-height: 56px; padding: 0 var(--b-inset); font-size: .9375rem; background: #FFFFFF; color: #0B3B38; flex: none; }
 
 /* ---------- the clock-state screen ---------- */
 .who { display: flex; align-items: center; gap: 14px; }
 .face { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: 1.375rem; font-weight: 700; }
-.face[data-size=sm] { width: 40px; height: 40px; font-size: var(--b-fs-title-sm); }
 .strow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-8) var(--b-space-12); margin: var(--b-space-8) 0 0 66px; }
 .chip { display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: var(--b-space-4) 13px; border-radius: var(--b-radius-pill); font-size: .9375rem; font-weight: 700; background: var(--ck-key); color: var(--ck-ink2); }
-.chip::before { content: ""; width: 8px; height: 8px; border-radius: 4px; background: currentColor; }
+.chip::before { content: ""; width: max(8px, .5333em); height: max(8px, .5333em); border-radius: 50%; background: currentColor; } /* #16: grows with the text */
 .chip[data-state=on] { background: var(--ck-green-wash); color: var(--ck-green); }
 .chip[data-state=break] { background: var(--ck-amber-wash); color: var(--ck-amber); }
-.detail { margin: 0; font-size: .9375rem; line-height: 1.4; color: var(--ck-grey); overflow-wrap: anywhere; }
+.detail { margin: 0; font-size: .9375rem; line-height: 1.4; color: var(--ck-grey); overflow-wrap: anywhere; text-wrap: pretty; }
 .detail time { font-weight: 600; color: var(--ck-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .ago { white-space: nowrap; }
 .breakContext { margin: 10px 0 0 66px; font-size: .9375rem; color: var(--ck-ink2); overflow-wrap: anywhere; }
@@ -312,7 +360,7 @@
 .act[data-kind=secondary] > svg:last-child { color: #8A9399; }
 .actText { display: grid; gap: var(--b-space-2); min-width: 0; overflow-wrap: anywhere; }
 .actText small { font-size: .875rem; line-height: 1.3; font-weight: 500; color: var(--ck-grey); letter-spacing: 0; }
-.other { display: flex; flex-direction: column; align-items: center; text-align: center; margin: 18px 0 0; padding: 22px var(--b-space-20) var(--b-space-20); border-radius: 18px; background: var(--ck-canvas); }
+.other { display: flex; flex-direction: column; align-items: center; text-align: center; margin: 18px 0 0; padding: 22px var(--b-space-20) var(--b-space-20); border-radius: var(--b-radius-field); background: var(--ck-canvas); }
 .other .ring { margin-bottom: 10px; }
 .other .smsg { margin-top: 0; }
 .panelFoot { margin-top: 18px; }
@@ -322,6 +370,8 @@
 .facts > div { padding: 14px var(--b-inset); min-width: 0; }
 .facts > div + div { box-shadow: inset 1px 0 0 var(--ck-line); }
 .facts dt { font-size: var(--b-fs-meta); color: var(--ck-grey); }
+/* One fact alone takes the row (a break with no suggested length on the receipt). */
+.facts > div:only-child { grid-column: 1 / -1; text-align: center; }
 .facts dd { margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
 /* ---------- recorded ---------- */
@@ -332,32 +382,87 @@
 @keyframes ckDraw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 .hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bye { margin: var(--b-space-8) 0 0; font-size: 1.125rem; font-weight: 600; color: var(--ck-green); }
-.saved { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-body-sm); line-height: 1.45; color: var(--ck-ink2); overflow-wrap: anywhere; text-wrap: pretty; }
+.saved { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-body-sm); line-height: 1.45; color: var(--ck-ink2); overflow-wrap: anywhere; text-wrap: balance; }
 .saved time { font-weight: 600; color: var(--ck-ink); }
+/* Phase 8 (#11): the clear line is one piece, so a two-line saved line breaks between its two sentences. */
+.clearsIn { display: inline-block; }
 .countdown { display: block; width: 70%; height: 6px; margin: 18px auto 0; border-radius: 3px; background: var(--ck-green-wash); overflow: hidden; }
 .countdown > i { display: block; height: 100%; border-radius: 3px; background: var(--ck-green-fill); transform-origin: left; animation: ckClear 8s linear forwards; }
 @keyframes ckClear { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .reference { margin-top: 10px; text-align: center; }
-.reference summary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 0 var(--b-space-8); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; list-style: none; }
+.reference summary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 56px; padding: 0 var(--b-space-8); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; list-style: none; }
 .reference summary::-webkit-details-marker { display: none; }
 .reference[open] summary svg { transform: rotate(180deg); }
-.reference code { display: block; margin: 0 auto; padding: 10px var(--b-space-12); max-width: 100%; border-radius: var(--b-radius-small); background: var(--ck-canvas); font-size: .8125rem; overflow-wrap: anywhere; }
+/* Premium pass (#9): references in the kiosk's Inter at its meta size (system monospace was the only other face on the
+ * kiosk), proportional (Inter's tabular forms space the hyphens out and read as monospace again), one per line with 4px
+ * between, selectable as they are. */
+.reference code { display: grid; gap: var(--b-space-4); justify-items: center; margin: 0 auto; padding: 10px var(--b-space-16); max-width: 100%; border-radius: var(--b-radius-field); background: var(--ck-canvas);
+  font-family: inherit; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 500; letter-spacing: .01em; color: var(--ck-ink2); overflow-wrap: anywhere; user-select: text; }
+.reference code > span { display: block; }
+.refLabel { display: block; margin: 10px 0 6px; font-size: var(--b-fs-meta); color: var(--ck-grey); }
 
-/* ---------- recording ---------- */
-.doing { display: flex; align-items: center; justify-content: center; gap: var(--b-space-12); margin-top: var(--b-space-12); font-size: var(--b-fs-title); font-weight: 700; overflow-wrap: anywhere; }
+/* ---------- recording (the title names the person and the action: "Clocking out James…") ---------- */
 .progress { display: block; width: 100%; height: 8px; margin: var(--b-space-20) 0 0; border-radius: 4px; background: var(--ck-soft); overflow: hidden; }
 .progress > i { display: block; width: 38%; height: 100%; border-radius: 4px; background: var(--ck-focus); animation: ckRun 1.3s ease-in-out infinite; }
 @keyframes ckRun { from { transform: translateX(-105%); } to { transform: translateX(265%); } }
 
-/* ---------- saved-action help (handoff) ---------- */
+/* ---------- saved-punch help ----------
+ * Phase 8 (Nov 17, 2026): the link opens the help as its own card state (clocker-recovery.tsx), so nothing scrolls inside
+ * the card and Back is always in view. Asking the Owner stays the quiet button (Phase 6); the references sit behind the
+ * receipt's Reference disclosure. */
 .handoff { width: 100%; margin-top: var(--b-space-8); text-align: center; }
-.handoffPanel { margin-top: var(--b-space-8); padding: var(--b-space-16); border-radius: var(--b-radius-field); background: var(--ck-canvas); font-size: .9375rem; line-height: 1.45; color: var(--ck-ink2); text-align: left;
-  max-height: 40dvh; overflow-y: auto; overscroll-behavior: contain; }
-.handoffPanel p { margin: 0 0 10px; overflow-wrap: anywhere; }
-.handoffPanel ul { list-style: none; margin: var(--b-space-12) 0 0; padding: 0; display: grid; gap: 10px; }
-.handoffPanel li { display: grid; gap: var(--b-space-8); }
-.handoffPanel code { display: block; padding: 10px var(--b-space-12); border-radius: var(--b-radius-small); background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--ck-line); font-size: .75rem; overflow-wrap: anywhere; }
-.handoffPanel .btn { min-height: 48px; font-size: .9375rem; }
+.quietLine { margin: var(--b-space-8) auto 0; max-width: 40ch; font-size: .9375rem; line-height: 1.45; color: var(--ck-grey); text-align: center; text-wrap: balance; }
+.stack > .quietLine { margin: 0 auto; }
+/* An empty live line keeps its place in the stack for what it will say, without adding a gap. */
+.stack > .quietLine:empty { margin-top: calc(-1 * var(--b-space-12)); }
+.reference summary + .refLabel { margin-top: 0; }
+/* Check your last punch (#33): one measure and one size for every line; what to do now is ink, the count is grey. */
+.said { display: grid; gap: 6px; width: 100%; max-width: 40ch; margin: 10px auto 0; font-size: 1rem; line-height: 1.45; color: var(--ck-ink2); text-align: center; }
+.said p { margin: 0; max-width: none; text-wrap: pretty; overflow-wrap: anywhere; }
+.said > div { display: grid; gap: 6px; }
+.said [data-strong] { color: var(--ck-ink); font-weight: 600; }
+.said [data-quiet] { color: var(--ck-grey); font-size: .9375rem; }
+/* The paused page's action meets the kiosk floor (the billing pages' own action is 52px). */
+.pausedAction.pausedAction { min-height: 56px; }
+
+/* ---------- Windows High Contrast (forced colours; RA-17, Phase 6) ----------
+ * Forced colours drop every shadow and repaint every fill, and the kiosk draws its edges, its PIN dots, its rings and
+ * its bars with exactly those. Here each control gets a real border, each field its edge, the dots and bars a system
+ * colour, and focus a system-coloured outline, so the screen reads and the focused control is always marked. */
+@media (forced-colors: active) {
+  .btn, .key, .act, .lang, .langSolid, .back { border: 2px solid ButtonText; }
+  .link, .reference summary { text-decoration: underline; text-underline-offset: 4px; }
+  .btn:disabled, .key:disabled, .act:disabled, .back:disabled { border-color: GrayText; color: GrayText; }
+  .btn[data-kind=primary]:not(:disabled), .act[data-kind=primary]:not(:disabled) { border-width: 3px; }
+  .pin, .idEntry input, .field textarea { border: 2px solid CanvasText; }
+  /* Review 30 (D36): the PIN's own input is invisible (the four slots show the digits); forced colours repainted its text and
+   * caret, so it drew two bullets and a caret at its left edge beside the slots. */
+  .pin input { forced-color-adjust: none; color: transparent; caret-color: transparent; background: transparent; }
+  .pin[data-error=true] { border-style: dashed; }
+  .pin:focus-within, .idEntry input:focus-visible, .field textarea:focus { outline: 3px solid Highlight; outline-offset: 2px; }
+  .slots > span { border: 2px solid CanvasText; forced-color-adjust: none; background: Canvas; box-shadow: none; }
+  .slots > span[data-filled=true] { background: CanvasText; }
+  .other, .note, .facts, .privacy, .status, .workspace, .location, .companyLogo, .chip { border: 1px solid CanvasText; }
+  /* The card's edge is an outline, so it adds no height: the PIN step fits a 768px-tall window under forced colours (#17). */
+  .card { outline: 1px solid CanvasText; outline-offset: -1px; }
+  /* The state chip's dot is drawn in the system text colour, so "Clocked in" keeps its dot (#24). */
+  .chip::before { forced-color-adjust: none; background: CanvasText; }
+  .ring, .check, .face, .actIcon { border: 2px solid CanvasText; }
+  /* The band's edge only where it meets the task: its right side as the left panel, its foot across the top (#17). */
+  .band { border-right: 1px solid CanvasText; }
+  .dot { forced-color-adjust: none; background: CanvasText; box-shadow: none; }
+  /* The connected dot is system-coloured too, not its green (Phase 8, with #24). */
+  .status[data-tone=ok] .dot { background: CanvasText; box-shadow: none; }
+  /* The amber dot is hollow, so the two states differ without colour; the label beside it says which. */
+  .status:is([data-tone=attn], [data-tone=stop]) .dot { background: Canvas; border: 2px solid CanvasText; }
+  .countdown, .progress { border: 1px solid CanvasText; }
+  .countdown > i, .progress > i { forced-color-adjust: none; background: Highlight; }
+  .spin { forced-color-adjust: none; border-color: GrayText; border-top-color: Highlight; }
+}
+
+@media (forced-colors: active) and (orientation: portrait), (forced-colors: active) and (max-width: 699px) {
+  .band { border-right: 0; border-bottom: 1px solid CanvasText; }
+}
 
 /* ---------- motion: never under reduced motion; the words carry every state ---------- */
 @media (prefers-reduced-motion: reduce) {
@@ -378,9 +483,36 @@
 .content:has(> .privacy) .clears { visibility: hidden; }
 /* The privacy pill never covers a receipt. */
 .content:has([data-clocker-state=success]) > .privacy { display: none; }
-/* The saved-action link inline in the ready screen's link row; its panel takes the next line. */
-.handoff[data-inline] { display: contents; }
-.links > .handoffPanel, .handoff[data-inline] > .handoffPanel { flex: 1 0 100%; }
+/* A small landscape tablet (800x600; Phase 6): the whole PIN step, with Continue and the language switch, fits the
+ * screen. After the component rules it adjusts, like the phone block below. Keys and buttons hold the 56px floor; only the gaps, the card's padding and the headline give way.
+ * Review 30 (D35): counted in lines of text (40em is 640px at the default size), so a 1024x768 tablet at 200% text takes it. */
+@media (orientation: landscape) and (max-height: 40em) and (min-width: 700px) {
+  .page { --ck-keyh: 56px; }
+  /* Review 30 (D35): a digit stays inside its 56px key at a larger text size (it is 30px at the default size). */
+  .key { font-size: min(var(--b-fs-display), 40px); }
+  .task { padding-top: var(--b-space-8); padding-bottom: var(--b-space-8); }
+  .card { padding: var(--b-space-12) var(--b-space-24) 10px; }
+  /* Premium pass (#15): only the ID and PIN steps need the 12px top to fit; a clock screen or a state card keeps 24px
+   * over its avatar or ring, as at its sides. */
+  .card:has([data-clocker-pin=verified], [data-clocker-blocked], [data-clocker-setup]:not([data-clocker-setup=type])) { padding-top: var(--b-space-24); }
+  .card .title { font-size: 1.375rem; }
+  .pin { height: 52px; margin-top: var(--b-space-8); }
+  .idEntry input { height: 52px; }
+  .pinMsg { min-height: 2.6em; margin-top: var(--b-space-4); font-size: .8125rem; }
+  .keys { gap: 6px; margin-top: var(--b-space-4); }
+  .pinForm .continue { margin-top: var(--b-space-8); }
+  .meta { margin-top: 6px; }
+  .ring { width: 52px; height: 52px; margin-bottom: 10px; }
+  .check { width: 72px; height: 72px; margin: var(--b-space-12) auto 14px; box-shadow: 0 0 0 8px var(--ck-green-wash); }
+  .check svg { width: 40px; height: 40px; }
+  .hero { font-size: 2.75rem; }
+  .acts { gap: 10px; margin-top: var(--b-space-16); }
+  .act { min-height: 72px; }
+  .stack { margin-top: var(--b-space-16); }
+  .facts { margin-top: var(--b-space-12); }
+  .facts > div { padding: 10px var(--b-space-16); }
+  .countdown { margin-top: var(--b-space-12); }
+}
 /* Phones, after the component rules they adjust (Nov 10 review): one left edge in the clock-state card (NV-299), and the
  * privacy reminder stays in view with its button wrapped under the line (NV-053). */
 @media (max-width: 599px) {
@@ -389,4 +521,26 @@
   .idEntry input { height: 54px; }
   .privacy { position: fixed; bottom: max(16px, env(safe-area-inset-bottom)); width: calc(100% - 32px); }
   .privacy .btn { flex: 1 0 100%; }
+}
+/* Review 30 (D35): a portrait tablet with large text (the window is under 56 lines of the reader's text tall: 896px at the
+ * default size, so no portrait tablet at the default size takes it). The band and the card give way as on the small
+ * landscape tablet, so the PIN step with Continue fits the screen at 200% text: the band keeps the clock, the place, the date
+ * and the tablet's state (its time zone and name go, as on a phone), and the keys and buttons hold the 56px floor. */
+@media (orientation: portrait) and (min-width: 600px) and (max-height: 56em) {
+  .page { --ck-keyh: 56px; --ck-btn: 56px; }
+  .key { font-size: min(var(--b-fs-display), 40px); }
+  .band { padding-bottom: 60px; }
+  .when { padding-top: var(--b-space-12); }
+  .under { margin-top: 10px; }
+  .foot { margin-top: 10px; }
+  .zone, .device { display: none; }
+  .task { margin-top: -44px; }
+  .card { padding: var(--b-space-20) var(--b-space-24) var(--b-space-16); }
+  .card .title { font-size: 1.375rem; }
+  .pin { height: 52px; margin-top: var(--b-space-8); }
+  .idEntry input { height: 52px; }
+  .pinMsg { min-height: 1.4em; margin-top: var(--b-space-4); font-size: .8125rem; }
+  .keys { gap: 6px; margin-top: var(--b-space-4); }
+  .pinForm .continue { margin-top: var(--b-space-8); }
+  .meta { margin-top: 6px; }
 }

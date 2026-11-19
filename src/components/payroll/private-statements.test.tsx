@@ -1,16 +1,16 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { DocumentLink } from './payroll-ui';
 import { MyPay } from './my-pay';
 import { PayrollRuns } from './payroll-runs';
 import { nativeRun, statement } from './native-ui-fixture.test-support';
 
-const boundary = vi.hoisted(() => ({ loading: false, error: '', statements: [] as unknown[], runs: [] as unknown[] }));
-vi.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',
+const boundary = rs.hoisted(() => ({ loading: false, error: '', statements: [] as unknown[], runs: [] as unknown[] }));
+rs.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',
   usePayrollResource: (path: string) => ({ data: path === '/api/payroll/runs' ? { version: 'PAYROLL_API_V1', capabilities: { enabled: true, canConfigure: true, canReview: true, canApprove: true, internalCalculatorAvailable: true }, runs: boundary.runs, jobs: [] } : { statements: boundary.statements }, loading: boundary.loading, error: boundary.error, reload: async () => {} }),
   usePayrollOperation: () => ({ busy: false, pending: null, resuming: false, message: '', error: '', revisionConflict: false, submit: async () => {}, receipt: null }),
 }));
-vi.mock('next/navigation', () => ({ usePathname: () => '/app/payroll/history', useRouter: () => ({ push: () => {}, replace: () => {} }) }));
+rs.mock('next/navigation', () => ({ usePathname: () => '/app/payroll/history', useRouter: () => ({ push: () => {}, replace: () => {} }) }));
 beforeEach(() => { boundary.loading = false; boundary.error = ''; boundary.statements = [statement]; boundary.runs = [nativeRun({ status: 'APPROVED', documents: [statement], correctionOf: 'fictional-original', nativeCorrection: { rootRunId: 'fictional-original', reason: 'Fictional payroll correction' } })]; });
 
 describe('private employee statement presentation', () => {
@@ -44,7 +44,8 @@ describe('private employee statement presentation', () => {
     const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional-owner" view="history" />);
     // Round 2 (R9): "Pay statements", and a correction row says so on its second line (its reason is on Payroll details).
     expect(html).toContain('Pay statements');
-    expect(html).toMatch(/Payday <span class="c-num">Fri, Oct 16<\/span>\u00a0· Correction/);
+    // Premium pass: one facts line (BSegs); "Payday" keeps its date and the dot belongs to the next fact.
+    expect(html).toContain('Payday\u00a0<span class="c-num">Fri,\u00a0Oct\u00a016</span></span></span><span class="b-segs__i"><span class="b-sr"> · </span>Correction');
     expect(html).toContain(statement.viewUrl);
   });
   it('distinguishes empty own history from a failed private read', () => {

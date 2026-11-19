@@ -14,6 +14,10 @@ not establish that a hosted environment is activated or accepted for use.
 | Developer | [Developer](developer.md) | Architecture, authority, safe local work and verification |
 | Operator | [Operations](operations.md) | Admission, workers, monitoring, incidents, privacy cases and restore gates |
 
+The [November 17 UI integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md)
+records the combined source scope and qualification gates. Hosted availability
+and promotion remain separate.
+
 The guides cover the web app on desktop and mobile browsers. Native apps,
 native push, store availability and physical-device acceptance are a separate
 delivery track. The internal payroll calculator's source folder is also named

@@ -95,4 +95,19 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .q-page .q-requests .q-request .q-rv:has(> .b-req-ago):not(#p3d-1):not(#p3d-2):not(#p3d-3):not(#p3d-4):not(#p3d-5) { display: none !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .q-page .q-requests .b-req-age:not(#p3d-1):not(#p3d-2):not(#p3d-3):not(#p3d-4):not(#p3d-5) { display: block !important; margin-top: var(--b-space-2) !important; font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-caption) !important; color: var(--b-grey) !important; }
   }
+
+  /* ---------- Phase 8 (Nov 17, 2026) ---------- */
+  /* a.md #12: a request row's face keeps the person's tint (RequestFace sets it from the name, as BAvatar does). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-av[data-tint]:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { background: var(--av-bg) !important; color: var(--av-fg) !important; box-shadow: none !important; }
+  /* a.md #26: on phones a request drew two hairlines between rows, its actions' own line (from 72px) and the list's
+   * separator 1px under it (from 18px). The list's one inset divider stays. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-requests > li .q-acts:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e)::after { content: none !important; }
+  }
+
+  /* ---------- Premium pass FA (Nov 18, 2026): final verification A #21 (one row title) ---------- */
+  /* A list row's title is 600 on every Owner and Manager list, as on Things to do, Team and Home: Shift requests, Time off
+   * requests, Notifications, Updates and Prepare payroll drew their names and periods at 500. The account deletion's consent
+   * sentence is a checkbox label, not a row title, and keeps its weight (final regression review #6). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page :is(.q-row:not(.q-deletion__check), .q-request, .q-requests > li) .q-rt > b:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-page.c-pay .c-row__title--b:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-weight: 600 !important; }
 }

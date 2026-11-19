@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from '@rstest/core';
 import { randomBytes } from "node:crypto";
 import { createDisposableFoundationDatabase } from "./local-postgres";
 import { fictionalAuthenticator } from "./passkey-authenticator.test-support";

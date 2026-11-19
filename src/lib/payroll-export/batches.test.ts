@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {parseExportCommand} from './service';
 import type {BreakTreatment} from './paid-time';
 import type {Population} from '../period-close/service';
@@ -49,7 +49,7 @@ it('also respects the existing 100-card cap',async()=>{
 
 it('recovers stored wire bodies after a change in platform collation',async()=>{
  const {planPaidExportBatches,paidExportBatchProgress}=await import('./batches');const input=fixture(3,0),plan=await planPaidExportBatches(input);
- const original=String.prototype.localeCompare,collation=vi.spyOn(String.prototype,'localeCompare').mockImplementation(function(this:string,other:string){return -original.call(this,other);});
+ const original=String.prototype.localeCompare,collation=rs.spyOn(String.prototype,'localeCompare').mockImplementation(function(this:string,other:string){return -original.call(this,other);});
  try{await expect(paidExportBatchProgress(plan,[])).resolves.toMatchObject({state:'INCOMPLETE',periodComplete:false});}
  finally{collation.mockRestore();}
 });

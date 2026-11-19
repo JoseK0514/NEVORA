@@ -28,8 +28,27 @@ const KIND_ORDER: readonly ObservationKind[] = [
   "CLOCK_IN_AFTER_SCHEDULE_START",
   "CLOCK_OUT_BEFORE_SCHEDULE_END",
   "OPEN_AFTER_SCHEDULE_END",
+  "OPEN_PAST_LIMIT",
   "BREAK_TARGET_EXCEEDED",
 ];
+
+/**
+ * Review threshold, in whole hours, for an open entry that has no matched
+ * scheduled end to compare against (its saved schedule context is unmatched,
+ * ambiguous or not evaluated). An entry open strictly longer than this at the
+ * projection's observedAt raises OPEN_PAST_LIMIT, so a forgotten clock-out on
+ * an unscheduled punch reaches management review instead of accruing silently.
+ *
+ * This is a review threshold only, not a pay, overtime, break or attendance
+ * policy rule. It never closes, edits or shortens a punch and does not change
+ * recorded, timecard, payroll or export totals. The Owner has not yet chosen an
+ * automatic close policy, so nothing closes an open entry automatically.
+ * Matched entries keep OPEN_AFTER_SCHEDULE_END instead; long closed entries
+ * remain under the deferred `unusually_long_entry` capability.
+ */
+export const OPEN_ENTRY_REVIEW_LIMIT_HOURS = 12;
+const OPEN_ENTRY_REVIEW_LIMIT_NANOSECONDS =
+  BigInt(OPEN_ENTRY_REVIEW_LIMIT_HOURS) * BigInt(3_600_000_000_000);
 
 const DEFERRED_CAPABILITIES: readonly DeferredCapability[] = [
   "missing_clock_in",
@@ -323,6 +342,45 @@ function sortObservations(observations: Observation[]): void {
   });
 }
 
+/**
+ * Duration check for a consistent open entry with no matched scheduled end.
+ * Callers use it only for unmatched, ambiguous or not-evaluated schedule
+ * evidence, so a matched entry is never flagged twice. Strict comparison:
+ * exactly the limit is not flagged. Read-only; it never changes the entry.
+ */
+function openPastLimitObservation(
+  source: ValidatedAttendanceSource,
+  entry: RecordedEntry,
+  observedAt: Temporal.Instant,
+): Observation[] {
+  if (entry.clockOutAt !== null) return [];
+  const start = Temporal.Instant.from(entry.clockInAt);
+  // Compare before constructing an instant beyond the supported range. A real
+  // exceedance guarantees that the limit instant is earlier than observedAt.
+  if (
+    observedAt.epochNanoseconds - start.epochNanoseconds <=
+    OPEN_ENTRY_REVIEW_LIMIT_NANOSECONDS
+  ) {
+    return [];
+  }
+  const limit = start.add({ hours: OPEN_ENTRY_REVIEW_LIMIT_HOURS });
+  const difference = positiveDifference(observedAt, limit);
+  if (!difference) return [];
+  return [
+    observation(
+      source,
+      entry,
+      "OPEN_PAST_LIMIT",
+      `No clock-out recorded · open more than ${OPEN_ENTRY_REVIEW_LIMIT_HOURS} hours.`,
+      {
+        recordedAt: source.observedAt,
+        expectedAt: limit.toString(),
+        differenceNanoseconds: difference,
+      },
+    ),
+  ];
+}
+
 function scheduleObservation(
   source: ValidatedAttendanceSource,
   entry: RecordedEntry,
@@ -339,6 +397,7 @@ function scheduleObservation(
         "No schedule match recorded.",
         { reason: schedule.reason },
       ),
+      ...openPastLimitObservation(source, entry, observedAt),
     ];
   }
   if (schedule.state === "ambiguous") {
@@ -350,6 +409,7 @@ function scheduleObservation(
         "Schedule match needs review.",
         { reason: schedule.reason },
       ),
+      ...openPastLimitObservation(source, entry, observedAt),
     ];
   }
   if (schedule.state === "not_evaluated") {
@@ -358,7 +418,7 @@ function scheduleObservation(
       breakId: null,
       reason: schedule.reason,
     });
-    return [];
+    return openPastLimitObservation(source, entry, observedAt);
   }
 
   const actualStart = Temporal.Instant.from(entry.clockInAt);

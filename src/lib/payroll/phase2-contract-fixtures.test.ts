@@ -1,5 +1,5 @@
 import {readFileSync} from 'node:fs';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseImport,parseRunCommand,totals,PayrollError} from './model';
 import {failure} from './http';
 import {parseExportCommand} from '../payroll-export/command';

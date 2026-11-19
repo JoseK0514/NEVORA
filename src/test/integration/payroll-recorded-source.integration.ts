@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { createPunchFixture } from './clocker-punch-fixture';
 import { readTimecards, mutateTimecard } from '../../lib/timecards/service';
 import { submitTimeCorrection, reviewTimeCorrection } from '../../lib/time-corrections/service';

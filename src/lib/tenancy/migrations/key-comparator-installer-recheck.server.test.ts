@@ -1,7 +1,7 @@
 // UNEXECUTED source regression proposal. Root must overlay the two candidates
 // plus the genuine root-owned admission module before discovery/TypeScript.
 // These tests do not simulate or issue installer admission, genuine plans or SQL.
-import {describe,it,expect,vi} from 'vitest';
+import {describe,it,expect,rs} from '@rstest/core';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
@@ -57,7 +57,7 @@ describe('fixed local installer comparator source and unissued-input contracts o
   expect(recheck).toContain('same(current.rows,observations.rows)');expect(recheck).toContain('same(current.catalogs,observations.catalogs)');
  });
  it('fails closed on null, fake, clone, accessor and revoked-proxy plans without reading any other input',async()=>{
-  const trap=vi.fn(()=>{throw Error('fictional trap');}),hostile=new Proxy({},{get:trap,ownKeys:trap,getPrototypeOf:trap});
+  const trap=rs.fn(()=>{throw Error('fictional trap');}),hostile=new Proxy({},{get:trap,ownKeys:trap,getPrototypeOf:trap});
   const revoked=Proxy.revocable({},{});revoked.revoke();
   const plans=[null,{},JSON.parse('{"format":"TYPED_TENANT_BACKFILL_PLAN_V1"}'),{get manifest(){return trap();}},revoked.proxy];
   for(const plan of plans){

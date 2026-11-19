@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {combineManagerActions} from './project';
 import {isOwnReview} from './needs-you';
 import {parseTimecardsResponse} from '../timecards/read-model';

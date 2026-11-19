@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { describe,expect,it } from 'vitest';
+import { describe,expect,it } from '@rstest/core';
 import { canonicalOwnershipJson,getOwnershipRegistry } from './ownership';
 import { decodeTypedMigrationWireValue,projectTypedMigrationWireValueToLegacy,TYPED_MIGRATION_SOURCE_TYPES,type TypedMigrationWireValue } from './typed-wire';
 import * as typedCodec from './typed-wire';

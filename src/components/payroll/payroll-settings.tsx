@@ -81,7 +81,9 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
   // effective date and a reason, as before. On desktop the Time and pay tabs lead here, so there is no Back.
   return <CorpPage className="c-pay c-pset c-page--narrow" labelledBy="payroll-settings-title">
     <CorpNav back={{ href: '/app/payroll', label: 'Payroll' }} title="Payroll settings" phoneOnly />
-    <CorpTitle id="payroll-settings-title" title="Payroll settings" sub="US dollars" wide />
+    {/* Phase 8 (review B #35): the band says what payroll does, as Payroll above the same tabs does (the approved scope
+      sentence, unchanged); "US dollars" read as a stray fact, and the currency is fixed. */}
+    <CorpTitle id="payroll-settings-title" title="Payroll settings" sub="Calculate pay and share statements. You pay your team outside NEVORA." wide />
     <PayrollTabs items={tabs} current="/app/settings/payroll" />
     <BusinessZone.Provider value={timeZone}><SavingForm.Provider value={savingForm}>
     <KeepFocusClear />

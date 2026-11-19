@@ -1,9 +1,9 @@
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe,it,expect,vi} from 'vitest';
+import {describe,it,expect,rs} from '@rstest/core';
 import {AssistedRecovery} from './assisted-recovery';
 import {AccountRecovery} from './account-recovery';
-vi.stubGlobal('React',React);
+rs.stubGlobal('React',React);
 const props={hydrated:true,busy:false,message:'',issued:null,onSubmit:()=>{},onStartAgain:()=>{}};
 
 describe('Assisted recovery workflow presentation',()=>{
@@ -23,7 +23,7 @@ describe('Assisted recovery workflow presentation',()=>{
  it('disables submission before hydration and explains no-JavaScript behavior',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER"/>);
   expect(html).toContain('<fieldset disabled=""');
-  expect(html).toContain('Enable JavaScript to issue a recovery code.');
+  expect(html).toContain('Enable JavaScript to make a reset link.');
   // Quiet (v4): Account recovery opens from Team, so Back returns there.
   expect(html).toMatch(/href="\/app\/employees"[^>]*>[\s\S]*?Team<\/a>/);
  });
@@ -36,22 +36,25 @@ describe('Assisted recovery workflow presentation',()=>{
  it('announces pending issuance while all mutation fields are disabled',()=>{
   const html=renderToStaticMarkup(<AssistedRecovery {...props} busy/>);
   expect(html).toContain('aria-busy="true"');expect(html).toContain('<fieldset disabled=""');
-  expect(html).toContain('Issuing recovery code');expect(html).toContain('role="status"');
-  expect(html).not.toContain('Recovery code ready');
+  expect(html).toContain('Making the reset link.');expect(html).toContain('role="status"');
+  expect(html).not.toContain('Reset link ready');
  });
  it('shows the issued employee and real expiry without claiming a password reset',()=>{
   const html=renderToStaticMarkup(<AssistedRecovery {...props} issued={{proof:'A'.repeat(43),employeeId:'QAEMPLOYEE',expiresAt:'2026-10-12T16:30:00Z'}}/>);
-  expect(html).toContain('Recovery code ready');expect(html).toContain('QAEMPLOYEE');
-  expect(html).toContain('dateTime="2026-10-12T16:30:00Z"');expect(html).toContain('readOnly=""');
-  // B7 wording (NV-021): the steps name the real sign-in link, "Forgot password?", and link to its page.
-  expect(html).toContain('works once');expect(html).toContain('href="/forgot-access"');expect(html).toContain('I have a recovery code');
-  expect(html).toContain('hides when you leave this page');expect(html).toContain('unused earlier code');
+  expect(html).toContain('Reset link ready');expect(html).toContain('QAEMPLOYEE');
+  expect(html).toContain('dateTime="2026-10-12T16:30:00Z"');
+  // Phase 5 (PB-008): the code is handed over as a link. The raw code is not in the page until "Show code" is opened,
+  // and the link itself is never written into the markup (no href, no text, no image address).
+  expect(html).not.toContain('A'.repeat(43));expect(html).not.toContain('#proof=');expect(html).not.toContain('<img');
+  expect(html).toContain('Copy link');expect(html).toMatch(/aria-expanded="false" aria-controls="assisted-code"/);
+  expect(html).toContain('works once');expect(html).toContain('href="/reset-access"');
+  expect(html).toContain('hides when you leave this page');expect(html).toContain('unused earlier one');
   expect(html).not.toContain('<form');expect(html).not.toContain('Password updated');
  });
  it('gives ended-access feedback an explicit sign-in path',()=>{
   const html=renderToStaticMarkup(<AssistedRecovery {...props} message="Your session ended. Sign in again to issue a code."/>);
   expect(html).toContain('role="alert"');expect(html).toContain('tabindex="-1"');
-  expect(html).toContain('href="/login"');expect(html).not.toContain('Recovery code ready');
+  expect(html).toContain('href="/login"');expect(html).not.toContain('Reset link ready');
  });
  it('keeps request and reset field contracts available',()=>{
   const request=renderToStaticMarkup(<AccountRecovery kind="request"/>),reset=renderToStaticMarkup(<AccountRecovery kind="reset"/>);

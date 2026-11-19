@@ -1,23 +1,23 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from 'node:crypto';
 import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import type { SqlExecutor } from '@/lib/notifications/types';
 import { companyAccessFixture } from '@/test/integration/company-access-fixture';
-const state = vi.hoisted(() => ({ proof: null as SessionMutationProof | null, ex: null as SqlExecutor | null }));
-vi.mock('@/lib/auth/session', () => ({ getSession: async () => state.proof?.employee ?? null, requireSessionMutationProof: async () => state.proof }));
-vi.mock('@/lib/data/sql-executor', () => ({ neonNotificationExecutor: () => state.ex }));
+const state = rs.hoisted(() => ({ proof: null as SessionMutationProof | null, ex: null as SqlExecutor | null }));
+rs.mock('@/lib/auth/session', () => ({ getSession: async () => state.proof?.employee ?? null, requireSessionMutationProof: async () => state.proof }));
+rs.mock('@/lib/data/sql-executor', () => ({ neonNotificationExecutor: () => state.ex }));
 import { GET, POST } from '@/app/api/owner/advisor/knowledge/route';
 import { GET as versionGET } from '@/app/api/owner/advisor/knowledge/entries/[documentId]/versions/[versionId]/route';
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
 beforeEach(async () => { f = await companyAccessFixture(); state.proof = f.owner; state.ex = f.db.executor; });
-afterEach(async () => { vi.restoreAllMocks(); await f?.db.dispose(); });
+afterEach(async () => { rs.restoreAllMocks(); await f?.db.dispose(); });
 const url = 'http://localhost/api/owner/advisor/knowledge';
 const request = (body?: unknown, headers = {}) => new Request(url, { method: body === undefined ? 'GET' : 'POST', headers: { 'x-nevora-company-knowledge': '1', origin: 'http://localhost', 'content-type': 'application/json', ...headers }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
 const draft = () => ({ op: 'draft_document', requestId: randomUUID(), expectedRevision: 0, documentId: null, title: 'Fictional handbook', locale: 'es', category: 'policy', body: 'Texto ficticio: <script>alert(1)</script>. This is guidance, not verified law.', sourceName: 'handbook.md' });
 const context = (documentId = randomUUID(), versionId = randomUUID()) => ({ params: Promise.resolve({ documentId, versionId }) });
 
 it('uses current Owner admission, same-origin intent, bounded JSON and private response headers without a model', async () => {
-  const outbound = vi.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No network allowed'));
+  const outbound = rs.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No network allowed'));
   expect((await POST(request(draft(), { origin: 'https://evil.invalid' }))).status).toBe(403);
   expect((await GET(request(undefined, { 'x-nevora-company-knowledge': '' }))).status).toBe(403);
   expect((await GET(new Request(url + '?workspace=other', { headers: { 'x-nevora-company-knowledge': '1' } }))).status).toBe(400);

@@ -1,5 +1,5 @@
 
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import {
   registerClockerDevice, redeemClockerEnrollment, authenticateClockerDevice,

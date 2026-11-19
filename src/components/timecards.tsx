@@ -27,16 +27,23 @@ import type {TimecardIssue} from '@/lib/timecards/project';
 import {CorpAvatar,CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpDuration,CorpEmpty,CorpErrorCard,CorpPage,CorpRow,CorpRows,CorpStats,CorpTime,CorpTitle} from './corp/corp';
 import {QuietSheet,SheetCancel} from './quiet/quiet-sheet';
 import './timecards-corp.css';
-import {BAvatar,BButton,BCard,BChip,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack} from './owner-b/b-kit';
-import {UploadSimpleIcon} from '@phosphor-icons/react/dist/ssr/UploadSimple';
+import {BAvatar,BButton,BCard,BChip,BDoneMark,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BSegs,BStack,BState,BStatusText} from './owner-b/b-kit';
+import {momentsCopy} from './owner-b/moments-copy';
+import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
+import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {Duration,SigBand,SigLinkRow,SigPage,SigSection} from './signature/signature';
 import sigStyles from './timecards-signature.module.css';
 import {announceOfflineHeld,steppedAway} from '@/lib/offline-hold';
 import {dateRangeText,durationRow,durationSentence,durationTotal,minutesFromNanoseconds,timeRangeText} from '@/lib/duration-format';
 import {ownApprover} from './timecards-own';
 
+const M=momentsCopy();
+/** Phase 7 (moments): a set of timecards is done only when the server confirmed every card in it. */
+const batchAllDone=(outcomes:BatchOutcome[])=>outcomes.length>0&&(outcomes.every(outcome=>outcome.status==='approved')||outcomes.every(outcome=>outcome.status==='finalized'));
+/** The shared done state for a whole confirmed set. A set with any other result shows no mark: each card says its own. */
+const batchDone=(outcomes:BatchOutcome[])=>batchAllDone(outcomes)?<div className="b-done-host--flush c-tc-batchdone"><BState kind="done" title={outcomes[0].status==='finalized'?M.batchAllFinalized(outcomes.length):M.batchAllApproved(outcomes.length)} line={M.batchLine}/></div>:null;
 /** "Oct 14–20", or "Sep 28 – Oct 4" across a month. */
 function signatureRange(start:string,end:string){
   const month=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short'}).format(new Date(`${date}T12:00:00Z`));
@@ -111,6 +118,8 @@ const isApproved=(item:TimecardItem)=>item.state==='APPROVED'||item.state==='FIN
 /** On the narrowest phones (under 360px) a long status in a row with a wide hours figure would be cut off ("Missing
  * clock-…"), so it uses a shorter word there; every other width keeps the full one (the full one is what is read aloud). */
 const NARROW_STATUS:Readonly<Record<string,string>>={'Missing clock-out':'No clock-out'};
+/** Phase 9 (spec 3.1): the live dot for a card whose person is on the clock right now; every other quiet state has none. */
+const LIVE_DOT:Readonly<Record<string,'green'>>={'Clocked in now':'green'};
 const reasonNames:Partial<Record<TimecardIssue,string>>={open_entry:'Missing clock-out',open_break:'Check breaks',pending_correction:'Correction waiting',overlapping_time:'Overlapping recorded time'};
 type RowTone='review'|'done'|'neutral';
 // Owner premium R7/R10 (copy table 36–38): Approve is step 1 and Finalize step 2 on every surface (lead decision, Oct 31:
@@ -519,7 +528,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {/* Closing F1 (NV-029): the decision is confirmed in the panel at once, in words, while the fresh read runs. */}
           {/* OW-037: the success is a block, not a line: a green circle with a check, the word, and how far the period is. The
             * sentence that names the person stays for screen readers. */}
-          {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status"><BIcon tone="green"><CheckIcon weight="bold"/></BIcon>
+          {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status"><BDoneMark on="tint"/>
             <span className="c-tc-sheet__donetx"><b aria-hidden="true">{done.action==='finalized'?'Finalized':'Approved'}</b>
               <span className="c-sr">{`${done.name==='This'?'This':`${done.name}’s`} timecard is ${done.action==='finalized'?'finalized':'approved'}.`}</span>
               <span className="c-num">{`${doneCount(done.action)} of ${cards.length} done`}</span></span>
@@ -588,6 +597,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const reviewLabel=inProgress&&!reviewSummary.counts.awaitingFinalization?'In progress':'Needs review';
     const percent=cards.length?Math.round(approvedCount/cards.length*100):0;
     const finalizedCount=cards.filter(item=>item.state==='FINALIZED').length,allFinalized=cards.length>0&&finalizedCount===cards.length;
+    const sumNs=(pick:(item:TimecardItem)=>string)=>cards.reduce((sum,item)=>sum+(/^\d+$/.test(pick(item))?BigInt(pick(item)):BigInt(0)),BigInt(0)).toString();
     const sumOf=(pick:(item:TimecardItem)=>string)=>quietHours(cards.reduce((sum,item)=>sum+(/^\d+$/.test(pick(item))?BigInt(pick(item)):BigInt(0)),BigInt(0)).toString());
     const recordedTotal=sumOf(item=>item.card.recordedNanoseconds),breaksTotal=sumOf(item=>item.card.breakNanoseconds);
     const recordedWhole=wholeHours(cards.reduce((sum,item)=>sum+(/^\d+$/.test(item.card.recordedNanoseconds)?BigInt(item.card.recordedNanoseconds):BigInt(0)),BigInt(0)).toString());
@@ -597,7 +607,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // Nov 1 upscale (review S15): while approval hasn't opened and nothing is approved, the card would only say when it
     // opens, so that line joins the subtitle instead ("Oct 26 – Nov 1 · 9 people · Approval opens Mon, Nov 2").
     const folded=open&&!approvedCount;
-    const subtitle=ready?`${rangeText(period)} · ${cards.length} ${cards.length===1?'person':'people'}${folded&&cards.length?` · Approval opens ${approveFrom(period)}`:''}`:rangeText(period);
+    // Phase 8 (b.md #27): each part stays whole ("Approval opens Mon, Nov 23" never splits); the line breaks only after " · ".
+    // Premium pass FA (final verification B #8): one line of facts (BSegs): each part whole, and no line starts or ends on
+    // a "·" ("12 people · / Approval opens Mon, Nov 23" left the dot at the end of the first line).
+    const subtitle=<BSegs parts={ready?[rangeText(period),`${cards.length} ${cards.length===1?'person':'people'}`,folded&&cards.length?`Approval opens ${approveFrom(period)}`:null].map(part=>part?part.replace(/ /g,'\u00a0'):part):[rangeText(period)]}/>;
     const summary=ready&&cards.length&&!showBulk&&!folded?<CorpCard as="div" ariaLabel="Period overview">
       <div className="c-card__body">
         <div className="c-tc-sum"><b>{summaryTitle}</b>
@@ -636,7 +649,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const exportsLine=viewerIsOwner?'Download hours for payroll':'Download approved hours';
     const toolsCard=<CorpCard as="div" ariaLabel="Time tools"><CorpRows label="Time tools">
       {/* Review B5 (NV-263): the same rows as the phone, an icon and a line under each. */}
-      <li><CorpRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} icon={<UploadSimpleIcon className="c-ic" weight="bold"/>} title="Time exports" detail={exportsLine} chevron/></li>
+      {/* Premium pass FA (final verification B #9): one glyph per meaning. A download is the down arrow (it drew the upload
+        * arrow); fixing time is the pencil on every page and for every role (Home and Things to do drew a clock). */}
+      <li><CorpRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} icon={<DownloadSimpleIcon className="c-ic" weight="bold"/>} title="Time exports" detail={exportsLine} chevron/></li>
       {/* A9: employees' time corrections are reviewed under Time. */}
       <li><CorpRow href="/app/timecards/corrections" icon={<PencilSimpleIcon className="c-ic" weight="bold"/>} title="Time corrections" detail="Fixes people asked for" chevron/></li>
     </CorpRows></CorpCard>;
@@ -665,8 +680,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </div>:null}
         {outcomes?<div className="q-tc-confirm">
           <div className="q-grp"><h2>Per-card results</h2></div>
-          <ul className="q-list">{outcomes.map(outcome=><li key={outcome.command.operationId}><div className="q-row q-row--one"><span className="q-rt"><b>{nameOf(outcome.command.employeeId)}</b></span><span className="q-rv" data-tone={outcome.status}>{outcome.status.replaceAll('-',' ')}</span></div></li>)}</ul>
-          <p className="q-help">Refresh timecards before reviewing another set.</p>
+          {batchDone(outcomes)}
+          <ul className="q-list">{outcomes.map(outcome=><li key={outcome.command.operationId}><div className="q-row q-row--one"><span className="q-rt"><b>{nameOf(outcome.command.employeeId)}</b></span><span className="q-rv" data-tone={outcome.status}>{M.batchWord[outcome.status]}</span></div></li>)}</ul>
+          {batchAllDone(outcomes)?null:<p className="q-help">{M.batchLine}</p>}
         </div>:null}
         {pending?<button type="button" className="q-btn q-btn--sec" disabled={busy} onClick={()=>void act()}>Retry original attempted action</button>:null}
         {outcomes?<button type="button" className="q-btn q-btn--quiet" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button>:null}
@@ -696,7 +712,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {nextStep?<BCard label="Next step"><BList label="Next step">
             <BRow href={nextStep.href??undefined} lead={<BIcon tone="green"><CheckIcon weight="bold"/></BIcon>} title={nextStep.title} sub={nextStepWhy}/>
           </BList></BCard>:null}
-          {ready&&cards.length&&!open&&eligible.length?<BCard label="Ready to approve"><div className="b-notice"><BIcon tone="teal"><CheckIcon weight="bold"/></BIcon>
+          {/* Phase 9 (spec 3.4): timecards waiting for this person's approval lead with the timecards' Clock in amber (it was a
+            * teal Check, the "done" glyph). */}
+          {ready&&cards.length&&!open&&eligible.length?<BCard label="Ready to approve"><div className="b-notice"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon>
             <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{/* Review B2 (NV-006): every count names its week. */}{`${rangeText(period)} · ${attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`}`}</span></span>
             <BButton onClick={()=>{setSelecting(true);selectAll(true);}}>Review</BButton></div></BCard>
           :ready&&cards.length&&open&&approvedCount?<BCard label="Approval"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{summaryTitle}</span><span className="b-notice__s">{`You can approve the rest from ${approveFrom(period)}`}</span></span></div></BCard>:null}
@@ -705,23 +723,26 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             chip={attentionShown?<button type="button" className="b-card__a" onClick={()=>setAttentionOnly(false)}>Show all</button>:undefined}>
             <BList label={attentionShown?'Timecards that need attention':'Timecards in this period'}>{phoneRows.map(item=>{
               const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),hours=noTime(item)?'':compactHours(item.card.recordedNanoseconds),tone=toneOf(item);
-              // Round 5 (Nov 8): "2 h 30 min breaks" is one unit; non-breaking spaces keep it whole when the sub line wraps.
-              // BR-1: a sub line is a sentence, so the minutes carry their unit ("2 h 30 breaks" read as thirty breaks).
-              const breaks=/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?`${quietHours(item.card.breakNanoseconds)} breaks`.replaceAll(' ','\u00a0'):null;
               // OW-017: every row is two lines at one height. Line 1 is the name (and "You"); line 2 is the status (a chip
               // when it is one) and then the breaks, whole parts only: a part that does not fit the line is left out, so
               // nothing wraps or ends on a separator. A name and a chip do not fit one line beside the hours at 390px.
               // The bar under each row had no scale, so it is gone; the hours sit in a fixed right-aligned column.
-              const parts=[tone?null:row.text,breaks].filter(Boolean) as string[];
+              // Phase 9 (spec 3.1): a card still running is the quiet words with the green live dot ("Clocked in now"),
+              // the same quiet form Home and Team use.
+              const liveDot=LIVE_DOT[row.text];
+              // Premium pass FA (final verification A #25, B #31): the breaks fitted on some rows and were left out of others by
+              // an invisible rule, so a phone row says its status only; the breaks are in the row's sheet and the wide table.
+              const parts=[tone||liveDot?null:row.text].filter(Boolean) as string[];
               return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,isOwn(item)?'You':null,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
                 title={name} chip={isOwn(item)?youChip:undefined}
-                sub={tone||parts.length?<span className="c-tc-sub">{tone?<BChip tone={tone}>{NARROW_STATUS[row.text]?<><span className="c-tc-chip-full">{row.text}</span><span className="c-tc-chip-short" aria-hidden="true">{NARROW_STATUS[row.text]}</span></>:row.text}</BChip>:null}{parts.map((part,index)=><span key={part}>{index||tone?' · ':''}{part}</span>)}</span>:undefined}
+                sub={tone||liveDot||parts.length?<span className="c-tc-sub">{tone?<BChip tone={tone}>{NARROW_STATUS[row.text]?<><span className="c-tc-chip-full">{row.text}</span><span className="c-tc-chip-short" aria-hidden="true">{NARROW_STATUS[row.text]}</span></>:row.text}</BChip>:liveDot?<BStatusText dot={liveDot}>{row.text}</BStatusText>:null}{parts.map((part,index)=><span key={part}>{index||tone||liveDot?' · ':''}{part}</span>)}</span>:undefined}
                 end={hours?<b className="c-num c-tc-hours">{hours}</b>:undefined} chevron/>;
             })}</BList>
           </BCard>:null}
+          {/* Phase 8 (a.md #22): rows that open lead with the teal-50 circle, as they do from 768px. */}
           <BCard label="Time tools"><BList label="Time tools">
-            <BRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} lead={<BIcon tone="grey"><UploadSimpleIcon weight="bold"/></BIcon>} title="Time exports" sub={exportsLine}/>
-            <BRow href="/app/timecards/corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Time corrections" sub="Fixes people asked for"/>
+            <BRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} lead={<BIcon tone="teal"><DownloadSimpleIcon weight="bold"/></BIcon>} title="Time exports" sub={exportsLine}/>
+            <BRow href="/app/timecards/corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Time corrections" sub="Fixes people asked for"/>
           </BList></BCard>
         </BStack>
       </BScreen>;
@@ -784,7 +805,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             <label className="c-tc-dbulk__check"><input type="checkbox" className="c-tc-box" aria-label="Confirm reviewed timecards" checked={confirmed} disabled={busy} onChange={e=>setConfirmed(e.target.checked)}/>I reviewed this exact selected set and its recorded time for {batchAction==='APPROVE'?'approval':'finalization'}.</label>
             <button type="button" className="c-btn c-btn--md" disabled={!confirmed||busy||!!pending} onClick={()=>void submitBatch()}>{batchAction==='APPROVE'?'Approve selected':'Finalize selected'}</button>
           </div>:null}
-          {outcomes?<div className="c-tc-dbulk__step"><h3>Per-card results</h3><ul>{outcomes.map(outcome=><li key={outcome.command.operationId}>{nameOf(outcome.command.employeeId)} · {outcome.status.replaceAll('-',' ')}</li>)}</ul><p>Refresh timecards before reviewing another set.</p></div>:null}
+          {outcomes?<div className="c-tc-dbulk__step"><h3>Per-card results</h3>{batchDone(outcomes)}<ul>{outcomes.map(outcome=><li key={outcome.command.operationId}>{nameOf(outcome.command.employeeId)} · {M.batchWord[outcome.status]}</li>)}</ul>{batchAllDone(outcomes)?null:<p>{M.batchLine}</p>}</div>:null}
           <div className="c-tc-dbulk__foot">
             {pending?<button type="button" className="c-btn c-btn--secondary c-btn--md" disabled={busy} onClick={()=>void act()}>Retry original attempted action</button>:null}
             <button type="button" className="c-link c-tc-refresh" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button>
@@ -819,7 +840,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 <td data-col="breaks" className="c-tc-num c-tc-muted">{breaks==='0h'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:breaks}</td>
                 {/* OW-016: a chip only where it says something (amber to act on, green done); the usual state is plain grey
                   * text. The status sits at the card's right edge with a chevron, so the row shows it opens. */}
-                <td data-col="status"><span className="c-tc-st">{toneOf(item)?<BChip tone={toneOf(item)??'grey'}>{row.text}</BChip>:<span className="c-tc-plain">{row.text}</span>}{selecting?null:<CaretRightIcon className="c-tc-chev" weight="bold" aria-hidden="true"/>}</span></td>
+                <td data-col="status"><span className="c-tc-st">{toneOf(item)?<BChip tone={toneOf(item)??'grey'}>{row.text}</BChip>:<BStatusText dot={LIVE_DOT[row.text]}>{row.text}</BStatusText>}{selecting?null:<CaretRightIcon className="c-tc-chev" weight="bold" aria-hidden="true"/>}</span></td>
               </tr>;
             }):<tr><td colSpan={cols} className="c-tc-none">{tab==='review'?'No recorded timecards need review.':'No approved timecards yet.'}</td></tr>}
             {fold?<tr className="c-tc-idle">{selecting?<td className="c-tc-check" aria-hidden="true"/>:null}<td colSpan={cols-(selecting?1:0)}>
@@ -829,8 +850,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             {tab==='all'?<tfoot><tr className="c-tc-total">
               {selecting?<td className="c-tc-check" aria-hidden="true"/>:null}
               <th scope="row" data-col="person">Total</th>{showRole?<td data-col="role"/>:null}
-              <td data-col="recorded" className="c-tc-num"><CorpDuration>{recordedTotal}</CorpDuration></td>
-              <td data-col="breaks" className="c-tc-num c-tc-muted">{breaksTotal==='0 min'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:breaksTotal}</td>
+              {/* Premium pass FA (final verification A #25): one duration form per column, the total included: the rows' form
+                * to the minute ("211 h 42", "8 h 30"), where the total read "211 h" over rows of "18 h 04". */}
+              <td data-col="recorded" className="c-tc-num"><CorpDuration>{compactHours(sumNs(item=>item.card.recordedNanoseconds))}</CorpDuration></td>
+              <td data-col="breaks" className="c-tc-num c-tc-muted">{breaksTotal==='0 min'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:compactHours(sumNs(item=>item.card.breakNanoseconds))}</td>
               <td data-col="status"/>
             </tr></tfoot>:null}
           </table></div>

@@ -1,6 +1,6 @@
 
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {CorpCorrections,CorpFixTime,CorpHoursTitle,CorpPastTimecards,CorpTimeEntry,CorpTimeTab,boardDuration,clockRange,formatClock,parseClock,timeSubtitle} from './hours-corp';
 import {HoursCorrectionOperation} from './hours-operation';
 import type {EmployeeTimeEntry,EmployeeTimeReady} from '@/lib/employee-time';

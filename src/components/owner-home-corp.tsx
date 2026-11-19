@@ -1,5 +1,4 @@
 "use client";
-import { parsePeriod } from '@/lib/timecards/project';
 import type { HomePayrollStatus } from '@/lib/payroll/backlog-read';
 import "./owner-home-corp.css";
 import { isStaffingRepair } from "@/lib/time-off-staffing/present";
@@ -10,6 +9,8 @@ import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 import { periodLabel, type NextPay } from "@/components/payroll/my-pay";
 import type { ActionCenterConnection } from "./manager-action-center";
 import type { NeedsYou } from "@/lib/action-center/needs-you";
+import { needsYouTotal, paydayReview } from "@/lib/action-center/review-routing";
+import { reviewCopy } from "@/components/review-details/copy";
 import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
 import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
@@ -29,6 +30,7 @@ export { toDoSentence } from "./manager-inbox-corp";
 const working = (shift: TodayShift) => shift.status === "clocked_in" || shift.status === "on_break";
 const people = (shifts: TodayShift[]) => new Set(shifts.map(shift => shift.employeeId)).size;
 const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+const t = reviewCopy();
 
 
 export type OwnerHomeCorpProps = {
@@ -66,7 +68,7 @@ export function OwnerHomeCorp(props: OwnerHomeCorpProps) {
     <div data-live-readers={props.liveReaders} hidden />
     {/* Direction B: the phone screen (shown on phones under data-nv-b; tablets and desktop keep the cards below). */}
     <HomeB today={props.today} monitor={props.monitor} monitorPending={props.monitorPending} offline={props.offline} value={props.value} connection={props.connection}
-      timecards={props.timecards} timecardsReady={props.timecardsReady ?? props.value !== null} businessDay={props.businessDay} nextPay={props.nextPay} setup={props.setup} billing={props.billing}
+      timecards={props.timecards} timecardsReady={props.timecardsReady ?? props.value !== null} businessDay={props.businessDay} nextPay={props.nextPay} payrollStatus={props.payrollStatus} setup={props.setup} billing={props.billing}
       dateLabel={props.dateLabel} summary={props.summary} week={props.week} greeting={props.greeting} onRetry={props.onRetryActions} />
     <CorpTitle title={props.greeting} sub={<>{props.dateLabel}<span role="status" className="c-sr">{props.summary}</span></>} />
     <TodayCard {...props} />
@@ -155,14 +157,6 @@ const homeGap = <T extends { detail?: string }>(row: T): T => row.detail ? { ...
 
 const dayName = (date: string, style: "long" | "short") => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: style, ...(style === "short" ? { month: "short", day: "numeric" } : {}) }).format(new Date(`${date}T12:00:00Z`));
 const nextDay = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
-/** Keep the exact canonical review period; dropping it would open the current week instead of the counted cards. */
-const timecardPeriod = (item: ActionItem) => {
-  try {
-    const url = new URL(item.href, "https://nevora.invalid");
-    return url.pathname === "/app/timecards" ? parsePeriod(url.searchParams.get("start") ?? "", url.searchParams.get("end") ?? "") : null;
-  } catch { return null; }
-};
-
 /** Payday: the next payday, then what to do about its timecards and when (R7). Approvals open the day after a period ends
  * (as Timecards says), so before then the card names that day ("You can approve from Mon, Nov 2"); it names a count to
  * review only for periods that have ended; and it never says "approved" (an empty list can mean none were recorded) or
@@ -173,23 +167,19 @@ function PaydayCard({ nextPay, payrollStatus, timecards, ready, connection, busi
   // "Tue, Nov 3" with how far away it is in grey ("Tomorrow", "In 3 days"); the card's label already says Payday.
   const when = nextPay ? dayName(nextPay.payday, "short") : null;
   const away = nextPay ? nextPay.daysUntil <= 0 ? "Today" : nextPay.daysUntil === 1 ? "Tomorrow" : `In ${nextPay.daysUntil} days` : undefined;
-  const periods = timecards.map(timecardPeriod);
-  const ends = periods.map(period => period?.endDate);
-  const closed = new Map<string, {startDate: string; endDate: string; count: number}>();
-  if (ready && businessDay) for (const period of periods) {
-    if (!period || period.endDate >= businessDay) continue;
-    const key = `${period.startDate}:${period.endDate}`;
-    const group = closed.get(key);
-    if (group) group.count++;
-    else closed.set(key, {...period, count: 1});
-  }
+  // Phase 4 (U03): the same count as the Direction B tile and every other Home (paydayReview): only the cards this
+  // person may review, by the server's typed review facts, each under its own pay period. A card another reviewer
+  // approves has its own row and is never counted; cards whose facts are missing make the count read "At least".
+  const review = paydayReview(ready ? timecards : [], businessDay, nextPay?.period?.endDate);
+  const closed = review.periods;
   // The earliest period still open: a waiting timecard's, or else the next payday's own period.
-  const openEnd = businessDay ? [...ends, nextPay?.period?.endDate].filter((end): end is string => !!end && end >= businessDay).sort()[0] : undefined;
+  const openEnd = review.openEnd;
   // While the read is out of reach the line says so (and keeps the card's height); it never guesses a count.
   const step: { title: string; detail: string } = !ready
     ? { title: "Timecards", detail: connection === "loading" || connection === "reconnecting" ? "Checking timecards…" : connection === "offline" ? "Updates when you reconnect"
       : connection === "paused" ? "Updates when you’re back" : "Timecards aren’t available right now" }
     : openEnd ? { title: "Approve timecards", detail: `You can approve from ${dayName(nextDay(openEnd), "short")}` }
+    : review.otherReviewer || review.unknown ? { title: "Timecards", detail: t.noneForYou }
     : { title: "Timecards", detail: "No timecards waiting" };
   const period = nextPay?.period ? periodLabel(nextPay.period.startDate, nextPay.period.endDate) : "";
   const label = when ? "Payday" : payrollNeedsAttention ? "Payroll" : "Timecards";
@@ -204,11 +194,14 @@ function PaydayCard({ nextPay, payrollStatus, timecards, ready, connection, busi
       {payrollStatus?.state === 'ready' && payrollStatus.overdue ? payrollFact("Payroll to prepare", payrollStatus.overdue) : null}
       {payrollStatus?.state === 'ready' && payrollStatus.reviewRequired ? payrollFact("Payroll schedule needs review", payrollStatus.reviewRequired) : null}
       {when ? <li><CorpRow title={when} bold detail={period ? `Pay period ${period}` : undefined} value={away} valueTone="soft" /></li> : null}
-      {closed.size ? [...closed.values()].sort((a, b) => a.startDate.localeCompare(b.startDate) || a.endDate.localeCompare(b.endDate)).map(period => {
-        const title = `Review ${count(period.count, "timecard", "timecards")}`;
+      {closed.length ? closed.map(period => {
+        const title = review.exact ? `Review ${count(period.count, "timecard", "timecards")}` : t.reviewAtLeast(period.count);
         const detail = `Before payroll · ${periodLabel(period.startDate, period.endDate)}`;
         return <li key={`${period.startDate}:${period.endDate}`} className="c-home__payday"><CorpRow title={title} detail={detail} href={`/app/timecards?start=${period.startDate}&end=${period.endDate}`} chevron label={`${title}. ${detail}. Opens Timecards`} /></li>;
       }) : <li className="c-home__payday"><CorpRow title={step.title} detail={step.detail} href="/app/timecards" chevron label={`${step.title}. ${step.detail}. Opens Timecards`} /></li>}
+      {ready && review.otherReviewer ? <li className="c-home__payday"><CorpRow title={review.otherReviewer === 1 && review.own === 1 ? t.otherReviewerYours : t.otherReviewerCount(review.otherReviewer)} detail={t.reviewerNeeded} href="/app/timecards" chevron
+        label={`${review.otherReviewer === 1 && review.own === 1 ? t.otherReviewerYours : t.otherReviewerCount(review.otherReviewer)}. ${t.reviewerNeeded} Opens Timecards`} /></li> : null}
+      {ready && review.unknown ? <li className="c-home__payday"><CorpRow title={t.uncheckedCount(review.unknown)} detail={t.reviewUnchecked} href="/app/timecards" chevron label={`${t.uncheckedCount(review.unknown)}. Opens Timecards`} /></li> : null}
     </CorpRows>
   </CorpCard>;
 }
@@ -216,7 +209,7 @@ function PaydayCard({ nextPay, payrollStatus, timecards, ready, connection, busi
 /** Things to do on Home: only the decisions people are waiting on (requests, corrections, other urgent items). Shifts with no
  * clock-in and open shifts stay in Today above, so no count shows twice. The header carries no total: each row says what
  * it counts, and the full page and the sidebar keep the one shared total. Each row opens where the decision is made. */
-function ThingsToDo({ value, connection, offline, onRetryActions, setup }: OwnerHomeCorpProps) {
+function ThingsToDo({ value, connection, offline, onRetryActions, setup, today }: OwnerHomeCorpProps) {
   if (!value) {
     const busy = connection === "loading" || connection === "reconnecting";
     const quiet = offline || connection === "offline" || connection === "paused";
@@ -250,13 +243,16 @@ function ThingsToDo({ value, connection, offline, onRetryActions, setup }: Owner
     { title: "Other items to review", n: urgent.length - corrections - repairs, href: "/app/inbox#todo-review" },
   ].filter(row => row.n > 0);
   const shiftsOnly = value.count > 0;
+  // Phase 4 (U03): with clock-ins unread, or review facts missing, an empty card is not all-clear.
+  const total = needsYouTotal(value, { clockInsUnavailable: today?.state === "unavailable" });
   return <CorpCard id="home-needs-you" label="Things to do" aside={<CorpLink href="/app/inbox" label="See all things to do">See all</CorpLink>}>
     {rows.length ? <CorpRows label="Things to do">
       {/* R3: one count voice, the label then the figure in grey (badges stay in navigation). */}
       {rows.map(row => <li key={row.title}><CorpRow title={row.title} href={row.href} one value={row.n} valueTone="soft" chevron label={`${row.title}, ${row.n}`} /></li>)}
     </CorpRows> : <div className="c-empty c-empty--card">{shiftsOnly
       ? <><b className="c-empty__title">No requests waiting</b><span className="c-empty__body">Open shifts and missed clock-ins are under Today.</span></>
-      : <><b className="c-empty__title">You’re all set</b><span className="c-empty__body">Nothing needs you right now.</span></>}</div>}
+      : total.exact ? <><b className="c-empty__title">You’re all set</b><span className="c-empty__body">Nothing needs you right now.</span></>
+      : <><b className="c-empty__title">{t.notAllChecked}</b><span className="c-empty__body">{t.notAllCheckedLine}</span></>}</div>}
     {setup}
   </CorpCard>;
 }

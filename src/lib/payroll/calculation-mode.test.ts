@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {readPayrollCalculationMode,assertNativeCalculationEnabled} from './calculation-mode';
 
 it.each([undefined,'external','native','true','NATIVE_PROVISIONAL',' native_provisional'])('requires explicit native provisional opt-in: %j',value=>{

@@ -1,4 +1,4 @@
-import { afterAll, vi } from 'vitest';
+import { afterAll, rs } from '@rstest/core';
 import { Client } from 'pg';
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
@@ -28,7 +28,7 @@ const traced = function (this: Client, ...args: unknown[]): unknown {
   return result;
 };
 // Delegate every original argument/result unchanged; only observe Promise-based queries used by the checked-in adapter.
-const spy = vi.spyOn(Client.prototype, 'query').mockImplementation(traced as typeof Client.prototype.query);
+const spy = rs.spyOn(Client.prototype, 'query').mockImplementation(traced as typeof Client.prototype.query);
 afterAll(() => {
   spy.mockRestore();
   const output = process.env.NEVORA_REHEARSAL_FIXTURE_OUTPUT;

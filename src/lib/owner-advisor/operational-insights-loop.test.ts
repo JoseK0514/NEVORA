@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { investigate } from "./loop.server";
 import { deriveOperationalInsights } from "./operational-insights";
 it("exposes strict date-only history reads within the same tool/citation budget and supplies observed data", async () => {

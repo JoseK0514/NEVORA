@@ -13,6 +13,7 @@ export const FEATURE_FLAGS = Object.freeze({
   mobileAccess: 'NEVORA_MOBILE_ACCESS_ENABLED',
   mobileSupport: 'NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED',
   ownerAdvisor: 'NEVORA_OWNER_ADVISOR_ENABLED',
+  managerAdvisor: 'NEVORA_MANAGER_ADVISOR_ENABLED',
   ownerAdvisorKnowledge: 'NEVORA_OWNER_ADVISOR_KNOWLEDGE_ENABLED',
   ownerAdvisorWeekly: 'NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED',
   ownerAdvisorBusinessImports: 'NEVORA_OWNER_ADVISOR_BUSINESS_IMPORTS_ENABLED',
@@ -20,6 +21,8 @@ export const FEATURE_FLAGS = Object.freeze({
   clockerPunch: 'NEVORA_CLOCKER_PUNCH_ENABLED',
   // Retained for development's legacy renderer until reviewed UI integration.
   clockerUiV2: 'NEVORA_CLOCKER_UI_V2',
+  // Public-page visit counts only; see src/lib/analytics/redact.ts.
+  webAnalytics: 'NEVORA_WEB_ANALYTICS_ENABLED',
 } as const);
 
 export type FeatureFlags = Readonly<{[K in keyof typeof FEATURE_FLAGS]: boolean}>;

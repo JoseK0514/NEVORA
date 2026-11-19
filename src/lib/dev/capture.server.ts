@@ -22,14 +22,14 @@ export function devRecoveryDelivery(env:Record<string,string|undefined>,headers?
   if(!headers||!localRequest(headers))return null;
   const origin=new URL(env.FUEL_PORTAL_ORIGIN!).origin;
   const transport=nodemailer.createTransport({streamTransport:true,buffer:true,newline:'unix',disableFileAccess:true,disableUrlAccess:true});
-  return {async send(email,proof){
+  return {async send(email,proof,context){
     if(!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)||/[\r\n]/.test(proof))throw Error('Invalid local capture input');
-    const message=await transport.sendMail({from:'NEVORA preview <preview@example.invalid>',to:email,...recoveryEmail(`${origin}/reset-access#proof=${proof}`),disableFileAccess:true,disableUrlAccess:true});
+    const message=await transport.sendMail({from:'NEVORA preview <preview@example.invalid>',to:email,...recoveryEmail(`${origin}/reset-access#proof=${proof}`,context),disableFileAccess:true,disableUrlAccess:true});
     if(!Buffer.isBuffer(message.message))throw Error('Local email capture did not produce a buffered message');
     await record(directory,'email','.eml',message.message);
-  },async notifyReset(email){
+  },async notifyReset(email,context){
     if(!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email))throw Error('Invalid local capture input');
-    const message=await transport.sendMail({from:'NEVORA preview <preview@example.invalid>',to:email,...passwordChangedEmail(origin)});
+    const message=await transport.sendMail({from:'NEVORA preview <preview@example.invalid>',to:email,...passwordChangedEmail(origin,context)});
     if(!Buffer.isBuffer(message.message))throw Error('Local email capture did not produce a buffered message');
     await record(directory,'email','.eml',message.message);
   }};

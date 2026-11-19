@@ -8,7 +8,11 @@ import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from
 import { useToday } from "./manager-today";
 import { gapPlace, itemEntry, lateBy, planLabel, shiftEntry } from "./manager-inbox";
 import { workspaceNow } from "@/lib/action-center/inbox";
-import { isOwnReview, needsYou } from "@/lib/action-center/needs-you";
+import { needsYou } from "@/lib/action-center/needs-you";
+import { concernsActor, needsYouTotal, reviewRoute, timecardPeriod, type NeedsYouTotal } from "@/lib/action-center/review-routing";
+import { coverOutcomeText, otherShiftLine, swapShifts } from "@/lib/action-center/request-details";
+import { reviewCopy } from "@/components/review-details/copy";
+import { dateRangeText } from "@/lib/duration-format";
 import { ATTENDANCE_WORDS, itemPerson, presentItem, readableDates, spacedRanges, splitNoClockIn } from "@/lib/action-center/present";
 import { actionCenterNavigation } from "./action-center-navigation";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
@@ -22,7 +26,11 @@ import { isStaffingRepair, repairTitle, repairWhen } from "@/lib/time-off-staffi
 
 type Row = { key: string; href: string; label: string; title: string; detail?: string; value?: string; valueTone?: "red" | "soft" | "amber";
   /** Phase 3 (MG-012): the person the request is from, when the title says more than their name (the row's avatar). */
-  person?: string };
+  person?: string;
+  /** Phase 4 (U09): further lines under the detail: the other shift of a swap, a cover request's result. */
+  lines?: string[];
+  /** Phase 4 (U03): listed for the record, not this person's to decide (another reviewer approves it). */
+  quiet?: boolean };
 type Group = { id: string; title: string; rows: Row[]; count?: number; aside?: { href: string; label: string; text: string };
   /** A line under the card's heading ("You can approve these from Mon, Nov 16."). */
   note?: string };
@@ -42,6 +50,8 @@ const midnight = (text: string) => text.replace(/\bmidnight\b/gi, "12:00 AM");
 /** R7 (copy row 3): "Need 1 employee" reads "Needs 1 person" ("Needs 2 people"), the count kept with its noun. */
 const needs = (text: string) => text.replace(/Need\s(\d+)\semployees?/g, (_, n: string) => `Needs ${n}\u00a0${n === "1" ? "person" : "people"}`);
 const plain = (text: string) => text.replace(/ /g, " ");
+const t = reviewCopy();
+const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? name;
 
 /** Codex's optional request facts (dates and partial-day times), when the read carries them. */
 type RequestFacts = { startDate: string; endDate: string; partialDay?: { start: string; end: string } };
@@ -51,7 +61,9 @@ function requestDetail(item: ActionItem, fallback: string) {
   const dates = facts.startDate === facts.endDate ? dayText(facts.startDate) : `${dayText(facts.startDate)} – ${dayText(facts.endDate)}`;
   // Backend (Nov 15, 2026): a cover request says so (a swap's title already shows both people with ⇄).
   const cover = item.type === "EXCHANGE" && item.request?.exchangeKind === "COVERAGE" ? "Cover request · " : "";
-  return `${cover}${dates} · ${facts.partialDay ? `${hhmm(facts.partialDay.start)} – ${hhmm(facts.partialDay.end)}` : "All day"}`;
+  // Phase 8 (a.md #14): several whole days read as Time off requests says them ("3 days"); one day is "All day".
+  const days = Math.round((Date.parse(`${facts.endDate}T12:00:00Z`) - Date.parse(`${facts.startDate}T12:00:00Z`)) / 86_400_000) + 1;
+  return `${cover}${dates} · ${facts.partialDay ? `${hhmm(facts.partialDay.start)} – ${hhmm(facts.partialDay.end)}` : days > 1 ? `${days} days` : "All day"}`;
 }
 
 function itemRow(item: ActionItem, timeZone: string, calm = false): Row {
@@ -59,18 +71,38 @@ function itemRow(item: ActionItem, timeZone: string, calm = false): Row {
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, actionCenterNavigation(item).label, timeZone);
   const request = item.category === "requests";
   // Nov 14, 2026 inspection (BR-7): a shift request names both people when the read carries the other one. Phase 3
-  // (MG-012): the two names are joined by the swap sign, and a can't-work row says the day in its title ("James Ortiz
-  // can’t work Fri, Nov 20") over the shift's time and place. The other person's shift and whether cover exists are
-  // not in the read, so the line under a swap is the one shift the read carries.
+  // (MG-012): the two names are joined by the swap sign.
   const other = request ? item.request?.counterpartName : undefined;
   const who = request ? shown.person ?? shown.title : shown.title;
   const facts = request ? item.request : undefined;
   const callout = item.type === "CALLOUT" && facts && shown.person ? facts : null;
-  const title = callout ? `${who} can’t work ${facts!.startDate === facts!.endDate ? dayText(facts!.startDate) : `${dayText(facts!.startDate)} – ${dayText(facts!.endDate)}`}` : other ? `${who} ⇄ ${other}` : who;
-  const detail = callout ? [callout.partialDay ? `${hhmm(callout.partialDay.start)} – ${hhmm(callout.partialDay.end)}` : "All day", callout.locationName].join(" · ")
+  // Phase 4 (U09): only a swap joins two names; a cover request is the requester's, and who picked it up is its result.
+  const covering = item.type === "EXCHANGE" && item.request?.exchangeKind === "COVERAGE";
+  // Phase 8 (a.md #13, b.md #44): a can't-work row's title is the person, like every other row; the card already says
+  // "Can't work", so the line under it is the day, the shift's time and its place.
+  const title = other && !covering ? `${who} ⇄ ${other}` : who;
+  const base = callout ? [callout.startDate === callout.endDate ? dayText(callout.startDate) : `${dayText(callout.startDate)} – ${dayText(callout.endDate)}`,
+    callout.partialDay ? `${hhmm(callout.partialDay.start)} – ${hhmm(callout.partialDay.end)}` : "All day", callout.locationName].join(" · ")
     : request ? requestDetail(item, shown.detail) : shown.detail;
-  return { key: item.id, href: entry.href, label: midnight(other ? `${entry.label}, with ${other}` : entry.label), title: plain(title),
-    detail: needs(midnight(plain(detail))), ...(request && shown.person ? { person: shown.person } : {}) };
+  // Phase 4 (U09): the facts now carry both shifts of a swap and a cover request's status. A swap shows each shift on
+  // its own line (date, time, place); a second shift the server withholds, or one the read doesn't carry, says so and
+  // is never read as "no second shift". A cover request says its result, and "not known" is not "nobody".
+  const year = facts?.shift?.date.slice(0, 4);
+  const swap = item.type === "EXCHANGE" && facts?.exchangeKind === "SWAP" ? swapShifts(facts, t, year) : null;
+  const cover = item.type === "EXCHANGE" && facts?.exchangeKind === "COVERAGE" ? facts : null;
+  const detail = swap?.offered ? `${shown.person ? `${t.shiftOf(firstName(shown.person))}: ` : ""}${swap.offered}`
+    : cover?.shift ? `${t.coverRequest} · ${swapShifts(cover, t, year).offered}` : base;
+  // Phase 4 (U03): a time correction this person can't decide stays listed and says who decides it, from the typed
+  // review facts (no reviewer is assigned in the read, so no name and no date are given).
+  const route = reviewRoute(item);
+  const lines = [
+    ...(swap ? [otherShiftLine(swap, other ? firstName(other) : undefined, t)] : []),
+    ...(cover ? [coverOutcomeText(cover, t)] : []),
+    ...(item.type === "TIME_CORRECTION" && route === "other_reviewer" ? [t.otherReviewer] : item.type === "TIME_CORRECTION" && route === "unknown" ? [t.reviewUnchecked] : []),
+  ].map(line => midnight(plain(line)));
+  return { key: item.id, href: entry.href, label: midnight([other && !covering ? `${entry.label}, with ${other}` : entry.label, ...lines].join(". ")), title: plain(title),
+    detail: needs(midnight(plain(detail))), ...(request && shown.person ? { person: shown.person } : {}), ...(lines.length ? { lines } : {}),
+    ...(item.type === "TIME_CORRECTION" && route !== "mine" ? { quiet: true } : {}) };
 }
 
 /** An open shift as the board reads it: "Barista 1:00 PM – 3:00 PM" over "Today · Condado · 1 open", or
@@ -94,34 +126,47 @@ export function gapRow(item: ActionItem, timeZone: string, day: string): Row {
  * (BR-7): each row says how many cards it holds and whether its pay period has ended, the words Home's Payday uses for
  * the cards it counts ("Pay period ended"), so the two screens' numbers can be told apart. */
 function timecardRows(items: ActionItem[], day: string, open = true, dateInNote = false): Row[] {
+  // Phase 4 (U09): the card's own pay period comes from the typed review facts; an older payload without them keeps
+  // the period the item's line names.
+  const periodText = (item: ActionItem) => { const period = item.review?.period; return period ? dateRangeText(period.startDate, period.endDate) : plain(spacedRanges(readableDates(item.detail.split(" · ")[1] ?? ""))).replace(/\.\s*$/, ""); };
   const byPeriod = new Map<string, ActionItem[]>();
-  for (const item of items) { const period = item.detail.split(" · ")[1] ?? ""; byPeriod.set(period, [...(byPeriod.get(period) ?? []), item]); }
+  for (const item of items) { const period = periodText(item); byPeriod.set(period, [...(byPeriod.get(period) ?? []), item]); }
   return [...byPeriod].flatMap(([period, all]) => {
-    // Phase 3 (MG-004): the signed-in person's own timecard is another reviewer's to approve, so it is left out of the
-    // count and the names, and the line says so ("10 of 11 timecards").
-    const list = all.filter(item => !isOwnReview(item));
-    if (!list.length) return [];
+    // Phase 4 (U03): the count and the names are the cards this person may review (the server's actorMayReview). A card
+    // another reviewer approves, the signed-in person's own included, is its own row under the period, so it stays
+    // visible; a card whose review facts are missing says that it could not be checked. Neither is counted.
+    const list = all.filter(mine);
+    // Review B5 (NV-243): a period is a title, never a sentence ("Nov 2 – 8", not "Nov 2 – 8.").
+    const title = plain(period || "This pay period");
+    const rest: Row[] = all.filter(item => !mine(item)).map(item => {
+      const name = concernsActor(item) ? t.yourTimecard : itemPerson(item) ?? item.detail.split(" · ")[0] ?? title;
+      const why = reviewRoute(item) === "other_reviewer" ? t.otherReviewer : t.reviewUnchecked;
+      const review = new URL(item.href, "https://nevora.invalid");
+      return { key: `timecard-other:${item.id}`, href: review.pathname === "/app/timecards" ? review.pathname + review.search + review.hash : "/app/timecards",
+        label: `${name}, ${title}. ${why}.${reviewRoute(item) === "other_reviewer" ? ` ${t.reviewerNeeded}` : ""}`, title: plain(name), detail: title, lines: [why], quiet: true };
+    });
+    if (!list.length) return rest;
     const names = list.map(item => itemPerson(item) ?? item.detail.split(" · ")[0]).map(name => name.split(" ")[0]);
-    // Review B5 (NV-243): a period is a title, never a sentence ("Nov 2 – Nov 8", not "Nov 2 – Nov 8.").
-    const title = plain(period ? spacedRanges(readableDates(period)) : "This pay period").replace(/\.\s*$/, "");
     // Time opens on that pay period (the items' own review link: ?start=&end=), and on the person's card when only one
     // is waiting. Without the period it would open the current week, where an earlier period's cards aren't shown.
     const review = new URL(list[0].href, "https://nevora.invalid");
     if (list.length > 1) review.hash = "";
     const href = review.pathname === "/app/timecards" ? review.pathname + review.search + review.hash : "/app/timecards";
-    const end = review.searchParams.get("end") ?? "";
+    const end = periodEnd(list[0]) ?? "";
     const state = /^\d{4}-\d{2}-\d{2}$/.test(end) ? end < day ? "Pay period ended" : "Pay period open" : undefined;
     const cards = `${list.length === all.length ? list.length : `${list.length}\u00a0of\u00a0${all.length}`}\u00a0${all.length === 1 ? "timecard" : "timecards"}`;
     // Phase 3 (MG-005): a pay period that is still open can't be approved yet; its row says the day approval opens.
     const opens = !open && /^\d{4}-\d{2}-\d{2}$/.test(end) ? `Opens ${dayText(nextDay(end))}` : undefined;
     // Jose (Nov 15, 2026): when the card's heading line already says the day approval opens, the row names the people.
     return [{ key: `timecards:${period}`, href, label: `${opens ? "Pay period still open" : "Timecards to approve"}, ${title}${opens ? `, ${opens.toLowerCase()}` : state ? `, ${state.toLowerCase()}` : ""}: ${names.join(", ")}`, title,
-      detail: opens && !dateInNote ? `${opens} · ${cards}` : `${cards} · ${names.join(", ")}`, value: opens ? undefined : state, valueTone: "soft" as const }];
+      detail: opens && !dateInNote ? `${opens} · ${cards}` : `${cards} · ${names.join(", ")}`, value: opens ? undefined : state, valueTone: "soft" as const }, ...rest];
   });
 }
 const nextDay = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
-const periodEnd = (item: ActionItem) => { try { const end = new URL(item.href, "https://nevora.invalid").searchParams.get("end"); return end && /^\d{4}-\d{2}-\d{2}$/.test(end) ? end : null; } catch { return null; } };
-const periodEnded = (item: ActionItem, day: string) => { try { const end = new URL(item.href, "https://nevora.invalid").searchParams.get("end"); return !end || end < day; } catch { return true; } };
+const periodEnd = (item: ActionItem) => timecardPeriod(item)?.endDate ?? null;
+const periodEnded = (item: ActionItem, day: string) => { const end = periodEnd(item); return !end || end < day; };
+/** Phase 4 (U03): this person may review it (the server's typed actorMayReview). */
+const mine = (item: ActionItem) => reviewRoute(item) === "mine";
 
 function shiftRow(shift: TodayShift, timeZone: string, observedAt: string | undefined, showPlace: boolean): Row {
   const entry = shiftEntry(shift, timeZone, observedAt, showPlace);
@@ -182,11 +227,12 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
     // Phase 3 (MG-005): corrections that wait on this person can be decided today, so they sit with today's Time kinds
     // and are part of the count (needsYou counts them; the reviewer's own correction is another person's to decide).
     { id: "corrections", title: "Time corrections", rows: [...of(["TIME_CORRECTION"], urgent), ...value.corrections].map(item => itemRow(item, timeZone)) },
-    { id: "timecards", title: "Timecards to approve", rows: timecardRows(of(["TIMECARD"], urgent), day), count: of(["TIMECARD"], urgent).filter(item => !isOwnReview(item)).length },
+    { id: "timecards", title: "Timecards to approve", rows: timecardRows(of(["TIMECARD"], urgent), day), count: of(["TIMECARD"], urgent).filter(mine).length },
   ];
   const asked: Group[] = [
     { id: "time-off", title: "Time off", rows: of(["TIME_OFF"], requests).map(item => itemRow(item, timeZone)) },
-    { id: "swaps", title: "Shift swaps", rows: of(["EXCHANGE"], requests).map(item => itemRow(item, timeZone)) },
+    // Phase 8 (a.md #14): the card holds swaps and cover requests, so it carries the page's name for both.
+    { id: "swaps", title: "Shift requests", rows: of(["EXCHANGE"], requests).map(item => itemRow(item, timeZone)) },
     { id: "cant-work", title: "Can’t work", rows: of(["CALLOUT"], requests).map(item => itemRow(item, timeZone)) },
     { id: "requests", title: "Other requests", rows: requests.filter(item => !known.includes(item.type)).map(item => itemRow(item, timeZone)) },
   ];
@@ -203,15 +249,16 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
   // The reviewer's own correction (another person decides it) stays listed with the waiting reviews.
   const periodCards = of(["TIMECARD"], later), due = periodCards.filter(item => periodEnded(item, day)), notOpen = periodCards.filter(item => !periodEnded(item, day));
   const waiting: Group[] = [
-    { id: "waiting-corrections", title: "Time corrections", rows: of(["TIME_CORRECTION"], later).map(item => itemRow(item, timeZone)) },
-    { id: "waiting-timecards", title: "Timecards to approve", rows: timecardRows(due, day), count: due.filter(item => !isOwnReview(item)).length },
+    // Phase 4 (U03): corrections another reviewer decides stay listed here; the count is only what this person can decide.
+    { id: "waiting-corrections", title: "Time corrections", rows: of(["TIME_CORRECTION"], later).map(item => itemRow(item, timeZone)), count: of(["TIME_CORRECTION"], later).filter(mine).length },
+    { id: "waiting-timecards", title: "Timecards to approve", rows: timecardRows(due, day), count: due.filter(mine).length },
   ].filter(group => group.rows.length);
   // Jose (Nov 15, 2026): the card is "Pay period still open", and when one period is waiting its line says the day
   // approval opens, in the words Time exports uses. Two periods keep the day on each row.
-  const openEnds = [...new Set(notOpen.filter(item => !isOwnReview(item)).map(periodEnd).filter((end): end is string => !!end))];
+  const openEnds = [...new Set(notOpen.filter(mine).map(periodEnd).filter((end): end is string => !!end))];
   const opensOn = openEnds.length === 1 ? dayText(nextDay(openEnds[0])) : null;
   const closed: Group[] = [
-    { id: "closed-timecards", title: "Pay period still open", rows: timecardRows(notOpen, day, false, !!opensOn), count: notOpen.filter(item => !isOwnReview(item)).length,
+    { id: "closed-timecards", title: "Pay period still open", rows: timecardRows(notOpen, day, false, !!opensOn), count: notOpen.filter(mine).length,
       // The day stays on one line on a narrow phone ("Mon, Nov 16." never breaks before "16").
       ...(opensOn ? { note: `You can approve these from ${opensOn.replace(/ /g, "\u00a0")}.` } : {}) },
   ].filter(group => group.rows.length);
@@ -222,11 +269,15 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
       ? [{ key: "earlier:gaps", href: "/app/schedule", label: `Coverage gaps earlier this week, ${value.past.length}`, title: "Coverage gaps", value: String(value.past.length), valueTone: "soft" as const }]
       : value.past.map(item => itemRow(item, timeZone, true)), count: value.past.length },
   ].filter(group => group.rows.length);
-  return { value, families, waiting, closed, more };
+  // Phase 4 (U03): the count with its completeness. When today's clock-ins couldn't be read, or a correction's review
+  // facts are missing, the count is a lower bound ("at least") and the page never offers all-clear.
+  const total: NeedsYouTotal = needsYouTotal(value, { clockInsUnavailable: today?.state === "unavailable" });
+  return { value, families, waiting, closed, more, total };
 }
 
 /** R7 (copy row 6): the screen-reader line matches the page's name. "5 things to do today", never "need you". */
-export const toDoSentence = (n: number) => n === 0 ? "Nothing to do right now." : `${n}\u00a0${n === 1 ? "thing" : "things"} to do today.`;
+export const toDoSentence = (n: number, exact = true) => n === 0 ? exact ? "Nothing to do right now." : `${t.notAllChecked}.`
+  : exact ? `${n}\u00a0${n === 1 ? "thing" : "things"} to do today.` : t.toDoAtLeast(n);
 
 const groupCount = (group: Group) => group.count ?? group.rows.length;
 
@@ -237,7 +288,7 @@ export function ManagerInboxCorp({ weekStart, actorId, timeZone, coverageFirst =
 }
 
 const rowOf = (row: Row) => <li key={row.key}>
-  <CorpRow href={row.href} label={row.label} title={row.title} bold detail={row.detail} value={row.value} valueTone={row.valueTone} chevron />
+  <CorpRow href={row.href} label={row.label} title={row.title} bold detail={row.lines?.length ? <>{row.detail}{row.lines.map(line => <span key={line} className="b-row__more">{line}</span>)}</> : row.detail} value={row.value} valueTone={row.valueTone} chevron />
 </li>;
 
 /** R3: one count voice. The label, then the figure in grey, no brackets ("Open shifts 3"). */
@@ -274,13 +325,14 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
   const ready = connection === "ready" && snapshot?.state === "ready" ? snapshot : null;
   const grouped = ready ? groupThingsToDo(ready, today, timeZone, coverageFirst) : null;
   const value = grouped?.value ?? null, more = grouped?.more ?? [], families = grouped?.families ?? [], waiting = grouped?.waiting ?? [], closed = grouped?.closed ?? [];
+  const exact = grouped?.total.exact ?? true;
   const moreView = view === "more";
   // Closing F1 (NV-002): the Later and done row names what it holds.
   const moreCount = (id: string) => { const group = more.find(item => item.id === id); return group ? groupCount(group) : 0; };
   const laterCounts = { plan: moreCount("plan"), earlier: moreCount("earlier") };
   const shown = moreView ? more.length : families.length + waiting.length + closed.length;
   const todayFailed = today?.state === "unavailable";
-  const summary = value ? `${toDoSentence(value.count)}${todayFailed ? " Clock-ins can’t be checked right now." : ""}` : statusText[connection];
+  const summary = value ? `${toDoSentence(value.count, exact)}${todayFailed ? " Clock-ins can’t be checked right now." : ""}${grouped?.total.uncheckedReviews ? ` ${t.correctionsUnchecked(grouped.total.uncheckedReviews)}` : ""}` : statusText[connection];
   let body: ReactNode;
   if (!ready && (connection === "unavailable" || connection === "ready")) {
     // P3: the kit's one error card.
@@ -297,7 +349,8 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
     // A10: the kit's empty card, never one bare line.
     body = <CorpCard as="div" ariaLabel="Things to do"><div className="c-empty c-empty--card">{moreView
       ? <><b className="c-empty__title">Nothing later or done</b><span className="c-empty__body">Planning items and earlier gaps appear here.</span></>
-      : <><b className="c-empty__title">You’re all set</b><span className="c-empty__body">Nothing needs you right now.</span></>}</div></CorpCard>;
+      : exact ? <><b className="c-empty__title">You’re all set</b><span className="c-empty__body">Nothing needs you right now.</span></>
+      : <><b className="c-empty__title">{t.nothingListed}</b><span className="c-empty__body">{t.nothingListedLine}</span></>}</div></CorpCard>;
   } else if (moreView) {
     body = more.map(group => <CorpCard key={group.id} id={`todo-${group.id}`} label={headed(group.title, groupCount(group))}>
       <CorpRows label={group.title}>{group.rows.map(rowOf)}</CorpRows>
@@ -317,7 +370,7 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
   return <CorpPage className="c-todo c-page--narrow" labelledBy="todo-title">
     <div data-todo-state={ready ? (shown ? "ready" : "clear") : connection} hidden />
     {/* Direction B: the phone screen (phones under data-nv-b); tablets and desktop keep the cards below. */}
-    {moreView ? <LaterB ready={!!ready} groups={more} statusLine={summary} onRefresh={onRefresh} connection={connection} /> : <InboxB ready={ready} families={families} waiting={waiting} closed={closed} later={ready ? laterCounts : undefined} total={value ? value.count : null} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back />}
+    {moreView ? <LaterB ready={!!ready} groups={more} statusLine={summary} onRefresh={onRefresh} connection={connection} /> : <InboxB ready={ready} families={families} waiting={waiting} closed={closed} later={ready ? laterCounts : undefined} total={value ? value.count : null} exact={exact} uncheckedReviews={grouped?.total.uncheckedReviews ?? 0} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back />}
     {/* Phone: "‹ Home" over the page; when Things to do is a tab of its own the shell hides it and the large title shows. */}
     <CorpNav back={moreView ? { href: "/app/inbox", label: "Things to do" } : { href: "/app", label: "Home" }} title={title} phoneOnly />
     <CorpTitle id="todo-title" title={title} sub={moreView ? undefined : <span role="status" className="c-sr">{summary}</span>} wide />

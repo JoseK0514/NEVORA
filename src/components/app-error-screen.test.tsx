@@ -1,16 +1,17 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import { AppErrorScreen, errorReference, portalErrorAdvice } from "./app-error-screen";
 import RootError from "../app/error";
 import GlobalError from "../app/global-error";
-const router=vi.hoisted(()=>({refresh:vi.fn(),path:'/app/schedule'}));
-vi.mock('next/navigation',()=>({useRouter:()=>router,usePathname:()=>router.path}));
+const router=rs.hoisted(()=>({refresh:rs.fn(),path:'/app/schedule'}));
+rs.mock('next/navigation',()=>({useRouter:()=>router,usePathname:()=>router.path}));
 
-vi.mock("./app-error-screen.css", () => ({}));
-vi.mock("@/components/kit/kit.css", () => ({}));
-vi.mock("@/app/not-found.css", () => ({}));
-vi.mock("./public-error-screen.css", () => ({}));
+rs.mock("./app-error-screen.css", () => ({}));
+rs.mock("@/components/kit/kit.css", () => ({}));
+rs.mock("@/app/not-found.css", () => ({}));
+rs.mock("./public-error-screen.css", () => ({}));
+rs.mock("@/components/access-recovery/access-recovery.css", () => ({}));
 
 it("uses the portal's own error words, with a retry and a full-load link home", () => {
   const html = renderToStaticMarkup(createElement(AppErrorScreen, { reset: () => {} }));
@@ -34,11 +35,34 @@ it("the root boundary and the global boundary render the same screen", () => {
   expect(root).toContain("This page didn’t load");
   expect(global).toMatch(/^<html lang="en">(<head><\/head>)?<body/);
   expect(global).toContain("This page didn’t load");
-  // RA-15: the root boundary shows Next's short reference for support to quote, once visibly and once in the alert;
-  // the global boundary passes none.
+  // RA-15: the root boundary shows Next's short reference for support to quote, once visibly and once in the alert.
+  // Phase 5: the global boundary passes it too.
   expect(root).toContain('<p class="app-error-screen__ref">Reference: 4074344408</p>');
   expect(root).toContain("Something went wrong on our side. Try again. Reference: 4074344408</p>");
-  expect(global).not.toContain("4074344408");
+  expect(global).toContain('<p class="app-error-screen__ref">Reference: 4074344408</p>');
+});
+
+it("the public screen shows the short reference from both boundaries, and the Support reference block only for a reference the seam accepts", () => {
+  const plain = Object.assign(new Error("fictional failure"), { digest: "4074344408" });
+  const carried = Object.assign(new Error("fictional failure"), { digest: "4074344408", supportReference: "3f2c1a9e-5b7d-4e21-9a6c-0d4b8e7f1a23" });
+  try {
+    router.path = '/privacy';
+    for (const Boundary of [RootError, GlobalError]) {
+      const html = renderToStaticMarkup(createElement(Boundary, { error: plain, reset: () => {} }));
+      expect(html).toContain('<p class="pe-ref">Reference: 4074344408</p>');
+      expect(html).not.toContain('class="ar-ref"');
+      // A reference the failure itself carries replaces the short line: one reference to quote, never two.
+      const withReference = renderToStaticMarkup(createElement(Boundary, { error: carried, reset: () => {} }));
+      expect(withReference).toContain('class="ar-ref"');
+      expect(withReference).toContain("3f2c1a9e-5b7d-4e21-9a6c-0d4b8e7f1a23");
+      expect(withReference).toContain("Support reference");
+      expect(withReference).not.toContain("4074344408");
+      // Anything that is not a UUID is never printed in the block.
+      const wrong = renderToStaticMarkup(createElement(Boundary, { error: Object.assign(new Error("x"), { supportReference: "DEL-7KQ2M9XA" }), reset: () => {} }));
+      expect(wrong).not.toContain('class="ar-ref"');
+      expect(wrong).not.toContain("DEL-7KQ2M9XA");
+    }
+  } finally { router.path = '/app/schedule'; }
 });
 
 it("prints only a short plain reference, never an arbitrary digest", () => {
@@ -71,12 +95,12 @@ it("signed-out and public addresses get the public screen: same words, Try again
 });
 
 it("UI Try again asks Next to refetch (retry), not just re-render the failed result (reset)", async () => {
-  const error = new Error("fictional transient failure"), reset = vi.fn(), retry = vi.fn();
+  const error = new Error("fictional transient failure"), reset = rs.fn(), retry = rs.fn();
   for (const Boundary of [RootError, GlobalError]) {
     const tree = JSON.stringify(Boundary({ error, reset, retry }), (_key, value) => typeof value === "function" ? (value === retry ? "RETRY" : value === reset ? "RESET" : "fn") : value);
     expect(tree).toContain('"reset":"RETRY"');
   }
-  vi.doMock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
+  rs.doMock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
   const PortalError = (await import("../app/app/error")).default;
   const find = (node: unknown): (() => void) | null => {
     if (!node || typeof node !== "object") return null;

@@ -1,10 +1,10 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from 'react-dom/server';
-const fixture = vi.hoisted(() => ({ directory: vi.fn(), inbox: vi.fn(), role: 'MANAGER' }));
-vi.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'actor', role: fixture.role }), requireSessionMutationProof: async () => ({ employee: { id: 'actor', role: fixture.role } }) }));
-vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ timeZone: 'America/Puerto_Rico' }) }));
-vi.mock('@/lib/company-access/operational-read.server', () => ({ readOperationalDirectory: fixture.directory }));
-vi.mock('@/components/manager-inbox-corp', () => ({ ManagerInboxCorp: (props: Record<string, unknown>) => { fixture.inbox(props); return <p>Things to do</p>; } }));
+const fixture = rs.hoisted(() => ({ directory: rs.fn(), inbox: rs.fn(), role: 'MANAGER' }));
+rs.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'actor', role: fixture.role }), requireSessionMutationProof: async () => ({ employee: { id: 'actor', role: fixture.role } }) }));
+rs.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ timeZone: 'America/Puerto_Rico' }) }));
+rs.mock('@/lib/company-access/operational-read.server', () => ({ readOperationalDirectory: fixture.directory }));
+rs.mock('@/components/manager-inbox-corp', () => ({ ManagerInboxCorp: (props: Record<string, unknown>) => { fixture.inbox(props); return <p>Things to do</p>; } }));
 import InboxPage from './page';
 beforeEach(() => { fixture.role = 'MANAGER'; fixture.directory.mockReset(); fixture.inbox.mockClear(); });
 

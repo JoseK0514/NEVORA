@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { Client } from 'pg';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { fixtureShift, proof, seedShiftChanges } from './shift-change-fixture';
 import { executeShiftChange } from '../../lib/data/shift-changes';

@@ -1,11 +1,11 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {Client} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import {getWorkspace,workspaceReadGuard} from '../../lib/data/workspaces';
 import {isManagementAuthorizationError} from '../../lib/data/management-session';
 import {readOwnerOperationalScope,assignOperationalScope,operationalScopeStatements,readOperationalAuthority} from '../../lib/company-access/operational-scope.server';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 type Fixture=Awaited<ReturnType<typeof companyAccessFixture>>;
 async function waitLock(f:Fixture,pattern:string){
  const until=Date.now()+3500;

@@ -4,6 +4,7 @@ import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import type { ClockerIdentityProof } from './pin-identity.server';
 import { ClockerPunchError } from './punch-command';
 import { prepareScheduleCapture, type PublishedScheduleSource } from './schedule-candidates';
+import { readEarlyClockInGraceForPunch } from './schedule-grace.server';
 
 const s = (text: string, values: readonly unknown[] = []): SqlStatement => ({ text, values });
 
@@ -65,10 +66,13 @@ export async function prepareScheduleTransaction(
  const [row] = await executor.query<{ source: PublishedScheduleSource }>(s(sourceSql, values));
  if (!row?.source) throw new ClockerPunchError('UNAVAILABLE');
  const source = row.source;
+ // The Owner's early clock-in grace, fixed for this clock-in from the persisted setting (never from the client).
+ // Missing or unreadable is 0: strict matching. The SQL resolver rechecks a grace above 0 when the entry is written.
+ const earlyGraceMinutes = await readEarlyClockInGraceForPunch(workspace.id, executor);
  const prepared = prepareScheduleCapture(source, {
   employeeId: proof.employeeId, locationId: proof.device.locationId,
   workspaceId: workspace.id, timeZone: workspace.timeZone,
- });
+ }, earlyGraceMinutes);
  const fixedValues = [proof.employeeId, proof.device.locationId, workspace.timeZone, source.anchorDate, workspace.id];
  const existing = "current_setting('nevora.clocker_schedule_existing',true)='1'";
  return {

@@ -162,12 +162,19 @@ export async function executeManagerReminder(proof:SessionMutationProof,c:Manage
   dispatched=true;
   let result:Receipt|undefined;
   try{const rows=await executor.transaction(writes,signal);result=rows[writes.indexOf(receipt)]?.[0] as Receipt|undefined;}
-  catch(error){if(!sentinel(error,'manager_reminder_replay'))throw error;result=await lookup(proof,a,c.operationId,executor,signal);}
+  catch(error){
+   // The hold guard is a statement inside the write transaction, so its refusal rolled the whole write back: nothing
+   // was queued and no operation was recorded. Any later hold (lookup, fence) stays outcome_unknown below.
+   if(sentinel(error,'communication_activation_held'))return {status:'held',reason:'activation_held'};
+   if(!sentinel(error,'manager_reminder_replay'))throw error;result=await lookup(proof,a,c.operationId,executor,signal);
+  }
   await responseFence(proof,a,executor,signal);
   return result?(result.hash===hash?publicResult(result,proof,c.operationId):conflict):{status:'outcome_unknown',operationId:c.operationId};
  }catch(error){
   if(denied(error))return blocked;
   if(sentinel(error,'manager_reminder_source_changed')||sentinel(error,'workspace_version_conflict'))return conflict;
+  // Before the write nothing can have been queued, so a hold on the reads is a definite held.
+  if(!dispatched&&sentinel(error,'communication_activation_held'))return {status:'held',reason:'activation_held'};
   return dispatched?{status:'outcome_unknown',operationId:c.operationId}:{status:'unavailable',reason:'read_failed'};
  }
 }

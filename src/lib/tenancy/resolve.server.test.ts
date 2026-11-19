@@ -1,14 +1,14 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { runInNewContext } from 'node:vm';
 import { types as nodeTypes } from 'node:util';
 import { transpileModule, ScriptTarget } from 'typescript';
-vi.mock('server-only', () => ({}));
-const database = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
-const transports = vi.hoisted(() => ({ legacy: vi.fn(() => database), runtime: vi.fn(() => database) }));
-vi.mock('../db', () => ({ getDb: transports.legacy, getTenantRuntimeDb: transports.runtime }));
+rs.mock('server-only', () => ({}));
+const database = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn() }));
+const transports = rs.hoisted(() => ({ legacy: rs.fn(() => database), runtime: rs.fn(() => database) }));
+rs.mock('../db', () => ({ getDb: transports.legacy, getTenantRuntimeDb: transports.runtime }));
 import { getProvisionerScopeFacts, getTenantProofFacts, resolveCalendarReadProof, resolveClockerProof, resolvePortalProof, resolveProvisionerScope, resolveWorkerProof } from './resolve.server';
 import { RUNTIME_CATALOG_SHARED_FENCE_SQL } from './runtime/catalog-fence.server';
 import type { ProvisionerScope, TenantProof } from './types';
@@ -37,7 +37,7 @@ async function allowedPortal() {
   return result.proof;
 }
 
-beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(NOW); database.query.mockReset(); database.transaction.mockReset();
+beforeEach(() => { rs.useFakeTimers(); rs.setSystemTime(NOW); database.query.mockReset(); database.transaction.mockReset();
   database.query.mockImplementation((text, values) => ({ text, values, then() { throw Error('resolver query awaited outside transaction'); } })); transports.legacy.mockClear(); transports.runtime.mockClear(); });
 
 describe('resolver owning catalog-fenced transaction', () => {
@@ -127,7 +127,7 @@ describe('resolver owning catalog-fenced transaction', () => {
       database.transaction.mockResolvedValue(results);
       expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'UNAVAILABLE' });
     }
-    database.transaction.mockImplementation(async () => { vi.setSystemTime(new Date('2026-10-09T12:01:01Z')); return fenced([{ facts: portal() }]); });
+    database.transaction.mockImplementation(async () => { rs.setSystemTime(new Date('2026-10-09T12:01:01Z')); return fenced([{ facts: portal() }]); });
     expect(await resolvePortalProof('tenant-aa', digest)).toEqual({ status: 'DENY' });
   });
 });
@@ -163,7 +163,7 @@ describe('server-local proof authenticity and least metadata', () => {
 
   it('rejects a once-issued proof when its bounded lifetime expires', async () => {
     const proof = await allowedPortal();
-    vi.setSystemTime(new Date('2026-10-09T12:01:01Z'));
+    rs.setSystemTime(new Date('2026-10-09T12:01:01Z'));
     expect(() => getTenantProofFacts(proof)).toThrow('tenant_proof_denied');
   });
 });
@@ -325,7 +325,7 @@ describe('separate purpose-bound provisioning authority', () => {
     expect(facts.workspaceId).toBeNull();
     expect(facts.bootstrapNonce).toBe('bootstrap-a');
     expect(facts).not.toHaveProperty('role');
-    vi.setSystemTime(new Date('2026-10-09T12:01:01Z'));
+    rs.setSystemTime(new Date('2026-10-09T12:01:01Z'));
     expect(() => getProvisionerScopeFacts(result.scope)).toThrow('provisioner_scope_denied');
   });
 

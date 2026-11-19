@@ -21,7 +21,7 @@ import { PremiumHomeLive, PremiumHomeSurface, type PremiumHomeWeek } from './pre
 import type { NextPay } from './payroll/my-pay';
 import { Avatar, Card, CardBody, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, StatGrid, Status } from './kit/kit';
 import { presentItem } from '@/lib/action-center/present';
-import { ArrowsLeftRightIcon, CalendarBlankIcon, CalendarXIcon, PaperPlaneTiltIcon, PhoneXIcon } from '@phosphor-icons/react/ssr';
+import { ArrowsLeftRightIcon, CalendarBlankIcon, CalendarMinusIcon, PaperPlaneTiltIcon, UserMinusIcon } from '@phosphor-icons/react/ssr';
 import { CorpBody, CorpCard, CorpLink, CorpNav, CorpPage, CorpRows, CorpTitle } from './corp/corp';
 import './schedule-activity.css';
 import type { Today } from '@/lib/today/project';
@@ -162,7 +162,9 @@ function TeamTab(props: Props) {
 /** Schedule activity (Release 1, board O-Activity): "‹ Schedule", Activity, the week and its locations, then one card per
  * day with the week's publication and dated items as rows (a grey round icon, the title, a 13px line). Same read as before. */
 const ACTIVITY_ICON: Partial<Record<ManagerActionItem["type"], typeof CalendarBlankIcon>> = {
-  COVERAGE_GAP: CalendarBlankIcon, TIME_OFF: CalendarXIcon, EXCHANGE: ArrowsLeftRightIcon, CALLOUT: PhoneXIcon,
+  // Phase 9 (spec 3.6): one glyph per concept, the ones the sidebar and Things to do use: CalendarMinus for time off,
+  // UserMinus for a can't-work request.
+  COVERAGE_GAP: CalendarBlankIcon, TIME_OFF: CalendarMinusIcon, EXCHANGE: ArrowsLeftRightIcon, CALLOUT: UserMinusIcon,
 };
 const ACTIVITY_SHOWN = 8;
 function ActivityCorp(props: Props) {

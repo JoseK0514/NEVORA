@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -36,19 +36,38 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           const url = new URL(route.request().url());
           if (['http:', 'https:'].includes(url.protocol) && url.origin !== origin) await route.abort('blockedbyclient');
           else {
-            if (holdRefresh && url.pathname === '/app/inbox' && route.request().headers().rsc === '1') await new Promise<void>(release => pendingRefresh.push(release));
+            if (holdRefresh && url.pathname === '/app/employees/QW-MANAGER' && route.request().headers().rsc === '1') await new Promise<void>(release => pendingRefresh.push(release));
             await route.continue();
           }
         });
-        const page = await context.newPage();
-        page.setDefaultTimeout(15000);
-        page.on('pageerror', (error: Error) => errors.push(engine + ': ' + error.message.slice(0, 400)));
-        const visit = async (path: string) => {
-          if (page.url() !== 'about:blank') {
-            await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
-            await page.waitForLoadState('networkidle');
+        const responses=new Map<string,any>();
+        let page = await context.newPage();
+        const observe=(view:any)=>{
+          view.setDefaultTimeout(15000);view.on('pageerror',(error:Error)=>errors.push(engine+': '+error.message.slice(0,400)));
+          view.on('response',(response:any)=>{const url=new URL(response.url());if(url.origin===origin&&response.request().method()==='GET')responses.set(url.pathname,response);});
+        };observe(page);
+        // Direct URL permission probes and the independent contact-lifetime check enter authenticated tabs.
+        // Every tab remains observed; ordinary workflow steps use the app's real navigation controls.
+        const enter = async(path:string)=>{page=await context.newPage();observe(page);return page.goto(origin+path);};
+        const visit = async(path:string)=>{
+          if(page.url()==='about:blank'||path==='/login')return page.goto(origin+path);
+          if(path.includes('#'))return enter(path);
+          const target=new URL(origin+path);
+          if(new URL(page.url()).pathname!==target.pathname){
+            const links=page.locator('a[href="'+path+'"]').filter({visible:true});
+            if(await links.count())await links.first().click();
+            else if(path==='/app/schedule/new'){
+              await page.getByRole('button',{name:'Search',exact:true}).click();
+              await page.getByRole('combobox',{name:'Search pages, people and places'}).fill('add shift');
+              await page.getByRole('option',{name:/Add shift/}).click();
+            }else throw Error('No real navigation control for '+path);
+            await page.waitForURL((url:URL)=>url.pathname===target.pathname,{waitUntil:'domcontentloaded'});
           }
-          return page.goto(origin + path);
+          const destination:Record<string,string>={'/app':'.c-home #b-home-on','/app/timecards':'.c-tc','/app/reports':'.c-ins','/app/inbox':'.c-todo','/app/schedule/new':'form:has([name="employeeId"])'};
+          await page.locator(destination[path]).filter({visible:true}).first().waitFor();
+          // Bind the HTTP assertion to an actual document/RSC response, including a fresh accepted prefetch.
+          await expect.poll(()=>responses.get(target.pathname)?.status(),{timeout:15000}).toBe(200);
+          return responses.get(target.pathname);
         };
         try {
           await visit('/login');
@@ -60,15 +79,18 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             const response = await visit(path);
             expect(response?.status(), engine + ' ' + actor + ' ' + path).toBe(200);
             await page.locator('main').getByRole('heading', { level: 1 }).first().waitFor();
-            await page.waitForLoadState('networkidle');
+            // Background action-center reads remain live. Wait on rendered read state, not global silence.
+            await page.evaluate(()=>document.fonts.ready);
+            await expect.poll(()=>page.locator('main [aria-busy="true"]:visible').count(),{timeout:15000}).toBe(0);
+            if(path==='/app')await expect.poll(()=>page.locator('#b-home-on').innerText(),{timeout:15000}).toContain('Fictional Owner');
             for (const width of [320, 390, 768, 1440]) {
               await page.setViewportSize({ width, height: 1000 });
               expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2), engine + ' ' + actor + ' ' + path + ' ' + width).toBe(true);
             }
             if (path === '/app') {
-              await page.locator('#home-timeline').waitFor();
-              expect(await page.locator('#home-timeline').textContent()).toContain('Fictional Owner');
-              checks.push(engine + ': ' + actor + ' unscheduled-only Home timeline');
+              await page.locator('#b-home-on').waitFor();
+              expect(await page.locator('#b-home-on').textContent()).toContain('Fictional Owner');
+              checks.push(engine + ': ' + actor + ' unscheduled real clock-in on Home');
             }
             if (path === '/app/timecards') {
               const folded = page.getByRole('button', { name: /people with no time yet/ });
@@ -90,7 +112,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
               await page.getByRole('button', { name: 'This week', exact: true }).waitFor();
               expect(await page.getByRole('button', { name: 'This week', exact: true }).getAttribute('aria-pressed')).toBe('true');
               await page.getByRole('button', { name: 'Last week', exact: true }).click();
-              await page.getByText('No recorded time in this period', { exact: true }).waitFor();
+              const emptyPeriod=page.getByText('No recorded time in this period', { exact: true }).filter({visible:true});await emptyPeriod.waitFor();expect(await emptyPeriod.count()).toBe(1);
               await page.setViewportSize({ width: 1440, height: 1000 });
               checks.push(engine + ': ' + actor + ' current and empty previous Insights period');
             }
@@ -111,49 +133,41 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           await page.keyboard.press('Escape');
           checks.push(engine + ': ' + actor + ' search verb synonyms and keyboard dismissal');
           for (const path of ['/app/settings', '/app/settings/branding', '/app/settings/positions']) {
-            await visit(path);
+            await enter(path);
             if (actor === 'QW-MANAGER') {
-              await page.getByText('Only Owners can open Settings.', { exact: true }).waitFor();
+              await page.getByText('Settings are for Owners', { exact: true }).waitFor();
+              expect(await page.getByRole('link',{name:'Open Scheduling rules',exact:true}).getAttribute('href')).toBe('/app/schedule/settings');
               expect(new URL(page.url()).pathname).toBe(path);
               expect(await page.getByRole('button', { name: /Save/ }).count()).toBe(0);
             } else await page.locator('main').getByRole('heading', { level: 1 }).first().waitFor();
             checks.push(engine + ': ' + actor + ' Settings route ' + path);
           }
           if (engine === 'chromium' && actor === 'QAOWNER') {
-            await context.route('**/api/manager/today', async (route: { fulfill(options: unknown): Promise<void> }) => {
-              const now = Date.now(), observedAt = new Date(now).toISOString();
-              const shift = { id: 'quick-wins-contact', employeeId: 'QW-MANAGER', employeeName: 'Fictional Manager', locationId: 'loc-1', locationName: 'Northside Main Office', positionName: null,
-                startAt: new Date(now - 3600000).toISOString(), endAt: new Date(now + 3600000).toISOString(), status: 'not_clocked_in', firstClockInAt: null, late: false };
-              await route.fulfill({ status: 200, json: { state: 'ready', observedAt, validForMs: 60000, timeZone: 'America/Puerto_Rico', today: observedAt.slice(0, 10), counts: { scheduled: 1, clockedIn: 0, late: 0, notClockedIn: 1 }, shifts: [shift], missed: [shift] } });
-            });
-            await visit('/app/inbox?item=shift%3Aquick-wins-contact');
-            const call = page.getByRole('link', { name: 'Call Fictional Manager', exact: true });
-            await call.waitFor();
-            holdRefresh = true;
-            await call.waitFor({ state: 'detached', timeout: 20000 });
-            await page.getByRole('button', { name: 'Try again', exact: true }).click();
-            await page.getByRole('link', { name: /Contact for Fictional Manager:/ }).waitFor();
-            expect(await call.count()).toBe(0);
-            expect(await page.getByRole('link', { name: 'Text Fictional Manager', exact: true }).count()).toBe(0);
-            releaseRefresh();
-            await call.waitFor();
-            holdRefresh = true;
-            await page.evaluate(() => window.dispatchEvent(new Event('blur')));
-            await call.waitFor({ state: 'detached' });
-            await page.evaluate(() => window.dispatchEvent(new Event('focus')));
-            await page.getByRole('link', { name: /Contact for Fictional Manager:/ }).waitFor();
-            expect(await call.count()).toBe(0);
-            releaseRefresh();
-            await call.waitFor();
-            checks.push('chromium: real directory contacts expire and clear on blur; fresh authority and RSC restore them; controlled Today response only');
+            // Current Things to do opens full reviews; contacts live on the person's Team page.
+            // Exercise that real scoped read, including retirement while its actual RSC renewal is held.
+            await enter('/app/employees/QW-MANAGER');
+            const call=page.getByRole('link',{name:'Call Fictional Manager',exact:true}),message=page.getByRole('link',{name:'Message Fictional Manager',exact:true});
+            await call.waitFor();expect(await call.getAttribute('href')).toBe('tel:2025550141');expect(await message.getAttribute('href')).toBe('sms:2025550141');
+            holdRefresh=true;
+            await call.waitFor({state:'detached',timeout:20000});
+            await page.getByRole('button',{name:'Try again',exact:true}).click();
+            await expect.poll(()=>pendingRefresh.length,{timeout:15000}).toBeGreaterThan(0);
+            expect(await call.count()).toBe(0);expect(await message.count()).toBe(0);
+            releaseRefresh();await call.waitFor();
+            holdRefresh=true;
+            await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await call.waitFor({state:'detached'});
+            expect(await message.count()).toBe(0);
+            await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+            await expect.poll(()=>pendingRefresh.length,{timeout:15000}).toBeGreaterThan(0);
+            expect(await call.count()).toBe(0);expect(await message.count()).toBe(0);
+            releaseRefresh();await call.waitFor();
+            checks.push('chromium: actual Team contact links expire and clear on blur; fresh authority and real RSC restore them; no synthesized Today response');
           }
         } catch (error) {
           await page.screenshot({ path: output + '/' + engine + '-' + actor + '-failure.png', fullPage: true }).catch(() => {});
           throw error;
         } finally {
           releaseRefresh();
-          await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))).catch(() => {});
-          await page.waitForLoadState('networkidle').catch(() => {});
           await context.close();
         }
       }

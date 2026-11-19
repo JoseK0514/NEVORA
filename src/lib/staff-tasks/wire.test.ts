@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { parseTaskCommandResult, parseTaskResource } from './wire';
 import type { StaffTask, StaffTaskCommand, TaskContextResult, TaskDetailResult, TaskDraft, TaskListResult } from './types';
 

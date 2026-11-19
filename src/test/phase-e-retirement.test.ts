@@ -1,6 +1,6 @@
 import {spawnSync} from 'node:child_process';
 import {resolve} from 'node:path';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 
 const runner=resolve('scripts/phase-e-owned.mjs'),fixture=resolve('src/test/fixtures/phase-e-retirement-boundary.mjs');
 const modes=['member-environment','root-environment','root-with-live-member','member-eacces','member-eio','member-missing-marker','ambiguous-exit','ambiguous-exit-stderr','ambiguous-exit-malformed','root-ambiguous-exit','darwin-environment-stderr','member-retired-eacces','root-retired-eacces','root-retired-eacces-with-live-member','root-retired-eacces-ambiguous'] as const;

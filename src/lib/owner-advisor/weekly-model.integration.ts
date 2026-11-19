@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from 'node:crypto';
 import { companyAccessFixture } from '@/test/integration/company-access-fixture';
 import { fictionalProfile } from '@/test/fixtures/shift-changes';
@@ -14,7 +14,7 @@ let f: Awaited<ReturnType<typeof companyAccessFixture>>;
 const env = { NEVORA_OWNER_ADVISOR_ENABLED: 'true', NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED: 'true', NEVORA_OWNER_ADVISOR_PROVIDER: 'openai',
   NEVORA_OWNER_ADVISOR_DATA_APPROVED: 'true', NEVORA_OWNER_ADVISOR_MODEL: 'fictional', NEVORA_OWNER_ADVISOR_DAILY_LIMIT: '100', OPENAI_API_KEY: 'fictional' };
 beforeEach(async () => {
-  f = await companyAccessFixture(); vi.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No real provider requests'));
+  f = await companyAccessFixture(); rs.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No real provider requests'));
   await f.q(`UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false;
     INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('target','loc-1');
     INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('mon-one','loc-1',1,'08:00','12:00'),('tue-one','loc-1',2,'08:00','12:00');
@@ -22,12 +22,12 @@ beforeEach(async () => {
     INSERT INTO weekly_availability_submissions(employee_id,week_start,uses_normal_availability) VALUES('target','2026-11-16',true);`);
   await f.q("INSERT INTO employee_scheduling_settings(employee_id,maximum_weekly_hours,operational_rule_profile) VALUES('target',40,$1::jsonb)", [JSON.stringify(fictionalProfile())]);
 });
-afterEach(async () => { vi.restoreAllMocks(); await f?.db.dispose(); });
+afterEach(async () => { rs.restoreAllMocks(); await f?.db.dispose(); });
 const command = () => ({ op: 'ask', requestId: randomUUID(), message: 'Compare the week of November16 for location1. Wait for my exact review.' });
 const prose = () => Response.json({ output: [{ type: 'message', content: [{ type: 'output_text', text: 'Open the private weekly review before making a decision. Nothing has been saved to the schedule.' }] }] });
 function scripted(onSecond?: () => Promise<void>, expectWeekly = true) {
   let calls = 0;
-  const transport = vi.fn(async (_url: string, init: RequestInit) => {
+  const transport = rs.fn(async (_url: string, init: RequestInit) => {
     const body = JSON.parse(String(init.body)); calls++;
     expect(body.tools.some((t: { name: string }) => t.name === 'weekly_plan')).toBe(expectWeekly);
     if (calls === 1 && expectWeekly) return Response.json({ output: [{ type: 'function_call', name: 'weekly_plan', call_id: 'fictional-weekly-tool',
@@ -57,7 +57,7 @@ it('preserves legacy investigations with weekly off and creates no weekly artifa
 
 it('replays once without a provider call or new comparison and rejects a changed source rather than re-planning', async () => {
   const c = command(), transport = scripted(), result = await call(c, transport);
-  const noProvider = vi.fn(async () => { throw Error('Replay must not run a provider'); });
+  const noProvider = rs.fn(async () => { throw Error('Replay must not run a provider'); });
   expect(await call(c, noProvider)).toMatchObject({ state: 'answered', answer: 'answer' in result ? result.answer : {} });
   await f.q("UPDATE employees SET first_name='Changed' WHERE id='target'");
   await expect(call(c, noProvider)).rejects.toMatchObject({ code: 'conflict' });
@@ -91,7 +91,7 @@ it('rolls back an after-settlement trigger mutation, request completion and hist
 
 it('qualifies unselected weekly observations on replay without exposing their internal custody references', async () => {
   const c = command(); let round = 0;
-  const transport = vi.fn(async () => {
+  const transport = rs.fn(async () => {
     round++;
     if (round < 3) return Response.json({ output: [{ type: 'function_call', name: 'weekly_plan', call_id: `fictional-week-${round}`,
       arguments: JSON.stringify({ weekStart: round === 1 ? '2026-11-16' : '2026-11-23', locationScope: { kind: 'SELECTED', locationIds: ['loc-1'] } }) }] });
@@ -105,7 +105,7 @@ it('qualifies unselected weekly observations on replay without exposing their in
   const first = stored.result.weeklyInspectionRefs[0].comparisonId;
   const [review] = await f.q<{ review_id: string }>('SELECT review_id FROM owner_advisor_weekly_reviews WHERE comparison_id=$1 ORDER BY review_id LIMIT 1', [first]);
   await weeklyService(f.owner, f.db.executor, env, new AbortController().signal, { op: 'decline_week_plan', requestId: randomUUID(), reviewId: review.review_id });
-  const noProvider = vi.fn(async () => { throw Error('No replay provider'); });
+  const noProvider = rs.fn(async () => { throw Error('No replay provider'); });
   await expect(call(c, noProvider)).rejects.toMatchObject({ code: 'conflict' }); expect(noProvider).not.toHaveBeenCalled();
   expect(await f.q("SELECT count(*)::int n FROM owner_advisor_weekly_operations WHERE command_kind='compare_week'")).toEqual([{ n: 2 }]);
 });
@@ -120,7 +120,7 @@ it.each(['suppress', 'alter-result'])('rejects %s of weekly answer custody and r
 });
 
 it('does not return a cached weekly answer with the weekly feature off', async () => {
-  const c = command(); await call(c, scripted()); const noProvider = vi.fn(async () => { throw Error('No replay provider'); });
+  const c = command(); await call(c, scripted()); const noProvider = rs.fn(async () => { throw Error('No replay provider'); });
   await expect(call(c, noProvider, f.db.executor, { ...env, NEVORA_OWNER_ADVISOR_WEEKLY_ENABLED: 'false' })).rejects.toMatchObject({ code: 'conflict' });
   expect(noProvider).not.toHaveBeenCalled();
 });
@@ -133,7 +133,7 @@ it.each(['en', 'es'])('reviews exact weekly identity and source-owned metrics wi
   await companyKnowledgeService(f.owner, f.db.executor, new AbortController().signal, { op: 'publish', requestId: randomUUID(), expectedRevision: 1,
     documentId: profile.documentId, versionId: profile.versionId, reviewedTextDigest: profile.textDigest });
   let calls = 0; const requests: string[] = [];
-  const transport = vi.fn(async (_url: string, init: RequestInit) => {
+  const transport = rs.fn(async (_url: string, init: RequestInit) => {
     const body = JSON.parse(String(init.body)); requests.push(String(init.body)); calls++;
     if (calls === 1) {
       expect(JSON.stringify(body.tools)).toContain('weekly_added_minutes');
@@ -173,7 +173,7 @@ it.each(['source','decline','feature-off','second-session'])('keeps weekly-deriv
   const prior = [{role:'user',content:'Earlier general question'},{role:'assistant',content:'Earlier ordinary advice'}];
   await f.q('INSERT INTO owner_advisor_profiles(workspace_id,owner_id,history) VALUES($1,$2,$3::jsonb)',['workspace-fuel','owner',JSON.stringify(prior)]);
   const base = scripted();
-  const transport = vi.fn(async (url: string, init: RequestInit) => {
+  const transport = rs.fn(async (url: string, init: RequestInit) => {
     const response = await base(url,init), body = await response.json();
     if (body.output[0].type === 'message') body.output[0].content[0].text = 'FICTIONAL_WEEKLY_PRIVATE_HISTORY_MARKER: scoped weekly advice.';
     return Response.json(body);
@@ -192,7 +192,7 @@ it.each(['source','decline','feature-off','second-session'])('keeps weekly-deriv
   }
   const snapshot = await advisorService(proof,f.db.executor,settings,new AbortController().signal);
   expect('history' in snapshot && snapshot.history).toEqual(prior);
-  const next = vi.fn(async (_url:string,init:RequestInit) => {
+  const next = rs.fn(async (_url:string,init:RequestInit) => {
     expect(String(init.body)).not.toContain('FICTIONAL_WEEKLY_PRIVATE_HISTORY_MARKER');
     expect(String(init.body)).toContain('Earlier ordinary advice');
     return prose();
@@ -214,7 +214,7 @@ it('rejects a decision activation between initial model memory admission and the
     if(!providerStarted)statements.forEach((statement,index)=>{if(statement.text==='SELECT clock_timestamp() AS now')results[index]=[{now:priorAt}];});
     return results;
   }};
-  const base=scripted(),transport=vi.fn(async(url:string,init:RequestInit)=>{
+  const base=scripted(),transport=rs.fn(async(url:string,init:RequestInit)=>{
     if(!providerStarted)expect(String(init.body)).not.toContain('FUTURE_DECISION_ACTIVATION_MARKER');
     providerStarted=true;return base(url,init);
   });

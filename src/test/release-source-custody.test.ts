@@ -2,11 +2,11 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, expect, it, rs } from '@rstest/core';
 
 // The DB boundary is deliberately unreachable for invalid source. Filesystem
 // and Git are real; no provider, PostgreSQL or application process is launched.
-vi.mock('./integration/local-postgres', () => ({ createDisposableExchangeDatabase: async () => { throw Error('Database allocation reached'); } }));
+rs.mock('./integration/local-postgres', () => ({ createDisposableExchangeDatabase: async () => { throw Error('Database allocation reached'); } }));
 import { createOwnedNextApp } from './integration/owned-next-app';
 const original = process.cwd();
 const roots: string[] = [];

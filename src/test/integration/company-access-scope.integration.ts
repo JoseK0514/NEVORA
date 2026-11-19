@@ -1,5 +1,5 @@
 import {readFile} from 'node:fs/promises';
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect} from '@rstest/core';
 import {createDisposableFoundationDatabase} from './local-postgres';
 
 const migrationPath='db/migrations/0032_company_access_invitations.sql';

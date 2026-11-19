@@ -1,11 +1,12 @@
-import {afterEach, beforeEach, expect, it, vi} from 'vitest';
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import {afterEach, beforeEach, expect, it, rs} from '@rstest/core';
 
-const hooks = vi.hoisted(() => ({
+const hooks = rs.hoisted(() => ({
   states: [] as unknown[], refs: [] as {current: unknown}[],
   effects: [] as (() => void | (() => void))[], stateIndex: 0, refIndex: 0, server: false,
 }));
-vi.mock('react', async original => ({
-  ...await original<Record<string, unknown>>(),
+rs.mock('react',  () => ({
+  ...rstestOriginal0,
   useState: (initial: unknown) => {
     const index = hooks.stateIndex++;
     if (!(index in hooks.states)) hooks.states[index] = initial;
@@ -16,11 +17,12 @@ vi.mock('react', async original => ({
     return hooks.refs[index] ??= {current: initial};
   },
   useEffect: (effect: () => void | (() => void)) => {hooks.effects.push(effect);},
+  useCallback: (fn: unknown) => fn,
   useId: () => 'reference-fixture',
   useSyncExternalStore: (_subscribe: unknown, snapshot: () => unknown, serverSnapshot?: () => unknown) => hooks.server&&serverSnapshot?serverSnapshot():snapshot(),
 }));
-vi.mock('gsap', () => ({default: {registerPlugin: () => {}}}));
-vi.mock('@gsap/react', () => ({useGSAP: () => {}}));
+rs.mock('gsap', () => ({default: {registerPlugin: () => {}}}));
+rs.mock('@gsap/react', () => ({useGSAP: () => {}}));
 
 import {ClockerRecoveryReview} from './clocker-recovery-review';
 import {ScopedReadFrame} from './company-access/scoped-read-frame';
@@ -55,10 +57,10 @@ const requests: string[] = [];
 let dispose: (() => void) | void;
 beforeEach(() => {
   hooks.states = []; hooks.refs = []; hooks.server=false; requests.length = 0;
-  vi.stubGlobal('window', new EventTarget());
-  vi.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible'}));
-  vi.stubGlobal('navigator', {onLine: true});
-  vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+  rs.stubGlobal('window', new EventTarget());
+  rs.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible'}));
+  rs.stubGlobal('navigator', {onLine: true});
+  rs.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
     const {commandId} = JSON.parse(String(init.body));
     requests.push(commandId);
     return {ok: true, status: 200, json: async () => ({
@@ -68,7 +70,7 @@ beforeEach(() => {
   render();
   dispose = hooks.effects[0]();
 });
-afterEach(() => {dispose?.(); dispose = undefined; vi.unstubAllGlobals();});
+afterEach(() => {dispose?.(); dispose = undefined; rs.unstubAllGlobals();});
 const observed = () => hooks.states.some(value => value && typeof value === 'object' && 'state' in value && value.state === 'ready');
 
 it('withholds receipt submission until hydration even with a valid reference and initialized controller', async () => {
@@ -82,12 +84,12 @@ it('withholds receipt submission until hydration even with a valid reference and
   expect(requests).toEqual([]);
   hooks.server=false;
   submit();
-  await vi.waitFor(()=>expect(requests).toEqual([first]));
+  await rs.waitFor(()=>expect(requests).toEqual([first]));
 });
 
 it('editing a reference retires its receipt before a lifecycle refresh can read it again', async () => {
   change(first); submit();
-  await vi.waitFor(() => expect(observed()).toBe(true));
+  await rs.waitFor(() => expect(observed()).toBe(true));
   expect(requests).toEqual([first]);
   change(second);
   window.dispatchEvent(new Event('storage'));
@@ -95,32 +97,106 @@ it('editing a reference retires its receipt before a lifecycle refresh can read 
   expect(requests).toEqual([first]);
   expect(observed()).toBe(false);
   submit();
-  await vi.waitFor(() => expect(requests).toEqual([first, second]));
+  await rs.waitFor(() => expect(requests).toEqual([first, second]));
 });
 
 it('keeps the selected reference outside the access barrier and clears and re-reads receipt data on return',async()=>{
   expect(find(render(),ScopedReadFrame)?.props.observation).toEqual(observation);
   change(first);submit();
-  await vi.waitFor(()=>expect(observed()).toBe(true));
+  await rs.waitFor(()=>expect(observed()).toBe(true));
   window.dispatchEvent(new Event('blur'));
   expect(observed()).toBe(false);
   expect(find(render(),'input')?.props.value).toBe(first);
   expect(requests).toEqual([first]);
   window.dispatchEvent(new Event('focus'));
-  await vi.waitFor(()=>expect(requests).toEqual([first,first]));
-  await vi.waitFor(()=>expect(observed()).toBe(true));
+  await rs.waitFor(()=>expect(requests).toEqual([first,first]));
+  await rs.waitFor(()=>expect(observed()).toBe(true));
 });
 
 it('uppercase references are normalized to the server command format', async () => {
   change(first.toUpperCase()); submit();
-  await vi.waitFor(() => expect(requests).toEqual([first]));
+  await rs.waitFor(() => expect(requests).toEqual([first]));
 });
 
 it('offline submission explains unavailability without starting a request', async () => {
   change(first);
-  vi.stubGlobal('navigator', {onLine: false});
+  rs.stubGlobal('navigator', {onLine: false});
   window.dispatchEvent(new Event('offline'));
   submit();
   expect(requests).toEqual([]);
   expect(hooks.states).toContainEqual({state: 'unavailable', reason: 'offline'});
+});
+
+// Phase 6 follow-up: the answer card takes focus when it mounts. The access frame (ScopedReadFrame) commits this
+// component's content one step after it renders, so at the time the focus effect runs the card is not in the document.
+function answerCard() {
+  const walk = (value: unknown): Element | undefined => {
+    if (Array.isArray(value)) return value.map(walk).find(Boolean);
+    if (!isElement(value)) return;
+    return value.props.className === 'ck-result' ? value : walk(value.props.children);
+  };
+  const card = walk(render());
+  if (!card) throw Error('Answer card missing');
+  return card.props.ref as (node: unknown) => void;
+}
+const node = () => ({focus: rs.fn(), isConnected: true});
+const focusEffect = () => { render(); hooks.effects[1]?.(); };
+
+it('moves focus to the answer when its card mounts, although the focus effect ran before the card existed', async () => {
+  change(first); submit();
+  await rs.waitFor(() => expect(observed()).toBe(true));
+  // The effect runs first, with no card in the document: nothing to focus, and the request for focus is kept.
+  expect(() => focusEffect()).not.toThrow();
+  const card = node();
+  answerCard()(card);
+  expect(card.focus).toHaveBeenCalledTimes(1);
+  expect(card.focus).toHaveBeenCalledWith({preventScroll: true});
+});
+
+it('asks for focus once: a routine renewal for the same code keeps the card and does not move focus again', async () => {
+  change(first); submit();
+  await rs.waitFor(() => expect(observed()).toBe(true));
+  const card = node();
+  answerCard()(card);
+  // The renewal: the same code is read again and the answer stays on screen the whole time.
+  window.dispatchEvent(new Event('storage'));
+  expect(observed()).toBe(true);
+  await rs.waitFor(() => expect(requests).toEqual([first, first]));
+  expect(observed()).toBe(true);
+  focusEffect();
+  // Even a card that mounts again later (after an expiry) is not a reason to take focus.
+  const later = node();
+  answerCard()(later);
+  expect(card.focus).toHaveBeenCalledTimes(1);
+  expect(later.focus).not.toHaveBeenCalled();
+});
+
+it('does not steal focus when the person has moved to another control before the answer arrives', async () => {
+  change(first); submit();
+  await rs.waitFor(() => expect(observed()).toBe(true));
+  const elsewhere = {tagName: 'A'};
+  rs.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible', activeElement: elsewhere, body: {}}));
+  const card = node();
+  answerCard()(card);
+  expect(card.focus).not.toHaveBeenCalled();
+  // The request is spent: the card does not take focus later either.
+  rs.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible', activeElement: null, body: {}}));
+  answerCard()(card);
+  expect(card.focus).not.toHaveBeenCalled();
+});
+
+it('takes focus from the control that asked, and from the document body the disabled form leaves it on', async () => {
+  const button = {tagName: 'BUTTON'}, body = {};
+  rs.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible', activeElement: button, body}));
+  change(first); submit();
+  await rs.waitFor(() => expect(observed()).toBe(true));
+  const card = node();
+  answerCard()(card);
+  expect(card.focus).toHaveBeenCalledTimes(1);
+  // The same code checked again while its card is on screen: the effect moves focus, from the body this time.
+  rs.stubGlobal('document', Object.assign(new EventTarget(), {visibilityState: 'visible', activeElement: body, body}));
+  submit();
+  await rs.waitFor(() => expect(requests).toEqual([first, first]));
+  focusEffect();
+  expect(card.focus).toHaveBeenCalledTimes(2);
 });

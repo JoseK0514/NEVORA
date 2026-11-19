@@ -4,11 +4,11 @@ import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
-vi.mock("./owner-b.css", () => ({}));
-vi.mock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+rs.mock("./owner-b.css", () => ({}));
+rs.mock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
 
 import { BHero, BLoadingScreen, BState, BStateScreen } from "./b-kit";
 import { BOfflineContext } from "./b-offline";
@@ -28,7 +28,8 @@ describe("the loading placeholder keeps the page's frame", () => {
   });
   it("draws the page's own title, back row, strip, band height, width and row cards", () => {
     const html = renderToStaticMarkup(<BLoadingScreen {...loadingShape("/app/notifications", false)} />);
-    expect(html).toContain('class="b-screen b-screen--back" data-b-load="" data-b-band="strip" data-b-frame="read"');
+    // Phase 8: a strip under a title with no sub-line ends its band 32px under the strip, at 264 under a back link.
+    expect(html).toContain('class="b-screen b-screen--back" data-b-load="" data-b-band="own" style="--b-band-own:264px" data-b-frame="read"');
     expect(html).not.toContain("data-b-lift");
     expect(html).toContain('data-b-under=""');
     expect(html).toContain('<span class="b-skel b-skel--back" aria-hidden="true"></span>');
@@ -57,7 +58,12 @@ describe("the loading placeholder keeps the page's frame", () => {
     expect(loadingShape("/app", false).band).toBeUndefined();
     for (const path of ["/app", "/app/my-time", "/app/my-pay", "/app/requests/hub"]) expect(loadingShape(path, true).band, path).toBeUndefined();
     // Owner and Manager (package A's settled frame).
-    for (const path of ["/app/schedule", "/app/timecards", "/app/employees", "/app/inbox", "/app/notifications", "/app/updates", "/app/requests", "/app/exchange", "/app/availability", "/app/payroll-export", "/app/settings/payroll"]) expect(loadingShape(path, false).band, path).toBe("strip");
+    for (const path of ["/app/schedule", "/app/timecards", "/app/employees", "/app/inbox", "/app/availability", "/app/payroll-export", "/app/settings/payroll"]) expect(loadingShape(path, false).band, path).toBe("strip");
+    // Phase 8: a strip under a title with no sub-line: 264 under a back link, 270 on Updates (a sidebar page whose list lifts).
+    for (const path of ["/app/notifications", "/app/requests", "/app/exchange", "/app/settings/clocker/pins"]) expect(loadingShape(path, false).band, path).toBe(264);
+    expect(loadingShape("/app/updates", false)).toMatchObject({ band: 270 });
+    expect(loadingShape("/app/updates", false).back).toBeFalsy();
+    expect(loadingShape("/app/updates", false).lift).toBeUndefined();
     for (const path of ["/app/reports", "/app/settings", "/app/more", "/app/help", "/app/profile", "/app/schedule/new", "/app/schedule/publish", "/app/updates/compose", "/app/employees/import", "/app/settings/locations", "/app/anything-else"]) expect(loadingShape(path, false).band, path).toBe("short");
     for (const path of ["/app/employees/QA-1", "/app/employees/new", "/app/timecards/corrections", "/app/schedule/settings"]) expect(loadingShape(path, false).band, path).toBe("sub");
     expect(loadingShape("/app/payroll", false).band).toBe("strip");
@@ -66,7 +72,9 @@ describe("the loading placeholder keeps the page's frame", () => {
     for (const path of ["/app/more", "/app/help", "/app/my-pay", "/app/employees/new", "/app/schedule/settings", "/app/notifications"]) expect(loadingShape(path, false).back, path).toBe(true);
     expect(loadingShape("/app/employees", false).frame).toBe("rail-desktop");
     expect(loadingShape("/app/employees", false).lift).toBeUndefined();
-    expect(loadingShape("/app/payroll-export", false).lift).toBe(false);
+    // Phase 8: Time exports and Payroll settings lift their first card like Payroll (sibling tabs, one frame).
+    expect(loadingShape("/app/payroll-export", false).lift).toBeUndefined();
+    expect(loadingShape("/app/settings/payroll", false).lift).toBeUndefined();
     // Employee and Lead (package B's settled frame).
     for (const path of ["/app/schedule", "/app/requests", "/app/exchange", "/app/notifications", "/app/updates", "/app/more"]) expect(loadingShape(path, true).band, path).toBe("strip");
     for (const path of ["/app/notifications", "/app/updates", "/app/schedule"]) { expect(loadingShape(path, true).lift, path).toBeUndefined(); expect(loadingShape(path, true).back, path).toBeFalsy(); }
@@ -93,7 +101,7 @@ describe("the loading placeholder keeps the page's frame", () => {
     expect(css).toContain('.b-screen[data-b-band="own"] { --b-ph-band: calc(var(--b-band-own) - var(--b-title-top)); }');
     expect(css).toMatch(/@media \(min-width: 768px\) and \(max-width: 1023px\) \{\s*[^{]*\[data-b-frame="rail-desktop"\][^{]*\{ display: grid !important; grid-template-columns: minmax\(0, 1fr\) !important; \}/);
   });
-  it("reads the band heights from the frame tokens and never shimmers", () => {
+  it("reads the band heights from the frame tokens; its own rules stay still (the one shimmer is b-shimmer.css, Phase 7)", () => {
     for (const kind of ["short", "sub", "strip"]) expect(css).toContain(`.b-screen[data-b-band="${kind}"] { --b-ph-band: calc(var(--b-band-${kind}) - var(--b-title-top)); }`);
     const block = css.slice(css.indexOf("Phase 2 (package D"));
     expect(block).not.toMatch(/animation|@keyframes|transition/);

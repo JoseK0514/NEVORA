@@ -7,6 +7,29 @@ export async function waitForPortalReady(page) {
   await page.waitForFunction(() => document.querySelector('.portal-notification-bell')?.getAttribute('data-state') === 'ready');
 }
 
+// Contrast and target geometry describe the settled control. Wait for its own
+// and ancestor motion without changing styles, emulating reduced motion or
+// accepting unfinished/infinite animations. Keep one original bounded deadline.
+export async function waitForControlPaint(control, timeout = 2000) {
+  if (!Number.isFinite(timeout) || timeout <= 0) throw new RangeError('A positive paint deadline is required');
+  const deadline = performance.now() + timeout;
+  const element = await control.elementHandle({timeout});
+  if (!element) throw new Error('The expected control is absent');
+  try {
+    if (performance.now() >= deadline) throw new Error('Control paint exceeded its original deadline');
+    const ready = await control.page().waitForFunction(element => {
+      if (!element.isConnected) return false;
+      for (let node = element; node; node = node.parentElement) {
+        node.getBoundingClientRect();
+        if (node.getAnimations().some(animation => animation.pending || animation.playState === 'running' || animation.playState === 'paused')) return false;
+      }
+      return true;
+    }, element, {timeout: Math.max(1, deadline - performance.now())});
+    await ready.dispose();
+    if (performance.now() >= deadline) throw new Error('Control paint exceeded its original deadline');
+  } finally {await element.dispose();}
+}
+
 export async function waitForCalendarCopyReady(page, noticeText) {
   const ready = await page.waitForFunction(text => {
     const root = [...document.querySelectorAll('.b-screen:has(#b-calendar-title), [data-calendar-setting]')].find(element => element.getClientRects().length > 0);

@@ -1,4 +1,4 @@
-import {describe,it,expect,vi} from 'vitest';
+import {describe,it,expect,rs} from '@rstest/core';
 import {readSignupAdmission,signupAdmissionAllows} from './admission.server';
 import {registrationHttpHandlers} from './registration-http.server';
 import {onboardingTestConfig} from '@/test/integration/onboarding-test-config';
@@ -23,7 +23,7 @@ describe('production registration admission',()=>{
   expect(a.mode).toBe('open');expect(signupAdmissionAllows(a,'visitor@example.invalid')).toBe(true);
  });
  it.each([{mode:'closed'} as const,{mode:'approved_recipient',email:'support@example.invalid'} as const])('denies an unapproved registration before accessing a control store',async admission=>{
-  const query=vi.fn(),transaction=vi.fn(),send=vi.fn();
+  const query=rs.fn(),transaction=rs.fn(),send=rs.fn();
   const request=new Request('https://signup.example.invalid/api/onboarding/registration',{method:'POST',headers:{origin:'https://signup.example.invalid','content-type':'application/json'},body:JSON.stringify({schemaVersion:1,operationId:'5944698c-641f-4272-a25b-8dbfa6fb3518',email:'visitor@example.invalid',locale:'en',termsVersion:'terms-1',privacyVersion:'privacy-1'})});
   const handlers=registrationHttpHandlers({config:onboardingTestConfig(),admission,store:{query,transaction},delivery:{send}});
   const response=await handlers.request(request);

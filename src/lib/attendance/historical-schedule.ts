@@ -23,6 +23,11 @@ const nonnegativeInteger = (value: unknown): value is number =>
 const positiveInteger = (value: unknown): value is number =>
   nonnegativeInteger(value) && value >= 1;
 
+/** Optional, backward-compatible version-1 field: the Owner's early clock-in grace that was fixed when the punch was
+ * matched (src/lib/clocker/schedule-candidates.ts). Absent means strict matching (0); otherwise 0–30 whole minutes. */
+const earlyGrace = (value: unknown): value is number | undefined =>
+  value === undefined || (nonnegativeInteger(value) && value <= 30);
+
 const notEvaluated = (
   reason: Extract<ScheduleEvidence, { state: "not_evaluated" }>["reason"],
 ): ScheduleEvidence => ({ state: "not_evaluated", reason });
@@ -180,8 +185,12 @@ function matchedEvidence(
 
   try {
     const clockIn = Temporal.Instant.from(entry.clockInAt);
+    // A match captured with grace G covers [start − G, end); the saved G, never today's setting, decides.
+    const earliest = Temporal.Instant.from(instants.startAt).subtract({
+      minutes: (context.earlyGraceMinutes as number | undefined) ?? 0,
+    });
     if (
-      Temporal.Instant.compare(clockIn, instants.startAt) < 0 ||
+      Temporal.Instant.compare(clockIn, earliest) < 0 ||
       Temporal.Instant.compare(clockIn, instants.endAt) >= 0
     ) {
       return notEvaluated("schedule_reference_invalid");
@@ -202,9 +211,11 @@ function matchedEvidence(
 
 /**
  * Resolve only the publication evidence captured at clock-in; never rematch a
- * record against today's schedule. Identity, revision and interval must all
- * agree. Missing/invalid evidence yields a comparison limitation, while a saved
- * unmatched/ambiguous result preserves the historical matching outcome.
+ * record against today's schedule or today's grace setting. Identity, revision
+ * and interval must all agree; the interval starts the saved earlyGraceMinutes
+ * (absent = 0) before the scheduled start. Missing/invalid evidence yields a
+ * comparison limitation, while a saved unmatched/ambiguous result preserves the
+ * historical matching outcome.
  */
 export function resolveHistoricalSchedule(
   source: ValidatedAttendanceSource,
@@ -220,7 +231,8 @@ export function resolveHistoricalSchedule(
     !validTimeZone(context.timeZone) ||
     !sameInstant(context.capturedAt, entry.clockInAt) ||
     !nonnegativeInteger(context.candidateCount) ||
-    !reviewedRevisions(context.reviewedRevisionIds)
+    !reviewedRevisions(context.reviewedRevisionIds) ||
+    !earlyGrace(context.earlyGraceMinutes)
   ) {
     return notEvaluated("schedule_context_invalid");
   }

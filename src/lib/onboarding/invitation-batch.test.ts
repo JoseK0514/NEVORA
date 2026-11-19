@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {parseInvitationBatchCommand,invitationChildOperationId} from './invitation-batch.server';
 it('bounds and canonicalizes the explicitly selected target review without accepting caller authority',()=>{
  const c={schemaVersion:1,operationId:'12345678-1234-4234-8234-123456789012',expectedVersion:'1',payload:{targets:[{employeeId:'EMP-1',expectedEmployeeVersion:'2026-11-08 01:00:00.000001+00',expectedInvitationRevision:0}]}};

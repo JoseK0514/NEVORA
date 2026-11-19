@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { decodeTypedMigrationWireValue } from '../migrations/typed-wire';
 import { compareWorkspaceIncarnations, validateWorkspaceIncarnation } from './workspace-incarnation';
 

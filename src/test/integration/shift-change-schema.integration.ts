@@ -1,4 +1,4 @@
-import { afterAll,beforeAll,expect,it } from 'vitest';
+import { afterAll,beforeAll,expect,it } from '@rstest/core';
 import { readFile } from 'node:fs/promises';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import type { SqlExecutor } from '../../lib/notifications/types';

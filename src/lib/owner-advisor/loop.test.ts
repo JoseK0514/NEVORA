@@ -1,5 +1,5 @@
 import { readConfig } from "./config.server";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, rs } from '@rstest/core';
 import { parseCommand } from "./contracts";
 import { investigate } from "./loop.server";
 import { ownerCoveragePlan } from "@/test/fixtures/owner-coverage-plan";
@@ -24,13 +24,13 @@ const call = (name = "company_briefing", args = "{}") => ({
   output: [{ type: "function_call", name, arguments: args, call_id: "c1" }],
 });
 const transport = (responses: unknown[]) =>
-  vi.fn(
+  rs.fn(
     async (_url: string, _init: RequestInit) =>
       new Response(JSON.stringify(responses.shift()), { status: 200 }),
   );
 const deps = () => ({
-  check: vi.fn(async () => {}),
-  tool: vi.fn(async (): Promise<import("./contracts").ToolResult> => ({
+  check: rs.fn(async () => {}),
+  tool: rs.fn(async (): Promise<import("./contracts").ToolResult> => ({
     observedAt: "2026-10-22",
     sources: [],
     partial: false,
@@ -50,7 +50,7 @@ it("keeps joint plans server-owned while the model can explain their dated evide
 it("keeps executable proposal hints out of provider input and attaches only server-returned evidence", async () => {
   const proposal = { employeeName: "Fictional", locationId: "L1", locationName: "North", date: "2026-10-22", startTime: "08:00", endTime: "12:00", positionName: null, isDesignatedLead: false, scheduledHours: 12, targetHours: null, publication: "DRAFT" as const, review: "PRIVATE_REVIEW_HINT" };
   const fetch = transport([call("coverage_proposals", '{"date":"2026-10-22"}'), answer]);
-  const tool = vi.fn(async (c: import("./contracts").ToolCall) => ({ observedAt: "2026-10-22T12:00:00Z", sources: [], partial: false, data: {}, ...(c.name === "coverage_proposals" ? { proposals: [proposal] } : {}) }));
+  const tool = rs.fn(async (c: import("./contracts").ToolCall) => ({ observedAt: "2026-10-22T12:00:00Z", sources: [], partial: false, data: {}, ...(c.name === "coverage_proposals" ? { proposals: [proposal] } : {}) }));
   const result = await investigate(config, [], "", "Prepare coverage", { ...deps(), tool, fetch });
   expect(result.proposals).toEqual([proposal]);
   expect(String(fetch.mock.calls[1][1].body)).not.toContain("PRIVATE_REVIEW_HINT");
@@ -145,7 +145,7 @@ describe("Owner investigation boundaries", () => {
     d.check.mockImplementation(async () => {
       if (lost) throw new Error("revoked");
     });
-    const fetch = vi.fn(async () => {
+    const fetch = rs.fn(async () => {
       lost = true;
       return new Response(JSON.stringify(answer));
     });
@@ -223,7 +223,7 @@ it("bounds the entire provider response stream", async () => {
   await expect(
     investigate(config, [], "", "Ask", {
       ...deps(),
-      fetch: vi.fn(async () => new Response("x".repeat(131073))),
+      fetch: rs.fn(async () => new Response("x".repeat(131073))),
     }),
   ).rejects.toThrow("limit");
 });
@@ -255,28 +255,28 @@ it("propagates cancellation during a provider wait", async () => {
   expect(observed?.aborted).toBe(true);
 });
 it("times out a stalled provider at the individual deadline without retries", async () => {
-  vi.useFakeTimers();
+  rs.useFakeTimers();
   try {
     const original = AbortSignal.timeout;
-    const timeout = vi
+    const timeout = rs
       .spyOn(AbortSignal, "timeout")
       .mockImplementation((ms) => {
         const c = new AbortController();
         setTimeout(() => c.abort(), ms);
         return c.signal;
       });
-    const fetch = vi.fn(async () => new Promise<Response>(() => {}));
+    const fetch = rs.fn(async () => new Promise<Response>(() => {}));
     const pending = expect(
       investigate(config, [], "", "Ask", { ...deps(), fetch }),
     ).rejects.toThrow();
-    await vi.advanceTimersByTimeAsync(20001);
+    await rs.advanceTimersByTimeAsync(20001);
     await pending;
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(timeout).toHaveBeenCalledWith(20000);
     timeout.mockRestore();
     expect(AbortSignal.timeout).toBe(original);
   } finally {
-    vi.useRealTimers();
+    rs.useRealTimers();
   }
 });
 it("rejects arbitrary Neon endpoints and requires explicit provider selection", () => {

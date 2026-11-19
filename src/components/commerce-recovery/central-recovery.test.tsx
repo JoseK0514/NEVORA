@@ -1,14 +1,16 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
-const fixture=vi.hoisted(()=>({snapshot:null as unknown}));
+const fixture=rs.hoisted(()=>({snapshot:null as unknown}));
 // Seed the real component's private snapshot for static rendering. Effects,
 // browser lifetime, normal Owner proof and real Stripe remain separate retests.
-vi.mock('react',async original=>{
- const actual=await original<typeof import('react')>();
+rs.mock('react', ()=>{
+ const actual=rstestOriginal0;
  return {...actual,useState:(initial:unknown)=>actual.useState(
   initial&&typeof initial==='object'&&'snapshot'in initial&&'paused'in initial
    ?{snapshot:fixture.snapshot,paused:false,refreshing:false}:initial)};
 });
+import styles from './recovery.module.css';
 import {CentralBilling} from './central';
 import {parseCentralStatus} from '@/lib/commerce/central-billing';
 const base={state:'paid',operational:true,trialEndsAt:'2026-12-09T00:06:15.800Z',paidThrough:'2026-12-09T00:29:58.000Z',
@@ -62,4 +64,38 @@ it.each(['en','es'] as const)('confirms a Stripe return in %s only from a curren
 it('sends a team over 30 to a quote with the support address',()=>{
  const html=render('portal','en',false,{state:'restricted',operational:false,plan:'team',employeeLimit:30,activeEmployees:31,reason:'employee_limit_exceeded'});
  expect(html).toContain('Teams over 30 need a custom plan. Contact us for a quote.');expect(html).toContain('href="mailto:support@thevelani.com"');expect(html).toContain('Email support@thevelani.com');expect(html).toContain('31 / 30');
+});
+// Phase 5 (Nov 17, 2026): the sign-in look's rule on the billing page. One filled button per state; a payment choice
+// that is not the main one is an outlined pill; everything else (the way back while there is something to do here) is a
+// text link. In static rendering the link is still "loading", so Refresh and Close are not drawn; the browser capture
+// covers them.
+const kinds=(html:string)=>{
+ const controls=[...html.matchAll(/<(?:a|button)[^>]*class="([^"]*)"[^>]*>([^<]*)</g)];
+ const of=(name:'action'|'secondary'|'quiet')=>{
+  expect(styles[name]).toEqual(expect.any(String));
+  return controls.filter(match=>match[1].split(/\s+/).includes(styles[name])).map(match=>match[2]);
+ };
+ return {filled:of('action'),outlined:of('secondary'),quiet:of('quiet')};
+};
+it.each(['en','es'] as const)('draws one filled button per billing state in %s, with the way back as a text link',lang=>{
+ const paid=kinds(render('portal',lang));
+ expect(paid.filled).toEqual([lang==='en'?'Manage billing in Stripe':'Administrar facturación en Stripe']);
+ expect(paid.outlined).toEqual([lang==='en'?'Review Team plan':'Revisar plan Team']);
+ expect(paid.quiet).toEqual([lang==='en'?'Back to Fictional recovery':'Volver a Fictional recovery']);
+ const trial=kinds(render('checkout',lang,false,{state:'trial',plan:null}));
+ expect(trial.filled).toEqual([lang==='en'?'Review subscription in Stripe':'Revisar suscripción en Stripe']);
+ expect(trial.outlined).toEqual([]);
+ // After Stripe, with the subscription confirmed, going back is the main action and billing is the outlined one.
+ const done=kinds(render('portal',lang,true));
+ expect(done.filled).toEqual([lang==='en'?'Back to Fictional recovery':'Volver a Fictional recovery']);
+ expect(done.outlined[0]).toBe(lang==='en'?'Manage billing in Stripe':'Administrar facturación en Stripe');
+ expect(done.quiet).toEqual([]);
+ // A team over 30: writing to us is the main action.
+ const quote=kinds(render('portal',lang,false,{state:'restricted',operational:false,plan:'team',employeeLimit:30,activeEmployees:31,reason:'employee_limit_exceeded'}));
+ expect(quote.filled).toEqual([lang==='en'?'Email support@thevelani.com':'Escribir a support@thevelani.com']);
+ // No status at all: the only thing to do is go back, so that is the filled button.
+ fixture.snapshot=null;
+ const none=kinds(renderToStaticMarkup(<CentralBilling apiOrigin="http://127.0.0.1:39991" initialLanguage={lang}/>));
+ expect(none.filled).toEqual([lang==='en'?'Back to NEVORA sign-in':'Volver al inicio de sesión de NEVORA']);
+ expect([...none.outlined,...none.quiet]).toEqual([]);
 });

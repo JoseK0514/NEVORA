@@ -32,17 +32,19 @@ import { ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
 import { ExportIcon } from "@phosphor-icons/react/dist/ssr/Export";
 import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/ssr/SidebarSimple";
 import { UsersThreeIcon } from "@phosphor-icons/react/dist/ssr/UsersThree";
-import { DotsThreeCircleIcon } from "@phosphor-icons/react/dist/ssr/DotsThreeCircle";
 import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
-import { ArticleIcon } from "@phosphor-icons/react/dist/ssr/Article";
+import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
 
+/* Phase 9 (Nov 18, 2026): one glyph per concept, and the same glyph in the sidebar, the rail, the phone tab bar and More.
+ * Payroll is the wallet everywhere (the Owner's tab drew a card), a pay statement is the receipt for every role (an Owner's
+ * or Manager's My pay drew Week templates' page), Plan and billing is the card (it drew Settings' gear) and Help someone
+ * sign in is the key (it drew Profile's face). The tab bar's own card and page glyphs and the unused circled "more" left. */
 const icons = {
-  /* Corporate tab bar (boards C-Owner, C-Employee): a card for Pay and Payroll, a page with two lines for Requests. */
-  tabPay: CreditCardIcon,
-  tabRequests: ArticleIcon,
   payroll: WalletIcon,
-  statement: FileTextIcon,
+  statement: ReceiptIcon,
   receipt: ReceiptIcon,
+  billing: CreditCardIcon,
+  key: KeyIcon,
   dashboard: HouseIcon,
   schedule: CalendarBlankIcon,
   calendar: CalendarCheckIcon,
@@ -74,9 +76,8 @@ const icons = {
   reports: ChartBarIcon,
   export: ExportIcon,
   sidebar: SidebarSimpleIcon,
-  // Clean Manager (v3) phone tab bar: the iOS-style glyphs for Team and More.
+  // Who's working (three people on now; Team is Users).
   team: UsersThreeIcon,
-  moreCircle: DotsThreeCircleIcon,
 };
 
 export type NavIconName = keyof typeof icons;

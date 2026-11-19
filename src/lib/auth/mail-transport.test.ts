@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {validatedMailTransport} from './mail-transport.server';
 it('admits HTTPS links with a development loopback SMTP transport while remote SMTP still requires credentials and HTTPS',()=>{
  const env={NODE_ENV:'test',NEVORA_RECOVERY_SMTP_HOST:'127.0.0.1',NEVORA_RECOVERY_SMTP_PORT:'23232',NEVORA_RECOVERY_FROM:'fictional@example.invalid',FUEL_PORTAL_ORIGIN:'https://alpha.portal.example.invalid'};

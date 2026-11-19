@@ -5,8 +5,9 @@ const scryptAsync = promisify(scrypt);
 const KEY_LENGTH = 64;
 
 /** Produce the persisted scrypt$salt$key format with a fresh 16-byte salt.
- * This enforces only the minimum length; request-specific upper bounds belong
- * to callers before they start the asynchronous password work. */
+ * The legacy primitive floor preserves existing fixture/hash compatibility. All
+ * enrollment callers must apply password-policy with authoritative context before
+ * hashing; sign-in verification deliberately does not reapply enrollment policy. */
 export async function hashPassword(password: string) {
   if (password.length < 8) {
     throw new Error("Password must contain at least 8 characters.");

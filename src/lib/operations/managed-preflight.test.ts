@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {build} from 'esbuild';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';

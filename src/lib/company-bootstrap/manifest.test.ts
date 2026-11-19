@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {canonicalCompanyManifest} from './server';
 import {bootstrapManifest} from './manifest.generated';
 it('pins the API artifact to the exact ordered canonical SQL sources',async()=>{

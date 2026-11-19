@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, expect, it } from 'vitest';
+import { afterAll, beforeAll, expect, it } from '@rstest/core';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { createOwnedPgTransport, type OwnedDatabaseIdentity } from './owned-pg-transport';
 

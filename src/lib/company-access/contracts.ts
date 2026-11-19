@@ -4,7 +4,7 @@ import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import type * as M from './model';
 import type * as I from '@/lib/auth/invitations/model';
 export type InvitationDelivery = {
-  send(input: { registeredEmail: string; employeeId?:string; proof: string; expiresAt: string }): Promise<{ providerAccepted: true }>;
+  send(input: { registeredEmail: string; employeeId?:string; proof: string; expiresAt: string; companyName?:string; firstName?:string|null; timeZone?:string }): Promise<{ providerAccepted: true }>;
 };
 export type CompanyAccessBackend = {
   readOwnerOperationalScope(proof: SessionMutationProof, employeeId: string, executor?: SqlExecutor): Promise<M.OperationalRead<M.OwnerOperationalScopeData>>;
@@ -15,7 +15,7 @@ export type CompanyAccessBackend = {
   readOperationalSchedule(proof: SessionMutationProof, query: { weekStart: string; locationId?: string }, executor?: SqlExecutor): Promise<M.OperationalRead<M.OperationalScheduleData>>;
   readOperationalShiftEditor(proof: SessionMutationProof, query: { shiftId: string } | { weekStart: string; locationId: string }, executor?: SqlExecutor): Promise<M.OperationalRead<M.OperationalShiftEditorData>>;
   readOperationalClockMonitor(proof: SessionMutationProof, executor?: SqlExecutor): Promise<M.OperationalRead<M.OperationalClockMonitorData>>;
-  readOperationalEmployeeProfile(proof: SessionMutationProof, employeeId: string, executor?: SqlExecutor): Promise<M.OperationalRead<M.OperationalEmployeeProfileData>>;
+  readOperationalEmployeeProfile(proof: SessionMutationProof, employeeId: string, executor?: SqlExecutor, options?: { employmentDates?: boolean }): Promise<M.OperationalRead<M.OperationalEmployeeProfileData>>;
   saveEmployeeCoreAccessProfile(proof: SessionMutationProof, command: M.EmployeeCoreAccessCommand, executor?: SqlExecutor): Promise<M.EmployeeCoreAccessResult>;
   createEmployeeWithAccess(proof: SessionMutationProof, command: M.CreateEmployeeWithAccessCommand, executor?: SqlExecutor): Promise<M.EmployeeCoreAccessResult>;
   readEmployeeCoreAccessOperation(proof: SessionMutationProof, operationId: string, executor?: SqlExecutor): Promise<M.EmployeeCoreAccessResult>;

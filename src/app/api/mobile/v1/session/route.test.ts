@@ -1,7 +1,7 @@
-import {beforeEach, expect, it, vi} from 'vitest';
+import {beforeEach, expect, it, rs} from '@rstest/core';
 
-const auth = vi.hoisted(() => ({session: vi.fn()}));
-vi.mock('@/lib/auth/session', () => ({getSession: auth.session}));
+const auth = rs.hoisted(() => ({session: rs.fn()}));
+rs.mock('@/lib/auth/session', () => ({getSession: auth.session}));
 import {GET} from './route';
 const request = (path = '', headers: Record<string, string> = {}) =>
   new Request('https://nevora.example/api/mobile/v1/session' + path, {headers});

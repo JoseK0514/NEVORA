@@ -1,4 +1,4 @@
-import {beforeEach,afterEach,expect,it} from 'vitest';
+import {beforeEach,afterEach,expect,it} from '@rstest/core';
 import {companyAccessFixture} from './company-access-fixture';
 import {createCurrentClockerPhotoRuntime} from '../../lib/clocker/photo-server/runtime.server';
 import {PHOTO_ACTIONS} from '../../lib/clocker/photo-server/contracts';

@@ -19,7 +19,7 @@ export const metadata = { title: "Time exports" };
 export default async function PayrollExportPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession();
   // Review F2 (NV-136): a closed page says why, never a silent redirect to Home.
-  if(!isManagerRole(session.role))return <OwnerOnlyNotice title="Time exports" reason="Time exports are for Owners and Managers." help="Your own hours are on Time." next={{href:'/app/my-time',label:'Open Time'}}/>;
+  if(!isManagerRole(session.role))return <OwnerOnlyNotice state title="Time exports" reason="Time exports are for Owners and Managers." help="Your own hours are on Time." next={{href:'/app/my-time',label:'Open Time'}}/>;
   const proof=await requireSessionMutationProof();
   const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Time exports unavailable" reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;

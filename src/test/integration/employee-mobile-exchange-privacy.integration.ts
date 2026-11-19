@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {createDisposableExchangeDatabase} from './local-postgres';
 import {seedOwnedApp,seedOwnedScenario} from './owned-app-fixture';

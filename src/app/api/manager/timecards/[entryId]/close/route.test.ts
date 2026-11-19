@@ -1,7 +1,7 @@
-import {beforeEach,expect,it,vi} from 'vitest';
-const mocks=vi.hoisted(()=>({session:vi.fn(),proof:vi.fn(),read:vi.fn(),close:vi.fn()}));
-vi.mock('@/lib/auth/session',()=>({getSession:mocks.session,readSessionMutationProof:mocks.proof}));
-vi.mock('@/lib/management-close/service.server',()=>({readManagementCloseContext:mocks.read,closeManagedTimeEntry:mocks.close}));
+import {beforeEach,expect,it,rs} from '@rstest/core';
+const mocks=rs.hoisted(()=>({session:rs.fn(),proof:rs.fn(),read:rs.fn(),close:rs.fn()}));
+rs.mock('@/lib/auth/session',()=>({getSession:mocks.session,readSessionMutationProof:mocks.proof}));
+rs.mock('@/lib/management-close/service.server',()=>({readManagementCloseContext:mocks.read,closeManagedTimeEntry:mocks.close}));
 import {GET,POST} from './route';
 const url='https://nevora.invalid/api/manager/timecards/entry/close';
 const context={params:Promise.resolve({entryId:'entry'})};
@@ -9,7 +9,7 @@ const headers={'X-Nevora-Management-Close':'1','X-Nevora-Management-Close-Author
 const command={operationId:'55555555-5555-4555-8555-555555555555',timeEntryId:'entry',expectedSourceHash:'a'.repeat(32),closedAt:'2026-11-10T12:00:00Z',reason:'Confirmed last worked time.'};
 const post=(body:unknown=command,overrides:Record<string,string>={})=>new Request(url,{method:'POST',headers:{...headers,...overrides},body:JSON.stringify(body)});
 beforeEach(()=>{
-  vi.resetAllMocks();mocks.session.mockResolvedValue({id:'manager',role:'MANAGER'});mocks.proof.mockResolvedValue({employee:{id:'manager',role:'MANAGER'},sessionTokenHash:'b'.repeat(64)});
+  rs.resetAllMocks();mocks.session.mockResolvedValue({id:'manager',role:'MANAGER'});mocks.proof.mockResolvedValue({employee:{id:'manager',role:'MANAGER'},sessionTokenHash:'b'.repeat(64)});
   mocks.read.mockResolvedValue({state:'ready',target:{timeEntryId:'entry'},authority:'a'.repeat(64)});mocks.close.mockResolvedValue({status:'closed',operationId:command.operationId});
 });
 it.each(['OWNER','MANAGER'])('admits a cookie-derived %s through the strict transport boundary',async role=>{

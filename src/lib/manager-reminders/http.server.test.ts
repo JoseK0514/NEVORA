@@ -1,12 +1,13 @@
-import {beforeEach,expect,it,vi} from 'vitest';
-const mocks=vi.hoisted(()=>({session:vi.fn(),proof:vi.fn(),execute:vi.fn(),lookup:vi.fn(),enabled:vi.fn(),eligibility:vi.fn()}));
-vi.mock('../auth/session',()=>({getSession:mocks.session,readSessionMutationProof:mocks.proof}));
-vi.mock('../workspace-presentation/current.server',()=>({moduleEnabled:mocks.enabled}));
-vi.mock('../communications/service.server',()=>({communicationAuthority:()=> 'a'.repeat(64)}));
-vi.mock('./service.server',()=>({executeManagerReminder:mocks.execute,findManagerReminderOperation:mocks.lookup,readManagerReminderEligibility:mocks.eligibility}));
+import {beforeEach,expect,it,rs} from '@rstest/core';
+import {readSupportReference} from '../support-reference';
+const mocks=rs.hoisted(()=>({session:rs.fn(),proof:rs.fn(),execute:rs.fn(),lookup:rs.fn(),enabled:rs.fn(),eligibility:rs.fn()}));
+rs.mock('../auth/session',()=>({getSession:mocks.session,readSessionMutationProof:mocks.proof}));
+rs.mock('../workspace-presentation/current.server',()=>({moduleEnabled:mocks.enabled}));
+rs.mock('../communications/service.server',()=>({communicationAuthority:()=> 'a'.repeat(64)}));
+rs.mock('./service.server',()=>({executeManagerReminder:mocks.execute,findManagerReminderOperation:mocks.lookup,readManagerReminderEligibility:mocks.eligibility}));
 import {managerReminderHttp,managerReminderEligibilityHttp} from './http.server';
 function request(headers:Record<string,string>={},body:unknown={kind:'COMMUNICATION'}){return new Request('https://nevora.invalid/api/manager/reminders',{method:'POST',headers:{'x-nevora-reminder':'1','x-nevora-reminder-authority':'a'.repeat(64),origin:'https://nevora.invalid','content-type':'application/json',...headers},body:JSON.stringify(body)});}
-beforeEach(()=>{vi.resetAllMocks();mocks.session.mockResolvedValue({id:'owner',role:'OWNER'});mocks.proof.mockResolvedValue({employee:{id:'owner',role:'OWNER'}});mocks.enabled.mockResolvedValue(true);mocks.execute.mockResolvedValue({status:'committed',notificationId:'notification'});});
+beforeEach(()=>{rs.resetAllMocks();mocks.session.mockResolvedValue({id:'owner',role:'OWNER'});mocks.proof.mockResolvedValue({employee:{id:'owner',role:'OWNER'}});mocks.enabled.mockResolvedValue(true);mocks.execute.mockResolvedValue({status:'committed',notificationId:'notification'});});
 it('returns private committed queue results for management only',async()=>{const r=await managerReminderHttp(request());expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toBe('no-store, private');expect(await r.json()).toMatchObject({notificationId:'notification'});});
 it('rejects cross-site, replacement authority, employee role and disabled updates before command',async()=>{
  for(const headers of [{origin:'https://other.invalid'},{'x-nevora-reminder-authority':'b'.repeat(64)},{'sec-fetch-site':'cross-site'}] as Record<string,string>[])expect((await managerReminderHttp(request(headers))).status).toBe(403);
@@ -37,15 +38,18 @@ it('handles session revocation between admission and proof without a diagnostic 
  expect(response.status).toBe(401);expect(response.headers.get('X-Nevora-Request-Id')).toBeNull();expect(mocks.eligibility).not.toHaveBeenCalled();
 });
 it('correlates an unexpected eligibility HTTP failure and ignores a forged incoming reference',async()=>{
- const sink=vi.spyOn(console,'error').mockImplementation(()=>{});
+ const sink=rs.spyOn(console,'error').mockImplementation(()=>{});
  try{
   mocks.eligibility.mockRejectedValue(new Error('private workforce and fictional password'));
   const incoming='11111111-1111-4111-8111-111111111111';
   const response=await managerReminderEligibilityHttp(request({'X-Nevora-Request-Id':incoming}));
-  const reference=response.headers.get('X-Nevora-Request-Id');
+  const reference=readSupportReference(response);
   expect(response.status).toBe(503);expect(reference).toMatch(/^[a-f0-9-]{36}$/);expect(reference).not.toBe(incoming);
   expect(await response.json()).toEqual({status:'unavailable',reason:'read_failed'});
-  expect(sink).toHaveBeenCalledTimes(1);expect(JSON.parse(sink.mock.calls[0][0])).toMatchObject({route:'/api/manager/reminders/eligibility',requestId:reference});
+  expect(sink).toHaveBeenCalledTimes(1);
+  // Local responder round trip: the consumer's validated header identifies the
+  // one sanitized event, without exposing private error data or changing the body.
+  expect(JSON.parse(sink.mock.calls[0][0])).toEqual({event:'server_request_error',route:'/api/manager/reminders/eligibility',requestId:reference,errorClass:'Error'});
   expect(JSON.stringify(sink.mock.calls)).not.toMatch(/workforce|password|fictional/);
  }finally{sink.mockRestore();}
 });

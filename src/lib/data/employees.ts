@@ -8,6 +8,7 @@ import { getWorkspace, workspaceReadGuard } from "./workspaces";
 import { employeePositionMembershipStatements } from "./positions";
 import type { SessionMutationProof } from '../shift-changes/types';
 import { assertManagementProof, managementSessionStatements } from './management-session';
+import type { EmploymentDates } from '../employment-dates';
 
 type EmployeeRow = {
   id: string;
@@ -127,6 +128,8 @@ export type EmployeeCreationMutationInput = {
   eligibleLocationIds: string[];
   passwordHash?: string;
   positionIds?: readonly string[];
+  /** Already validated by the caller (employment-dates.ts); omitted leaves the columns NULL. */
+  employmentDates?: EmploymentDates;
   actorEmployeeId: string;
   proof: SessionMutationProof;
 };
@@ -156,7 +159,9 @@ export async function prepareEmployeeCreationMutation(input: EmployeeCreationMut
     ...managementSessionStatements(input.proof, input.actorEmployeeId),
   ];
   const writes: SqlStatement[] = [
-    { text: 'INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,$2,$3,$4,$5,$6,$7)', values: [input.id, input.firstName, input.lastName, input.phone, input.email ?? null, input.role, input.primaryLocationId] },
+    input.employmentDates
+      ? { text: 'INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id,hire_date,termination_date,birth_date) VALUES($1,$2,$3,$4,$5,$6,$7,$8::date,$9::date,$10::date)', values: [input.id, input.firstName, input.lastName, input.phone, input.email ?? null, input.role, input.primaryLocationId, input.employmentDates.hireDate, input.employmentDates.terminationDate, input.employmentDates.birthDate] }
+      : { text: 'INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,$2,$3,$4,$5,$6,$7)', values: [input.id, input.firstName, input.lastName, input.phone, input.email ?? null, input.role, input.primaryLocationId] },
     ...eligible.map(locationId => ({ text: 'INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES($1,$2)', values: [input.id, locationId] })),
     ...employeePositionMembershipStatements({ employeeId: input.id, positionIds: positions }),
   ];
@@ -250,6 +255,27 @@ export async function getEmployeeManagementProfile(
   };
 }
 
+/**
+ * Management-only read of the optional employment dates (migration 0068) with
+ * the version they belong to. Callers must already hold the authority to edit
+ * this person's core profile and must compare updatedAt with the profile they
+ * show, so a form never pairs these dates with a different employee version.
+ * Never fold these values into Employee or a roster/schedule/export projection.
+ */
+export async function getEmployeeEmploymentDates(
+  employeeId: string,
+  executor: SqlExecutor,
+): Promise<(EmploymentDates & { updatedAt: string }) | null> {
+  const rows = await executor.query<EmploymentDates & { updatedAt: string }>({
+    text: `SELECT e.updated_at::text AS "updatedAt",to_char(e.hire_date,'YYYY-MM-DD') AS "hireDate",
+      to_char(e.termination_date,'YYYY-MM-DD') AS "terminationDate",to_char(e.birth_date,'YYYY-MM-DD') AS "birthDate"
+      FROM employees e WHERE e.id=$1 LIMIT 1`,
+    values: [employeeId],
+  });
+  const row = rows[0];
+  return row ? { updatedAt: row.updatedAt, hireDate: row.hireDate ?? null, terminationDate: row.terminationDate ?? null, birthDate: row.birthDate ?? null } : null;
+}
+
 export type EmployeeCoreMutationInput = {
     employeeId: string;
     expectedUpdatedAt: string;
@@ -260,6 +286,9 @@ export type EmployeeCoreMutationInput = {
     role: UserRole;
     primaryLocationId: string;
     active: boolean;
+    /** Validated by the caller. Present: written as given (null clears). Absent: unchanged.
+     * Informational only; `active` above is the only lifecycle input. */
+    employmentDates?: EmploymentDates;
     actorEmployeeId: string;
     proof: SessionMutationProof;
   };
@@ -271,7 +300,7 @@ export type EmployeeCoreMutationInput = {
  * intentional self-edits retain only the captured, still-unexpired authority.
  * Execute all returned pieces in order within one transaction.
  */
-export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutationInput, executor?: SqlExecutor) {
+export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutationInput, executor?: SqlExecutor, preparedWorkspace?: Workspace) {
   assertManagementProof(input.proof, input.actorEmployeeId);
   if (!["OWNER", "MANAGER", "LEAD", "EMPLOYEE"].includes(input.role)) {
     throw new Error("employee_profile_invalid_role");
@@ -293,7 +322,7 @@ export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutation
   }
 
   const sql = executor ?? neonNotificationExecutor();
-  const workspace = await getWorkspace(sql);
+  const workspace = preparedWorkspace ?? await getWorkspace(sql);
   const lockIds = [...new Set([input.actorEmployeeId, input.employeeId])].sort();
 
   const guards: SqlStatement[] = [
@@ -413,6 +442,7 @@ export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutation
       values: [input.employeeId, input.active],
     },
     {
+      // The dates ride on the same guarded, versioned UPDATE; they never set active.
       text: `UPDATE employees
         SET first_name=$1,
             last_name=$2,
@@ -420,7 +450,10 @@ export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutation
             email=$4,
             role=$5,
             primary_location_id=$6,
-            active=$7,
+            active=$7,${input.employmentDates ? `
+            hire_date=$9::date,
+            termination_date=$10::date,
+            birth_date=$11::date,` : ""}
             updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond')
         WHERE id=$8
         RETURNING updated_at::text AS "updatedAt"`,
@@ -433,6 +466,7 @@ export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutation
         input.primaryLocationId,
         input.active,
         input.employeeId,
+        ...(input.employmentDates ? [input.employmentDates.hireDate, input.employmentDates.terminationDate, input.employmentDates.birthDate] : []),
       ],
     },
   ];

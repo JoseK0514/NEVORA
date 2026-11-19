@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {projectToday} from '../today/project';
 import {parseEmployeeView} from '../employee-view';
 import {projectActionRequestFact} from './action-request-facts.server';

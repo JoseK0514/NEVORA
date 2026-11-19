@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { describe, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
+import { describe, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
 import { normalizeWorkspaceLocator } from '../identity';
 import { INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL } from './catalog-fence.server';
 import { parseDdlDeclarations, tokenizeDdl } from '../inventory/ddl';

@@ -1,8 +1,8 @@
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect,it,vi} from 'vitest';
-vi.mock('../app/app/schedule/settings/actions',()=>({saveShiftChangePolicyAction:async()=>({status:'conflict'})}));
-vi.mock('../app/app/employees/actions',()=>({saveOperationalRulesAction:async()=>({status:'conflict'})}));
+import {expect,it,rs} from '@rstest/core';
+rs.mock('../app/app/schedule/settings/actions',()=>({saveShiftChangePolicyAction:async()=>({status:'conflict'})}));
+rs.mock('../app/app/employees/actions',()=>({saveOperationalRulesAction:async()=>({status:'conflict'})}));
 import {ShiftChangePolicyFields} from './shift-change-policy-fields';
 import {OperationalRuleFields} from './operational-rule-fields';
 import {unknownOperationalRuleProfile} from '../lib/shift-changes/policy';
@@ -18,4 +18,4 @@ it('configured zero survives alongside unknown and reviewed not applicable setti
  const h=renderToStaticMarkup(createElement(OperationalRuleFields,{employeeId:'e',profile:p,canEdit:true}));expect(h).toContain('name="minimumRest.minutes"');expect(h).toContain('value="0"');expect(h).toContain('Reviewed not applicable');expect(h).toContain('Unknown');expect(h).toContain('name="breaks.paid"');
 });
 
-vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
+rs.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));

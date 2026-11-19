@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, it, expect } from 'vitest';
+import { beforeAll, afterAll, it, expect } from '@rstest/core';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { getShiftValidationContext } from '../../lib/data/schedules';
 import { readGenerationSnapshot } from '../../lib/data/schedule-generation-snapshot';

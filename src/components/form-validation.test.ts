@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { describedByWith } from "./form-validation";
 
 // Nov 14 inspection (RA-9): the field's link to its message is re-asserted every time the message shows.

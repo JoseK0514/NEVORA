@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { fictionalBusinessScope } from '@/test/fixtures/rondo-business';
 import { calculateFinance } from './finance';
 import { calculateSales } from './sales';

@@ -1,5 +1,5 @@
-import { describe,expect,it,vi } from 'vitest';
-import { beforeAll,afterAll } from 'vitest';
+import { describe,expect,it,rs } from '@rstest/core';
+import { beforeAll,afterAll } from '@rstest/core';
 import { readFileSync,writeFileSync,realpathSync } from 'node:fs';
 import { join,resolve } from 'node:path';
 import { randomBytes } from 'node:crypto';
@@ -260,7 +260,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   const malformed={...request};
   Object.defineProperty(malformed,'sourceDigest',{enumerable:true,get(){called=true;throw new Error('private-capture-data');}});
   expect(await captureTenantMigrationFacts(client,malformed)).toEqual({status:'BLOCKED',code:'CAPTURE_FAILED'});expect(called).toBe(false);
-  const spy=vi.spyOn(client,'query').mockRejectedValueOnce(new Error('private-query-password-capture'));
+  const spy=rs.spyOn(client,'query').mockRejectedValueOnce(new Error('private-query-password-capture'));
   expect(await capture()).toEqual({status:'BLOCKED',code:'CAPTURE_FAILED'});
   spy.mockRestore();
   expect(client.getTransactionStatus()).toBe('I');
@@ -335,7 +335,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   await resetFence();
   const before=await allOriginalRows(),original=client.query.bind(client);
   let rollbackCalls=0;
-  const spy=vi.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
+  const spy=rs.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
    if(args[0]==='ROLLBACK')rollbackCalls++;
    const result=await Reflect.apply(original,client,args);
    if(args[0]==='COMMIT')throw new Error('fictional lost COMMIT acknowledgement PRIVATE_CAPTURE_PAYLOAD');
@@ -352,7 +352,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
  it('rolls back only its own attempted BEGIN when the server entered the transaction but its acknowledgement is lost',async()=>{
   await resetFence();
   const original=client.query.bind(client);let rollbackCalls=0;
-  const spy=vi.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
+  const spy=rs.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
    if(args[0]==='ROLLBACK')rollbackCalls++;
    const result=await Reflect.apply(original,client,args);
    if(args[0]==='BEGIN ISOLATION LEVEL SERIALIZABLE')throw new Error('fictional lost BEGIN acknowledgement PRIVATE_CAPTURE_PAYLOAD');
@@ -367,7 +367,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
  });
  it('reports unconfirmed rollback as uncertain without exposing raw failures or claiming the fence was restored',async()=>{
   await resetFence();const original=client.query.bind(client);
-  const spy=vi.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
+  const spy=rs.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
    const result=await Reflect.apply(original,client,args);
    const text=typeof args[0]==='string'?args[0]:(args[0] as {text?:string}).text;
    if(text==='SELECT pg_current_snapshot()::text'||text==='ROLLBACK')throw new Error('fictional lost rollback acknowledgement PRIVATE_CAPTURE_PAYLOAD');
@@ -383,7 +383,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   await resetFence();
   const supplied=JSON.parse(canonicalOwnershipJson(request)) as MigrationCaptureRequest,original=client.query.bind(client);
   let altered=false;
-  const spy=vi.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
+  const spy=rs.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
    const result=await Reflect.apply(original,client,args);
    const text=typeof args[0]==='string'?args[0]:(args[0] as {text?:string}).text;
    if(!altered&&text?.startsWith('SELECT current_database()')){
@@ -447,7 +447,7 @@ describe.skipIf(!leasePath)('owned PostgreSQL privileged migration capture',()=>
   const original=client.query.bind(client);
   let signal:()=>void=()=>{},release:()=>void=()=>{};
   const acquired=new Promise<void>(r=>{signal=r;}),hold=new Promise<void>(r=>{release=r;});
-  const spy=vi.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
+  const spy=rs.spyOn(client,'query').mockImplementation((async(...args:Parameters<Client['query']>)=>{
    const result=await Reflect.apply(original,client,args);
    if(typeof args[0]==='string'&&args[0].startsWith('LOCK TABLE public.')){signal();await hold;}
    return result;

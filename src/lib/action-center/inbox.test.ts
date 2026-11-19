@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 import {inboxSections, isPastCoverageGap, timeOffRequestId, workspaceNow} from './inbox';
 import type {ActionItem} from './project';
 

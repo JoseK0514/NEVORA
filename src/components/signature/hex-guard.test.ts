@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { rawHexCount, readHexCounts } from './hex-guard';
 
 /* A ratchet: each Signature stylesheet may hold at most the raw hex colours it had when the guard landed

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { calculateNativePayroll } from "./calculate";
 import type { NativePayrollInput,NativePayrollReady } from "./contracts";
 import { input, entry } from "./fixtures.test-support";

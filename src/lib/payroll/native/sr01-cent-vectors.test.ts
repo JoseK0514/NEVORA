@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import vectors from './sr01-cent-vectors.test-support.json';
 import { prIncomeWithholding } from './rules/pr-2026';
 import { acceptsNativePrCentProfile, acceptsNativePrCentResult, PR_FINAL_PERIODIC_HALF_UP_GUIDANCE, usesAcceptedProfessionalPrCents } from './pr-income-cent-policy';

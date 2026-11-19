@@ -1,6 +1,7 @@
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
 import { managementProof } from '../../test/fixtures/management';
-import { it, expect, vi } from "vitest";
-vi.mock("@/lib/db", () => ({
+import { it, expect, rs } from '@rstest/core';
+rs.mock("@/lib/db", () => ({
   getDb: () => {
     throw Error("no database");
   },
@@ -15,11 +16,11 @@ import type { SqlExecutor, SqlStatement } from "../notifications/types";
 function executor() {
   // A SQL batch returns one result array per statement; final guards are not
   // the business UPDATE's RETURNING row.
-  const transaction = vi.fn(async (statements: readonly SqlStatement[]) => statements.map(statement =>
+  const transaction = rs.fn(async (statements: readonly SqlStatement[]) => statements.map(statement =>
     statement.text.includes('RETURNING updated_at::text AS "updatedAt"')
       ? [{ updatedAt: "written-unit-version" }] : []));
   return {
-    query: vi.fn(async () => [
+    query: rs.fn(async () => [
       {
         id: "w",
         name: "Northside",
@@ -44,7 +45,7 @@ it("scheduling profile composes qualification and primary-inclusive eligibility 
   );
   expect(result).toEqual({ updatedAt: "written-unit-version" });
   expect(sql.transaction).toHaveBeenCalledTimes(1);
-  const batch = vi.mocked(sql.transaction).mock.calls[0][0];
+  const batch = rs.mocked(sql.transaction).mock.calls[0][0];
   expect(batch[0].text).toContain("workspaces");
   expect(batch.map((x) => x.text).join("\n")).toContain("employee_positions");
   expect(batch.map((x) => x.text).join("\n")).toContain("primary_location_id");
@@ -67,7 +68,7 @@ it("coverage window and quotas commit together", async () => {
     sql,
   );
   expect(sql.transaction).toHaveBeenCalledTimes(1);
-  const text = vi
+  const text = rs
     .mocked(sql.transaction)
     .mock.calls[0][0].map((x) => x.text)
     .join("\n");
@@ -95,4 +96,4 @@ it.each([0, -1, 1.5, 101])(
 
 // Unit-only admission I/O; real Company/current-scope behavior and rollback are
 // exercised in company-access-configuration.integration.ts.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'w',name:'Fictional',active:true,timeZone:'America/New_York',createdAt:'',updatedAt:'version'}})}));
+rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rstestOriginal0,assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'w',name:'Fictional',active:true,timeZone:'America/New_York',createdAt:'',updatedAt:'version'}})}));

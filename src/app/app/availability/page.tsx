@@ -144,7 +144,7 @@ export default async function AvailabilityPage({
   }
 
   // Server-rendered deadline status intentionally reflects the current request time.
-  // eslint-disable-next-line react-hooks/purity
+  // eslint-disable-next-line hooks-preserved/purity
   const requestTime = Date.now();
   const locked = Boolean(
     selectedWeek &&

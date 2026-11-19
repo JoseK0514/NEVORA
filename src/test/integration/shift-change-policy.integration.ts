@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import { beforeAll,afterAll,expect,it } from 'vitest';
+import { beforeAll,afterAll,expect,it } from '@rstest/core';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { readShiftChangePolicy,saveShiftChangePolicy,saveOperationalRuleProfile } from '../../lib/data/shift-change-policy';
 import type { PolicyWrite,OperationalProfileWrite } from '../../lib/shift-changes/types';

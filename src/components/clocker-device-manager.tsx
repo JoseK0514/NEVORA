@@ -1,78 +1,146 @@
 "use client";
 
-import ownerStyles from './clocker-owner.module.css';
-import Link from 'next/link';
-import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent } from 'react';
-import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent } from 'react';
+import { DeviceTabletIcon } from '@phosphor-icons/react/dist/ssr/DeviceTablet';
+import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
+import { QuestionIcon } from '@phosphor-icons/react/dist/ssr/Question';
 import type { ClockerDeviceView, ClockerLocationView, ClockerOwnerResult } from '../lib/clocker/views';
 import { toast } from './toaster';
-import { keepWhole } from '../lib/keep-whole';
-import { Notice, SettingsFrame } from '../app/app/settings/wave-c-kit';
+import { SettingsFrame } from '../app/app/settings/wave-c-kit';
 import { ButtonLabel, Field, FieldErrors, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
-import { CorpButton, CorpCard } from './corp/corp';
+import { CorpButton } from './corp/corp';
 import { QuietSheet } from './quiet/quiet-sheet';
+import { BCard, BChip, BIcon, BList, BNote, BRow, BState } from './owner-b/b-kit';
+import { Dotted } from './employee-b/parts';
+import { encodeQr, qrPath } from './access-recovery/qr';
+import { setupLink } from './clocker-setup-link';
+import { clockerOwnerCopy, clockerOwnerWhen, type ClockerOwnerCopy, type ClockerOwnerLang } from './clocker-owner-copy';
 import './clocker-device-manager.css';
+import './clocker-owner-b.css';
 
 type Operation = 'REGISTER' | 'RENAME' | 'ROTATE' | 'REVOKE';
 type Selection = { operation: Operation; device?: ClockerDeviceView };
-const statuses = { UNREGISTERED: 'Not set up', PENDING: 'Awaiting setup', EXPIRED: 'Setup expired', ACTIVE: 'Registered', REVOKED: 'Removed' };
+type Ticket = { code: string; expiresAt: string; device: ClockerDeviceView; added: boolean };
 const subscribe = () => () => {};
+const needsSetup = (device: ClockerDeviceView) => device.state === 'UNREGISTERED' || device.state === 'PENDING' || device.state === 'EXPIRED';
 
-/** Wave C: Clocker devices on the kit. Every operation goes through one sheet (the kit's bottom sheet: a centred title
- * with Done or Cancel); the server's answer decides what the list shows. Setup codes stay on screen only until they expire. */
-export function ClockerDeviceManager({ initialDevices, locations, timeZone, action, shortNames = {} }: {
+/** What one tablet's row says: the exception as a chip (the normal state is plain grey words), then what and when.
+ * Exported for its tests. The states are the server's: connected (ACTIVE), not set up yet (no code, a code that is still
+ * good, a code that expired) and removed. A tablet whose location is inactive cannot be used, so the row says that. */
+export function tabletLine(device: ClockerDeviceView, options: { place?: string; locationActive: boolean; timeZone: string; lang?: ClockerOwnerLang }) {
+  const lang = options.lang ?? 'en', t = clockerOwnerCopy[lang];
+  const when = (value: string) => clockerOwnerWhen(value, options.timeZone, lang);
+  const place = options.place ?? t.locationUnavailable;
+  if (device.state === 'REVOKED') return { tone: 'grey' as const, chip: null, sub: `${place} · ${t.removed}` };
+  if (!options.locationActive) return { tone: 'amber' as const, chip: t.chipLocationInactive, sub: `${place} · ${t.locationOff}` };
+  if (device.state === 'ACTIVE') return { tone: 'grey' as const, chip: null, sub: `${place} · ${t.connected} · ${device.lastSeenAt ? t.lastSeen(when(device.lastSeenAt)) : t.notUsedYet}` };
+  if (device.state === 'PENDING') return { tone: 'amber' as const, chip: t.chipNotSetUp, sub: `${place} · ${device.enrollmentExpiresAt ? t.codeGoodUntil(when(device.enrollmentExpiresAt)) : t.noCodeYet}` };
+  if (device.state === 'EXPIRED') return { tone: 'amber' as const, chip: t.chipCodeExpired, sub: `${place} · ${device.enrollmentExpiresAt ? t.codeExpired(when(device.enrollmentExpiresAt)) : t.codeExpiredPlain}` };
+  return { tone: 'amber' as const, chip: t.chipNotSetUp, sub: `${place} · ${t.noCodeYet}` };
+}
+
+/** The setup code the server just issued, for the tablet to pick up (JR-26): a QR code of the kiosk link with the code in
+ * its fragment, the three steps, how long it is good, Copy link, and the code itself behind Show code.
+ *
+ * The code is a credential. It lives in this component's props (the page's React state) from the server's answer until
+ * the Owner taps Done, it expires, the tablet is removed or given a newer code, or the page goes away. While the card is
+ * open it is also in the drawn QR path and in the "open its Clocker" link; the readable code is in the page only while
+ * Show code is open. Copy puts it on the clipboard, which this page cannot clear. Nothing here logs or stores it. */
+export function ClockerSetupTicket({ name, place, clockerKey, code, expiresAt, timeZone, added, onDone, lang = 'en', origin: givenOrigin }: {
+  name: string; place: string; clockerKey: string; code: string; expiresAt: string; timeZone: string; added?: boolean; onDone: () => void; lang?: ClockerOwnerLang;
+  /** For tests; the page reads its own origin. */ origin?: string;
+}) {
+  const t = clockerOwnerCopy[lang];
+  const here = useSyncExternalStore(subscribe, () => window.location.origin, () => '');
+  const origin = givenOrigin ?? here;
+  const link = origin ? setupLink(origin, clockerKey, code) : '';
+  const qr = useMemo(() => link ? encodeQr(link, 30) : null, [link]);
+  const [shown, setShown] = useState(false);
+  const [said, setSaid] = useState('');
+  const codeField = useRef<HTMLTextAreaElement>(null);
+  async function copy(text: string, done: string) {
+    try { await navigator.clipboard.writeText(text); setSaid(done); }
+    catch { setShown(true); setSaid(t.copyFailed); requestAnimationFrame(() => { codeField.current?.focus(); codeField.current?.select(); }); }
+  }
+  return <div className="ck-ticket">
+    {added ? <p className="ck-step">{t.ticketStep}</p> : null}
+    <h2 className="ck-ticket__t" id="clocker-code-title" tabIndex={-1}>{t.ticketTitle(name)}</h2>
+    {/* Phase 8: the date and time it ends stay on one line ("Nov 18," / "12:15 AM" split on a phone). */}
+    <p className="ck-ticket__s">{t.ticketWhere(place)} · {t.ticketValid(clockerOwnerWhen(expiresAt, timeZone, lang).replace(/ /g, '\u00A0'))}</p>
+    <div className="ck-ticket__body">
+      <div className="ck-qr">{qr
+        ? <svg viewBox={`0 0 ${qr.size + 8} ${qr.size + 8}`} role="img" aria-label={t.qrLabel(name)} shapeRendering="crispEdges"><rect width="100%" height="100%" fill="#FFFFFF" /><path d={qrPath(qr, 4)} fill="#111517" /></svg>
+        : link ? <p className="ck-qr__none">{t.qrTooLong}</p> : <span className="ck-qr__wait" aria-hidden="true" />}</div>
+      <div className="ck-ticket__how">
+        <ol className="ck-steps" aria-label={t.ticketStepsLabel}>{t.ticketSteps.map((step, index) => <li key={step}><span className="ck-steps__n" aria-hidden="true">{index + 1}</span><span>{step}</span></li>)}</ol>
+        <p className="ck-ticket__note">{t.ticketPrivate}</p>
+      </div>
+    </div>
+    {shown ? <div className="ck-code">
+      <label className="ck-code__l" htmlFor="clocker-setup-code">{t.codeLabel}</label>
+      <textarea id="clocker-setup-code" ref={codeField} className="ck-code__v" value={code} readOnly rows={3} spellCheck={false} autoComplete="off" aria-describedby="clocker-setup-hint" onFocus={event => event.currentTarget.select()} />
+      <p className="ck-code__h" id="clocker-setup-hint">{t.codeHelp(place)}</p>
+    </div> : null}
+    <div className="ck-ticket__acts">
+      <button type="button" className="b-btn b-btn--ghost" disabled={!link} onClick={() => void copy(link, t.linkCopied)}>{t.copyLink}</button>
+      {shown ? <button type="button" className="b-btn b-btn--ghost" onClick={() => void copy(code, t.codeCopied)}>{t.copyCode}</button> : null}
+      <button type="button" className="b-btn b-btn--quiet ck-text" aria-expanded={shown} aria-controls="clocker-setup-code" onClick={() => setShown(value => !value)}>{shown ? t.hideCode : t.showCode}</button>
+      {link ? <a className="b-btn b-btn--quiet ck-text" href={link} target="_blank" rel="noopener noreferrer">{t.openHere}</a> : null}
+      <button type="button" className="b-btn b-btn--quiet ck-ticket__done" onClick={onDone}>{t.ticketDone}</button>
+    </div>
+    <p role="status" className="ck-ticket__said">{said}</p>
+  </div>;
+}
+
+/** Clocker tablets (Phase 6). The list of tablets with honest states, one tinted action and one quiet action per row,
+ * adding a tablet in two steps (name and location, then the code for the tablet), and the sheet that renames, replaces or
+ * removes one after saying what stops working. Every change still goes through the one server action; its answer decides
+ * what the list shows. An answer that can't be confirmed is never shown as saved or as failed: the list is refreshed. */
+export function ClockerDeviceManager({ initialDevices, locations, timeZone, action, shortNames = {}, lang = 'en' }: {
   initialDevices: ClockerDeviceView[]; locations: ClockerLocationView[]; timeZone: string;
   action(form: FormData): Promise<ClockerOwnerResult>;
   /** Each location's short name ("Condado") by id, as every other page names it; the full name when missing. */
   shortNames?: Record<string, string>;
+  lang?: ClockerOwnerLang;
 }) {
+  const t: ClockerOwnerCopy = clockerOwnerCopy[lang];
   const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
   const [devices, setDevices] = useState(initialDevices);
   const [selection, setSelection] = useState<Selection | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<{ message: string; refresh: boolean } | null>(null);
   const [notice, setNotice] = useState('');
-  const [setup, setSetup] = useState<{ code: string; expiresAt: string; device: ClockerDeviceView } | null>(null);
-  const [copyMessage, setCopyMessage] = useState('');
+  const [setup, setSetup] = useState<Ticket | null>(null);
   const sheetForm = useRef<HTMLFormElement>(null);
   const dismissed = useRef(false);
   const returnFocus = useRef<HTMLElement | null>(null);
-  const codeField = useRef<HTMLTextAreaElement>(null);
   const setupCard = useRef<HTMLElement>(null);
   const errorBox = useRef<HTMLDivElement>(null);
   const busy = useRef(false);
   const activeLocations = locations.filter(location => location.active);
-  const needsSetup = (device: ClockerDeviceView) => ['UNREGISTERED', 'PENDING', 'EXPIRED'].includes(device.state);
-  const registered = devices.filter(device => device.state === 'ACTIVE').length;
+  const connected = devices.filter(device => device.state === 'ACTIVE').length;
   const waiting = devices.filter(needsSetup).length;
   const revoked = devices.filter(device => device.state === 'REVOKED').length;
-  const { errors, handlers, clear } = useFieldErrors({ name: { missing: 'Enter a tablet name' }, locationId: { missing: 'Choose a location' } });
+  const { errors, handlers, clear } = useFieldErrors({ name: { missing: t.nameMissing }, locationId: { missing: t.locationMissing } });
   const place = (id: string | undefined) => { const location = locations.find(item => item.id === id); return location ? shortNames[location.id] ?? location.name : undefined; };
-  const date = (value: string) => {
-    // ICU versions disagree on joining literals (", " versus " at ").
-    // Use semantic parts and fixed separators so Node and WebKit hydrate identically.
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true,
-    }).formatToParts(new Date(value));
-    const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value ?? '';
-    return keepWhole(`${part('month')} ${part('day')}, ${part('hour')}:${part('minute')} ${part('dayPeriod')}`);
-  };
+  const locationActive = (device?: ClockerDeviceView) => !!locations.find(item => item.id === device?.locationId)?.active;
 
   useEffect(() => {
     if (!selection) return;
-    // The sheet (QuietSheet) opens itself; destructive confirms (remove, new code) then start on Cancel and Add tablet on
-    // its name. A tablet's options start on the sheet, so no keyboard rises over the iPad's setup steps.
+    // The sheet (QuietSheet) opens itself; a confirm that stops something working starts on Cancel, Add tablet on its
+    // name. A tablet's options start on the sheet, so no keyboard rises over them.
     sheetForm.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus({ preventScroll: true });
     const unlock = lockPageScroll();
     return unlock;
   }, [selection]);
   useEffect(() => {
     if (!setup) return;
+    // The code leaves the page the moment it stops being good.
     const duration = Math.max(0, new Date(setup.expiresAt).getTime() - Date.now());
-    const timeout = window.setTimeout(() => { setSetup(null); setNotice('The setup code expired. Get a new one from the tablet’s row.'); }, duration);
+    const timeout = window.setTimeout(() => { setSetup(null); setNotice(t.ticketExpired); }, duration);
     return () => window.clearTimeout(timeout);
-  }, [setup]);
-  useEffect(() => { if (setup) setupCard.current?.focus({ preventScroll: false }); }, [setup]);
+  }, [setup, t.ticketExpired]);
+  useEffect(() => { if (setup) setupCard.current?.querySelector<HTMLElement>('#clocker-code-title')?.focus({ preventScroll: false }); }, [setup]);
   useEffect(() => { if (error) errorBox.current?.focus(); }, [error]);
 
   function open(next: Selection, event: MouseEvent<HTMLButtonElement>) {
@@ -92,6 +160,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     if (form && selection?.device && input instanceof HTMLInputElement && input.value.trim() !== selection.device.name) form.requestSubmit();
     else close();
   }
+  function closeTicket() { setSetup(null); setNotice(t.ticketClosed); }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy.current || !selection) return;
@@ -108,136 +177,129 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     busy.current = true; setPending(true); setError(null);
     try {
       const result = await action(form);
-      if (!result.ok) { if (dismissed.current) toast(result.error); setError({ message: result.error, refresh: result.refresh }); return; }
+      if (!result.ok) { if (dismissed.current) toast(result.refresh ? t.notConfirmedBody : result.error); setError({ message: result.error, refresh: result.refresh }); return; }
       setDevices(current => current.some(device => device.id === result.device.id)
         ? current.map(device => device.id === result.device.id ? result.device : device)
         : [...current, result.device]);
-      setCopyMessage(''); setNotice('');
-      if (result.setup) setSetup({ ...result.setup, device: result.device });
+      setNotice('');
+      // A newer code, or removing the tablet, ends an older code on screen.
+      if (result.setup) setSetup({ ...result.setup, device: result.device, added: selection.operation === 'REGISTER' });
       else if (setup?.device.id === result.device.id && selection.operation === 'REVOKE') setSetup(null);
-      toast(selection.operation === 'RENAME' ? 'Tablet name saved.' : selection.operation === 'REVOKE'
-        ? 'Tablet removed. Its time records are kept.' : 'Setup code ready. Finish on the tablet.');
+      else if (setup?.device.id === result.device.id) setSetup({ ...setup, device: result.device });
+      // Phase 8: a new setup code is its own card, and focus moves to its title, so no toast says it again (a result drawn
+      // inline sends no toast, Phase 7).
+      if (!result.setup) toast(selection.operation === 'RENAME' ? t.nameSaved : selection.operation === 'REVOKE' ? t.tabletRemoved : t.codeReady);
       busy.current = false;
       if (result.setup) { returnFocus.current = null; setSelection(null); setError(null); }
       else if (!dismissed.current) close();
-    } catch { if (dismissed.current) toast('It may not have saved. Refresh tablets before you try again.'); setError({ message: 'It may not have saved. Refresh tablets before you try again.', refresh: true }); }
+    } catch { if (dismissed.current) toast(t.notConfirmedBody); setError({ message: t.notConfirmedBody, refresh: true }); }
     finally { busy.current = false; setPending(false); }
   }
-  async function copyCode() {
-    if (!setup) return;
-    try { await navigator.clipboard.writeText(setup.code); setCopyMessage('Setup code copied.'); }
-    catch { codeField.current?.focus(); codeField.current?.select(); setCopyMessage('Select and copy the setup code.'); }
-  }
-  const locationForSetup = locations.find(location => location.id === setup?.device.locationId);
-  // A tablet that was never connected (C1): its sheet is titled with its name and leads with "Get setup code"; getting
-  // its code replaces nothing that works, so that confirm starts on its action instead of Cancel.
-  const firstSetup = !!selection?.device && needsSetup(selection.device);
+
+  const ticketLocation = locations.find(location => location.id === setup?.device.locationId);
+  const device = selection?.device;
+  const firstSetup = !!device && needsSetup(device);
   const options = selection?.operation === 'RENAME';
-  const title = selection?.operation === 'REGISTER' ? 'Add tablet' : options ? selection.device?.name ?? 'Tablet'
-    : selection?.operation === 'REVOKE' ? 'Remove this tablet?' : firstSetup ? 'Get a setup code?' : 'Create a new setup code?';
-  const submitLabel = selection?.operation === 'REGISTER' ? 'Get setup code' : options ? 'Save name' : selection?.operation === 'REVOKE' ? 'Remove tablet'
-    : firstSetup ? 'Get setup code' : 'Create new code';
-  const locationActive = (device?: ClockerDeviceView) => !!locations.find(item => item.id === device?.locationId)?.active;
+  const rotateKind = device?.state === 'ACTIVE' ? 'replace' : device?.state === 'REVOKED' ? 'again' : 'code';
+  const title = !selection ? '' : selection.operation === 'REGISTER' ? t.addTitle : options ? device?.name ?? ''
+    : selection.operation === 'REVOKE' ? t.removeTitle(device?.name ?? '')
+      : rotateKind === 'replace' ? t.replaceTitle(device?.name ?? '') : rotateKind === 'again' ? t.againTitle(device?.name ?? '') : t.codeTitle(device?.name ?? '');
+  const body = !selection ? '' : selection.operation === 'REGISTER' ? t.addBody
+    : options ? (firstSetup ? t.manageNotSetUp : device?.state === 'REVOKED' ? t.manageRemoved : t.manageAt(place(device?.locationId) ?? t.locationUnavailable))
+      : selection.operation === 'REVOKE' ? t.removeBody : rotateKind === 'replace' ? t.replaceBody : rotateKind === 'again' ? t.againBody : t.codeBody;
+  const submitLabel = !selection ? '' : selection.operation === 'REGISTER' ? t.addSubmit : options ? t.saveName : selection.operation === 'REVOKE' ? t.removeSubmit
+    : rotateKind === 'replace' ? t.replaceSubmit : t.getCode;
   const rotate = () => { setError(null); setSelection({ operation: 'ROTATE', device: selection!.device }); };
-  // One row per tablet: name, then its state in words when it isn't working yet, the location's short name and last use.
-  // No icon and no pill (Owner premium R3): the row says it once.
-  const deviceRow = (device: ClockerDeviceView) => {
-    const location = locations.find(item => item.id === device.locationId);
-    const inactive = location?.active === false && device.state !== 'REVOKED';
-    const seen = device.lastSeenAt ? `Used ${date(device.lastSeenAt)}` : device.state === 'ACTIVE' ? 'Not used yet' : null;
-    const exception = inactive ? 'Location inactive' : needsSetup(device) ? statuses[device.state] : null;
-    return <li key={device.id}>
-      <button type="button" className="c-row c-tablets__row" data-clocker-device={device.id} aria-label={`${device.name}, options`} disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device }, event)}>
-        <span className="c-row__main"><span className="c-row__title c-row__title--b">{device.name}</span>
-          {/* Closing F1 (NV-247): one meta order everywhere, location · status · last use. */}
-          <span className="c-row__detail"><span>{[place(device.locationId) ?? 'Location unavailable', exception, seen].filter(Boolean).join(' · ')}</span></span></span>
-        <CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" />
-      </button>
-    </li>;
+
+  // One row per tablet: a 36px lead, the name with its exception chip, what and when, then at most one tinted action and
+  // one quiet action. Each button names the tablet for a screen reader. Phase 8 (B #10): the sub-line wraps between its
+  // parts, never inside one ("Connected · Not" / "used yet").
+  const row = (item: ClockerDeviceView) => {
+    const active = locationActive(item), line = tabletLine(item, { place: place(item.locationId), locationActive: active, timeZone, lang });
+    const go = item.state === 'REVOKED' || !active ? null : needsSetup(item)
+      ? <button type="button" className="b-btn b-btn--ghost" data-clocker-code={item.id} aria-label={item.state === 'UNREGISTERED' ? t.getCodeFor(item.name) : t.newCodeFor(item.name)} disabled={!hydrated} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{item.state === 'UNREGISTERED' ? t.getCode : t.newCode}</button> : null;
+    const quiet = item.state === 'REVOKED'
+      ? <button type="button" className="b-btn b-btn--quiet ck-text" data-clocker-device={item.id} aria-label={t.setUpAgainFor(item.name)} disabled={!hydrated || !active} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{t.setUpAgain}</button>
+      : <button type="button" className="b-btn b-btn--quiet ck-text" data-clocker-device={item.id} aria-label={t.manageFor(item.name)} disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device: item }, event)}>{t.manage}</button>;
+    return <BRow key={item.id} lead={<BIcon tone={line.tone === 'amber' ? 'amber' : item.state === 'ACTIVE' ? 'teal' : 'grey'}><DeviceTabletIcon weight="bold" /></BIcon>}
+      title={item.name} chip={line.chip ? <BChip tone="amber">{line.chip}</BChip> : undefined} sub={<Dotted text={line.sub} />} trail={<span className="ck-acts">{go}{quiet}</span>} />;
   };
 
-  // Release 1 (board O-ClockerDevices, "Clocker tablets"); Owner premium R3/R8 (round 2): the tablets in one card, then
-  // "Set up a tablet" as three numbered steps (not rows) with one primary: set up the first waiting tablet, or add one.
-  const current = devices.filter(device => device.state !== 'REVOKED');
-  const removed = devices.filter(device => device.state === 'REVOKED');
-  const firstWaiting = current.find(needsSetup);
-  return <SettingsFrame className={`${ownerStyles.owner} c-tablets`} title="Clocker tablets">
-    {!activeLocations.length ? <Notice tone="info" title="No active location"
-      action={<Link className="q-btn q-btn--quiet" href="/app/settings/locations">Go to Locations</Link>}>Add or reactivate a location before you add a tablet.</Notice> : null}
-    {notice ? <div role="status"><Notice tone="info">{notice}</Notice></div> : null}
-    {setup && locationForSetup ? <section aria-labelledby="clocker-code-title" ref={setupCard} tabIndex={-1}>
-      <div className="q-grp"><h2 id="clocker-code-title">Connect {setup.device.name}</h2></div>
-      <div className="q-fl" style={{ marginTop: 8 }}>
-        <label className="q-fl__label" htmlFor="clocker-setup-code">Setup code · expires {date(setup.expiresAt)}</label>
-        <textarea id="clocker-setup-code" ref={codeField} className="q-in" style={{ height: 76, marginTop: 8 }} value={setup.code} readOnly rows={2} spellCheck={false} autoComplete="off" aria-describedby="clocker-setup-hint" />
-        <p className="q-fl__help" id="clocker-setup-hint">Open this location’s Clocker on the tablet and paste the code.</p>
-      </div>
-      <button className="q-btn" type="button" onClick={copyCode}>Copy setup code</button>
-      <Link className="q-btn q-btn--sec" style={{ marginTop: 12 }} href={`/clocker/${locationForSetup.clockerKey}`} target="_blank" rel="noopener noreferrer">Open {locationForSetup.name} Clocker</Link>
-      <button className="q-btn q-btn--quiet" type="button" onClick={() => setSetup(null)}>Hide code</button>
-      <p role="status" className="q-sr">{copyMessage}</p>
-    </section> : null}
-    <div className="c-page c-embed c-tablets__page">
-      <p className="c-sr" role="status">{`${registered} registered, ${waiting} waiting for setup, ${revoked} removed`}</p>
-      {/* Closing F1 (NV-238): "Tablets 2", title and count pill. */}
-      {current.length ? <CorpCard as="div" label="Tablets" count={current.length}><ul className="c-rows" aria-label="Your tablets">{current.map(deviceRow)}</ul></CorpCard> : null}
-      <section className="c-card c-tablets__steps" aria-labelledby="clocker-steps-title">
-        <div className="c-card__head"><h2 className="c-card__label" id="clocker-steps-title">Set up a tablet</h2></div>
-        <ol className="c-tablets__list">
-          <li><span className="c-tablets__n" aria-hidden="true">1</span><span>On the tablet, open the Clocker page.</span></li>
-          <li><span className="c-tablets__n" aria-hidden="true">2</span><span>{firstWaiting ? 'Tap the tablet above and get a code.' : 'Tap Add tablet to get a code.'}</span></li>
-          <li><span className="c-tablets__n" aria-hidden="true">3</span><span>Pick the location. Your team clocks in with their PIN.</span></li>
-        </ol>
-        <div className="c-card__foot c-tablets__foot">
-          {firstWaiting ? <CorpButton kind="secondary" size="md" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}>Add tablet</CorpButton> : null}
-          {firstWaiting ? <CorpButton size="md" disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device: firstWaiting }, event)}>{`Set up ${firstWaiting.name}`}</CorpButton>
-            : <CorpButton size="md" disabled={!hydrated || !activeLocations.length} onClick={event => open({ operation: 'REGISTER' }, event)}>Add tablet</CorpButton>}
-        </div>
-      </section>
-      <p className="c-tablets__note">One tablet per location works best.</p>
-      {removed.length ? <CorpCard as="div" label="Removed" count={removed.length}><ul className="c-rows" aria-label="Removed tablets">{removed.map(deviceRow)}</ul></CorpCard> : null}
-      {/* Inside the kit page so the sheet reads the kit's colour tokens. */}
-      <QuietSheet open={!!selection} onClose={close} labelledBy="clocker-dialog-title">
-        {selection ? <form ref={sheetForm} noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} aria-describedby="clocker-dialog-text" className="c-sheet c-tablet-sheet" {...handlers}>
-          {/* Owner premium R8: the kit's sheet. A tablet's options: its name centred, Done on the right (a changed name saves).
-            A confirm (add, new code, remove): Cancel on the left, the question centred, its one action below. */}
-          <div className="c-sheet__nav">
-            {options ? <span aria-hidden="true" /> : <button type="button" className="c-sheet-head__l" disabled={pending} onClick={close}
-              data-autofocus={selection.operation === 'REVOKE' || (selection.operation === 'ROTATE' && !firstSetup) ? '' : undefined}>Cancel</button>}
-            <h2 className="c-sheet__title" id="clocker-dialog-title">{title}</h2>
-            {options ? <button type="button" className="c-sheet__done" disabled={pending} onClick={done}>{pending ? 'Saving…' : 'Done'}</button> : <span aria-hidden="true" />}
-          </div>
-          <p className="c-tablet-sheet__text" id="clocker-dialog-text">{selection.device && !options ? <strong>{selection.device.name}. </strong> : null}
-            {selection.operation === 'REGISTER' ? 'Name the tablet and choose its location. You can’t move it later.'
-              : options ? (firstSetup ? 'Not set up yet. Get a code, then type it on the iPad.'
-                : selection.device?.state === 'REVOKED' ? 'This tablet was removed. Reconnect it with a new setup code.' : `At ${place(selection.device?.locationId) ?? 'an unavailable location'}.`)
-                : selection.operation === 'ROTATE' ? (firstSetup ? 'Any earlier setup code stops working. Type the new code on the iPad.' : 'The old code and this tablet stop working right away. Its location and time records stay the same.')
-                  : 'It stops working right away. Clock-ins and time records stay.'}</p>
-          <fieldset disabled={pending || Boolean(error?.refresh)} className="wc-fieldset c-tablet-sheet__fields">
-            <FieldErrors errors={errors}>
-              {selection.operation === 'REGISTER' || options ? <div className="wc-fields">
-                <Field label="Tablet name" id="clocker-device-name" name="name" placeholder="e.g. Condado iPad" defaultValue={selection.device?.name ?? ''} required maxLength={80} autoComplete="off" enterKeyHint="done"
-                  help={options ? 'Only you see this name.' : undefined} data-autofocus={selection.operation === 'REGISTER' ? '' : undefined} />
-                {selection.operation === 'REGISTER' ? <Field kind="select" label="Location" id="clocker-device-location" name="locationId" required defaultValue="">
-                  <option value="" disabled>Choose a location</option>
-                  {activeLocations.map(location => <option key={location.id} value={location.id}>{shortNames[location.id] ?? location.name}</option>)}
-                </Field> : null}
-              </div> : null}
-            </FieldErrors>
-          </fieldset>
-          {error ? <div ref={errorBox} role="alert" tabIndex={-1} className="wc-feedback"><Notice tone="urgent" title={error.message.startsWith('It may not have saved') ? 'Not saved yet' : 'Not saved'}>{error.message}</Notice></div> : null}
-          <p role="status" className="c-sr">{pending ? 'Saving…' : ''}</p>
-          <div className="c-tablet-sheet__actions">
-            {error?.refresh ? <CorpButton full onClick={() => window.location.reload()}>Refresh tablets</CorpButton>
-              : options ? (selection.device?.state === 'ACTIVE'
-                ? <CorpButton kind="secondary" full disabled={pending || !locationActive(selection.device)} onClick={rotate}>Replace tablet</CorpButton>
-                : <CorpButton full disabled={pending || !locationActive(selection.device)} onClick={rotate}>{firstSetup ? 'Get setup code' : 'Reconnect tablet'}</CorpButton>)
-                : <CorpButton type="submit" kind={selection.operation === 'REVOKE' ? 'danger' : 'primary'} full disabled={pending}><ButtonLabel pending={pending} idle={submitLabel} busy="Saving…" /></CorpButton>}
-            {options && selection.device && selection.device.state !== 'REVOKED' ? <button type="button" className="c-tablet-sheet__remove" disabled={pending}
-              onClick={() => { setError(null); setSelection({ operation: 'REVOKE', device: selection.device }); }}>Remove tablet</button> : null}
-          </div>
-        </form> : null}
-      </QuietSheet>
+  const current = devices.filter(item => item.state !== 'REVOKED');
+  const removed = devices.filter(item => item.state === 'REVOKED');
+  const canAdd = hydrated && activeLocations.length > 0;
+  return <SettingsFrame className="ck-owner ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} summary={t.tabletsSub}>
+    <div className="ck-stack">
+      <p className="b-sr" role="status">{t.tabletsCount(connected, waiting, revoked)}</p>
+      {notice ? <p className="ck-notice" role="status">{notice}</p> : null}
+      {setup && ticketLocation ? <section className="b-card ck-ticketcard" aria-labelledby="clocker-code-title" ref={setupCard}>
+        <ClockerSetupTicket name={setup.device.name} place={place(setup.device.locationId) ?? ticketLocation.name} clockerKey={ticketLocation.clockerKey} code={setup.code} expiresAt={setup.expiresAt} timeZone={timeZone} added={setup.added} onDone={closeTicket} lang={lang} />
+      </section> : null}
+      {!activeLocations.length ? <BCard label={t.noLocationTitle}><BState kind="paused" title={t.noLocationTitle} line={t.noLocationBody} action={{ label: t.goToLocations, href: '/app/settings/locations' }} /></BCard> : null}
+      {current.length ? <BCard id="clocker-tablets" title={t.tabletsCard} count={current.length}>
+        <BList label={t.tabletsList}>{current.map(row)}</BList>
+        <div className="ck-foot"><button type="button" className="b-btn b-btn--teal" data-clocker-add="" disabled={!canAdd} onClick={event => open({ operation: 'REGISTER' }, event)}>{t.addTablet}</button></div>
+      </BCard> : activeLocations.length ? <BCard label={t.emptyTitle}>
+        <BState kind="empty" icon={<DeviceTabletIcon weight="bold" />} title={t.emptyTitle} line={t.emptyBody}>
+          <button type="button" className="b-btn b-btn--teal" data-clocker-add="" disabled={!canAdd} onClick={event => open({ operation: 'REGISTER' }, event)}>{t.addFirstTablet}</button>
+        </BState>
+      </BCard> : null}
+      {removed.length ? <BCard id="clocker-removed" title={t.removedCard} count={removed.length}><BList label={t.removedList}>{removed.map(row)}</BList></BCard> : null}
+      {current.length ? <BNote>{t.tabletsNote}</BNote> : null}
     </div>
+    <QuietSheet open={!!selection} onClose={close} labelledBy="clocker-dialog-title">
+      {selection ? <form ref={sheetForm} noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} aria-describedby="clocker-dialog-text" className="c-sheet c-tablet-sheet ck-sheet" {...handlers}>
+        {/* A tablet's options: its name centred, Done on the right (a changed name saves). A confirm (add, new code,
+          replace, remove): Cancel on the left, the question centred, its one action below. */}
+        <div className="c-sheet__nav">
+          {options ? <span aria-hidden="true" /> : <button type="button" className="c-sheet-head__l" disabled={pending} onClick={close}
+            data-autofocus={selection.operation === 'REVOKE' || (selection.operation === 'ROTATE' && rotateKind === 'replace') ? '' : undefined}>{t.cancel}</button>}
+          <h2 className="c-sheet__title" id="clocker-dialog-title">{title}</h2>
+          {options ? <button type="button" className="c-sheet__done" disabled={pending} onClick={done}>{pending ? t.saving : t.done}</button> : <span aria-hidden="true" />}
+        </div>
+        {selection.operation === 'REGISTER' ? <p className="ck-step ck-step--sheet">{t.addStep}</p> : null}
+        <p className="c-tablet-sheet__text" id="clocker-dialog-text">{body}</p>
+        <fieldset disabled={pending || Boolean(error?.refresh)} className="wc-fieldset c-tablet-sheet__fields">
+          <FieldErrors errors={errors}>
+            {selection.operation === 'REGISTER' || options ? <div className="wc-fields">
+              <Field label={t.nameLabel} id="clocker-device-name" name="name" placeholder={t.namePlaceholder} defaultValue={device?.name ?? ''} required maxLength={80} autoComplete="off" enterKeyHint="done"
+                help={t.nameHelp} data-autofocus={selection.operation === 'REGISTER' ? '' : undefined} />
+              {selection.operation === 'REGISTER' ? <Field kind="select" label={t.locationLabel} id="clocker-device-location" name="locationId" required defaultValue={activeLocations.length === 1 ? activeLocations[0].id : ''}>
+                <option value="" disabled>{t.locationChoose}</option>
+                {activeLocations.map(location => <option key={location.id} value={location.id}>{shortNames[location.id] ?? location.name}</option>)}
+              </Field> : null}
+            </div> : null}
+          </FieldErrors>
+        </fieldset>
+        {error ? <div ref={errorBox} role="alert" tabIndex={-1} className="ck-alert" data-tone={error.refresh ? 'amber' : 'red'}>
+          {error.refresh ? <QuestionIcon size={18} weight="bold" aria-hidden="true" /> : <WarningCircleIcon size={18} weight="bold" aria-hidden="true" />}
+          <span><b>{error.refresh ? t.notConfirmedTitle : t.notSavedTitle}</b>{error.refresh ? t.notConfirmedBody : error.message}</span>
+        </div> : null}
+        <p role="status" className="b-sr">{pending ? t.saving : ''}</p>
+        <div className="c-tablet-sheet__actions">
+          {error?.refresh ? <CorpButton full onClick={() => window.location.reload()}>{t.refreshTablets}</CorpButton>
+            : options ? (device?.state === 'ACTIVE'
+              ? <><CorpButton kind="secondary" full disabled={pending || !locationActive(device)} aria-describedby="clocker-replace-help" onClick={rotate}>{t.replaceTablet}</CorpButton><p className="ck-sheet__help" id="clocker-replace-help">{t.replaceHelp}</p></>
+              : <CorpButton full disabled={pending || !locationActive(device)} onClick={rotate}>{firstSetup ? t.getCode : t.setUpAgain}</CorpButton>)
+              : <CorpButton type="submit" kind={selection.operation === 'REVOKE' ? 'danger' : 'primary'} full disabled={pending}><ButtonLabel pending={pending} idle={submitLabel} busy={t.saving} /></CorpButton>}
+          {options && device && device.state !== 'REVOKED' ? <><button type="button" className="c-tablet-sheet__remove" disabled={pending}
+            onClick={() => { setError(null); setSelection({ operation: 'REVOKE', device }); }}>{t.removeTablet}</button><p className="ck-sheet__help">{t.pauseNote}</p></> : null}
+        </div>
+      </form> : null}
+    </QuietSheet>
+  </SettingsFrame>;
+}
+
+/** The page when the tablets could not be read: the band, one state card, one retry. */
+export function ClockerDevicesUnavailable({ lang = 'en' }: { lang?: ClockerOwnerLang }) {
+  const t = clockerOwnerCopy[lang];
+  return <SettingsFrame className="ck-owner ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle}>
+    <div className="ck-stack"><BCard label={t.loadFailedTitle}>
+      <BState kind="failed" alert title={t.loadFailedTitle} line={t.loadFailedBody}>
+        {/* A retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript. */}
+        {/* eslint-disable-next-line next-preserved/no-html-link-for-pages -- see above: a full reload, so every read runs again */}
+        <a className="b-btn b-btn--teal" href="/app/settings/clocker">{t.tryAgain}</a>
+      </BState>
+    </BCard></div>
   </SettingsFrame>;
 }

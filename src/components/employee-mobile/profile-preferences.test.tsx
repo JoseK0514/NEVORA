@@ -1,10 +1,10 @@
 import {createElement,type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {afterEach,expect,it,vi} from 'vitest';
-const flags=vi.hoisted(()=>({passkeys:true}));
-vi.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
-vi.mock('next/navigation',()=>({useRouter:()=>({replace:()=>{}})}));
-vi.mock('../../lib/passkeys/client',()=>({passkeysFlagOn:()=>flags.passkeys}));
+import {afterEach,expect,it,rs} from '@rstest/core';
+const flags=rs.hoisted(()=>({passkeys:true}));
+rs.mock('next/link',()=>({default:({children,...props}:ComponentProps<'a'>)=>createElement('a',props,children)}));
+rs.mock('next/navigation',()=>({useRouter:()=>({replace:()=>{}})}));
+rs.mock('../../lib/passkeys/client',()=>({passkeysFlagOn:()=>flags.passkeys}));
 import {EmployeeProfilePreferences,EmployeeProfilePage} from './profile';
 import {onlyB,withoutB} from '../owner-b/test-support';
 afterEach(()=>{flags.passkeys=true;});

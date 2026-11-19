@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {useState,type ReactNode} from 'react';
+import {useEffect,useState,type ReactNode} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { ReturnToNext } from './team/return-to-next';
 import {EmployeeAccessForm} from './company-access/employee-access-form';
@@ -12,6 +12,8 @@ import {CorpField} from '@/components/corp/corp';
 import {FormHead,FormHeadLink,PhoneField} from '@/components/team/team-forms';
 import type { EmployeeManagementProfile } from "@/lib/data/employees";
 import type { Location, UserRole } from "@/lib/domain";
+import type { EmploymentDates } from "@/lib/employment-dates";
+import { EmploymentDateFields } from "./employment-date-fields";
 
 type EmployeeCoreProfileProps={
  employee:EmployeeManagementProfile;locations:Location[];actorId:string;actorRole:UserRole;
@@ -20,6 +22,14 @@ type EmployeeCoreProfileProps={
  cancelHref?:string;
  /** Picker rows that open their own sheets (Positions, Hours and rules), after the role and location. */
  more?:ReactNode;
+ /** Hire, termination and birth dates, read with this profile version for an actor who may edit them. Without them the
+  * sheet shows no date fields and the save leaves the stored dates unchanged. */
+ employmentDates?:EmploymentDates;
+ /** Review 30 (D38): the workspace is in Puerto Rico, so the hire date's line names Christmas bonus hours. */
+ bonusApplies?:boolean;
+ /** Review 30 (D21): opened from a report to add a hire date. The hire date takes focus, and the saved state's next step
+  * goes back to that report. */
+ returnTo?:{href:string;label:string;focusHire?:boolean};
 };
 const roleNames:Record<UserRole,string>={OWNER:'Owner',MANAGER:'Manager',LEAD:'Lead',EMPLOYEE:'Employee'};
 
@@ -29,11 +39,11 @@ export function EmployeeCoreProfileForm(props:EmployeeCoreProfileProps){
 
 /** Edit employee (Release 1, board O-EditEmployee): a sheet with Cancel · Edit employee · Save. The same command as before;
  * the account status is unchanged here (Access and sign-in deactivates and reactivates). */
-function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null,action,cancelHref,more}:EmployeeCoreProfileProps){
+function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null,action,cancelHref,more,employmentDates,bonusApplies=true,returnTo}:EmployeeCoreProfileProps){
   // Editable drafts retain the versions they were opened against. An RSC refresh
   // must not silently attach dirty fields to a newer employee/access revision.
-  const [baseline]=useState(()=>({employee,ownerScope}));
-  const [role,setRole]=useState(employee.role),[scope,setScope]=useState<ScopeSelection|null>(null);
+  const [baseline]=useState(()=>({employee,ownerScope,employmentDates}));
+  const [role,setRole]=useState(employee.role),[scope,setScope]=useState<ScopeSelection|null>(null),[saved,setSaved]=useState(false);
   const active=String(employee.active);
   const needsScope=actorRole==='OWNER'&&role==='MANAGER'&&active==='true'&&(baseline.employee.role!=='MANAGER'||!baseline.employee.active);
   const roleOptions = [
@@ -53,11 +63,29 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
           : location.shortName,
     }));
   const formId=`employee-core-${employee.id}`;
+  // Final verification F (F12): Save appears once something differs from what the sheet opened with (DESIGN.MD Forms, as
+  // Shift matching and Availability do), on the band from 768px and in the phone's header. What the form holds is read
+  // after the first frame (the phone field formats its value), then compared on every edit; undoing an edit hides Save.
+  const [changed,setChanged]=useState(false);
+  useEffect(()=>{
+    const form=document.getElementById(formId);
+    if(!(form instanceof HTMLFormElement))return;
+    const read=()=>new URLSearchParams([...new FormData(form)].map(([key,value])=>[key,typeof value==='string'?value:value.name])).toString();
+    let opened:string|null=null;
+    const frame=requestAnimationFrame(()=>{opened=read();});
+    const check=()=>{if(opened===null)opened=read();setChanged(read()!==opened);};
+    form.addEventListener('input',check);form.addEventListener('change',check);
+    return()=>{cancelAnimationFrame(frame);form.removeEventListener('input',check);form.removeEventListener('change',check);};
+  },[formId]);
 
   return <>
-    <FormHead titleId="person-edit-title" title="Edit employee" left={<FormHeadLink href={cancelHref??`/app/employees/${encodeURIComponent(employee.id)}`}>Cancel</FormHeadLink>}
-      right={<button type="submit" form={formId}>Save</button>}/>
-    <EmployeeAccessForm id={formId} action={action} employeeId={employee.id} build={(fields,id)=>coreCommandFromForm(fields,baseline.employee,baseline.ownerScope,actorRole,scope,id)} className="c-teamform employee-core-profile-form">
+    {/* Review 30 (D04): once the save is confirmed the sheet's Save goes and Cancel reads Done; the result replaces the form. */}
+    <FormHead titleId="person-edit-title" title="Edit employee" left={<FormHeadLink href={cancelHref??`/app/employees/${encodeURIComponent(employee.id)}`}>{saved?'Done':'Cancel'}</FormHeadLink>}
+      right={saved||!changed?undefined:<button type="submit" form={formId}>Save</button>}/>
+    <EmployeeAccessForm id={formId} action={action} employeeId={employee.id} build={(fields,id)=>coreCommandFromForm(fields,baseline.employee,baseline.ownerScope,actorRole,scope,id)} className="c-teamform employee-core-profile-form"
+      done={{title:({first,last})=>`${[first,last].filter(Boolean).join(' ')||'Employee'}’s details saved`,line:returnTo?'Christmas bonus hours show the saved details.':'Their profile shows what was saved.',
+        next:()=>returnTo??{href:`/app/employees/${encodeURIComponent(employee.id)}`,label:'Open profile'}}}
+      onSaved={()=>setSaved(true)}>
       <input type="hidden" name="employeeId" value={employee.id} />
       <input type="hidden" name="active" value={active} />
       <ReturnToNext />
@@ -79,6 +107,7 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
       {role!==baseline.employee.role?<p className="c-callout" role="status"><span><b>{`${roleNames[baseline.employee.role]} to ${roleNames[role]} when you save`}</b>
         {role==='MANAGER'&&actorRole!=='OWNER'?'An Owner assigns their management access after this. No access is granted automatically.':null}</span></p>:null}
       {needsScope&&(baseline.ownerScope?<ManagerOperationalScopeFields current={baseline.ownerScope} locations={locations.filter(l=>l.active).map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:<p role="alert" className="c-error">Current management access is unavailable. Reload this employee before promoting or reactivating a Manager.</p>)}
+      {baseline.employmentDates?<EmploymentDateFields idPrefix="edit" value={baseline.employmentDates} bonusApplies={bonusApplies} focusHire={returnTo?.focusHire}/>:null}
       {more}
     </EmployeeAccessForm>
   </>;

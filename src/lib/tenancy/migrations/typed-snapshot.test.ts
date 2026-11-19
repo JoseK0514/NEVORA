@@ -1,4 +1,4 @@
-import {describe,it,expect,vi} from 'vitest';
+import {describe,it,expect,rs} from '@rstest/core';
 import {inspectTypedMigrationSnapshot,isIssuedInspectedTypedSnapshot} from './typed-snapshot';
 import {decodeTypedMigrationWireValue} from './typed-wire';
 import {canonicalOwnershipJson,type JsonValue} from './ownership';
@@ -46,7 +46,7 @@ describe('complete typed snapshot integrity, separate from ownership and namespa
  it('blocks nullable versus nonnullable source cell drift',()=>{const f=fixture();f.row('employee_scheduling_settings',{employee_id:'e'});const c=f.facts.tables.find(t=>t.table==='employee_scheduling_settings')!.rows[0].columns[0],x=decodeTypedMigrationWireValue(c.type,null);if(x.status!=='DECODED')throw Error('Bad root fixture');Object.assign(c,{wire:null,value:x.value});blocked(f.facts,f.seal(),'TYPED_SNAPSHOT_REQUIRED_COLUMN_NULL');});
  it('blocks invalid native array syntax before emitting any snapshot',()=>{const f=fixture();f.row('calendar_subscriptions',{allowed_location_ids:'[0:2]={a,b}'});blocked(f.facts,f.seal(),'INVALID_ARRAY_WIRE');});
  it('rejects deserialized envelopes without reissuing provenance',()=>{const f=good();blocked(JSON.parse(canonicalOwnershipJson(f.facts)),f.boundary,'TYPED_SNAPSHOT_UNISSUED_CELL');});
- it('does not invoke capture accessors',()=>{const f=good(),get=vi.fn(()=>f.facts.tables);Object.defineProperty(f.facts,'tables',{enumerable:true,get});blocked(f.facts,f.boundary,'UNSUPPORTED_TYPED_SNAPSHOT_VALUE');expect(get).not.toHaveBeenCalled();});
+ it('does not invoke capture accessors',()=>{const f=good(),get=rs.fn(()=>f.facts.tables);Object.defineProperty(f.facts,'tables',{enumerable:true,get});blocked(f.facts,f.boundary,'UNSUPPORTED_TYPED_SNAPSHOT_VALUE');expect(get).not.toHaveBeenCalled();});
  it.each([undefined,null,1,NaN,Infinity,()=>1,new Date(),Object.create(null)])('rejects unsupported capture input%p',input=>{const f=good();expect(inspectTypedMigrationSnapshot(input,f.boundary).status).toBe('BLOCKED');});
  it('does not let a clone or revoked proxy acquire inspected provenance',()=>{const f=good(),r=inspectTypedMigrationSnapshot(f.facts,f.boundary);expect(r.status).toBe('INSPECTED');if(r.status!=='INSPECTED')return;expect(isIssuedInspectedTypedSnapshot({...r.snapshot})).toBe(false);const proxy=Proxy.revocable(r.snapshot,{});proxy.revoke();expect(isIssuedInspectedTypedSnapshot(proxy.proxy)).toBe(false);});
 });

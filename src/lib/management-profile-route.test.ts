@@ -1,17 +1,17 @@
-import {afterEach,beforeEach,expect,it,vi} from 'vitest';
-const mocks=vi.hoisted(()=>({session:vi.fn(),proof:vi.fn(),read:vi.fn(),save:vi.fn()}));
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/auth/session',()=>({getSession:mocks.session,requireSessionMutationProof:mocks.proof}));
-vi.mock('@/lib/data/management-profile.server',()=>({readManagementProfile:mocks.read,saveManagementAlertChoice:mocks.save}));
+import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
+const mocks=rs.hoisted(()=>({session:rs.fn(),proof:rs.fn(),read:rs.fn(),save:rs.fn()}));
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/auth/session',()=>({getSession:mocks.session,requireSessionMutationProof:mocks.proof}));
+rs.mock('@/lib/data/management-profile.server',()=>({readManagementProfile:mocks.read,saveManagementAlertChoice:mocks.save}));
 import {GET} from '../app/api/management/profile/route';
 import {POST} from '../app/api/management/profile/alerts/route';
 beforeEach(()=>{
-  vi.stubEnv('FUEL_PORTAL_ORIGIN','http://localhost:3000');
+  rs.stubEnv('FUEL_PORTAL_ORIGIN','http://localhost:3000');
   mocks.session.mockReset().mockResolvedValue({id:'self',role:'OWNER'});
   mocks.proof.mockReset().mockResolvedValue({employee:{id:'self',role:'OWNER'},sessionTokenHash:'a'.repeat(64)});
   mocks.read.mockReset().mockResolvedValue({state:'unavailable',reason:'read_failed'});mocks.save.mockReset().mockResolvedValue(undefined);
 });
-afterEach(()=>vi.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 const get=()=>new Request('http://localhost:3000/api/management/profile',{headers:{'Sec-Fetch-Site':'same-origin'}});
 const post=(value:unknown={topicId:'time-off',on:false},headers:Record<string,string>={})=>new Request('http://localhost:3000/api/management/profile/alerts',{method:'POST',headers:{origin:'http://localhost:3000','Sec-Fetch-Site':'same-origin','Content-Type':'application/json','X-Nevora-Profile-Alerts':'1',...headers},body:JSON.stringify(value)});
 it('uses the agreed 200 unavailable snapshot and disables private caching',async()=>{

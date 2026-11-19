@@ -9,7 +9,8 @@ import {AvailabilityDayRows,AvailabilityDaySheet,AvailabilityTime} from '../avai
 import {timeZoneLabel} from '@/lib/time-zone-label';
 import {PlanningFrame} from './planning-frame';
 import {AvailabilityB,AvailabilityStatusB,availabilitySubB} from '../employee-b/availability-b';
-import {BButton,BButtonLink} from '../owner-b/b-kit';
+import {BButton,BButtonLink,BState} from '../owner-b/b-kit';
+import {momentsCopy} from '../owner-b/moments-copy';
 import {usePlanning} from './use-planning';
 import {PlanningOperations} from './planning-operation';
 import {PlanningFeedback,usePlanningOperation} from './planning-feedback';
@@ -18,6 +19,7 @@ import {saveEmployeePlanningAction,checkEmployeePlanningAction} from '@/app/app/
 import {addDays,formatTimeRange,formatWeekRange} from '@/lib/date-utils';
 type Day={dayOfWeek:number;available:boolean;periods:{startTime:string;endTime:string}[]};
 type Draft={basis:string;base:PlanningHours[];days:Day[];confirmEmpty:boolean};
+const M=momentsCopy();
 const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const daysFrom=(windows:PlanningHours[]):Day[]=>[1,2,3,4,5,6,0].map(dayOfWeek=>{const periods=windows.filter(w=>w.dayOfWeek===dayOfWeek).map(w=>({startTime:w.startTime,endTime:w.endTime}));return {dayOfWeek,available:periods.length>0,periods:periods.length?periods:[{startTime:'09:00',endTime:'17:00'}]};});
 const hoursFrom=(days:Day[]):PlanningHours[]=>days.flatMap(day=>day.available?day.periods.map(p=>({dayOfWeek:day.dayOfWeek,...p})):[]);
@@ -63,7 +65,12 @@ export function EmployeeAvailability({authority,selection}:{authority:string;sel
  return <PlanningFrame title="Availability" sub={isNormal?'Used to build your future schedules':'Used for the week of '+formatWeekRange(selection)} back="/app/schedule" backLabel="Schedule" selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh} b={b}>
  {read?<div className="c-avail c-avail--phone b-keep" data-availability-status={status}>
   {other?<CorpCard as="div" ariaLabel="Earlier submission"><div className="c-avail__msg"><p>A submission for another week still needs to be checked.</p><Link className="c-link c-link--l" href={'/app/availability'+(other[0]==='normal'?'':'?week='+other[0])}>Return to that submission</Link></div></CorpCard>:null}
-  {complete?<CorpCard as="div" ariaLabel="Submission result"><div className="c-avail__msg"><h2 ref={receipt} tabIndex={-1}>{isNormal?'Usual hours saved':'Weekly availability submitted'}</h2><p>Saved hours match your submission.</p><CorpButton kind="secondary" size="md" full disabled={panel.state.refreshing||locked} onClick={()=>{ops.reset(selection);setDrafts(previous=>({...previous,[selection]:draftFrom(read)}));}}>{locked?'This week is closed':'Review saved hours'}</CorpButton></div></CorpCard>:draft?<>
+  {complete?<CorpCard as="div" ariaLabel="Submission result"><div className="b-done-host">
+   {/* Phase 7 (moments): the saved result is the shared done state in place of the form. Its line is the fact this page's
+     * title already carries (what the hours are used for); a closed week offers no step. */}
+   <BState kind="done" heading titleRef={receipt} title={isNormal?M.usualSaved:M.weekSubmitted} line={isNormal?M.usualLine:M.weekLine(formatWeekRange(selection))}
+    action={locked?undefined:{label:M.reviewSaved,onClick:()=>{ops.reset(selection);setDrafts(previous=>({...previous,[selection]:draftFrom(read)}));}}}>
+    {locked?<p className="b-done__fact">{M.weekClosed}</p>:null}</BState></div></CorpCard>:draft?<>
    {stale?<CorpCard as="div" ariaLabel="Changed saved hours"><div className="c-avail__msg"><h2>Saved hours changed</h2><p>Your edits are still here. Review the saved hours before applying your edited days.</p><details><summary>Current saved hours</summary><dl>{daysFrom(read.data.windows).map(day=><div key={day.dayOfWeek} style={{display:'contents'}}><dt>{dayNames[day.dayOfWeek]}</dt><dd>{daySummary(day)}</dd></div>)}</dl></details><div className="c-btns c-btns--stack"><CorpButton kind="secondary" size="md" disabled={blocked} onClick={()=>change(d=>({...draftFrom(read),days:daysFrom(mergePlanningDraft(read.data.windows,hoursFrom(d.days),changedDays(d))),confirmEmpty:d.confirmEmpty}))}>Keep my edited days</CorpButton><CorpButton kind="secondary" size="md" disabled={pending||uncertain} onClick={()=>change(()=>draftFrom(read))}>Use saved hours</CorpButton></div></div></CorpCard>:null}
    <form ref={form} className="c-avail__form" noValidate aria-busy={pending} onSubmit={event=>{
     event.preventDefault();if(blocked||stale||!canAct())return;
@@ -83,7 +90,7 @@ export function EmployeeAvailability({authority,selection}:{authority:string;sel
      <AvailabilityDayRows days={draft.days.map(day=>({key:day.dayOfWeek,name:dayNames[day.dayOfWeek],hours:day.available?rowHours(day):null,periods:day.periods,label:dayNames[day.dayOfWeek]+', '+daySummary(day),onOpen:()=>openDay(day.dayOfWeek)}))}/>
     </CorpCard>
     {!hoursFrom(draft.days).length?<label className="c-avail__check"><input type="checkbox" name="confirmEmpty" aria-invalid={!!error&&!hoursFrom(draft.days).length||undefined} aria-describedby={error&&!hoursFrom(draft.days).length?errorId:undefined} checked={draft.confirmEmpty} disabled={blocked} onChange={e=>change(d=>({...d,confirmEmpty:e.target.checked}))}/>I am unavailable for the entire {isNormal?'usual week':'week'}.</label>:null}
-    <p className="c-note c-avail__note">{isNormal?<span><span className="eb-avail-lead">Your manager uses this to build the schedule. </span>One-off days off go in Requests.</span>:locked?<span>This week is closed. Contact your manager if your availability changed. <Link className="c-link" href="/app/availability">Usual week</Link></span>:<span>{read.data.deadline?'Send by '+zoneDay(read.data.deadline,true)+' ('+timeZoneLabel(read.timeZone)+'). ':''}Hours for this week only; your usual week stays the same. <Link className="c-link" href="/app/availability">Usual week</Link></span>}</p>
+    <p className="c-note c-avail__note">{isNormal?<span><span className="eb-avail-lead">Your manager uses this to build the schedule. </span>{/* Phase 4 (EM-032): "Requests" opens Time off, where a day off is asked for. */}One-off days off go in <Link className="eb-avail-req" href="/app/requests">Requests</Link>.</span>:locked?<span>This week is closed. Contact your manager if your availability changed. <Link className="c-link" href="/app/availability">Usual week</Link></span>:<span>{read.data.deadline?'Send by '+zoneDay(read.data.deadline,true)+' ('+timeZoneLabel(read.timeZone)+'). ':''}Hours for this week only; your usual week stays the same. <Link className="c-link" href="/app/availability">Usual week</Link></span>}</p>
     {errorInSheet?null:errorText}<PlanningFeedback operation={currentOperation} onRetry={()=>{void currentOperation.retry(check,send,()=>panel.allowed());}}/>
     {/* Upscale B4, review F3 (NV-102): the usual week's Save appears once something changes (no disabled bar at rest); a
       week's Submit stays available. */}

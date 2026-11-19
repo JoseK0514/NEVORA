@@ -6,7 +6,7 @@ import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
 import {privateReadBody} from '../lib/http/nevora-failure';
 import {parseActionCenter,type ActionCenter,type ActionItem} from '../lib/action-center/project';
 import styles from './manager-action-center.module.css';
-import {ArrowsClockwiseIcon, CalendarBlankIcon, CaretDownIcon, CheckCircleIcon, ClockIcon, InfoIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
+import {ArrowClockwiseIcon, CalendarBlankIcon, CaretDownIcon, CheckCircleIcon, ClockIcon, InfoIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
 import {formatBusinessTimestamp} from '../lib/business-time';
 import {actionCenterNavigation} from './action-center-navigation';
 import {MobileHomeDisclosure} from './mobile-home-disclosure';
@@ -84,7 +84,7 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
     </article>;
    };
  return <section className={styles.root} aria-label="Manager Action Center">
-  <header><div><h2>Tasks</h2>{ready?<p className="manager-tasks-updated">Updated <time dateTime={ready.observedAt}>{formatUpdated(ready.observedAt,timeZone)}</time></p>:null}</div>{ready?<strong className={styles.total} aria-label="Total tasks">{ready.counts.total}</strong>:null}<button className="button secondary" type="button" onClick={onRefresh} aria-label="Refresh tasks"><ArrowsClockwiseIcon size={18} weight="bold" aria-hidden="true"/><span>Refresh</span></button></header>
+  <header><div><h2>Tasks</h2>{ready?<p className="manager-tasks-updated">Updated <time dateTime={ready.observedAt}>{formatUpdated(ready.observedAt,timeZone)}</time></p>:null}</div>{ready?<strong className={styles.total} aria-label="Total tasks">{ready.counts.total}</strong>:null}<button className="button secondary" type="button" onClick={onRefresh} aria-label="Refresh tasks"><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true"/><span>Refresh</span></button></header>
   <MobileHomeDisclosure id="mobile-action-review" available={Boolean(ready)} expandedLabel="Close task review"
     label={ready?(category==='all'?`Review ${plural(ready.counts.total,'task','tasks')}`:category==='requests'?`Review ${matching.length} ${matching.length===1?'request':'requests'}`:`Review ${category} tasks`):'Review tasks'}
     summary={ready?<div>

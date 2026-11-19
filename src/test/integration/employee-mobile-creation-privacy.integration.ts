@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {createDisposableExchangeDatabase} from './local-postgres';
 import {seedOwnedApp,seedOwnedScenario} from './owned-app-fixture';
 import {fixtureProof} from './shift-change-api';

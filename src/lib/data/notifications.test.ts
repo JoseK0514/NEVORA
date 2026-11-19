@@ -1,8 +1,9 @@
-import { expect, it, vi } from 'vitest';
+import * as rstestOriginal0 from "../db" with { rstest: 'importActual' };
+import { expect, it, rs } from '@rstest/core';
 import * as repository from './notifications';
 import type { NotificationIntent, SqlStatement } from '../notifications/types';
-const queries = vi.hoisted(() => ({ query: vi.fn() }));
-vi.mock('../db', async original => ({ ...await original<typeof import('../db')>(), getDb: () => queries }));
+const queries = rs.hoisted(() => ({ query: rs.fn() }));
+rs.mock('../db',  () => ({ ...rstestOriginal0, getDb: () => queries }));
 const intent: NotificationIntent = { id:'intent-1', employeeId:'employee-1', type:'TIME_OFF_APPROVED', title:'Update', body:'Review the portal', eventKey:'same-key', environment:'test', source:{kind:'TIME_OFF',id:'request-1',version:'v1'}, effectiveVersion:'v1', purpose:'EVENT', urgency:'normal', dueAt:'2030-10-01T12:00:00Z', expiresAt:'2030-10-02T12:00:00Z' };
 it('outbox_statements_share_business_transaction', () => {
   expect(repository).toHaveProperty('notificationIntentStatements');

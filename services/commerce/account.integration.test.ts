@@ -2,7 +2,7 @@ import { verifyPassword } from "../../src/lib/auth/password";
 import { workerOnce } from "./worker";
 import { createHttpServer } from "./http";
 import { dropTestDatabase } from "./test-database";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from '@rstest/core';
 import { Pool } from "pg";
 import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";

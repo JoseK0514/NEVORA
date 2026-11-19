@@ -1,8 +1,8 @@
 import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect, it, vi} from 'vitest';
+import {expect, it, rs} from '@rstest/core';
 import {ManagerWeekOverview} from './manager-week-overview';
-vi.mock('next/link', () => ({default: ({children, ...props}: ComponentProps<'a'>) => createElement('a', props, children)}));
+rs.mock('next/link', () => ({default: ({children, ...props}: ComponentProps<'a'>) => createElement('a', props, children)}));
 
 it('keeps selected-week planning distinct from attendance and does not invent a schedule status', () => {
   const html = renderToStaticMarkup(<ManagerWeekOverview

@@ -23,7 +23,8 @@ export function PasswordInput({ showLabel, hideLabel: _hideLabel, controls, quie
   const ids = controls ?? [input.id];
   return (
     <div className={quiet ? "q-in__wrap" : "ap-box ap-box--toggle"}>
-      <input {...input} type={visible ? "text" : "password"} className={quiet ? "q-in" : "ap-input"} />
+      {/* Phase 5 (PB-037): a password is never corrected, capitalised or spell-checked; a caller can still override. */}
+      <input autoCorrect="off" autoCapitalize="none" spellCheck={false} {...input} type={visible ? "text" : "password"} className={quiet ? "q-in" : "ap-input"} />
       <button type="button" className={quiet ? "q-in__eye" : "ap-eye"} aria-pressed={visible} aria-controls={ids.join(" ")} aria-label={showLabel}
         onClick={() => {
           setVisible(!visible);

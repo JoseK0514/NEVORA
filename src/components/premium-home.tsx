@@ -15,6 +15,8 @@ import { mobileActionDetail } from "./manager-action-center";
 import { withoutSetupItems } from "@/lib/action-center/setup";
 import { workspaceNow } from "@/lib/action-center/inbox";
 import { needsYou, needsYouSentence, type NeedsYou } from "@/lib/action-center/needs-you";
+import { needsYouTotal } from "@/lib/action-center/review-routing";
+import { reviewCopy } from "@/components/review-details/copy";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor, ClockMonitorEmployee } from "@/lib/time-clock";
@@ -121,7 +123,9 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
   const retryAll = () => { onRetryActions?.(); onRetryToday?.(); focusAfterRetry("#home-needs-you .nv-card__title", ".premium-pending-failed .nv-btn"); };
   // The band's one live line. Once Home has numbers the Needs you card says them, so the line is for screen readers only.
   // Corporate Home names its card ("5 things to do today."); the older looks keep their line.
-  const summary = value ? corporate ? toDoSentence(value.count) : needsYouSentence(value.count)
+  // Phase 4 (U03): with clock-ins unread or review facts missing, the count is a lower bound and a zero is not all-clear.
+  const total = value ? needsYouTotal(value, { clockInsUnavailable: todayFailed }) : null;
+  const summary = value && total ? corporate ? toDoSentence(value.count, total.exact) : total.exact ? needsYouSentence(value.count) : value.count ? `${reviewCopy().needYou(value.count, false)} today.` : `${reviewCopy().notAllChecked}.`
     : actionsConnection === "offline" ? "You’re offline."
     : actionsConnection === "paused" ? "Paused while you’re away."
     : actionsConnection === "unavailable" || actionsConnection === "access_lost" || today?.state === "unavailable" ? "Couldn’t load everything."
@@ -162,7 +166,7 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
     <QuietHeader title="Today" sub={<>{dateLabel}<span role="status" className="q-sr">{summary}</span></>} />
     <QuietRightNow today={today} monitor={monitor} monitorPending={monitorPending} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
     <div className="cm-home__now" ref={nowColumn}>
-      {value ? <QuietNeedsYou value={value} timeZone={timeZone} observedAt={readyToday?.observedAt} /> : <QuietPending connection={offline ? "offline" : actionsConnection} onRetry={retryAll} />}
+      {value ? <QuietNeedsYou value={value} timeZone={timeZone} observedAt={readyToday?.observedAt} exact={total?.exact ?? true} /> : <QuietPending connection={offline ? "offline" : actionsConnection} onRetry={retryAll} />}
     </div>
     {setup}
   </div>;
@@ -197,8 +201,8 @@ function QuietRightNow({ today, monitor, monitorPending = false, refreshing, onR
 }
 
 /** Needs you: one row per kind, said as one phrase ("2 open shifts"). The one red is how late someone is. */
-function QuietNeedsYou({ value, timeZone, observedAt }: { value: NeedsYou; timeZone: string; observedAt?: string }) {
-  if (value.count === 0) return <QuietSection id="home-needs-you" title="Things to do"><p className="q-empty">Nothing needs you right now.</p></QuietSection>;
+function QuietNeedsYou({ value, timeZone, observedAt, exact = true }: { value: NeedsYou; timeZone: string; observedAt?: string; exact?: boolean }) {
+  if (value.count === 0) return <QuietSection id="home-needs-you" title="Things to do"><p className="q-empty">{exact ? "Nothing needs you right now." : reviewCopy().notAllCheckedLine}</p></QuietSection>;
   const gaps = value.now.filter(item => item.type === "COVERAGE_GAP");
   const urgentRequests = value.now.filter(item => item.category === "requests");
   const otherUrgent = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests");

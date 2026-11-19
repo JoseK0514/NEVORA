@@ -19,7 +19,7 @@ Settings includes these current destinations:
 | --- | --- |
 | Company | Company profile, locations, branding, features and team terms, company policies |
 | Scheduling | Positions, break types and scheduling rules |
-| Clocker | Clocker tablets, PINs, punch photos and recovery |
+| Clocker | Clocker tablets, PINs, punch photos, shift matching and recovery |
 | Pay | Payroll settings, when payroll is available to this environment |
 
 Confirm the company timezone, active locations and positions before planning.
@@ -54,6 +54,14 @@ Use **Refresh invitation** for current state. If an action is unconfirmed, use
 **Check action outcome** before sending another invitation. For management
 access conflicts, reload the current employee and review the current assignment.
 An earlier receipt records an action; it does not prove access is unchanged now.
+
+**Employment dates** are optional on the add and edit forms: hire date,
+termination date and date of birth. In Puerto Rico the hire date decides which
+wage rules apply (people hired before January 26, 2017 follow the earlier
+rules), and the date of birth supports minors' hour limits. Only you and
+company-wide Managers see or edit them, and they never appear on schedules, the
+kiosk, exports or employee screens. A termination date is a record only: it
+never deactivates anyone.
 
 Deactivate or change access through the employee's current form. Payroll review
 and approval grants are separate from management scope. A Lead has personal
@@ -113,6 +121,17 @@ attendance or hours worked. Employees use their location's enrolled **Clocker**
 to record punches. The personal time view is not a promise of phone clock-in.
 Review Clocker recovery and any photo requirements through the Owner tools.
 
+**Settings → Clocker → Shift matching** sets the **Early clock-in grace**, 0 to
+30 minutes. A punch up to that many minutes before a shift start counts toward
+that shift; paid time still starts at the actual punch. It starts at 0 (strict
+matching), only you can change it, every save is recorded, and punches already
+recorded keep how they were matched.
+
+Attendance review flags a forgotten clock-out. A punch matched to a shift
+shows **No clock-out recorded · scheduled end passed**; a punch with no single
+matching shift shows **No clock-out after 12 hours** once it has been open more
+than 12 hours. Both are review prompts only: nothing closes a punch for you.
+
 For another person’s eligible open punch, use **Close open punch** in the
 Timecards inspector. Enter the verified company-local end time, a reason and
 the confirmation, then choose **Record close**. Read the open-break explanation
@@ -130,6 +149,15 @@ approve or reject it. Follow current-source and finalized-period restrictions.
 **Insights** uses a selected reporting period. Verify that period and the
 underlying records before drawing conclusions. **Time exports** exports time
 data; it is distinct from payroll approval or sending money.
+
+In a Puerto Rico workspace, **Insights → Christmas bonus hours** shows each
+person's hours on finalized timecards for a bonus year (October 1 to
+September 30) against 700 hours (hired before January 26, 2017) or 1,350 hours
+(hired on or after). A person is **Reached**, **Check breaks** (reached only if
+breaks count), **Not confirmed** (short, with time not yet finalized), **Not
+reached**, or needs a hire date. It shows no money and doesn't decide
+eligibility; confirm with your payroll provider or counsel before paying between
+November 15 and December 15 (exemption filings are due December 1).
 
 When payroll is enabled:
 
@@ -167,8 +195,54 @@ For Rondo, use the separate [Rondo guide](rondo.md). For technical operations or
 privacy fulfillment, use the [operations guide](operations.md).
 
 
-## Local business evidence backend
+## Business records, when enabled
 
-The local default-off finance/sales backend supports Owner-reviewed JSON/explicit CSV versions and account/location coverage maps, exact finance/sales reads and original-operation recovery. Claude owns its separate B2 interface; no new screen or real provider connection is claimed. Full review and explicit publication are required before Rondo may use a source. An Owner-declared perimeter cannot prove omitted accounts do not exist, and shared cash cannot be allocated to locations. See the technical handoff for the current bounded scope.
+Open **AI manager → Business records**. Add a JSON file or explicitly map a CSV,
+review every bounded row and the server's findings, and acknowledge the exact
+version before **Publish for Rondo**. **Main records** reviews the account and
+location perimeter; **Check figures** reads the eligible published records for the
+chosen period. These controls depend on the existing default-off feature flags;
+this source guide does not establish hosted activation or an accounting connector.
+An Owner-declared perimeter cannot prove no account is missing, and shared cash
+cannot be allocated to locations. Receivables are not cash and net receipts are
+not profit. An unconfirmed change keeps its original reference: check that change,
+even after a conflict, instead of creating a replacement.
 
-See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
+## Import pay and export paid time
+
+On **Review payroll**, **Import pay** opens file selection, exact person matching,
+amount review and confirmation. An untouched supported CSV is retained exactly.
+Re-matched or corrected CSV data is saved as the reviewed structured amounts;
+keep the original file separately when the confirmation says it is not retained.
+Choices for people omitted from a file do not replace the server's reviewed
+period population or create persisted employment facts. Resolve a population
+refusal on **Who's included** and review again.
+
+**Paid time export** requires a current reviewed population and finalized cards.
+Decide each recorded break explicitly; a recorded label does not establish paid
+or unpaid treatment. Review the planned whole-person batches, recover an uncertain
+batch using its original identity, and confirm the period only after every batch
+and the server manifest reconcile. A saved file is not a provider submission or
+payment. This guided export uses the exact neutral format. It does not offer
+a saved rounding profile; values requiring rounding are refused. Payroll treatment
+and legal suitability remain employer review matters.
+
+Private import drafts, break choices, plans and CSV replies clear when their
+current view expires, you step away, or access ends. Read current access again
+and re-upload an unsaved file. An uncertain save retains only its original
+request for checking or an unchanged retry; do not start a replacement while it
+is unresolved. Downloading a batch checks current access with the server again.
+
+## Agreed scheduling times
+
+From a person's Team page, **When they can be scheduled** shows current and future
+agreements and change requests. Management-agreed restrictions are enforceable;
+availability preferences remain separate. Review the effective Monday and changed
+days before saving or deciding a request. A missing legacy agreement does not mean
+an explicit unrestricted agreement.
+
+## Tablet setup and uncertain punches
+
+Open **Clocker tablets** to register a tablet. The setup card offers a QR code, **Copy link** and **Show code**; use the link only on the intended tablet. The person holding it must tap to connect it. The code works once for 15 minutes. Browser and Home Screen app cookies can differ, so check registration in the actual kiosk you will use.
+
+A retained punch may say **not confirmed yet**. **Check if it saved** checks its original reference; **Send it again** retains that reference. **See current status** is a separate current observation. **Ask Owner to check** and **Check your last punch** are recovery routes. A failed check or a disabled service is not proof that a previous punch was never recorded. Offline punches are not queued automatically.

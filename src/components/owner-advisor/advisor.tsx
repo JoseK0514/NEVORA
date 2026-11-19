@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PageBand } from "@/components/kit/kit";
 import type { AdvisorSource } from "@/lib/owner-advisor/contracts";
+import type { BusinessModelEvidence } from "@/lib/owner-advisor/business/model-contracts";
+import { isBusinessCitationHref } from "@/lib/owner-advisor/business/metrics";
+import { BusinessCitationItem } from "./business/evidence-card";
 import {
   createAdvisorController,
   initialView,
@@ -24,10 +27,12 @@ const starters = [
   "Investigate coverage for tomorrow and compare my options.",
   "What could go wrong with this plan?",
 ];
-function Sources({ sources }: { sources: AdvisorSource[] }) {
+/** `evidence`: the answer's checked business evidence. A business citation that has some opens its figures as a card;
+ * every other source, and a business citation without evidence, stays the plain link. */
+function Sources({ sources, evidence }: { sources: AdvisorSource[]; evidence?: BusinessModelEvidence[] }) {
   return (
     <ul className="oa-sources">
-      {sources.map((s, i) => (
+      {sources.map((s, i) => isBusinessCitationHref(s.href) && evidence?.length ? <BusinessCitationItem key={i} source={s} evidence={evidence} /> : (
         <li key={i}>
           <a href={s.href}>{s.label}</a>
           <span>
@@ -72,7 +77,7 @@ export function AdvisorScreen({
       <PageBand
         title="AI manager"
         summary="See what needs your attention, then investigate your options."
-        aside={<span className="oa-links"><Link className="nv-btn" data-kind="secondary" href="/app/ai-manager/weekly">Weekly plan</Link><Link className="nv-btn" data-kind="secondary" href="/app/ai-manager/knowledge">Company knowledge</Link></span>}
+        aside={<span className="oa-links"><Link className="nv-btn" data-kind="secondary" href="/app/ai-manager/weekly">Weekly plan</Link><Link className="nv-btn" data-kind="secondary" href="/app/ai-manager/knowledge">Company knowledge</Link><Link className="nv-btn" data-kind="secondary" href="/app/ai-manager/business">Business records</Link></span>}
       />
       <div className="oa-content">
         {view.message && (
@@ -172,7 +177,7 @@ export function AdvisorScreen({
                     {view.answer.context?.notebookRevision !== undefined && view.answer.context.notebookRevision !== null && view.answer.context.notebookRevision !== saved?.revision && <p className="oa-notice">Your saved goals or tasks changed after this investigation. This answer uses earlier saved context; investigate again before relying on it for a new decision.</p>}
                     <p className="oa-plain">{comparisonPredatesSave(view.answer.coveragePlans, coverage?.view.lastSavedAt) && <strong>From an earlier comparison: </strong>}{view.answer.text}</p>
                     <WorkflowResults answer={view.answer} reviewCoverage={actions.reviewCoverage} lastSavedAt={coverage?.view.lastSavedAt} />
-                    <Sources sources={view.answer.sources} />
+                    <Sources sources={view.answer.sources} evidence={view.answer.businessEvidence} />
                   </article>
                 )}
                 {current.connection === "unavailable" && (

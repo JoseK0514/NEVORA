@@ -75,7 +75,9 @@ Follow the table in `README.md` (“Data inventory”). In short:
 - Employer work records (shifts, time, corrections, payroll): keep or de-identify as `RETENTION_SCHEDULE` says;
   restrict access to what is kept.
 - `employees` row: clear first name, last name, phone and email (replace with a neutral label such as
-  “Former team member”) when work records must stay; keep it inactive and remove all sign-in/recovery material.
+  “Former team member”) and set `birth_date` to NULL (migration 0068) when work records must stay; keep it inactive
+  and remove all sign-in/recovery material. Hire and termination dates are employment records: handle them with the
+  work records above.
   The schema requires non-null name/phone fields: use a reviewed neutral label/empty contact value, not an
   invented reachable address or `NULL` that violates the schema. Otherwise remove the row only after reviewing
   its actual dependencies. The request's `employee_id` may become null by its existing foreign key; preserve the

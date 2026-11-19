@@ -1,29 +1,29 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 
-const fixture = vi.hoisted(() => ({ inactiveLocation: false, empty: false, denied: false, positionsFailed:false, owner: false, importOff: false, events: [] as string[] }));
+const fixture = rs.hoisted(() => ({ inactiveLocation: false, empty: false, denied: false, positionsFailed:false, owner: false, importOff: false, events: [] as string[] }));
 beforeEach(() => { fixture.inactiveLocation = false; fixture.empty = false; fixture.denied = false; fixture.positionsFailed=false; fixture.owner = false; fixture.importOff = false; fixture.events = []; });
 
-vi.mock("next/link", () => ({
+rs.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
     createElement("a", { href, ...props }, children),
 }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ push: rs.fn() }) }));
 // The staff list import works only where company workspaces are routed; Team offers its link on the same condition.
-vi.mock('@/lib/workspace-routing/config.server', () => ({ readWorkspaceRoutingConfig: () => { if (fixture.importOff) throw Error('Fictional single-company deployment'); return {}; } }));
-vi.mock("@/lib/auth/permissions", () => ({
+rs.mock('@/lib/workspace-routing/config.server', () => ({ readWorkspaceRoutingConfig: () => { if (fixture.importOff) throw Error('Fictional single-company deployment'); return {}; } }));
+rs.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
   requireRoles: async () => { fixture.events.push("authorize"); if (fixture.denied) throw new Error("forbidden"); return { id: "manager", role: fixture.owner ? "OWNER" : "MANAGER" }; },
 }));
-vi.mock("@/components/page-header", () => ({ PageHeader: () => null }));
-vi.mock("@/components/status-pill", () => import("../../../components/status-pill"));
-vi.mock("@/lib/employee-display", () => ({
+rs.mock("@/components/page-header", () => ({ PageHeader: () => null }));
+
+rs.mock("@/lib/employee-display", () => ({
   employeeInitials: (firstName: string, lastName: string) => firstName[0] + lastName[0],
   employeeRoleLabel: (role: string) => role,
 }));
-vi.mock("@/lib/phone", () => ({ formatPhoneNumber: (value: string) => value }));
-vi.mock("@/lib/data/employees", () => ({
+rs.mock("@/lib/phone", () => ({ formatPhoneNumber: (value: string) => value }));
+rs.mock("@/lib/data/employees", () => ({
   listEmployees: async () => { fixture.events.push("employees"); return fixture.empty ? [] : [
     { id:"active",firstName:"Active",lastName:"Person",phone:"7875550101",role:"EMPLOYEE",primaryLocationId:"loc",eligibleLocationIds:["loc"],positionIds:[],active:true },
     { id:"inactive",firstName:"Inactive",lastName:"Person",phone:"7875550102",role:"LEAD",primaryLocationId:"loc",eligibleLocationIds:["loc"],positionIds:[],active:false },
@@ -52,7 +52,7 @@ it("offers Availability in Team tools to every manager and the staff list import
   // Nov 14, 2026 inspection (AR-9, BR-11). Both layouts (the phone screen and the desktop card) carry the rows.
   const manager = renderToStaticMarkup(await EmployeesPage());
   expect(manager.match(/href="\/app\/availability"/g)).toHaveLength(2);
-  expect(manager).toContain("Who can work, and when");
+  expect(manager).toContain("Who can work and when");
   expect(manager).not.toContain("/app/employees/import");
   expect(manager).toMatch(/<button type="submit"[^>]*class="b-search__go"[^>]*><svg[^>]*aria-hidden="true"[^>]*>.*?<\/svg><span class="b-sr">Apply search<\/span><\/button>/);
   fixture.owner = true;
@@ -119,13 +119,13 @@ it("distinguishes no matches from a genuinely empty workforce", async () => {
 });
 
 // Server composition tests; actual mounted finite-body behavior is checked separately.
-const operationalPageFixture=vi.hoisted(()=>({denied:false,scoped:false}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
-vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+const operationalPageFixture=rs.hoisted(()=>({denied:false,scoped:false}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
 beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;});
 
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({}));expect(html).toContain('current company-wide management access');expect(fixture.events).toEqual(['authorize']);expect(html).not.toContain('Active Person');});
 
@@ -136,13 +136,13 @@ it('uses the released minimal directory projection for a location-scoped Manager
  expect(html).not.toContain('href="/app/employees/local"');expect(html).not.toContain('href="/app/employees/new"');
  expect(fixture.events).toEqual(['authorize']);
 });
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalDirectory:async()=>{
+rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalDirectory:async()=>{
  if(operationalPageFixture.denied)return {state:'unavailable',reason:'access_denied'};
  if(operationalPageFixture.scoped)return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{mode:'LOCATIONS',employees:[{id:'local',firstName:'Local',lastName:'Person',role:'EMPLOYEE',locationIds:['loc']}],locations:[{id:'loc',name:'Main',shortName:'Main',active:true}]}};
  const source=await import('@/lib/data/employees');return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{mode:'COMPANY',employees:await source.listEmployees(),locations:await source.listLocations({includeInactive:true})}};
 }}));
 
-vi.mock('@/lib/data/positions',()=>({listPositions:async()=>{if(fixture.positionsFailed)throw Error('Fictional position source unavailable');return [];}}));
+rs.mock('@/lib/data/positions',()=>({listPositions:async()=>{if(fixture.positionsFailed)throw Error('Fictional position source unavailable');return [];}}));
 it('withholds a directory when the position source fails instead of replacing positions with access roles',async()=>{
  fixture.positionsFailed=true;const html=renderToStaticMarkup(await EmployeesPage());
  expect(html).toContain('Employees unavailable');expect(html).not.toContain('Active Person');

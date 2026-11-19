@@ -1,21 +1,21 @@
 import { readFileSync } from "node:fs";
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import { AppShell } from "./app-shell";
 import { NavIcon } from "./nav-icon";
 
-const navigationMock = vi.hoisted(() => ({ pathname: "/app/my-time" }));
-vi.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname, useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }), useSearchParams: () => new URLSearchParams() }));
-vi.mock("next/link", () => ({
+const navigationMock = rs.hoisted(() => ({ pathname: "/app/my-time" }));
+rs.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname, useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }), useSearchParams: () => new URLSearchParams() }));
+rs.mock("next/link", () => ({
   default: ({ href, children, ...props }: ComponentProps<"a">) => createElement("a", { href, ...props }, children),
   useLinkStatus: () => ({ pending: false }),
 }));
-vi.mock("@/components/brand-mark", () => import("./brand-mark"));
-vi.mock("@/components/nav-icon", () => import("./nav-icon"));
-vi.mock("@/lib/navigation", () => import("../lib/navigation"));
-vi.mock("@/app/login/actions", () => ({ logout: vi.fn() }));
-vi.mock("next/image", () => ({ default: () => null }));
+
+
+
+rs.mock("@/app/login/actions", () => ({ logout: rs.fn() }));
+rs.mock("next/image", () => ({ default: () => null }));
 
 const company={state:'ready' as const,employeeId:'actor',role:'MANAGER' as const,source:'LEGACY_ADOPTION' as const,scope:{mode:'COMPANY' as const,locationIds:[] as []},scopeRevision:1,authority:'fictional',locations:[],observedAt:'2026-10-14T12:00:00Z',validForMs:15000};
 
@@ -305,7 +305,8 @@ it.each(['EMPLOYEE','OWNER'] as const)('renders the %s shell with both sidebar c
  expect(html).toContain('data-sidebar-desktop="full"');
  expect(html).toContain('data-sidebar-tablet="rail"');
  // Review B5 (NV-110): the tile carries its full name as a title.
- expect(html).toContain('<p class="cm-org" title="Northside Services"><span class="cm-org__mark" aria-hidden="true">NS</span><span class="cm-org__name">Northside Services</span></p>');
+ // Phase 4 (EM-026): an Employee's card carries the role line a Lead's has, so both are one height; an Owner's has none.
+ expect(html).toContain(`<p class="cm-org" title="Northside Services"><span class="cm-org__mark" aria-hidden="true">NS</span><span class="cm-org__name">Northside Services</span>${role==='EMPLOYEE'?'<span class="cm-org__role">Employee</span>':''}</p>`);
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(sidebar).not.toMatch(/class="nav-link[^"]*"[^>]*title=/);
  // One tooltip element for the rail, outside the sidebar, hidden from assistive technology (it repeats the entry's name).
@@ -317,6 +318,7 @@ it.each(['EMPLOYEE','OWNER'] as const)('renders the %s shell with both sidebar c
 it('gives a Lead the corporate Direction B shell',()=>{
  const {html}=render('LEAD','/app');
  expect(html).toContain('class="cm-org"');
+ expect(html).toContain('<span class="cm-org__role">Lead</span></p>');
  expect(html).not.toContain('class="e5-new"');
  expect(html).toContain('data-nv-b=""');
 });
@@ -441,4 +443,16 @@ it('keeps every Phase 3 shell rule scoped to Owner and Manager shells',()=>{
  expect(block).toMatch(/\.nav-count \{[^}]*min-width: 20px !important; height: 20px !important;[^}]*background: var\(--b-teal\) !important; font: 700 var\(--b-fs-count\)/);
  expect(block).toContain('@media (min-width: 768px) and (pointer: coarse)');
  expect(css).not.toMatch(/\.b-tab-badge \{[^}]*var\(--b-red\)/);
+});
+// Phase 8 (Nov 17, 2026): a sidebar or rail that holds more than a short window says so. The list carries one cue at each
+// edge, hidden from assistive technology and drawn only when the list scrolls (b-foundation.css reads data-more-above and
+// data-more-below, which the shell sets in the browser); the entries and their order are unchanged.
+it.each(['OWNER','MANAGER','EMPLOYEE'] as const)('gives the %s sidebar its scroll cues around the entries, outside the accessibility tree',role=>{
+ const {sidebar}=shell(role,'/app');
+ // Phase 9: the head carries a caret (pointing up) as the foot does (pointing down).
+ expect(sidebar).toMatch(/^[^>]*><span class="sidebar-more sidebar-more--top" aria-hidden="true"><svg[^>]*>[\s\S]*?<\/svg><\/span><div class="sidebar-nav-group"/);
+ expect(sidebar).toMatch(/<span class="sidebar-more sidebar-more--bottom" aria-hidden="true"><svg[^>]*>[\s\S]*<\/svg><\/span>$/);
+ expect(sidebar).not.toContain('data-more-');
+ expect(sidebar.indexOf('sidebar-more--top')).toBeLessThan(sidebar.indexOf('class="nav-link'));
+ expect(sidebar.lastIndexOf('class="nav-link')).toBeLessThan(sidebar.indexOf('sidebar-more--bottom'));
 });

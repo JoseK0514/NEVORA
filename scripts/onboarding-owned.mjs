@@ -31,7 +31,7 @@ try{
   const browserDb=new URL(env.NEVORA_ONBOARDING_TEST_ADMIN_URL);browserDb.pathname='/nevora_exchange_test_s4_'+marker.slice(0,12);
   env.FUEL_TEST_DATABASE_URL=browserDb.href;env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN='yes';
  }
- const testArgs=['node_modules/vitest/vitest.mjs','run','--config',suite==='step4-local'?'vitest.step4-local.config.mts':suite==='central-billing'?'vitest.central-billing-browser.config.mts':'vitest.onboarding-integration.config.mts'];
+ const testArgs=['scripts/run-rstest.mjs','run','--config',suite==='step4-local'?'vitest.step4-local.config.mts':suite==='central-billing'?'vitest.central-billing-browser.config.mts':'vitest.onboarding-integration.config.mts'];
  if(suite==='step4-local'||suite==='central-billing')testArgs.push('--reporter=default','--reporter=json','--outputFile='+join(suite==='step4-local'?env.NEVORA_STEP4_EVIDENCE:env.NEVORA_CENTRAL_BILLING_EVIDENCE,'vitest.json'));
  const r=spawnSync(process.execPath,testArgs,{env,stdio:'inherit'});exit=r.status??1;
 }finally{

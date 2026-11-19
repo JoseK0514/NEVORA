@@ -1,4 +1,4 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {EmployeePasskeyView} from './passkeys';
 import type {PasskeyState} from '../../lib/passkeys/management';
@@ -24,4 +24,4 @@ it('draws the same corporate card on a computer, with one primary Add a passkey 
  const html=renderToStaticMarkup(<EmployeePasskeyView mobile={false} state={state} supported confirm={null} onAdd={noop} onRefresh={noop} onRemove={noop} onReview={noop} onKeep={noop} onCancel={noop}/>);
  expect(html).not.toContain('<dialog');expect(html).toContain('Saved passkeys');expect(html).toContain(' · Not used yet');expect(html).toContain('>Add a passkey<');expect(html.match(/class="c-btn c-btn--full"/g)).toHaveLength(1);expect(html).toContain('em-account-textbtn--danger');
 });
-vi.unstubAllGlobals();
+rs.unstubAllGlobals();

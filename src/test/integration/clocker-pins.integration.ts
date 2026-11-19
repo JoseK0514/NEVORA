@@ -1,7 +1,7 @@
 
 import { readFile } from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import { afterEach, beforeEach, expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { registerClockerDevice, redeemClockerEnrollment, authenticateClockerDevice, revokeClockerDevice } from '../../lib/clocker/devices.server';
 import { setEmployeeClockerPin, readEmployeeClockerPin, verifyEmployeeClockerPin, readClockerIdentity, clearClockerIdentity, clockerIdentityWriteGuards } from '../../lib/clocker/pins.server';

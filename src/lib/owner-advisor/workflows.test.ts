@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { parseCommand, parseTool } from "./contracts";
 const requestId = "11111111-1111-4111-8111-111111111111";
 it("admits bounded explicit inspections and both bilingual period tools", () => {

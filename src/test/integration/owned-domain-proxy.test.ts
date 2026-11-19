@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {createServer,request} from 'node:http';
 import {connect} from 'node:net';
 import {startOwnedDomainProxy} from './owned-domain-proxy';

@@ -1,30 +1,31 @@
 'use client';
 
 import {ClockerOwnerRequests} from './clocker-owner-requests';
-import {useEffect, useId, useRef, useState, useSyncExternalStore} from 'react';
+import {useCallback, useEffect, useId, useRef, useState, useSyncExternalStore} from 'react';
 import Link from 'next/link';
 
-import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-
-
-
-
-
+import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
+import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
+import {QuestionIcon} from '@phosphor-icons/react/dist/ssr/Question';
+import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
 import type {RecoveryReview} from '../lib/clocker/recovery-review.server';
-import {keepWhole} from '../lib/keep-whole';
-import {Notice, SettingsFrame} from '../app/app/settings/wave-c-kit';
-import { ButtonLabel } from '../app/app/settings/wave-c-form';
+import {SettingsFrame} from '../app/app/settings/wave-c-kit';
+import {BAvatar, BCard, BIcon, BList, BRow, BState} from './owner-b/b-kit';
+import {clockerOwnerCopy, clockerOwnerWhen, type ClockerOwnerLang} from './clocker-owner-copy';
+import './clocker-owner-b.css';
 import {ScopedReadFrame,type ScopedObservation} from './company-access/scoped-read-frame';
 
 const subscribe = () => () => {};
-const actionNames: Record<string, string> = {
-  CLOCK_IN: 'Clock in', CLOCK_OUT: 'Clock out', START_BREAK: 'Start break', END_BREAK: 'End break',
-};
 
-/** Wave C: Clocker recovery on the kit (Owners). The private snapshot controller,
- * its pause-on-blur and the request are unchanged; checking a receipt never changes recorded time. */
-export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {actorId: string; timeZone: string; from?: 'settings'; observation?:ScopedObservation}) {
+/** Clocker recovery (Phase 6, Owners): what the page is for in one sentence, the people who asked for help on a tablet,
+ * one 560px form that checks a code, and one designed answer for each result: saved (green), nothing saved yet (amber:
+ * not confirmed, never "failed"), more than one record (amber: look before you change anything), offline, session ended
+ * and failed. The private snapshot controller, its pause-on-blur and the request are unchanged; checking a code never
+ * changes recorded time. */
+export function ClockerRecoveryReview({actorId, timeZone, from, observation, lang = 'en'}: {actorId: string; timeZone: string; from?: 'settings'; observation?:ScopedObservation; lang?: ClockerOwnerLang}) {
+  const t = clockerOwnerCopy[lang];
+  const actionNames: Record<string, string> = {CLOCK_IN: t.actionClockIn, CLOCK_OUT: t.actionClockOut, START_BREAK: t.actionStartBreak, END_BREAK: t.actionEndBreak};
   const hydrated = useSyncExternalStore(subscribe, () => true, () => false);
   const [reference, setReference] = useState('');
   const [hasSelection, setHasSelection] = useState(false);
@@ -32,6 +33,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
   const [loading, setLoading] = useState(true);
   const feedback = useRef<HTMLDivElement>(null);
   const submitted = useRef(false);
+  const asker = useRef<Element | null>(null);
   const selected = useRef('');
   const controller = useRef<ReturnType<typeof createPrivateSnapshotController<RecoveryReview>> | null>(null);
   const inputId = useId();
@@ -42,13 +44,18 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
   const denied = state?.state === 'unavailable' && state.reason === 'access_denied';
   const unavailable = state?.state === 'unavailable' && state.reason !== 'no_selection';
   // Clocker recovery lives with the Clocker settings (A2: Team no longer opens it), so Back returns to Settings.
-  const back = {href: '/app/settings', label: 'Settings'};
+  const back = {href: '/app/settings', label: t.settings};
   void from;
 
   useEffect(() => {
     const c = createPrivateSnapshotController<RecoveryReview>(value => {
-      setState(value.refreshing ? null : value.snapshot);
-      setLoading(value.refreshing);
+      // A routine renewal keeps the answer on screen (and the reader's place and focus), as the help requests above do; the
+      // controller still clears it the moment it expires, access ends, the code is edited or the window is left.
+      // Only the answer for the code being checked is kept: a check of another code (from a help request) starts clean.
+      const kept = value.snapshot?.state === 'ready' && value.snapshot.commandId === selected.current;
+      const shown = value.refreshing && !kept ? null : value.snapshot;
+      setState(shown);
+      setLoading(value.refreshing && !shown);
     }, async signal => {
       if (!selected.current) return {state: 'unavailable', reason: 'no_selection'};
       const response = await fetch('/api/manager/clocker-recovery', {
@@ -90,12 +97,24 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
     };
   }, [actorId]);
 
+  /* Focus goes to the answer of a check the person asked for, once. The page is drawn through the access frame
+   * (ScopedReadFrame), which commits this component's content one step after this component renders, so when the effect
+   * below runs the answer card is usually not in the document yet. The card therefore takes focus as it mounts (its ref
+   * callback); the effect covers an answer whose card is already there (the same code checked again).
+   * Focus is never taken back: it moves only while it is still where the check left it (the control that asked, or
+   * nowhere, since the form is disabled during the check). A routine renewal keeps the card mounted and asks nothing. */
+  const answer = useCallback((node: HTMLDivElement | null) => {
+    feedback.current = node;
+    if (!node || !submitted.current) return;
+    submitted.current = false;
+    const active = document.activeElement;
+    if (!active || active === document.body || active === asker.current) node.focus({preventScroll: true});
+  }, []);
   useEffect(() => {
-    if (!loading && submitted.current && (ready || unavailable)) {
-      submitted.current = false;
-      feedback.current?.focus({preventScroll: true});
-    }
-  }, [loading, ready, unavailable]);
+    if (!loading && submitted.current && (ready || unavailable) && feedback.current?.isConnected) answer(feedback.current);
+  }, [loading, ready, unavailable, answer]);
+  /** A check was asked for: remember which control asked, so the answer can take focus from it and from nowhere else. */
+  const ask = () => { submitted.current = true; asker.current = typeof document === 'undefined' ? null : document.activeElement; };
 
   function changeReference(value: string) {
     setReference(value);
@@ -107,25 +126,27 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
     if (document.visibilityState === 'visible' && navigator.onLine) controller.current?.start();
   }
 
-  function formattedTime(value: string) {
-    if (!Number.isFinite(Date.parse(value))) return 'Time unavailable';
-    return keepWhole(new Intl.DateTimeFormat('en-US', {timeZone, month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'}).format(new Date(value)));
-  }
+  const formattedTime = (value: string) => clockerOwnerWhen(value, timeZone, lang);
 
   const errorId = `${inputId}-error`;
-  // Quiet (v4, approved Oct 23): the reference, Check, the receipt when there is one, and one row to Timecards.
-  const content = <SettingsFrame back={back} settingsCrumb={false} className="wc-recovery" title="Clocker recovery" summary="Check a clock-in or clock-out someone made on a tablet.">
-    <ClockerOwnerRequests actorId={actorId} timeZone={timeZone} onSelect={value=>{setReference(value);setHasSelection(true);setInvalid('');selected.current=value;submitted.current=true;controller.current?.refresh();}}/>
-    {/* Review F4 (NV-102): on tablets and desktop the form is one card and Check code is in its footer (phones unchanged). */}
-    <form noValidate className="wc-form wc-savecard" aria-label="Check a tablet code" data-guard={hydrated ? undefined : ''}
-      onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the code from the tablet.' : 'Enter the whole code from the tablet, with its dashes.'); (event.target as HTMLInputElement).focus(); }}
+  const offline = state?.state === 'unavailable' && state.reason === 'offline';
+  const receipts = ready?.receipts ?? [];
+  const receiptRows = receipts.length ? <BList label={t.resultHeading}>{receipts.map((receipt, index) => <BRow key={[receipt.employeeId, receipt.performedAt, index].join('-')}
+    lead={<BAvatar name={receipt.employeeName} />} title={`${receipt.employeeName} · ${actionNames[receipt.action] ?? t.actionOther}`}
+    sub={<><time dateTime={receipt.performedAt}>{formattedTime(receipt.performedAt)}</time>{` · ${receipt.deviceName}, ${receipt.locationName}`}</>} />)}</BList> : null;
+  const content = <SettingsFrame back={back} settingsCrumb={false} className="wc-recovery ck-owner ck-recovery" title={t.recoveryTitle} summary={t.recoverySub}>
+    <div className="ck-stack">
+    <ClockerOwnerRequests actorId={actorId} timeZone={timeZone} lang={lang} onSelect={value=>{setReference(value);setHasSelection(true);setInvalid('');selected.current=value;ask();controller.current?.refresh();}}/>
+    <BCard label={t.lookupTitle}>
+    <form noValidate className="ck-form" aria-labelledby="recovery-lookup-heading" data-guard={hydrated ? undefined : ''}
+      onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? t.lookupMissing : t.lookupPattern); (event.target as HTMLInputElement).focus(); }}
       onSubmit={event => {
         event.preventDefault();
         if (!hydrated || pending) return;
         if (event.currentTarget?.checkValidity && !event.currentTarget.checkValidity()) return;
         selected.current = reference.trim().toLowerCase();
         setHasSelection(true);
-        submitted.current = true;
+        ask();
         if (!navigator.onLine) {
           setLoading(false);
           setState({state: 'unavailable', reason: 'offline'});
@@ -133,44 +154,49 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
         }
         controller.current?.refresh();
       }}>
-      <h2 className="q-sr" id="recovery-lookup-heading">Check a tablet code</h2>
-      <fieldset disabled={!hydrated || pending} className="q-fieldset">
-        <div className="q-fl" data-invalid={invalid ? 'true' : undefined}>
-          <label className="q-fl__label" htmlFor={inputId}>Code from the tablet</label>
-          <input id={inputId} className="q-in" style={{ marginTop: 8 }} required value={reference} onChange={event => changeReference(event.target.value)}
+      <h2 className="ck-form__t" id="recovery-lookup-heading">{t.lookupTitle}</h2>
+      <p className="ck-form__p">{t.recoveryWhat}</p>
+      <fieldset disabled={!hydrated || pending} className="ck-form__fields">
+        <div className="ck-field" data-invalid={invalid ? 'true' : undefined}>
+          <label className="ck-field__l" htmlFor={inputId}>{t.lookupLabel}</label>
+          <input id={inputId} className="ck-input" required value={reference} onChange={event => changeReference(event.target.value)}
             pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
-            maxLength={36} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="go" aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}
-            placeholder="The code shown on the tablet"/>
-          {invalid ? <p className="q-fl__error" id={errorId}>{invalid}</p> : null}
-          <p id={helpId} className="q-sr">The code on the tablet screen.</p>
+            maxLength={36} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="go" aria-describedby={invalid ? `${errorId} ${helpId}` : helpId} aria-invalid={invalid ? true : undefined}/>
+          {invalid ? <p className="ck-field__e" id={errorId} role="alert"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{invalid}</p> : null}
+          <p id={helpId} className="ck-form__h">{t.lookupHelp}</p>
         </div>
       </fieldset>
-      <div className="wc-savefoot"><button className="q-btn" type="submit" disabled={!hydrated || pending}><ButtonLabel pending={pending} idle="Check code" busy="Checking…"/></button></div>
-      <noscript><Notice tone="info">Turn on JavaScript to check a code.</Notice></noscript>
+      <div className="ck-form__foot"><button className="b-btn b-btn--teal" type="submit" disabled={!hydrated || pending}>{pending ? t.checking : t.lookupSubmit}</button></div>
+      <noscript><p className="ck-form__h">{t.noScript}</p></noscript>
     </form>
+    </BCard>
 
-    <section aria-labelledby="recovery-result-heading" aria-busy={pending}>
-      <h2 className="q-sr" id="recovery-result-heading">What was saved</h2>
-      {pending ? <p className="q-empty" role="status" style={{ marginTop: 24 }}>Checking the code…</p>
-        : ready ? <div ref={feedback} tabIndex={-1} className="wc-feedback">
-          <div role="status" className="q-lead" style={{ marginTop: 32 }}><b>{ready.receipts.length ? 'Recorded action found' : 'Nothing saved for this code'}</b>
-            <i>{ready.receipts.length ? 'Check it with the employee, then they finish on the same tablet.' : 'It may still be in progress. They check again on the same tablet.'}</i></div>
-          {ready.receipts.length ? <ul className="q-list" style={{ marginTop: 12 }}>{ready.receipts.map((receipt, index) => <li key={[receipt.employeeId, receipt.performedAt, index].join('-')}>
-            <div className="q-row q-row--av"><span className="q-av" aria-hidden="true">{receipt.employeeName.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('')}</span>
-              <span className="q-rt"><b>{`${receipt.employeeName} · ${actionNames[receipt.action] ?? 'Recorded action'}`}</b><i><time dateTime={receipt.performedAt}>{formattedTime(receipt.performedAt)}</time>{` · ${receipt.deviceName}, ${receipt.locationName}`}</i></span></div>
-          </li>)}</ul> : null}
-          <p className="q-sr">Code checked: {ready.commandId}</p>
+    <section className="ck-results" aria-labelledby="recovery-result-heading" aria-busy={pending}>
+      <h2 className="b-sr" id="recovery-result-heading">{t.resultHeading}</h2>
+      {pending ? <BCard label={t.lookupBusy}><BState kind="loading" title={t.lookupBusy} /></BCard>
+        : ready ? <div ref={answer} tabIndex={-1} className="ck-result" data-result={receipts.length === 0 ? 'none' : receipts.length === 1 ? 'found' : 'conflict'}>
+          <BCard label={receipts.length === 0 ? t.notFoundTitle : receipts.length === 1 ? t.foundTitle : t.conflictTitle}>
+            {receipts.length === 1 ? <div className="b-statecard" data-kind="done" role="status">
+              <BIcon tone="green"><CheckIcon weight="bold" /></BIcon>
+              <div className="b-statecard__main"><p className="b-statecard__t">{t.foundTitle}</p><p className="b-statecard__s">{t.foundBody}</p></div>
+            </div>
+              : <BState kind="paused" icon={<QuestionIcon weight="bold" />} title={receipts.length ? t.conflictTitle : t.notFoundTitle} line={receipts.length ? t.conflictBody : t.notFoundBody} />}
+            {receiptRows}
+          </BCard>
+          <p className="b-sr">{t.codeChecked(ready.commandId)}</p>
         </div>
-        : unavailable ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role="alert">
-          <Notice tone="urgent" title={denied ? 'Your session ended' : 'Couldn’t check the code.'}
-            action={denied ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : undefined}>
-            {denied ? 'Sign in again before checking this action.' : 'Keep the code and check again when you’re back online.'}</Notice>
+        : unavailable ? <div ref={answer} tabIndex={-1} className="ck-result">
+          <BCard label={denied ? t.sessionTitle : offline ? t.offlineTitle : t.failedTitle}>
+            <BState kind={denied ? 'locked' : offline ? 'offline' : 'failed'} alert title={denied ? t.sessionTitle : offline ? t.offlineTitle : t.failedTitle} line={denied ? t.sessionBody : offline ? t.offlineBody : t.failedBody}>
+              {denied ? <Link className="b-btn b-btn--ghost" href="/login">{t.signIn}</Link> : null}
+            </BState>
+          </BCard>
         </div> : null}
     </section>
 
-    <ul className="q-list" style={{ marginTop: 40 }}>
-      <li><Link href="/app/timecards" className="q-row"><span className="q-rt"><b>Time wrong or missing?</b><i>Fix it in Timecards</i></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li>
-    </ul>
+    {/* Final review B #9: the link to Timecards draws Timecards' own glyph, the Clock (the counter-clockwise clock is Time corrections). */}
+    <BCard label={t.timecardsTitle}><BList><BRow href="/app/timecards" lead={<BIcon tone="teal"><ClockIcon weight="bold" /></BIcon>} title={t.timecardsTitle} sub={t.timecardsSub} /></BList></BCard>
+    </div>
   </SettingsFrame>;
   return observation ? <ScopedReadFrame observation={observation}>{content}</ScopedReadFrame> : content;
 }

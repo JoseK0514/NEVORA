@@ -15,9 +15,14 @@ import { shiftBoundaryInstants } from '../lib/business-time';
 import { emptyScheduleLabel } from '../lib/data/employee-schedule';
 import { dayFmt, hasNotEnded, hours, hoursLabel, overnight, shiftMinutes, swappable, weekRange, type EmployeeMyScheduleProps, type OpenShift, type Shift } from './employee-my-schedule';
 import { OpenShiftsB, ScheduleB, type OpenB } from './employee-b/schedule-b';
-import { BChip } from './owner-b/b-kit';
+import { BChip, BStatusText, compactRange } from './owner-b/b-kit';
 import { BDay, Dotted } from './employee-b/parts';
+import { workCopy } from './employee-b/work-copy';
+import { momentsCopy } from './owner-b/moments-copy';
 import { NotPhone, PhoneOnly } from './employee-b/viewport';
+
+const t = workCopy();
+const M = momentsCopy();
 
 /* An Employee's Schedule on the corporate kit (Release 1, boards G-E-Schedule, E-ShiftDetail and E-OpenShifts). The
  * week card (range, arrows, day strip), the confirmation when the manager asks for one, the week's shifts, then open
@@ -139,17 +144,31 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
   // hides it; when every shift this week is led, the list's header says so once and the rows don't repeat it.
   const allLed = allLedNote(props.lead === true, shifts) !== null;
   const rowDetail = (shift: Shift) => [shift.isDesignatedLead && !allLed ? 'Shift lead' : null, shift.positionName, nameOf(shift.locationId) || 'Location unavailable', overnight(shift) ? `Ends ${dayFmt(addDays(shift.date, 1), { weekday: 'short', month: 'short', day: 'numeric' })}` : null].filter(Boolean).join(' · ');
+  // Phase 9 (spec 1.2, 1.4): a time fact ("Now", "Starts in 2 h", "Tomorrow") is not a state, so it is quiet grey text where
+  // the chip sat, beside the shift's time (under it when the line is too short); "Can’t work · approved" stays a chip.
   const bChip = (shift: Shift) => {
+    if (shift.isCalloutApproved) return <BChip tone="grey">Can’t work · approved</BChip>;
     const soon = startsIn(shift, today, observedAt, timeZone);
-    return shift.isCalloutApproved ? <BChip tone="grey">Can’t work · approved</BChip> : soon ? <BChip tone="teal">{soon}</BChip> : when(shift, today) === 'Tomorrow' ? <BChip tone="teal">Tomorrow</BChip> : undefined;
+    return soon ? <BStatusText>{soon}</BStatusText> : when(shift, today) === 'Tomorrow' ? <BStatusText>Tomorrow</BStatusText> : undefined;
   };
-  const bLead = (shift: Shift) => <BDay date={shift.date} today={shift.date === today} past={shift.date < today}/>;
+  // Phase 4 (EM-013): on desktop the card beside "This week" shows one day: the chosen day, else today, else (another
+  // week) the first day with a shift. The week card above already shows every day, so nothing is listed twice.
+  const wideDay = chosen ? null : weekStart === currentWeek ? today : shifts[0]?.date ?? null;
+  const wideRows = wideDay ? listed.filter(shift => shift.date === wideDay).length : 0;
+  // The shift's length is the day card's trailing value on desktop ("8 h"); other widths leave it out.
+  const bLead = (shift: Shift) => <><BDay date={shift.date} today={shift.date === today} past={shift.date < today} pick={shift.date === wideDay}/><span className="es-len" aria-hidden="true">{hoursLabel(shiftMinutes(shift))}</span></>;
+  // Phase 4 (TB-002): a tablet's day block is too narrow for "Starts in 4 h"; it reads "In 4 h" there, never clipped.
+  const weekChip = (shift: Shift) => {
+    const soon = startsIn(shift, today, observedAt, timeZone);
+    const both = (long: string, short: string) => long === short ? long : <><span className="eb-wsh__long">{long}</span><span className="eb-wsh__short">{short}</span></>;
+    return shift.isCalloutApproved ? <BChip tone="grey">{both('Can’t work · approved', t.cantWorkShort)}</BChip> : soon ? <BChip tone="teal">{both(soon, soon.startsWith('Starts in ') ? t.startsShort(soon.slice('Starts in '.length)) : soon)}</BChip> : when(shift, today) === 'Tomorrow' ? <BChip tone="teal">Tomorrow</BChip> : null;
+  };
   return <CorpPage className="c-esched">
     {/* Direction B: the phone screen (phones only; tablets and desktop keep the layout below). The shift sheets and the
       * confirmation are mounted once, in the layout that shows. */}
     <ScheduleB sub={subText} leadNote={allLedNote(props.lead === true, shifts)}
       // Review B6 (NV-152): a confirmed week keeps a green card where Confirm was, so the change is visible in place.
-      done={review && acknowledged ? { title: 'Week confirmed', detail: keepWhole(`${weekRange(weekStart)} · Your manager can see you checked it`) } : null} range={<>{weekRange(weekStart)}<span className="b-sr">, {weekStart.slice(0, 4)}</span></>} confirmed={!!review && !!acknowledged}
+      done={review && acknowledged ? { title: M.weekConfirmed, occurrence: `week:${weekStart}`, detail: keepWhole(`${weekRange(weekStart)} · ${M.weekConfirmedLine}`), detailShort: M.weekConfirmedLine } : null} range={<>{weekRange(weekStart)}<span className="b-sr">, {weekStart.slice(0, 4)}</span></>} confirmed={!!review && !!acknowledged}
       todayHref={weekStart !== currentWeek ? `/app/schedule?week=${currentWeek}` : null} prevHref={`/app/schedule?week=${addDays(weekStart, -7)}${keep}`} nextHref={`/app/schedule?week=${addDays(weekStart, 7)}${keep}`}
       days={dates.map(date => {
         const assigned = shifts.some(shift => shift.date === date);
@@ -159,6 +178,8 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
       })}
       confirm={review && !acknowledged ? { title: confirmationNeeded ? 'Confirm this week' : 'Schedule review',
         detail: confirmationNeeded ? (shifts.length ? 'Your manager asked you to check it' : 'No assignments remain this week. Review the changes, then confirm.') : 'Review the current week again.',
+        // Phase 4 (EM-022): on a phone the reason keeps one line beside the button.
+        detailShort: confirmationNeeded && shifts.length ? t.managerAsked : undefined,
         control: <PhoneOnly fallback={<span className="b-btn b-btn--teal" aria-hidden="true">Confirm</span>}>{confirmation}</PhoneOnly> } : null}
       celebration={review && acknowledged && props.acknowledgedRevisionId ? <PhoneOnly><Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /></PhoneOnly> : null}
       changes={changes && state !== 'unavailable' ? changes : null}
@@ -171,7 +192,14 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
         detail: openCount === null ? 'Couldn’t check right now' : openCount ? keepWhole([...new Set(props.openShifts!.available.slice(0, 2).map(shift => dayFmt(shift.date, { weekday: 'short', month: 'short', day: 'numeric' })))].join(' and ')) : 'None right now' } : null}
       unavailable={state === 'unavailable' ? { retryHref: `/app/schedule?week=${weekStart}` } : null}
       list={{ label: listLabel, wholeWeekHref: chosen ? `/app/schedule?week=${weekStart}${keep}` : null,
-        empty: listed.length ? null : state === 'published' ? (chosen ? (chosen === today ? 'Day off today.' : 'Day off.') : weekStart === currentWeek && shifts.length ? 'No more shifts this week.' : 'Day off all week.') : emptyScheduleLabel(state),
+        // Phase 4: a week that is partly published and has no shift left ahead says so (it said "Schedule not published
+        // yet" under seven published shifts).
+        empty: listed.length ? null : state === 'published' ? (chosen ? (chosen === today ? 'Day off today.' : 'Day off.') : weekStart === currentWeek && shifts.length ? 'No more shifts this week.' : 'Day off all week.')
+          : state === 'unpublished' && !chosen && weekStart === currentWeek && shifts.length ? t.noMorePublishedThisWeek : emptyScheduleLabel(state),
+        wide: wideDay && state !== 'unavailable' ? { title: wideDay === today ? t.today : keepWhole(dayFmt(wideDay, { weekday: 'long', month: 'short', day: 'numeric' })),
+          meta: wideDay === today ? keepWhole(dayFmt(wideDay, { weekday: 'short', month: 'short', day: 'numeric' })) : null,
+          empty: wideRows ? null : state === 'published' ? (shifts.some(shift => shift.date === wideDay) ? t.noMoreToday : 'Day off today.')
+            : shifts.some(shift => shift.date === wideDay) ? t.noMorePublishedToday : emptyScheduleLabel(state) } : null,
         rows: listed.map(shift => <PhoneOnly key={shift.id} fallback={<li className="b-li"><Link className="b-row b-row--link" href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} scroll={false} aria-label={rowLabel(shift)}>
           {bLead(shift)}<span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{hours(shift)}</span>{bChip(shift) ?? null}</span><span className="b-row__s"><Dotted text={rowDetail(shift)}/></span></span>
           <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" /></Link></li>}>
@@ -184,7 +212,7 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
         // Review B6 (NV-150, NV-289): the band already says "7 shifts · 59.5 h"; the footer keeps only the publication sentence.
         summary: [shifts.length ? null : 'No published shifts',
           state === 'unpublished' ? (shifts.length ? unpublishedNote(unpublishedNames, publishedNames) : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`) : null].filter(Boolean).join(' · '),
-        days: dates.map(date => ({ date, short: dayFmt(date, { weekday: 'short' }), day: Number(date.slice(8)), today: date === today, selected: chosen ? date === chosen : date === today,
+        days: dates.map(date => ({ date, short: dayFmt(date, { weekday: 'short' }), day: Number(date.slice(8)), today: date === today, selected: chosen ? date === chosen : date === today, wide: !!wideDay && wideDay !== today && date === wideDay,
           href: date === chosen ? `/app/schedule?week=${weekStart}${keep}` : dayHref(date),
           label: `${dayFmt(date, { weekday: 'long', month: 'long', day: 'numeric' })}${date === today ? ', today' : ''}${date === chosen ? ', selected day, show the whole week' : ''}`,
           shifts: shifts.filter(shift => shift.date === date).map(shift => {
@@ -193,10 +221,11 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
             // Review B6 (NV-289, Jose approved): when the Lead leads every shift, the header says so once and only today's
             // block keeps the chip.
             const leads = props.lead === true && shift.isDesignatedLead === true && (!allLed || shift.date === today);
-            const chip = kind === 'past' ? null : bChip(shift) ?? null;
+            const chip = kind === 'past' ? null : weekChip(shift);
             // Review B6 (NV-044, NV-169): a range breaks only after its dash ("8:00 AM –" / "4:00 PM") on a narrow day.
             // Review F2 (NV-169): the same time format as Coming up and the list beside it (one format per page).
-            return { key: shift.id, time: keepWhole(hours(shift)), tomorrow: !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) === 'Tomorrow', position: shift.positionName ?? null, place: keepWhole(`${nameOf(shift.locationId) || 'Location unavailable'} · ${hoursLabel(shiftMinutes(shift))}`),
+            // Phase 4 (EM-014): the compact range ("9 AM – 5 PM") keeps one line in a day block; no dash is left hanging.
+            return { key: shift.id, time: compactRange(hours(shift)), tomorrow: !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) === 'Tomorrow', position: shift.positionName ?? null, place: `${keepWhole(nameOf(shift.locationId) || 'Location unavailable')} · ${keepWhole(hoursLabel(shiftMinutes(shift)))}`,
               kind, chip: leads && !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) !== 'Tomorrow' ? null : chip,
               label: props.lead === true && shift.isDesignatedLead === true ? `${rowLabel(shift)}, shift lead` : rowLabel(shift), lead: leads };
           }) })) }} />

@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {parseEmployeeHours,parseHoursCorrection,hoursInstant,hoursLocalValue,validHoursSelection} from './employee-hours';
 const envelope={state:'ready',kind:'hours',view:'records',selection:'overview',authority:'a'.repeat(64),observedAt:'2026-10-27T15:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',data:{state:'ready',observedAt:'2026-10-27T15:00:00Z',validForMs:45000,timeZone:'America/Puerto_Rico',date:'2026-10-27',current:null,today:{entries:[],recordedSeconds:0,breakSeconds:0},recent:{entries:[],total:0,limit:20}}};
 it('accepts an own finite recorded-time envelope while rejecting widened identity and wrong context',()=>{expect(parseEmployeeHours(envelope)).toEqual(envelope);for(const patch of [{employeeId:'foreign'},{view:'cards'},{selection:'someone-else'},{validForMs:45001},{authority:'raw-session'},{timeZone:'unknown/zone'}])expect(parseEmployeeHours({...envelope,...patch}).state).toBe('unavailable');});

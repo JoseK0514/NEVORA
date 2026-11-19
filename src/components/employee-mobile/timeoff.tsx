@@ -8,8 +8,8 @@ import {PlanningFeedback,usePlanningOperation} from './planning-feedback';
 import {TimeOffListRow,TimeOffRequestCard,timeOffDates,timeOffDay} from './timeoff-parts';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
-import {HourglassIcon} from '@phosphor-icons/react/dist/ssr/Hourglass';
-import {BIcon} from '../owner-b/b-kit';
+import {BCallout,BState} from '../owner-b/b-kit';
+import {momentsCopy} from '../owner-b/moments-copy';
 import {TimeOffB,TimeOffStateB} from '../employee-b/timeoff-b';
 import {parsePlanningCommand,type PlanningRequest,type PlanningCommand} from '@/lib/employee-planning';
 import {saveEmployeePlanningAction,checkEmployeePlanningAction} from '@/app/app/employee-planning/actions';
@@ -18,6 +18,7 @@ import {formatTime,isValidIsoDate} from '@/lib/date-utils';
 /* Employee Time off on the phone, on the corporate kit (Release 1, boards E-TimeOffDetail and E-TimeOffSheet): the list
  * (Waiting / Decided), one request, and the request form. Same planning read, commands, validation and receipts. */
 
+const M=momentsCopy();
 type Draft={startDate:string;endDate:string;partial:boolean;startTime:string;endTime:string;note:string};
 const empty:Draft={startDate:'',endDate:'',partial:false,startTime:'09:00',endTime:'12:00',note:''};
 
@@ -57,14 +58,14 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
  const denied=panel.state.snapshot?.state==='unavailable'&&panel.state.snapshot.reason==='access_denied';
  // Direction B (phones only): the same page as the B screen. The form, its receipt and the withdraw step stay in this page
  // once (b-keep) and are drawn as that screen's cards.
- const b=<TimeOffB page={isNew?'new':isList?'list':'detail'} filter={filter} enabled={read?read.enabled:null} earlier={!isNew&&(pending||uncertain)} requests={shown} request={row??null} zone={read?.timeZone??'UTC'}
+ const b=<TimeOffB page={isNew?'new':isList?'list':'detail'} filter={filter} enabled={read?read.enabled:null} earlier={!isNew&&(pending||uncertain)} requests={shown} request={row??null} zone={read?.timeZone??'UTC'} waiting={read?read.data.requests.filter(r=>r.status==='PENDING').length:null}
   state={read?null:<TimeOffStateB paused={panel.state.paused} denied={denied} refreshing={panel.state.refreshing} onRetry={panel.refresh}/>}/>;
  return <PlanningFrame b={b} bTitleId="b-timeoff-title" title={title} sub="" sheet={isNew} back={isList?'/app/requests/hub':isNew?listHref:'/app/requests/hub'} backLabel="Requests" selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh}>
   {read&&!read.enabled?<p className="c-note" role="status">Time off is turned off for your company.</p>:read?<>
    {!isNew&&(pending||uncertain)?<section className="c-card"><div className="c-card__body tof-feedback"><p>An earlier time-off submission still needs to be checked.</p><Link href="/app/requests?tab=new">Return to my submission</Link></div></section>:null}
-   {isNew?complete?<section className="c-card tof-done b-keep" aria-label="Submission result"><h2 ref={receipt} tabIndex={-1}>Request recorded</h2><p>Your time-off request was recorded. Open it to see its current approval status.</p>
-     <Link className="c-btn c-btn--full" href={'/app/requests?requestId='+operation.result?.requestId}>View my request</Link>
-     <button className="c-btn c-btn--secondary c-btn--full" type="button" onClick={()=>{setOperation(new PlanningOperation());id.current=null;setDraft(empty);}}>Make another request</button></section>
+   {isNew?complete?<section className="c-card tof-done b-keep b-done-host--flush" aria-label="Submission result">
+     <BState kind="done" heading titleRef={receipt} title={M.requestSent} line={M.timeOffLine} action={{label:M.viewRequest,href:'/app/requests?requestId='+operation.result?.requestId}}
+      quiet={<button className="b-done__quiet" type="button" onClick={()=>{setOperation(new PlanningOperation());id.current=null;setDraft(empty);}}>{M.anotherRequest}</button>}/></section>
     :<form ref={form} className="tof-form b-keep" noValidate aria-busy={pending} onSubmit={event=>{
      event.preventDefault();if(locked||!panel.allowed())return;
      id.current??=crypto.randomUUID();const command=parsePlanningCommand({kind:'request',requestId:id.current,startDate:draft.startDate,endDate:draft.partial?draft.startDate:draft.endDate,startTime:draft.partial?draft.startTime:null,endTime:draft.partial?draft.endTime:null,note:draft.note.trim()});
@@ -95,8 +96,9 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
     </fieldset>
     {errorFor('note')?<p id={errorId+'-note'} className="c-error" role="alert">{errorFor('note')?.message}</p>:null}
     <p className="c-note tof-approve">Your manager needs to approve this request. Keep your scheduled shifts until it is approved.</p>
-    {/* Direction B (phones): the same words as a soft notice; hidden elsewhere. */}
-    <div className="eb-tof-approve"><BIcon tone="grey"><HourglassIcon weight="bold"/></BIcon><span><b>Your manager approves it</b><span>Keep your scheduled shifts until it is approved.</span></span></div>
+    {/* Direction B (phones): the same words as the kit's callout (Phase 9, spec 2.2: the HourglassMedium wait glyph, no
+      * circle in a tint), teal because it is information about what happens next, not a warning; hidden elsewhere. */}
+    <div className="eb-tof-approve"><BCallout tone="teal" icon="wait" title="Your manager approves it">Keep your scheduled shifts until it is approved.</BCallout></div>
     <PlanningFeedback operation={operation} onRetry={retry}/>
     {/* Upscale M2: Send is pinned in the sheet's footer (hairline above, safe area below). */}
     <div className="tof-foot"><button className="c-btn c-btn--full" type="submit" disabled={locked||!read.enabled}>{pending?'Sending…':'Send request'}</button></div></form>

@@ -1,11 +1,11 @@
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect, it, vi} from 'vitest';
+import {expect, it, rs} from '@rstest/core';
 import {EmployeeScheduleCorp} from './employee-schedule-corp';
 import type {EmployeeMyScheduleProps} from './employee-my-schedule';
 
-vi.mock('next/link', () => ({default: ({children, scroll: _scroll, prefetch: _prefetch, ...props}: React.ComponentProps<'a'> & {scroll?: boolean; prefetch?: boolean}) => createElement('a', props, children)}));
-vi.mock('next/navigation', () => ({useRouter: () => ({push: vi.fn(), replace: vi.fn()})}));
+rs.mock('next/link', () => ({default: ({children, scroll: _scroll, prefetch: _prefetch, ...props}: React.ComponentProps<'a'> & {scroll?: boolean; prefetch?: boolean}) => createElement('a', props, children)}));
+rs.mock('next/navigation', () => ({useRouter: () => ({push: rs.fn(), replace: rs.fn()})}));
 
 /* Nov 1 upscale (S12, S5, S13, B12) on fictional data: today is Sunday, Nov 1, 2026. */
 const shift = (id: string, date: string, startTime = '08:00', endTime = '16:00') => ({id, scheduleId: 's', employeeId: 'self', employeeName: 'Fictional Employee', locationId: 'condado', date, startTime, endTime,
@@ -48,4 +48,11 @@ it('S5/S12: the shift panel is titled "Tomorrow, Nov 2" with its details on one 
   expect(sheet).toContain('c-card c-sheet__shift c-esheet__card');
   expect(sheet.replace(/[  ]/g, ' ')).toContain('Barista · Condado · 8 h');
   expect(sheet).not.toContain('c-sheet__facts');expect(sheet.slice(0, sheet.indexOf('c-sheet__actions'))).not.toContain('c-pill');
+});
+
+it('Phase 9 (spec 1.4): a shift row says its time fact as quiet text beside the time, not as a teal chip', () => {
+  const output = html({weekStart: '2026-11-02', shifts: [shift('m', '2026-11-02'), shift('n', '2026-11-04')]});
+  const agenda = output.slice(output.indexOf('id="b-my-agenda"'), output.indexOf('</section>', output.indexOf('id="b-my-agenda"')));
+  expect(agenda).toMatch(/<span class="b-row__tt">[^<]*<\/span><span class="b-status">Tomorrow<\/span><\/span>/);
+  expect(agenda).not.toContain('b-chip--teal');
 });

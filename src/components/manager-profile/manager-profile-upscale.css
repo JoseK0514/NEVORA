@@ -16,11 +16,12 @@
 /* ---------- Review F2 (Nov 10, 2026) ---------- */
 /* NV-096: on a phone the person is the page's title, so it sits in the band like every other secondary page (title 28/34
  * white, "Owner · company" as the band's sub-line) and the details card lifts over the teal. Desktop already does this
- * (owner-b-desktop.css). NV-105: your own face is drawn as in the header, a white circle with teal initials. */
+ * (owner-b-desktop.css). NV-105: your own face is drawn as in the header, a white circle with teal initials. Final review B
+ * #34: the band's face starts on the page's 16px gutter, under the back button and on the cards' edge (it sat at 20). */
 @media (max-width: 767px) {
   @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who:not(#nvd-none) {
-    position: relative !important; z-index: 1 !important; gap: 14px !important; margin: -16px 0 0 !important; padding: 18px 20px 62px !important; box-shadow: 0 -2px 0 #08504C !important;
+    position: relative !important; z-index: 1 !important; gap: 14px !important; margin: -16px 0 0 !important; padding: 18px var(--b-space-16) 62px !important; box-shadow: 0 -2px 0 #08504C !important;
     background: #08504C !important; color: #FFFFFF !important;
   } }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who h1:not(#nvd-none) { overflow-wrap: anywhere; }
@@ -59,3 +60,25 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell) .q-page.premium-manager-profile .q-details[open] > ul.q-list > li > :is(a, button, div).q-row:not(#nvd-none) { padding-left: 16px !important; } }
 @layer nv-b {
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell) .q-page.premium-manager-profile button.q-row.pmp-switch-row:not(#nvd-none) { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; align-items: center !important; column-gap: 16px !important; min-height: 64px !important; } }
+
+/* ---------- Final verification (Nov 18, 2026): final review B (numbers are its rows) ---------- */
+@layer nv-b {
+  /* B #12: every value in your details ends on one edge. A row with no chevron (Time zone) keeps the chevron's place
+   * when the rows around it have one (an Owner's Phone and Email), and a row with no lock keeps the lock's place when
+   * they have one (a Manager's), so Puerto Rico no longer sits 28px right of 555-0100. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile #profile-details-list:has(.q-chev) > li > .q-row:not(:has(> .q-chev)) > .q-rv:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4):not(#nvd-none5) { margin-right: 28px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile #profile-details-list:has(.pmp-fixed__lock) > li > .q-row:not(.pmp-fixed) > .q-rv:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4):not(#nvd-none5) { margin-right: 22px !important; }
+  @media (max-width: 359px) {
+    /* A narrow phone stacks a Manager's locked rows (value under its label), so there is no shared right edge to keep. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile #profile-details-list:has(.pmp-fixed__lock) > li > .q-row:not(.pmp-fixed) > .q-rv:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4):not(#nvd-none5) { margin-right: 0 !important; }
+  }
+  @media (max-width: 767px) {
+    /* B #5: the band's Edit is the phone band's 40px pill (it drew 36px), level with the 40px back button; its 44px target
+     * stays. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .q-nav > .q-nav__r:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4):not(#nvd-none5) { min-height: 40px !important; height: 40px !important; padding: 0 var(--b-space-16) !important; }
+  }
+  @media (min-width: 768px) {
+    /* B #5: from 768px Edit is the band's 48px pill (it drew 42px), still centred on your name's line. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.premium-manager-profile > .q-nav .q-nav__r:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4):not(#nvd-none5) { min-height: var(--b-btn-h-band) !important; height: var(--b-btn-h-band) !important; padding: 0 var(--b-space-24) !important; top: -5px !important; }
+  }
+}

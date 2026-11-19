@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -48,15 +48,15 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
       }
       await page.setViewportSize({width:390,height:900});
       await page.goto(origin+'/login');
-      for (const label of ['Privacy','Terms','Support']) expect(await page.getByRole('navigation',{name:'Policies and help'}).getByRole('link',{name:label,exact:true}).count()).toBe(1);
-      await page.getByRole('button',{name:'Español',exact:true}).click();
+      for (const [label,path] of [['Privacy','/privacy'],['Terms','/terms'],['Support','/support']]) {const link=page.locator('.q-auth__foot').getByRole('link',{name:label,exact:true});expect(await link.count()).toBe(1);expect(await link.isVisible()).toBe(true);expect(await link.getAttribute('href')).toBe(path);}
+      await page.getByRole('button',{name:'Language: Español',exact:true}).click();
       await page.getByLabel('ID de empleado',{exact:true}).waitFor();
-      await page.getByRole('button',{name:'English',exact:true}).click();
+      await page.getByRole('button',{name:'Idioma: English',exact:true}).click();
       await page.getByLabel('Employee ID',{exact:true}).fill(engine==='chromium'?'UI-EMPLOYEE':'UI-LEAD');
       await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
       await page.getByRole('button',{name:'Sign in',exact:true}).click();
       await page.waitForURL(origin+'/app');
-      await page.locator('[data-home-state="ready"]').waitFor();
+      await page.locator('[data-home-state="ready"]').waitFor({state:'attached'});await page.locator('#b-home-shift:visible').waitFor();
       checks.push(engine+': language switch and real password sign-in');
       for (const path of ['/app','/app/schedule','/app/requests/hub','/app/requests','/app/availability','/app/my-time','/app/timecards','/app/my-pay','/app/notifications','/app/profile']) {
         const response = await page.goto(origin+path);
@@ -69,41 +69,53 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
         }
         checks.push(engine+': employee '+path+' at 320/390/768/1440');
       }
-      await page.getByRole('button',{name:'Refresh details',exact:true}).waitFor();
-      const profileGeometry=await page.locator('.employee-profile-details').evaluate((element:HTMLElement)=>({
+      await page.locator('[data-profile-state="ready"]').waitFor({state:'attached'});
+      const personal=page.locator('#b-profile-personal');
+      expect(await personal.innerText()).toContain(engine==='chromium'?'Fictional Employee':'Fictional Lead');
+      await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+      await page.locator('[data-profile-state="paused"]').waitFor({state:'attached'});
+      expect(await personal.innerText()).not.toContain(engine==='chromium'?'UI-EMPLOYEE':'UI-LEAD');
+      await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+      await page.locator('[data-profile-state="ready"]').waitFor({state:'attached'});
+      const profileGeometry=await personal.evaluate((element:HTMLElement)=>({
         details:element.getBoundingClientRect().width,
-        settings:document.querySelector('.profile-settings-list')!.getBoundingClientRect().width,
+        settings:document.querySelector('#b-profile-security')!.getBoundingClientRect().width,
       }));
       expect(profileGeometry.details).toBeGreaterThanOrEqual(profileGeometry.settings-32);
-      expect(await page.locator('.pk-body').evaluate((element:HTMLElement)=>element.getBoundingClientRect().height)).toBeLessThan(200);
+      expect(await page.locator('.em-passkeys').count()).toBe(0);
+      expect(await page.locator('#b-profile-passkeys').getAttribute('href')).toBe('/app/profile/passkeys');
+      checks.push(engine+': actual profile values, blur retirement, focus refresh and dedicated passkeys entry');
       await page.screenshot({path:evidence+'/'+engine+'-profile-1440.png',fullPage:true});
       if (engine==='chromium') {
         await page.setViewportSize({width:1440,height:1000});
+        await page.locator('#b-profile-passkeys:visible').click();await page.waitForURL(origin+'/app/profile/passkeys');
         const cdp = await context.newCDPSession(page);
         await cdp.send('WebAuthn.enable');
         await cdp.send('WebAuthn.addVirtualAuthenticator',{options:{protocol:'ctap2',transport:'internal',hasResidentKey:true,hasUserVerification:true,isUserVerified:true,automaticPresenceSimulation:true}});
         await page.getByRole('button',{name:'Add a passkey',exact:true}).click();
-        await page.locator('.pk-list .pk-item').waitFor();
+        await page.getByRole('list',{name:'Your passkeys'}).locator('li').waitFor();
         expect(await q("SELECT count(*)::int n FROM employee_passkeys WHERE employee_id='UI-EMPLOYEE' AND revoked_at IS NULL")).toEqual([{n:1}]);
-        await page.locator('.pk-list').getByRole('button',{name:/^Remove /}).click();
-        const confirmation = page.getByRole('dialog');
+        await page.getByRole('list',{name:'Your passkeys'}).getByRole('button',{name:/^Remove /}).click();
+        const confirmation = page.getByRole('group',{name:/^Remove “/});
         await confirmation.waitFor();
-        // B7 wording (NV-241): confirm buttons are verb plus object.
-        expect(await confirmation.getByRole('button',{name:'Keep passkey',exact:true}).evaluate((element:HTMLElement)=>element===document.activeElement)).toBe(true);
+        // The current inline review receives focus; its first keyboard action keeps the passkey.
+        await expect.poll(()=>confirmation.evaluate((element:HTMLElement)=>element===document.activeElement)).toBe(true);
+        await page.keyboard.press('Tab');expect(await confirmation.getByRole('button',{name:'Keep passkey',exact:true}).evaluate((element:HTMLElement)=>element===document.activeElement)).toBe(true);
         await confirmation.getByRole('button',{name:'Remove passkey',exact:true}).click();
-        await page.locator('.pk-list').waitFor({state:'detached'});
+        await page.getByRole('list',{name:'Your passkeys'}).waitFor({state:'detached'});
+        expect(await q("SELECT count(*)::int n FROM employee_passkeys WHERE employee_id='UI-EMPLOYEE' AND revoked_at IS NULL")).toEqual([{n:0}]);
         await page.getByRole('button',{name:'Add a passkey',exact:true}).click();
-        await page.locator('.pk-list .pk-item').waitFor();
+        await page.getByRole('list',{name:'Your passkeys'}).locator('li').waitFor();
         await context.clearCookies();
         await page.goto(origin+'/login');
         await page.getByRole('button',{name:'Sign in with a passkey',exact:true}).click();
         await page.waitForURL(origin+'/app');
-        await page.locator('[data-home-state="ready"]').waitFor();
+        await page.locator('[data-home-state="ready"]').waitFor({state:'attached'});await page.locator('#b-home-shift:visible').waitFor();
         checks.push('chromium: native WebAuthn enroll, remove confirmation focus, remove and discoverable sign-in');
         await page.goto(origin+'/app/account/delete');
-        await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+        await page.getByLabel('Enter your password to confirm',{exact:true}).fill(TEST_PASSWORD);
         await page.getByRole('checkbox').check();
-        await page.getByRole('button',{name:'Confirm deletion request',exact:true}).click();
+        await page.getByRole('button',{name:'Delete my account',exact:true}).click();
         await page.getByText(/DEL-[A-HJ-NP-Z2-9]{8}/).first().waitFor();
         expect(await q("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='UI-EMPLOYEE'")).toEqual([{n:0}]);
         expect(await q("SELECT count(*)::int n FROM employee_passkeys WHERE employee_id='UI-EMPLOYEE' AND revoked_at IS NULL")).toEqual([{n:0}]);

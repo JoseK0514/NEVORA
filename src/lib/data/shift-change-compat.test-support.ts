@@ -1,7 +1,7 @@
 // Test-only bridge supplies the newly mandatory reviewed command and server proof
 // to legacy API contract scenarios. Production never synthesizes this authority.
 import {randomUUID} from 'node:crypto';
-import {expect,vi} from 'vitest';
+import {expect,rs} from '@rstest/core';
 import * as exchanges from './exchanges';
 import * as callouts from './callouts';
 import {executeShiftChange} from './shift-changes';
@@ -26,8 +26,8 @@ export function verifyReadOnlyFences() {
 export function fixture(kind:'EXCHANGE'|'CALLOUT',status='PENDING',mode:'SHIFT_CHANGE'|'DIRECT_PUBLICATION'='SHIFT_CHANGE') {
  const r=previousFixture(kind,status);registry.set(r.executor,r);
  const businessBatches:SqlStatement[][]=[];
- const businessTransaction=vi.fn<SqlExecutor['transaction']>(async statements=>statements.map(()=>[]));
- vi.mocked(r.executor.transaction).mockImplementation(async statements=>{
+ const businessTransaction=rs.fn<SqlExecutor['transaction']>(async statements=>statements.map(()=>[]));
+ rs.mocked(r.executor.transaction).mockImplementation(async statements=>{
   const batch=[...statements];r.batches.push(batch);
   if(mode==='DIRECT_PUBLICATION'||batch.some(s=>/^INSERT INTO shift_change_operations\b/.test(s.text))) {
    businessBatches.push(batch);return businessTransaction(statements);
@@ -36,7 +36,7 @@ export function fixture(kind:'EXCHANGE'|'CALLOUT',status='PENDING',mode:'SHIFT_C
  });
  // Each original fixture's owner occupies a designated Lead slot.
  r.state.recipients[0].role='LEAD';
- vi.mocked(r.executor.query).mockImplementation(async statement=>{
+ rs.mocked(r.executor.query).mockImplementation(async statement=>{
   if(!statement.text.includes('AS source')) {if(statement.text.includes('AS state'))return [{state:structuredClone(r.state),read_at:'2030-10-07 12:00:00.123456+00'}] as never;return [{id:'northside',name:'Northside',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'}] as never;}
   const source=build(r,kind);
   return [{source,state:structuredClone(r.state),observedAt:'2030-10-07T12:00:00Z',workspaceUpdatedAt:'2030-01-01 00:00:00.123456+00',authorized:true}] as never;

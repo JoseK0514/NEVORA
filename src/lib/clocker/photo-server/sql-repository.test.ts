@@ -1,4 +1,4 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import type { SqlStatement, SqlExecutor } from '../../notifications/types';
 import type { ClockerIdentityProof } from '../pin-identity.server';
 import { SqlClockerPhotoRepository, type PhotoAuthorityBinder } from './sql-repository';
@@ -7,26 +7,26 @@ const command = { commandId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', verificatio
 const proof = { employeeId: 'fictional-employee', device: { deviceId: 'fictional-device', workspaceId: 'fictional-a', credentialVersion: 7 } } as ClockerIdentityProof;
 const owner = { workspaceId: 'fictional-a', employeeId: 'fictional-owner', sessionTokenHash: 'a'.repeat(64) };
 const guards = { before: [{ text: 'current-proof-before', values: [] }], after: [{ text: 'current-proof-after', values: [] }] };
-const authority: PhotoAuthorityBinder = { punch: vi.fn(() => guards), management: vi.fn(() => guards) };
+const authority: PhotoAuthorityBinder = { punch: rs.fn(() => guards), management: rs.fn(() => guards) };
 let returned: unknown;
 let captured: readonly SqlStatement[];
-const executor: SqlExecutor = { query: async () => [], transaction: vi.fn(async statements => { if (statements.length === 3) captured = statements; return [[], [{ value: returned }], []]; }) };
+const executor: SqlExecutor = { query: async () => [], transaction: rs.fn(async statements => { if (statements.length === 3) captured = statements; return [[], [{ value: returned }], []]; }) };
 const repository = new SqlClockerPhotoRepository(executor, authority);
-beforeEach(() => { vi.clearAllMocks(); returned = { commandId: command.commandId, state: 'unknown' }; captured = []; });
+beforeEach(() => { rs.clearAllMocks(); returned = { commandId: command.commandId, state: 'unknown' }; captured = []; });
 it('checks current authority before and after the SAME actual SQL batch', async () => {
   expect(await repository.status(proof, command)).toEqual(returned);
   expect(captured[0]).toEqual(guards.before[0]); expect(captured.at(-1)).toEqual(guards.after[0]);
   expect(captured[1].values).toEqual(['fictional-a', 'fictional-device', 'fictional-employee', 7, command.commandId]);
   expect(authority.punch).toHaveBeenCalledWith(proof, command);
   expect(executor.transaction).toHaveBeenCalledTimes(2);
-  expect(vi.mocked(executor.transaction).mock.calls[1][0]).toEqual([...guards.before,...guards.after]);
+  expect(rs.mocked(executor.transaction).mock.calls[1][0]).toEqual([...guards.before,...guards.after]);
 });
 it('fails closed on an empty adapter instead of treating proof as authenticated', async () => {
   const unbound = new SqlClockerPhotoRepository(executor, { punch: () => ({ before: [], after: [] }), management: () => guards });
   await expect(unbound.status(proof, command)).rejects.toThrow('Verify your PIN'); expect(executor.transaction).not.toHaveBeenCalled();
 });
 it('an unknown response preserves no-commit claim and never writes a punch', async () => {
-  vi.mocked(executor.transaction).mockRejectedValueOnce(new Error('secret SQL result lost'));
+  rs.mocked(executor.transaction).mockRejectedValueOnce(new Error('secret SQL result lost'));
   await expect(repository.status(proof, command)).rejects.toThrow('result could not be confirmed');
   expect(captured.every(statement => !statement.text.includes('clocker_apply_punch'))).toBe(true);
 });

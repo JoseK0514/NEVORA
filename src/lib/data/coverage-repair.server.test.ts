@@ -1,4 +1,5 @@
-import { expect, it, vi } from 'vitest';
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+import { expect, it, rs } from '@rstest/core';
 import { managementProof, schedulingSourceFixture } from '../../test/fixtures/management';
 import { assignmentFacts } from './assignment-facts.test-support';
 import type { GuardedWeekState } from './notification-transactions';
@@ -9,7 +10,7 @@ import { readCoverageRepair, readCoverageRepairSelection } from './coverage-repa
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { generationSourceSql } from './generation-guards';
 import {applyRestrictionCommand,emptyRestrictionDocument} from '../scheduling/restrictions';
-vi.mock('@/lib/db', () => import('../db'));
+
 
 function fixture() {
   const state: GuardedWeekState = { assignmentFacts: assignmentFacts(), schedules: [], shifts: [], revisions: [], acknowledgements: [], recipients: [
@@ -84,9 +85,9 @@ it('returns a resolved gap without an Add or Save candidate when the interval is
 function executorFixture() {
   const r = fixture(); const batches: SqlStatement[][] = [];
   const executor: SqlExecutor = {
-    query: vi.fn(async s => s.text.includes('AS state') ? [{ state: structuredClone(r.state), source: structuredClone(r.source), read_at: '2030-10-07T12:00:00Z' }]
+    query: rs.fn(async s => s.text.includes('AS state') ? [{ state: structuredClone(r.state), source: structuredClone(r.source), read_at: '2030-10-07T12:00:00Z' }]
       : [{ id: 'test-workspace', name: 'Fictional', active: true, timeZone: 'America/Puerto_Rico', createdAt: '', updatedAt: '2030-01-01 00:00:00.123456+00' }]) as SqlExecutor['query'],
-    transaction: vi.fn(async (statements: readonly SqlStatement[]) => { batches.push([...statements]); return statements.map(s => s.text.includes(' AS source') ? [{ source: structuredClone(r.source) }] : []); }),
+    transaction: rs.fn(async (statements: readonly SqlStatement[]) => { batches.push([...statements]); return statements.map(s => s.text.includes(' AS source') ? [{ source: structuredClone(r.source) }] : []); }),
   };
   const review = createCoverageRepairReview(r.source, r.locator, 'E', r.proof);
   const command = { review, proof: r.proof, actorEmployeeId: 'M', employeeId: 'E', locationId: 'loc-1', weekStart: '2030-10-07', date: '2030-10-07', startTime: '08:00', endTime: '12:00', positionId: 'barista', isDesignatedLead: true };
@@ -131,7 +132,7 @@ it('a valid repair creates its schedule and exact positioned Lead shift in ONE e
 });
 
 it.each(['generation_source_conflict', 'schedule_week_version_conflict'])('repair %s requires a fresh review, never a rebuilt second attempt', async conflict => {
-  const r = executorFixture(); vi.mocked(r.executor.transaction).mockRejectedValue(Object.assign(new Error(conflict), { code: '22P02' }));
+  const r = executorFixture(); rs.mocked(r.executor.transaction).mockRejectedValue(Object.assign(new Error(conflict), { code: '22P02' }));
   await expect(createCoverageRepairShift(r.command, r.executor)).rejects.toThrow('Coverage changed');
   expect(r.executor.transaction).toHaveBeenCalledTimes(1); expect(r.executor.query).toHaveBeenCalledTimes(2);
 });
@@ -200,4 +201,4 @@ it.each(['2026-11-01', '2026-03-08'])('a DST ambiguous or missing local endpoint
 
 // These business/unit fixtures do not execute SQL. Current scope admission and
 // rollback are exercised by company-access-schedule-*.integration.ts.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+rs.mock('@/lib/company-access/operational-scope.server', ()=>({...rstestOriginal0,assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));

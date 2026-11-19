@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from '@rstest/core';
 import { Cursor, createDdlParser, parseDdlDeclarations, tokenizeDdl } from './ddl';
 import type { DdlConstraint, DdlJournal, DdlSpan } from './ddl';
 import { loadPinnedMigrations } from './source';

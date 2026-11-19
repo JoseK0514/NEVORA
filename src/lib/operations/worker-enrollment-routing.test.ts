@@ -1,4 +1,4 @@
-import {beforeAll,expect,it,vi} from 'vitest';
+import {beforeAll,expect,it,rs} from '@rstest/core';
 import {generateKeyPairSync} from 'node:crypto';
 import {readWorkerRoutingConfig,readWorkspaceRoutingConfig} from '../workspace-routing/config.server';
 import {resolveWorkspaceBinding} from '../workspace-routing/resolver.server';
@@ -23,7 +23,7 @@ it('refuses incomplete enrollment, public keys, malformed IDs and production',()
  for(const patch of [{NEVORA_WORKER_ENROLLMENT_ID:undefined},{NEVORA_WORKER_RECIPIENT_PRIVATE_KEY:undefined},{NEVORA_WORKER_RECIPIENT_PRIVATE_KEY:publicKey},{NEVORA_WORKER_ENROLLMENT_ID:'invalid'},{NEVORA_ONBOARDING_ENVIRONMENT:'production'}])expect(()=>readWorkerRoutingConfig({...env(),...patch})).toThrow('Workspace is unavailable');
 });
 it('rejects APP and BOOTSTRAP before looking up any protected source',async()=>{
- const query=vi.fn(async()=>({rows:[],rowCount:0})),transaction=vi.fn(async()=>{throw Error('must_not_read');}),store={query,transaction},c=readWorkerRoutingConfig(env());
+ const query=rs.fn(async()=>({rows:[],rowCount:0})),transaction=rs.fn(async()=>{throw Error('must_not_read');}),store={query,transaction},c=readWorkerRoutingConfig(env());
  for(const purpose of ['APP','BOOTSTRAP'] as const)await expect(resolveWorkspaceBinding({origin:profile().origin},store,c,purpose)).rejects.toThrow('Workspace is unavailable');expect(query).not.toHaveBeenCalled();expect(transaction).not.toHaveBeenCalled();
 });
 it('curates enrolled host profiles without synthesizing or passing shared roots',()=>{

@@ -1,11 +1,12 @@
 'use client';
 import Link from 'next/link';
 import {useState,type MouseEvent,type ReactNode} from 'react';
-import {CircleNotchIcon} from '@phosphor-icons/react/dist/ssr/CircleNotch';
 import type {EmployeeNotificationItem,EmployeeViewSnapshot} from '../../lib/employee-view';
 import type {PrivatePanelState} from '../../lib/private-snapshot-client';
 import {notificationCountNote,notificationKindFor,notificationName,notificationOutcomeNote} from '../../lib/notification-facts';
 import {CorpCard,CorpCount} from '../corp/corp';
+import {BSegs} from '../owner-b/b-kit';
+import {ACCOUNT_LOCALE,accountCopy,type AccountLang} from '../employee-b/account-copy';
 import './account-corp.css';
 
 export type NotificationTab='all'|'unread';
@@ -55,6 +56,51 @@ export function notificationTitle(item:EmployeeNotificationItem):string{
  }
 }
 
+/** Phase 4 (EM-005): a row in two parts. `title` is the outcome in a few words ("Time off approved", "Confirm your
+ * schedule"); `object` is what it is about, from the dates, the name and the count the list sends ("Nov 30 – Dec 2",
+ * "Week of Nov 9 · 2 shifts", "Sat, Nov 21 · From Ana Colon"), or null when the list sends none of them (a team update's
+ * title and a pay statement's period are not in the read). `decided` is set only for a decision the event type names.
+ * Nothing is guessed: without an event type the title stops at "answered" or "updated", as notificationTitle does. */
+export type NotificationHeadline={title:string;object:string|null;decided:'approved'|'declined'|null};
+const headlineDay=(date:string,locale:string,weekday:boolean)=>new Intl.DateTimeFormat(locale,{timeZone:'UTC',...(weekday?{weekday:'short'}:{}),month:'short',day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
+export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountLang='en'):NotificationHeadline{
+ const t=accountCopy(lang),locale=ACCOUNT_LOCALE[lang],subject=item.subject??null,needed=item.actionState==='required',who=notificationName(item);
+ const kind=notificationKindFor(item),event=needed?null:item.eventType??null;
+ const dates=!subject?null:subject.kind==='scheduleWeek'?t.weekOf(headlineDay(subject.startDate,locale,false))
+  :subject.startDate===subject.endDate?headlineDay(subject.startDate,locale,true)
+  :`${headlineDay(subject.startDate,locale,false)} – ${subject.startDate.slice(0,7)===subject.endDate.slice(0,7)?Number(subject.endDate.slice(8)):headlineDay(subject.endDate,locale,false)}`;
+ const count=/^SCHEDULE_/.test(item.eventType??'')&&typeof item.count==='number'&&Number.isSafeInteger(item.count)&&item.count>=0?t.shifts(item.count):null;
+ const later=notificationOutcomeNote(item),now=later?t.now[later.replace(/^Now /,'')]??null:null;
+ const forYou=item.actionState==='available'&&(item.eventType==='SWAP_RESPONSE_REQUIRED'||item.eventType==='COVERAGE_INVITATION');
+ const object=[dates,count,forYou&&who?t.from(who):null,now].filter(Boolean).join(' · ')||null;
+ const decided=/_APPROVED$/.test(event??'')?'approved' as const:/_DENIED$/.test(event??'')?'declined' as const:null;
+ const title=((): string=>{
+  switch(event){
+   case 'SCHEDULE_PUBLISHED':return t.schedulePublished;
+   case 'TIME_OFF_APPROVED':return t.timeOffApproved;
+   case 'TIME_OFF_DENIED':return t.timeOffDeclined;
+   case 'CALLOUT_APPROVED':return t.calloutApproved;
+   case 'CALLOUT_DENIED':return t.calloutDeclined;
+   case 'SWAP_APPROVED':return t.swapApproved;
+   case 'SWAP_DENIED':return t.swapDeclined;
+   case 'COVERAGE_APPROVED':return t.coverApproved;
+   case 'COVERAGE_DENIED':return t.coverDeclined;
+  }
+  if(forYou)return item.eventType==='SWAP_RESPONSE_REQUIRED'?t.swapForYou:t.coverForYou;
+  switch(kind){
+   case 'SCHEDULE':return needed?t.scheduleConfirm:t.scheduleUpdated;
+   case 'TIME_OFF':return t.timeOffAnswered;
+   case 'CALLOUT':return t.calloutAnswered;
+   case 'EXCHANGE':return item.actionState==='available'?t.requestForYou:item.actionState==='complete'?t.requestClosed:t.requestUpdated;
+   case 'AVAILABILITY':return needed?t.availabilityDue:item.actionState==='complete'?t.availabilitySent:t.availabilityReminder;
+   case 'COMMUNICATION':return needed?t.updateToAcknowledge:t.updateShared;
+   case 'PAYROLL_STATEMENT':return t.payStatementShared;
+   default:return item.label;
+  }
+ })();
+ return {title,object,decided:decided&&kind?decided:null};
+}
+
 /** Board E-Notifications (upscale B7): All / Unread tabs, then the notices grouped by day in cards, one row per notice.
  * No icon tile and no pill: an unread notice has a bold title and one dot; one that needs you says so in grey before its
  * time. While a tapped notice opens (`opening`), its row stays pressed with a 16px spinner where the dot sits. Times are
@@ -77,8 +123,8 @@ export function EmployeeNotificationList({items,partial,tab,onTab,timeZone,onOpe
     const facts=[notificationOutcomeNote(item),notificationCountNote(item)].filter((note):note is string=>!!note);
     return <li key={item.id}><Link id={'message-'+item.id} className={`c-row em-notif-row${isUnread?' em-notif-row--unread':''}${busy?' em-notif-row--busy':''}`} href={item.href} prefetch={false} onClick={onOpen?event=>onOpen(event,item.id,item.href):undefined}
      aria-busy={busy||undefined} aria-label={`${title}${facts.length?`, ${facts.join(', ')}`:''}${isUnread?', unread':''}${required?', action needed':''}, ${time}`}>
-     <span className="c-row__main"><span className={isUnread?'c-row__title c-row__title--b':'c-row__title'}>{title}</span><span className="c-row__detail"><span>{required?'Action needed · ':''}{facts.map(note=>`${note} · `).join('')}{time}</span></span></span>
-     {busy?<CircleNotchIcon className="em-notif-spin" weight="bold" aria-hidden="true"/>:isUnread?<span className="em-notif-dot" aria-hidden="true"/>:null}
+     <span className="c-row__main"><span className={isUnread?'c-row__title c-row__title--b':'c-row__title'}>{title}</span><span className="c-row__detail"><BSegs parts={[required?'Action needed':null,...facts,time].flatMap(part=>part?part.split(/[\s\u00a0]+·[\s\u00a0]+/):[])}/></span></span>
+     {busy?<span className="em-notif-spin b-spin b-spin--sm" aria-hidden="true"/>:isUnread?<span className="em-notif-dot" aria-hidden="true"/>:null}
     </Link></li>;})}</ul>
   </CorpCard>):<CorpCard><p className="c-empty"><b>{tab==='unread'?'You’re all caught up':partial?'Nothing confirmed on this page':'No current notifications'}</b>{tab==='unread'?'No unread notifications.':partial?'Some notices couldn’t be checked. Refresh to check again.':'New schedule, request and pay notices will show here.'}{more?' Older items may be on another page.':''}</p></CorpCard>}
  </>;

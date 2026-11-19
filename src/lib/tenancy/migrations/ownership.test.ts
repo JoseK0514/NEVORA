@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { loadPinnedMigrations } from '../inventory/source';
 import { getOwnershipRegistry, verifyOwnershipSource, OWNERSHIP_SCHEMA_COMMIT, OWNERSHIP_SCHEMA_TREE, canonicalOwnershipJson } from './ownership';
 const repo = process.cwd();

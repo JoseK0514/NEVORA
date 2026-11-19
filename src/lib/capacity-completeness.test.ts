@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseTimecardsResponse} from './timecards/read-model';
 import {parseCurrentTimecards} from './timecards/client';
 import {parseManagerTimeCorrections} from './time-corrections/read-model';

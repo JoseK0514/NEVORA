@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {ShiftChangeFormState} from './shift-change-form-state';
 const op='11111111-1111-4111-8111-111111111111';
 it('reconciles a lost committed response without resubmitting or changing identity',async()=>{

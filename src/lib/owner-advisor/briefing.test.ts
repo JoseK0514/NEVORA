@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { projectToday } from "@/lib/today/project";
 import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
 import { deriveAttention, type AttentionReview } from "./briefing";

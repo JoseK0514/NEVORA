@@ -135,6 +135,18 @@ When an incident occurs:
    established. Observe fresh ticks and inspect remaining failed work. A code
    rollback cannot unsend a message or reverse a completed business mutation.
 
+The application answers `GET /healthz` (and `HEAD`) with `{"status":"ok"}` and
+`Cache-Control: no-store`. It reads no session, database, configuration or
+workspace, so frequent polling cannot keep a scale-to-zero database awake, and
+it sits outside the proxy matcher. It is a liveness target only; it does not
+prove database, worker or provider health.
+
+Public-page Web Analytics is off unless `NEVORA_WEB_ANALYTICS_ENABLED` is
+exactly `true`. When on, it counts only allowlisted public pages with query
+strings and fragments removed; portal, kiosk and API paths are never reported.
+Turning it on also needs Web Analytics enabled on the Vercel project, counsel's
+review of the updated privacy processor list and a new policy effective date.
+
 Private worker health is not public uptime coverage. Public monitoring acceptance
 still needs an approved public target, safe expected response, check interval and
 failure/recovery criteria, independent execution, actual alert destination and
@@ -203,6 +215,12 @@ Email and assisted recovery also require a different password while replacement
 is pending. A customer-chosen password in self-service signup is distinguished
 from an operator-created password and does not require choosing it twice.
 
+New and replacement passwords use the shared 15-character policy, including
+operator setup and initial Owner activation. The local, pinned breach blocklist
+is finite and must be refreshed using `scripts/password-blocklist.mjs`; its source,
+license and refresh procedure are in `src/lib/auth/blocked-passwords.md`. This does
+not change verification of existing credentials or introduce periodic rotation.
+
 Keep payroll calculation mode `external` for this release. Native table presence
 does not enable calculation. Imported statement validation and approval do not
 prove tax correctness, wage payment or remittance. Do not turn on customer payroll,
@@ -228,3 +246,24 @@ Business evidence maintenance and model retrieval use separate default-off Owner
 See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
 
 Posted cash is assigned by posting time, including cross-month occurrences. Cash inflows/outflows and sale/refund amounts/counts are separate from net totals. Reconciliation must hold within every admitted cash window and across shared boundaries; offsetting discrepancies cannot establish clearance. CURRENT freshness is capped at the requested window end. Source deletion conservatively clears all workspace business answer-receipt payloads as well as structured inspection content, retaining content-free operation/request identities and unrelated ordinary history.
+
+## Combined UI acceptance and uncertain operations
+
+Development is the working and acceptance line, held to production standards.
+Source publication and passing CI do not prove hosted configuration, migration
+state or browser acceptance on a hosted environment. Main and production promotion
+require Jose's separate approval. Keep business/import/retrieval and delivery holds
+truthful; this UI integration does not activate providers or authorize real data tests.
+
+For an uncertain financial or reminder write, preserve the original operation
+reference and recover its receipt under current authority. An absent completed
+receipt is not a guarantee against a late commit. Do not create a replacement to
+resolve uncertainty. Private data must hide after its observation expires or the
+user steps away, including while a refresh is pending. Share only a content-free
+support reference with support, never imported records, credentials or recovery codes.
+
+## Combined Development release checks
+
+Use the final candidate SHA and its source inventory, not an old Preview's Ready status. Qualify the full dependency tree and production tree, actual role/privacy/recovery journeys, all required cloud contexts and the actual Development workflows. Rebuild all six source-bound manuals after application or guide changes. Preserve the source-bound production build's artifact hashes across the development-marker check.
+
+The local restore rehearsal verifies both the earlier Development backup and the schema including employment dates and Clocker grace. It does not replace the selected hosted Neon migration/restore run or independent disaster-recovery acceptance. Before hosted work, verify the exact fictional database binding, migration ledger, restricted principals and rollback artifact. Keep provider/retention/Tax and production approval holds in force.

@@ -2,15 +2,15 @@
 // (docs/execution/employee-mobile-device-alerts/evidence/root/reviews/qa/ownership-replacement.test.ts.txt).
 // The actual public/fuel-portal-sw.js runs in a VM; only native IDB/PushManager/MessageChannel/fetch are doubles.
 // The probe asserted the unsafe outcome to prove reproduction; these tests assert the safe one.
-import {it,expect,vi,beforeEach,afterEach} from 'vitest';
+import {it,expect,rs,beforeEach,afterEach} from '@rstest/core';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 let DeviceController: typeof import('./device-client').DeviceController;
 let browserRuntime: typeof import('./device-client').browserRuntime;
 // Each fixture is a fresh browser; replacements within one test share its lifetime.
-beforeEach(async()=>{vi.resetModules();({DeviceController,browserRuntime}=await import('./device-client'));});
+beforeEach(async()=>{rs.resetModules();({DeviceController,browserRuntime}=await import('./device-client'));});
 const source=readFileSync('public/fuel-portal-sw.js','utf8');
-afterEach(()=>{vi.unstubAllGlobals();});
+afterEach(()=>{rs.unstubAllGlobals();});
 const origin='https://portal.example';const gen='generation-original';const authority='fictional-authority';
 // Actual deployed worker source executes. Only native IDB/PushManager/MessageChannel
 // boundaries are doubles. Shared IDB data survives worker/controller replacement.
@@ -33,16 +33,16 @@ function fixture(){
  const db=storage(),messages:any[]=[],stores=new Map<string,Map<string,Response>>();let cacheFailed=false;
  const caches={open:async(name:string)=>{if(cacheFailed)throw Error('Cache unavailable');if(!stores.has(name))stores.set(name,new Map());const store=stores.get(name)!;return {keys:async()=>[...store.keys()].map(k=>new Request(k)),match:async(key:string)=>store.get(key)?.clone(),put:async(key:string,value:Response)=>{store.set(key,value.clone())}}}};
  let active=worker(db,messages,caches);const values=new Map<string,string>();let failLocal=false;
- const subscription={unsubscribe:vi.fn(async()=>{throw Error('native rejected')}),toJSON:()=>({endpoint:'fictional'})};
+ const subscription={unsubscribe:rs.fn(async()=>{throw Error('native rejected')}),toJSON:()=>({endpoint:'fictional'})};
  const registration={get active(){return active},waiting:null,pushManager:{getSubscription:async()=>subscription},getNotifications:async()=>[]};
  const locks={request:async(_n:string,_o:unknown,action:()=>unknown)=>action()};
- const notification={permission:'granted',requestPermission:vi.fn()};
- vi.stubGlobal('Notification',notification);
- vi.stubGlobal('window',{isSecureContext:true,PushManager:{},Notification:notification,matchMedia:()=>({matches:false}),addEventListener(){},removeEventListener(){}});
- vi.stubGlobal('navigator',{userAgent:'fictional',platform:'fictional',maxTouchPoints:0,locks,serviceWorker:{register:async()=>registration,getRegistration:async()=>registration}});
- vi.stubGlobal('location',{pathname:'/app'});
- vi.stubGlobal('localStorage',{getItem:(key:string)=>values.get(key)??null,setItem:(key:string,value:string)=>{if(failLocal)throw Error('storage unavailable');values.set(key,value);},removeItem:(key:string)=>{values.delete(key);}});
- vi.stubGlobal('fetch',vi.fn(async(url:string)=>url.endsWith('/status')?new Response(JSON.stringify({supported:true,enabled:true,configurationAvailable:true,testAllowed:false,ownershipGeneration:gen,vapidPublicKey:'fictional',authority,validForMs:45000}),{status:200}):new Response(JSON.stringify({error:'cleanup_pending'}),{status:503})));
+ const notification={permission:'granted',requestPermission:rs.fn()};
+ rs.stubGlobal('Notification',notification);
+ rs.stubGlobal('window',{isSecureContext:true,PushManager:{},Notification:notification,matchMedia:()=>({matches:false}),addEventListener(){},removeEventListener(){}});
+ rs.stubGlobal('navigator',{userAgent:'fictional',platform:'fictional',maxTouchPoints:0,locks,serviceWorker:{register:async()=>registration,getRegistration:async()=>registration}});
+ rs.stubGlobal('location',{pathname:'/app'});
+ rs.stubGlobal('localStorage',{getItem:(key:string)=>values.get(key)??null,setItem:(key:string,value:string)=>{if(failLocal)throw Error('storage unavailable');values.set(key,value);},removeItem:(key:string)=>{values.delete(key);}});
+ rs.stubGlobal('fetch',rs.fn(async(url:string)=>url.endsWith('/status')?new Response(JSON.stringify({supported:true,enabled:true,configurationAvailable:true,testAllowed:false,ownershipGeneration:gen,vapidPublicKey:'fictional',authority,validForMs:45000}),{status:200}):new Response(JSON.stringify({error:'cleanup_pending'}),{status:503})));
  const controller=()=>new DeviceController(browserRuntime(authority),()=>{});
  return {db,messages,values,subscription,controller,failWorkerStorage(){db.fail();cacheFailed=true;},replaceWorker(){active=worker(db,messages,caches)},failLocalStorage(){failLocal=true;}};
 }
@@ -52,7 +52,7 @@ it('QA-OWN-3: after IDB suppression, native unsubscribe and server cleanup all f
  const f=fixture();
  const first=f.controller();await first.start();expect(first.snapshot.state).toBe('enabled');
  f.db.fail();await first.turnOff();expect(first.snapshot.state).toBe('error');
- await vi.waitFor(()=>expect(f.subscription.unsubscribe).toHaveBeenCalledOnce());
+ await rs.waitFor(()=>expect(f.subscription.unsubscribe).toHaveBeenCalledOnce());
  expect(JSON.parse(f.values.get('fuel-portal-turn-off-pending')!)).toEqual([gen]);
  const ownedBefore=setOwner(f.messages);
  first.dispose();f.db.recover();f.replaceWorker();const next=f.controller();await next.start();
@@ -69,11 +69,11 @@ it('QA-OWN-3: after IDB suppression, native unsubscribe and server cleanup all f
 it('QA-OWN-3: Retry turn off on the replacement, once confirmed, clears the remembered intent',async()=>{
  const f=fixture();
  const first=f.controller();await first.start();f.db.fail();await first.turnOff();
- await vi.waitFor(()=>expect(f.subscription.unsubscribe).toHaveBeenCalledOnce());
+ await rs.waitFor(()=>expect(f.subscription.unsubscribe).toHaveBeenCalledOnce());
  first.dispose();f.db.recover();f.replaceWorker();const next=f.controller();await next.start();
  expect(next.snapshot.cleanupPending).toBe(true);
  // The server now accepts the cleanup and its fresh status confirms the generation is off.
- vi.stubGlobal('fetch',vi.fn(async(url:string)=>url.endsWith('/status')
+ rs.stubGlobal('fetch',rs.fn(async(url:string)=>url.endsWith('/status')
   ?new Response(JSON.stringify({supported:true,enabled:false,configurationAvailable:true,testAllowed:false,vapidPublicKey:'fictional',authority,validForMs:45000}),{status:200,headers:{'Content-Type':'application/json'}})
   :new Response(JSON.stringify({generation:gen,status:'complete'}),{status:200,headers:{'Content-Type':'application/json'}})));
  await next.turnOff(gen);

@@ -1,7 +1,7 @@
 'use client';
 import { focusAfterRetry } from '@/components/kit/focus-after-retry';
 
-import { ArrowsClockwiseIcon, DownloadSimpleIcon, EyeIcon, FileTextIcon, FileCodeIcon, LockKeyIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
+import { ArrowClockwiseIcon, DownloadSimpleIcon, EyeIcon, FileTextIcon, FileCodeIcon, LockKeyIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import type { ReactNode } from 'react';
 import type { PayrollDocument } from '@/lib/payroll/contracts';
 import { PAYROLL_SIGNED_OUT, type usePayrollOperation } from './use-payroll';
@@ -22,8 +22,8 @@ export function PayrollPanel({ title, description, children, aside }: { title: s
 }
 export function PayrollState({ title, children, error = false, retry }: { title: string; children: ReactNode; error?: boolean; retry?: () => void }) {
   return <div className={`pw-state${error ? ' pw-state-error' : ''}`} role={error ? 'alert' : 'status'}>
-    {error ? <WarningCircleIcon size={25} weight="bold" aria-hidden /> : <FileTextIcon size={25} weight="bold" aria-hidden />}
-    <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <button type="button" className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar', '.pw-state .pw-button'); }}><ArrowsClockwiseIcon size={18} weight="bold" aria-hidden />Try again</button>}</div>
+    {error ? <WarningCircleIcon size={22} weight="bold" aria-hidden /> : <FileTextIcon size={22} weight="bold" aria-hidden />}
+    <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <button type="button" className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar', '.pw-state .pw-button'); }}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden />Try again</button>}</div>
   </div>;
 }
 export function OperationFeedback({ operation }: { operation: ReturnType<typeof usePayrollOperation> }) {
@@ -45,5 +45,5 @@ export function DocumentLink({ document }: { document: PayrollDocument }) {
   </div>;
 }
 export function PrivacyNote({ children }: { children: ReactNode }) {
-  return <p className="pw-privacy"><LockKeyIcon size={17} weight="bold" aria-hidden />{children}</p>;
+  return <p className="pw-privacy"><LockKeyIcon size={16} weight="bold" aria-hidden />{children}</p>;
 }

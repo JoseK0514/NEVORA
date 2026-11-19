@@ -5,7 +5,7 @@ import { useFormStatus } from "react-dom";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { SigSpinner, useKeepFocusWhileBusy } from "@/components/signature/sig-button";
 
-export function ActivationSubmit({pending:controlledPending,idle="Activate account",busy="Activating account…",className}: {pending?:boolean;idle?:string;busy?:string;className?:string} = {}) {
+export function ActivationSubmit({pending:controlledPending,idle="Set up account",busy="Setting up your account…",className}: {pending?:boolean;idle?:string;busy?:string;className?:string} = {}) {
   const status = useFormStatus();
   const pending = controlledPending ?? status.pending;
   const button = useRef<HTMLButtonElement>(null);

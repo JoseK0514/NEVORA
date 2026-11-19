@@ -1,20 +1,20 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, rs } from '@rstest/core';
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
-const fixture = vi.hoisted(() => ({ role: "OWNER", payroll: false, scope: "COMPANY", modules: undefined as Record<string, boolean> | undefined, failed: false }));
-vi.mock("next/navigation", () => ({ notFound: () => { throw new Error("NEXT_NOT_FOUND"); }, usePathname: () => "/app/help", useRouter: () => ({ refresh: () => undefined }) }));
-vi.mock("@/lib/auth/session", () => ({ requireSession: async () => ({ id: "fictional", role: fixture.role, firstName: "Ana", lastName: "Colón" }),
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+const fixture = rs.hoisted(() => ({ role: "OWNER", payroll: false, scope: "COMPANY", modules: undefined as Record<string, boolean> | undefined, failed: false }));
+rs.mock("next/navigation", () => ({ notFound: () => { throw new Error("NEXT_NOT_FOUND"); }, usePathname: () => "/app/help", useRouter: () => ({ refresh: () => undefined }) }));
+rs.mock("@/lib/auth/session", () => ({ requireSession: async () => ({ id: "fictional", role: fixture.role, firstName: "Ana", lastName: "Colón" }),
   requireSessionMutationProof: async () => ({ employee: { id: "fictional", role: fixture.role }, sessionTokenHash: "a".repeat(64) }) }));
 // How to lists only what this person can open: the same role, scope, module and payroll reads the menus use (fictional here).
-vi.mock("@/lib/payroll/service", () => ({ payrollFeatureEnabled: () => fixture.payroll,
+rs.mock("@/lib/payroll/service", () => ({ payrollFeatureEnabled: () => fixture.payroll,
   readPayrollCapabilities: async () => ({ enabled: true, canConfigure: true, canReview: true, canApprove: true, internalCalculatorAvailable: false, bankCompatibility: "UNVERIFIED" }) }));
-vi.mock("@/lib/company-access/operational-scope.server", () => ({ readOperationalAuthority: async () => {
+rs.mock("@/lib/company-access/operational-scope.server", () => ({ readOperationalAuthority: async () => {
   if (fixture.failed) throw new Error("fictional read failure");
   return { state: "ready", employeeId: "fictional", role: "MANAGER", source: "LEGACY_ADOPTION", scope: { mode: fixture.scope, locationIds: fixture.scope === "COMPANY" ? [] : ["l1"] }, scopeRevision: 1, authority: "fictional", locations: [], observedAt: "2026-11-14T12:00:00Z", validForMs: 15000 };
 } }));
-vi.mock("@/lib/workspace-presentation/current.server", () => ({ currentBrand: async () => ({ words: "standard", modules: fixture.modules }) }));
+rs.mock("@/lib/workspace-presentation/current.server", () => ({ currentBrand: async () => ({ words: "standard", modules: fixture.modules }) }));
 
 import NotFound from "./not-found";
 import MissingPage from "./[...missing]/page";

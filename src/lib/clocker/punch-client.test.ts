@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { makePunchCommand, punchActions, readPendingPunch, savePendingPunch, forgetPendingPunch, canRetirePendingPunch, parseClockView, parseReceiptReply } from './punch-client';
 import type { PunchSnapshot } from './punch-types';
 import {readSubjectPendingPunch,saveSubjectPendingPunch,forgetSubjectPendingPunch,pendingPunchReferences} from './punch-client';

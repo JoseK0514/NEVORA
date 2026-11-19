@@ -1,16 +1,16 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import RequestsPage from './page';
 import { onlyB, withoutB } from '@/components/owner-b/test-support';
 
-vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},replace:()=>{}})}));
-vi.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'fictional', role: 'EMPLOYEE' }),
+rs.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},replace:()=>{}})}));
+rs.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'fictional', role: 'EMPLOYEE' }),
   // The page binds its planning view to the real proof shape (employee id and session token hash).
   requireSessionMutationProof: async () => ({ employee: { id: 'fictional', firstName: 'Fictional', lastName: 'Employee', role: 'EMPLOYEE', primaryLocationId: 'loc-1' }, sessionTokenHash: 'a'.repeat(64) }) }));
-vi.mock('@/lib/auth/permissions', () => ({ isTimeOffReviewerRole: () => false }));
-vi.mock('@/components/manager-time-off', () => ({ ManagerTimeOff: () => null }));
-vi.mock('@/app/app/requests/time-off-form', () => ({ TimeOffForm: () => null }));
-vi.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () => [
+rs.mock('@/lib/auth/permissions', () => ({ isTimeOffReviewerRole: () => false }));
+rs.mock('@/components/manager-time-off', () => ({ ManagerTimeOff: () => null }));
+rs.mock('@/app/app/requests/time-off-form', () => ({ TimeOffForm: () => null }));
+rs.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () => [
   { id: 'pending', employeeId: 'fictional', status: 'PENDING', startDate: '2030-10-07', endDate: '2030-10-08', allDay: true, reason: 'Fictional pending request' },
   { id: 'approved', status: 'APPROVED', startDate: '2030-10-09', endDate: '2030-10-10', allDay: true, reason: 'Fictional approved request', createdAt: '2030-10-01T15:00:00.000Z', reviewedAt: '2030-10-02T15:00:00.000Z', reviewerName: 'Fictional Manager' },
   { id: 'withdrawn', status: 'CANCELLED', startDate: '2030-10-11', endDate: '2030-10-11', allDay: true, createdAt: '2030-10-01T15:00:00.000Z', reviewedAt: '2030-10-03T15:00:00.000Z' },

@@ -1,17 +1,18 @@
-vi.mock('@/lib/data/sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import * as rstestOriginal0 from "../../test/fixtures/business-sql-session" with { rstest: 'importActual' };
+rs.mock('@/lib/data/sql-session-contract',()=>rstestOriginal0);
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 
-const state = vi.hoisted(() => ({ query: vi.fn(), verify: vi.fn(), transaction: vi.fn() }));
-vi.mock("@/lib/db", () => ({ getDb: () => ({ query: state.query }), queryRows: (rows: unknown) => rows }));
-vi.mock("@/lib/auth/password", () => ({ verifyPassword: state.verify, dummyPasswordHash: async () => "fictional-dummy-hash" }));
-vi.mock("@/lib/data/notification-transactions", () => ({ neonNotificationExecutor: () => ({ transaction: state.transaction }) }));
+const state = rs.hoisted(() => ({ query: rs.fn(), verify: rs.fn(), transaction: rs.fn() }));
+rs.mock("@/lib/db", () => ({ getDb: () => ({ query: state.query }), queryRows: (rows: unknown) => rows }));
+rs.mock("@/lib/auth/password", () => ({ verifyPassword: state.verify, dummyPasswordHash: async () => "fictional-dummy-hash" }));
+rs.mock("@/lib/data/notification-transactions", () => ({ neonNotificationExecutor: () => ({ transaction: state.transaction }) }));
 import { DELETION_REFERENCE, activeDeletionRequest, checkDeletionRequest, newDeletionReference, rejectedByDatabase, submitDeletionRequest } from "./requests.server";
 
 const input = { employeeId: "FICTIONAL-E1", sessionTokenHash: "a".repeat(64), password: "fictional-password", channel: "web" as const, policyVersion: "2026-10-20-draft" };
 const missingTable = Object.assign(new Error("relation does not exist"), { code: "42P01" });
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  rs.clearAllMocks();
   state.verify.mockResolvedValue(true);
   state.query.mockImplementation(async (text: string) => text.includes("employee_credentials") ? [{ password_hash: "fictional-hash", password_updated_at: "2030-01-01 09:00:00+00" }] : []);
   state.transaction.mockImplementation(async (statements: { text: string; values: unknown[] }[]) =>

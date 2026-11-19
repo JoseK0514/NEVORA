@@ -1,21 +1,21 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, rs } from '@rstest/core';
 import { NativeDeviceController, type NativeDeviceRuntime } from './device-client';
 const generation = 'a0eb37ac-e8a2-4f72-9f01-74eaa15eaa11';
 function fixture() {
     const hello = { state: 'ready', platform: 'ios', nonce: generation, spki: 'public-key', keyFingerprint: 'a'.repeat(64), permission: 'granted', generation: null, revision:null,maintenance:false };
-    const request = vi.fn<NativeDeviceRuntime['request']>(async (method) => method === 'hello' ? hello : method === 'notifications.complete' ? { state: 'active', generation } : { state: 'complete', generation });
-    const api = vi.fn<NativeDeviceRuntime['api']>(async (action) => action === 'challenge' ? { state: 'challenge', challenge: { operation: 'enroll' } } : { state: 'off' });
-    const runtime = { request, api, close: vi.fn() } as unknown as NativeDeviceRuntime;
+    const request = rs.fn<NativeDeviceRuntime['request']>(async (method) => method === 'hello' ? hello : method === 'notifications.complete' ? { state: 'active', generation } : { state: 'complete', generation });
+    const api = rs.fn<NativeDeviceRuntime['api']>(async (action) => action === 'challenge' ? { state: 'challenge', challenge: { operation: 'enroll' } } : { state: 'off' });
+    const runtime = { request, api, close: rs.fn() } as unknown as NativeDeviceRuntime;
     return { hello, request, api, runtime, client: new NativeDeviceController(runtime, () => { }) };
 }
 describe('native device ownership', () => {
     it('waits for bounded native rotation without enrolling or calling it revoked, and retires its retry on pause',async()=>{
-        vi.useFakeTimers();try {
+        rs.useFakeTimers();try {
             const f=fixture();f.hello.maintenance=true;await f.client.start();expect(f.client.snapshot.state).toBe('loading');expect(f.api).not.toHaveBeenCalled();
             f.hello.maintenance=false;Object.assign(f.hello,{generation,revision:generation});f.api.mockResolvedValue({state:'active',generation});
-            await vi.advanceTimersByTimeAsync(1000);expect(f.client.snapshot.state).toBe('enabled');
-            f.hello.maintenance=true;await f.client.start();const count=f.request.mock.calls.length;f.client.pause();await vi.advanceTimersByTimeAsync(2000);expect(f.request).toHaveBeenCalledTimes(count);f.client.dispose();
-        }finally{vi.useRealTimers();}
+            await rs.advanceTimersByTimeAsync(1000);expect(f.client.snapshot.state).toBe('enabled');
+            f.hello.maintenance=true;await f.client.start();const count=f.request.mock.calls.length;f.client.pause();await rs.advanceTimersByTimeAsync(2000);expect(f.request).toHaveBeenCalledTimes(count);f.client.dispose();
+        }finally{rs.useRealTimers();}
     });
     it('accepts detached tombstone revisions and reenrolls with that revision', async () => {
         const f = fixture(), tombstone = 'b0eb37ac-e8a2-4f72-9f01-74eaa15eaa11';
@@ -80,7 +80,7 @@ describe('native device ownership', () => {
         let resolve!: (v: Record<string, unknown>) => void;
         f.api.mockImplementation(async (action: string) => action === 'challenge' ? new Promise(r => { resolve = r; }) : { state: 'off' });
         const pending = f.client.enable();
-        await vi.waitFor(() => expect(resolve).toBeTypeOf('function'));
+        await rs.waitFor(() => expect(resolve).toBeTypeOf('function'));
         f.client.dispose();
         resolve({ state: 'challenge', challenge: { operation: 'enroll' } });
         await pending;

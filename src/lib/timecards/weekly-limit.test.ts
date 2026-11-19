@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {parseTimecardsResponse} from './read-model';
 const period={startDate:'2026-11-09',endDate:'2026-11-15'};
 it('reports unknown company weekly limit without inventing a threshold or changing card source',()=>{

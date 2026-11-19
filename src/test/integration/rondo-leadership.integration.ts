@@ -1,5 +1,5 @@
 /** Owned PostgreSQL plus scripted transport readiness; never an AI quality score. */
-import {afterAll,beforeAll,expect,it,vi} from 'vitest';
+import {afterAll,beforeAll,expect,it,rs} from '@rstest/core';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {randomUUID} from 'node:crypto';
@@ -19,20 +19,20 @@ import {AdvisorProviderFailure} from '../../lib/owner-advisor/provider-failure.s
 
 const rows:Record<string,unknown>[]=[];
 let failureCaptureChecks=0;
-const ambientFetch=vi.fn(async()=>{throw Error('Ambient external network is disabled in Rondo fixture verification');});
+const ambientFetch=rs.fn(async()=>{throw Error('Ambient external network is disabled in Rondo fixture verification');});
 beforeAll(()=>{
  expect(leadershipCases).toHaveLength(16);
  expect(new Set(leadershipCases.map(c=>c.id)).size).toBe(16);
  expect(leadershipCases.map(c=>c.id).sort()).toEqual([...leadershipCaseIds].sort());
  for(const c of leadershipCases){expect(c.question.length).toBeGreaterThan(0);expect(c.oracle.length).toBeGreaterThan(0);expect(c.role).toBe(c.id==='rondo-manager-claims-owner-authority'?'MANAGER':'OWNER');}
- vi.stubEnv('NEVORA_PAYROLL_ENABLED','false');vi.stubGlobal('fetch',ambientFetch);
+ rs.stubEnv('NEVORA_PAYROLL_ENABLED','false');rs.stubGlobal('fetch',ambientFetch);
 });
 afterAll(async()=>{
  try{
   const directory='.omo/evidence/rondo-provider-challenges-20261109';await mkdir(directory,{recursive:true});
   await writeFile(directory+'/leadership-readiness.json',JSON.stringify({sourceHead:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),layer:'owned-postgres-and-scripted-transport',technicalReady:rows.length===16&&rows.every(r=>r.status==='technical-readiness-verified')&&failureCaptureChecks===2&&ambientFetch.mock.calls.length===0,failedTurnCaptureChecks:failureCaptureChecks,semanticAssessment:'not-run',paidModelCalls:0,cases:rows},null,2));
   expect(ambientFetch).not.toHaveBeenCalled();
- }finally{vi.unstubAllEnvs();vi.unstubAllGlobals();}
+ }finally{rs.unstubAllEnvs();rs.unstubAllGlobals();}
 });
 const invoke=(f:ResilienceDatabase,command:AdvisorCommand,transport:Transport,signal=new AbortController().signal)=>advisorService(f.owner,f.db.executor,fixtureEnvironment,signal,command,transport);
 const textResponse=()=>Response.json({output:[{type:'message',role:'assistant',content:[{type:'output_text',text:'SCRIPTED TRANSPORT READINESS ONLY. No model reasoning or semantic pass is claimed.'}]}]});
@@ -60,7 +60,7 @@ async function verifyLostReply(f:ResilienceDatabase){
 
 async function verifyCancellation(f:ResilienceDatabase,setup:LeadershipSetup){
  const controller=new AbortController(),command=setup.command(setup.turns[0].question),before=await resilienceBusinessSnapshot(f);
- const transport=vi.fn(async(_url:string,init:RequestInit)=>{
+ const transport=rs.fn(async(_url:string,init:RequestInit)=>{
   const body=String(init.body);expect(body).toContain('currentTaskEvidence');
   expect(body).toContain('coverage_plan');
   queueMicrotask(()=>controller.abort());return new Promise<Response>(()=>{});
@@ -79,7 +79,7 @@ it.each(leadershipCases)('readies the actual company fixture and service path: $
  try{
   const setup=await prepareLeadershipFixture(f,scenario.id);
   if(setup.mode==='manager-denial'){
-   const transport=vi.fn(async()=>textResponse()),before=await resilienceBusinessSnapshot(f);
+   const transport=rs.fn(async()=>textResponse()),before=await resilienceBusinessSnapshot(f);
    await expect(advisorService(f.manager,f.db.executor,fixtureEnvironment,new AbortController().signal,setup.command(setup.turns[0].question),transport)).rejects.toMatchObject({code:'forbidden'});
    expect(transport).not.toHaveBeenCalled();expect(await resilienceBusinessSnapshot(f)).toEqual(before);
    expect(await f.q('SELECT count(*)::int n FROM owner_advisor_requests')).toEqual([{n:0}]);
@@ -146,7 +146,7 @@ it.each([true,false])('retains a failed evaluation turn without raw provider dia
   const setup=await prepareLeadershipFixture(f,'rondo-solvable-control');
   const error=typed?new AdvisorProviderFailure(400,'safety_filter'):Error('private-record secret-key');
   Object.assign(error,{upstream:'private-record secret-key'});
-  const capture=vi.fn(),invoke=vi.fn(async()=>{throw error;});
+  const capture=rs.fn(),invoke=rs.fn(async()=>{throw error;});
   await expect(runLeadershipConversation(f,setup,invoke,capture)).rejects.toBe(error);
   expect(invoke).toHaveBeenCalledTimes(1);
   expect(capture).toHaveBeenCalledTimes(1);

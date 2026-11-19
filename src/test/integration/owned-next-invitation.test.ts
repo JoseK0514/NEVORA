@@ -1,13 +1,13 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {randomBytes} from 'node:crypto';
 import {createOwnedNextApp,ownedMailEnvironment} from './owned-next-app';
 import {fakeInvitationSmtp} from './company-access-smtp.test-support';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {invitationDelivery} from '../../lib/auth/invitations/delivery.server';
 const origin='http://127.0.0.1:32123';
-afterEach(()=>vi.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 it('owned mail stays invitation-disabled without an explicit port and ignores ambient provider configuration',()=>{
- vi.stubEnv('NEVORA_INVITATION_DELIVERY_ENABLED','true');vi.stubEnv('NEVORA_RECOVERY_SMTP_HOST','smtp.example.invalid');vi.stubEnv('NEVORA_RECOVERY_SMTP_PORT','465');
+ rs.stubEnv('NEVORA_INVITATION_DELIVERY_ENABLED','true');rs.stubEnv('NEVORA_RECOVERY_SMTP_HOST','smtp.example.invalid');rs.stubEnv('NEVORA_RECOVERY_SMTP_PORT','465');
  const env=ownedMailEnvironment(origin);expect(env).toEqual({NEVORA_INVITATION_DELIVERY_ENABLED:'false'});expect(invitationDelivery(env)).toBeNull();
 });
 it('explicit invitation port configures only loopback SMTP and the minted owned origin',()=>{

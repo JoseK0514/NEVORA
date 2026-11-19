@@ -1,7 +1,8 @@
 import { CorpButtonLink, CorpEmpty, CorpNav, CorpPage, CorpTitle } from "./corp/corp";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { BButtonLink, BCard, BHero, BScreen, BStack, BState, BStateScreen } from "./owner-b/b-kit";
+import { BButtonLink, BCard, BGlyph, BHero, BScreen, BStack, BState, BStateScreen } from "./owner-b/b-kit";
+import { ClosedSettingsTitle } from "./owner-only-title";
 
 /** "Jose Natal" or "Jose Natal or Ana Colon" (at most two names, then "an Owner"). */
 export function ownerNames(names: string[]) {
@@ -26,7 +27,7 @@ export function closedPayrollForManager(has: (href: string) => boolean, who: str
  * Review B2 (NV-136, NV-137): every closed page uses this notice. A lock in a grey circle, the reason as the title, who can
  * help ("Jose Natal can give you payroll access.") and one way forward: the page that does the job for this role when there
  * is one, otherwise Home on desktop (phones have the band's "‹ Home"). */
-export function OwnerOnlyNotice({ title, reason, help = "Ask an Owner if you need a change here.", owners = [], ownersCan, next, line: ownLine, also, state = false }: {
+export function OwnerOnlyNotice({ title, reason, help = "Ask an Owner if you need a change here.", owners = [], ownersCan, next, line: ownLine, also, state = false, info = false, back }: {
   /** `reason` is left out when the title already is the reason (/app/restricted): the card then holds the help line alone. */
   title: string; reason?: string; help?: string;
   /** The workspace's Owners, to name who can help. */
@@ -44,16 +45,25 @@ export function OwnerOnlyNotice({ title, reason, help = "Ask an Owner if you nee
    * tinted pill, never a second filled button). Without it the notice is drawn as before, so an Employee's closed pages
    * are unchanged. */
   state?: boolean;
+  /** Review 30 (D19): the page is closed by a rule of the place (Christmas bonus hours outside Puerto Rico), not by this
+   * person's access, so the card shows the information glyph, not the lock. */
+  info?: boolean;
+  /** The band's way back when it is not Home ("‹ Insights"). */
+  back?: { href: string; label: string };
 }) {
   const named = ownerNames(owners);
   const line = ownLine ?? (named && ownersCan ? `${named} can ${ownersCan}.` : help);
+  // Final verification F (F09): every closed page has one tinted step (DESIGN.MD Phase 3). Without a page that does the
+  // job for this person, the step is Home, as on the pages closed for company-wide access; a Manager limited to one
+  // location met a dead end on a closed Settings page. A closed Settings page also names itself on the band.
+  const step = next ?? { href: "/app", label: "Return to Home" };
   if (state) return <CorpPage className="c-page--narrow cm-owner-only c-route-state--checking" labelledBy="owner-only-title">
-    <BStateScreen title={title} titleId="owner-only-title" back={{ href: "/app", label: "Home" }}>
-      <BState kind="locked" title={reason} line={line}>
-        {next || also ? <div className="b-state-actions b-closed-actions">
-          {next ? <BButtonLink href={next.href} kind="ghost">{next.label}</BButtonLink> : null}
+    <BStateScreen title={title === "Settings" ? <ClosedSettingsTitle /> : title} titleId="owner-only-title" back={back ?? { href: "/app", label: "Home" }}>
+      <BState kind="locked" icon={info ? <BGlyph meaning="info" /> : undefined} title={reason} line={line}>
+        <div className="b-state-actions b-closed-actions">
+          <BButtonLink href={step.href} kind="ghost">{step.label}</BButtonLink>
           {also ? <Link className="b-closed-also" href={also.href}>{also.label}</Link> : null}
-        </div> : null}
+        </div>
       </BState>
     </BStateScreen>
   </CorpPage>;

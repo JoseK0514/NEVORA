@@ -42,10 +42,19 @@ assignments remain Owner controls. **Help someone sign in** supports authorized
 assisted recovery; the person keeps their password and private verification
 material.
 
+Company-wide Managers can also record optional employment dates (hire,
+termination and date of birth) on the forms of people they may edit, but not on
+an Owner. A termination date never deactivates anyone. In a Puerto Rico
+workspace, **Insights → Christmas bonus hours** shows hours against the bonus
+thresholds; it shows no money and doesn't decide eligibility.
+
 Review actual punches and correction requests in **Time** / **Timecards**.
 Use **Insights** and **Time exports** only for the period you intend. Planned
 shifts do not establish recorded attendance or final pay. Owner-only company
 settings and Clocker administration remain with the Owner.
+
+Attendance review shows **No clock-out after 12 hours** for an open punch with
+no single matching shift. It is a prompt to check, not an automatic close.
 
 Within current company scope, the Timecards inspector can offer **Close open
 punch** for another person. Enter a verified company-local end time and reason,
@@ -109,3 +118,26 @@ outcome** or recovery action after an unconfirmed save rather than creating a
 second request. A missing or unavailable read is not a confirmed empty result.
 Use **More → Help** for an app problem and keep private employee/pay data out of
 support messages.
+
+## Agreements, reminders and imported pay
+
+Within your granted coverage, a person's Team page offers **When they can be
+scheduled**. Review current and future agreements and decide each request against
+the current effective-week bound. Employee requests never approve themselves.
+
+Availability and an Update's **Read by** list may offer reminders to Managers
+with Company access. Eligibility, cooldown and workplace holds still apply.
+**Queued** is not delivered. When the result or its receipt is not confirmed,
+keep the original operation and use its check or exact retry; no receipt yet does
+not prove that nothing can still be queued. A restricted Manager asks an Owner
+for help rather than changing access.
+
+When explicitly granted payroll review access, **Import pay** opens the same
+file/matching/review workflow as the Owner guide. Time-export access and financial
+payroll access remain different permissions. Lead uses the Employee workflow and
+does not gain management authority from these screens.
+
+Private import work and export files clear when you step away, the current view
+expires or access ends. Reopen with current access and upload an unsaved file
+again. Keep an uncertain original operation for its check or unchanged retry;
+fresh access does not bring back an old CSV download.

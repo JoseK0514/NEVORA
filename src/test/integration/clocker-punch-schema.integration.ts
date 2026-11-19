@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 
 it('extends punch persistence without rewriting historical entries or breaks',async()=>{

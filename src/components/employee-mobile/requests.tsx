@@ -6,9 +6,11 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {CorpButton,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpRow,CorpRows} from '../corp/corp';
 import {EmployeeRequestsCorp,requestDay,requestsSubtitle,shiftPill,timeOffDetail,timeOffPill,waitingStatus,waitsOnManager,type CorpRequestRow} from '../employee-requests-corp';
+import {accountCopy} from '../employee-b/account-copy';
 import {BStateCard,IncomingB,InlineRetryB,RequestsHubB,RequestsWaitB,bPillText,bTone,type BRequestRow} from '../employee-b/requests-b';
 import {OpenShiftsB,PickupResultB,type OpenRowB} from '../employee-b/exchange-b';
-import {BButton,BButtonLink} from '../owner-b/b-kit';
+import {BButton,BButtonLink,BState} from '../owner-b/b-kit';
+import {momentsCopy} from '../owner-b/moments-copy';
 import {keepWhole} from '@/lib/keep-whole';
 import {createPrivateSnapshotController,type PrivatePanelState} from '@/lib/private-snapshot-client';
 import {parseEmployeeRequests,type EmployeeRequestsSnapshot,type OpenEmployeeShift,type OwnRequest} from '@/lib/employee-requests';
@@ -20,6 +22,7 @@ import {formatTime,addDays,weekStartFor} from '@/lib/date-utils';
 import {offlineListener} from '@/lib/offline-hold';
 
 type Mode='hub'|'open';
+const M=momentsCopy();
 const day=requestDay;
 const href=(row:OwnRequest)=>row.kind==='timeOff'?`/app/requests?requestId=${encodeURIComponent(row.id)}`:`/app/exchange?tab=requests&requestId=${encodeURIComponent(row.id)}`;
 const requestRow=(row:OwnRequest):CorpRequestRow=>{
@@ -34,7 +37,7 @@ const requestRowB=(row:OwnRequest):BRequestRow=>{const corp=requestRow(row);retu
 /** Swaps addressed to you, inside the Waiting card: a row when some need your answer, a retry when they couldn't be checked. */
 export function IncomingRequestSection({count,onRetry}:{count:number|null;onRetry:()=>void}){
  if(count===null)return <div className="c-ereq__inline"><span role="status">Swaps for you couldn’t be checked. <Link className="c-link" href="/app/exchange?tab=foryou">Open swaps for you</Link></span><button className="c-ereq__retry" type="button" onClick={onRetry}>Try again</button></div>;
- return count?<CorpRows label="Needs your answer"><li><CorpRow href="/app/exchange?tab=foryou" bold title={count===1?'A teammate requested a swap':`${count} swaps need your answer`} detail="Review the shifts before responding" chevron/></li></CorpRows>:null;
+ return count?<CorpRows label="Needs your answer"><li><CorpRow href="/app/exchange?tab=foryou" bold title={count===1?accountCopy().swapForYou:`${count} swaps need your answer`} detail="Review the shifts before responding" chevron/></li></CorpRows>:null;
 }
 /** One pickup: its button ("action"), its outcome ("status"), or both stacked. `look="b"` draws the same controls for the
  * Direction B phone screen; its copy passes `effects={false}` so the refresh after a settled pickup runs once (the corporate
@@ -43,19 +46,27 @@ export function Pickup({operation,onRefresh,canSubmit=false,isCurrent=()=>false,
  useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);
  const current=operation.state,result=current.result,resolved=result&&['completed','pending','closed'].includes(result.status);
  useEffect(()=>{if(effects&&resolved&&part!=='action')onRefresh();},[effects,resolved,onRefresh,part]);
+ const won=!!result&&(result.status==='completed'||result.status==='pending');
+ // Phase 7 (moments): the pressed button leaves with the row's action, so focus goes to the result's title (the copy on
+ // screen only, and only when focus was lost). The title is then what is read.
+ const doneTitle=useRef<HTMLElement>(null);
+ useEffect(()=>{const title=doneTitle.current,active=document.activeElement;if(won&&title?.getClientRects().length&&(!active||active===document.body))title.focus({preventScroll:true});},[won]);
  const run=()=>{if(canSubmit&&navigator.onLine)void operation.submit(shiftChangeAction,()=>isCurrent(operation));};
  const check=()=>{if(navigator.onLine)void operation.retry(reconcileShiftChangeAction,shiftChangeAction,canRecover);};
  const b=look==='b';
  const ready=canSubmit&&(!result||!resolved&&!current.uncertain),word=current.pending?'Submitting…':'Pick up';
  const action=ready?b?<BButton kind="ghost" disabled={current.pending} onClick={run} label={label}>{word}</BButton>:<CorpButton kind="secondary" size="sm" disabled={current.pending} onClick={run} aria-label={label}>{word}</CorpButton>:null;
  if(part==='action')return action;
- const next=resolved?{href:result.status==='completed'?'/app/schedule':'/app/exchange?tab=requests',text:result.status==='completed'?'View my schedule':'View my requests'}:null;
+ const next=resolved?{href:result.status==='completed'?'/app/schedule':'/app/exchange?tab=requests',text:result.status==='completed'?M.viewSchedule:M.viewRequests}:null;
  const status=<>
   {current.pending&&current.uncertain?<p role="status">Checking the original request…</p>:null}
-  {result?<p role={resolved?'status':'alert'}>{result.status==='completed'?'Shift pickup completed. Check your current schedule.':result.status==='pending'?'Pickup requested. Your assignment is awaiting review.':shiftChangeFeedback(result)}</p>:null}
+  {/* Phase 7 (moments): a pickup the server confirmed is the shared done state in place of the row's button. "pending"
+    * is requested, not yours yet; a closed request and every refusal keep their own line and never borrow the mark. */}
+  {result&&won&&next?<BState kind="done" titleRef={doneTitle} title={result.status==='completed'?M.pickupDone:M.pickupSent} line={result.status==='completed'?M.pickupDoneLine:M.pickupSentLine} action={{label:next.text,href:next.href}}/>
+   :result?<p role={resolved?'status':'alert'}>{shiftChangeFeedback(result)}</p>:null}
   {current.uncertain?b?<BButton kind="quiet" full disabled={current.pending} onClick={check}>Check pickup status</BButton>:<CorpButton kind="secondary" size="sm" disabled={current.pending} onClick={check}>Check pickup status</CorpButton>:null}
   {result&&!current.uncertain&&!resolved?b?<BButton kind="quiet" full onClick={onRefresh}>Refresh shift options</BButton>:<CorpButton kind="secondary" size="sm" onClick={onRefresh}>Refresh shift options</CorpButton>:null}
-  {next?b?<BButtonLink href={next.href} kind="quiet" full>{next.text}</BButtonLink>:<CorpButtonLink href={next.href} kind="secondary" size="sm">{next.text}</CorpButtonLink>:null}
+  {next&&!won?b?<BButtonLink href={next.href} kind="quiet" full>{next.text}</BButtonLink>:<CorpButtonLink href={next.href} kind="secondary" size="sm">{next.text}</CorpButtonLink>:null}
  </>;
  return <div className={b?'eb-pickup':'c-ereq__result em-pickup'} aria-busy={current.pending}>{part==='all'?action:null}{status}</div>;
 }

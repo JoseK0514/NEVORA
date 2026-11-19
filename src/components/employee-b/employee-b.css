@@ -28,7 +28,8 @@
 
   /* Inspection round 1: notes under cards line up with the cards' text (18px in from the card edge). */
   /* The unread count beside a title: the kit's teal pill (the corporate shell forces its own grey with ids). */
-  html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-row__t .q-count { background: var(--b-teal-50) !important; color: var(--b-teal) !important; min-width: 22px !important; height: 22px !important; padding: 0 var(--b-space-8) !important; border-radius: var(--b-radius-pill) !important; font: 700 12px/22px Inter, "Inter Fallback", sans-serif !important; }
+  /* Phase 9 (spec 1.3): the one inline count, 20px, 12/16 700 tabular (it was 22px). */
+  html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-row__t .q-count { background: var(--b-teal-50) !important; color: var(--b-teal) !important; min-width: var(--b-count-h) !important; height: var(--b-count-h) !important; padding: 0 6px !important; border-radius: var(--b-radius-pill) !important; font: 700 var(--b-fs-count)/16px Inter, "Inter Fallback", sans-serif !important; font-variant-numeric: tabular-nums !important; }
 
   /* Inspection round 1, measured in the browser: the hero's rhythm and the page's ends match the mock on every Employee
    * screen. Older phone layers add an 8px margin above a hero subtitle, a 4px gap above some screens, 17px links and 76px of
@@ -44,8 +45,8 @@
 
   /* Inspection round 2 (shared by every Employee phone screen). */
   /* One empty state everywhere: a 48px grey circle with a 22px glyph, then the title and its line. */
-  /* Card headers: the mock's 46px (title where it was, 2px more air to the first row); header chips 24px; titles never
-   * leave one word alone. */
+  /* Card headers: the mock's 46px (title where it was, 2px more air to the first row); titles never leave one word alone.
+   * Phase 9: a header chip is the kit's one 22px chip (it was 24px at 12.5px here). */
   /* Glass segments: 34px thumbs, as in the mock. */
   /* A big button inside a card sits flat (the glow is for buttons on the canvas). */
   /* Notice rows: the mock's line heights, and the title wraps naturally. */
@@ -102,9 +103,19 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift { display: flex; flex-direction: column; gap: 14px; padding: 6px var(--b-inset) 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift__time { font-size: 26px; line-height: 32px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift__where { margin-top: -12px; font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint { display: flex; align-items: center; gap: var(--b-space-12); padding: var(--b-space-12) var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-canvas); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint .b-notice__t { font-size: var(--b-fs-body-sm); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift .b-btn--full { min-height: 48px; border-radius: var(--b-radius-pill); font-size: var(--b-fs-body); font-weight: 700; }
+/* Final review C (row 9): the clock line is one treatment at every width, the desktop's: the teal clock and two lines on
+ * the card's white, no panel (on phones a canvas panel held the teal-50 circle, a tint inside a tint). The first line is
+ * what matters now (your clock state with its live dot, or where to clock in) at 14.5/20 600 ink; the second is the
+ * standing instruction at 13.5/18 grey, 2px under it. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint { display: flex; align-items: center; gap: var(--b-space-12); padding: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint .b-notice__t { font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint .eb-state { margin-bottom: var(--b-space-2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint .eb-state > .b-status { font: inherit; color: inherit; letter-spacing: inherit; white-space: normal; }
+/* Phase 9: a clock state in the shift card is the kit's callout; the card's column gap (14px) spaces it. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift > .b-callout { margin: 0; }
+/* Final review C (row 8): Shift details is the card's quiet next step, the ladder's 44px step at 14.5/20 600 (it was
+ * 48px at 15.5/700 here and 38px in the desktop footer). */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift .b-btn--full { min-height: var(--b-btn-h); border-radius: var(--b-radius-pill); font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); font-weight: 600; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status { display: flex; flex-direction: column; gap: var(--b-space-12); padding: 6px var(--b-inset) 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-state { padding: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .eb-status:first-child { padding-top: 18px; }
@@ -114,24 +125,27 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day--past { opacity: 0.55; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardnote { padding: 0 var(--b-inset) var(--b-space-16); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardnote--center { text-align: center; }
+/* An email address never takes a hyphen: at 200% text it breaks anywhere instead (as the earlier deletion screens did). */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .em-delete-link { overflow-wrap: anywhere; hyphens: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-li + .b-li .b-add, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-li:first-child .b-add { box-shadow: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add { width: 100%; padding: 10px var(--b-inset); transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add:active { background-color: rgb(16 24 32 / 0.04); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add { width: 100%; padding: 10px var(--b-inset); }
+/* Phase 7 (UI-7, RA-21): the tint fades only when motion is allowed. */
+@media (prefers-reduced-motion: no-preference) { :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add { transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); } }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add:active { background-color: var(--b-press-tint); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add .b-ico svg { width: 16px; height: 16px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list + .eb-cardnote { padding-top: 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__t .q-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 var(--b-space-8); border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__t .q-count { display: inline-grid; place-items: center; box-sizing: border-box; min-width: var(--b-count-h); height: var(--b-count-h); padding: 0 6px; border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal); font-size: var(--b-fs-count); font-weight: 700; font-variant-numeric: tabular-nums; }
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg { margin-left: var(--b-space-16); margin-right: var(--b-space-16); }
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg:has(> :nth-child(3)) > * { font-size: var(--b-fs-meta); letter-spacing: -0.01em; padding: 0 var(--b-space-4); }
 }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .es-empty-state__a { display: flex; justify-content: center; margin: -8px 0 10px; }
-:is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-note { padding: var(--b-space-2) var(--b-inset); }
+:is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-note { padding: var(--b-space-2) var(--b-note-x, var(--b-inset)); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen { margin-top: 0 !important; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen.b-screen.b-screen.b-screen.b-screen { margin-top: 0 !important; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { width: 48px; height: 48px; margin-bottom: var(--b-space-4); border-radius: var(--b-radius-pill); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico svg { width: 22px; height: 22px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card__h { min-height: 46px; padding-bottom: var(--b-space-4); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card__h > .b-chip { height: 24px; padding: 0 var(--b-space-8); border-radius: var(--b-radius-pill); font-size: var(--b-fs-caption); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card__h h2 { text-wrap: balance; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-seg > * { min-height: 34px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card .b-btn--big { box-shadow: none; }

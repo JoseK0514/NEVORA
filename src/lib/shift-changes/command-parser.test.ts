@@ -1,4 +1,4 @@
-import { expect,it } from 'vitest';
+import { expect,it } from '@rstest/core';
 import { parseShiftChangeCommand,isShiftChangeCommand } from './command-parser';
 const command={kind:'ACCEPT',operationId:'d2d7d243-a4d4-4fd6-b720-d5be3dc2f9e8',requestId:'request',expectedRevision:1};
 it('A003 accepts finite business input and framework metadata',()=>{

@@ -1,17 +1,18 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import * as rstestOriginal0 from "@/lib/company-access/operational-scope.server" with { rstest: 'importActual' };
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import { assignmentFacts } from '../../../lib/data/assignment-facts.test-support';
 import { ManualAssignmentConflictError, validateManualAssignments } from '../../../lib/data/manual-assignment-validation';
 import type { GuardedWeekState } from '../../../lib/data/notification-transactions';
 import { schedulingSourceFixture, managementProof } from '../../../test/fixtures/management';
 
-const writes = vi.hoisted(() => ({ copy:vi.fn(async()=>({operationId:'11111111-1111-4111-8111-111111111111',rows:[]})),insert: vi.fn(async () => 'new'), update: vi.fn(async () => true), ensure: vi.fn(async () => 'a') }));
-vi.mock('@/lib/data/schedule-copy',()=>({executeScheduleCopy:writes.copy}));
-vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
-vi.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
-vi.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER', 'MANAGER'], requireRoles: async () => ({ id: 'M', role: 'MANAGER' }) }));
-vi.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('M') }));
-vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ id: 'test-workspace', active: true, timeZone: 'America/Puerto_Rico' }) }));
-vi.mock('@/lib/data/schedules', () => ({
+const writes = rs.hoisted(() => ({ copy:rs.fn(async()=>({operationId:'11111111-1111-4111-8111-111111111111',rows:[]})),insert: rs.fn(async () => 'new'), update: rs.fn(async () => true), ensure: rs.fn(async () => 'a') }));
+rs.mock('@/lib/data/schedule-copy',()=>({executeScheduleCopy:writes.copy}));
+rs.mock('next/cache', () => ({ revalidatePath: rs.fn() }));
+rs.mock('next/navigation', () => ({ redirect: (destination: string) => { throw Object.assign(new Error('redirect'), { destination }); } }));
+rs.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER', 'MANAGER'], requireRoles: async () => ({ id: 'M', role: 'MANAGER' }) }));
+rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => managementProof('M') }));
+rs.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({ id: 'test-workspace', active: true, timeZone: 'America/Puerto_Rico' }) }));
+rs.mock('@/lib/data/schedules', () => ({
   insertShiftAtLocation: writes.insert, insertShift: writes.insert, updateShift: writes.update, ensureSchedule: writes.ensure,
   getShiftForManagement: async () => ({ id: 'old', employeeId: 'E', locationId: 'loc-1', date: '2030-10-07', startTime: '08:00', endTime: '09:00', weekStart: '2030-10-07' }),
   getShiftValidationContext: async () => ({
@@ -22,12 +23,12 @@ vi.mock('@/lib/data/schedules', () => ({
   }),
   listWeekShifts: async () => [0, 1].map(index => ({ id: String(index), employeeId: 'E', locationId: 'loc-1', date: '2030-09-30', startTime: '10:00', endTime: '12:00', isDesignatedLead: false })),
 }));
-vi.mock('@/lib/data/schedule-templates', () => ({ listTemplateShifts: async () => [0, 1].map(() => ({ employeeId: 'E', locationId: 'loc-1', dayOffset: 0, startTime: '10:00', endTime: '12:00' })) }));
-vi.mock('@/lib/data/positions', () => ({ listPositions: async () => [] }));
-vi.mock('@/lib/data/employees', () => ({ listEmployees: async () => [] }));
-vi.mock('@/lib/data/week-settings', () => ({ setAvailabilityDeadline: vi.fn() }));
-vi.mock('@/lib/data/publication-revisions', () => ({ publishScheduleWithRevision: vi.fn() }));
-vi.mock('@/lib/data/schedule-health', () => ({ listCoverageWindows: vi.fn(), listEmployeeHourTargets: vi.fn(), listLocationStaffingSettings: vi.fn() }));
+rs.mock('@/lib/data/schedule-templates', () => ({ listTemplateShifts: async () => [0, 1].map(() => ({ employeeId: 'E', locationId: 'loc-1', dayOffset: 0, startTime: '10:00', endTime: '12:00' })) }));
+rs.mock('@/lib/data/positions', () => ({ listPositions: async () => [] }));
+rs.mock('@/lib/data/employees', () => ({ listEmployees: async () => [] }));
+rs.mock('@/lib/data/week-settings', () => ({ setAvailabilityDeadline: rs.fn() }));
+rs.mock('@/lib/data/publication-revisions', () => ({ publishScheduleWithRevision: rs.fn() }));
+rs.mock('@/lib/data/schedule-health', () => ({ listCoverageWindows: rs.fn(), listEmployeeHourTargets: rs.fn(), listLocationStaffingSettings: rs.fn() }));
 import { createShiftAction, updateShiftAction, copyPreviousWeekAction } from './actions';
 import { applyTemplateAction } from './templates/actions';
 
@@ -45,7 +46,7 @@ function form() {
   Object.entries({ expectedReviewVersion:'a'.repeat(64), operationId:'11111111-1111-4111-8111-111111111111', shiftId: 'old', employeeId: 'E', locationId: 'loc-1', weekStart: '2030-10-07', date: '2030-10-07', startTime: '10:00', endTime: '12:00', positionId: '', notes: 'Private retained draft', templateId: 't' }).forEach(([key, value]) => data.set(key, value));
   return data;
 }
-beforeEach(() => { vi.resetAllMocks(); writes.copy.mockResolvedValue({operationId:'11111111-1111-4111-8111-111111111111',rows:[]}); writes.insert.mockResolvedValue('new'); writes.update.mockResolvedValue(true); writes.ensure.mockResolvedValue('a'); });
+beforeEach(() => { rs.resetAllMocks(); writes.copy.mockResolvedValue({operationId:'11111111-1111-4111-8111-111111111111',rows:[]}); writes.insert.mockResolvedValue('new'); writes.update.mockResolvedValue(true); writes.ensure.mockResolvedValue('a'); });
 it('canonical rule conflicts carry the existing stable issue code', () => {
   expect(conflict()).toMatchObject({ name: 'ManualAssignmentConflictError', code: 'SHIFT_OVERLAP', message: 'Employee already has an overlapping shift.' });
 });
@@ -83,5 +84,5 @@ it.each([
 
 // These business/unit fixtures do not execute SQL. Current scope admission and
 // rollback are exercised by company-access-schedule-*.integration.ts.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64),workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
-vi.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{reviewVersion:'a'.repeat(64),id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));
+rs.mock('@/lib/company-access/operational-scope.server', () =>({...rstestOriginal0,assertOriginalOperationalAccess:async(_proof:unknown,original:{authority:string})=>{expect(original.authority).toBe('f'.repeat(64));},assertOperationalAccess:async()=>({scope:{mode:'COMPANY',locationIds:[]},authority:'f'.repeat(64),workspace:{id:'test-workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:'',updatedAt:'2030-01-01 00:00:00.123456+00'}})}));
+rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>({state:'ready',data:{saveAvailability:'available',shift:{reviewVersion:'a'.repeat(64),id:'test-shift'},employeeOptions:[],positionOptions:[]}})}));

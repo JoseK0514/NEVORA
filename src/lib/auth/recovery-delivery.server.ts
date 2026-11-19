@@ -17,24 +17,24 @@ export function recoveryDelivery(env:Record<string,string|undefined>=process.env
   if(directory!==undefined){
    if(!requestHeaders||!localRequest(requestHeaders))return null;
    const capturedEnv={...env};
-   return {async send(email,proof){
+   return {async send(email,proof,context){
     const captured=(await import('../dev/capture.server')).devRecoveryDelivery(capturedEnv,requestHeaders);
     if(!captured)throw Error('Local recovery capture is unavailable');
-    await captured.send(email,proof);
-   },async notifyReset(email){
+    await captured.send(email,proof,context);
+   },async notifyReset(email,context){
     const captured=(await import('../dev/capture.server')).devRecoveryDelivery(capturedEnv,requestHeaders);
     if(!captured?.notifyReset)throw Error('Local recovery capture is unavailable');
-    await captured.notifyReset(email);
+    await captured.notifyReset(email,context);
    }};
   }
  }
  const mail=validatedMailTransport(env);
  if(!mail)return null;
- return {async send(email,proof) {
-  const message=recoveryEmail(`${mail.origin}/reset-access#proof=${await publicWorkspaceToken('RECOVERY',proof,Date.now()+15*60*1000)}`);
-  await mail.sendRegistered(email,message.subject,message.text);
- },async notifyReset(email){
-  const message=passwordChangedEmail(mail.origin);
-  await mail.sendRegistered(email,message.subject,message.text);
+ return {async send(email,proof,context) {
+  const message=recoveryEmail(`${mail.origin}/reset-access#proof=${await publicWorkspaceToken('RECOVERY',proof,context?.expiresAt?Date.parse(context.expiresAt):Date.now()+15*60*1000)}`,context);
+  await mail.sendRegistered(email,message.subject,message.text,message.html);
+ },async notifyReset(email,context){
+  const message=passwordChangedEmail(mail.origin,context);
+  await mail.sendRegistered(email,message.subject,message.text,message.html);
  }};
 }

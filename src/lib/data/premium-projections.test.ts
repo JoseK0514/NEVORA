@@ -1,17 +1,18 @@
-vi.mock('./sql-session-contract',()=>import('../../test/fixtures/business-sql-session'));
-import {expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
-const mocks=vi.hoisted(()=>({today:vi.fn(),actions:vi.fn(),query:vi.fn()}));
-vi.mock('./today.server',()=>({readToday:mocks.today}));
-vi.mock('../action-center/service',()=>({readActionCenter:mocks.actions}));
-vi.mock('../db',()=>({getDb:()=>({query:mocks.query}),queryRows:(rows:unknown)=>rows}));
+import * as rstestOriginal0 from "../../test/fixtures/business-sql-session" with { rstest: 'importActual' };
+rs.mock('./sql-session-contract',()=>rstestOriginal0);
+import {expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
+const mocks=rs.hoisted(()=>({today:rs.fn(),actions:rs.fn(),query:rs.fn()}));
+rs.mock('./today.server',()=>({readToday:mocks.today}));
+rs.mock('../action-center/service',()=>({readActionCenter:mocks.actions}));
+rs.mock('../db',()=>({getDb:()=>({query:mocks.query}),queryRows:(rows:unknown)=>rows}));
 import {readInboxCount} from './inbox-count.server';
 import {describeCopyRow} from './schedule-copy';
 import {listTeamTimeOffRequests} from './requests';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor} from '../notifications/types';
 const proof:SessionMutationProof={employee:{id:'self',firstName:'QA',lastName:'Owner',role:'OWNER',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
-const executor={transaction:vi.fn(async()=>[]),query:vi.fn()} as unknown as SqlExecutor;
+const executor={transaction:rs.fn(async()=>[]),query:rs.fn()} as unknown as SqlExecutor;
 it('uses exactly needsYou semantics including no-clock-in shifts and excluding planning/past',async()=>{
   mocks.today.mockResolvedValue({state:'ready',today:'2026-10-19',observedAt:'2026-10-19T14:00:00Z',validForMs:45000,missed:[{id:'no-punch'}]});
   const item={title:'QA',detail:'QA',href:'/app/inbox'};

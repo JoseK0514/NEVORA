@@ -1,4 +1,4 @@
-import {afterEach,expect,it,vi} from 'vitest';
+import {afterEach,expect,it,rs} from '@rstest/core';
 import {randomUUID,randomBytes} from 'node:crypto';
 import {Pool} from 'pg';
 import {configureWorkerControlReader,workerControlRole} from '@/lib/operations/routing-reader';
@@ -16,7 +16,7 @@ import {configureMonitorPrincipal,processMonitorObservation} from '@/lib/operati
 import {sendMonitorNotice,type MonitorConfig} from '@/lib/operations/monitor';
 import {ownedSmtpLostAcknowledgement} from './owned-smtp-ack-fixture';
 import {assertMachinePrincipal} from '@/lib/operations/principal-policy';
-afterEach(()=>{vi.restoreAllMocks();vi.unstubAllEnvs();});
+afterEach(()=>{rs.restoreAllMocks();rs.unstubAllEnvs();});
 it.each(['PUBLIC-function','named-relation','PUBLIC-relation','named-column','PUBLIC-column','catalog-grant-option','information-schema-write','information-schema-grant-option','information-schema-definer','information-schema-private-table','unregistered-catalog-function'] as const)('compares effective %s catalog access to the shipped PUBLIC baseline',async capability=>{
  const f=await freshOnboardingControl(),monitor='nv_ops_monitor_'+randomBytes(12).toString('hex'),worker=workerControlRole(randomUUID(),'test'),roles=[monitor,worker],pools:Pool[]=[];
  try{
@@ -183,10 +183,10 @@ it('commits a deadline-expired SMTP outcome as unknown, releases the session loc
   let sends=0,accept!:(result:{accepted:string[]})=>void;
   await processMonitorObservation(pool,role,async()=>'unhealthy',true,async kind=>{
    // Only the SMTP wait uses virtual time; all actual PostgreSQL IO uses real time.
-   vi.useFakeTimers();try{
+   rs.useFakeTimers();try{
     const result=sendMonitorNotice(config,kind,{sendRegistered:()=>{sends++;return new Promise(resolve=>{accept=resolve;});}});
-    await vi.advanceTimersByTimeAsync(15000);return await result;
-   }finally{vi.useRealTimers();}
+    await rs.advanceTimersByTimeAsync(15000);return await result;
+   }finally{rs.useRealTimers();}
   });
   expect((await pool.query('SELECT status FROM nevora_operations.monitor_attempts')).rows).toEqual([{status:'unknown'}]);
   expect((await pool.query('SELECT status FROM nevora_operations.monitor_notices')).rows).toEqual([{status:'unknown'}]);
@@ -196,7 +196,7 @@ it('commits a deadline-expired SMTP outcome as unknown, releases the session loc
   await f.pool.query("UPDATE nevora_operations.monitor_notices SET next_attempt_at=clock_timestamp()-interval '1 second'");
   await processMonitorObservation(pool,role,async()=>'unhealthy',true,async()=>{sends++;return 'accepted';});expect(sends).toBe(1);
   expect((await pool.query('SELECT status FROM nevora_operations.monitor_notices')).rows).toEqual([{status:'unknown'}]);
- }finally{vi.useRealTimers();await pool?.end();await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});await f.close();}
+ }finally{rs.useRealTimers();await pool?.end();await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});await f.close();}
 });
 it('bounds definite mail retries and daily attempts, records disabled monitoring without sending, and respects principal isolation',async()=>{
  const f=await freshOnboardingControl(),role='nv_ops_monitor_'+randomBytes(12).toString('hex'),password=randomBytes(32).toString('base64url');let pool:Pool|undefined;
@@ -229,7 +229,7 @@ it('retains a real committed SMTP intent when the journal connection dies after 
 const queues=`SELECT jsonb_build_object('payroll',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]') FROM payroll_jobs t),'notifications',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]') FROM notifications t),'deliveries',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]') FROM push_deliveries t),'subscriptions',(SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY id),'[]') FROM push_subscriptions t)) AS snapshot`;
 it('observes real due/future/failed/leased queues under restricted WORKER without writes or cross-company data',async()=>{
  const f=await onboardingJourneyFixture();try{
-  const a=await f.activateCompany(await f.createCompany()),b=await f.activateCompany(await f.createCompany('beta','b@example.invalid'));vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
+  const a=await f.activateCompany(await f.createCompany()),b=await f.activateCompany(await f.createCompany('beta','b@example.invalid'));rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
   const db=a.c.resource.db.pool,workspaceId=a.c.row.workspace_id;
   for(const [status,delay,lease] of [['PENDING','-5 minutes',null],['PENDING','1 hour',null],['FAILED','-5 minutes',null],['RUNNING','-5 minutes','-2 minutes'],['RUNNING','-5 minutes','1 minute']] as const)await db.query("INSERT INTO payroll_jobs(id,workspace_id,kind,business_key,status,payload,available_at,lease_token,lease_until) VALUES($1::uuid,$2,'REMINDER',$1::text,$3,'{}',clock_timestamp()+$4::interval,$5,CASE WHEN $6::text IS NULL THEN NULL ELSE clock_timestamp()+$6::interval END)",[randomUUID(),workspaceId,status,delay,lease?randomUUID():null,lease]);
   await db.query("INSERT INTO push_subscriptions(id,employee_id,installation_hash,environment,endpoint_fingerprint,encrypted_material,generation,session_hash,status) VALUES('owned-sub','OWNER-1','owned-installation','test','owned-endpoint','fictional-private-material','owned-generation',$1,'active')",[a.actor.sessionTokenHash]);
@@ -257,7 +257,7 @@ it('observes real due/future/failed/leased queues under restricted WORKER withou
 it('uses actual company-scoped WORKER-only control custody without any browser key and rejects broad/mismatched readers',async()=>{
  const f=await onboardingJourneyFixture();const readers:Pool[]=[],roles:string[]=[];try{
   await f.db.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.db.name} FROM PUBLIC`);
-  const a=await f.activateCompany(await f.createCompany()),b=await f.activateCompany(await f.createCompany('beta','b@example.invalid'));vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
+  const a=await f.activateCompany(await f.createCompany()),b=await f.activateCompany(await f.createCompany('beta','b@example.invalid'));rs.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
   async function reader(environment:'test'|'production'){
    const role=workerControlRole(a.c.row.workspace_id,environment),password=randomBytes(32).toString('base64url');roles.push(role);
    await f.db.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'`);await f.db.pool.query(`GRANT CONNECT ON DATABASE ${f.db.name} TO ${role}`);
@@ -275,8 +275,8 @@ it('uses actual company-scoped WORKER-only control custody without any browser k
   expect((await r.pool.query('SELECT id::text FROM nevora_onboarding.worker_workspace_registry')).rows).toEqual([{id:a.c.row.workspace_id}]);
   const machine=routing.readWorkerRoutingConfig({NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_PORTAL_BASE_DOMAIN:f.config.portalBaseDomain,NEVORA_CONTROL_DATABASE_URL:r.url,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:f.config.encryptionKey});expect(machine).not.toHaveProperty('tokenKey');
   await expect(resolveWorkspaceBinding({origin:b.c.origin},r.store,machine,'WORKER')).rejects.toThrow();for(const purpose of ['APP','BOOTSTRAP'] as const)await expect(resolveWorkspaceBinding({origin:a.c.origin},r.store,machine,purpose)).rejects.toThrow();
-  vi.spyOn(routing,'readWorkerRoutingConfig').mockReturnValue(machine);vi.spyOn(control,'runtimeControlStore').mockReturnValue(r.store);
-  const work=vi.fn(async()=>readQueueHealth(getWorkspaceDb(await currentWorkspaceBinding()),'test'));
+  rs.spyOn(routing,'readWorkerRoutingConfig').mockReturnValue(machine);rs.spyOn(control,'runtimeControlStore').mockReturnValue(r.store);
+  const work=rs.fn(async()=>readQueueHealth(getWorkspaceDb(await currentWorkspaceBinding()),'test'));
   const expected={workspaceId:a.c.row.workspace_id,environment:'test' as const};expect(await withWorkerWorkspace(a.c.origin,work,expected)).toMatchObject({workspaceId:a.c.row.workspace_id});
   await expect(withWorkerWorkspace(a.c.origin,work,{...expected,workspaceId:b.c.row.workspace_id})).rejects.toThrow();await expect(withWorkerWorkspace(a.c.origin,work,{...expected,environment:'production'})).rejects.toThrow();expect(work).toHaveBeenCalledTimes(1);
   const prod=await reader('production');expect((await prod.pool.query('SELECT * FROM nevora_onboarding.worker_workspace_secrets')).rows).toEqual([]);expect((await r.pool.query('SELECT count(*)::int n FROM nevora_onboarding.worker_workspace_secrets')).rows[0].n).toBe(1);

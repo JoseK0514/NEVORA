@@ -1,16 +1,16 @@
 import {renderToStaticMarkup} from 'react-dom/server';
-import {beforeEach,it,expect,vi} from 'vitest';
+import {beforeEach,it,expect,rs} from '@rstest/core';
 import {projectCompanyPolicyHistory} from '../../../../lib/business-improvements/company-policies/history';
 import {parseCompanyPolicySettings} from '../../../../lib/business-improvements/company-policies/model';
 import {policyUIRows} from '../../../../test/fixtures/company-policy-history-ui';
 import Page from './page';
-const source=vi.hoisted(()=>({fail:false,rows:[] as unknown[]}));
-vi.mock('@/lib/auth/permissions',()=>({requireRoles:async()=>{}}));
-vi.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({})}));
-vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
-vi.mock('@/lib/data/locations',()=>({listLocations:async()=>[{id:'loc-1',name:'Northside',active:true}]}));
-vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
-vi.mock('@/lib/business-improvements/company-policies/service',()=>({
+const source=rs.hoisted(()=>({fail:false,rows:[] as unknown[]}));
+rs.mock('@/lib/auth/permissions',()=>({requireRoles:async()=>{}}));
+rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({})}));
+rs.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({timeZone:'America/Puerto_Rico'})}));
+rs.mock('@/lib/data/locations',()=>({listLocations:async()=>[{id:'loc-1',name:'Northside',active:true}]}));
+rs.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{}})}));
+rs.mock('@/lib/business-improvements/company-policies/service',()=>({
  readCompanyPolicies:async()=>{if(source.fail)throw Error('PRIVATE_SQL_DIAGNOSTIC');return(source.rows as ReturnType<typeof policyUIRows>).map(row=>({...row,settings:parseCompanyPolicySettings(row.settings)}));},
  readCompanyPolicyHistory:async()=>{if(source.fail)throw Error('PRIVATE_SQL_DIAGNOSTIC');return projectCompanyPolicyHistory(source.rows as ReturnType<typeof policyUIRows>);},
 }));

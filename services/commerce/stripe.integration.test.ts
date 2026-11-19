@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, rs } from '@rstest/core';
 import Stripe from "stripe";
 import { Pool } from "pg";
 import { createHmac,randomUUID } from "node:crypto";
@@ -69,7 +69,7 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     await business();
   });
   afterEach(async () => {
-    vi.restoreAllMocks();
+    rs.restoreAllMocks();
     await pool?.end();
     if (admin) {
       if (name) await dropTestDatabase(admin, name);
@@ -145,7 +145,7 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     if(reason==='ambiguous')provider.sessions.set('cs_duplicate',{...session,id:'cs_duplicate'});
     else {
       const observed=await provider.client.checkout.sessions.list({customer:session.customer,limit:100});
-      vi.spyOn(provider.client.checkout.sessions,'list').mockResolvedValueOnce({...observed,lastResponse:observed.lastResponse,has_more:reason==='pagination',data:reason==='missing'?[]:[{...session,customer:reason==='foreign-customer'?'cus_foreign':session.customer} as unknown as Stripe.Checkout.Session]});
+      rs.spyOn(provider.client.checkout.sessions,'list').mockResolvedValueOnce({...observed,lastResponse:observed.lastResponse,has_more:reason==='pagination',data:reason==='missing'?[]:[{...session,customer:reason==='foreign-customer'?'cus_foreign':session.customer} as unknown as Stripe.Checkout.Session]});
     }
     expect(await billing.reconcile()).toEqual({checked:1,failed:reason==='missing'?0:1});
     expect((await pool.query('SELECT reconciled_expired_at FROM commerce.checkout_intents')).rows).toEqual([{reconciled_expired_at:null}]);
@@ -556,7 +556,7 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     provider.loseCheckoutResponse = true;
     await expect(checkout(id, operation)).rejects.toThrow();
     const realNow = Date.now();
-    vi.spyOn(Date, "now").mockReturnValue(realNow + 2000);
+    rs.spyOn(Date, "now").mockReturnValue(realNow + 2000);
     expect(await billing.checkout(await store.business(id), operation)).toBe(
       "https://checkout.stripe.com/c/pay/cs_fixture_1",
     );
@@ -704,6 +704,32 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     expect(provider.requests.find(r=>r.path==='/v1/billing_portal/sessions')!.form.get('configuration')).toBe('bpc_small');
     expect((await store.business(id)).planKey).toBe('team');
   });
+  it('rechecks actual headcount after an accepted downgrade when the team grows before renewal', async () => {
+    enablePlanChanges();
+    provider.counts.set(id, 16);
+    const { subscription } = await subscribed();
+    provider.markPaid(subscription.id);
+    await billing.syncJob({ subscriptionId: subscription.id });
+    provider.counts.set(id, 15);
+    expect(await billing.planChange(await store.business(id), randomUUID(), 'small')).toMatchObject({ plan: 'small', effective: 'period_end' });
+    expect((await store.business(id)).planKey).toBe('team');
+
+    // The old commerce snapshot still fits; the workforce count changes after the offer.
+    await pool.query('UPDATE commerce.businesses SET employee_count=15 WHERE id=$1', [id]);
+    provider.counts.set(id, 16);
+    subscription.items.data[0].price = provider.prices.get('price_small')!;
+    provider.markPaid(subscription.id);
+    await billing.syncJob({ subscriptionId: subscription.id });
+    expect((await store.business(id)).planKey).toBe('small');
+    const token = 'j'.repeat(43);
+    await pool.query("INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'session',$3)", [digest(token), id, new Date(now + 86400000)]);
+    const headcount = rs.fn(async (b: { id: string }) => provider.counts.get(b.id)!);
+    const app = createCommerce({ store, origin: 'https://accounts.example.test', allowedOrigins: [], now: () => now, headcount });
+    const status = await app(new Request('https://accounts.example.test/v1/status', { headers: { authorization: `Bearer ${token}` } }), '127.0.0.1');
+    expect(status.status).toBe(200);
+    expect(await status.json()).toMatchObject({ operational: false, reason: 'employee_limit_exceeded', export: true });
+    expect(headcount).toHaveBeenCalled();
+  });
   it.each([-400,0])('keeps unpaid upgrades and non-positive credit lines from granting paid Team capacity: %s',async lineAmount=>{
     const {subscription}=await subscribed();provider.markPaid(subscription.id);await billing.syncJob({subscriptionId:subscription.id});
     const before=await store.business(id);expect(before.planKey).toBe('small');
@@ -717,7 +743,7 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
   it('retains Small trial capacity before the first paid Team invoice without changing the trial deadline',async()=>{
     const {subscription}=await subscribed(),before=await store.business(id);
     expect(before.planKey).toBe('small');expect(before.paidThrough).toBeNull();
-    const policy=vi.fn(async()=>{});Object.assign(billing.options,{policy});
+    const policy=rs.fn(async()=>{});Object.assign(billing.options,{policy});
     subscription.items.data[0].price=provider.prices.get('price_team')!;
     await billing.syncJob({subscriptionId:subscription.id});
     expect((await store.business(id)).planKey).toBe('small');expect(policy).toHaveBeenLastCalledWith(expect.anything(),15);
@@ -769,14 +795,14 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
   // Jose explicitly approved the stricter durable contract on November12.
   it('strict billing never returns an expired known Checkout URL or creates another session on retry',async()=>{
     const operation=randomUUID();await billing.checkout(await store.business(id),operation);
-    const session=[...provider.sessions.values()][0];vi.spyOn(Date,'now').mockReturnValue(session.expires_at*1000+1);
+    const session=[...provider.sessions.values()][0];rs.spyOn(Date,'now').mockReturnValue(session.expires_at*1000+1);
     await expect(billing.checkout(await store.business(id),operation)).rejects.toMatchObject({code:'checkout_expired',status:409});
     expect(provider.sessions.size).toBe(1);expect(provider.requests.filter(r=>r.method==='POST'&&r.path==='/v1/checkout/sessions')).toHaveLength(1);
   });
   it('strict billing recovers a lost Portal reply with the original parameters and no new operation',async()=>{
     await checkout();const before=await store.business(id),operation=randomUUID();
     const create=provider.client.billingPortal.sessions.create.bind(provider.client.billingPortal.sessions);
-    vi.spyOn(provider.client.billingPortal.sessions,'create').mockImplementationOnce(async(params,options)=>{await create(params,options);throw Error('Owned accepted Portal reply lost');});
+    rs.spyOn(provider.client.billingPortal.sessions,'create').mockImplementationOnce(async(params,options)=>{await create(params,options);throw Error('Owned accepted Portal reply lost');});
     await expect(billing.portal(before,operation,null,'es')).rejects.toThrow('Owned accepted Portal reply lost');
     await expect(billing.portal(before,randomUUID(),null,'es')).rejects.toMatchObject({code:'billing_operation_pending',status:409});
     expect(await billing.portal(before,operation,null,'es')).toBe('https://billing.stripe.com/p/session_fixture');
@@ -787,7 +813,7 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
   });
   it('strict billing retains issued Portal custody across a failed local result commit',async()=>{
     await checkout();const before=await store.business(id),operation=randomUUID(),actual=store.transaction.bind(store);let fail=true;
-    vi.spyOn(store,'transaction').mockImplementation(fn=>actual(async client=>{
+    rs.spyOn(store,'transaction').mockImplementation(fn=>actual(async client=>{
       const value=await fn(client);
       if(fail&&value&&typeof value==='object'&&'url' in value){fail=false;throw Error('Owned result commit failed before acknowledgement');}
       return value;
@@ -803,7 +829,7 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     await checkout();const operation=randomUUID(),proof='r'.repeat(43);
     await pool.query("INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'session',clock_timestamp()+interval '1 hour')",[digest(proof),id]);
     const create=provider.client.billingPortal.sessions.create.bind(provider.client.billingPortal.sessions);
-    vi.spyOn(provider.client.billingPortal.sessions,'create').mockImplementationOnce(async(params,options)=>{const result=await create(params,options);await pool.query('DELETE FROM commerce.tokens WHERE hash=$1',[digest(proof)]);return result;});
+    rs.spyOn(provider.client.billingPortal.sessions,'create').mockImplementationOnce(async(params,options)=>{const result=await create(params,options);await pool.query('DELETE FROM commerce.tokens WHERE hash=$1',[digest(proof)]);return result;});
     const handle=createCommerce({store,billing,origin:'https://accounts.example.test',allowedOrigins:['https://www.thevelani.com'],headcount:async()=>10,now:()=>now});
     const send=()=>handle(new Request('https://accounts.example.test/v1/portal',{method:'POST',headers:{origin:'https://www.thevelani.com',authorization:'Bearer '+proof,'content-type':'application/json','idempotency-key':operation},body:'{}'}),'127.0.0.1');
     const response=await send();expect(response.status).toBe(401);expect(await response.json()).toEqual({error:{code:'unauthorized'}});

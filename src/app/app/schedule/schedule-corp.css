@@ -136,7 +136,7 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-add { border-radius: 8px; color: var(--c-teal); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid td:hover > .cm-add { background: #F7F8F8; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid__toggle button { color: var(--c-teal); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .wb-note { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .wb-note { font: 400 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--b-grey); } /* Phase 9: the meta role (13.5/18), not 13px */
   /* Link colours need the kit's weight (its :where(a) inherit rule carries an id). */
   :is(#c-root, html) .c-sched .cm-sched-slot .cm-block.open { color: var(--c-ink2); }
 }
@@ -235,4 +235,8 @@ html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-a
   html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-label { margin: 12px 16px 4px; }
   html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item { min-height: 40px !important; }
   html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) { min-width: 280px; }
+}
+/* Phase 7 (Nov 17, 2026; UI-7, RA-21): reduced motion. The feedback above still shows; it no longer fades. */
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block { transition: none; }
 }

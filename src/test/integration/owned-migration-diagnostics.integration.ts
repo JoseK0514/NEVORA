@@ -1,7 +1,7 @@
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {Client,type QueryResult} from 'pg';
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {createDisposableNotificationDatabase,CURRENT_MIGRATIONS} from './local-postgres';
 import type {MigrationFailureReceipt} from './owned-migration-diagnostics';
 
@@ -15,7 +15,7 @@ it('retains an actual helper bootstrap lock failure and closes both clients befo
   const rawEnd=Client.prototype.end as (this:Client)=>Promise<void>;
   const closed=new Set<Client>(),lines:string[]=[];
   let injected=false,bodyStarted=false,dropped=false,bootstrap:Client|undefined,observer:Client|undefined,original:unknown,caught:unknown;
-  const endSpy=vi.spyOn(Client.prototype,'end').mockImplementation(async function(this:Client){await rawEnd.call(this);closed.add(this);});
+  const endSpy=rs.spyOn(Client.prototype,'end').mockImplementation(async function(this:Client){await rawEnd.call(this);closed.add(this);});
   const intercept=async function(this:Client,text:string,values?:unknown[]):Promise<QueryResult>{
     const migrationName=known.get(text);if(migrationName)executed.push(migrationName);
     if(text.startsWith('SELECT state,wait_event_type,wait_event,cardinality'))observer=this;
@@ -30,8 +30,8 @@ it('retains an actual helper bootstrap lock failure and closes both clients befo
       try{return await raw.call(this,text,values);}catch(error){original=error;throw error;}
     }finally{try{await raw.call(blocker,'ROLLBACK');}finally{await blocker.end();}}
   };
-  const querySpy=vi.spyOn(Client.prototype,'query').mockImplementation(intercept as typeof Client.prototype.query);
-  const writeSpy=vi.spyOn(process.stderr,'write').mockImplementation((chunk)=>{lines.push(String(chunk));return true;});
+  const querySpy=rs.spyOn(Client.prototype,'query').mockImplementation(intercept as typeof Client.prototype.query);
+  const writeSpy=rs.spyOn(process.stderr,'write').mockImplementation((chunk)=>{lines.push(String(chunk));return true;});
   try{
     try{const database=await createDisposableNotificationDatabase();bodyStarted=true;await database.dispose();}catch(error){caught=error;}
     expect(caught).toBe(original);expect(caught).toMatchObject({code:'57014'});expect(bodyStarted).toBe(false);expect(dropped).toBe(true);

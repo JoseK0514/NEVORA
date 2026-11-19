@@ -66,6 +66,8 @@ export const CURRENT_MIGRATIONS = [
   '0064_owner_company_knowledge.sql',
   '0066_owner_advisor_weekly.sql',
   '0067_owner_business_evidence.sql',
+  '0068_employee_employment_dates.sql',
+  '0069_clocker_early_grace.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

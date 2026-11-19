@@ -150,10 +150,40 @@ Report unavailable or contradictory results through **Help** with minimal privat
 context. Past evaluations do not certify current answers or provider access.
 
 
-## Local business evidence backend
+## Business records and figures, when enabled
 
-Owner-reviewed finance and sales evidence is implemented as a local default-off backend/API and read-only model capability. Its B2 screens are a separate Claude deliverable; this guide does not claim they are available. Explicit JSON/CSV imports need complete review and exact acknowledged publication, then a reviewed account/location perimeter. Results retain currency, half-open window, source version, freshness and missing-scope limits. Receivables are not cash; net receipts are not profit. No real accounting/POS/bank connector is active. Source deletion erases local structured source content; chat/provider prose has separate retention. Actual-model 50-case qualification remains unrun.
+The Development source includes **Business records**, a complete version review,
+**Main records** for the coverage map, and **Check figures**. A current Company
+Owner and the appropriate parent/import/retrieval flags are required. The flags
+remain off by default; source inclusion does not activate hosted access, a bank,
+accounting or POS connector, or paid inference.
 
-See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
+Import JSON or explicitly map CSV fields, review the full bounded response and
+its findings, then explicitly publish that exact version. Review and acknowledge
+a coverage map separately. Figures retain currency, period, source, freshness and
+missing-scope limits. Receivables are not cash; net receipts are not profit; an
+Owner-declared perimeter cannot prove that omitted accounts do not exist.
 
-Posted cash is assigned by posting time, including cross-month occurrences. Cash inflows/outflows and sale/refund amounts/counts are separate from net totals. Reconciliation must hold within every admitted cash window and across shared boundaries; offsetting discrepancies cannot establish clearance. CURRENT freshness is capped at the requested window end. Source deletion conservatively clears all workspace business answer-receipt payloads as well as structured inspection content, retaining content-free operation/request identities and unrelated ordinary history.
+Private rows and figures have short observations and hide when they expire or
+you step away. Read them again with current authority. Publication consent does
+not transfer to changed content or another destructive action. Withdrawal removes
+eligibility; deletion erases local structured source content and retires dependent
+evidence. Ordinary chat/provider prose has separate retention.
+
+A failed refresh clears the previous private list or answer. A review that
+changes or expires must be opened and acknowledged again; refreshing its rows
+does not extend the original publication window. **Check figures** keeps the
+last submitted type, period and selections until you choose **Show figures**
+again. Editing the form alone does not change the answer being refreshed.
+
+A write may commit before its final response reports a conflict or becomes
+unavailable. **Not confirmed yet** keeps the original content-free operation
+reference. Use **Check again** or the exact in-memory retry. No completed receipt
+observed is not proof that a late commit cannot occur; do not add a replacement
+operation. Reload recovery checks the original identity and never reconstructs a
+financial command from newly entered form values. Actual-model 50-case
+qualification, provider activation and hosted acceptance remain separate.
+
+## Scoped Manager guidance
+
+The Development backend also provides a separate guided Manager API for an authorized location and week: four scheduling questions and a weekly summary. Its UI is owned by Claude and depends on the selected release and feature settings. It does not give Managers Owner business records, payroll, knowledge administration, schedule mutation or free-text paid AI. Use only destinations actually offered to your signed-in role.

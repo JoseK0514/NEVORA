@@ -1,8 +1,8 @@
-import {beforeEach,expect,it,vi} from 'vitest';
+import {beforeEach,expect,it,rs} from '@rstest/core';
 import {employeeViewAuthority} from '../employee-view-authority.server';
 import type {SessionMutationProof} from '../shift-changes/types';
-const state=vi.hoisted(()=>({session:{id:'owner',role:'OWNER'} as {id:string;role:string}|null,proof:null as SessionMutationProof|null,read:vi.fn()}));
-vi.mock('../auth/session',()=>({getSession:async()=>state.session,requireSessionMutationProof:async()=>state.proof}));
+const state=rs.hoisted(()=>({session:{id:'owner',role:'OWNER'} as {id:string;role:string}|null,proof:null as SessionMutationProof|null,read:rs.fn()}));
+rs.mock('../auth/session',()=>({getSession:async()=>state.session,requireSessionMutationProof:async()=>state.proof}));
 import {createStaffingReadPost} from './route.server';
 const proof:SessionMutationProof={employee:{id:'owner',role:'OWNER',firstName:'Fictional',lastName:'Owner',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 const req=(body:unknown={weekStart:'2030-10-07'},headers:Record<string,string>={})=>new Request('https://example.test/api/manager/time-off-staffing',{method:'POST',headers:{origin:'https://example.test','content-type':'application/json','x-nevora-leave-staffing':'1','x-nevora-actor':'owner','x-nevora-employee-view':employeeViewAuthority(proof,'requests'),...headers},body:JSON.stringify(body)});

@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {parseManagementCloseCommand} from './validation';
 
 const command=()=>({operationId:'a13d6b36-2740-4e2e-8bca-cd11af44619f',timeEntryId:'recorded-entry-1',expectedSourceHash:'b'.repeat(32),closedAt:'2026-11-10T12:15:00-04:00',reason:'Worker cannot use the retired tablet.'});

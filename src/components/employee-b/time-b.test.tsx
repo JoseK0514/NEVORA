@@ -1,6 +1,6 @@
 import {type ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {CorpCorrections,CorpFixTime,CorpHoursFrame,CorpPastTimecards,CorpTimeEntry,CorpTimeTab} from '../employee-mobile/hours-corp';
 import {HoursCorrectionOperation} from '../employee-mobile/hours-operation';
 import {HoursBContext,type HoursBHead} from './time-b';
@@ -40,6 +40,32 @@ describe('Time tab (e-time)',()=>{
   // Last week is its own private read: hidden until it arrives.
   expect(plain).not.toContain('Last week');
  });
+ it('Phase 8 (review C, row 10): a shift that ended with the punch still open is amber, in Home’s words',()=>{
+  const late:EmployeeTimeEntry={...open,clockInAt:'2026-10-27T13:02:00Z',elapsedSeconds:47_820};
+  const data=ready({observedAt:'2026-10-28T02:19:00Z',current:late,today:{entries:[late],recordedSeconds:47_820,breakSeconds:0}});
+  const shifts=[{date:'2026-10-27',startTime:'09:00',endTime:'17:00'}];
+  const b=onlyB(renderToStaticMarkup(<HoursBContext.Provider value={{head:timeHead,authority:'fictional-view',shifts}}><div className="c-page"><CorpTimeTab data={data}/></div></HoursBContext.Provider>)),plain=text(b);
+  // Phase 9 (spec 1.4, 2.2): your own state is the quiet "Clocked in" with the amber live dot, and the amber callout (a
+  // title over its lines, no circle in a tint) says the shift has ended.
+  expect(b).toContain('<span class="b-status" data-dot="amber"><span class="b-ldot" data-tone="amber" aria-hidden="true"></span>Clocked in</span>');expect(b).not.toContain('b-chip--amber');
+  expect(b).toContain('<div class="b-callout" data-tone="amber" role="status">');expect(b).not.toContain('b-ico b-ico--amber');
+  expect(b).toMatch(/<p class="b-callout__t">Still clocked in since 9:02\sAM<\/p>/);
+  expect(plain).toContain('Still clocked in since 9:02 AM');expect(plain).toContain('Your 9 AM – 5 PM shift has ended. Clock out on the Condado tablet.');
+  // Without today's shifts the card says Clocked in (green live dot), never guessing that a shift ended.
+  const plainB=onlyB(inPage(timeHead,<CorpTimeTab data={data}/>));
+  expect(plainB).toContain('<span class="b-status" data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"></span>Clocked in</span>');expect(text(plainB)).not.toContain('Still clocked in');expect(plainB).not.toContain('b-callout');
+ });
+ it('Phase 9 (spec 1.4): your own clock state is quiet words, with the amber live dot and the minutes once a shift has started',()=>{
+  // 9:30 AM in Puerto Rico; today's shift runs 9:00 to 5:00 and there is no punch.
+  const data=ready();
+  const under=onlyB(renderToStaticMarkup(<HoursBContext.Provider value={{head:timeHead,authority:'fictional-view',shifts:[{date:'2026-10-27',startTime:'09:00',endTime:'17:00'}]}}><div className="c-page"><CorpTimeTab data={data}/></div></HoursBContext.Provider>));
+  expect(under).toContain('<span class="b-status" data-dot="amber"><span class="b-ldot" data-tone="amber" aria-hidden="true"></span>Not clocked in · 30 min</span>');expect(under).not.toContain('b-chip');
+  // Before the shift starts (or with no shift today) it is the quiet grey words without a dot.
+  const before=onlyB(renderToStaticMarkup(<HoursBContext.Provider value={{head:timeHead,authority:'fictional-view',shifts:[{date:'2026-10-27',startTime:'14:00',endTime:'22:00'}]}}><div className="c-page"><CorpTimeTab data={data}/></div></HoursBContext.Provider>));
+  expect(before).toContain('<span class="b-status">Not clocked in</span>');expect(before).not.toContain('b-chip--amber');
+  // The week under way says "In progress" as quiet text in its header.
+  expect(before).toContain('<span class="b-status">In progress</span>');expect(before).not.toContain('b-chip--teal');
+ });
  it('says where and since when while on the clock; a cut read shows dashes, not short totals',()=>{
   const on=text(onlyB(inPage(timeHead,<CorpTimeTab data={ready({current:open,today:{entries:[open],recordedSeconds:5520,breakSeconds:0}})}/>)));
   // B7 wording (NV-119/NV-035): "Clocked in" status, "correction request" naming.
@@ -72,7 +98,7 @@ describe('Past timecards (e-timecards)',()=>{
   const list=plain.slice(plain.indexOf('Weeks'));
   const order=['Oct 26 – Nov 1','Oct 19 – 25','Oct 12 – 18','Sep 21 – 27','Show earlier weeks','Your correction requests'].map(range=>list.indexOf(range));
   expect(order.every(at=>at>=0)).toBe(true);expect([...order].sort((a,b)=>a-b)).toEqual(order);
-  expect(plain).toContain('Loading…');expect(plain).toContain('Sent to your manager for review');expect(list).not.toContain('Tue 20');
+  expect(plain).toContain('Loading…');expect(plain).toContain('Waiting and decided');expect(list).not.toContain('Tue 20');
   // The corporate page keeps its chosen week in full.
   expect(text(withoutB(html))).toContain('Tue 20');
  });
@@ -123,4 +149,13 @@ describe('read states and Availability',()=>{
   expect(html).toContain('href="/app/schedule"');expect(text(html)).toContain('Availability');expect(text(html)).toContain('Your usual week, used to build your schedule');
   expect(html).toMatch(/class="b-btn b-btn--glass" href="\/app\/availability\?week=2026-11-09"/);expect(text(html)).toContain('Change one week');
  });
+});
+
+it('keeps Time clocked in without an ended-shift warning during the next active assignment',()=>{
+ const entry:EmployeeTimeEntry={...open,clockInAt:'2026-11-17T13:00:00Z',elapsedSeconds:14400};
+ const data=ready({date:'2026-11-17',observedAt:'2026-11-17T17:00:00Z',current:entry,today:{entries:[entry],recordedSeconds:14400,breakSeconds:0}});
+ const shifts=[{date:data.date,startTime:'09:00',endTime:'12:00'},{date:data.date,startTime:'12:00',endTime:'17:00'}];
+ const html=onlyB(renderToStaticMarkup(<HoursBContext.Provider value={{head:timeHead,authority:'fictional-view',shifts}}><div className="c-page"><CorpTimeTab data={data}/></div></HoursBContext.Provider>));
+ expect(text(html)).toContain('Clocked in at 9:00 AM');expect(text(html)).not.toContain('shift has ended');expect(html).not.toContain('b-callout');
+ expect(html).toContain('data-dot="green"');
 });

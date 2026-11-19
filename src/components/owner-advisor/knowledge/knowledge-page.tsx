@@ -18,7 +18,7 @@ import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle"
 import {
   CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpEmptyRow, CorpField, CorpFormFooter, CorpNav, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows, CorpSection, CorpTitle,
 } from "@/components/corp/corp";
-import { BState } from "@/components/owner-b/b-kit";
+import { BCallout, BState } from "@/components/owner-b/b-kit";
 import { FormHead, FormHeadLink } from "@/components/team/team-forms";
 import { toast } from "@/components/toaster";
 import {
@@ -349,7 +349,7 @@ function useLatest(ctx: Ctx, entry: KnowledgeEntry | null) {
       setState(result.kind === "ready" ? { kind: "ready", version: result.value } : { kind: "failed" });
     });
     return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line hooks-preserved/exhaustive-deps
   }, [documentId]);
   return state;
 }
@@ -628,7 +628,7 @@ function VersionReview({ ctx, entry, versionId, problem }: { ctx: Ctx; entry: Kn
     {publishable ? <CorpSection id="kn-publish" label="Publish for Rondo">
       <CorpCard as="div"><CorpBody>
         <div className="kn-publish">
-          {current && futureStart ? <p className="kn-callout"><WarningIcon weight="bold" aria-hidden="true" /><span><strong>Gap until {shortDay(version.effectiveFrom!, ctx.timeZone)}.</strong> Version {number(current.versionId)} stops when you publish.</span></p> : null}
+          {current && futureStart ? <BCallout tone="amber" title={<>Gap until {shortDay(version.effectiveFrom!, ctx.timeZone)}.</>}>Version {number(current.versionId)} stops when you publish.</BCallout> : null}
           <p className="kn-para">{effect}</p>
           {mismatch ? <p className="c-error" role="alert"><ErrorText>Out of date. Open the newest draft</ErrorText></p> : null}
           <div className="kn-actions">

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { rankCoverageCandidates } from "./coverage-ranking";
 import type { ValidateShiftInput } from "./validate-shift";
 function candidate(

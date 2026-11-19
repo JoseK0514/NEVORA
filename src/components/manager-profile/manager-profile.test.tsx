@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { parseManagerProfile, type ManagerProfileSnapshot } from './contract';
 import { ALERT_TOPIC_COUNT, ManagerProfileView, managerAccess, type ManagerProfileIdentity } from './manager-profile-live';
 
@@ -48,7 +48,9 @@ describe('management profile contract', () => {
 describe('Owner and Manager Profile', () => {
   it('shows what today’s reads know at once, and says it is checking the rest', () => {
     const html = render(owner, null);
-    for (const text of ['Fictional Owner', 'Owner · Northside QA Workforce', 'Puerto Rico', 'Checking…']) expect(html).toContain(text);
+    for (const text of ['Fictional Owner', 'Puerto Rico', 'Checking…']) expect(html).toContain(text);
+    // Phase 8: the role and the company are two whole parts of one line (it broke inside "Northside Café / & Bakery").
+    expect(html).toContain('Owner</span><span class="eb-dots__p"><span class="eb-dots__sep" aria-hidden="true">·</span><span class="b-sr">, </span>Northside QA Workforce</span>');
     expect(html).not.toContain('role="switch"');
     // The read may still list the payroll topic (switched off); the page leaves it out without payroll.
     expect(render({ ...owner, payrollAlerts: false }, parseManagerProfile(fixture('owner'))).match(/role="switch"/g)).toHaveLength(4);
@@ -82,12 +84,12 @@ describe('Owner and Manager Profile', () => {
     const assigned = render({ ...manager, changedBy: 'Jose Natal', locationsWord: 'stores' }, parseManagerProfile(fixture('manager')));
     expect(assigned).toContain('<b>Access</b><i>Schedule and team at your stores. Payroll and Settings are for Owners.</i>');
     expect(assigned).toContain('<span class="q-rv q-rv--l">Manager, Main Office, West Office</span>');
-    expect(assigned.match(/<small class="pmp-fixed__why">Jose Natal can change this\.<\/small>/g)).toHaveLength(2);
+    expect(assigned.match(/<small class="pmp-fixed__why">Jose Natal can change this<\/small>/g)).toHaveLength(2);
     expect(assigned).not.toContain('Read-only');
     const all = render(manager, parseManagerProfile({ ...fixture('manager'), locations: { scope: 'all', names: ['Main Office'] } }));
     expect(all).toContain('<span class="q-rv q-rv--l">Manager, all locations</span>');
     expect(all).toContain('Schedule, time, team and requests. Payroll and Settings are for Owners.');
-    expect(all).toContain('An Owner can change this.');
+    expect(all).toContain('An Owner can change this<');
     // Before the read arrives, and when it fails, only the role is said: no locations are claimed.
     for (const html of [render(manager, null), render(manager, { state: 'unavailable', reason: 'read_failed' })]) {
       expect(html).toContain('<b>Access</b><i>Payroll and Settings are for Owners.</i></span><span class="q-rv q-rv--l">Manager</span>');

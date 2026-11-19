@@ -1,4 +1,4 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 import {createHash, generateKeyPairSync, randomUUID} from 'node:crypto';
 import type {SessionMutationProof} from '../shift-changes/types';
 async function api() {
@@ -22,17 +22,17 @@ function request(action: string, body: unknown, headers: Record<string, string> 
   return new Request(origin + '/api/mobile/v1/notifications/' + action, {method: 'POST', headers: {'content-type': 'application/json', ...headers}, body: typeof body === 'string' ? body : JSON.stringify(body)});
 }
 async function setup() {
-  const repository = {issueEnrollment: vi.fn(async () => ({state: 'challenge' as const, challenge: {public: true}})),
-    issueMaintenance: vi.fn(async () => ({state: 'conflict' as const})), complete: vi.fn(async () => ({state: 'active' as const, generation})),
-    status: vi.fn(async () => ({state: 'active' as const, generation})), cleanupRevoked: vi.fn()};
-  const session = vi.fn(async (): Promise<SessionMutationProof | null> => proof);
-  const factory = vi.fn(() => repository);
+  const repository = {issueEnrollment: rs.fn(async () => ({state: 'challenge' as const, challenge: {public: true}})),
+    issueMaintenance: rs.fn(async () => ({state: 'conflict' as const})), complete: rs.fn(async () => ({state: 'active' as const, generation})),
+    status: rs.fn(async () => ({state: 'active' as const, generation})), cleanupRevoked: rs.fn()};
+  const session = rs.fn(async (): Promise<SessionMutationProof | null> => proof);
+  const factory = rs.fn(() => repository);
   // Fake repository has the exact boundary responses relevant here; actual
   // challenge shapes and persistence are exercised by real PostgreSQL tests.
   const make = (value: typeof config | null = config) => (api()).then(m => m.createNativeRegistrationHandlers({config: value, session, repository: factory as unknown as Parameters<typeof m.createNativeRegistrationHandlers>[0]['repository']}));
   return {repository, session, factory, make, handlers: await make()};
 }
-afterEach(() => vi.useRealTimers());
+afterEach(() => { rs.useRealTimers(); });
 it('requires current browser authority for explicit receipt reconciliation without redefining ordinary enrollment',async()=>{
  const f=await setup(),body={...enrollment(),operation:'reconcile'};
  expect((await f.handlers.challenge(request('challenge',body))).status).toBe(200);
@@ -92,7 +92,7 @@ it.each(['{"keyFingerprint":"a","keyFingerprint":"b"}', '{"keyFingerprint":"a","
   expect(f.factory).not.toHaveBeenCalled();
 });
 it('bounds actual streamed UTF8 bytes independently of Content-Length and cancels rejected input', async () => {
-  const f = await setup(), cancelled = vi.fn(); let emitted = false;
+  const f = await setup(), cancelled = rs.fn(); let emitted = false;
   const body = new ReadableStream({pull(controller) {if (!emitted) {emitted = true; controller.enqueue(new Uint8Array(16385));}}, cancel: cancelled});
   const req = new Request(origin + '/api/mobile/v1/notifications/complete', {method: 'POST', headers: {'content-type': 'application/json', 'content-length': '1'}, body, duplex: 'half'} as RequestInit);
   expect((await f.handlers.complete(req)).status).toBe(413); expect(cancelled).toHaveBeenCalledOnce();
@@ -108,9 +108,9 @@ it('rejects oversized declared lengths, invalid UTF8, wrong content type and abo
   expect(f.factory).not.toHaveBeenCalled();
 });
 it('times out a stalled body and cancels its stream without repository work', async () => {
-  const f = await setup(); vi.useFakeTimers(); const cancel = vi.fn();
+  const f = await setup(); rs.useFakeTimers(); const cancel = rs.fn();
   const req = new Request(origin + '/api/mobile/v1/notifications/complete', {method: 'POST', headers: {'content-type': 'application/json'}, body: new ReadableStream({cancel}), duplex: 'half'} as RequestInit);
-  const pending = f.handlers.complete(req); await vi.advanceTimersByTimeAsync(2001);
+  const pending = f.handlers.complete(req); await rs.advanceTimersByTimeAsync(2001);
   expect((await pending).status).toBe(400); expect(cancel).toHaveBeenCalledOnce(); expect(f.factory).not.toHaveBeenCalled();
 });
 it('returns status without identity/material and sanitizes uncertain database failures', async () => {

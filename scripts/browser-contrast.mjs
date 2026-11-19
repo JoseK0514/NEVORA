@@ -14,7 +14,12 @@ export function measureRenderedContrast(element) {
   const layers = [], targetBounds = element.getBoundingClientRect();
   for (let node = element; node; node = node.parentElement) {
     const style = getComputedStyle(node);
-    if (style.opacity !== '1' || style.mixBlendMode !== 'normal' || style.filter !== 'none') throw Error('Unsupported compositing');
+    // The current entrance animation ends at blur(0). Its retained computed
+    // blur(0px) is the identity filter, not unmeasured paint. Every nonzero or
+    // compound filter still fails closed, as do opacity and blend effects.
+    if (style.opacity !== '1' || style.mixBlendMode !== 'normal' || !['none', 'blur(0px)'].includes(style.filter)) {
+      throw Error('Unsupported compositing: ' + JSON.stringify({tag:node.tagName,opacity:style.opacity,mixBlendMode:style.mixBlendMode,filter:style.filter}));
+    }
     const layer = {tag: node.tagName, color: style.backgroundColor, image: style.backgroundImage, bounds:node.getBoundingClientRect().toJSON(), overlays: []};
     for (const pseudo of ['::before', '::after']) {
       const p = getComputedStyle(node, pseudo);

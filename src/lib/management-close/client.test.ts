@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {parseCloseContext,parseCloseReceipt} from './client';
 const context={state:'ready',recoveryScope:'c'.repeat(64),observedAt:'2026-11-10T12:00:00Z',validForMs:15000,authority:'a'.repeat(64),sourceHash:'b'.repeat(32),target:{timeEntryId:'entry',employeeName:'Fictional Employee',locationName:'Main',clockInAt:'2026-11-10 08:00:00+00',openBreakStartedAt:null}};
 const command={operationId:'11111111-1111-4111-8111-111111111111',timeEntryId:'entry',expectedSourceHash:context.sourceHash,closedAt:'2026-11-10T11:00:00Z',reason:'Confirmed last worked time.'};

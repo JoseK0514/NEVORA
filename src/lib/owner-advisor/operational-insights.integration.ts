@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { advisorService } from "./service.server";
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
 beforeEach(async () => { f = await companyAccessFixture(); });
 afterEach(async () => { await f?.db.dispose(); });
 it("explicitly opens detailed 28-day local historical evidence, no fabricated investigation and zero provider calls", async () => {
-  const provider = vi.fn();
+  const provider = rs.fn();
   const result = await advisorService(f.owner, f.db.executor, { NEVORA_OWNER_ADVISOR_ENABLED: "true" }, new AbortController().signal, undefined, provider, {view:'detail'});
   expect(result).toMatchObject({ operationalInsights: { state: "ready", denominators: { publishedShiftRecords: 0, effectiveEntryRecords: 0, timecardPeriodRecords: 0 }, suggestions: [] } });
   expect(provider).not.toHaveBeenCalled();

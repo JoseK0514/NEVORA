@@ -5,7 +5,7 @@ import type {ReactNode} from 'react';
 import {CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpLink, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle} from './corp/corp';
 import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {HomeSnapshot, PublishedAssignment} from '../lib/employee-home/types';
-import {unpublishedNote} from '../lib/publication-note';
+import {homePublishedNames, unpublishedNote} from '../lib/publication-note';
 import {keepWhole} from '../lib/keep-whole';
 import Link from 'next/link';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -13,6 +13,8 @@ import {useAccessJourney} from './mobile-access/journey';
 import {useEmployeeBScreen} from './employee-mobile/use-mobile';
 import type {AttentionItem} from '../lib/employee-home/types';
 import {EmployeeHomeB, type HomeBExtras} from './employee-b/home-b';
+import {reviewCopy} from './review-details/copy';
+import {homeTaskTotal} from '../lib/action-center/review-routing';
 import {businessDate, clock, confirmsWeek, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type EmployeeHomeQuietViewProps, type HomeWeek} from './employee-home-quiet';
 
 /* Employee Home on the corporate kit (Release 1, board C-Employee; Nov 1 upscale S3, S4, M7). Look only: the Home read, its states, links, authority
@@ -147,6 +149,9 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
   // The name is private like the rest of Home: it shows only with released data and clears when Home pauses.
   const name = snapshot ? displayName?.trim() : undefined;
   const todos = snapshot ? homeTodoRows(snapshot.attention.filter(item => item.actionable || item.required), snapshot, week) : [];
+  // Phase 4 (U03): the count and the "nothing to do" state come from the read's task facts. A partial read, or an older
+  // payload without them, makes the count a lower bound ("At least 2"); "You’re all set" is only the server's all-clear.
+  const tasks = homeTaskTotal(released && 'tasks' in released ? released.tasks : undefined, todos.length, {partial, allSet: !!released && released.allSet === true});
   // Upscale M7: the Quick guide repeats the tabs, so a returning employee's Home shows "Coming up" instead. The guide shows
   // only for the session in which the person has just activated their account (Employee Access on).
   const firstVisit = useAccessJourney().confirmedId !== null;
@@ -163,13 +168,13 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
 
   return <CorpPage className="c-ehome c-page--narrow">
     {/* Direction B: the phone screen (phones only; tablets and desktop keep the cards below). */}
-    <EmployeeHomeB snapshot={snapshot ?? null} partial={partial} todos={todos} week={week} name={name} date={dateB} place={(snapshot?.currentShift ?? snapshot?.nextShift)?.locationLabel || workspaceName}
+    <EmployeeHomeB snapshot={snapshot ?? null} partial={partial} todos={todos} tasks={tasks} week={week} name={name} date={dateB} place={(snapshot?.currentShift ?? snapshot?.nextShift)?.locationLabel || workspaceName}
       intro={bScreen && firstVisit ? intro : undefined} waiting={waiting} loading={loading} paused={paused} denied={denied} refreshing={refreshing} onRetry={onRetry} weekTodo={item => weekTodo(item, week)} team={teamMessage} {...b}/>
     <div data-home-state={viewState} aria-busy={refreshing || loading} className="c-ehome__body">
       <CorpTitle title={name ? `Welcome back, ${name}` : 'Home'} sub={<>{date}{workspaceName ? <> · {workspaceName}</> : null}</>}/>
       {snapshot ? <>
         <ShiftCard snapshot={snapshot}/>
-        {snapshot.publicationState === 'partial' ? <CorpNote>{unpublishedNote(snapshot.unpublishedLocations ?? [])}</CorpNote> : null}
+        {snapshot.publicationState === 'partial' ? <CorpNote>{unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations))}</CorpNote> : null}
       </> : <CorpCard id="home-shift" label="Today’s shift">
         <CorpBody>
           <p className="c-ehome__state" role="status">{waiting}</p>
@@ -197,7 +202,7 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
               return <li key={key}><CorpRow href={sourceDestinations[key]} title={sourceNames[key]} detail={state} label={`Open ${sourceNames[key].toLowerCase()}, ${state.toLowerCase()}`}/></li>;
             }) : null}
           </CorpRows>
-        </CorpCard> : <CorpNote center>You’re all set. Nothing needs you right now.</CorpNote>}
+        </CorpCard> : <CorpNote center>{tasks.allSet ? 'You’re all set. Nothing needs you right now.' : reviewCopy().nothingToDo}</CorpNote>}
         <p className="nv-sr" data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{clock(snapshot.observedAt, snapshot.timeZone)}</time>, times in {snapshot.timeZone.split('/').pop()!.replace(/_/g, ' ')} time</p>
       </> : null}
     </div>

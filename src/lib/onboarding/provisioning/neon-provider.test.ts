@@ -1,10 +1,10 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {NeonProvisioningProvider,readProvisionerPolicy} from './neon-provider.server';
 import {resourceIdentity} from './model';
 const request={operationId:'170837ce-471d-4c6f-a322-aa73ce9863d6',workspaceId:'270837ce-471d-4c6f-a322-aa73ce9863d6',environment:'test' as const,accountRef:'fictional-org',region:'aws-us-east-1',createdAt:new Date().toISOString()};
 const identity=resourceIdentity(request,Buffer.alloc(32,4).toString('base64url'));
 const policy={accountRef:'fictional-org',region:'aws-us-east-1',version:'fictional-policy',maxComputeUnits:0.25,suspendSeconds:60,historySeconds:86400,quota:{active_time_seconds:3600,compute_time_seconds:3600,written_data_bytes:104857600,data_transfer_bytes:104857600,logical_size_bytes:104857600}};
-function fixture(){const calls:{url:string;init:RequestInit}[]=[];const fetcher=vi.fn(async(input:RequestInfo|URL,init:RequestInit={})=>{
+function fixture(){const calls:{url:string;init:RequestInit}[]=[];const fetcher=rs.fn(async(input:RequestInfo|URL,init:RequestInit={})=>{
  const url=new URL(String(input));calls.push({url:url.href,init});expect(url.origin).toBe('https://console.neon.tech');expect(init.redirect).toBe('error');
  const path=url.pathname.replace('/api/v2',''),project={id:'fictional-project',name:identity.name,org_id:policy.accountRef,region_id:policy.region,created_at:request.createdAt};
  if(path==='/regions')return Response.json({regions:[{region_id:policy.region}]});
@@ -50,10 +50,10 @@ it('rejects cross-account requests and an unlimited/absent resource policy witho
  const f=fixture();await expect(f.provider.create({...request,accountRef:'foreign-org'},identity)).rejects.toThrow();expect(f.fetcher).not.toHaveBeenCalled();expect(readProvisionerPolicy({})).toBeNull();expect(readProvisionerPolicy({NEVORA_PROVISIONER_RESOURCE_POLICY:JSON.stringify({...policy,quota:{...policy.quota,compute_time_seconds:0}})})).toBeNull();
 });
 it('sanitizes provider failures and never retries a POST inside the adapter',async()=>{
- const fetcher=vi.fn(async()=>new Response('private provider diagnostics',{status:429,headers:{'retry-after':'120'}}));const p=new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy,fetch:fetcher});await expect(p.find(request,identity)).rejects.toMatchObject({status:429,retryAfterSeconds:120,message:'Provisioning provider unavailable'});expect(fetcher).toHaveBeenCalledTimes(1);
+ const fetcher=rs.fn(async()=>new Response('private provider diagnostics',{status:429,headers:{'retry-after':'120'}}));const p=new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy,fetch:fetcher});await expect(p.find(request,identity)).rejects.toMatchObject({status:429,retryAfterSeconds:120,message:'Provisioning provider unavailable'});expect(fetcher).toHaveBeenCalledTimes(1);
 });
 it('treats a read failure after an acknowledged project create as unknown creation, even if that read returns429',async()=>{
- const f=fixture();let created=false;const fetcher=vi.fn(async(input:RequestInfo|URL,init:RequestInit={})=>{const url=new URL(String(input));if(created&&url.pathname==='/api/v2/projects/fictional-project')return new Response('private read diagnostics',{status:429,headers:{'retry-after':'120'}});const response=await f.fetcher(input,init);if(init.method==='POST')created=true;return response;});
+ const f=fixture();let created=false;const fetcher=rs.fn(async(input:RequestInfo|URL,init:RequestInit={})=>{const url=new URL(String(input));if(created&&url.pathname==='/api/v2/projects/fictional-project')return new Response('private read diagnostics',{status:429,headers:{'retry-after':'120'}});const response=await f.fetcher(input,init);if(init.method==='POST')created=true;return response;});
  const p=new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy,fetch:fetcher});await expect(p.create(request,identity)).rejects.toMatchObject({status:503,retryAfterSeconds:120});expect(fetcher.mock.calls.filter(([,init])=>init?.method==='POST')).toHaveLength(1);
 });
 it('permits only the pinned endpoint default PostgreSQL port for bootstrap credentials',async()=>{

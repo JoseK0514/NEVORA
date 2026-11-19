@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "date": "2026-11-17",
+  "date": "2026-11-19",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "e05208db194c0ef6c30637f1abb6d05db7010dfb",
-  "applicationHash": "83404afdfa5e86bd8923cd20a7061d7236337151fa2b863f3712feda82ae84a0",
+  "sourceSha": "070c9aa3d0a20e99566fd1504a8ebd091d02e407",
+  "applicationHash": "f2189c90bf86c6a39a51466e5ad82a1dbe592ec0a4bb86f7bc1f9fde22e4d44d",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
-    "sha256": "1f6a3c14d7ae322345b3c7d2975ae8423265cda5e2cf86da3cdaa662adb31693"
+    "sha256": "0cd9232190da48d0e815aac9cbfe8df1ad69be5fe97f153ed58c7626fde85fec"
   },
   "guides": [
     {
@@ -14,12 +14,12 @@
       "title": "NEVORA Owner web guide",
       "markdown": {
         "path": "docs/guides/web/owner.md",
-        "sha256": "f219515723c6a582fb85230090d7717c41636c433d3cb123d1d8db2f4d1d65ab"
+        "sha256": "fc53689e5ca42df33d463afcca52ab26e2709b9c7b52868f289c7b9dc5dc91bb"
       },
       "evidence": [
         {
           "path": "src/lib/navigation.ts",
-          "sha256": "b823c09c39b03151fd42517a929e510e23eef1b4c7bf7adbd1a6bfe346de6a8d"
+          "sha256": "557f5f4be93a0b70d34231082cd0400a4fe50e63354037db41491d268af6d76e"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -27,7 +27,7 @@
         },
         {
           "path": "src/app/app/settings/page.tsx",
-          "sha256": "749e8a328b420820a51326038b3ed2d3a4850150b827ace9f4e0fe7aa710c987"
+          "sha256": "ab0b7c41b91ad835bf17a3c4aeee0a2d67c552e687894f3704132e22cf063eef"
         },
         {
           "path": "src/app/app/employees/page.tsx",
@@ -35,11 +35,11 @@
         },
         {
           "path": "src/app/app/employees/new/page.tsx",
-          "sha256": "c386a75e021b7cb892ccbe363afe120b05c797eae94ce4d060ea1b30f904d4f6"
+          "sha256": "a7860c55514ceb58da96a11536f56fa772eb45c7f02111f505fb809dbebe657e"
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "14168dac1dfe8640454901a65d225231a593f21afc958785f19883a9859756f8"
+          "sha256": "4da17e160a1cced833366475d939f1defe39a0708a41443b29447032cda58305"
         },
         {
           "path": "src/components/company-access/employee-invitation-panel.tsx",
@@ -51,7 +51,7 @@
         },
         {
           "path": "src/app/app/schedule/page.tsx",
-          "sha256": "9cfcb5b407f90b5b4c329bb362b564abd17fcec661f07d2cd1ea4b8c5c8a14bc"
+          "sha256": "bb5c753d1cb08199b7c6a0d85d9677d8fde17b3a148e4a8d3a59eda469db8459"
         },
         {
           "path": "src/app/app/schedule/publish/page.tsx",
@@ -59,15 +59,15 @@
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
-          "sha256": "9bce5af035ab0ba4e885ac251d6322d86c74a9b0753b3f287152876131fe81fc"
+          "sha256": "62e08916d5fdddb4afa4bb783c6f0f8b5760f87476f60f054a509e329d286b65"
         },
         {
           "path": "src/app/app/reports/page.tsx",
-          "sha256": "7a6264b5aa7f2c157114e4f8d8408c9d9459c36361fc885ccf3c873da92d2138"
+          "sha256": "9a771c976fa05560eaeb685f5fdf86179e1890cd7d0e8889c407d192b6b1be1b"
         },
         {
           "path": "src/components/payroll/payroll-runs.tsx",
-          "sha256": "a0c9663628dcb42c7a290389ff75b63f5f69d048a0916a01e32061118f2b7eba"
+          "sha256": "2099a895ee6b101808de847031dd6eaee2320f0fdf490c01ec77146eab86f883"
         },
         {
           "path": "src/lib/payroll/service.ts",
@@ -79,7 +79,7 @@
         },
         {
           "path": "src/app/app/help/page.tsx",
-          "sha256": "8592c356cb9919e559db04a6926d147263be0065ee381188178b40cf6fdd215b"
+          "sha256": "4df7ce6aa95bec187deee5284f7d4a3e1a8206a12b2d5b34915abe51ec1f76fa"
         },
         {
           "path": "src/lib/onboarding/admission.server.ts",
@@ -107,7 +107,7 @@
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "9815af9ea9ea91e48511d538ec4e508e1129bca2e02d214a1f695aeccff77124"
+          "sha256": "b93210996be687cdbba3b4e40b7979874dec4c020cc6836e39fc47a4e3c4f567"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -155,7 +155,7 @@
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
+          "sha256": "a8fae13caa3fb7156c57d7b57cc726d47da281bd4a352a649970b25875a9a150"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -172,12 +172,40 @@
         {
           "path": "docs/qa/rondo-development-integration-20261116/index.json",
           "sha256": "4b1fe9aee6a41427213e4e23d599c682f1ea7c78f492826ba01957a1cdccb11f"
+        },
+        {
+          "path": "src/lib/employment-dates.ts",
+          "sha256": "77fdbaae540355daaaef4ec58d3ed34d66b87e25a8a534ff02244e07d483dec5"
+        },
+        {
+          "path": "src/components/employment-date-fields.tsx",
+          "sha256": "832ba2714f5ffbd3c1acaa47ddd8c37f4d6f4ff8c7685799ba8deb77e9e4942b"
+        },
+        {
+          "path": "src/app/app/reports/christmas-bonus/page.tsx",
+          "sha256": "d1bc6970661879bec1d3426c48c4d499a7d3a7f43ed3915d4c6406e175e440d1"
+        },
+        {
+          "path": "src/lib/reports/christmas-bonus.ts",
+          "sha256": "756acc772a2154f3cc299b4e09873a6e2d12641b46afe200aa5af9e7c62fa825"
+        },
+        {
+          "path": "src/app/app/settings/clocker/matching/page.tsx",
+          "sha256": "7d9b195a8452a9c95427625cdb6b451aa035171e784669c0a8d10dfeec7c4986"
+        },
+        {
+          "path": "src/lib/clocker/schedule-grace.server.ts",
+          "sha256": "0093466dba1fa8076d36dc782b263f536c487434caa99dd6a4d1499cce5505ce"
+        },
+        {
+          "path": "src/lib/attendance/project.ts",
+          "sha256": "987a80f87dabf52d11f2c5057689ee6c1ee62a878d430c88579259b096b42616"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "893f40ec65d58440cf39de7b4b2af6c1a7dadebd22f739f2b73103afd94ac7f0",
-        "pageCount": 4
+        "sha256": "c580bb46c5fcdcef971b3eed6bae74dc8ea544c41955dda0a1b22927469122a8",
+        "pageCount": 6
       }
     },
     {
@@ -185,7 +213,7 @@
       "title": "NEVORA Manager and Lead web guide",
       "markdown": {
         "path": "docs/guides/web/manager-lead.md",
-        "sha256": "d5a2a7b76a7dac1f4e525a8e99c235411cc965180cf57141dbad706828a121aa"
+        "sha256": "03de8dcfc658f2c9332eec1428236aee4404cd5958b69e03dd84e8a527897d2e"
       },
       "evidence": [
         {
@@ -194,11 +222,11 @@
         },
         {
           "path": "src/lib/navigation.ts",
-          "sha256": "b823c09c39b03151fd42517a929e510e23eef1b4c7bf7adbd1a6bfe346de6a8d"
+          "sha256": "557f5f4be93a0b70d34231082cd0400a4fe50e63354037db41491d268af6d76e"
         },
         {
           "path": "src/lib/company-access/model.ts",
-          "sha256": "82d6a936f3b42fd17a17407f57fadce5a693a7b55b57ed6ab91bb70aaef5117c"
+          "sha256": "d259968101c7c83e253e2864832ae8aed5942e9ebbf48fc064f53de38f1356d3"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -214,11 +242,11 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "14168dac1dfe8640454901a65d225231a593f21afc958785f19883a9859756f8"
+          "sha256": "4da17e160a1cced833366475d939f1defe39a0708a41443b29447032cda58305"
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
-          "sha256": "9bce5af035ab0ba4e885ac251d6322d86c74a9b0753b3f287152876131fe81fc"
+          "sha256": "62e08916d5fdddb4afa4bb783c6f0f8b5760f87476f60f054a509e329d286b65"
         },
         {
           "path": "src/lib/payroll/service.ts",
@@ -230,7 +258,7 @@
         },
         {
           "path": "src/app/app/my-time/page.tsx",
-          "sha256": "6cbfcc2836c9cbac232570f6f7604e06053100ab2b74c23f3fbbf8542ec2a23f"
+          "sha256": "5d5b233755e56bc0b28193ee325365c5f85d91e17735991f53f76591383e0412"
         },
         {
           "path": "src/app/app/ai-manager/page.tsx",
@@ -279,12 +307,28 @@
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
           "sha256": "6688c85c3b15c960295273b476052e789ffbee93adaf295e661ee81548a6838d"
+        },
+        {
+          "path": "src/lib/employment-dates.ts",
+          "sha256": "77fdbaae540355daaaef4ec58d3ed34d66b87e25a8a534ff02244e07d483dec5"
+        },
+        {
+          "path": "src/lib/company-access/employee-profile.server.ts",
+          "sha256": "f7eb3d9be9a4a5090bec9acb3ec14c1bbac88359de0bf5a3e0f865d6e0e8b51a"
+        },
+        {
+          "path": "src/app/app/reports/christmas-bonus/page.tsx",
+          "sha256": "d1bc6970661879bec1d3426c48c4d499a7d3a7f43ed3915d4c6406e175e440d1"
+        },
+        {
+          "path": "src/components/manager-attendance-review.tsx",
+          "sha256": "013f8b81d7f433aa659d28ef472fc49f507fcc55109d526d20902d99491a6fd7"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "58c770da3f851ef49266f0dd6dee9ca4078decb159727514894cbf25ace78dea",
-        "pageCount": 3
+        "sha256": "90f0df5804b1459ed0155c0be19241f4b4112d028b3ab6bc5cb2be74dd9078a7",
+        "pageCount": 4
       }
     },
     {
@@ -292,28 +336,28 @@
       "title": "NEVORA Employee web guide",
       "markdown": {
         "path": "docs/guides/web/employee.md",
-        "sha256": "42013ef57d36643619e65fc13c33441a3b74aec2061e9125b98477a19ef4095d"
+        "sha256": "088dcdf70157b1fb88dc7ec3d2e6ac56f1f34398cc1ff2165725ce80a78ec6f8"
       },
       "evidence": [
         {
           "path": "src/lib/navigation.ts",
-          "sha256": "b823c09c39b03151fd42517a929e510e23eef1b4c7bf7adbd1a6bfe346de6a8d"
+          "sha256": "557f5f4be93a0b70d34231082cd0400a4fe50e63354037db41491d268af6d76e"
         },
         {
           "path": "src/app/activate/page.tsx",
-          "sha256": "83a6192e03d8b91f8051e3dba569a39b50d322e37ef35c1f2fc550983a751021"
+          "sha256": "3682d5b3d830e3de2f0e0ccecddaa919ee04ba118e5b7630906ce025421b4819"
         },
         {
           "path": "src/app/activate/activation-invitation.tsx",
-          "sha256": "a632528dc0492aa18f82d86d98e2ad2caca3ffdb89d159a2a7be57b03886cce2"
+          "sha256": "7a5e9e451ea562eed6438817f21a8ed3dfe42fb90a8e3a88077a0632e719df2c"
         },
         {
           "path": "src/app/app/schedule/page.tsx",
-          "sha256": "9cfcb5b407f90b5b4c329bb362b564abd17fcec661f07d2cd1ea4b8c5c8a14bc"
+          "sha256": "bb5c753d1cb08199b7c6a0d85d9677d8fde17b3a148e4a8d3a59eda469db8459"
         },
         {
           "path": "src/app/app/availability/page.tsx",
-          "sha256": "d2340a521286da98678a6749c92b9741e246af485bdab3c0d34a4590451e4b1c"
+          "sha256": "fac6e83a56b7aac3da34494b71152a97fa5035c9db530091679b5383c835057f"
         },
         {
           "path": "src/app/app/requests/hub/page.tsx",
@@ -325,7 +369,7 @@
         },
         {
           "path": "src/app/app/exchange/page.tsx",
-          "sha256": "e97b45f4e74edcb171d691adf9f683c43e840b36c023e959321ca57d8a2f49e0"
+          "sha256": "408b3d813fd49b20bcf7d2609600c2640eda4f5116ecb2414d0b1ec6d38ccf2c"
         },
         {
           "path": "src/app/app/exchange/swap/page.tsx",
@@ -337,7 +381,7 @@
         },
         {
           "path": "src/app/app/my-time/page.tsx",
-          "sha256": "6cbfcc2836c9cbac232570f6f7604e06053100ab2b74c23f3fbbf8542ec2a23f"
+          "sha256": "5d5b233755e56bc0b28193ee325365c5f85d91e17735991f53f76591383e0412"
         },
         {
           "path": "src/components/employee-time-panel.tsx",
@@ -361,7 +405,7 @@
         },
         {
           "path": "src/app/app/help/page.tsx",
-          "sha256": "8592c356cb9919e559db04a6926d147263be0065ee381188178b40cf6fdd215b"
+          "sha256": "4df7ce6aa95bec187deee5284f7d4a3e1a8206a12b2d5b34915abe51ec1f76fa"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
@@ -374,11 +418,35 @@
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-remaining-dependencies.json",
           "sha256": "6688c85c3b15c960295273b476052e789ffbee93adaf295e661ee81548a6838d"
+        },
+        {
+          "path": "src/app/app/availability/agreement/page.tsx",
+          "sha256": "5c1ad72b70be386599610b57e8b54fda2b5957890fc69cf6093f165991108217"
+        },
+        {
+          "path": "src/components/employee-b/home-b.tsx",
+          "sha256": "d4a15b0f53680af64e70137e1674676cf14cf89956dacc7c6f8710af7ceeceb8"
+        },
+        {
+          "path": "src/components/access-recovery/support-reference-seam.ts",
+          "sha256": "8509acf2aa793826429338060f1c83147f3d15db1dfae8f092dd56ade86147cf"
+        },
+        {
+          "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
+          "sha256": "d5eb30a608f80da15a7ce3e528b9b1776aa8a6eea9ccabcd540a40a39a579574"
+        },
+        {
+          "path": "src/components/access-recovery/password-pair.tsx",
+          "sha256": "c8c75c00d3702d5a6ee92b26f57b30e751df7065d0955b7ce749f3d0a0b9cc16"
+        },
+        {
+          "path": "src/lib/auth/password-requirements.ts",
+          "sha256": "18359c81579b1e549e0f7d273162af3f3e4afa2db8d77962dfee31ebe2fb1bf7"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "5f2fe9175c67d5082a1a36882d095331ad429b4a46cab269c2ff0c89106fe019",
+        "sha256": "847ea6a5e786aa334c543968834a826600856373fa7f6bdec0a8c381a39cb17d",
         "pageCount": 3
       }
     },
@@ -387,7 +455,7 @@
       "title": "Rondo web guide",
       "markdown": {
         "path": "docs/guides/web/rondo.md",
-        "sha256": "3e6e249a6ce0563fce3c7fae23916e41bf54940802e812a38c3116284761bee5"
+        "sha256": "7ad15811e379e7d904e4c6c2249b20d1f63903f6b55528a168abf3a50166edd0"
       },
       "evidence": [
         {
@@ -424,7 +492,7 @@
         },
         {
           "path": "src/components/owner-advisor/advisor.tsx",
-          "sha256": "f20731066624243559a9c237649709fdc39dae92b7d3bd5f808b214677a36644"
+          "sha256": "5782cabeca7bb2cf4908c5e712ccf974ebc0329ae0328c60b03760be93cffbb5"
         },
         {
           "path": "src/components/owner-advisor/notebook-panel.tsx",
@@ -464,7 +532,7 @@
         },
         {
           "path": "src/components/owner-advisor/knowledge/knowledge-page.tsx",
-          "sha256": "e02472bc5400fd3b1b186788566ce8036d8c454bfcb8f24cd27af19fdcdf622d"
+          "sha256": "8d0ea9bc0f80697a4486a1f40fc2a5a56f839ced4779e260496acf5c77c860c8"
         },
         {
           "path": "src/lib/owner-advisor/company-knowledge.server.ts",
@@ -480,7 +548,7 @@
         },
         {
           "path": "src/components/owner-advisor/weekly/weekly-page.tsx",
-          "sha256": "1b40ced188219230bdc00671cfeab2dc6f4c475fe104ef98aa6395c7382039d4"
+          "sha256": "78712dc7c2595f3c1fca0aca99d07d49d1a341ed6df991b6930235038e045cbd"
         },
         {
           "path": "src/lib/owner-advisor/weekly-contracts.ts",
@@ -500,7 +568,7 @@
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
+          "sha256": "a8fae13caa3fb7156c57d7b57cc726d47da281bd4a352a649970b25875a9a150"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -517,11 +585,43 @@
         {
           "path": "docs/qa/rondo-development-integration-20261116/index.json",
           "sha256": "4b1fe9aee6a41427213e4e23d599c682f1ea7c78f492826ba01957a1cdccb11f"
+        },
+        {
+          "path": "src/components/owner-advisor/business/business-page.tsx",
+          "sha256": "7910abc56df0fa1f94227434c9d8f09635dd197c7b0b8ae2546a31b87a598d88"
+        },
+        {
+          "path": "src/components/owner-advisor/business/business-map.tsx",
+          "sha256": "0791a49d22f8121ab334a6a0cb31899c4c49dfc7082492e2c5e0dda252e21896"
+        },
+        {
+          "path": "src/components/owner-advisor/business/business-client.ts",
+          "sha256": "dfd1e5f8be638c3c93d5c13af9c6654842fdc5c696e180585c3a734036e35a2c"
+        },
+        {
+          "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
+          "sha256": "d5eb30a608f80da15a7ce3e528b9b1776aa8a6eea9ccabcd540a40a39a579574"
+        },
+        {
+          "path": "docs/handoffs/2026-11-17-claude-ui-integration-contract-review.md",
+          "sha256": "6c5aeeb08ab67d47811c88d84de991f9bb96ca2cad7ee382c1ceb22d11efb1b9"
+        },
+        {
+          "path": "src/lib/owner-advisor/manager-contracts.ts",
+          "sha256": "3ae4f0209082343685e45962eb2682fe9282fb423ce088a18e908aafc34c8133"
+        },
+        {
+          "path": "src/lib/owner-advisor/manager.server.ts",
+          "sha256": "c7a0f0de38a81d1d6ff9634d21c8251385f69f45002403580f8e3c88565ba687"
+        },
+        {
+          "path": "src/lib/owner-advisor/business/ui-contract.integration.ts",
+          "sha256": "c2f93311af25ea0a55d66f772701f410af46c9f3bbf1b97daf0c32d961094b78"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "037f71134f85dfac8fb85e422167b34d72901c6dabbcf1418cf0aac2e348a9ac",
+        "sha256": "a70ecab2dd642afb12c652a9612d8dd4a219891e055dc97adb71e3dce570c171",
         "pageCount": 4
       }
     },
@@ -530,7 +630,7 @@
       "title": "NEVORA web developer guide",
       "markdown": {
         "path": "docs/guides/web/developer.md",
-        "sha256": "51ce0772279c1be63fe1b4e27dfc5a076c8d60a872ab29c3a0ed0efc4aaeaab2"
+        "sha256": "f57131c74aab915d87b2013934193e5770283ada8d26981da8f0cb43f8440945"
       },
       "evidence": [
         {
@@ -539,11 +639,11 @@
         },
         {
           "path": "package.json",
-          "sha256": "9136761fee3266028a58746f628157b2f7f32ab2ea48430414090f099d92a4d7"
+          "sha256": "7badfc73e1881cfcb9235bf1f43fc631c06c27d4e3679b0ece4e9750355e4ba1"
         },
         {
           "path": ".github/workflows/ci.yml",
-          "sha256": "7a6fe7b1d2fcfb2d17e4b7200717cfd0956f1cba625a8334af4954ae5574219e"
+          "sha256": "6407fc63c49c1dabd859a2ddab2b7ca974dc9c6c18661dc7389d779435466dbe"
         },
         {
           "path": "docs/development/developer-guide.md",
@@ -551,7 +651,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "94066c92fac8a0a4a5316f493dfdd8c798e6986cae4aa522bb06ed7de958d816"
+          "sha256": "7e14ad231a96bb27532380993b63e39ec05e66c41b8b70be494071b83422e533"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -591,7 +691,7 @@
         },
         {
           "path": "db/migrations/order.ts",
-          "sha256": "d4c1279425196d1725699c7f4f1adf98d5ea54dbdaef0e35795f84a2815c1007"
+          "sha256": "24f6e974bafec8f61a5f49c5121c3a639831098e99dd54a8caf2c01ee067c31f"
         },
         {
           "path": "scripts/release-build.mjs",
@@ -639,7 +739,7 @@
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "9815af9ea9ea91e48511d538ec4e508e1129bca2e02d214a1f695aeccff77124"
+          "sha256": "b93210996be687cdbba3b4e40b7979874dec4c020cc6836e39fc47a4e3c4f567"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -675,11 +775,11 @@
         },
         {
           "path": "src/lib/manager-reminders/types.ts",
-          "sha256": "11c14347e452d05763062b36833dc399dcd02f2972877ec8f6f65eff6c896049"
+          "sha256": "24d7e440e1edde595a510158b0b5b03693b3828c4384cba5e102bf3597b2f540"
         },
         {
           "path": "src/lib/auth/session.ts",
-          "sha256": "071958c449a77aa9184a927369a2f9ae0e2618e117360482cab5227c8a6c27d5"
+          "sha256": "89e01cc11d755816951120d7a49886c9c7625e3ea5eee226a697225f194754c1"
         },
         {
           "path": "src/lib/auth/request-destination.ts",
@@ -707,7 +807,7 @@
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
+          "sha256": "a8fae13caa3fb7156c57d7b57cc726d47da281bd4a352a649970b25875a9a150"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -724,12 +824,68 @@
         {
           "path": "docs/qa/rondo-development-integration-20261116/index.json",
           "sha256": "4b1fe9aee6a41427213e4e23d599c682f1ea7c78f492826ba01957a1cdccb11f"
+        },
+        {
+          "path": "db/migrations/0068_employee_employment_dates.sql",
+          "sha256": "ebcc4181f3837dc858b8396863ea28bd2e18c0a3d6eefac4f744a1403fcbefdf"
+        },
+        {
+          "path": "src/lib/employment-dates.privacy.test.ts",
+          "sha256": "f32dd8c7928524f3524be34df0b0724e3e07248c90bccdf6fcc5803f9101b3e9"
+        },
+        {
+          "path": "src/lib/reports/christmas-bonus.ts",
+          "sha256": "756acc772a2154f3cc299b4e09873a6e2d12641b46afe200aa5af9e7c62fa825"
+        },
+        {
+          "path": "src/app/healthz/route.ts",
+          "sha256": "3edb13007ca692b04fcf4cd1f2eb428e038ab0fafe94ffd240e1713ab806cf06"
+        },
+        {
+          "path": "src/lib/analytics/redact.ts",
+          "sha256": "3f996964d0f93191673c86c4aef77f293303e7b451f37a10c654588dd86bc1ee"
+        },
+        {
+          "path": "db/migrations/0069_clocker_early_grace.sql",
+          "sha256": "28acfdf048b9ac7aa588bf4a12bf12a5ed6c708500d1142f115a38eeda6f44eb"
+        },
+        {
+          "path": "src/lib/clocker/schedule-candidates.ts",
+          "sha256": "4bc1264482832db7c649aaa28ef038f1c1fe76f97f74359560e69ee18113dfd2"
+        },
+        {
+          "path": "src/lib/clocker/schedule-grace.server.ts",
+          "sha256": "0093466dba1fa8076d36dc782b263f536c487434caa99dd6a4d1499cce5505ce"
+        },
+        {
+          "path": "src/lib/attendance/project.ts",
+          "sha256": "987a80f87dabf52d11f2c5057689ee6c1ee62a878d430c88579259b096b42616"
+        },
+        {
+          "path": "src/lib/owner-advisor/manager-contracts.ts",
+          "sha256": "3ae4f0209082343685e45962eb2682fe9282fb423ce088a18e908aafc34c8133"
+        },
+        {
+          "path": "src/lib/owner-advisor/manager.server.ts",
+          "sha256": "c7a0f0de38a81d1d6ff9634d21c8251385f69f45002403580f8e3c88565ba687"
+        },
+        {
+          "path": "src/lib/auth/password-requirements.ts",
+          "sha256": "18359c81579b1e549e0f7d273162af3f3e4afa2db8d77962dfee31ebe2fb1bf7"
+        },
+        {
+          "path": "src/test/integration/release1-migrations.integration.ts",
+          "sha256": "8e378b2d2ae673b4401b9c0eab9833a1cd3a82aaf7b31ee9b08464ca70fa163d"
+        },
+        {
+          "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
+          "sha256": "b13f83cf019b41cbf94d34b837a0951b2fdf618d883f36fcb5d0e5685d1f45d0"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "fb3d94739a6609b7646e2fb5152482ecbbd0d2d168e6f073b3a30b050eb263ad",
-        "pageCount": 5
+        "sha256": "c9d37f0e0a40c82256a9b1685146740c7b4ecc8198c608c32dcb69a9831d8683",
+        "pageCount": 7
       }
     },
     {
@@ -737,7 +893,7 @@
       "title": "NEVORA web operations guide",
       "markdown": {
         "path": "docs/guides/web/operations.md",
-        "sha256": "c1ebc94593c5cf0ca7f511bfd79df1212970f53819cc2bfe66511f4ed61bb754"
+        "sha256": "77b213cc3209a0ab37c4bd12d2c3e52d17da7f03f186649106d7ffd03c5e3bf9"
       },
       "evidence": [
         {
@@ -766,11 +922,11 @@
         },
         {
           "path": "docs/compliance/account-deletion-runbook.md",
-          "sha256": "fa88b5f9657a0c1d0c9c140f85add88aaaa442338da398917c7a424889c8968c"
+          "sha256": "f364f689df7d7387be286159a190c90c5d6ab32063b8d8adef386da05d6790a8"
         },
         {
           "path": "src/lib/legal/policies.ts",
-          "sha256": "a67da0e14c179df3bf707b1cc61e5f6ab753fa17bb2cc9ca12b65675a64fcdc1"
+          "sha256": "d3ecb6e622dfc0310fe91d78fe6c060d3efbcbcb9f01fdd3b67f10f8b8365394"
         },
         {
           "path": "src/lib/onboarding/admission.server.ts",
@@ -834,7 +990,7 @@
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "9815af9ea9ea91e48511d538ec4e508e1129bca2e02d214a1f695aeccff77124"
+          "sha256": "b93210996be687cdbba3b4e40b7979874dec4c020cc6836e39fc47a4e3c4f567"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -870,7 +1026,7 @@
         },
         {
           "path": "src/lib/owner-advisor/business/service.server.ts",
-          "sha256": "fac479453318942f259adc4c9affc3e965414efc180265d9aa04553169c40155"
+          "sha256": "a8fae13caa3fb7156c57d7b57cc726d47da281bd4a352a649970b25875a9a150"
         },
         {
           "path": "src/lib/owner-advisor/business/fence.server.ts",
@@ -887,12 +1043,32 @@
         {
           "path": "docs/qa/rondo-development-integration-20261116/index.json",
           "sha256": "4b1fe9aee6a41427213e4e23d599c682f1ea7c78f492826ba01957a1cdccb11f"
+        },
+        {
+          "path": "src/app/healthz/route.ts",
+          "sha256": "3edb13007ca692b04fcf4cd1f2eb428e038ab0fafe94ffd240e1713ab806cf06"
+        },
+        {
+          "path": "src/lib/analytics/redact.ts",
+          "sha256": "3f996964d0f93191673c86c4aef77f293303e7b451f37a10c654588dd86bc1ee"
+        },
+        {
+          "path": "src/lib/feature-flags.ts",
+          "sha256": "d459497878830158d2e3e34ac0318cc339b5c37045a74e3644002305b882db43"
+        },
+        {
+          "path": "src/test/integration/release1-migrations.integration.ts",
+          "sha256": "8e378b2d2ae673b4401b9c0eab9833a1cd3a82aaf7b31ee9b08464ca70fa163d"
+        },
+        {
+          "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
+          "sha256": "b13f83cf019b41cbf94d34b837a0951b2fdf618d883f36fcb5d0e5685d1f45d0"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "9b66a1b37887d12873cf8423eed1abb13610ae4f1beed526750edeeb16ae1c56",
-        "pageCount": 5
+        "sha256": "12441c37585f79faa82337c8d1d349ba3606c0bfbab734837d1f591fee88af02",
+        "pageCount": 6
       }
     }
   ]

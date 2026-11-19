@@ -76,8 +76,15 @@ export function CorpBody({ children, tight }: { children: ReactNode; tight?: boo
  * tone="neutral", and keep "red" for the one real problem. */
 /** Nov 1 upscale (kit consistency 5): on Employee pages amber and blue pills read as grey text too (corp-employee-bridge.css),
  * and `blue` reads as grey text everywhere. */
+/** Phase 9 (spec 1.1, section 7): the pill is the kit's one chip (`.b-chip`, owner-b.css): 22px, 12/16 600, tabular
+ * figures, a 1px edge in its own ink. Neutral is the kit's grey chip (the second grey #EDEEEF is retired) and `dot` is the
+ * kit's 6px live dot in the tone's solid colour. `blue` was always grey words, so it is the kit's quiet status text. The
+ * `c-pill` classes stay for the page rules that place a pill. */
+const CHIP_TONE: Record<Exclude<Tone, "blue">, string> = { teal: "teal", amber: "amber", green: "green", red: "red", neutral: "grey" };
 export function CorpPill({ tone = "neutral", dot, children, label }: { tone?: Tone; dot?: boolean; children: ReactNode; label?: string }) {
-  return <span className={`c-pill c-pill--${tone}`} aria-label={label}>{dot ? <span className="c-pill__dot" aria-hidden="true" /> : null}{children}</span>;
+  if (tone === "blue") return <span className="c-pill c-pill--blue b-status" aria-label={label}>{children}</span>;
+  const chip = CHIP_TONE[tone];
+  return <span className={`c-pill c-pill--${tone} b-chip b-chip--${chip}`} data-dot={dot ? "" : undefined} aria-label={label}>{dot ? <span className="c-pill__dot b-ldot" data-tone={chip} aria-hidden="true" /> : null}{children}</span>;
 }
 
 export function CorpBadge({ count, label }: { count: number; label?: string }) {

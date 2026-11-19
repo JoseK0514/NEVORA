@@ -1,4 +1,5 @@
 import { test } from 'node:test';
+import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -161,4 +162,9 @@ test('stops unknown, prefix-only, duplicate and historical renamed ledger entrie
   for(const applied of [['0038'],['0038_native_payroll_setup_records.sql'],['0026_tenant_ownership_expand.sql'],['0001_initial.sql','0001_initial.sql']]){
     assert.throws(()=>readMigrationPlan(process.cwd(),applied),/ledger/);
   }
+});
+
+test('qualifies the actual company installer without weakening the forwarding source gate',()=>{
+ const plan=readMigrationPlan(fileURLToPath(new URL('../../',import.meta.url)));
+ assert.equal(plan.source,'manifest');assert.ok(plan.current.length>0);
 });

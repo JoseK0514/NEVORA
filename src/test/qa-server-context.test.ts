@@ -1,4 +1,4 @@
-import {expect, it} from 'vitest';
+import {expect, it} from '@rstest/core';
 import {spawnSync} from 'node:child_process';
 import {mkdtempSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -40,17 +40,17 @@ it('the QA context does not resolve arbitrary server-only subpaths', () => {
   expect(result.stderr).toContain('ERR_MODULE_NOT_FOUND');
 });
 
-it.each(['foundation', 'phase-b-c-authority', 'generation', 'exchanges', 'notifications'])('%s SQL config loads current server services in its real Vitest process', name => {
+it.each(['foundation', 'phase-b-c-authority', 'generation', 'exchanges', 'notifications'])('%s SQL config loads current server services in its real Rstest process', name => {
   const scratch = mkdtempSync(join(tmpdir(), 'nevora-server-context-'));
   try {
     const fixture = join(scratch, 'context.test.ts');
-    const api = pathToFileURL(resolve('src/lib/company-access/operational-scope.server.ts')).href;
-    const vitest = pathToFileURL(resolve('node_modules/vitest/dist/index.js')).href;
-    writeFileSync(fixture, `import {it,expect} from ${JSON.stringify(vitest)};import {withOperationalCompany} from ${JSON.stringify(api)};it('denied current authority never enters a company loader',async()=>{let reads=0;const executor={query:async()=>{throw Error('No workspace');},transaction:async()=>{throw Error('No workspace');}};const result=await withOperationalCompany({employee:{id:'fictional',role:'MANAGER'},sessionTokenHash:'f'.repeat(64)},async()=>{reads++;return 'private';},executor);expect(result.state).toBe('unavailable');expect(reads).toBe(0);});`);
+    const api = resolve('src/lib/company-access/operational-scope.server.ts');
+    const rstest = resolve('node_modules/@rstest/core/dist/index.js');
+    writeFileSync(fixture, `import {it,expect} from ${JSON.stringify(rstest)};import {withOperationalCompany} from ${JSON.stringify(api)};it('denied current authority never enters a company loader',async()=>{let reads=0;const executor={query:async()=>{throw Error('No workspace');},transaction:async()=>{throw Error('No workspace');}};const result=await withOperationalCompany({employee:{id:'fictional',role:'MANAGER'},sessionTokenHash:'f'.repeat(64)},async()=>{reads++;return 'private';},executor);expect(result.state).toBe('unavailable');expect(reads).toBe(0);});`);
     const config = join(scratch, 'vitest.config.mts');
     const original = pathToFileURL(resolve(`vitest.${name}${name === 'phase-b-c-authority' ? '' : '-integration'}.config.mts`)).href;
-    writeFileSync(config, `import original from ${JSON.stringify(original)};export default {...original,test:{...original.test,include:[${JSON.stringify(fixture)}],setupFiles:[],reporters:['dot']}};`);
-    const result = spawnSync(process.execPath, ['node_modules/vitest/vitest.mjs', 'run', '--config', config], {env, encoding: 'utf8', timeout: 12000});
+    writeFileSync(config, `import original from ${JSON.stringify(original)};export default {...original,include:[${JSON.stringify(fixture)}],setupFiles:[],reporters:['default']};`);
+    const result = spawnSync(process.execPath, ['scripts/run-rstest.mjs', 'run', '--config', config], {env, encoding: 'utf8', timeout: 12000});
     expect({exit: result.status, spawned: result.error === undefined, stderr: result.stderr}).toEqual({exit: 0, spawned: true, stderr: ''});
     expect(result.stdout).toContain('1 passed');
   } finally { rmSync(scratch, {recursive: true, force: true}); }

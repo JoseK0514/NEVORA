@@ -99,6 +99,9 @@
 :is(#c-root, html) .c-pill--red { background: var(--c-red-bg); color: var(--c-red); }
 :is(#c-root, html) .c-pill--neutral { background: var(--c-neutral-bg); color: var(--c-ink2); }
 :is(#c-root, html) .c-pill__dot { width: 6px; height: 6px; border-radius: 3px; background: currentColor; }
+/* Phase 9: CorpPill draws the kit's chip (.b-chip, with its 1px edge). Where the Employee app turns an amber pill into grey
+ * words (corp-employee-bridge.css), the words carry no edge either. */
+html body #employee-mobile[data-nv-corp] .c-pill.b-chip.c-pill--amber { box-shadow: none; outline: 0; }
 /* Owner premium (Jose, Oct 31): in-row counts and avatars are neutral grey; teal stays on the sidebar/tab total and the one
  * primary action. */
 :is(#c-root, html) .c-badge { flex: none; display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--c-badge-neutral-bg, #EDEEEF); color: var(--c-badge-neutral-ink, #1A1C1E); font-size: 13px; line-height: 18px; font-weight: 600; }
@@ -659,3 +662,7 @@
 
 /* Review B1 (NV-228): the off track is #8C9397 (3.12:1 on white, it was 1.43:1), and the switch takes a 44px hit area. */
 :is(#c-root, html) .c-switch::before { content: ""; position: absolute; inset: -7px -2px; }
+/* Phase 7 (Nov 17, 2026; RA-21): this movement had no reduced-motion rule. */
+@media (prefers-reduced-motion: reduce) {
+  [data-c-slide="x"]::after { transition: none; }
+}

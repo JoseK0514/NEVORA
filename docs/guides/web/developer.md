@@ -12,9 +12,11 @@ Read [AGENTS.md](../../../AGENTS.md), the relevant repository skills,
 [package.json](../../../package.json), tests and the code you intend to change.
 Fetch and reconcile `origin/development` before new integration work. Inspect
 status and ownership; preserve other agents' changes and use a detached worktree
-for isolation. Only `development`, `main` and `claude-codex-collab-nevora` are
-active branches under the current policy. Main and production require Jose's
-explicit authorization.
+for isolation. The normal working branches are `development`, `main` and
+`claude-codex-collab-nevora`. Jose separately authorized `nevora-30-day-phase`;
+that specific exception does not authorize further branches. Reconcile any
+held PR source through the inventory before publication. Main and production
+require Jose's explicit authorization.
 
 Run `npm run check:development-sources` after fetching before assembly. Its
 [inventory](../../handoffs/2026-10-21-development-assembly-sources.json) detects
@@ -188,10 +190,10 @@ Session code applies `safeReturnTo` again. Referer, Host and forwarded-host valu
 establish neither a prior session nor a return destination; the hint grants no
 business authority. Language remains validated cookie/Accept-Language handling.
 
-Claude must still implement the indexed consumers and qualify their current
-mobile/keyboard/EN/ES/private-state behavior. Revisit user-guide instructions
-after those consumers change; source-qualified PDFs alone do not pass an unwired
-journey. Rondo knowledge/provider/tool work and actual-model quality evidence
+The [November 17 integration handoff](../../handoffs/2026-11-17-claude-ui-integration.md)
+records the delivered consumers, combined checks and remaining product choices.
+Revisit these guides when consumers change; source-qualified PDFs alone do not
+qualify an application journey. Rondo knowledge/provider/tool work and actual-model quality evidence
 remain with its existing owner. Hosted/provider activation and physical-device
 acceptance remain separate from local backend checks.
 
@@ -208,3 +210,64 @@ Business evidence is an additive default-off Owner module under src/lib/owner-ad
 See [business backend contract](../../handoffs/2026-11-16-rondo-business-evidence-ui-contract.md).
 
 Posted cash is assigned by posting time, including cross-month occurrences. Cash inflows/outflows and sale/refund amounts/counts are separate from net totals. Reconciliation must hold within every admitted cash window and across shared boundaries; offsetting discrepancies cannot establish clearance. CURRENT freshness is capped at the requested window end. Source deletion conservatively clears all workspace business answer-receipt payloads as well as structured inspection content, retaining content-free operation/request identities and unrelated ordinary history.
+
+## 30-day business phase additions
+
+The `nevora-30-day-phase` work adds these contracts; details are in the
+phase handoff, `docs/handoffs/2026-11-18-30-day-phase.md`.
+
+- Migration `0068_employee_employment_dates.sql` adds nullable `hire_date`,
+  `termination_date` and `birth_date`. They stay out of the shared `Employee`
+  DTO; `src/lib/employment-dates.privacy.test.ts` fails if `birth_date` or the
+  other dates appear outside the management edit path and the bonus report.
+  A termination date never changes `active`.
+- `src/lib/reports/christmas-bonus.ts` projects finalized timecard snapshots with
+  `projectTimecard`, clipped to an Oct 1–Sep 30 business-local bonus year. It
+  computes no money and is read only for `America/Puerto_Rico` workspaces.
+- `GET /healthz` is liveness only and reads nothing; it is classified in the
+  onboarding entrypoint inventory and sits outside the proxy matcher.
+- Migration `0069_clocker_early_grace.sql` adds the Owner's early clock-in grace
+  (`clocker_schedule_match_policy` plus append-only revisions). A shift covers
+  `[start − G, end)`; G = 0 reproduces the previous context exactly. The grace
+  used is read server-side at punch time, kept in the captured context as an
+  optional `earlyGraceMinutes` (still `version: 1`), and checked by the SQL
+  resolver; a missing or unreadable setting means 0, never a blocked punch.
+- Attendance observation `OPEN_PAST_LIMIT` flags a consistent open entry with an
+  unmatched, ambiguous or not-evaluated schedule once it is open strictly more
+  than `OPEN_ENTRY_REVIEW_LIMIT_HOURS` (12). It is computed per read, never
+  stored, and writes nothing; matched entries keep `OPEN_AFTER_SCHEDULE_END`.
+- `NEVORA_WEB_ANALYTICS_ENABLED` (default false) renders Vercel Web Analytics with
+  `src/lib/analytics/redact.ts`, an allowlist of public paths that strips query
+  strings and drops every other path.
+
+## November 17 combined UI contract checks
+
+The six delivered UI feature items and Employee/Lead Phase 4 are integrated from
+Claude's exact pushed source through a checked linear tree import. Preserve
+server-owned contracts and the source inventory's honest non-ancestry disposition.
+The real joined browser journeys cover CSV custody, re-matched/corrected reviewed
+amounts, explicit paid-break decisions and an actual reconciled manifest, plus a
+post-commit Rondo context conflict, original receipt recovery, map publication and
+figures. Fixtures use ownership-marked local PostgreSQL and pinned browsers;
+forced successful API responses do not establish acceptance.
+
+Keep Rondo and timecard data observations bounded by the original request lifetime.
+Never clear uncertain command custody on a missing receipt or a post-commit response
+fence refusal. Support references come only from the failed response's validated
+X-Nevora-Request-Id header; they are separate from operation and deletion IDs.
+Rebuild all six manuals from committed final inputs. GitHub qualification uses an
+immutable candidate tag and both workflows on that exact SHA before a normal
+fast-forward to Development; hosted configuration and acceptance remain separate.
+
+The guided paid-time flow currently sends the neutral profile. The backend supports
+reviewed paid mappings and custom rounding, but selecting a saved paid profile in
+that flow is not implemented. Keep broader SCRUM-197 open for that UI and product
+choice; do not replace a precision refusal with inferred rounding.
+
+## Joined password, Manager Rondo and restore contracts
+
+The shared browser-safe password requirements count Unicode code points, enforce the selected 15-character minimum and reject oversized input without truncation. Identity/company screening remains server-side and revision-fenced. Policy refusals keep valid proofs available. Password-only sign-in for existing credentials keeps the original verification bytes.
+
+The Manager Rondo route is provider-free, read-only and location/week-scoped, with its own feature flag and current-role checks; its wire contract is in `src/lib/owner-advisor/manager-contracts.ts`. Owner finance and knowledge administration remain outside that role. Business full-read renewals can repeat the exact original command until the persisted read handle expires; a renewed 15-second observation never extends publication consent. Preserve immutable operation identities and capacity guards.
+
+The final-schema restore test uses a recorded Development migration-hash manifest, real owned `pg_dump`/`pg_restore`, earlier-backup rollback and final-backup restoration. It never targets a caller's existing database. Hosted restoration and independent acceptance remain separate.

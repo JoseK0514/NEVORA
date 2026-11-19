@@ -1,12 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, rs } from '@rstest/core';
 import { createHash } from 'node:crypto';
 
 // Fictional SDK rows exercise the real parser and private object-identity issuer.
 // They establish no native/current-proof/RLS/Neon or database issuer authority.
-vi.mock('server-only', () => ({}));
-const database = vi.hoisted(() => ({ query: vi.fn(), transaction: vi.fn() }));
-const runtime = vi.hoisted(() => vi.fn(() => database));
-vi.mock('../db', () => ({ getTenantRuntimeDb: runtime }));
+rs.mock('server-only', () => ({}));
+const database = rs.hoisted(() => ({ query: rs.fn(), transaction: rs.fn() }));
+const runtime = rs.hoisted(() => rs.fn(() => database));
+rs.mock('../db', () => ({ getTenantRuntimeDb: runtime }));
 import {
   getProvisionerScopeFacts, getTenantProofFacts, resolveCalendarReadProof,
   resolveClockerProof, resolvePortalProof, resolveProvisionerScope, resolveWorkerProof,
@@ -105,11 +105,11 @@ function expectProvisionerLookup(purpose: ProvisionerPurpose) {
       operator.requestDigest, operator.operationId, operator.payloadDigest]);
 }
 beforeEach(() => {
-  vi.useFakeTimers(); vi.setSystemTime(NOW); runtime.mockClear(); database.query.mockReset(); database.transaction.mockReset();
+  rs.useFakeTimers(); rs.setSystemTime(NOW); runtime.mockClear(); database.query.mockReset(); database.transaction.mockReset();
   database.query.mockImplementation((text, values) => ({ text, values,
     then() { throw Error('resolver query awaited outside transaction'); } }));
 });
-afterEach(() => { vi.useRealTimers(); });
+afterEach(() => { rs.useRealTimers(); });
 
 describe.each(tenants)('$kind workspace incarnation metadata', fixture => {
   it.each([MAX_INT8_PLUS_ONE, LONG_REVISION])('rejects overflow %s without a private proof', async value => {

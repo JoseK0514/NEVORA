@@ -1,11 +1,11 @@
-import {beforeEach,afterEach,it,expect,vi} from 'vitest';
+import {beforeEach,afterEach,it,expect,rs} from '@rstest/core';
 import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {issueInitialPasswordReplacement,issueAssistedRecovery,requestPasswordRecovery,resetPasswordWithProof} from '../../lib/auth/recovery.server';
 import {hashPassword,verifyPassword} from '../../lib/auth/password';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
-vi.mock('next/headers',()=>({cookies:async()=>({set:vi.fn()})}));
-vi.mock('../../lib/data/notification-transactions',async importOriginal=>({...await importOriginal<typeof import('../../lib/data/notification-transactions')>(),neonNotificationExecutor:()=>f.db.executor}));
+rs.mock('next/headers',()=>({cookies:async()=>({set:rs.fn()})}));
+rs.mock('../../lib/data/notification-transactions', ()=>({...rs.requireActual<typeof import('../../lib/data/notification-transactions')>('../../lib/data/notification-transactions'),neonNotificationExecutor:()=>f.db.executor}));
 import {ClockerPunchService} from '../../lib/clocker/punches.server';
 import {submitTimeCorrection,reviewTimeCorrection} from '../../lib/time-corrections/service';
 import {createSession} from '../../lib/auth/session';
@@ -14,13 +14,33 @@ const owner:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstNam
 beforeEach(async()=>{f=await createPunchFixture({breaks:true,companyAccess:true});const old=await hashPassword('Fictional previous password');await f.q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) SELECT id,$1,false FROM employees',[old]);await f.q("UPDATE employees SET email='avery@example.invalid' WHERE id='c34-a'; INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('b',64),'c34-a',now()+interval '1 day'),(repeat('c',64),'c34-a',now()+interval '1 day'); INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('UX1-S','loc-1','2030-10-07','DRAFT','c34-owner'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('UX1-D','UX1-S','c34-a','2030-10-07','08:00','12:00');");});
 afterEach(async()=>{await f?.db.dispose();});
 async function issued(){const r=await issueAssistedRecovery(owner,'c34-a','Verified in person using established workplace process.',f.db.executor);if(r.state!=='issued')throw Error('Fixture proof not issued');return r;}
+it.each([['twelve chars','too_short'],['qwertyuiopasdfgh','breached'],['quiet '.repeat(205),'too_long']] as const)('PB-026 refuses %s without consuming the reset proof or changing sessions',async(password,passwordReason)=>{
+ const p=await issued(),before=await f.q("SELECT password_hash FROM employee_credentials WHERE employee_id='c34-a'");
+ expect(await resetPasswordWithProof(p.proof,password,f.db.executor)).toEqual({state:'invalid',passwordReason});
+ expect(await f.q("SELECT password_hash FROM employee_credentials WHERE employee_id='c34-a'")).toEqual(before);
+ expect((await f.q('SELECT used_at FROM password_recovery_proofs WHERE token_hash=$1',[createHash('sha256').update(p.proof).digest('hex')]))[0].used_at).toBeNull();
+ expect((await f.q('SELECT count(*)::int AS n FROM employee_sessions'))[0].n).toBe(3);
+ expect(await resetPasswordWithProof(p.proof,'quiet meadows under winter skies',f.db.executor)).toEqual({state:'reset'});
+});
+it('PB-026 checks the proof-bound company name and reveals no policy context for an expired proof',async()=>{
+ await f.q("UPDATE workspaces SET name='North Harbor Foods',updated_at=clock_timestamp() WHERE singleton");
+ const p=await issued();expect(await resetPasswordWithProof(p.proof,'NorthHarborFoods2026!',f.db.executor)).toEqual({state:'invalid',passwordReason:'company_name'});
+ await f.q("UPDATE password_recovery_proofs SET created_at=clock_timestamp()-interval '16 minutes',expires_at=clock_timestamp()-interval '1 minute' WHERE token_hash=$1",[createHash('sha256').update(p.proof).digest('hex')]);
+ expect(await resetPasswordWithProof(p.proof,'NorthHarborFoods2026!',f.db.executor)).toEqual({state:'invalid'});
+});
+it('PB-022 delivers the actual issued expiry and canonical company/name to the registered-channel renderer',async()=>{
+ const send=rs.fn();await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);
+ const [issuedRow]=await f.q<{expiresAt:string}>('SELECT expires_at::text AS "expiresAt" FROM password_recovery_proofs');
+ const [company]=await f.q<{name:string}>('SELECT name FROM workspaces WHERE singleton');
+ expect(send.mock.calls[0][2]).toMatchObject({companyName:company.name,firstName:'Avery',expiresAt:issuedRow.expiresAt});
+});
 it('UX-01 stores only a hashed expiring proof and validates the registered channel without enumeration',async()=>{
- const send=vi.fn();await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledOnce();const token=send.mock.calls[0][1];expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/);
+ const send=rs.fn();await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledOnce();const token=send.mock.calls[0][1];expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/);
  const rows=await f.q('SELECT token_hash,expires_at-created_at AS lifetime,used_at FROM password_recovery_proofs');expect(rows).toHaveLength(1);expect(rows[0].token_hash).toBe(createHash('sha256').update(token).digest('hex'));expect(JSON.stringify(rows)).not.toContain(token);expect(rows[0].used_at).toBeNull();
  await requestPasswordRecovery('unknown','avery@example.invalid',{send},f.db.executor);await requestPasswordRecovery('c34-a','wrong@example.invalid',{send},f.db.executor);await requestPasswordRecovery('c34-a','avery@example.invalid',null,f.db.executor);expect(send).toHaveBeenCalledOnce();
 });
 it('UX-01 per-account and global limits apply without changing credentials or locking accounts',async()=>{
- const send=vi.fn();for(let i=0;i<5;i++)await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledTimes(3);
+ const send=rs.fn();for(let i=0;i<5;i++)await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledTimes(3);
  await f.q("UPDATE password_recovery_limits SET attempts=300 WHERE scope='global'");await requestPasswordRecovery('c34-b','blair@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledTimes(3);expect((await f.q('SELECT count(*)::int AS n FROM employee_sessions'))[0].n).toBe(3);
 });
 it('UX-01 resets credentials once, invalidates every portal session and preserves unrelated account/work data and Clocker PINs',async()=>{
@@ -59,7 +79,7 @@ it('UX-01 reset detaches push material and cancels pending deliveries while pres
  expect(await f.q("SELECT status,encrypted_material,generation<>'old-generation' AS rotated,installation_hash FROM push_subscriptions WHERE id='UX1-P'")).toEqual([{status:'detached',encrypted_material:null,rotated:true,installation_hash:'fictional-installation'}]);expect(await f.q("SELECT status FROM push_deliveries WHERE id='UX1-D'")).toEqual([{status:'cancelled'}]);
 });
 it('P1 requests that match no account and email use up no budget, so nobody can be locked out of self-recovery',async()=>{
- const send=vi.fn();for(let i=0;i<12;i++)await requestPasswordRecovery('c34-a','wrong@example.invalid',{send},f.db.executor);
+ const send=rs.fn();for(let i=0;i<12;i++)await requestPasswordRecovery('c34-a','wrong@example.invalid',{send},f.db.executor);
  for(let i=0;i<12;i++)await requestPasswordRecovery(`unknown-${i}`,'avery@example.invalid',{send},f.db.executor);
  expect(await f.q('SELECT count(*)::int AS n FROM password_recovery_limits')).toEqual([{n:0}]);
  await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledOnce();
@@ -67,15 +87,15 @@ it('P1 requests that match no account and email use up no budget, so nobody can 
 it('P1 random reset codes use up no budget; a real code still resets and the person is told by email',async()=>{
  for(let i=0;i<30;i++)expect(await resetPasswordWithProof(randomBytes(32).toString('base64url'),'Fictional new password',f.db.executor)).toEqual({state:'invalid'});
  expect(await f.q('SELECT count(*)::int AS n FROM password_recovery_limits')).toEqual([{n:0}]);
- const notifyReset=vi.fn(async()=>{}),p=await issued();
- expect(await resetPasswordWithProof(p.proof,'Fictional NEW password',f.db.executor,{send:vi.fn(),notifyReset})).toEqual({state:'reset'});
- expect(notifyReset).toHaveBeenCalledExactlyOnceWith('avery@example.invalid');
+ const notifyReset=rs.fn(async()=>{}),p=await issued();
+ expect(await resetPasswordWithProof(p.proof,'Fictional NEW password',f.db.executor,{send:rs.fn(),notifyReset})).toEqual({state:'reset'});
+ expect(notifyReset).toHaveBeenCalledExactlyOnceWith('avery@example.invalid',{companyName:'Fuel Coffee Drive',firstName:'Avery',timeZone:'America/Puerto_Rico'});
 });
 it('P1 a failed notice never undoes the reset, and a person without an email is simply not emailed',async()=>{
- const failing=vi.fn(async()=>{throw Error('fictional mail outage');});let p=await issued();
- expect(await resetPasswordWithProof(p.proof,'Fictional NEW password',f.db.executor,{send:vi.fn(),notifyReset:failing})).toEqual({state:'reset'});expect(failing).toHaveBeenCalledOnce();
- await f.q("UPDATE employees SET email=NULL WHERE id='c34-a'");const quiet=vi.fn(async()=>{});p=await issued();
- expect(await resetPasswordWithProof(p.proof,'Fictional newer password',f.db.executor,{send:vi.fn(),notifyReset:quiet})).toEqual({state:'reset'});expect(quiet).not.toHaveBeenCalled();
+ const failing=rs.fn(async()=>{throw Error('fictional mail outage');});let p=await issued();
+ expect(await resetPasswordWithProof(p.proof,'Fictional NEW password',f.db.executor,{send:rs.fn(),notifyReset:failing})).toEqual({state:'reset'});expect(failing).toHaveBeenCalledOnce();
+ await f.q("UPDATE employees SET email=NULL WHERE id='c34-a'");const quiet=rs.fn(async()=>{});p=await issued();
+ expect(await resetPasswordWithProof(p.proof,'Fictional newer password',f.db.executor,{send:rs.fn(),notifyReset:quiet})).toEqual({state:'reset'});expect(quiet).not.toHaveBeenCalled();
 });
 
 async function initialReplacement(){
@@ -87,7 +107,7 @@ it('operator password requires replacement before session issuance; the proof is
  const {reviewed,issued:p}=await initialReplacement();expect(p.state).toBe('issued');if(p.state!=='issued')throw Error('Expected proof');
  await expect(createSession('c34-a',reviewed)).rejects.toThrow('session_login_changed');
  expect(await f.q("SELECT method,actor_employee_id,attestation FROM password_recovery_proofs")).toEqual([{method:'INITIAL_PASSWORD',actor_employee_id:null,attestation:null}]);
- expect(await resetPasswordWithProof(p.proof,'Fictional previous password',f.db.executor)).toEqual({state:'invalid'});
+ expect(await resetPasswordWithProof(p.proof,'Fictional previous password',f.db.executor)).toEqual({state:'invalid',passwordReason:'temporary_password'});
  expect(await resetPasswordWithProof(p.proof,'Fictional replacement password',f.db.executor)).toEqual({state:'reset'});
  expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:false}]);
  expect(await f.q("SELECT count(*)::int AS n FROM employee_sessions WHERE employee_id='c34-a'")).toEqual([{n:0}]);
@@ -106,7 +126,7 @@ it.each(['EMAIL','ASSISTED'] as const)('a legitimate %s recovery cannot keep an 
  if(method==='ASSISTED')token=(await issued()).proof;
  else await requestPasswordRecovery('c34-a','avery@example.invalid',{send:async(_email,proof)=>{token=proof;}},f.db.executor);
  expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/);
- expect(await resetPasswordWithProof(token,'Fictional previous password',f.db.executor)).toEqual({state:'invalid'});
+ expect(await resetPasswordWithProof(token,'Fictional previous password',f.db.executor)).toEqual({state:'invalid',passwordReason:'temporary_password'});
  expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:true}]);
  expect(await resetPasswordWithProof(token,'Fictional alternate replacement password',f.db.executor)).toEqual({state:'reset'});
  expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:false}]);
@@ -120,4 +140,37 @@ it('a replacement requirement changed after recovery pre-read cannot be cleared 
  }};
  expect(await resetPasswordWithProof(p.proof,'Fictional previous password',ex)).toEqual({state:'invalid'});expect(changed).toBe(true);
  expect(await f.q("SELECT must_change_password FROM employee_credentials WHERE employee_id='c34-a'")).toEqual([{must_change_password:true}]);
+});
+it('P5 a reset during the sign-in pause is allowed and lets the person sign in with the new password straight away',async()=>{
+ const {admitLogin,admitLoginAttempt,LOGIN_LIMITS}=await import('../../lib/auth/login-limits.server');
+ const {consumeLoginAttempt}=await import('../../lib/auth/login-limits');
+ const address='198.51.100.41',other='198.51.100.42';
+ // The pause: the per-ID budget is spent (password and passkey limiters), and this address has failures too.
+ for(let i=0;i<LOGIN_LIMITS.perId;i++)expect(await admitLoginAttempt('c34-a',address,f.db.executor)).toBe(true);
+ for(let i=0;i<10;i++)expect(await consumeLoginAttempt('c34-a',f.db.executor)).toBe(true);
+ for(let i=0;i<LOGIN_LIMITS.perId+1;i++)await admitLoginAttempt('c34-b',other,f.db.executor);
+ expect((await admitLogin('C34-A',other,f.db.executor)).admitted).toBe(false);expect(await consumeLoginAttempt('c34-a',f.db.executor)).toBe(false);
+ // Asking for a reset is not blocked by the pause (recovery has its own budget).
+ const send=rs.fn();await requestPasswordRecovery('c34-a','avery@example.invalid',{send},f.db.executor);expect(send).toHaveBeenCalledOnce();
+ expect(await resetPasswordWithProof(send.mock.calls[0][1],'Fictional NEW password',f.db.executor)).toEqual({state:'reset'});
+ // The reset proves control of the account, so its own per-ID pause ends; typed in any case.
+ expect((await admitLogin('c34-A',other,f.db.executor)).admitted).toBe(true);expect(await consumeLoginAttempt('C34-a',f.db.executor)).toBe(true);
+ // Nothing else is released: another person's pause, and the address budget, stay as they were.
+ expect((await admitLogin('c34-b','198.51.100.43',f.db.executor)).admitted).toBe(false);
+ const addressRow=await f.q<{n:number}>("SELECT count(*)::int AS n FROM password_recovery_limits WHERE scope=encode(sha256(convert_to('NEVORA login limit address v1:198.51.100.41','UTF8')),'hex')");expect(addressRow).toEqual([{n:1}]);
+});
+it('P5 a refused or failed reset never ends the sign-in pause',async()=>{
+ const {admitLogin,admitLoginAttempt,LOGIN_LIMITS}=await import('../../lib/auth/login-limits.server');
+ for(let i=0;i<LOGIN_LIMITS.perId;i++)await admitLoginAttempt('c34-a',null,f.db.executor);
+ expect((await resetPasswordWithProof(randomBytes(32).toString('base64url'),'Fictional NEW password',f.db.executor)).state).toBe('invalid');
+ const p=await issued();await f.q("UPDATE password_recovery_proofs SET created_at=clock_timestamp()-interval '16 minutes',expires_at=clock_timestamp()-interval '1 minute' WHERE token_hash=$1",[createHash('sha256').update(p.proof).digest('hex')]);
+ expect((await resetPasswordWithProof(p.proof,'Fictional NEW password',f.db.executor)).state).toBe('invalid');
+ expect((await admitLogin('c34-a',null,f.db.executor)).admitted).toBe(false);
+});
+
+it('explains temporary password reuse and accepts a different password with the same proof',async()=>{
+ const {issued:p}=await initialReplacement();if(p.state!=='issued')throw Error('Expected proof');
+ expect(await resetPasswordWithProof(p.proof,'Fictional previous password',f.db.executor)).toEqual({state:'invalid',passwordReason:'temporary_password'});
+ expect((await f.q('SELECT used_at FROM password_recovery_proofs WHERE token_hash=$1',[createHash('sha256').update(p.proof).digest('hex')]))[0].used_at).toBeNull();
+ expect(await resetPasswordWithProof(p.proof,'quiet meadows under winter skies',f.db.executor)).toEqual({state:'reset'});
 });

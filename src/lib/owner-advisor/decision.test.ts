@@ -1,14 +1,14 @@
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import { investigate } from "./loop.server";
 import { ownerDecision, decisionReply } from "@/test/fixtures/owner-decision";
 import type { ToolCall, ToolResult } from "./contracts";
 const config = { endpoint: "https://provider.invalid/responses", model: "fictional", key: "fixture", dailyLimit: 3 };
 const observation = "2026-10-30T12:00:00Z";
 const evidence = (partial = false): ToolResult => ({ observedAt: observation, partial, sources: [{ label: "Today", href: "/app", observedAt: observation }], data: { date: "2026-10-30", scheduled: 2 } });
-const dependencies = (partial = false) => ({ check: async () => {}, signal: new AbortController().signal, tool: vi.fn(async (_call: ToolCall) => evidence(partial)) });
+const dependencies = (partial = false) => ({ check: async () => {}, signal: new AbortController().signal, tool: rs.fn(async (_call: ToolCall) => evidence(partial)) });
 
 it("renders an accepted evidence-based decision through the existing answer contract", async () => {
-  const fetch = vi.fn(async () => Response.json(decisionReply()));
+  const fetch = rs.fn(async () => Response.json(decisionReply()));
   const result = await investigate(config, [], "", "Help me decide", { ...dependencies(), fetch });
   expect(result.text).toContain("Two shifts are recorded.");
   expect(result.text).toContain("Review the recorded exceptions");
@@ -36,7 +36,7 @@ const invalidCases: { name: string; code: string; mutate: (decision: ReturnType<
 ];
 it.each(invalidCases)("returns bounded correction feedback for $name, then accepts a repaired decision", async ({ mutate, code }) => {
   const invalid = mutate(ownerDecision()), bodies: Record<string, unknown>[] = [];
-  const fetch = vi.fn(async (_url: string, init: RequestInit) => {
+  const fetch = rs.fn(async (_url: string, init: RequestInit) => {
     bodies.push(JSON.parse(String(init.body)));
     return Response.json(decisionReply(bodies.length === 1 ? invalid : ownerDecision(), "decision-" + bodies.length));
   });

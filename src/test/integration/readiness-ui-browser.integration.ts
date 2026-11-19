@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -139,7 +139,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
           expect(await q('SELECT manifest_hash FROM payroll_period_manifests WHERE id=$1', [manifest.id])).toEqual(originalArtifact);
           checks.push(`${engine}: 1001 real events, explicit 50-row pages, complete traversal, unchanged artifact hash, blur retirement`);
         }
-        await pause(); await context.close();
+        await pause(); await context.unrouteAll({behavior:'wait'}); await context.close();
       }
     }
     expect(errors).toEqual([]); complete = true;

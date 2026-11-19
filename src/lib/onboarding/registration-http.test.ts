@@ -1,15 +1,15 @@
-import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,describe,expect,it,rs} from '@rstest/core';
 import {onboardingTestConfig} from '@/test/integration/onboarding-test-config';
 import {registrationHttpHandlers} from './registration-http.server';
 
-const calls=vi.hoisted(()=>({requestRegistration:vi.fn(),verifyRegistration:vi.fn()}));
-vi.mock('./registration.server',()=>calls);
+const calls=rs.hoisted(()=>({requestRegistration:rs.fn(),verifyRegistration:rs.fn()}));
+rs.mock('./registration.server',()=>calls);
 
 describe('registration HTTP network admission boundary',()=>{
- const config=onboardingTestConfig(),store={query:vi.fn(),transaction:vi.fn()},delivery={send:vi.fn()};
+ const config=onboardingTestConfig(),store={query:rs.fn(),transaction:rs.fn()},delivery={send:rs.fn()};
  const body={schemaVersion:1,operationId:'5944698c-641f-4272-a25b-8dbfa6fb3518',email:'owner@example.invalid',locale:'en',termsVersion:'terms-1',privacyVersion:'privacy-1'};
- beforeEach(()=>{vi.stubEnv('VERCEL','1');calls.requestRegistration.mockResolvedValue({schemaVersion:1,state:'verification_requested',resendAfterMs:60000});});
- afterEach(()=>{vi.clearAllMocks();vi.unstubAllEnvs();});
+ beforeEach(()=>{rs.stubEnv('VERCEL','1');calls.requestRegistration.mockResolvedValue({schemaVersion:1,state:'verification_requested',resendAfterMs:60000});});
+ afterEach(()=>{rs.clearAllMocks();rs.unstubAllEnvs();});
  async function request(headers:Record<string,string>){
   const response=await registrationHttpHandlers({config,store,delivery,admission:{mode:'open'}}).request(new Request(config.signupOrigin+'/api/onboarding/registrations',{method:'POST',headers:{origin:config.signupOrigin,'content-type':'application/json',...headers},body:JSON.stringify(body)}));
   expect(response.status).toBe(202);return response;
@@ -28,7 +28,7 @@ describe('registration HTTP network admission boundary',()=>{
   expect(calls.requestRegistration.mock.calls[0]?.[4]).toBeNull();
  });
  it.each([undefined,'0','false'])('does not trust forwarding headers outside the Vercel runtime (%s)',async runtime=>{
-  vi.stubEnv('VERCEL',runtime);await request({'x-vercel-forwarded-for':'203.0.113.7','x-forwarded-for':'198.51.100.9'});
+  rs.stubEnv('VERCEL',runtime);await request({'x-vercel-forwarded-for':'203.0.113.7','x-forwarded-for':'198.51.100.9'});
   expect(calls.requestRegistration.mock.calls[0]?.[4]).toBeNull();
  });
 });

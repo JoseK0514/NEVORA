@@ -1,5 +1,5 @@
 import {fixtureProof} from './shift-change-api';
-import { beforeAll, afterAll, beforeEach, expect, it } from 'vitest';
+import { beforeAll, afterAll, beforeEach, expect, it } from '@rstest/core';
 import { createDisposableFoundationDatabase } from './local-postgres';
 import { reviewTimeOffRequest } from './management-api';
 import { createTimeOffRequest } from './self-service-api';

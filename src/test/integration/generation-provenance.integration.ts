@@ -1,5 +1,5 @@
 import { updateShift, deleteShift, insertShift, saveEmployeeSchedulingProfile } from './management-api';
-import { beforeAll, afterAll, beforeEach, expect, it } from 'vitest';
+import { beforeAll, afterAll, beforeEach, expect, it } from '@rstest/core';
 import { setTimeout as delay } from 'node:timers/promises';
 import { createDisposableGenerationDatabase } from './local-postgres';
 import { instrumentGeneration } from './generation-instrumentation';

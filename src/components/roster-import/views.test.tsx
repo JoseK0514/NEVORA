@@ -1,11 +1,11 @@
 // Owner roster import: what each step renders (server string render; there is no DOM here). Fictional data only.
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { parseRosterTable } from "@/lib/onboarding/roster";
 
-vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => undefined }) }));
+rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => undefined }) }));
 
 import { rosterImportCopy } from "./copy";
 import { headcountsOf, readPreviewResponse, type PreviewReady } from "./contract";

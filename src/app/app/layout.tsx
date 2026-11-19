@@ -50,6 +50,21 @@ import "./owner-b-schedule.css";
 import "./owner-b-time-pay.css";
 import "./owner-b-requests.css";
 import "./owner-b-settings.css";
+// Nov 17, 2026: one Direction B sheet per feature item (U01, U02, U03 with U09, U10).
+import "./b-restrictions.css";
+import "./b-payroll-import.css";
+import "./b-reminders.css";
+import "./b-review-details.css";
+// Review 30 (Nov 18, 2026): the 30-day phase screens (Edit employee's band, the date fields, Christmas bonus hours, Shift
+// matching, the attendance review). After the area and feature sheets.
+import "./b-thirty-day.css";
+// Phase 4 (Nov 17, 2026): the Employee and Lead screens, one sheet per group of screens.
+import "./employee-b-work.css";
+import "./employee-b-account.css";
+// Phase 7 (Nov 17, 2026): motion (overlays and press), finishing moments, loading shimmer. Loaded last.
+import "./b-motion.css";
+import "./b-moments.css";
+import "./b-shimmer.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies, headers} from "next/headers";
 import {createHash} from "node:crypto";

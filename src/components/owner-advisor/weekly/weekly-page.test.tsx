@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { Comparison } from "./weekly-page";
 import { parseWeeklyResult } from "@/lib/owner-advisor/weekly-client";

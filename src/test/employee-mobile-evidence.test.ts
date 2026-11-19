@@ -1,4 +1,4 @@
-import {beforeAll,expect,it} from 'vitest';
+import {beforeAll,expect,it} from '@rstest/core';
 import {execFileSync} from 'node:child_process';
 import {readFileSync,readdirSync} from 'node:fs';
 import {join} from 'node:path';

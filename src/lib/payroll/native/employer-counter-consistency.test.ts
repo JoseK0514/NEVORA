@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { calculateNativePayroll } from './calculate';
 import { parseYtd } from './model';
 import type { NativePayrollInput } from './contracts';

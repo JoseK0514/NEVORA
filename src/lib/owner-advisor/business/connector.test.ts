@@ -1,10 +1,10 @@
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import { fictionalBusinessInput, businessJanuary } from '@/test/fixtures/rondo-business';
 import { collectReadonlyBusinessSnapshot, registerReadonlyBusinessConnector } from './connector.server';
 const input = fictionalBusinessInput();
 const page=(patch:Record<string,unknown>={})=>({pageId:'page-1',snapshotId:'snapshot-1',revision:'revision-1',sourceAsOf:businessJanuary.toAt,final:true,records:input.records,...patch});
 function registered(pages:unknown[], patch:Record<string,unknown>={}) {
-  const readPages=vi.fn(async function*(){for(const p of pages)yield p;});
+  const readPages=rs.fn(async function*(){for(const p of pages)yield p;});
   const handle=registerReadonlyBusinessConnector({id:'fictional-bank',workspaceId:'workspace-fuel',environment:'development',source:input.source,accountRefs:['operating'],locationIds:[],secretReference:{kind:'REFERENCE',store:'keychain',name:'fictional-readonly-ref',environment:'development'},adapter:{mode:'READ_ONLY_SNAPSHOT',readPages},...patch});
   return {handle,readPages};
 }

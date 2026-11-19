@@ -1,7 +1,7 @@
-import {beforeEach,it,expect,vi} from 'vitest';
-const mocks=vi.hoisted(()=>({session:vi.fn(),proof:vi.fn(),read:vi.fn()}));
-vi.mock('@/lib/auth/session',()=>({getSession:mocks.session,requireSessionMutationProof:mocks.proof}));
-vi.mock('@/lib/data/inbox-count.server',()=>({readInboxCount:mocks.read}));
+import {beforeEach,it,expect,rs} from '@rstest/core';
+const mocks=rs.hoisted(()=>({session:rs.fn(),proof:rs.fn(),read:rs.fn()}));
+rs.mock('@/lib/auth/session',()=>({getSession:mocks.session,requireSessionMutationProof:mocks.proof}));
+rs.mock('@/lib/data/inbox-count.server',()=>({readInboxCount:mocks.read}));
 import {GET} from './route';
 beforeEach(()=>{mocks.session.mockReset().mockResolvedValue({id:'qa',role:'OWNER'});mocks.proof.mockReset().mockResolvedValue({employee:{id:'qa',role:'OWNER'}});mocks.read.mockReset().mockResolvedValue({state:'ready',count:4,observedAt:'2026-10-19T14:00:00Z'});});
 it('returns the own ready projection privately and preserves unavailable without inventing zero',async()=>{

@@ -1,4 +1,4 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
@@ -10,9 +10,9 @@ import {listScheduleTemplates,listTemplateShifts,createTemplateFromWeek,archiveS
 import {readScheduleCopyReceipt,readScheduleCopyCommand,executeScheduleCopy} from '../../lib/data/schedule-copy';
 import {generateWeekDraft} from '../../lib/data/schedule-generation';
 import {setAvailabilityDeadline} from '../../lib/data/week-settings';
-const ctx=vi.hoisted(()=>({ex:null as SqlExecutor|null}));
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/db',()=>{
+const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null}));
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/db',()=>{
  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>ctx.ex!.query({text,values}).then(yes,no)});
  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((text,part,i)=>text+(i?'$'+i:'')+part,''),values),{query:statement,transaction:(queries:{statement:SqlStatement}[])=>ctx.ex!.transaction(queries.map(q=>q.statement))});
  return {getDb:()=>tagged,queryRows:(rows:unknown)=>rows};

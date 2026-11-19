@@ -78,6 +78,9 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen h1[tabindex="-1"]:focus-visible, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-receipt:focus-visible { outline: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-now { align-items: flex-start; padding: 6px var(--b-inset) var(--b-space-16); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-now .b-notice__tx { gap: var(--b-space-2); }
+/* Phase 9: Right now's amber callout (a punch left open after the shift) starts where the notice's words did, 6px under the
+ * card's header; the kit gives its sides and its foot. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-hours-now > .b-callout { margin-top: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-flat { align-items: flex-start; padding: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-quiet { padding: 14px var(--b-inset); font-size: var(--b-fs-body); line-height: 20px; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-teal { color: var(--b-teal); }
@@ -95,7 +98,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-more { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 52px; padding: 14px var(--b-inset); font-size: var(--b-fs-body); line-height: 20px; font-weight: 600; color: var(--b-teal); text-align: center;
   transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-more svg { flex: none; width: 16px; height: 16px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-more:active { background-color: rgb(16 24 32 / 0.04); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-more:active { background-color: var(--b-press-tint); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px var(--b-inset) var(--b-space-20); text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none .b-ico { width: 48px; height: 48px; margin-bottom: var(--b-space-4); border-radius: var(--b-radius-pill); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none .b-ico svg { width: 22px; height: 22px; }

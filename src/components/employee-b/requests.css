@@ -80,7 +80,6 @@
   html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep :is(.c-btn--primary, button[type="submit"].c-btn) { min-height: 56px !important; border-radius: 18px !important; font-size: var(--b-fs-title-sm) !important; font-weight: 700 !important; box-shadow: none !important; }
   @media (max-width: 359px) {
     html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-row { row-gap: var(--b-space-16) !important; }
-    html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve { padding: var(--b-space-12) !important; gap: 10px !important; }
   }
 
   /* Inspection round 3: the form's 13.5px lines sit on 19px, like the mock. */
@@ -119,7 +118,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pickup .b-btn--teal { align-self: flex-start; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary { list-style: none; cursor: pointer; transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary::-webkit-details-marker { display: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary:active { background-color: rgb(16 24 32 / 0.04); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary:active { background-color: var(--b-press-tint); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary:focus-visible { outline: 2px solid var(--b-teal); outline-offset: -2px; border-radius: var(--b-radius-card); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why[open] .eb-why__chev { rotate: 180deg; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why__list { display: flex; flex-direction: column; margin: 0; padding: 0 var(--b-inset) var(--b-space-8) 66px; list-style: none; }
@@ -181,16 +180,14 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button { height: 50px; min-height: 0; margin: -6px 0; padding: 0 var(--b-space-8); font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); font-weight: 600; color: var(--b-ink2); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button::before { border-radius: var(--b-radius-small); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button[aria-pressed="true"] { color: #0B3B38; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button[aria-pressed="true"]::before { background: #FFFFFF; box-shadow: 0 2px 6px rgb(0 0 0 / 0.12); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button[aria-pressed="true"]::before { background: #FFFFFF; box-shadow: var(--b-shadow-thumb); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-row { gap: 10px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-pick { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-8); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-pick__ph { color: var(--b-grey); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-pick__ic { display: block; flex: none; width: 18px; height: 18px; color: var(--b-grey); pointer-events: none; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-approve { display: none; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve { display: flex; align-items: flex-start; gap: var(--b-space-12); padding: var(--b-space-12) var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-canvas); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve > span:last-child { display: flex; flex-direction: column; min-width: 0; padding-top: 0; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b { font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); font-weight: 600; color: var(--b-ink); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b + span { font-size: var(--b-fs-meta); color: var(--b-grey); text-wrap: pretty; }
+/* Phase 9: the approval note is the kit's amber wait callout; this wrapper only shows it on the phone screen. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve { display: block; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-foot {
   position: static; margin: 0; padding: 0; background: none; box-shadow: none;
 }
@@ -222,7 +219,5 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-receipt h2 { font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700; letter-spacing: -0.01em; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-receipt p { font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xsk { border-radius: var(--b-radius-field); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b { text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { margin-bottom: 5px; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b + span { line-height: 19px; }

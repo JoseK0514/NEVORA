@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { SigPendingLabel } from "./sig-button";
 
 // Phase 1 (inspection Oct 24): the spinner was always rendered and only hidden, so its infinite rotation ran on every
@@ -11,5 +11,7 @@ it("runs no spinner while idle and shows it while pending, at the same size", ()
   expect(idle).toContain('class="sig-btn__spin-slot"');
   const busy = renderToStaticMarkup(<SigPendingLabel pending pendingText="Saving…">Save</SigPendingLabel>);
   expect(busy).toContain("sig-btn__spin");
-  expect(busy).toContain("<svg");
+  // Phase 7: the one spinner is a ring drawn in CSS (no icon), hidden from assistive technology.
+  expect(busy).toContain('<span class="sig-btn__spin" aria-hidden="true"></span>');
+  expect(busy).not.toContain("<svg");
 });

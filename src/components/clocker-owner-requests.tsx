@@ -1,9 +1,15 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
+import {BAvatar,BCard,BList,BRow,BState} from './owner-b/b-kit';
+import {clockerOwnerCopy,clockerOwnerWhen,type ClockerOwnerLang} from './clocker-owner-copy';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
 import type {OwnerReviewRequestsResult} from '../lib/clocker/review-requests.server';
-export function ClockerOwnerRequests({actorId,timeZone,onSelect}:{actorId:string;timeZone:string;onSelect:(reference:string)=>void}){
+/** Help requests on Clocker recovery (Phase 6): who asked on a tablet, where and when, with one tinted action (Check
+ * looks their saved punch up) and one quiet one (Fix in Timecards). Loading, empty, offline and failed are each one state
+ * card inside the list's card. The private snapshot controller and its pause-on-blur are unchanged. */
+export function ClockerOwnerRequests({actorId,timeZone,onSelect,lang='en'}:{actorId:string;timeZone:string;onSelect:(reference:string)=>void;lang?:ClockerOwnerLang}){
+ const t=clockerOwnerCopy[lang];
  const [state,setState]=useState<OwnerReviewRequestsResult|null>(null),[loading,setLoading]=useState(true),cursor=useRef<string|undefined>(undefined),controller=useRef<ReturnType<typeof createPrivateSnapshotController<OwnerReviewRequestsResult>>|null>(null);
  // Reliability R-05: a routine renewal keeps the current list (and the reader's place and focus) on screen; the
  // controller still clears it the moment it expires, access ends or the window is left.
@@ -17,13 +23,22 @@ export function ClockerOwnerRequests({actorId,timeZone,onSelect}:{actorId:string
   return()=>{c.stop();controller.current=null;for(const name of ['focus','pageshow','online'])window.removeEventListener(name,active);for(const name of ['blur','pagehide','offline'])window.removeEventListener(name,pause);document.removeEventListener('visibilitychange',active);};
  },[actorId]);
  const ready=state?.state==='ready'?state:null;
- const when=(at:string)=>new Intl.DateTimeFormat('en-US',{timeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));
- // Release 1: the requests in one card like the boards' lists (who asked, where, when), a teal Refresh in its header,
- // and one way to check each. No internal wording; the request id stays for screen readers only.
- return <section className="q-list wc-help" aria-labelledby="clocker-review-requests"><div className="wc-cardhead"><h2 id="clocker-review-requests">Help requests</h2><button type="button" className="wc-textbtn" disabled={loading} onClick={()=>{cursor.current=undefined;controller.current?.refresh();}}>Refresh</button></div>
-  {loading?<p className="wc-emptyrow" role="status">Checking requests…</p>:ready?ready.requests.length?<ul>{ready.requests.map(r=><li key={r.requestId}>{r.commandId
-   ?<button type="button" className="q-row" onClick={()=>onSelect(r.commandId!)} aria-label={`Check ${r.requesterName}'s clock action`}><span className="q-rt"><b>{r.requesterName}</b><i>{`${r.locationName} · ${r.deviceName} · `}<time dateTime={r.requestedAt}>{when(r.requestedAt)}</time></i></span><span className="wc-meta wc-meta--teal">Check</span></button>
-   :<Link className="q-row" href="/app/timecards"><span className="q-rt"><b>{r.requesterName}</b><i>{`${r.locationName} · `}<time dateTime={r.requestedAt}>{when(r.requestedAt)}</time>{' · Fix it in Timecards'}</i></span><span className="q-sr">{`Request ${r.requestId}`}</span></Link>}</li>)}</ul>
-  :<p className="wc-emptyrow" role="status">No one needs help right now</p>:<p className="wc-emptyrow" role="status">Couldn’t load requests. Refresh to try again.</p>}
-  {ready?.nextCursor?<button className="wc-addrow" type="button" disabled={loading} onClick={()=>{cursor.current=ready.nextCursor!;controller.current?.refresh();}}>Show more requests</button>:null}</section>;
+ const offline=state?.state==='unavailable'&&state.reason==='offline';
+ const refresh=()=>{cursor.current=undefined;controller.current?.refresh();};
+ const row=(r:Extract<OwnerReviewRequestsResult,{state:'ready'}>['requests'][number])=>{
+  const when=<time dateTime={r.requestedAt}>{clockerOwnerWhen(r.requestedAt,timeZone,lang)}</time>;
+  const fix=<Link className="b-btn b-btn--quiet ck-text" href="/app/timecards" aria-label={t.fixFor(r.requesterName)}>{t.fixInTimecards}</Link>;
+  return <BRow key={r.requestId} lead={<BAvatar name={r.requesterName}/>} title={r.requesterName}
+   sub={<>{t.requestLine(r.locationName,r.deviceName)} · {when}{r.commandId?null:<> · {t.requestNoCode}</>}</>}
+   trail={<span className="ck-acts">{r.commandId?<button type="button" className="b-btn b-btn--ghost" onClick={()=>onSelect(r.commandId!)} aria-label={t.checkFor(r.requesterName)}>{t.check}</button>:null}{fix}</span>}/>;
+ };
+ return <BCard id="clocker-review-requests" title={t.requestsTitle} count={ready?.requests.length?ready.requests.length:undefined}
+  chip={<button type="button" className="b-btn b-btn--quiet ck-text" disabled={loading} onClick={refresh}>{t.refresh}</button>}>
+  {loading?<BState kind="loading" title={t.requestsLoading}/>
+   :ready?ready.requests.length?<BList label={t.requestsList}>{ready.requests.map(row)}</BList>
+    :<BState kind="empty" title={t.requestsEmptyTitle} line={t.requestsEmptyBody}/>
+   :offline?<BState kind="offline" title={t.requestsOfflineTitle} line={t.requestsOfflineBody}/>
+   :<BState kind="failed" alert title={t.requestsFailedTitle} line={t.requestsFailedBody}><button type="button" className="b-btn b-btn--ghost" onClick={refresh}>{t.refresh}</button></BState>}
+  {ready?.nextCursor?<div className="ck-foot"><button className="b-btn b-btn--ghost" type="button" disabled={loading} onClick={()=>{cursor.current=ready.nextCursor!;controller.current?.refresh();}}>{t.requestsMore}</button></div>:null}
+ </BCard>;
 }

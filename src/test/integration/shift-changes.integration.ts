@@ -1,9 +1,9 @@
-import {vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import {reviewedAttentionInput} from './attention-api';
 import {reviewedFixtureSource} from './shift-change-api';
 import { randomUUID } from 'node:crypto';
-import { beforeAll, afterAll, expect, it } from 'vitest';
+import { beforeAll, afterAll, expect, it } from '@rstest/core';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { executeShiftChange,findShiftChangeOperation } from '../../lib/data/shift-changes';
 import { proof,seedShiftChanges,fixtureShift,publishFixtureWeek } from './shift-change-fixture';

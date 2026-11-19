@@ -2,7 +2,7 @@
 // measured from the token values, and the Phase 1 names exist.
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from '@rstest/core';
 
 const source = readFileSync(join(__dirname, 'b-tokens.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 const token = (name: string) => {
@@ -103,7 +103,59 @@ describe('Phase 1 token names', () => {
     for (const index of [0, 1, 2]) { expect(two[index]).toBeGreaterThan(one[index]); expect(three[index]).toBeGreaterThan(two[index]); }
     expect(token('elev-glow')).toBe('0 6px 14px -6px rgb(11 110 105 / 0.6)');
   });
+  it('keeps the menu radius and the thumb shadow in the one shadow colour (Phase 9)', () => {
+    expect(token('radius-menu')).toBe('16px');
+    expect(token('shadow-thumb')).toBe('0 1px 2px rgb(16 40 38 / 0.10), 0 2px 6px rgb(16 40 38 / 0.16)');
+    for (const colour of token('shadow-thumb').match(/rgb\([^)]*\)/g) ?? []) expect(colour).toMatch(/^rgb\(16 40 38 \/ 0\.\d+\)$/);
+  });
   it('names the palette the other sheets read', () => {
     for (const name of ['teal', 'teal-50', 'ink', 'ink2', 'grey', 'grey-on-fill', 'line', 'canvas', 'quiet', 'amber', 'amber-50', 'amber-solid', 'red', 'red-50', 'green', 'green-50', 'green-solid', 'coral', 'field-edge', 'hover', 'disabled-bg', 'disabled-ink', 'band', 'on-band', 'glass', 'focus']) expect(token(name)).not.toBe('');
+  });
+});
+
+// Phase 9 (Nov 18, 2026): one status label, one note, one icon scale, one button ladder.
+const TONES: [tone: string, ink: string, tint: string, edge: string, dot: string][] = [
+  ['teal', 'teal', 'teal-50', 'teal-edge', 'teal'],
+  ['amber', 'amber', 'amber-50', 'amber-edge', 'amber-solid'],
+  ['red', 'red', 'red-50', 'red-edge', 'red'],
+  ['green', 'green', 'green-50', 'green-edge', 'green-solid'],
+  ['grey', 'ink2', 'quiet', 'quiet-edge', 'field-edge'],
+];
+
+describe('Phase 9 tones: edges, dots, callouts', () => {
+  it.each(TONES)('the %s edge is its ink mixed 16%% over its tint, darker than the tint', (_tone, ink, tint, edge) => {
+    const mixed = over(hex(token(ink)), 0.16, hex(token(tint)));
+    const value = hex(token(edge));
+    value.forEach((channel, index) => expect(Math.abs(channel - mixed[index])).toBeLessThanOrEqual(1));
+    expect(luminance(value)).toBeLessThan(luminance(hex(token(tint))));
+  });
+  it('pins the edge values', () => {
+    expect(TONES.map(([, , , edge]) => token(edge))).toEqual(['#C5DEDB', '#EBD8C0', '#F1CCC8', '#C7DED1', '#D4D6D8']);
+  });
+  it.each(TONES)('a %s chip: its ink on its tint is text contrast', (_tone, ink, tint) => {
+    expect(contrast(hex(token(ink)), hex(token(tint)))).toBeGreaterThanOrEqual(4.5);
+  });
+  it.each(TONES)('a %s live dot is a graphic on its chip and on white', (_tone, _ink, tint, _edge, dot) => {
+    expect(contrast(hex(token(dot)), hex(token(tint)))).toBeGreaterThanOrEqual(3);
+    expect(contrast(hex(token(dot)), WHITE)).toBeGreaterThanOrEqual(3);
+  });
+  it.each(TONES)('a %s callout: the ink2 body, the ink title and the teal link read on its tint', (_tone, _ink, tint) => {
+    for (const text of ['ink', 'ink2', 'teal']) expect(contrast(hex(token(text)), hex(token(tint)))).toBeGreaterThanOrEqual(4.5);
+  });
+  it('the quiet status text is grey on white, grey-on-fill on a tint', () => {
+    expect(contrast(hex(token('grey')), WHITE)).toBeGreaterThanOrEqual(4.5);
+    for (const [, , tint] of TONES) expect(contrast(hex(token('grey-on-fill')), hex(token(tint)))).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
+describe('Phase 9 sizes', () => {
+  it('pins the chip, the count and the icon scale', () => {
+    expect([token('chip-h'), token('chip-px'), token('chip-dot'), token('count-h')]).toEqual(['22px', '8px', '6px', '20px']);
+    expect(token('count-h')).toBe(token('seg-count-h'));
+    expect(['chip', 'inline', 'lead', 'control', 'state', 'tab', 'finish'].map(role => token(`ic-${role}`))).toEqual(['12px', '16px', '18px', '20px', '22px', '24px', '28px']);
+  });
+  it('pins the button ladder, its regular step at the touch target', () => {
+    expect([token('btn-h-compact'), token('btn-h'), token('btn-h-band'), token('btn-h-full')]).toEqual(['36px', '44px', '48px', '52px']);
+    expect(token('btn-h')).toBe(token('target'));
   });
 });

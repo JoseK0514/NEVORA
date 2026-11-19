@@ -1,4 +1,4 @@
-import {describe,it,expect,vi} from 'vitest';
+import {describe,it,expect,rs} from '@rstest/core';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {createTypedSnapshotFixture} from './typed-fixture.test-support';
@@ -34,7 +34,7 @@ describe('shared pinned namespace comparator validation on typed source',()=>{
  it('retains the exact original namespace capture checksum in the issued typed snapshot',()=>{const f=fixture();expect(f.snapshot.namespaceCaptureChecksum).toBe(f.namespace.captureChecksum);});
  it('rejects alternate coherent expression/class results that are not the original capture',()=>{const f=fixture(),row=f.namespace.rows.find(r=>r.key[0]==='employee-1')!;row.expressionValue='ALTERNATE_COHERENT_DB_VALUE';row.comparisonClass='ALTERNATE_COHERENT_DB_CLASS';reseal(f.namespace);expect(codes(f.snapshot,f.namespace,f.migrations)).toContain('DATABASE_COMPARATOR_CAPTURE_BOUNDARY_DRIFT');});
  it('freezes exported source contracts including declaration fields',()=>{expect(Object.isFrozen(DATABASE_NAMESPACES)).toBe(true);for(const c of DATABASE_NAMESPACES){expect(Object.isFrozen(c)).toBe(true);expect(Object.isFrozen(c.source)).toBe(true);}});
- it('rejects snapshot clones before input accessors or coercion',()=>{const f=fixture(),get=vi.fn();expect(codes({...f.snapshot},{get binding(){return get();}},[])).toContain('UNISSUED_TYPED_SNAPSHOT');expect(get).not.toHaveBeenCalled();});
+ it('rejects snapshot clones before input accessors or coercion',()=>{const f=fixture(),get=rs.fn();expect(codes({...f.snapshot},{get binding(){return get();}},[])).toContain('UNISSUED_TYPED_SNAPSHOT');expect(get).not.toHaveBeenCalled();});
  it('rejects revoked snapshot proxies without traps',()=>{const f=fixture(),p=Proxy.revocable(f.snapshot,{});p.revoke();expect(codes(p.proxy,f.namespace,f.migrations)).toContain('UNISSUED_TYPED_SNAPSHOT');});
  it('blocks altered original migration bytes before namespace validation',()=>{const f=fixture();f.migrations[0].text+='--drift';expect(codes(f.snapshot,f.namespace,f.migrations)).toContain('SOURCE_DRIFT');});
  const mutations:[string,string,(n:DatabaseNamespaceComparators)=>void][]=[
@@ -57,6 +57,6 @@ describe('shared pinned namespace comparator validation on typed source',()=>{
  it.each(mutations)('blocks%s with a coherently rebound outer checksum',(name,code,mutate)=>{void name;const f=fixture();mutate(f.namespace);reseal(f.namespace);expect(codes(f.snapshot,f.namespace,f.migrations)).toContain(code);});
  it('blocks different classes for identical included expression outputs',()=>{const f=fixture();const included=f.namespace.rows.filter(r=>r.contractId==='employees.email_ci'&&r.included);included[1].expressionValue=included[0].expressionValue;included[1].comparisonClass='other';reseal(f.namespace);expect(codes(f.snapshot,f.namespace,f.migrations)).toContain('DATABASE_COMPARATOR_ROW_DRIFT');});
  it('blocks a changed checksum on otherwise coherent metadata',()=>{const f=fixture();f.namespace.captureChecksum='b'.repeat(64);expect(codes(f.snapshot,f.namespace,f.migrations)).toContain('DATABASE_COMPARATOR_CAPTURE_DRIFT');});
- it('rejects metadata accessors without calling them',()=>{const f=fixture(),get=vi.fn(()=>f.namespace.rows);Object.defineProperty(f.namespace,'rows',{get,enumerable:true});expect(codes(f.snapshot,f.namespace,f.migrations)).toContain('UNSUPPORTED_NAMESPACE_VALUE');expect(get).not.toHaveBeenCalled();});
+ it('rejects metadata accessors without calling them',()=>{const f=fixture(),get=rs.fn(()=>f.namespace.rows);Object.defineProperty(f.namespace,'rows',{get,enumerable:true});expect(codes(f.snapshot,f.namespace,f.migrations)).toContain('UNSUPPORTED_NAMESPACE_VALUE');expect(get).not.toHaveBeenCalled();});
  it('does not allow clones or revoked proxies to acquire observation provenance',()=>{const f=fixture(),r=validateTypedDatabaseNamespaceComparators(f.snapshot,f.namespace,f.migrations);expect(r.status).toBe('VALIDATED');if(r.status!=='VALIDATED')return;expect(isIssuedTypedDatabaseNamespaceObservations({...r.observations})).toBe(false);const p=Proxy.revocable(r.observations,{});p.revoke();expect(isIssuedTypedDatabaseNamespaceObservations(p.proxy)).toBe(false);});
 });

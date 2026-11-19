@@ -1,7 +1,8 @@
 'use client';
 import {useMemo} from 'react';
-import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
+import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
+import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {ClockCountdownIcon} from '@phosphor-icons/react/dist/ssr/ClockCountdown';
 import {useLeaveStaffing,type StaffingState} from './use-leave-staffing';
 import {weeksFor} from '@/lib/time-off-staffing/client';
@@ -11,7 +12,8 @@ import './leave-staffing.css';
 
 /* A pending time-off request, before its Approve (Nov 9, 2026): the published shifts it overlaps and what approving does
  * to them. Approve stays the existing form and its handler; nothing here decides or infers a decision. "Couldn't check"
- * and "expired" are said as such, never as "no conflicts". */
+ * and "expired" are said as such, never as "no conflicts". Phase 9: one glyph per meaning, the circle for red (stop), the
+ * triangle for amber (check), the kit's bold check for green (done). */
 
 export type PendingLeave={id:string;startDate:string;endDate:string};
 
@@ -32,9 +34,9 @@ export function LeaveConflictCheck({request,employeeName}:{request:PendingLeave;
  else if(state.status==='paused')body=<p className="ls-check__state">Paused while you’re away. It checks again when you come back.</p>;
  else if(state.status==='expired')body=<Line tone="amber" icon={<ClockCountdownIcon weight="bold"/>} title="This check expired" sub="Check again before you decide." action={<button type="button" className="c-btn c-btn--secondary ls-check__retry" onClick={refresh}>Check again</button>}/>;
  else if(state.status==='unavailable')body=state.denied
-  ?<Line tone="red" icon={<WarningIcon weight="bold"/>} title="Your access changed" sub="Reload the page to check this request with your current access."/>
+  ?<Line tone="red" icon={<WarningCircleIcon weight="bold"/>} title="Your access changed" sub="Reload the page to check this request with your current access."/>
   :<Line tone="amber" icon={<WarningIcon weight="bold"/>} title="Couldn’t check for shift conflicts" sub="This doesn’t mean there are none. Try again before you decide." action={<button type="button" className="c-btn c-btn--secondary ls-check__retry" onClick={refresh}>Try again</button>}/>;
- else if(!conflicts?.length)body=<Line tone="green" icon={<CheckCircleIcon weight="bold"/>} title="No published shifts overlap" sub={`${first} isn’t on the published schedule during this time off.`}/>;
+ else if(!conflicts?.length)body=<Line tone="green" icon={<CheckIcon weight="bold"/>} title="No published shifts overlap" sub={`${first} isn’t on the published schedule during this time off.`}/>;
  else body=<>
   <Line tone="amber" icon={<WarningIcon weight="bold"/>} title={`${first} is on the schedule then`} sub={`${conflictTotal(conflicts)} would need someone else.`}/>
   <ul className="ls-check__list" aria-label="Overlapping published shifts">{conflicts.map(item=><li key={item.id}>

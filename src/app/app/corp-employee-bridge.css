@@ -242,3 +242,7 @@ html body #employee-mobile[data-nv-corp] .c-pill:is(.c-pill--amber, .c-pill--blu
 html body #employee-mobile[data-nv-corp] .c-pill:is(.c-pill--amber, .c-pill--blue) > .c-pill__dot { display:none; }
 /* The same for a row's amber value ("Due Mon, Nov 2"). */
 html body #employee-mobile[data-nv-corp] .c-row__value--amber { color:#6B7075; }
+/* Phase 7 (Nov 17, 2026; UI-7, RA-21): reduced motion. The feedback above still shows; it no longer fades. */
+@media (prefers-reduced-motion: reduce) {
+  html body #employee-mobile[data-nv-corp] :is(.em-request-entry, .em-request-links > a, .em-request-list > li > a) { transition: none; }
+}

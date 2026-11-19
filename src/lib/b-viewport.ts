@@ -11,3 +11,9 @@ export const B_WIDE = "(min-width: 768px)";
 export const B_TABLET = "(min-width: 768px) and (max-width: 1023px)";
 /** Desktop from 1024px. */
 export const B_DESKTOP = "(min-width: 1024px)";
+/** A short window (Phase 8, Nov 17, 2026): a phone held sideways (844×390, 932×430) or a desktop window 500px tall or
+ * less. It refines B_WIDE only, never the phone: the band and the rail turn compact so the page keeps the screen. Height
+ * is asked here and nowhere else (src/app/app/b-viewport.test.ts). */
+export const B_SHORT = "(max-height: 500px)";
+/** B_WIDE in a short window: the compact band and rail. */
+export const B_WIDE_SHORT = `${B_WIDE} and ${B_SHORT}`;

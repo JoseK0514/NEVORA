@@ -1,5 +1,5 @@
 'use client';
-import {ArrowsClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
+import {ArrowClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import {useEffect,useRef,useState} from 'react';
 import type {CalendarSubscriptionStatus} from '@/lib/calendar/types';
 import Link from 'next/link';
@@ -48,7 +48,7 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
     </div>:null}
     <div ref={feedback} tabIndex={-1}>
    {notice?<p role="status" className="employee-notice">{notice}</p>:null}
-   {status?.state==='unauthorized'?<Link className="button secondary" href="/login">Sign in</Link>:(status?.state==='unavailable'||unknown)?<button type="button" className="nv-btn" data-kind="primary" disabled={busy} onClick={onRetry}><ArrowsClockwiseIcon size={18} weight="bold" aria-hidden="true"/>Try again<span className="nv-sr"> to load the calendar link</span></button>:null}
+   {status?.state==='unauthorized'?<Link className="button secondary" href="/login">Sign in</Link>:(status?.state==='unavailable'||unknown)?<button type="button" className="nv-btn" data-kind="primary" disabled={busy} onClick={onRetry}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true"/>Try again<span className="nv-sr"> to load the calendar link</span></button>:null}
     </div>
    </div>
    <p className="employee-calendar-privacy"><LockKeyIcon size={18} weight="bold" aria-hidden="true"/><span>This private link includes your shift times and location labels. Anyone with the link can view these details.</span></p>

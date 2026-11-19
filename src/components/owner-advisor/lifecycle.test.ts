@@ -1,4 +1,4 @@
-import { expect, it, vi } from "vitest";
+import { expect, it, rs } from '@rstest/core';
 import { bindAdvisorLifecycle } from "./lifecycle";
 it("never restores while unfocused and permanently retires on same-tab signout", () => {
   const win = new EventTarget();
@@ -7,7 +7,7 @@ it("never restores while unfocused and permanently retires on same-tab signout",
     visibilityState: "visible" as const,
     hasFocus: () => focused,
   });
-  const controller = { start: vi.fn(), pause: vi.fn(), stop: vi.fn() };
+  const controller = { start: rs.fn(), pause: rs.fn(), stop: rs.fn() };
   const cleanup = bindAdvisorLifecycle(controller, win, doc, () => true);
   expect(controller.start).toHaveBeenCalledTimes(1);
   focused = false;

@@ -1,19 +1,19 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 
-const session = vi.hoisted(() => ({ role: "OWNER" as string, proof: true, scope: null as null | { mode: "COMPANY" } | { mode: "LOCATIONS"; locationIds: string[] }, path: "/app/settings" }));
-vi.mock("@/lib/auth/session", () => ({
+const session = rs.hoisted(() => ({ role: "OWNER" as string, proof: true, scope: null as null | { mode: "COMPANY" } | { mode: "LOCATIONS"; locationIds: string[] }, path: "/app/settings" }));
+rs.mock("@/lib/auth/session", () => ({
   requireSession: async () => ({ id: "X", role: session.role }),
   readSessionMutationProof: async () => session.proof ? { employee: { id: "X", role: session.role } } : null,
 }));
-const team = vi.hoisted(() => ({ list: [] as { firstName: string; lastName: string; role: string; active: boolean }[] }));
-vi.mock("@/lib/data/employees", () => ({ listEmployees: async () => team.list }));
+const team = rs.hoisted(() => ({ list: [] as { firstName: string; lastName: string; role: string; active: boolean }[] }));
+rs.mock("@/lib/data/employees", () => ({ listEmployees: async () => team.list }));
 // What the shell already reads for this person: their operational scope and the workspace's words and features.
-vi.mock("@/lib/company-access/operational-scope.server", () => ({
+rs.mock("@/lib/company-access/operational-scope.server", () => ({
   readOperationalAuthority: async () => session.scope ? { state: "ready", role: "MANAGER", scope: session.scope } : { state: "unavailable", reason: "access_denied" },
 }));
-vi.mock("@/lib/workspace-presentation/current.server", () => ({ currentBrand: async () => ({ words: "retail", modules: undefined }) }));
-vi.mock("next/navigation", () => ({ usePathname: () => session.path }));
+rs.mock("@/lib/workspace-presentation/current.server", () => ({ currentBrand: async () => ({ words: "retail", modules: undefined }) }));
+rs.mock("next/navigation", () => ({ usePathname: () => session.path }));
 import SettingsLayout from "./layout";
 import { closedSettingsSubject } from "./closed-line";
 
@@ -34,7 +34,7 @@ describe("Settings for someone who isn't an Owner (PD9, UX10)", () => {
     session.role = "MANAGER"; session.scope = null; session.path = "/app/settings";
     team.list = [{ firstName: "Jose", lastName: "Natal", role: "OWNER", active: true }, { firstName: "Old", lastName: "Owner", role: "OWNER", active: false }, { firstName: "Elena", lastName: "Ruiz", role: "MANAGER", active: true }];
     const html = await render();
-    expect(html).toContain("Jose Natal can change a setting for you.");
+    expect(html).toContain("Jose\u00A0Natal can change a setting for you.");
     expect(html).not.toContain("Old Owner");
     // Without Scheduling rules in their navigation, no button offers it.
     expect(html).not.toContain("/app/schedule/settings");
@@ -47,7 +47,8 @@ describe("Settings for someone who isn't an Owner (PD9, UX10)", () => {
     const html = await render();
     expect(html).toMatch(/<h1 id="owner-only-title"[^>]*>Settings<\/h1>/);
     expect(html).toContain("Settings are for Owners");
-    expect(html).toContain("You can change scheduling rules. For anything else, ask Jose Natal.");
+    // Phase 8 (B #22): the Owner's name is kept on one line.
+    expect(html).toContain("You can change scheduling rules. For anything else, ask Jose\u00A0Natal.");
     expect(html).toContain('<a class="b-btn b-btn--ghost" href="/app/schedule/settings">Open Scheduling rules</a>');
     expect(html).not.toContain("b-btn--teal");
     expect(html).not.toContain("PRIVATE settings page");
@@ -68,12 +69,12 @@ describe("Settings for someone who isn't an Owner (PD9, UX10)", () => {
     team.list = [{ firstName: "Jose", lastName: "Natal", role: "OWNER", active: true }];
     session.path = "/app/settings/locations/loc-1";
     let html = await render();
-    expect(html).toContain("Stores are part of Settings, which only Owners can change. Ask Jose Natal.");
+    expect(html).toContain("Stores are part of Settings, which only Owners can change. Ask Jose\u00A0Natal.");
     expect(html).toMatch(/<h1 id="owner-only-title"[^>]*>Settings<\/h1>/);
     expect(html).not.toContain("PRIVATE settings page");
     session.path = "/app/settings/workspace";
     html = await render();
-    expect(html).toContain("Company profile is part of Settings, which only Owners can change. Ask Jose Natal.");
+    expect(html).toContain("Company profile is part of Settings, which only Owners can change. Ask Jose\u00A0Natal.");
     team.list = [];
     session.path = "/app/settings/features";
     expect(await render()).toContain("Features and team terms are part of Settings, which only Owners can change. Ask an Owner.");

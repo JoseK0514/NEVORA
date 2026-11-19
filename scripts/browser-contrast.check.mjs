@@ -48,3 +48,16 @@ test('implicit stops and a middle stop retain the least contrast paint bound',()
 test('stacked translucent image layers remain unsupported',()=>{
  assert.throws(()=>measure({backgroundColor:'rgb(0, 0, 0)',backgroundImage:'linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12)), linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))'}),/Unsupported background image/);
 });
+test('a completed entrance with computed blur(0px) preserves measured contrast',()=>{
+ const plain=measure({backgroundColor:'rgb(0, 0, 0)'});
+ assert.deepEqual(measure({backgroundColor:'rgb(0, 0, 0)',filter:'blur(0px)'}).samples,plain.samples);
+ assert.equal(measure({backgroundColor:'rgb(0, 0, 0)'},{filter:'blur(0px)'}).ratio,21);
+});
+test('nonzero, compound and unknown filters still fail closed',()=>{
+ for(const filter of ['blur(0.001px)','blur(4px)','blur(0px) brightness(0.5)','brightness(1)','url("unmeasured.svg")'])
+  assert.throws(()=>measure({backgroundColor:'rgb(0, 0, 0)',filter}),/Unsupported compositing/);
+});
+test('zero blur cannot hide opacity or blend compositing',()=>{
+ for(const extra of [{opacity:'0.5'},{mixBlendMode:'overlay'}])
+  assert.throws(()=>measure({backgroundColor:'rgb(0, 0, 0)',filter:'blur(0px)',...extra}),/Unsupported compositing/);
+});

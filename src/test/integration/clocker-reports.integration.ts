@@ -1,4 +1,4 @@
-import {afterEach,beforeEach,describe,expect,it} from 'vitest';
+import {afterEach,beforeEach,describe,expect,it} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readReports} from '../../lib/reports/service';
 import {mutateTimecard} from '../../lib/timecards/service';

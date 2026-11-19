@@ -11,9 +11,9 @@ import '../login/auth-signature.css';
 export const dynamic='force-dynamic';
 
 export default async function ForgotAccessPage(){
- const [,lang]=await Promise.all([getPublicWorkspaceName(),readAuthLang()]);
+ const [workspaceName,lang]=await Promise.all([getPublicWorkspaceName(),readAuthLang()]);
  const t=AUTH_COPY[lang];
- return <QuietAuthShell helpFrom="recover" lang={lang} t={t} back="/login"><AccountRecovery mobileAccess={mobileAccessEnabled()} kind="request" lang={lang}/></QuietAuthShell>;
+ return <QuietAuthShell helpFrom="recover" lang={lang} t={t} back="/login"><AccountRecovery mobileAccess={mobileAccessEnabled()} kind="request" lang={lang} workspaceName={workspaceName}/></QuietAuthShell>;
 }
 
 export const generateMetadata=()=>mobileAccessMetadata("recover");

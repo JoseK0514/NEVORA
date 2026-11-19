@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
-import {it,expect} from 'vitest';
+import {it,expect} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {ClockerPunchService} from '../../lib/clocker/punches.server';
 import {submitTimeCorrection,reviewTimeCorrection} from '../../lib/time-corrections/service';

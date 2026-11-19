@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { createDisposableExchangeDatabase } from './local-postgres';
 import { seedShiftChanges, fixtureShift, proof } from './shift-change-fixture';
 import { fictionalProfile } from '../fixtures/shift-changes';

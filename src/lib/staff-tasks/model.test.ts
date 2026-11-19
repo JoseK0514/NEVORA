@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { parseTaskDraft, parseStaffTaskCommand, parseTaskQuery, parseTaskHistoryQuery, parseTaskContextQuery, planTaskOccurrences } from './model';
 import type { StaffTaskCommand, TaskDraft } from './types';
 

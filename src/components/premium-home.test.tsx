@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from '@rstest/core';
 import { timelineLanes } from "./premium-home";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor, ClockMonitorEmployee } from "@/lib/time-clock";

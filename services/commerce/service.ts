@@ -295,6 +295,7 @@ export function createCommerce(options: CommerceOptions) {
         {
           error: {
             ...(error instanceof CommerceError&&error.operationState?{operationState:error.operationState}:{}),
+            ...(error instanceof CommerceError&&error.passwordReason?{passwordReason:error.passwordReason}:{}),
             code:
               error instanceof CommerceError
                 ? error.code

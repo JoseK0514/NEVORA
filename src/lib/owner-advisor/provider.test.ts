@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, rs } from '@rstest/core';
 import { readConfig } from "./config.server";
 import { investigate } from "./loop.server";
 import type { ToolCall, ToolResult } from "./contracts";
@@ -17,11 +17,11 @@ const chat = (content: unknown = "Two current shifts; verify the linked source."
 const toolCall = (id: string, name = "published_staffing", args = '{"date":"2026-10-30"}') => ({ id, type: "function", function: { name, arguments: args } });
 const responseText = { output: [{ type: "message", role: "assistant", content: [{ type: "output_text", text: "Current evidence, not a saved action." }] }] };
 const dependencies = () => ({
-  signal: new AbortController().signal, check: vi.fn(async () => {}),
-  tool: vi.fn(async (_call: ToolCall): Promise<ToolResult> => ({ observedAt: "2026-10-30T12:00:00Z", sources: [{ label: "Today", href: "/app", observedAt: "2026-10-30T12:00:00Z" }], partial: false, data: { date: "2026-10-30", scheduled: 2 } })),
+  signal: new AbortController().signal, check: rs.fn(async () => {}),
+  tool: rs.fn(async (_call: ToolCall): Promise<ToolResult> => ({ observedAt: "2026-10-30T12:00:00Z", sources: [{ label: "Today", href: "/app", observedAt: "2026-10-30T12:00:00Z" }], partial: false, data: { date: "2026-10-30", scheduled: 2 } })),
 });
 function fixtureFetch(responses: unknown[]) {
-  return vi.fn(async (_url: string, _init: RequestInit) => Response.json(responses.shift()));
+  return rs.fn(async (_url: string, _init: RequestInit) => Response.json(responses.shift()));
 }
 
 describe("explicit provider routing", () => {

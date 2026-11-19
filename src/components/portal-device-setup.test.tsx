@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 import { DeviceSetupContent } from './portal-device-setup';
 const base={state:'ready' as const, standalone:false as const, ios:false, installPrompt:false, testAllowed:false, instructions:false, onEnable:()=>{},onDismiss:()=>{},onInstructions:()=>{},onInstall:()=>{},onTurnOff:()=>{},onTest:()=>{},onRetry:()=>{}};
 it('uses approved copy and equal peer action classes',()=>{

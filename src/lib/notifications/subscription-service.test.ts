@@ -1,5 +1,5 @@
 import { createECDH } from 'node:crypto';
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 async function api() { const m = await import('./subscription-service').catch(() => ({})); expect(m).toHaveProperty('validatePushSubscription'); return m as typeof import('./subscription-service'); }
 export function subscription(endpoint = 'https://fcm.googleapis.com/fcm/send/fictional') { const e = createECDH('prime256v1'); e.generateKeys(); return { endpoint, expirationTime: null, keys: { p256dh: e.getPublicKey().toString('base64url'), auth: Buffer.alloc(16, 1).toString('base64url') } }; }
 it('strict_subscription_shapes_and_real_p256_key_lengths', async () => { const m = await api(); const value = subscription(); expect(m.validatePushSubscription(value)).toEqual(value); for (const bad of [{ ...value, employeeId: 'foreign' }, { ...value, installationHash: 'foreign' }, { ...value, keys: { ...value.keys, extra: true } }, { ...value, keys: { ...value.keys, p256dh: Buffer.alloc(65, 4).toString('base64url') } }, { ...value, keys: { ...value.keys, auth: 'abc=' } }, { ...value, expirationTime: Infinity }, { ...value, endpoint: 'x'.repeat(4097) }])

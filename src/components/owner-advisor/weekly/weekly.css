@@ -63,13 +63,11 @@
 :is(#c-root, html) .wk .wk-grid > .c-card { display: flex; flex-direction: column; margin: 0; }
 :is(#c-root, html) .wk .wk-grid > .c-card > .c-rows { display: flex; flex-direction: column; flex: 1; }
 :is(#c-root, html) .wk .wk-grid > .c-card > .c-rows > li:last-child { margin-top: auto; }
-:is(#c-root, html) .wk .wk-note { display: flex; gap: var(--b-space-12); margin: 0 0 var(--b-space-12); padding: var(--b-space-12) var(--b-space-16); border-radius: var(--b-radius-small); background: var(--b-amber-50);
-  font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
-:is(#c-root, html) .wk .wk-note > svg { flex: none; width: 18px; height: 18px; margin-top: 1px; color: var(--b-amber); }
+/* Phase 9: the "can't be saved" note is the kit's callout (BCallout, owner-b.css); the deciding column spaces it. */
 
 /* Deciding. */
 :is(#c-root, html) .wk .wk-decide { display: flex; flex-direction: column; gap: var(--b-space-12); }
-:is(#c-root, html) .wk .wk-decide .wk-note, :is(#c-root, html) .wk .wk-decide .wk-acts { margin: 0; }
+:is(#c-root, html) .wk .wk-decide > .b-callout:not(#wk-p6), :is(#c-root, html) .wk .wk-decide .wk-acts { margin: 0; }
 :is(#c-root, html) .wk .wk-ack { display: flex; align-items: center; gap: var(--b-space-12); min-height: 48px; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 500; color: var(--b-ink); cursor: pointer; }
 :is(#c-root, html) .wk .wk-ack input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--b-teal); }
 

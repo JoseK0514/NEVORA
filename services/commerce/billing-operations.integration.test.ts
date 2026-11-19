@@ -1,4 +1,4 @@
-import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
+import {afterEach,beforeEach,describe,expect,it,rs} from '@rstest/core';
 import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
@@ -18,7 +18,7 @@ describe.skipIf(!enabled)('durable billing request and issued-stage custody',()=
   await pool.query(await readFile(new URL('./schema.sql',import.meta.url),'utf8'));store=new CommerceStore(pool,Buffer.alloc(32,47));
   await seed(businessId);
  });
- afterEach(async()=>{vi.restoreAllMocks();await pool?.end();await observer?.end();if(admin){if(name)await dropTestDatabase(admin,name);await admin.end();}});
+ afterEach(async()=>{rs.restoreAllMocks();await pool?.end();await observer?.end();if(admin){if(name)await dropTestDatabase(admin,name);await admin.end();}});
  async function seed(id:string){await pool.query("INSERT INTO commerce.accounts(id,email,profile,verified_at) VALUES($1,$2,$3,clock_timestamp());",[id,id+'@example.invalid',{email:id+'@example.invalid'}]);await pool.query("INSERT INTO commerce.businesses(id,state,employee_count) VALUES($1,'ready',1)",[id]);}
  async function open(operation=randomUUID(),overrides:Partial<Parameters<typeof openBillingOperation>[1]>={}){
   return openBillingOperation(store,{business:await store.business(businessId),operation,action:'checkout',request:{lang:'en'},context:{actor:'a'.repeat(64),assertCurrent:async(client)=>{if(client)await client.query('SELECT 1');}},...overrides});
@@ -63,7 +63,7 @@ describe.skipIf(!enabled)('durable billing request and issued-stage custody',()=
  it('recovers a stage whose result committed even when the caller lost the local commit reply',async()=>{
   const operation=randomUUID(),op=await open(operation);await op.prepareStage('portal',async()=>({customer:'cus_fictional'}));
   const actual=store.transaction.bind(store);let lose=true,creates=0;
-  vi.spyOn(store,'transaction').mockImplementation(async fn=>{
+  rs.spyOn(store,'transaction').mockImplementation(async fn=>{
    const value=await actual(fn);if(lose&&value&&typeof value==='object'&&'url' in value){lose=false;throw Error('Owned local commit reply lost');}return value;
   });
   await expect(op.executeStage('portal',async()=>{creates++;return {url:'https://billing.stripe.com/original'};})).rejects.toThrow('Owned local commit reply lost');
@@ -82,7 +82,7 @@ describe.skipIf(!enabled)('durable billing request and issued-stage custody',()=
   const operation=randomUUID(),op=await open(operation);await op.prepareStage('portal',async()=>({customer:'cus_fictional'}));
   await expect(op.executeStage('portal',async()=>{throw Error('Owned uncertain effect');})).rejects.toThrow('Owned uncertain effect');
   const expires=(await pool.query('SELECT expires_at FROM commerce.billing_operations')).rows[0].expires_at;
-  vi.spyOn(Date,'now').mockReturnValue(expires.getTime()+1);
+  rs.spyOn(Date,'now').mockReturnValue(expires.getTime()+1);
   await expect(op.executeStage('portal',async()=>{throw Error('A late create must never run');})).rejects.toMatchObject({code:'billing_operation_reconciliation_required',status:409});
   await expect(open(randomUUID())).rejects.toMatchObject({code:'billing_operation_pending'});
   expect((await pool.query('SELECT expires_at FROM commerce.billing_operations')).rows[0].expires_at).toEqual(expires);

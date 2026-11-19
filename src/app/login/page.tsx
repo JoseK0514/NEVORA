@@ -5,11 +5,10 @@ import {MOBILE_ACCESS_COPY} from "@/components/mobile-access/copy";
 import {AccessEmployeeIdInput} from "@/components/mobile-access/journey";
 import {AccessCard, AccessOutside} from "@/components/mobile-access/chrome";
 import {CaretDownIcon} from "@phosphor-icons/react/dist/ssr/CaretDown";
-import {WarningCircleIcon} from "@phosphor-icons/react/dist/ssr/WarningCircle";
-import {HourglassMediumIcon} from "@phosphor-icons/react/dist/ssr/HourglassMedium";
-import {CheckCircleIcon} from "@phosphor-icons/react/dist/ssr/CheckCircle";
-import {InfoIcon} from "@phosphor-icons/react/dist/ssr/Info";
+import { BCallout, BEmail } from "@/components/owner-b/b-kit";
+import { SUPPORT_EMAIL } from "@/lib/legal/policies";
 import { getPublicWorkspaceName } from "@/lib/data/workspaces";
+import { noteParts } from "@/components/auth-premium/note-parts";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { login } from "@/app/login/actions";
 import { AUTH_COPY } from "@/lib/auth-copy";
@@ -24,6 +23,18 @@ import { LoginSubmit } from "./login-submit";
 import { readKeptLoginId } from "./kept-id";
 import "./auth-premium.css";
 import "./auth-signature.css";
+
+/* Phase 9 (Nov 18, 2026): the notes at the top of the form are the kit's callout (BCallout): red stops you (WarningCircle,
+ * the glyph the field errors use too), amber waits (HourglassMedium), green is done (Check), teal informs (Info). A short
+ * first sentence is the note's 600 title and the rest is its body, word for word; a one-sentence message (a wrong ID or
+ * password) or a long first sentence (the deletion note) is all body text (noteParts, premium pass FD, Nov 18). */
+/** The support address in a note's body is the note's one teal link and wraps only after "@" (BEmail), as on the policy
+ * pages. The words around it are the message's own. */
+function withEmail(text: string | null) {
+  const at = text ? text.indexOf(SUPPORT_EMAIL) : -1;
+  if (!text || at < 0) return text;
+  return <>{text.slice(0, at)}<a href={`mailto:${SUPPORT_EMAIL}`}><BEmail address={SUPPORT_EMAIL} /></a>{text.slice(at + SUPPORT_EMAIL.length)}</>;
+}
 
 export default async function LoginPage({
   searchParams,
@@ -45,7 +56,21 @@ export default async function LoginPage({
   // RA-5: a session that ended says so, calmly (teal, not red), and sign-in returns to the page the person was on.
   const keptId = params.error ? await readKeptLoginId() : null;
   const ended = params.ended === "1" && !params.error && !params.activated;
-  const greeting = <div className="q-hd q-auth__hd"><Greeting words={t.greeting} className=""/><p>{workspaceName ?? t.workspaceUnavailable}</p></div>;
+  const error = params.error ? noteParts(params.error === "deleting" ? t.loginDeleting : params.error === "replace" ? t.loginReplace : wait ? t.loginBusy : t.loginError) : null;
+  const activated = params.activated ? noteParts(t.activated) : null;
+  const endedNote = ended ? noteParts(returnTo ? t.sessionEndedReturn : t.sessionEnded) : null;
+  // Phase 5 (Nov 17, 2026, PB-036): straight from activation the greeting is "Welcome", not "Welcome back".
+  const greeting = <div className="q-hd q-auth__hd"><Greeting words={t.greeting} className="" first={Boolean(params.activated)}/><p>{workspaceName ?? t.workspaceUnavailable}</p></div>;
+  // Phase 5: what sits under the card (PB-012, PB-009, PB-010). The two links say who each is for; in Spanish one grey
+  // line says the app itself is in English for now; the proof rows are the desktop panel's foot only (Nov 17: phones keep field, field, button).
+  const under = <>
+    <nav className="q-auth__links" aria-label={t.accountHelp}>
+      <Link className={mobile ? "ma-desktop" : undefined} href="/forgot-access">{t.forgotAccess}</Link>
+      <Link href={`/activate${returnQuery}`}>{t.setUpAccount}</Link>
+    </nav>
+    {mobile ? <details id="login-id-help" className="ma-details ma-only"><summary>{mt.idHelp}<CaretDownIcon className="ma-caret" size={16} weight="bold" aria-hidden="true"/></summary><p>{mt.idHelpBody}</p></details> : null}
+    {t.appLanguageNote ? <p className="q-auth__langnote">{t.appLanguageNote}</p> : null}
+  </>;
 
   // Quiet (v4, approved Oct 23): the wordmark and Español, the greeting and the workspace, two fields, Sign in, Face ID,
   // then Forgot password? and Activate account on one line. With mobile Access on, phones show the form on a card
@@ -62,21 +87,24 @@ export default async function LoginPage({
           {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
           {/* Direction B (Nov 8, 2026): the error and the activated notice read at the top of the form card. Red stops you,
             * amber means wait, green is done; each note leads with its icon. */}
-          {params.error ? <p className={`q-error q-auth__alert${wait ? " q-auth__alert--wait" : ""}`} id="login-error" role="alert">{wait ? <HourglassMediumIcon size={20} weight="bold" aria-hidden="true" /> : <WarningCircleIcon size={20} weight="bold" aria-hidden="true" />}<span>{params.error === "deleting" ? t.loginDeleting : params.error === "replace" ? t.loginReplace : wait ? t.loginBusy : t.loginError}</span></p> : null}
-          {params.activated ? <p className="q-help q-auth__alert" role="status"><CheckCircleIcon size={20} weight="bold" aria-hidden="true" /><span>{t.activated}</span></p> : null}
-          {ended ? <p className="q-auth__alert q-auth__alert--info" role="status"><InfoIcon size={20} weight="bold" aria-hidden="true" /><span>{t.sessionEnded}</span></p> : null}
+          {error ? <BCallout tone={wait ? "amber" : "red"} icon={wait ? "wait" : "stop"} id="login-error" role="alert" title={error.title ?? undefined}>{withEmail(error.body)}</BCallout> : null}
+          {activated ? <BCallout tone="green" role="status" title={activated.title ?? undefined}>{activated.body}</BCallout> : null}
+          {endedNote ? <BCallout tone="teal" role="status" title={endedNote.title ?? undefined}>{endedNote.body}</BCallout> : null}
           <PasswordSignInMarker />
           <div className="q-fl">
             <label htmlFor="login-employee-id">{t.employeeId}</label>
             <AccessEmployeeIdInput id="login-employee-id" className="q-in" name="employeeId" placeholder={t.quiet.idPlaceholder}
-              autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={[errorId, "login-employee-id-invalid"].filter(Boolean).join(" ")} required
+              autoComplete="username" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="next" aria-describedby={[errorId, "login-employee-id-invalid", "login-employee-id-help"].filter(Boolean).join(" ")} required
               defaultValue={keptId ?? undefined}
               aria-invalid={fieldsInvalid} data-msg-required={t.invalid.employeeId} />
             <FieldInvalid id="login-employee-id" />
+            {/* Phase 5 (PB-012): what the ID is and who to ask, at every width. Phones with mobile Access keep their own
+              * "Where do I find my Employee ID?" under the card instead. */}
+            <p className={`q-auth__fieldhelp${mobile ? " ma-desktop" : ""}`} id="login-employee-id-help">{t.employeeIdHelp}</p>
           </div>
           <div className="q-fl">
             <label htmlFor="login-password">{t.password}</label>
-            <PasswordInput quiet id="login-password" name="password" placeholder={t.quiet.passwordPlaceholder} autoComplete="current-password"
+            <PasswordInput quiet id="login-password" name="password" autoComplete="current-password" enterKeyHint="go"
               aria-describedby={[errorId, "login-password-invalid"].filter(Boolean).join(" ")} required showLabel={t.showPassword}
               aria-invalid={fieldsInvalid} data-msg-required={t.invalid.password} />
             <FieldInvalid id="login-password" />
@@ -84,15 +112,9 @@ export default async function LoginPage({
           </div>
           <LoginSubmit idle={t.signIn} busy={t.signingIn} className="q-btn" focusPassword={Boolean(params.error || params.activated)} />
         </form>
-        <PasskeySlot t={mobile ? {...t,passkeyPhone:t.passkeyDesktop,passkeyBusyPhone:t.passkeyBusyDesktop,passkeyNotFoundPhone:t.passkeyNotFoundDesktop,passkeyUnavailablePhone:t.passkeyUnavailableDesktop} : t} quiet />
+        <PasskeySlot t={mobile ? {...t,passkeyPhone:t.passkeyDesktop,passkeyBusyPhone:t.passkeyBusyDesktop,passkeyNotFoundPhone:t.passkeyNotFoundDesktop,passkeyUnavailablePhone:t.passkeyUnavailableDesktop} : t} quiet lang={lang} />
       </AccessCard>
-      <AccessOutside mobile={mobile}>
-        <nav className="q-auth__links" aria-label={t.accountHelp}>
-          <Link className={mobile ? "ma-desktop" : undefined} href="/forgot-access">{t.forgotAccess}</Link>
-          <Link href={`/activate${returnQuery}`}>{t.activateAccount}</Link>
-        </nav>
-        {mobile ? <details id="login-id-help" className="ma-details ma-only"><summary>{mt.idHelp}<CaretDownIcon className="ma-caret" size={16} weight="bold" aria-hidden="true"/></summary><p>{mt.idHelpBody}</p></details> : null}
-      </AccessOutside>
+      {mobile ? <AccessOutside mobile>{under}</AccessOutside> : <div className="q-auth__under">{under}</div>}
     </QuietAuthShell>
   );
 }

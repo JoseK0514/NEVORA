@@ -67,11 +67,19 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
   return { data, loading, error, errorCode, reload };
 }
 
+/** Phase 7 (moments): what the receipt itself confirms, for the shared done state. Publishing only queues the statements
+ * (the worker shares them later), so its receipt is "Saved" and never borrows the success mark for "shared". The words
+ * are the existing ones; no payroll sentence is new. */
+export function confirmedTitle(command: { action?: string }): string | null {
+  return command.action === 'PUBLISH' ? null : confirmedMessage(command);
+}
 /** Toast copy for a receipt-confirmed command; never shown before the receipt. */
 function confirmedMessage(command: { action?: string }) {
   switch (command.action) {
     case 'APPROVE': return 'Payroll approved';
-    case 'PUBLISH': return 'Pay statements shared';
+    // Publishing only queues the statements; the worker shares them later. The receipt confirms the save, not the sharing,
+    // so it says "Saved" (decided Nov 17, 2026; the old toast said the statements were already shared).
+    case 'PUBLISH': return 'Saved';
     case 'PAYMENT_EXPORT': return 'Payment file ready';
     default: return 'Saved';
   }
@@ -84,11 +92,15 @@ function confirmedMessage(command: { action?: string }) {
  * After remount, check the receipt first; reconstruction requires the user to
  * re-enter the original command, which the server compares against that ID.
  */
-export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payroll/runs' | '/api/payroll/native-profiles', reload: () => Promise<void>, recoveryScope: string) {
+export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payroll/runs' | '/api/payroll/native-profiles', reload: () => Promise<void>, recoveryScope: string,
+  /** Phase 7 (moments): the screen draws this hook's result inline (`Feedback`), so a confirmed result is said there
+   * once and no toast repeats it. A screen without `Feedback` passes false and keeps the toast. */
+  inlineResult = true) {
   const referenceKey = `nevora-payroll-operation:${recoveryScope}`;
   const [pending, setPending] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [confirmed, setConfirmed] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<PayrollReceipt | null>(null);
   const [error, setError] = useState('');
   const [retryAvailable, setRetryAvailable] = useState(false);
@@ -107,21 +119,21 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
   }, [referenceKey]);
   const check = useCallback(async (id = reference.current) => {
     if (!id || inFlight.current) return;
-    inFlight.current = true; setBusy(true); setError('');
+    inFlight.current = true; setBusy(true); setError(''); setConfirmed(null);
     try {
       const receipt = readReceipt(await payrollRequest(`/api/payroll/receipts?operationId=${encodeURIComponent(id)}`));
       if (receipt && receipt.operationId !== id) throw new Error('The returned receipt does not match this action reference. Check the same reference again.');
       if (receipt && receipt.operationId === id) {
-        setReceipt(receipt); finish(id); setMessage('Saved. Check the status below.'); toast('Saved'); await reload();
+        setReceipt(receipt); finish(id); setMessage('Saved. Check the status below.'); setConfirmed('Saved'); if (!inlineResult) toast('Saved'); await reload();
       } else {
         setUnconfirmed(true);
         setMessage('No receipt is available yet. Check this same reference again; the action has not been confirmed.');
       }
     } catch (failure) {
-      if (failure instanceof PayrollRequestError && [401, 403].includes(failure.status)) { setReceipt(null); finish(id); await reload(); }
+      if (failure instanceof PayrollRequestError && [401, 403].includes(failure.status)) { setReceipt(null); setUnconfirmed(true); await reload(); }
       setError(failure instanceof Error ? failure.message : 'The action reference could not be checked.');
     } finally { inFlight.current = false; setBusy(false); }
-  }, [finish, reload]);
+  }, [finish, reload, inlineResult]);
   useEffect(() => {
     let active = true;
     queueMicrotask(() => {
@@ -135,18 +147,19 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
 
   const dispatch = async (next: Command, reconstructed = false) => {
     if (inFlight.current) return;
-    inFlight.current = true; setBusy(true); setError(''); setMessage(''); setReceipt(null); setRevisionConflict(false); setResuming(false); setUnconfirmed(false);
+    inFlight.current = true; setBusy(true); setError(''); setMessage(''); setConfirmed(null); setReceipt(null); setRevisionConflict(false); setResuming(false); setUnconfirmed(false);
     try {
       const receipt = readReceipt(await payrollRequest(path, next));
       if (!receipt || receipt.operationId !== next.operationId) throw new Error('The action response is unconfirmed. Check its saved reference.');
-      setReceipt(receipt); finish(next.operationId); setMessage('Saved. Check the status below.'); toast(confirmedMessage(next)); await reload();
+      setReceipt(receipt); finish(next.operationId); setMessage('Saved. Check the status below.'); setConfirmed(confirmedTitle(next)); if (!inlineResult) toast(confirmedMessage(next)); await reload();
     } catch (failure) {
       if (failure instanceof PayrollRequestError && (failure.code === 'OPERATION_CONFLICT' || (reconstructed && [400, 409].includes(failure.status)))) {
         command.current = null; setRetryAvailable(false);
         setMessage('This reference remains unconfirmed. Check the original action before reconstructing it again; a recorded reference cannot accept changed details.');
         await reload();
       }
-      else if (failure instanceof PayrollRequestError && [400, 401, 403, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409); finish(next.operationId); await reload(); }
+      else if (failure instanceof PayrollRequestError && [401, 403].includes(failure.status)) { setUnconfirmed(true); setRetryAvailable(true); await reload(); }
+      else if (failure instanceof PayrollRequestError && [400, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409); finish(next.operationId); await reload(); }
       else setRetryAvailable(true);
       setError(failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'The action response was interrupted. Check its reference.');
     } finally { inFlight.current = false; setBusy(false); }
@@ -168,9 +181,9 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
     reference.current = operationId; command.current = next; reconstructedCommand.current = reconstructed; setPending(operationId);
     await dispatch(next, reconstructed);
   };
-  return { pending, busy, message, receipt, error, retryAvailable, revisionConflict, resuming, locked: busy || (!!pending && !resuming),
+  return { pending, busy, message, confirmed, receipt, error, retryAvailable, revisionConflict, resuming, locked: busy || (!!pending && !resuming),
     resumeAvailable: unconfirmed && !retryAvailable && !busy && !resuming,
-    resume: () => { if (unconfirmed && !command.current && !inFlight.current) { setResuming(true); setError(''); setMessage('Re-enter the original action and details below. Submission will reuse this exact reference; changed details cannot replace a recorded action.'); } },
+    resume: () => { if (unconfirmed && !command.current && !inFlight.current) { setResuming(true); setError(''); setConfirmed(null); setMessage('Re-enter the original action and details below. Submission will reuse this exact reference; changed details cannot replace a recorded action.'); } },
     pauseResume: () => setResuming(false),
     submit, check: () => check(), retry: () => command.current ? dispatch(command.current, reconstructedCommand.current) : check() };
 }

@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { createPunchFixture } from '../../src/test/integration/clocker-punch-fixture';
 import { createDisposableFoundationDatabase } from '../../src/test/integration/local-postgres';
 import { ClockerPinError, pinBatch } from '../../src/lib/clocker/pin-authority.server';

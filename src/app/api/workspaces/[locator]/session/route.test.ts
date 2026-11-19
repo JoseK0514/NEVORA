@@ -1,8 +1,8 @@
 // HTTP adapter tests only. Mocked ALLOW does not establish native tenant authority.
-import { beforeEach, expect, it, vi } from 'vitest';
-vi.mock('server-only', () => ({}));
-const mocks = vi.hoisted(() => ({ resolve: vi.fn() }));
-vi.mock('@/lib/auth/portal-request.server', () => ({ resolveSelectedPortalRequest: mocks.resolve }));
+import { beforeEach, expect, it, rs } from '@rstest/core';
+rs.mock('server-only', () => ({}));
+const mocks = rs.hoisted(() => ({ resolve: rs.fn() }));
+rs.mock('@/lib/auth/portal-request.server', () => ({ resolveSelectedPortalRequest: mocks.resolve }));
 import { GET } from './route';
 
 const request = (query = '', headers: Record<string, string> = {}) =>
@@ -12,7 +12,7 @@ const allowed = () => ({ status: 'ALLOW', proof: { kind: 'PORTAL', secret: 'priv
   workspace: { id: 'internal-A', name: 'Fictional A', timeZone: 'America/Puerto_Rico', active: true },
   employment: { id: 'internal-employee-A', firstName: 'Fictional', lastName: 'Employee', role: 'EMPLOYEE', active: true },
   sessionTokenHash: 'private-digest', workspaceIncarnation: 'private-version' });
-beforeEach(() => { vi.resetAllMocks(); mocks.resolve.mockResolvedValue(allowed()); });
+beforeEach(() => { rs.resetAllMocks(); mocks.resolve.mockResolvedValue(allowed()); });
 
 it('returns only the current selected workspace and own safe employment fields', async () => {
   const response = await GET(request(), context());

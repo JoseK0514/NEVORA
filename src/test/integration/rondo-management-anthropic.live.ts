@@ -1,6 +1,6 @@
 /** Explicit fictional evaluation of the real service and canonical database tools.
  * Offline rehearsal is the default. Real model quality is reviewed from captures. */
-import { beforeAll, afterAll, expect, it, vi } from 'vitest';
+import { beforeAll, afterAll, expect, it, rs } from '@rstest/core';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
@@ -32,7 +32,7 @@ const rows: Record<string, unknown>[] = [];
 let ledger: ManagementLedger | undefined;
 let writer: Awaited<ReturnType<typeof openManagementCapture>> | undefined;
 let offlineDispatches = 0;
-const externalDenied = vi.fn(async () => { throw Error('Unowned external request denied'); });
+const externalDenied = rs.fn(async () => { throw Error('Unowned external request denied'); });
 const cases = repair ? ['rondo-diagnostic-scope-en', 'rondo-diagnostic-scope-es'] : ['rondo-evidence-reversal-and-restoration', 'rondo-one-worker-two-sites', 'rondo-missing-policy-is-not-policy', 'rondo-identical-facts-new-preference'];
 const env = () => ({ NEVORA_OWNER_ADVISOR_ENABLED: 'true', NEVORA_OWNER_ADVISOR_DATA_APPROVED: 'true',
   NEVORA_OWNER_ADVISOR_PROVIDER: 'anthropic', NEVORA_OWNER_ADVISOR_API_STYLE: 'anthropic_messages',
@@ -45,10 +45,10 @@ const checkpoint = async () => { await writer?.checkpoint(report()); };
 
 beforeAll(async () => {
   if (process.env.RONDO_MANAGEMENT_EVALUATION && !['fictional-offline', 'fictional-offline-diagnostic-repair', 'fictional-approved-continuation', 'fictional-approved-diagnostic-repair'].includes(process.env.RONDO_MANAGEMENT_EVALUATION)) throw Error('Unknown evaluation mode');
-  vi.stubEnv('NEVORA_PAYROLL_ENABLED', 'false');
-  vi.stubGlobal('fetch', externalDenied);
+  rs.stubEnv('NEVORA_PAYROLL_ENABLED', 'false');
+  rs.stubGlobal('fetch', externalDenied);
   if (!live) {
-    vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-15T12:00:00Z'));
+    rs.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-15T12:00:00Z'));
     await mkdir(dirname(evidencePath), { recursive: true });
     writer = await openManagementCapture(evidencePath, { exclusive: false });
   }
@@ -59,7 +59,7 @@ beforeAll(async () => {
 afterAll(async () => {
   if (live && !writer && rows.length) await writeFile(evidencePath + '.not-admitted-' + randomUUID() + '.json', JSON.stringify(report()) + '\n', { flag: 'wx', mode: 0o600 });
   await checkpoint();
-  vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.unstubAllGlobals();
+  rs.restoreAllMocks(); rs.unstubAllEnvs(); rs.unstubAllGlobals();
   expect(externalDenied).not.toHaveBeenCalled();
 });
 

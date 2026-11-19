@@ -11,6 +11,10 @@ import { currentBrand } from '@/lib/workspace-presentation/current.server';
 import { navigationForRole } from '@/lib/navigation';
 import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import { payrollTabs } from '@/components/payroll/payroll-tabs';
+import { CorpPage } from '@/components/corp/corp';
+import { SheetMarker } from '@/components/team/team-forms';
+import { PayrollImportFlow } from '@/components/payroll-import/import-flow';
+import { workCopy } from '@/components/employee-b/work-copy';
 import './payroll-workflow.css';
 
 /** Every Payroll page (Release 1): the same access check, then one view of the payroll workspace. The review pages are
@@ -33,13 +37,26 @@ export async function PayrollRoute({ view, runId = null }: { view: PayrollView; 
       // A read that fails leaves the notice without its two ways on; it never opens Payroll.
       const navigation = await Promise.all([readOperationalAuthority(proof), currentBrand()])
         .then(([operational, brand]) => navigationForRole('MANAGER', capabilities, { operational, modules: brand.modules })).catch(() => []);
-      const closed = closedPayrollForManager(href => navigation.some(item => item.href === href), ownerNames(owners));
+      // Phase 8 (B #22, #23): a name never breaks across two lines; "or" between two names still may.
+      const closed = closedPayrollForManager(href => navigation.some(item => item.href === href), ownerNames(owners.map(name => name.replace(/ /g, '\u00A0'))));
       return <OwnerOnlyNotice state title="Payroll" reason="Payroll is for Owners" line={closed.line} next={closed.next} also={closed.also} />;
     }
-    return <OwnerOnlyNotice title="Payroll" reason="Payroll is for Owners" help="Owners can give you payroll access." ownersCan="give you payroll access" owners={owners} />;
+    // Phase 8 (review C, row 12): an Employee or Lead gets the same state screen, and their own pay is the way on when
+    // their navigation has Pay (the rule More and the shell use); otherwise the notice names who can help, as before.
+    const navigation = await currentBrand().then(brand => navigationForRole(proof.employee.role, capabilities, { modules: brand.modules })).catch(() => []);
+    if (navigation.some(item => item.href === '/app/my-pay')) {
+      return <OwnerOnlyNotice state title="Payroll" reason="Payroll is for Owners" line={workCopy().payIsInPay} next={{ href: '/app/my-pay', label: workCopy().openPay }} />;
+    }
+    return <OwnerOnlyNotice state title="Payroll" reason="Payroll is for Owners" help="Owners can give you payroll access." ownersCan="give you payroll access" owners={owners} />;
   }
   const workspace = await getWorkspace();
   const recoveryScope = payrollRecoveryScope(workspace.id, proof.employee.id);
+  // U01: importing pay from another payroll system is its own step-by-step page, behind the same access check as every
+  // Payroll page above (a Manager without the grant has already been shown the closed-page card).
+  if (view === 'import') return <CorpPage className="c-addemp c-sheetpage c-pim" labelledBy="payroll-import-title">
+    <SheetMarker />
+    <PayrollImportFlow key={`${recoveryScope}:${runId ?? ''}`} runId={runId} recoveryScope={recoveryScope} actorId={proof.employee.id} />
+  </CorpPage>;
   const current = await currentPayPeriod().catch(() => null);
   // Names for the people a review, fix list or Pay history statement refers to by reference (no pay data; the team list
   // the Owner already sees). Pay history uses them to name each statement's employee from its record, never its file name.

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from 'node:crypto';
 import type { SqlExecutor } from '@/lib/notifications/types';
 import { companyAccessFixture } from '@/test/integration/company-access-fixture';
@@ -12,8 +12,8 @@ const env = { NEVORA_OWNER_ADVISOR_ENABLED: 'true', NEVORA_OWNER_ADVISOR_BUSINES
 const signal = () => new AbortController().signal;
 const call = (value?: unknown, settings: Record<string, string | undefined> = env, ex = f.db.executor) =>
   businessSourceService(f.owner, ex, settings, signal(), value);
-beforeEach(async () => { f = await companyAccessFixture(); vi.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No external requests')); });
-afterEach(async () => { vi.restoreAllMocks(); await f?.db.dispose(); });
+beforeEach(async () => { f = await companyAccessFixture(); rs.spyOn(globalThis, 'fetch').mockRejectedValue(Error('No external requests')); });
+afterEach(async () => { rs.restoreAllMocks(); await f?.db.dispose(); });
 async function draft() {
   return call({ op: 'stage_source_version', requestId: randomUUID(), format: 'JSON', input: fictionalBusinessInput() });
 }
@@ -55,6 +55,26 @@ it('reports an already-shortened database handle instead of inventing observedAt
   expect(handle.readReceiptExpiresAt).toBe(new Date(row.expiry).toISOString());
   expect(Date.parse(handle.readReceiptExpiresAt) - Date.now()).toBeLessThan(45000);
 });
+it('renews the response observation with the original full-read identity at capacity without extending its publication handle', async () => {
+  const staged = await draft();
+  const command = { op: 'read_source_version', requestId: randomUUID(), sourceId: staged.receipt!.sourceId, versionId: staged.receipt!.versionId };
+  const first = await call(command);
+  await f.q("INSERT INTO owner_advisor_business_operations(workspace_id,owner_id,request_id,command_kind,command_hash) SELECT 'workspace-fuel','owner',gen_random_uuid(),'stage_source_version',repeat('b',64) FROM generate_series(1,9998)");
+  const renewed = await call(command);
+  expect(renewed.state).toBe('ready');
+  expect(renewed.version).toEqual(first.version);
+  expect(renewed.receipt).toEqual(first.receipt);
+  expect(renewed.readReceiptId).toBe(first.readReceiptId);
+  expect(renewed.readReceiptExpiresAt).toBe(first.readReceiptExpiresAt);
+  expect(Date.parse(renewed.observedAt)).toBeGreaterThan(Date.parse(first.observedAt));
+  expect(renewed.validForMs).toBeLessThanOrEqual(15000);
+  expect(await f.q('SELECT count(*)::int n FROM owner_advisor_business_operations')).toEqual([{n:10000}]);
+  await expect(call({...command, requestId:randomUUID()})).rejects.toMatchObject({code:'limit'});
+  expect((await call({op:'check_source_operation',requestId:randomUUID(),operationId:staged.receipt!.operationId})).receipt).toEqual(staged.receipt);
+  await f.q("UPDATE owner_advisor_business_read_receipts SET expires_at=clock_timestamp()-interval '1 second' WHERE request_id=$1::uuid",[command.requestId]);
+  await expect(call(command)).rejects.toMatchObject({code:'conflict'});
+  expect(await f.q('SELECT count(*)::int n FROM owner_advisor_business_operations')).toEqual([{n:10000}]);
+});
 it('binds coverage publication to the full-read receipt revision, not its older staged input revision', async () => {
   const staged = await call({ op: 'stage_coverage_map', requestId: randomUUID(), map: { expectedRevision: 0, accounts: [], cells: [] } });
   const full = await call({ op: 'read_coverage_map', requestId: randomUUID(), mapVersionId: staged.receipt!.mapVersionId });
@@ -75,3 +95,31 @@ it('recovers with only the original operation ID and no financial payload when b
   expect(await f.q('SELECT count(*)::int AS n FROM owner_advisor_business_operations')).toEqual([{ n: 1 }]);
 });
 
+
+for(const kind of ['source','map'] as const)for(const change of ['location','draft','final_observation'] as const){
+ it(`${kind} review renewal refuses ${change} drift without replacing its immutable operation or original receipt`,async()=>{
+  const staged=kind==='source'?await draft():await call({op:'stage_coverage_map',requestId:randomUUID(),map:{expectedRevision:0,accounts:[],cells:[]}});
+  const command=kind==='source'?{op:'read_source_version',requestId:randomUUID(),sourceId:staged.receipt!.sourceId,versionId:staged.receipt!.versionId}
+   :{op:'read_coverage_map',requestId:randomUUID(),mapVersionId:staged.receipt!.mapVersionId};
+  const first=await call(command);
+  const original=await f.q('SELECT to_jsonb(r) AS row FROM owner_advisor_business_read_receipts r WHERE request_id=$1::uuid',[command.requestId]);
+  const operation=await f.q('SELECT to_jsonb(o) AS row FROM owner_advisor_business_operations o WHERE request_id=$1::uuid',[command.requestId]);
+  const advanceDraft=async()=>{
+   if(kind==='source'){
+    const input=fictionalBusinessInput();input.source.sourceId=staged.receipt!.sourceId;input.source.expectedRevision=first.receipt!.revision;
+    await call({op:'stage_source_version',requestId:randomUUID(),format:'JSON',input});
+   }else await call({op:'stage_coverage_map',requestId:randomUUID(),map:{expectedRevision:first.receipt!.revision,accounts:[],cells:[]}});
+  };
+  if(change==='location')await f.q("UPDATE locations SET name='Fictional renamed after review' WHERE id='loc-1'");
+  if(change==='draft')await advanceDraft();
+  let changed=false;
+  const ex:SqlExecutor={...f.db.executor,async transaction(statements,incoming){
+   if(change==='final_observation'&&!changed&&statements.some(x=>x.text.startsWith('WITH clock AS MATERIALIZED'))){changed=true;await advanceDraft();}
+   return f.db.executor.transaction(statements,incoming);
+  }};
+  await expect(call(command,env,ex)).rejects.toMatchObject({code:'conflict'});
+  expect(await f.q('SELECT to_jsonb(r) AS row FROM owner_advisor_business_read_receipts r WHERE request_id=$1::uuid',[command.requestId])).toEqual(original);
+  expect(await f.q('SELECT to_jsonb(o) AS row FROM owner_advisor_business_operations o WHERE request_id=$1::uuid',[command.requestId])).toEqual(operation);
+  const fresh=await call({...command,requestId:randomUUID()});expect(fresh.state).toBe('ready');expect(fresh.readReceiptId).not.toBe(first.readReceiptId);
+ });
+}

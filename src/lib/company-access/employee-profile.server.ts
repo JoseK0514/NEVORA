@@ -6,6 +6,9 @@ import type {SessionMutationProof} from '@/lib/shift-changes/types';
 import type {UserRole,Workspace} from '@/lib/domain';
 import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
 import {prepareEmployeeProfileMutation,prepareEmployeeCreationMutation} from '@/lib/data/employees';
+import {getWorkspace} from '@/lib/data/workspaces';
+import {businessDate} from '@/lib/business-time';
+import {employmentDateErrors,parseEmploymentDates,type EmploymentDates} from '@/lib/employment-dates';
 
 import {normalizePhoneNumber} from '@/lib/phone';
 import {readOperationalAuthority,operationalScopeStatements,withOperationalCompany} from './operational-scope.server';
@@ -27,17 +30,26 @@ function profile(v:unknown):CoreProfileInput|null {
   ||(email!==null&&(!text(email,254)||/\s/.test(email)||!/^[^@]+@[^@]+$/.test(email))))return null;
  return {firstName,lastName,phone,email,primaryLocationId,active:v.active,role:v.role as UserRole};
 }
+/** undefined: the command leaves the dates alone; null: malformed (reject the command). */
+function optionalDates(value:unknown):EmploymentDates|undefined|null{return value===undefined?undefined:parseEmploymentDates(value);}
+/** Business-local rules for dates the command carries; `invalid` names each field. */
+function dateRefusal(dates:EmploymentDates,workspace:Workspace):EmployeeCoreAccessResult|null {
+ const errors=employmentDateErrors(dates,businessDate(new Date(),workspace.timeZone));
+ return errors.length?{state:'invalid',fieldErrors:errors.map(e=>({field:e.field,message:e.message,code:'INVALID_EMPLOYMENT_DATE'}))}:null;
+}
 function parseUpdate(value:unknown):EmployeeCoreAccessCommand|null {
- if(!object(value,['operationId','employeeId','expectedEmployeeUpdatedAt','profile'],['managerTransitionScope'])||!uuid(value.operationId)||!text(value.employeeId,128)||!text(value.expectedEmployeeUpdatedAt,100))return null;
+ if(!object(value,['operationId','employeeId','expectedEmployeeUpdatedAt','profile'],['managerTransitionScope','employmentDates'])||!uuid(value.operationId)||!text(value.employeeId,128)||!text(value.expectedEmployeeUpdatedAt,100))return null;
  const p=profile(value.profile);if(!p)return null;
- const base={operationId:value.operationId.toLowerCase(),employeeId:value.employeeId.trim(),expectedEmployeeUpdatedAt:value.expectedEmployeeUpdatedAt,profile:p};
+ const dates=optionalDates(value.employmentDates);if(dates===null)return null;
+ const base:EmployeeCoreAccessCommand={operationId:value.operationId.toLowerCase(),employeeId:value.employeeId.trim(),expectedEmployeeUpdatedAt:value.expectedEmployeeUpdatedAt,profile:p,...(dates?{employmentDates:dates}:{})};
  if(value.managerTransitionScope===undefined)return base;
  const t=value.managerTransitionScope;
  if(!object(t,['expectedScopeRevision','expectedRoleGeneration','scope'])||!revision(t.expectedScopeRevision)||!generation(t.expectedRoleGeneration))return null;
  const scope=parseScopeSelection(t.scope);return scope?{...base,managerTransitionScope:{expectedScopeRevision:t.expectedScopeRevision,expectedRoleGeneration:t.expectedRoleGeneration,scope}}:null;
 }
 export function parseCreateEmployeeWithAccessCommand(value:unknown):CreateEmployeeWithAccessCommand|null {
- if(!object(value,['operationId','employee'],['initialManagerScope'])||!uuid(value.operationId))return null;
+ if(!object(value,['operationId','employee'],['initialManagerScope','employmentDates'])||!uuid(value.operationId))return null;
+ const dates=optionalDates(value.employmentDates);if(dates===null)return null;
  const e=value.employee;
  if(!object(e,['id','firstName','lastName','phone','email','role','primaryLocationId','eligibleLocationIds','positionIds'])||!text(e.id,128))return null;
  const p=profile({firstName:e.firstName,lastName:e.lastName,phone:e.phone,email:e.email,role:e.role,primaryLocationId:e.primaryLocationId,active:true});
@@ -45,7 +57,7 @@ export function parseCreateEmployeeWithAccessCommand(value:unknown):CreateEmploy
  if(!p||!ids(e.eligibleLocationIds)||!ids(e.positionIds))return null;
  const scope=value.initialManagerScope===undefined?undefined:parseScopeSelection(value.initialManagerScope);if(scope===null)return null;
  return {operationId:value.operationId.toLowerCase(),employee:{id:e.id.trim().toUpperCase(),firstName:p.firstName,lastName:p.lastName,phone:p.phone,email:p.email,role:p.role,primaryLocationId:p.primaryLocationId,
-  eligibleLocationIds:[...new Set([p.primaryLocationId,...e.eligibleLocationIds])].sort(),positionIds:[...new Set(e.positionIds)].sort()},...(scope?{initialManagerScope:scope}:{})};
+  eligibleLocationIds:[...new Set([p.primaryLocationId,...e.eligibleLocationIds])].sort(),positionIds:[...new Set(e.positionIds)].sort()},...(scope?{initialManagerScope:scope}:{}),...(dates?{employmentDates:dates}:{})};
 }
 function cleanReceipt(value:unknown):EmployeeCoreAccessReceipt|null {
  if(!value||typeof value!=='object'||Array.isArray(value))return null;
@@ -111,6 +123,9 @@ async function failure(error:unknown,proof:SessionMutationProof,id:string,hash:s
  if(message.includes('employee_profile_stale')||message.includes('company_access_profile_generation_changed'))return {state:'conflict',reason:'employee_changed'};
  if(message.includes('company_access_profile_scope_changed'))return {state:'conflict',reason:'scope_changed'};
  if(message.includes('employee_profile_last_owner'))return invalid('role','Keep at least one active Owner in the company.');
+ // The database repeats two of the date rules (0068); the service normally refuses first.
+ if(message.includes('employees_termination_after_hire'))return invalid('terminationDate','The termination date can’t be before the hire date.','INVALID_EMPLOYMENT_DATE');
+ if(message.includes('employees_birth_date_floor'))return invalid('birthDate','Enter a date of birth in 1900 or later.','INVALID_EMPLOYMENT_DATE');
  if(message.includes('company_access_scope_locations')||message.includes('employee_profile_location_invalid')||message.includes('employee_location_invalid')||message.includes('employee_position_invalid'))return invalid('profile','Choose valid company locations and positions.','CATALOGUE_CHANGED');
  const code=error&&typeof error==='object'&&'code'in error?String(error.code):'';
  if(code==='23505')return invalid('employee','Employee ID or email is already in use.','ID_OR_EMAIL_IN_USE');
@@ -134,7 +149,10 @@ export async function saveEmployeeCoreAccessProfile(proof:SessionMutationProof,v
   if(actor.role==='OWNER'&&transition&&!c.managerTransitionScope)return invalid('scope','Choose Company or selected locations for this Manager transition.');
   if(c.managerTransitionScope&&(!transition||actor.role!=='OWNER'))return invalid('scope','Only an Owner may choose scope for a Manager transition.');
   if(c.managerTransitionScope&&(c.managerTransitionScope.expectedRoleGeneration!==old.roleGeneration||c.managerTransitionScope.expectedScopeRevision!==old.scopeRevision))return {state:'conflict',reason:'scope_changed'};
-  const batch=await prepareEmployeeProfileMutation({employeeId:c.employeeId,expectedUpdatedAt:c.expectedEmployeeUpdatedAt,...c.profile,email:c.profile.email??undefined,actorEmployeeId:proof.employee.id,proof},ex);
+  // Dates follow the same core-profile authority and version guards below; validate them in the business time zone.
+  const workspace=await getWorkspace(ex);
+  if(c.employmentDates){const refused=dateRefusal(c.employmentDates,workspace);if(refused)return refused;}
+  const batch=await prepareEmployeeProfileMutation({employeeId:c.employeeId,expectedUpdatedAt:c.expectedEmployeeUpdatedAt,...c.profile,email:c.profile.email??undefined,...(c.employmentDates?{employmentDates:c.employmentDates}:{}),actorEmployeeId:proof.employee.id,proof},ex,workspace);
   const statements:SqlStatement[]=[{text:'SELECT id FROM workspaces WHERE singleton ORDER BY id FOR NO KEY UPDATE',values:[]},...batch.guards,
    ...operationalScopeStatements(proof,batch.workspace,{kind:'COMPANY'},actor.authority),operationAbsent(batch.workspace.id,proof,c.operationId),
    check('EXISTS(SELECT 1 FROM operational_subject_versions v JOIN employees e ON e.id=v.employee_id WHERE v.workspace_id=$1 AND e.id=$2 AND v.generation::text=$3 AND e.role=$4 AND e.active=$5)',[batch.workspace.id,c.employeeId,old.roleGeneration,old.role,old.active],'company_access_profile_generation_changed'),
@@ -169,7 +187,9 @@ export async function prepareEmployeeWithAccessCreation(proof:SessionMutationPro
  const actor=context?.actor??await readOperationalAuthority(proof,ex);if(actor.state!=='ready'||actor.employeeId!==proof.employee.id||actor.scope?.mode!=='COMPANY')return {state:'unavailable' as const};
  if(c.employee.role==='MANAGER'&&actor.role==='OWNER'&&!c.initialManagerScope)return invalid('scope','Choose Company or selected locations for the new Manager.','MANAGER_SCOPE_REQUIRED');
  if(c.initialManagerScope&&(actor.role!=='OWNER'||c.employee.role!=='MANAGER'))return invalid('scope','Only an Owner may assign a new Manager scope.');
- const batch=await prepareEmployeeCreationMutation({...c.employee,email:c.employee.email??undefined,actorEmployeeId:proof.employee.id,proof},ex,context?.workspace);
+ const workspace=context?.workspace??(c.employmentDates?await getWorkspace(ex):undefined);
+ if(c.employmentDates&&workspace){const refused=dateRefusal(c.employmentDates,workspace);if(refused)return refused;}
+ const batch=await prepareEmployeeCreationMutation({...c.employee,email:c.employee.email??undefined,...(c.employmentDates?{employmentDates:c.employmentDates}:{}),actorEmployeeId:proof.employee.id,proof},ex,workspace);
  const hash=createHash('sha256').update(JSON.stringify({kind:'CREATE',command:c})).digest('hex');
  const statements:SqlStatement[]=[{text:'SELECT id FROM workspaces WHERE singleton ORDER BY id FOR NO KEY UPDATE',values:[]},...batch.guards,
   ...operationalScopeStatements(proof,batch.workspace,{kind:'COMPANY'},actor.authority),operationAbsent(batch.workspace.id,proof,c.operationId),...batch.writes,

@@ -1,5 +1,5 @@
-import {expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import {admitLoginAttempt,clientAddress,LOGIN_LIMITS} from './login-limits.server';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 

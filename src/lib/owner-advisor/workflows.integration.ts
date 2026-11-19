@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from "node:crypto";
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { fictionalProfile } from "@/test/fixtures/shift-changes";
@@ -8,7 +8,7 @@ import { createCoverageRepairShift } from "@/lib/data/schedules";
 import { newRun } from "@/lib/payroll/service";
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
 beforeEach(async () => { f = await companyAccessFixture(); });
-afterEach(async () => { vi.unstubAllEnvs(); await f?.db.dispose(); });
+afterEach(async () => { rs.unstubAllEnvs(); await f?.db.dispose(); });
 const env = { NEVORA_OWNER_ADVISOR_ENABLED: "true" };
 const coverage = { name: "coverage_proposals", args: { date: "2026-10-22" } };
 const period = (language = "en") => ({ name: "attendance_payroll_review", args: { startDate: "2026-10-01", endDate: "2026-10-07", language } });
@@ -75,7 +75,7 @@ it("requires publication approval separately and records the canonical published
   await expect(createCoverageRepairShift({ ...command, publicationConsent: true }, f.db.executor)).rejects.toThrow();
 });
 it("reviews canonical timecards in English/Spanish and never reports financial readiness", async () => {
-  vi.stubEnv("NEVORA_PAYROLL_ENABLED", "false");
+  rs.stubEnv("NEVORA_PAYROLL_ENABLED", "false");
   const en = await inspect(period()); const es = await inspect(period("es"));
   expect(en).toMatchObject({ state: "answered", answer: { periodReview: { language: "en", readiness: "unverified", payroll: { state: "disabled" }, attendance: { state: "ready" } } } });
   expect(es).toMatchObject({ state: "answered", answer: { text: expect.stringContaining("nómina"), periodReview: { language: "es", readiness: "unverified" } } });
@@ -89,7 +89,7 @@ it("reports an open recorded entry with its location, without inferring an end o
   expect(await f.q("SELECT clock_out_at FROM time_entries WHERE id='advisor-time'")).toEqual([{ clock_out_at: null }]);
 });
 it("shows only current run revisions and safe exception categories, including superseded/incomplete runs", async () => {
-  vi.stubEnv("NEVORA_PAYROLL_ENABLED", "true");
+  rs.stubEnv("NEVORA_PAYROLL_ENABLED", "true");
   const id = randomUUID(), correction = randomUUID();
   const original = { ...newRun(id, { startDate: "2026-10-01", endDate: "2026-10-07" }, "2026-10-09"), exceptions: ["SECRET_OLD_REVISION"] };
   await f.q("INSERT INTO payroll_runs(workspace_id,id,start_date,end_date) VALUES('workspace-fuel',$1,'2026-10-01','2026-10-07')", [id]);

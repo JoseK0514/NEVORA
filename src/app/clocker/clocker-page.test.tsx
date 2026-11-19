@@ -1,21 +1,23 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, rs } from '@rstest/core';
 import ClockerPage from './[location]/page';
 import type { Location } from '../../lib/domain';
 
-const state = vi.hoisted(() => ({ failed: false, locations: [] as Location[] }));
-vi.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { throw Error('PIN not configured'); } }));
-vi.mock('@/lib/data/locations', () => ({
+const state = rs.hoisted(() => ({ failed: false, locations: [] as Location[], lang: 'en' as 'en' | 'es' }));
+rs.mock('@/lib/auth-lang.server', () => ({ readAuthLang: async () => state.lang }));
+rs.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { throw Error('PIN not configured'); } }));
+rs.mock('@/lib/data/locations', () => ({
   findActiveLocationByClockerKey: async (key: string) => {
     if (state.failed) throw Error('Location configuration is unavailable.');
     return state.locations.find(location => location.active && location.clockerKey === key) ?? null;
   },
 }));
-vi.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({id:'north',name:'Northside Services',timeZone:'Asia/Tokyo',active:true,createdAt:'2030-10-07T00:00:00Z',updatedAt:'2030-10-07T00:00:00Z'}) }));
-vi.mock('@/components/clocker-setup', () => import('../../components/clocker-setup'));
-vi.mock('next/navigation', () => ({ notFound: () => { throw Error('NOT_FOUND'); } }));
+rs.mock('@/lib/data/workspaces', () => ({ getWorkspace: async () => ({id:'north',name:'Northside Services',timeZone:'Asia/Tokyo',active:true,createdAt:'2030-10-07T00:00:00Z',updatedAt:'2030-10-07T00:00:00Z'}) }));
+
+rs.mock('next/navigation', () => ({ notFound: () => { throw Error('NOT_FOUND'); } }));
 beforeEach(() => {
   state.failed = false;
+  state.lang = 'en';
   state.locations = [{id:'main',workspaceId:'north',name:'Main Office',shortName:'Main',clockerKey:'main-office',active:true},
     {id:'fuel2',workspaceId:'north',name:'FUEL – 2',shortName:'FUEL – 2',clockerKey:'2',active:true},
     {id:'fuel110',workspaceId:'north',name:'FUEL – 110',shortName:'FUEL – 110',clockerKey:'110',active:true}];
@@ -47,4 +49,17 @@ it('returns not-found for inactive and unknown keys', async () => {
 it('keeps a database failure unavailable instead of treating it as not-found', async () => {
   state.failed = true;
   await expect(render('main-office')).rejects.toThrow('Location configuration is unavailable.');
+});
+
+// Phase 6 (RA-13): a tablet with no saved choice starts in the language the page was served in (the browser's
+// Accept-Language on a first visit), so a Spanish tablet opens in Spanish. The choice made on the tablet still leads.
+it('serves the kiosk in the language the tablet asks for', async () => {
+  expect((await render('main-office')).props).toMatchObject({ initialLocale: 'en' });
+  state.lang = 'es';
+  const page = await render('main-office');
+  expect(page.props).toMatchObject({ initialLocale: 'es' });
+  const html = renderToStaticMarkup(page);
+  expect(html).toContain('lang="es"');
+  expect(html).toContain('Configura esta tableta');
+  expect(html).not.toContain('Set up this tablet');
 });

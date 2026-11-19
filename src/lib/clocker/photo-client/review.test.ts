@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {photoReviewStateLabel,readPhotoReviewPage,readPhotoReviewRecord,verifyPhotoRemoval} from './review';
 
 export const record={reference:{deviceId:'fictional-tablet',commandId:'90ef3e34-415b-4513-bb06-6017d35367e3'},employeeName:'Fictional Employee',locationName:'Fictional Location',locationKey:'fictional-location',timeZone:'America/Puerto_Rico',action:'CLOCK_IN',performedAt:'2030-01-01T00:00:00Z',policyVersion:1,profileVersion:1,state:'stored',expiresAt:'2030-01-30T00:00:00Z',hasImage:true,removedAt:null};

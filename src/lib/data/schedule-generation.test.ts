@@ -1,5 +1,5 @@
-import { expect, it, vi } from 'vitest';
-vi.mock('@/lib/db', () => import('../db'));
+import { expect, it, rs } from '@rstest/core';
+
 import { generateWeekDraft, readGenerationSnapshot, type GenerationRequest } from './schedule-generation';
 import type { SqlExecutor } from '../notifications/types';
 import { managementProof } from '../../test/fixtures/management';
@@ -44,8 +44,8 @@ it.each([{
   }
 }])('rejects malformed server scope before any database read: %j', async patch => {
   const executor: SqlExecutor = {
-    query: vi.fn(),
-    transaction: vi.fn()
+    query: rs.fn(),
+    transaction: rs.fn()
   };
   await expect(generateWeekDraft({
     ...request,
@@ -56,13 +56,13 @@ it.each([{
   expect(executor.transaction).not.toHaveBeenCalled();
 });
 it.each([undefined, { ...managementProof('manager'), sessionTokenHash: '' }, managementProof('other')])('rejects absent, malformed or actor-mismatched session proof before reading source', async proof => {
-  const executor: SqlExecutor = { query: vi.fn().mockRejectedValue(new Error('unexpected_database_read')), transaction: vi.fn() };
+  const executor: SqlExecutor = { query: rs.fn().mockRejectedValue(new Error('unexpected_database_read')), transaction: rs.fn() };
   await expect(generateWeekDraft({ ...request, proof } as Parameters<typeof generateWeekDraft>[0], executor)).rejects.toThrow('management_authorization');
   expect(executor.query).not.toHaveBeenCalled();
   expect(executor.transaction).not.toHaveBeenCalled();
 });
 it('snapshot is one authoritative read and missing actor cannot become a solver input', async () => {
-  const query = vi.fn().mockResolvedValue([{
+  const query = rs.fn().mockResolvedValue([{
     source: {
       workspaces: [{
         id: 'fictional',
@@ -74,7 +74,7 @@ it('snapshot is one authoritative read and missing actor cannot become a solver 
   }]);
   const executor: SqlExecutor = {
     query,
-    transaction: vi.fn()
+    transaction: rs.fn()
   };
   await expect(readGenerationSnapshot(request, executor)).rejects.toThrow('active Owner or Manager');
   expect(query).toHaveBeenCalledTimes(1);

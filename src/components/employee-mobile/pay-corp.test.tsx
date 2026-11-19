@@ -1,12 +1,12 @@
-import {beforeEach,describe,expect,it,vi} from 'vitest';
+import {beforeEach,describe,expect,it,rs} from '@rstest/core';
 import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import type {PayrollStatementsResponse} from '@/lib/payroll/contracts';
 import type {PayView} from './pay';
 import {onlyB,withoutB} from '../owner-b/test-support';
 
-const route=vi.hoisted(()=>({search:''}));
-vi.mock('next/navigation',()=>({useSearchParams:()=>new URLSearchParams(route.search)}));
+const route=rs.hoisted(()=>({search:''}));
+rs.mock('next/navigation',()=>({useSearchParams:()=>new URLSearchParams(route.search)}));
 const {CorpPayView}=await import('./pay-corp');
 
 type Statement=PayrollStatementsResponse['statements'][number];
@@ -34,7 +34,7 @@ describe('Employee Pay on the kit (G-E-Pay)',()=>{
   const phone=onlyB(html);expect(text(phone).match(/Your employer pays you\. NEVORA shows your pay statement\./g)).toHaveLength(1);
   expect(phone).toContain('aria-label="Earlier statements"');expect(html).not.toMatch(/See all pay|Earlier pay|Next payday/);
   expect(phone).toMatch(/<span class="b-chip b-chip--teal">Corrected<\/span>/);expect(phone).toContain(`<a class="b-btn b-btn--teal b-btn--full" aria-label="View statement, Thursday, January 24, 2030" href="/app/my-pay?paycheck=${ids.correction}">`);
-  expect(onlyB(render({statements:[history[0]]}))).toContain('<span class="b-chip b-chip--green">Statement ready</span>');
+  expect(onlyB(render({statements:[history[0]]}))).toMatch(/<span class="b-chip b-chip--green" data-icon="check"><svg[^>]*>.*?<\/svg>Statement ready<\/span>/);
  });
  it('names the next scheduled payday from the pay schedule without calling it a payment',()=>{
   const plain=text(render({nextPay:{payday:'2030-02-07',daysUntil:3,period:{startDate:'2030-01-20',endDate:'2030-02-02'}}}));

@@ -5,9 +5,8 @@ import {useState, type MouseEvent, type ReactNode} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {HandCoinsIcon} from '@phosphor-icons/react/dist/ssr/HandCoins';
-import {CalendarXIcon} from '@phosphor-icons/react/dist/ssr/CalendarX';
+import {UserMinusIcon} from '@phosphor-icons/react/dist/ssr/UserMinus';
 import {UserPlusIcon} from '@phosphor-icons/react/dist/ssr/UserPlus';
-import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import './employee-shift-sheet.css';
 import {QuietSheet, SheetCancel} from './quiet/quiet-sheet';
 import {Dotted} from './employee-b/parts';
@@ -64,7 +63,7 @@ export function ShiftSheetRow({shift, href, closeHref, title, detail, initiallyO
         <ul className="q-list" onClick={event => { if ((event.target as HTMLElement).closest('a')) setOpen(false); }}>
           {shift.canSwap ? <li><Link className="q-row q-row--one" href={`/app/exchange/swap?sourceShiftId=${id}`}><span className="q-row__ic" aria-hidden="true"><ArrowsLeftRightIcon weight="bold" className="q-ic"/></span><span className="q-rt"><b>Swap with a teammate</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li> : null}
           {shift.canSwap ? <li><Link className="q-row q-row--one" href={`/app/exchange/swap?sourceShiftId=${id}&mode=cover`}><span className="q-row__ic" aria-hidden="true"><HandCoinsIcon weight="bold" className="q-ic"/></span><span className="q-rt"><b>Offer it for cover</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li> : null}
-          {shift.canReport ? <li><Link className="q-row q-row--one q-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="q-row__ic" aria-hidden="true"><CalendarXIcon weight="bold" className="q-ic"/></span><span className="q-rt"><b>Can’t work this shift</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li> : null}
+          {shift.canReport ? <li><Link className="q-row q-row--one q-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="q-row__ic" aria-hidden="true"><UserMinusIcon weight="bold" className="q-ic"/></span><span className="q-rt"><b>Can’t work this shift</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li> : null}
         </ul>
         <p className="q-help">It stays your shift until a swap completes or your manager approves your request.</p>
       </> : null}
@@ -111,7 +110,7 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
           <ul className="c-card c-rows c-sheet__actions" aria-label="Change this shift" onClick={event => { if ((event.target as HTMLElement).closest('a')) setOpen(false); }}>
             {shift.canSwap ? <li><Link className="c-row c-row--one" href={`/app/exchange/swap?sourceShiftId=${id}`}><span className="c-row__icon" aria-hidden="true"><ArrowsLeftRightIcon className="c-ic" weight="bold"/></span><span className="c-row__main"><span className="c-row__title">Swap with someone</span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
             {shift.canSwap ? <li><Link className="c-row c-row--one" href={`/app/exchange/swap?sourceShiftId=${id}&mode=cover`}><span className="c-row__icon" aria-hidden="true"><UserPlusIcon className="c-ic" weight="bold"/></span><span className="c-row__main"><span className="c-row__title">Offer for cover</span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
-            {shift.canReport ? <li><Link className="c-row c-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="c-row__icon" aria-hidden="true"><ProhibitIcon className="c-ic" weight="bold"/></span><span className="c-row__main"><span className="c-row__title">I can’t work this shift</span><span className="c-row__detail"><span>Tells your manager right away</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
+            {shift.canReport ? <li><Link className="c-row c-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="c-row__icon" aria-hidden="true"><UserMinusIcon className="c-ic" weight="bold"/></span><span className="c-row__main"><span className="c-row__title">I can’t work this shift</span><span className="c-row__detail"><span>Tells your manager right away</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
           </ul>
           {/* Employee desktop (Nov 8, 2026): the panel says what changing it means; shown only there (employee-b-desktop.css). */}
           <p className="c-esheet__note">It stays your shift until a swap completes or your manager approves your request.</p>

@@ -1,30 +1,30 @@
-import {afterEach, expect, it, vi} from 'vitest';
+import {afterEach, expect, it, rs} from '@rstest/core';
 import {staffTaskRequest, sendStaffTaskCommand, readStaffTaskOperation, parseStaffTaskLifetime} from './client';
 import type {StaffTaskCommand} from './types';
 const authority = 'a'.repeat(64), id = '00000000-0000-4000-8000-000000000001';
 const command: StaffTaskCommand = {kind: 'COMPLETE', operationId: id, authority, taskId: id, expectedRevision: 1};
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { rs.unstubAllGlobals(); });
 it('uses only fixed same-origin endpoints with no-store credentials and intent headers', async () => {
-  const fetch = vi.fn().mockResolvedValue(Response.json({state: 'ready'})); vi.stubGlobal('fetch', fetch);
+  const fetch = rs.fn().mockResolvedValue(Response.json({state: 'ready'})); rs.stubGlobal('fetch', fetch);
   await staffTaskRequest('query', authority, {fromDate: '2026-11-11', toDate: '2026-11-17', view: 'MINE', locationId: null});
   expect(fetch).toHaveBeenCalledWith('/api/staff-tasks/query', expect.objectContaining({method: 'POST', credentials: 'same-origin', cache: 'no-store', redirect: 'error', headers: expect.objectContaining({'X-Nevora-Staff-Task': '1', 'X-Nevora-Staff-Task-Authority': authority})}));
   await expect(staffTaskRequest('read', authority, undefined, '../private')).rejects.toThrow();
   expect(fetch).toHaveBeenCalledTimes(1);
 });
 it('preserves committed, conflict and blocked results without automatic retry', async () => {
-  const fetch = vi.fn(); vi.stubGlobal('fetch', fetch);
+  const fetch = rs.fn(); rs.stubGlobal('fetch', fetch);
   for (const result of [{status: 'committed', operationId: id, templateId: id, taskId: id, revision: 2}, {status: 'conflict', reason: 'revision_changed'}, {status: 'blocked', reason: 'access_denied'}]) {
     fetch.mockResolvedValueOnce(Response.json(result)); expect(await sendStaffTaskCommand(command)).toEqual(result);
   }
   expect(fetch).toHaveBeenCalledTimes(3);
 });
 it('treats transport or invalid response loss after mutation dispatch as unknown with the original operation ID', async () => {
-  const fetch = vi.fn().mockRejectedValueOnce(Error('network')).mockResolvedValueOnce(new Response('<html>failed</html>', {status: 502})).mockResolvedValueOnce(Response.json({status: 'committed', operationId: 'other'})); vi.stubGlobal('fetch', fetch);
+  const fetch = rs.fn().mockRejectedValueOnce(Error('network')).mockResolvedValueOnce(new Response('<html>failed</html>', {status: 502})).mockResolvedValueOnce(Response.json({status: 'committed', operationId: 'other'})); rs.stubGlobal('fetch', fetch);
   for (let n = 0; n < 3; n++) expect(await sendStaffTaskCommand(command)).toEqual({status: 'outcome_unknown', operationId: id});
   expect(fetch).toHaveBeenCalledTimes(3);
 });
 it('uses recovery with the same ID and never interprets a failed lookup as a safe retry', async () => {
-  const fetch = vi.fn().mockRejectedValue(Error('network')); vi.stubGlobal('fetch', fetch);
+  const fetch = rs.fn().mockRejectedValue(Error('network')); rs.stubGlobal('fetch', fetch);
   expect(await readStaffTaskOperation(authority, id)).toEqual({status: 'unavailable', reason: 'operation_unavailable'});
   expect(fetch).toHaveBeenCalledWith('/api/staff-tasks/operations/' + id, expect.objectContaining({method: 'GET'}));
 });
@@ -49,7 +49,7 @@ it('rejects incomplete resources and malformed nested task/template/context/hist
   ]) expect(() => parseStaffTaskLifetime(body, String(body.authority))).toThrow();
 });
 it('rejects malformed or wrong-target committed receipts after dispatch without inventing success', async () => {
-  const fetch = vi.fn(); vi.stubGlobal('fetch', fetch);
+  const fetch = rs.fn(); rs.stubGlobal('fetch', fetch);
   const receipt = {status: 'committed', operationId: id, templateId: id, taskId: id, revision: 2};
   for (const body of [
     {...receipt, taskId: '00000000-0000-4000-8000-000000000002'},
@@ -62,7 +62,7 @@ it('rejects malformed or wrong-target committed receipts after dispatch without 
   }
 });
 it('uses fixed POST endpoints for canonical and history continuation without query-string workarounds', async () => {
-  const fetch = vi.fn().mockImplementation(async () => Response.json({state: 'ready'})); vi.stubGlobal('fetch', fetch);
+  const fetch = rs.fn().mockImplementation(async () => Response.json({state: 'ready'})); rs.stubGlobal('fetch', fetch);
   await staffTaskRequest('contextPage', authority, {employeeCursor: 'roster-100', locationCursor: null});
   expect(fetch).toHaveBeenLastCalledWith('/api/staff-tasks/context', expect.objectContaining({method: 'POST'}));
   await staffTaskRequest('history', authority, {taskId: id, beforeCursor: {id, createdAt: '2026-11-11T12:00:00.123456Z'}});

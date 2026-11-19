@@ -5,6 +5,7 @@ import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple'
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CorpNav,CorpTitle} from './corp/corp';
+import {BState} from './owner-b/b-kit';
 import './payroll/payroll-corp.css';
 import {neutralProfile,parseExportProfile,type ExportProfile} from '@/lib/payroll-export/model';
 import {type TimecardItem} from '@/lib/timecards/read-model';
@@ -20,6 +21,8 @@ import {stableExportJson} from '@/lib/payroll-export/json';
 import {selectVisibleFinalized,changeExportSelection} from '@/lib/payroll-export/selection';
 import {PayrollExportMapping} from './payroll-export-mapping';
 import {PayrollTabs,type PayrollTab} from './payroll/payroll-tabs';
+import {payrollImportCopy} from './payroll-import/copy';
+const FILES_READY='Files ready. Download the CSV and its time record.';
 function download(text:string,type:string,name:string){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 type ProfileCommand={operationId:string;id:string;expectedRevision:number;profile:ExportProfile};
 function payrollSourceKey(cards:readonly TimecardItem[],profiles:readonly SavedExportProfile[]){
@@ -148,7 +151,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
     if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}
     setNotice(body?.state==='already_generated'?'This time record and CSV have already been exported. Use your original downloaded files. No new export was created.':'The timecards or the file format changed. Refresh and check again.');return;
    }
-   if(!response.ok)throw new Error();const verified=await verifyExportReply(await response.json(),command);if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}setResult(verified);setRetry(null);setNotice('Files ready. Download the CSV and its time record.');}catch{if(current===generation.current.value)setNotice('We couldn’t confirm the export. Try again; it won’t create a second file.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
+   if(!response.ok)throw new Error();const verified=await verifyExportReply(await response.json(),command);if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}setResult(verified);setRetry(null);setNotice(FILES_READY);}catch{if(current===generation.current.value)setNotice('We couldn’t confirm the export. Try again; it won’t create a second file.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
  };
  const save=async()=>{
   if(!currentActor){clearProtected.current('Export access ended',true);return;}
@@ -210,7 +213,10 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
     {weeks.map(w=><option key={w.value} value={w.value}>{w.label}</option>)}
    </select>
   </div>
-  {notice?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
+  {/* Phase 7 (moments): the verified export is the shared done state; every other notice (not confirmed, already
+    * exported, out of date) keeps the plain callout and never the success mark. Same words, split at the period. */}
+  {result&&notice===FILES_READY?<div className="b-done-host b-done-host--card"><BState kind="done" title="Files ready" line="Download the CSV and its time record."/></div>
+   :notice?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
   {/* R5: section labels sit above their cards. */}
   <section className="c-pay__group" aria-labelledby="time-export-send">
    <div className="c-sec-label c-pay__sec"><h2 id="time-export-send">{profiles.length?'Send to':'File'}</h2></div>
@@ -245,6 +251,8 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
   {ready?<section className="c-pay__group" aria-labelledby="time-export-options">
    <div className="c-sec-label c-pay__sec"><h2 id="time-export-options">Options</h2></div>
    <div className="c-card">
+   {/* U01: the way into the paid time export (every recorded break decided, sent in batches), for the dates shown. */}
+   <a className="c-row c-exp__item c-exp__paid" href={`/app/payroll-export/paid-time?start=${period.startDate}&end=${period.endDate}`}><span className="c-row__main"><span className="c-row__title">{payrollImportCopy.en.exp.entry.title}</span><span className="c-row__detail"><span>{payrollImportCopy.en.exp.entry.line}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></a>
    <details className="c-exp__item" open={selected.length>0||undefined}>
     <summary className="c-row"><span className="c-row__main"><span className="c-row__title">People in this export</span><span className="c-row__detail"><span>{`${selected.length} selected · ${visibleSelection.excluded} not finalized.${visibleSelection.overLimit?' Select up to 100 people at a time.':''}`}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
     <div className="c-exp__body">

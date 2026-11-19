@@ -1,33 +1,34 @@
+import * as rstestOriginal0 from "@/components/schedule-copy-form" with { rstest: 'importActual' };
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, rs } from '@rstest/core';
 import ScheduleTemplatesPage from "./page";
 
-const access=vi.hoisted(()=>({denied:false}));
-vi.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
-const f = vi.hoisted(() => ({
-  requireRoles: vi.fn(), requireProof: vi.fn(), list: vi.fn(), copy: vi.fn(),
+const access=rs.hoisted(()=>({denied:false}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+const f = rs.hoisted(() => ({
+  requireRoles: rs.fn(), requireProof: rs.fn(), list: rs.fn(), copy: rs.fn(),
   proof: { employee: { id: "manager", role: "MANAGER" }, sessionTokenHash: "a".repeat(64) },
   templates: [{ id: "pattern-1", name: "Regular week", shiftCount: 12, createdAt: "2026-10-01" }],
 }));
-vi.mock("next/link", () => ({ default: ({ children, ...props }: ComponentProps<"a">) => createElement("a", props, children), useLinkStatus: () => ({ pending: false }) }));
-vi.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["MANAGER", "OWNER"], requireRoles: f.requireRoles }));
-vi.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: f.requireProof }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }), unstable_rethrow: () => {} }));
-vi.mock("@/components/schedule-copy-form", async importOriginal => {
-  const original = await importOriginal<typeof import("@/components/schedule-copy-form")>();
+rs.mock("next/link", () => ({ default: ({ children, ...props }: ComponentProps<"a">) => createElement("a", props, children), useLinkStatus: () => ({ pending: false }) }));
+rs.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["MANAGER", "OWNER"], requireRoles: f.requireRoles }));
+rs.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: f.requireProof }));
+rs.mock("next/navigation", () => ({ useRouter: () => ({ push: rs.fn(), refresh: rs.fn() }), unstable_rethrow: () => {} }));
+rs.mock("@/components/schedule-copy-form",  () => {
+  const original = rstestOriginal0;
   return { ScheduleCopyForm: (props: ComponentProps<typeof original.ScheduleCopyForm>) => {
     f.copy(props);
     return createElement(original.ScheduleCopyForm, props);
   } };
 });
-vi.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ timeZone: "America/Puerto_Rico" }) }));
-vi.mock("@/lib/data/schedule-templates", () => ({ listScheduleTemplates: f.list }));
-vi.mock("./actions", () => ({ saveTemplateAction: vi.fn(), applyTemplateAction: vi.fn(), archiveTemplateAction: vi.fn() }));
+rs.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ timeZone: "America/Puerto_Rico" }) }));
+rs.mock("@/lib/data/schedule-templates", () => ({ listScheduleTemplates: f.list }));
+rs.mock("./actions", () => ({ saveTemplateAction: rs.fn(), applyTemplateAction: rs.fn(), archiveTemplateAction: rs.fn() }));
 
 beforeEach(() => {
   access.denied=false;
-  vi.useRealTimers();
+  rs.useRealTimers();
   f.requireRoles.mockReset().mockResolvedValue({ id: "manager" });
   f.requireProof.mockReset().mockResolvedValue(f.proof);
   f.copy.mockReset();
@@ -64,10 +65,10 @@ describe("schedule template workflow presentation", () => {
     expect(output).toContain('Oct 12 – 18');
   });
   it.each(["2026-10-13", "2030-02-30", "<script>", ""])("uses workspace-local current week for invalid input %s", async week => {
-    vi.useFakeTimers(); vi.setSystemTime(new Date("2026-10-12T02:30:00Z"));
+    rs.useFakeTimers(); rs.setSystemTime(new Date("2026-10-12T02:30:00Z"));
     const output = await html(Promise.resolve({ week }));
     expect(output).toContain('name="weekStart" value="2026-10-05"');
-    vi.useRealTimers();
+    rs.useRealTimers();
   });
   it("retains complete long names and escapes template content", async () => {
     f.templates = [{ id: "unsafe", name: "<script>alert('name')</script> & Operations", shiftCount: 1, createdAt: "2026-10-01" }];
@@ -99,7 +100,7 @@ describe("schedule template workflow presentation", () => {
   });
 });
 
-it('does not load templates or expose copy commands when company source is denied',async()=>{access.denied=true;const output=await html();expect(f.list).not.toHaveBeenCalled();expect(f.copy).not.toHaveBeenCalled();expect(output).toContain('Schedule templates unavailable');});
+it('does not load templates or expose copy commands when company source is denied',async()=>{access.denied=true;const output=await html();expect(f.list).not.toHaveBeenCalled();expect(f.copy).not.toHaveBeenCalled();expect(output).toContain('<h1>Schedule templates</h1>');});
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
-vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));

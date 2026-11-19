@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 
 // SY-012 / UI-6 (Nov 15, 2026): DESIGN.MD "Current direction" draws every Phosphor icon bold. An icon with no weight
 // draws regular, and the `dist/ssr` icons used across the app do not read IconContext, so the weight has to be on the

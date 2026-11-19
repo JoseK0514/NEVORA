@@ -1,4 +1,5 @@
-import {describe, expect, it} from 'vitest';
+import {reviewFacts} from './review-facts';
+import {describe, expect, it} from '@rstest/core';
 import {ATTENDANCE_WORDS, correctionLine, groupHeading, presentItem, spacedRanges, splitNoClockIn} from './present';
 import type {ActionItem} from './project';
 
@@ -38,10 +39,15 @@ describe('presented action items (Phase 7)', () => {
     const added = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Time correction waiting for review', detail: 'Sofía Méndez · Recorded entry not sent yet.'}), 'Review correction');
     expect(added.title).toBe('Sofía Méndez');
     expect(added.detail).toBe('Add unrecorded time');
-    // The reviewer's own request keeps its title: it needs someone else.
-    const own = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Your correction needs another reviewer', detail: 'Jose Natal · Recorded time correction.', dateTime: '2026-11-10'}), 'Review correction');
-    expect(own.title).toBe('Your correction needs another reviewer');
+    // Phase 4 (U03): "yours" is the server's typed concernsActor. The English title alone never makes it yours.
+    const titled = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Your correction needs another reviewer', detail: 'Jose Natal · Recorded time correction.', dateTime: '2026-11-10'}), 'Review correction');
+    expect(titled.title).toBe('Jose Natal');
+    const own = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Corrección pendiente', detail: 'Jose Natal · Recorded time correction.', dateTime: '2026-11-10', review: reviewFacts(true, true, 'TIME_CORRECTION')}), 'Review correction');
+    expect(own.title).toBe('Your time correction');
     expect(plain(own.detail)).toBe('Time correction · sent Nov 10');
+    // A correction sent for someone else (a delegated requester) needs another reviewer, but it is still theirs.
+    const delegated = presentItem(item({type: 'TIME_CORRECTION', category: 'timekeeping', priority: 'REVIEW', title: 'Your correction needs another reviewer', detail: 'Ana Ruiz · Recorded time correction.', review: reviewFacts(false, true, 'TIME_CORRECTION')}), 'Review correction');
+    expect(delegated.title).toBe('Ana Ruiz');
     expect(`${fix.title} ${fix.detail} ${added.title} ${added.detail}`).not.toMatch(/Recorded time correction|not sent yet|\.$/);
   });
   it('keeps Jose’s attendance words apart: a shift in progress is not clocked in, an ended one is missed', () => {

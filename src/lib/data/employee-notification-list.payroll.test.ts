@@ -1,5 +1,5 @@
-import {afterEach,expect,it,vi} from 'vitest';
-vi.mock('server-only',()=>({}));
+import {afterEach,expect,it,rs} from '@rstest/core';
+rs.mock('server-only',()=>({}));
 import {notificationReadManifest} from './employee-notification-list.server';
 import {readPortalNotificationList} from './portal-notification-list.server';
 import {payrollNoticeReadSql} from '../payroll/notices';
@@ -10,10 +10,10 @@ import type {SqlExecutor,SqlStatement} from '../notifications/types';
 
 // Transport contract fixture: actual canonical source check and protected replay
 // run unchanged. These returned facts do not certify Finance's SQL predicate.
-afterEach(()=>vi.unstubAllEnvs());
+afterEach(()=>{ rs.unstubAllEnvs(); });
 type Mode='normal'|'source-lost'|'version-changed'|'authority-lost'|'foreign'|'new-candidate'|'missing-read'|'source-failed';
 async function read(role:'EMPLOYEE'|'LEAD'|'MANAGER'|'OWNER',mode:Mode='normal',count=1,readAt:string|null=null,kind='PAYROLL_STATEMENT') {
- vi.stubEnv('NEVORA_PAYROLL_ENABLED','true');
+ rs.stubEnv('NEVORA_PAYROLL_ENABLED','true');
  const now=new Date().toISOString(),past=new Date(Date.now()-1000).toISOString(),future=new Date(Date.now()+86400000).toISOString();
  const proof={employee:{id:'self',role},sessionTokenHash:'a'.repeat(64)} as SessionMutationProof;
  const workspace={id:'workspace',name:'Fictional',active:true,timeZone:'America/Puerto_Rico',createdAt:past,updatedAt:past};

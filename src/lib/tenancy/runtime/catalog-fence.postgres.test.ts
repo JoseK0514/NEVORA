@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, rs } from '@rstest/core';
 import { Client } from 'pg';
 import { appendFileSync, lstatSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -7,7 +7,7 @@ import { RUNTIME_CATALOG_SHARED_FENCE_SQL, INSTALLER_CATALOG_EXCLUSIVE_FENCE_SQL
 
 // Match existing server-only test handling; SQL, clients and locks are real when
 // root explicitly invokes the owned fixture. This mocks only the build marker.
-vi.mock('server-only', () => ({}));
+rs.mock('server-only', () => ({}));
 const sourcePath = resolve('src/lib/tenancy/runtime/catalog-fence.server.ts');
 
 const expectedSourceSHA256 = '2244d516b56bb7b4bbb76b47699971ed71c8ec0aebdeee6b8031692d2c1d0a2f';

@@ -264,7 +264,7 @@ try {
     await employeePage.goto(app.url + '/app?view=attendance#review', { waitUntil: 'networkidle' });
     // Corporate UI: the review lives on Who's working behind "Time corrections". None of it may render for
     // an Employee, even with the deep link that opens the review.
-    assert.equal(await employeePage.getByText('Today’s clock-ins', { exact: true }).count(), 0);
+    assert.equal(await employeePage.getByRole('heading', { name: /^Today’s clock-ins(?:\s*\d+ to review)?$/, exact: true }).count(), 0);
     assert.equal(await employeePage.locator('.attendance-review, .c-who, #who-title').count(), 0);
     assert.equal(await employeePage.getByText('Time corrections', { exact: true }).count(), 0);
     checked(engine + ': Employee cannot enter Manager attendance surface');
@@ -318,8 +318,8 @@ try {
     assert.doesNotMatch((await page.locator('.c-who .c-title__sub').first().innerText()).trim(), /\d{1,2}:\d{2}/, 'The subtitle is the day, without the read time');
     assert.equal(await page.locator('.attendance-review').count(), 0, 'review stays collapsed until opened');
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
-    await page.getByRole('button', { name: 'Clock-ins to check, collapsed', exact: true }).click();
-    await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
+    await page.getByRole('button', { name: /^Clock-ins to check(?:, [^,]+)*, collapsed$/, exact: true }).click();
+    await page.getByRole('heading', { name: /^Today’s clock-ins(?:\s*\d+ to review)?$/, exact: true }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     checked(engine + ': attendance review opens from Who’s working');
     // Same-document fragment change only: later reloads and remounts keep the review open through #review.
@@ -372,7 +372,7 @@ try {
     await page.getByRole('button', { name: 'Refresh attendance review' }).click();
     // The review rows carry the refreshed labels. The configured-policies panel above them reads location
     // names from its own endpoint (?policies=1, not intercepted here), so it rightly still says "Main Office".
-    const reviewRows = page.locator('.attendance-review-list');
+    const reviewRows = page.getByRole('list', {name: 'Clock-ins to review', exact: true});
     await reviewRows.getByText('Renamed Main Office', { exact: true }).waitFor();
     assert.equal(await reviewRows.getByText('Main Office', { exact: true }).count(), 0);
     checked(engine + ': refreshed server labels replace stale page-load labels');
@@ -424,7 +424,7 @@ try {
     fixture = { status: 200, payload: fixtureReady() };
     await page.bringToFront();
     await page.reload({ waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
+    await page.getByRole('heading', { name: /^Today’s clock-ins(?:\s*\d+ to review)?$/, exact: true }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     await page.waitForFunction(() => document.hasFocus() && document.visibilityState === 'visible');
     let offlineReads = 0;

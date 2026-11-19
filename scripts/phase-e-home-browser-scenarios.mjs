@@ -1,4 +1,4 @@
-import {waitForPortalReady} from './browser-render-readiness.mjs';
+import {waitForPortalReady,waitForControlPaint} from './browser-render-readiness.mjs';
 import {measureRenderedContrast} from './browser-contrast.mjs';
 import {fulfillHeldResponse} from './browser-held-response.mjs';
 import {safeLoginServerRequests,safeEvaluationFailure} from './release-browser-diagnostics.mjs';
@@ -53,7 +53,7 @@ export async function waitForRecordedTimeReady(page, expectedState){
   const time=document.querySelector('.c-hours[data-hours-view="records"]');
   if(!time||time.getAttribute('data-hours-state')!=='ready'||time.getAttribute('aria-busy')!=='false')return false;
   const b=time.querySelector('#b-hours-now');
-  if(b?.getClientRects().length){const pill=b.querySelector('.b-card__h .b-chip')?.textContent;return b.querySelector('h2')?.textContent==='Right now'&&pill===(expected==='OFF_CLOCK'?'Not clocked in':status.pill)?{state:expected,view:'time',settled:true}:false;}
+  if(b?.getClientRects().length){const pill=b.querySelector('.b-card__h :is(.b-chip,.b-status)')?.textContent;return b.querySelector('h2')?.textContent==='Right now'&&pill===(expected==='OFF_CLOCK'?'Not clocked in':status.pill)?{state:expected,view:'time',settled:true}:false;}
   const card=time.querySelector('#hours-now');if(!card)return false;
   const label=card.querySelector('.c-card__label')?.textContent??null,pill=card.querySelector('.c-card__aside .c-pill')?.textContent??null;
   if(label!==status.label||pill!==status.pill)return false;
@@ -96,7 +96,13 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const todoName=()=>todo().evaluate(card=>{const title=document.getElementById(card.getAttribute('aria-labelledby')??'')?.cloneNode(true);title?.querySelector('.b-pill')?.remove();return card.getAttribute('aria-label')??title?.textContent??null;});
  const todoTitle=()=>todo().locator(':is(#employee-home-todo-label,#b-home-todo-h)');
  const rowLimit=width>=1024?5:3;
- const overflowCount=async expected=>{const badge=todo().locator('#b-home-todo-h .b-pill');if(await badge.count())assert.equal(await badge.textContent(),String(expected));else assert.equal((await seeAll().textContent()).trim(),`See all ${expected}`);};
+ const overflowCount=async (expected,read)=>{const badge=todo().locator('#b-home-todo-h .b-pill');if(await badge.count()){
+  // Task completeness belongs to the canonical read, including publication coverage. A known row count is a lower
+  // bound when those facts are partial or absent; require the qualification instead of accepting either label.
+  const exact=read.tasks?.state==='complete'&&read.tasks.counts!==null;
+  if(read.tasks?.state==='partial')assert.equal(read.tasks.counts,null,'Partial task facts cannot claim an exact total');
+  assert.equal((await badge.textContent()).replace(/\s+/g,' ').trim(),exact?String(expected):`At least ${expected}`);
+ }else assert.equal((await seeAll().textContent()).trim(),`See all ${expected}`);};
  const seeAll=()=>todo().getByRole('link',{name:/^(See all \d+|See all notifications)$/});
  const items=()=>todo().locator('li > :is(a.c-row,a.b-row):visible, li > .b-row > a.b-row__hit:visible').filter({hasNotText:/^See all \d+$/});
  const allSet=()=>page.getByText('You’re all set. Nothing needs you right now.',{exact:true}).filter({visible:true});
@@ -212,7 +218,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await next().getByText('On shift now',{exact:true}).filter({visible:true}).waitFor();
  assert.equal(homeResponse.state,'partial');assert.equal(homeResponse.allSet,false);assert.equal(homeResponse.snapshot.sources.communications.state,'complete');assert.equal(homeResponse.snapshot.nextShift.shiftId,scenario.sourceId);assert.equal(homeResponse.snapshot.currentShift.shiftId,label+'-ongoing');
  assert.equal(await page.getByRole('heading',{level:1}).count(),1);assert.equal(await page.getByRole('heading',{level:1,name:'Welcome back, QA '+label,exact:true}).count(),1);assert.equal(homeResponse.snapshot.publicationState,'partial');assert.equal(await page.locator('[data-home-state="ready"]').count(),1,'complete source reads are ready while the publication note explains unpublished locations');
- const publicationNote=page.locator('.employee-home :is(.c-note,.b-note,.eb-cardnote):visible').filter({hasText:/published this week yet\. Shifts shown are published\.$/});assert(await publicationNote.isVisible());assert(await next().evaluate((card,note)=>!!(card.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING),await publicationNote.elementHandle()),'The publication note follows the shift card');assert.equal(await allSet().count(),0);
+ const publicationNote=page.locator('.employee-home :is(.c-note,.b-note,.eb-cardnote):visible').filter({hasText:/published this week yet\./});assert(await publicationNote.isVisible());const publicationCopy=(await publicationNote.innerText()).replace(/\s+/g,' ');assert(publicationCopy.includes('Your '+homeResponse.snapshot.currentShift.locationLabel+' shifts are published.'));for(const waiting of homeResponse.snapshot.unpublishedLocations)assert(publicationCopy.includes(waiting+' hasn’t published this week yet.'));assert(await next().evaluate((card,note)=>!!(card.compareDocumentPosition(note)&Node.DOCUMENT_POSITION_FOLLOWING),await publicationNote.elementHandle()),'The publication note follows the shift card');assert.equal(await allSet().count(),0);
  assert.equal(await page.getByText('Some Home sections could not be fully checked. Counts show known items. Refresh Home below to check again.',{exact:true}).count(),0,'an unpublished location is explained by publication state, not a failed read');
  assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('On shift now',{exact:true}).filter({visible:true}).isVisible());assert.equal(await assignments().count(),1);
  const hierarchy=await page.locator(HOME_SHIFT_CARD+',:is(#employee-home-todo,#b-home-todo):visible').evaluateAll(es=>({tops:es.map(e=>e.getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
@@ -224,7 +230,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   const expected=actionHrefs(homeResponse);
   assert(await todo().isVisible());assert.equal(await todoName(),'Things to do');assert.equal(await todoTitle().count(),1,'One thing to do is its own card; several share the Things to do header');
   assert.deepEqual(await shownHrefs(),expected.slice(0,rowLimit));assert.equal(await seeAll().count(),expected.length>3?1:0);
-  if(expected.length>3){assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(expected.length);}
+  if(expected.length>3){assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(expected.length,homeResponse);}
   details.homeDisclosures.push({kind:'actions',rows:expected.length,hasOverflow:expected.length>3,seeAll:expected.length>3});
  }
  for(const item of homeResponse.snapshot.attention.filter(item=>!item.required&&!item.actionable))assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0,'Informational updates are read in Notifications');
@@ -306,7 +312,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   assert.deepEqual(actionRows.filter(href=>!overflowPublished.some(published=>href==='/app/updates/'+published.result.id)),overflowEvidence.baseline.hrefs.actions);
   for(const published of overflowPublished){const canonical=actual.snapshot.attention.filter(item=>item.ref.kind==='COMMUNICATION'&&item.ref.id===published.result.id);assert.equal(canonical.length,1);assert.equal(canonical[0].required,true);assert.equal(canonical[0].ref.version,published.result.version);assert.equal(canonical[0].href,'/app/updates/'+published.result.id);}
   assert.deepEqual(await shownHrefs(),actionRows.slice(0,rowLimit));assert.equal(await todoName(),'Things to do');assert.equal(await todoName(),'Things to do');
-  assert.equal(await seeAll().count(),1);assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(actionRows.length);
+  assert.equal(await seeAll().count(),1);assert.equal(await seeAll().getAttribute('href'),'/app/notifications');await overflowCount(actionRows.length,actual);
   assert.equal(await items().count(),rowLimit);assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);assert.equal(await allSet().count(),0);assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE COMPLETE CONTENT'));
   await shot('actions-overflow');
   overflowEvidence.phase='native-keyboard';
@@ -322,6 +328,11 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   overflowEvidence.phase='notifications-list';
   // The Employee messages reader and visible Notifications title are current at every width.
   await page.waitForFunction(()=>document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready');await page.getByRole('heading',{name:'Notifications',exact:true,level:1}).waitFor();
+  // Delivered Notifications folds related notices. Opening a group must expose
+  // every member; verify the same canonical IDs after using its actual control.
+  const notificationFolds=page.locator('main button.eb-fold[aria-expanded="false"]:visible');
+  overflowEvidence.notificationGroupsOpened=await notificationFolds.count();
+  while(await notificationFolds.count())await notificationFolds.first().click();
   overflowEvidence.notificationRows=await page.locator('main :is(a.em-notif-row,a.eb-notif):visible').evaluateAll(rows=>rows.map(row=>row.id));page.off('response',notificationRead);
   overflowEvidence.notificationRowsSql=await q("SELECT id,source_kind,due_at<=clock_timestamp() AS due,expires_at>clock_timestamp() AS current,environment,cancelled_at IS NULL AS active FROM notifications WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 30",[actor]);
   const notices=[];
@@ -350,7 +361,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='keyboard';await page.locator('h1:visible').click();const link=assignments().first(),tab=nativeTab;let reached=false;
  for(let i=0;i<55;i++){await page.keyboard.press(tab);if(await link.evaluate(e=>e===document.activeElement)){reached=true;break;}}
  assert(reached);assert(await link.evaluate(e=>e.matches(':focus-visible')));details.linkTarget=await link.evaluate(measurePointerTarget,44);assert(details.linkTarget.meetsMinimum,'Shift details must retain a real44px pointer target: '+JSON.stringify(details.linkTarget));
- const measureContrast=()=>link.evaluate(measureRenderedContrast);details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
+ const measureContrast=async()=>{await waitForControlPaint(link);return link.evaluate(measureRenderedContrast);};details.linkContrast={focus:await measureContrast()};await link.evaluate(e=>e.blur());await page.mouse.move(0,0);details.linkContrast.normal=await measureContrast();await link.hover();details.linkContrast.hover=await measureContrast();await page.mouse.down();details.linkContrast.pressed=await measureContrast();await page.mouse.move(0,0);await page.mouse.up();for(const value of Object.values(details.linkContrast))assert(value.ratio>=4.5);await link.focus();
  // Re-anchored clock recovery: Home has no clock panel, so its keyboard route to recorded time is the Time tab.
  // Phones: the tab bar follows main (forward Tab). Wider layouts: the sidebar precedes main (reverse Tab).
  const myTime=navLink('/app/my-time');const timeKey=await page.locator('.mobile-nav').isVisible()?tab:nativeBackTab;await page.locator('h1:visible').click();let clockFocus=false;

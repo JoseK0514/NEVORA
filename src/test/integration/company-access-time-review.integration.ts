@@ -1,4 +1,4 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {Client} from 'pg';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
@@ -8,10 +8,10 @@ import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/compan
 import {mutateTimecard,readTimecards} from '../../lib/timecards/service';
 import {submitTimeCorrection,reviewTimeCorrection} from '../../lib/time-corrections/service';
 import {correctionAuthority} from '../../lib/time-corrections/authority.server';
-const ctx=vi.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
-vi.mock('server-only',()=>({}));
-vi.mock('@/lib/auth/session',()=>({getSession:async()=>ctx.proof?.employee??null,requireSessionMutationProof:async()=>ctx.proof}));
-vi.mock('@/lib/db',()=>{
+const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
+rs.mock('server-only',()=>({}));
+rs.mock('@/lib/auth/session',()=>({getSession:async()=>ctx.proof?.employee??null,requireSessionMutationProof:async()=>ctx.proof}));
+rs.mock('@/lib/db',()=>{
  const statement=(text:string,values:readonly unknown[]=[])=>({statement:{text,values},then:(yes:(rows:unknown[])=>unknown,no:(error:unknown)=>unknown)=>ctx.ex!.query({text,values}).then(yes,no)});
  const tagged=Object.assign((strings:TemplateStringsArray,...values:unknown[])=>statement(strings.reduce((text,part,i)=>text+(i?'$'+i:'')+part,''),values),{query:statement,transaction:(queries:{statement:SqlStatement}[])=>ctx.ex!.transaction(queries.map(q=>q.statement))});return {getDb:()=>tagged,queryRows:(rows:unknown)=>rows};
 });
@@ -35,7 +35,7 @@ async function setup(){const f=await companyAccessFixture();ctx.ex=f.db.executor
  const view=await readTimecards(f.manager,period,f.db.executor);if(view.state!=='ready')throw Error('Expected canonical source');const card=view.cards.find(c=>c.card.employeeId==='review-private-b')!;
  return {...f,timecard:{...period,operationId:randomUUID(),employeeId:'review-private-b',expectedRevision:card.revision,expectedSourceHash:card.sourceHash,action:'APPROVE' as const},correction:{operationId:randomUUID(),requestId:pending.requestId,expectedRevision:pending.revision,decision:'APPROVE' as const}};
  }catch(error){await f.db.dispose();throw error;}}
-async function close(f:Fixture){ctx.ex=null;ctx.proof=null;vi.unstubAllEnvs();await f.db.dispose();}
+async function close(f:Fixture){ctx.ex=null;ctx.proof=null;rs.unstubAllEnvs();await f.db.dispose();}
 const cases=[
  {name:'timecard approval',call:'nevora_timecard_command',run:(f:Fixture,p:SessionMutationProof,ex:SqlExecutor)=>mutateTimecard(p,f.timecard,ex)},
  {name:'correction review',call:'nevora_review_time_correction',run:(f:Fixture,p:SessionMutationProof,ex:SqlExecutor)=>reviewTimeCorrection(p,f.correction,ex)},
@@ -73,7 +73,7 @@ it.each(['revoked','role cycle','unassigned'] as const)('both time-review protoc
 });
 it.each(['timecard','correction'] as const)('actual %s review API cannot bypass Company using valid B commands and intent bindings',async kind=>{
  const f=await setup();try{
-  await choose(f,'LOCATIONS');vi.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');const before=await snapshot(f);
+  await choose(f,'LOCATIONS');rs.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');const before=await snapshot(f);
   const request=(path:string,body:unknown,header:string)=>new Request('http://127.0.0.1'+path,{method:'POST',headers:{[header]:'1','x-nevora-actor':'manager','x-nevora-correction-authority':correctionAuthority(f.manager),'content-type':'application/json',origin:'http://127.0.0.1'},body:JSON.stringify(body)});
   const response=kind==='timecard'?await timecardPOST(request('/api/manager/timecards',f.timecard,'x-nevora-timecards')):await correctionPOST(request('/api/manager/time-corrections',f.correction,'x-nevora-time-correction'));
   expect(response.status).toBe(503);expect(await response.json()).toEqual(kind==='timecard'?{status:'unavailable'}:{state:'unavailable'});expect(await snapshot(f)).toEqual(before);
@@ -91,7 +91,7 @@ it.each(cases)('$name expires after actual business writes and its final DB-cloc
 });
 it.each(['timecard','correction'] as const)('actual %s review API permits current Company and replays the same committed receipt',async kind=>{
  const f=await setup();try{
-  vi.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');
+  rs.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');
   const send=()=>{const request=new Request('http://127.0.0.1'+(kind==='timecard'?'/api/manager/timecards':'/api/manager/time-corrections'),{method:'POST',headers:{[kind==='timecard'?'x-nevora-timecards':'x-nevora-time-correction']:'1','x-nevora-actor':'manager','x-nevora-correction-authority':correctionAuthority(f.manager),'content-type':'application/json',origin:'http://127.0.0.1'},body:JSON.stringify(kind==='timecard'?f.timecard:f.correction)});return kind==='timecard'?timecardPOST(request):correctionPOST(request);};
   const first=await send();expect(first.status).toBe(200);const body=await first.json();expect(body[kind==='timecard'?'status':'state']).toBe('approved');expect(first.headers.get('cache-control')).toContain('no-store');const committed=await snapshot(f);
   const replay=await send();expect(replay.status).toBe(200);expect(await replay.json()).toEqual(body);expect(await snapshot(f)).toEqual(committed);

@@ -1,6 +1,10 @@
 import type {CoverageMinutes,MinuteObligation} from '@/lib/scheduling/coverage-minutes';
 import {minutesText} from '@/lib/time-off-staffing/present';
 import './coverage-minutes.css';
+import {reviewCopy} from '@/components/review-details/copy';
+import {Explain} from '@/components/review-details/explain';
+import {BSegs} from '@/components/owner-b/b-kit';
+const t=reviewCopy();
 
 /* Coverage from canonical schedule health (Nov 9, 2026): required minutes covered, weighted by how many people,
  * positions and leads each period needs (calculateScheduleHealth's coverageMinutes). Staffing, positions and lead are
@@ -18,7 +22,7 @@ const detail=(value:MinuteObligation|null,none:string)=>!value?'':value.required
 export function CoverageFigures({coverage,label='Coverage this week',variant='b'}:{coverage:CoverageMinutes|null|undefined;label?:string;variant?:'b'|'glass'}){
  if(!coverage)return null;
  if(coverage.state==='not_configured')return <div className={`cov cov--${variant}`} role="group" aria-label={label}>
-  <span className="cov__k">{label}</span><span className="cov__none">Not set up</span>
+  <span className="cov__k">{label}</span><span className="cov__none">{t.noNeeds}</span><Explain text={t.staffingExplain} label={t.explain} compact/>
  </div>;
  const rows:[string,MinuteObligation,string][]=[['Staffing',coverage.staffing,'Nothing required'],['Positions',coverage.positions,'No positions required'],['Lead',coverage.lead,'No lead required']];
  // Review B2 (NV-108): an obligation nobody set up (nothing required) isn't a tile with a big dash; it folds into one grey
@@ -33,6 +37,9 @@ export function CoverageFigures({coverage,label='Coverage this week',variant='b'
   {folded.length?<p className="cov__none-line">{`${folded.length===2?'Positions and leads aren’t':folded[0]==='positions'?'Positions aren’t':'Leads aren’t'} required`}</p>:null}
   {/* Closing F1 (NV-126): on a phone's band the tiles become one line ("Staffing 57% · 192 h of 336 h", then Positions and
     Lead only when required), so the day's shifts come up the screen; coverage-minutes.css swaps them under 768px. */}
-  {variant==='glass'?<p className="cov__line c-num">{shown.map(([name,value],index)=>index===0?`${name} ${percentText(value)}${value.required?` · ${detail(value,'')}`:''}`:`${name} ${percentText(value)}`).join(' · ')}</p>:null}
+  {/* Premium pass FA (final verification A #11): the line wraps between its facts, never under the explainer beside it. */}
+  {variant==='glass'?<p className="cov__line c-num"><BSegs parts={shown.flatMap(([name,value],index)=>index===0?[`${name} ${percentText(value)}`,value.required?detail(value,''):null]:[`${name} ${percentText(value)}`])}/></p>:null}
+  {/* Phase 4 (U09): what the figures measure, one line, opened from the control beside them. */}
+  <Explain text={t.staffingExplain} label={t.explain} compact/>
  </div>;
 }

@@ -1,16 +1,23 @@
 import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {expect, it, vi} from 'vitest';
+import {expect, it, rs} from '@rstest/core';
 import type {ActionCenter, ActionItem} from '../lib/action-center/project';
 import {reviewFacts} from '../lib/action-center/review-facts';
 import type {Today, TodayShift} from '../lib/today/project';
 import {onlyB} from './owner-b/test-support';
 
-vi.mock('next/link', () => ({default: ({children, prefetch: _prefetch, ...props}: ComponentProps<'a'> & {prefetch?: boolean}) => createElement('a', props, children)}));
+rs.mock('next/link', () => ({default: ({children, prefetch: _prefetch, ...props}: ComponentProps<'a'> & {prefetch?: boolean}) => createElement('a', props, children)}));
 const {ThingsToDoPage} = await import('./manager-inbox-corp');
 
 const item = (id: string, type: ActionItem['type'], category: ActionItem['category'], priority: ActionItem['priority'] = 'REVIEW', extra: Partial<ActionItem> = {}): ActionItem =>
-  ({id, type, category, priority, title: `Title ${id}`, detail: `Detail ${id}`, href: '/app/requests?tab=pending&requestId=r1', ...extra} as ActionItem);
+  ({id, type, category, priority, title: `Title ${id}`, detail: `Detail ${id}`, href: '/app/requests?tab=pending&requestId=r1', ...typedReview(type, extra), ...extra} as ActionItem);
+/** Phase 4 (U03): every timecard the server sends carries typed review facts (its own period, and whether this person
+ * may review it). A fixture without them would be an older payload, which is never counted. */
+const typedReview = (type: string, extra: Partial<ActionItem>) => {
+  if (type !== 'TIMECARD' || extra.review) return {};
+  const url = new URL(extra.href ?? '/app/timecards', 'https://nevora.invalid');
+  return {review: reviewFacts(false, false, 'TIMECARD', {startDate: url.searchParams.get('start') ?? '2026-10-12', endDate: url.searchParams.get('end') ?? '2026-10-18'})};
+};
 const ready = (items: ActionItem[], limitedAttendance = false): ActionCenter => ({
   state: 'ready', observedAt: '2026-10-16T14:30:00Z', validForMs: 30000, weekStart: '2026-10-12', items, limitedAttendance,
   counts: {total: items.length, scheduling: 0, requests: 0, timekeeping: 0},
@@ -27,8 +34,8 @@ const items = [
   item('EXCHANGE:e1', 'EXCHANGE', 'requests'),
   item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT', {title: 'Position not covered at Condado', detail: '2026-10-16 · 1:00 PM–3:00 PM · Barista: 1 open', dateTime: '2026-10-16T13:00', href: '/app/schedule?shift=gap'}),
   item('fix1', 'TIME_CORRECTION', 'timekeeping', 'REVIEW', {href: '/app/timecards?correction=fix1', review:reviewFacts(false,false,'TIME_CORRECTION')}),
-  item('card1', 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: 'Marco Silva · Oct 12 – 18 · Fix recorded-time issues before finalizing.', href: '/app/timecards#timecard-e1'}),
-  item('card2', 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: 'Priya Lal · Oct 12 – 18 · Fix recorded-time issues before finalizing.', href: '/app/timecards#timecard-e2'}),
+  item('card1', 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: 'Marco Silva · Oct 5 – 11 · Fix recorded-time issues before finalizing.', href: '/app/timecards#timecard-e1', review: reviewFacts(false, false, 'TIMECARD', {startDate: '2026-10-05', endDate: '2026-10-11'})}),
+  item('card2', 'TIMECARD', 'timekeeping', 'REVIEW', {title: 'Period timecard needs review', detail: 'Priya Lal · Oct 5 – 11 · Fix recorded-time issues before finalizing.', href: '/app/timecards#timecard-e2', review: reviewFacts(false, false, 'TIMECARD', {startDate: '2026-10-05', endDate: '2026-10-11'})}),
   item('target1', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT', {href: '/app/schedule/settings#target-hours'}),
   item('target2', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT', {href: '/app/schedule/settings#target-hours'}),
 ];
@@ -47,7 +54,7 @@ it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at mo
   expect(html).toContain(count('Not clocked in', 1));
   expect(html).not.toContain('Missed clock-ins');
   expect(html).toContain(count('Time off', 1));
-  expect(html).toContain(count('Shift swaps', 1));
+  expect(html).toContain(count('Shift requests', 1));
   expect(html).not.toMatch(/\(\d+\)</);
   expect(html).not.toContain('c-badge');
   const order = ['todo-card-open', 'todo-open', 'todo-review', 'todo-not-clocked-in', 'todo-card-requests', 'todo-time-off', 'todo-swaps', 'todo-more'].map(id => html.indexOf(`id="${id}"`));
@@ -130,7 +137,7 @@ it('reads an open shift and a pay period the way the board does', () => {
   // Review B2 (NV-002): timecards that wait are on Things to do now (Waiting for review), not on Later and done.
   const html = page({snapshot: ready(items)});
   // Timecards: one row per period, naming whose cards wait; it opens Time.
-  expect(html).toMatch(/<a class="c-row" href="\/app\/timecards" aria-label="Timecards to approve, Oct 12 – 18: Marco, Priya">/);
+  expect(html).toMatch(/<a class="c-row" href="\/app\/timecards" aria-label="Timecards to approve, Oct 5 – 11, pay period ended: Marco, Priya">/);
   // Nov 14, 2026 inspection (BR-7): the row says how many cards it holds, then whose.
   expect(html).toContain('<span>2\u00a0timecards · Marco, Priya</span>');
 });
@@ -204,7 +211,8 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
   expect(html).toMatch(/class="b-btn b-btn--ghost"[^>]*>Find cover<\/a>/);
   expect(html).toContain('<input type="hidden" name="requestId" value="r1"/><input type="hidden" name="returnTo" value="inbox"/><input type="hidden" name="returnFilter" value="all"/>');
   // Review B1 (NV-125): Decline first asks once (Keep or Decline); the confirming Decline posts the same DENIED review.
-  expect(html).toContain('type="button" aria-label="Decline time off for Ana Colon">Decline</button>');
+  // Phase 7 (package C): the label sits in the busy stack (its busy words share the cell, hidden), so the pill keeps its width.
+  expect(html).toContain('type="button" aria-label="Decline time off for Ana Colon"><span class="b-busy"><span class="b-busy__idle">Decline</span><span class="b-busy__on" data-b-off="" aria-hidden="true"><span class="b-spin-slot" aria-hidden="true"></span>Declining…</span></span></button>');
   // Nov 9, 2026 (leave staffing): the row offers Approve only after its published-shift check comes back clear; with no
   // check here (no browser read), its teal button is Review, the request's page that shows the overlapping shifts first.
   expect(html).not.toContain('aria-label="Approve time off for Ana Colon"');
@@ -214,10 +222,11 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
   expect(html).not.toContain('b-btn--teal');
   // Jose's attendance words (Nov 11, 2026): a running shift is "Not clocked in", with how long ago it started.
   expect(html).toContain('id="b-todo-not-clocked-in-h">Not clocked in<span class="b-pill">1</span>');
-  expect(html).toContain('>Started 2 h 30 min ago<');
+  // Phase 8 (a.md #11): the chip reads as Team's does.
+  expect(html).toContain('>Not clocked in · 2 h 30 min<');
   expect(html).not.toContain('Missed clock-ins');
   // AR-9: Availability sits with the request lists.
-  expect(html).toMatch(/href="\/app\/availability"[^>]*>.*Availability.*Who can work, and when/);
+  expect(html).toMatch(/href="\/app\/availability"[^>]*>.*Availability.*Who can work and when/);
 });
 
 it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count is what can be decided today, and what is not open is one closed card', () => {
@@ -229,33 +238,40 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
     {...card('c4', 'Elena Ruiz', '2026-10-05', '2026-10-11', 'Oct 5 – 11',true), title: 'Your timecard needs another reviewer'},
     item('CALLOUT:k1', 'CALLOUT', 'requests', 'REVIEW', {title: 'Callout', detail: 'Luis Torres is waiting for review.', request: {startDate: '2026-10-20', endDate: '2026-10-20', partialDay: {start: '09:00', end: '17:00'}, lengthText: '8 h', locationName: 'Condado', reviewHref: '/app/exchange?tab=requests&requestId=k1'}} as Partial<ActionItem>)])})).replace(/\u00a0/g, ' ');
   // The correction's title is the person; the line under it says what they asked for and the day it was sent.
-  expect(html).toMatch(/<span class="b-row__tt">James Ortiz<\/span><\/span><span class="b-row__s">Time correction · sent Oct 10</);
+  expect(html).toMatch(/<span class="b-row__tt">James Ortiz<\/span><\/span><span class="b-row__s"><span class="b-segs"><span class="b-segs__i">Time correction<\/span><span class="b-segs__i"><span class="b-sr"> · <\/span>sent Oct 10</);
   expect(html).not.toContain('Recorded time correction');
   expect(html).not.toContain('asked for a time correction');
-  // A swap names both people in its title; a can't-work request says the day, over the shift's time and place.
+  // A swap names both people in its title; a can't-work request's title is the person (Phase 8, a.md #13), over the
+  // day, the shift's time and its place.
   expect(html).toContain('>Ana Colon ⇄ James Ortiz<');
   expect(html).toContain('with James Ortiz"');
-  expect(html).toContain('>Luis Torres can’t work Tue, Oct 20<');
-  expect(html).toContain('>9:00 AM – 5:00 PM · Condado<');
+  expect(html).toContain('>Luis Torres<');
+  expect(html).not.toContain('can’t work Tue');
+  expect(html.replace(/\u2060/g, '').replace(/<[^>]+>/g, '')).toContain('Tue, Oct 20 · 9:00 AM – 5:00 PM · Condado');
   // Both end with the tinted Review pill, as time off does.
   expect(html.match(/class="b-btn b-btn--ghost"[^>]*>Review</g)).toHaveLength(2);
-  // One glyph and tone per kind: swaps, can't work and corrections wait on you (amber); timecards are teal; not open is grey.
-  expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(3);
-  expect(html.match(/b-ico b-ico--teal/g)).toHaveLength(1);
+  // One glyph and tone per kind: swaps, can't work, corrections and timecards that can be approved wait on you (amber,
+  // Phase 8 a.md #43); not open is grey.
+  expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(4);
+  // Phase 9 (spec 3.2): only the four shortcut rows under the list are teal; they open pages.
+  expect(html.match(/b-ico b-ico--teal/g)).toHaveLength(4);
+  expect(html.slice(html.indexOf('id="b-todo-more"')).match(/b-ico b-ico--teal/g)).toHaveLength(4);
   // Timecards whose period has ended can be approved: the reviewer's own card is left out and the line says so.
-  expect(html).toContain('1 of 2 timecards · Avery');
+  expect(html.replace(/<[^>]+>/g, '')).toContain('1 of 2 timecards · Avery');
   expect(html).not.toContain('Elena');
-  expect(html).toMatch(/Oct 5 – 11<\/span><span class="b-chip b-chip--grey">Pay period ended</);
+  // Phase 9 (spec 3.1): the period's state is the expected one, so it is quiet grey words, not a grey chip.
+  expect(html).toMatch(/Oct 5 – 11<\/span><span class="b-status">Pay period ended</);
   expect(html).toMatch(/id="b-todo-waiting-timecards-h">Timecards to approve<span class="b-pill">1</);
   // A period still open is one closed card at the bottom (Jose, Nov 15, 2026: "Pay period still open"): its line says the
   // day approval opens, the row says how many and whose; no count pill, no "waiting" suffix.
   expect(html).toMatch(/id="b-todo-closed-timecards-h">Pay period still open<\/h2><\/div><p class="b-card__note">You can approve these from Mon, Oct 19.<\/p>/);
-  expect(html).toContain('>2 timecards · Blair, Casey<');
+  expect(html.replace(/<[^>]+>/g, '')).toContain('2 timecards · Blair, Casey');
   expect(html).not.toContain('Not open yet');
   expect(html).not.toContain('· waiting');
   expect(html.indexOf('b-todo-closed-timecards')).toBeGreaterThan(html.indexOf('b-todo-waiting-timecards'));
   // The band counts the two requests and the correction; the tabs add up to it; the timecards to approve are named after it.
-  expect(html).toContain('<p class="b-sub">3 things need you · 1 timecard to approve<span');
+  // Final regression review: the band's line is the kit's facts line (BSegs); the dot belongs to the second fact.
+  expect(html).toContain('<p class="b-sub"><span class="b-segs"><span class="b-segs__i">3 things need you</span><span class="b-segs__i"><span class="b-sr"> · </span>1 timecard to approve</span></span><span');
   expect(html).toContain('aria-label="All, 3"');
   expect(html).toContain('aria-label="Time, 1"');
   expect(html).toContain('aria-label="Requests, 2"');

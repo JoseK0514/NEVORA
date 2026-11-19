@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it} from '@rstest/core';
 import {adpRunColumns,adpRunPaidColumns,canonicalPayrollExport,decimalHours,mappedPayrollCsv,neutralProfile,parseExportProfile,type ExportProfile} from './model';
 const model={version:1 as const,workspaceId:'W',timeZone:'America/Puerto_Rico',period:{startDate:'2026-09-21',endDate:'2026-09-27'},timeBasis:'RECORDED_ELAPSED_INCLUDING_BREAKS' as const,rows:[{employeeId:'E',employeeName:'José',revision:2,sourceHash:'a'.repeat(32),finalizationOperationId:'11111111-1111-4111-8111-111111111111',recordedNanoseconds:'28800000000000',breakNanoseconds:'1800000000000',entries:[]}]};
 describe('D6 canonical model and verified configurable adapters',()=>{

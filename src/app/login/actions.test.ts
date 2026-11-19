@@ -1,24 +1,25 @@
-import { beforeEach, expect, it, vi } from 'vitest';
-const state = vi.hoisted(() => ({ replacement: vi.fn(), envelope: vi.fn(), allowed: vi.fn(async () => true), create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn(), deletion: vi.fn(), admit: vi.fn(), release: vi.fn(), forwarded: null as string | null, jar: new Map<string, { value: string; options: Record<string, unknown> }>() }));
-vi.mock('@/lib/auth/login-limits', () => ({ passwordLoginAllowed: state.allowed }));
-vi.mock('next/headers', () => ({ headers: async () => new Headers(state.forwarded ? { 'x-forwarded-for': state.forwarded } : {}),
+import * as rstestOriginal0 from "../../lib/auth/login-limits.server" with { rstest: 'importActual' };
+import { beforeEach, expect, it, rs } from '@rstest/core';
+const state = rs.hoisted(() => ({ replacement: rs.fn(), envelope: rs.fn(), allowed: rs.fn(async () => true), create: rs.fn(), destroy: rs.fn(), prepare: rs.fn(), credential: rs.fn(), activation: rs.fn(), verify: rs.fn(), activate: rs.fn(), deletion: rs.fn(), admit: rs.fn(), release: rs.fn(), forwarded: null as string | null, jar: new Map<string, { value: string; options: Record<string, unknown> }>() }));
+rs.mock('@/lib/auth/login-limits', () => ({ passwordLoginAllowed: state.allowed }));
+rs.mock('next/headers', () => ({ headers: async () => new Headers(state.forwarded ? { 'x-forwarded-for': state.forwarded } : {}),
   cookies: async () => ({ get: (name: string) => state.jar.get(name), set: (name: string, value: string, options: Record<string, unknown>) => { if (options.maxAge === 0) state.jar.delete(name); else state.jar.set(name, { value, options }); } }) }));
-vi.mock('@/lib/auth/login-limits.server', async () => ({ ...(await import('../../lib/auth/login-limits.server')), admitLogin: async (id: string, address: string | null) => ({ admitted: await state.admit(id, address), addressBucket: 1977 }), releaseLoginAddress: state.release }));
-vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
-vi.mock('@/lib/auth/session', () => ({ createSession: state.create, destroySession: state.destroy }));
-vi.mock('@/lib/data/employees', () => ({ findEmployeeCredential: state.credential, getEmployeeActivationState: state.activation, activateEmployeeCredential: state.activate }));
-vi.mock('@/lib/auth/password', () => ({ verifyPassword: state.verify, hashPassword: async () => 'fictional-hash', dummyPasswordHash: async () => 'fictional-dummy-hash' }));
-vi.mock('@/lib/notifications/destinations', () => import('../../lib/notifications/destinations'));
-vi.mock('@/lib/notifications/logout', () => ({ prepareInstallationForLogin: state.prepare }));
-vi.mock('@/lib/phone', () => import('../../lib/phone'));
-vi.mock('@/lib/account-deletion/requests.server', () => ({ activeDeletionRequest: state.deletion }));
-vi.mock('@/lib/auth/recovery.server', () => ({issueInitialPasswordReplacement:state.replacement}));
-vi.mock('@/lib/workspace-routing/token-envelope.server', () => ({publicWorkspaceToken:state.envelope}));
+rs.mock('@/lib/auth/login-limits.server',  () => ({ ...(rstestOriginal0), admitLogin: async (id: string, address: string | null) => ({ admitted: await state.admit(id, address), addressBucket: 1977 }), releaseLoginAddress: state.release }));
+rs.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
+rs.mock('@/lib/auth/session', () => ({ createSession: state.create, destroySession: state.destroy }));
+rs.mock('@/lib/data/employees', () => ({ findEmployeeCredential: state.credential, getEmployeeActivationState: state.activation, activateEmployeeCredential: state.activate }));
+rs.mock('@/lib/auth/password', () => ({ verifyPassword: state.verify, hashPassword: async () => 'fictional-hash', dummyPasswordHash: async () => 'fictional-dummy-hash' }));
+
+rs.mock('@/lib/notifications/logout', () => ({ prepareInstallationForLogin: state.prepare }));
+
+rs.mock('@/lib/account-deletion/requests.server', () => ({ activeDeletionRequest: state.deletion }));
+rs.mock('@/lib/auth/recovery.server', () => ({issueInitialPasswordReplacement:state.replacement}));
+rs.mock('@/lib/workspace-routing/token-envelope.server', () => ({publicWorkspaceToken:state.envelope}));
 import { login, logout } from './actions';
 import { activateAccountAction } from '../activate/actions';
 function form(returnTo?: string) { const f = new FormData(); f.set('employeeId', ' employee '); f.set('password', 'test-password'); f.set('confirmPassword', 'test-password'); f.set('phone', '7875550123'); if (returnTo)
     f.set('returnTo', returnTo); return f; }
-beforeEach(() => { vi.clearAllMocks(); state.jar.clear(); state.allowed.mockResolvedValue(true); state.deletion.mockResolvedValue(null); state.admit.mockResolvedValue(true); state.forwarded = null; state.activation.mockResolvedValue(null); state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: true, password_hash: 'fictional', updated_at:'2030-01-01 00:00:00.123456+00', password_updated_at:'2030-01-01 00:00:00.234567+00' }); state.verify.mockResolvedValue(true); state.activate.mockResolvedValue(true); state.prepare.mockResolvedValue({ state: 'complete' }); });
+beforeEach(() => { rs.clearAllMocks(); state.jar.clear(); state.allowed.mockResolvedValue(true); state.deletion.mockResolvedValue(null); state.admit.mockResolvedValue(true); state.forwarded = null; state.activation.mockResolvedValue(null); state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: true, password_hash: 'fictional', updated_at:'2030-01-01 00:00:00.123456+00', password_updated_at:'2030-01-01 00:00:00.234567+00' }); state.verify.mockResolvedValue(true); state.activate.mockResolvedValue(true); state.prepare.mockResolvedValue({ state: 'complete' }); });
 it('login_defaults_and_permissions_remain_unchanged', async () => { await expect(login(form())).rejects.toThrow('redirect:/app'); expect(state.create).toHaveBeenCalledWith('EMPLOYEE',await state.credential()); state.credential.mockResolvedValue(null); await expect(login(form('/app/requests?tab=my'))).rejects.toThrow('redirect:/login?error=invalid'); });
 it('a shared login rate denial cannot create a password session', async () => {
   state.allowed.mockResolvedValueOnce(false);
@@ -57,12 +58,12 @@ it('a failed attempt keeps the Employee ID as typed for the form, never the pass
   await expect(login(long)).rejects.toThrow('redirect:/login?error=invalid'); expect(kept()).toBeUndefined();
 });
 it('javascript_disabled_native_signout_exits_after_cleanup_rejection', async () => { state.destroy.mockRejectedValue(new Error('storage failure')); await expect(logout()).rejects.toThrow('redirect:/login'); });
-vi.mock('@/components/brand-mark', () => ({ BrandMark: () => null, BrandWordmark: () => null }));
-vi.mock('@/components/brand-lockup', () => ({ BrandLockup: () => null }));
-vi.mock('@/components/brand-legal', () => ({ BrandLegal: () => null }));
-vi.mock('@/components/phone-input', () => ({ PhoneInput: () => null }));
-vi.mock('@/app/login/actions', () => import('./actions'));
-vi.mock('@/app/activate/actions', () => import('../activate/actions'));
+rs.mock('@/components/brand-mark', () => ({ BrandMark: () => null, BrandWordmark: () => null }));
+rs.mock('@/components/brand-lockup', () => ({ BrandLockup: () => null }));
+rs.mock('@/components/brand-legal', () => ({ BrandLegal: () => null }));
+rs.mock('@/components/phone-input', () => ({ PhoneInput: () => null }));
+
+
 function hiddenReturns(node: unknown): unknown[] {
     if (Array.isArray(node))
         return node.flatMap(hiddenReturns);
@@ -118,7 +119,7 @@ it.each([
 });
 
 // Public identity is an external database read, independent of return-to validation.
-vi.mock('@/lib/data/workspaces', () => ({getPublicWorkspaceName:async()=> 'Northside Services'}));
+rs.mock('@/lib/data/workspaces', () => ({getPublicWorkspaceName:async()=> 'Northside Services'}));
 
 it('too_many_attempts_stop_before_the_account_is_read_and_say_so', async () => {
  state.admit.mockResolvedValue(false); state.forwarded = '203.0.113.7, 10.0.0.1';

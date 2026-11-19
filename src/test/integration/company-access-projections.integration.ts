@@ -1,10 +1,10 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,rs} from '@rstest/core';
 import {randomUUID} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {listEmployees} from '../../lib/data/employees';
-vi.mock('server-only',()=>({}));
+rs.mock('server-only',()=>({}));
 import {readOperationalDirectory,readOperationalSchedule,readOperationalShiftEditor,readOperationalClockMonitor,readOperationalEmployeeProfile} from '../../lib/company-access/operational-read.server';
 const week='2026-10-12';
 

@@ -18,6 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * rendered. */
 export default async function RestrictedPage() {
   const session = await requireSession();
-  // Phase 3 (MG-015): a Manager sees the one state screen at every width; an Employee or Lead keeps the notice as it was.
-  return <OwnerOnlyNotice state={session.role === "MANAGER"} title={restrictedTitle(session.role)} help="Ask your Owner if you need access." next={{ href: "/app", label: "Go to Home" }} />;
+  // Phase 3 (MG-015): a Manager sees the one state screen at every width. Phase 4 (EM-019): an Employee or Lead does too,
+  // so the way on is the tinted pill on every closed page.
+  return <OwnerOnlyNotice state title={restrictedTitle(session.role)} help="Ask your Owner if you need access." next={{ href: "/app", label: "Go to Home" }} />;
 }

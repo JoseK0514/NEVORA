@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
 import { randomUUID } from 'node:crypto';
 import { companyAccessFixture } from '@/test/integration/company-access-fixture';
 import { fictionalProfile } from '@/test/fixtures/shift-changes';
@@ -25,7 +25,7 @@ beforeEach(async () => {
     INSERT INTO weekly_availability_submissions(employee_id,week_start,uses_normal_availability) VALUES('target','2026-11-16',true);`);
   await f.q("INSERT INTO employee_scheduling_settings(employee_id,maximum_weekly_hours,operational_rule_profile) VALUES('target',40,$1::jsonb)",[JSON.stringify(fictionalProfile())]);
 });
-afterEach(async () => { vi.restoreAllMocks(); await f?.db.dispose(); });
+afterEach(async () => { rs.restoreAllMocks(); await f?.db.dispose(); });
 const call = (value: unknown, executor = f.db.executor, settings = env, proof = f.owner) => weeklyService(proof, executor, settings, signal(), value);
 async function proposal() {
   const command = compare(), result = await call(command);
@@ -355,7 +355,7 @@ it('keeps saved custody through concurrent comparison cleanup and terminal actio
 
 it('applies the approved set even when planning is unavailable because apply never invokes it', async () => {
   const p = await reviewed();
-  const planner = vi.spyOn(weeklyPlanner, 'compareWeeklyPlans').mockImplementation(async () => { throw Error('Planner must not execute during approval'); });
+  const planner = rs.spyOn(weeklyPlanner, 'compareWeeklyPlans').mockImplementation(async () => { throw Error('Planner must not execute during approval'); });
   const saved = await call(p.apply); expect(saved.state).toBe('saved');
   expect(planner).not.toHaveBeenCalled();
   expect(await f.q('SELECT count(*)::int n FROM shifts')).toEqual([{ n: 2 }]);

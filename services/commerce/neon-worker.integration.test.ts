@@ -1,4 +1,4 @@
-import {beforeEach,afterEach,describe,it,expect} from 'vitest';
+import {beforeEach,afterEach,describe,it,expect} from '@rstest/core';
 import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';

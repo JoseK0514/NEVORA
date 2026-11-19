@@ -1,5 +1,5 @@
 // SOURCE PREPARATION ONLY. None of these proposed cases has been executed.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { makeAttendanceSource, makeHistoricalShift, makeRecordedEntry } from '@/test/fixtures/attendance-exceptions';
 import { projectAttendance } from '../attendance/project';
 import { parseManagerTimeCorrections } from '../time-corrections/read-model';
@@ -126,6 +126,21 @@ describe('unused F1 canonical capture adapter — proposed, unexecuted',()=>{
   it('rejects altered attendance signals instead of trusting a caller projection',()=>{
     const s=attendance();s.projection.groups[0].observations=[];
     expect(()=>prepareAttendanceActionRows(s)).toThrow();
+  });
+  it('captures an open unscheduled entry past the review limit and rejects a projection without that flag',()=>{
+    // Open 12 h 0 min 1 s at observedAt with no saved schedule context.
+    const source=makeAttendanceSource({observedAt,entries:[makeRecordedEntry({clockInAt:'2030-10-07T04:09:59Z'})]});
+    const projection=projectAttendance(source);
+    if(projection.state!=='ready')throw Error('Expected canonical fixture');
+    const capture={...attendance(),source,projection};
+    const result=prepareAttendanceActionRows(capture);
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0]).toMatchObject({kind:'ATTENDANCE',payload:{entryId:'entry-1',
+      observations:[{id:JSON.stringify([1,workspaceId,'entry-1','OPEN_PAST_LIMIT',null]),kind:'OPEN_PAST_LIMIT'}]}});
+    expect(result.rows[0].payload).not.toHaveProperty('evidence');
+    expect(source.entries[0]).toMatchObject({clockOutAt:null,status:'CLOCKED_IN'});
+    const altered=structuredClone(capture);altered.projection.groups[0].observations=[];
+    expect(()=>prepareAttendanceActionRows(altered)).toThrow();
   });
   it('preserves canonical 24:00 coverage and whole health input locations without synthetic versions or permission grants',()=>{
     const result=prepareSchedulingActionRows(scheduling());

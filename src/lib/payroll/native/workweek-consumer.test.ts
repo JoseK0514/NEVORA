@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest';
+import { it, expect } from '@rstest/core';
 import { input, entry } from './fixtures.test-support';
 import { fictionalWorkweekPolicy } from './workweek-fixtures.test-support';
 import { classifyRecordedTime, HOUR } from './time';

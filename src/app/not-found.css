@@ -71,3 +71,34 @@ html:has(body .nf-page), body:has(.nf-page) { background: #F2F5F4; }
 .nf-foot .q-legal a:is(:hover, :focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
 .nf-foot .q-legal__item { white-space: nowrap; }
 .nf-foot .q-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* Phase 5 (Nov 17, 2026, PB-035): one sentence and one button read in a 560px state card, centred; the band's wordmark,
+ * language switch and title share its edges. The public error screen draws on the same band and card. */
+.nf-sheet { max-width: 592px; }
+.nf-band h1 { text-wrap: balance; }
+@media (min-width: 768px) {
+  .nf-band { padding-left: max(24px, calc((100% - 560px) / 2)); padding-right: max(24px, calc((100% - 560px) / 2)); }
+  .nf-sheet { max-width: 608px; }
+}
+
+/* Phase 8 (Nov 17, 2026, review D rows 5, 6 and 15): the band header every signed-out page shares. The band is the flat
+ * teal of the other signed-out bands; the 104px wordmark and the language pill sit on a 44px row 16px under the status
+ * area (48px from the top from 1024px, as on the policy pages); the band's words sit on the card's text edge; the card
+ * overlaps the band by 40px; the footer is SignedOutFooter, 16px above the foot of a short window, as on Sign in. The
+ * public error screen draws on the same band and card. */
+.nf-page { display: flex; flex-direction: column; }
+.nf-band { padding: calc(16px + env(safe-area-inset-top, 0px)) 36px 84px; background: var(--b-band-solid, #0C726C); }
+.nf-top { min-height: 44px; margin-bottom: 28px; }
+.nf-wordmark { width: 104px; }
+.nf-sheet { flex: 1 0 auto; display: flex; flex-direction: column; width: 100%; margin-top: -40px; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.nf-card { padding: 20px; }
+.nf-foot { margin-top: auto; padding: 36px 0 16px; }
+.nf-page p { text-wrap: pretty; }
+.nf-band .q-auth__lang { font-size: 15px; } /* the sign-in pages' pill, so it is one width on every band */
+@media (min-width: 768px) {
+  .nf-band { padding: calc(16px + env(safe-area-inset-top, 0px)) max(44px, calc((100% - 560px) / 2 + 20px)) 96px; }
+  .nf-sheet { margin-top: -40px; padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
+@media (min-width: 1024px) {
+  .nf-band { padding-top: 48px; }
+}

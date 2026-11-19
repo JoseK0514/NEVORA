@@ -1,4 +1,4 @@
-import {expect,it,vi} from 'vitest';
+import {expect,it,rs} from '@rstest/core';
 import {createIdentityReload,createNavigationCoordinator,onRouterTransition,routerTransitionStarted} from './navigation-coordinator';
 
 it('keeps accepted navigation pending before native Link reports its first pending state',()=>{
@@ -10,7 +10,7 @@ it('keeps accepted navigation pending before native Link reports its first pendi
 });
 
 it('releases a matching native Link after it was pending and then settled',()=>{
- const navigation=createNavigationCoordinator(),settled=vi.fn(),attempt=navigation.begin('/source','/destination','link');
+ const navigation=createNavigationCoordinator(),settled=rs.fn(),attempt=navigation.begin('/source','/destination','link');
  navigation.subscribe(settled);
  if(!attempt)throw Error('Expected a navigation attempt');
  navigation.observe(attempt,true);navigation.observe(attempt,false);navigation.observe(attempt,false);
@@ -27,7 +27,7 @@ it('does not let an older Link completion release a newer accepted destination',
 });
 
 it('retains an uncertain unmounted initiator until a new explicit user choice',()=>{
- const navigation=createNavigationCoordinator(),attempt=navigation.begin('/source','/destination','link'),settled=vi.fn();
+ const navigation=createNavigationCoordinator(),attempt=navigation.begin('/source','/destination','link'),settled=rs.fn();
  navigation.subscribe(settled);
  expect(navigation.pending()).toBe(true);
  navigation.discard();
@@ -39,7 +39,7 @@ it('retains an uncertain unmounted initiator until a new explicit user choice',(
 });
 
 it('ignores source address observations and releases after router commitment to a destination',()=>{
- const navigation=createNavigationCoordinator(),settled=vi.fn();
+ const navigation=createNavigationCoordinator(),settled=rs.fn();
  navigation.subscribe(settled);navigation.begin('/source?period=1','/destination','link');
  navigation.committed('/source?period=1');expect(navigation.pending()).toBe(true);
  navigation.committed('/destination');expect(navigation.pending()).toBe(false);expect(settled).toHaveBeenCalledTimes(1);
@@ -56,7 +56,7 @@ it('settles a redirect only through its own native Link completion',()=>{
 });
 
 it('does not let an older destination address release a newer navigation',()=>{
- const navigation=createNavigationCoordinator(),settled=vi.fn();
+ const navigation=createNavigationCoordinator(),settled=rs.fn();
  navigation.subscribe(settled);
  const older=navigation.begin('/source','/first','link');
  if(!older)throw Error('Expected a navigation attempt');
@@ -94,7 +94,7 @@ it('keeps same-address navigation free unless it supersedes an existing destinat
 // the redirecting page's commit, and an identity reload must not cancel it mid-flight.
 
 it('keeps a server redirect replace pending through its source commit and settles at its destination',()=>{
- const navigation=createNavigationCoordinator(),settled=vi.fn();navigation.subscribe(settled);
+ const navigation=createNavigationCoordinator(),settled=rs.fn();navigation.subscribe(settled);
  navigation.begin('/app/payroll-export','/app/reports','link');
  // Next commits Reports, its redirect boundary calls router.replace('/app'), then the provider records the commit.
  navigation.transition('/app/reports','/app');
@@ -122,19 +122,19 @@ it('keeps a link attempt when the router reports the same destination, and ignor
 });
 
 it('delivers router transition starts to every registered listener until it stops listening',()=>{
- const heard=vi.fn(),stop=onRouterTransition(heard);
+ const heard=rs.fn(),stop=onRouterTransition(heard);
  routerTransitionStarted('/app');stop();routerTransitionStarted('/app/reports');
  expect(heard).toHaveBeenCalledTimes(1);expect(heard).toHaveBeenCalledWith('/app');
 });
 
 it('reloads at once for an identity change when no router navigation is in flight',()=>{
- const reload=vi.fn(),identity=createIdentityReload(createNavigationCoordinator(),reload);
+ const reload=rs.fn(),identity=createIdentityReload(createNavigationCoordinator(),reload);
  identity.request();identity.request();
  expect(reload).toHaveBeenCalledTimes(1);
 });
 
 it('reloads for an identity change only after the in-flight redirect commits, exactly once',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  navigation.begin('/app/payroll-export','/app/reports','link');
  navigation.transition('/app/reports','/app');navigation.committed('/app/reports');
  identity.request();identity.request();
@@ -146,7 +146,7 @@ it('reloads for an identity change only after the in-flight redirect commits, ex
 });
 
 it('still reloads exactly once when the new identity remounts the shell at the redirect commit',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/app/reports','/app');identity.request();
  // The remount discards the old provider's coordinator, which leaves it idle; the old shell's unmount then releases.
  navigation.discard();expect(reload).toHaveBeenCalledTimes(1);
@@ -155,7 +155,7 @@ it('still reloads exactly once when the new identity remounts the shell at the r
 });
 
 it('does not reload on unmount when no identity change was requested',()=>{
- const reload=vi.fn(),identity=createIdentityReload(createNavigationCoordinator(),reload);
+ const reload=rs.fn(),identity=createIdentityReload(createNavigationCoordinator(),reload);
  identity.release();
  expect(reload).not.toHaveBeenCalled();
 });
@@ -164,7 +164,7 @@ it('does not reload on unmount when no identity change was requested',()=>{
 // never on a commit belonging to a navigation it superseded; an abandoned navigation never strands an identity reload.
 
 it('keeps a newer router transition pending through a stale commit of the transition it superseded',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/source','/old');
  const current=navigation.transition('/source','/new');
  identity.request();navigation.committed('/old');
@@ -174,7 +174,7 @@ it('keeps a newer router transition pending through a stale commit of the transi
 });
 
 it('ignores stale commits from every transition in a superseded chain, including a superseded link',()=>{
- const navigation=createNavigationCoordinator(),settled=vi.fn();navigation.subscribe(settled);
+ const navigation=createNavigationCoordinator(),settled=rs.fn();navigation.subscribe(settled);
  navigation.begin('/source','/first','link');navigation.transition('/source','/second');navigation.transition('/source','/third');
  navigation.committed('/first');navigation.committed('/second');navigation.committed('/source');
  expect(navigation.pending()).toBe(true);expect(navigation.current()?.destination).toBe('/third');expect(settled).not.toHaveBeenCalled();
@@ -203,7 +203,7 @@ it('compares router addresses by their decoded query, as the router formats a co
 });
 
 it('still settles a superseding transition on a genuine further redirect',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/source','/old');navigation.transition('/source','/new');identity.request();
  navigation.transition('/new','/login');
  navigation.committed('/old');navigation.committed('/new');expect(reload).not.toHaveBeenCalled();
@@ -212,7 +212,7 @@ it('still settles a superseding transition on a genuine further redirect',()=>{
 });
 
 it('waits for a navigation that a settled listener starts before reloading for an identity change',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  const stop=navigation.subscribe(()=>{stop();navigation.transition('/new','/next');});
  navigation.transition('/source','/new');identity.request();
  navigation.committed('/new');
@@ -222,7 +222,7 @@ it('waits for a navigation that a settled listener starts before reloading for a
 });
 
 it('reloads exactly once when the pending navigation is discarded, and never again for a later navigation',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/source','/new');identity.request();
  navigation.discard();
  expect(navigation.pending()).toBe(false);expect(reload).toHaveBeenCalledTimes(1);
@@ -234,7 +234,7 @@ it('reloads exactly once when the pending navigation is discarded, and never aga
 });
 
 it('reloads once when a failed Link navigation settles without committing an address',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/source','/new');
  const link=navigation.begin('/source','/other','link');
  if(!link)throw Error('Expected a navigation attempt');
@@ -245,7 +245,7 @@ it('reloads once when a failed Link navigation settles without committing an add
 });
 
 it('notifies idle listeners once when a navigation finishes or is discarded, and not after they stop listening',()=>{
- const navigation=createNavigationCoordinator(),finished=vi.fn(),discarded=vi.fn(),stopped=vi.fn(),idle=vi.fn();
+ const navigation=createNavigationCoordinator(),finished=rs.fn(),discarded=rs.fn(),stopped=rs.fn(),idle=rs.fn();
  navigation.whenIdle(idle);expect(idle).toHaveBeenCalledTimes(1);
  navigation.transition('/source','/a');navigation.whenIdle(finished);navigation.committed('/a');navigation.committed('/b');
  navigation.transition('/a','/b');navigation.whenIdle(discarded);navigation.whenIdle(stopped)();navigation.discard();navigation.discard();
@@ -254,7 +254,7 @@ it('notifies idle listeners once when a navigation finishes or is discarded, and
 });
 
 it('does not reload again when the shell unmounts after the wait already reloaded',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/source','/new');identity.request();navigation.committed('/new');
  identity.release();
  expect(reload).toHaveBeenCalledTimes(1);
@@ -264,7 +264,7 @@ it('does not reload again when the shell unmounts after the wait already reloade
 // address an older attempt targeted is stale for every later attempt, whatever navigation types came in between.
 
 it('keeps a router transition pending through a stale commit when a Link started in between',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/source','/old?name=Ana%20Rivera');
  navigation.begin('/source','/middle','link');
  const current=navigation.transition('/source','/new');
@@ -277,7 +277,7 @@ it('keeps a router transition pending through a stale commit when a Link started
 });
 
 it.each(['history','imperative'] as const)('keeps a router transition pending through a stale commit when %s navigation started in between',kind=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/source','/old');navigation.begin('/source','/middle',kind);navigation.transition('/source','/new');
  identity.request();navigation.committed('/old');navigation.committed('/middle');
  expect(navigation.pending()).toBe(true);expect(navigation.current()?.destination).toBe('/new');expect(reload).not.toHaveBeenCalled();
@@ -285,7 +285,7 @@ it.each(['history','imperative'] as const)('keeps a router transition pending th
 });
 
 it('keeps a router transition pending through a commit of a navigation discarded before it started',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  navigation.transition('/source','/old');navigation.discard();
  navigation.transition('/source','/new');identity.request();
  navigation.committed('/old');
@@ -305,7 +305,7 @@ it('treats discarded Link and history destinations, with query variants, as stal
 });
 
 it('ignores a late commit from an attempt superseded before an earlier navigation settled',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn();
+ const navigation=createNavigationCoordinator(),reload=rs.fn();
  navigation.transition('/source','/old');navigation.transition('/source','/second');navigation.committed('/second');
  const third=navigation.transition('/second','/third'),identity=createIdentityReload(navigation,reload);
  identity.request();navigation.committed('/old');
@@ -314,7 +314,7 @@ it('ignores a late commit from an attempt superseded before an earlier navigatio
 });
 
 it('ignores late Link completions from discarded or superseded attempts',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  const discarded=navigation.begin('/source','/a','link');navigation.discard();
  const superseded=navigation.begin('/source','/b','link');
  const current=navigation.transition('/source','/c');identity.request();
@@ -325,7 +325,7 @@ it('ignores late Link completions from discarded or superseded attempts',()=>{
 });
 
 it.each([64,128])('keeps the newest destination pending after %s abandoned destinations',count=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  for(let index=0;index<count;index++){
   navigation.transition('/source',`/abandoned/${index}`);navigation.discard();
  }
@@ -337,7 +337,7 @@ it.each([64,128])('keeps the newest destination pending after %s abandoned desti
 });
 
 it.each(['link','history','imperative','router'] as const)('keeps repeated older %s destinations stale, including query spelling variants',kind=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  for(let index=0;index<2;index++){
   navigation.begin('/source','/old?name=Ana%20Rivera',kind);navigation.discard();
  }
@@ -349,7 +349,7 @@ it.each(['link','history','imperative','router'] as const)('keeps repeated older
 });
 
 it('requires current-attempt evidence even for an address never seen before',()=>{
- const navigation=createNavigationCoordinator(),reload=vi.fn(),identity=createIdentityReload(navigation,reload);
+ const navigation=createNavigationCoordinator(),reload=rs.fn(),identity=createIdentityReload(navigation,reload);
  const current=navigation.transition('/source','/new');identity.request();
  navigation.committed('/unattributed');
  expect(navigation.pending()).toBe(true);expect(navigation.current()).toBe(current);expect(reload).not.toHaveBeenCalled();

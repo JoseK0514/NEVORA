@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { DEFAULT_NOTIFICATION_POLICY as policy, nextRoutineTime, planReminder, retryDecision } from './policy';
 import type { NotificationIntent } from './types';
 const intent: NotificationIntent = {id:'12345678-1234-4234-8234-123456789abc',employeeId:'a',type:'AVAILABILITY_REMINDER',title:'Fuel',body:'Open Fuel',eventKey:'event',environment:'test',source:{kind:'AVAILABILITY',id:'week',version:'v1'},effectiveVersion:'v1',purpose:'REMINDER',urgency:'normal',dueAt:'2026-10-05T12:00:00Z',expiresAt:'2026-10-06T12:00:00Z'};

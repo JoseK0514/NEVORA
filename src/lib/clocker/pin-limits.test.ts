@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {reservePinAttempt} from './pin-limits.server';
 import type {SqlExecutor} from '../notifications/types';
 import type {ClockerDeviceWriteProof} from './devices.server';

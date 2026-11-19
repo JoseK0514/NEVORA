@@ -85,7 +85,7 @@ try {
     FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN: "yes",
   };
   delete env.DATABASE_URL;
-  const args = ["node_modules/vitest/vitest.mjs", "run", "--config", config, ...process.argv.slice(3)];
+  const args = ["scripts/run-rstest.mjs", "run", "--config", config, ...process.argv.slice(3)];
   const result = spawnSync(process.execPath, args, { env, stdio: "inherit" });
   exitCode = result.status ?? 1;
 } finally {

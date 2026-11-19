@@ -1,4 +1,4 @@
-import { expect, it, vi } from 'vitest';
+import { expect, it, rs } from '@rstest/core';
 import { createECDH } from 'node:crypto';
 import type { PushRuntimeConfig,PushSubscriptionRecord,SubscriptionRepository } from '../../../../lib/notifications/types';
 // P-256 scalars have a 32-byte wire representation even when Node's minimal
@@ -7,7 +7,7 @@ function canonicalPrivateKey(curve: ReturnType<typeof createECDH>) {
     const key = curve.getPrivateKey();
     return Buffer.concat([Buffer.alloc(32 - key.length), key]).toString('base64url');
 }
-async function setup(privateScalar?: Buffer) { const m = await import('../../../../lib/notifications/subscription-service').catch(() => ({})); expect(m).toHaveProperty('createPushHandlers'); const api = m as typeof import('../../../../lib/notifications/subscription-service'); const installation = await import('../../../../lib/notifications/installation'); const configModule = await import('../../../../lib/notifications/config'); const e = createECDH('prime256v1'); if (privateScalar) e.setPrivateKey(privateScalar); else e.generateKeys(); const key = Buffer.alloc(32, 7); const config: PushRuntimeConfig = configModule.readNotificationConfig({ FUEL_PORTAL_ORIGIN: 'https://fuel.example', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'true', PUSH_DELIVERY_ENABLED: 'true', PUSH_TEST_DELIVERY_ENABLED: 'true', PUSH_TEST_ACCOUNT_IDS: 'employee', PUSH_SUBSCRIPTION_ENCRYPTION_KEY: key.toString('base64url'), PUSH_VAPID_PUBLIC_KEY: e.getPublicKey().toString('base64url'), PUSH_VAPID_PRIVATE_KEY: canonicalPrivateKey(e), PUSH_VAPID_SUBJECT: 'mailto:test@example.com', NOTIFICATION_WORKER_SECRET: 'x'.repeat(32) }); const proof = installation.createInstallationProof('test'); const cookieValues = new Map([['fuel_push_installation', installation.sealInstallationProof(proof, key)], ['fuel_session', 'fictional-session']]); const cookies = { get: (name: string) => cookieValues.has(name) ? { value: cookieValues.get(name)! } : undefined, set: vi.fn((name: string, value: string) => { cookieValues.set(name, value); }), delete: vi.fn((name: string) => { cookieValues.delete(name); }) }; let current: PushSubscriptionRecord | null = null; let employee = { id: 'employee', firstName: 'F', lastName: 'T', role: 'EMPLOYEE' as const, primaryLocationId: '2' }; const enroll = vi.fn(async (input) => { current = { ...input, id: 'subscription', status: 'active', consentAt: '2026-10-02T12:00:00Z', updatedAt: '2026-10-02T12:00:00Z', lastTestAt: null }; return { state: 'active' as const, generation: input.generation }; }); const queueSelfTest = vi.fn(async (_input: unknown) => true); const repo = { enroll, findInstallation: vi.fn(async (hash: string, environment: string) => current?.installationHash === hash && current.environment === environment ? current : null), detach: vi.fn(async () => ({ state: 'complete' as const })), reconcile: vi.fn(async () => ({ state: 'complete' as const })), queueSelfTest } as unknown as SubscriptionRepository; const repository = vi.fn(() => repo); const session = vi.fn(async () => employee); const handlers = api.createPushHandlers({ config, cookies: async () => cookies, session, subscriptions: repository, cleanupDeps: {clock:()=>new Date('2026-10-02T12:00:00Z'), secureCookies:true, subscriptions:()=>repo, revokeSession:async()=>{}, sealReceipt:receipt=>installation.sealCleanupReceipt(receipt,key), openReceipt:value=>installation.openCleanupReceipt(value,key,new Date('2026-10-02T12:00:00Z'))}, clock: () => new Date('2026-10-02T12:00:00Z') }); const sub = { endpoint: 'https://fcm.googleapis.com/fcm/send/fictional', expirationTime: null, keys: { p256dh: e.getPublicKey().toString('base64url'), auth: Buffer.alloc(16, 1).toString('base64url') } }; const request = (body: unknown, headers: Record<string, string> = {}, method = 'POST') => new Request('https://fuel.example/app/api/push/subscribe', { method, headers: { Origin: 'https://fuel.example', 'Content-Type': 'application/json', ...headers }, body: method === 'GET' ? undefined : JSON.stringify(body) }); return { handlers, request, sub, config, repo, repository, cookies, cookieValues, proof, enroll, session, queueSelfTest, setCurrent: (value: PushSubscriptionRecord | null) => { current = value; }, getCurrent: () => current, setEmployee: (id: string) => { employee = { ...employee, id }; }, installation, key }; }
+async function setup(privateScalar?: Buffer) { const m = await import('../../../../lib/notifications/subscription-service').catch(() => ({})); expect(m).toHaveProperty('createPushHandlers'); const api = m as typeof import('../../../../lib/notifications/subscription-service'); const installation = await import('../../../../lib/notifications/installation'); const configModule = await import('../../../../lib/notifications/config'); const e = createECDH('prime256v1'); if (privateScalar) e.setPrivateKey(privateScalar); else e.generateKeys(); const key = Buffer.alloc(32, 7); const config: PushRuntimeConfig = configModule.readNotificationConfig({ FUEL_PORTAL_ORIGIN: 'https://fuel.example', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'true', PUSH_DELIVERY_ENABLED: 'true', PUSH_TEST_DELIVERY_ENABLED: 'true', PUSH_TEST_ACCOUNT_IDS: 'employee', PUSH_SUBSCRIPTION_ENCRYPTION_KEY: key.toString('base64url'), PUSH_VAPID_PUBLIC_KEY: e.getPublicKey().toString('base64url'), PUSH_VAPID_PRIVATE_KEY: canonicalPrivateKey(e), PUSH_VAPID_SUBJECT: 'mailto:test@example.com', NOTIFICATION_WORKER_SECRET: 'x'.repeat(32) }); const proof = installation.createInstallationProof('test'); const cookieValues = new Map([['fuel_push_installation', installation.sealInstallationProof(proof, key)], ['fuel_session', 'fictional-session']]); const cookies = { get: (name: string) => cookieValues.has(name) ? { value: cookieValues.get(name)! } : undefined, set: rs.fn((name: string, value: string) => { cookieValues.set(name, value); }), delete: rs.fn((name: string) => { cookieValues.delete(name); }) }; let current: PushSubscriptionRecord | null = null; let employee = { id: 'employee', firstName: 'F', lastName: 'T', role: 'EMPLOYEE' as const, primaryLocationId: '2' }; const enroll = rs.fn(async (input) => { current = { ...input, id: 'subscription', status: 'active', consentAt: '2026-10-02T12:00:00Z', updatedAt: '2026-10-02T12:00:00Z', lastTestAt: null }; return { state: 'active' as const, generation: input.generation }; }); const queueSelfTest = rs.fn(async (_input: unknown) => true); const repo = { enroll, findInstallation: rs.fn(async (hash: string, environment: string) => current?.installationHash === hash && current.environment === environment ? current : null), detach: rs.fn(async () => ({ state: 'complete' as const })), reconcile: rs.fn(async () => ({ state: 'complete' as const })), queueSelfTest } as unknown as SubscriptionRepository; const repository = rs.fn(() => repo); const session = rs.fn(async () => employee); const handlers = api.createPushHandlers({ config, cookies: async () => cookies, session, subscriptions: repository, cleanupDeps: {clock:()=>new Date('2026-10-02T12:00:00Z'), secureCookies:true, subscriptions:()=>repo, revokeSession:async()=>{}, sealReceipt:receipt=>installation.sealCleanupReceipt(receipt,key), openReceipt:value=>installation.openCleanupReceipt(value,key,new Date('2026-10-02T12:00:00Z'))}, clock: () => new Date('2026-10-02T12:00:00Z') }); const sub = { endpoint: 'https://fcm.googleapis.com/fcm/send/fictional', expirationTime: null, keys: { p256dh: e.getPublicKey().toString('base64url'), auth: Buffer.alloc(16, 1).toString('base64url') } }; const request = (body: unknown, headers: Record<string, string> = {}, method = 'POST') => new Request('https://fuel.example/app/api/push/subscribe', { method, headers: { Origin: 'https://fuel.example', 'Content-Type': 'application/json', ...headers }, body: method === 'GET' ? undefined : JSON.stringify(body) }); return { handlers, request, sub, config, repo, repository, cookies, cookieValues, proof, enroll, session, queueSelfTest, setCurrent: (value: PushSubscriptionRecord | null) => { current = value; }, getCurrent: () => current, setEmployee: (id: string) => { employee = { ...employee, id }; }, installation, key }; }
 it('keeps a legacy installation and writes new enrollment under the active key ID',async()=>{
  const s=await setup();Object.assign(s.config,{subscriptionEncryptionKey:Buffer.alloc(32,47).toString('base64url'),subscriptionEncryptionKeyId:'new-key',subscriptionPreviousEncryptionKey:s.key.toString('base64url'),subscriptionPreviousEncryptionKeyId:'old-key',subscriptionLegacyEncryptionKeyId:'old-key'});
  const response=await s.handlers.mutation(s.request({subscription:s.sub}),'subscribe');expect(response.status).toBe(200);
@@ -83,13 +83,13 @@ it('cleanup_outage_keeps_receipt_and_fails_closed_until_verified_reconciliation'
     const s = await setup();
     await s.handlers.mutation(s.request({ subscription: s.sub }), 'subscribe');
     const current = s.getCurrent()!;
-    vi.mocked(s.repo.detach).mockRejectedValueOnce(new Error('storage secret'));
+    rs.mocked(s.repo.detach).mockRejectedValueOnce(new Error('storage secret'));
     const pending = await s.handlers.mutation(s.request({ ownershipGeneration: current.generation }), 'unsubscribe');
     expect(pending.status).toBe(503);
     expect(await pending.json()).toEqual({ status: 'pending', generation: current.generation });
     const receipt = s.installation.openCleanupReceipt(s.cookieValues.get('fuel_push_cleanup')!, s.key, new Date('2026-10-02T12:00:00Z'));
     expect(receipt?.generation).toBe(current.generation);
-    vi.mocked(s.repo.reconcile).mockRejectedValueOnce(new Error('outage'));
+    rs.mocked(s.repo.reconcile).mockRejectedValueOnce(new Error('outage'));
     expect((await s.handlers.mutation(s.request({ subscription: s.sub, ownershipGeneration: current.generation }), 'subscribe')).status).toBe(409);
     expect(s.cookieValues.has('fuel_push_cleanup')).toBe(true);
     s.setCurrent({ ...current, status: 'detached' } as never);
@@ -101,16 +101,16 @@ it('cleanup_timeout_reports_pending_without_waiting_forever', async () => {
     const s = await setup();
     await s.handlers.mutation(s.request({ subscription: s.sub }), 'subscribe');
     const current = s.getCurrent()!;
-    vi.useFakeTimers();
+    rs.useFakeTimers();
     try {
-        vi.mocked(s.repo.detach).mockImplementationOnce(() => new Promise(() => { }));
+        rs.mocked(s.repo.detach).mockImplementationOnce(() => new Promise(() => { }));
         const result = s.handlers.mutation(s.request({ ownershipGeneration: current.generation }), 'unsubscribe');
-        await vi.waitFor(() => expect(s.repo.detach).toHaveBeenCalled());
-        await vi.advanceTimersByTimeAsync(3000);
+        await rs.waitFor(() => expect(s.repo.detach).toHaveBeenCalled());
+        await rs.advanceTimersByTimeAsync(3000);
         expect(await (await result).json()).toEqual({ status: 'pending', generation: current.generation });
     }
     finally {
-        vi.useRealTimers();
+        rs.useRealTimers();
     }
 });
 it('status_and_tests_do_not_expose_or_inherit_foreign_environment_or_device_state', async () => {
@@ -139,10 +139,10 @@ it('signed_in_new_account_rotates_only_after_outage_receipt_recovers', async () 
     s.cookieValues.set('fuel_push_cleanup', s.installation.sealCleanupReceipt({ ...proof, sessionHash: createHash('sha256').update('fictional-session').digest('hex'), revokeSession: true, issuedAt: '2026-10-02T12:00:00Z', expiresAt: '2026-10-03T12:00:00Z' }, s.key));
     s.setEmployee('foreign');
     s.cookieValues.set('fuel_session', 'new-account-session');
-    vi.mocked(s.repo.reconcile).mockRejectedValueOnce(new Error('outage'));
+    rs.mocked(s.repo.reconcile).mockRejectedValueOnce(new Error('outage'));
     expect((await s.handlers.status()).status).toBe(409);
     expect(s.installation.readInstallationProof(s.cookies, s.key)).toEqual(proof);
-    vi.mocked(s.repo.reconcile).mockImplementationOnce(async () => { s.setCurrent({ ...current, status: 'detached' } as never); return { state: 'complete' }; });
+    rs.mocked(s.repo.reconcile).mockImplementationOnce(async () => { s.setCurrent({ ...current, status: 'detached' } as never); return { state: 'complete' }; });
     const healthy = await s.handlers.status();
     expect(healthy.status).toBe(200);
     expect((await healthy.json()).enabled).toBe(false);

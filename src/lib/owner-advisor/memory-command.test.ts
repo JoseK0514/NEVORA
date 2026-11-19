@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from '@rstest/core';
 import { parseCommand } from "./contracts";
 it("accepts only an explicit bounded memory submission, never a verified client outcome", () => {
     const command = { op: "memory", requestId: "20000000-0000-4000-8000-000000000001", expectedRevision: 0, change: { kind: "save_intent", intentId: "20000000-0000-4000-8000-000000000002", kindOfIntent: "preference", text: "Prefer stable teams", focus: { kind: "general" }, effectiveDate: "2026-11-01", expiryDate: "2026-11-30" } };

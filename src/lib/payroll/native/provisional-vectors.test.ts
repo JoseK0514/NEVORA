@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 import { Temporal } from '@js-temporal/polyfill';
 import { input, entry } from './fixtures.test-support';
 import { calculateNativePayroll } from './calculate';

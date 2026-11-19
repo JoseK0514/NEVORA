@@ -1,5 +1,5 @@
 import {createServer} from 'node:http';
-import {expect,it} from 'vitest';
+import {expect,it} from '@rstest/core';
 import {installOwnedCreationDiagnostics} from './integration/owned-creation-diagnostics.mjs';
 it('records native response completion for the owned fictional action without private request content',async()=>{
  const server=createServer((_request,response)=>response.end('fictional-body'));await new Promise<void>(ready=>server.listen(0,'127.0.0.1',ready));const address=server.address();if(!address||typeof address==='string')throw Error('No owned port');const origin='http://127.0.0.1:'+address.port,events:unknown[]=[];

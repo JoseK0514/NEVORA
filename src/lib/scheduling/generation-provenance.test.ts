@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { expect, it } from '@rstest/core';
 async function api() {
   const implementation = await import('./generation-provenance').catch(() => ({}));
   expect(implementation).toHaveProperty('normalizeAssignmentOrigin');
