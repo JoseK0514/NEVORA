@@ -46,16 +46,16 @@ it('renders actual recovery routes with current sessions, bounded status reads a
    await page.goto(origin+'/app/account/delete');await page.waitForURL(/\/login(?:\?|$)/);
    await page.goto(origin+'/clocker/access/paused?from=%2Fclocker%2Fmain&reason=billing_status_unavailable&secret=must-not-echo');
    await page.getByRole('heading',{name:'Access could not be checked',exact:true}).waitFor();
-   expect(await page.getByRole('link',{name:'Try Clocker again'}).getAttribute('href')).toBe('/clocker/main');
+   expect(await page.getByRole('link',{name:'Try again',exact:true}).getAttribute('href')).toBe('/clocker/main');
    expect(await page.locator('body').innerText()).not.toContain('must-not-echo');
    for(const width of [320,390,768,1440]){
     await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
     await page.screenshot({path:join(evidence,engine+'-clocker-'+width+'.png'),fullPage:true});
     await page.addStyleTag({content:'html{font-size:200%}'});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.addStyleTag({content:'html{font-size:100%}'});
    }
-   await page.getByRole('link',{name:'Try Clocker again'}).focus();expect(await page.getByRole('link',{name:'Try Clocker again'}).evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
+   await page.getByRole('link',{name:'Try again',exact:true}).focus();expect(await page.getByRole('link',{name:'Try again',exact:true}).evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
    expect(await page.getByRole('link',{name:'Owner sign in'}).count()).toBe(0);expect(await page.getByText('Open billing on your own device.',{exact:false}).isVisible()).toBe(true); // Shared tablet never invites an Owner sign-in.
-   await page.goto(origin+'/clocker/access/paused?from=https%3A%2F%2Fevil.invalid');expect(await page.getByRole('link',{name:'Try Clocker again'}).count()).toBe(0);
+   await page.goto(origin+'/clocker/access/paused?from=https%3A%2F%2Fevil.invalid');expect(await page.getByRole('link',{name:'Try again',exact:true}).count()).toBe(0);
    checks.push(engine+': public tablet has bounded return, no private data, four widths and keyboard focus');
    for(const [id,owner] of [['QAOWNER',true],['QA-RECOVERY-EMP',false]] as const){
     await context.clearCookies();await page.goto(origin+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(id);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();
