@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-19",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "1056e81dbf4d425abf108c414f1196e83cafb47b",
-  "applicationHash": "043a20cdb8dacc39c603c2f6d5c489dab280fbd34ee77d111bbd3b9f222795ad",
+  "sourceSha": "ad5ee2ca51d4ecb3b71fdd14c15504aff667f6d1",
+  "applicationHash": "02605d5eecfd3791d33c08f2002accc9a5140bd56896a2a07fc51311fdf5e3ca",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "0cd9232190da48d0e815aac9cbfe8df1ad69be5fe97f153ed58c7626fde85fec"
@@ -71,7 +71,7 @@
         },
         {
           "path": "src/lib/payroll/service.ts",
-          "sha256": "a81aa78ec62d937dc0724e5f68ff676284cae2ecc4a9417d0df6fa38e2e0fe75"
+          "sha256": "d028e3cb97126fed241c69e931d2b7ed7b639f20c2c68631e44077a6e8f9b3cb"
         },
         {
           "path": "src/lib/payroll/access.ts",
@@ -103,7 +103,7 @@
         },
         {
           "path": "src/lib/payroll/calculation-mode.ts",
-          "sha256": "c94459692143f60495f66ad6c82ac991bc1fbddbfd2e01c02cb3176eb7c50443"
+          "sha256": "bac072790f0f619ee3f4adc3fbc3d43f647ee049fad5a8242d9f7f9cb2c56962"
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
@@ -204,7 +204,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "8ad34cbcbfd41d09e2618d3a9b0016fcd36e95fb046844845ce2bf8f6c4a0558",
+        "sha256": "8e0cc5a04dd58cd65de8518c3d34e7e93125182046e0e54907d8f5d7e055c122",
         "pageCount": 6
       }
     },
@@ -250,7 +250,7 @@
         },
         {
           "path": "src/lib/payroll/service.ts",
-          "sha256": "a81aa78ec62d937dc0724e5f68ff676284cae2ecc4a9417d0df6fa38e2e0fe75"
+          "sha256": "d028e3cb97126fed241c69e931d2b7ed7b639f20c2c68631e44077a6e8f9b3cb"
         },
         {
           "path": "src/lib/payroll/native/scope.ts",
@@ -327,7 +327,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "18380d2450d0af276fb5df25d500013a8cacfdbaa859bc645b525e8ed430a11e",
+        "sha256": "68e8417e794204f2eb93c5a60465bbc74045e0cb7c984e41120deafea9ca562b",
         "pageCount": 4
       }
     },
@@ -349,7 +349,7 @@
         },
         {
           "path": "src/app/activate/activation-invitation.tsx",
-          "sha256": "7a5e9e451ea562eed6438817f21a8ed3dfe42fb90a8e3a88077a0632e719df2c"
+          "sha256": "a7adcf8c5388a30352d9cefe34d4bb36fbde377f21b6c2cbe4c1b427623dcd2b"
         },
         {
           "path": "src/app/app/schedule/page.tsx",
@@ -446,7 +446,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "38e00a278596a294841b5a61c8724d34b657d27bc9fd18e38940839f78bc6c90",
+        "sha256": "9a4028946f720e713c8ba5e2bead59a6efcbd7bb4dbd10d29da21c6385dc7a97",
         "pageCount": 3
       }
     },
@@ -621,7 +621,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "976211f6dba417fe82a102963dc8ffff72154c46a4a57bc8fe64e84867d60c8e",
+        "sha256": "02b80c94c7fa7bb41b83fcd58e28c11c869a0e3644be92ea187d2a366c0f98f6",
         "pageCount": 4
       }
     },
@@ -630,7 +630,7 @@
       "title": "NEVORA web developer guide",
       "markdown": {
         "path": "docs/guides/web/developer.md",
-        "sha256": "f57131c74aab915d87b2013934193e5770283ada8d26981da8f0cb43f8440945"
+        "sha256": "03ffff2aac5430fb4b6ef86fb6f83549be04f6d2e3e374f362a67fda0a800022"
       },
       "evidence": [
         {
@@ -651,7 +651,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "8983143a011d0ae97d8439c4f8319050e5bd6b2890dc1141f0b5d482dbe6d429"
+          "sha256": "5ca59fb77535207ec85fc747ce20508e75e802cac9789e214c1312043a7b8d4f"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -691,7 +691,7 @@
         },
         {
           "path": "db/migrations/order.ts",
-          "sha256": "24f6e974bafec8f61a5f49c5121c3a639831098e99dd54a8caf2c01ee067c31f"
+          "sha256": "5d717d078e75b7cdc6ff4fd89544f108a467f17716905bffcfbbe616c4dced55"
         },
         {
           "path": "scripts/release-build.mjs",
@@ -735,7 +735,7 @@
         },
         {
           "path": "src/lib/payroll/calculation-mode.ts",
-          "sha256": "c94459692143f60495f66ad6c82ac991bc1fbddbfd2e01c02cb3176eb7c50443"
+          "sha256": "bac072790f0f619ee3f4adc3fbc3d43f647ee049fad5a8242d9f7f9cb2c56962"
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
@@ -875,7 +875,7 @@
         },
         {
           "path": "src/test/integration/release1-migrations.integration.ts",
-          "sha256": "8e378b2d2ae673b4401b9c0eab9833a1cd3a82aaf7b31ee9b08464ca70fa163d"
+          "sha256": "2c325ffbc6e7b2345522c84b6423fac6c7d7068b989a733742f885065adbb1ea"
         },
         {
           "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
@@ -884,7 +884,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "7834c6eebe4497514f60d3a5fba8ecb519575176bf7b4c3f3d97333afe9ef21a",
+        "sha256": "6db28978937a88d32fe010eb55c6f34234abe2961b2a02db403cc2dfdb38d37a",
         "pageCount": 7
       }
     },
@@ -986,7 +986,7 @@
         },
         {
           "path": "src/lib/payroll/calculation-mode.ts",
-          "sha256": "c94459692143f60495f66ad6c82ac991bc1fbddbfd2e01c02cb3176eb7c50443"
+          "sha256": "bac072790f0f619ee3f4adc3fbc3d43f647ee049fad5a8242d9f7f9cb2c56962"
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
@@ -1058,7 +1058,7 @@
         },
         {
           "path": "src/test/integration/release1-migrations.integration.ts",
-          "sha256": "8e378b2d2ae673b4401b9c0eab9833a1cd3a82aaf7b31ee9b08464ca70fa163d"
+          "sha256": "2c325ffbc6e7b2345522c84b6423fac6c7d7068b989a733742f885065adbb1ea"
         },
         {
           "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
@@ -1067,7 +1067,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "21224873a36f94e0f23b56f953c5cd0c242fed70e9cba64c1c39afcdae2aca70",
+        "sha256": "2198bffb9ea55704148f6bf3d7c713a8d2765d374d7ef8137299c2f01260de53",
         "pageCount": 6
       }
     }
