@@ -96,8 +96,10 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     await page.getByLabel('Employee ID', { exact: true }).fill('QAOWNER');
     await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
     await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(origin + '/app');
+    const notificationReadReady = () => page.locator('.portal-notification-bell[data-state="ready"]').first().waitFor({ state: 'attached' });
     let enteredFromManager = false;
     const openForm = async (steps: number) => {
+      await notificationReadReady();
       if (!enteredFromManager) {
         await page.setViewportSize({ width: 1440, height: 900 });
         await page.locator('#desktop-primary-navigation').getByRole('link', { name: 'AI manager', exact: true }).click();
@@ -171,6 +173,7 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     const pendingStorage = await page.evaluate(() => JSON.parse(sessionStorage.getItem('nevora.rondo.weekly.pendingApply.v1') ?? 'null'));
     expect(Object.keys(pendingStorage).sort()).toEqual(['acknowledged','authority','readReceiptId','requestId','reviewId','termsDigest']);
     expect(JSON.stringify(pendingStorage)).not.toContain('Fictional');
+    await notificationReadReady();
     const recovered = response('check_week_plan'); await page.reload(); const saved = await result(recovered);
     expect(saved.state).toBe('saved'); expect(saved.receipt?.operationId).toBe(pendingStorage.requestId);
     await page.getByRole('heading', { name: 'What was saved', exact: true }).waitFor();
