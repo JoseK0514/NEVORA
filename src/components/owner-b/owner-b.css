@@ -390,6 +390,10 @@
   :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit):has(> .b-row__end > :is(.b-chip, .b-status)) > .b-chev { grid-column: 3; grid-row: 1 / 3; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__s { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__s:has(.b-leave-note) { display: block; -webkit-line-clamp: none; overflow: visible; }
+  /* Audit NV-AUDIT-03 (Nov 19, 2026): a facts line built from parts (Dotted: place · state · last used) wraps between its
+   * parts and is never cut. The two-line clamp cut a tablet's line to "Main Office · Connect…" at 320px and hid when it was
+   * last used. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__s:has(> .eb-dots) { display: block; -webkit-line-clamp: none; overflow: visible; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__t { flex-wrap: wrap; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__tt { white-space: normal; text-wrap: balance; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__h { gap: var(--b-space-4); }

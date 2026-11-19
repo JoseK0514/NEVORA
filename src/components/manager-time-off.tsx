@@ -5,7 +5,7 @@ import {requireSessionMutationProof} from '@/lib/auth/session';
 import { TimeOffReviewActions } from "@/components/time-off-review-actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/requests";
-import { reviewTimeOffAction } from "@/app/app/requests/actions";
+import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
 import { formatTimeRange, weekStartFor } from "@/lib/date-utils";
 import { CorpPill } from "@/components/corp/corp";
 import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
@@ -112,21 +112,39 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
     {/* Review B6 (NV-093): the decision is one footer: who hears about it, then Decline and Approve, on the right. */}
     <div className="c-request__foot">
       <CorpNote>{`${first} gets a notification either way.`}</CorpNote>
-      <form action={reviewTimeOffAction} className="c-request__decide" aria-label={`Review time off for ${request.employeeName}`}>
+      {/* Audit NV-AUDIT-05 (Nov 19, 2026): a lost answer reads "not confirmed yet" here, with a check that reads this page again. */}
+      <TimeOffDecisionForm className="c-request__decide" label={`Review time off for ${request.employeeName}`}>
         <input type="hidden" name="requestId" value={request.id} />
         <input type="hidden" name="returnTo" value={origin.from} />
         <input type="hidden" name="returnFilter" value={origin.filter} />
         <TimeOffReviewActions name={request.employeeName} corp />
-      </form>
+      </TimeOffDecisionForm>
     </div>
   </CorpPage>;
 }
 
-/** IS-10: a link to a request that is no longer waiting says so, instead of opening the list. */
-function DecidedReview({ origin }: { origin: Origin }) {
+/** Codex C1: who decided and when, once the read includes it: "Approved by Dana Kim · Oct 2". */
+function decisionLine(status: "APPROVED" | "DENIED", request: object, timeZone: string) {
+  const { reviewerName, reviewedAt } = request as { reviewerName?: string; reviewedAt?: string };
+  if (!reviewerName && !reviewedAt) return null;
+  let on = "";
+  try { on = reviewedAt ? new Intl.DateTimeFormat("en-US", { timeZone, month: "short", day: "numeric" }).format(new Date(reviewedAt)) : ""; } catch { on = ""; }
+  return `${status === "APPROVED" ? "Approved" : "Declined"}${reviewerName ? ` by ${reviewerName}` : ""}${on ? ` · ${on}` : ""}`;
+}
+
+/** IS-10: a link to a request that is no longer waiting says so, instead of opening the list. Audit NV-AUDIT-05 (Nov 19,
+ * 2026): when the Approved or Declined list holds it, the page says which, by whom and when, so a Manager checking a
+ * decision whose answer was lost sees the result that was saved. */
+function DecidedReview({ origin, decided, timeZone }: { origin: Origin; decided: { status: "APPROVED" | "DENIED"; request: DecidedRequest } | null; timeZone: string }) {
+  const approved = decided?.status === "APPROVED", line = decided ? decisionLine(decided.status, decided.request, timeZone) : null;
   return <QuietPage>
     <QuietNav back={backTo(origin)} />
-    <QuietHeader title="Already decided" sub="This request isn’t waiting anymore." />
+    <QuietHeader title={decided ? approved ? "Already approved" : "Already declined" : "Already decided"} sub="This request isn’t waiting anymore." />
+    {decided ? <QuietList label="This request" style={{ marginTop: 16 }}>
+      <QuietRow avatar={<RequestFace name={decided.request.employeeName} initials={initialsOf(decided.request.employeeName)} />} title={decided.request.employeeName}
+        detail={line ? <>{whenLabel(decided.request)}<span className="q-rt__line">{line}</span></> : whenLabel(decided.request)}
+        value={<CorpPill tone={approved ? "green" : "neutral"}>{approved ? "Approved" : "Declined"}</CorpPill>} />
+    </QuietList> : null}
     <QuietList style={{ marginTop: 16 }}>
       <QuietRow title="Approved time off" href="/app/requests?tab=approved" />
       <QuietRow title="Declined time off" href="/app/requests?tab=declined" />
@@ -153,20 +171,23 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
     return <ScopedReadFrame observation={source}><FocusedReview request={focused as PendingRequest} origin={origin} error={error}
       others={approved?.state === "ready" ? approved.data : null} timeZone={zone} /></ScopedReadFrame>;
   }
-  if (selected.status === "PENDING" && requestId && !error) return <ScopedReadFrame observation={source}><DecidedReview origin={origin} /></ScopedReadFrame>;
+  if (selected.status === "PENDING" && requestId && !error) {
+    // Audit NV-AUDIT-05: find the decision in the Approved and Declined lists, under the same access.
+    const [approvedRead, declinedRead, zone] = await Promise.all([
+      withOperationalCompany(proof, () => listTeamTimeOffRequests("APPROVED")).catch(() => null),
+      withOperationalCompany(proof, () => listTeamTimeOffRequests("DENIED")).catch(() => null),
+      getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC")]);
+    const find = (read: typeof approvedRead) => read?.state === "ready" ? read.data.find(request => request.id === requestId) : undefined;
+    const approvedOne = find(approvedRead), declinedOne = approvedOne ? undefined : find(declinedRead);
+    const decided = approvedOne ? { status: "APPROVED" as const, request: approvedOne } : declinedOne ? { status: "DENIED" as const, request: declinedOne } : null;
+    return <ScopedReadFrame observation={source}><DecidedReview origin={origin} decided={decided} timeZone={zone} /></ScopedReadFrame>;
+  }
 
   // Quiet (v4, approved Oct 23): the segments carry the waiting count on every tab.
   const waiting = selected.status === "PENDING" ? requests.length
     : await withOperationalCompany(proof, () => listPendingTimeOffRequests()).then(read => read.state === "ready" ? read.data.length : 0).catch(() => 0);
   const zone = selected.status === "PENDING" ? "UTC" : await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
-  // Codex C1: who decided and when, once the read includes it: "Approved by Dana Kim · Oct 2".
-  const decidedLine = (request: object) => {
-    const { reviewerName, reviewedAt } = request as { reviewerName?: string; reviewedAt?: string };
-    if (!reviewerName && !reviewedAt) return null;
-    let on = "";
-    try { on = reviewedAt ? new Intl.DateTimeFormat("en-US", { timeZone: zone, month: "short", day: "numeric" }).format(new Date(reviewedAt)) : ""; } catch { on = ""; }
-    return `${selected.id === "approved" ? "Approved" : "Declined"}${reviewerName ? ` by ${reviewerName}` : ""}${on ? ` · ${on}` : ""}`;
-  };
+  const decidedLine = (request: object) => selected.status === "PENDING" ? null : decisionLine(selected.status, request, zone);
 
   return (<ScopedReadFrame observation={source}>
     <QuietPage className="q-timeoff">

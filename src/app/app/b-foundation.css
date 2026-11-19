@@ -316,7 +316,10 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 }
 @media (max-width: 767px) { :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend { display: none; } }
 @media (min-width: 768px) {
-  :is(#c-root, html) body .app-shell[data-nv-b] .cm-grid .cm-person__name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  /* Audit NV-AUDIT-04 (Nov 19, 2026): the grid shows each person's whole name, wrapping under itself, so two people whose
+   * names start the same never look alike ("Alexandra Montenegro d…"), whether the Owner or Manager points, taps or tabs.
+   * It was cut at two lines, with the rest only in a mouse tooltip. */
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-grid .cm-person__name { display: block; overflow-wrap: break-word; text-wrap: pretty; }
 }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-tc-day .c-ampm { font-size: 1em; font-weight: inherit; letter-spacing: 0; color: inherit; }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-tc-sheet__issue .c-tc-sheet__go { margin-top: 10px; }

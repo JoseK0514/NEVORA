@@ -47,6 +47,15 @@ export async function requestPin(locationKey:string,body:object):Promise<Reply>{
  if(data.state==='verified'&&typeof data.firstName==='string'&&typeof data.expiresAt==='string')return {state:'verified',firstName:data.firstName,expiresAt:data.expiresAt};
  throw new PinRequestError(CLOCKER_PIN_ERROR_FALLBACK,true);
 }
+/** Audit NV-AUDIT-01 (Nov 19, 2026): on a short screen the PIN step opens with its keypad and Continue in view. The page
+ * scrolls just far enough to show Continue, never past the card's top; when Continue is already in view nothing moves
+ * (the band keeps as much of the screen as it can). */
+function revealCard(field:HTMLInputElement|null){
+ const card=field?.closest('[data-clocker-pin]')?.parentElement,go=field?.form?.querySelector('button[type="submit"]');if(!card||!go)return;
+ const over=go.getBoundingClientRect().bottom+8-window.innerHeight;
+ if(over>0)window.scrollBy({top:Math.min(over,Math.max(0,card.getBoundingClientRect().top-8)),behavior:'instant'});
+}
+
 export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{locationKey:string;timeZone?:string;punchEnabled?:boolean}){
  const t=useClockerCopy(),{locale}=useClockerPresentation(),intl=useClockerIntlLocale();
  const input=useRef<HTMLInputElement>(null),busy=useRef(false),epoch=useRef(0),heading=useRef<HTMLHeadingElement>(null);
@@ -146,7 +155,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  useEffect(()=>{if(replaced)heading.current?.focus({preventScroll:true});},[replaced]);
  useEffect(()=>{
   if(pending||identity||blocked||offline)return;
-  if(step==='pin'){input.current?.focus({preventScroll:true});return;}
+  if(step==='pin'){input.current?.focus({preventScroll:true});revealCard(input.current);return;}
   // Back from the PIN step, the Employee ID is still there to check or correct.
   if(idInput.current){idInput.current.value=employeeId.current;idInput.current.focus();}
  },[pending,identity,blocked,step,offline]);

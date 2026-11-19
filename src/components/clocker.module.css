@@ -107,7 +107,9 @@
 .card { width: 100%; max-width: 472px; min-width: 0; padding: 30px var(--b-space-32) 26px; border-radius: var(--b-radius-card); background: var(--ck-card); box-shadow: var(--ck-lift); }
 
 /* Portrait tablets and phones: the band across the top fills the space above; the card sits low, toward the hand. */
-@media (orientation: portrait), (max-width: 699px) {
+/* Audit NV-AUDIT-01 (Nov 19, 2026): a landscape phone 600 to 699px wide and under 32 lines of text tall (667x375,
+ * 699x390) takes the side band instead, so the PIN step fits beside it (the short-landscape block at the end). */
+@media (orientation: portrait), (max-width: 599px), (max-width: 699px) and (min-height: 32.0625em) {
   /* Keys grow with the screen's height, up to 96px. Premium pass (#11): the PIN step's other parts (the band, whose clock
    * is 13.5vw, the card's title, field, message slot, Continue and language switch, and the 32px under the card) take
    * about 670px plus 12.8vw, so four rows of keys get the rest: 64px at 768x1024 (the card ended at the window's edge with
@@ -153,14 +155,14 @@
  * scroll to reach Continue. At 768px and taller nothing changes. */
 /* Review 30 (D35): the height is counted in lines of the reader's text (47.9375em is 767px at the default 16px), so at a
  * larger text size a 768px-tall tablet takes this layout too and the PIN step still fits. */
-@media (orientation: landscape) and (max-height: 47.9375em) and (min-width: 700px) {
+@media (orientation: landscape) and (max-height: 47.9375em) and (min-width: 700px), (orientation: landscape) and (max-height: 32em) and (min-width: 600px) {
   .page { --ck-keyh: 64px; --ck-btn: 56px; }
   .clock { font-size: clamp(56px, calc((100cqi - 88px) / 2.7), 6rem); }
   .card { padding: 22px 26px var(--b-space-20); }
 }
 /* Landscape: the band holds the screen's height, so content growing in the card (the saved-action help) never moves the
  * clock (Nov 10 review, NV-185). */
-@media (orientation: landscape) and (min-width: 700px) {
+@media (orientation: landscape) and (min-width: 700px), (orientation: landscape) and (max-height: 32em) and (min-width: 600px) {
   .band { position: sticky; top: 0; align-self: flex-start; height: 100dvh; }
   /* The 56px language switch and back arrow (Phase 6) add 8px to the PIN step; the task area gives them back. */
   .task { padding-top: max(24px, env(safe-area-inset-top)); padding-bottom: max(24px, env(safe-area-inset-bottom)); }
@@ -460,7 +462,7 @@
   .spin { forced-color-adjust: none; border-color: GrayText; border-top-color: Highlight; }
 }
 
-@media (forced-colors: active) and (orientation: portrait), (forced-colors: active) and (max-width: 699px) {
+@media (forced-colors: active) and (orientation: portrait), (forced-colors: active) and (max-width: 599px), (forced-colors: active) and (max-width: 699px) and (min-height: 32.0625em) {
   .band { border-right: 0; border-bottom: 1px solid CanvasText; }
 }
 
@@ -486,7 +488,7 @@
 /* A small landscape tablet (800x600; Phase 6): the whole PIN step, with Continue and the language switch, fits the
  * screen. After the component rules it adjusts, like the phone block below. Keys and buttons hold the 56px floor; only the gaps, the card's padding and the headline give way.
  * Review 30 (D35): counted in lines of text (40em is 640px at the default size), so a 1024x768 tablet at 200% text takes it. */
-@media (orientation: landscape) and (max-height: 40em) and (min-width: 700px) {
+@media (orientation: landscape) and (max-height: 40em) and (min-width: 700px), (orientation: landscape) and (max-height: 32em) and (min-width: 600px) {
   .page { --ck-keyh: 56px; }
   /* Review 30 (D35): a digit stays inside its 56px key at a larger text size (it is 30px at the default size). */
   .key { font-size: min(var(--b-fs-display), 40px); }
@@ -543,4 +545,57 @@
   .keys { gap: 6px; margin-top: var(--b-space-4); }
   .pinForm .continue { margin-top: var(--b-space-8); }
   .meta { margin-top: 6px; }
+}
+/* Audit NV-AUDIT-01 (Nov 19, 2026): a short phone (under 48 lines of text tall: 375x667, 360x640, 320x568). The band and
+ * the card's gaps give way so the whole PIN step (keypad, Continue and the language switch) is no taller than a 568px
+ * screen, and opening the PIN step scrolls just far enough to show Continue (clocker-pin-gate.tsx). Keys and buttons keep the
+ * 56px floor. At 390x844 and taller nothing changes. */
+@media (max-width: 599px) and (max-height: 47.9375em) {
+  .band { padding-bottom: 52px; }
+  .when { padding-top: var(--b-space-8); }
+  .clock { font-size: clamp(40px, calc((100cqi - 88px) / 2.7), 3.25rem); }
+  .under { margin-top: var(--b-space-8); }
+  .task { margin-top: -40px; }
+  .card { padding: var(--b-space-16) var(--b-space-16) var(--b-space-12); }
+  .card .title { font-size: 1.375rem; }
+  .pin { height: 52px; margin-top: var(--b-space-8); }
+  .idEntry { margin-top: var(--b-space-12); }
+  .idEntry input { height: 52px; }
+  .pinMsg { min-height: 2.6em; margin-top: var(--b-space-4); font-size: .8125rem; }
+  .keys { gap: var(--b-space-8); margin-top: var(--b-space-4); }
+  .pinForm .continue { margin-top: var(--b-space-8); }
+  .meta { margin-top: 6px; }
+}
+/* Audit NV-AUDIT-01 and -02 (Nov 19, 2026): a short landscape screen (under 32 lines of text tall, 512px at the default
+ * size: a phone held sideways, 844x390, 699x390, 667x375). The band narrows and tightens so the location, the date, the
+ * tablet's state, its time zone and its name stay in view; a name too long for even that scrolls inside the band rather
+ * than being cut off. The PIN step puts the keypad beside the field, its message and Continue, so the whole step fits
+ * without scrolling. Tab order is unchanged: back, the field, the keys, Continue, then the language switch. */
+@media (orientation: landscape) and (max-height: 32em) and (min-width: 600px) {
+  .page { --ck-keyh: 56px; --ck-btn: 56px; }
+  .band { flex-basis: clamp(240px, 32vw, 340px); gap: var(--b-space-12); padding: max(16px, env(safe-area-inset-top)) var(--b-space-20) max(16px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgb(255 255 255 / .45) transparent; }
+  .brand { gap: 10px; }
+  .logo { height: 15px; }
+  .workspace { min-height: 30px; padding: var(--b-space-4) var(--b-space-12); font-size: .8125rem; }
+  .companyLogo { height: 34px; }
+  .companyLogo img { max-height: 24px; }
+  .clock { font-size: clamp(44px, calc((100cqi - 88px) / 2.7), 4.5rem); }
+  .under { gap: 6px; margin-top: 10px; }
+  .location { min-height: 30px; padding: var(--b-space-4) var(--b-space-12) var(--b-space-4) 10px; font-size: .875rem; }
+  .date { font-size: 1rem; }
+  .foot { gap: var(--b-space-8); }
+  .status { padding: 10px 14px; border-radius: 14px; }
+  .powered { display: none; }
+  .task { padding: max(8px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) var(--b-space-16); }
+  .card { max-width: 600px; padding: var(--b-space-12) var(--b-space-20); }
+  .content[data-clocker-step=pin]:has([data-clocker-keypad]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: auto auto auto auto 1fr; column-gap: var(--b-space-20); align-items: start; }
+  .content[data-clocker-step=pin]:has([data-clocker-keypad]) :is(.pinForm, .pinForm fieldset) { display: contents; }
+  .content[data-clocker-step=pin]:has([data-clocker-keypad]) > .head { grid-area: 1 / 1; }
+  .content[data-clocker-step=pin]:has([data-clocker-keypad]) > .head[data-back] .title { padding: 0 0 0 48px; text-align: start; }
+  .content[data-clocker-step=pin]:has([data-clocker-keypad]) .pin { grid-area: 2 / 1; }
+  .content[data-clocker-step=pin]:has([data-clocker-keypad]) .pinMsg { grid-area: 3 / 1; }
+  .content[data-clocker-step=pin]:has([data-clocker-keypad]) .continue { grid-area: 4 / 1; }
+  .content[data-clocker-step=pin]:has([data-clocker-keypad]) .keys { grid-area: 1 / 2 / 6 / 3; margin-top: 0; }
+  .content[data-clocker-step=pin]:has([data-clocker-keypad]) > .meta { grid-area: 5 / 1; align-self: end; }
 }
