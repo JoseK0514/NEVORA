@@ -355,7 +355,7 @@ try{
     const fixtureNames=Object.fromEntries((await q('SELECT id,first_name FROM employees')).map(person=>[person.id,person.first_name]));
     const readCards=()=>readVisibleInboxCards(todoCards,inboxActions.items,fixtureNames);
     const sum=cards=>cards.reduce((total,card)=>total+(card.count??card.representedCount),0);
-    const positiveCards=cards=>cards.every(card=>card.id==='todo-closed-timecards'?card.count===null&&card.representedCount>0:Number.isInteger(card.count)&&card.count>0);
+    const positiveCards=cards=>cards.every(card=>card.id==='todo-closed-timecards'||card.quietOnly?card.count===null&&(card.representedCount>0||card.nonReviewableCount>0):Number.isInteger(card.count)&&card.count>0);
     const cardCounts=await readCards();
     assert(positiveCards(cardCounts));
     {const more=center.locator('#b-todo-more');assert.equal(await more.getAttribute('aria-label'),'More');
@@ -371,7 +371,7 @@ try{
     }
     const planCount=moreCards.find(card=>card.id==='todo-plan')?.count??0,earlierCount=moreCards.find(card=>card.id==='todo-earlier')?.count??0;const laterDescription=[planCount?`${planCount} planned`:null,earlierCount?`${earlierCount} done`:null].filter(Boolean).join(' · ')||'Nothing later or done';assert.equal((await moreRow.locator('.b-row__s').innerText()).trim(),laterDescription);assert.equal(await moreRow.getAttribute('aria-label'),'Later and done: '+laterDescription.toLowerCase());
     (report.inboxVisibility??=[]).push({engine,cards:cardCounts,more:moreCards});
-    const expectedTotal=inboxActions.items.filter(item=>item.type!=='TIMECARD'||item.review?.independentReviewRequired!==true).length+(todaySource.state==='ready'?todaySource.missed.length:0);
+    const expectedTotal=inboxActions.items.filter(item=>!['TIMECARD','TIME_CORRECTION'].includes(item.type)||item.review?.actorMayReview===true&&item.review.unavailableReason!=='facts_unavailable').length+(todaySource.state==='ready'?todaySource.missed.length:0);
     assert.equal(sum(cardCounts)+sum(moreCards),expectedTotal,'Things to do and Later and done represent every eligible canonical action and current missed shift exactly once');
     // Owners see coverage first, then the approved card order.
     const order=['todo-repair','todo-open','todo-not-clocked-in','todo-missed','todo-now','todo-corrections','todo-timecards','todo-time-off','todo-swaps','todo-cant-work','todo-requests','todo-waiting-corrections','todo-waiting-timecards','todo-closed-timecards'];
