@@ -676,6 +676,32 @@ item names the lines it supersedes; line numbers are from the file before this s
     with one check. The request's page then reads "Already approved" or "Already declined" with who and when, or the
     buttons return under "This request is still waiting. Decide again."
 
+- **Owner and Manager controls (Nov 19, 2026; SCRUM-215, 218, 214; see
+  `docs/handoffs/2026-11-19-claude-owner-manager-controls.md`).** On Development's contracts, English and Spanish.
+  - *Language.* These screens speak the person's portal language (`readPortalLanguage`: saved choice, then the device's
+    `nv-lang`, then the browser). Where the rest of a page is still English, the new card or page carries its own `lang`
+    (`CorpPage`/`CorpCard` take `lang`). Money is exact ("$18.255" is never rounded), dates are `en-US` or `es-PR`.
+  - *Action grants.* On a Manager's Access page, under Management access: "What they can approve", one group per location
+    the Manager manages, three switches each (Publish schedules, Approve time off, Review time exceptions). A switch shows
+    the server's state only and moves when the save is confirmed; a lost answer says "Not confirmed" with "Check again"
+    (the same command, sent again), a conflict asks for a reload. The Manager's Profile lists what they can approve and
+    where, and who to ask for the rest. A refusal names the missing grant and who decides (publishing, time off).
+  - *Week starts on.* Scheduling rules has the planning calendar (Owner edits, Manager reads). When it isn't Monday, the
+    schedule shows the planning week as two parts, each with its schedule week's own label and a way to open it;
+    publishing and history keep their Monday weeks.
+  - *First-week setup.* Owner Home's setup slot is the five server-confirmed steps with a five-part track: a done step is
+    a green check and "Complete", the next one a teal ring named "Next step", later ones "To do". It reads again when the
+    Owner comes back to the tab. A failed read is "unavailable right now" with Try again, never "nothing to do"; a
+    finished setup leaves Home. The older coverage and hour-target items stay in Things to do.
+  - *Pay rate.* An Owner-only page under each person (Team › person › Pay rate): rates now by location ("No rate" is
+    amber and never shown as $0; "$0.00/h, Saved as zero" is a recorded zero), the next scheduled change, history with
+    who, when and why. Change: set or remove a rate at chosen locations from a day, then a review with each location's
+    old and new rate, then one save. It shares the scheduling restrictions page's parts. An unconfirmed save is held and
+    only ever sent again unchanged.
+  - *Base scheduled pay.* The Owner's schedule has one estimate card: the total in the header, a row per location with
+    shifts and hours, "Incomplete" with what is priced so far ("$1,240.00 for 30 of 36 shifts"), "No pay rates" with a
+    way to Team. "What's included" opens the basis. It is an estimate, never payroll.
+
 ## Previous direction (October 20, 2026; superseded)
 
 | Surface | Design then | Source |

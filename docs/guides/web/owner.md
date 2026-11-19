@@ -36,6 +36,12 @@ If an operator supplied your initial password, sign in with it and choose a
 different password on the replacement screen. The initial password grants no
 workplace session. After replacement, sign in with your new password.
 
+**First-week setup** on Home shows five steps: add a team member, set up
+locations and staffing rules, publish your first schedule, register a time clock
+tablet and review your first timecard. Each step opens its own page, and Home
+updates when you come back. If progress can't load, use **Try again**. The card
+leaves Home once every step is complete.
+
 ## Add people and grant access
 
 1. Open **Team** and add the person. Enter a unique Employee ID and accurate
@@ -73,6 +79,13 @@ and approval grants are separate from management scope. A Lead has personal
 self-service access; neither the Lead role nor a shift's designated-lead marker
 grants Manager powers.
 
+**What a Manager can approve** sits under Management access on a Manager's
+**Access and sign-in** page. For each location they manage, switch on **Publish
+schedules**, **Approve time off** and **Review time exceptions** separately. A
+switch moves only after the save is confirmed. If it says **Not confirmed**, use
+**Check again**, which sends the same change again. A request outside every
+Manager's grants comes to you. Nobody reviews their own time off or correction.
+
 ## Build, review and publish a schedule
 
 1. Open **Schedule**, select the week and location, and check who is eligible.
@@ -99,6 +112,11 @@ grants Manager powers.
 Published replacements may require an additional explicit publication consent.
 Follow the particular review screen. A saved replacement or Rondo coverage
 draft is not a general instruction to publish every outstanding change.
+
+**Week starts on** in Scheduling rules sets the seven days Schedule shows
+together (Monday by default). With another day, Schedule shows the planning week
+in its schedule weeks, each with its own dates and **Open**. Publishing,
+published schedules and payroll keep their Monday-to-Sunday weeks.
 
 ## Review requests and recorded time
 
@@ -245,6 +263,23 @@ agreements and change requests. Management-agreed restrictions are enforceable;
 availability preferences remain separate. Review the effective Monday and changed
 days before saving or deciding a request. A missing legacy agreement does not mean
 an explicit unrestricted agreement.
+
+## Pay rates and scheduled pay
+
+Only Owners see pay rates. From a person's Team page, **Pay rate** shows the rate
+at each location now, any change set to start later, and the history with who
+changed it, when and why. **No rate** means the location has no rate; a recorded
+zero shows as **$0.00/h, Saved as zero**. Use **Change pay rate** to set or
+remove a rate at the locations you pick from a day you choose, then review each
+location's old and new rate before **Save rate**. If the save isn't confirmed,
+use **Check again** before changing anything else. Saving a rate doesn't run
+payroll; payroll asks you to confirm new terms before it pays with them.
+
+**Base scheduled pay** on the Schedule is an estimate for the week and the
+locations in view, drafts included: scheduled time at each person's rate in
+effect. **Incomplete** says how many shifts are priced; **No pay rates** links to
+Team. It leaves out overtime, premiums, breaks, employer taxes, benefits and
+deductions, and it isn't payroll.
 
 ## Tablet setup and uncertain punches
 
