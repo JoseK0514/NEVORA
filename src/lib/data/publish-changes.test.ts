@@ -62,7 +62,7 @@ it('Publish changes writes one whole-week revision, one diff notification set an
   expect(capture.text).toContain('FROM shifts sh JOIN schedules s');
   const mark = texts.findIndex(t => t.includes('UPDATE schedule_pending_edits SET published_revision_id'));
   expect(mark).toBeGreaterThan(texts.indexOf(capture.text));
-  expect(batch[mark].values).toEqual([result.revision!.id, result.revision!.createdAt, week, null]);
+  expect(batch[mark].values).toEqual([result.revision!.id, result.revision!.createdAt, week, null, []]);
   // Only E's shift changed, so only E is told; F's unchanged shift sends nothing.
   expect(events(batch)).toEqual(['E']);
   expect(access.footprints).toContainEqual({ kind: 'COMPANY' });
