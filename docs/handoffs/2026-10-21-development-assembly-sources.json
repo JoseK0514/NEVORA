@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-19T01:51:25.204167+00:00",
+  "observedAt": "2026-11-19T02:37:04Z",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -516,14 +516,9 @@
     {
       "branch": "codex/nevora-password-emails-20261117",
       "sha": "6d31d122c078a43297e37a90280f2c657b03b8b6",
-      "disposition": "held",
-      "reason": "Password policy and bilingual email change. The 11 commits beyond development remain on draft PR #39 and have failing required checks at this head. Review and disposition belong to that delivery. Chat 2 imports none of these changes."
-    },
-    {
-      "branch": "nevora-30-day-phase",
-      "sha": "69aa0970c73c2f93ef330b4252523dddd2aa2f64",
-      "disposition": "held",
-      "reason": "Separately authorized 30-day business branch. The 155 commits beyond development include Claude UI, framework updates, Clocker grace, employment dates, a Christmas bonus report, and disabled public analytics. Preserve the exact head pending separate disposition; Chat 2 imports none of these changes."
+      "disposition": "included",
+      "reason": "Password enrollment and bilingual account email changes from PR #39 are included through a history-preserving merge.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-18/codex/nevora-password-emails-20261117"
     },
     {
       "branch": "nevora-30-day-phase",
@@ -531,13 +526,6 @@
       "disposition": "included",
       "reason": "Included through the collaboration branch.",
       "archiveRef": "refs/tags/archive/branches/2026-11-18/nevora-30-day-phase"
-    },
-    {
-      "branch": "codex/nevora-password-emails-20261117",
-      "sha": "6d31d122c078a43297e37a90280f2c657b03b8b6",
-      "disposition": "included",
-      "reason": "Password enrollment and bilingual account email changes from PR #39 are included through a history-preserving merge.",
-      "archiveRef": "refs/tags/archive/branches/2026-11-18/codex/nevora-password-emails-20261117"
     }
   ],
   "maximumActiveBranches": 3,
