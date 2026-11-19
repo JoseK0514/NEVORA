@@ -126,8 +126,8 @@ it("compares real joint day plans with discoverable keyboard review and private 
         for (const width of [320, 390, 1440]) {
           await page.setViewportSize({ width, height: 844 });
           const layout = await page.evaluate(() => ({ overflow: document.documentElement.scrollWidth > innerWidth,
-            shortTargets: [...document.querySelectorAll<HTMLElement>(".oa-answer summary, #oa-coverage-date, .oa-section form button")].filter(el => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height < 44).map(el => ({ text: el.textContent, height: el.getBoundingClientRect().height })) }));
-          const audit = await page.evaluate("axe.run('.oa-content', {runOnly: {type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa']}})");
+            shortTargets: [...document.querySelectorAll<HTMLElement>(".oa-answer summary, #oa-coverage-date, .oa form button")].filter(el => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height < 44).map(el => ({ text: el.textContent, height: el.getBoundingClientRect().height })) }));
+          const audit = await page.evaluate("axe.run('.oa', {runOnly: {type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa']}})");
           await writeFile(resolve(evidence, `${engine}-${width}-audit.json`), JSON.stringify({ layout, audit }, null, 2));
           await page.screenshot({ path: resolve(evidence, `${engine}-${width}.png`), fullPage: true });
           expect(layout.overflow).toBe(false); expect(layout.shortTargets).toEqual([]); expect(audit.violations).toEqual([]);

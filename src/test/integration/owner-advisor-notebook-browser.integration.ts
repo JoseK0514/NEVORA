@@ -176,7 +176,7 @@ it("persists private goals and tasks through the real Owner app, preserves delib
             overflow: document.documentElement.scrollWidth > innerWidth,
             shortTargets: [...document.querySelectorAll<HTMLElement>(".oa-notebook button,.oa-notebook summary")].filter(el => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height < 44).map(el => ({ text: el.textContent, height: el.getBoundingClientRect().height })),
           }));
-          const audit = await page.evaluate("axe.run('.oa-content', {runOnly: {type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa']}})");
+          const audit = await page.evaluate("axe.run('.oa', {runOnly: {type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa']}})");
           await writeFile(resolve(evidence, `${engine}-${width}-audit.json`), JSON.stringify({ layout, audit }, null, 2));
           await page.screenshot({ path: resolve(evidence, `${engine}-${width}.png`), fullPage: true });
           expect(layout.overflow, `${engine}/${width} overflow`).toBe(false);

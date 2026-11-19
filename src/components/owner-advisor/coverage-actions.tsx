@@ -44,8 +44,8 @@ export function CoverageActionPanel({ view, actions }: { view: CoverageActionVie
           {r.partial && <BCallout tone="amber">Some locations or requirements are outside this review. Check the full schedule before publishing.</BCallout>}
           <label className="oa-consent"><input type="checkbox" checked={view.acknowledged} onChange={e => actions.acknowledge(e.target.checked)} disabled={busy}/><span>I reviewed these exact assignments and want to save them as drafts.</span></label>
           <div className="oa-acts oa-acts--end">
-            <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={actions.dismiss}>Back to comparison</CorpButton>
             <CorpButton kind="primary" size="md" onClick={() => void actions.save()} disabled={!view.acknowledged || busy}>Save {r.assignments.length} draft {r.assignments.length === 1 ? "assignment" : "assignments"}</CorpButton>
+            <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={actions.dismiss}>Back to comparison</CorpButton>
           </div>
         </>}
         {receipt && <>
