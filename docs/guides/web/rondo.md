@@ -1,13 +1,14 @@
 # Rondo web guide
 
-Rondo is the company operations assistant in the current Owner web workflow.
-The integrated page and navigation are still labelled **AI manager**. This guide
-uses Rondo's product name without claiming a displayed UI rename or Manager
-rollout. The [guide index](README.md) identifies the development distribution.
+Rondo is the company operations assistant in the NEVORA web app. Owners open
+it as **Rondo AI** from the sidebar or **More**. Managers have their own
+read-only Rondo AI view when the Manager switch is on (see
+[Rondo AI for Managers](#rondo-ai-for-managers)). The [guide index](README.md)
+identifies the development distribution.
 
 ## Availability and access
 
-Only a current Owner with company authority can open this page. It is hidden or
+Only a current Owner with company authority can open the Owner page. It is hidden or
 unavailable when the feature is disabled. Model investigation also requires
 approved data use, a configured supported provider/model, server-side credentials
 and a bounded daily limit. Opening the page does not prove the model provider is
@@ -20,7 +21,7 @@ surface with different information and capabilities.
 
 ## Investigate a specific decision
 
-1. Open **AI manager** and review **Live briefing**, its observation time and
+1. Open **Rondo AI** and review **Live briefing**, its observation time and
    the company/date. Use **Refresh history** when returning to an old tab or
    when current information is hidden or unavailable.
 2. Ask a bounded question: identify the date, location and decision. For example,
@@ -82,7 +83,7 @@ lost response does not prove that server work or provider use never occurred.
 
 ## Maintain company knowledge
 
-Open **Company knowledge** from AI manager. This library belongs to the company
+Open **Company knowledge** from Rondo AI. This library belongs to the company
 and is shared with its authorized Owners; it is separate from private Owner
 priorities and goals.
 
@@ -107,7 +108,7 @@ If a save is not confirmed, use **Check again** for that original operation.
 
 ## Compare and approve a full week
 
-When available, open **Weekly plan** from AI manager. Select the week and location
+When available, open **Weekly plan** from Rondo AI. Select the week and location
 scope, then **Compare options**. **Fill open gaps** keeps current shifts.
 **Rebuild generated drafts** may replace earlier generated drafts; protected,
 manual and published work stays protected by the scheduling rules.
@@ -139,6 +140,26 @@ unmeasurable scope identified. While weekly planning is off, authorized links to
 previously saved plans can still show a minimal receipt, without a new comparison
 or schedule mutation. Review details hide when the Owner steps away or the short
 read lease ends, and must be read again with current authority.
+
+## Rondo AI for Managers
+
+A Manager sees **Rondo AI** when the adviser switch and the Manager switch are
+both on and the Manager has a current company or location assignment. The view
+reads the schedule and changes nothing.
+
+1. Choose a location you manage and a week.
+2. Choose one of four questions: published shifts, drafts, scheduled hours or
+   released shifts. Rondo shows the figure, what it counts, the location, the
+   week and the time it checked.
+3. Read **Week by day** for each day's published shifts, drafts, released shifts
+   and planned hours.
+
+Hours are planned time from the schedule; timecards show hours worked. Released
+shifts followed an approved “Can’t work” request and are not in the draft or
+published counts. A Manager cannot type a question, open business records,
+company knowledge or Owner priorities, or read a location outside their
+assignment. Answers hide when you switch away; choose **Show again** to read them
+with current access.
 
 ## Understand the action boundary
 
