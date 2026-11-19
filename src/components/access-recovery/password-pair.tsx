@@ -6,6 +6,7 @@ import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { AUTH_COPY, type AuthLang } from "@/lib/auth-copy";
 import { FieldError, FieldInvalid } from "@/components/auth-premium/auth-validation";
 import { RuleLine } from "@/components/auth-premium/password-rules";
+import { MIN_PASSWORD_CHARACTERS, passwordLength } from "@/lib/auth/password-requirements";
 import { ACCESS_COPY } from "./copy";
 import "./access-recovery.css";
 
@@ -44,12 +45,12 @@ export function PasswordPair({ prefix, lang, mismatch = false, newLabel, confirm
     form?.addEventListener("reset", clear);
     return () => form?.removeEventListener("reset", clear);
   }, []);
-  const longEnough = password.length >= 8, same = Boolean(confirm) && confirm === password;
+  const longEnough = passwordLength(password) >= MIN_PASSWORD_CHARACTERS, same = Boolean(confirm) && confirm === password;
   // Said in red once the two values differ and either the form refused the pair or the person left the second field.
   // Until something is typed nothing differs, so a refused form that was cleared shows no stale error.
   const differs = Boolean(confirm) && confirm !== password && (mismatch || left);
   function typed(nextPassword: string, nextConfirm: string) {
-    const nowLong = nextPassword.length >= 8, nowSame = Boolean(nextConfirm) && nextConfirm === nextPassword;
+    const nowLong = passwordLength(nextPassword) >= MIN_PASSWORD_CHARACTERS, nowSame = Boolean(nextConfirm) && nextConfirm === nextPassword;
     if (nowSame && !same) setSaid(t.activation.passwordsMatch);
     else if (nowLong && !longEnough) setSaid(t.reset.lengthMet);
     else if (!nowLong && !nowSame) setSaid("");
@@ -62,21 +63,21 @@ export function PasswordPair({ prefix, lang, mismatch = false, newLabel, confirm
     <div className="q-fl">
       <label htmlFor={first}>{newLabel}</label>
       <div className="q-in__wrap">
-        <input id={first} className="q-in" name="password" type={visible ? "text" : "password"} required minLength={8} maxLength={1024}
+        <input id={first} className="q-in" name="password" type={visible ? "text" : "password"} required minLength={MIN_PASSWORD_CHARACTERS}
           autoComplete="new-password" autoCorrect="off" autoCapitalize="none" spellCheck={false} enterKeyHint="next"
           aria-describedby={`${first}-hint ${advice ? `${first}-advice ` : ""}${first}-invalid`}
           data-msg-required={t.invalid.newPassword} data-msg-invalid={t.invalid.newPassword}
           onInput={event => typed(event.currentTarget.value, confirm)} />
         {eye}
       </div>
-      <RuleLine id={`${first}-hint`} state={longEnough ? "ok" : "idle"} text={t.atLeast8} />
+      <RuleLine id={`${first}-hint`} state={longEnough ? "ok" : "idle"} text={t.atLeast15} />
       {advice ? <span className="ar-rule ar-rule--plain" id={`${first}-advice`}>{advice}</span> : null}
       <FieldInvalid id={first} />
     </div>
     <div className="q-fl" data-invalid={differs ? "" : undefined}>
       <label htmlFor={second}>{confirmLabel}</label>
       <div className="q-in__wrap">
-        <input id={second} className="q-in" name="confirmPassword" type={visible ? "text" : "password"} required minLength={8} maxLength={1024}
+        <input id={second} className="q-in" name="confirmPassword" type={visible ? "text" : "password"} required minLength={MIN_PASSWORD_CHARACTERS}
           autoComplete="new-password" autoCorrect="off" autoCapitalize="none" spellCheck={false} enterKeyHint="go"
           aria-invalid={differs || (mismatch && !same) || undefined} aria-describedby={`${differs ? mismatchId : `${second}-hint`} ${second}-invalid`}
           data-msg-required={t.invalid.confirm} data-msg-invalid={t.invalid.confirm}

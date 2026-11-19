@@ -16,6 +16,7 @@ import {ACCESS_COPY} from '@/components/access-recovery/copy';
 import {AccessSteps} from '@/components/access-recovery/access-steps';
 import {SupportReference} from '@/components/access-recovery/support-reference';
 import '@/components/access-recovery/access-recovery.css';
+import {passwordRejectionMessage,type PasswordRejection} from '@/lib/auth/password-requirements';
 import {MOBILE_ACCESS_COPY} from './copy';
 import {AccessPasswordPair} from './password-pair';
 import {useAccessJourney} from './journey';
@@ -31,7 +32,7 @@ import {Whole} from '@/components/auth-premium/whole';
  * Premium pass FD (Nov 18, 2026): offline and "not available" are the kit's callout (amber offline, red stop), word for
  * word; the workplace's name never splits across lines; on "You're set" the Employee ID is a plain field with its label
  * above it, as on every other width (mobile-access.css). */
-export function MobileActivationView({phase,mismatch=false,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang,offline=false,supportReference=null,otherSession=null,passkeys=false}:{phase:ActivationPhase;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>;lang:AuthLang;offline?:boolean;supportReference?:string|null;otherSession?:string|true|null;passkeys?:boolean}) {
+export function MobileActivationView({phase,passwordReason,mismatch=false,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang,offline=false,supportReference=null,otherSession=null,passkeys=false}:{phase:ActivationPhase;passwordReason?:PasswordRejection;mismatch?:boolean;employeeId?:string|null;loginHref:string;workspaceName?:string|null;onSubmit:(event:FormEvent<HTMLFormElement>)=>void;formRef?:RefObject<HTMLFormElement|null>;successRef?:RefObject<HTMLDivElement|null>;lang:AuthLang;offline?:boolean;supportReference?:string|null;otherSession?:string|true|null;passkeys?:boolean}) {
  const t=MOBILE_ACCESS_COPY[lang],u=ACCESS_COPY[lang].activation,chip=workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null,journey=useAccessJourney(),input=useRef<HTMLInputElement>(null),version=useRef({generation:0}),[copyStatus,setCopyStatus]=useState('');
  useEffect(()=>{const lifetime=version.current;lifetime.generation++;return()=>{lifetime.generation++;};},[employeeId,lang]);
  const canSubmit=['ready','pending','unavailable'].includes(phase),signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
@@ -54,8 +55,9 @@ export function MobileActivationView({phase,mismatch=false,employeeId,loginHref,
  return <><AccessCard>{phase==='checking'||unknown?null:<AccessSteps journey="activation" current={canSubmit?2:1} lang={lang}/>}
   <div className="q-hd"><h1>{title}</h1>{canSubmit||phase==='checking'?null:chip}<p role={phase==='checking'?'status':unknown?'alert':undefined}>{sub}</p></div>
   {canSubmit?<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'}><AuthValidation/>
+   {passwordReason&&!mismatch?<div id="activation-policy-error" className="ar-note" role="alert"><BCallout tone="red">{passwordRejectionMessage(lang,passwordReason)}</BCallout></div>:null}
    {offline?<div id="activation-offline" className="ar-note" role="alert" tabIndex={-1}><BCallout tone="amber" icon="offline" title={offlineNote.title??undefined}>{offlineNote.body}</BCallout></div>:null}
-   {phase==='unavailable'&&!mismatch&&!offline?<><div id="activation-unavailable" className="ar-note" role="alert"><BCallout tone="red" title={unavailableNote.title??undefined}>{unavailableNote.body}</BCallout></div><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
+   {phase==='unavailable'&&!passwordReason&&!mismatch&&!offline?<><div id="activation-unavailable" className="ar-note" role="alert"><BCallout tone="red" title={unavailableNote.title??undefined}>{unavailableNote.body}</BCallout></div><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}><AccessPasswordPair prefix="activation" lang={lang} mismatch={mismatch} newLabel={t.createPassword}/></fieldset>
    <ul className="ar-facts" aria-label={u.factsLabel}>
     <li><KeyIcon size={16} weight="bold" aria-hidden="true"/><span>{u.passwordFact}</span></li>

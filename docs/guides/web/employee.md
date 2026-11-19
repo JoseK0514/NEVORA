@@ -18,6 +18,12 @@ notifications have separate availability and acceptance. See the
    activation is unconfirmed, ask them to check account status; try normal
    sign-in with your known ID before requesting another invitation.
 
+Choose at least 15 characters. Long passphrases and spaces are welcome; you do
+not need a prescribed mix of symbols, numbers or capital letters. Common or known
+breached values and passwords based on your Employee ID or company name are
+refused with a specific reason. Existing passwords keep working, with no scheduled
+password changes. New or reset passwords follow these rules.
+
 Keep your invitation, password, recovery code and passkeys private. Use the
 sign-in help/recovery flow if needed. Your manager can help through an authorized
 recovery process without learning your password.

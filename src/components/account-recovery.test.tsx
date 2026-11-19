@@ -31,8 +31,8 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   expect(html).toContain('minLength="43"');expect(html).toContain('maxLength="4096"');
   expect(html.match(/autoComplete="new-password"/g)).toHaveLength(2);
   expect(html).toContain('name="confirmPassword"');expect(html).not.toContain('recovery-help');
-  expect(html.match(/minLength="8"/g)).toHaveLength(2);
-  expect(html.match(/maxLength="1024"/g)).toHaveLength(2);
+  expect(html.match(/minLength="15"/g)).toHaveLength(2);
+  expect(html).not.toContain('maxLength="1024"');
   expect(html).toContain('aria-controls="reset-password reset-confirm-password"');
   expect(html).toContain('aria-label="Show password"');
   expect(html).toContain('Enable JavaScript to reset your password');

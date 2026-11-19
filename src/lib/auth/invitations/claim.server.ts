@@ -1,3 +1,4 @@
+import {isPasswordTooLong} from '../password-requirements';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import {reportHandledServerError} from '@/lib/server-error';
@@ -5,6 +6,7 @@ import type {Workspace} from '@/lib/domain';
 import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
 import {neonNotificationExecutor} from '@/lib/data/notification-transactions';
 import {workspaceReadGuard} from '@/lib/data/workspaces';
+import {passwordRejection} from '../password-policy';
 import {hashPassword} from '@/lib/auth/password';
 import {invitationProofDigest} from './service.server';
 import {tryAcquireInvitationPasswordWork} from './admission.server';
@@ -59,7 +61,8 @@ function failure(error:unknown,commitAttempted:boolean,aborted:boolean):Activati
  * the credential+consume transaction. Identity is disclosed only after a known
  * commit. An unresolved commit returns outcome_unknown and creates no session. */
 export async function claimInvitation(proof:string,password:string,executor:SqlExecutor=neonNotificationExecutor(),signal?:AbortSignal):Promise<ActivationResult>{
- if(!validProof(proof)||typeof password!=='string'||password.length<8||password.length>1024||signal?.aborted)return {state:'invalid'};
+ if(!validProof(proof)||typeof password!=='string'||signal?.aborted)return {state:'invalid'};
+ if(isPasswordTooLong(password))return {state:'invalid',passwordReason:'too_long'};
  let release:(()=>void)|null=null,commitAttempted=false;
  try{
   const digest=invitationProofDigest(proof);
@@ -82,6 +85,7 @@ export async function claimInvitation(proof:string,password:string,executor:SqlE
    current(digest,row)];
   const admitted=await executor.transaction(admission,signal);
   if(admitted[admission.length-2]?.length!==1||signal?.aborted)return {state:'invalid'};
+  const passwordReason=passwordRejection(password,{employeeId:row.employeeId,companyName:row.name});if(passwordReason)return {state:'invalid',passwordReason};
   const passwordHash=await hashPassword(password);
   if(signal?.aborted)return {state:'invalid'};
   const statements:SqlStatement[]=[...locks(row),current(digest,row),
