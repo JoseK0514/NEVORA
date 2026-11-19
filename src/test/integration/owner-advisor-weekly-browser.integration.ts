@@ -113,9 +113,21 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     await page.getByLabel('Employee ID', { exact: true }).fill('QAOWNER');
     await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
     await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(origin + '/app');
+    let enteredFromManager = false, navigationControlCompleted = false;
+    const openForm = async (steps: number) => {
+      if (!enteredFromManager) {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.locator('#desktop-primary-navigation').getByRole('link', { name: 'AI manager', exact: true }).click();
+        await page.waitForURL(origin + '/app/ai-manager');
+        await page.setViewportSize({ width: 390, height: 844 });
+        await page.locator('main').getByRole('link', { name: 'Weekly plan', exact: true }).click();
+        await page.waitForURL(origin + '/app/ai-manager/weekly'); enteredFromManager = true;
+      } else {await beforeHardNavigation();await page.goto(origin + '/app/ai-manager/weekly');}
+      await page.getByRole('button', { name: 'Compare options', exact: true }).waitFor();
+      if(!navigationControlCompleted){
     // An earlier document-idle event cannot prove a later real RSC read ended.
     // Hold that read and require the navigation barrier to wait for its body.
-    phase='hard navigation read-drain control';await page.waitForLoadState('networkidle');
+    const priorPhase=phase;phase='hard navigation read-drain control';await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await expect.poll(()=>pendingShellReads.size,{timeout:20000}).toBe(0);await page.waitForLoadState('networkidle');
     let releaseProbe:()=>void=()=>{},probeArrived:()=>void=()=>{},holdProbe=true;
     const probeGate=new Promise<void>(resolve=>{releaseProbe=resolve;}),probeSeen=new Promise<void>(resolve=>{probeArrived=resolve;});
     const probePattern='**/app/ai-manager/weekly?__qa_drain=1';
@@ -130,18 +142,9 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
       holdProbe=false;releaseProbe();await waiting;expect(pendingRouterReads.size).toBe(0);
       navigationControls.push({engine,previousIdleWithPendingReads:heldReads,navigationWaitedForRealBody:true,remaining:pendingRouterReads.size});
     }finally{holdProbe=false;releaseProbe();await waiting?.catch(()=>{});await page.unroute(probePattern);}
-    await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));
-    let enteredFromManager = false;
-    const openForm = async (steps: number) => {
-      if (!enteredFromManager) {
-        await page.setViewportSize({ width: 1440, height: 900 });
-        await page.locator('#desktop-primary-navigation').getByRole('link', { name: 'AI manager', exact: true }).click();
-        await page.waitForURL(origin + '/app/ai-manager');
-        await page.setViewportSize({ width: 390, height: 844 });
-        await page.locator('main').getByRole('link', { name: 'Weekly plan', exact: true }).click();
-        await page.waitForURL(origin + '/app/ai-manager/weekly'); enteredFromManager = true;
-      } else {await beforeHardNavigation();await page.goto(origin + '/app/ai-manager/weekly');}
-      await page.getByRole('button', { name: 'Compare options', exact: true }).waitFor();
+    await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));phase=priorPhase;
+      navigationControlCompleted=true;
+      }
       for (let i = 0; i < steps; i++) await page.getByRole('button', { name: 'Next week', exact: true }).click();
     };
     const compare = async () => {
@@ -247,7 +250,7 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     expect(await page.locator('.wk').getByText(/Fictional Avery|Fictional Blair/).count()).toBe(0);
     expect(await page.evaluate(() => sessionStorage.getItem('nevora.rondo.weekly.pendingApply.v1'))).toBeNull();
     checks.push(engine + ': revoked real session clears private review DOM and pending custody');
-    expect(visualFailures).toEqual([]); expect(responseWaitErrors).toEqual([]); expect(external).toEqual([]); expect(errors).toEqual([]); completedEngines++;
+    await beforeHardNavigation();expect(visualFailures).toEqual([]); expect(responseWaitErrors).toEqual([]); expect(external).toEqual([]); expect(errors).toEqual([]); completedEngines++;
   } catch (error) {
     await writeFile(resolve(evidence, `${engine}-failure.json`), JSON.stringify({ phase, message: String(error), observed }, null, 2));
     await page.screenshot({ path: resolve(evidence, `${engine}-failed.png`), fullPage: true, timeout: 5000 }).catch(() => {}); throw error;
