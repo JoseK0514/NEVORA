@@ -73,8 +73,8 @@ export function useHeld<T>(key: string, initial: () => T, keep:(value:T)=>T): [T
   const [value, setValue] = useState<T>(() => (held.get(key)?.value as T | undefined) ?? initial());
   const latest = useRef(value),mounted=useRef(false),owner=useRef(Symbol('payroll-flow'));
   useEffect(() => {
-    mounted.current=true;held.set(key,{value:keep(latest.current),owner:owner.current});
-    return () => {mounted.current=false;latest.current=keep(latest.current);if(held.get(key)?.owner===owner.current)held.set(key,{value:latest.current,owner:owner.current});};
+    const mine=owner.current;mounted.current=true;held.set(key,{value:keep(latest.current),owner:mine});
+    return () => {mounted.current=false;latest.current=keep(latest.current);if(held.get(key)?.owner===mine)held.set(key,{value:latest.current,owner:mine});};
   }, [key,keep]);
   const set = useCallback((next: T | ((value: T) => T)) => {
     if(!mounted.current&&held.get(key)?.owner!==owner.current)return;

@@ -12,7 +12,8 @@ const ACTIVE_FOR=120000;
  * and unresolved write custody. Renewal never cancels the old expiry. */
 export function useBusinessRead(ctx:BusinessCtx,request:(signal:AbortSignal,fresh:boolean)=>Promise<BusinessOutcome>,accept:(result:BusinessApiResult)=>boolean,auto:boolean,onFresh?:(result:BusinessApiResult)=>void){
  const [state,setState]=useState<ReadState>({kind:auto?'loading':'idle'});
- const latest=useRef({ctx,request,accept,onFresh});latest.current={ctx,request,accept,onFresh};
+ const latest=useRef({ctx,request,accept,onFresh});
+ useEffect(()=>{latest.current={ctx,request,accept,onFresh};},[ctx,request,accept,onFresh]);
  const generation=useRef(0),mounted=useRef(false),focused=useRef(true),active=useRef<AbortController|null>(null),lastActive=useRef(0),deadline=useRef(0);
  const timers=useRef<{end?:ReturnType<typeof setTimeout>;renew?:ReturnType<typeof setTimeout>}>({});
  const retire=useCallback((kind:'idle'|'hidden'|'failed'|'gone'='hidden')=>{
@@ -20,7 +21,7 @@ export function useBusinessRead(ctx:BusinessCtx,request:(signal:AbortSignal,fres
   clearTimeout(timers.current.end);clearTimeout(timers.current.renew);timers.current={};
   if(mounted.current)setState({kind});
  },[]);
- const read=useCallback(async(quiet=false)=>{
+ const read=useCallback(async function readObservation(quiet=false){
   if(!mounted.current||!focused.current||!foreground())return;
   const current=++generation.current,controller=new AbortController();active.current?.abort();active.current=controller;
   clearTimeout(timers.current.renew);
@@ -36,7 +37,7 @@ export function useBusinessRead(ctx:BusinessCtx,request:(signal:AbortSignal,fres
   clearTimeout(timers.current.end);
   now.onFresh?.(result);setState({kind:'ready',result,until:deadline.current});
   timers.current.end=setTimeout(()=>retire(),result.validForMs);
-  timers.current.renew=setTimeout(()=>{if(performance.now()-lastActive.current<ACTIVE_FOR&&!latest.current.ctx.busy)void read(true);},Math.max(1,Math.min(30000,result.validForMs*.7)));
+  timers.current.renew=setTimeout(()=>{if(performance.now()-lastActive.current<ACTIVE_FOR&&!latest.current.ctx.busy)void readObservation(true);},Math.max(1,Math.min(30000,result.validForMs*.7)));
  },[retire]);
  useEffect(()=>{
   mounted.current=true;focused.current=foreground();lastActive.current=performance.now();

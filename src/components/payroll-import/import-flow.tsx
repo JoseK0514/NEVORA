@@ -52,11 +52,12 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
   const active=useRef(false),focused=useRef(true),generation=useRef(0),readSequence=useRef(0),validUntil=useRef(0);
   const timers=useRef<{end?:ReturnType<typeof setTimeout>;renew?:ReturnType<typeof setTimeout>}>({});
   const hasLease=()=>active.current&&focused.current&&foreground()&&performance.now()<validUntil.current;
+  const cancelRead=useCallback(()=>{generation.current++;readSequence.current++;validUntil.current=0;clearTimeout(timers.current.end);clearTimeout(timers.current.renew);timers.current={};},[]);
   const retire=useCallback(()=>{
-    generation.current++;readSequence.current++;validUntil.current=0;clearTimeout(timers.current.end);clearTimeout(timers.current.renew);timers.current={};
+    cancelRead();
     const next=retireWork(latest.current);latest.current=next;setWork(next);setLoaded({state:"loading"});setEditing(null);setReading(false);setTouched(false);
-  },[setWork]);
-  const load=useCallback(async()=>{
+  },[cancelRead,setWork]);
+  const load=useCallback(async function loadImport(){
     if(!active.current||!focused.current||!foreground())return;
     const sequence=++readSequence.current,began=performance.now();
     const [runs,settings,authority]=await Promise.all([ask("/api/payroll/runs"),ask("/api/payroll/settings"),fetch("/api/company-access/operational-authority",{cache:"no-store",credentials:"same-origin",headers:{"x-nevora-company-access":"1"}}).then(async response=>({status:response.status,body:await response.json()})).catch(()=>({status:0,body:null}))]);
@@ -71,7 +72,7 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
       const roster=readSettings(settings.body).employees.map(person=>({id:person.id,name:person.name,active:person.active}));
       clearTimeout(timers.current.end);clearTimeout(timers.current.renew);validUntil.current=deadline;
       timers.current.end=setTimeout(()=>{retire();setLoaded({state:"failed",why:"network"});},remaining);
-      timers.current.renew=setTimeout(()=>void load(),remaining*.7);
+      timers.current.renew=setTimeout(()=>void loadImport(),remaining*.7);
       setLoaded({state:"ready",run,roster});
       const now=latest.current,after:Snapshot={roster,run};
       if(now.write.phase!=="idle"&&now.write.phase!=="refused")return;
@@ -86,8 +87,8 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
     const back=()=>{if(foreground()){focused.current=true;void load();}};
     const visible=()=>document.visibilityState==="hidden"?away():back();
     window.addEventListener("blur",away);window.addEventListener("offline",away);window.addEventListener("pagehide",away);window.addEventListener("focus",back);window.addEventListener("online",back);window.addEventListener("pageshow",back);document.addEventListener("visibilitychange",visible);
-    return()=>{active.current=false;generation.current++;readSequence.current++;validUntil.current=0;clearTimeout(timers.current.end);clearTimeout(timers.current.renew);window.removeEventListener("blur",away);window.removeEventListener("offline",away);window.removeEventListener("pagehide",away);window.removeEventListener("focus",back);window.removeEventListener("online",back);window.removeEventListener("pageshow",back);document.removeEventListener("visibilitychange",visible);};
-  },[load,retire]);
+    return()=>{active.current=false;cancelRead();window.removeEventListener("blur",away);window.removeEventListener("offline",away);window.removeEventListener("pagehide",away);window.removeEventListener("focus",back);window.removeEventListener("online",back);window.removeEventListener("pageshow",back);document.removeEventListener("visibilitychange",visible);};
+  },[load,retire,cancelRead]);
   // Another payroll action whose result is still unknown (recorded by Review payroll) comes first.
   useEffect(() => {
     queueMicrotask(() => { try { const stored = localStorage.getItem(referenceKey); setOtherPending(!!stored && !("custody" in latest.current.write && latest.current.write.custody.key === stored)); } catch { /* storage is optional here */ } });

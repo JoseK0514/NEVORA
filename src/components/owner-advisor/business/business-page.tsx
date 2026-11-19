@@ -83,7 +83,7 @@ export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled,
     if(mounted.current){setLoad({state} as BusinessLoad);setIssue(null);}
   },[]);
   const revoke=useCallback(()=>retireCatalog("revoked"),[retireCatalog]);
-  const reload=useCallback(async()=>{
+  const reload=useCallback(async function refreshCatalog(){
     if(!importsEnabled||!mounted.current||!focused.current||!catalogForeground())return null;
     const generation=++catalogGeneration.current,controller=new AbortController();catalogRequest.current?.abort();catalogRequest.current=controller;
     clearTimeout(catalogTimers.current.renew);
@@ -97,7 +97,7 @@ export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled,
     clearTimeout(catalogTimers.current.end);
     catalogDeadline.current=performance.now()+outcome.result.validForMs;
     catalogTimers.current.end=setTimeout(()=>retireCatalog(),outcome.result.validForMs);
-    catalogTimers.current.renew=setTimeout(()=>void reload(),Math.max(1,outcome.result.validForMs*.7));
+    catalogTimers.current.renew=setTimeout(()=>void refreshCatalog(),Math.max(1,outcome.result.validForMs*.7));
     setNow(Date.now());setLoad({state:"ready",catalog,authority:by});
     setPending(old=>old&&old.status!=="sending"&&old.meta.authority!==by?{...old,status:"foreign"}:old);
     return catalog;

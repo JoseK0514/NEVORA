@@ -46,11 +46,11 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   const active = useRef(false), focused = useRef(true), readSequence = useRef(0), validUntil = useRef(0),generation=useRef(0);
   const expiry = useRef<ReturnType<typeof setTimeout> | null>(null),renewal=useRef<ReturnType<typeof setTimeout>|null>(null);
   const cancelRead = useCallback(() => {
-    readSequence.current++; validUntil.current = 0;
+    generation.current++;readSequence.current++; validUntil.current = 0;
     if (expiry.current) clearTimeout(expiry.current);
     expiry.current = null;if(renewal.current)clearTimeout(renewal.current);renewal.current=null;
   }, []);
-  const pausePrivate=useCallback(()=>{generation.current++;cancelRead();const next=retireWork(latest.current);latest.current=next;setWork(next);setLoaded({state:"loading"});},[cancelRead,setWork]);
+  const pausePrivate=useCallback(()=>{cancelRead();const next=retireWork(latest.current);latest.current=next;setWork(next);setLoaded({state:"loading"});},[cancelRead,setWork]);
   const hasLease = () => active.current && focused.current && foreground() && performance.now() < validUntil.current;
   const started = Object.keys(work.states).length > 0;
   const unresolved = Object.values(work.states).some(holdsCustody) || holdsCustody(work.record);
@@ -58,7 +58,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   useStepFocus(`${work.step}:${work.record.phase}`, HEADING_ID);
   useEffect(() => () => { if (latest.current.record.phase === "saved") dropWork(); }, [dropWork]);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async function loadExport() {
     if (!active.current || !focused.current || !foreground()) return;
     const sequence = ++readSequence.current, began = performance.now();
     const [close, time] = await Promise.all([
@@ -80,7 +80,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
       if (expiry.current) clearTimeout(expiry.current);
       validUntil.current = deadline;
       expiry.current = setTimeout(() => { if (active.current){pausePrivate();setLoaded({state:"failed",why:"network"});} }, remaining);
-      if(renewal.current)clearTimeout(renewal.current);renewal.current=setTimeout(()=>void load(),remaining*.7);
+      if(renewal.current)clearTimeout(renewal.current);renewal.current=setTimeout(()=>void loadExport(),remaining*.7);
       setLoaded({ state: "ready", source });
       // Once a batch is out the plan is fixed: a newer read is shown for names only and never changes the plan.
       if (Object.keys(now.states).length || now.source === key) return;
@@ -99,7 +99,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     window.addEventListener("online", again); window.addEventListener("focus", again); window.addEventListener("pageshow", again);
     window.addEventListener("offline", hide); window.addEventListener("blur", hide); window.addEventListener("pagehide", hide); document.addEventListener("visibilitychange", visible);
     return () => {
-      active.current = false;generation.current++;cancelRead();
+      active.current = false;cancelRead();
       window.removeEventListener("online", again); window.removeEventListener("focus", again); window.removeEventListener("pageshow", again);
       window.removeEventListener("offline", hide); window.removeEventListener("blur", hide); window.removeEventListener("pagehide", hide); document.removeEventListener("visibilitychange", visible);
     };
