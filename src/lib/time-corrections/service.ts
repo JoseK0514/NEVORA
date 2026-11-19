@@ -27,7 +27,8 @@ export type CorrectionMutationResult =
   | { status: 'approved'; operationId: string; requestId: string; revision: number; adjustmentId: string }
   | { status: 'rejected'; operationId: string; requestId: string; revision: number }
   | { status: 'blocked'; reason: CorrectionBlockedReason }
-  | { status: 'conflict' | 'unavailable' }
+  | { status: 'conflict' }
+  | { status: 'unavailable'; reason?: 'permission_required' }
   | { status: 'outcome-unknown'; operationId: string };
 
 const object = (value: unknown): value is Record<string, unknown> =>
@@ -234,7 +235,7 @@ export async function reviewTimeCorrection(
   try {
     const admission = await listWorkforcePermissions(proof, executor);
     if (proof.employee.role !== 'OWNER' && !admission.permissions.some(g => g.permission === 'REVIEW_TIME_EXCEPTION')) {
-      return { status: 'unavailable' };
+      return { status: 'unavailable', reason: 'permission_required' };
     }
     const [subject] = await executor.query<CorrectionReviewSubject>({
       text: correctionReviewSubjectSql, values: [command.requestId, admission.access.workspace.id],

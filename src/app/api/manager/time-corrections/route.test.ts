@@ -43,6 +43,17 @@ describe('D2 manager correction API boundary',()=>{
   expect((await POST(post(review(),{'X-Nevora-Time-Correction':'1','Content-Type':'application/json','Sec-Fetch-Site':'cross-site'}))).status).toBe(403);
   expect((await GET(get('?employeeId=other'))).status).toBe(400);expect(mocks.review).not.toHaveBeenCalled();
  });
+ it('distinguishes a missing review grant from an authorized empty queue',async()=>{
+  const empty=await GET(get());expect(empty.status).toBe(200);
+  expect(await empty.json()).toMatchObject({state:'ready',requests:[]});
+  const refusal={state:'unavailable',reason:'permission_required'};
+  mocks.read.mockResolvedValueOnce(refusal);
+  mocks.review.mockResolvedValueOnce({status:'unavailable',reason:'permission_required'});
+  for(const response of [await GET(get()),await POST(post(review()))]){
+   expect(response.status).toBe(403);
+   expect(await response.json()).toEqual(refusal);
+  }
+ });
  it('surfaces self-review and stale-decision conflicts as bounded 409s',async()=>{
   mocks.review.mockResolvedValueOnce({status:'blocked',reason:'self_review'});let response=await POST(post(review()));
   expect(response.status).toBe(409);expect(await response.json()).toEqual({state:'blocked',reason:'self_review'});

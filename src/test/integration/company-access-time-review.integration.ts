@@ -38,12 +38,12 @@ async function setup(){const f=await companyAccessFixture();ctx.ex=f.db.executor
  }catch(error){await f.db.dispose();throw error;}}
 async function close(f:Fixture){ctx.ex=null;ctx.proof=null;rs.unstubAllEnvs();await f.db.dispose();}
 const cases=[
- {name:'timecard approval',call:'nevora_timecard_command',run:(f:Fixture,p:SessionMutationProof,ex:SqlExecutor)=>mutateTimecard(p,f.timecard,ex)},
- {name:'correction review',call:'nevora_review_time_correction',run:(f:Fixture,p:SessionMutationProof,ex:SqlExecutor)=>reviewTimeCorrection(p,f.correction,ex)},
+ {name:'timecard approval',restricted:{status:'unavailable'},call:'nevora_timecard_command',run:(f:Fixture,p:SessionMutationProof,ex:SqlExecutor)=>mutateTimecard(p,f.timecard,ex)},
+ {name:'correction review',restricted:{status:'unavailable',reason:'permission_required'},call:'nevora_review_time_correction',run:(f:Fixture,p:SessionMutationProof,ex:SqlExecutor)=>reviewTimeCorrection(p,f.correction,ex)},
 ];
 async function snapshot(f:Fixture){return f.q(`SELECT jsonb_build_object('cards',(SELECT jsonb_agg(to_jsonb(t) ORDER BY operation_id) FROM timecard_revisions t),'events',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM time_correction_events t),'adjustments',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM time_correction_adjustments t),'requests',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM time_correction_requests t),'raw',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM time_entries t)) AS state`);}
 it.each(cases)('$name denies selected-location authority and preserves all revisions, raw time and adjustment history',async test=>{
- const f=await setup();try{await choose(f,'LOCATIONS');const before=await snapshot(f);expect(await test.run(f,f.manager,f.db.executor)).toEqual({status:'unavailable'});expect(await snapshot(f)).toEqual(before);}finally{await close(f);}
+ const f=await setup();try{await choose(f,'LOCATIONS');const before=await snapshot(f);expect(await test.run(f,f.manager,f.db.executor)).toEqual(test.restricted);expect(await snapshot(f)).toEqual(before);}finally{await close(f);}
 });
 it.each(cases.flatMap(test=>['Owner','Company Manager'].map(role=>({...test,role}))))('$name permits current $role exactly once and preserves its replay receipt',async test=>{
  const f=await setup();try{
@@ -62,7 +62,7 @@ it.each(cases)('$name rechecks Company after admission and rolls back the actual
 });
 it.each(cases)('$name historical receipt is inaccessible after restriction while the committed history is preserved',async test=>{
  const f=await setup();try{
-  expect((await test.run(f,f.manager,f.db.executor)).status).toBe('approved');const committed=await snapshot(f);await choose(f,'LOCATIONS');expect(await test.run(f,f.manager,f.db.executor)).toEqual({status:'unavailable'});expect(await snapshot(f)).toEqual(committed);
+  expect((await test.run(f,f.manager,f.db.executor)).status).toBe('approved');const committed=await snapshot(f);await choose(f,'LOCATIONS');expect(await test.run(f,f.manager,f.db.executor)).toEqual(test.restricted);expect(await snapshot(f)).toEqual(committed);
  }finally{await close(f);}
 });
 it.each(['revoked','role cycle','unassigned'] as const)('both time-review protocols deny current %s access without business effects',async kind=>{
@@ -77,7 +77,7 @@ it.each(['timecard','correction'] as const)('actual %s review API cannot bypass 
   await choose(f,'LOCATIONS');rs.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');const before=await snapshot(f);
   const request=(path:string,body:unknown,header:string)=>new Request('http://127.0.0.1'+path,{method:'POST',headers:{[header]:'1','x-nevora-actor':'manager','x-nevora-correction-authority':correctionAuthority(f.manager),'content-type':'application/json',origin:'http://127.0.0.1'},body:JSON.stringify(body)});
   const response=kind==='timecard'?await timecardPOST(request('/api/manager/timecards',f.timecard,'x-nevora-timecards')):await correctionPOST(request('/api/manager/time-corrections',f.correction,'x-nevora-time-correction'));
-  expect(response.status).toBe(503);expect(await response.json()).toEqual(kind==='timecard'?{status:'unavailable'}:{state:'unavailable'});expect(await snapshot(f)).toEqual(before);
+  expect(response.status).toBe(kind==='timecard'?503:403);expect(await response.json()).toEqual(kind==='timecard'?{status:'unavailable'}:{state:'unavailable',reason:'permission_required'});expect(await snapshot(f)).toEqual(before);
  }finally{await close(f);}
 });
 

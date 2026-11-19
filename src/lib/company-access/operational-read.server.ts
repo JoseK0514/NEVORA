@@ -1,12 +1,13 @@
 import {planningWeekFor, defaultPlanningCalendar, type PlanningCalendar} from '../workforce/planning-calendar';
 import {businessDate} from '../business-time';
-import {listWorkforcePermissions} from '../workforce/authority.server';
+import {listWorkforcePermissions,workforcePermissionStatements} from '../workforce/authority.server';
+import {getSchedulePublishReadiness} from '../data/schedule-publication-review';
 import {shiftReviewSql} from '../data/shift-review';
 import {projectPersonHours,type PersonHours,type PersonHoursSource} from '../person-hours';
 import 'server-only';
 import {createHash} from 'node:crypto';
 import type {Employee,Workspace} from '@/lib/domain';
-import type {SqlExecutor} from '@/lib/notifications/types';
+import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
 import {getWorkspace,workspaceReadGuard} from '@/lib/data/workspaces';
 import {getEmployeeEmploymentDates,getEmployeeManagementProfile} from '@/lib/data/employees';
@@ -31,7 +32,7 @@ const bounded=<T>(rows:T[])=>{if(rows.length>MAX_ROWS)throw new ReadFailure('sou
 const id=(v:unknown):v is string=>typeof v==='string'&&v.length>0&&v.length<=200&&v===v.trim()&&!/[\p{Cc}\p{Cf}]/u.test(v);
 type View=Extract<OperationalAuthorityView,{state:'ready'}>&{scope:NonNullable<Extract<OperationalAuthorityView,{state:'ready'}>['scope']>};
 type Context={proof:SessionMutationProof;workspace:Workspace;view:View;ex:SqlExecutor;ids:string[]|null};
-type Payload<T>={data:T;coverage?:SourceCoverage;observedAt?:string;validForMs?:number};
+type Payload<T>={data:T;coverage?:SourceCoverage;observedAt?:string;validForMs?:number;disclosureGuard?:SqlStatement[]};
 /** Shared disclosure boundary for projections assembled across multiple reads.
  * Preserve the original authority through the final protected check and spend
  * the source's observation budget while loading; this does not make the loader's
@@ -45,7 +46,7 @@ async function read<T>(proof:SessionMutationProof,load:(ctx:Context)=>Promise<Pa
   const payload=await load(ctx);
   // A result projected outside a transaction crosses this current protected boundary before return.
   await ex.transaction([...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
-   ...operationalScopeStatements(proof,workspace,ctx.ids===null?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:ctx.ids},view.authority)]);
+   ...operationalScopeStatements(proof,workspace,ctx.ids===null?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:ctx.ids},view.authority),...(payload.disclosureGuard??[])]);
   const fresh=await readOperationalAuthority(proof,ex);
   if(fresh.state!=='ready'||fresh.authority!==view.authority)return {state:'unavailable',reason:'source_changed'};
   const observedAt=payload.observedAt??fresh.observedAt;
@@ -127,6 +128,43 @@ export async function readOperationalSchedule(proof:SessionMutationProof,query:{
    ...(ids!==null?{coverage:{kind:'LOCATIONS' as const,locationIds:ids}}:{})};
  },ex);
 }
+type PublishLocation = Pick<CatalogLocation,'id'|'name'|'shortName'> & {
+ status: 'DRAFT'|'PUBLISHED'|'ARCHIVED'|'NONE';
+ shiftCount: number;
+};
+
+/** The publish page shows active locations with a current action grant, even
+ * when the Manager's general operational scope covers the whole company. */
+export async function readManagerSchedulePublish(
+ proof:SessionMutationProof,query:{weekStart:string;reviewLocationId?:string},ex:SqlExecutor=neonNotificationExecutor(),
+){
+ return read(proof,async ctx=>{
+  if(ctx.view.role!=='MANAGER'||!isValidWeekStart(query.weekStart))return deny();
+  const {access,permissions}=await listWorkforcePermissions(proof,ex);
+  if(access.authority!==ctx.view.authority)return deny();
+  const publishLocationIds=permissions.filter(grant=>grant.permission==='PUBLISH_SCHEDULE').map(grant=>grant.locationId);
+  if(!publishLocationIds.length||
+   (query.reviewLocationId!==undefined&&!publishLocationIds.includes(query.reviewLocationId)))return deny();
+  const catalog=await ex.query<PublishLocation>({
+   text:`SELECT l.id,l.name,l.short_name AS "shortName",COALESCE(s.status,'NONE') AS status,
+    (SELECT count(*)::integer FROM shifts sh WHERE sh.schedule_id=s.id
+     AND NOT EXISTS (SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()})) AS "shiftCount"
+    FROM locations l LEFT JOIN schedules s ON s.location_id=l.id AND s.week_start=$2::date
+    WHERE l.workspace_id=$1 AND l.active AND l.id=ANY($3::text[]) ORDER BY l.id`,
+   values:[ctx.workspace.id,query.weekStart,publishLocationIds],
+  });
+  const location=catalog.find(location=>location.id===query.reviewLocationId&&location.status==='DRAFT');
+  const readiness=location?await getSchedulePublishReadiness(query.weekStart,location.id,true):null;
+  return {
+   disclosureGuard:workforcePermissionStatements(proof,ctx.workspace,'PUBLISH_SCHEDULE',publishLocationIds,access.authority),
+   coverage:{kind:'LOCATIONS',locationIds:publishLocationIds},
+   observedAt:access.observedAt,
+   validForMs:access.validForMs,
+   data:{locations:catalog,publishLocationIds,review:location&&readiness?.hasWarnings?[{location,readiness}]:[]},
+  };
+ },ex);
+}
+
 /** Projects planning dates over current operational rows and preserves each row's
  * canonical schedule key for editor and publication actions. */
 export async function readOperationalPlanningWeek(proof:SessionMutationProof,date:string,ex:SqlExecutor=neonNotificationExecutor()) {

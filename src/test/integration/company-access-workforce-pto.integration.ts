@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
-import { assignOperationalScope, readOwnerOperationalScope } from '../../lib/company-access/operational-scope.server';
+import { assignOperationalScope, isOperationalAuthorizationError, readOwnerOperationalScope } from '../../lib/company-access/operational-scope.server';
 import { readOperationalPlanningWeek } from '../../lib/company-access/operational-read.server';
 import { mutateEmployeePlanning } from '../../lib/data/employee-planning-write.server';
 import { weekStartFor } from '../../lib/date-utils';
@@ -56,7 +56,7 @@ const decide = (requestId: string, status: 'APPROVED' | 'DENIED' | 'CANCELLED', 
 
 it('keeps grants separate, routes a cross-location leave case to a complete reviewer, and keeps historical legacy rows Owner-only', async () => {
   const first = await request('2030-10-07');
-  await expect(decide(first,'APPROVED')).rejects.toThrow('operational_authorization');
+  await expect(decide(first,'APPROVED')).rejects.toMatchObject({reason:'permission_required'});
   const status = await listWorkforceLeave(f.manager,'PENDING',f.db.executor);
   expect(status).toEqual({state:'unavailable',reason:'access_denied'});
   await grant('APPROVE_LEAVE','loc-1');
@@ -66,20 +66,28 @@ it('keeps grants separate, routes a cross-location leave case to a complete revi
   await expect(decide('legacy-leave','APPROVED')).rejects.toThrow('operational_authorization');
   expect(await decide('legacy-leave','APPROVED',f.owner)).toBe(true);
   await f.q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date) VALUES('self-leave','manager','2030-10-17','2030-10-17')");
-  await expect(decide('self-leave','APPROVED')).rejects.toThrow('operational_authorization');
+  await expect(decide('self-leave','APPROVED')).rejects.toMatchObject({reason:'self_review'});
   expect(await listWorkforceLeave(f.manager,'PENDING',f.db.executor)).toMatchObject({state:'ready',data:[{id:first}]});
   expect(await decide(first,'APPROVED')).toBe(true);
 
   await f.q("INSERT INTO employee_location_eligibility VALUES ('target','loc-2')");
   const cross = await request('2030-10-09');
-  await expect(decide(cross,'APPROVED')).rejects.toThrow('operational_authorization');
+  await expect(decide(cross,'APPROVED')).rejects.toMatchObject({reason:'leave_scope'});
   await f.q("DELETE FROM employee_location_eligibility WHERE employee_id='target' AND location_id='loc-2'");
-  await expect(decide(cross,'APPROVED')).rejects.toThrow('operational_authorization');
+  await expect(decide(cross,'APPROVED')).rejects.toMatchObject({reason:'leave_scope'});
+  await f.q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id)
+    VALUES('foreign-leave-person','Private','QA','555010','EMPLOYEE','loc-2');
+    INSERT INTO time_off_requests(id,employee_id,start_date,end_date)
+    VALUES('foreign-leave','foreign-leave-person','2030-10-18','2030-10-18')`);
+  for (const opaqueId of ['foreign-leave','absent-leave','legacy-leave']) {
+    await expect(decide(opaqueId,'APPROVED').catch(error=>({denied:isOperationalAuthorizationError(error),reason:error.reason})))
+      .resolves.toEqual({denied:true,reason:undefined});
+  }
   await grant('APPROVE_LEAVE','loc-2');
   expect(await decide(cross,'APPROVED')).toBe(true);
   expect(await reviewTimeCorrection(f.manager,{
     operationId:randomUUID(),requestId:randomUUID(),expectedRevision:1,decision:'APPROVE',
-  },f.db.executor)).toEqual({status:'unavailable'});
+  },f.db.executor)).toEqual({status:'unavailable',reason:'permission_required'});
 
   await expect(f.q("UPDATE workforce_permission_revisions SET granted=false")).rejects.toThrow('workforce_history_immutable');
 });
@@ -241,7 +249,11 @@ it('scopes time exceptions independently, rejects a delegated requester, and rec
   expect(submitted.status).toBe('pending');
   if (submitted.status!=='pending') throw new Error('No correction request');
   const review = {operationId:randomUUID(),requestId:submitted.requestId,expectedRevision:1,decision:'APPROVE'} as const;
-  expect(await reviewTimeCorrection(f.manager,review,f.db.executor)).toEqual({status:'unavailable'});
+  expect(await readManagerTimeCorrections(f.manager,f.db.executor)).toEqual({state:'unavailable',reason:'permission_required'});
+  expect(await reviewTimeCorrection(f.manager,review,f.db.executor)).toEqual({status:'unavailable',reason:'permission_required'});
+  await grant('REVIEW_TIME_EXCEPTION','loc-2');
+  expect(await readManagerTimeCorrections(f.manager,f.db.executor)).toMatchObject({state:'ready',requests:[]});
+  await grant('REVIEW_TIME_EXCEPTION','loc-2',false,1);
   await grant('REVIEW_TIME_EXCEPTION','loc-1');
   await f.q("INSERT INTO employee_location_eligibility VALUES ('target','loc-2')");
   const otherSite = await submitTimeCorrection(employee,{...command,locationId:'loc-2',operationId:randomUUID(),
@@ -249,7 +261,9 @@ it('scopes time exceptions independently, rejects a delegated requester, and rec
     proposedEndAt:new Date(now.getTime()-169200000).toISOString()},f.db.executor);
   if (otherSite.status!=='pending') throw new Error('No second location request: '+otherSite.status);
   expect(await readManagerTimeCorrections(f.manager,f.db.executor)).toMatchObject({state:'ready',requests:[{id:submitted.requestId}]});
-  expect(await reviewTimeCorrection(f.manager,{...review,operationId:randomUUID(),requestId:otherSite.requestId},f.db.executor)).toEqual({status:'unavailable'});
+  for (const requestId of [otherSite.requestId,randomUUID()]) {
+    expect(await reviewTimeCorrection(f.manager,{...review,operationId:randomUUID(),requestId},f.db.executor)).toEqual({status:'unavailable'});
+  }
   let entered=false;
   const racing:SqlExecutor={...f.db.executor,transaction:async statements=>{
     if (!entered && statements.some(statement=>statement.text.includes('SELECT nevora_review_time_correction('))) {

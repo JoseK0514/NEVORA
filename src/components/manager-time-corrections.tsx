@@ -46,6 +46,9 @@ function noticeFor(result:CorrectionActionResponse){
   return 'That didn’t go through. Refresh and try again.';
 }
 
+const reviewAccessLost = (snapshot: ManagerTimeCorrections | null | undefined) =>
+  snapshot?.state === 'unavailable' && (snapshot.reason === 'access_denied' || snapshot.reason === 'permission_required');
+
 export function ManagerTimeCorrectionsSurface({
   snapshot,
   loading,
@@ -70,7 +73,7 @@ export function ManagerTimeCorrectionsSurface({
   onRetry:()=>void;
   retry:CorrectionReviewCommand|null;
 }){
-  const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(snapshot.reason==='access_denied'?'access_lost':'unavailable'):'paused');
+  const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(reviewAccessLost(snapshot)?'access_lost':'unavailable'):'paused');
   const mode=requestedMode==='ready'&&snapshot?.state!=='ready'?'unavailable':requestedMode;
   const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
   usePrivateFragmentFocus('correction-',!!ready);
@@ -134,7 +137,7 @@ export function ManagerTimeCorrections({actorId,authority,band}:{actorId?:string
     const advanceCommandEpoch=()=>{commandEpoch.current++;};
     const controller=createPrivateSnapshotController<ManagerTimeCorrections>(next=>{
       setSnapshot(next.refreshing?null:next.snapshot);
-      const denied=next.snapshot?.state==='unavailable'&&next.snapshot.reason==='access_denied';
+      const denied=reviewAccessLost(next.snapshot);
       if(denied){authorityLost.current=true;advanceCommandEpoch();}
       else if(next.snapshot?.state==='ready')authorityLost.current=false;
       if(denied){recovery?.clear();setRetry(null);setNotice(null);setConnection('access_lost');}
@@ -142,7 +145,7 @@ export function ManagerTimeCorrections({actorId,authority,band}:{actorId?:string
     },signal=>fetchManagerTimeCorrections(signal,actorId,authority),parseManagerTimeCorrections,reason=>({state:'unavailable',reason}),()=> 'read_failed');
     const clear=(mode:CorrectionQueueConnection)=>{active=false;resumeMode=mode;controller.pause();setNotice(pausedCorrectionNotice);};
     const refresh=(event?:Event)=>{if(event?.type==='focus'&&event.target!==window)return;
-      if(event?.type==='focus'&&active){authorityProbe?.abort();const probe=new AbortController();authorityProbe=probe;void fetchManagerTimeCorrections(probe.signal,actorId,authority).then(next=>{if(disposed||probe.signal.aborted)return;if(next.state==='unavailable'&&next.reason==='access_denied'){authorityLost.current=true;advanceCommandEpoch();clear('access_lost');recovery?.clear();setRetry(null);setNotice(null);}}).catch(()=>{if(!disposed&&!probe.signal.aborted)clear('unavailable');});return;}if(document.visibilityState!=='hidden'&&navigator.onLine){active=true;resumeMode='loading';controller.start();}};
+      if(event?.type==='focus'&&active){authorityProbe?.abort();const probe=new AbortController();authorityProbe=probe;void fetchManagerTimeCorrections(probe.signal,actorId,authority).then(next=>{if(disposed||probe.signal.aborted)return;if(reviewAccessLost(next)){authorityLost.current=true;advanceCommandEpoch();clear('access_lost');setSnapshot(next);recovery?.clear();setRetry(null);setNotice(null);}}).catch(()=>{if(!disposed&&!probe.signal.aborted)clear('unavailable');});return;}if(document.visibilityState!=='hidden'&&navigator.onLine){active=true;resumeMode='loading';controller.start();}};
     const reconnect=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine){active=true;resumeMode='reconnecting';controller.start();}};
     const offline=()=>clear('offline'),hide=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;clear('paused');},visibility=()=>document.visibilityState==='hidden'?hide():refresh();
     if(navigator.onLine&&document.visibilityState!=='hidden')refresh();else clear(navigator.onLine?'paused':'offline');

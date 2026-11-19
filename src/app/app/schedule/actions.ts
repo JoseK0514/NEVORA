@@ -166,7 +166,9 @@ export async function publishScheduleAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
-  const locationId = String(formData.get("locationId") ?? "");
+  const [location, ...extraLocations] = formData.getAll("locationId");
+  if (extraLocations.length) redirect("/app/schedule?error=INVALID_PUBLISH");
+  const locationId = typeof location === "string" ? location : "";
   const confirmWarnings = formData.get("confirmWarnings") === "yes";
   let admission:Awaited<ReturnType<typeof assertOperationalAccess>>;
   try{admission=await assertWorkforcePermission(proof,'PUBLISH_SCHEDULE',locationId?[locationId]:null);}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
@@ -176,9 +178,13 @@ export async function publishScheduleAction(formData: FormData) {
   }
 
   if (!confirmWarnings) {
-    const readiness = await getSchedulePublishReadiness(weekStart, locationId, admission.scope.mode === "LOCATIONS");
+    const scopedReview = admission.scope.mode === "LOCATIONS" || (session.role === "MANAGER" && formData.get("from") === "publish");
+    const readiness = await getSchedulePublishReadiness(weekStart, locationId, scopedReview);
     if(!await currentPublicationAdmission(proof,admission,locationId?[locationId]:null))redirect('/app/schedule?error=ACCESS_DENIED');
     if (readiness.hasWarnings) {
+      if (scopedReview) {
+        redirect(`/app/schedule/publish?week=${encodeURIComponent(weekStart)}&review=1&location=${encodeURIComponent(locationId)}#publish-review`);
+      }
       redirect(
         scheduleUrl(
           weekStart,

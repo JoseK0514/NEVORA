@@ -2,13 +2,13 @@ import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, rs } from '@rstest/core';
 
-const f = rs.hoisted(() => ({ statuses: [] as { locationId: string; status: string }[], warnings: {} as Record<string, boolean>, denied: false, pending: null as unknown }));
+const f = rs.hoisted(() => ({ statuses: [] as { locationId: string; status: string }[], warnings: {} as Record<string, boolean>, denied: false, role: "OWNER", pending: null as unknown }));
 rs.mock("next/link", () => ({ default: ({ children, prefetch: _p, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", props, children) }));
-rs.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => ({ employee: { id: "QAOWNER", role: "OWNER" } }) }));
-rs.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["OWNER", "MANAGER"], requireRoles: async () => ({ id: "QAOWNER", role: "OWNER" }) }));
+rs.mock("@/lib/auth/session", () => ({ requireSessionMutationProof: async () => ({ employee: { id: "QAOWNER", role: f.role } }) }));
+rs.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["OWNER", "MANAGER"], requireRoles: async () => ({ id: "QAOWNER", role: f.role }) }));
 rs.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ id: "w", timeZone: "America/Puerto_Rico" }) }));
 rs.mock("@/lib/business-time", () => ({ businessDate: () => "2026-10-30" }));
-rs.mock("@/lib/company-access/operational-scope.server", () => ({ withOperationalCompany: async (_proof: unknown, load: () => Promise<unknown>) => f.denied ? { state: "unavailable", reason: "access_denied" } : { state: "ready", data: await load(), authority: "fixture", observedAt: "2026-10-30T12:00:00Z", validForMs: 15000 } }));
+rs.mock("@/lib/company-access/operational-scope.server", () => ({ withOperationalCompany: async (_proof: unknown, load: () => Promise<unknown>) => f.denied || f.role === "MANAGER" ? { state: "unavailable", reason: "access_denied" } : { state: "ready", data: await load(), authority: "fixture", observedAt: "2026-10-30T12:00:00Z", validForMs: 15000 } }));
 rs.mock("@/components/company-access/scoped-read-frame", () => ({ ScopedReadFrame: ({ children }: { children: React.ReactNode }) => children }));
 rs.mock("@/components/company-access/operational-unavailable", () => ({ OperationalUnavailable: ({ title }: { title: string }) => createElement("p", null, title) }));
 rs.mock("@/components/schedule-generation-controls", () => ({ ScheduleGenerationControls: () => createElement("div", null, "Build week") }));
@@ -19,7 +19,12 @@ rs.mock("@/lib/data/schedule-generation-review", () => ({ getScheduleGenerationR
 rs.mock("@/lib/data/schedule-publication-review", () => ({ getSchedulePublishReadiness: async (_week: string, id: string) => ({ hasWarnings: !!f.warnings[id], coverageGaps: f.warnings[id] ? 2 : 0, missingLeadBlocks: 0, underTargetCount: 0, overTargetCount: 0, unconfiguredTargetCount: 0 }) }));
 rs.mock("./actions", () => ({ publishDraftsAction: async () => {} }));
 rs.mock("../actions", () => ({ publishScheduleChangesAction: async () => {} }));
-rs.mock("@/lib/company-access/operational-read.server", () => ({ readSchedulePendingChanges: async () => f.pending ? { state: "ready", data: f.pending } : { state: "unavailable", reason: "read_failed" } }));
+rs.mock("@/lib/company-access/operational-read.server", () => ({
+  readManagerSchedulePublish: async () => ({
+    state: "ready", authority: "fixture", observedAt: "2026-10-30T12:00:00Z", validForMs: 15000,
+    data: { locations: [{ id: "loc-1", name: "Calle Loíza", shortName: "Calle Loíza", status: "DRAFT", shiftCount: 2 }], publishLocationIds: ["loc-1"], review: [] },
+  }),
+  readSchedulePendingChanges: async () => f.pending ? { state: "ready", data: f.pending } : { state: "unavailable", reason: "read_failed" } }));
 const value = (startTime: string, endTime: string) => ({ employeeId: "e1", employeeName: "Dana Kim", locationId: "loc-1", date: "2026-11-03", startTime, endTime, positionId: null, positionName: null, isDesignatedLead: false, notes: null });
 const pendingData = (canPublish = true) => ({ weekStart: "2026-11-02", hasPendingChanges: true, pendingCount: 2, neverCaptured: false, latestRevision: null, canPublish, truncated: false,
   locations: [{ locationId: "loc-1", locationName: "Condado", pendingCount: 2 }],
@@ -29,7 +34,7 @@ const pendingData = (canPublish = true) => ({ weekStart: "2026-11-02", hasPendin
   ] });
 const { default: Page } = await import("./page");
 const html = async (params: Record<string, string> = {}) => renderToStaticMarkup(await Page({ searchParams: Promise.resolve({ week: "2026-11-02", ...params }) }));
-beforeEach(() => { f.statuses = [{ locationId: "loc-1", status: "PUBLISHED" }, { locationId: "loc-2", status: "DRAFT" }]; f.warnings = {}; f.denied = false; f.pending = null; });
+beforeEach(() => { f.statuses = [{ locationId: "loc-1", status: "PUBLISHED" }, { locationId: "loc-2", status: "DRAFT" }]; f.warnings = {}; f.denied = false; f.role = "OWNER"; f.pending = null; });
 
 it("names the week, each location's state and shift count, and publishes every draft with one button", async () => {
   const out = await html();
@@ -97,4 +102,11 @@ it("publishes drafts and held changes together, and tells a location Manager who
   const out = await html();
   expect(out).toContain("An Owner or company-wide Manager publishes these changes.");
   expect(out).not.toContain(">Publish changes<");
+});
+
+it("opens publishing for a location-scoped Manager without exposing other locations or the bulk form", async () => {
+  f.role = "MANAGER";
+  const out = await html();
+  expect(out).toMatch(/Calle Loíza.*2 shifts.*Draft/);
+  expect(out).not.toMatch(/Build and publish unavailable|Condado|Dorado|Hato Rey|Copy last week|name="locationId"/);
 });

@@ -1,4 +1,6 @@
 "use server";
+
+import { LeaveReviewRefusal } from "@/lib/workforce/leave-authority.server";
 import { moduleEnabled } from "@/lib/workspace-presentation/current.server";
 
 import {isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
@@ -92,6 +94,7 @@ export async function reviewTimeOffAction(formData: FormData) {
     reviewed=await reviewTimeOffRequest({requestId,managerId:session.id,proof,status:decision});
   } catch(error) {
     if (error instanceof Error && error.message === "pto_insufficient_balance") redirect("/app/requests?tab=pending&error=pto-balance");
+    if (error instanceof LeaveReviewRefusal) redirect(`/app/requests?tab=team&error=${error.reason}`);
     if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))redirect('/app/requests?tab=team&error=review');
     throw error;
   }

@@ -16,7 +16,7 @@ export type CorrectionActionResponse =
   | {state:'conflict'}
   | {state:'outcome_unknown';operationId:string}
   | {state:'invalid'}
-  | {state:'unavailable';httpStatus?:401|403};
+  | {state:'unavailable';httpStatus?:401|403;reason?:'permission_required'};
 
 const object=(value:unknown):value is Record<string,unknown>=>Boolean(value)&&typeof value==='object'&&!Array.isArray(value);
 const uuid=(value:unknown):value is string=>typeof value==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
@@ -39,13 +39,24 @@ function action(value:unknown):CorrectionActionResponse{
   throw new Error('Invalid correction response');
 }
 
+const managerReviewPath = '/api/manager/time-corrections';
+async function permissionRefusal(response: Response, path: string) {
+  if(path!==managerReviewPath || response.status!==403 || nevoraFailure(response)!=='access_denied') return false;
+  const body: unknown = await response.json().catch(()=>null);
+  return object(body) && body.state==='unavailable' && body.reason==='permission_required';
+}
+
 async function get(path:string,signal:AbortSignal,actorId?:string,authority?:string){
   const response=await fetch(path,{method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error',signal,headers:{
     Accept:'application/json','X-Nevora-Time-Correction':'1',...(actorId?{'X-Nevora-Actor':actorId}:{}),...(authority?{'X-Nevora-Correction-Authority':authority}:{}),
   }});
   // X-Nevora-Failure (Nov 9, 2026): the shared mapping (data-clearing failures read as access ended, the rest unavailable).
   const read=await privateReadBody(response);
-  if(!read.ok){if(read.reason==='access_denied')return {state:'unavailable',reason:'access_denied'} as const;throw new Error('Correction data is unavailable');}
+  if (!read.ok) {
+    if (await permissionRefusal(response,path)) return {state:'unavailable',reason:'permission_required'} as const;
+    if (read.reason==='access_denied') return {state:'unavailable',reason:'access_denied'} as const;
+    throw new Error('Correction data is unavailable');
+  }
   return read.body;
 }
 
@@ -59,7 +70,9 @@ async function post(path:string,body:CorrectionRequestCommand|CorrectionReviewCo
     // The page-level notice hears about an ended session, changed access, an unconfirmed connection or a malformed
     // request; the business body below still decides the outcome, and the operation ID is never remade.
     if(!response.ok)announceFailure(nevoraFailure(response));
-    if(response.status===401||response.status===403)return {state:'unavailable',httpStatus:response.status};
+    if(response.status===401||response.status===403) {
+      return {state:'unavailable',httpStatus:response.status,...(await permissionRefusal(response,path)?{reason:'permission_required' as const}:{})};
+    }
     const result=action(await response.json());
     if('operationId' in result&&result.operationId!==body.operationId)return unknown;
     return result;
@@ -76,10 +89,10 @@ export async function submitEmployeeTimeCorrection(command:CorrectionRequestComm
   return post('/api/employee/time-corrections',command,undefined,authority);
 }
 export async function fetchManagerTimeCorrections(signal:AbortSignal,actorId?:string,authority?:string):Promise<ManagerTimeCorrections>{
-  return parseManagerTimeCorrections(await get('/api/manager/time-corrections',signal,actorId,authority));
+  return parseManagerTimeCorrections(await get(managerReviewPath,signal,actorId,authority));
 }
 export async function reviewManagerTimeCorrection(command:CorrectionReviewCommand,actorId?:string,authority?:string):Promise<CorrectionActionResponse>{
-  return post('/api/manager/time-corrections',command,actorId,authority);
+  return post(managerReviewPath,command,actorId,authority);
 }
 export async function fetchDelegatedTimeCorrections(employeeId:string,actorId:string,authority:string,recoveryScope:string,signal:AbortSignal){
  return parseDelegatedTimeCorrections(await get('/api/manager/time-corrections/delegated/'+encodeURIComponent(employeeId),signal,actorId,authority),employeeId,recoveryScope);

@@ -22,6 +22,7 @@ const back = (weekStart: string, suffix = "") => `/app/schedule/publish?week=${e
  */
 export async function publishDraftsAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
+  if (session.role !== "OWNER") redirect("/app/schedule?error=ACCESS_DENIED");
   const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
   const locationIds = [...new Set(formData.getAll("locationId").map(String).filter(Boolean))];
