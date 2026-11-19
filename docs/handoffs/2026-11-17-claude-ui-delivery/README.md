@@ -186,6 +186,11 @@ None blocks integration. Each report has its full list.
 - The Nov 19 desktop and mobile defect audit of `bc75950a8` (NV-AUDIT-01 to 05: Clocker PIN step and band on short
   screens, tablet rows at 320px, whole names in the schedule grid, a lost time-off decision): UI fixes, before and
   after evidence in Chromium and WebKit: [audit fixes](../../product/review-2026-11-19-audit/README.md).
+- Owner and Manager controls (SCRUM-215 Manager action grants, planning week and escalation; SCRUM-218 first-week
+  setup; SCRUM-214 pay rates and base scheduled pay), English and Spanish, on Development's contracts: code `d22e8eaa`,
+  guides rebuilt in `df86717a`: [hand-back](../2026-11-19-claude-owner-manager-controls.md) and
+  [evidence](../../product/review-2026-11-19-owner-manager/README.md). Location-scoped publishing needs a backend read
+  change (item 2 there).
 - The Support reference is switched on (`5cc1c838` and before, by the backend session), so the U11 note above is
   out of date.
 
