@@ -372,7 +372,7 @@ try {
     await page.getByRole('button', { name: 'Refresh attendance review' }).click();
     // The review rows carry the refreshed labels. The configured-policies panel above them reads location
     // names from its own endpoint (?policies=1, not intercepted here), so it rightly still says "Main Office".
-    const reviewRows = page.locator('.attendance-review-list');
+    const reviewRows = page.getByRole('list', {name: 'Clock-ins to review', exact: true});
     await reviewRows.getByText('Renamed Main Office', { exact: true }).waitFor();
     assert.equal(await reviewRows.getByText('Main Office', { exact: true }).count(), 0);
     checked(engine + ': refreshed server labels replace stale page-load labels');
