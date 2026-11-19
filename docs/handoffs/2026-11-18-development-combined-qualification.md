@@ -1,5 +1,13 @@
 # Development combined qualification handoff — November 18, 2026
 
+November19 publication update: candidate02 passed all23 CI jobs and Mobile
+Access, but GitHub rejected its merge history. Development remains22107 and
+no hosted upgrade was applied. The qualified assembly is preserved; its exact
+application tree is being delivered with the required linear history. Follow
+[the current publication record](2026-11-19-linear-development-publication.md)
+and its new exact-source gates. Earlier local/hosted evidence below remains
+scoped to the named assembly; it is not a successful Development publication.
+
 Jose authorized Development publication and the six bounded UI corrections, with
 an explicit boundary: “only in dev you can’t touch collab.” Codex owns backend,
 integration and hosting; Claude retains visual/design ownership. Development is

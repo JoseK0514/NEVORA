@@ -1,5 +1,12 @@
 # Assemble Claude premium UI and qualified backend on Development
 
+November19 execution ruling: the real assembly passed its full gates, but GitHub
+requires linear publication. Preserve its immutable tag and real merge history;
+represent its exact qualified tree in detached linear commits from Development,
+reconcile truthful source dispositions and rebuild manuals. Run all mandatory
+exact-source gates again. No branch control or content-fidelity assertion is
+relaxed. See `docs/handoffs/2026-11-19-linear-development-publication.md`.
+
 Jose authorized Development publication, combined reviewed/pushed UI integration, and six bounded UI corrections only on Development. Collaboration is read-only; main/production stay unchanged. This assembly continues the approved release, not a new product direction.
 
 ## Pinned inputs

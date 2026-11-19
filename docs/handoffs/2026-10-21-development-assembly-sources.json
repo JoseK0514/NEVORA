@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-19T02:27:22.678653+00:00",
+  "observedAt": "2026-11-19T04:55:14.245073+00:00",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -489,8 +489,8 @@
     {
       "branch": "claude-codex-collab-nevora",
       "sha": "f9171d7c685b8a780b1d66feab331b10d51558ab",
-      "disposition": "included",
-      "reason": "Reviewed and pushed Claude premium UI checkpoint integrated by a real merge into the isolated Development assembly. Backend, password policy and six release corrections retained. Collaboration remains read-only; qualification and hosted acceptance are separate gates."
+      "disposition": "superseded",
+      "reason": "Reviewed and pushed Claude premium UI checkpoint integrated by a real merge into the isolated Development assembly. Backend, password policy and six release corrections retained. Collaboration remains read-only; qualification and hosted acceptance are separate gates. November 19 linear publication: this original head is preserved by immutable qualified assembly candidate/backend-completion/20261118-development-combined-02 at05f2553182b387f20495c19070cfbabd50a987ef, which contains the actual integration ancestry. Its byte-identical tree is republished from Development22107 to obey GitHub required linear history; this record does not claim the original head is an ancestor of that linear delivery. The two active source branches remain active and unchanged; the password source retains its exact approved archive. See2026-11-19-linear-development-publication.md and the exact content-equivalence receipt. No source gate or branch ceiling is relaxed."
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",
@@ -516,15 +516,15 @@
     {
       "branch": "codex/nevora-password-emails-20261117",
       "sha": "6d31d122c078a43297e37a90280f2c657b03b8b6",
-      "disposition": "included",
-      "reason": "Jose explicitly approved archive and retirement November18. Exact head preserved in verified remote archive via atomic guarded deletion; all11 commits already included. PR39 retained as a closed record by GitHub after head retirement; all local worktrees preserved.",
+      "disposition": "superseded",
+      "reason": "Jose explicitly approved archive and retirement November18. Exact head preserved in verified remote archive via atomic guarded deletion; all11 commits already included. PR39 retained as a closed record by GitHub after head retirement; all local worktrees preserved. November 19 linear publication: this original head is preserved by immutable qualified assembly candidate/backend-completion/20261118-development-combined-02 at05f2553182b387f20495c19070cfbabd50a987ef, which contains the actual integration ancestry. Its byte-identical tree is republished from Development22107 to obey GitHub required linear history; this record does not claim the original head is an ancestor of that linear delivery. The two active source branches remain active and unchanged; the password source retains its exact approved archive. See2026-11-19-linear-development-publication.md and the exact content-equivalence receipt. No source gate or branch ceiling is relaxed.",
       "archiveRef": "refs/tags/archive/branches/2026-11-18/codex/nevora-password-emails-20261117"
     },
     {
       "branch": "nevora-30-day-phase",
       "sha": "69aa0970c73c2f93ef330b4252523dddd2aa2f64",
-      "disposition": "included",
-      "reason": "Jose explicitly authorized this extra branch on November 18, recorded in docs/handoffs/2026-11-18-30-day-phase.md. Exact source is already included through collaboration merge 4e83dfa53; the exception is scoped to this phase, not other branches."
+      "disposition": "superseded",
+      "reason": "Jose explicitly authorized this extra branch on November 18, recorded in docs/handoffs/2026-11-18-30-day-phase.md. Exact source is already included through collaboration merge 4e83dfa53; the exception is scoped to this phase, not other branches. November 19 linear publication: this original head is preserved by immutable qualified assembly candidate/backend-completion/20261118-development-combined-02 at05f2553182b387f20495c19070cfbabd50a987ef, which contains the actual integration ancestry. Its byte-identical tree is republished from Development22107 to obey GitHub required linear history; this record does not claim the original head is an ancestor of that linear delivery. The two active source branches remain active and unchanged; the password source retains its exact approved archive. See2026-11-19-linear-development-publication.md and the exact content-equivalence receipt. No source gate or branch ceiling is relaxed."
     }
   ],
   "maximumActiveBranches": 4,
@@ -537,7 +537,7 @@
     "review": "phase5-final-source-equivalence-code-review.md; exact handoff/delta inspected read-only",
     "productionChanged": false,
     "observedFailureSource": "76f08e5101a1f34fd9dc30cf68b9246fa92ee198",
-    "branchCeilingReason": "Three normal branches plus Jose’s authorized nevora-30-day-phase exception. Superseded password head archived and retired with explicit approval; no broader exception."
+    "branchCeilingReason": "Three normal branches plus Jose\u2019s authorized nevora-30-day-phase exception. Superseded password head archived and retired with explicit approval; no broader exception."
   },
   "rondoDevelopmentIntegration": {
     "date": "2026-11-16",
@@ -585,7 +585,7 @@
     "priorTooling": "66b86420dec773f01c9fa829d5498fab4507b941",
     "passwordEmails": "6d31d122c078a43297e37a90280f2c657b03b8b6",
     "committedRondo": "99636b3da504595197e7b12b7d7c8f0aab833020",
-    "branchCeilingReason": "Three normal branches plus Jose’s explicitly authorized nevora-30-day-phase exception. The fifth observed password PR branch still exceeds this ceiling; no general exception or remote deletion is inferred. Preserve the open PR and reconcile before publication.",
+    "branchCeilingReason": "Three normal branches plus Jose\u2019s explicitly authorized nevora-30-day-phase exception. The fifth observed password PR branch still exceeds this ceiling; no general exception or remote deletion is inferred. Preserve the open PR and reconcile before publication.",
     "uncommittedGrounding": "Held until Claude-ready checkpoint per Jose; not imported; original finite model evidence retained.",
     "publication": "Candidate only; main and production unchanged."
   }
