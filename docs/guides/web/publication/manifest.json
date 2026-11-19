@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-19",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "879f81bb784e9d31370e5626d9d9ea4cde349a04",
-  "applicationHash": "461cf287e3a8e2585890d88df08942a3b28d8eb89f40808689ec499c387538ec",
+  "sourceSha": "bc3ca0db33070b8b79a6a9fdcd7b3ffc1ff77c90",
+  "applicationHash": "c6990711f015849d60e1bd474f38314bddf30eeb5886e15fec1a5cbccf3ff470",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "0cd9232190da48d0e815aac9cbfe8df1ad69be5fe97f153ed58c7626fde85fec"
@@ -204,7 +204,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "492d7e3a5ff0de21c293b074d120918ee707a67f4ddebd27f136e45c765bae87",
+        "sha256": "e885d735d2c2747338852e751d8ecbeac1d03732444a474f71a861ad05d528e1",
         "pageCount": 6
       }
     },
@@ -327,7 +327,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "0ce6db9e2ea248b5a3a11417955a086e0d1084c2835ad6a7b9db98c219347fe9",
+        "sha256": "3a36351728742a2f407317ca364418a7b039645f75d067268518391f672d5dc6",
         "pageCount": 4
       }
     },
@@ -446,7 +446,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "13c04221d46fad7cbde9975d9db14ccefbcb8ee7833093641f0633599b025076",
+        "sha256": "e5171f757dacfd00b263ddbb1029c1c080c6b4308c0a1b57b9049a7f5a227a4c",
         "pageCount": 3
       }
     },
@@ -496,11 +496,11 @@
         },
         {
           "path": "src/components/owner-advisor/notebook-panel.tsx",
-          "sha256": "0311c842cd4526dfd50533bc1828bc2e7089fa11219ba8a943f159d606aa7aab"
+          "sha256": "e229ae66dc1f5b484b2816231d798b28c4986ecc421b1d98fa97cef807443a40"
         },
         {
           "path": "src/components/owner-advisor/coverage-actions.tsx",
-          "sha256": "6a1cbdcdbc957eee58606c28bc9e63bb8738f21934f9dfdea49cb1897c28c524"
+          "sha256": "0011c2bacb3054f6793f7ffb7cadaae6bfcbc8b1d84b0d9749acceaa397c0c4a"
         },
         {
           "path": "src/components/owner-advisor/coverage-plans.tsx",
@@ -621,7 +621,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "737ecabbfadd7cd62edf5e248ed4aa2a9dcfc4ae8d5a983f00b494ebd1157d19",
+        "sha256": "439edfae0edacf8bd8e2eb39c2f4cfae594fab65eda53fa09c42c9fb06086481",
         "pageCount": 5
       }
     },
@@ -884,7 +884,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "bce741ac6881295a137a3fa09da0b4fb049db6e5b34087a7b250143cbbc02ac2",
+        "sha256": "1fc1b85ed2e348ea05fd0b2072cd288f3f3377211a3188b747f11c0a72c6194e",
         "pageCount": 7
       }
     },
@@ -1067,7 +1067,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "e87fd1395a790c9345f07cf4cacc1d4e6d860297760d3361a15399215fa977dc",
+        "sha256": "76bb2a05dda0bd46095c28a3cf148b1b0f6c5e50081f40477ab77568703d5dc7",
         "pageCount": 6
       }
     }
