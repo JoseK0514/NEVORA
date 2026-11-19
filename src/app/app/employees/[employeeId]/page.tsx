@@ -10,6 +10,8 @@ import {durationSentence} from '@/lib/duration-format';
 import {readInvitationStatus} from '@/lib/auth/invitations/service.server';
 import {EmployeeInvitationPanel} from '@/components/company-access/employee-invitation-panel';
 import {ManagerOperationalScopePanel} from '@/components/company-access/manager-operational-scope-panel';
+import {ManagerActionGrants} from '@/components/workforce/manager-action-grants';
+import {readPortalLanguage} from '@/lib/activation/language.server';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import { EmployeeCoreProfileForm, EmployeeStatusForm, SheetField } from "@/components/employee-core-profile-form";
 import { ConfigurationForm } from "@/components/configuration-form";
@@ -156,6 +158,7 @@ export default async function EmployeeProfilePage({
           <li><CorpRow href={`/app/availability?employeeId=${encodeURIComponent(employee.id)}`} title="Availability" label={`Availability for ${name}`} chevron /></li>
           {/* Scheduling restrictions (U02): the times agreed with this person, kept apart from the availability they send. */}
           <li><CorpRow href={`${base}/restrictions`} title="When they can be scheduled" label={`When ${name} can be scheduled`} chevron /></li>
+          {actor.role === "OWNER" ? <li><CorpRow href={`${base}/pay`} title="Pay rate" label={`Pay rate for ${name}`} chevron /></li> : null}
         </CorpRows>
       </CorpCard>
       <CorpCard as="div" ariaLabel="Access and sign-in">
@@ -169,6 +172,8 @@ export default async function EmployeeProfilePage({
 
   // Release 1, board O-PersonAccess: role, Clocker PIN and account; reset password; the Owner's invitation and management
   // access controls; then Deactivate (red outline) at the bottom.
+  let accessLang: "en" | "es" = "en";
+  if (accessView && actor.role === "OWNER" && employee.role === "MANAGER") { try { accessLang = (await readPortalLanguage(proof)).language; } catch { /* English */ } }
   if (accessView) return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-person c-access c-page--narrow" labelledBy="access-title">
       <CorpNav back={{ href: base, label: employee.firstName }} title="Access and sign-in" titleId="access-nav-title" phoneOnly />
@@ -192,6 +197,10 @@ export default async function EmployeeProfilePage({
       {actor.role==='OWNER'&&(inviting||employee.role==='MANAGER') ? <div className="c-access__panels">
         {inviting ? <EmployeeInvitationPanel actorId={actor.id} employeeId={employee.id} initialStatus={invitation}/> : null}
         {employee.role==='MANAGER'?(ownerScope?<ManagerOperationalScopePanel actorId={actor.id} current={ownerScope} locations={locations}/>:<p className="c-note" role="status">Management access could not be confirmed. Refresh this employee before changing access.</p>):null}
+        {/* SCRUM-215: the actions this Manager may take, granted one by one at each location they manage. */}
+        {employee.role==='MANAGER'&&ownerScope?<ManagerActionGrants key={`${employee.id}:${ownerScope.scopeRevision}:${ownerScope.roleGeneration}`} employeeId={employee.id} firstName={employee.firstName} lang={accessLang}
+          manager={ownerScope.active} locations={locations.map(location=>({id:location.id,name:location.shortName||location.name,active:location.active}))}
+          scopeLocationIds={!ownerScope.scope?null:ownerScope.scope.mode==='COMPANY'?'all':ownerScope.scope.locationIds}/>:null}
       </div> : null}
       {canManageCore && employee.id !== actor.id ? <div className="c-access__foot">
         <EmployeeStatusForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} />

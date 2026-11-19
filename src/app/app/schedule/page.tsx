@@ -1,4 +1,8 @@
 import type { ReactNode } from "react";
+import { LaborCostCard } from "@/components/wages/labor-cost-card";
+import { readPortalLanguage } from "@/lib/activation/language.server";
+import { PlanningWindowCard, type PlanningWindow } from "@/components/workforce/planning-window-card";
+import { readOperationalPlanningWeek } from "@/lib/company-access/operational-read.server";
 import {scopedObservation} from '@/lib/company-access/observation';
 import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {readOperationalSchedule,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
@@ -333,6 +337,11 @@ export default async function SchedulePage({
     : <span className="c-meta c-sched-weekstate">Not started</span>;
   const todayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
   const todayShort = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
+  let costLang: "en" | "es" = "en";
+  try { costLang = (await readPortalLanguage(await requireSessionMutationProof())).language; } catch { /* English */ }
+  // SCRUM-215: the company's planning week, when it doesn't start on Monday (the window holding the Monday on screen).
+  let planningWindow: PlanningWindow | null = null;
+  if (!reviewDay) { try { const read = await readOperationalPlanningWeek(await requireSessionMutationProof(), weekStart); if (read.state === "ready" && read.data.startsOn !== 1) planningWindow = read.data; } catch { /* the Monday week alone */ } }
   const locationName = selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName ?? "";
   // Publish opens Build and publish (board O-BuildPublish): the week's drafts and one "Publish N drafts".
   const publishHref = `/app/schedule/publish?week=${weekStart}`;
@@ -506,6 +515,10 @@ export default async function SchedulePage({
                 detail={drafted ? "The team can’t see this week yet" : "Nothing scheduled this week"} label={drafted ? `Review and publish ${location.shortName}` : `Plan ${location.shortName}`} chevron /></li>;
             })}</CorpRows>
           </CorpCard> : null}
+          {planningWindow ? <PlanningWindowCard window={planningWindow} viewingWeek={weekStart} owner={session.role === "OWNER"} locationQuery={locationQuery} lang={costLang} /> : null}
+          {/* SCRUM-214: the Owner's draft labor cost for the locations in view (base scheduled pay, an estimate). */}
+          {session.role === "OWNER" && !reviewDay ? <LaborCostCard key={`${weekStart}:${selectedLocation}`} weekStart={weekStart} lang={costLang}
+            locations={inView.map(location => ({ id: location.id, name: location.shortName }))} /> : null}
           {publicationReview || params.publishCheck || params.plan === "1" ? <section className="c-card c-sched-plan mws-planning manager-issue-target" id="schedule-planning" tabIndex={-1} aria-labelledby="schedule-planning-title">
             <div className="c-card__head"><h2 className="c-card__label" id="schedule-planning-title">Build and publish</h2></div>
             <div className="c-card__body mws-planning-body"><p className="c-sched-plan__intro">Build or fill your draft, review the assignments, then publish so your team can see it.</p>

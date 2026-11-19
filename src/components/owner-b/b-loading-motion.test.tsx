@@ -27,6 +27,7 @@ const SAMPLES: Record<string, string> = {
   "^\\/app\\/schedule\\/.+": "/app/schedule/coverage",
   "^\\/app\\/payroll\\/.+": "/app/payroll/runs/1",
   "^\\/app\\/employees\\/[^/]+\\/restrictions$": "/app/employees/E1/restrictions",
+  "^\\/app\\/employees\\/[^/]+\\/pay$": "/app/employees/E1/pay",
   "^\\/app\\/employees\\/[^/]+\\/clocker-pin$": "/app/employees/E1/clocker-pin",
   "^\\/app\\/employees\\/.+": "/app/employees/E1",
   "^\\/app\\/updates\\/.+": "/app/updates/7",

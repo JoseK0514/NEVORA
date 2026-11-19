@@ -52,6 +52,8 @@ import "./owner-b-requests.css";
 import "./owner-b-settings.css";
 // Nov 17, 2026: one Direction B sheet per feature item (U01, U02, U03 with U09, U10).
 import "./b-restrictions.css";
+import "./b-wages.css";
+import "./b-workforce.css";
 import "./b-payroll-import.css";
 import "./b-reminders.css";
 import "./b-review-details.css";

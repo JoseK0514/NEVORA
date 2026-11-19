@@ -8,7 +8,9 @@ import {BButtonLink,BState,BStateScreen} from '../owner-b/b-kit';
  * "Christmas bonus hours". */
 const pageName=(title:string)=>title.replace(/\s+unavailable$/i,'')||title;
 
-export function OperationalUnavailable({title='Page unavailable',reason,scoped=false,back}:{title?:string;reason:AccessFailure;scoped?:boolean;
+export function OperationalUnavailable({title='Page unavailable',reason,scoped=false,back,closed}:{title?:string;reason:AccessFailure;scoped?:boolean;
+ /** SCRUM-215: a page closed because an action grant is missing names that grant and who decides instead. */
+ closed?:{title:string;line:string;lang?:'en'|'es'};
  /** Review 30 (D08): the page's way back on the band ("‹ Insights"), as the page itself has, when the page couldn't be
   * read. A page closed for lack of access keeps none: its way back needs the same access. */
  back?:{href:string;label:string}}){
@@ -19,8 +21,8 @@ export function OperationalUnavailable({title='Page unavailable',reason,scoped=f
  if(reason==='access_denied')return <ScopedReadFrame unavailable={<div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
   {/* No back link here: the page it leads to (Insights for Christmas bonus hours) needs the same access. */}
   <BStateScreen title={pageName(title)}>
-   <BState kind="locked" title={scoped?'Outside the locations you manage':'Company-wide access needed'}
-    line={scoped?'This view is not available with your current management access. Return to your schedule to choose a location you manage.':'This page needs current company-wide management access. An Owner can give it to you. If your access just changed, sign in again.'}>
+   <BState kind="locked" title={closed?<span lang={closed.lang}>{closed.title}</span>:scoped?'Outside the locations you manage':'Company-wide access needed'}
+    line={closed?<span lang={closed.lang}>{closed.line}</span>:scoped?'This view is not available with your current management access. Return to your schedule to choose a location you manage.':'This page needs current company-wide management access. An Owner can give it to you. If your access just changed, sign in again.'}>
     <div className="b-state-actions b-closed-actions">
      {scoped?<BButtonLink href="/app/schedule" kind="ghost">Open your schedule</BButtonLink>:<BButtonLink href="/app" kind="ghost">Return to Home</BButtonLink>}
      {scoped?<Link className="b-closed-also" href="/app">Return to Home</Link>:<Link className="b-closed-also" href="/login">Sign in again</Link>}

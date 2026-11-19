@@ -59,6 +59,8 @@ type View = {
   /** Server-rendered account cards (Face ID and passkeys, Privacy and your account), shown in the right column after
    * Notifications and before Sign out, so Sign out stays last at every width. */
   accountCards?: ReactNode;
+  /** SCRUM-215: a Manager's "What you can approve", server-rendered, under their details. */
+  authority?: ReactNode;
   /** The read rows' last heights, kept only while the session has ended (the values themselves are cleared). */
   rowHeights?: Record<string, number> | null;
 };
@@ -145,7 +147,7 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: Mana
   </li>;
 }
 
-export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, rowHeights = null, accountCards = null }: View) {
+export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, rowHeights = null, accountCards = null, authority = null }: View) {
   const ready = !state.paused && state.snapshot?.state === 'ready' ? state.snapshot : null;
   const read = readState(state), row = 'row' in read ? read.row : undefined;
   // Approved set: without payroll an Owner isn't told about payroll, even if the read lists the topic (switched off).
@@ -199,6 +201,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
     </ul>
     {read.kind === 'failed' ? <button type="button" className="q-btn q-btn--quiet" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={() => onRetry('details')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
     {read.kind === 'denied' ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : null}
+    {authority}
     <ul className="q-list" style={{ marginTop: 32 }} aria-label="Notifications and account">
       <li><details className="q-details" id="profile-notifications"><summary className="q-row q-row--one"><span className="q-rt"><b>Notifications</b></span>
         <span className="q-rv q-rv--l">{onCount === null ? read.head ?? '' : onCount ? 'On' : 'Off'}</span><CaretDownIcon className="q-chev q-chev--down" weight="bold" aria-hidden="true" /></summary>
@@ -228,7 +231,7 @@ function focusedTopic(): string | null {
   return active instanceof HTMLElement && active.dataset.topic ? active.dataset.topic : null;
 }
 
-export function ManagerProfileLive({ identity, initial = null, accountCards = null }: { identity: ManagerProfileIdentity; initial?: Ready | null; accountCards?: ReactNode }) {
+export function ManagerProfileLive({ identity, initial = null, accountCards = null, authority = null }: { identity: ManagerProfileIdentity; initial?: Ready | null; accountCards?: ReactNode; authority?: ReactNode }) {
   const [state, setState] = useState<PrivatePanelState<ManagerProfileSnapshot>>({ snapshot: null, paused: false, refreshing: true });
   const [saves, setSaves] = useState<Record<string, AlertSave>>({});
   const [overrides, setOverrides] = useState<Record<string, { on: boolean; basis: string }>>({});
@@ -364,6 +367,6 @@ export function ManagerProfileLive({ identity, initial = null, accountCards = nu
     if (!error || error === 'signed_out') control.current?.refresh();
   }
 
-  return <ManagerProfileView identity={identity} accountCards={accountCards} state={state} onRetry={retry} retrying={retrying} retried={outcome} saves={saves} overrides={shownOverrides} onToggle={toggle}
+  return <ManagerProfileView identity={identity} accountCards={accountCards} authority={authority} state={state} onRetry={retry} retrying={retrying} retried={outcome} saves={saves} overrides={shownOverrides} onToggle={toggle}
     held={held} rowHeights={rowHeights} announcement={announced.text ? announced.text + (announced.count % 2 ? '' : '\u00a0') : ''} />;
 }

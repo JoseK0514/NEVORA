@@ -47,6 +47,8 @@ const MANAGEMENT: Entry[] = [
   ["/app/employees/new", { ...detail, cards: [{ head: true, lines: 4 }] }],
   ["/app/employees/import", form],
   // Scheduling restrictions (U02): back row, title and the person's name (band 224), then the week card and one more.
+  // SCRUM-214: one person's pay rates (rates now, then the history).
+  [/^\/app\/employees\/[^/]+\/pay$/, { ...detail, title: "Pay rate", cards: [{ head: true, rows: 3 }, { head: true, rows: 2 }] }],
   [/^\/app\/employees\/[^/]+\/restrictions$/, { ...detail, title: "When they can be scheduled", cards: [{ head: true, rows: 7 }, { head: true, lines: 2 }] }],
   // One person's Clocker PIN (Phase 6): back row, the title and the person's name (band 224), one form card.
   [/^\/app\/employees\/[^/]+\/clocker-pin$/, { ...detail, title: "Clocker PIN", cards: [{ head: true, lines: 4 }] }],

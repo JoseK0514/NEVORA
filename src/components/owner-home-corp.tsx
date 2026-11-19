@@ -57,6 +57,8 @@ export type OwnerHomeCorpProps = {
   nextPay?: NextPay;
   payrollStatus?: HomePayrollStatus | null;
   setup?: ReactNode;
+  /** SCRUM-218: `setup` is the first-week card, drawn once by the Direction B screen. */
+  setupCard?: boolean;
   billing?: ReactNode;
   liveReaders?: string;
   /** Direction B (phones): the week behind This week, and where Payday's button goes. */
@@ -68,7 +70,7 @@ export function OwnerHomeCorp(props: OwnerHomeCorpProps) {
     <div data-live-readers={props.liveReaders} hidden />
     {/* Direction B: the phone screen (shown on phones under data-nv-b; tablets and desktop keep the cards below). */}
     <HomeB today={props.today} monitor={props.monitor} monitorPending={props.monitorPending} offline={props.offline} value={props.value} connection={props.connection}
-      timecards={props.timecards} timecardsReady={props.timecardsReady ?? props.value !== null} businessDay={props.businessDay} nextPay={props.nextPay} payrollStatus={props.payrollStatus} setup={props.setup} billing={props.billing}
+      timecards={props.timecards} timecardsReady={props.timecardsReady ?? props.value !== null} businessDay={props.businessDay} nextPay={props.nextPay} payrollStatus={props.payrollStatus} setup={props.setup} setupCard={props.setupCard} billing={props.billing}
       dateLabel={props.dateLabel} summary={props.summary} week={props.week} greeting={props.greeting} onRetry={props.onRetryActions} />
     <CorpTitle title={props.greeting} sub={<>{props.dateLabel}<span role="status" className="c-sr">{props.summary}</span></>} />
     <TodayCard {...props} />
@@ -209,7 +211,7 @@ function PaydayCard({ nextPay, payrollStatus, timecards, ready, connection, busi
 /** Things to do on Home: only the decisions people are waiting on (requests, corrections, other urgent items). Shifts with no
  * clock-in and open shifts stay in Today above, so no count shows twice. The header carries no total: each row says what
  * it counts, and the full page and the sidebar keep the one shared total. Each row opens where the decision is made. */
-function ThingsToDo({ value, connection, offline, onRetryActions, setup, today }: OwnerHomeCorpProps) {
+function ThingsToDo({ value, connection, offline, onRetryActions, setup, setupCard, today }: OwnerHomeCorpProps) {
   if (!value) {
     const busy = connection === "loading" || connection === "reconnecting";
     const quiet = offline || connection === "offline" || connection === "paused";
@@ -223,7 +225,7 @@ function ThingsToDo({ value, connection, offline, onRetryActions, setup, today }
       : <CorpBody><p className="c-home__state" aria-busy={busy || undefined}>{message}</p>
         {connection === "access_lost" ? <CorpButtonLink href="/login" kind="secondary" size="md" native>Sign in</CorpButtonLink> : null}
       </CorpBody>}
-      {setup}
+      {setupCard ? null : setup}
     </CorpCard>;
   }
   const requests = [...value.now.filter(item => item.category === "requests"), ...value.requests];
@@ -253,6 +255,6 @@ function ThingsToDo({ value, connection, offline, onRetryActions, setup, today }
       ? <><b className="c-empty__title">No requests waiting</b><span className="c-empty__body">Open shifts and missed clock-ins are under Today.</span></>
       : total.exact ? <><b className="c-empty__title">You’re all set</b><span className="c-empty__body">Nothing needs you right now.</span></>
       : <><b className="c-empty__title">{t.notAllChecked}</b><span className="c-empty__body">{t.notAllCheckedLine}</span></>}</div>}
-    {setup}
+    {setupCard ? null : setup}
   </CorpCard>;
 }

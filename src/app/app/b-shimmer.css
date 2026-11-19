@@ -22,9 +22,9 @@
  *   (the 36px lead and its 12px gap); their band starts 48px earlier to stay in step.
  * - It waits --b-delay-shimmer before the first pass. Until then the band sits outside the block.
  * - Reduced motion: no band is drawn at all. The placeholder is the static one Phase 2 built. */
-:is(#c-root, html) .app-shell[data-nv-b] :is(.b-screen[data-b-load] .b-skel, .be-skel__bar, .be-skel__dot, .kn-skel__bar, .kn-skel__dot, .wk-skel__bar) { position: relative; overflow: hidden; }
+:is(#c-root, html) .app-shell[data-nv-b] :is(.b-screen[data-b-load] .b-skel, .be-skel__bar, .be-skel__dot, .kn-skel__bar, .kn-skel__dot, .wk-skel__bar, .fw-skel__bar, .fw-skel__track, .lc-skel__bar, .mg-skel__bar) { position: relative; overflow: hidden; }
 @media (prefers-reduced-motion: no-preference) {
-  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-screen[data-b-load] .b-skel, .be-skel__bar, .be-skel__dot, .kn-skel__bar, .kn-skel__dot, .wk-skel__bar)::after {
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-screen[data-b-load] .b-skel, .be-skel__bar, .be-skel__dot, .kn-skel__bar, .kn-skel__dot, .wk-skel__bar, .fw-skel__bar, .fw-skel__track, .lc-skel__bar, .mg-skel__bar)::after {
     content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: min(calc(var(--b-shimmer-span) * 0.3), 160px); pointer-events: none;
     background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--b-on-band) 72%, transparent) 50%, transparent);
     transform: translateX(-100%); animation: b-shimmer var(--b-dur-shimmer) linear var(--b-delay-shimmer) infinite; }

@@ -52,7 +52,7 @@ export type HomeBWeek = {
 export type HomeBProps = {
   today: Today | null; monitor: ClockMonitor | null; monitorPending: boolean; offline: boolean;
   value: NeedsYou | null; connection: ActionCenterConnection; timecards: ActionItem[]; timecardsReady: boolean; businessDay?: string;
-  nextPay?: NextPay; setup?: ReactNode; billing?: ReactNode; dateLabel: string; summary: string; week?: HomeBWeek; greeting: string;
+  nextPay?: NextPay; setup?: ReactNode; setupCard?: boolean; billing?: ReactNode; dateLabel: string; summary: string; week?: HomeBWeek; greeting: string;
   /** Phase 8 (a.md #5): the Owner's payroll preparation facts Home already reads (the oldest period whose scheduled
    * payday passed with no payroll, a schedule that needs review), so Home never looks calm while Payroll is red. */
   payrollStatus?: HomePayrollStatus | null;
@@ -142,7 +142,10 @@ export function HomeB(props: HomeBProps) {
           steps are complete), so a new workplace sees what to finish before the day's figures. */}
         {/* Backend (Nov 15, 2026): the Owner's plan and billing notice leads while it applies. */}
         {props.billing ?? null}
-        {props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
+        {/* SCRUM-218 (Nov 19, 2026): the Owner's setup slot is the first-week card, a whole card of its own with its own
+          read; the older setup rows (the preview) keep their "Finish setting up" card. */}
+        {props.setupCard ? props.setup
+          : props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
         <NeedsYouCard {...props} gapRows={gapRows} openHref={openHref} />
         {ready ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} /> : null}
       </div>

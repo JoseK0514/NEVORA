@@ -14,6 +14,8 @@ const scheduleErrors:Record<string,string>={
  INVALID_TIME_RANGE:'Enter a valid shift date and time period.',
  INVALID_SHIFT_LEAD:'Only an Owner, Manager or Lead can lead a shift.',
  INVALID_PUBLISH:'The schedule could not be published.',
+ // SCRUM-215: a Manager without the Publish schedules grant at a location in the request.
+ ACCESS_DENIED:'You can’t publish here. Publishing isn’t part of your access at every location in this week. Ask an Owner, or publish the locations you can.',
  NO_PENDING_CHANGES:'There were no unpublished changes to publish.',
  NO_SCHEDULE:'There is no schedule to publish for that location yet.',
  SHIFT_HAS_EXCHANGE_HISTORY:'This shift has scheduling history and cannot be deleted. Edit it instead.',
