@@ -62,7 +62,19 @@ for(const engine of ['chromium','webkit']){
   let bSettled=false;const bWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(()=>{bSettled=true;});await render();assert.equal(bSettled,false);
   await page.evaluate(()=>document.querySelector('.c-hours').setAttribute('aria-busy','false'));await render();assert.equal(bSettled,false,'A hidden legacy off-clock card cannot authorize the visible Clocked in view');
   await page.evaluate(()=>document.querySelector('#b-hours-now .b-chip').textContent='Not clocked in');await bWaiting;assert.equal(bSettled,true);
-  result.recordedReadiness.push({phase:'Visible B status matches the fresh released read; hidden legacy status cannot pass',settled:bSettled});result.status='passed';
+  result.recordedReadiness.push({phase:'Visible B status matches the fresh released read; hidden legacy status cannot pass',settled:bSettled});
+  // After a real clock-out during a scheduled shift, the delivered status also
+  // says how long the shift has been under way. It remains OFF_CLOCK. Invalid
+  // text, a clocked-in status, paused data and an in-flight read must still wait.
+  await page.setContent('<main class="c-hours" data-hours-view="records" data-hours-state="ready" aria-busy="false"><section id="b-hours-now"><div class="b-card__h"><h2>Right now</h2><span class="b-status" data-dot="green">Clocked in</span></div></section></main>');
+  let elapsedSettled=false;const elapsedWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(value=>{elapsedSettled=true;result.elapsedRecordedResult=value;});
+  await render();assert.equal(elapsedSettled,false,'An old Clocked in status must remain refused');
+  await page.evaluate(()=>{const status=document.querySelector('.b-status');status.textContent='Not clocked in · unknown';status.dataset.dot='amber';});await render();assert.equal(elapsedSettled,false,'An unknown off-clock duration cannot authorize readiness');
+  await page.evaluate(()=>{const status=document.querySelector('.b-status');status.textContent='Not clocked in · 1 h';status.dataset.dot='green';});await render();assert.equal(elapsedSettled,false,'The elapsed not-clocked-in hint is amber, not a recorded green clock-in');
+  await page.evaluate(()=>{document.querySelector('.b-status').dataset.dot='amber';document.querySelector('.c-hours').dataset.hoursState='paused';});await render();assert.equal(elapsedSettled,false,'Paused data cannot authorize the elapsed status');
+  await page.evaluate(()=>{const time=document.querySelector('.c-hours');time.dataset.hoursState='ready';time.setAttribute('aria-busy','true');});await render();assert.equal(elapsedSettled,false,'A current read must settle before its elapsed status is admitted');
+  await page.evaluate(()=>document.querySelector('.c-hours').setAttribute('aria-busy','false'));await elapsedWaiting;assert.deepEqual(result.elapsedRecordedResult,{state:'OFF_CLOCK',view:'time',settled:true});
+  result.recordedReadiness.push({phase:'Settled OFF_CLOCK can include the delivered amber elapsed hint; stale and malformed states remain refused',settled:elapsedSettled});result.status='passed';
  }catch(error){result.failure={name:error.name,message:error instanceof assert.AssertionError?error.message:'Controlled readiness fixture failed'};process.exitCode=1;}
  finally{await context?.close();await browser.close();result.browserClosed=!browser.isConnected();await writeFile(join(evidence,'readiness-report.json'),JSON.stringify(results,null,2));}
 }
