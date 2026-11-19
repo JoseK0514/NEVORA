@@ -64,7 +64,7 @@ export type WallShift = {date: string; startTime: string; endTime: string};
  * about how long is too long. */
 export function shiftEndedWhileOpen({shifts, today, zone, observedAt, clockInAt}: {shifts: readonly WallShift[]; today: string; zone: string; observedAt: string; clockInAt: string}): WallShift | null {
   const nowWall = wallAt(observedAt, zone), inWall = wallAt(clockInAt, zone);
-  if (inWall.slice(0, 10) !== today) return null;
+  if (inWall.slice(0, 10) !== today || shiftUnderway({shifts, today, zone, observedAt})) return null;
   const ended = shifts.filter(shift => shift.date === today && shift.endTime > shift.startTime && `${shift.date} ${shift.endTime}` <= nowWall && inWall < `${shift.date} ${shift.endTime}`)
     .sort((a, b) => b.endTime.localeCompare(a.endTime))[0];
   const later = shifts.some(shift => shift.date === today && `${shift.date} ${shift.startTime}` > nowWall);

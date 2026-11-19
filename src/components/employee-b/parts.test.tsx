@@ -50,3 +50,9 @@ it('Phase 9: Dotted splits a line that was kept whole at its dots, so a time mov
   expect(html.match(/class="eb-dots__p"/g)).toHaveLength(2);
   expect(html).toContain('<span class="b-sr">, </span>9:00');
 });
+
+it.each(['2026-11-17T16:00:00Z', '2026-11-17T17:00:00Z', '2026-11-17T20:59:00Z'])('keeps the current assignment active after an earlier shift ends at %s', observedAt => {
+ const today = '2026-11-17';
+ const shifts = [{date: today, startTime: '09:00', endTime: '12:00'}, {date: today, startTime: '12:00', endTime: '17:00'}];
+ expect(shiftEndedWhileOpen({shifts, today, zone: 'America/Puerto_Rico', observedAt, clockInAt: '2026-11-17T13:00:00Z'})).toBeNull();
+});
