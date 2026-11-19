@@ -142,7 +142,17 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
  const refreshProfile=()=>page.evaluate(()=>window.dispatchEvent(new Event('storage')));
  async function screenshot(name){await page.screenshot({path:join(evidenceDirectory,`${prefix}-${name}.png`),fullPage:true});}
  async function accessibility(name){
-  const expectedTitle={'Requests hub':'Requests · NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];assert(expectedTitle,'Known page title contract');await page.waitForFunction(title=>document.title===title,expectedTitle);if(name==='Requests hub'&&phone){await page.locator('[data-requests-state="ready"]').waitFor({state:'attached'});await page.locator('#b-requests-title').waitFor();}const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;
+  const expectedTitle={'Requests hub':'Requests · NEVORA',Profile:'Profile · NEVORA',Notifications:'Notifications · NEVORA'}[name];
+  assert(expectedTitle,'Known page title contract');
+  await page.waitForFunction(title=>document.title===title,expectedTitle);
+  if(name==='Requests hub'){
+   // The live employee view replaces the server placeholder on tablets and desktops as well as phones.
+   await page.locator('[data-requests-state="ready"]').waitFor({state:'attached'});
+   await page.locator('#b-requests-title').waitFor();
+   await page.locator('#b-requests-decided').getByRole('link',{name:'See all decided requests',exact:true}).waitFor();
+   await page.waitForFunction(()=>!document.documentElement.hasAttribute('data-c-arrived'));
+  }
+  const entrance=name==='Requests hub'?await waitForSheetEntrance(page):undefined;
   // Audit the settled tab bar: a tab's pressed/pending opacity transition is a frame of motion, not its colour.
   // A tapped tab also keeps the browser's :active state for a few hundred milliseconds after the tap (Chromium holds it
   // past a quick second tap elsewhere), and while it is pressed the tab dims to .64 by design (Signature press feedback,
