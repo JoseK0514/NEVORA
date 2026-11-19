@@ -5,7 +5,7 @@ import {resolve} from 'node:path';
 import {createOwnedNextApp} from './owned-next-app';
 import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
 import {seedEmployeeHours} from './employee-hours-fixture';
-import {publishScheduleWithRevision} from '../../lib/data/schedules';
+import {publishScheduleWithRevision} from './management-api';
 import {weekStartFor} from '../../lib/date-utils';
 
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'))('playwright');
