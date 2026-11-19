@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "date": "2026-11-17",
+  "date": "2026-11-18",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "e05208db194c0ef6c30637f1abb6d05db7010dfb",
-  "applicationHash": "83404afdfa5e86bd8923cd20a7061d7236337151fa2b863f3712feda82ae84a0",
+  "sourceSha": "9f158734597c630a971a4b0afbcedcf0265e090b",
+  "applicationHash": "f90f215cb49ca77a6224c3474b4914b2b82650c96693cb272fc097a507bca2d0",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "1f6a3c14d7ae322345b3c7d2975ae8423265cda5e2cf86da3cdaa662adb31693"
@@ -71,7 +71,7 @@
         },
         {
           "path": "src/lib/payroll/service.ts",
-          "sha256": "a81aa78ec62d937dc0724e5f68ff676284cae2ecc4a9417d0df6fa38e2e0fe75"
+          "sha256": "d028e3cb97126fed241c69e931d2b7ed7b639f20c2c68631e44077a6e8f9b3cb"
         },
         {
           "path": "src/lib/payroll/access.ts",
@@ -103,7 +103,7 @@
         },
         {
           "path": "src/lib/payroll/calculation-mode.ts",
-          "sha256": "c94459692143f60495f66ad6c82ac991bc1fbddbfd2e01c02cb3176eb7c50443"
+          "sha256": "bac072790f0f619ee3f4adc3fbc3d43f647ee049fad5a8242d9f7f9cb2c56962"
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
@@ -176,7 +176,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "893f40ec65d58440cf39de7b4b2af6c1a7dadebd22f739f2b73103afd94ac7f0",
+        "sha256": "21743970b4f4a2897933a69bd31fcd813379761b0c1c9b3cafc6327f54f1cc5f",
         "pageCount": 4
       }
     },
@@ -222,7 +222,7 @@
         },
         {
           "path": "src/lib/payroll/service.ts",
-          "sha256": "a81aa78ec62d937dc0724e5f68ff676284cae2ecc4a9417d0df6fa38e2e0fe75"
+          "sha256": "d028e3cb97126fed241c69e931d2b7ed7b639f20c2c68631e44077a6e8f9b3cb"
         },
         {
           "path": "src/lib/payroll/native/scope.ts",
@@ -283,7 +283,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "58c770da3f851ef49266f0dd6dee9ca4078decb159727514894cbf25ace78dea",
+        "sha256": "d4e9dc8c69187780c7d17484e2418e75dc190c08f83049a97afbcc708ab841c1",
         "pageCount": 3
       }
     },
@@ -378,7 +378,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "5f2fe9175c67d5082a1a36882d095331ad429b4a46cab269c2ff0c89106fe019",
+        "sha256": "87c0ae068fac957a74d1ff391aea9464885ecd0be6c9a6772ea6939787c47b44",
         "pageCount": 3
       }
     },
@@ -521,7 +521,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "037f71134f85dfac8fb85e422167b34d72901c6dabbcf1418cf0aac2e348a9ac",
+        "sha256": "399d9958651e00c18bbe6d4d26e4b8eec3b0bce20a81c829a6085c99714c7e1a",
         "pageCount": 4
       }
     },
@@ -530,7 +530,7 @@
       "title": "NEVORA web developer guide",
       "markdown": {
         "path": "docs/guides/web/developer.md",
-        "sha256": "51ce0772279c1be63fe1b4e27dfc5a076c8d60a872ab29c3a0ed0efc4aaeaab2"
+        "sha256": "5707487395d3bc52d0d1b60df358b395625609d869cd0f05727f5aae519a1d9b"
       },
       "evidence": [
         {
@@ -635,7 +635,7 @@
         },
         {
           "path": "src/lib/payroll/calculation-mode.ts",
-          "sha256": "c94459692143f60495f66ad6c82ac991bc1fbddbfd2e01c02cb3176eb7c50443"
+          "sha256": "bac072790f0f619ee3f4adc3fbc3d43f647ee049fad5a8242d9f7f9cb2c56962"
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
@@ -728,7 +728,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "fb3d94739a6609b7646e2fb5152482ecbbd0d2d168e6f073b3a30b050eb263ad",
+        "sha256": "759bf936564ce712a024fbcf918f3771261c3c87d2b10c626dee1e714f7098d2",
         "pageCount": 5
       }
     },
@@ -830,7 +830,7 @@
         },
         {
           "path": "src/lib/payroll/calculation-mode.ts",
-          "sha256": "c94459692143f60495f66ad6c82ac991bc1fbddbfd2e01c02cb3176eb7c50443"
+          "sha256": "bac072790f0f619ee3f4adc3fbc3d43f647ee049fad5a8242d9f7f9cb2c56962"
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
@@ -891,7 +891,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "9b66a1b37887d12873cf8423eed1abb13610ae4f1beed526750edeeb16ae1c56",
+        "sha256": "e6bd4d0718de08ffea70ef6f0a6687bb108894f7ca784515b11fbc2313955a44",
         "pageCount": 5
       }
     }
