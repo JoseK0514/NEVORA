@@ -14,7 +14,7 @@ export function measureRenderedContrast(element) {
   const layers = [], targetBounds = element.getBoundingClientRect();
   for (let node = element; node; node = node.parentElement) {
     const style = getComputedStyle(node);
-    if (style.opacity !== '1' || style.mixBlendMode !== 'normal' || style.filter !== 'none') throw Error('Unsupported compositing');
+    if (style.opacity !== '1' || style.mixBlendMode !== 'normal' || style.filter !== 'none') throw Error('Unsupported compositing on '+node.tagName+'.'+node.className+' (opacity '+style.opacity+', blend '+style.mixBlendMode+', filter '+style.filter+')');
     const layer = {tag: node.tagName, color: style.backgroundColor, image: style.backgroundImage, bounds:node.getBoundingClientRect().toJSON(), overlays: []};
     for (const pseudo of ['::before', '::after']) {
       const p = getComputedStyle(node, pseudo);

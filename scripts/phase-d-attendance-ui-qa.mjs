@@ -264,7 +264,7 @@ try {
     await employeePage.goto(app.url + '/app?view=attendance#review', { waitUntil: 'networkidle' });
     // Corporate UI: the review lives on Who's working behind "Time corrections". None of it may render for
     // an Employee, even with the deep link that opens the review.
-    assert.equal(await employeePage.getByText('Today’s clock-ins', { exact: true }).count(), 0);
+    assert.equal(await employeePage.locator('#attendance-review-title').count(), 0);
     assert.equal(await employeePage.locator('.attendance-review, .c-who, #who-title').count(), 0);
     assert.equal(await employeePage.getByText('Time corrections', { exact: true }).count(), 0);
     checked(engine + ': Employee cannot enter Manager attendance surface');
@@ -319,7 +319,7 @@ try {
     assert.equal(await page.locator('.attendance-review').count(), 0, 'review stays collapsed until opened');
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await page.getByRole('button', { name: 'Clock-ins to check, 1 to review, collapsed', exact: true }).click();
-    await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
+    await page.getByRole('heading', { name: /^Today’s clock-ins\s*1 to review$/, level: 2 }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     checked(engine + ': attendance review opens from Who’s working');
     // Same-document fragment change only: later reloads and remounts keep the review open through #review.
@@ -424,7 +424,7 @@ try {
     fixture = { status: 200, payload: fixtureReady() };
     await page.bringToFront();
     await page.reload({ waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Today’s clock-ins', exact: true }).waitFor();
+    await page.getByRole('heading', { name: /^Today’s clock-ins\s*1 to review$/, level: 2 }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     await page.waitForFunction(() => document.hasFocus() && document.visibilityState === 'visible');
     let offlineReads = 0;
