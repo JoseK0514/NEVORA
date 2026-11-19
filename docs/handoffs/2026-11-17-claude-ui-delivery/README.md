@@ -179,6 +179,11 @@ None blocks integration. Each report has its full list.
   F01 (a punch open since an earlier day is not flagged after 12 hours), F26 to F28, and the "registered" Clocker
   sentences.
 - Rondo AI on Development and Manager access: [request to Codex](../2026-11-18-claude-to-codex-rondo-ai-activation-and-manager-access.md).
+- Owner and Manager controls (SCRUM-215 Manager action grants, planning week and escalation; SCRUM-218 first-week
+  setup; SCRUM-214 pay rates and base scheduled pay), English and Spanish, on Development's contracts: code `d22e8eaa`,
+  guides rebuilt in `df86717a`: [hand-back](../2026-11-19-claude-owner-manager-controls.md) and
+  [evidence](../../product/review-2026-11-19-owner-manager/README.md). Location-scoped publishing needs a backend read
+  change (item 2 there).
 - The Support reference is switched on (`5cc1c838` and before, by the backend session), so the U11 note above is
   out of date.
 
