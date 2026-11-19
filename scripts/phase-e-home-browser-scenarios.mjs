@@ -53,7 +53,7 @@ export async function waitForRecordedTimeReady(page, expectedState){
   const time=document.querySelector('.c-hours[data-hours-view="records"]');
   if(!time||time.getAttribute('data-hours-state')!=='ready'||time.getAttribute('aria-busy')!=='false')return false;
   const b=time.querySelector('#b-hours-now');
-  if(b?.getClientRects().length){const pill=b.querySelector('.b-card__h .b-chip')?.textContent;return b.querySelector('h2')?.textContent==='Right now'&&pill===(expected==='OFF_CLOCK'?'Not clocked in':status.pill)?{state:expected,view:'time',settled:true}:false;}
+  if(b?.getClientRects().length){const pill=b.querySelector('.b-card__h .b-status')?.textContent;return b.querySelector('h2')?.textContent==='Right now'&&pill===(expected==='OFF_CLOCK'?'Not clocked in':status.pill)?{state:expected,view:'time',settled:true}:false;}
   const card=time.querySelector('#hours-now');if(!card)return false;
   const label=card.querySelector('.c-card__label')?.textContent??null,pill=card.querySelector('.c-card__aside .c-pill')?.textContent??null;
   if(label!==status.label||pill!==status.pill)return false;

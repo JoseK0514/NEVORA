@@ -191,6 +191,7 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').waitFor();expect(new URL(page.url()).hash).toBe('');
    for(const width of [1440,320]){
     await page.setViewportSize({width,height:1000});
+    await page.locator(width===320?'.ma-card #activation-password':'#activation-password').waitFor();
     const candidate='a fictional oversized phrase '.repeat(50);
     for(const selector of ['#activation-password','#activation-confirm-password']){await page.locator(selector).fill('');await page.locator(selector).focus();await page.keyboard.insertText(candidate);expect(await page.locator(selector).inputValue()).toBe(candidate);}
     await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#activation-error,#activation-policy-error').innerText()).toBe(passwordRejectionMessage('en','too_long'));
@@ -198,7 +199,12 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    for(const lang of ['en','es'] as const){
     step=engine+' invitation policy '+lang;await context.addCookies([{name:'nv-lang',value:lang,url:origin}]);await page.goto('about:blank');
     // Reopen in a fresh document: a same-document fragment navigation can race hydration in WebKit.
-    await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').fill('qwertyuiopasdfgh');await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');await page.locator('button[type="submit"]').click();
+    await page.goto(origin+'/activate#proof='+proof);
+    await page.locator('.ma-card #activation-password').waitFor();
+    await page.locator('#activation-password').fill('qwertyuiopasdfgh');await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');
+    const [refusal]=await Promise.all([page.waitForResponse(origin+'/api/auth/activate'),page.locator('button[type="submit"]').click()]);
+    expect(refusal.status()).toBe(400);
+    expect(await refusal.json()).toEqual({state:'invalid',passwordReason:'breached'});
     await expect.poll(()=>page.locator('#activation-error,#activation-policy-error').innerText()).toBe(passwordRejectionMessage(lang,'breached'));
     expect(await page.locator('#activation-password').getAttribute('minlength')).toBe('15');
     await page.locator('#activation-confirm-password').fill('different fictional phrase');await page.locator('button[type="submit"]').click();expect(await page.locator('#activation-error').count()).toBe(1);expect(await page.locator('#activation-error').innerText()).not.toContain(passwordRejectionMessage(lang,'breached'));
