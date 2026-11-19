@@ -47,8 +47,8 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     // turn. Typing before that arrival lets the intended move blur/clear the
     // picker; await the actual focus contract before beginning keyboard entry.
     const matchHeading=page.getByRole('heading',{name:'Match each row to a person',exact:true});
-    await expect.poll(()=>matchHeading.evaluate(element=>element===document.activeElement)).toBe(true);
-    const personPicker=page.locator('.pim-pick__in');await personPicker.focus();await expect.poll(()=>personPicker.evaluate(element=>element===document.activeElement)).toBe(true);
+    await expect.poll(()=>matchHeading.evaluate((element:HTMLElement)=>element===document.activeElement)).toBe(true);
+    const personPicker=page.locator('.pim-pick__in');await personPicker.focus();await expect.poll(()=>personPicker.evaluate((element:HTMLElement)=>element===document.activeElement)).toBe(true);
     await personPicker.fill(fixture.ids.a);await expect.poll(()=>personPicker.inputValue()).toBe(fixture.ids.a);await expect.poll(()=>personPicker.getAttribute('aria-expanded')).toBe('true');
     await page.getByRole('option',{name:new RegExp(fixture.ids.a)}).waitFor();await expect.poll(()=>page.getByRole('option').count()).toBe(1);await personPicker.press('Enter');await expect.poll(()=>personPicker.inputValue()).toBe('María José Fictional QA');
     const zeroChoices=page.getByRole('radio',{name:'Not paid this period',exact:true});expect(await zeroChoices.count()).toBe(roster.length-1);for(const choice of await zeroChoices.all())await choice.check();
