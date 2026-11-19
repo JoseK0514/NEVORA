@@ -187,7 +187,7 @@ try{
   diagnostic.phase('continue','before');await verify(t,'2468',diagnostic);diagnostic.phase('continue','after');await t.getByRole('button',{name:'Clock in',exact:true}).waitFor();
   await diagnostic.close();currentPinDiagnostic=undefined;
   await t.evaluate(()=>{window.__restoreStorage=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(){throw new DOMException('Test storage denial','QuotaExceededError');};});
-  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'This tablet can’t save right now',exact:true}).waitFor();assert.equal(await count(),guardStart);
+  await t.getByRole('button',{name:'Clock in',exact:true}).click();await t.getByRole('heading',{name:'This tablet can’t save punches',exact:true}).waitFor();assert.equal(await count(),guardStart);
   await t.evaluate(()=>{IDBObjectStore.prototype.put=window.__restoreStorage;delete window.__restoreStorage;});
   await t.getByRole('button',{name:'Done',exact:true}).click();await idle(t);checked(engine+': blocked browser recovery storage prevents the request entirely');
   // A second tab changes the shared HttpOnly cookie. The old screen must not act as that employee.
