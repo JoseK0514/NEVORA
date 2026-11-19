@@ -16,11 +16,12 @@ The detached publication checkout starts from exact Development
 `22107a24272f2347bbb59a3da1f54319632772a5`. Its first linear commit,
 `959347c8c510295640c17c4d932ce07f3d586429`, has the exact complete tree of that
 qualified assembly: `05d5e989fb3464da0dbf818d3742c88af187f49a`.
-Only provenance documents, the source inventory and rebuilt source-qualified
-manuals change afterward. Application, schema, assets, QA drivers, configuration,
-dependencies and tests retain the qualified assembly's exact bytes and modes.
+Provenance documents, the source inventory and rebuilt source-qualified manuals
+change afterward. Candidate03 exposed two QA ordering/label defects described
+below; exactly three QA files also change. Application, schema, assets,
+configuration and dependencies retain the qualified assembly's exact bytes and modes.
 The external `linear-content-equivalence.json` proves this with the exact allowed
-metadata differences; extra differences fail qualification.
+metadata/manual differences and three named QA paths; extra differences fail qualification.
 
 Three original source heads are not ancestors of the linear delivery:
 collaboration f9171d7c6, the approved password source6d31d122c and the authorized
@@ -52,4 +53,32 @@ Manager Rondo's reviewed-UI dependency and production authorization remain.
 Private evidence and current final-state receipt:
 `/Users/josek0514/Documents/NEVORA-Evidence/2026-11-18-development-publication/FINAL-STATUS.json`.
 The next immutable candidate is
-`candidate/backend-completion/20261119-development-linear-03`.
+`candidate/backend-completion/20261119-development-linear-04`.
+
+
+Candidate03 (43c24ac69fd7) failed Home in both engines and the joined-payroll
+WebKit driver; the dependent Phase E gates also failed. Its other leaf jobs and
+Mobile Access passed. Preserve CI44462553806 and Mobile44462553798. No application
+change followed these failures:
+
+- Time legitimately displays an amber “Not clocked in · 1 h” after clock-out
+  when the fixture shift began today. The Home driver formerly required the
+  plain label. It now accepts only the bounded elapsed format with its amber
+  semantic dot, while requiring fresh, settled records. The controlled browser
+  regression rejects stale clocked-in, malformed duration, wrong dot, paused
+  and busy states. Both engines reproduced RED then passed GREEN; actual Home
+  passed all seven widths in each engine. Files: scripts/phase-e-home-browser-scenarios.mjs
+  and scripts/phase-e-home-held-response.check.mjs.
+- The payroll step intentionally focuses its new heading in requestAnimationFrame.
+  Typing before that focus cleared the picker query on blur. The joined driver
+  now awaits heading focus, explicitly focuses the picker and verifies its
+  query and expanded state before the existing exact-option/Enter assertions.
+  Both real PostgreSQL/browser engines passed. File:
+  src/test/integration/claude-ui-joined-browser.integration.ts.
+
+These corrections preserve application behavior, freshness/authority fences,
+error assertions, timeouts, native input and workflow guarantees. No skip, retry,
+control waiver or new review loop was introduced. Detailed RED/GREEN reports
+are in the private evidence directories named by linear-content-equivalence.json.
+The protected fictional hosted candidate03 also passed 60 pages/73 checks; final
+source04 must pass its own cloud and hosted gates before publication.
