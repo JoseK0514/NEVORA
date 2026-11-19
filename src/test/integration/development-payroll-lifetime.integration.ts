@@ -15,8 +15,8 @@ it.each(['chromium','webkit'])('%s retires payroll drafts and late artifacts whi
  const check=(name:string,passed:boolean)=>checks.push({name,passed});
  try{
   rs.stubEnv('NEVORA_PAYROLL_ENABLED','true');await seedOwnedApp(app.database.executor);const fixture=await seedPayrollFixture(app.database.executor,{breaks:true,automaticPublish:false});
-  page.setDefaultTimeout(20000);page.on('pageerror',(error:Error)=>errors.push(error.message));page.on('download',()=>downloads++);page.on('dialog',(dialog:any)=>dialog.accept());
-  const q=(text:string,values:unknown[]=[])=>app.database.executor.query({text,values});
+  page.setDefaultTimeout(20000);page.on('pageerror',(error:Error)=>errors.push(error.stack??error.message));page.on('download',()=>downloads++);page.on('dialog',(dialog:any)=>dialog.accept());
+  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
   await context.addInitScript(()=>{
    const wire={mode:'normal',held:[] as (()=>void)[],writes:[] as {path:string;body:string}[],reads:[] as string[]};(window as any).__payWire=wire;const native=fetch.bind(window);
    window.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
