@@ -66,8 +66,25 @@ export async function waitForRecordedTimeReady(page, expectedState){
  try{return await ready.jsonValue();}finally{await ready.dispose();}
 }
 
+// Observe creation in the browser, before native fetch forwards the request.
+// Playwright's request event can be delivered after pagehide aborted a request
+// that was already created. Keep those Node events as diagnostics, not a clock.
+export function installTimeReadStartObserver(){
+ const original=window.fetch,starts=[];let count=0;
+ function observed(...args){
+  const input=args[0],url=new URL(typeof input==='string'||input instanceof URL?String(input):input.url,location.href),path=url.pathname;
+  if(path==='/api/employee/home'||path==='/api/employee/my-time'||path.startsWith('/api/employee/hours/')){
+   count++;if(starts.length<200)starts.push({sequence:count,at:Date.now(),endpoint:path.endsWith('/home')?'home':path.endsWith('/my-time')?'my-time':'hours'});
+  }
+  return Reflect.apply(original,this,args);
+ }
+ window.fetch=observed;
+ window.__homeTimeReadStarts={snapshot:()=>({count,starts:[...starts],truncated:count>starts.length}),stop:()=>{if(window.fetch!==observed)return false;window.fetch=original;return true;}};
+}
 export function assertNoTimeReadAfterPause(before,paused){
- assert.equal(paused.requestCount,before.requestCount,'Pagehide clearing must not require a new Home or Time request');
+ assert(Number.isSafeInteger(before.browserRequestCount)&&before.browserRequestCount>0,'A real browser read must precede pagehide');
+ assert(Number.isSafeInteger(paused.browserRequestCount),'Paused browser read count is required');
+ assert.equal(paused.browserRequestCount,before.browserRequestCount,'Pagehide clearing must not require a new Home or Time request');
 }
 
 // Actual authenticated persisted Task11 Home journeys with canonical communication sources.
@@ -419,7 +436,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  stage='late-time';
  // Re-anchored: clock status lives on the Time tab, so its own private read is held there.
  const timeView=(await openTime('CLOCKED_IN')).view;
- const timeEvidence={view:timeView,requests:[]};details.lateTime=timeEvidence;
+ const timeEvidence={view:timeView,requests:[]};details.lateTime=timeEvidence;await page.evaluate(installTimeReadStartObserver);
  const timeRequest=(event,request)=>{const path=new URL(request.url()).pathname;if(path==='/api/employee/home'||path==='/api/employee/my-time'||path.startsWith('/api/employee/hours/'))timeEvidence.requests.push({event,endpoint:path.endsWith('/home')?'home':path.endsWith('/my-time')?'my-time':'hours',at:Date.now()});};
  const timeStarted=request=>timeRequest('request',request),timeFailed=request=>timeRequest('failed',request),timeFinished=request=>timeRequest('finished',request);
  page.on('request',timeStarted);page.on('requestfailed',timeFailed);page.on('requestfinished',timeFinished);
@@ -428,17 +445,18 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   await refreshTime(timeView);await time.seen;
   await q("UPDATE time_entries SET clock_out_at=clock_timestamp(),status='CLOCKED_OUT' WHERE id=$1",[label+'-time']);
   timeEvidence.beforeDispatch={requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};assert(timeEvidence.beforeDispatch.requestCount>0,'The refresh issued its held read before pagehide');
-  timeEvidence.afterDispatch=await page.evaluate(()=>{window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),time:document.querySelector('.c-hours')?.getAttribute('data-hours-state')??null};});
+  timeEvidence.afterDispatch=await page.evaluate(()=>{const before=window.__homeTimeReadStarts.snapshot();window.dispatchEvent(new Event('pagehide'));return {at:Date.now(),before,browserRequestCount:window.__homeTimeReadStarts.snapshot().count,time:document.querySelector('.c-hours')?.getAttribute('data-hours-state')??null};});
+  timeEvidence.beforeDispatch.browserRequestCount=timeEvidence.afterDispatch.before.count;assertNoTimeReadAfterPause(timeEvidence.beforeDispatch,timeEvidence.afterDispatch);
   // Synthetic lifecycle dispatch returns before React necessarily commits its
   // invalidated state. Keep the old response held until that commit is visible.
   await timePaused().waitFor({timeout:15000});assert.equal(await clockedIn().count(),0);
-  timeEvidence.pausedCommit={at:Date.now(),clockedInCount:await clockedIn().count(),requestCount:timeEvidence.requests.filter(item=>item.event==='request').length};
+  timeEvidence.pausedCommit={at:Date.now(),clockedInCount:await clockedIn().count(),requestCount:timeEvidence.requests.filter(item=>item.event==='request').length,browserRequestCount:await page.evaluate(()=>window.__homeTimeReadStarts.snapshot().count)};
   assertNoTimeReadAfterPause(timeEvidence.beforeDispatch,timeEvidence.pausedCommit);
   time.release();await time.done;assert.equal(time.failure,undefined);timeEvidence.heldOutcome=time.outcome;
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
   assert.equal(await timePaused().count(),1);assert.equal(await clockedIn().count(),0);
-  timeEvidence.afterHeldSettled={at:Date.now(),state:'paused',clockedInCount:0};
- }finally{time.release();await time.done;await page.unroute(time.path,time.handler);page.off('request',timeStarted);page.off('requestfailed',timeFailed);page.off('requestfinished',timeFinished);await writeFile(join(evidenceDirectory,`home-held-time-${engine}-${width}.json`),JSON.stringify(timeEvidence,null,2));}
+  timeEvidence.afterHeldSettled={at:Date.now(),state:'paused',clockedInCount:0,browserRequestCount:await page.evaluate(()=>window.__homeTimeReadStarts.snapshot().count)};assertNoTimeReadAfterPause(timeEvidence.beforeDispatch,timeEvidence.afterHeldSettled);
+ }finally{time.release();await time.done;await page.unroute(time.path,time.handler);timeEvidence.browserReadStarts=await page.evaluate(()=>{const observer=window.__homeTimeReadStarts,snapshot=observer.snapshot(),restored=observer.stop();delete window.__homeTimeReadStarts;return {...snapshot,nativeFetchRestored:restored};});assert(timeEvidence.browserReadStarts.nativeFetchRestored,'Restore the exact native fetch after observation');page.off('request',timeStarted);page.off('requestfailed',timeFailed);page.off('requestfinished',timeFinished);await writeFile(join(evidenceDirectory,`home-held-time-${engine}-${width}.json`),JSON.stringify(timeEvidence,null,2));}
  await page.evaluate(()=>window.dispatchEvent(new Event('pageshow')));details.timeAfterClockOut=await waitForRecordedTimeReady(page,'OFF_CLOCK');assert(await offClock().first().isVisible());await openHome();checks.push('H07 held actual Time read after pagehide/unmount cannot restore old Clocked In on the Time tab; fresh re-entry reflects persisted clock-out');
  stage='route-leave';const leaving=gate('**/api/employee/home');await page.route(leaving.path,leaving.handler);await page.evaluate(()=>window.dispatchEvent(new Event('storage')));await leaving.seen;await page.waitForFunction(()=>document.querySelector('.portal-notification-bell')?.getAttribute('data-state')==='ready');const leavingNavigation=await page.goto(app.url+'/app/requests/hub',{waitUntil:'domcontentloaded'});assert(leavingNavigation?.ok());await page.getByRole('heading',{name:'Requests',exact:true}).waitFor();leaving.release('navigation');await leaving.done;assert.equal(leaving.failure,undefined);details.routeLeaveOutcome=leaving.outcome;await page.unroute(leaving.path,leaving.handler);await page.waitForLoadState('networkidle');assert.equal(await page.locator(HOME_SHIFT_CARD+' a[href^="/app/schedule"]').count(),0);await page.goto(app.url+'/app');await ready();checks.push('H08 hard route leave during actual Home read unmounts private Home; re-entry reads current sources');
  if(width===390){
