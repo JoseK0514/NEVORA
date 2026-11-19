@@ -53,7 +53,7 @@ Manager Rondo's reviewed-UI dependency and production authorization remain.
 Private evidence and current final-state receipt:
 `/Users/josek0514/Documents/NEVORA-Evidence/2026-11-18-development-publication/FINAL-STATUS.json`.
 The next immutable candidate is
-`candidate/backend-completion/20261119-development-linear-05`.
+`candidate/backend-completion/20261119-development-linear-06`.
 
 
 Candidate03 (43c24ac69fd7) failed Home in both engines and the joined-payroll
@@ -113,3 +113,38 @@ application code remain identical. Preserve candidate04's committed upgrade and
 backup/restore custody; rebind final deployment/evidence to the new source after
 its required gates. The prior actual Development employees remain outside
 authenticated or mutating QA. Main, production and collaboration remain held.
+
+
+Candidate05 (5efb32599b43) retains the exact application and adds the browser
+read-start correction. Its hosted fictional acceptance passed60 pages/73 checks;
+Home passed in cloud Chromium/WebKit. A Calendar job timed out during the existing
+8-minute Ubuntu/browser dependency installation, before application tests or
+evidence creation. Preserve that infrastructure failure; no timeout or test
+requirement was changed.
+
+The prior actual Development run also exposed an independent weekly-driver
+reload race: WebKit reported an authority-read navigation diagnostic during
+lost-response recovery. The driver had initiated hard navigation while real
+router reads could still be active. The existing readiness-suite approach is
+now applied in src/test/integration/owner-advisor-weekly-browser.integration.ts:
+finish real RSC bodies, pause private shell readers, and finish/cancel their
+reads before another document starts. All original strict page-error, visual,
+API, original-operation recovery, row-count, no-publication, authority-revocation
+and private-custody assertions remain unchanged.
+
+A real, held Next RSC response proves an old document-idle event is insufficient.
+The control failed RED in both engines before the drain, then the complete actual
+weekly flow and the control passed in Chromium and WebKit. Initial GREEN attempts
+exposed unnecessary document-idle waits during control setup and after session
+revocation; those failures are retained. The control now starts on the actual
+weekly screen, and the post-revocation assertions use their original authoritative
+states rather than introducing a new idle requirement. No errors are suppressed.
+Evidence: weekly-navigation-red and weekly-navigation-green-03.
+
+Only four explicitly named QA files now differ from the qualified assembly;
+application, schema, assets, configuration and dependencies remain identical.
+Rebuild manuals/build and run candidate06's exact cloud and hosted gates, then
+perform a normal Development update. The already committed77-file schema ledger
+and restricted runtime remain in place; no SQL replay, new role or configuration
+change is needed. Preserve the original transaction/backup/read-back evidence
+and verify the final exact-source deployment before the operating alias changes.
