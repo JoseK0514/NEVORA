@@ -150,3 +150,12 @@ describe('read states and Availability',()=>{
   expect(html).toMatch(/class="b-btn b-btn--glass" href="\/app\/availability\?week=2026-11-09"/);expect(text(html)).toContain('Change one week');
  });
 });
+
+it('keeps Time clocked in without an ended-shift warning during the next active assignment',()=>{
+ const entry:EmployeeTimeEntry={...open,clockInAt:'2026-11-17T13:00:00Z',elapsedSeconds:14400};
+ const data=ready({date:'2026-11-17',observedAt:'2026-11-17T17:00:00Z',current:entry,today:{entries:[entry],recordedSeconds:14400,breakSeconds:0}});
+ const shifts=[{date:data.date,startTime:'09:00',endTime:'12:00'},{date:data.date,startTime:'12:00',endTime:'17:00'}];
+ const html=onlyB(renderToStaticMarkup(<HoursBContext.Provider value={{head:timeHead,authority:'fictional-view',shifts}}><div className="c-page"><CorpTimeTab data={data}/></div></HoursBContext.Provider>));
+ expect(text(html)).toContain('Clocked in at 9:00 AM');expect(text(html)).not.toContain('shift has ended');expect(html).not.toContain('b-callout');
+ expect(html).toContain('data-dot="green"');
+});
