@@ -53,7 +53,7 @@ Manager Rondo's reviewed-UI dependency and production authorization remain.
 Private evidence and current final-state receipt:
 `/Users/josek0514/Documents/NEVORA-Evidence/2026-11-18-development-publication/FINAL-STATUS.json`.
 The next immutable candidate is
-`candidate/backend-completion/20261119-development-linear-04`.
+`candidate/backend-completion/20261119-development-linear-05`.
 
 
 Candidate03 (43c24ac69fd7) failed Home in both engines and the joined-payroll
@@ -82,3 +82,34 @@ control waiver or new review loop was introduced. Detailed RED/GREEN reports
 are in the private evidence directories named by linear-content-equivalence.json.
 The protected fictional hosted candidate03 also passed 60 pages/73 checks; final
 source04 must pass its own cloud and hosted gates before publication.
+
+
+Candidate04 (ed3a2aa07213) passed all23 qualification jobs and Mobile8, passed
+protected fictional hosted60/73, and was published by a normal protected push
+to Development. The guarded actual Development upgrade committed39 migrations
+and2 exact-schema ledger reconciliations, preserving all original rows. Its
+restricted runtime passed TLS identity/privilege/ledger-denial checks and a
+post-commit read-back of77 exact hashes. Development-only configuration and its
+exact Preview were verified; the operating alias remains on the retained prior
+deployment until the actual branch workflows pass.
+
+Actual branch CI44470507786 failed WebKit Home at430px: after pagehide cleared
+private time, Node observed4 request events against a baseline3. The extra
+event was aborted, and no stale private state was restored. The browser-start
+regression demonstrates the diagnostic's ordering flaw: Node notification of
+a pre-boundary request may arrive later, while a genuine new browser read may
+start before Node sees it. The driver now records starts synchronously before
+forwarding native fetch unchanged, snapshots the boundary in the same browser
+turn as pagehide, and rejects any increase at dispatch, paused commit or held
+reply settlement. Node delivery events remain diagnostic evidence. The observer
+is restored afterward and records no request payloads, headers or credentials.
+The controlled regression proves both delayed-notification acceptance and real
+post-boundary rejection in both engines. All private-clearing, abort, stale-reply,
+fresh-read and viewport guarantees remain; no timeout, retry, skip or application
+change is introduced. Preserve the target failure and qualify candidate05 anew.
+
+No additional schema change is needed for candidate05: all migration bytes and
+application code remain identical. Preserve candidate04's committed upgrade and
+backup/restore custody; rebind final deployment/evidence to the new source after
+its required gates. The prior actual Development employees remain outside
+authenticated or mutating QA. Main, production and collaboration remain held.

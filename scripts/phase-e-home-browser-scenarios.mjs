@@ -72,7 +72,7 @@ export async function waitForRecordedTimeReady(page, expectedState){
 export function installTimeReadStartObserver(){
  const original=window.fetch,starts=[];let count=0;
  function observed(...args){
-  const input=args[0],url=new URL(typeof input==='string'||input instanceof URL?String(input):input.url,location.href),path=url.pathname;
+  let path;try{const input=args[0];path=new URL(typeof input==='string'||input instanceof URL?String(input):input.url,location.href).pathname;}catch{return Reflect.apply(original,this,args);}
   if(path==='/api/employee/home'||path==='/api/employee/my-time'||path.startsWith('/api/employee/hours/')){
    count++;if(starts.length<200)starts.push({sequence:count,at:Date.now(),endpoint:path.endsWith('/home')?'home':path.endsWith('/my-time')?'my-time':'hours'});
   }
