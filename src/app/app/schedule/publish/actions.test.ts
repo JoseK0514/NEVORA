@@ -8,9 +8,14 @@ vi.mock("@/lib/auth/permissions", () => ({ MANAGER_ROLES: ["OWNER", "MANAGER"], 
 vi.mock("@/lib/data/schedule-publication-review", () => ({ getSchedulePublishReadiness: async (_week: string, locationId: string) => ({ hasWarnings: !!f.warnings[locationId] }) }));
 vi.mock("@/lib/data/publication-revisions", () => ({ publishScheduleWithRevision: async ({ locationId }: { locationId: string }) => { f.events.push(`publish:${locationId}`); f.published.push(locationId); return { published: true }; } }));
 vi.mock("@/lib/company-access/operational-scope.server", () => ({
-  assertOperationalAccess: async () => { f.events.push("admit"); return { scope: { mode: "COMPANY" } }; },
-  assertOriginalOperationalAccess: async () => { f.events.push("recheck"); if (f.deniedAfter) throw Object.assign(new Error("denied"), { denied: true }); },
   isOperationalAuthorizationError: (error: unknown) => !!(error as { denied?: boolean })?.denied,
+}));
+vi.mock("@/lib/workforce/authority.server", () => ({
+  assertWorkforcePermission: async (_proof:unknown, _permission:unknown, _ids:unknown, _executor:unknown, original:unknown) => {
+    f.events.push(original ? "recheck" : "admit");
+    if (original && f.deniedAfter) throw Object.assign(new Error("denied"), { denied: true });
+    return {scope:{mode:"COMPANY"}};
+  },
 }));
 vi.mock("@/lib/data/management-session", () => ({ isManagementAuthorizationError: () => false }));
 const { publishDraftsAction } = await import("./actions");

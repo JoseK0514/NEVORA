@@ -809,6 +809,24 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/compensation/labor-cost/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "The workspace-bound schedule reader and shared application executor price the requested location against saved wage intervals. The private same-origin endpoint checks the current Owner session and returns aggregate estimates.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/compensation/wages/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "The private same-origin endpoint uses the current workspace session and host-bound application executor. Owner checks surround reads and writes. Employee and location membership are verified inside the protected transaction.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/employee/calendar-subscriptions/route.ts",
       "tags": [
         "request-entrypoint"
@@ -1582,6 +1600,15 @@
       ],
       "status": "CONVERTED",
       "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/workforce/[resource]/[[...selector]]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "The same-origin workforce endpoint uses the host-bound workspace session and scoped application executor. Settings mutations require a current Owner. Leave, publication hints, and ledger reads verify the relevant management or employee authority.",
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
@@ -4648,6 +4675,26 @@
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Vitest integration source. Direct pg Client is used solely against the ownership-marked disposable loopback database from companyAccessFixture for lock/fault regressions; it is not imported by runtime application entrypoints.",
       "isolatedBehavior": "TEST_ONLY"
+    },
+    {
+      "path": "src/app/api/account/language/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private GET and same-origin PUT derive the actor from the current session. The company-bound APP executor rechecks the session and workspace in the transaction that reads or saves the actor’s language.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/setup/first-week/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private Owner-only GET uses the company-bound APP executor with current session checks. The response projects setup milestone statuses from scheduling, tablet and timecard records.",
+      "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
       "path": "src/app/api/owner/advisor/business/route.ts",

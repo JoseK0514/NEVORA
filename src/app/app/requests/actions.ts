@@ -3,6 +3,7 @@ import { moduleEnabled } from "@/lib/workspace-presentation/current.server";
 
 import {isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
 
+import { isWorkforceUuid } from '@/lib/workforce/contracts';
 import { isValidIsoDate } from "@/lib/date-utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -30,9 +31,11 @@ export async function requestTimeOffAction(formData: FormData) {
   const startTime = partialDay ? String(formData.get("startTime") ?? "") : undefined;
   const endTime = partialDay ? String(formData.get("endTime") ?? "") : undefined;
   const reason = String(formData.get("reason") ?? "").trim();
+  const ptoPolicyId = String(formData.get("ptoPolicyId") ?? "");
 
   if (
     !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId) ||
+    (ptoPolicyId !== "" && !isWorkforceUuid(ptoPolicyId)) ||
     !isValidIsoDate(startDate) ||
     !isValidIsoDate(endDate) ||
     startDate > endDate ||
@@ -47,7 +50,7 @@ export async function requestTimeOffAction(formData: FormData) {
     redirect("/app/requests?error=invalid");
   }
 
-  await createTimeOffRequest({
+  try { await createTimeOffRequest({
     requestId,
     employeeId: session.id,
     proof,
@@ -56,7 +59,13 @@ export async function requestTimeOffAction(formData: FormData) {
     startTime,
     endTime,
     reason: reason || undefined,
-  });
+    ...(ptoPolicyId ? { ptoPolicyId } : {}),
+  }); } catch (error) {
+    if (error instanceof Error && ['pto_policy_changed','pto_request_minutes_changed'].includes(error.message)) {
+      redirect("/app/requests?error=pto-policy");
+    }
+    throw error;
+  }
 
   revalidatePath("/app/requests");
   redirect("/app/requests?tab=my&submitted=1");
@@ -74,7 +83,7 @@ export async function reviewTimeOffAction(formData: FormData) {
   const requestId = String(formData.get("requestId") ?? "");
   const decision = String(formData.get("decision") ?? "");
 
-  if (!requestId || (decision !== "APPROVED" && decision !== "DENIED")) {
+  if (!requestId || (decision !== "APPROVED" && decision !== "DENIED" && decision !== "CANCELLED")) {
     redirect("/app/requests?tab=pending&error=review");
   }
 
@@ -82,6 +91,7 @@ export async function reviewTimeOffAction(formData: FormData) {
   try {
     reviewed=await reviewTimeOffRequest({requestId,managerId:session.id,proof,status:decision});
   } catch(error) {
+    if (error instanceof Error && error.message === "pto_insufficient_balance") redirect("/app/requests?tab=pending&error=pto-balance");
     if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))redirect('/app/requests?tab=team&error=review');
     throw error;
   }
@@ -93,6 +103,7 @@ export async function reviewTimeOffAction(formData: FormData) {
   if (!reviewed) redirect(origin ? `/app/requests?tab=pending&error=review&requestId=${encodeURIComponent(requestId)}&from=${origin}` : "/app/requests?tab=pending&error=review");
 
   revalidatePath("/app/requests");
+  if (decision === "CANCELLED") redirect("/app/requests?tab=team&cancelled=1");
   if (origin) {
     revalidatePath("/app/inbox");
     const outcome = decision === "APPROVED" ? "approved" : "declined";

@@ -7,7 +7,7 @@ import CoverageSuggestionsPage from "../app/app/schedule/coverage/page";
 import { ManagerTimeOff } from "./manager-time-off";
 import { ManagerAvailability } from "./manager-availability";
 import { ManagerShiftRequests } from "./manager-shift-requests";
-import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/requests";
+import { listWorkforceLeave } from "@/lib/data/requests";
 import { listAvailabilitySubmissionStatuses } from "@/lib/data/availability-submissions";
 import { listManagementCoverage, listManagerPendingExchanges, listTeamExchangeActivity } from "@/lib/data/exchanges";
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
@@ -26,7 +26,7 @@ vi.mock("@/lib/data/hour-fairness", () => ({ listHourFairness: vi.fn(async () =>
 vi.mock("@/lib/data/schedules", () => ({ getShiftValidationContext: vi.fn() }));
 vi.mock("@/lib/scheduling/coverage-ranking", () => import("../lib/scheduling/coverage-ranking"));
 vi.mock("@/lib/scheduling/validate-shift", () => import("../lib/scheduling/validate-shift"));
-vi.mock("@/lib/data/requests", () => ({ listPendingTimeOffRequests: vi.fn(async () => []), listTeamTimeOffRequests: vi.fn(async () => []) }));
+vi.mock("@/lib/data/requests", () => ({ listWorkforceLeave: vi.fn(async () => access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:[],coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}) }));
 vi.mock("@/lib/data/availability-submissions", () => ({ listAvailabilitySubmissionStatuses: vi.fn(async () => [
   {employeeId:"missing",employeeName:"Missing Person",submitted:false,windowCount:0,state:"NOT_SUBMITTED"},
   {employeeId:"unavailable",employeeName:"Unavailable Person",submitted:true,windowCount:0,state:"SUBMITTED_UNAVAILABLE"},
@@ -52,16 +52,16 @@ beforeEach(() => { access.denied=false;vi.clearAllMocks(); vi.mocked(requireSess
 it.each(["EMPLOYEE","LEAD"] as const)("denies %s direct management review before reading team data", async role => {
   vi.mocked(requireSession).mockResolvedValue({id:"viewer",firstName:"Sam",lastName:"Cruz",role,primaryLocationId:"loc"});
   for (const page of [() => ManagerTimeOff({}), () => ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"}), () => ManagerShiftRequests({ timeZone:"America/Puerto_Rico",}), () => CoverageSuggestionsPage({searchParams:Promise.resolve({})})]) await expect(page()).rejects.toThrow("redirect:/app/restricted");
-  expect(listPendingTimeOffRequests).not.toHaveBeenCalled(); expect(listAvailabilitySubmissionStatuses).not.toHaveBeenCalled(); expect(listManagerPendingExchanges).not.toHaveBeenCalled();
+  expect(listWorkforceLeave).not.toHaveBeenCalled(); expect(listAvailabilitySubmissionStatuses).not.toHaveBeenCalled(); expect(listManagerPendingExchanges).not.toHaveBeenCalled();
 });
 it.each(["OWNER","MANAGER"] as const)("gives %s operational Time Off views and read-only history", async role => {
   vi.mocked(requireSession).mockResolvedValue({id:"reviewer",firstName:"Alex",lastName:"Rivera",role,primaryLocationId:"loc"});
   const pending = renderToStaticMarkup(await ManagerTimeOff({tab:"team"}));
-  expect(listPendingTimeOffRequests).toHaveBeenCalledOnce();
+  expect(listWorkforceLeave).toHaveBeenCalledOnce();
   expect(pending).toContain("Waiting"); expect(pending).not.toMatch(/New Request|My Requests|startDate/);
   const approved = renderToStaticMarkup(await ManagerTimeOff({tab:"approved"}));
-  expect(listTeamTimeOffRequests).toHaveBeenCalledWith("APPROVED"); expect(approved).not.toContain("<form");
-  await ManagerTimeOff({tab:"declined"}); expect(listTeamTimeOffRequests).toHaveBeenCalledWith("DENIED");
+  expect(listWorkforceLeave).toHaveBeenCalledWith(expect.any(Object), "APPROVED"); expect(approved).not.toContain("<form");
+  await ManagerTimeOff({tab:"declined"}); expect(listWorkforceLeave).toHaveBeenCalledWith(expect.any(Object), "DENIED");
 });
 it("distinguishes missing, intentionally unavailable and submitted windows without treating seeded hours as a submission", async () => {
   // Times are kept whole with no-break spaces; compare the words.
@@ -124,24 +124,24 @@ it('H12 actionable manager exception explains its reason outside the action grid
 
 it("names who decided a request and when, once the read includes it (Codex C1), and stays quiet without it", async () => {
   const base = { id: "r1", employeeId: "e1", employeeName: "Fictional Person", startDate: "2026-10-29", endDate: "2026-10-30", status: "APPROVED", createdAt: "2026-10-01T15:00:00.000Z" };
-  vi.mocked(listTeamTimeOffRequests).mockResolvedValueOnce([{ ...base, reviewerName: "Fictional Manager", reviewedAt: "2026-10-02T15:00:00.000Z" }] as never);
+  vi.mocked(listWorkforceLeave).mockResolvedValueOnce({state:'ready',data:[{ ...base, reviewerName: "Fictional Manager", reviewedAt: "2026-10-02T15:00:00.000Z" }],coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000} as never);
   const decided = renderToStaticMarkup(await ManagerTimeOff({ tab: "approved" })).replace(/\u00a0/g, " ");
   expect(decided).toContain("Approved by Fictional Manager · Oct 2");
-  vi.mocked(listTeamTimeOffRequests).mockResolvedValueOnce([base] as never);
+  vi.mocked(listWorkforceLeave).mockResolvedValueOnce({state:'ready',data:[base],coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000} as never);
   const older = renderToStaticMarkup(await ManagerTimeOff({ tab: "approved" }));
   expect(older).not.toContain("Approved by");
 });
 
 it("Back to Inbox keeps the Inbox's selected item, and ignores anything that isn't an item id (IS-P4-11)", async () => {
   const pending = { id: "req-1", employeeId: "e1", employeeName: "Fictional Person", startDate: "2026-10-29", endDate: "2026-10-30", status: "PENDING", createdAt: "2026-10-01T15:00:00.000Z" };
-  vi.mocked(listPendingTimeOffRequests).mockResolvedValueOnce([pending] as never);
+  vi.mocked(listWorkforceLeave).mockResolvedValueOnce({state:'ready',data:[pending],coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000} as never);
   const kept = renderToStaticMarkup(await ManagerTimeOff({ tab: "pending", requestId: "req-1", filter: "requests", item: "TIME_OFF:req-1" }));
   expect(kept).toContain('href="/app/inbox?filter=requests&amp;item=TIME_OFF%3Areq-1"');
-  vi.mocked(listPendingTimeOffRequests).mockResolvedValueOnce([pending] as never);
+  vi.mocked(listWorkforceLeave).mockResolvedValueOnce({state:'ready',data:[pending],coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000} as never);
   const hostile = renderToStaticMarkup(await ManagerTimeOff({ tab: "pending", requestId: "req-1", filter: "requests", item: "javascript:alert(1)" }));
   expect(hostile).toContain('href="/app/inbox?filter=requests"');
 });
-it('honors company-read denial before team requests, availability and activity loaders (presentation boundary)',async()=>{access.denied=true;for(const load of [()=>ManagerTimeOff({}),()=>ManagerAvailability({timeZone:'America/Puerto_Rico',currentWeek:'2026-10-12'}),()=>ManagerShiftRequests({timeZone:'America/Puerto_Rico'}),()=>CoverageSuggestionsPage({searchParams:Promise.resolve({week:'2026-10-12',date:'2026-10-12',locationId:'loc',start:'08:00',end:'16:00'})})]){const html=renderToStaticMarkup(await load());expect(html).toContain('Return to Home');expect(html).toContain('current company-wide management access');}expect(listPendingTimeOffRequests).not.toHaveBeenCalled();expect(listAvailabilitySubmissionStatuses).not.toHaveBeenCalled();expect(listManagerPendingExchanges).not.toHaveBeenCalled();expect(getShiftValidationContext).not.toHaveBeenCalled();});
+it('honors scoped leave denial and company-read denial on other management pages',async()=>{access.denied=true;for(const load of [()=>ManagerTimeOff({}),()=>ManagerAvailability({timeZone:'America/Puerto_Rico',currentWeek:'2026-10-12'}),()=>ManagerShiftRequests({timeZone:'America/Puerto_Rico'}),()=>CoverageSuggestionsPage({searchParams:Promise.resolve({week:'2026-10-12',date:'2026-10-12',locationId:'loc',start:'08:00',end:'16:00'})})]){const html=renderToStaticMarkup(await load());expect(html).toContain('Return to Home');}expect(listWorkforceLeave).toHaveBeenCalledOnce();expect(listAvailabilitySubmissionStatuses).not.toHaveBeenCalled();expect(listManagerPendingExchanges).not.toHaveBeenCalled();expect(getShiftValidationContext).not.toHaveBeenCalled();});
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));

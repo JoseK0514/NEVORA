@@ -27,7 +27,7 @@ export async function reconcileEmployeePlanning(proof:SessionMutationProof,input
  }
  if(command.kind==='availability'||read.view!=='timeoff')return result('unknown',command);
  const row=read.data.requests[0];
- if(command.kind==='request')return result(!row?'missing':row.startDate===command.startDate&&row.endDate===command.endDate&&row.startTime===command.startTime&&row.endTime===command.endTime&&(row.note??'')===command.note?'complete':'conflict',command);
+ if(command.kind==='request')return result(!row?'missing':row.startDate===command.startDate&&row.endDate===command.endDate&&row.startTime===command.startTime&&row.endTime===command.endTime&&(row.note??'')===command.note&&row.ptoPolicyId===command.ptoPolicyId?'complete':'conflict',command);
  if(!row)return result('conflict',command);
  if(row.status==='PENDING')return result('missing',command);
  if(row.status!=='CANCELLED')return result('conflict',command);
@@ -50,7 +50,7 @@ export async function mutateEmployeePlanning(proof:SessionMutationProof,input:un
    else await replaceWeeklyAvailability(proof.employee.id,command.selection,command.windows,command.changedDays,proof,executor,guardedBasis);
   }else{
    const moduleAdmission=await planningModuleAdmission(workspace.id,guarded);
-   if(command.kind==='request')await createTimeOffRequest({employeeId:proof.employee.id,proof,requestId:command.requestId,startDate:command.startDate,endDate:command.endDate,startTime:command.startTime??undefined,endTime:command.endTime??undefined,reason:command.note||undefined,admission:[...admission,...moduleAdmission]},executor);
+   if(command.kind==='request')await createTimeOffRequest({employeeId:proof.employee.id,proof,requestId:command.requestId,startDate:command.startDate,endDate:command.endDate,startTime:command.startTime??undefined,endTime:command.endTime??undefined,reason:command.note||undefined,ptoPolicyId:command.ptoPolicyId,admission:[...admission,...moduleAdmission]},executor);
    else{
     const receipt=await withdrawTimeOffRequest({requestId:command.requestId,operationId:withdrawalIdentity(command.requestId),employeeId:proof.employee.id,proof,admission:[...admission,...moduleAdmission]},executor);
     if(!receipt)return result('conflict',command);
@@ -64,6 +64,7 @@ export async function mutateEmployeePlanning(proof:SessionMutationProof,input:un
   if(error instanceof AvailabilityDeadlineError)return result('locked',command);
   if(error instanceof AvailabilityConcurrencyError||String(error).includes('planning_basis_conflict'))return result('conflict',command);
   if(String(error).includes('planning_module_disabled'))return result('disabled',command);
+  if(error instanceof Error && ['pto_policy_changed','pto_request_minutes_changed'].includes(error.message))return result('conflict',command);
   if(String(error).includes('Time off request changed'))return result('conflict',command);
   return result('unknown',command);
  }
