@@ -48,18 +48,21 @@ export function installHomeHeldObserver(fresh){
 // it re-reads when the app returns to the front and marks itself aria-busy while a read is in flight.
 // Ready only when the released status matches and no read is in flight (not a still-loading or still-refreshing frame).
 const TIME_STATUS={OFF_CLOCK:{label:'Right now',pill:null,big:'Not clocked in'},CLOCKED_IN:{label:'Current shift',pill:'Clocked in',big:null},ON_BREAK:{label:'Current shift',pill:'On break',big:null}};
+// The delivered off-clock label gains an amber elapsed hint while a published
+// shift is under way. That hint does not represent an open recorded punch.
+export const OFF_CLOCK_STATUS_TEXT=/^Not clocked in(?: · (?:(?:[0-9]|[1-5][0-9]) min|[1-9][0-9]* h))?$/;
 export async function waitForRecordedTimeReady(page, expectedState){
- const ready=await page.waitForFunction(({expected,status})=>{
+ const ready=await page.waitForFunction(({expected,status,offClockPattern})=>{
   const time=document.querySelector('.c-hours[data-hours-view="records"]');
   if(!time||time.getAttribute('data-hours-state')!=='ready'||time.getAttribute('aria-busy')!=='false')return false;
   const b=time.querySelector('#b-hours-now');
-  if(b?.getClientRects().length){const pill=b.querySelector('.b-card__h :is(.b-chip,.b-status)')?.textContent;return b.querySelector('h2')?.textContent==='Right now'&&pill===(expected==='OFF_CLOCK'?'Not clocked in':status.pill)?{state:expected,view:'time',settled:true}:false;}
+  if(b?.getClientRects().length){const node=b.querySelector('.b-card__h :is(.b-chip,.b-status)'),pill=node?.textContent??'';const matches=expected==='OFF_CLOCK'?new RegExp(offClockPattern).test(pill)&&(pill==='Not clocked in'||node?.getAttribute('data-dot')==='amber'):pill===status.pill;return b.querySelector('h2')?.textContent==='Right now'&&matches?{state:expected,view:'time',settled:true}:false;}
   const card=time.querySelector('#hours-now');if(!card)return false;
   const label=card.querySelector('.c-card__label')?.textContent??null,pill=card.querySelector('.c-card__aside .c-pill')?.textContent??null;
   if(label!==status.label||pill!==status.pill)return false;
   if(status.big!==null&&card.querySelector('.c-big')?.textContent!==status.big)return false;
   return {state:expected,view:'time',settled:true};
- },{expected:expectedState,status:TIME_STATUS[expectedState]});
+ },{expected:expectedState,status:TIME_STATUS[expectedState],offClockPattern:OFF_CLOCK_STATUS_TEXT.source});
  try{return await ready.jsonValue();}finally{await ready.dispose();}
 }
 
@@ -109,7 +112,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const shownHrefs=async()=>items().evaluateAll(es=>es.map(e=>e.getAttribute('href')));
  // Clock status (Time tab). Phones show the Right now pill; wider layouts the My time status word.
  const clockedIn=()=>page.locator('main').getByText(/^Clocked in$/).filter({visible:true});
- const offClock=()=>page.locator('main :is(#hours-now,#b-hours-now):visible').getByText('Not clocked in',{exact:true});
+ const offClock=()=>page.locator('main :is(#hours-now,#b-hours-now):visible').getByText(OFF_CLOCK_STATUS_TEXT);
  const timePaused=()=>page.locator('.c-hours[data-hours-view="records"][data-hours-state="paused"]');
  const navLink=href=>page.locator(`.mobile-nav a[href="${href}"]:visible, nav[aria-label="Primary navigation"] a[href="${href}"]:visible`).first();
  const openTime=async expected=>{await navLink('/app/my-time').click();await page.waitForURL(u=>u.pathname==='/app/my-time');const time=await waitForRecordedTimeReady(page,expected);assert.equal(await next().count(),0,'Leaving Home unmounts its private shift card');return time;};
