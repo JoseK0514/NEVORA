@@ -96,7 +96,7 @@ export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled,
     const catalog=outcome.result.catalog,by=outcome.result.authority;
     clearTimeout(catalogTimers.current.end);
     catalogDeadline.current=performance.now()+outcome.result.validForMs;
-    catalogTimers.current.end=setTimeout(()=>retireCatalog(),outcome.result.validForMs);
+    catalogTimers.current.end=setTimeout(()=>retireCatalog("failed"),outcome.result.validForMs);
     catalogTimers.current.renew=setTimeout(()=>void refreshCatalog(),Math.max(1,outcome.result.validForMs*.7));
     setNow(Date.now());setLoad({state:"ready",catalog,authority:by});
     setPending(old=>old&&old.status!=="sending"&&old.meta.authority!==by?{...old,status:"foreign"}:old);
