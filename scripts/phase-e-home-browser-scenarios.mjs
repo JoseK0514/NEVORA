@@ -332,6 +332,11 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
   overflowEvidence.phase='notifications-list';
   // The Employee messages reader and visible Notifications title are current at every width.
   await page.waitForFunction(()=>document.querySelector('.em-messages[data-messages-view="notifications"]')?.getAttribute('data-messages-state')==='ready');await page.getByRole('heading',{name:'Notifications',exact:true,level:1}).waitFor();
+  // Repeated notifications are grouped on the approved screen. Open the groups before checking each actual notification.
+  for(const group of await page.locator('main button.eb-fold:visible').all()){
+   if(await group.getAttribute('aria-expanded')==='false'){await group.focus();await page.keyboard.press('Enter');}
+   assert.equal(await group.getAttribute('aria-expanded'),'true');
+  }
   overflowEvidence.notificationRows=await page.locator('main :is(a.em-notif-row,a.eb-notif):visible').evaluateAll(rows=>rows.map(row=>row.id));page.off('response',notificationRead);
   overflowEvidence.notificationRowsSql=await q("SELECT id,source_kind,due_at<=clock_timestamp() AS due,expires_at>clock_timestamp() AS current,environment,cancelled_at IS NULL AS active FROM notifications WHERE employee_id=$1 ORDER BY created_at DESC LIMIT 30",[actor]);
   const notices=[];

@@ -200,7 +200,7 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
     step=engine+' invitation policy '+lang;await context.addCookies([{name:'nv-lang',value:lang,url:origin}]);await page.goto('about:blank');
     // Reopen in a fresh document: a same-document fragment navigation can race hydration in WebKit.
     await page.goto(origin+'/activate#proof='+proof);
-    await page.locator('.ma-card #activation-password').waitFor();
+    await page.locator(lang==='en'?'.ma-card #activation-password':'#activation-password').waitFor();
     await page.locator('#activation-password').fill('qwertyuiopasdfgh');await page.locator('#activation-confirm-password').fill('qwertyuiopasdfgh');
     const [refusal]=await Promise.all([page.waitForResponse(origin+'/api/auth/activate'),page.locator('button[type="submit"]').click()]);
     expect(refusal.status()).toBe(400);
