@@ -4615,6 +4615,26 @@
       "isolatedBehavior": "TEST_ONLY"
     },
     {
+      "path": "src/app/api/account/language/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private GET and same-origin PUT derive the actor from the current session. The company-bound APP executor rechecks the session and workspace in the transaction that reads or saves the actor’s language.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/setup/first-week/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private Owner-only GET uses the company-bound APP executor with current session checks. The response projects setup milestone statuses from scheduling, tablet and timecard records.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/owner/advisor/business/route.ts",
       "tags": [
         "shared-executor",
