@@ -229,7 +229,7 @@ try{
   const captured=(await q("SELECT break_type_snapshot AS settings FROM break_entries b JOIN time_entries t ON t.id=b.time_entry_id WHERE t.employee_id='PUNCH-A' ORDER BY b.break_start_at DESC LIMIT 1"))[0].settings;
   assert.equal(captured.name,'Meal reference');assert.equal(captured.category,'MEAL');assert.equal(captured.targetMinutes,30);
   await shot(t,engine+'-historical-break-settings');await t.getByRole('button',{name:'End break',exact:true}).click();await success(t,'Break end');await done(t);
-  await verify(t);await t.getByText('No break types are configured. Ask your Owner to add one.',{exact:true}).waitFor();
+  await verify(t);await t.getByText('There are no breaks to choose here yet. Ask your Owner to add one.',{exact:true}).waitFor();
   assert.equal(await t.getByRole('button',{name:'Start break',exact:true}).count(),0);
   await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Confirm clock out',exact:true}).click();await success(t,'Clock out');await done(t);
   assert.equal(await count(),typedStart+4);checked(engine+': archived types preserve captured settings, allow End Break and never invent a new type');
