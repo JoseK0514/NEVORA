@@ -1,3 +1,6 @@
+import {planningWeekFor, defaultPlanningCalendar, type PlanningCalendar} from '../workforce/planning-calendar';
+import {businessDate} from '../business-time';
+import {listWorkforcePermissions} from '../workforce/authority.server';
 import {shiftReviewSql} from '../data/shift-review';
 import {projectPersonHours,type PersonHours,type PersonHoursSource} from '../person-hours';
 import 'server-only';
@@ -15,7 +18,7 @@ import {currentCalloutReleaseSql} from '@/lib/data/shift-change-release';
 import {clockMonitorSnapshotStatement} from '@/lib/data/clock-monitor.server';
 import {readToday} from '../data/today.server';
 import {projectClockMonitor,withMonitorLateness} from '@/lib/clock-monitor';
-import {durationMinutes,isValidWeekStart} from '@/lib/date-utils';
+import {durationMinutes,isValidIsoDate,isValidWeekStart} from '@/lib/date-utils';
 import {normalizeAssignmentOrigin} from '@/lib/scheduling/generation-provenance';
 import {readOperationalAuthority,readOwnerOperationalScope,operationalScopeStatements} from './operational-scope.server';
 import type {AccessFailure,OperationalAuthorityView,OperationalRead,SourceCoverage,ScopedRosterEmployee,OperationalDirectoryData,OperationalScheduleData,OperationalShiftRow,OperationalShiftEditorData,OperationalEditableShift,OperationalClockMonitorData,OperationalEmployeeProfileData} from './model';
@@ -94,7 +97,7 @@ export async function readOperationalDirectory(proof:SessionMutationProof,ex:Sql
  },ex);
 }
 type ShiftRow=OperationalShiftRow&{reviewVersion:string;weekStart:string;assignmentOrigin:string|null};
-async function shifts(ctx:Context,weekStart:string|null,ids:string[]|null,shiftId:string|null=null):Promise<ShiftRow[]>{
+async function shifts(ctx:Context,weekStart:string|null,ids:string[]|null,shiftId:string|null=null,range?:{startDate:string;endDate:string}):Promise<ShiftRow[]>{
  return bounded(await ctx.ex.query<ShiftRow>({text:`SELECT ${shiftReviewSql} AS "reviewVersion",sh.id,sh.schedule_id AS "scheduleId",sh.employee_id AS "employeeId",e.first_name||' '||e.last_name AS "employeeName",s.location_id AS "locationId",
    sh.date::text,sh.start_time::text AS "startTime",sh.end_time::text AS "endTime",sh.notes,sh.position_id AS "positionId",sh.is_designated_lead AS "isDesignatedLead",
    EXISTS(SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}) AS "isCalloutApproved",s.status AS "scheduleStatus",s.week_start::text AS "weekStart",sh.assignment_origin AS "assignmentOrigin",
@@ -104,7 +107,8 @@ async function shifts(ctx:Context,weekStart:string|null,ids:string[]|null,shiftI
   LEFT JOIN LATERAL(SELECT cap.source_shift_id,cap.position_name FROM schedule_publication_revision_shifts cap JOIN schedule_publication_revisions r ON r.id=cap.revision_id
    WHERE cap.source_shift_id=sh.id AND r.week_start=s.week_start ORDER BY r.revision_number DESC,r.id DESC,cap.id DESC LIMIT 1)capture ON true
   WHERE($1::date IS NULL OR s.week_start=$1) AND l.workspace_id=$2 AND($3::text[] IS NULL OR s.location_id=ANY($3::text[])) AND($4::text IS NULL OR sh.id=$4)
-  ORDER BY sh.date,sh.start_time,e.first_name,e.last_name,sh.id LIMIT 5001`,values:[weekStart,ctx.workspace.id,ids,shiftId]}));
+    ${range ? "AND sh.date BETWEEN $5::date AND $6::date" : ""}
+  ORDER BY sh.date,sh.start_time,e.first_name,e.last_name,sh.id LIMIT 5001`,values:[weekStart,ctx.workspace.id,ids,shiftId,...(range?[range.startDate,range.endDate]:[])]}));
 }
 function publicShift(s:ShiftRow):OperationalShiftRow{
  return {id:s.id,scheduleId:s.scheduleId,employeeId:s.employeeId,employeeName:s.employeeName,locationId:s.locationId,date:s.date,startTime:s.startTime.slice(0,5),endTime:s.endTime.slice(0,5),
@@ -123,6 +127,29 @@ export async function readOperationalSchedule(proof:SessionMutationProof,query:{
    ...(ids!==null?{coverage:{kind:'LOCATIONS' as const,locationIds:ids}}:{})};
  },ex);
 }
+/** Projects planning dates over current operational rows and preserves each row's
+ * canonical schedule key for editor and publication actions. */
+export async function readOperationalPlanningWeek(proof:SessionMutationProof,date:string,ex:SqlExecutor=neonNotificationExecutor()) {
+ return read(proof,async ctx=>{
+  if(date!=='current'&&!isValidIsoDate(date))return deny();
+  const [config]=await ex.query<PlanningCalendar>({
+   text:'SELECT starts_on AS "startsOn", revision FROM planning_calendar_revisions WHERE workspace_id=$1 ORDER BY revision DESC LIMIT 1',
+   values:[ctx.workspace.id],
+  });
+  const week=planningWeekFor(date==='current'?businessDate(new Date(),ctx.workspace.timeZone):date,config??defaultPlanningCalendar);
+  const catalog=await locations(ctx);
+  const [rows,capabilities]=await Promise.all([
+   shifts(ctx,null,ctx.ids,null,week),
+   listWorkforcePermissions(proof,ex)
+  ]);
+  if(capabilities.access.authority!==ctx.view.authority)return deny();
+  return {data:{ ...week, locations:catalog.map(minimalLocation),
+   shifts:rows.map(row=>({...publicShift(row),scheduleWeekStart:row.weekStart})),
+   publishLocationIds:capabilities.permissions.filter(grant=>grant.permission==='PUBLISH_SCHEDULE').map(grant=>grant.locationId),
+  }};
+ },ex);
+}
+
 /** Build editor options from the permitted location roster. sourceVersion binds
  * the returned data to the observed authority for client freshness; it grants no
  * write rights. Scoped Managers see Company-required status for published or
@@ -153,8 +180,8 @@ export async function readOperationalShiftEditor(proof:SessionMutationProof,quer
 }
 /**
  * Publish changes (Jose, 2026-10-29): what is waiting to be published in one
- * week. Owners/Managers only; a location-scoped Manager sees only changes that
- * touch their locations and canPublish=false (Publish changes needs COMPANY).
+ * week. The whole-week release stays with the Owner. Other authorized reviewers
+ * can release a single location through the scoped publication writer.
  * Returns OperationalRead<SchedulePendingChangesData>; see that type in
  * src/lib/scheduling/pending-changes.ts for every field. Read-only: it never
  * publishes, notifies or changes history.
@@ -177,7 +204,7 @@ export async function readSchedulePendingChanges(proof:SessionMutationProof,quer
   const data=buildSchedulePendingChanges({weekStart,changes:pending.changes,neverCaptured,
    latestRevision:pending.latest?{id:pending.latest.id,revisionNumber:pending.latest.revisionNumber,createdAt:pending.latest.createdAt}:null,
    locationIds:ctx.ids,employeeNames:new Map(names.map(e=>[e.id,e.name])),locationNames:new Map(catalog.map(l=>[l.id,l.name])),
-   positionNames:new Map(positions.map(p=>[p.id,p.name])),history,canPublish:ctx.ids===null});
+   positionNames:new Map(positions.map(p=>[p.id,p.name])),history,canPublish:ctx.view.role==='OWNER'});
   return {data};
  },ex);
 }

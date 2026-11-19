@@ -60,6 +60,12 @@ async function fixture(status: 'DRAFT' | 'PUBLISHED' = 'DRAFT', credential = tru
   if (credential) await db.executor.query({ text: "INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('worker','FICTIONAL_WORKER_HASH',false)", values: [] });
   // Seed the intended legacy census before atomic operational adoption; later Managers do not inherit Company.
   await db.executor.query({text:await readFile('db/migrations/0032_company_access_invitations.sql','utf8'),values:[]});
+  await db.executor.query({text:`INSERT INTO workforce_permission_revisions
+    (workspace_id,employee_id,location_id,permission,revision,role_generation,granted,actor_employee_id)
+    SELECT workspace_id,employee_id,'loc-1',p.permission,1,generation,true,'owner'
+    FROM operational_subject_versions
+    CROSS JOIN (VALUES ('PUBLISH_SCHEDULE'),('APPROVE_LEAVE')) p(permission)
+    WHERE employee_id='actor'`,values:[]});
   const owner = await fixtureProof(db.executor, 'owner'), actor = await fixtureProof(db.executor, 'actor');
   return { ...db, owner, actor };
 }
@@ -159,11 +165,10 @@ describe('Phase B final management authority and Lead capability', () => {
       try {
         let fired = false;
         const drop = async () => { fired = true; await profileWrite(db, 'actor', change === 'demote' ? { role: 'EMPLOYEE' } : { active: false }); };
-        const sql: SqlExecutor = { query: async <T>(statement: SqlStatement, signal?: AbortSignal) => {
-          if (op === 'timeoff' && !fired && statement.text.startsWith('SELECT e.id AS \"employeeId\", e.role, e.active')) await drop();
-          return db.executor.query<T>(statement, signal);
-        }, transaction: async (statements, signal) => {
-          if (!fired) await drop();
+        const sql: SqlExecutor = { query: db.executor.query, transaction: async (statements, signal) => {
+          if (!fired && statements.some(statement => op==='timeoff'
+            ? statement.text.includes('AS request_changed')
+            : statement.text.includes('AS guarded_after'))) await drop();
           return db.executor.transaction(statements, signal);
         } };
         const outcome = await Promise.allSettled([managementWrite(db, op, sql)]);

@@ -28,7 +28,7 @@ import { readNotificationConfig as readRuntimeConfig } from '../../lib/notificat
 import { replaceWeeklyAvailability } from './self-service-api';
 import { runDispatch, type WorkerDeps } from '../../lib/notifications/worker';
 import { runReminders } from '../../lib/notifications/reminders';
-import type { NotificationIntent, SqlExecutor, InstallationProof } from '../../lib/notifications/types';
+import type { NotificationIntent, SqlExecutor, SqlStatement, InstallationProof } from '../../lib/notifications/types';
 
 // Substitute the SQL transport only. Tagged statements remain lazy until the
 // original production transaction submits its exact ordered batch to PostgreSQL.
@@ -68,9 +68,9 @@ async function delivery(overrides: Partial<NotificationIntent> = {}) {
   await sqlDeliveryRepository('test', db).materialize([value.id]);
   return value;
 }
-function onceBeforeTransaction(action: () => Promise<unknown>): SqlExecutor {
+function onceBeforeTransaction(action: () => Promise<unknown>, matches: (statements: readonly SqlStatement[]) => boolean = () => true): SqlExecutor {
   let first = true;
-  return { query: (s, signal) => db.query(s, signal), transaction: async (statements, signal) => { if (first) { first = false; await action(); } return db.transaction(statements, signal); } };
+  return { query: (s, signal) => db.query(s, signal), transaction: async (statements, signal) => { if (first && matches(statements)) { first = false; await action(); } return db.transaction(statements, signal); } };
 }
 beforeAll(async () => { database = await createDisposableNotificationDatabase(); db = database.executor; transport.executor = db; }, 30000);
 afterAll(async () => { await database?.dispose(); });
@@ -86,6 +86,12 @@ beforeEach(async () => {
   await sql(`INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES ('QA-sh1','QA-s1','QA-E','2030-10-11','09:00','17:00'),('QA-sh2','QA-s2','QA-F','2030-10-12','09:00','17:00')`);
   // Explicit legacy Manager/Owner census precedes current enforcement.
   await sql(await readFile('db/migrations/0032_company_access_invitations.sql','utf8'));
+  await sql(`INSERT INTO workforce_permission_revisions
+    (workspace_id,employee_id,location_id,permission,revision,role_generation,granted,actor_employee_id)
+    SELECT v.workspace_id,v.employee_id,l.id,p.permission,1,v.generation,true,'QA-O'
+    FROM operational_subject_versions v JOIN locations l ON l.workspace_id=v.workspace_id
+    CROSS JOIN (VALUES ('PUBLISH_SCHEDULE'),('APPROVE_LEAVE')) p(permission)
+    WHERE v.employee_id='QA-M' AND l.id IN ('loc-1','loc-2')`);
 });
 
 it('bounds concurrent queue claims and records FIFO urgent backlog without a provider send',async()=>{
@@ -148,7 +154,7 @@ describe('actual ordered publication and request SQL', () => {
     } finally { await sql('ALTER TABLE notifications DROP CONSTRAINT qa_reject_intent'); }
   });
   it('failed_mutation_has_no_notification', async () => {
-    expect(await reviewTimeOffRequest({ requestId: 'QA-missing', managerId: 'QA-M', status: 'APPROVED' }, db)).toBe(false);
+    await expect(reviewTimeOffRequest({ requestId: 'QA-missing', managerId: 'QA-M', status: 'APPROVED' }, db)).rejects.toThrow(/operational_authorization/);
     await expect(createTimeOffRequest({ employeeId: 'QA-E', startDate: '2030-10-12', endDate: '2030-10-11' }, db)).rejects.toThrow();
     expect(await count('notifications')).toBe(0);
   });
@@ -157,7 +163,7 @@ describe('actual ordered publication and request SQL', () => {
     const racing = onceBeforeTransaction(async () => {
       await commitPublishedWeekChange({ weekStarts: [week], actorEmployeeId: 'QA-M',proof:await fixtureProof(db,'QA-M'), sourceType: 'MANAGER_MUTATION', build: s => ({ statements: [{ text: `UPDATE shifts SET start_time='10:00' WHERE id='QA-sh1'`, values: [] }], afterSchedules: s.schedules, afterShifts: s.shifts.map(sh => sh.sourceShiftId === 'QA-sh1' ? { ...sh, startTime: '10:00' } : sh) }) }, db);
       await publish('loc-2');
-    });
+    }, statements => statements.some(statement => statement.text.includes('AS guarded_after')));
     expect((await publish('loc-1', racing)).published).toBe(true);
     const state = await readNotificationWeekState([week], db);
     expect(state.revisions).toHaveLength(2);

@@ -72,6 +72,8 @@ export const BASE_MIGRATIONS = [
   '0064_owner_company_knowledge.sql',
   '0066_owner_advisor_weekly.sql',
   '0067_owner_business_evidence.sql',
+  '0070_scheduling_authority_pto.sql',
+  '0071_user_language_preferences.sql',
 ] as const;
 
 /** Applied last, in exactly this order, once the company and Owner exist:

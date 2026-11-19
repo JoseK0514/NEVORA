@@ -1,10 +1,9 @@
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
-import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import { TimeOffReviewActions } from "@/components/time-off-review-actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/requests";
+import { listWorkforceLeave, type TimeOffListItem } from "@/lib/data/requests";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { formatTimeRange, weekStartFor } from "@/lib/date-utils";
 import { CorpPill } from "@/components/corp/corp";
@@ -26,7 +25,7 @@ const tabs = [
 
 
 
-type PendingRequest = Awaited<ReturnType<typeof listPendingTimeOffRequests>>[number];
+type PendingRequest = TimeOffListItem;
 
 /** F6: one request on its own page. Back names where the manager came from;
  * the decision returns there (D-5). Dates, length and the note come first (O1). */
@@ -50,7 +49,7 @@ function whenLabel(request: { startDate: string; endDate: string; startTime?: st
 }
 
 
-type DecidedRequest = Awaited<ReturnType<typeof listTeamTimeOffRequests>>[number];
+type DecidedRequest = TimeOffListItem;
 
 /** "Thu, Nov 12" or "Thu, Nov 12 – Fri, Nov 13", and "All day", "9:00 AM – 1:00 PM" or "2 days" under it. */
 function requestDates(request: { startDate: string; endDate: string; startTime?: string | null; endTime?: string | null }) {
@@ -139,15 +138,15 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
   await requireRoles(MANAGER_ROLES);
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
   const proof = await requireSessionMutationProof();
-  const source=await withOperationalCompany(proof,()=>selected.status==='PENDING'?listPendingTimeOffRequests():listTeamTimeOffRequests(selected.status));
-  if(source.state==='unavailable')return <OperationalUnavailable title="Team time off unavailable" reason={source.reason}/>;
+  const source=await listWorkforceLeave(proof, selected.status);
+  if(source.state==='unavailable')return <OperationalUnavailable title="Team time off unavailable" reason={source.reason} scoped/>;
   const requests=source.data;
 
   const focused = selected.status === "PENDING" && requestId ? requests.find(request => request.id === requestId) : undefined;
   const origin: Origin = { from: from === "home" ? "home" : "inbox", filter: inboxFilter(filter ?? "requests"), item: inboxItem(item) };
   if (focused) {
     // Who else is off then: the approved time off this page already reads for its Approved tab, under the same access.
-    const approved = await withOperationalCompany(proof, () => listTeamTimeOffRequests("APPROVED")).catch(() => null);
+    const approved = await listWorkforceLeave(proof, "APPROVED").catch(() => null);
     const zone = await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
     return <ScopedReadFrame observation={source}><FocusedReview request={focused as PendingRequest} origin={origin} error={error}
       others={approved?.state === "ready" ? approved.data : null} timeZone={zone} /></ScopedReadFrame>;
@@ -156,7 +155,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
 
   // Quiet (v4, approved Oct 23): the segments carry the waiting count on every tab.
   const waiting = selected.status === "PENDING" ? requests.length
-    : await withOperationalCompany(proof, () => listPendingTimeOffRequests()).then(read => read.state === "ready" ? read.data.length : 0).catch(() => 0);
+    : await listWorkforceLeave(proof, "PENDING").then(read => read.state === "ready" ? read.data.length : 0).catch(() => 0);
   const zone = selected.status === "PENDING" ? "UTC" : await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
   // Codex C1: who decided and when, once the read includes it: "Approved by Dana Kim · Oct 2".
   const decidedLine = (request: object) => {

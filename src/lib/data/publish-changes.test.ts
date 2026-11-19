@@ -1,3 +1,11 @@
+vi.mock('@/lib/workforce/authority.server', async original => ({
+  ...await original<Record<string, unknown>>(),
+  assertWorkforcePermission: async (_proof: unknown, permission: string, ids: string[] | null) => {
+    expect(permission).toBe('PUBLISH_SCHEDULE');
+    access.footprints.push(ids ? {kind:'LOCATIONS',locationIds:ids} : {kind:'COMPANY'});
+    return { authority: 'a'.repeat(64) };
+  },
+}));
 import { managementProof, schedulingSourceFixture } from '../../test/fixtures/management';
 import { assignmentFacts } from './assignment-facts.test-support';
 import { beforeEach, expect, it, vi } from 'vitest';
@@ -54,7 +62,7 @@ it('Publish changes writes one whole-week revision, one diff notification set an
   expect(capture.text).toContain('FROM shifts sh JOIN schedules s');
   const mark = texts.findIndex(t => t.includes('UPDATE schedule_pending_edits SET published_revision_id'));
   expect(mark).toBeGreaterThan(texts.indexOf(capture.text));
-  expect(batch[mark].values).toEqual([result.revision!.id, result.revision!.createdAt, week]);
+  expect(batch[mark].values).toEqual([result.revision!.id, result.revision!.createdAt, week, null]);
   // Only E's shift changed, so only E is told; F's unchanged shift sends nothing.
   expect(events(batch)).toEqual(['E']);
   expect(access.footprints).toContainEqual({ kind: 'COMPANY' });

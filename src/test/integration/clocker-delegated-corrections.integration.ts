@@ -1,3 +1,4 @@
+import { applyWorkforceCommand } from '../../lib/workforce/settings.server';
 import {randomUUID} from 'node:crypto';
 import {afterEach,beforeEach,expect,it} from 'vitest';
 import {createPunchFixture} from './clocker-punch-fixture';
@@ -16,6 +17,8 @@ const command=():CorrectionRequestCommand=>({operationId:randomUUID(),kind:'ENTR
 beforeEach(async()=>{
  f=await createPunchFixture({breaks:true,companyAccess:true});
  await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('delegated-manager','Morgan','QA','559','MANAGER','loc-1');INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('c',64),'delegated-manager',clock_timestamp()+interval '1 day'),(repeat('d',64),'c34-a',clock_timestamp()+interval '1 day')");
+ expect((await applyWorkforceCommand(owner,{kind:'PERMISSION',operationId:randomUUID(),employeeId:manager.employee.id,
+  locationId:'loc-1',permission:'REVIEW_TIME_EXCEPTION',granted:true,expectedRevision:0},f.db.executor)).state).toBe('saved');
  await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('delegated-entry','c34-a','loc-1',$1,$2,$3,'CLOCKED_OUT',4)",[f.devices[0].device.id,ago(240),ago(120)]);
 });
 afterEach(async()=>{if(f)await f.db.dispose();});

@@ -33,7 +33,16 @@ it('submission outbox failure rejects the whole transaction and has no separate 
  expect(r.executor.transaction).toHaveBeenCalledTimes(1);expect(vi.mocked(r.executor.query).mock.calls.every(([statement])=>!statement.text.includes('INSERT'))).toBe(true);
 });
 
-// Business-unit admission I/O only. Keep real initial/final operational guard
-// assembly and all decision/outbox/conflict assertions; real current Company,
-// lifecycle, expiry and rollback controls use owned team-review SQL.
-vi.mock('@/lib/company-access/operational-scope.server',async original=>({...await original<Record<string,unknown>>(),assertOperationalAccess:async()=>({workspace:{id:'northside',name:'Northside',timeZone:'America/New_York',active:true,createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'},authority:'a'.repeat(64),scope:{mode:'COMPANY',locationIds:[]}})}));
+// Mock admission I/O while preserving the transaction guard and outbox assembly.
+vi.mock('@/lib/workforce/leave-authority.server', async original => ({
+  ...await original<Record<string, unknown>>(),
+  admitLeaveReview: async () => ({
+    employeeId:'E',
+    locationIds:['L'],
+    access:{
+      workspace:{id:'northside',name:'Northside',timeZone:'America/New_York',active:true,
+        createdAt:'2030-01-01 00:00:00+00',updatedAt:'2030-01-01 00:00:00.123456+00'},
+      authority:'a'.repeat(64),scope:{mode:'LOCATIONS',locationIds:['L']},
+    },
+  }),
+}));

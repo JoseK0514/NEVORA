@@ -2,7 +2,7 @@ import {expect,it,vi} from 'vitest';
 import {randomUUID} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
-import {companyAccessFixture} from './company-access-fixture';
+import {companyAccessFixture,grantFixtureWorkforcePermission} from './company-access-fixture';
 import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {readAttendanceReview} from '../../lib/data/attendance-review.server';
 import {readManagerTimeCorrections} from '../../lib/data/time-corrections.server';
@@ -58,7 +58,7 @@ it.each(reads)('$name denies a selected-location Manager without exposing global
 });
 it('current Company and Owner global reads preserve complete B data with finite observations',async()=>{
  const f=await setup();try{
-  await choose(f,'COMPANY');
+  await choose(f,'COMPANY');await grantFixtureWorkforcePermission(f,'REVIEW_TIME_EXCEPTION','loc-1','loc-2');
   for(const proof of [f.owner,f.manager])for(const test of reads){
    const value=await test.run(proof,f.db.executor);expect(value.state,test.name).toBe('ready');if(value.state!=='ready')throw Error('Expected ready '+test.name);
    expect(value.validForMs,test.name).toBeGreaterThan(0);expect(value.validForMs,test.name).toBeLessThanOrEqual(15000);
@@ -96,7 +96,7 @@ it.each(['EMPLOYEE','LEAD'] as const)('mixed timecards API preserves %s own sour
 });
 it.each(reads)('$name suppresses already fetched global results when Company is lost before final return',async test=>{
  const f=await setup();try{
-  await choose(f,'COMPANY');const base=f.db.executor;let changed=false;
+  await choose(f,'COMPANY');await grantFixtureWorkforcePermission(f,'REVIEW_TIME_EXCEPTION','loc-1','loc-2');const base=f.db.executor;let changed=false;
   const retire=async()=>{if(!changed){changed=true;await choose(f,'LOCATIONS');}};
   const ex:SqlExecutor={...base,query:async<T>(s:SqlStatement,signal?:AbortSignal)=>{const rows=await base.query<T>(s,signal);if(/AS remaining|AS "validForMs"|AS "validatedAt"|clock_timestamp\(\)::text AS at/.test(s.text)&&!s.text.includes('operational_subject_versions'))await retire();return rows;},transaction:async(statements,signal)=>{const rows=await base.transaction(statements,signal);if(test.name==='attendance policy observation'&&statements.some(s=>s.text.includes('INSERT INTO attendance_policy_observations')))await retire();return rows;}};
   const result=await test.run(f.manager,ex);expect(changed).toBe(true);expect(result).toEqual({state:'unavailable',reason:'access_denied'});
@@ -105,7 +105,7 @@ it.each(reads)('$name suppresses already fetched global results when Company is 
 
 it('actual global read APIs retain current Company positive controls and complete B reports/timecards/CSV',async()=>{
  const f=await setup();try{
-  vi.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');await choose(f,'COMPANY');
+  vi.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');await choose(f,'COMPANY');await grantFixtureWorkforcePermission(f,'REVIEW_TIME_EXCEPTION','loc-1','loc-2');
   for(const test of apiReads){const response=await test.run();expect(response.status,test.name).toBe(200);const body=await response.text();
    if(['report POST','report CSV export','manager timecards POST','action center POST'].includes(test.name))expect(body,test.name).toContain('global-private-b');
    if(test.name!=='report CSV export'){const value=JSON.parse(body);expect(value.validForMs).toBeGreaterThan(0);expect(value.validForMs).toBeLessThanOrEqual(15000);}
@@ -121,21 +121,21 @@ it.each(['revoked','role cycle'] as const)('actual global APIs deny current %s p
 });
 it('policy observation loses Company after source read and writes no observation',async()=>{
  const f=await setup();try{
-  await choose(f,'COMPANY');let reached=false;const base=f.db.executor;
+  await choose(f,'COMPANY');await grantFixtureWorkforcePermission(f,'REVIEW_TIME_EXCEPTION','loc-1','loc-2');let reached=false;const base=f.db.executor;
   const ex={...base,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{if(statements.some(s=>s.text.includes('INSERT INTO attendance_policy_observations'))){reached=true;await choose(f,'LOCATIONS');}return base.transaction(statements,signal);}};
   expect(await readAttendancePolicies(f.manager,ex)).toEqual({state:'unavailable',reason:'access_denied'});expect(reached).toBe(true);expect(await f.q('SELECT id FROM attendance_policy_observations')).toEqual([]);
  }finally{await close(f);}
 });
 it('policy observation expires its original budget during commit and returns no ready payload',async()=>{
  const f=await setup();let elapsed=0;const monotonic=vi.spyOn(performance,'now').mockImplementation(()=>elapsed);try{
-  await choose(f,'COMPANY');const base=f.db.executor;let reached=false;
+  await choose(f,'COMPANY');await grantFixtureWorkforcePermission(f,'REVIEW_TIME_EXCEPTION','loc-1','loc-2');const base=f.db.executor;let reached=false;
   const ex={...base,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{const rows=await base.transaction(statements,signal);if(statements.some(s=>s.text.includes('INSERT INTO attendance_policy_observations'))){reached=true;elapsed=16000;}return rows;}};
   const result=await readAttendancePolicies(f.manager,ex);expect(reached).toBe(true);expect(result).toEqual({state:'unavailable',reason:'access_denied'});
  }finally{monotonic.mockRestore();await close(f);}
 });
 it.each(['logout','expired','inactive','wrong token','malformed proof'] as const)('global read services classify current %s as access denial without payloads',async kind=>{
  const f=await setup();try{
-  await choose(f,'COMPANY');let proof=f.manager;
+  await choose(f,'COMPANY');await grantFixtureWorkforcePermission(f,'REVIEW_TIME_EXCEPTION','loc-1','loc-2');let proof=f.manager;
   if(kind==='logout')await f.q("DELETE FROM employee_sessions WHERE employee_id='manager'");
   else if(kind==='expired')await f.q("UPDATE employee_sessions SET expires_at=clock_timestamp()-interval '1 second' WHERE employee_id='manager'");
   else if(kind==='inactive')await f.q("UPDATE employees SET active=false WHERE id='manager'");

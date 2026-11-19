@@ -1,6 +1,7 @@
 "use server";
 
 import { requireSessionMutationProof } from "@/lib/auth/session";
+import { assertWorkforcePermission } from "@/lib/workforce/authority.server";
 import { getSchedulePublishReadiness } from "@/lib/data/schedule-publication-review";
 
 import { getWorkspace, WorkspaceConcurrencyError } from "@/lib/data/workspaces";
@@ -48,6 +49,20 @@ async function currentAdmission(proof:Awaited<ReturnType<typeof requireSessionMu
  catch(error){if(denied(error))return false;throw error;}
 }
 
+
+async function currentPublicationAdmission(
+  proof: Awaited<ReturnType<typeof requireSessionMutationProof>>,
+  original: Awaited<ReturnType<typeof assertWorkforcePermission>>,
+  locationIds: string[] | null,
+) {
+  try {
+    await assertWorkforcePermission(proof, 'PUBLISH_SCHEDULE', locationIds, undefined, original);
+    return true;
+  } catch (error) {
+    if (denied(error)) return false;
+    throw error;
+  }
+}
 
 /**
  * Converts the manager form into a validated assignment in workspace local time.
@@ -154,15 +169,15 @@ export async function publishScheduleAction(formData: FormData) {
   const locationId = String(formData.get("locationId") ?? "");
   const confirmWarnings = formData.get("confirmWarnings") === "yes";
   let admission:Awaited<ReturnType<typeof assertOperationalAccess>>;
-  try{admission=await assertOperationalAccess(proof,{kind:'COMPANY'});}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
+  try{admission=await assertWorkforcePermission(proof,'PUBLISH_SCHEDULE',locationId?[locationId]:null);}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
 
   if (!isValidWeekStart(weekStart) || !locationId) {
     redirect("/app/schedule?error=INVALID_PUBLISH");
   }
 
   if (!confirmWarnings) {
-    const readiness = await getSchedulePublishReadiness(weekStart, locationId);
-    if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
+    const readiness = await getSchedulePublishReadiness(weekStart, locationId, admission.scope.mode === "LOCATIONS");
+    if(!await currentPublicationAdmission(proof,admission,locationId?[locationId]:null))redirect('/app/schedule?error=ACCESS_DENIED');
     if (readiness.hasWarnings) {
       redirect(
         scheduleUrl(
@@ -175,8 +190,8 @@ export async function publishScheduleAction(formData: FormData) {
 
   let published:boolean;
   try{({published}=await publishScheduleWithRevision({locationId,weekStart,managerId:session.id,proof}));}
-  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');if(error instanceof ManualAssignmentConflictError){if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');redirect(scheduleUrl(weekStart,`&error=${encodeURIComponent(error.code)}`));}throw error;}
-  if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
+  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');if(error instanceof ManualAssignmentConflictError){if(!await currentPublicationAdmission(proof,admission,locationId?[locationId]:null))redirect('/app/schedule?error=ACCESS_DENIED');redirect(scheduleUrl(weekStart,`&error=${encodeURIComponent(error.code)}`));}throw error;}
+  if(!await currentPublicationAdmission(proof,admission,locationId?[locationId]:null))redirect('/app/schedule?error=ACCESS_DENIED');
 
   revalidatePath("/app/schedule");
   redirect(
@@ -201,23 +216,24 @@ export async function publishScheduleChangesAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
   const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
+  const locationId = String(formData.get("locationId") ?? "");
   const confirmWarnings = formData.get("confirmWarnings") === "yes";
   let admission:Awaited<ReturnType<typeof assertOperationalAccess>>;
-  try{admission=await assertOperationalAccess(proof,{kind:'COMPANY'});}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
+  try{admission=await assertWorkforcePermission(proof,'PUBLISH_SCHEDULE',locationId?[locationId]:null);}catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
   if (!isValidWeekStart(weekStart)) redirect("/app/schedule?error=INVALID_PUBLISH");
 
   if (!confirmWarnings) {
-    const published = (await listScheduleStatuses(weekStart)).filter(s => s.status === "PUBLISHED");
-    const readiness = await Promise.all(published.map(s => getSchedulePublishReadiness(weekStart, s.locationId)));
-    if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
+    const locationIds = locationId ? [locationId] : (await listScheduleStatuses(weekStart)).filter(s => s.status === "PUBLISHED").map(s => s.locationId);
+    const readiness = await Promise.all(locationIds.map(id => getSchedulePublishReadiness(weekStart, id, admission.scope.mode === "LOCATIONS")));
+    if(!await currentPublicationAdmission(proof,admission,locationId?[locationId]:null))redirect('/app/schedule?error=ACCESS_DENIED');
     // Release 1: the warnings are reviewed on Build and publish, where "Publish changes anyway" confirms.
-    if (readiness.some(r => r.hasWarnings)) redirect(`/app/schedule/publish?week=${encodeURIComponent(weekStart)}&review=changes#publish-review`);
+    if (readiness.some(r => r.hasWarnings)) redirect(`/app/schedule/publish?week=${encodeURIComponent(weekStart)}&review=changes${locationId?`&location=${encodeURIComponent(locationId)}`:""}#publish-review`);
   }
 
   let published:boolean;
-  try{({published}=await publishScheduleChanges({weekStart,managerId:session.id,proof}));}
-  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');if(error instanceof ManualAssignmentConflictError){if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');redirect(scheduleUrl(weekStart,`&error=${encodeURIComponent(error.code)}`));}throw error;}
-  if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
+  try{({published}=await publishScheduleChanges({weekStart,managerId:session.id,proof,...(locationId?{locationId}:{})}));}
+  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');if(error instanceof ManualAssignmentConflictError){if(!await currentPublicationAdmission(proof,admission,locationId?[locationId]:null))redirect('/app/schedule?error=ACCESS_DENIED');redirect(scheduleUrl(weekStart,`&error=${encodeURIComponent(error.code)}`));}throw error;}
+  if(!await currentPublicationAdmission(proof,admission,locationId?[locationId]:null))redirect('/app/schedule?error=ACCESS_DENIED');
 
   revalidatePath("/app/schedule");
   redirect(scheduleUrl(weekStart, published ? "&changesPublished=1" : "&error=NO_PENDING_CHANGES"));

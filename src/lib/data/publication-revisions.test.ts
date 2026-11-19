@@ -1,3 +1,7 @@
+vi.mock('@/lib/workforce/authority.server', async original => ({
+  ...await original<Record<string, unknown>>(),
+  assertWorkforcePermission: async () => ({ authority: 'a'.repeat(64) }),
+}));
 import { managementProof, schedulingSourceFixture } from '../../test/fixtures/management';
 import {assignmentFacts} from './assignment-facts.test-support';
 import { beforeEach, expect, it, vi } from 'vitest';
