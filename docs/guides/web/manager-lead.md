@@ -18,6 +18,12 @@ not gain company totals, contacts or financial records by opening a saved link.
 An Owner controls management assignments. A promotion, reactivation or later
 scope change can invalidate access that was available earlier.
 
+Within your locations, an Owner grants three actions one location at a time:
+publishing schedules, approving time off and reviewing time exceptions. **Profile**
+lists **What you can approve** and where. When a page or a decision says an
+action isn't part of your access, it names who decides instead; ask that Owner.
+You never review your own time off or correction.
+
 ## Company-scoped Manager workflow
 
 Start at **Home** and **Things to do**. Open the current record before acting;
