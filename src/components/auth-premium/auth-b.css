@@ -456,8 +456,10 @@
  * decorative; the shared mobile Access rule already omits it in this posture. */
 @media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   #mobile-access-page.q-auth .ma-hero { display: none !important; }
-  /* Keep the language pill's expanded44px target above the following heading. */
-  #mobile-access-page.q-auth .ma-header { position: relative; z-index: 1; }
+  /* Let the header's expanded44px target clear the following heading without
+   * raising the decorative band over the sign-in card. */
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__col > .ma-only { z-index: auto; }
+  #mobile-access-page.q-auth .ma-header { position: relative; z-index: 2; }
 }
 
 /* ---------- U11, access and recovery (Nov 17, 2026) ----------

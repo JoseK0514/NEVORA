@@ -58,9 +58,10 @@ it('retires reset A drafts and replies when proof B replaces it in the same tab'
      expect(await proof().inputValue()).toBe(b);
      expect(await password().inputValue()).toBe('Fictional replacement password 456!');
      expect(await password().isDisabled(),'A cannot end B pending state').toBe(true);
-     expect(await page.locator('.ar-done').count(),'A cannot complete B screen').toBe(0);
+     const receipt=page.locator('.ar-done,.ar-done__line');
+     expect(await receipt.count(),'A cannot complete B screen').toBe(0);
      await page.evaluate(()=>{(window as Window&{__resetWire?:{calls:{finish:(state:string)=>void}[]}}).__resetWire!.calls[1].finish('reset');});
-     await page.locator('.ar-done').waitFor();expect(await password().count()).toBe(0);
+     await receipt.waitFor();expect(await password().count()).toBe(0);
      const sent=await page.evaluate(()=>((window as Window&{__resetWire?:{calls:{proof:string}[]}}).__resetWire!.calls.map(call=>call.proof)));
      expect(sent).toEqual([a,b]);expect(errors).toEqual([]);
      cells.push({engine,lang,width,oldOutcome,retiredDrafts:true,lateReplyFenced:true,originalProofsDistinct:true});
