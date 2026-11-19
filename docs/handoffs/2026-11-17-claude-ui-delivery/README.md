@@ -179,6 +179,10 @@ None blocks integration. Each report has its full list.
   F01 (a punch open since an earlier day is not flagged after 12 hours), F26 to F28, and the "registered" Clocker
   sentences.
 - Rondo AI on Development and Manager access: [request to Codex](../2026-11-18-claude-to-codex-rondo-ai-activation-and-manager-access.md).
+- Rondo AI screens for Owner and Manager (the name and glyph, the Manager view on Codex's contract, the Owner page on
+  the corporate kit) are `aae7c32fc`, built on `f9171d7c`; guide text `97c61303`, guides rebuilt in `513396a3`:
+  [Rondo AI UI](../2026-11-18-claude-rondo-ai-ui.md). Joining it with Codex's candidate `21fd1235` conflicts in 15 files;
+  the note lists them.
 - The Support reference is switched on (`5cc1c838` and before, by the backend session), so the U11 note above is
   out of date.
 

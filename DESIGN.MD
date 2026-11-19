@@ -636,6 +636,29 @@ item names the lines it supersedes; line numbers are from the file before this s
   - Supersedes any older chip, note, glyph, error or button size in this file that differs from the list above. Section
     2 of the spec lists what the pages drew before the pass.
 
+- **Rondo AI (built Nov 18, 2026; see `docs/handoffs/2026-11-18-claude-rondo-ai-ui.md`).** The adviser is "Rondo AI"
+  wherever the product names it (sidebar, rail, More, page titles, back links); a reply's author is "Rondo".
+  - *Nothing AI-generic (Jose, Nov 18).* No sparkle, magic wand, robot or brain glyph; no gradient, glow or shimmer used
+    to say "AI". Rondo's glyph is Phosphor ChatsCircle (two speech bubbles, a conversation), key `rondo`, in the
+    sidebar, More and beside a Manager's answer. Rondo's tools have their own glyphs: Weekly plan CalendarDots, Company
+    knowledge BookOpenText, Business records CashRegister. Rondo's pages use the corporate kit like every other page.
+  - *Owner.* Listed under More in the sidebar and on More when the adviser's switch is on; no card on Home (Jose
+    decides). The Owner's Rondo AI page: teal band; tools as rows; issue rows with a facts line (place · day · time) and
+    one tinted action; kit stats for the briefing; the two checks as form cards; the conversation card with the note
+    "Answers to typed questions are off" while no AI service is approved; priorities, goals and tasks in one card. From
+    1280 a 1080 frame with a 340 right rail. Dates read "Wed, Nov 18", times "9:27 PM", zones "Puerto Rico time".
+  - *Manager.* Same address, its own read-only view: location (a select, or a plain line with the map pin for one),
+    the Weekly plan's week stepper with "This week" as a facts line, "Ask Rondo" (four guided questions as rows; the
+    asked one teal; the reply above them: the question in grey, the glyph in a teal circle, the figure at 24/30 700,
+    what it counts, then location · week · "Checked 9:28 PM"), and "Week by day" (seven rows: day, a facts line of
+    published, drafts and released with zero facts left out, planned hours on the right). Quiet notes under the cards.
+  - *Words that carry meaning.* Hours are "Planned time from the schedule. Timecards show hours worked." Released shifts
+    "followed an approved 'Can't work' request" and "aren't in the draft or published counts". A failed read never
+    shows as zero. Copy follows stop-slop: plain, specific, active, no filler or hype.
+  - *Private and short-lived.* A Rondo read stays on screen only for the lease the server gives it, renews while the
+    page is in front, and hides when the person switches away ("Details hidden", "Show again").
+  - *Kit.* A kit button (`b-btn`) never shows the browser's outset border on a corporate-kit page.
+
 ## Previous direction (October 20, 2026; superseded)
 
 | Surface | Design then | Source |
