@@ -9,7 +9,7 @@ import {fictionalBusinessInput} from '../fixtures/rondo-business';
 
 type BusinessMode='normal'|'fail-catalog'|'hold-all'|'hold-catalog'|'hold-query';
 type ReadCommand={op:string;requestId:string;query?:unknown};
-type BusinessWire={mode:BusinessMode;catalogReads:number;reads:ReadCommand[];held:(()=>void)[];offset:number};
+type BusinessWire={mode:BusinessMode;catalogReads:number;catalogValidity:number;reads:ReadCommand[];held:(()=>void)[];offset:number};
 declare global{interface Window{__businessWire?:BusinessWire}}
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'))('playwright');
 // Only response delivery/lease duration and the browser's wall clock are controlled.
@@ -24,7 +24,7 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
  try{
   await seedOwnedApp(app.database.executor);page.setDefaultTimeout(20000);page.on('pageerror',(error:Error)=>errors.push(error.message));
   await context.addInitScript(()=>{
-   const wire:BusinessWire={mode:'normal',catalogReads:0,reads:[],held:[],offset:0};
+   const wire:BusinessWire={mode:'normal',catalogReads:0,catalogValidity:15000,reads:[],held:[],offset:0};
    window.__businessWire=wire;const wall=Date.now;Date.now=()=>wall()+wire.offset;
    const native=fetch.bind(window);
    window.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
@@ -33,10 +33,10 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
     const command=init?.body?JSON.parse(String(init.body)) as ReadCommand:null,read=!command||['read_source_version','read_coverage_map','query_finance','query_sales'].includes(command.op);
     if(!read)return native(input,init);
     if(command)wire.reads.push(command);else wire.catalogReads++;
-    const mode=wire.mode;
+    const mode=wire.mode,validForMs=command?4000:wire.catalogValidity;
     if(mode==='fail-catalog'&&!command)return new Response('{}',{status:503});
     const response=await native(input,{...init,signal:undefined}),body=await response.json();
-    if(response.ok)body.validForMs=4000;
+    if(response.ok)body.validForMs=validForMs;
     if(mode==='hold-all'||mode==='hold-catalog'&&!command||mode==='hold-query'&&command?.op.startsWith('query_'))await new Promise<void>(done=>wire.held.push(done));
     return new Response(JSON.stringify(body),{status:response.status,headers:{'Content-Type':'application/json'}});
    }) as typeof fetch;
@@ -60,8 +60,11 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
   await wire('hold-catalog','blur');await settle();check('blur clears catalog',await privateName().count()===0);
   await wire('hold-catalog','online');await page.waitForFunction(()=>window.__businessWire!.held.length>0);await wire('hold-catalog','blur');await release();await settle();check('late catalog cannot revive retired generation',await privateName().count()===0);
   await visit(library);await privateName().first().waitFor();await wire('fail-catalog','online');await settle();check('failed catalog refresh clears old private catalog',await privateName().count()===0);
-  await visit(library);await privateName().first().waitFor();await page.evaluate(()=>{const wire=window.__businessWire!;wire.mode='hold-catalog';wire.offset=-86400000;});
-  await page.waitForTimeout(4300);check('monotonic catalog expiry survives backward wall clock',await privateName().count()===0);await release();
+  await visit(library);await privateName().first().waitFor();
+  const shortened=page.waitForResponse((response:{url():string;request():{method():string}})=>new URL(response.url()).pathname==='/api/owner/advisor/business'&&response.request().method()==='GET');
+  await page.evaluate(()=>{window.__businessWire!.catalogValidity=1800;window.dispatchEvent(new Event('online'));});await (await shortened).finished();await settle();
+  await page.evaluate(()=>{const wire=window.__businessWire!;wire.mode='hold-catalog';wire.offset=-86400000;});
+  await page.waitForTimeout(1900);check('monotonic catalog expiry survives backward wall clock',await privateName().count()===0);check('expired catalog offers fresh recovery instead of an endless skeleton',await page.getByRole('button',{name:'Try again',exact:true}).count()>0);await release();
   await visit(version);const ack=page.getByRole('checkbox',{name:'I reviewed the rows, the period and the things to check, and I want Rondo to use this version',exact:true});await ack.waitFor();await ack.check();
   await page.waitForTimeout(3300);
   const reads=await page.evaluate(()=>window.__businessWire!.reads.filter((command:ReadCommand)=>command.op==='read_source_version'));
