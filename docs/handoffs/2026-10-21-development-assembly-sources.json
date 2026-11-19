@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "9af91ef2b2fa69b292ed4cf524e9f03e3d9d0819",
+      "sha": "a87826f6833c3572ea429939dbd688dd94549863",
       "disposition": "held",
-      "reason": "The reviewed Rondo changes through bc75950a were integrated with Development's knowledge search in 879f81bb and checked on the published base 49cd1072. Collab advanced from e89784d3 by merging Development e0e8efe9 in 4c3c052f and rebuilding its six web guides at 9af91ef2. The short-screen Clocker, tablet and Schedule layout, and lost time-off decision fixes remain held on Collab pending release verification. Earlier checkpoint f9171d7c remains preserved in the qualified combined assembly 05f2553182b387f20495c19070cfbabd50a987ef and its linear publication evidence."
+      "reason": "The reviewed Rondo changes through bc75950a were integrated with Development's knowledge search in 879f81bb and checked on the published base 49cd1072. Collab merged Development e0e8efe9 in 4c3c052f and rebuilt its guides at 9af91ef2. Head a87826f6 includes the later Owner and Manager controls, planning calendar, first-week setup, wages, draft labor cost, and their guide and evidence handoff. These changes and the earlier Collab UI fixes remain held pending release verification. Earlier checkpoint f9171d7c is preserved in the qualified combined assembly 05f2553182b387f20495c19070cfbabd50a987ef and its linear publication evidence."
     },
     {
       "branch": "scrum190-signup-ui",
