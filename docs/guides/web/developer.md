@@ -148,7 +148,11 @@ test content out of Git, logs and support records. See the
 
 Payroll availability and calculation policy are separate. New work defaults to
 `NEVORA_PAYROLL_CALCULATION_MODE=external`, even with native tables installed.
-`native_provisional` is an explicit operator/test opt-in, not customer approval.
+Development and test processes can opt into `native_provisional`. Production
+builds use external amounts while professional reconciliation is pending.
+The Owner wage editor and draft labor-cost endpoints use saved rates with either
+payroll switch off. See the [compensation UI contract](../../handoffs/compensation-ui.md)
+and [payroll validation cases](../../payroll/professional-reconciliation.md).
 Preserve historical statements and receipts; Manager access administration stays
 available in external mode. See the [backend contract](../../handoffs/2026-11-15-inspection-backend-remaining.md).
 
