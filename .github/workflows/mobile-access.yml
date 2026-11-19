@@ -18,11 +18,13 @@ jobs:
   mobile-access:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    env:
+      MOBILE_ACCESS_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.MOBILE_ACCESS_EXPECTED_SHA }}
           persist-credentials: false
       - name: Use Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -53,13 +55,13 @@ jobs:
           NEVORA_MOBILE_ACCESS_EVIDENCE: ${{ runner.temp }}/nevora-mobile-access
         shell: bash
         run: |
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$MOBILE_ACCESS_EXPECTED_SHA"
           env -u DATABASE_URL npm run test:mobile-access:owned -- --reporter=default --reporter=json --outputFile="$NEVORA_MOBILE_ACCESS_EVIDENCE/vitest-results.json"
       - name: Upload viewport captures and result receipts
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: mobile-access-${{ github.sha }}
+          name: mobile-access-${{ env.MOBILE_ACCESS_EXPECTED_SHA }}
           path: |
             ${{ runner.temp }}/nevora-mobile-access/*.png
             ${{ runner.temp }}/nevora-mobile-access/*results.json

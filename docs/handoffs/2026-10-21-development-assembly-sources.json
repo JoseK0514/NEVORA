@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "e89784d383b9a30ef4e0af8c868fc797c6f6ddfc",
+      "sha": "9af91ef2b2fa69b292ed4cf524e9f03e3d9d0819",
       "disposition": "held",
-      "reason": "The reviewed Rondo changes through bc75950a were integrated with Development's knowledge search in 879f81bb and checked on the published base 49cd1072. The later short-screen Clocker, tablet and Schedule layout, and lost time-off decision fixes remain on Collab for their own integration and verification. Earlier checkpoint f9171d7c remains preserved in the qualified combined assembly 05f2553182b387f20495c19070cfbabd50a987ef and its linear publication evidence."
+      "reason": "The reviewed Rondo changes through bc75950a were integrated with Development's knowledge search in 879f81bb and checked on the published base 49cd1072. Collab advanced from e89784d3 by merging Development e0e8efe9 in 4c3c052f and rebuilding its six web guides at 9af91ef2. The short-screen Clocker, tablet and Schedule layout, and lost time-off decision fixes remain held on Collab pending release verification. Earlier checkpoint f9171d7c remains preserved in the qualified combined assembly 05f2553182b387f20495c19070cfbabd50a987ef and its linear publication evidence."
     },
     {
       "branch": "scrum190-signup-ui",

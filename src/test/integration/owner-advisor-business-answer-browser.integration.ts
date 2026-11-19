@@ -3,6 +3,7 @@ import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
 import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
 import {createOwnedNextApp,ownedAdvisorEnvironment} from './owned-next-app';
 import {seedOwnedApp,TEST_PASSWORD} from './owned-app-fixture';
 import {fictionalBusinessInput,businessJanuary} from '../fixtures/rondo-business';
@@ -13,17 +14,34 @@ import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {BusinessApiResult} from '../../lib/owner-advisor/business/contracts';
 const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'))('playwright');
 const options={ownerAdvisorEnabled:true,ownerAdvisorReplayFixture:true,ownerAdvisorBusinessImportsEnabled:true,ownerAdvisorBusinessRetrievalEnabled:true};
-let app:Awaited<ReturnType<typeof createOwnedNextApp>>,evidence:string;const checks:string[]=[],external:string[]=[],errors:string[]=[];
+let app:Awaited<ReturnType<typeof createOwnedNextApp>>,evidence:string;const checks:string[]=[],external:string[]=[],errors:unknown[]=[],reloadDiagnostics:unknown[]=[];
 beforeAll(async()=>{if(!process.env.NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE)throw Error('External evidence path required');evidence=resolve(process.env.NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE,'business-answer-combined');await mkdir(evidence,{recursive:true});app=await createOwnedNextApp(evidence,options);await seedOwnedApp(app.database.executor);});
-afterAll(async()=>{if(!app)return;await app.close();const log=await readFile(resolve(app.root,'next.log'),'utf8');const guardActive=log.includes('OWNED_REPLAY_FETCH_GUARD_ACTIVE'),providerDenied=log.includes('OWNED_REPLAY_EXTERNAL_FETCH_DENIED');await writeFile(resolve(evidence,'report.json'),JSON.stringify({complete:checks.length===2&&guardActive&&!providerDenied,checks,external,errors,guardActive,unexpectedExternalProviderAttempt:providerDenied,source:app.sourceHashes,scope:'Actual authenticated business APIs, genuine SQL/service evidence and actual Next advisor replay parsed/rendered by the real B2 client. Provider turns scripted only during receipt preparation outside Next; browser request ID deliberately bound to that completed original receipt. Next external fetches blocked; no API response fixtures or paid provider calls.'},null,2));expect(guardActive).toBe(true);expect(providerDenied).toBe(false);});
+afterAll(async()=>{if(!app)return;await app.close();const log=await readFile(resolve(app.root,'next.log'),'utf8');const guardActive=log.includes('OWNED_REPLAY_FETCH_GUARD_ACTIVE'),providerDenied=log.includes('OWNED_REPLAY_EXTERNAL_FETCH_DENIED');await writeFile(resolve(evidence,'report.json'),JSON.stringify({complete:checks.length===2&&guardActive&&!providerDenied,checks,external,errors,reloadDiagnostics,guardActive,unexpectedExternalProviderAttempt:providerDenied,source:app.sourceHashes,scope:'Actual authenticated business APIs, genuine SQL/service evidence and actual Next advisor replay parsed/rendered by the real B2 client. Provider turns scripted only during receipt preparation outside Next; browser request ID deliberately bound to that completed original receipt. Next external fetches blocked; no API response fixtures or paid provider calls.'},null,2));expect(guardActive).toBe(true);expect(providerDenied).toBe(false);});
 it.each(['chromium','webkit'])('%s renders genuine finance/sales evidence through the combined client and rejects withdrawn replay',async engine=>{
- const browser=await runtime[engine].launch({headless:true}),context=await browser.newContext({viewport:{width:1440,height:900},serviceWorkers:'block'}),page=await context.newPage(),origin=app.url.replace('127.0.0.1','localhost');
+ const browser=await runtime[engine].launch({headless:true});
+ const context=await browser.newContext({viewport:{width:1440,height:900},serviceWorkers:'block'});
+ const origin=app.url.replace('127.0.0.1','localhost');
  let original:{op:'ask';requestId:string;message:string}|undefined,askPosts=0;
  const q=<T=Record<string,unknown>>(text:string,values:readonly unknown[]=[])=>app.database.executor.query<T>({text,values});
  try{
+ const {observeBrowserCell}=await import(pathToFileURL(resolve('scripts/phase-e-browser-qa.mjs')).href);
+ const {verifyReloadFetchDiagnostic}=await import(pathToFileURL(resolve('scripts/browser-reload-diagnostic.mjs')).href);
+ // Accept a WebKit reload diagnostic only with per-browser proof and an observed GET.
+ const execution={engine,navigationDiagnostics:[] as {documentNavigation:{phase:string}}[]};
+ const notificationReload=engine==='webkit'?await verifyReloadFetchDiagnostic(browser):null;
+ const authorityReload=engine==='webkit'?await verifyReloadFetchDiagnostic(browser,{resource:'authority',bothWitnesses:true}):null;
+ const runtimeCell=observeBrowserCell(execution,errors,{
+  reloadDiagnosticVerified:notificationReload?.verified===true,
+  authorityDiagnosticVerified:authorityReload?.verified===true,
+  navigationReadKinds:['notification-read','authority-read'],
+  requireNotificationGetWitness:engine==='webkit',
+  requireAuthorityGetWitness:engine==='webkit',
+ });
+ await runtimeCell.observeContext(context,'primary');
+ const page=await context.newPage();
  await context.route('**/*',async(route:{request():{url():string;method():string;postDataJSON():{op?:string;message?:string}};continue(options?:{postData:string}):Promise<void>;abort():Promise<void>})=>{const request=route.request(),url=new URL(request.url());if(['http:','https:'].includes(url.protocol)&&url.origin!==origin){external.push(url.origin);await route.abort();return;}
  if(original&&url.pathname==='/api/owner/advisor'&&request.method()==='POST'&&request.postDataJSON().op==='ask'){expect(request.postDataJSON().message).toBe(original.message);askPosts++;await route.continue({postData:JSON.stringify(original)});return;}await route.continue();});
- page.on('pageerror',(error:Error)=>errors.push(engine+':'+error.message));page.setDefaultTimeout(20000);
+ page.setDefaultTimeout(20000);
  await page.goto(origin+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(origin+'/app');await page.locator('#desktop-primary-navigation').getByRole('link',{name:'Rondo AI',exact:true}).click();await page.waitForURL(origin+'/app/ai-manager');await page.getByRole('button',{name:'Ask',exact:true}).waitFor();
  const send=(value:unknown):Promise<{status:number;body:BusinessApiResult} >=>page.evaluate(async(command:unknown)=>{const response=await fetch('/api/owner/advisor/business',{method:'POST',headers:{'content-type':'application/json','x-nevora-business-evidence':'1'},body:JSON.stringify(command)});return {status:response.status,body:await response.json()};},value);
  const ok=async(value:unknown)=>{const result=await send(value);expect(result.status,JSON.stringify(result.body)).toBe(200);return result.body;};
@@ -55,6 +73,15 @@ it.each(['chromium','webkit'])('%s renders genuine finance/sales evidence throug
  }
  await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);await page.screenshot({path:resolve(evidence,engine+'-business-answer-390.png'),fullPage:true});
  const catalog=async()=>page.evaluate(async()=>{const r=await fetch('/api/owner/advisor/business',{headers:{'x-nevora-business-evidence':'1'}});return r.json();});let source=(await catalog()).catalog.sources.find((s:{sourceId:string})=>s.sourceId===ids[0]);await ok({op:'withdraw_source',requestId:randomUUID(),sourceId:source.sourceId,expectedRevision:source.revision,digest:source.scopeDigest,acknowledged:true});await page.getByLabel('Your question',{exact:true}).fill(message);const rejected=page.waitForResponse((r:{url():string;request():{method():string}})=>r.url().endsWith('/api/owner/advisor')&&r.request().method()==='POST');await page.getByRole('button',{name:'Ask',exact:true}).click();expect((await rejected).status()).toBe(409);expect(providerTurns).toBe(3);
- source=(await catalog()).catalog.sources.find((s:{sourceId:string})=>s.sourceId===ids[0]);await ok({op:'delete_source',requestId:randomUUID(),sourceId:source.sourceId,expectedRevision:source.revision,digest:source.scopeDigest,acknowledged:true});await page.reload();await page.getByRole('heading',{name:'Rondo AI',exact:true}).waitFor();expect(await page.locator('.be-cite,a[href^="/api/owner/advisor/business/sources/"]').count()).toBe(0);expect(await q('SELECT result FROM owner_advisor_requests WHERE request_id=$1',[original.requestId])).toEqual([{result:null}]);expect(external).toEqual([]);expect(errors).toEqual([]);checks.push(engine+':'+language);
+ source=(await catalog()).catalog.sources.find((s:{sourceId:string})=>s.sourceId===ids[0]);await ok({op:'delete_source',requestId:randomUUID(),sourceId:source.sourceId,expectedRevision:source.revision,digest:source.scopeDigest,acknowledged:true});
+ await page.reload();
+ await page.getByRole('heading',{name:'Rondo AI',exact:true}).waitFor();
+ expect(await page.locator('.be-cite,a[href^="/api/owner/advisor/business/sources/"]').count()).toBe(0);
+ expect(await q('SELECT result FROM owner_advisor_requests WHERE request_id=$1',[original.requestId])).toEqual([{result:null}]);
+ expect(external).toEqual([]);
+ reloadDiagnostics.push(...execution.navigationDiagnostics);
+ expect(execution.navigationDiagnostics.every(event=>event.documentNavigation.phase==='reload-requested')).toBe(true);
+ expect(errors).toEqual([]);
+ checks.push(engine+':'+language);
  }finally{await context.close();await browser.close();}
 });
