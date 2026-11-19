@@ -245,7 +245,12 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
     expect(await page.locator('#reset-error').evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
    }
    await page.screenshot({path:evidence+'/'+engine+'-reset-es.png',fullPage:true});
-   const next='a distant orchestra carries through the winter valley';await page.locator('#reset-password').fill(next);await page.locator('#reset-confirm-password').fill(next);await page.locator('button[type="submit"]').click();await page.locator('a[href="/login"]').first().waitFor();
+   step=engine+' successful reset and single-use proof';
+   const next='a distant orchestra carries through the winter valley';await page.locator('#reset-password').fill(next);await page.locator('#reset-confirm-password').fill(next);
+   const [saved]=await Promise.all([page.waitForResponse(origin+'/api/auth/reset-access'),page.locator('button[type="submit"]').click()]);
+   expect(saved.status()).toBe(200);expect(await saved.json()).toEqual({state:'reset'});
+   await page.getByRole('heading',{name:'Contraseña actualizada',exact:true,level:1}).waitFor();
+   await page.locator('a[href="/login"]').first().waitFor();
    const replay=await context.request.post(origin+'/api/auth/reset-access',{headers:{Origin:origin,'x-nevora-recovery':'1'},data:{proof:resetProof,password:next}});expect(replay.status()).toBe(400);
    await page.goto(origin+'/login');await page.locator('#login-employee-id').fill(id);await page.locator('#login-password').fill(next);await page.locator('button[type="submit"]').click();await page.waitForURL('**/app',{timeout:45000});
    await expect.poll(()=>smtp.messages.filter((m:{recipient:string})=>m.recipient.includes(engine+'@example.invalid')).length).toBe(3);
