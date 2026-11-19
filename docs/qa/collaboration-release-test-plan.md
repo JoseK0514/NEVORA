@@ -211,6 +211,8 @@ The `a87826f6` handoff reports that a Manager with a grant at one location canno
 
 On the updated scope, 27 focused unit tests passed. The branch push's durable commerce job timed out while installing the fictional `SELF_SERVICE` company. The exact case passed in isolation in 2.57 seconds with its original five-second deadline. Check the full onboarding gate on the qualification tag. [Collaboration CI](https://github.com/JoseK0514/NEVORA/actions/runs/44635911252/job/135954238714)
 
+Candidate `9ebb4fac` passed validation, Mobile Access, and the full onboarding backend gate. The Owner Advisor gate recorded a WebKit access-control diagnostic on the new Owner Home first-week GET in the business-lifetime scenario. The scenario now waits for the real setup response to finish and confirms its ready state before leaving Home. It still asserts that no browser errors occurred. [Owner Advisor job](https://github.com/JoseK0514/NEVORA/actions/runs/44638125275/job/135961879734)
+
 ```bash
 NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE="$NEVORA_QA_ROOT/owner-advisor" \
   node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts \
