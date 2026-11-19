@@ -191,9 +191,9 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    await page.close();await context.clearCookies();page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',(e:Error)=>errors.push(engine+': '+step+': '+e.name+' '+e.message));await context.addCookies([{name:'nv-lang',value:'en',url:origin}]);
    await page.goto(origin+'/activate#proof='+proof);await page.locator('#activation-password').waitFor();expect(new URL(page.url()).hash).toBe('');
    for(const width of [1440,320]){
-    await page.setViewportSize({width,height:1000});
+    await page.setViewportSize({width,height:1000});await expect.poll(()=>page.locator('.ma-passwords').count()).toBe(width<768?1:0);
     const candidate='a fictional oversized phrase '.repeat(50);
-    for(const selector of ['#activation-password','#activation-confirm-password']){await page.locator(selector).focus();await page.locator(selector).press('ControlOrMeta+A');await page.keyboard.insertText(candidate);expect(await page.locator(selector).inputValue()).toBe(candidate);}
+    for(const selector of ['#activation-password','#activation-confirm-password']){await expect.poll(()=>page.locator(selector).isEnabled()).toBe(true);await page.locator(selector).focus();await expect.poll(()=>page.locator(selector).evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.locator(selector).press('ControlOrMeta+A');await page.keyboard.insertText(candidate);await expect.poll(()=>page.locator(selector).inputValue()).toBe(candidate);}
     await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#activation-error,#activation-policy-error').innerText()).toBe(passwordRejectionMessage('en','too_long'));
    }
    for(const lang of ['en','es'] as const){
@@ -215,8 +215,8 @@ it('PB-026 and PB-022 enforce new passwords and render bilingual company emails 
    const resetProof=/#proof=([A-Za-z0-9_-]{43})/.exec(resetMail.body.replace(/=\r?\n/g,'').replace(/=3D/g,'='))?.[1];if(!resetProof)throw Error('Missing owned reset proof');
    await page.goto(origin+'/reset-access#proof='+resetProof);await page.locator('#reset-password').waitFor();
    for(const width of [1440,320]){
-    await page.setViewportSize({width,height:1000});const candidate='a fictional oversized phrase '.repeat(50);
-    for(const selector of ['#reset-password','#reset-confirm-password']){await page.locator(selector).focus();await page.locator(selector).press('ControlOrMeta+A');await page.keyboard.insertText(candidate);expect(await page.locator(selector).inputValue()).toBe(candidate);}
+    await page.setViewportSize({width,height:1000});await expect.poll(()=>page.locator('.ma-passwords').count()).toBe(width<768?1:0);const candidate='a fictional oversized phrase '.repeat(50);
+    for(const selector of ['#reset-password','#reset-confirm-password']){await expect.poll(()=>page.locator(selector).isEnabled()).toBe(true);await page.locator(selector).focus();await expect.poll(()=>page.locator(selector).evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.locator(selector).press('ControlOrMeta+A');await page.keyboard.insertText(candidate);await expect.poll(()=>page.locator(selector).inputValue()).toBe(candidate);}
     await page.locator('button[type="submit"]').click();await expect.poll(()=>page.locator('#reset-error').innerText()).toContain(passwordRejectionMessage('es','too_long'));
    }
    for(const [candidate,reason] of [['NorthHarborFoods2026!','company_name'],['qwertyuiopasdfgh','breached']] as const){

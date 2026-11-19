@@ -121,7 +121,7 @@ try{
   await done(t);await verify(t);await startBreak(t);await success(t,'Break start');await done(t);
   await verify(t);await t.getByRole('button',{name:'End break',exact:true}).waitFor();await shot(t,engine+'-on-break');
   await t.getByRole('button',{name:'End break',exact:true}).click();await success(t,'Break end');await done(t);
-  await verify(t);await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Cancel clock-out',exact:true}).click();
+  await verify(t);await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Stay clocked in',exact:true}).click();
   assert.equal(await count(),before+3);await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Confirm clock out',exact:true}).click();await success(t,'Clock out');await done(t);
   assert.equal(await count(),before+4);checked(engine+': all four transitions persist; canceled Clock out does not write');
   // A lost response must not create a replacement command, even after a page reload.

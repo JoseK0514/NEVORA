@@ -118,8 +118,8 @@ test('published policy admits only the three normal heads plus the approved30-da
   const archives=new Map(i.sources.filter(source=>source.archiveRef).map(source=>[source.archiveRef,source.sha]));
   assert.deepEqual(compareSources(i,actual,()=>true,archives),[]);
   const live=new Map(published.sources.filter(source=>!source.archiveRef).map(source=>[source.branch,source.sha]));
-  assert.deepEqual(compareSources(published,live,()=>true,archives),['Remote branch ceiling exceeded: 5 > 4']);
-  for(const name of ['AI-owner','claude/employee-mobile-phase2-20261027','codex/release1-db-rehearsal-20261101']) {
+  assert.deepEqual(compareSources(published,live,()=>true,archives),[]);
+  for(const name of ['AI-owner','claude/employee-mobile-phase2-20261027','codex/release1-db-rehearsal-20261101','codex/nevora-password-emails-20261117']) {
     const retired=i.sources.find(source=>source.branch===name);
     assert.ok(retired?.archiveRef,`Missing recoverable archive for ${name}`);
     actual.set(name,retired.sha);
