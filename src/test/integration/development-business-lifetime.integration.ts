@@ -50,7 +50,7 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
   const release=()=>page.evaluate(()=>{const wire=(window as any).__businessWire;wire.mode='normal';wire.held.splice(0).forEach((done:()=>void)=>done());});
   const settle=()=>page.evaluate(()=>new Promise<void>(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>done()))));
   await visit(library);await privateName().first().waitFor();await wire('hold-catalog','blur');await settle();check('blur clears catalog',await privateName().count()===0);
-  await wire('hold-catalog','focus');await page.waitForFunction(()=>(window as any).__businessWire.held.length>0);await wire('hold-catalog','blur');await release();await settle();check('late catalog cannot revive retired generation',await privateName().count()===0);
+  await wire('hold-catalog','online');await page.waitForFunction(()=>(window as any).__businessWire.held.length>0);await wire('hold-catalog','blur');await release();await settle();check('late catalog cannot revive retired generation',await privateName().count()===0);
   await visit(library);await privateName().first().waitFor();await wire('fail-catalog','online');await settle();check('failed catalog refresh clears old private catalog',await privateName().count()===0);
   await visit(library);await privateName().first().waitFor();await page.evaluate(()=>{const wire=(window as any).__businessWire;wire.mode='hold-catalog';wire.offset=-86400000;});
   await page.waitForTimeout(4300);check('monotonic catalog expiry survives backward wall clock',await privateName().count()===0);await release();
@@ -64,7 +64,7 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
   await visit(library+'?view=figures');await page.locator('#be-q-domain').selectOption('FINANCE');await page.locator('#be-q-time').selectOption('HISTORICAL');await page.locator('#be-q-first').fill('2026-01-01');await page.locator('#be-q-last').fill('2026-01-31');await page.getByRole('button',{name:'Show figures',exact:true}).click();await page.waitForFunction(()=>(window as any).__businessWire.reads.some((c:any)=>c.op==='query_finance'));await page.locator('#be-figures [aria-busy="true"]').waitFor({state:'detached'});
   await page.locator('#be-q-domain').selectOption('SALES');await wire('hold-query');await page.waitForTimeout(3300);
   const queries=await page.evaluate(()=>(window as any).__businessWire.reads.filter((c:any)=>c.op.startsWith('query_')));check('unsent domain edits cannot change a renewal',queries.length>=2&&queries.every((command:unknown)=>JSON.stringify(command)===JSON.stringify(queries[0])));
-  await page.getByRole('button',{name:'Show figures',exact:true}).click();await wire('normal');await page.waitForTimeout(700);
+  await wire('normal');await page.getByRole('button',{name:'Show figures',exact:true}).click();await page.waitForTimeout(700);
   const resubmitted=await page.evaluate(()=>(window as any).__businessWire.reads.filter((c:any)=>c.op.startsWith('query_')));check('deliberate resubmit supersedes pending renewal',resubmitted.at(-1).op==='query_sales'&&resubmitted.at(-1).requestId!==queries[0].requestId);await release();await settle();
   check('new submitted domain stays selected',await page.locator('#be-q-domain').inputValue()==='SALES');
   expect(errors).toEqual([]);expect(checks.filter(item=>!item.passed)).toEqual([]);complete=true;
