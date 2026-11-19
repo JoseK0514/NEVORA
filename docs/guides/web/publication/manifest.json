@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-18",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "3f0b5a9d584734fe1cbf62769cd03fc82617b9a0",
-  "applicationHash": "d31ae70f71c45e93e459efb67f9d541b8e7ef6778ac9beb6a955b596ea3c3804",
+  "sourceSha": "1462b75fa6bd48f3065027b29b651ddc12b13739",
+  "applicationHash": "02c26c526130ded62d810bcfbbb2bac8b79ba04818af099a4df55813ff66ee40",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "8799983c53c4af7debb08cab54b6337c35f3a7dbe1abcb3f8c218c9c400a7e53"
@@ -71,7 +71,7 @@
         },
         {
           "path": "src/lib/payroll/service.ts",
-          "sha256": "a81aa78ec62d937dc0724e5f68ff676284cae2ecc4a9417d0df6fa38e2e0fe75"
+          "sha256": "d028e3cb97126fed241c69e931d2b7ed7b639f20c2c68631e44077a6e8f9b3cb"
         },
         {
           "path": "src/lib/payroll/access.ts",
@@ -103,11 +103,11 @@
         },
         {
           "path": "src/lib/payroll/calculation-mode.ts",
-          "sha256": "c94459692143f60495f66ad6c82ac991bc1fbddbfd2e01c02cb3176eb7c50443"
+          "sha256": "bac072790f0f619ee3f4adc3fbc3d43f647ee049fad5a8242d9f7f9cb2c56962"
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "e193a312e1690bdb733c1ed4d1f01adc92d664fdc821d9aa47e3441d3177df71"
+          "sha256": "d6841fdcb0529ec26bf994eea8e8b92a568ea5fa84a41c43483072a1f0b4c62f"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -204,7 +204,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "1910c8bc4396959a0b2c19bba27eb1886de19b48365d5db34717422adf953ab9",
+        "sha256": "b04cb5882a1749052cbf47fa93067f0c2247d017d6434e5c648e8a4b93de2c52",
         "pageCount": 5
       }
     },
@@ -250,7 +250,7 @@
         },
         {
           "path": "src/lib/payroll/service.ts",
-          "sha256": "a81aa78ec62d937dc0724e5f68ff676284cae2ecc4a9417d0df6fa38e2e0fe75"
+          "sha256": "d028e3cb97126fed241c69e931d2b7ed7b639f20c2c68631e44077a6e8f9b3cb"
         },
         {
           "path": "src/lib/payroll/native/scope.ts",
@@ -327,7 +327,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "c21accb063bab19c9a7e428fdceae1ca5c14babb0980e3e286d72deed187a988",
+        "sha256": "a9698a092ca788b7200e2bc57bb3ee4b71b167349cc21f472ca3d6bf095d7050",
         "pageCount": 3
       }
     },
@@ -336,7 +336,7 @@
       "title": "NEVORA Employee web guide",
       "markdown": {
         "path": "docs/guides/web/employee.md",
-        "sha256": "a797ded6381b347363cb6967a4d9efc8edd164c064df331590e839d535e2d3cd"
+        "sha256": "f51baa8483768ffd9edafa674b0f2b2fe0756c2718305a9f194b9d8d490ac4d1"
       },
       "evidence": [
         {
@@ -349,7 +349,7 @@
         },
         {
           "path": "src/app/activate/activation-invitation.tsx",
-          "sha256": "b5b2d81e1d198fecc64048040c91aa4760ac9ce70a92cc80cdc0a5c446d34905"
+          "sha256": "adfedbfaeea6f7a1fee9cb8d509cd974e604600382fc99f5f448c458e3691af7"
         },
         {
           "path": "src/app/app/schedule/page.tsx",
@@ -422,7 +422,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "243b02d3261c85edb2ea41da9ec8c3886599cab8833df77c344051bad3431949",
+        "sha256": "bcc1c2b0bd19caf4c9884d5134fc791c05f6d5b432427785f19b8262dc6c053f",
         "pageCount": 3
       }
     },
@@ -565,7 +565,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "b99c420d2431f2f18ba387339b632dc1f7b32034052bfce285e82045a1a806c6",
+        "sha256": "3c1fda0cc511643343550a5d0039d9f54f8ca19ae0bf1bbe035861cefc3686cd",
         "pageCount": 4
       }
     },
@@ -595,7 +595,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "94066c92fac8a0a4a5316f493dfdd8c798e6986cae4aa522bb06ed7de958d816"
+          "sha256": "3b5c808812ffbc766c0043be243d22707aefd372193d61223fce0da62bb112e3"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -635,7 +635,7 @@
         },
         {
           "path": "db/migrations/order.ts",
-          "sha256": "24f6e974bafec8f61a5f49c5121c3a639831098e99dd54a8caf2c01ee067c31f"
+          "sha256": "5d717d078e75b7cdc6ff4fd89544f108a467f17716905bffcfbbe616c4dced55"
         },
         {
           "path": "scripts/release-build.mjs",
@@ -679,11 +679,11 @@
         },
         {
           "path": "src/lib/payroll/calculation-mode.ts",
-          "sha256": "c94459692143f60495f66ad6c82ac991bc1fbddbfd2e01c02cb3176eb7c50443"
+          "sha256": "bac072790f0f619ee3f4adc3fbc3d43f647ee049fad5a8242d9f7f9cb2c56962"
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "e193a312e1690bdb733c1ed4d1f01adc92d664fdc821d9aa47e3441d3177df71"
+          "sha256": "d6841fdcb0529ec26bf994eea8e8b92a568ea5fa84a41c43483072a1f0b4c62f"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -808,7 +808,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "7a68d76b4d2a2ebbf2c771eb6bb2a6206f622442d44e783f209bada685669cca",
+        "sha256": "4bb09f8e6e9995f94b618ea506d3eef33094f93b78316c39c898ca6c4d1dda13",
         "pageCount": 6
       }
     },
@@ -817,7 +817,7 @@
       "title": "NEVORA web operations guide",
       "markdown": {
         "path": "docs/guides/web/operations.md",
-        "sha256": "a5dfb061a16b5060e9fca902914c3608ae0fed92e46aa9f1b177946f1766e624"
+        "sha256": "db0c656dd83a1d02ec49736eece181944ae4e6156e57f23d78d048f727023f5b"
       },
       "evidence": [
         {
@@ -910,11 +910,11 @@
         },
         {
           "path": "src/lib/payroll/calculation-mode.ts",
-          "sha256": "c94459692143f60495f66ad6c82ac991bc1fbddbfd2e01c02cb3176eb7c50443"
+          "sha256": "bac072790f0f619ee3f4adc3fbc3d43f647ee049fad5a8242d9f7f9cb2c56962"
         },
         {
           "path": "src/lib/auth/recovery.server.ts",
-          "sha256": "e193a312e1690bdb733c1ed4d1f01adc92d664fdc821d9aa47e3441d3177df71"
+          "sha256": "d6841fdcb0529ec26bf994eea8e8b92a568ea5fa84a41c43483072a1f0b4c62f"
         },
         {
           "path": "docs/handoffs/2026-11-15-inspection-backend-remaining.md",
@@ -983,7 +983,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "5387115312667482bbd3484c3337119abd0cbeda3829d56ffc9ff321bfe2d28c",
+        "sha256": "1c7539c903fa9866664122fdb7b8c9e0125dac55b4afd9136503e8975411a04d",
         "pageCount": 6
       }
     }
