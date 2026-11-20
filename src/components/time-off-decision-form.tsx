@@ -15,8 +15,10 @@ import "./time-off-decision-form.css";
  *
  * The action, its fields and its redirects are unchanged: a redirect or not-found from the server still reaches Next's
  * router. Used by the request page, the Waiting list and Things to do. */
-export function TimeOffDecisionForm({ className, label, checkHref, children }: {
+export function TimeOffDecisionForm({ className, label, checkHref, waitingLine = "This request is still waiting. Decide again.", children }: {
   className?: string; label?: string;
+  /** What the form says when the check finds the request unchanged (cancelling an approval: "still approved"). */
+  waitingLine?: string;
   /** The request's own page, opened by the check. Leave it out on that page: the check reads it again in place. */
   checkHref?: string;
   children: ReactNode;
@@ -46,7 +48,7 @@ export function TimeOffDecisionForm({ className, label, checkHref, children }: {
         The answer didn’t arrive, so it may already be saved. Check the request before you decide again.
       </BCallout>
     </div> : <>
-      {waiting ? <p className="tod-waiting" role="status">This request is still waiting. Decide again.</p> : null}
+      {waiting ? <p className="tod-waiting" role="status">{waitingLine}</p> : null}
       {children}
     </>}
   </form>;

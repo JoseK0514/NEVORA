@@ -47,6 +47,8 @@ const MANAGEMENT: Entry[] = [
   ["/app/employees/new", { ...detail, cards: [{ head: true, lines: 4 }] }],
   ["/app/employees/import", form],
   // Scheduling restrictions (U02): back row, title and the person's name (band 224), then the week card and one more.
+  // PTO screens: one person's time off balance (balances, then the history).
+  [/^\/app\/employees\/[^/]+\/time-off$/, { ...detail, title: "Time off balance", cards: [{ head: true, rows: 2 }, { head: true, rows: 3 }] }],
   // SCRUM-214: one person's pay rates (rates now, then the history).
   [/^\/app\/employees\/[^/]+\/pay$/, { ...detail, title: "Pay rate", cards: [{ head: true, rows: 3 }, { head: true, rows: 2 }] }],
   [/^\/app\/employees\/[^/]+\/restrictions$/, { ...detail, title: "When they can be scheduled", cards: [{ head: true, rows: 7 }, { head: true, lines: 2 }] }],
@@ -73,6 +75,8 @@ const MANAGEMENT: Entry[] = [
   ["/app/settings/clocker/photos", { ...detail, title: "Punch photos", cards: [{ lines: 2, rows: 5 }] }],
   // Shift matching: one card with the grace field, its help and a note.
   ["/app/settings/clocker/matching", { ...detail, title: "Shift matching", cards: [{ lines: 3 }] }],
+  // PTO screens: Settings › Time off policies (the policies card with its rows).
+  ["/app/settings/time-off", { ...detail, title: "Time off policies", cards: [{ head: true, rows: 2 }] }],
   ["/app/settings/clocker/pins", { title: "Clocker PINs", back: true, strip: true, band: 264, frame: "read", lift: false, cards: [{ head: true, rows: 6, avatar: true }] }],
   ["/app/settings/clocker", { ...detail, title: "Clocker tablets", cards: [{ head: true, rows: 2, avatar: true }] }],
   [/^\/app\/settings\/.+/, form],

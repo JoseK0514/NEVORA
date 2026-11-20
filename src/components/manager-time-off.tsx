@@ -3,6 +3,8 @@ import { readPortalLanguage } from "@/lib/activation/language.server";
 import { listEmployees } from "@/lib/data/employees";
 import { ownerNames } from "@/components/owner-only-notice";
 import { permissionCopy } from "@/components/workforce/permission-copy";
+import { CancelApproval } from "@/components/time-off-admin/cancel-approval";
+import { ptoCopy } from "@/components/time-off-admin/copy";
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import { TimeOffReviewActions } from "@/components/time-off-review-actions";
@@ -160,8 +162,8 @@ function DecidedReview({ origin, decided, timeZone }: { origin: Origin; decided:
   </QuietPage>;
 }
 
-export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, filter, item }: {
-  tab?: string; error?: string; reviewed?: string; requestId?: string; from?: string; filter?: string; item?: string;
+export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, filter, item, cancelled }: {
+  tab?: string; error?: string; reviewed?: string; requestId?: string; from?: string; filter?: string; item?: string; cancelled?: string;
 }) {
   await requireRoles(MANAGER_ROLES);
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
@@ -205,6 +207,8 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
     : await listWorkforceLeave(proof, "PENDING").then(read => read.state === "ready" ? read.data.length : 0).catch(() => 0);
   const zone = selected.status === "PENDING" ? "UTC" : await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
   const decidedLine = (request: object) => selected.status === "PENDING" ? null : decisionLine(selected.status, request, zone);
+  let ptoLang: "en" | "es" = "en";
+  if (selected.id === "approved") { try { ptoLang = (await readPortalLanguage(proof)).language; } catch { /* English */ } }
 
   return (<ScopedReadFrame observation={source}>
     <QuietPage className="q-timeoff">
@@ -215,6 +219,7 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
         label: item.id === "pending" && waiting ? `Waiting (${waiting})` : item.label }))} />
       {error ? <p className="q-error q-first" role="alert">{error === "pto-balance" ? PTO_BALANCE : REVIEW_REFUSED}</p> : null}
       {reviewed ? <p className="q-help q-first" role="status">Decision saved.</p> : null}
+      {cancelled && selected.id === "approved" ? <p className="q-help q-first" role="status" lang={ptoLang}>{ptoCopy(ptoLang).cancelledNote}</p> : null}
       {/* Closing F1 (NV-077): each waiting row carries the staffing check and the compact Decline / Approve, as on Things to
         do (this replaces Release 1's "no decision in the list"; the row still opens the request with its shifts). */}
       {selected.id === "pending" ? (requests.length ? <TimeOffWaitingList requests={requests.map(request => {
@@ -223,12 +228,14 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
           when: whenLabel(request), ago: sent ? agoLabel(sent, source.observedAt) : undefined,
           aged: sent ? Date.parse(source.observedAt) - Date.parse(sent) >= 86_400_000 : undefined, href: `/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}` };
       })} /> : <p className="q-empty q-first">You’re all caught up.</p>)
-      : requests.length ? <QuietList label={`${selected.label} time off`} style={{ marginTop: 16 }}>{requests.map(request => (
-          <QuietRow key={request.id} avatar={<RequestFace name={request.employeeName} initials={initialsOf(request.employeeName)} />} title={request.employeeName}
+      : requests.length ? <QuietList label={`${selected.label} time off`} style={{ marginTop: 16 }}>{requests.map(request => {
+          const row = <QuietRow key={request.id} bare={selected.id === "approved"} avatar={<RequestFace name={request.employeeName} initials={initialsOf(request.employeeName)} />} title={request.employeeName}
             detail={decidedLine(request) ? <>{whenLabel(request)}<span className="q-rt__line">{decidedLine(request)}</span></> : whenLabel(request)}
             // Review B5 (NV-268): a decided request carries its state as a chip (green approved, grey declined).
-            value={<CorpPill tone={selected.id === "approved" ? "green" : "neutral"}>{selected.id === "approved" ? "Approved" : "Declined"}</CorpPill>} />
-        ))}</QuietList>
+            value={<CorpPill tone={selected.id === "approved" ? "green" : "neutral"}>{selected.id === "approved" ? "Approved" : "Declined"}</CorpPill>} />;
+          // PTO screens: an approval can be cancelled; the server gives the paid time back and decides who may do it.
+          return selected.id === "approved" ? <li key={request.id} className="pto-approved">{row}<CancelApproval requestId={request.id} name={request.employeeName} when={whenLabel(request)} lang={ptoLang} /></li> : row;
+        })}</QuietList>
       : <p className="q-empty q-first">{`No ${selected.label.toLowerCase()} time off yet.`}</p>}
     </QuietPage>
   </ScopedReadFrame>);

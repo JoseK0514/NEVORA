@@ -159,6 +159,7 @@ export default async function EmployeeProfilePage({
           {/* Scheduling restrictions (U02): the times agreed with this person, kept apart from the availability they send. */}
           <li><CorpRow href={`${base}/restrictions`} title="When they can be scheduled" label={`When ${name} can be scheduled`} chevron /></li>
           {actor.role === "OWNER" ? <li><CorpRow href={`${base}/pay`} title="Pay rate" label={`Pay rate for ${name}`} chevron /></li> : null}
+          {actor.role === "OWNER" ? <li><CorpRow href={`${base}/time-off`} title="Time off balance" label={`Time off balance for ${name}`} chevron /></li> : null}
         </CorpRows>
       </CorpCard>
       <CorpCard as="div" ariaLabel="Access and sign-in">

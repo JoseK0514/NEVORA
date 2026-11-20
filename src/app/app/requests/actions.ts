@@ -92,7 +92,7 @@ export async function reviewTimeOffAction(formData: FormData) {
     reviewed=await reviewTimeOffRequest({requestId,managerId:session.id,proof,status:decision});
   } catch(error) {
     if (error instanceof Error && error.message === "pto_insufficient_balance") redirect("/app/requests?tab=pending&error=pto-balance");
-    if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))redirect('/app/requests?tab=team&error=review');
+    if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))redirect(decision==="CANCELLED"?'/app/requests?tab=approved&error=review':'/app/requests?tab=team&error=review');
     throw error;
   }
 
@@ -103,7 +103,8 @@ export async function reviewTimeOffAction(formData: FormData) {
   if (!reviewed) redirect(origin ? `/app/requests?tab=pending&error=review&requestId=${encodeURIComponent(requestId)}&from=${origin}` : "/app/requests?tab=pending&error=review");
 
   revalidatePath("/app/requests");
-  if (decision === "CANCELLED") redirect("/app/requests?tab=team&cancelled=1");
+  // PTO screens: a cancelled approval returns to the Approved list, which says the time went back to the balance.
+  if (decision === "CANCELLED") redirect("/app/requests?tab=approved&cancelled=1");
   if (origin) {
     revalidatePath("/app/inbox");
     const outcome = decision === "APPROVED" ? "approved" : "declined";
