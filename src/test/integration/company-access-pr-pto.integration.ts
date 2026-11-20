@@ -191,3 +191,23 @@ it('posts sick leave on its own during a documented probationary period', async 
   });
   expect(await balances()).toEqual([{ employee_id: 'target', policy_code: 'SICK', minutes: 480 }]);
 });
+
+it('refuses an accrual if the employment dates change between calculation and posting', async () => {
+  const ctx = await setup();
+  const timecard = await ctx.finalized('target', 9600);
+  const original = f.db.executor;
+  let changed = false;
+  f.db.executor = {
+    ...original,
+    async transaction(statements, signal) {
+      if (statements.some(statement => statement.text.includes('pto_service_dates_changed'))) {
+        changed = true;
+        await f.q("UPDATE employees SET hire_date=hire_date+1 WHERE id='target'");
+      }
+      return original.transaction(statements, signal);
+    },
+  };
+  expect(await request('post', ctx, timecard, ctx.evidence)).toEqual({ status: 409, body: { state: 'conflict' } });
+  expect(changed).toBe(true);
+  expect(await balances()).toEqual([]);
+});

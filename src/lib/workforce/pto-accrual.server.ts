@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { OperationalAuthorizationError } from '../company-access/operational-scope.server';
+import { employeeServiceDatesGuard, finalizedTimecardServiceDates, type EmployeeServiceDates } from '../data/employees';
 import { neonNotificationExecutor } from '../data/sql-executor';
 import { mutationTransaction, readTransaction } from '../data/transaction-composition';
 import { getWorkspace } from '../data/workspaces';
@@ -22,7 +23,7 @@ type AccrualCommand = {
 type StatutoryCommand = AccrualCommand & { action: 'preview' | 'post'; evidence: PuertoRicoAccrualEvidence };
 type FinalizedSource = {
   snapshot: unknown; occurredAt: string; employeeId: string; startDate: string; endDate: string;
-  hireDate: string | null; terminationDate: string | null; asOf: string;
+  asOf: string;
 };
 type AccrualEntry = {
   policyCode: 'VACATION' | 'SICK';
@@ -47,7 +48,6 @@ const postAccrual = `
     JOIN employees e ON e.id=t.employee_id JOIN locations home ON home.id=e.primary_location_id
     WHERE t.workspace_id=$1 AND home.workspace_id=$1 AND t.operation_id=$2 AND t.action='FINALIZE'
     AND ($9::jsonb IS NULL OR (w.time_zone='America/Puerto_Rico'
-      AND e.hire_date IS NOT DISTINCT FROM $10::date AND e.termination_date IS NOT DISTINCT FROM $11::date
       AND extract(year FROM t.end_date)=extract(year FROM (clock_timestamp() AT TIME ZONE w.time_zone)::date)))
   ), prior AS (
     SELECT a.* FROM pto_timecard_accrual_revisions a JOIN source t
@@ -90,7 +90,7 @@ const postAccrual = `
         WHERE j.workspace_id=t.workspace_id AND j.employee_id=t.employee_id AND j.policy_code=p.code) AS balance
     FROM source t JOIN pto_policy_revisions p ON t.workspace_id=p.workspace_id
     LEFT JOIN pinned old ON old.policy_code=p.code
-    WHERE p.enabled AND ((p.code='VACATION' AND p.id=$4 AND NOT $12::boolean) OR (p.code='SICK' AND p.id=$5))
+    WHERE p.enabled AND ((p.code='VACATION' AND p.id=$4 AND NOT $10::boolean) OR (p.code='SICK' AND p.id=$5))
       AND (old.policy_id IS NULL OR old.policy_id=p.id)
       AND ($9::jsonb IS NULL OR old.policy_id IS NOT NULL OR EXISTS (
         SELECT 1 FROM pto_policies_current cur WHERE cur.workspace_id=p.workspace_id AND cur.id=p.id))
@@ -111,8 +111,8 @@ const postAccrual = `
     SELECT manual_credit, carryover,
       ($9::jsonb IS NOT NULL AND EXISTS (SELECT 1 FROM changes WHERE change_minutes<0)) AS downward,
       NOT incompatible AND (SELECT count(*) FROM source)=1
-        AND (SELECT count(*) FROM changes)+(SELECT count(*) FROM prior WHERE NOT $12::boolean OR policy_code='SICK')
-          = CASE WHEN $12::boolean THEN 1 ELSE 2 END
+        AND (SELECT count(*) FROM changes)+(SELECT count(*) FROM prior WHERE NOT $10::boolean OR policy_code='SICK')
+          = CASE WHEN $10::boolean THEN 1 ELSE 2 END
         AND NOT EXISTS (SELECT 1 FROM changes WHERE balance+change_minutes NOT BETWEEN 0 AND 2147483647)
         AS available
     FROM blocked
@@ -126,7 +126,7 @@ const postAccrual = `
       CASE WHEN c.correcting THEN 'Finalized timecard correction' ELSE 'Finalized timecard accrual' END,
       $6,CASE WHEN NOT c.correcting THEN $3::integer END
     FROM changes c CROSS JOIN source t CROSS JOIN gate g
-    WHERE $13::boolean AND g.available AND NOT (g.downward OR g.manual_credit OR g.carryover) AND c.change_minutes<>0
+    WHERE $11::boolean AND g.available AND NOT (g.downward OR g.manual_credit OR g.carryover) AND c.change_minutes<>0
     RETURNING policy_code,id
   ), saved AS (
     INSERT INTO pto_timecard_accrual_revisions(workspace_id,employee_id,timecard_operation_id,timecard_revision,
@@ -134,12 +134,12 @@ const postAccrual = `
     SELECT t.workspace_id,t.employee_id,t.operation_id,t.revision,t.start_date,t.end_date,
       c.policy_id,c.policy_code,$3,c.award_minutes,c.change_minutes,j.id,$6,$9::jsonb
     FROM changes c LEFT JOIN journal j USING (policy_code) CROSS JOIN source t CROSS JOIN gate g
-    WHERE $13::boolean AND g.available AND NOT (g.downward OR g.manual_credit OR g.carryover)
+    WHERE $11::boolean AND g.available AND NOT (g.downward OR g.manual_credit OR g.carryover)
     RETURNING policy_code,policy_id,qualifying_minutes,award_minutes,change_minutes,ledger_entry_id
   ), results AS (
     SELECT policy_code,policy_id,qualifying_minutes,award_minutes,change_minutes,ledger_entry_id FROM prior
     UNION ALL SELECT * FROM saved
-    UNION ALL SELECT policy_code,policy_id,$3::integer,award_minutes,change_minutes,NULL::uuid FROM changes WHERE NOT $13::boolean
+    UNION ALL SELECT policy_code,policy_id,$3::integer,award_minutes,change_minutes,NULL::uuid FROM changes WHERE NOT $11::boolean
   )
   SELECT g.available,g.downward,g.manual_credit AS "manualCredit",g.carryover,COALESCE((
     SELECT jsonb_agg(jsonb_build_object('policyCode',policy_code,'policyId',policy_id,
@@ -171,18 +171,19 @@ async function runTimecardAccrual(proof: SessionMutationProof, command: AccrualC
     ...readGuards,
     {
       text: `SELECT t.snapshot,t.occurred_at::text AS "occurredAt",t.employee_id AS "employeeId",
-        t.start_date::text AS "startDate",t.end_date::text AS "endDate",e.hire_date::text AS "hireDate",
-        e.termination_date::text AS "terminationDate",
+        t.start_date::text AS "startDate",t.end_date::text AS "endDate",
         ((clock_timestamp() AT TIME ZONE w.time_zone)::date)::text AS "asOf"
         FROM timecard_revisions t JOIN workspaces w ON w.id=t.workspace_id
         JOIN employees e ON e.id=t.employee_id JOIN locations home ON home.id=e.primary_location_id
         WHERE t.workspace_id=$1 AND home.workspace_id=$1 AND t.operation_id=$2 AND t.action='FINALIZE'`,
       values: [workspace.id, timecardOperationId],
     },
+    ...(statutory ? [finalizedTimecardServiceDates(workspace.id, timecardOperationId)] : []),
     ...readGuards.slice(-2),
   ]);
   const source = read[readGuards.length]?.[0] as FinalizedSource | undefined;
-  if (!source) return { state: 'conflict' } as const;
+  const dates = statutory ? read[readGuards.length + 1]?.[0] as EmployeeServiceDates | undefined : undefined;
+  if (!source || (statutory && !dates)) return { state: 'conflict' } as const;
   const card = projectTimecard(source.snapshot, source.occurredAt);
   if (card.issues.length || card.employeeId !== source.employeeId ||
       card.startDate !== source.startDate || card.endDate !== source.endDate) {
@@ -192,8 +193,8 @@ async function runTimecardAccrual(proof: SessionMutationProof, command: AccrualC
   const recordedNanoseconds = BigInt(card.recordedNanoseconds);
   const breakNanoseconds = BigInt(card.breakNanoseconds);
   if (statutory && card.timeZone !== 'America/Puerto_Rico') return review('COVERAGE_UNRESOLVED');
-  const calculation = statutory && calculatePuertoRicoAccrual({
-    ...source, recordedNanoseconds, breakNanoseconds, evidence: statutory.evidence,
+  const calculation = statutory && dates && calculatePuertoRicoAccrual({
+    ...source, ...dates, recordedNanoseconds, breakNanoseconds, evidence: statutory.evidence,
   });
   if (calculation?.state === 'review_required') return calculation;
   const qualifyingMinutes = calculation?.qualifyingMinutes ??
@@ -202,18 +203,27 @@ async function runTimecardAccrual(proof: SessionMutationProof, command: AccrualC
   const vacationDeferred = calculation?.vacationDeferred ?? false;
   const post = statutory?.action !== 'preview';
   const guards = workforceSessionGuards(proof, workspace, true, true);
-  const result = await mutationTransaction(executor, [
+  const locked = [
     ...guards,
     { text: 'SELECT id FROM employees WHERE id=$1 FOR SHARE', values: [source.employeeId] },
-    {
-      text: postAccrual,
-      values: [workspace.id, timecardOperationId, qualifyingMinutes, policyIds.vacation, policyIds.sick, proof.employee.id,
-        calculation?.vacationMinutes ?? null, calculation?.sickMinutes ?? null, evidence, source.hireDate,
-        source.terminationDate, vacationDeferred, post],
-    },
-    ...guards.slice(-2),
-  ]);
-  const row = result[guards.length + 1]?.[0] as {
+    ...(dates ? [employeeServiceDatesGuard(source.employeeId, dates)] : []),
+  ];
+  let result;
+  try {
+    result = await mutationTransaction(executor, [
+      ...locked,
+      {
+        text: postAccrual,
+        values: [workspace.id, timecardOperationId, qualifyingMinutes, policyIds.vacation, policyIds.sick, proof.employee.id,
+          calculation?.vacationMinutes ?? null, calculation?.sickMinutes ?? null, evidence, vacationDeferred, post],
+      },
+      ...guards.slice(-2),
+    ]);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('"pto_service_dates_changed"')) return { state: 'conflict' } as const;
+    throw error;
+  }
+  const row = result[locked.length]?.[0] as {
     entries: AccrualEntry[]; available: boolean; downward: boolean; manualCredit: boolean; carryover: boolean;
   } | undefined;
   if (row?.manualCredit) return review('OPENING_BALANCES_UNRECONCILED');
