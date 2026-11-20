@@ -143,7 +143,7 @@ export default async function SchedulePage({
       const source=await readOperationalSchedule(proof,{weekStart,...(params.location===undefined||params.location==='all'?{}:{locationId:params.location})});
       if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason} scoped/>;
       if(source.authority!==access.authority)return <OperationalUnavailable title="Schedule unavailable" reason="source_changed" scoped/>;
-      return withRepair(<ScopedOperationalSchedule data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
+      return withRepair(<ScopedOperationalSchedule data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}{(await currentPresentation()).modules.marketplace ? <Link href="/app/exchange/open-shifts" className="button secondary">Posted open shifts</Link> : null}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
     }
   }
   async function renderSchedule(){
@@ -388,6 +388,7 @@ export default async function SchedulePage({
                 {/* Review B2 (NV-013): Add shift and Build and publish are reachable from the menu at every width (the grid's
                   hover "+ Add" is a pointer-only shortcut). */}
                 <Link className="nevora-action-menu-item" href={addShiftHref}><strong>Add shift</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                {(await currentPresentation()).modules.marketplace ? <Link className="nevora-action-menu-item" href="/app/exchange/open-shifts"><strong>Posted open shifts</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link> : null}
                 <Link className="nevora-action-menu-item" href={publishHref}><strong>Build and publish</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
                 {/* Review Nov 14 (AR-9): team Availability had no menu entry for an Owner or Manager; it opens here, on the
                   week being planned, before the week is built. */}

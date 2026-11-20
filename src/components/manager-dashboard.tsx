@@ -126,6 +126,7 @@ function dashboardHref(
 
 function revisionSourceLabel(sourceType: string) {
   if (sourceType === "PUBLISH") return "Schedule published";
+  if (sourceType === "OPEN_SHIFT") return "Open shift claimed";
   if (sourceType === "EXCHANGE") return "Shift request applied";
   if (sourceType === "CALLOUT") return "Can’t-work request applied";
   return "Published schedule updated";

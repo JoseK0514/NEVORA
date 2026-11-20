@@ -72,6 +72,8 @@ async function runtimeRoles(client:BootstrapClient,spec:PendingCompanySpec){
    await client.query(`REVOKE UPDATE,DELETE,TRUNCATE ON management_time_closes FROM ${role.name}`);
    await client.query(`REVOKE UPDATE,DELETE ON workforce_permission_revisions,planning_calendar_revisions,pto_policy_revisions,pto_ledger,workforce_setting_operations,pto_timecard_accrual_revisions FROM ${role.name};
      REVOKE INSERT,UPDATE,DELETE ON workforce_permissions_current,pto_policies_current FROM ${role.name}`);
+   await client.query(`REVOKE UPDATE,DELETE ON manager_open_shifts FROM ${role.name};
+     GRANT UPDATE(claimed_by,claimed_at,assignment_id,assignment_visibility,withdrawn_by,withdrawn_at) ON manager_open_shifts TO ${role.name}`);
    await client.query(`REVOKE UPDATE,DELETE ON user_language_preferences FROM ${role.name}; GRANT UPDATE(language) ON user_language_preferences TO ${role.name}`);
    await client.query(`GRANT EXECUTE ON FUNCTION nevora_management_close_source(text,text),nevora_management_close(text,text,text,text,text,text,uuid,text,timestamptz,text,text) TO ${role.name}`);
   }

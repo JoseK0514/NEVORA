@@ -53,7 +53,7 @@ function change(v:unknown):ReportChange{
   return v as ReportChange;
 }
 function publication(v:unknown):ReportPublication{
-  if(!record(v)||!text(v.id)||!positive(v.revisionNumber)||!at(v.createdAt)||!['PUBLISH','EXCHANGE','CALLOUT','MANAGER_MUTATION'].includes(String(v.sourceType)))throw new Error('Invalid publication source');
+  if(!record(v)||!text(v.id)||!positive(v.revisionNumber)||!at(v.createdAt)||!['PUBLISH','EXCHANGE','CALLOUT','MANAGER_MUTATION','OPEN_SHIFT'].includes(String(v.sourceType)))throw new Error('Invalid publication source');
   return v as ReportPublication;
 }
 const ns=(v:string)=>Temporal.Instant.from(v).epochNanoseconds;

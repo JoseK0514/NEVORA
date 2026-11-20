@@ -83,6 +83,7 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
     <BStack>
       {state ?? (enabled === false ? <BCard><BText status>Your workplace doesn’t use shift pickup in NEVORA.</BText></BCard> : <>
         {results}
+        <BCard label="Posted open shifts"><BList><BRow href="/app/exchange/open-shifts" title="Posted open shifts" /></BList></BCard>
         {failed ? <BCard><div className="eb-status"><p className="b-state" role="status">Open shifts couldn’t be checked.</p><BButton kind="quiet" full disabled={refreshing} onClick={onRefresh}>Try again</BButton></div></BCard> : <>
           {rows.length ? <BCard id="b-open-eligible" title="You can pick up" count={rows.length}>
             <BList>{rows.map(row => <OpenShiftRow key={row.shift.id} row={row}/>)}</BList>

@@ -73,6 +73,7 @@ export const CURRENT_MIGRATIONS = [
   '0072_delegated_time_off.sql',
   '0073_pto_timecard_accrual.sql',
   '0074_puerto_rico_pto.sql',
+  '0075_manager_open_shifts.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every
