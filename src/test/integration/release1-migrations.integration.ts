@@ -41,9 +41,10 @@ it('refuses an actual interrupted concurrent index without silently dropping or 
 
 it.each([
  ['release 1 indexes', ['0038_read_path_indexes.sql','0039_native_payroll_setup_records.sql']],
- ['published 30-day Development through 0069', ['0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql']],
- ['Development through 0067', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql']],
- ['workforce installed before the 30-day work', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql']],
+ ['current Development through 0071', ['0072_delegated_time_off.sql']],
+ ['published 30-day Development through 0069', ['0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_delegated_time_off.sql']],
+ ['Development through 0067', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_delegated_time_off.sql']],
+ ['workforce installed before the 30-day work', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0072_delegated_time_off.sql']],
 ] as const)('upgrades %s by exact filename, preserves rows and keeps setup records immutable',async(_label,additions)=>{
  const database=await createDisposableFoundationDatabase({mode:'empty'}),client=new Client({connectionString:database.connectionString});
  try{
@@ -105,7 +106,7 @@ it('upgrades the recorded Development schema and restores both its rollback back
   const before=await state(client),oldBackup=join(directory,'development.dump');
   tool('pg_dump',['--format=custom','--no-owner','--file',oldBackup,'--dbname',database.connectionString]);
   const additions=BASE_MIGRATIONS.slice(baseline.base.length);
-  expect(additions).toEqual(['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql']);
+  expect(additions).toEqual(['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_delegated_time_off.sql']);
   for(const file of additions)await client.query(await readFile('db/migrations/'+file,'utf8'));
   expect(await state(client)).toEqual(before);
   expect((await client.query("SELECT hire_date,termination_date,birth_date FROM employees WHERE id='R1-RESTORE'")).rows).toEqual([{hire_date:null,termination_date:null,birth_date:null}]);

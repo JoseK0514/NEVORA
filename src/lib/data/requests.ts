@@ -1,5 +1,6 @@
 import { databaseDate as dateValue } from './database-date';
 import {Temporal} from '@js-temporal/polyfill';
+import { admitManagedLeaveSubmission } from '../workforce/leave-submission.server';
 import {admitLeaveReview,workforceLeaveFootprintSql} from '../workforce/leave-authority.server';
 import {listWorkforcePermissions,workforcePermissionStatements} from '../workforce/authority.server';
 import type {OperationalRead} from '../company-access/model';
@@ -31,6 +32,9 @@ export type TimeOffListItem = {
   cancelledAt?: string;
   ptoPolicyId?: string;
   ptoMinutes?: number;
+  submittedByEmployeeId?: string;
+  enteredBy?: string;
+  ownerReviewRequired?: boolean;
   /** The manager who decided it; absent for a withdrawal (the employee reviewed it themself). */
   reviewerName?: string;
 };
@@ -52,6 +56,9 @@ function mapRequest(row: unknown): TimeOffListItem {
     reason: item.reason ? String(item.reason) : undefined,
     status: item.status as RequestStatus,
     createdAt:Temporal.Instant.from(item.created_at instanceof Date?item.created_at.toISOString():String(item.created_at)).toString(),
+    ...(item.requested_by_employee_id ? { submittedByEmployeeId: String(item.requested_by_employee_id) } : {}),
+    ...(item.entered_by_name ? { enteredBy: String(item.entered_by_name) } : {}),
+    ...(item.owner_review_required === true ? { ownerReviewRequired: true } : {}),
     ...(item.pto_policy_id ? { ptoPolicyId: String(item.pto_policy_id), ptoMinutes: Number(item.pto_minutes) } : {}),
     ...(item.cancelled_at ? { cancelledAt: new Date(String(item.cancelled_at)).toISOString() } : {}),
     ...(item.reviewed_at ? { reviewedAt: item.reviewed_at instanceof Date ? item.reviewed_at.toISOString() : String(item.reviewed_at) } : {}),
@@ -82,6 +89,9 @@ export async function listEmployeeTimeOffRequests(employeeId: string, executor?:
        r.status,
        r.created_at,
        r.reviewed_at, r.cancelled_at, r.pto_policy_id, r.pto_minutes,
+       to_jsonb(r)->>'requested_by_employee_id' AS requested_by_employee_id,
+       CASE WHEN submitter.id<>r.employee_id THEN concat_ws(' ',submitter.first_name,submitter.last_name) END AS entered_by_name,
+       (to_jsonb(r)->>'owner_review_required')::boolean AS owner_review_required,
        -- Jose, 2026-10-19: the employee's timeline names who decided their own request. A withdrawal is
        -- reviewed by the employee themself, so it carries no reviewer name.
        CASE WHEN r.reviewed_by IS NOT NULL AND r.reviewed_by <> r.employee_id
@@ -89,6 +99,7 @@ export async function listEmployeeTimeOffRequests(employeeId: string, executor?:
      FROM time_off_requests r
      JOIN employees e ON e.id = r.employee_id
      LEFT JOIN employees rv ON rv.id = r.reviewed_by
+     LEFT JOIN employees submitter ON submitter.id=to_jsonb(r)->>'requested_by_employee_id'
      WHERE r.employee_id = $1${requestId ? " AND r.id = $2" : ""}
      ORDER BY r.created_at DESC`,
     requestId ? [employeeId, requestId] : [employeeId],
@@ -164,10 +175,13 @@ export async function listWorkforceLeave(
       ...guards,
       {
         text: `SELECT r.*,concat_ws(' ',e.first_name,e.last_name) AS employee_name,
+          CASE WHEN submitter.id<>r.employee_id THEN concat_ws(' ',submitter.first_name,submitter.last_name) END AS entered_by_name,
           CASE WHEN r.reviewed_by<>r.employee_id THEN concat_ws(' ',rv.first_name,rv.last_name) END AS reviewer_name
           FROM time_off_requests r JOIN employees e ON e.id=r.employee_id JOIN locations home ON home.id=e.primary_location_id
           LEFT JOIN employees rv ON rv.id=r.reviewed_by
-          WHERE home.workspace_id=$1 AND r.status=$2 AND r.employee_id<>$3
+          LEFT JOIN employees submitter ON submitter.id=to_jsonb(r)->>'requested_by_employee_id'
+          WHERE home.workspace_id=$1 AND r.status=$2 AND r.employee_id<>$3 AND submitter.id IS DISTINCT FROM $3
+            AND ($4::text[] IS NULL OR NOT COALESCE((to_jsonb(r)->>'owner_review_required')::boolean,false))
             AND ($4::text[] IS NULL OR ($4::text[] @> (${workforceLeaveFootprintSql})))
           ORDER BY CASE WHEN $2='PENDING' THEN r.start_date END,
             CASE WHEN $2<>'PENDING' THEN r.start_date END DESC,r.created_at DESC,r.id LIMIT 1001`,
@@ -187,8 +201,12 @@ export async function listWorkforceLeave(
   }
 }
 
+export class TimeOffSubmissionConflict extends Error {
+  constructor() { super('Time off request changed. Please try again.'); }
+}
+
 /**
- * Create an own pending request and its outbox intents atomically. A repeated
+ * Create a pending request and its outbox intents atomically. A repeated
  * request ID is accepted only when an authorized read matches the same employee
  * and exact original dates/times/reason; ID reuse never overwrites an old request.
  * Input date/time validation belongs to the calling action.
@@ -205,48 +223,69 @@ export async function createTimeOffRequest(input: {
   ptoPolicyId?: string;
   admission?: readonly SqlStatement[];
 }, executor: SqlExecutor = neonNotificationExecutor()) {
-  assertManagementProof(input.proof, input.employeeId);
+  const actor = input.proof.employee.id;
+  assertManagementProof(input.proof, actor);
+  const managedSubmission = actor !== input.employeeId || input.proof.employee.role === 'MANAGER'
+    ? await admitManagedLeaveSubmission(input.proof, input, executor) : undefined;
   const id = input.requestId ?? randomUUID();
   const createdAt = new Date().toISOString();
+  const captureGuard = managedSubmission?.capturedLocations ? {
+    text: `SELECT (CASE WHEN EXISTS (SELECT 1 FROM time_off_requests WHERE id=$1 AND $2::text[] @> approval_location_ids)
+      THEN '1' ELSE 'operational_authorization' END)::integer`,
+    values: [id, managedSubmission.capturedLocations],
+  } : undefined;
   const committed = await commitRequestTransition({
-    actorEmployeeId: input.employeeId,
+    actorEmployeeId: actor,
+    managedSubmission,
+    afterMutation: captureGuard,
     selfServiceProof: input.proof,
     admission: input.admission,
     after: requestSnapshot('TIME_OFF', { id, employeeId: input.employeeId, employeeName: '', startDate: input.startDate, endDate: input.endDate, startTime: input.startTime, endTime: input.endTime, reason: input.reason, status: 'PENDING', createdAt }),
     mutation: {
-      text: input.ptoPolicyId
+      text: managedSubmission
+        ? `INSERT INTO time_off_requests (id,employee_id,start_date,end_date,start_time,end_time,reason,created_at,pto_policy_id,
+              requested_by_employee_id,owner_review_required)
+            SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11 WHERE NOT EXISTS (SELECT 1 FROM time_off_requests WHERE id=$1)
+            ON CONFLICT (id) DO NOTHING RETURNING id`
+        : input.ptoPolicyId
         ? `INSERT INTO time_off_requests (id,employee_id,start_date,end_date,start_time,end_time,reason,created_at,pto_policy_id)
             SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9 WHERE NOT EXISTS (SELECT 1 FROM time_off_requests WHERE id=$1)
             ON CONFLICT (id) DO NOTHING RETURNING id`
         : `INSERT INTO time_off_requests (id, employee_id, start_date, end_date, start_time, end_time, reason, created_at)
             VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (id) DO NOTHING RETURNING id`,
       values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null,createdAt,
-        ...(input.ptoPolicyId ? [input.ptoPolicyId] : [])],
+        ...(managedSubmission ? [input.ptoPolicyId ?? null, actor, managedSubmission.ownerReviewRequired]
+          : input.ptoPolicyId ? [input.ptoPolicyId] : [])],
     },
   }, executor);
   if (!committed) {
     // A retry may acknowledge only the same actor's exact original payload.
     // The conflicting insert rolled back its entire outbox batch.
-    const workspace = await getWorkspace(executor);
-    const authority = () => managementSessionStatements(input.proof, input.employeeId, ['EMPLOYEE', 'LEAD']);
+    const workspace = managedSubmission?.workspace ?? await getWorkspace(executor);
+    const authority = () => managedSubmission?.guards ?? managementSessionStatements(input.proof, actor, ['EMPLOYEE', 'LEAD']);
     const statements = [
       ...workspaceReadGuard(workspace),
-      { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.employeeId] },
+      { text: 'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR SHARE', values: [[actor, input.employeeId]] },
       { text: 'SELECT id FROM time_off_requests WHERE id=$1 ORDER BY id FOR SHARE', values: [id] },
       ...authority(),
+      ...(input.admission ?? []),
       {
       text: `SELECT id FROM time_off_requests WHERE id=$1 AND employee_id=$2
         AND start_date=$3::date AND end_date=$4::date
         AND start_time IS NOT DISTINCT FROM $5::time
         AND end_time IS NOT DISTINCT FROM $6::time
         AND reason IS NOT DISTINCT FROM $7::text
-        AND (to_jsonb(time_off_requests)->>'pto_policy_id') IS NOT DISTINCT FROM $8::text`,
-      values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null,input.ptoPolicyId?.toLowerCase() ?? null],
+        AND (to_jsonb(time_off_requests)->>'pto_policy_id') IS NOT DISTINCT FROM $8::text
+        AND (to_jsonb(time_off_requests)->>'requested_by_employee_id') IS NOT DISTINCT FROM $9::text
+        AND COALESCE((to_jsonb(time_off_requests)->>'owner_review_required')::boolean,false)=$10::boolean
+        AND ($11::text[] IS NULL OR $11::text[] @> approval_location_ids)`,
+      values: [id,input.employeeId,input.startDate,input.endDate,input.startTime ?? null,input.endTime ?? null,input.reason ?? null,input.ptoPolicyId?.toLowerCase() ?? null,
+        managedSubmission ? actor : null, managedSubmission?.ownerReviewRequired ?? false, managedSubmission?.capturedLocations ?? null],
       },
     ];
     const receipts = await executor.transaction([...statements, ...authority()]);
     const receipt = receipts[statements.length - 1]?.[0];
-    if (!receipt) throw new Error('Time off request changed. Please try again.');
+    if (!receipt) throw new TimeOffSubmissionConflict();
   }
 }
 
@@ -295,7 +334,7 @@ export async function withdrawTimeOffRequest(input: WithdrawalCommand & {employe
   assertManagementProof(proof,employeeId);
   const workspace=await getWorkspace(executor);
   const recipients=await executor.query<RecipientAccess>({text:requestRecipientSql,values:[]});
-  const authority=()=>managementSessionStatements(proof,employeeId,['EMPLOYEE','LEAD']);
+  const authority=()=>managementSessionStatements(proof,employeeId,proof.employee.role==='MANAGER'?['MANAGER']:['EMPLOYEE','LEAD']);
   const statements=[
     ...workspaceReadGuard(workspace),
     ...timeOffTransitionLocks(command.requestId,employeeId,recipients),
