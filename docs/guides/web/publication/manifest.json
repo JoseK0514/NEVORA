@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "5e467e3966af6201e1b245db74725abcc9255b5b",
-  "applicationHash": "609ecd8f7549bc38e95e391a3803f1a03cf7918ec0603cae3af2ee932a77ebea",
+  "sourceSha": "87b22d32926120f5225ffee90eec755098321bba",
+  "applicationHash": "f3493493d88bc30573ec05657f3a37e7c1ffc6b9f2b28cde8494f46541eb4975",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "37461cc1c4d239db0b500a7b191f11b30a8ae74b95974b7aa0b86c92f890ffb1"
@@ -14,7 +14,7 @@
       "title": "NEVORA Owner web guide",
       "markdown": {
         "path": "docs/guides/web/owner.md",
-        "sha256": "3eae6477209984fa4acdb0bf945c6be4a2f967e3ebb32dbddb574bf2a45a1054"
+        "sha256": "a7e8284c06f26489bdee0da422b371dc7543f9c3ce08244a83e8ace5107a49b7"
       },
       "evidence": [
         {
@@ -27,7 +27,7 @@
         },
         {
           "path": "src/app/app/settings/page.tsx",
-          "sha256": "ab0b7c41b91ad835bf17a3c4aeee0a2d67c552e687894f3704132e22cf063eef"
+          "sha256": "f98f600cd5b9da69d0e526bee291b748b52e36c82cb84f5526f2b14be3aa54ec"
         },
         {
           "path": "src/app/app/employees/page.tsx",
@@ -39,7 +39,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "f2ad2a34d0d96c8d3bc1db929c34ea5de121374c3edd224e6d5279b8c3dd9d5f"
+          "sha256": "b37cae1fd6cea44a0b97de98ff108346df5aa7b98b9bac806270dda92016c132"
         },
         {
           "path": "src/components/company-access/employee-invitation-panel.tsx",
@@ -212,7 +212,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "e8333ea541fc7c1e1acc6f6f28b6cab6d564fb51dd39e4c6c7a2cd91696083b5",
+        "sha256": "b20b6f31e6ffb56f1ef48f340aaee62bc5091b2d54b8ff8b47367936dfb8dfc1",
         "pageCount": 7
       }
     },
@@ -250,7 +250,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "f2ad2a34d0d96c8d3bc1db929c34ea5de121374c3edd224e6d5279b8c3dd9d5f"
+          "sha256": "b37cae1fd6cea44a0b97de98ff108346df5aa7b98b9bac806270dda92016c132"
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
@@ -335,7 +335,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "e76d80af67ef2441f9cbdbec05ee52e4b40bd605134c201470e01bdbdfb24f06",
+        "sha256": "93aa402f0d03629afea8a0c686c14a942f5eed93c5f4d4bb324e8451760af3e6",
         "pageCount": 4
       }
     },
@@ -373,7 +373,7 @@
         },
         {
           "path": "src/app/app/requests/page.tsx",
-          "sha256": "21e284b13d750f7198ac4862ac4db5bc2af78d0d2611fea2838f4cb1bcd16abc"
+          "sha256": "c98317d3ee679a0d3f8d123c35fcf0f5cf97550323cc7f8b6149a24d6a5321a7"
         },
         {
           "path": "src/app/app/exchange/page.tsx",
@@ -454,7 +454,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "44111f0a296172037afdd86822af625aa14b84f213715c132362a220779403e4",
+        "sha256": "3d721ea8f49819cc40abd01d1f6009a92b606f340280c52a3cd75d6aad031ca1",
         "pageCount": 3
       }
     },
@@ -629,7 +629,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "5511868537d8bcfdb8aae6b1b71b2c296a4bf4a017e64260f5a3e0caa96eba77",
+        "sha256": "f415cc603adbc36727b07648d45798dc18c98bbf7a652ea63339319d0d586b66",
         "pageCount": 5
       }
     },
@@ -659,7 +659,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "a767b1fe6b4a3492ad200bf2b5d6474994bfb13a9c05dd6c4212cd79e5ab81fa"
+          "sha256": "ab8f14acf13b30a0f949a5f58616e198f63782f2ab9e673f8bd84297fb29c88e"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -892,7 +892,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "742ca994138684ef77c6548f1a0e637a5d8ccb6de1d47ce962f64189e9e70cb7",
+        "sha256": "c43b749b9179ed04fd64dc42ae4b44d5648eb1e576e40ed5cea59a89b29f4cb5",
         "pageCount": 7
       }
     },
@@ -1087,7 +1087,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "24493ea515e03a1ba6b376c90cdee2ffdfb12fa3a3476fa6fa2e34fef42e8506",
+        "sha256": "9c69471bb1b1c90b4779d1f4e6ab6232005da5a52283223ebeaba3782a5a3e9f",
         "pageCount": 7
       }
     }
