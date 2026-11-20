@@ -6,6 +6,7 @@ import { listWorkforceLeave, TimeOffSubmissionConflict } from '@/lib/data/reques
 import { correctionBoundaryResponse, correctionJson, readCorrectionJson } from '@/lib/time-corrections/http.server';
 import { isWorkforceId } from '@/lib/workforce/contracts';
 import { readOwnManagedLeave, submitManagedLeave } from '@/lib/workforce/leave.server';
+import { applyPuertoRicoAccrual } from '@/lib/workforce/pto-accrual.server';
 import { listWorkforcePermissions } from '@/lib/workforce/authority.server';
 import { applyWorkforceCommand, readPtoAccount, readWorkforceSettings } from '@/lib/workforce/settings.server';
 
@@ -20,7 +21,7 @@ async function handle(request: Request, context: Context, write: boolean) {
   const blocked = correctionBoundaryResponse(request, write, headers);
   if (blocked) return blocked;
   const { resource, selector = [] } = await context.params;
-  if (selector.length > 1 || (write && ((resource !== 'settings' && resource !== 'leave') || selector.length))) return correctionJson(invalid, 400);
+  if (selector.length > 1 || (write && ((resource !== 'settings' && resource !== 'leave' && resource !== 'pto-accrual') || selector.length))) return correctionJson(invalid, 400);
   let proof;
   try { proof = await requireSessionMutationProof(); } catch { return correctionJson(unavailable, 401); }
   try {
@@ -31,8 +32,12 @@ async function handle(request: Request, context: Context, write: boolean) {
         const outcome = await submitManagedLeave(proof, value);
         return correctionJson(outcome, { saved: 200, conflict: 409, invalid: 400 }[outcome.state]);
       }
+      if (resource === 'pto-accrual') {
+        const outcome = await applyPuertoRicoAccrual(proof, value);
+        return correctionJson(outcome, { saved: 200, ready: 200, review_required: 409, conflict: 409, invalid: 400 }[outcome.state]);
+      }
       const outcome = await applyWorkforceCommand(proof, value);
-      const status = { saved:200, conflict:409, invalid:400, unknown:503 }[outcome.state];
+      const status = { saved:200, conflict:409, invalid:400, unknown:503, review_required:409 }[outcome.state];
       return correctionJson(outcome, status);
     }
     const [key] = selector;

@@ -6,6 +6,8 @@ export type WorkforceCommand =
   | { kind: 'PLANNING_CALENDAR'; operationId: string; startsOn: number; expectedRevision: number }
   | { kind: 'PTO_POLICY'; operationId: string; code: string; label: string; enabled: boolean; fullDayMinutes: number;
       earnedMinutesPer100Hours: number; carryoverCapMinutes: number; expectedRevision: number }
+  | { kind: 'PR_SICK_CARRYOVER'; operationId: string; employeeId: string; expectedPolicyRevision: number;
+      effectiveDate: string; regularDayMinutes: number | null; reference: string }
   | { kind: 'PTO_POST'; operationId: string; employeeId: string; policyCode: string; expectedPolicyRevision: number;
       effectiveDate: string; entryKind: 'OPENING' | 'EARNED' | 'CARRYOVER' | 'ADJUSTMENT'; quantity: number; sourceReference: string | null; note: string };
 
@@ -51,6 +53,14 @@ export function parseWorkforceCommand(input: unknown): WorkforceCommand | null {
         && integer(v.carryoverCapMinutes, 0, 525600) && integer(expected, 0, 2147483646)
         ? { kind:v.kind, operationId, code:v.code, label:v.label.trim(), enabled:v.enabled, fullDayMinutes:v.fullDayMinutes,
           earnedMinutesPer100Hours:v.earnedMinutesPer100Hours, carryoverCapMinutes:v.carryoverCapMinutes, expectedRevision:expected } : null;
+    case 'PR_SICK_CARRYOVER':
+      return exact('employeeId','expectedPolicyRevision','effectiveDate','regularDayMinutes','reference')
+        && isWorkforceId(v.employeeId) && integer(v.expectedPolicyRevision, 1, 2147483647)
+        && typeof v.effectiveDate === 'string' && /^\d{4}-01-01$/.test(v.effectiveDate) && v.effectiveDate >= '2018-01-01'
+        && (v.regularDayMinutes === null || integer(v.regularDayMinutes, 1, 1440))
+        && typeof v.reference === 'string' && /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,99}$/.test(v.reference)
+        ? { kind:v.kind, operationId, employeeId:v.employeeId, expectedPolicyRevision:v.expectedPolicyRevision,
+          effectiveDate:v.effectiveDate, regularDayMinutes:v.regularDayMinutes, reference:v.reference } : null;
     case 'PTO_POST': {
       const entryKind = v.entryKind;
       const supported = entryKind === 'OPENING' || entryKind === 'EARNED' || entryKind === 'CARRYOVER' || entryKind === 'ADJUSTMENT';

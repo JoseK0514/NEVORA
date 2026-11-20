@@ -95,7 +95,11 @@ export async function readPtoAccount(proof: SessionMutationProof, employeeId = p
         CASE WHEN earned.ledger_entry_id IS NOT NULL THEN jsonb_build_object(
           'startDate',earned.start_date,'endDate',earned.end_date,'qualifyingMinutes',earned.qualifying_minutes,
           'policyRevision',revision.revision,'awardMinutes',earned.award_minutes,'changeMinutes',earned.change_minutes
-        ) END AS accrual
+        ) || CASE WHEN earned.statutory_evidence IS NULL THEN '{}'::jsonb ELSE jsonb_build_object(
+          'statutoryRule',earned.statutory_evidence->>'rule'
+        ) || CASE WHEN a.role='OWNER' THEN jsonb_build_object(
+          'reviewReference',earned.statutory_evidence->>'reference'
+        ) ELSE '{}'::jsonb END END END AS accrual
         FROM pto_ledger j JOIN employees a ON a.id=$3
         JOIN pto_policy_revisions revision ON revision.workspace_id=j.workspace_id AND revision.id=j.policy_id
         LEFT JOIN pto_timecard_accrual_revisions earned ON earned.workspace_id=j.workspace_id AND earned.ledger_entry_id=j.id
@@ -109,7 +113,8 @@ export async function readPtoAccount(proof: SessionMutationProof, employeeId = p
   return { employeeId, balances, entries: ledger.slice(0, 100), historyTruncated: ledger.length > 100 };
 }
 
-type Outcome = { state: 'saved'; receipt: WorkforceReceipt } | { state: 'conflict' | 'invalid' | 'unknown' };
+type Outcome = { state: 'saved'; receipt: WorkforceReceipt } | { state: 'conflict' | 'invalid' | 'unknown' }
+  | { state: 'review_required'; reasons: ['SICK_CARRYOVER_UNRESOLVED'] };
 
 function ownerWrite(command: WorkforceCommand, workspace: string, actor: string): SqlStatement & { prefix?: string; receiptFields?: string } {
   switch (command.kind) {
@@ -148,6 +153,44 @@ function ownerWrite(command: WorkforceCommand, workspace: string, actor: string)
         values: [workspace,code,label,enabled,fullDayMinutes,earnedMinutesPer100Hours,carryoverCapMinutes,expectedRevision,actor],
       };
     }
+    case 'PR_SICK_CARRYOVER': {
+      const { employeeId, expectedPolicyRevision, effectiveDate, regularDayMinutes, reference } = command;
+      return {
+        prefix: `account AS (
+          SELECT p.id,greatest(15*$5::integer,p.carryover_cap_minutes) AS cap
+          FROM pto_policies_current p JOIN workspaces w ON w.id=p.workspace_id
+          JOIN employees e ON e.id=$2 JOIN locations home ON home.id=e.primary_location_id AND home.workspace_id=w.id
+          WHERE NOT EXISTS (SELECT 1 FROM prior) AND p.workspace_id=$1 AND p.code='SICK' AND p.revision=$3
+            AND p.enabled AND w.time_zone='America/Puerto_Rico' AND $5::integer IS NOT NULL
+            AND $4::date=date_trunc('year', clock_timestamp() AT TIME ZONE w.time_zone)::date
+        ), history AS (
+          SELECT COALESCE(sum(minutes),0) AS balance,
+            COALESCE(sum(minutes) FILTER (WHERE effective_date<$4::date),0) AS before,
+            max(effective_date) FILTER (WHERE kind='CARRYOVER') AS last_rollover
+          FROM pto_ledger WHERE workspace_id=$1 AND employee_id=$2 AND policy_code='SICK'
+        ), latest_prior_awards AS (
+          SELECT DISTINCT ON (start_date,end_date) award_minutes,statutory_evidence
+          FROM pto_timecard_accrual_revisions
+          WHERE workspace_id=$1 AND employee_id=$2 AND policy_code='SICK'
+            AND end_date BETWEEN ($4::date-interval '1 year')::date AND $4::date-1
+          ORDER BY start_date,end_date,timecard_revision DESC
+        ), change AS (
+          SELECT account.id,history.balance,-greatest(history.before-account.cap,0) AS minutes
+          FROM account CROSS JOIN history
+          WHERE (history.last_rollover IS NULL OR history.last_rollover<$4::date)
+            AND NOT EXISTS (SELECT 1 FROM latest_prior_awards WHERE award_minutes>0
+              AND (statutory_evidence IS NULL OR award_minutes<>$5::integer))
+        )`,
+        text: `INSERT INTO pto_ledger(workspace_id,employee_id,policy_id,policy_code,kind,minutes,effective_date,
+          source_reference,note,actor_employee_id)
+          SELECT $1,$2,change.id,'SICK','CARRYOVER',change.minutes,$4,($4::date)::text,'Act 180 review: '||$6,$7
+          FROM change WHERE change.balance+change.minutes BETWEEN 0 AND 2147483647
+            AND change.minutes BETWEEN -525600 AND 0
+          ON CONFLICT DO NOTHING RETURNING id::text AS "entryId",minutes`,
+        receiptFields: `,'balanceMinutes',(SELECT balance FROM change)+changed.minutes`,
+        values: [workspace,employeeId,expectedPolicyRevision,effectiveDate,regularDayMinutes,reference,actor],
+      };
+    }
     case 'PTO_POST': {
       const { employeeId, policyCode, expectedPolicyRevision, effectiveDate, entryKind, quantity, sourceReference, note } = command;
       return {
@@ -157,6 +200,10 @@ function ownerWrite(command: WorkforceCommand, workspace: string, actor: string)
           JOIN employees e ON e.id=$2 JOIN locations home ON home.id=e.primary_location_id AND home.workspace_id=w.id
           WHERE NOT EXISTS (SELECT 1 FROM prior) AND p.workspace_id=$1 AND p.code=$3 AND p.revision=$4 AND ($6::text NOT IN ('OPENING','EARNED') OR p.enabled)
             AND $5::date <= (clock_timestamp() AT TIME ZONE w.time_zone)::date
+            AND ($6::text NOT IN ('CARRYOVER','EARNED') OR NOT EXISTS (
+              SELECT 1 FROM pto_timecard_accrual_revisions a WHERE a.workspace_id=$1 AND a.employee_id=$2
+                AND a.policy_code=$3 AND a.statutory_evidence IS NOT NULL
+            ))
         ), history AS (
           SELECT COALESCE(sum(minutes),0)::integer AS balance,
             COALESCE(sum(minutes) FILTER (WHERE effective_date<$5::date),0)::integer AS before,
@@ -214,7 +261,11 @@ export async function applyWorkforceCommand(proof: SessionMutationProof, value: 
   try {
     const result = await mutationTransaction(executor, [...guards, sql, ...guards.slice(-2)]);
     const row = result[guards.length]?.[0] as { hash: string; receipt: WorkforceReceipt } | undefined;
-    return row?.hash === hash ? { state: 'saved', receipt: row.receipt } : { state: 'conflict' };
+    if (row?.hash === hash) return { state: 'saved', receipt: row.receipt };
+    if (!row && command.kind === 'PR_SICK_CARRYOVER') {
+      return { state: 'review_required', reasons: ['SICK_CARRYOVER_UNRESOLVED'] };
+    }
+    return { state: 'conflict' };
   } catch (error) {
     const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
     if (!/^[0-9A-Z]{5}$/.test(code) || code.startsWith('08')) return { state: 'unknown' };
