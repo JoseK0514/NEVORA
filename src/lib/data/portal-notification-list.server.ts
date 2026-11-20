@@ -13,10 +13,17 @@ import {safeNotificationOpenPath,safeReturnTo} from '../notifications/destinatio
 import type {EmployeeViewSnapshot,EmployeeNotificationItem} from '../employee-view';
 import type {SqlExecutor,SqlStatement,SourceKind} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
+import {faceAlertCandidatesSql,faceAlertId,faceAlertScope,faceAlertWorkspace} from '../clocker/face-verification/alerts.server';
+import {FACE_ALERT_EVENT,FACE_ALERT_TITLE} from '../clocker/face-verification/contracts';
 
 const LIMIT=25,MAX_BYTES=1_000_000;
 const labels:Record<SourceKind,string>={SCHEDULE:'Schedule update',TIME_OFF:'Time-off update',EXCHANGE:'Shift request update',CALLOUT:'Can’t-work update',AVAILABILITY:'Availability update',MANAGER_SUMMARY:'Operations need review',SELF_TEST:'Device notification test',COMMUNICATION:'Team update',PAYROLL_PREPARATION:'Payroll preparation update',PAYROLL_STATEMENT:'Pay statement update'};
-const candidatesSql=(actor='$1',environment='$2')=>`SELECT id,created_at::text AS at,read_at::text AS read FROM notifications n WHERE employee_id=${actor} AND environment=${environment} AND cancelled_at IS NULL AND ${notificationOperationalAllowedSql()} ORDER BY created_at DESC,id DESC LIMIT 26`;
+const candidatesSql=(actor='$1',environment='$2',includeFace=false)=>{
+ const ordinary=`SELECT id,created_at::text AS at,read_at::text AS read${includeFace?',false AS face,NULL::text AS "expiresAt"':''}
+   FROM notifications n WHERE employee_id=${actor} AND environment=${environment} AND cancelled_at IS NULL AND ${notificationOperationalAllowedSql()}`;
+ if(!includeFace)return ordinary+' ORDER BY created_at DESC,id DESC LIMIT 26';
+ return `SELECT * FROM (${ordinary} UNION ALL ${faceAlertCandidatesSql(actor)}) candidates ORDER BY "at"::timestamptz DESC,id DESC LIMIT 26`;
+};
 const jsonRows=(sql:string)=>`(SELECT COALESCE(jsonb_agg(to_jsonb(r)),'[]'::jsonb) FROM (${sql}) r)`;
 function rows(value:unknown):Record<string,unknown>[]{
  if(!Array.isArray(value)||value.some(row=>!row||typeof row!=='object'||Array.isArray(row)))throw Error('Missing notification observation');
@@ -51,8 +58,10 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
  if(environment!=='test'&&environment!=='production')return {state:'unavailable',reason:'read_failed'};
  const started=performance.now(),signal=AbortSignal.timeout(8000),bounded=boundedExecutor(executor,signal);
  try{
-  const workspace=await getWorkspace(bounded),guards=employeeViewGuards(proof,workspace,false);
-  const initial=await bounded.transaction([...guards,{text:candidatesSql(),values:[proof.employee.id,environment]},
+  const workspace=await getWorkspace(bounded);
+  const includeFace=proof.employee.role==='OWNER'&&environment==='test'&&faceAlertWorkspace()===workspace.id;
+  const guards=[...employeeViewGuards(proof,workspace,false),...(includeFace?[faceAlertScope(workspace.id)]:[])];
+  const initial=await bounded.transaction([...guards,{text:candidatesSql('$1','$2',includeFace),values:[proof.employee.id,environment]},
    {text:`SELECT LEAST(15000,FLOOR(EXTRACT(EPOCH FROM(s.expires_at-clock_timestamp()))*1000)) AS "validForMs" FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=$3 AND s.expires_at>clock_timestamp()`,values:[proof.sessionTokenHash,proof.employee.id,proof.employee.role]}]);
   const originalBudget=Number((initial[guards.length+1]?.[0] as {validForMs:unknown}|undefined)?.validForMs);
   if(!Number.isFinite(originalBudget)||originalBudget<=0)return {state:'unavailable',reason:'access_denied'};
@@ -72,6 +81,13 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
    let expires=Infinity,requiresCompany=false;
    for(const row of candidates.slice(0,LIMIT)){
     signal.throwIfAborted();if(typeof row.id!=='string'||typeof row.at!=='string')throw Error('Invalid notification candidate');
+    if(row.face===true){
+     const href=safeNotificationOpenPath(row.id),expiry=typeof row.expiresAt==='string'?Date.parse(row.expiresAt):NaN;
+     if(!includeFace||!faceAlertId(row.id)||!href||!(expiry>now.getTime()))continue;
+     expires=Math.min(expires,expiry);
+     items.push({id:row.id,eventType:FACE_ALERT_EVENT,label:FACE_ALERT_TITLE,at:new Date(row.at).toISOString(),href,reviewState:row.read?'read':'unread',actionState:'available'});
+     continue;
+    }
     const intent=await repository.findIntent(row.id);
     if(!intent||intent.employeeId!==proof.employee.id||intent.environment!==environment||Date.parse(intent.dueAt)>now.getTime()||Date.parse(intent.expiresAt)<=now.getTime())continue;
     const check=await repository.check(intent,proof.employee.id,now,'open');
@@ -93,7 +109,7 @@ export async function readPortalNotificationList(proof:SessionMutationProof,envi
    const args=entry.values.map(value=>{values.push(value);return `$${values.length}`;});
    return jsonRows(entry.template.sql(args));
   });
-  const statement:SqlStatement={text:`WITH facts AS MATERIALIZED (SELECT ${jsonRows(candidatesSql('$1','$5'))} AS candidates,jsonb_build_array(${observations.join(',')}) AS reads),
+  const statement:SqlStatement={text:`WITH facts AS MATERIALIZED (SELECT ${jsonRows(candidatesSql('$1','$5',includeFace))} AS candidates,jsonb_build_array(${observations.join(',')}) AS reads),
    observed AS MATERIALIZED (SELECT facts.*,clock_timestamp() AS at FROM facts)
    SELECT candidates,reads,to_jsonb(at) AS "observedAt",
     (SELECT LEAST(15000,FLOOR(EXTRACT(EPOCH FROM (s.expires_at-at))*1000)) FROM employee_sessions s JOIN employees e ON e.id=s.employee_id

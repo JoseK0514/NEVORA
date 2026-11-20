@@ -22,7 +22,7 @@ export type PhotoSettingsTransportDeps = {
   service: ClockerPhotoService;
   authenticate(request: Request): Promise<PhotoManagementProof | null>;
 };
-function permitted(request: Request, security: PhotoTransportSecurity): boolean {
+export function clockerPhotoRequestPermitted(request: Request, security: PhotoTransportSecurity): boolean {
   try {
     const origin = new URL(security.portalOrigin);
     if (origin.origin !== security.portalOrigin || origin.username || origin.password ||
@@ -82,7 +82,7 @@ async function effectiveNotice(deps: PhotoTransportDeps, proof: ClockerIdentityP
 /** Owner metadata/remove transport, never a public image or time-writing route. */
 export async function handleClockerPhotoOwnerReview(request: Request, deps: PhotoSettingsTransportDeps): Promise<Response> {
   if (!deps.enabled) return json({ state: 'disabled' }, 503);
-  if (!permitted(request, deps.security)) return json({ state: 'rejected' }, 403);
+  if (!clockerPhotoRequestPermitted(request, deps.security)) return json({ state: 'rejected' }, 403);
   try {
     const proof = await deps.authenticate(request);
     if (!proof) throw new ClockerPhotoError('AUTH_REQUIRED');
@@ -100,7 +100,7 @@ export async function handleClockerPhotoOwnerReview(request: Request, deps: Phot
 /** Separate image endpoint: inherited 2 KiB punch endpoint stays unchanged. */
 export async function handleClockerPhoto(request: Request, locationKey: string, deps: PhotoTransportDeps): Promise<Response> {
   if (!deps.enabled) return json({ state: 'disabled', error: 'Punch photo collection is not enabled in this environment.' }, 503);
-  if (!permitted(request, deps.security)) return json({ state: 'rejected', error: 'Open Clocker directly on this site.' }, 403);
+  if (!clockerPhotoRequestPermitted(request, deps.security)) return json({ state: 'rejected', error: 'Open Clocker directly on this site.' }, 403);
   if (locationKey.length > 64 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(locationKey) || locationKey.endsWith('\n')) return failed(new ClockerPhotoError('INVALID_INPUT'));
   try {
     const proof = await deps.authenticate(request, locationKey);
@@ -135,7 +135,7 @@ export async function handleClockerPhoto(request: Request, locationKey: string, 
  * Review/deletion scheduling is not enabled by the existence of this helper. */
 export async function handleClockerPhotoSettings(request: Request, deps: PhotoSettingsTransportDeps): Promise<Response> {
   if (!deps.enabled) return json({ state: 'disabled' }, 503);
-  if (!permitted(request, deps.security)) return json({ state: 'rejected', error: 'Open company settings directly on this site.' }, 403);
+  if (!clockerPhotoRequestPermitted(request, deps.security)) return json({ state: 'rejected', error: 'Open company settings directly on this site.' }, 403);
   try {
     const proof = await deps.authenticate(request);
     if (!proof) throw new ClockerPhotoError('AUTH_REQUIRED');
@@ -154,7 +154,7 @@ export async function handleClockerPhotoSettings(request: Request, deps: PhotoSe
 
 export async function handleClockerPhotoReview(request: Request, locationKey: string, commandId: string, deps: PhotoSettingsTransportDeps): Promise<Response> {
   if (!deps.enabled) return json({ state: 'disabled' }, 503);
-  if (!permitted(request, deps.security)) return json({ state: 'rejected' }, 403);
+  if (!clockerPhotoRequestPermitted(request, deps.security)) return json({ state: 'rejected' }, 403);
   try {
     const proof = await deps.authenticate(request);
     if (!proof) throw new ClockerPhotoError('AUTH_REQUIRED');
