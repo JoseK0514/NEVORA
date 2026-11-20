@@ -265,10 +265,12 @@ import { listLocations, findActiveLocationByClockerKey } from '../../lib/data/lo
 it('location identity enforces Owner writes and preserves keys, memberships and history',async()=>{
  const db=await workspaceFixture();const q=(text:string,values:unknown[]=[])=>db.executor.query({text,values});
  try {
-  const location=await createLocation({name:' Northside New ',shortName:' New ',clockerKey:'northside-new',actorEmployeeId:'owner'},db.executor);
+  const location=await createLocation({name:' Northside New ',shortName:' New ',clockerKey:'northside-new',address:'19 Fictional Way',actorEmployeeId:'owner'},db.executor);
   expect(location).toMatchObject({name:'Northside New',shortName:'New',active:true,clockerKey:'northside-new'});
   for(const table of ['location_staffing_settings','location_coverage_windows','employee_location_eligibility'])expect(await q(`SELECT * FROM ${table} WHERE location_id=$1`,[location.id])).toEqual([]);
-  expect(await findActiveLocationByClockerKey('northside-new',db.executor)).toEqual(location);
+  const {address, ...clockerLocation}=location;
+  expect(address).toBe('19 Fictional Way');
+  expect(await findActiveLocationByClockerKey('northside-new',db.executor)).toStrictEqual(clockerLocation);
   await expect(createLocation({name:'Duplicate',shortName:'Dup',clockerKey:'northside-new',actorEmployeeId:'owner'},db.executor)).rejects.toThrow();
   await q("INSERT INTO employee_location_eligibility VALUES('owner',$1)",[location.id]);
   await q("INSERT INTO schedules(id,location_id,week_start,created_by) VALUES('location-history',$1,'2026-09-28','owner')",[location.id]);
@@ -1040,7 +1042,9 @@ it.each([1,3,5,20])('Task 11 separate generic SQL workspace supports exactly %i 
     expect(new Set(locations.map(l=>l.clockerKey)).size).toBe(count);
     for(const table of ['location_staffing_settings','location_coverage_windows','employee_location_eligibility','employee_positions','coverage_window_position_requirements']) expect(await q(`SELECT * FROM ${table}`)).toEqual([]);
     for(const location of locations) {
-      expect(await findActiveLocationByClockerKey(location.clockerKey,db.executor)).toEqual(location);
+      const {address, ...clockerLocation}=location;
+      expect(address).toBeNull();
+      expect(await findActiveLocationByClockerKey(location.clockerKey,db.executor)).toStrictEqual(clockerLocation);
       expect(evaluateLocationReadiness({workspace,location,staffing:null,coverageWindows:[],positions:[],eligibleEmployees:[]}).issues.map(i=>i.code)).toEqual(['STAFFING_NOT_CONFIGURED','COVERAGE_NOT_CONFIGURED','NO_ELIGIBLE_EMPLOYEES']);
     }
     expect(await findActiveLocationByClockerKey('2',db.executor)).toBeNull();
