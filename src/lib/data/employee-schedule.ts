@@ -14,7 +14,7 @@ export type EmployeeScheduleRead = {state:EmployeeScheduleState;shifts:ScheduleS
 const unavailable:EmployeeScheduleRead={state:'unavailable',shifts:[],locations:[]};
 
 /** Canonical active, currently eligible location source for employee reads. */
-export const employeeAllowedLocationsSql=(workspace='$1',employee='$2')=>`SELECT l.id,l.short_name FROM locations l WHERE l.workspace_id=${workspace} AND l.active AND
+export const employeeAllowedLocationsSql=(workspace='$1',employee='$2')=>`SELECT l.id,l.short_name,l.address FROM locations l WHERE l.workspace_id=${workspace} AND l.active AND
    (l.id=(SELECT primary_location_id FROM employees WHERE id=${employee}) OR EXISTS(SELECT 1 FROM employee_location_eligibility elig WHERE elig.employee_id=${employee} AND elig.location_id=l.id))`;
 
 /** The existing live published schedule is the source. Coverage and own rows
@@ -31,7 +31,7 @@ export async function readEmployeeSchedule(proof:SessionMutationProof,weekStart:
    SELECT count(*)>0 AND bool_and(EXISTS(SELECT 1 FROM schedules s WHERE s.week_start=$3::date AND s.location_id=l.id AND s.status='PUBLISHED')) AS complete FROM allowed l
   ), own AS (
    SELECT sh.id,sh.schedule_id AS "scheduleId",sh.employee_id AS "employeeId",trim(e.first_name||' '||e.last_name) AS "employeeName",
-    s.location_id AS "locationId",sh.date::text AS date,left(sh.start_time::text,5) AS "startTime",left(sh.end_time::text,5) AS "endTime",
+    s.location_id AS "locationId",l.address AS "locationAddress",sh.date::text AS date,left(sh.start_time::text,5) AS "startTime",left(sh.end_time::text,5) AS "endTime",
     sh.position_id AS "positionId",sh.is_designated_lead AS "isDesignatedLead",
     EXISTS(SELECT 1 FROM shift_callouts c WHERE ${currentCalloutReleaseSql()}) AS "isCalloutApproved",'PUBLISHED'::text AS "scheduleStatus"
    FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id JOIN employees e ON e.id=sh.employee_id JOIN allowed l ON l.id=s.location_id

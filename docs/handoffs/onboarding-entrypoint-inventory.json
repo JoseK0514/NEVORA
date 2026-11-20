@@ -1439,6 +1439,13 @@
       "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
     },
     {
+      "path": "src/app/api/owner/activity/route.ts",
+      "tags": ["shared-executor", "request-entrypoint"],
+      "status": "CONVERTED",
+      "reason": "Private Owner history uses host-bound application SQL, a current Owner session, a workspace fence, and a limited metadata projection.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/owner/advisor/route.ts",
       "tags": [
         "shared-executor",

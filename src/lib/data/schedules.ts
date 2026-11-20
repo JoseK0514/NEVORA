@@ -30,6 +30,7 @@ export type ScheduleShiftRow = {
   employeeId: string;
   employeeName: string;
   locationId: string;
+  locationAddress?: string | null;
   date: string;
   startTime: string;
   endTime: string;
