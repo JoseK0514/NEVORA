@@ -49,6 +49,7 @@
       "src/test/integration/clocker-management-close.integration.ts",
       "src/test/integration/clocker-owner-policy.integration.ts",
       "src/test/integration/clocker-photo-platform.integration.ts",
+      "src/test/integration/clocker-face-verification.integration.ts",
       "src/test/integration/clocker-pin-crypto.integration.ts",
       "src/test/integration/clocker-pins.integration.ts",
       "src/test/integration/clocker-recovery-review.integration.ts",
