@@ -65,3 +65,18 @@ it.each(['permission_required','self_review','leave_scope'] as const)('redirects
   data.set('returnTo','inbox');
   await expect(reviewTimeOffAction(data)).rejects.toThrow(`redirect:/app/requests?tab=team&error=${reason}`);
 });
+
+it('keeps confirmed and refused cancellations on the Approved tab with distinct feedback', async () => {
+  const data = new FormData();
+  data.set('requestId', 'r1');
+  data.set('decision', 'CANCELLED');
+
+  rs.mocked(reviewTimeOffRequest).mockResolvedValueOnce(true);
+  await expect(reviewTimeOffAction(data)).rejects.toThrow('redirect:/app/requests?tab=approved&cancelled=1');
+
+  rs.mocked(reviewTimeOffRequest).mockResolvedValueOnce(false);
+  await expect(reviewTimeOffAction(data)).rejects.toThrow('redirect:/app/requests?tab=approved&error=review');
+
+  rs.mocked(reviewTimeOffRequest).mockRejectedValueOnce(new LeaveReviewRefusal('leave_scope'));
+  await expect(reviewTimeOffAction(data)).rejects.toThrow('redirect:/app/requests?tab=approved&error=leave_scope');
+});

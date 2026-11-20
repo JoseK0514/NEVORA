@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
-import { reviewTimeOffAction } from "@/app/app/requests/actions";
+import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
 import { QuietRow } from "@/components/quiet/quiet";
 import { RequestFace } from "@/components/request-face";
 import { BSegs } from "@/components/owner-b/b-kit";
@@ -48,10 +48,10 @@ export function TimeOffWaitingList({ requests }: { requests: WaitingTimeOff[] })
         detail={<><WholeParts text={request.when} />{request.aged && request.ago ? <span className="q-rt__line b-req-age">{request.ago}</span> : null}</>}
         value={request.ago ? <span className="b-req-ago">{request.ago}</span> : undefined} />
       {note ? <p className="q-acts-note">{note}</p> : null}
-      <form action={reviewTimeOffAction} className="q-acts-form">
+      <TimeOffDecisionForm className="q-acts-form" checkHref={request.href}>
         <input type="hidden" name="requestId" value={request.id} />
         <WaitingDecide name={request.employeeName} approve={clear} reviewHref={request.href} />
-      </form>
+      </TimeOffDecisionForm>
     </li>;
   })}</ul>;
 }

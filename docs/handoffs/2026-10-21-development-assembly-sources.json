@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "a87826f6833c3572ea429939dbd688dd94549863",
-      "disposition": "held",
-      "reason": "The reviewed Rondo changes through bc75950a were integrated with Development's knowledge search in 879f81bb and checked on the published base 49cd1072. The November 19 audit candidate imports d22e8eaa, a1ae2753 and a87826f68 for Owner and Manager controls, guide text and evidence. The short-screen Clocker, tablet and Schedule layout, and lost time-off decision fixes remain on Collab for their own integration. Earlier checkpoint f9171d7c remains preserved in the qualified combined assembly 05f2553182b387f20495c19070cfbabd50a987ef and its linear publication evidence."
+      "sha": "d00ca97b6b4e301ab05de72684c58e4ae1647186",
+      "disposition": "included",
+      "reason": "The November 20 merge includes the exact Collab tip, including the short-screen Clocker and schedule audit fixes, time-off decision recovery, and Owner PTO screens. Development retains scoped Manager publishing, Manager-posted open shifts, the Owner activity feed, and location-address contracts and migrations."
     },
     {
       "branch": "scrum190-signup-ui",
