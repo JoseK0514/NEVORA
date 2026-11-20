@@ -35,4 +35,4 @@ All calls are same-origin POST with the current session, `x-nevora-clocker: 1`, 
 
 ## Release gate
 
-The backend contracts and local verification are separate from the combined UI acceptance. Claude needs to complete the Owner enrollment and settings screens, tablet consent and skip controls, and exact-punch navigation. The physical-iPad evaluation and model rights review gate an employee-data pilot. Main and production require separate release approval.
+The backend ships with the face key, platform binding, and worker disabled. Existing Clocker photo settings and the Owner inbox work with face verification unconfigured, including before the additive migration is applied. Claude needs to complete the Owner enrollment and settings screens, tablet consent and skip controls, and exact-punch navigation. The physical-iPad evaluation and model rights review gate an employee-data pilot. Main and production require separate release approval.

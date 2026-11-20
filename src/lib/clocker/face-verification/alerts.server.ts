@@ -1,10 +1,11 @@
 import 'server-only';
 import type {SqlStatement} from '../../notifications/types';
 import {readPhotoPlatformBinding} from '../photo-server/platform-lifecycle';
+import {readFaceKey} from './crypto.server';
 
 const faces = /^clocker-face-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
 export const faceAlertId = (value: string) => faces.exec(value)?.[1] ?? null;
-export const faceAlertWorkspace = () => readPhotoPlatformBinding(process.env)?.workspaceId;
+export const faceAlertWorkspace = () => readFaceKey() ? readPhotoPlatformBinding(process.env)?.workspaceId : undefined;
 export const faceAlertScope = (workspaceId: string): SqlStatement => ({
   text: "SELECT set_config('nevora.clocker.photo_workspace',$1,true)", values: [workspaceId],
 });

@@ -84,13 +84,21 @@ it('keeps one original punch, emits one current Owner inbox item, and reuses the
   const [notification] = await fixture.q<{id: string}>('SELECT id::text FROM clocker_face_alerts');
   const id = 'clocker-face-' + notification.id;
   const env = {NEVORA_ENVIRONMENT: 'staging', NEVORA_CLOCKER_PHOTO_RUNTIME: 'neon-staging-v1',
-    NEVORA_CLOCKER_PHOTO_WORKSPACE: scope.workspaceId, NEVORA_CLOCKER_PHOTO_PROJECT: scope.projectId, NEVORA_CLOCKER_PHOTO_BRANCH: scope.branchId};
+    NEVORA_CLOCKER_PHOTO_WORKSPACE: scope.workspaceId, NEVORA_CLOCKER_PHOTO_PROJECT: scope.projectId,
+    NEVORA_CLOCKER_PHOTO_BRANCH: scope.branchId, NEVORA_CLOCKER_FACE_KEY: Buffer.alloc(32, 19).toString('base64url')};
   const previous = Object.fromEntries(Object.keys(env).map(key => [key, process.env[key]]));
   Object.assign(process.env, env);
   try {
     expect(await readPortalNotificationList(ownerSession, 'test', fixture.db.executor)).toMatchObject({
       state: 'ready', items: [{id, label: 'Punch photo needs review', reviewState: 'unread'}],
     });
+    delete process.env.NEVORA_CLOCKER_FACE_KEY;
+    await fixture.q('ALTER TABLE clocker_face_alerts RENAME TO fixture_hidden_face_alerts');
+    try {
+      expect(await readPortalNotificationList(ownerSession, 'test', fixture.db.executor)).toMatchObject({state: 'ready', items: []});
+    } finally {
+      await fixture.q('ALTER TABLE fixture_hidden_face_alerts RENAME TO clocker_face_alerts');
+    }
   } finally {
     for (const [key, value] of Object.entries(previous)) {
       if (value !== undefined) process.env[key] = value;
