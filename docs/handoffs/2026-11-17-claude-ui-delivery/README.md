@@ -191,6 +191,9 @@ None blocks integration. Each report has its full list.
   guides rebuilt in `df86717a`: [hand-back](../2026-11-19-claude-owner-manager-controls.md) and
   [evidence](../../product/review-2026-11-19-owner-manager/README.md). Location-scoped publishing needs a backend read
   change (item 2 there).
+- Time off for Owners on Codex's PTO contract (Settings › Time off policies, Team › person › Time off balance with
+  adjustments, Cancel approval on Approved time off), English and Spanish: code `c9d042b9`, guides `d74a9578`:
+  [hand-back](../2026-11-20-claude-pto-owner-screens.md) and [evidence](../../product/review-2026-11-20-pto/README.md).
 - The Support reference is switched on (`5cc1c838` and before, by the backend session), so the U11 note above is
   out of date.
 
