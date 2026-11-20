@@ -36,7 +36,7 @@ describe('migration order authority', () => {
     // 0043 (Publish changes held-edit history) depends only on base tables and follows the Clocker tail; 0044/0045 are additive Owner AI storage.
     // 0069 (Clocker early clock-in grace) is additive and replaces clocker_resolve_schedule_context from 0015.
     // 0068 (optional employee employment dates) and 0069 are independent additive columns/tables.
-    expect(BASE_MIGRATIONS.slice(BASE_MIGRATIONS.indexOf('0037_owner_briefing_reviews.sql'), BASE_MIGRATIONS.indexOf('0071_user_language_preferences.sql') + 1)).toEqual([
+    expect(BASE_MIGRATIONS.slice(BASE_MIGRATIONS.indexOf('0037_owner_briefing_reviews.sql'), BASE_MIGRATIONS.indexOf('0076_location_addresses.sql') + 1)).toEqual([
       '0037_owner_briefing_reviews.sql', '0038_read_path_indexes.sql', '0039_native_payroll_setup_records.sql',
       '0038_clocker_pin_operation_reference.sql', '0039_clocker_review_requests.sql',
       '0040_clocker_photo_policy_evidence.sql', '0041_clocker_photo_platform_cleanup.sql',
@@ -67,6 +67,11 @@ describe('migration order authority', () => {
       '0069_clocker_early_grace.sql',
       '0070_scheduling_authority_pto.sql',
       '0071_user_language_preferences.sql',
+      '0072_delegated_time_off.sql',
+      '0073_pto_timecard_accrual.sql',
+      '0074_puerto_rico_pto.sql',
+      '0075_manager_open_shifts.sql',
+      '0076_location_addresses.sql',
     ]);
   });
 

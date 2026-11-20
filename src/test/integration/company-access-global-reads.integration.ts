@@ -52,7 +52,7 @@ const reads=[
 it.each(reads)('$name denies a selected-location Manager without exposing global payloads or creating observations',async test=>{
  const f=await setup();try{
   const before=await f.q('SELECT id,payload FROM attendance_policy_observations ORDER BY id');
-  expect(await test.run(f.manager,f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+  expect(await test.run(f.manager,f.db.executor)).toEqual({state:'unavailable',reason:test.name==='corrections'?'permission_required':'access_denied'});
   expect(await f.q('SELECT id,payload FROM attendance_policy_observations ORDER BY id')).toEqual(before);
  }finally{await close(f);}
 });
@@ -85,7 +85,7 @@ const apiReads=[
  {name:'manager timecards POST',run:()=>timecardsPOST(new Request('http://127.0.0.1/api/timecards',{method:'POST',headers:{'x-nevora-timecards':'1','x-nevora-actor':ctx.proof!.employee.id,'content-type':'application/json',origin:'http://127.0.0.1'},body:JSON.stringify(period)}))},
 ];
 it.each(apiReads)('$name enforces Company at the actual API boundary',async test=>{
- const f=await setup();try{rs.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');const response=await test.run();expect(response.status).toBe(403);expect(await response.json()).toEqual({state:'unavailable',reason:'access_denied'});expect(response.headers.get('cache-control')).toContain('no-store');}finally{await close(f);}
+ const f=await setup();try{rs.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');const response=await test.run();expect(response.status).toBe(403);expect(await response.json()).toEqual({state:'unavailable',reason:test.name==='corrections GET'?'permission_required':'access_denied'});expect(response.headers.get('cache-control')).toContain('no-store');}finally{await close(f);}
 });
 it.each(['EMPLOYEE','LEAD'] as const)('mixed timecards API preserves %s own source and canonical complete manager source stays unfiltered',async role=>{
  const f=await setup();try{

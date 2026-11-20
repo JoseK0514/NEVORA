@@ -79,6 +79,9 @@ export const BASE_MIGRATIONS = [
   '0072_delegated_time_off.sql',
   '0073_pto_timecard_accrual.sql',
   '0074_puerto_rico_pto.sql',
+  '0075_manager_open_shifts.sql',
+  '0076_location_addresses.sql',
+  '0077_clocker_face_verification.sql',
 ] as const;
 
 /** Applied last, in exactly this order, once the company and Owner exist:

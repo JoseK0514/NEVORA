@@ -4,7 +4,7 @@ import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {companyAccessFixture,grantFixtureWorkforcePermission} from './company-access-fixture';
 import {readOwnerOperationalScope,assignOperationalScope,readOperationalAuthority} from '../../lib/company-access/operational-scope.server';
-import {readOperationalShiftEditor} from '../../lib/company-access/operational-read.server';
+import {readManagerSchedulePublish,readOperationalShiftEditor} from '../../lib/company-access/operational-read.server';
 const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
 rs.mock('server-only',()=>({}));
 rs.mock('@/lib/db',()=>{
@@ -18,6 +18,7 @@ rs.mock('../../lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],req
 rs.mock('next/cache',()=>({revalidatePath:()=>{}}));
 rs.mock('next/navigation',()=>({redirect:(destination:string)=>{throw Object.assign(new Error('Owned redirect'),{destination});}}));
 rs.mock('../../lib/data/notification-transactions', ()=>({...rs.requireActual<typeof import('../../lib/data/notification-transactions')>('../../lib/data/notification-transactions'),neonNotificationExecutor:()=>ctx.ex!}));
+import {applyWorkforceCommand} from '../../lib/workforce/settings.server';
 import {createShiftAction,updateShiftAction,deleteShiftAction,publishScheduleAction} from '../../app/app/schedule/actions';
 type ReadObserver=(statement:SqlStatement,rows:unknown[],contract:unknown[]|undefined)=>void|Promise<void>;
 /** Observe completed real reads before returning their rows to the action.
@@ -74,6 +75,72 @@ it('normal actions deny B targets, forged foreign employee and A publication wit
   await expect(publishScheduleAction(form())).rejects.toMatchObject({destination:'/app/schedule?error=ACCESS_DENIED'});
   expect(await f.q('SELECT to_jsonb(s) AS row FROM shifts s ORDER BY id')).toEqual(before);
   expect(await f.q('SELECT id FROM schedule_publication_revisions')).toEqual([]);
+ }finally{await close(f);}
+});
+it('publishes only Calle Loíza and refuses direct out-of-scope or revoked publication',async()=>{
+ const f=await setup();
+ try{
+  const weekStart='2026-10-12';
+  await f.q(`UPDATE locations SET name='Calle Loíza',short_name='Calle Loíza' WHERE id='loc-1';
+    UPDATE locations SET name='Condado',short_name='Condado' WHERE id='loc-2';
+    INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('action-a','loc-1','2026-10-12','DRAFT','owner');
+    INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('loiza-shift','action-a','TARGET','2026-10-12','08:00','09:00')`);
+  await grantFixtureWorkforcePermission(f,'PUBLISH_SCHEDULE','loc-1');
+  const foreign=()=>f.q(`SELECT to_jsonb(s) AS schedule,to_jsonb(sh) AS shift FROM schedules s
+    JOIN shifts sh ON sh.schedule_id=s.id WHERE s.id='action-b'`);
+  const originalForeign=await foreign();
+  const deniedView={state:'unavailable',reason:'access_denied'};
+  for(const mode of ['LOCATIONS','COMPANY'] as const){
+   await choose(f,mode);
+   const view=await readManagerSchedulePublish(f.manager,{weekStart},f.db.executor);
+   expect(view).toMatchObject({state:'ready',coverage:{kind:'LOCATIONS',locationIds:['loc-1']},data:{
+    publishLocationIds:['loc-1'],locations:[{id:'loc-1',name:'Calle Loíza',status:'DRAFT',shiftCount:1}],
+   }});
+   expect(JSON.stringify(view)).not.toContain('Condado');
+   expect(await readManagerSchedulePublish(f.manager,{weekStart,reviewLocationId:'loc-2'},f.db.executor)).toEqual(deniedView);
+   await expect(publishScheduleAction(form({locationId:'loc-2',confirmWarnings:'yes'})))
+    .rejects.toMatchObject({destination:'/app/schedule?error=ACCESS_DENIED'});
+  }
+  await choose(f,'LOCATIONS');
+  const multiple=form({confirmWarnings:'yes'});
+  multiple.append('locationId','loc-2');
+  await expect(publishScheduleAction(multiple)).rejects.toMatchObject({destination:'/app/schedule?error=INVALID_PUBLISH'});
+  await expect(publishScheduleAction(form({from:'publish'}))).rejects.toMatchObject({
+   destination:'/app/schedule/publish?week=2026-10-12&review=1&location=loc-1#publish-review',
+  });
+  expect(await readManagerSchedulePublish(f.manager,{weekStart,reviewLocationId:'loc-1'},f.db.executor))
+   .toMatchObject({state:'ready',data:{review:[{location:{id:'loc-1'},readiness:{hasWarnings:true}}]}});
+  const [scheduleBefore]=await f.q("SELECT to_jsonb(s) AS row FROM schedules s WHERE id='action-a'");
+  const base=f.db.executor;
+  let reachedWrite=false;
+  ctx.ex={...base,transaction:async(statements,signal)=>{
+   if(!reachedWrite&&statements.some(s=>s.text.includes("UPDATE schedules SET status='PUBLISHED'"))){
+    reachedWrite=true;
+    expect(await applyWorkforceCommand(f.owner,{
+     kind:'PERMISSION',operationId:randomUUID(),employeeId:'manager',permission:'PUBLISH_SCHEDULE',
+     locationId:'loc-1',granted:false,expectedRevision:1,
+    },base)).toMatchObject({state:'saved'});
+   }
+   return base.transaction(statements,signal);
+  }};
+  await expect(publishScheduleAction(form({confirmWarnings:'yes'}))).rejects.toMatchObject({destination:'/app/schedule?error=ACCESS_DENIED'});
+  expect(reachedWrite).toBe(true);
+  expect(await f.q("SELECT to_jsonb(s) AS row FROM schedules s WHERE id='action-a'")).toEqual([scheduleBefore]);
+  expect(await f.q('SELECT id FROM schedule_publication_revisions')).toEqual([]);
+  expect(await readManagerSchedulePublish(f.manager,{weekStart},base)).toEqual(deniedView);
+  await expect(publishScheduleAction(form({confirmWarnings:'yes'}))).rejects.toMatchObject({destination:'/app/schedule?error=ACCESS_DENIED'});
+  expect(await foreign()).toEqual(originalForeign);
+
+  ctx.ex=base;
+  expect(await applyWorkforceCommand(f.owner,{
+   kind:'PERMISSION',operationId:randomUUID(),employeeId:'manager',permission:'PUBLISH_SCHEDULE',
+   locationId:'loc-1',granted:true,expectedRevision:2,
+  },base)).toMatchObject({state:'saved'});
+  await expect(publishScheduleAction(form({from:'publish',confirmWarnings:'yes'})))
+   .rejects.toMatchObject({destination:'/app/schedule?week=2026-10-12&location=loc-1&published=loc-1'});
+  expect(await f.q("SELECT status,published_by FROM schedules WHERE id='action-a'")).toEqual([{status:'PUBLISHED',published_by:'manager'}]);
+  expect(await f.q('SELECT location_id FROM schedule_publication_revision_shifts')).toEqual([{location_id:'loc-1'}]);
+  expect(await foreign()).toEqual(originalForeign);
  }finally{await close(f);}
 });
 it('normal scoped create/update/delete A succeeds and preserves every B schedule timestamp',async()=>{

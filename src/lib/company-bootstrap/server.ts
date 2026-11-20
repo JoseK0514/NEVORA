@@ -58,7 +58,7 @@ async function runtimeRoles(client:BootstrapClient,spec:PendingCompanySpec){
   await client.query('INSERT INTO onboarding_runtime_roles(kind,login_role) VALUES($1,$2)',[kind,role.name]);
  }
  await client.query(`REVOKE CONNECT,TEMPORARY ON DATABASE ${spec.databaseName} FROM PUBLIC; REVOKE CREATE ON SCHEMA public FROM PUBLIC`);
- const business=await client.query<{name:string}>(`SELECT c.relname AS name FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p','v','m','f') AND c.relname NOT IN('onboarding_workspace_identity','onboarding_runtime_roles','onboarding_provision_receipts','onboarding_initial_owner','onboarding_owner_grants','onboarding_owner_activation_receipts','onboarding_restore_receipts','nevora_commerce_installation') ORDER BY c.relname`);
+ const business=await client.query<{name:string}>(`SELECT c.relname AS name FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p','v','m','f') AND NOT starts_with(c.relname,'clocker_face_') AND c.relname NOT IN('onboarding_workspace_identity','onboarding_runtime_roles','onboarding_provision_receipts','onboarding_initial_owner','onboarding_owner_grants','onboarding_owner_activation_receipts','onboarding_restore_receipts','nevora_commerce_installation') ORDER BY c.relname`);
  const quoted=business.rows.map(r=>'"'+r.name.replaceAll('"','""')+'"').join(',');
  for(const role of [spec.app,spec.worker]){
   await client.query(`GRANT CONNECT ON DATABASE ${spec.databaseName} TO ${role.name}; GRANT USAGE ON SCHEMA public TO ${role.name}`);
@@ -72,6 +72,15 @@ async function runtimeRoles(client:BootstrapClient,spec:PendingCompanySpec){
    await client.query(`REVOKE UPDATE,DELETE,TRUNCATE ON management_time_closes FROM ${role.name}`);
    await client.query(`REVOKE UPDATE,DELETE ON workforce_permission_revisions,planning_calendar_revisions,pto_policy_revisions,pto_ledger,workforce_setting_operations,pto_timecard_accrual_revisions FROM ${role.name};
      REVOKE INSERT,UPDATE,DELETE ON workforce_permissions_current,pto_policies_current FROM ${role.name}`);
+   await client.query(`REVOKE UPDATE,DELETE ON manager_open_shifts FROM ${role.name};
+     GRANT UPDATE(claimed_by,claimed_at,assignment_id,assignment_visibility,withdrawn_by,withdrawn_at) ON manager_open_shifts TO ${role.name}`);
+   await client.query(`GRANT SELECT ON clocker_face_platform,clocker_face_checks TO ${role.name};
+     GRANT SELECT,INSERT,UPDATE ON clocker_face_policies,clocker_face_enrollments TO ${role.name};
+     GRANT INSERT ON clocker_face_events TO ${role.name};
+     GRANT INSERT,UPDATE(state,finished_at,lease_token,lease_until) ON clocker_face_checks TO ${role.name};
+     GRANT SELECT,UPDATE(read_at) ON clocker_face_alerts TO ${role.name};
+     GRANT EXECUTE ON FUNCTION clocker_face_account(text,text,text,text,text,text,integer,boolean,integer,text),
+       clocker_face_ready(text,text,text),clocker_face_skip(text,text,text,uuid) TO ${role.name}`);
    await client.query(`REVOKE UPDATE,DELETE ON user_language_preferences FROM ${role.name}; GRANT UPDATE(language) ON user_language_preferences TO ${role.name}`);
    await client.query(`GRANT EXECUTE ON FUNCTION nevora_management_close_source(text,text),nevora_management_close(text,text,text,text,text,text,uuid,text,timestamptz,text,text) TO ${role.name}`);
   }

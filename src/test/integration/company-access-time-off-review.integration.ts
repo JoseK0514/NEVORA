@@ -40,13 +40,17 @@ async function denied(work:()=>Promise<unknown>){let error:unknown;try{await wor
 it.each(['pending','absent','terminal'] as const)('team review denies selected-location access before reading a private %s request',async kind=>{
  const f=await setup();try{
   if(kind==='terminal')expect(await reviewTimeOffRequest(command(f),f.db.executor)).toBe(true);await choose(f,'LOCATIONS');const before=await snapshot(f);let read=false;const base=f.db.executor,ex={...base,query:async<T>(s:SqlStatement,signal?:AbortSignal)=>{if(s.text.includes('SELECT * FROM time_off_requests WHERE id='))read=true;return base.query<T>(s,signal);}};
-  await denied(()=>reviewTimeOffRequest(command(f,f.manager,kind==='absent'?randomUUID():f.requestId),ex));expect(read).toBe(false);expect(await snapshot(f)).toEqual(before);
+  const review=()=>reviewTimeOffRequest(command(f,f.manager,kind==='absent'?randomUUID():f.requestId),ex);
+  if(kind==='absent')await denied(review);
+  else await expect(review()).rejects.toMatchObject({reason:'leave_scope'});
+  expect(read).toBe(false);expect(await snapshot(f)).toEqual(before);
  }finally{await close(f);}
 });
 it('custom terminal transition cannot bypass Company with a valid stored before/after snapshot',async()=>{
  const f=await setup();try{
   const before=await getTimeOffRequest(f.requestId,f.db.executor);if(!before)throw Error('Owned request');await choose(f,'LOCATIONS');const state=await snapshot(f);
-  await denied(()=>commitRequestTransition({before:requestSnapshot('TIME_OFF',before),after:requestSnapshot('TIME_OFF',{...before,status:'DENIED'}),actorEmployeeId:'manager',managementProof:f.manager,mutation:{text:"UPDATE time_off_requests SET status='DENIED',reviewed_by=$2,reviewed_at=clock_timestamp() WHERE id=$1 AND status='PENDING' RETURNING id",values:[f.requestId,'manager']}},f.db.executor));expect(await snapshot(f)).toEqual(state);
+  await expect(commitRequestTransition({before:requestSnapshot('TIME_OFF',before),after:requestSnapshot('TIME_OFF',{...before,status:'DENIED'}),actorEmployeeId:'manager',managementProof:f.manager,mutation:{text:"UPDATE time_off_requests SET status='DENIED',reviewed_by=$2,reviewed_at=clock_timestamp() WHERE id=$1 AND status='PENDING' RETURNING id",values:[f.requestId,'manager']}},f.db.executor)).rejects.toMatchObject({reason:'leave_scope'});
+  expect(await snapshot(f)).toEqual(state);
  }finally{await close(f);}
 });
 it.each(['Owner','Company Manager'] as const)('current %s makes one terminal decision and keeps the repeat a no-op',async role=>{
@@ -70,7 +74,7 @@ it('team decision expires after actual writes and the final DB-clock guard rolls
  }finally{await worker.end();await close(f);}
 });
 const form=(f:Fixture)=>{const body=new FormData();body.set('requestId',f.requestId);body.set('decision','APPROVED');body.set('managerId','owner');return body;};
-it('normal time-off review action denies a scoped Manager with a generic review redirect and no writes',async()=>{const f=await setup();try{await choose(f,'LOCATIONS');const before=await snapshot(f);await expect(reviewTimeOffAction(form(f))).rejects.toMatchObject({destination:'/app/requests?tab=team&error=review'});expect(await snapshot(f)).toEqual(before);}finally{await close(f);}});
+it('normal time-off review action denies a partially scoped Manager with a leave-scope redirect and no writes',async()=>{const f=await setup();try{await choose(f,'LOCATIONS');const before=await snapshot(f);await expect(reviewTimeOffAction(form(f))).rejects.toMatchObject({destination:'/app/requests?tab=team&error=leave_scope'});expect(await snapshot(f)).toEqual(before);}finally{await close(f);}});
 it.each([{decision:'APPROVED',code:'timeoff-approved'},{decision:'DENIED',code:'timeoff-declined'}] as const)('normal Company $decision action retains its session actor and exact known-decision redirect',async({decision,code})=>{
  const f=await setup();try{const body=form(f);body.set('decision',decision);
   await expect(reviewTimeOffAction(body)).rejects.toMatchObject({destination:'/app/requests?tab=pending&reviewed=1&decided='+code});

@@ -56,6 +56,16 @@
       "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
+      "path": "scripts/clocker-face-verification-worker.ts",
+      "tags": [
+        "direct-transport",
+        "non-request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Requires an explicit fictional staging photo binding and an execute-only worker role. The database verifies the workspace, project, branch, model revision, and session role before accepting claims or cleanup.",
+      "isolatedBehavior": "BOUND_WORKER"
+    },
+    {
       "path": "scripts/communication-login-diagnostics.mjs",
       "tags": [
         "runtime-boundary-audit"
@@ -650,6 +660,16 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/clocker/[location]/face-verification/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "shared-executor"
+      ],
+      "status": "CONVERTED",
+      "reason": "Uses the workspace-bound executor, exact staging scope, same-origin Clocker transport, and current registered device and employee PIN proofs for enrollment, withdrawal, and individual comparison skips.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/clocker/[location]/photos/[photoId]/route.ts",
       "tags": [
         "request-entrypoint"
@@ -706,6 +726,16 @@
       ],
       "status": "CONVERTED",
       "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/clocker/face-verification/route.ts",
+      "tags": [
+        "request-entrypoint",
+        "shared-executor"
+      ],
+      "status": "CONVERTED",
+      "reason": "Uses the workspace-bound executor and exact staging scope. Current Owner session and same-origin checks fence policy changes, enrolled reference reads, and employee enrollment operations.",
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
@@ -1439,6 +1469,20 @@
       "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
     },
     {
+      "path": "src/app/api/open-shifts/route.ts",
+      "tags": ["shared-executor", "request-entrypoint"],
+      "status": "CONVERTED",
+      "reason": "Open shift requests use host-bound application SQL, the marketplace gate and current session proof. Posting and claiming enforce workspace, grant and employee eligibility in the shared service.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/owner/activity/route.ts",
+      "tags": ["shared-executor", "request-entrypoint"],
+      "status": "CONVERTED",
+      "reason": "Private Owner history uses host-bound application SQL, a current Owner session, a workspace fence, and a limited metadata projection.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/owner/advisor/route.ts",
       "tags": [
         "shared-executor",
@@ -1861,6 +1905,13 @@
       ],
       "status": "CONVERTED",
       "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/app/exchange/open-shifts/actions.ts",
+      "tags": ["server-action"],
+      "status": "CONVERTED",
+      "reason": "The open shift form uses current session proof and the same host-bound service and marketplace gate as the API.",
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {

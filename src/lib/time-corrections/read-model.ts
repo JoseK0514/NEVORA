@@ -80,7 +80,7 @@ export type ManagerTimeCorrections =
       requests: ManagerCorrectionItem[];
       paging?: CompleteReadManifest;
     }
-  | { state: 'unavailable'; reason: 'access_denied' | 'read_failed' | 'schema_missing' | 'source_limit' };
+  | { state: 'unavailable'; reason: 'access_denied' | 'permission_required' | 'read_failed' | 'schema_missing' | 'source_limit' };
 
 const object = (value: unknown): value is Record<string, unknown> =>
   Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -224,6 +224,7 @@ export function parseEmployeeTimeCorrections(value: unknown): EmployeeTimeCorrec
 /** Require a positive, at-most-45-second view lifetime as well as validated review rows. */
 export function parseManagerTimeCorrections(value: unknown): ManagerTimeCorrections {
   if (!object(value)) throw new Error('Invalid correction response');
+  if (value.state === 'unavailable' && value.reason === 'permission_required') return {state:'unavailable',reason:'permission_required'};
   const failed = unavailable(value);
   if (failed) return failed;
   if (value.state !== 'ready' || !integer(value.validForMs,1) || value.validForMs>45000 || !instant(value.observedAt) || !zone(value.timeZone) ||

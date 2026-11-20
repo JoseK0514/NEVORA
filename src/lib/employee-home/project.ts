@@ -24,7 +24,8 @@ function safeItem(row:AttentionItem):AttentionItem{
 function safeAssignment(row:PublishedAssignment|null):PublishedAssignment|null{
  if(row===null)return null;
  if(!row||!text(row.shiftId)||!text(row.assignmentEpisodeId)||!Number.isSafeInteger(row.termsRevision)||row.termsRevision<1||!isValidWeekStart(row.weekStart)||!isValidIsoDate(row.date)||!instant(row.startAt)||!instant(row.endAt)||Date.parse(row.endAt)<=Date.parse(row.startAt)||!text(row.locationId)||!text(row.locationLabel)||!text(row.publicationRevisionId)||typeof row.designatedLead!=='boolean'||row.positionLabel!==null&&!text(row.positionLabel))throw Error('Invalid assignment');
- return {shiftId:row.shiftId,assignmentEpisodeId:row.assignmentEpisodeId,termsRevision:row.termsRevision,weekStart:row.weekStart,date:row.date,startAt:row.startAt,endAt:row.endAt,locationId:row.locationId,locationLabel:row.locationLabel,positionLabel:row.positionLabel,designatedLead:row.designatedLead,publicationRevisionId:row.publicationRevisionId};
+ if(row.locationAddress!=null&&(typeof row.locationAddress!=='string'||[...row.locationAddress].length>300))throw Error('Invalid location address');
+ return {shiftId:row.shiftId,assignmentEpisodeId:row.assignmentEpisodeId,termsRevision:row.termsRevision,weekStart:row.weekStart,date:row.date,startAt:row.startAt,endAt:row.endAt,locationId:row.locationId,locationLabel:row.locationLabel,locationAddress:row.locationAddress??null,positionLabel:row.positionLabel,designatedLead:row.designatedLead,publicationRevisionId:row.publicationRevisionId};
 }
 const itemSource:Record<AttentionItem['ref']['kind'],HomeSource>={SCHEDULE:'acknowledgements',EXCHANGE:'exchanges',TIME_OFF:'timeOff',TIME_CORRECTION:'ownTime',COMMUNICATION:'communications'};
 const rank=(item:AttentionItem)=>item.actionable&&item.deadlineAt?0:item.required?1:item.actionable?2:3;

@@ -8,12 +8,18 @@ import { createPosition, updatePosition, PositionConcurrencyError } from "@/lib/
 import type { ConfigurationResult } from "@/components/configuration-form";
 const value = (data: FormData, key: string) =>
   String(data.get(key) ?? "").trim();
+const addressField = (data: FormData) => {
+  const address = data.get("address");
+  if (address === null) return undefined;
+  if (typeof address !== "string") throw new Error("Location address must be text.");
+  return address;
+};
 /** Exposes known configuration/concurrency messages without leaking arbitrary database errors. */
 function failure(error: unknown): ConfigurationResult {
   if (error instanceof LocationConcurrencyError || error instanceof PositionConcurrencyError) return { error: error.message };
   const message = error instanceof Error ? error.message : "";
   const safe =
-    /^(?:Location name|Short name|Position name|Clocker key|Workspace name|Enter your business name|A valid|Time zone|Changing the business timezone|Choose|Only an active|Workspace configuration|Position not found|Location not found)/;
+    /^(?:Location name|Location address|Short name|Position name|Clocker key|Workspace name|Enter your business name|A valid|Time zone|Changing the business timezone|Choose|Only an active|Workspace configuration|Position not found|Location not found)/;
   return {
     error: safe.test(message)
       ? message
@@ -52,6 +58,7 @@ export async function createLocationAction(
     await createLocation({
       name: value(data, "name"),
       shortName: value(data, "shortName"),
+      address: addressField(data),
       clockerKey: value(data, "clockerKey") || undefined,
       actorEmployeeId: actor.id,
       proof,
@@ -76,6 +83,7 @@ export async function updateLocationAction(
       id: value(data, "id"),
       name: value(data, "name"),
       shortName: value(data, "shortName"),
+      address: addressField(data),
       active: data.get("active") === "on",
       expectedUpdatedAt: value(data, "expectedUpdatedAt"),
       actorEmployeeId: actor.id,

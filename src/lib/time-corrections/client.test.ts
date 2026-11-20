@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, rs } from '@rstest/core';
-import { reviewManagerTimeCorrection, submitEmployeeTimeCorrection } from './client';
+import { fetchManagerTimeCorrections, reviewManagerTimeCorrection, submitEmployeeTimeCorrection } from './client';
 
 const operationId='11111111-1111-4111-8111-111111111111';
 const request={operationId,kind:'ENTRY_BOUNDARY' as const,timeEntryId:'recorded-entry',proposedStartAt:'2020-10-07T12:00:00Z',proposedEndAt:'2020-10-07T13:00:00Z',reason:'Review this recorded interval.'};
@@ -36,4 +36,13 @@ describe('D2 same-operation response recovery',()=>{
     rs.stubGlobal('fetch',rs.fn().mockResolvedValue(Response.json({state:'pending',operationId:review.requestId,requestId:review.requestId,revision:1})));
     await expect(submitEmployeeTimeCorrection(request)).resolves.toEqual({state:'outcome_unknown',operationId});
   });
+});
+
+it('keeps a missing review grant in both transport responses',async()=>{
+  const refusal={state:'unavailable',reason:'permission_required'};
+  rs.stubGlobal('fetch',rs.fn().mockImplementation(()=>Response.json(refusal,{
+    status:403,headers:{'X-Nevora-Failure':'access_denied'},
+  })));
+  await expect(fetchManagerTimeCorrections(new AbortController().signal)).resolves.toEqual(refusal);
+  await expect(reviewManagerTimeCorrection(review)).resolves.toEqual({...refusal,httpStatus:403});
 });

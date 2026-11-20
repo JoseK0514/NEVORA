@@ -3,6 +3,7 @@ import { requestTimeOffAction, reviewTimeOffAction } from './actions';
 import { requireRoles, requireSelfService } from '@/lib/auth/permissions';
 import { createTimeOffRequest, reviewTimeOffRequest } from '@/lib/data/requests';
 import { requireSessionMutationProof } from '@/lib/auth/session';
+import { LeaveReviewRefusal } from '@/lib/workforce/leave-authority.server';
 import { managementProof } from '../../../test/fixtures/management';
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:rs.fn(async()=>({employee:{id:'M',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)}))}));
 rs.mock('@/lib/auth/permissions',()=>({ TIME_OFF_REVIEW_ROLES:['OWNER','MANAGER'],requireRoles:rs.fn(),requireSelfService:rs.fn() }));
@@ -54,4 +55,28 @@ it('returns to the Inbox filter it came from, from a fixed list only (IS-14)', a
   await expect(reviewTimeOffAction(form('planning'))).rejects.toThrow('redirect:/app/inbox?filter=planning&decided=timeoff-approved');
   await expect(reviewTimeOffAction(form('all'))).rejects.toThrow('redirect:/app/inbox?decided=timeoff-approved');
   await expect(reviewTimeOffAction(form('//evil'))).rejects.toThrow('redirect:/app/inbox?filter=requests&decided=timeoff-approved');
+});
+
+it.each(['permission_required','self_review','leave_scope'] as const)('redirects with the bounded leave refusal %s',async reason=>{
+  rs.mocked(reviewTimeOffRequest).mockRejectedValueOnce(new LeaveReviewRefusal(reason));
+  const data=new FormData();
+  data.set('requestId','private-request');
+  data.set('decision','APPROVED');
+  data.set('returnTo','inbox');
+  await expect(reviewTimeOffAction(data)).rejects.toThrow(`redirect:/app/requests?tab=team&error=${reason}`);
+});
+
+it('keeps confirmed and refused cancellations on the Approved tab with distinct feedback', async () => {
+  const data = new FormData();
+  data.set('requestId', 'r1');
+  data.set('decision', 'CANCELLED');
+
+  rs.mocked(reviewTimeOffRequest).mockResolvedValueOnce(true);
+  await expect(reviewTimeOffAction(data)).rejects.toThrow('redirect:/app/requests?tab=approved&cancelled=1');
+
+  rs.mocked(reviewTimeOffRequest).mockResolvedValueOnce(false);
+  await expect(reviewTimeOffAction(data)).rejects.toThrow('redirect:/app/requests?tab=approved&error=review');
+
+  rs.mocked(reviewTimeOffRequest).mockRejectedValueOnce(new LeaveReviewRefusal('leave_scope'));
+  await expect(reviewTimeOffAction(data)).rejects.toThrow('redirect:/app/requests?tab=approved&error=leave_scope');
 });

@@ -10,7 +10,7 @@ import {assertEmployeeViewProof,employeeViewGuards,employeeReadLimits,readEmploy
 import {employeeAllowedLocationsSql} from './employee-schedule';
 
 type AssignmentRow={shiftId:string;assignmentEpisodeId:string;termsRevision:number;weekStart:string;date:string;
- startTime:string;endTime:string;locationId:string;locationLabel:string;positionLabel:string|null;designatedLead:boolean;publicationRevisionId:string|null};
+ startTime:string;endTime:string;locationId:string;locationLabel:string;locationAddress?:string|null;positionLabel:string|null;designatedLead:boolean;publicationRevisionId:string|null};
 type Observation={observedAt:string;timeZone:string;future:AssignmentRow[];current:AssignmentRow[];coverageComplete:boolean;unpublishedLabels?:unknown};
 type SourceAuthority={allowedLocationIds:string[]};
 const unavailable:PublishedAssignmentRead={observedAt:null,timeZone:null,nextShift:null,currentShift:null,publicationState:'unavailable'};
@@ -22,7 +22,7 @@ function assignment(row:AssignmentRow,timeZone:string):PublishedAssignment{
   (row.positionLabel!==null&&typeof row.positionLabel!=='string')||typeof row.designatedLead!=='boolean')throw Error('Invalid published assignment source');
  const {startAt,endAt}=shiftBoundaryInstants(row,timeZone);
  return {shiftId:row.shiftId,assignmentEpisodeId:row.assignmentEpisodeId,termsRevision:row.termsRevision,weekStart:row.weekStart,
-  date:row.date,startAt,endAt,locationId:row.locationId,locationLabel:row.locationLabel,positionLabel:row.positionLabel,
+  date:row.date,startAt,endAt,locationId:row.locationId,locationLabel:row.locationLabel,locationAddress:row.locationAddress??null,positionLabel:row.positionLabel,
   designatedLead:row.designatedLead,publicationRevisionId:row.publicationRevisionId};
 }
 
@@ -49,7 +49,7 @@ export function projectPublishedAssignmentRows(input:Observation):PublishedAssig
 // from the live row; a held removal keeps its captured row and revision id.
 const ownColumns=`rs.source_shift_id AS "shiftId",COALESCE(sh.assignment_episode_id::text,rs.id) AS "assignmentEpisodeId",COALESCE(sh.terms_revision,1) AS "termsRevision",
  r.week_start::text AS "weekStart",rs.date::text AS date,left(rs.start_time::text,5) AS "startTime",left(rs.end_time::text,5) AS "endTime",
- rs.location_id AS "locationId",l.short_name AS "locationLabel",rs.position_name AS "positionLabel",rs.is_designated_lead AS "designatedLead",
+ rs.location_id AS "locationId",l.short_name AS "locationLabel",l.address AS "locationAddress",rs.position_name AS "positionLabel",rs.is_designated_lead AS "designatedLead",
  r.id AS "publicationRevisionId"`;
 const ownSelect=(extra:string,weeks:string,local='')=>`SELECT ${ownColumns}
  FROM (SELECT DISTINCT ON (pr.week_start) pr.id,pr.week_start FROM schedule_publication_revisions pr WHERE ${weeks} ORDER BY pr.week_start,pr.revision_number DESC,pr.id) r

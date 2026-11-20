@@ -26,7 +26,7 @@ export async function GET(request: Request): Promise<Response> {
     if(binding&&!await matchesCorrectionAuthority(binding))return correctionJson({state:'unavailable'},403);
     const result=await getManagerTimeCorrections();
     if (result.state==='ready') return correctionJson(result);
-    return correctionJson(result,result.reason==='access_denied'?403:503);
+    return correctionJson(result,result.reason==='access_denied'||result.reason==='permission_required'?403:503);
   } catch {
     return correctionJson({state:'unavailable'},503);
   }
@@ -56,6 +56,9 @@ export async function POST(request: Request): Promise<Response> {
         revision:result.revision,
         ...(result.status==='approved'?{adjustmentId:result.adjustmentId}:{}),
       });
+    }
+    if (result.status==='unavailable' && result.reason==='permission_required') {
+      return correctionJson({state:'unavailable',reason:result.reason},403);
     }
     if (result.status==='conflict') return correctionJson({state:'conflict'},409);
     if (result.status==='blocked') return correctionJson({state:'blocked',reason:result.reason},409);

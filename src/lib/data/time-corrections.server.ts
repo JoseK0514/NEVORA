@@ -362,7 +362,7 @@ async function readManagerTimeCorrectionsCore(
     const permitted = proof.employee.role === 'OWNER' ? null : permissions
       .filter(grant => grant.permission === 'REVIEW_TIME_EXCEPTION').map(grant => grant.locationId);
     if (permitted?.length === 0) {
-      if (!allowEmptyWithoutGrant) return {state:'unavailable',reason:'access_denied'};
+      if (!allowEmptyWithoutGrant) return {state:'unavailable',reason:'permission_required'};
       const validForMs = Math.floor(access.validForMs - Math.max(0,Date.now()-Date.parse(access.observedAt)));
       return validForMs > 0
         ? {state:'ready',observedAt:access.observedAt,timeZone:workspace.timeZone,requests:[],validForMs,authority:correctionAuthority(proof)}
@@ -408,7 +408,6 @@ async function readManagerTimeCorrectionsCore(
   }
 }
 
-// Public DTO/parser unchanged; the new internal reader is not a F10 authority boundary.
 export async function readManagerTimeCorrections(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),

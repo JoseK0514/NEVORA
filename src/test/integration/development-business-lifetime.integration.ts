@@ -42,7 +42,21 @@ it.each(['chromium','webkit'])('%s fences business observations and preserves su
    }) as typeof fetch;
   });
   const visit=async(path:string)=>{await page.goto(origin+path,{waitUntil:'domcontentloaded'});await page.bringToFront();await page.waitForFunction(()=>document.hasFocus());await page.evaluate(()=>window.dispatchEvent(new Event('focus')));};
-  await visit('/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(origin+'/app');
+  await visit('/login');
+  await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');
+  await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+  // The business scenario starts after Owner Home has finished its first-week read.
+  const setupRead=page.waitForResponse((response:{url():string;request():{method():string}})=>{
+   const url=new URL(response.url());
+   return url.origin===origin&&url.pathname==='/api/setup/first-week'&&response.request().method()==='GET';
+  });
+  void setupRead.catch(()=>{});
+  await page.getByRole('button',{name:'Sign in',exact:true}).click();
+  await page.waitForURL(origin+'/app');
+  const setupResponse=await setupRead;
+  expect(setupResponse.status()).toBe(200);
+  expect(await setupResponse.finished()).toBeNull();
+  expect((await setupResponse.json()).state).toBe('ready');
   const send=(command:unknown)=>page.evaluate(async (command:unknown)=>{const response=await fetch('/api/owner/advisor/business',{method:'POST',headers:{'content-type':'application/json','x-nevora-business-evidence':'1'},body:JSON.stringify(command)});if(!response.ok)throw Error('Fixture command refused '+response.status);return response.json();},command);
   const input=fictionalBusinessInput();input.source.name='Private lifetime fixture';input.window={fromAt:'2026-01-01T04:00:00.000Z',toAt:'2026-02-01T04:00:00.000Z'};input.sourceAsOf=input.window.toAt;
   for(const row of input.records){if(row.kind==='BALANCE')row.at=row.recordId==='opening'?input.window.fromAt:input.window.toAt;if('recordedAt' in row)row.recordedAt=input.window.fromAt;}

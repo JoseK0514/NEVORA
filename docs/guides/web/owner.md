@@ -303,6 +303,8 @@ To cancel approved time off, open **Time off requests**, choose **Approved** and
 to the balance, and the person is told. Puerto Rico accrual from finalized timecards
 is set up separately and isn't posted from these screens.
 
+## Tablet setup and uncertain punches
+
 Open **Clocker tablets** to register a tablet. The setup card offers a QR code, **Copy link** and **Show code**; use the link only on the intended tablet. The person holding it must tap to connect it. The code works once for 15 minutes. Browser and Home Screen app cookies can differ, so check registration in the actual kiosk you will use.
 
 A retained punch may say **not confirmed yet**. **Check if it saved** checks its original reference; **Send it again** retains that reference. **See current status** is a separate current observation. **Ask Owner to check** and **Check your last punch** are recovery routes. A failed check or a disabled service is not proof that a previous punch was never recorded. Offline punches are not queued automatically.

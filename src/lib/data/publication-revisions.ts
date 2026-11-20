@@ -9,6 +9,7 @@ export type RevisionSourceType =
   | "PUBLISH"
   | "EXCHANGE"
   | "CALLOUT"
+  | "OPEN_SHIFT"
   | "MANAGER_MUTATION";
 
 export type PublicationRevision = {

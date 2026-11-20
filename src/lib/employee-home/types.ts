@@ -1,7 +1,7 @@
 export type PublishedAssignment = {
   shiftId:string;assignmentEpisodeId:string;termsRevision:number;
   weekStart:string;date:string;startAt:string;endAt:string;
-  locationId:string;locationLabel:string;positionLabel:string|null;
+  locationId:string;locationLabel:string;locationAddress?:string|null;positionLabel:string|null;
   designatedLead:boolean;publicationRevisionId:string;
 };
 

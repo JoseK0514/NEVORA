@@ -1,4 +1,6 @@
 "use server";
+
+import { LeaveReviewRefusal } from "@/lib/workforce/leave-authority.server";
 import { moduleEnabled } from "@/lib/workspace-presentation/current.server";
 
 import {isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
@@ -92,7 +94,11 @@ export async function reviewTimeOffAction(formData: FormData) {
     reviewed=await reviewTimeOffRequest({requestId,managerId:session.id,proof,status:decision});
   } catch(error) {
     if (error instanceof Error && error.message === "pto_insufficient_balance") redirect("/app/requests?tab=pending&error=pto-balance");
-    if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))redirect(decision==="CANCELLED"?'/app/requests?tab=approved&error=review':'/app/requests?tab=team&error=review');
+    const reviewTab = decision === "CANCELLED" ? "approved" : "team";
+    if (error instanceof LeaveReviewRefusal) redirect(`/app/requests?tab=${reviewTab}&error=${error.reason}`);
+    if (isOperationalAuthorizationError(error) || isManagementAuthorizationError(error)) {
+      redirect(`/app/requests?tab=${reviewTab}&error=review`);
+    }
     throw error;
   }
 
@@ -100,6 +106,7 @@ export async function reviewTimeOffAction(formData: FormData) {
   // destinations are accepted; anything else keeps the list's own redirect.
   const returnTo = String(formData.get("returnTo") ?? "");
   const origin = returnTo === "inbox" || returnTo === "home" ? returnTo : null;
+  if (!reviewed && decision === "CANCELLED") redirect("/app/requests?tab=approved&error=review");
   if (!reviewed) redirect(origin ? `/app/requests?tab=pending&error=review&requestId=${encodeURIComponent(requestId)}&from=${origin}` : "/app/requests?tab=pending&error=review");
 
   revalidatePath("/app/requests");

@@ -21,7 +21,7 @@ import { listScheduleStatuses, listWeekShifts } from "@/lib/data/schedules";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { publishDraftsAction } from "./actions";
 import { publishScheduleChangesAction } from "../actions";
-import { readSchedulePendingChanges } from "@/lib/company-access/operational-read.server";
+import { readManagerSchedulePublish, readSchedulePendingChanges } from "@/lib/company-access/operational-read.server";
 import type { SchedulePendingChange } from "@/lib/scheduling/pending-changes";
 import "@/components/schedule-shift-form.css";
 import "./publish.css";
@@ -34,8 +34,7 @@ const range = (weekStart: string) => {
 };
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
-/** Build and publish (Release 1, board O-BuildPublish): the week, building the draft, each location's state, and one
- * "Publish N drafts". Same reads and the same publication writer as Schedule; Owners and company-wide Managers only. */
+/** The Owner builds and reviews the full week. Managers review their publication locations. */
 const FIELD_TEXT: Record<SchedulePendingChange["fields"][number], string> = {
   ADDED: "Added", REMOVED: "Removed", EMPLOYEE: "Person changed", LOCATION: "Location changed", TIME: "Time changed",
   POSITION: "Position changed", LEAD: "Lead changed", CALLOUT: "Can't-work changed", NOTES: "Note changed",
@@ -50,7 +49,7 @@ function changeDetail(change: SchedulePendingChange) {
   return [shortDay(change.date), what, times].filter(Boolean).join(" · ");
 }
 
-export default async function BuildAndPublishPage({ searchParams }: { searchParams: Promise<{ week?: string; review?: string }> }) {
+export default async function BuildAndPublishPage({ searchParams }: { searchParams: Promise<{ week?: string; review?: string; location?: string }> }) {
   const session = await requireRoles(MANAGER_ROLES);
   const params = await searchParams;
   const workspace = await getWorkspace();
@@ -58,33 +57,45 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
   const weekStart = params.week && isValidWeekStart(params.week) ? params.week : currentWeek;
   const proof = await requireSessionMutationProof();
   // Publish changes (Jose, Oct 29): edits to a published week wait here until the Owner publishes them once.
-  const pendingRead = await readSchedulePendingChanges(proof, { weekStart }).catch(() => null);
-  const pending = pendingRead?.state === "ready" ? pendingRead.data : null;
-  const source = await withOperationalCompany(proof, async () => {
-    const [locations, statuses, shifts, generation] = await Promise.all([
+  const owner = session.role === "OWNER";
+  const source = owner ? await withOperationalCompany(proof, async () => {
+    const [locations, statuses, shifts, generation, pendingRead] = await Promise.all([
       listLocations(), listScheduleStatuses(weekStart).catch(() => null), listWeekShifts({ weekStart }),
       getScheduleGenerationReview({ workspaceId: workspace.id, actorEmployeeId: session.id, weekStart, locationScope: { kind: "ALL" } })
         .catch((): ScheduleGenerationReview => ({ editable: false, unavailable: true, attempted: 0, needsSetup: 0, coverage: null, exclusions: [] })),
+      readSchedulePendingChanges(proof, { weekStart }).catch(() => null),
     ]);
+    const pending = pendingRead?.state === "ready" ? pendingRead.data : null;
     // Plain data only: this result also travels to the client read frame.
     const statusById: Record<string, string | null> = Object.fromEntries(locations.map(location => [location.id, statuses ? statuses.find(row => row.locationId === location.id)?.status ?? "NONE" : null]));
     const drafts = locations.filter(location => statusById[location.id] === "DRAFT");
     // review=1: the drafts being published; review=changes: the published locations whose changes are being published.
     const reviewed = params.review === "1" ? drafts : params.review === "changes" ? locations.filter(location => statusById[location.id] === "PUBLISHED") : [];
     const review = await Promise.all(reviewed.map(async location => ({ location, readiness: await getSchedulePublishReadiness(weekStart, location.id) })));
-    return { locations, statusById, shifts, generation, drafts, review: review.filter(item => item.readiness.hasWarnings) };
+    return {
+      locations: locations.map(location => ({
+        ...location,
+        status: statusById[location.id],
+        shiftCount: shifts.filter(shift => shift.locationId === location.id && !shift.isCalloutApproved).length,
+      })),
+      generation, hasShifts: shifts.length > 0, pending, review: review.filter(item => item.readiness.hasWarnings),
+    };
+  }) : await readManagerSchedulePublish(proof, {
+    weekStart,
+    ...(params.review === "1" && params.location !== undefined ? { reviewLocationId: params.location } : {}),
   });
   if (source.state === "unavailable") return <OperationalUnavailable title="Build and publish unavailable" reason={source.reason} />;
-  const { locations, statusById, shifts, generation, drafts, review } = source.data;
-  const status = (locationId: string) => statusById[locationId] ?? null;
+  const { locations, review } = source.data;
+  const generation = "generation" in source.data ? source.data.generation : null;
+  const pending = "pending" in source.data ? source.data.pending : null;
+  const drafts = locations.filter(location => location.status === "DRAFT");
   const when = weekStart === currentWeek ? "This week" : weekStart === addDays(currentWeek, 7) ? "Next week" : weekStart === addDays(currentWeek, -7) ? "Last week" : "Week";
-  const statePill = (locationId: string) => {
-    const value = status(locationId);
+  const statePill = (value: string | null) => {
     return value === "PUBLISHED" ? <CorpPill tone="green">Published</CorpPill> : value === "DRAFT" ? <CorpPill tone="amber">Draft</CorpPill> : value === null ? null : <CorpPill tone="neutral">Not started</CorpPill>;
   };
   const scheduleHref = `/app/schedule?week=${encodeURIComponent(weekStart)}`;
   // Closing F1 (NV-088): the week's state as the Schedule band says it: amber while something waits, green once published.
-  const allPublished = !drafts.length && !pending?.hasPendingChanges && locations.some(location => status(location.id) === "PUBLISHED");
+  const allPublished = !drafts.length && !pending?.hasPendingChanges && locations.some(location => location.status === "PUBLISHED");
   const pill = drafts.length || pending?.hasPendingChanges ? <CorpPill tone="amber">{[drafts.length ? plural(drafts.length, "draft", "drafts") : "", pending?.hasPendingChanges ? plural(pending.pendingCount, "change", "changes") : ""].filter(Boolean).join(" · ")}</CorpPill>
     : allPublished ? <CorpPill tone="green">Published</CorpPill> : null;
   const notified = <CorpNote icon={<BellIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true" />}>{pending?.hasPendingChanges && drafts.length ? "Your team is notified when you publish. Changes to published days go out too." : "Your team is notified when you publish."}</CorpNote>;
@@ -105,7 +116,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
             <span><small>{when}</small><b>{range(weekStart)}</b></span>
             {pill}
           </div>
-          <details className="c-card c-pub__start" open={!shifts.length || undefined}>
+          {generation ? <details className="c-card c-pub__start" open={!("hasShifts" in source.data && source.data.hasShifts) || undefined}>
             <summary className="c-row c-row--one">
               <span className="c-row__main"><span className="c-row__title">Start from</span></span>
               <span className="c-row__value">Availability</span>
@@ -120,12 +131,12 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
               <ScheduleCopyForm actorId={session.id} label="Copy last week" className="c-btn c-btn--secondary c-btn--full" command={{ operationId: randomUUID(), kind: "PREVIOUS_WEEK", weekStart }} />
               <CorpButtonLink href={`/app/schedule/templates?week=${encodeURIComponent(weekStart)}`} kind="secondary" full>Use a template</CorpButtonLink>
             </div>
-          </details>
+          </details> : null}
           <CorpCard as="div" id="publish-locations" ariaLabel="Locations this week">
             <CorpRows label="Locations this week">{locations.map(location => {
-              const count = shifts.filter(shift => shift.locationId === location.id && !shift.isCalloutApproved).length;
+              const count = location.shiftCount;
               return <li key={location.id}><CorpRow href={`${scheduleHref}&location=${encodeURIComponent(location.id)}`} bold title={location.shortName}
-                detail={count ? plural(count, "shift", "shifts") : "Nothing scheduled"} trail={statePill(location.id)} chevron={false} /></li>;
+                detail={count ? plural(count, "shift", "shifts") : "Nothing scheduled"} trail={statePill(location.status)} chevron={false} /></li>;
             })}</CorpRows>
           </CorpCard>
           {pending?.hasPendingChanges ? <CorpCard id="publish-changes" label={`Changes not published (${pending.pendingCount})`}>
@@ -149,10 +160,10 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
                   {readiness.unconfiguredTargetCount > 0 ? <li>{plural(readiness.unconfiguredTargetCount, "employee without a weekly hour target", "employees without a weekly hour target")}</li> : null}
                 </ul>
               </div>)}
-              <p className="c-publish__lead">Hour counts cover the business week across locations. Publishing makes these schedules visible to your team.</p>
+              <p className="c-publish__lead">Hour counts cover the business week{owner ? " across locations" : " at the reviewed location"}. Publishing makes these schedules visible to your team.</p>
             </CorpBody>
           </CorpCard> : null}
-          {!drafts.length && pending?.hasPendingChanges ? pending.canPublish ? <form action={publishScheduleChangesAction} className="c-publish__go">
+          {owner && (!drafts.length && pending?.hasPendingChanges ? pending.canPublish ? <form action={publishScheduleChangesAction} className="c-publish__go">
             <input type="hidden" name="weekStart" value={weekStart} />
             {params.review === "changes" && review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
             <CorpNote icon={<BellIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true" />}>Each person with a change is notified once when you publish.</CorpNote>
@@ -166,7 +177,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
             <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">
               {`Publish ${drafts.length === 1 ? drafts[0].shortName : plural(drafts.length, "draft", "drafts")}${pending?.hasPendingChanges ? " and changes" : ""}${review.length ? " anyway" : ""}`}
             </EmployeeSubmitButton>
-          </form> : <CorpNote icon={<CheckCircleIcon className={allPublished ? "c-ic c-ic--s c-pub__done" : "c-ic c-ic--s"} weight={allPublished ? "fill" : "bold"} aria-hidden="true" />}>{locations.some(location => status(location.id) === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>}
+          </form> : <CorpNote icon={<CheckCircleIcon className={allPublished ? "c-ic c-ic--s c-pub__done" : "c-ic c-ic--s"} weight={allPublished ? "fill" : "bold"} aria-hidden="true" />}>{locations.some(location => location.status === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>)}
         </div>
       </div>
     </CorpPage>
