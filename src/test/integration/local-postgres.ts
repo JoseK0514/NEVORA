@@ -70,6 +70,7 @@ export const CURRENT_MIGRATIONS = [
   '0069_clocker_early_grace.sql',
   '0070_scheduling_authority_pto.sql',
   '0071_user_language_preferences.sql',
+  '0072_location_addresses.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

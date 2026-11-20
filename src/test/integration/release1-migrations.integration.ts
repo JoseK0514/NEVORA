@@ -41,8 +41,8 @@ it('refuses an actual interrupted concurrent index without silently dropping or 
 
 it.each([
  ['release 1 indexes', ['0038_read_path_indexes.sql','0039_native_payroll_setup_records.sql']],
- ['published 30-day Development through 0069', ['0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql']],
- ['Development through 0067', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql']],
+ ['published 30-day Development through 0069', ['0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_location_addresses.sql']],
+ ['Development through 0067', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_location_addresses.sql']],
  ['workforce installed before the 30-day work', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql']],
 ] as const)('upgrades %s by exact filename, preserves rows and keeps setup records immutable',async(_label,additions)=>{
  const database=await createDisposableFoundationDatabase({mode:'empty'}),client=new Client({connectionString:database.connectionString});
@@ -57,6 +57,7 @@ it.each([
   for(const file of missing){await client.query(await readFile('db/migrations/'+file,'utf8'));applied.push(file as typeof applied[number]);}
   expect(missingMigrationFiles([...BASE_MIGRATIONS,...FINAL_MIGRATIONS],applied)).toEqual([]);
   expect((await client.query('SELECT id,name FROM workspaces ORDER BY id')).rows).toEqual(before);
+  expect((await client.query("SELECT address FROM locations WHERE id='loc-1'")).rows).toEqual([{address:null}]);
   expect((await client.query("SELECT active,hire_date,termination_date,birth_date FROM employees WHERE id='R1-OWNER'")).rows).toEqual([{active:true,hire_date:null,termination_date:null,birth_date:null}]);
   expect((await client.query("SELECT count(*)::int AS count FROM clocker_schedule_match_policy")).rows).toEqual([{count:0}]);
   const hash='a'.repeat(64),payload={factsSha256:hash,revision:1,kind:'COMPANY_DEFAULTS',subjectId:'COMPANY'};
@@ -105,7 +106,7 @@ it('upgrades the recorded Development schema and restores both its rollback back
   const before=await state(client),oldBackup=join(directory,'development.dump');
   tool('pg_dump',['--format=custom','--no-owner','--file',oldBackup,'--dbname',database.connectionString]);
   const additions=BASE_MIGRATIONS.slice(baseline.base.length);
-  expect(additions).toEqual(['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql']);
+  expect(additions).toEqual(['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_location_addresses.sql']);
   for(const file of additions)await client.query(await readFile('db/migrations/'+file,'utf8'));
   expect(await state(client)).toEqual(before);
   expect((await client.query("SELECT hire_date,termination_date,birth_date FROM employees WHERE id='R1-RESTORE'")).rows).toEqual([{hire_date:null,termination_date:null,birth_date:null}]);

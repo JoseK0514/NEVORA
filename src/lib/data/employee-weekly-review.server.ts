@@ -35,7 +35,7 @@ export async function readEmployeeWeeklyReview(proof:SessionMutationProof,weekSt
    history_before AS (${snapshot("(SELECT comparison->>'baselineRevisionId' FROM confirmed_review)")}),
    before AS (${snapshot('(SELECT id FROM ack)')}),after AS (${snapshot('(SELECT id FROM latest)')}),
    own AS (SELECT rs.source_shift_id AS id,rs.schedule_id AS "scheduleId",rs.employee_id AS "employeeId",''::text AS "employeeName",
-    rs.location_id AS "locationId",rs.date::text AS date,left(rs.start_time::text,5) AS "startTime",left(rs.end_time::text,5) AS "endTime",
+    rs.location_id AS "locationId",l.address AS "locationAddress",rs.date::text AS date,left(rs.start_time::text,5) AS "startTime",left(rs.end_time::text,5) AS "endTime",
     rs.position_id AS "positionId",rs.position_name AS "positionName",rs.is_designated_lead AS "isDesignatedLead",rs.is_callout_approved AS "isCalloutApproved",'PUBLISHED'::text AS "scheduleStatus"
     FROM schedule_publication_revision_shifts rs JOIN allowed l ON l.id=rs.location_id WHERE rs.employee_id=$2 AND rs.revision_id=(SELECT id FROM latest)
     ORDER BY rs.date,rs.start_time,rs.source_shift_id LIMIT 501)
