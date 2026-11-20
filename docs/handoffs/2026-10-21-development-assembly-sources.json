@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "e89784d383b9a30ef4e0af8c868fc797c6f6ddfc",
+      "sha": "a87826f6833c3572ea429939dbd688dd94549863",
       "disposition": "held",
-      "reason": "The reviewed Rondo changes through bc75950a were integrated with Development's knowledge search in 879f81bb and checked on the published base 49cd1072. The later short-screen Clocker, tablet and Schedule layout, and lost time-off decision fixes remain on Collab for their own integration and verification. Earlier checkpoint f9171d7c remains preserved in the qualified combined assembly 05f2553182b387f20495c19070cfbabd50a987ef and its linear publication evidence."
+      "reason": "The reviewed Rondo changes through bc75950a were integrated with Development's knowledge search in 879f81bb and checked on the published base 49cd1072. The later short-screen Clocker, tablet and Schedule layout, and lost time-off decision fixes remain on Collab for their own integration and verification. The November 19 Collab delta also contains Owner and Manager controls from d22e8eaa, their guides, and Claude’s handoff evidence. That delta was inspected and is held for the separate UI integration. The Puerto Rico PTO candidate uses the PTO backend checkpoint and does not import the Collab UI delta. Earlier checkpoint f9171d7c remains preserved in the qualified combined assembly 05f2553182b387f20495c19070cfbabd50a987ef and its linear publication evidence."
     },
     {
       "branch": "scrum190-signup-ui",

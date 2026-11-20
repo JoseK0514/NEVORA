@@ -13,7 +13,9 @@ const footprint = `CASE WHEN r.approval_location_ids IS NULL THEN NULL ELSE ARRA
   ) all_sites ORDER BY id
 ) END`;
 
-const leaveScopeSql = `SELECT r.employee_id AS "employeeId", ${footprint} AS "locationIds"
+const leaveScopeSql = `SELECT r.employee_id AS "employeeId",
+    to_jsonb(r)->>'requested_by_employee_id' AS "submittedByEmployeeId",
+    COALESCE((to_jsonb(r)->>'owner_review_required')::boolean,false) AS "ownerReviewRequired", ${footprint} AS "locationIds"
   FROM time_off_requests r JOIN employees e ON e.id=r.employee_id JOIN locations home ON home.id=e.primary_location_id
   WHERE r.id=$1 AND home.workspace_id=$2`;
 
@@ -22,7 +24,7 @@ export async function admitLeaveReview(proof: SessionMutationProof, requestId: s
   if (proof.employee.role !== 'OWNER' && !permissions.some(g => g.permission === 'APPROVE_LEAVE')) {
     throw new OperationalAuthorizationError();
   }
-  const [subject] = await executor.query<{ employeeId: string; locationIds: string[] | null }>({
+  const [subject] = await executor.query<{ employeeId: string; locationIds: string[] | null; submittedByEmployeeId: string | null; ownerReviewRequired: boolean }>({
     text: leaveScopeSql, values: [requestId, access.workspace.id],
   });
   if (!subject) {
@@ -31,6 +33,10 @@ export async function admitLeaveReview(proof: SessionMutationProof, requestId: s
   }
   assertIndependentReview(proof.employee.id, subject.employeeId);
   await assertWorkforcePermission(proof, 'APPROVE_LEAVE', subject.locationIds, executor, access);
+  if (proof.employee.id === subject.submittedByEmployeeId ||
+      (subject.ownerReviewRequired && proof.employee.role !== 'OWNER')) {
+    throw new OperationalAuthorizationError();
+  }
   return { access, ...subject };
 }
 

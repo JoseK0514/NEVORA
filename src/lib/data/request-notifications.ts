@@ -1,5 +1,6 @@
 import {OperationalAuthorizationError} from '../company-access/operational-scope.server';
 import {admitLeaveReview,leaveScopeGuard} from '../workforce/leave-authority.server';
+import type { ManagedLeaveAdmission } from '../workforce/leave-submission.server';
 import {workforcePermissionStatements} from '../workforce/authority.server';
 import { getWorkspace, workspaceReadGuard } from './workspaces';
 import { buildNotificationIntents } from '../notifications/recipients';
@@ -55,20 +56,20 @@ export function timeOffTransitionLocks(id: string | undefined, actorEmployeeId: 
 }
 /** Non-schedule Time Off writes still guard current recipient access, then commit
  * the mutation, cancellation and intents together. No provider dependency. */
-export async function commitRequestTransition(input: { before?: RequestSnapshot; after: RequestSnapshot; actorEmployeeId: string; mutation: SqlStatement; managementProof?: SessionMutationProof; selfServiceProof?: SessionMutationProof; admission?: readonly SqlStatement[] }, executor: SqlExecutor): Promise<boolean> {
+export async function commitRequestTransition(input: { before?: RequestSnapshot; after: RequestSnapshot; actorEmployeeId: string; mutation: SqlStatement; managementProof?: SessionMutationProof; selfServiceProof?: SessionMutationProof; managedSubmission?: ManagedLeaveAdmission; afterMutation?: SqlStatement; admission?: readonly SqlStatement[] }, executor: SqlExecutor): Promise<boolean> {
   if (input.after.kind === 'TIME_OFF' && input.after.record.status !== 'PENDING' && !input.managementProof) throw new Error('management_authorization');
   const submission = input.after.kind === 'TIME_OFF' && input.after.record.status === 'PENDING';
   const proof = submission ? input.selfServiceProof : input.managementProof;
-  if (input.after.kind === 'TIME_OFF' && input.after.record.status === 'PENDING' && (!proof || input.after.record.employeeId !== input.actorEmployeeId)) throw new Error('management_authorization');
+  if (input.after.kind === 'TIME_OFF' && input.after.record.status === 'PENDING' && (!proof || (!input.managedSubmission && input.after.record.employeeId !== input.actorEmployeeId))) throw new Error('management_authorization');
   if (proof) assertManagementProof(proof, input.actorEmployeeId);
   const decision = input.after.kind === 'TIME_OFF' && !submission;
   const review = decision && proof ? await admitLeaveReview(proof, input.after.record.id, executor) : null;
   if (decision && input.after.kind === 'TIME_OFF' && (!review || review.employeeId !== input.after.record.employeeId)) throw new OperationalAuthorizationError();
-  const workspace = review?.access.workspace ?? await getWorkspace(executor);
+  const workspace = review?.access.workspace ?? input.managedSubmission?.workspace ?? await getWorkspace(executor);
   const authority = () => proof ? review
     ? [...workforcePermissionStatements(proof, workspace, 'APPROVE_LEAVE', review.locationIds, review.access.authority),
        leaveScopeGuard(input.after.record.id, review)]
-    : managementSessionStatements(proof,input.actorEmployeeId,submission?['EMPLOYEE','LEAD']:['OWNER','MANAGER']) : [];
+    : input.managedSubmission?.guards ?? managementSessionStatements(proof,input.actorEmployeeId,submission?['EMPLOYEE','LEAD']:['OWNER','MANAGER']) : [];
   const recipients = await executor.query<RecipientAccess>({ text: requestRecipientSql, values: [] });
   try {
     await executor.transaction([
@@ -78,7 +79,8 @@ export async function commitRequestTransition(input: { before?: RequestSnapshot;
       ...(input.admission ?? []),
       { text: `SELECT (CASE WHEN COALESCE((SELECT jsonb_agg(r ORDER BY r."employeeId") FROM (${requestRecipientSql}) r),'[]'::jsonb)=$1::jsonb THEN '1' ELSE 'request_transition_conflict' END)::integer AS access_guarded`, values: [JSON.stringify(recipients)] },
       guardedRequestMutation(input.mutation),
-      ...requestNotificationStatements({ before: input.before, after: input.after, actorEmployeeId: input.actorEmployeeId, recipients,config:bindWorkspaceNotificationConfig(readNotificationConfig(process.env),workspace) }),
+      ...(input.afterMutation ? [input.afterMutation] : []),
+      ...requestNotificationStatements({ before: input.before, after: input.after, actorEmployeeId: input.actorEmployeeId, recipients: input.managedSubmission ? recipients.filter(r => r.role === 'OWNER') : recipients,config:bindWorkspaceNotificationConfig(readNotificationConfig(process.env),workspace) }),
       ...authority(),
     ]);
     return true;

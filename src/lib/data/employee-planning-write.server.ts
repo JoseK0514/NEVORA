@@ -27,7 +27,7 @@ export async function reconcileEmployeePlanning(proof:SessionMutationProof,input
  }
  if(command.kind==='availability'||read.view!=='timeoff')return result('unknown',command);
  const row=read.data.requests[0];
- if(command.kind==='request')return result(!row?'missing':row.startDate===command.startDate&&row.endDate===command.endDate&&row.startTime===command.startTime&&row.endTime===command.endTime&&(row.note??'')===command.note&&row.ptoPolicyId===command.ptoPolicyId?'complete':'conflict',command);
+ if(command.kind==='request')return result(!row?'missing':!row.enteredBy&&row.startDate===command.startDate&&row.endDate===command.endDate&&row.startTime===command.startTime&&row.endTime===command.endTime&&(row.note??'')===command.note&&row.ptoPolicyId===command.ptoPolicyId?'complete':'conflict',command);
  if(!row)return result('conflict',command);
  if(row.status==='PENDING')return result('missing',command);
  if(row.status!=='CANCELLED')return result('conflict',command);

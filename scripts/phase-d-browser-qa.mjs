@@ -55,22 +55,29 @@ async function issueAssistedRecovery(page,employeeId,attestation){
  return page.getByLabel('Reset code',{exact:true}).inputValue();
 }
 try{
-  smtp=await createOwnedSmtp();app=await createOwnedNextApp(evidence,{clockerPinKey:"3d".repeat(32),clockerPunchEnabled:true,recoverySmtpPort:smtp.port});const q=(text,values=[])=>app.database.executor.query({text,values});
-  const prepared=[];for(const path of ['/app/inbox','/app/settings/clocker','/app/clocker-recovery','/app/schedule']){const response=await fetch(app.url+path,{redirect:'manual',signal:AbortSignal.timeout(15000)});assert.equal(response.status,307);assert.equal(new URL(response.headers.get('location'),app.url).pathname,'/login');await response.text();prepared.push({path,status:response.status});}await writeFile(join(evidence,'route-preparation-report.json'),JSON.stringify(prepared,null,2));
-  await seedOwnedApp(app.database.executor);const password=await hashPassword(TEST_PASSWORD);
-  for(const [id,first,role] of [['D3-E','Avery','EMPLOYEE'],['D3-M','Morgan','MANAGER'],['D3-L','Taylor','LEAD']]){
-    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'Period QA','555-0300',$3,'loc-1')",[id,first,role]);
-    await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[id,password]);
-    await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);
+  smtp=await createOwnedSmtp();
+  const q=(text,values=[])=>app.database.executor.query({text,values});
+  const password=await hashPassword(TEST_PASSWORD);
+  const prepared=[];
+  async function prepareEngine(engine){
+    app=await createOwnedNextApp(evidence,{clockerPinKey:"3d".repeat(32),clockerPunchEnabled:true,recoverySmtpPort:smtp.port});
+    for(const path of ['/app/inbox','/app/settings/clocker','/app/clocker-recovery','/app/schedule']){const response=await fetch(app.url+path,{redirect:'manual',signal:AbortSignal.timeout(15000)});assert.equal(response.status,307);assert.equal(new URL(response.headers.get('location'),app.url).pathname,'/login');await response.text();prepared.push({engine,path,status:response.status});}
+    await writeFile(join(evidence,'route-preparation-report.json'),JSON.stringify(prepared,null,2));
+    await seedOwnedApp(app.database.executor);
+    for(const [id,first,role] of [['D3-E','Avery','EMPLOYEE'],['D3-M','Morgan','MANAGER'],['D3-L','Taylor','LEAD']]){
+      await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'Period QA','555-0300',$3,'loc-1')",[id,first,role]);
+      await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[id,password]);
+      await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);
+    }
+    await q("INSERT INTO clocker_devices(id,location_id,name,active) VALUES('d3-device','loc-1','Fictional D3 tablet',true)");
+    await assignOwnedManagerCompanyAccess(app.database.executor,'D3-M');
+    await grantOwnedManagerWorkforcePermission(app.database.executor,'D3-M','loc-1','REVIEW_TIME_EXCEPTION');
+    await grantOwnedManagerWorkforcePermission(app.database.executor,'D3-M','loc-1','APPROVE_LEAVE');
+    await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('D3-UI','D3-E','loc-1','d3-device','2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)");
+    await q("INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('D3-UI-B','D3-UI','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z')");
+    // Current Weeks rows link only when a week actually has recorded time.
+    await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('D3-LATER','D3-E','loc-1','d3-device','2026-09-29T12:00:00Z','2026-09-29T20:00:00Z','CLOCKED_OUT',1)");
   }
-  await q("INSERT INTO clocker_devices(id,location_id,name,active) VALUES('d3-device','loc-1','Fictional D3 tablet',true)");
-  await assignOwnedManagerCompanyAccess(app.database.executor,'D3-M');
-  await grantOwnedManagerWorkforcePermission(app.database.executor,'D3-M','loc-1','REVIEW_TIME_EXCEPTION');
-  await grantOwnedManagerWorkforcePermission(app.database.executor,'D3-M','loc-1','APPROVE_LEAVE');
-  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('D3-UI','D3-E','loc-1','d3-device','2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)");
-  await q("INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('D3-UI-B','D3-UI','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z')");
-  // Current Weeks rows link only when a week actually has recorded time. Seed the later-week navigation fixture.
-  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('D3-LATER','D3-E','loc-1','d3-device','2026-09-29T12:00:00Z','2026-09-29T20:00:00Z','CLOCKED_OUT',1)");
   const engineName=id=>'Portal '+id;
   async function context(browser,id){
     const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
@@ -112,6 +119,11 @@ try{
   // Act only once the page has been ready, with no lifecycle event or remount, for 750 ms.
   const settled=page=>page.waitForFunction(()=>!document.querySelector('.portal-route-state')&&Date.now()-window.__nevoraQuietSince>=750,null,{polling:100});
   for(const [engine,type] of [['chromium',chromium],['webkit',webkit]].filter(([name])=>!process.env.PHASE_D_QA_ENGINES||process.env.PHASE_D_QA_ENGINES.split(',').includes(name))){
+    // Give each engine a fresh owned database. The timecard history and its
+    // immutable accrual receipts can then keep their foreign key and guards.
+    currentPage=undefined;
+    if(app){await app.close();app=undefined;}
+    await prepareEngine(engine);
     lifecycle='scenario';
     const browser=await type.launch({headless:true});browsers.push(browser);
     if(engine==='webkit'){
@@ -590,7 +602,6 @@ try{
       for(const page of context.pages())await page.waitForLoadState('networkidle');
       await context.close();
     }
-    await q('TRUNCATE timecard_revisions');
   }
   report.scenarioComplete=true;
 }catch(error){

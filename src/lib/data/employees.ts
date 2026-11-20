@@ -276,6 +276,31 @@ export async function getEmployeeEmploymentDates(
   return row ? { updatedAt: row.updatedAt, hireDate: row.hireDate ?? null, terminationDate: row.terminationDate ?? null, birthDate: row.birthDate ?? null } : null;
 }
 
+export type EmployeeServiceDates = Pick<EmploymentDates, 'hireDate' | 'terminationDate'>;
+
+/** Use in the same Owner-authorized transaction as the finalized timecard read.
+ * The service-date projection intentionally carries no birth date or roster fields. */
+export function finalizedTimecardServiceDates(workspaceId: string, operationId: string): SqlStatement {
+  return {
+    text: `SELECT e.hire_date::text AS "hireDate",e.termination_date::text AS "terminationDate"
+      FROM timecard_revisions t JOIN employees e ON e.id=t.employee_id
+      JOIN locations home ON home.id=e.primary_location_id AND home.workspace_id=t.workspace_id
+      WHERE t.workspace_id=$1 AND t.operation_id=$2 AND t.action='FINALIZE'`,
+    values: [workspaceId, operationId],
+  };
+}
+
+/** Run after locking the subject, before writing a calculation that uses these dates. */
+export function employeeServiceDatesGuard(employeeId: string, dates: EmployeeServiceDates): SqlStatement {
+  return {
+    text: `SELECT (CASE WHEN EXISTS (
+        SELECT 1 FROM employees WHERE id=$1 AND hire_date IS NOT DISTINCT FROM $2::date
+          AND termination_date IS NOT DISTINCT FROM $3::date
+      ) THEN '1' ELSE 'pto_service_dates_changed' END)::integer`,
+    values: [employeeId, dates.hireDate, dates.terminationDate],
+  };
+}
+
 export type EmployeeCoreMutationInput = {
     employeeId: string;
     expectedUpdatedAt: string;
