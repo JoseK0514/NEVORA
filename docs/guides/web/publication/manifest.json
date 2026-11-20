@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-19",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "7fe4f208879e702f518e046ee623a53aacb107ac",
-  "applicationHash": "c497d7d8dd0f4fee22c8296eba3e179a03e430d79079f0ccb8ebdf3898c92b09",
+  "sourceSha": "80158125c68dc52f98457bb3ec14ae7dbf8269d3",
+  "applicationHash": "b579ee50fd290219aa40b409e442bd5b8de14ecdbb74c9911f417fd5f3936fc4",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "37461cc1c4d239db0b500a7b191f11b30a8ae74b95974b7aa0b86c92f890ffb1"
@@ -212,7 +212,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "2af10a7c418ddd596191157219ea5651500ea1df838866d1442a48ec25442c00",
+        "sha256": "f2367761f010711fd8239bdc4db8047f8fbac10d6a4675771ad6a8072adb762d",
         "pageCount": 6
       }
     },
@@ -335,7 +335,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "da98f3b30178c1c9c7511e4fdc6b833775d46aa778f6739dbfe4f8999acd9c37",
+        "sha256": "8bb1dba10a9bd16b09f812347b066f97619a832b009a3632b2ff8bb98e19bd4f",
         "pageCount": 4
       }
     },
@@ -454,7 +454,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "10448f493623843f8203042121e715542fc2035e19897119dcf306de7a449016",
+        "sha256": "4ed3da91aa74d00e1385297ce95f26db081a17bac53d3ea2912f4d84855f3124",
         "pageCount": 3
       }
     },
@@ -629,7 +629,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "2a5f2aa75232f583d6bffa0eff885b490c3b9d10815826d73223c832a147134d",
+        "sha256": "7fd71f02649564dd46756778af50e58695f81bfe2a5bec5254dbb8e41d932084",
         "pageCount": 5
       }
     },
@@ -659,7 +659,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "82f1b8de34b75c16db19708ce9c8402d31f4a5d0927152318d12e97211f76704"
+          "sha256": "31a9818402c6b4389721472f7631b8589cae2c7247d273025fca32b2278a1040"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -699,7 +699,7 @@
         },
         {
           "path": "db/migrations/order.ts",
-          "sha256": "5d717d078e75b7cdc6ff4fd89544f108a467f17716905bffcfbbe616c4dced55"
+          "sha256": "adfbedef8f4f6df074689d9ff4feebc900f850106deff4ae38e6c4d5c252cca2"
         },
         {
           "path": "scripts/release-build.mjs",
@@ -883,7 +883,7 @@
         },
         {
           "path": "src/test/integration/release1-migrations.integration.ts",
-          "sha256": "d3bd11207c08d9ea2f124d463a83af8a4712e53d1e4f6e82dbed0175e52f21ea"
+          "sha256": "7a72f3ce1aec7fd2f34cb2dc27a29f211704a063e68b0eee97eda862aca68c75"
         },
         {
           "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
@@ -892,7 +892,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "eec0e182dd2c079893b357c09b0c1af945e5051514b6bd284e3158338a5e8287",
+        "sha256": "d478cd34ac0d3ecf0da3e3d8e0707fa3265deccb3be51082b52974013a7963be",
         "pageCount": 7
       }
     },
@@ -1066,7 +1066,7 @@
         },
         {
           "path": "src/test/integration/release1-migrations.integration.ts",
-          "sha256": "d3bd11207c08d9ea2f124d463a83af8a4712e53d1e4f6e82dbed0175e52f21ea"
+          "sha256": "7a72f3ce1aec7fd2f34cb2dc27a29f211704a063e68b0eee97eda862aca68c75"
         },
         {
           "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
@@ -1087,7 +1087,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "254f447bcf8f0f3c958c19ea50dedb08d744f5bf559d57fe66f642c4698e9102",
+        "sha256": "81268351759cb27437920f8f6ce97b0bdcc152eca35aaddaa516f358c67cbafa",
         "pageCount": 7
       }
     }
