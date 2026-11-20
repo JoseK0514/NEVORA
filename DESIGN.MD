@@ -702,6 +702,17 @@ item names the lines it supersedes; line numbers are from the file before this s
     shifts and hours, "Incomplete" with what is priced so far ("$1,240.00 for 30 of 36 shifts"), "No pay rates" with a
     way to Team. "What's included" opens the basis. It is an estimate, never payroll.
 
+- **Time off for Owners (Nov 20, 2026; see `docs/handoffs/2026-11-20-claude-pto-owner-screens.md`).** On Codex's PTO
+  contract, English and Spanish, in the same parts as the pay rate page (`.rs` fields, footer, issue and done cards).
+  - *Policies* (Settings › Time off policies): Vacation, then Sick, then others by name. A row says the daily hours, the
+    earning rate and the carryover in one line, with an On/Off chip. The code is fixed after creation.
+  - *Balance* (Team › person › Time off balance, Owner only): balances by policy, then history newest first. Each entry
+    is "kind · policy" with its signed hours on the right and a line that explains it (from finalized timecards for a
+    period, approved or cancelled time off, or who made it); an Owner's reason shows under it. An adjustment reviews
+    now / change / after; one that would go below zero stops before sending.
+  - *Cancel approval* (Team time off › Approved): a quiet text action under the row opens an in-place confirmation;
+    the red-edged "Cancel time off" is the commit. The list then says the paid time went back to the balance.
+
 ## Previous direction (October 20, 2026; superseded)
 
 | Surface | Design then | Source |
