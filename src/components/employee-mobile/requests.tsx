@@ -184,6 +184,7 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
   <div className="c-ereq__body" data-requests-state={viewState}>
    <CorpNav back={{href:'/app/schedule',label:'Schedule'}} title="Open shifts"/>
    {unavailable??(snapshot!.modules.marketplace?<>
+    <CorpRows><li><CorpRow href="/app/exchange/open-shifts" title="Posted open shifts" /></li></CorpRows>
     {orphans.map(item=><CorpCard key={item.requestId} ariaLabel="Your pickup result"><div className="c-card__body"><Pickup operation={item} onRefresh={refresh} canRecover={canRecover}/></div></CorpCard>)}
     {snapshot!.open===null?<CorpCard ariaLabel="Open shifts"><div className="c-card__body"><p className="c-ereq__state" role="status">Open shifts couldn’t be checked.</p><CorpButton kind="secondary" size="md" full disabled={state.refreshing} onClick={refresh}>Try again</CorpButton></div></CorpCard>:<>
      <p className="c-ereq__lede" id="em-eligible-heading">{eligible.length?'Shifts at your locations you can pick up':unconfirmed.length?'Some shifts still need an eligibility check. Refresh to try again.':'No eligible open shifts right now. Check back when more coverage is offered.'}</p>

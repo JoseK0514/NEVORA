@@ -341,7 +341,7 @@ function supersedePersonalStatements(week: string, employeeId: string, environme
 type ManagementWeekAuthority =
     | { sourceType: 'MANAGER_MUTATION'; proof: SessionMutationProof }
     | { sourceType: 'PUBLISH'; proof: SessionMutationProof; publicationLocationId?: string }
-    | { sourceType: 'EXCHANGE' | 'CALLOUT'; proof?: never };
+    | { sourceType: 'EXCHANGE' | 'CALLOUT' | 'OPEN_SHIFT'; proof?: never };
 /**
  * Commit business statements, publication snapshots, calendar removals and
  * notification intents atomically. The builder runs outside the SQL transaction
@@ -505,7 +505,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
             },
             ...((input.sourceType === 'MANAGER_MUTATION' || input.sourceType === 'PUBLISH') ? managementSessionStatements(input.proof, input.actorEmployeeId) : []),
         ];
-        const stamp:SqlStatement=locationId ? {text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[]) AND location_id=$2`,values:[weeks,locationId]} : input.sourceType==='MANAGER_MUTATION'?{text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=ANY($1::text[])`,values:[operational.scheduleIds]}:{text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[])`,values:[weeks]};
+        const stamp:SqlStatement=locationId ? {text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[]) AND location_id=$2`,values:[weeks,locationId]} : (input.sourceType==='MANAGER_MUTATION'||input.sourceType==='OPEN_SHIFT')?{text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=ANY($1::text[])`,values:[operational.scheduleIds]}:{text:`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[])`,values:[weeks]};
         const statements: SqlStatement[] = [
             {
                 text: `SELECT (CASE WHEN ${notificationStateSql} = $2::jsonb THEN '1' ELSE 'schedule_week_version_conflict' END)::integer AS guarded`, values: [weeks, JSON.stringify(state)]
@@ -603,7 +603,7 @@ export function preparePublishedWeekChange(input: PublishedChangePlanInput): Pre
         }
  // Publication, history and notification DML may wait after initial authorization.
  // Recheck wall-clock validity before this SAME transaction can commit.
- if(revisions.length&&!locationId){
+ if(revisions.length&&!locationId&&input.sourceType!=='OPEN_SHIFT'){
   stamp.text=`UPDATE schedules SET updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE week_start=ANY($1::date[])`;
   stamp.values=[weeks];
  }

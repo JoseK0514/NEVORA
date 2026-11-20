@@ -17,7 +17,7 @@ import { businessDate, shiftBoundaryInstants } from "@/lib/business-time";
 import { schedulingIssueMessage } from "@/lib/scheduling/validate-shift";
 import { ManagerShiftRequests } from "@/components/manager-shift-requests";
 import { shiftPlace } from "@/components/shift-requests-signature";
-import { QuietHeader, QuietNav, QuietPage, QuietRow, QuietSegments } from "@/components/quiet/quiet";
+import { QuietHeader, QuietList, QuietNav, QuietPage, QuietRow, QuietSegments } from "@/components/quiet/quiet";
 import { SheetRow } from "@/components/quiet/quiet-sheet";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { requireSession,requireSessionMutationProof } from "@/lib/auth/session";
@@ -205,6 +205,7 @@ export default async function ExchangePage({
         {operation ? <p className="q-help" role="status">{shiftChangeFeedback(operation)}</p> : null}
 
         {view === "available" ? <>
+          <QuietList><QuietRow href="/app/exchange/open-shifts" title="Posted open shifts" /></QuietList>
           {claimable.length ? <ul className="q-list" style={{ marginTop: 16 }} aria-label="Open shifts you can claim">{claimable.map(exchange => (
             <SheetRow key={exchange.id} anchor={`request-${exchange.id}`} sheetTitle="Open shift" title={when(exchange.sourceShift)}
               detail={keepWhole(`${place(exchange.sourceShift)} · from ${marketplaceDisplayName(exchange.requestedByName)}`)}>
