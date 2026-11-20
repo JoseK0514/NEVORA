@@ -54,3 +54,5 @@ npm run typecheck
 npm run lint
 npm run check:onboarding-manifest
 ```
+
+The code checkpoint is `188d3a8886960bf0672b389b6d64249b16b1dfdf`. The broader Company Access run passed 548 tests. The owned onboarding provisioning run passed 25. Typecheck, lint and the canonical manifest check passed. The full unit run passed 15,824 tests and had two failures. The manifest test read SQL edited after test startup and passed on rerun at the checkpoint. The manual publication check still reports a stale application content hash. Rebuild the six revision-bound manuals once the combined Development application is frozen. The Development source inventory also flags the newer Collab head for integrator reconciliation.
