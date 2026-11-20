@@ -4,7 +4,7 @@ ALTER TABLE time_off_requests
   ADD COLUMN requested_by_employee_id text REFERENCES employees(id),
   ADD COLUMN owner_review_required boolean NOT NULL DEFAULT false,
   ADD CONSTRAINT workforce_leave_owner_review CHECK (
-    NOT owner_review_required OR requested_by_employee_id IS NOT DISTINCT FROM employee_id
+    owner_review_required = (requested_by_employee_id IS NOT NULL AND requested_by_employee_id=employee_id)
   );
 
 CREATE FUNCTION workforce_leave_submission_locations(p_workspace text, p_employee text, p_start date, p_end date)
@@ -28,6 +28,10 @@ BEGIN
   IF TG_OP='UPDATE' THEN
     IF ROW(NEW.approval_location_ids, NEW.pto_policy_id, NEW.pto_minutes, NEW.requested_by_employee_id, NEW.owner_review_required)
       IS DISTINCT FROM ROW(OLD.approval_location_ids, OLD.pto_policy_id, OLD.pto_minutes, OLD.requested_by_employee_id, OLD.owner_review_required)
+    THEN RAISE EXCEPTION 'workforce_leave_capture_immutable'; END IF;
+    IF OLD.requested_by_employee_id IS NOT NULL AND
+      ROW(NEW.employee_id,NEW.start_date,NEW.end_date,NEW.start_time,NEW.end_time,NEW.reason,NEW.created_at)
+      IS DISTINCT FROM ROW(OLD.employee_id,OLD.start_date,OLD.end_date,OLD.start_time,OLD.end_time,OLD.reason,OLD.created_at)
     THEN RAISE EXCEPTION 'workforce_leave_capture_immutable'; END IF;
     IF OLD.pto_policy_id IS NOT NULL AND (
       ROW(NEW.employee_id,NEW.start_date,NEW.end_date,NEW.start_time,NEW.end_time)
@@ -62,7 +66,7 @@ BEGIN
 END $$;
 DROP TRIGGER workforce_leave_capture ON time_off_requests;
 CREATE TRIGGER workforce_leave_capture BEFORE INSERT OR UPDATE OF approval_location_ids, pto_policy_id, pto_minutes,
-  employee_id,start_date,end_date,start_time,end_time,reviewed_by,reviewed_at,cancelled_by,cancelled_at,
+  employee_id,start_date,end_date,start_time,end_time,reason,created_at,reviewed_by,reviewed_at,cancelled_by,cancelled_at,
   requested_by_employee_id,owner_review_required
   ON time_off_requests FOR EACH ROW EXECUTE FUNCTION workforce_leave_capture();
 

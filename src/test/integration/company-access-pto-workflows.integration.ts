@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { afterEach, beforeEach, expect, it, rs } from '@rstest/core';
+import { assignOperationalScope, readOwnerOperationalScope } from '../../lib/company-access/operational-scope.server';
+import { mutateSchedulingRestrictions, readSchedulingRestrictions } from '../../lib/data/scheduling-restrictions.server';
 import { businessDate } from '../../lib/business-time';
 import { mutateEmployeePlanning } from '../../lib/data/employee-planning-write.server';
 import { readEmployeePlanning } from '../../lib/data/employee-planning.server';
@@ -58,6 +60,8 @@ it('records delegated attribution once and shows the pending request to the empl
   }] } });
   expect(await f.q('SELECT employee_id, requested_by_employee_id FROM time_off_requests WHERE id=$1', [command.requestId]))
     .toEqual([{ employee_id: 'target', requested_by_employee_id: 'manager' }]);
+  await expect(f.q("UPDATE time_off_requests SET employee_id='manager' WHERE id=$1", [command.requestId]))
+    .rejects.toThrow('workforce_leave_capture_immutable');
   expect(await mutateEmployeePlanning(employee, {
     kind: 'request', requestId: command.requestId, startDate: command.startDate, endDate: command.endDate,
     startTime: null, endTime: null, note: command.reason,
@@ -102,6 +106,14 @@ it('routes a Manager’s own leave to an Owner even if the requester later chang
     kind: 'PERMISSION', operationId: randomUUID(), employeeId: peer.employee.id,
     locationId: 'loc-1', permission: 'APPROVE_LEAVE', granted: true, expectedRevision: 0,
   }, f.db.executor)).toMatchObject({ state: 'saved' });
+  const scope = await readOwnerOperationalScope(f.owner, peer.employee.id, f.db.executor);
+  if (scope.state !== 'ready') throw Error('Peer scope unavailable');
+  expect(await assignOperationalScope(f.owner, peer.employee.id, {
+    action: 'ASSIGN', operationId: randomUUID(), expectedEmployeeVersion: scope.data.current.employeeUpdatedAt,
+    expectedRoleGeneration: scope.data.current.roleGeneration, expectedScopeRevision: scope.data.current.scopeRevision,
+    scope: { mode: 'LOCATIONS', locationIds: ['loc-1'] },
+  }, f.db.executor)).toMatchObject({ state: 'saved' });
+  expect(await listWorkforceLeave(peer, 'PENDING', f.db.executor)).toMatchObject({ state: 'ready', data: [] });
   await expect(decide(peer, command.requestId, 'APPROVED')).rejects.toThrow('operational_authorization');
   expect(await decide(f.owner, command.requestId, 'APPROVED')).toBe(true);
 });
@@ -188,4 +200,16 @@ it('enforces HTTP intent and session boundaries and exposes the Manager’s own 
   } finally {
     rs.unstubAllEnvs();
   }
+});
+
+
+it('lets the sole Owner record scheduling unavailability without creating leave or a ledger entry', async () => {
+  const current = await readSchedulingRestrictions(f.owner, f.owner.employee.id, f.db.executor);
+  expect(await mutateSchedulingRestrictions(f.owner, f.owner.employee.id, {
+    kind: 'SET', operationId: randomUUID(), expectedRevision: current.document.revision,
+    effectiveWeek: current.earliestWeek, reason: 'Fictional scheduling unavailability',
+    unavailable: [{ dayOfWeek: 1, startTime: '00:00', endTime: '24:00' }],
+  }, f.db.executor)).toMatchObject({ changed: true });
+  expect(await f.q('SELECT id FROM time_off_requests')).toEqual([]);
+  expect(await f.q('SELECT id FROM pto_ledger')).toEqual([]);
 });

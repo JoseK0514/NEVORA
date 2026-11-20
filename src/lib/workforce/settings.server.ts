@@ -23,7 +23,7 @@ function calendarSelect(workspaceId: string): SqlStatement {
 
 const policyFields = 'id,code,revision,label,enabled,full_day_minutes AS "fullDayMinutes",earned_minutes_per_100_hours AS "earnedMinutesPer100Hours",carryover_cap_minutes AS "carryoverCapMinutes"';
 
-function workspaceSession(proof: SessionMutationProof, workspace: Awaited<ReturnType<typeof getWorkspace>>, owner: boolean, write = false) {
+export function workforceSessionGuards(proof: SessionMutationProof, workspace: Awaited<ReturnType<typeof getWorkspace>>, owner: boolean, write = false) {
   const session = managementSessionStatements(proof, proof.employee.id, owner ? ownerOnly : allRoles);
   const prefix = workspaceReadGuard(workspace);
   if (write) prefix[0] = { text: 'SELECT id FROM workspaces WHERE singleton=true ORDER BY id FOR UPDATE', values: [] };
@@ -36,7 +36,7 @@ function workspaceSession(proof: SessionMutationProof, workspace: Awaited<Return
 
 export async function readWorkforceSettings(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
   const workspace = await getWorkspace(executor);
-  const guards = workspaceSession(proof, workspace, false);
+  const guards = workforceSessionGuards(proof, workspace, false);
   const [calendar, policies, grants] = (await readTransaction(executor, [
     ...guards,
     calendarSelect(workspace.id),
@@ -71,7 +71,7 @@ export async function readWorkforceSettings(proof: SessionMutationProof, executo
 /** An employee can see their own balance. Company Owners can audit another account. */
 export async function readPtoAccount(proof: SessionMutationProof, employeeId = proof.employee.id, executor: SqlExecutor = neonNotificationExecutor()) {
   const workspace = await getWorkspace(executor);
-  const guards = workspaceSession(proof, workspace, employeeId !== proof.employee.id);
+  const guards = workforceSessionGuards(proof, workspace, employeeId !== proof.employee.id);
   const result = await readTransaction(executor, [
     ...guards,
     {
@@ -91,8 +91,15 @@ export async function readPtoAccount(proof: SessionMutationProof, employeeId = p
         CASE WHEN a.role='OWNER' THEN j.actor_employee_id END AS "actorEmployeeId",
         CASE WHEN a.role='OWNER' THEN j.source_reference END AS "sourceReference",
         CASE WHEN a.role='OWNER' THEN j.qualifying_minutes END AS "qualifyingMinutes",
-        CASE WHEN a.role='OWNER' THEN j.note END AS note
-        FROM pto_ledger j JOIN employees a ON a.id=$3 WHERE j.workspace_id=$1 AND j.employee_id=$2
+        CASE WHEN a.role='OWNER' THEN j.note END AS note,
+        CASE WHEN earned.ledger_entry_id IS NOT NULL THEN jsonb_build_object(
+          'startDate',earned.start_date,'endDate',earned.end_date,'qualifyingMinutes',earned.qualifying_minutes,
+          'policyRevision',revision.revision,'awardMinutes',earned.award_minutes,'changeMinutes',earned.change_minutes
+        ) END AS accrual
+        FROM pto_ledger j JOIN employees a ON a.id=$3
+        JOIN pto_policy_revisions revision ON revision.workspace_id=j.workspace_id AND revision.id=j.policy_id
+        LEFT JOIN pto_timecard_accrual_revisions earned ON earned.workspace_id=j.workspace_id AND earned.ledger_entry_id=j.id
+        WHERE j.workspace_id=$1 AND j.employee_id=$2
         ORDER BY j.recorded_at DESC,j.id LIMIT 101`, values: [workspace.id, employeeId, proof.employee.id],
     },
     ...guards.slice(-2),
@@ -181,7 +188,7 @@ export async function applyWorkforceCommand(proof: SessionMutationProof, value: 
   const actor = proof.employee.id;
   const workspace = await getWorkspace(executor);
   const hash = createHash('sha256').update(JSON.stringify(command)).digest('hex');
-  const guards = workspaceSession(proof, workspace, true, true);
+  const guards = workforceSessionGuards(proof, workspace, true, true);
   const write = ownerWrite(command, workspace.id, actor);
   const size = write.values.length;
   const workspaceRef = '$'+(size+1);

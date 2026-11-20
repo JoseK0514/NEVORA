@@ -31,9 +31,12 @@ export async function admitLeaveReview(proof: SessionMutationProof, requestId: s
     if (proof.employee.role !== 'OWNER') throw new OperationalAuthorizationError();
     return null;
   }
-  assertIndependentReview(proof.employee.id, subject.employeeId, subject.submittedByEmployeeId);
-  if (subject.ownerReviewRequired && proof.employee.role !== 'OWNER') throw new OperationalAuthorizationError();
+  assertIndependentReview(proof.employee.id, subject.employeeId);
   await assertWorkforcePermission(proof, 'APPROVE_LEAVE', subject.locationIds, executor, access);
+  if (proof.employee.id === subject.submittedByEmployeeId ||
+      (subject.ownerReviewRequired && proof.employee.role !== 'OWNER')) {
+    throw new OperationalAuthorizationError();
+  }
   return { access, ...subject };
 }
 
