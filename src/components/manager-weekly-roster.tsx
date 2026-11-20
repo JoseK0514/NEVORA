@@ -368,7 +368,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
         {/* Phase 8 (a.md #12): a person keeps their face tint on the grid too (BAvatar's tint, from the name). */}
         <GridAvatar name={employee.name} />
         <span className="cm-person__text">
-          <span className="cm-person__name" title={employee.name}>{employee.name}</span>
+          <span className="cm-person__name">{employee.name}</span>
           <span className="cm-person__sub c-num" aria-hidden="true" title={employee.hours ? hoursText(employee.hours) : undefined}>{week}{over && employee.hours ? <em>{` · ${overBy(employee.hours)} over ${employee.hours.maximum} h`}</em> : null}</span>
           <span className="sr-only">{week} assigned this week</span>
           {employee.hours ? <span className="sr-only mws-hours" data-over={over || undefined}>{`, ${hoursText(employee.hours)}`}</span> : null}

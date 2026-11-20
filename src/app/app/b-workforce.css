@@ -62,3 +62,42 @@
 @media (min-width: 768px) {
   :is(#c-root, html) .app-shell[data-nv-b] .pw-card :is(.pw-note, .pw-parts) { padding-left: var(--b-inset-wide); padding-right: var(--b-inset-wide); }
 }
+
+/* PTO screens (Nov 20, 2026): Settings › Time off policies and a person's Time off balance. They wear the scheduling
+ * restrictions page's parts (.rs); this adds the hours fields, the policy switch row, the add buttons and the signed
+ * change on a history entry. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] .pto :is(input).rs-in.pto-num { max-width: 200px !important; font-variant-numeric: tabular-nums !important; }
+}
+:is(#c-root, html) .app-shell[data-nv-b] .pto .pto-switch { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--b-space-12); min-height: 56px; cursor: pointer; }
+:is(#c-root, html) .app-shell[data-nv-b] .pto .pto-switch__tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .pto .pto-switch__tx b { font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); }
+:is(#c-root, html) .app-shell[data-nv-b] .pto .pto-switch__tx span { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .pto .pto-empty { padding: var(--b-space-4) var(--b-inset) var(--b-space-8); }
+:is(#c-root, html) .app-shell[data-nv-b] .pto .pto-adds { flex-wrap: wrap; gap: var(--b-space-8); }
+:is(#c-root, html) .app-shell[data-nv-b] .pto .pto-delta { font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--b-ink); }
+:is(#c-root, html) .app-shell[data-nv-b] .pto .pto-delta[data-sign="minus"] { color: var(--b-ink2); }
+:is(#c-root, html) .app-shell[data-nv-b] .pto .pto-entry .rs-req__h { justify-content: space-between; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .pto .pto-empty { padding-left: var(--b-inset-wide); padding-right: var(--b-inset-wide); }
+}
+
+/* Team time off › Approved: "Cancel approval" under each row, opening a confirmation in place. It starts on the row's
+ * text edge (after the avatar) and keeps the 44px floor. */
+:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff li.pto-approved { list-style: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel { padding: 0 var(--b-inset) var(--b-space-8) var(--b-space-64); }
+:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel--open { display: flex; flex-direction: column; gap: var(--b-space-4); margin: 0 var(--b-inset) var(--b-space-12) var(--b-space-64);
+  padding: var(--b-space-12); border-radius: var(--b-radius-field); background: var(--b-canvas); }
+:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel__t { margin: 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 700; color: var(--b-ink); outline: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel__t:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: 2px; border-radius: var(--b-radius-small); }
+:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel__s { margin: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); max-width: 60ch; }
+:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff form.pto-cancel__acts { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--b-space-8); margin-top: var(--b-space-4); }
+@layer nv-b {
+  html body .app-shell[data-nv-b] .q-timeoff button.pto-cancel__open { display: inline-flex !important; align-items: center !important; min-height: 44px !important; margin: 0 !important; padding: 0 var(--b-space-4) !important;
+    border: 0 !important; background: none !important; box-shadow: none !important; color: var(--b-ink2) !important; font: 600 var(--b-fs-body-sm)/var(--b-lh-body-sm) Inter, system-ui, sans-serif !important;
+    text-decoration: underline !important; text-underline-offset: 3px !important; cursor: pointer !important; }
+  html body .app-shell[data-nv-b] .q-timeoff button.pto-cancel__open:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+  html body .app-shell[data-nv-b] .q-timeoff .pto-cancel__acts .b-btn { margin: 0 !important; border: 0 !important; font-family: inherit !important; cursor: pointer !important; }
+  html body .app-shell[data-nv-b] .q-timeoff .pto-cancel__acts .pto-cancel__go { color: var(--b-red) !important; box-shadow: inset 0 0 0 1px var(--b-red) !important; background: #FFFFFF !important; }
+  html body .app-shell[data-nv-b] .q-timeoff .pto-cancel__acts .b-btn:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+}

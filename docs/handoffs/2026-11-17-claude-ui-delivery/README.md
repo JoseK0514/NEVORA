@@ -179,11 +179,21 @@ None blocks integration. Each report has its full list.
   F01 (a punch open since an earlier day is not flagged after 12 hours), F26 to F28, and the "registered" Clocker
   sentences.
 - Rondo AI on Development and Manager access: [request to Codex](../2026-11-18-claude-to-codex-rondo-ai-activation-and-manager-access.md).
+- Rondo AI screens for Owner and Manager (the name and glyph, the Manager view on Codex's contract, the Owner page on
+  the corporate kit) are `aae7c32fc`, built on `f9171d7c`; guide text `97c61303`, guides rebuilt in `513396a3`:
+  [Rondo AI UI](../2026-11-18-claude-rondo-ai-ui.md). Joining it with Codex's candidate `21fd1235` conflicts in 15 files;
+  the note lists them.
+- The Nov 19 desktop and mobile defect audit of `bc75950a8` (NV-AUDIT-01 to 05: Clocker PIN step and band on short
+  screens, tablet rows at 320px, whole names in the schedule grid, a lost time-off decision): UI fixes, before and
+  after evidence in Chromium and WebKit: [audit fixes](../../product/review-2026-11-19-audit/README.md).
 - Owner and Manager controls (SCRUM-215 Manager action grants, planning week and escalation; SCRUM-218 first-week
   setup; SCRUM-214 pay rates and base scheduled pay), English and Spanish, on Development's contracts: code `d22e8eaa`,
   guides rebuilt in `df86717a`: [hand-back](../2026-11-19-claude-owner-manager-controls.md) and
   [evidence](../../product/review-2026-11-19-owner-manager/README.md). Location-scoped publishing needs a backend read
   change (item 2 there).
+- Time off for Owners on Codex's PTO contract (Settings › Time off policies, Team › person › Time off balance with
+  adjustments, Cancel approval on Approved time off), English and Spanish: code `c9d042b9`, guides `d74a9578`:
+  [hand-back](../2026-11-20-claude-pto-owner-screens.md) and [evidence](../../product/review-2026-11-20-pto/README.md).
 - The Support reference is switched on (`5cc1c838` and before, by the backend session), so the U11 note above is
   out of date.
 

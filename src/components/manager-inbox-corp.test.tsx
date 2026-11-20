@@ -7,6 +7,8 @@ import type {Today, TodayShift} from '../lib/today/project';
 import {onlyB} from './owner-b/test-support';
 
 rs.mock('next/link', () => ({default: ({children, prefetch: _prefetch, ...props}: ComponentProps<'a'> & {prefetch?: boolean}) => createElement('a', props, children)}));
+// Audit NV-AUDIT-05 (Nov 19, 2026): a time-off row's form reads the router for its "Check the request".
+rs.mock('next/navigation', () => ({useRouter: () => ({refresh: () => {}, push: () => {}, replace: () => {}}), usePathname: () => '/app/inbox', useSearchParams: () => new URLSearchParams()}));
 const {ThingsToDoPage} = await import('./manager-inbox-corp');
 
 const item = (id: string, type: ActionItem['type'], category: ActionItem['category'], priority: ActionItem['priority'] = 'REVIEW', extra: Partial<ActionItem> = {}): ActionItem =>

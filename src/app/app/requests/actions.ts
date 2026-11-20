@@ -94,8 +94,11 @@ export async function reviewTimeOffAction(formData: FormData) {
     reviewed=await reviewTimeOffRequest({requestId,managerId:session.id,proof,status:decision});
   } catch(error) {
     if (error instanceof Error && error.message === "pto_insufficient_balance") redirect("/app/requests?tab=pending&error=pto-balance");
-    if (error instanceof LeaveReviewRefusal) redirect(`/app/requests?tab=team&error=${error.reason}`);
-    if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))redirect('/app/requests?tab=team&error=review');
+    const reviewTab = decision === "CANCELLED" ? "approved" : "team";
+    if (error instanceof LeaveReviewRefusal) redirect(`/app/requests?tab=${reviewTab}&error=${error.reason}`);
+    if (isOperationalAuthorizationError(error) || isManagementAuthorizationError(error)) {
+      redirect(`/app/requests?tab=${reviewTab}&error=review`);
+    }
     throw error;
   }
 
@@ -103,10 +106,12 @@ export async function reviewTimeOffAction(formData: FormData) {
   // destinations are accepted; anything else keeps the list's own redirect.
   const returnTo = String(formData.get("returnTo") ?? "");
   const origin = returnTo === "inbox" || returnTo === "home" ? returnTo : null;
+  if (!reviewed && decision === "CANCELLED") redirect("/app/requests?tab=approved&error=review");
   if (!reviewed) redirect(origin ? `/app/requests?tab=pending&error=review&requestId=${encodeURIComponent(requestId)}&from=${origin}` : "/app/requests?tab=pending&error=review");
 
   revalidatePath("/app/requests");
-  if (decision === "CANCELLED") redirect("/app/requests?tab=team&cancelled=1");
+  // PTO screens: a cancelled approval returns to the Approved list, which says the time went back to the balance.
+  if (decision === "CANCELLED") redirect("/app/requests?tab=approved&cancelled=1");
   if (origin) {
     revalidatePath("/app/inbox");
     const outcome = decision === "APPROVED" ? "approved" : "declined";

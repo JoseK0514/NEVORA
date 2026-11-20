@@ -9,7 +9,7 @@ import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
 import { CalendarMinusIcon } from "@phosphor-icons/react/dist/ssr/CalendarMinus";
 import { UserMinusIcon } from "@phosphor-icons/react/dist/ssr/UserMinus";
-import { reviewTimeOffAction } from "@/app/app/requests/actions";
+import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
@@ -207,10 +207,10 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
           : conflicts ? null : <span className="b-leave-note">{!checked.has(requestId) ? "Check the schedule on its page" : staffing.status === "loading" ? "Checking the schedule…" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
         // Phase 3 (OW-012): a row with buttons has no chevron (the row itself opens the request); the buttons end the row.
         return <BRow key={row.key} lead={<BAvatar name={row.title} />} title={row.title} sub={<>{keepParts(row.detail)}{note}</>} href={reviewHref} label={row.label} chevron={false}
-          actions={<form action={reviewTimeOffAction}>
+          actions={<TimeOffDecisionForm checkHref={reviewHref}>
             <input type="hidden" name="requestId" value={requestId} /><input type="hidden" name="returnTo" value="inbox" /><input type="hidden" name="returnFilter" value="all" />
             <Decide name={row.title} approve={clear} reviewHref={reviewHref} />
-          </form>} />;
+          </TimeOffDecisionForm>} />;
       }
       const kind = kindIcon(group.id);
       // Phase 3 (MG-012): swaps and can't-work requests are decisions too, so they end with the same tinted Review pill

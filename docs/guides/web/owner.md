@@ -281,6 +281,28 @@ effect. **Incomplete** says how many shifts are priced; **No pay rates** links t
 Team. It leaves out overtime, premiums, breaks, employer taxes, benefits and
 deductions, and it isn't payroll.
 
+## Time off policies and balances
+
+In **Settings**, **Time off policies** lists each policy with its hours in a full
+day, the hours earned per 100 hours worked and the most hours carried into a new
+year. Add **Vacation** and **Sick**, or another policy with its own code. The code
+can't change later, so its balances stay together. Turning a policy off removes it
+from the request form; balances and history stay.
+
+From a person's Team page, **Time off balance** shows their balance for each policy
+and the latest 100 entries: opening balances, time earned from finalized
+timecards, approved and cancelled time off, carryover and adjustments, with who
+made each change and why. Use **Adjust balance** to add or take away time, or to
+enter the balance they had before NEVORA, with a date and a reason. You review the
+balance now, the change and the result before saving. A change that would leave the
+balance below zero isn't saved. If a save isn't confirmed, use **Check again**
+before changing anything else.
+
+To cancel approved time off, open **Time off requests**, choose **Approved** and use
+**Cancel approval**. The request becomes cancelled, any paid time it used goes back
+to the balance, and the person is told. Puerto Rico accrual from finalized timecards
+is set up separately and isn't posted from these screens.
+
 ## Tablet setup and uncertain punches
 
 Open **Clocker tablets** to register a tablet. The setup card offers a QR code, **Copy link** and **Show code**; use the link only on the intended tablet. The person holding it must tap to connect it. The code works once for 15 minutes. Browser and Home Screen app cookies can differ, so check registration in the actual kiosk you will use.

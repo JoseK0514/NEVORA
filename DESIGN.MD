@@ -636,6 +636,46 @@ item names the lines it supersedes; line numbers are from the file before this s
   - Supersedes any older chip, note, glyph, error or button size in this file that differs from the list above. Section
     2 of the spec lists what the pages drew before the pass.
 
+- **Rondo AI (built Nov 18, 2026; see `docs/handoffs/2026-11-18-claude-rondo-ai-ui.md`).** The adviser is "Rondo AI"
+  wherever the product names it (sidebar, rail, More, page titles, back links); a reply's author is "Rondo".
+  - *Nothing AI-generic (Jose, Nov 18).* No sparkle, magic wand, robot or brain glyph; no gradient, glow or shimmer used
+    to say "AI". Rondo's glyph is Phosphor ChatsCircle (two speech bubbles, a conversation), key `rondo`, in the
+    sidebar, More and beside a Manager's answer. Rondo's tools have their own glyphs: Weekly plan CalendarDots, Company
+    knowledge BookOpenText, Business records CashRegister. Rondo's pages use the corporate kit like every other page.
+  - *Owner.* Listed under More in the sidebar and on More when the adviser's switch is on; no card on Home (Jose
+    decides). The Owner's Rondo AI page: teal band; tools as rows; issue rows with a facts line (place · day · time) and
+    one tinted action; kit stats for the briefing; the two checks as form cards; the conversation card with the note
+    "Answers to typed questions are off" while no AI service is approved; priorities, goals and tasks in one card. From
+    1280 a 1080 frame with a 340 right rail. Dates read "Wed, Nov 18", times "9:27 PM", zones "Puerto Rico time".
+  - *Manager.* Same address, its own read-only view: location (a select, or a plain line with the map pin for one),
+    the Weekly plan's week stepper with "This week" as a facts line, "Ask Rondo" (four guided questions as rows; the
+    asked one teal; the reply above them: the question in grey, the glyph in a teal circle, the figure at 24/30 700,
+    what it counts, then location · week · "Checked 9:28 PM"), and "Week by day" (seven rows: day, a facts line of
+    published, drafts and released with zero facts left out, planned hours on the right). Quiet notes under the cards.
+  - *Words that carry meaning.* Hours are "Planned time from the schedule. Timecards show hours worked." Released shifts
+    "followed an approved 'Can't work' request" and "aren't in the draft or published counts". A failed read never
+    shows as zero. Copy follows stop-slop: plain, specific, active, no filler or hype.
+  - *Private and short-lived.* A Rondo read stays on screen only for the lease the server gives it, renews while the
+    page is in front, and hides when the person switches away ("Details hidden", "Show again").
+  - *Kit.* A kit button (`b-btn`) never shows the browser's outset border on a corporate-kit page.
+- **Audit fixes (Nov 19, 2026; see `docs/product/review-2026-11-19-audit/README.md`).** From the desktop and mobile defect
+  audit of `bc75950a8`.
+  - *Clocker on short screens.* A landscape screen under 32 lines of text tall (512px at the default size, 600px wide and
+    up: a phone held sideways) keeps the side band, narrower (240 to 340px) and tighter, so the location, date, state,
+    time zone and tablet name stay in view; a name too long even for that scrolls inside the band and is never clipped.
+    Its PIN step puts the keypad beside the field, its message and Continue. A short phone (under 48 lines tall) tightens
+    the band and the card so the PIN step fits a 568px screen, and opening the PIN step scrolls just far enough to show
+    Continue. Keys and buttons keep the 56px floor; the tab order is unchanged.
+  - *Facts lines are never cut.* A row's facts line built from parts (place · state · last used) wraps between its parts
+    at every width; the two-line clamp under 360px does not apply to it.
+  - *Whole names in the schedule grid.* A person's name wraps in full in the Owner and Manager grids at every width, and a
+    long name makes its row taller. No ellipsis and no name that only a mouse tooltip shows.
+  - *A decision whose answer is lost.* Decline and Approve for time off (the request page, the Waiting list, Things to
+    do) never fall through to "Nothing was changed". The buttons step aside for an amber note: "Your decision isn’t
+    confirmed yet" / "The answer didn’t arrive, so it may already be saved. Check the request before you decide again."
+    with one check. The request's page then reads "Already approved" or "Already declined" with who and when, or the
+    buttons return under "This request is still waiting. Decide again."
+
 - **Owner and Manager controls (Nov 19, 2026; SCRUM-215, 218, 214; see
   `docs/handoffs/2026-11-19-claude-owner-manager-controls.md`).** On Development's contracts, English and Spanish.
   - *Language.* These screens speak the person's portal language (`readPortalLanguage`: saved choice, then the device's
@@ -661,6 +701,17 @@ item names the lines it supersedes; line numbers are from the file before this s
   - *Base scheduled pay.* The Owner's schedule has one estimate card: the total in the header, a row per location with
     shifts and hours, "Incomplete" with what is priced so far ("$1,240.00 for 30 of 36 shifts"), "No pay rates" with a
     way to Team. "What's included" opens the basis. It is an estimate, never payroll.
+
+- **Time off for Owners (Nov 20, 2026; see `docs/handoffs/2026-11-20-claude-pto-owner-screens.md`).** On Codex's PTO
+  contract, English and Spanish, in the same parts as the pay rate page (`.rs` fields, footer, issue and done cards).
+  - *Policies* (Settings › Time off policies): Vacation, then Sick, then others by name. A row says the daily hours, the
+    earning rate and the carryover in one line, with an On/Off chip. The code is fixed after creation.
+  - *Balance* (Team › person › Time off balance, Owner only): balances by policy, then history newest first. Each entry
+    is "kind · policy" with its signed hours on the right and a line that explains it (from finalized timecards for a
+    period, approved or cancelled time off, or who made it); an Owner's reason shows under it. An adjustment reviews
+    now / change / after; one that would go below zero stops before sending.
+  - *Cancel approval* (Team time off › Approved): a quiet text action under the row opens an in-place confirmation;
+    the red-edged "Cancel time off" is the commit. The list then says the paid time went back to the balance.
 
 ## Previous direction (October 20, 2026; superseded)
 
