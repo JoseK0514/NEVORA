@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "a1ae2753304ad46c9b74e5f27e56e98007c3251d",
-  "applicationHash": "bd416ced02ac0937c7cfbdc56dde2b9fe9573990cea8a3ce18c2cafcee152251",
+  "sourceSha": "8645eb5a18c5151e6620619374cda4a30f455d59",
+  "applicationHash": "aa50ba6c4efc7052ab8198c7d23575a86448047d201bd5e4ea70216b597a543b",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "37461cc1c4d239db0b500a7b191f11b30a8ae74b95974b7aa0b86c92f890ffb1"
@@ -212,7 +212,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "761bd9a002eac367752df54a7aea40c57296ffa7ab8c3d387c1b67438879d51c",
+        "sha256": "e17f51b9361109ca1b5bd327f2f5088b769016a6385ad735d72f8f33eb12f05c",
         "pageCount": 7
       }
     },
@@ -335,7 +335,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "a71087de4e8d5845da5d51f46b3efa114cde66a665429c33b9a6a53a8eee8380",
+        "sha256": "cb7b840c9ae2edda3ed42a6cdbb3b00b2d115e0bfcaaa26c45e64261bb0869d3",
         "pageCount": 4
       }
     },
@@ -454,7 +454,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "7121b9ae3ed14f21994312b3720d57d000daa0dc06f5c1b169d593bfa62f3a97",
+        "sha256": "58a8a14b3a445167fac32b7b63aefd97cce111be0576dea03f8fa3aa794cd5af",
         "pageCount": 3
       }
     },
@@ -629,7 +629,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "e1480b85646a277fad41248731b8e7f7975fae07b8a3f2139dce2929c505e0ad",
+        "sha256": "078d5830cb2c3e9adf67d2d142ead7d22b2ef177843d1261400988565436cb9b",
         "pageCount": 5
       }
     },
@@ -659,7 +659,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "82f1b8de34b75c16db19708ce9c8402d31f4a5d0927152318d12e97211f76704"
+          "sha256": "31a9818402c6b4389721472f7631b8589cae2c7247d273025fca32b2278a1040"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -699,7 +699,7 @@
         },
         {
           "path": "db/migrations/order.ts",
-          "sha256": "5d717d078e75b7cdc6ff4fd89544f108a467f17716905bffcfbbe616c4dced55"
+          "sha256": "adfbedef8f4f6df074689d9ff4feebc900f850106deff4ae38e6c4d5c252cca2"
         },
         {
           "path": "scripts/release-build.mjs",
@@ -883,7 +883,7 @@
         },
         {
           "path": "src/test/integration/release1-migrations.integration.ts",
-          "sha256": "d3bd11207c08d9ea2f124d463a83af8a4712e53d1e4f6e82dbed0175e52f21ea"
+          "sha256": "7a72f3ce1aec7fd2f34cb2dc27a29f211704a063e68b0eee97eda862aca68c75"
         },
         {
           "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
@@ -892,7 +892,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "6d502017602b66337d567139318f084d68a56a217cf0966bfc699b1a57ecfe21",
+        "sha256": "cba2432d0cc53ea3e10b3d34840795a5e5d73453694e71cc679dc0046fe21ba2",
         "pageCount": 7
       }
     },
@@ -1066,7 +1066,7 @@
         },
         {
           "path": "src/test/integration/release1-migrations.integration.ts",
-          "sha256": "d3bd11207c08d9ea2f124d463a83af8a4712e53d1e4f6e82dbed0175e52f21ea"
+          "sha256": "7a72f3ce1aec7fd2f34cb2dc27a29f211704a063e68b0eee97eda862aca68c75"
         },
         {
           "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
@@ -1087,7 +1087,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "c85e7ef8a87ebb95dc28e5ddb3e558725cb8cc2b60ec0515b91a64f9bde0fe3b",
+        "sha256": "ecf63ed6844ceab3d2c3b54222c018dfdb0f19c7eb1b3428a9042a479dd6d4a7",
         "pageCount": 7
       }
     }
