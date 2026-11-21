@@ -400,11 +400,21 @@
 .facts dd { text-wrap: balance; margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
 /* ---------- recorded ---------- */
-.check { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; margin: 6px auto 22px; background: var(--ck-green-fill); color: #FFFFFF; box-shadow: 0 0 0 10px var(--ck-green-wash);
-  animation: ckPop var(--b-dur-enter) cubic-bezier(.2, .7, .2, 1) both; }
-.check svg { animation: ckDraw 420ms cubic-bezier(.2, .7, .2, 1) 160ms both; }
-@keyframes ckPop { from { transform: scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
-@keyframes ckDraw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+/* The done mark (Nov 21, 2026): the app's one success mark (BDoneMark, b-moments.css) on the kiosk, from the same tokens.
+ * A solid green disc with a top light edge, a soft halo and glow; it settles once, draws its own tick (DoneTick) and one
+ * ring leaves it. data-size="sm" is the setup card's 64px mark; data-still is a state that was already true. */
+.check { position: relative; width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; margin: 6px auto 22px; background: var(--b-green-solid); color: #FFFFFF;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 10px var(--b-done-halo), var(--b-done-glow);
+  animation: ckPop var(--b-dur-settle) var(--b-ease-settle) both; }
+.check svg { overflow: visible; }
+.check svg path { stroke-dasharray: 1; stroke-dashoffset: 0; animation: ckDraw var(--b-dur-draw) var(--b-ease-settle) var(--b-delay-draw) both; }
+.check::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 2px var(--b-green-solid); pointer-events: none; opacity: 0; animation: ckRing var(--b-dur-ring) var(--b-ease-settle) var(--b-delay-ring) both; }
+.check[data-size=sm] { width: 64px; height: 64px; margin: 0 auto 14px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 6px var(--b-done-halo), var(--b-done-glow); }
+.check[data-still], .check[data-still] svg path, .check[data-still]::after { animation: none; }
+@media (forced-colors: active) { .check { forced-color-adjust: none; background: CanvasText; color: Canvas; box-shadow: none; } }
+@keyframes ckPop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes ckDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes ckRing { from { opacity: .5; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
 .hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bye { margin: var(--b-space-8) 0 0; font-size: 1.125rem; font-weight: 600; color: var(--ck-green); }
 .saved { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-body-sm); line-height: 1.45; color: var(--ck-ink2); overflow-wrap: anywhere; text-wrap: balance; }
@@ -492,7 +502,7 @@
 /* ---------- motion: never under reduced motion; the words carry every state ---------- */
 @media (prefers-reduced-motion: reduce) {
   .page *, .page *::before, .page *::after { transition: none !important; scroll-behavior: auto !important; }
-  .pin[data-shake], .spin, .progress > i, .check svg { animation: none !important; }
+  .pin[data-shake], .spin, .progress > i, .check svg path, .check::after { animation: none !important; }
   /* The receipt's bar steps down once a second (a width change, not motion) instead of staying full (NV-304). */
   .countdown > i { animation: ckClear 8s steps(8, end) forwards !important; }
   .check { animation: ckFade 200ms linear both !important; }
@@ -528,8 +538,8 @@
   .pinForm .continue { margin-top: var(--b-space-8); }
   .meta { margin-top: 6px; }
   .ring { width: 52px; height: 52px; margin-bottom: 10px; }
-  .check { width: 72px; height: 72px; margin: var(--b-space-12) auto 14px; box-shadow: 0 0 0 8px var(--ck-green-wash); }
-  .check svg { width: 40px; height: 40px; }
+  .check:not([data-size]) { width: 72px; height: 72px; margin: var(--b-space-12) auto 14px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 8px var(--b-done-halo), var(--b-done-glow); }
+  .check:not([data-size]) svg { width: 40px; height: 40px; }
   .hero { font-size: 2.75rem; }
   .acts { gap: 10px; margin-top: var(--b-space-16); }
   .act { min-height: 72px; }

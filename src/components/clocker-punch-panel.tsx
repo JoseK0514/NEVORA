@@ -15,6 +15,7 @@ import {ClockerPunchPhotoFlow} from './clocker-photo/punch-photo-flow';
 import {createClockerPhotoTransport} from '../lib/clocker/photo-client/transport';
 import {readPhotoConfiguration,type PhotoSessionContext,type PhotoBindings} from '../lib/clocker/photo-client/session';
 import { ClockerIcon, type ClockerIconName } from './clocker-icon';
+import { DoneTick } from './owner-b/b-glyphs';
 import {ClockerText,useClockerCopy,useClockerIntlLocale,useClockerKeepNames,useClockerPresentation} from './clocker-language';
 import {CLOCKER_PUNCH_ERRORS,clockerOthersSavedText,clockerPunchErrorKey,clockerText,clockerUnconfirmedText} from './clocker-copy';
 import {useClockerOnline,useWhenBackOnline} from './clocker-online';
@@ -257,7 +258,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   ?<div role="status" data-clocker-notice className={styles.note}><ClockerIcon name="info" size={20} mark/><p><ClockerText text={message}/></p></div>
   :<p role={mode==='success'?'status':'alert'} data-clocker-notice className={styles.smsg}><ClockerText text={message}/></p>:null;
  return <div className={styles.content} aria-busy={waiting} data-clocker-state={mode} data-align={left?'start':'center'}>
-  {mode==='success'?<span className={styles.check}><ClockerIcon name="check" size={52}/></span>
+  {mode==='success'?<span className={styles.check}><DoneTick size={52}/></span>
    :ring?<span className={styles.ring} data-tone={ring[1]==='teal'?undefined:ring[1]}><ClockerIcon name={ring[0]} size={28} mark/></span>:null}
   {mode==='ready'?<div className={styles.who}>{face()}<h1 ref={heading} tabIndex={-1} className={styles.title}>{t(title,{name:first})}</h1></div>
    :<h1 ref={heading} tabIndex={-1} className={styles.title}>{t(title,{first,name:first})}</h1>}

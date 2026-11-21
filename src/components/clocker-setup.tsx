@@ -8,6 +8,7 @@ import setup from './clocker-tablet-setup.module.css';
 import { ClockerPinGate } from './clocker-pin-gate';
 import { ClockerShell } from './clocker-shell';
 import { ClockerIcon } from './clocker-icon';
+import { DoneTick } from './owner-b/b-glyphs';
 import { isSetupCode, setupCodeFromHash } from './clocker-setup-link';
 
 type SetupState = { state: 'prepared' | 'unregistered' } | { state: 'connected'; deviceName: string };
@@ -174,14 +175,14 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
         <span className={styles.ring} data-tone={offline ? 'red' : 'amber'}><ClockerIcon name={offline ? 'offline' : 'unknown'} size={28} mark/></span>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t(offline ? 'No connection' : 'Setup not confirmed')}</h1>
       </> : view === 'welcome' ? <>
-        <span className={styles.ring} data-tone="green"><ClockerIcon name="check" size={28} mark/></span>
+        <span className={styles.check} data-size="sm"><DoneTick size={30}/></span>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t('This tablet is connected to {location}', { location: locationLabel })}</h1>
         <p className={styles.lead}>{readyBefore}<strong>{state.state === 'connected' ? state.deviceName : ''}</strong>{readyAfter}</p>
         {punchEnabled ? null : punchNote}
         <div className={styles.stack}><button className={styles.btn} data-kind="primary" type="button" onClick={() => setWelcome(false)}>{t('Open the time clock')}<ClockerIcon name="arrow" size={20}/></button></div>
         <p className={styles.clears}>{t("Owner access has been signed out on this tablet.")}{punchEnabled ? <>{' '}{t('The time clock opens in a few seconds.')}</> : null}</p>
       </> : view === 'connected' ? <>
-        <span className={styles.ring} data-tone="green"><ClockerIcon name="check" size={28} mark/></span>
+        <span className={styles.check} data-size="sm" data-still={welcome ? undefined : ''}><DoneTick size={30}/></span>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{welcome ? t('This tablet is connected to {location}', { location: locationLabel }) : t("Tablet connected")}</h1>
         {/* One sentence with a placeholder (Nov 10 review, NV-173). */}
         <p className={styles.lead}>{deviceBefore}<strong>{state.state === 'connected' ? state.deviceName : ''}</strong>{deviceAfter}</p>
