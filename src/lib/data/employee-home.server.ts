@@ -4,6 +4,7 @@ import type {SqlExecutor,SqlStatement} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {AttentionItem,EmployeeHomeRead,HomeSource,SourceObservation} from '../employee-home/types';
 import {isValidIsoDate} from '../date-utils';
+import {dateRange} from '../duration-format';
 import {homeDestination,projectEmployeeHome} from '../employee-home/project';
 import {assertEmployeeViewProof,employeeReadLimits,employeeViewGuards,readEmployeeWorkspace} from './employee-profile.server';
 import {employeeAllowedLocationsSql} from './employee-schedule';
@@ -27,9 +28,7 @@ const CAP=100;
 function timeOffPeriod(detail:Record<string,unknown>):string{
  const start=String(detail.startDate),end=String(detail.endDate);
  if(!isValidIsoDate(start)||!isValidIsoDate(end)||end<start)throw Error('Invalid request period');
- // These are calendar dates; UTC formatting preserves them in every workspace zone.
- const format=(day:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric',year:'numeric'}).format(new Date(`${day}T12:00:00Z`));
- return start===end?format(start):`${format(start)} – ${format(end)}`;
+ return dateRange(start,end,{year:'end'});
 }
 type IndexRow={id:string;changedAt:string;version?:string;detail?:Record<string,unknown>;read?:boolean};
 type Section={observation:SourceObservation;items:AttentionItem[]};

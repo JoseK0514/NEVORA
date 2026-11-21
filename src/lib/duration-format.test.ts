@@ -1,5 +1,5 @@
 import {describe, expect, it} from '@rstest/core';
-import {dateRangeText, durationRow, durationSentence, durationTotal, minutesFromNanoseconds, relativeTimeText, timeRangeText} from './duration-format';
+import {dateRange, dateRangeText, durationRow, durationSentence, durationTotal, minutesFromNanoseconds, relativeTimeText, timeRangeText} from './duration-format';
 
 const MINUTE = BigInt(60_000_000_000);
 
@@ -56,6 +56,32 @@ describe('date and time ranges', () => {
     expect(dateRangeText('2026-09-28', '2026-10-04')).toBe('Sep 28 – Oct 4');
     expect(dateRangeText('2026-12-28', '2027-01-03')).toBe('Dec 28, 2026 – Jan 3, 2027');
     expect(dateRangeText('2026-11-09', '2026-11-09')).toBe('Nov 9');
+  });
+  // Jose (Nov 21, 2026): "Nov 16–22" everywhere, and "Nov 30–Dec 6" across months: a closed en dash, no spaces.
+  it('dateRange: one written form for a range of calendar dates', () => {
+    expect(dateRange('2026-11-16', '2026-11-22')).toBe('Nov 16–22');
+    expect(dateRange('2026-11-30', '2026-12-06')).toBe('Nov 30–Dec 6');
+    expect(dateRange('2026-12-28', '2027-01-03')).toBe('Dec 28, 2026–Jan 3, 2027');
+    expect(dateRange('2026-11-16', '2026-11-16')).toBe('Nov 16');
+    // A week that ends on the 1st names both months.
+    expect(dateRange('2026-11-25', '2026-12-01')).toBe('Nov 25–Dec 1');
+    for (const range of [dateRange('2026-11-16', '2026-11-22'), dateRange('2026-11-30', '2026-12-06'), dateRange('2026-12-28', '2027-01-03')])
+      expect(range).not.toMatch(/[\s\u00a0\u2009\u202f]–|–[\s\u00a0\u2009\u202f]/);
+  });
+  it('dateRange: years only as the caller shows them', () => {
+    expect(dateRange('2026-12-28', '2027-01-03', {year: 'never'})).toBe('Dec 28–Jan 3');
+    expect(dateRange('2026-11-16', '2026-11-22', {year: 'end'})).toBe('Nov 16–22, 2026');
+    expect(dateRange('2026-11-30', '2026-12-06', {year: 'end'})).toBe('Nov 30–Dec 6, 2026');
+    expect(dateRange('2026-12-28', '2027-01-03', {year: 'end'})).toBe('Dec 28, 2026–Jan 3, 2027');
+    expect(dateRange('2026-11-16', '2026-11-16', {year: 'end'})).toBe('Nov 16, 2026');
+    expect(dateRange('2026-11-16', '2026-11-22', {year: 'each'})).toBe('Nov 16, 2026–Nov 22, 2026');
+  });
+  it('dateRange: Spanish keeps its own order and month form', () => {
+    expect(dateRange('2026-11-16', '2026-11-22', {locale: 'es-PR'})).toBe('16–22 nov');
+    expect(dateRange('2026-11-30', '2026-12-06', {locale: 'es-PR'})).toBe('30 nov–6 dic');
+    expect(dateRange('2026-12-28', '2027-01-03', {locale: 'es-PR'})).toBe('28 dic 2026–3 ene 2027');
+    expect(dateRange('2026-11-16', '2026-11-16', {locale: 'es-PR'})).toBe('16 nov');
+    expect(dateRange('2026-11-16', '2026-11-22', {locale: 'es-PR', year: 'each'})).toBe('16 nov 2026–22 nov 2026');
   });
   it('writes clock times in the zone given, with "now" for an open end', () => {
     const range = timeRangeText('2026-11-09T13:00:00Z', '2026-11-09T21:00:00Z', 'America/Puerto_Rico').replace(/ /g, ' ');
