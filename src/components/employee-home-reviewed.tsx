@@ -48,11 +48,11 @@ function dateLabel(date: string) {
   }).format(at));
 }
 
-/** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month. */
+/** "Oct 19–25", or "Oct 26–Nov 1" across a month (the app's one date-range form, Nov 21, 2026). */
 function weekRange(weekStart: string) {
   const start = utcDay(weekStart), end = new Date(start.getTime() + 6 * 86_400_000);
   const same = start.getUTCMonth() === end.getUTCMonth();
-  return <><time dateTime={weekStart}>{monthDay(start)}</time>{' – '}{same ? end.getUTCDate() : monthDay(end)}</>;
+  return <><time dateTime={weekStart}>{monthDay(start)}</time>{'–'}{same ? end.getUTCDate() : monthDay(end)}</>;
 }
 
 function businessDate(at: string, zone: string) {

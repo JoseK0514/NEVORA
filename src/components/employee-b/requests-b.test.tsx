@@ -19,9 +19,9 @@ const PENDING = '11111111-1111-4111-8111-111111111111';
 beforeEach(() => { fixture.read = null; fixture.paused = false; });
 
 it('reads a time-off request as its dates over its days and length, in today’s words', () => {
-  expect(timeOffRange(request('a', 'PENDING', '2026-11-12', '2026-11-14'))).toBe('Nov 12 – 14');
+  expect(timeOffRange(request('a', 'PENDING', '2026-11-12', '2026-11-14'))).toBe('Nov 12–14');
   expect(timeOffSpan(request('a', 'PENDING', '2026-11-12', '2026-11-14'))).toBe('Thu – Sat · All day · 3 days');
-  expect(timeOffRange(request('b', 'PENDING', '2026-10-30', '2026-11-02'))).toBe('Oct 30 – Nov 2');
+  expect(timeOffRange(request('b', 'PENDING', '2026-10-30', '2026-11-02'))).toBe('Oct 30–Nov 2');
   expect(timeOffRange(request('c', 'PENDING', '2026-11-13', '2026-11-13'))).toBe('Nov 13');
   expect(timeOffSpan(request('c', 'PENDING', '2026-11-13', '2026-11-13'))).toBe('Fri · All day');
   expect(timeOffSpan(request('d', 'PENDING', '2026-11-13', '2026-11-13', ['09:00', '12:00']))).toBe('Fri · 9:00 AM – 12:00 PM');
@@ -36,11 +36,11 @@ it('maps today’s request tones to the B chips and says when a swap waits on yo
 
 it('draws the Requests tab: the white Request time off, what waits on the manager, then what was decided', () => {
   const html = renderToStaticMarkup(<div className="c-page"><RequestsHubB sub="Time off and shift changes you’ve sent" newHref="/app/requests?tab=new" forManager decidedHref="/app/requests?filter=decided"
-    waiting={[{key: 'w', href: '/app/requests?requestId=w', kind: 'timeOff', title: 'Time off', sub: 'Nov 12 – 14 · 3 days', chip: {tone: 'amber', text: 'Waiting'}}]}
+    waiting={[{key: 'w', href: '/app/requests?requestId=w', kind: 'timeOff', title: 'Time off', sub: 'Nov 12–14 · 3 days', chip: {tone: 'amber', text: 'Waiting'}}]}
     decided={[{key: 'd', href: '/app/exchange?tab=requests&requestId=d', kind: 'callout', title: 'Can’t work', sub: 'Mon, Sep 28', chip: {tone: 'red', text: 'Declined'}}]}/></div>);
   expect(html).toMatch(/class="b-btn b-btn--white b-btn--full" href="\/app\/requests\?tab=new">.*Request time off</);
   expect(html).toContain('Waiting for your manager<span class="b-pill">1</span>');
-  expect(html).toContain('aria-label="Time off, Nov 12 – 14 · 3 days, Waiting"');expect(html).toContain('b-chip--amber">Waiting<');
+  expect(html).toContain('aria-label="Time off, Nov 12–14 · 3 days, Waiting"');expect(html).toContain('b-chip--amber">Waiting<');
   expect(html).toContain('href="/app/requests?filter=decided"');expect(html).toContain('b-chip--red">Declined<');
   const empty = renderToStaticMarkup(<RequestsHubB sub="Time off you’ve asked for" newHref={null} forManager decidedHref={null} waiting={[]} decided={[]}/>);
   expect(empty).toContain('Nothing waiting right now');expect(empty).not.toContain('Request time off');expect(empty).not.toContain('Decided');

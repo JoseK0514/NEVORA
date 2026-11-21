@@ -1,5 +1,5 @@
 import {addDays,weekStartFor} from '@/lib/date-utils';
-import {durationRow,durationSentence} from '@/lib/duration-format';
+import {dateRange,durationRow,durationSentence} from '@/lib/duration-format';
 import type {EmployeeTime,EmployeeTimeEntry} from '@/lib/employee-time';
 import type {Period,TimecardIssue} from '@/lib/timecards/project';
 import type {PublicCorrectionItem} from '@/lib/time-corrections/read-model';
@@ -36,10 +36,9 @@ export const dayShort=(date:string)=>`${fmt('UTC',{weekday:'short'}).format(noon
 export const dayMedium=(date:string)=>fmt('UTC',{weekday:'short',month:'short',day:'numeric'}).format(noon(date));
 /** "Monday, October 26" */
 export const dayLong=(date:string)=>fmt('UTC',{weekday:'long',month:'long',day:'numeric'}).format(noon(date));
-/** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month. */
+/** "Oct 19–25", or "Oct 26–Nov 1" across a month. */
 export function rangeLabel(start:string,end:string){
- const short=(date:string)=>fmt('UTC',{month:'short',day:'numeric'}).format(noon(date));
- return start===end?short(start):start.slice(0,7)===end.slice(0,7)?`${short(start)} – ${Number(end.slice(8))}`:`${short(start)} – ${short(end)}`;
+ return dateRange(start,end,{year:'never'});
 }
 export const seconds=(nanos:string)=>Number(BigInt(nanos)/BigInt(1000000000));
 export const span=(start:string,end:string|null)=>end?Math.max(0,Math.round((Date.parse(end)-Date.parse(start))/1000)):null;

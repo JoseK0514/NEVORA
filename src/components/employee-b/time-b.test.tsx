@@ -34,7 +34,7 @@ describe('Time tab (e-time)',()=>{
   expect(b).toContain('<h1 id="b-hours-title" tabindex="-1">Time</h1>');expect(plain).toContain('Tue, Oct 27 · Condado');
   expect(plain).toMatch(/This week 8 h 02 8 h 2 min Breaks 30 min/);
   expect(plain).toContain('Right now');expect(plain).toContain('Not clocked in');expect(plain).toContain('Clock in on the Condado tablet');
-  expect(plain).toContain('This week · Oct 26 – Nov 1');expect(plain).toContain('In progress');
+  expect(plain).toContain('This week · Oct 26–Nov 1');expect(plain).toContain('In progress');
   expect(b).toContain('href="/app/my-time?entry=own-1"');expect(b).toContain('id="b-hours-entry-own-1"');expect(plain).toContain('30 min break');
   expect(b).toContain('href="/app/my-time?view=corrections&amp;edit=new"');expect(plain).toContain('Fix a missed punch');expect(plain).toContain('Hours include breaks.');
   // Final polish, round 2 (T1): a day row's range carries both dashes (time.css shows the leading one from 360px and the
@@ -99,12 +99,12 @@ describe('Past timecards (e-timecards)',()=>{
  const period={startDate:'2026-10-19',endDate:'2026-10-25'};
  it('lists weeks in one card: the later week, this one with its state in words, earlier weeks loading, then Show earlier weeks',()=>{
   const html=inPage(head,<CorpPastTimecards authority="a" data={data} period={period} today="2026-10-27" entryId={null} onRefresh={noop} chosen={false}/>),b=onlyB(html),plain=text(b);
-  expect(plain).toContain('Weeks');expect(plain).toContain('Oct 19 – 25');expect(plain).toContain('1 shift · Approved');expect(plain).toContain('8 h 02');
+  expect(plain).toContain('Weeks');expect(plain).toContain('Oct 19–25');expect(plain).toContain('1 shift · Approved');expect(plain).toContain('8 h 02');
   expect(b).toContain('href="/app/my-time?view=cards&amp;start=2026-10-19&amp;end=2026-10-25"');
   // Employee desktop (Nov 8, 2026) draws the week shown as a detail card before the list (desktop only, eb-desk), so the
   // list's order is read from its own card on.
   const list=plain.slice(plain.indexOf('Weeks'));
-  const order=['Oct 26 – Nov 1','Oct 19 – 25','Oct 12 – 18','Sep 21 – 27','Show earlier weeks','Your correction requests'].map(range=>list.indexOf(range));
+  const order=['Oct 26–Nov 1','Oct 19–25','Oct 12–18','Sep 21–27','Show earlier weeks','Your correction requests'].map(range=>list.indexOf(range));
   expect(order.every(at=>at>=0)).toBe(true);expect([...order].sort((a,b)=>a-b)).toEqual(order);
   expect(plain).toContain('Loading…');expect(plain).toContain('Waiting and decided');expect(list).not.toContain('Tue 20');
   // The corporate page keeps its chosen week in full.

@@ -17,7 +17,7 @@ const draw = (patch: Partial<PayBProps> = {}) => renderToStaticMarkup(<PayB {...
 
 it('EM-010: the pay period is plain band text under the date and the hero has one glass pill', () => {
   const html = draw(), hero = html.slice(html.indexOf('<header'), html.indexOf('</header>')), next = hero.slice(hero.indexOf('ep-next'));
-  expect(next).toContain('<p class="ep-next__k">Scheduled payday · In 3 days</p><p class="ep-next__v">Fri, Nov 20</p><p class="ep-next__p">For work Nov 9 – 15</p>');
+  expect(next).toContain('<p class="ep-next__k">Scheduled payday · In 3 days</p><p class="ep-next__v">Fri, Nov 20</p><p class="ep-next__p">For work Nov 9–15</p>');
   expect(hero).not.toContain('b-chip');
   // Final polish, round 2 (P1): See your hours is on the title's row (the band's action, as Past timecards is on Time),
   // before the desktop's Pay history; the payday block holds no button.
@@ -47,11 +47,11 @@ it('P2: a replaced statement reads "Earlier version" under its correction, not a
   const html = draw({ordered: list, byId: new Map(list.map(item => [item.id, item]))}), card = html.slice(html.indexOf('id="b-pay-recent"'));
   const rows = [...card.matchAll(/<li class="b-li">(.*?)<\/li>/g)].map(row => row[1]);
   // The correction keeps its date and "Corrected".
-  expect(rows[0]).toContain('<span class="b-row__tt">Fri, Nov 13</span>');expect(rows[0]).toContain('Corrected');expect(rows[0]).toContain('For work Nov 2 – 8');
+  expect(rows[0]).toContain('<span class="b-row__tt">Fri, Nov 13</span>');expect(rows[0]).toContain('Corrected');expect(rows[0]).toContain('For work Nov 2–8');
   // The one it replaced: no date title, no chip, the correction's payday in its line; the link's name is unchanged.
   expect(rows[1]).toContain('<span class="b-row__tt"><span class="ep-muted">Earlier version</span></span>');expect(rows[1]).toContain('<span class="b-row__s">Replaced by the Nov 13 correction</span>');
   expect(rows[1]).not.toContain('b-chip');expect(rows[1]).not.toContain('>Fri, Nov 13<');
-  expect(rows[1]).toContain('aria-label="Friday, November 13, 2026, replaced statement for Nov 2 – 8"');
+  expect(rows[1]).toContain('aria-label="Friday, November 13, 2026, replaced statement for Nov 2–8"');
   // The correction is not in the list this screen holds: the row keeps its date and "Replaced".
   const alone = draw({ordered: [list[0], old, ordered[1]], byId: new Map([list[0], old, ordered[1]].map(item => [item.id, item]))});
   expect(alone).toContain('<span class="ep-muted">Fri, Nov 13</span>');expect(alone).toContain('Replaced</span>');expect(alone).not.toContain('Earlier version');

@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {dateRange} from '@/lib/duration-format';
 import {useState,type MouseEvent,type ReactNode} from 'react';
 import type {EmployeeNotificationItem,EmployeeViewSnapshot} from '../../lib/employee-view';
 import type {PrivatePanelState} from '../../lib/private-snapshot-client';
@@ -20,9 +21,9 @@ export function notificationGroup(at:string,zone:string,now=new Date()):'Today'|
 }
 
 const shortDate=(date:string,month=true)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',...(month?{month:'short'}:{}),day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
-/** " for Nov 26", " for Nov 26 – 28" or " for Nov 28 – Dec 2": the dates a notice is about, when the list sends them. */
+/** " for Nov 26", " for Nov 26–28" or " for Nov 28–Dec 2": the dates a notice is about, when the list sends them. */
 const forDates=(subject:EmployeeNotificationItem['subject'])=>!subject?'':subject.startDate===subject.endDate?` for ${shortDate(subject.startDate)}`
- :` for ${shortDate(subject.startDate)} – ${shortDate(subject.endDate,subject.startDate.slice(0,7)!==subject.endDate.slice(0,7))}`;
+ :` for ${dateRange(subject.startDate,subject.endDate,{year:'never'})}`;
 /** Inspection Nov 14 (BR-6, EM-005): a notice's title says what happened instead of naming its category, as far as the
  * list's own fields tell: the kind (from its label), the dates it is about (`subject`) and whether it still needs the
  * person (`actionState`). The list doesn't send a request's outcome or what changed in a schedule, so those titles stop
@@ -57,7 +58,7 @@ export function notificationTitle(item:EmployeeNotificationItem):string{
 }
 
 /** Phase 4 (EM-005): a row in two parts. `title` is the outcome in a few words ("Time off approved", "Confirm your
- * schedule"); `object` is what it is about, from the dates, the name and the count the list sends ("Nov 30 – Dec 2",
+ * schedule"); `object` is what it is about, from the dates, the name and the count the list sends ("Nov 30–Dec 2",
  * "Week of Nov 9 · 2 shifts", "Sat, Nov 21 · From Ana Colon"), or null when the list sends none of them (a team update's
  * title and a pay statement's period are not in the read). `decided` is set only for a decision the event type names.
  * Nothing is guessed: without an event type the title stops at "answered" or "updated", as notificationTitle does.
@@ -70,7 +71,7 @@ export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountL
  const kind=notificationKindFor(item),event=needed?null:item.eventType??null;
  const dates=!subject?null:subject.kind==='scheduleWeek'?t.weekOf(headlineDay(subject.startDate,locale,false))
   :subject.startDate===subject.endDate?headlineDay(subject.startDate,locale,true)
-  :`${headlineDay(subject.startDate,locale,false)} – ${subject.startDate.slice(0,7)===subject.endDate.slice(0,7)?Number(subject.endDate.slice(8)):headlineDay(subject.endDate,locale,false)}`;
+  :dateRange(subject.startDate,subject.endDate,{year:'never',locale});
  const count=/^SCHEDULE_/.test(item.eventType??'')&&typeof item.count==='number'&&Number.isSafeInteger(item.count)&&item.count>=0?t.shifts(item.count):null;
  const later=notificationOutcomeNote(item),now=later?t.now[later.replace(/^Now /,'')]??null:null;
  const forYou=item.actionState==='available'&&(item.eventType==='SWAP_RESPONSE_REQUIRED'||item.eventType==='COVERAGE_INVITATION');

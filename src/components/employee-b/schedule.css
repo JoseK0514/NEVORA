@@ -134,7 +134,7 @@
 
 /* Final polish, round 2 (Nov 20, 2026).
  * S2: "Confirm this week" carries Home's amber "Action needed" chip. On phones and tablets the chip goes under the title
- * and its line ("Nov 16 – 22 · 7 shifts"), as Home's row does; from 1024px it sits beside the title. The button stays at
+ * and its line ("Nov 16–22 · 7 shifts"), as Home's row does; from 1024px it sits beside the title. The button stays at
  * the row's right and drops under the words below 360px (the rule above). */
 @media (max-width: 1023px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm .b-row__tx > .b-row__t:has(> .b-chip) { display: contents; }

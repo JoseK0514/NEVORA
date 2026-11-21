@@ -184,7 +184,7 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
       })}
       confirm={review && !acknowledged ? { title: confirmationNeeded ? 'Confirm this week' : 'Schedule review',
         // Round 2 (S2): the row says what Home's row for the same job says: the week and how many shifts it holds
-        // ("Nov 16 – 22 · 7 shifts"), with Home's amber chip. One line at every width, so no short form is needed.
+        // ("Nov 16–22 · 7 shifts"), with Home's amber chip. One line at every width, so no short form is needed.
         detail: confirmationNeeded ? (shifts.length ? keepWhole(`${weekRange(weekStart)} · ${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'}`) : 'No assignments remain this week. Review the changes, then confirm.') : 'Review the current week again.',
         needed: confirmationNeeded,
         control: <PhoneOnly fallback={<span className="b-btn b-btn--teal" aria-hidden="true">Confirm</span>}>{confirmation}</PhoneOnly> } : null}

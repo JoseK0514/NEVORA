@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {dateRange} from '@/lib/duration-format';
 import {useEmployeeMobile} from './employee-mobile/use-mobile';
 import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import {useState, type ReactNode} from 'react';
@@ -69,11 +70,10 @@ function greeting(at: string, zone: string) {
   return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 }
 
-/** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month. */
+/** "Oct 19–25", or "Oct 26–Nov 1" across a month (the app's one date-range form, Nov 21, 2026). */
 export function weekRange(weekStart: string) {
-  const start = utcDay(weekStart), end = new Date(start.getTime() + 6 * 86_400_000);
-  const monthDay = (at: Date) => fmt('UTC', {month: 'short', day: 'numeric'}).format(at);
-  return keepWhole(`${monthDay(start)} – ${start.getUTCMonth() === end.getUTCMonth() ? end.getUTCDate() : monthDay(end)}`);
+  const end = new Date(utcDay(weekStart).getTime() + 6 * 86_400_000);
+  return keepWhole(dateRange(weekStart, end.toISOString().slice(0, 10), {year: 'never'}));
 }
 
 /** "Today", "Tomorrow" or "Wednesday". */
@@ -124,7 +124,7 @@ function TodoIcon({item}: {item: AttentionItem}) {
   return <Icon weight="bold" className="q-ic" aria-hidden="true"/>;
 }
 
-/** Weeks to confirm share one row ("Oct 19 – 25 and Oct 26 – Nov 1"); every other item keeps its own. */
+/** Weeks to confirm share one row ("Oct 19–25 and Oct 26–Nov 1"); every other item keeps its own. */
 export function todoRows(items: readonly AttentionItem[]) {
   const weeks = items.filter(confirmsWeek);
   const rows: {key: string; item: AttentionItem; weeks?: AttentionItem[]}[] = [];

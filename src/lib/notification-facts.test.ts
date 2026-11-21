@@ -56,7 +56,7 @@ describe('notification facts become words only when the list sends them',()=>{
   expect(employeeTitle(row({eventType:'TIME_OFF_DENIED',subject:{kind:'requestDate',startDate:'2026-11-26',endDate:'2026-11-26'}}))).toBe('Your time-off request for Nov 26 was declined');
   expect(employeeTitle(row({label:'Swap request',eventType:'SWAP_RESPONSE_REQUIRED',actionState:'available',names:['Ana Colon']}))).toBe('Ana Colon asked you to swap a shift');
   expect(employeeTitle(row({label:'Swap request',eventType:'SWAP_RESPONSE_REQUIRED',actionState:'available'}))).toBe('You can respond to a shift request');
-  expect(employeeTitle(row({label:'Schedule published',eventType:'SCHEDULE_PUBLISHED',actionState:'required',subject:{kind:'scheduleWeek',startDate:'2026-11-16',endDate:'2026-11-22'}}))).toBe('Confirm your schedule for Nov 16 – 22');
+  expect(employeeTitle(row({label:'Schedule published',eventType:'SCHEDULE_PUBLISHED',actionState:'required',subject:{kind:'scheduleWeek',startDate:'2026-11-16',endDate:'2026-11-22'}}))).toBe('Confirm your schedule for Nov 16–22');
   expect(employeeTitle(row({label:'Schedule published',eventType:'SCHEDULE_PUBLISHED'}))).toBe('Your schedule was published');
   // An older row without facts reads as before.
   expect(employeeTitle(row({label:'Time-off update'}))).toBe('Your time-off request was answered');

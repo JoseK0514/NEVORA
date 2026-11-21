@@ -22,7 +22,7 @@ const item = (id: string, required: boolean, kind: AttentionItem['ref']['kind'] 
   href: `/app/notifications?item=${id}`, required, actionable: true, deadlineAt: required ? null : '2026-11-23T13:00:00Z', changedAt: at});
 const todo = (id: string, required = false): HomeTodo => ({key: `k:${id}`, item: item(id, required, required ? 'COMMUNICATION' : 'EXCHANGE'), week: false});
 const props = (patch: Partial<HomeBProps> = {}): HomeBProps => ({snapshot: snapshot(), partial: false, todos: [], week: week(), name: 'James', date: 'Tuesday, Nov 17', place: 'Main Office', waiting: null,
-  loading: false, paused: false, denied: false, refreshing: false, onRetry: () => {}, weekTodo: () => ({title: 'Confirm this week’s schedule', detail: 'Nov 16 – 22'}), payday: '2026-11-27', ...patch});
+  loading: false, paused: false, denied: false, refreshing: false, onRetry: () => {}, weekTodo: () => ({title: 'Confirm this week’s schedule', detail: 'Nov 16–22'}), payday: '2026-11-27', ...patch});
 const draw = (patch: Partial<HomeBProps> = {}) => renderToStaticMarkup(<EmployeeHomeB {...props(patch)}/>);
 const text = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/[  ]/g, ' ').replace(/\s+/g, ' ');
 

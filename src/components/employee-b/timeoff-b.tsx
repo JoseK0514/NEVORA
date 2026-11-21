@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {dateRange} from '@/lib/duration-format';
 import {OwnLeaveNote} from '../leave-staffing/own-leave-note';
 import type {ReactNode} from 'react';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
@@ -20,14 +21,11 @@ import './requests.css';
 
 const utc = (date: string) => new Date(`${date}T12:00:00Z`);
 const fmt = (options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', ...options});
-const monthDay = (date: string) => fmt({month: 'short', day: 'numeric'}).format(utc(date));
 const weekday = (date: string) => fmt({weekday: 'short'}).format(utc(date));
 
-/** "Nov 12 – 14", "Oct 30 – Nov 2" or "Nov 13". */
+/** "Nov 12–14", "Oct 30–Nov 2" or "Nov 13" (the app's one date-range form, Nov 21, 2026). */
 export function timeOffRange(request: TimeOffView) {
-  if (request.startDate === request.endDate) return monthDay(request.startDate);
-  const sameMonth = request.startDate.slice(0, 7) === request.endDate.slice(0, 7);
-  return `${monthDay(request.startDate)} – ${sameMonth ? Number(request.endDate.slice(8)) : monthDay(request.endDate)}`;
+  return dateRange(request.startDate, request.endDate, {year: 'never'});
 }
 /** "Thu – Sat · All day · 3 days", "Fri · All day" or "Fri · 9:00 AM – 12:00 PM" (Phase 4, EM-023: a time range already
  * says it is part of the day). */

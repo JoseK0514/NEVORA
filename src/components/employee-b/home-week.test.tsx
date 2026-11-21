@@ -48,6 +48,6 @@ it('shows the schedule alone without the hours read, and nothing for an empty we
   const html = renderToStaticMarkup(<HomeWeekCard week={week} hours={undefined} time={false}/>);
   expect(text(html)).not.toContain('Hours worked');
   expect(html).not.toContain('/app/my-time');
-  expect(text(html)).toContain('Nov 16 – 22');
+  expect(text(html)).toContain('Nov 16–22');
   expect(renderToStaticMarkup(<HomeWeekCard week={{...week, shifts: []}} hours={undefined} time={false}/>)).toBe('');
 });

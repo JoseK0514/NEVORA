@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {dateRange} from '@/lib/duration-format';
 
 import type {ReactNode, RefObject} from 'react';
 import {ArrowSquareOutIcon} from '@phosphor-icons/react/dist/ssr/ArrowSquareOut';
@@ -24,7 +25,7 @@ const utc = (date: string) => new Date(`${date}T12:00:00Z`);
 const fmt = (options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', ...options});
 const payday = (date: string) => fmt({weekday: 'short', month: 'short', day: 'numeric'}).format(utc(date));
 const paydayLong = (date: string) => fmt({weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}).format(utc(date));
-const period = (start: string, end: string) => { const short = (date: string) => fmt({month: 'short', day: 'numeric'}).format(utc(date)); return start.slice(0, 7) === end.slice(0, 7) ? `${short(start)} – ${Number(end.slice(8))}` : `${short(start)} – ${short(end)}`; };
+const period = (start: string, end: string) => dateRange(start, end, {year: 'never'});
 const paycheckHref = (id: string) => `/app/my-pay?paycheck=${encodeURIComponent(id)}`;
 const documentHref = (statement: Statement) => `/api/payroll/documents/${encodeURIComponent(statement.id)}`;
 const role = (item: Statement) => item.correctedBy ? 'replaced statement' : item.corrects ? 'corrected statement' : 'statement';

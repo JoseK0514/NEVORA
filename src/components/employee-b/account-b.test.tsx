@@ -76,8 +76,8 @@ describe('Notifications', () => {
       {id: 'd', label: 'Shift swap', eventType: 'SWAP_RESPONSE_REQUIRED', names: ['Ana Colon'], subject: {kind: 'requestDate' as const, startDate: '2026-11-28', endDate: '2026-11-28'}, at: '2026-11-05T15:10:00Z', href: '/app/exchange', reviewState: 'unread' as const, actionState: 'available' as const},
     ];
     const html = renderToStaticMarkup(<EmployeeNotificationsB list={list({items: facts})} />), plain = text(html);
-    for (const value of ['Time off approved', 'Nov 30 – Dec 2', 'Time off declined', 'Sat, Dec 5', 'Schedule published', 'Week of Nov 9', '2 shifts', 'Swap request waiting for you', 'Sat, Nov 28', 'From Ana Colon']) expect(plain).toContain(value);
-    expect(html).toContain('aria-label="Time off approved, Nov 30 – Dec 2, unread, 2:10 PM"');expect(html).toContain('aria-label="Schedule published, Week of Nov 9, 2 shifts, 12:10 PM"');
+    for (const value of ['Time off approved', 'Nov 30–Dec 2', 'Time off declined', 'Sat, Dec 5', 'Schedule published', 'Week of Nov 9', '2 shifts', 'Swap request waiting for you', 'Sat, Nov 28', 'From Ana Colon']) expect(plain).toContain(value);
+    expect(html).toContain('aria-label="Time off approved, Nov 30–Dec 2, unread, 2:10 PM"');expect(html).toContain('aria-label="Schedule published, Week of Nov 9, 2 shifts, 12:10 PM"');
     expect(html.match(/b-ico b-ico--green/g)).toHaveLength(1);expect(html.match(/eb-notif--declined/g)).toHaveLength(1);expect(plain).not.toContain('Action needed');
     // Final polish, round 2 (H2, N1): a swap that waits for this person's answer is amber with the Requests page's chip,
     // and a row's parts keep one order: title, grey line, then the chip.

@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useRef,useState,type ReactNode} from 'react';
+import {dateRange} from '@/lib/duration-format';
 import Link from 'next/link';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -21,10 +22,10 @@ export type PayView={statements:Statement[]|null;loading:boolean;error:string;er
 
 const utc=(date:string)=>new Date(`${date}T12:00:00Z`);
 const day=(date:string,weekday=false)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',...(weekday?{weekday:'long'}:{}),month:'long',day:'numeric',...(weekday?{}:{year:'numeric'})}).format(utc(date)).replace(/([A-Za-z]+) (\d)/,'$1\u00a0$2');
-/** "Sep 21 – 27, 2026" or "Sep 28 – Oct 4, 2026", ending with the year so history stays unambiguous. */
+/** "Sep 21–27, 2026" or "Sep 28–Oct 4, 2026", ending with the year so history stays unambiguous (both years when the
+ * period crosses one). */
 export function payPeriod(start:string,end:string){
- const short=(date:string,month=true)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',...(month?{month:'short'}:{}),day:'numeric'}).format(utc(date));
- return `${short(start)} – ${short(end,start.slice(0,7)!==end.slice(0,7))}, ${end.slice(0,4)}`;
+ return dateRange(start,end,{year:'end'});
 }
 const documentHref=(statement:Statement)=>`/api/payroll/documents/${encodeURIComponent(statement.id)}`;
 /** Inspection Nov 14 (PY-7): who pays, said once on every Pay view. NEVORA shows a scheduled payday and a statement. */
