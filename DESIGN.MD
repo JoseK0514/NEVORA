@@ -539,6 +539,11 @@ item names the lines it supersedes; line numbers are from the file before this s
     switch language to Spanish" ("English, cambiar idioma a inglés"), the phone avatar "More, James Ortiz, JO", and
     the desktop account button's initials are drawn by CSS beside the visible name. A Clocker break choice is named
     with its second line too: "Start Meal break, Suggested: 30 min".
+  - *The Clocker's done mark.* A recorded punch, a recorded photo punch and a connected tablet show the app's one done
+    mark (BDoneMark's disc and tick, from the same tokens, drawn by `DoneTick` because the kiosk is outside the app
+    shell): 96px on a receipt (72px on small screens), 64px on the setup card. It settles, draws its tick and sends one
+    ring once; a tablet that was already connected is still; reduced motion is a fade only. Supersedes the kiosk's
+    Phosphor check on a darker green disc and the setup card's outlined green ring.
   - *Micro-interactions.* A row that opens leans its chevron 2px on hover and press and settles its icon circle to 94%
     while pressed; a shortcut tile does the same; buttons ease their shade and lift in 150ms. Transform and colour only,
     nothing plays by itself, all off under reduced motion.
