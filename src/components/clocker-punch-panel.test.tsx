@@ -117,3 +117,11 @@ it('offers no filled action under the offline note on the clock screen; Done is 
  hooks.online=true;
  const online=allButtons(render('ready'));expect(online.find(button=>button.label==='Clock in')?.kind).toBe('primary');expect(online.find(button=>button.label==='Done')?.kind).toBe('secondary');
 });
+
+it('names a break choice with its second line, so the suggested length is announced too',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const source=await readFile(new URL('./clocker-punch-panel.tsx',import.meta.url),'utf8');
+ expect(source).toContain("aria-label={[t('Start {name}',{name:type.name}),breakSub(type)].filter(Boolean).join(', ')}");
+ // A space sits between the name and its second line, so the visible words read as two phrases to assistive tech.
+ expect(source).toContain("{type.name}{breakSub(type)?<>{' '}<small>{breakSub(type)}</small></>:null}");
+});

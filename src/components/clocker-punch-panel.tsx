@@ -289,9 +289,9 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   </>:null}
   {mode==='select-break'&&view?<>
    <p className={styles.lead}>{keep(t("Your break doesn’t end on its own. Tap End break when you’re back."))}</p>
-   <div className={styles.acts}>{view.breakTypes.map(type=><button tabIndex={0} key={type.id} className={styles.act} data-kind="secondary" type="button" aria-label={t('Start {name}',{name:type.name})} onClick={()=>act('START_BREAK',type)}>
+   <div className={styles.acts}>{view.breakTypes.map(type=><button tabIndex={0} key={type.id} className={styles.act} data-kind="secondary" type="button" aria-label={[t('Start {name}',{name:type.name}),breakSub(type)].filter(Boolean).join(', ')} onClick={()=>act('START_BREAK',type)}>
     <span className={styles.actIcon}><ClockerIcon name={breakIcon(type.category)} size={28} mark/></span>
-    <span className={styles.actText}>{type.name}{breakSub(type)?<small>{breakSub(type)}</small>:null}</span>
+    <span className={styles.actText}>{type.name}{breakSub(type)?<>{' '}<small>{breakSub(type)}</small></>:null}</span>
     <ClockerIcon name="arrow" size={22}/>
    </button>)}</div>
    <div className={styles.stack}><button tabIndex={0} type="button" className={styles.btn} data-kind="secondary" onClick={()=>setMode('ready')}>{t("Back")}</button></div>

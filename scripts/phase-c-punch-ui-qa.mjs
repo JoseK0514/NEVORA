@@ -221,7 +221,7 @@ try{
   assert.equal(await count(),typedStart+1,'A changed type cannot record from a stale choice');
   await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,typedStart+1);await t.getByRole('button',{name:'Start break',exact:true}).click();
   assert.equal(await t.getByRole('button',{name:'Start Fixture rest',exact:true}).count(),0);
-  await t.getByRole('button',{name:'Start Meal reference',exact:true}).click();await success(t,'Break start');await done(t);
+  await t.getByRole('button',{name:/^Start Meal reference(,|$)/}).click();await success(t,'Break start');await done(t);
   checked(engine+': stale break selection rejects safely, then requires an explicit current type');
   await editBreak(ownerPage,'Future rest','REST',5);await archiveBreak(ownerPage,'Archive');
   await verify(t);await t.getByRole('button',{name:'End break',exact:true}).waitFor();await t.getByText('Meal reference',{exact:true}).waitFor();
