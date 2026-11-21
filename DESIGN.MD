@@ -473,6 +473,13 @@ item names the lines it supersedes; line numbers are from the file before this s
     Your week, Coming up. A Lead's column is Today's team, Your week, Coming up.
   - *Supersedes* "Things to do in the right column" for an Employee's desktop Home (near D3 and the Nov 8 Employee
     desktop notes).
+- **Clocker on phones: compact band (built Nov 21, 2026; Jose asked for it).** Under 600px the band holds the same facts
+  in fewer rows: the date stands beside the clock at the band's right edge (two short lines where it must wrap), and
+  the place and the tablet's state share a row where both fit and wrap where they don't. The pills are 34px. At
+  390x844 the whole PIN step (keypad, Continue and the language switch) now fits the screen without scrolling. Tablets
+  and the landscape side band are unchanged. On the receipt, the saved time ("1:41 AM") never splits across lines.
+  Rules: the `@media (max-width: 599px)` block in `src/components/clocker.module.css`. *Supersedes* "the location pill
+  and date under it" for phones only (Clocker Direction B, Layout).
 - **Feature screens and Employee screens (built Nov 17, 2026; see `docs/handoffs/2026-11-17-claude-ui-delivery/README.md`).**
   - *Sheets.* One sheet per feature (`b-restrictions.css`, `b-payroll-import.css`, `b-reminders.css`,
     `b-review-details.css`) and two for the Employee and Lead app (`employee-b-work.css`, `employee-b-account.css`),
