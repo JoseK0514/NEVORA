@@ -522,6 +522,14 @@ item names the lines it supersedes; line numbers are from the file before this s
     hairlines with 12px of air. On the Clocker, the two figures on Clock out?; in the swap, cover and can't-work forms,
     the shift and the teammate the request is about.
   - *Request time off's toggle.* All day / Part of day keeps its 36px thumb inside the 44px track on touch screens.
+  - *Button shape (Jose's pick, Nov 21, 2026; board option C).* Every button has 10px corners (`--b-radius-btn`), 8px
+    at the compact 36px size (`--b-radius-btn-sm`), in place of the pill: the kit's buttons, row actions, the older
+    secondary, Employee form buttons and the Clocker's buttons and language button. Chips, segments and their thumbs,
+    icon circles, avatars, the search field, counts, shortcut tiles and the back circle keep their shapes. Supersedes
+    "every button, chip and segment thumb on B surfaces is a pill" for buttons (B1).
+  - *Label in name.* A control's spoken name contains the words it shows: the Clocker's language button is "Español,
+    switch language to Spanish" ("English, cambiar idioma a inglés"), the phone avatar "More, James Ortiz, JO", and
+    the desktop account button's initials are drawn by CSS beside the visible name.
   - *Micro-interactions.* A row that opens leans its chevron 2px on hover and press and settles its icon circle to 94%
     while pressed; a shortcut tile does the same; buttons ease their shade and lift in 150ms. Transform and colour only,
     nothing plays by itself, all off under reduced motion.
