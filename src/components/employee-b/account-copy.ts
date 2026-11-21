@@ -7,7 +7,7 @@ export type AccountLang = 'en' | 'es';
 const words = {
   en: {
     // Notifications: the title is the outcome, the sub-line is the object.
-    schedulePublished: 'Schedule published', scheduleUpdated: 'Schedule updated', scheduleConfirm: 'Confirm your schedule',
+    schedulePublished: 'Schedule published', scheduleUpdated: 'Schedule updated', scheduleConfirm: 'Confirm your schedule', scheduleConfirmWeek: (day: string) => `Confirm the week of ${day}`,
     timeOffApproved: 'Time off approved', timeOffDeclined: 'Time off declined', timeOffAnswered: 'Time-off request answered',
     calloutApproved: 'Can’t-work request approved', calloutDeclined: 'Can’t-work request declined', calloutAnswered: 'Can’t-work request answered',
     swapApproved: 'Shift swap approved', swapDeclined: 'Shift swap declined', coverApproved: 'Shift cover approved', coverDeclined: 'Shift cover declined',
@@ -41,7 +41,7 @@ const words = {
     privateTitle: 'Keep private details out of email',
   },
   es: {
-    schedulePublished: 'Horario publicado', scheduleUpdated: 'Horario actualizado', scheduleConfirm: 'Confirme su horario',
+    schedulePublished: 'Horario publicado', scheduleUpdated: 'Horario actualizado', scheduleConfirm: 'Confirme su horario', scheduleConfirmWeek: (day: string) => `Confirme la semana del ${day}`,
     timeOffApproved: 'Tiempo libre aprobado', timeOffDeclined: 'Tiempo libre rechazado', timeOffAnswered: 'Solicitud de tiempo libre respondida',
     calloutApproved: 'Solicitud de ausencia aprobada', calloutDeclined: 'Solicitud de ausencia rechazada', calloutAnswered: 'Solicitud de ausencia respondida',
     swapApproved: 'Cambio de turno aprobado', swapDeclined: 'Cambio de turno rechazado', coverApproved: 'Cobertura de turno aprobada', coverDeclined: 'Cobertura de turno rechazada',

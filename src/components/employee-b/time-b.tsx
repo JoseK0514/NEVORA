@@ -122,12 +122,16 @@ export function TimeTabB({data}:{data:Ready}){
    </BList>
    <BCardNote>Hours include breaks.</BCardNote>
   </BCard>
+  {/* Final polish (Nov 20, 2026): last week and the corrections are one column (the Home's eb-side), so on desktop the
+    * second card follows the first instead of waiting for the left column's row. Phones stack them as before. */}
+  <div className="eb-side" id="b-hours-side">
   {context?<LastWeekB authority={context.authority} date={data.date}/>:null}
   {/* The corrections sit under last week (the right column on desktop). Review F2 (NV-135): phones show them too, so
     * both widths hold the same content. */}
   <div className="eb-corrections"><BCard label="Your correction requests"><BList>
    <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub={W.correctionsSub}/>
   </BList></BCard></div>
+  </div>
  </HoursBScreen>;
 }
 

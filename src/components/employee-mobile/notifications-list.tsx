@@ -72,7 +72,10 @@ export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountL
  const count=/^SCHEDULE_/.test(item.eventType??'')&&typeof item.count==='number'&&Number.isSafeInteger(item.count)&&item.count>=0?t.shifts(item.count):null;
  const later=notificationOutcomeNote(item),now=later?t.now[later.replace(/^Now /,'')]??null:null;
  const forYou=item.actionState==='available'&&(item.eventType==='SWAP_RESPONSE_REQUIRED'||item.eventType==='COVERAGE_INVITATION');
- const object=[dates,count,forYou&&who?t.from(who):null,now].filter(Boolean).join(' · ')||null;
+ // Final polish (Nov 20, 2026): a week to confirm is named in its title ("Confirm the week of Nov 23"), so several
+ // weeks waiting never read as one row repeated; the line under it then keeps the shift count only.
+ const confirmWeek=kind==='SCHEDULE'&&needed&&subject?.kind==='scheduleWeek'?headlineDay(subject.startDate,locale,false):null;
+ const object=[confirmWeek?null:dates,count,forYou&&who?t.from(who):null,now].filter(Boolean).join(' · ')||null;
  const decided=/_APPROVED$/.test(event??'')?'approved' as const:/_DENIED$/.test(event??'')?'declined' as const:null;
  const title=((): string=>{
   switch(event){
@@ -88,7 +91,7 @@ export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountL
   }
   if(forYou)return item.eventType==='SWAP_RESPONSE_REQUIRED'?t.swapForYou:t.coverForYou;
   switch(kind){
-   case 'SCHEDULE':return needed?t.scheduleConfirm:t.scheduleUpdated;
+   case 'SCHEDULE':return confirmWeek?t.scheduleConfirmWeek(confirmWeek):needed?t.scheduleConfirm:t.scheduleUpdated;
    case 'TIME_OFF':return t.timeOffAnswered;
    case 'CALLOUT':return t.calloutAnswered;
    case 'EXCHANGE':return item.actionState==='available'?t.requestForYou:item.actionState==='complete'?t.requestClosed:t.requestUpdated;

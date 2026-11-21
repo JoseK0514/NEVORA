@@ -98,7 +98,14 @@ it('Phase 9: the shift card says its time fact as header meta, your clock state 
   // Still clocked in after today's shift ended: an amber callout with the Warning glyph, a title and its line.
   const read = {current: {state: 'CLOCKED_IN', clockInAt: '2026-11-17T13:02:00Z', locationName: 'Main Office'}} as unknown as Parameters<typeof HoursRead.Provider>[0]['value'];
   const late = renderToStaticMarkup(<HoursRead.Provider value={read}><EmployeeHomeB {...props()}/></HoursRead.Provider>);
-  const lateCard = late.slice(late.indexOf('id="b-home-shift"'), late.indexOf('</section>', late.indexOf('id="b-home-shift"')));
+  // Final polish (Nov 20, 2026): it is its own Right now card, first on Home, so it reads as about now; the shift card
+  // under it stays about the shift ahead and says only where to clock.
+  const lateCard = late.slice(late.indexOf('id="b-home-now"'), late.indexOf('</section>', late.indexOf('id="b-home-now"')));
+  const lateShift = late.slice(late.indexOf('id="b-home-shift"'), late.indexOf('</section>', late.indexOf('id="b-home-shift"')));
+  expect(late.indexOf('id="b-home-now"')).toBeGreaterThan(-1);expect(late.indexOf('id="b-home-now"')).toBeLessThan(late.indexOf('id="b-home-shift"'));
+  expect(lateCard).toContain('>Right now</h2>');expect(lateCard).toContain('href="/app/my-time"');
+  expect(lateShift).not.toContain('b-callout');expect(text(lateShift)).toContain('Clock in on the Main Office tablet');expect(text(lateShift)).not.toContain('Clocked in at');
+  expect(html).not.toContain('id="b-home-now"');
   expect(lateCard).toContain('<div class="b-callout" data-tone="amber" role="status">');
   expect(lateCard).toContain('<p class="b-callout__t">Still clocked in since 9:02 AM</p>');
   expect(text(lateCard)).toContain('Your 9 AM – 5 PM shift has ended. Clock out on the Main Office tablet.');
@@ -136,4 +143,20 @@ it('privacy: while Home is not released (offline, paused) no private row is draw
   const html = draw({snapshot: null, paused: true, waiting: 'You’re offline.', todos: [todo('a')], name: undefined});
   expect(html).not.toContain('b-home-todo');expect(html).not.toContain('b-home-upcoming');expect(html).not.toContain('b-live');
   expect(text(html)).toContain('You’re offline.');
+});
+
+it('final polish: Home’s shortcuts open the page that starts each request, and a module that is off has none', () => {
+  const nav = (html: string) => html.match(/<nav class="eb-qa" aria-label="Shortcuts">.*?<\/nav>/)?.[0] ?? '';
+  const all = nav(draw({shortcuts: ['timeOff', 'callout', 'swap', 'fixTime']}));
+  expect([...all.matchAll(/href="([^"]+)"/g)].map(match => match[1].replace(/&amp;/g, '&'))).toEqual(['/app/requests?tab=new', '/app/schedule?intent=callout', '/app/schedule?intent=swap', '/app/my-time?view=corrections&edit=new']);
+  expect(text(all).trim()).toBe('Time off Can’t work Swap shift Fix my time');
+  // The short labels keep their words inside the spoken name.
+  expect(all).toContain('aria-label="Request time off"');
+  // They lead the right column, over Your week and Coming up.
+  const html = draw({shortcuts: ['fixTime']});
+  expect(html.indexOf('class="eb-qa"')).toBeGreaterThan(html.indexOf('id="b-home-side"'));
+  expect(html.indexOf('class="eb-qa"')).toBeLessThan(html.indexOf('id="b-home-upcoming"'));
+  expect(text(nav(html)).trim()).toBe('Fix my time');
+  expect(nav(draw())).toBe('');
+  expect(nav(draw({shortcuts: []}))).toBe('');
 });

@@ -96,8 +96,8 @@
 .flow.flow .actions { gap: 12px; margin-top: 22px; }
 .flow.flow .actions button { min-height: 56px; padding: 12px 24px; border: 0 !important; border-radius: 999px; font-size: 1.0625rem; font-weight: 700; line-height: 1.25; -webkit-tap-highlight-color: transparent; transition: background-color 140ms ease, transform 120ms ease; }
 .flow.flow .primary { background: var(--clocker-accent, #0C726C); color: #FFFFFF; box-shadow: 0 8px 18px -8px rgb(11 110 105 / .6); }
-.flow.flow .secondary { background: #F0F2F3; color: #111517; }
+.flow.flow .secondary { background: var(--clocker-soft, #E8F3F1); color: #0B6E69; }
 .flow.flow .quiet { min-height: 56px; background: transparent; color: #0B6E69; font-size: .96875rem; font-weight: 600; }
 .flow.flow .actions button:active { transform: scale(.96); }
-@media (hover: hover) { .flow.flow .primary:hover { background: var(--clocker-accent-hover, #0A5F5A); } .flow.flow .secondary:hover { background: #E6E9EA; } }
+@media (hover: hover) { .flow.flow .primary:hover { background: var(--clocker-accent-hover, #0A5F5A); } .flow.flow .secondary:hover { background: #DCEDEA; } }
 @media (prefers-reduced-motion: reduce) { .flow.flow .actions button, .flow.flow .photoNotice summary > svg { transition: none; } .flow.flow .actions button:active { transform: none; } }

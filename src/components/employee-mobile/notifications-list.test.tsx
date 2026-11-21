@@ -62,7 +62,11 @@ it('Phase 4 (EM-005): a headline is the outcome and its object, in English and S
  expect(head('Schedule published',{eventType:'SCHEDULE_PUBLISHED',count:2,subject:week})).toEqual({title:'Schedule published',object:'Week of Nov 9 · 2 shifts',decided:null});
  expect(head('Schedule published',{eventType:'SCHEDULE_PUBLISHED',count:0,subject:week}).object).toBe('Week of Nov 9 · No shifts for you');
  // A notice that still needs the person is the action, whatever its event type; one without an event type stops at what is known.
- expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:week})).toEqual({title:'Confirm your schedule',object:'Week of Nov 9 · 4 shifts',decided:null});
+ expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:week})).toEqual({title:'Confirm the week of Nov 9',object:'4 shifts',decided:null});
+ // Final polish (Nov 20, 2026): the week is in the title, so two weeks waiting are two different rows; without a week the title stays general.
+ expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:{...week,startDate:'2026-11-16',endDate:'2026-11-22'}}).title).toBe('Confirm the week of Nov 16');
+ expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4}).title).toBe('Confirm your schedule');
+ expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:week},'es').title).toMatch(/^Confirme la semana del 9 (de )?nov\.?$/);
  expect(head('Schedule update')).toEqual({title:'Schedule updated',object:null,decided:null});expect(head('Time-off update',{subject:span}).title).toBe('Time-off request answered');
  expect(head('Shift swap',{eventType:'SWAP_RESPONSE_REQUIRED',actionState:'available',names:['Ana Colon'],subject:day})).toEqual({title:'Swap request waiting for you',object:'Thu, Nov 26 · From Ana Colon',decided:null});
  expect(head('Cover',{eventType:'COVERAGE_INVITATION',actionState:'available',subject:day})).toEqual({title:'Cover request waiting for you',object:'Thu, Nov 26',decided:null});

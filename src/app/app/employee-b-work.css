@@ -224,6 +224,9 @@
    * Native inline prose links retain their inline layout; checkbox/radio labels supply their hit region. */
   @media (pointer: coarse) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) :is(a[href]:not(.b-back), button, input:not([type="checkbox"], [type="radio"]), select, textarea, summary, label:has(> input:is([type="checkbox"], [type="radio"]))) { min-width: var(--b-target-touch) !important; min-height: var(--b-target-touch) !important; }
+    /* Final polish (Nov 20, 2026): a segment's link is its 36px thumb; the 44px target is the track (b-foundation's
+     * ::after). The floor above made the white thumb 48px tall in a 44px track on Time off and Pick up and swap. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) .b-seg > :is(a[href], button) { min-width: 0 !important; min-height: var(--b-seg-item-h) !important; }
   }
 
   /* ---------- Phase 8 (Nov 17, 2026): the final review's fixes (review C) ---------- */
@@ -267,3 +270,32 @@
  * short the range breaks before its dash ("9:02 AM" over "– now"), never after it (EM-014's day-block rule, now Home's and
  * Time's too). The `Range` helper in employee-b/parts.tsx draws the two halves. */
 .eb-nb { white-space: nowrap; }
+
+/* Final polish (Nov 20, 2026): Home's Right now card (home-b.tsx NowCard) leads the left column, so the shift, the
+ * to-dos and the right column each move down one row. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) { grid-template-rows: auto auto auto auto 1fr !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) > #b-home-now { grid-column: 1 !important; grid-row: 1 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) > #b-home-shift { grid-row: 2 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) > #b-home-upcoming { grid-row: 3 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) > .b-note { grid-row: 4 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) > #b-home-todo { grid-row: 1 / span 5 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now):has(> .eb-side) > #b-home-todo { grid-row: 3 / span 3 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now):has(> .eb-side) > .eb-side { grid-row: 1 / span 5 !important; }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack:has(> #b-home-now) > #b-home-now { grid-column: 1 / -1 !important; grid-row: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack:has(> #b-home-now) > #b-home-shift { grid-row: 2 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack:has(> #b-home-now) > #b-home-todo { grid-row: 3 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack:has(> #b-home-now) > :is(#b-home-upcoming, .eb-side) { grid-row: 3 !important; }
+  }
+}
+
+/* Final polish (Nov 20, 2026): Time's right column (last week over the corrections) is one grid item beside Right now and
+ * the week, with the page's 20px between its cards. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-hours > .b-screen .b-stack:has(> #b-hours-week) > #b-hours-side { grid-column: 2 !important; grid-row: 1 / span 7 !important; display: flex !important; flex-direction: column !important; gap: var(--b-space-20) !important; min-width: 0 !important; }
+  }
+}

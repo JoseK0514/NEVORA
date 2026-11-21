@@ -122,7 +122,8 @@
   .clock { font-size: clamp(72px, 13.5vw, 7.5rem); }
   .under { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
   .date { font-size: 1.125rem; }
-  .foot { margin-top: 14px; flex-direction: row; justify-content: flex-end; }
+  /* Final polish: the status starts on the band's left edge, under the clock and the date (it sat alone on the right). */
+  .foot { margin-top: 14px; flex-direction: row; justify-content: flex-start; }
   .status { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: var(--b-space-8) var(--b-space-16); border-radius: var(--b-radius-pill); }
   /* Phase 8 (#25): every separator has the same 10px on each side (the flex gap before, the margin after). */
   .zone::before, .device::before { content: "·"; margin-inline-end: 10px; }
@@ -214,15 +215,17 @@
   font-size: var(--b-fs-title-sm); line-height: 1.25; font-weight: 700; letter-spacing: -.005em; text-align: center; text-decoration: none; cursor: pointer; white-space: normal; overflow-wrap: anywhere;
   transition: background-color var(--b-dur-hover) var(--b-ease-out), transform var(--b-dur-press) var(--b-ease-out); }
 .btn[data-kind=primary] { background: var(--ck-accent); color: #FFFFFF; box-shadow: var(--b-elev-glow); }
-.btn[data-kind=secondary] { background: var(--ck-key); color: var(--ck-ink); }
+/* Final polish (Nov 20, 2026): a secondary is the tinted pill, as on Owner pages. Its grey was the disabled grey
+ * (#F0F2F3), so Done read as switched off. Grey now means disabled, and the keypad. */
+.btn[data-kind=secondary] { background: var(--ck-soft); color: var(--ck-focus); }
 .btn:disabled { cursor: not-allowed; }
 .btn[data-kind=primary]:disabled { background: #E3E7E8; color: var(--b-grey-on-fill); box-shadow: none; }
 /* Disabled controls take explicit colours, not opacity, so their text stays readable (Nov 14 inspection, SY-021). */
-.btn[data-kind=secondary]:disabled { color: var(--ck-grey); }
+.btn[data-kind=secondary]:disabled { background: var(--b-disabled-bg); color: var(--ck-grey); }
 .btn:active:not(:disabled) { transform: scale(var(--b-press-scale)); }
 @media (hover: hover) {
   .btn[data-kind=primary]:hover:not(:disabled) { background: var(--ck-accent-hover); }
-  .btn[data-kind=secondary]:hover:not(:disabled) { background: #E6E9EA; }
+  .btn[data-kind=secondary]:hover:not(:disabled) { background: #DCEDEA; }
   .link:hover:not(:disabled) { text-decoration: underline; text-underline-offset: 4px; }
 }
 .stack { display: grid; gap: var(--b-space-12); width: 100%; margin-top: 22px; }
@@ -232,7 +235,9 @@
 .link:disabled { color: var(--ck-grey); cursor: not-allowed; }
 /* Leaving beside a state's own actions: a text link in the same stack, so every gap is 12px (NV-184). */
 .stack > .link { justify-self: center; }
-.clears { margin: var(--b-space-4) 0 0; font-size: var(--b-fs-meta); line-height: 1.35; color: var(--ck-grey); text-align: center; text-wrap: balance; }
+/* Final polish: 12px above the line wherever it sits (it was 4px under Choose a break's and Clock out?'s last button,
+ * so it read as that button's caption). */
+.clears { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-meta); line-height: 1.35; color: var(--ck-grey); text-align: center; text-wrap: balance; }
 /* Premium pass (#20): under a 56px button the line keeps the stack's own 12px, so it no longer crowds the button. */
 .stack + .clears { margin-top: var(--b-space-12); }
 /* A result line in a stack (the help's "Request sent"): one centred paragraph whose icon leads its first line. */
