@@ -99,6 +99,8 @@ The personality is the same for both. Don't make Owner copy colder or Employee c
 - **Buttons start with a verb** and name the result: "Publish schedule" · "Publicar horario",
   "Approve time off" · "Aprobar días libres", "Save PIN" · "Guardar PIN". Never "Submit", "OK",
   "Click here", "Enviar" alone, "Aceptar" alone.
+- **Spanish buttons use the infinitive; Spanish sentences use tú.** Button: "Intentar de nuevo", "Guardar",
+  "Marcar entrada". Sentence: "No pudimos cargar tu horario. Inténtalo de nuevo."
 - **Links that stay in the app** end with "›". The external arrow only when a link leaves NEVORA.
 - **No terminal periods** on headings, labels and buttons. Full sentences in body copy get periods.
 - **Contractions are fine** in English ("didn't", "can't"). They read as a person, not a system.
