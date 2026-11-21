@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-21",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "f757174ca8618a19171872f71f5f5f66568520cc",
-  "applicationHash": "fd814b522c9771a68775c71390d5a58e07ddcae2844a2105eeefb3bb4f03808d",
+  "sourceSha": "4605c5ee9642ee7708fdcd474fc5ba90696e1351",
+  "applicationHash": "576284c425ca67c8a7ccaa2ca754217881f94dcab3ec56b5360752581c99d981",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "37461cc1c4d239db0b500a7b191f11b30a8ae74b95974b7aa0b86c92f890ffb1"
@@ -51,11 +51,11 @@
         },
         {
           "path": "src/app/app/schedule/page.tsx",
-          "sha256": "6a41f310b5ec6a4553a4997fcaa9844cd580b0a8ddf6ff356aa09d5f0f4aea33"
+          "sha256": "a236816142b5b00b99d061b2dae6cc68de70335ec539d4589e7a942dcefdc5b9"
         },
         {
           "path": "src/app/app/schedule/publish/page.tsx",
-          "sha256": "767f6a8877a1f5e820b432ec6eef29f42f101712563a00dce1aa166d34fe203b"
+          "sha256": "df99460634cf62a5a69493d2111a22610ca6251d21893ea4e2028726ed20e14e"
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
@@ -67,7 +67,7 @@
         },
         {
           "path": "src/components/payroll/payroll-runs.tsx",
-          "sha256": "cbc02db9db733d98cf7374046e1f95f85bd8909730fc5303df08dfd07f9d960c"
+          "sha256": "52179a3807e85ffb30475d1ca409fc93b387d9e2d302a6a14b4375c7541b20d1"
         },
         {
           "path": "src/lib/payroll/service.ts",
@@ -212,7 +212,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "feb3c5dbe323e56ba06830653e490293d7192040dd56ed785e1c2ce3fb49738b",
+        "sha256": "60e4e52109bcd50b07d91338f794d9a458ec23479f98fe87a984369b7127338b",
         "pageCount": 7
       }
     },
@@ -335,7 +335,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "46c0882d67f5bdd2c353a6af9dbc8d2acd3259e468f9bbc3e97c02aebd6520d0",
+        "sha256": "0101bbf284378340ea3e2c4eba5e5030c48bb2aba5240bf2f6dce891b6693105",
         "pageCount": 4
       }
     },
@@ -361,11 +361,11 @@
         },
         {
           "path": "src/app/app/schedule/page.tsx",
-          "sha256": "6a41f310b5ec6a4553a4997fcaa9844cd580b0a8ddf6ff356aa09d5f0f4aea33"
+          "sha256": "a236816142b5b00b99d061b2dae6cc68de70335ec539d4589e7a942dcefdc5b9"
         },
         {
           "path": "src/app/app/availability/page.tsx",
-          "sha256": "fac6e83a56b7aac3da34494b71152a97fa5035c9db530091679b5383c835057f"
+          "sha256": "f039504ad7e09c50e513b14bb6780d5fe0c414ced4c7beda5b256acf121156b1"
         },
         {
           "path": "src/app/app/requests/hub/page.tsx",
@@ -454,7 +454,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "26c9dc30703e2a8683e9c87a5814fd3d4a533c2ae615a3f24fe0438d26d830df",
+        "sha256": "ffed851e69da284acc2b7d732cfb427958aa0253e25d4226d79b6bb03bcfcb46",
         "pageCount": 3
       }
     },
@@ -604,7 +604,7 @@
         },
         {
           "path": "src/components/owner-advisor/business/business-client.ts",
-          "sha256": "dfd1e5f8be638c3c93d5c13af9c6654842fdc5c696e180585c3a734036e35a2c"
+          "sha256": "32de82b1f22a2781a6b6717eba89f9a59829dcb17a57314dbb65e0c6a8ef9fb9"
         },
         {
           "path": "docs/handoffs/2026-11-17-claude-ui-integration.md",
@@ -629,7 +629,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "02a777f7d43a3f02413b40bac474443893811bbcdc1778fe9e297d23548b964a",
+        "sha256": "9b22d5043b9b5f05ccfccd97d8ad29320e0f13910aed054820b42d4b43058cba",
         "pageCount": 5
       }
     },
@@ -892,7 +892,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "9fff66a62d1e699eb1a8b7dc95108dcf5fc026622e8f4f50bb69364a00ac76e8",
+        "sha256": "fd36cc1c6736b90479dbe55e84b002dda7db926b14cb0b08998b5029121e7853",
         "pageCount": 7
       }
     },
@@ -1087,7 +1087,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "1e5ddef0a33201514a185cb8db786bf2b8bb597e832c86511851cb2323d7949a",
+        "sha256": "ab881b59fde94af7f287e1496ba3f4792d6d1683402904154f0f3ba615982929",
         "pageCount": 7
       }
     }
