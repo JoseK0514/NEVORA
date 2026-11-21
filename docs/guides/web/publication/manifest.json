@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-21",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "ba65d22ad25518bd07b41325b4a0059e874e4cd7",
-  "applicationHash": "679d2dd48a7f73db4fa689fa64bd22ea69d6101172ac59200fe1df4362bbdbd0",
+  "sourceSha": "422d176c2cfa53a87d7d1cabd9e2b9e10cadae9e",
+  "applicationHash": "24472bb2dda69729d4b623e14857e05722005fe5a7842ce276c7eb3d5dd6d505",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "37461cc1c4d239db0b500a7b191f11b30a8ae74b95974b7aa0b86c92f890ffb1"
@@ -27,7 +27,7 @@
         },
         {
           "path": "src/app/app/settings/page.tsx",
-          "sha256": "f98f600cd5b9da69d0e526bee291b748b52e36c82cb84f5526f2b14be3aa54ec"
+          "sha256": "48afcf9e383b3371b5aff484dde731d6225b2c1307f8d4be8233289a52de5e90"
         },
         {
           "path": "src/app/app/employees/page.tsx",
@@ -39,7 +39,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "b37cae1fd6cea44a0b97de98ff108346df5aa7b98b9bac806270dda92016c132"
+          "sha256": "df681268028ba3d036d146dc2a067139d1de1e07b110d96a7d504e4831d9b149"
         },
         {
           "path": "src/components/company-access/employee-invitation-panel.tsx",
@@ -51,11 +51,11 @@
         },
         {
           "path": "src/app/app/schedule/page.tsx",
-          "sha256": "6ce10c217583146a507fab81882462f16ed07e29975385f057eb3b870781e611"
+          "sha256": "8ab5725316b864c10dcc3ad5b56cecfdb589615ce7932914e4838756bbd682e0"
         },
         {
           "path": "src/app/app/schedule/publish/page.tsx",
-          "sha256": "94d09ff8a19049ff3fc76bdf3c6fbad605000fe120d4895ce79dc5557bf5e011"
+          "sha256": "e1f786af5d067c761f61a0735dbb63621a38d2ee6713105283ca81780f45dd22"
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
@@ -67,7 +67,7 @@
         },
         {
           "path": "src/components/payroll/payroll-runs.tsx",
-          "sha256": "2099a895ee6b101808de847031dd6eaee2320f0fdf490c01ec77146eab86f883"
+          "sha256": "cbb0e9f0a1249c3aba536663d295f4f2ffc12a412389936b4bb272634fcc6958"
         },
         {
           "path": "src/lib/payroll/service.ts",
@@ -79,7 +79,7 @@
         },
         {
           "path": "src/app/app/help/page.tsx",
-          "sha256": "4df7ce6aa95bec187deee5284f7d4a3e1a8206a12b2d5b34915abe51ec1f76fa"
+          "sha256": "874d0c561812d2c6f03d92680078a80446edb4a65ff72969509589bf3c8776b5"
         },
         {
           "path": "src/lib/onboarding/admission.server.ts",
@@ -212,7 +212,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "87f86de61e719dafd943c5cd7d2c1f308bd98fc5663608d1638de21617f9d6c4",
+        "sha256": "1a3ae2ef1b7597c01fca43ee5b70ffc443b61f5238d8f8b97a0c6d86a606213a",
         "pageCount": 7
       }
     },
@@ -250,7 +250,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "b37cae1fd6cea44a0b97de98ff108346df5aa7b98b9bac806270dda92016c132"
+          "sha256": "df681268028ba3d036d146dc2a067139d1de1e07b110d96a7d504e4831d9b149"
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
@@ -335,7 +335,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "9e78cb4a8f4513fccd5ec1f39b4ac25e33a2dc65604e5345f1460ed6a32d4105",
+        "sha256": "3e5c43c275c72e23ff0ce27c79214cc49f127a9758b32be0f2ba3841691b19b1",
         "pageCount": 4
       }
     },
@@ -357,11 +357,11 @@
         },
         {
           "path": "src/app/activate/activation-invitation.tsx",
-          "sha256": "a7adcf8c5388a30352d9cefe34d4bb36fbde377f21b6c2cbe4c1b427623dcd2b"
+          "sha256": "d210b0e0a8e8a2452d73bce9d760fce97118396fedb961f710f226100a10694b"
         },
         {
           "path": "src/app/app/schedule/page.tsx",
-          "sha256": "6ce10c217583146a507fab81882462f16ed07e29975385f057eb3b870781e611"
+          "sha256": "8ab5725316b864c10dcc3ad5b56cecfdb589615ce7932914e4838756bbd682e0"
         },
         {
           "path": "src/app/app/availability/page.tsx",
@@ -393,7 +393,7 @@
         },
         {
           "path": "src/components/employee-time-panel.tsx",
-          "sha256": "01491977b62374a8dbb21bac2b675bbead1d3849968fe143adb0f2e1173a57ec"
+          "sha256": "ea410b04f6114a5bdfaeba0ef53bb8e8efc138d5b481e2e667b4e86133623245"
         },
         {
           "path": "src/app/app/my-pay/page.tsx",
@@ -413,7 +413,7 @@
         },
         {
           "path": "src/app/app/help/page.tsx",
-          "sha256": "4df7ce6aa95bec187deee5284f7d4a3e1a8206a12b2d5b34915abe51ec1f76fa"
+          "sha256": "874d0c561812d2c6f03d92680078a80446edb4a65ff72969509589bf3c8776b5"
         },
         {
           "path": "docs/handoffs/2026-11-16-backend-phase5-claude-contract-index.json",
@@ -433,7 +433,7 @@
         },
         {
           "path": "src/components/employee-b/home-b.tsx",
-          "sha256": "d4a15b0f53680af64e70137e1674676cf14cf89956dacc7c6f8710af7ceeceb8"
+          "sha256": "4d8e80f5c75ef7165c41507f5ebec4c799c28c5d63dc18490f8b40be542e54c8"
         },
         {
           "path": "src/components/access-recovery/support-reference-seam.ts",
@@ -454,7 +454,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "2f58c42a25130c5508affb3ce69b1642fb53b8b7cb65b253fa9ff9765a7aa61e",
+        "sha256": "70a6c80ea40195809469d9e3f3ff589039a2923db9193f50bb90cac7348d9c08",
         "pageCount": 3
       }
     },
@@ -500,7 +500,7 @@
         },
         {
           "path": "src/components/owner-advisor/advisor.tsx",
-          "sha256": "2cefa25611df52432c0839ce1b97fd09fc9cf39bb0b20390048f3a37b8b8f058"
+          "sha256": "8893f6802ac2c07e6fe76a2908933dd87500cc072d8e85c3b8580c4ef8f11b25"
         },
         {
           "path": "src/components/owner-advisor/notebook-panel.tsx",
@@ -508,7 +508,7 @@
         },
         {
           "path": "src/components/owner-advisor/coverage-actions.tsx",
-          "sha256": "0011c2bacb3054f6793f7ffb7cadaae6bfcbc8b1d84b0d9749acceaa397c0c4a"
+          "sha256": "daf01106d59b05a5dc3ca209759d77d468483b57e41710a641affef1f9f89e83"
         },
         {
           "path": "src/components/owner-advisor/coverage-plans.tsx",
@@ -516,7 +516,7 @@
         },
         {
           "path": "src/components/owner-advisor/workflows.tsx",
-          "sha256": "7779990c50f731b35359082955acd0f8d321f4175dbd6dccd4a7bcc93115a41d"
+          "sha256": "bd989d4025d042a8c584ee56f5550de35959d0094646107cdcf586979e19c883"
         },
         {
           "path": "docs/product/rondo-operating-contract.md",
@@ -540,7 +540,7 @@
         },
         {
           "path": "src/components/owner-advisor/knowledge/knowledge-page.tsx",
-          "sha256": "70909d043d8d7986175112f23b7791c3a2b831aee91f54bc8c76cb7fe6341677"
+          "sha256": "2f145405b1ffa0f1bd1d1846e8b7928d98d6bd2697031ddd8422368c8448d9a1"
         },
         {
           "path": "src/lib/owner-advisor/company-knowledge.server.ts",
@@ -556,7 +556,7 @@
         },
         {
           "path": "src/components/owner-advisor/weekly/weekly-page.tsx",
-          "sha256": "ba50fb01f4641a9275cb090139a78b1c2472fac81d41f674e5e86618f067bfcd"
+          "sha256": "fae878cb1327c3422817555a4f85a376583154e71f89602be35d4d225abb1de8"
         },
         {
           "path": "src/lib/owner-advisor/weekly-contracts.ts",
@@ -596,7 +596,7 @@
         },
         {
           "path": "src/components/owner-advisor/business/business-page.tsx",
-          "sha256": "7910abc56df0fa1f94227434c9d8f09635dd197c7b0b8ae2546a31b87a598d88"
+          "sha256": "0e7dcbf2455e7cbb37a7cfffd192880b66c20ff4be8d1b09b909e05353641b26"
         },
         {
           "path": "src/components/owner-advisor/business/business-map.tsx",
@@ -629,7 +629,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "1ee5eb84b8098da623b34e2982863379e91e9db041d79a3f43477640cdc81aae",
+        "sha256": "2ede0633e069a119b473c9741d7f0913796c63d73ea7ba41cb4ef50c45b34f63",
         "pageCount": 5
       }
     },
@@ -659,7 +659,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "a3f4336d534178e94702e6ec5f81e90f2e82fb517d30288c4f2a0133f6169705"
+          "sha256": "99a7c9e0bed6a1ade9ebc5935410dca8b816affde8c1170327a066069aa794f4"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -892,7 +892,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "63c027eb012f44e79a4b03ccde6a44bc37194e041ca7bb3cf0248e198e8a492d",
+        "sha256": "bfa4672823a38ac936912dee023c21658f89b16b96a0158185d0528bb5d6df4f",
         "pageCount": 7
       }
     },
@@ -1087,7 +1087,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "b292f7a5b8c24c1014dbec6356f56546d77fd133aa30b7b6157d13530a55cac8",
+        "sha256": "c93a2b16187833916ea3fedbe6544c15c7e17c354c7fb12e337f98d7f967dd0f",
         "pageCount": 7
       }
     }
