@@ -544,7 +544,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  assert.equal(details.removalSource.state,'partial');assert.equal(details.removalSource.reason,'unpublished');
  assert(removalResponse.snapshot.attention.some(item=>item.ref.kind==='SCHEDULE'&&item.ref.id===scenario.week&&item.required&&item.actionable));
  assert.equal(removalResponse.allSet,false);
- assert.equal(await page.locator('.employee-home').getByText('Time off approved · Nov 1, 2030 – Nov 2, 2030',{exact:true}).count(),0,'Informational time-off rows are read in Notifications');
+ const approval=removalResponse.snapshot.attention.find(item=>item.ref.kind==='TIME_OFF'&&item.ref.id===label+'-leave-1');
+ assert.equal(approval?.label,'Time off approved · Nov 1–2, 2030');
+ assert.equal(await page.locator('.employee-home').getByText(approval.label,{exact:true}).count(),0,'Informational time-off rows are read in Notifications');
  assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  await shot('last-shift-removal');

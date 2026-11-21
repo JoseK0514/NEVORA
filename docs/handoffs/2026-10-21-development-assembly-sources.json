@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "eb23572d63e037b3a7c239c7734e7ee98cb3ff09",
+      "sha": "62d791ad702f6b9590f037e3de647062291d42b7",
       "disposition": "target",
-      "reason": "Published Development base for the November 20 linear Collab integration. The candidate retains the post-merge CI baseline and carries the reconciled application and test tree of the tagged two-parent join."
+      "reason": "Published Development base for the Employee Home date-range fix. It includes the November 20 linear Collab integration and the staged Clocker face verification backend."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "d00ca97b6b4e301ab05de72684c58e4ae1647186",
-      "disposition": "superseded",
-      "reason": "The exact Collab tip is a parent of the preserved join 87b22d32926120f5225ffee90eec755098321bba, qualified under candidate/backend-completion/20261120-collab-join-9fd21cd4. The resolved application, test and service trees are carried forward in a linear commit on Development to meet its required history policy. The short-screen Clocker and schedule audit, time-off decision recovery, and Owner PTO screens are integrated with the existing Development backend, including open shifts, Owner activity, location addresses and scoped Manager publishing."
+      "sha": "9075be11a1e6989ea86942a67a68b28e8179bb92",
+      "disposition": "held",
+      "reason": "The prior Collab source d00ca97b6b4e301ab05de72684c58e4ae1647186 is preserved in join 87b22d32926120f5225ffee90eec755098321bba and its resolved tree was carried into Development by 2e42ee98a. This scoped integration takes the shared compact date formatter from c3ede1f86 for the Employee Home server fix 2f23dbabb68bf81380f8c4887b1a7947266e7b38. The rest of this Collab head is held for separate integration."
     },
     {
       "branch": "scrum190-signup-ui",
