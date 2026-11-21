@@ -193,7 +193,7 @@ it('own same-status time-off rows identify distinct canonical dates and ranges w
  await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,status,reason) VALUES('home-other-period',$1,'2030-12-02','2030-12-04','APPROVED','PRIVATE OTHER PERIOD')",[proof.employee.id]);
  const r=await home();if(!('snapshot' in r))throw Error('No Home');
  expect(r.snapshot.attention.find(i=>i.ref.id==='home-leave')?.label).toBe('Time off approved · Nov 1, 2030');
- expect(r.snapshot.attention.find(i=>i.ref.id==='home-other-period')?.label).toBe('Time off approved · Dec 2, 2030 – Dec 4, 2030');
+ expect(r.snapshot.attention.find(i=>i.ref.id==='home-other-period')?.label).toBe('Time off approved · Dec 2–4, 2030');
  expect(JSON.stringify(r)).not.toContain('PRIVATE OTHER PERIOD');
 });
 it('acknowledged last own shift removal has exact current review and preserves another authorized week',async()=>{
