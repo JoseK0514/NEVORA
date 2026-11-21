@@ -905,8 +905,19 @@ item names the lines it supersedes; line numbers are from the file before this s
   - *Figures.* Staffing and other figures are ink; a bar, a dot or the word beside them carries the tone.
   - *Home shortcuts and finder.* The finder leads each row with its destination's own glyph; no results reads
     `Nothing matches “query”`.
-  - *Open for Jose:* whether Finalize asks first; whether every Decline asks first (time off asks; swaps, cover,
-    call-outs and corrections decline on one tap); whether leaving an edited settings form asks; one date-range form.
+  - *Asking first (Jose, Nov 21, 2026: "Yes, all three").* Finalize on a timecard asks ("Finalize Ana's timecard?" /
+    "It locks this timecard for payroll. Reopening it needs a reason.", quiet "Not yet", the filled commit). Every
+    Decline asks, and so does Close request: time off (rows and the request's page), swaps, cover, call-outs,
+    corrections and a Rondo plan, each with its own question and one consequence line from facts the screen holds.
+    Nothing is sent when a question shows or on the safe way out; one question is open at a time; focus goes to the
+    question and back to its opener; Escape keeps. A question in a row has no panel: one hairline above it.
+  - *Discard changes.* Leaving an Owner or Manager form with unsaved edits asks "Discard changes?" / "Your edits on
+    this page haven't been saved.": quiet "Keep editing", red-edged "Discard changes"; a centred 460px dialog from
+    768px, a bottom sheet on phones (`kit/use-discard-guard.ts`, `kit/discard-dialog.tsx`). It covers in-app links,
+    the form's own Cancel and back link, the finder and browser Back (where the browser's Navigation API exists);
+    closing the tab gets the browser's own prompt. A clean or just-saved form never asks; a multi-step flow asks only
+    when leaving the flow. Forms that save each control at once (Features) need none.
+  - *Open for Jose:* one date-range form ("Nov 16 – 22" or "Nov 16–22").
 
 ## Previous direction (October 20, 2026; superseded)
 

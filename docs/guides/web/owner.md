@@ -58,6 +58,11 @@ On **Timecards**, **Approve N timecards** asks you to confirm the list first.
 **Finalize timecard** locks one person's timecard for payroll; **Reopen** asks
 for a reason.
 
+NEVORA asks before a step that is hard to take back. **Finalize timecard** and
+every **Decline** show a short question first, and nothing is sent until you
+confirm. If you leave a settings form with unsaved edits, **Discard changes?**
+lets you keep editing or leave without saving.
+
 **First-week setup** on Home shows five steps: add a team member, set up
 locations and staffing rules, publish your first schedule, register a time clock
 tablet and review your first timecard. Each step opens its own page, and Home
