@@ -853,6 +853,51 @@ item names the lines it supersedes; line numbers are from the file before this s
     done mark. In the list and the sheet only an exception is a chip ("Correction waiting", "Missing clock-out");
     "Ready to approve" and "Ready to finalize" are quiet text.
 
+- **Owner premium round (Nov 21, 2026; see `docs/handoffs/2026-11-21-claude-owner-premium-round.md`).** Jose's words:
+  light tinted buttons, labels and message strips are "slop"; a message is never "just a box with some message inside";
+  the check mark must look premium, with motion; "make things premium and organized". His picks came from boards
+  (`docs/product/review-2026-11-21-owner-premium/`). The shared kit parts (white button, no-box note, dot-and-words
+  status, plain counts, duotone in icon circles, 10px button corners) are recorded under the Employee, Lead and Clocker
+  polish bullets; the rules below are the Owner side and the parts this round added.
+  - *No tint behind words.* On Owner and Manager pages a teal-50, green-50, amber-50, red-50 or pale grey fill is
+    allowed only in icon circles, avatars, the selected thumb, bars and tracks, the current navigation item, a selected
+    row and the band's glass. The Nov 21 scan (computed colours on 72 Owner routes and the decision flows, 1440 and 390)
+    found none left.
+  - *Buttons.* 10px corners (8px at 36px) through `--b-radius-btn` and `--b-radius-btn-sm`; heights stay 36, 44, 48
+    (40 on a phone band) and 52. Chips, segmented controls, avatars, icon circles, the search field and Home's shortcut
+    tiles keep their shapes. Supersedes "every button is a pill".
+  - *The success mark.* One mark for every confirmed result (`BDoneMark`): a solid green disc (`--b-green-solid`), a
+    white tick it draws once by its stroke, a 4px halo and a soft green glow; 36px in a row, 48px in a result, 56px on
+    a page finish; still when the state was already true on load. Signed-out finishes copy it (`auth-b.css`). The
+    disc settles in 420ms, the tick follows 120ms later over 320ms, one ring leaves once; nothing under reduced motion.
+    Supersedes the green-50 circle with a green check.
+  - *One result.* A decision's result replaces the buttons or the form it came from, inside the same card: the mark,
+    a title that names what is now true ("Swap approved", "Isabel is deactivated", "7 timecards approved", "Export
+    ready"), one line with the next fact, one next step. A declined or closed request is a grey result with its own
+    glyph, never the mark. An inline result sends no toast (Team time off).
+  - *One confirm.* A question that is already asked is a block (`DecisionAsk`): a 600 question, one consequence
+    line, the safe way out as quiet text on the left, the commit on the right (red-edged when destructive). Used for
+    Decline time off, Cancel time off, Delete this shift, Deactivate, Remove tablet (a centred dialog from 768px, a
+    bottom sheet on phones) and "Approve N timecards?".
+  - *Uncertain.* A lost answer is one amber note with one check ("Check again", "Check and continue"); a commit
+    button keeps its label with the busy ring while it saves. On a request's own page the note is a white card.
+  - *Facts.* The details under an opened request are label and value rows between two hairlines, no box. A person's
+    own note is a quote in ink2, no fill.
+  - *Schedule.* A shift is a white capsule: 10px corners, one hairline and a soft shadow, the time in ink at 600, the
+    position in grey, a 3px foot. State is the foot and the edge, never a fill: published teal, draft grey, open a
+    dashed amber edge and amber foot, "Needs cover" an amber ring. With one day open (wherever the grid shows) the
+    column is a timeline: a day axis from the earliest start to the latest end on whole hours, at least 8 hours wide,
+    faint gridlines, each capsule at its hours (`src/lib/scheduling/day-axis.ts`). Phones keep the day list. One way
+    back from the day view: the "Full week" button. Supersedes "published blocks teal-50".
+  - *Timecards.* "Finalize timecard" acts on one timecard and says so. After Approve the footer is "Next timecard";
+    Finalize is in the footer only when every card is approved. "Earlier versions (n)". Select mode says "7 ready · 5
+    can't be approved yet". A correction request's sent state has no mark (it is not approved yet).
+  - *Figures.* Staffing and other figures are ink; a bar, a dot or the word beside them carries the tone.
+  - *Home shortcuts and finder.* The finder leads each row with its destination's own glyph; no results reads
+    `Nothing matches “query”`.
+  - *Open for Jose:* whether Finalize asks first; whether every Decline asks first (time off asks; swaps, cover,
+    call-outs and corrections decline on one tap); whether leaving an edited settings form asks; one date-range form.
+
 ## Previous direction (October 20, 2026; superseded)
 
 | Surface | Design then | Source |

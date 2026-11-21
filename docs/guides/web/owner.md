@@ -44,6 +44,20 @@ everyone. The chart counts the published schedule. It is not an estimate of
 hours worked. Four shortcuts open **Add shift**, **Add employee**, **Send
 update** and **Time off**; the last two show only while their feature is on.
 
+When NEVORA confirms something you did, the screen says what is now true
+("Swap approved", "7 timecards approved") beside a green check mark, in the place
+where the buttons were. If an answer doesn't arrive, an amber note says the
+result isn't confirmed yet and offers one check; nothing is sent twice.
+
+On the **Schedule**, each shift is a white block with a coloured foot: teal for
+published, grey for draft, amber for an open shift. Open one day on a computer
+or tablet to see it as a timeline, with each shift at its hours; **Full week**
+returns to the grid.
+
+On **Timecards**, **Approve N timecards** asks you to confirm the list first.
+**Finalize timecard** locks one person's timecard for payroll; **Reopen** asks
+for a reason.
+
 **First-week setup** on Home shows five steps: add a team member, set up
 locations and staffing rules, publish your first schedule, register a time clock
 tablet and review your first timecard. Each step opens its own page, and Home
