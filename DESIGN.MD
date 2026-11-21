@@ -537,7 +537,8 @@ item names the lines it supersedes; line numbers are from the file before this s
     "every button, chip and segment thumb on B surfaces is a pill" for buttons (B1).
   - *Label in name.* A control's spoken name contains the words it shows: the Clocker's language button is "Español,
     switch language to Spanish" ("English, cambiar idioma a inglés"), the phone avatar "More, James Ortiz, JO", and
-    the desktop account button's initials are drawn by CSS beside the visible name.
+    the desktop account button's initials are drawn by CSS beside the visible name. A Clocker break choice is named
+    with its second line too: "Start Meal break, Suggested: 30 min".
   - *Micro-interactions.* A row that opens leans its chevron 2px on hover and press and settles its icon circle to 94%
     while pressed; a shortcut tile does the same; buttons ease their shade and lift in 150ms. Transform and colour only,
     nothing plays by itself, all off under reduced motion.
