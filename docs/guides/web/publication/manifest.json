@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-21",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "4d70a52fba6da02ca4f95824af25d0648b066a96",
-  "applicationHash": "bf08f040020ec3ebed1ebac909db9cccc3b88d16823f6715c844218f398a98bf",
+  "sourceSha": "90e4f37f1c3d5c3189447bebb8c7e8d730038152",
+  "applicationHash": "87f578e655c3ca14ad1d3fb43d7e48aa0c6d37eb6c2498ccf284875b994f6ff4",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "37461cc1c4d239db0b500a7b191f11b30a8ae74b95974b7aa0b86c92f890ffb1"
@@ -14,7 +14,7 @@
       "title": "NEVORA Owner web guide",
       "markdown": {
         "path": "docs/guides/web/owner.md",
-        "sha256": "94b25e128e092dbb71141cbf60a67c2688cc5c739cc69c51ff6fe57b27bdb28a"
+        "sha256": "b51d6e6b9a568229c6df12af3b07dcfbeefc3862f758c97045b03a3b506d2fab"
       },
       "evidence": [
         {
@@ -212,7 +212,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "4541075e0dceeeb9687fbf5b38a075f6a65e81ebd33c6951854beb12678d2d42",
+        "sha256": "3e48c0380dde31a5f66005024bd4eeedef9a4244c8ef1de71a3c9185d81cff0c",
         "pageCount": 7
       }
     },
@@ -335,7 +335,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "ff6a6c7cac71afad8ce56f3fa951713f9de83c0a0766f784d7884e9104cc4480",
+        "sha256": "b2241b2bc0e7121f44acc73727bbc4c0d6eff4b730743dd6d34c7cee3a0c0d7f",
         "pageCount": 4
       }
     },
@@ -454,7 +454,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "4834f19ee2bddb40c5dd8fd8c6888216e08d04260aba5d27c9a5041013959628",
+        "sha256": "59802b922c94fa5472ab8098c94991d575b314e070e90636f5de78454de830a4",
         "pageCount": 3
       }
     },
@@ -556,7 +556,7 @@
         },
         {
           "path": "src/components/owner-advisor/weekly/weekly-page.tsx",
-          "sha256": "ba50fb01f4641a9275cb090139a78b1c2472fac81d41f674e5e86618f067bfcd"
+          "sha256": "f419ef17a529e08e3e8085eb19ceb8fa9018108fb2f9182db64cd93aea167012"
         },
         {
           "path": "src/lib/owner-advisor/weekly-contracts.ts",
@@ -629,7 +629,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "f9a5dda78dbcef13e79029e2eccf69815e6d6042dcbb59e7d1783a600cb29722",
+        "sha256": "3f49768958b3e53c5d856ca134720e76e856b2db1c93d6c6c467ca92f5afc81d",
         "pageCount": 5
       }
     },
@@ -892,7 +892,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "b68c99432b1a67085c8cfbbb7f59c40c1023d6ca009686b6dea1679f8e347684",
+        "sha256": "3ec06a1794b26dd6befe9ed45fbd42b1a1da30039f9f17c67130cf18607bfb05",
         "pageCount": 7
       }
     },
@@ -1087,7 +1087,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "38a9a373271a78fcffb90f12dc5cdf8a571d70b848f35301db62ecf7faee0590",
+        "sha256": "7c4d728848f9c2c6f6e93ad0c947cc533d6f1a40e465d467f312bb7f0dc43c5a",
         "pageCount": 7
       }
     }
