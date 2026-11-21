@@ -1,3 +1,4 @@
+import { TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import type {ReactNode} from 'react';
 import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
@@ -121,7 +122,7 @@ export function ScheduleB(props: ScheduleBProps) {
         <div className="b-row es-confirm" role="group" aria-labelledby="b-my-review-title">
           {/* Final review C (rows 4, 5): the manager asked for this, so it waits on you: the amber circle, as Home's and
             * Notifications' same task, with the glyph for confirming a schedule (CalendarCheck) on every screen. */}
-          <BIcon tone="amber"><CalendarCheckIcon weight="bold"/></BIcon>
+          <BIcon tone="amber"><TopicIcon glyph={CalendarCheckIcon} /></BIcon>
           <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt" id="b-my-review-title">{confirm.title}</span></span>
             {confirm.detailShort ? <><span className="b-row__s eb-phone">{confirm.detailShort}</span><span className="b-row__s eb-desk">{confirm.detail}</span></> : <span className="b-row__s">{confirm.detail}</span>}</span>
           <span className="es-confirm__act">{confirm.control}</span>
@@ -138,7 +139,7 @@ export function ScheduleB(props: ScheduleBProps) {
             // Review B2 (NV-275): none to pick up is a fact, not a row to open (grey: it doesn't open, EM-017).
             : open.count === 0 ? <BRow lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title={t.noOpenShifts}/>
             : <BRow href={open.href} label={open.label} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title="Open shifts" sub={open.detail}/> : null}
-          {changes ? <li className="b-li"><div className="es-chg"><BIcon tone="teal"><ClockCounterClockwiseIcon weight="bold"/></BIcon>{changes}</div></li> : null}
+          {changes ? <li className="b-li"><div className="es-chg"><BIcon tone="teal"><TopicIcon glyph={ClockCounterClockwiseIcon} /></BIcon>{changes}</div></li> : null}
         </ul>
       </section> : null}
       {swap ? <BCard title={<span role="status">{swap.title}</span>} link={{href: swap.doneHref, label: 'Done'}}><BCardNote>{swap.detail}</BCardNote></BCard> : null}

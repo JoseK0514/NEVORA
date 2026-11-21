@@ -1,3 +1,4 @@
+import { TopicIcon } from "../topic-icon";
 import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect, it, rs} from '@rstest/core';
@@ -69,7 +70,7 @@ it('Final review C (rows 4, 5): Confirm this week waits on you (amber) with the 
   const {UserCheckIcon} = await import('@phosphor-icons/react/dist/ssr/UserCheck');
   const html = draw(), row = html.slice(html.indexOf('es-confirm'), html.indexOf('es-confirm__act'));
   expect(row).toContain('<span class="b-ico b-ico--amber" aria-hidden="true">');
-  expect(row).toContain(renderToStaticMarkup(<CalendarCheckIcon weight="bold"/>));
+  expect(row).toContain(renderToStaticMarkup(<TopicIcon glyph={CalendarCheckIcon} />));
   const band = html.slice(html.indexOf('href="/app/availability"'), html.indexOf('Availability</a>'));
   expect(band).toContain(renderToStaticMarkup(<UserCheckIcon size={16} weight="bold" aria-hidden="true"/>));
   expect(band).not.toContain(renderToStaticMarkup(<CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>));

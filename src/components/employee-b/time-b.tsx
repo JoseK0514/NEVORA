@@ -1,5 +1,6 @@
 'use client';
 
+import { TopicIcon } from "@/components/topic-icon";
 import './employee-b.css';
 import './time.css';
 import Link from 'next/link';
@@ -107,7 +108,7 @@ export function TimeTabB({data}:{data:Ready}){
    {/* Phase 9 (spec 2.2): a punch left open after the shift ended is the kit's amber callout (Warning glyph, a hairline,
      * the 600 title over its lines), as on Home; every other state keeps the plain notice with the teal clock. */}
    {overrun&&current?<BCallout tone="amber" role="status" title={keepWhole(headline)}><p>{keepWhole(line)}</p>{hint?<p>{hint}</p>:null}</BCallout>
-    :<div className="b-notice eb-now"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
+    :<div className="b-notice eb-now"><BIcon tone="teal"><TopicIcon glyph={ClockIcon} /></BIcon><span className="b-notice__tx">
     <span className="b-notice__t">{keepWhole(headline)}</span><span className="b-notice__s">{keepWhole(line)}</span>{hint?<span className="b-notice__s">{hint}</span>:null}
    </span></div>}
   </BCard>
@@ -118,7 +119,7 @@ export function TimeTabB({data}:{data:Ready}){
       sub={entry.breakSeconds?`${boardDuration(entry.breakSeconds)} break`:undefined} end={<BValue><span className={entry.clockOutAt?undefined:'eb-teal'}><Dur value={entry.elapsedSeconds}/></span></BValue>}
       label={`${dayLong(date)}, ${range}, ${boardDuration(entry.elapsedSeconds)}${entry.breakSeconds?`, ${boardDuration(entry.breakSeconds)} break`:''}`}/>;})}
     {m.week.length?null:<li className="b-li"><p className="eb-quiet">No time recorded yet this week</p></li>}
-    <BAddRow href="/app/my-time?view=corrections&edit=new" icon={<PencilSimpleIcon weight="bold"/>}>Fix a missed punch</BAddRow>
+    <BAddRow href="/app/my-time?view=corrections&edit=new" icon={<TopicIcon glyph={PencilSimpleIcon} />}>Fix a missed punch</BAddRow>
    </BList>
    <BCardNote>Hours include breaks.</BCardNote>
   </BCard>
@@ -126,7 +127,7 @@ export function TimeTabB({data}:{data:Ready}){
   {/* The corrections sit under last week (the right column on desktop). Review F2 (NV-135): phones show them too, so
     * both widths hold the same content. */}
   <div className="eb-corrections"><BCard label="Your correction requests"><BList>
-   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub={W.correctionsSub}/>
+   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><TopicIcon glyph={PencilSimpleIcon} /></BIcon>} title="Your correction requests" sub={W.correctionsSub}/>
   </BList></BCard></div>
  </HoursBScreen>;
 }
@@ -159,7 +160,7 @@ export function DayB({total,running,status,line,punches,location,fix,notes}:{tot
    <BList label="Punches">
     {punches.map(punch=><BRow key={punch.key} title={punch.title} sub={punch.detail} end={<span className={punch.soft?'eb-val eb-val--soft':'eb-val'}>{keepWhole(punch.value)}</span>}/>)}
     <BRow title="Location" end={<span className="eb-val eb-val--soft eb-val--wrap">{location}</span>}/>
-    {fix?<BAddRow href={fix} icon={<PencilSimpleIcon weight="bold"/>}>Request a correction</BAddRow>:null}
+    {fix?<BAddRow href={fix} icon={<TopicIcon glyph={PencilSimpleIcon} />}>Request a correction</BAddRow>:null}
    </BList>
    {notes.map(note=><BCardNote key={note}>{note}</BCardNote>)}
   </BCard>
@@ -215,7 +216,7 @@ export function PastTimecardsB({data,period,today,chosen,weeks,earlier,earlierCo
    </BList>
   </BCard>
   <BCard label="Your correction requests"><BList>
-   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub={W.correctionsSub}/>
+   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><TopicIcon glyph={PencilSimpleIcon} /></BIcon>} title="Your correction requests" sub={W.correctionsSub}/>
   </BList></BCard>
  </HoursBScreen>;
 }
@@ -233,11 +234,11 @@ export function CorrectionsB({snapshot,decided}:{snapshot:Extract<EmployeeTimeCo
      return <BRow key={r.id} href={'/app/my-time?view=corrections&requestId='+r.id+(decided?'&filter=decided':'')} title={<span id={'b-hours-request-'+r.id}>{kindLabel[r.kind]}</span>}
       sub={keepWhole(`${dayMedium(day)} · ${times}`)} end={correctionChip(r.status)} label={`${kindLabel[r.kind]}, ${dayLong(day)}, ${times}, ${word}`}/>;})}
     {rows.length?null:<li className="b-li"><div className="eb-none">
-     <BIcon tone="grey"><ClockCounterClockwiseIcon weight="bold"/></BIcon>
+     <BIcon tone="grey"><TopicIcon glyph={ClockCounterClockwiseIcon} /></BIcon>
      <p className="eb-none__t">{decided?'No decided requests':'Nothing waiting for review'}</p>
      <p className="eb-none__s">{decided?'Nothing decided in your recent history.':'Requests you send stay here until your manager decides.'}</p>
     </div></li>}
-    <BAddRow href="/app/my-time?view=corrections&edit=new" icon={<PencilSimpleIcon weight="bold"/>}>Fix a missed punch</BAddRow>
+    <BAddRow href="/app/my-time?view=corrections&edit=new" icon={<TopicIcon glyph={PencilSimpleIcon} />}>Fix a missed punch</BAddRow>
    </BList>
    <BCardNote>To fix a day you already clocked, open it from Time.</BCardNote>
   </BCard>

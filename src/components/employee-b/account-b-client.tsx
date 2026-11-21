@@ -1,5 +1,6 @@
 'use client';
 
+import { TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import {useState, type ReactNode, type RefObject} from 'react';
 import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
@@ -81,15 +82,15 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
         </BCard>
         {/* Phase 4 (EM-030): the same card for an Employee and a Lead; both use both features. */}
         <div className="eb-desk eb-calalerts"><BCard title="Calendar and alerts" id="b-profile-calendar"><ul className="b-list">
-          <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/calendar"><BIcon tone="grey"><CalendarPlusIcon weight="bold" /></BIcon>
+          <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/calendar"><BIcon tone="grey"><TopicIcon glyph={CalendarPlusIcon} /></BIcon>
             <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Add to calendar</span></span><span className="b-row__s">Apple, Google or Outlook</span></span><Chev /></Link></li>
-          <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/device-alerts"><BIcon tone="grey"><BellIcon weight="bold" /></BIcon>
+          <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/device-alerts"><BIcon tone="grey"><TopicIcon glyph={BellIcon} /></BIcon>
             <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Alerts on this device</span></span><span className="b-row__s">{copy.alertsSub}</span></span><Chev /></Link></li>
         </ul></BCard></div>
         {/* Review B6 (NV-293): "Security" when it holds passkeys; "Account" when deletion is all it holds. */}
         {passkeys || policies ? <BCard title={passkeys ? 'Security' : 'Account'} id="b-profile-security">
           <ul className="b-list">
-            {passkeys ? <li className="b-li"><Link id="b-profile-passkeys" className="b-row b-row--link" href="/app/profile/passkeys"><BIcon tone="grey"><KeyIcon weight="bold" /></BIcon>
+            {passkeys ? <li className="b-li"><Link id="b-profile-passkeys" className="b-row b-row--link" href="/app/profile/passkeys"><BIcon tone="grey"><TopicIcon glyph={KeyIcon} /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Passkeys</span></span></span><Chev /></Link></li> : null}
             {policies ? <li className="b-li"><Link id="b-profile-account-deletion" className="b-row b-row--link" href="/app/account/delete"><BIcon tone="red"><TrashIcon weight="bold" /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{copy.deleteTitle}</span></span><span className="b-row__s">{copy.deleteSub}</span></span><Chev /></Link></li> : null}
@@ -159,7 +160,7 @@ export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKin
             return <li className="b-li" key={provider.id}>
               <button type="button" className="b-row b-row--link eb-expand" aria-expanded={expanded} aria-controls={'b-calendar-steps-' + provider.id} onClick={() => onOpen(expanded ? null : provider.id)}>
                 {/* Phase 4 (EM-017): each calendar's row leads with the calendar glyph, as every row that opens does. */}
-                <BIcon tone="grey"><CalendarPlusIcon weight="bold" /></BIcon>
+                <BIcon tone="grey"><TopicIcon glyph={CalendarPlusIcon} /></BIcon>
                 <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{provider.name}</span></span><span className="b-row__s">{provider.detail}</span></span>
                 <CaretDownIcon className="b-chev eb-expand__caret" size={18} weight="bold" aria-hidden="true" />
               </button>
@@ -210,7 +211,7 @@ export function EmployeeAlertsB({confirmationRef, feedbackRef, turnOffRef, endin
       {ending ? <BCard><p className="b-state eb-pad" role="status">Signing out…</p></BCard> : <>
         <section className="b-card" aria-labelledby="b-device-status-title" aria-busy={allowed && (busy || !s)}>
           <div className="b-card__h"><h2 id="b-device-card-title">This device</h2>{chip}</div>
-          <div className="b-notice eb-notice"><BIcon tone="grey"><BellIcon weight="bold" /></BIcon><span className="b-notice__tx">
+          <div className="b-notice eb-notice"><BIcon tone="grey"><TopicIcon glyph={BellIcon} /></BIcon><span className="b-notice__tx">
             <span className="b-notice__t" id="b-device-status-title">{title}</span><span className="b-notice__s" role={checking ? 'status' : undefined}>{text}</span></span></div>
           {state === 'install' && s ? <p className="eb-para eb-pad">{s.capabilities.requiresStandalone ? 'In Safari, open Share, then Add to Home Screen. Turn on Open as Web App if offered. Open NEVORA from the new icon.' : 'Open your browser menu and choose Install app or Add to Home Screen if offered. Open NEVORA from the new icon.'}</p> : null}
           {primary || recheck || test || turnOff || settled && state === 'ready' ? <div className="eb-body eb-body--acts">
@@ -258,9 +259,9 @@ export function EmployeeDeleteB({state, period, workplace, outcomeRef, missingPe
         </div>
         <BCard title="What happens next" id="b-deletion-next">
           <ul className="b-list">
-            <Point icon={<SignOutIcon weight="bold" />} tone="red" title="You’re signed out everywhere" text="You can’t sign in again with your password or a passkey. Calendar feed links and device alerts have stopped." />
-            <Point icon={<ClockIcon weight="bold" />} title="We delete your account" text={<>We aim to finish within {within}. If we have your email address, we’ll email you when it’s done.</>} />
-            <Point icon={<BriefcaseIcon weight="bold" />} title="Your job doesn’t change" text="Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep." />
+            <Point icon={<TopicIcon glyph={SignOutIcon} />} tone="red" title="You’re signed out everywhere" text="You can’t sign in again with your password or a passkey. Calendar feed links and device alerts have stopped." />
+            <Point icon={<TopicIcon glyph={ClockIcon} />} title="We delete your account" text={<>We aim to finish within {within}. If we have your email address, we’ll email you when it’s done.</>} />
+            <Point icon={<TopicIcon glyph={BriefcaseIcon} />} title="Your job doesn’t change" text="Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep." />
           </ul>
           <BCardNote>To ask about it, email {support(state.reference)} with your reference. We’ll never ask for your password. Changed your mind? Contact support before the request is processed.</BCardNote>
         </BCard>
@@ -272,8 +273,8 @@ export function EmployeeDeleteB({state, period, workplace, outcomeRef, missingPe
       </div> : <>
         <BCard title="What we delete" id="b-deletion-effects">
           <ul className="b-list">
-            <Point icon={<SignOutIcon weight="bold" />} tone="red" title="Your access ends right away" text="You’re signed out on every device and can’t sign in again with your password or a passkey. Calendar feed links and device alerts stop." />
-            <Point icon={<ClockIcon weight="bold" />} title={<>Deleted within {within}</>} text="We aim to delete your profile, sign-in details, notification subscriptions, calendar links and the content you contributed. After you confirm, you can’t cancel it in the app." />
+            <Point icon={<TopicIcon glyph={SignOutIcon} />} tone="red" title="Your access ends right away" text="You’re signed out on every device and can’t sign in again with your password or a passkey. Calendar feed links and device alerts stop." />
+            <Point icon={<TopicIcon glyph={ClockIcon} />} title={<>Deleted within {within}</>} text="We aim to delete your profile, sign-in details, notification subscriptions, calendar links and the content you contributed. After you confirm, you can’t cancel it in the app." />
           </ul>
         </BCard>
         <BCard title={`What ${workplace ?? 'your employer'} keeps`} id="b-deletion-kept">

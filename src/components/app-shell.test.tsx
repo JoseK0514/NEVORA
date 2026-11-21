@@ -343,13 +343,13 @@ it.each([['EMPLOYEE','Employee'],['OWNER','Owner'],['MANAGER','Manager']] as con
  expect(menu.indexOf('portal-account-signout')).toBeGreaterThan(menu.lastIndexOf('nevora-action-menu-divider'));
 });
 
-// Review B1 (NV-118): inactive tabs are Phosphor bold (the one weight), the current tab is filled.
-it.each([['EMPLOYEE','/app/schedule','schedule'],['OWNER','/app/timecards','clock']] as const)('fills the current %s tab icon and keeps the others bold',(role,pathname,icon)=>{
+// Review B1 (NV-118): inactive tabs are Phosphor duotone, the current tab is filled.
+it.each([['EMPLOYEE','/app/schedule','schedule'],['OWNER','/app/timecards','clock']] as const)('fills the current %s tab icon and keeps the others duotone',(role,pathname,icon)=>{
  const {mobile}=render(role,pathname);
  const active=mobile.split('class="mobile-nav-link active"')[1].split('</a>')[0];
  expect(active).toContain(renderToStaticMarkup(<NavIcon name={icon} size={24} weight="fill" />));
  const home=mobile.split('href="/app"')[1].split('</a>')[0];
- expect(home).toContain(renderToStaticMarkup(<NavIcon name="dashboard" size={24} weight="bold" />));
+ expect(home).toContain(renderToStaticMarkup(<NavIcon name="dashboard" size={24} weight="duotone" />));
 });
 
 // Upscale (Nov 1): the in-app Help page and the signed-in "not found" page belong to no tab or sidebar entry.
@@ -417,13 +417,13 @@ it.each(['/app/payroll','/app/settings','/app/reports'])('MG-014: a Manager\'s %
  if(pathname==='/app/reports') expect(sidebar).toContain('href="/app/reports" class="nav-link active" aria-current="page"');
  else expect(sidebar).not.toContain('aria-current');
 });
-it('TB-001, TB-009: the current sidebar entry\'s glyph is filled and the others are bold',()=>{
- const fill=renderToStaticMarkup(<NavIcon name="schedule" size={20} weight="fill"/>),bold=renderToStaticMarkup(<NavIcon name="schedule" size={20}/>);
- expect(fill).not.toBe(bold);
+it('TB-001, TB-009: the current sidebar entry\'s glyph is filled and the others are duotone',()=>{
+ const fill=renderToStaticMarkup(<NavIcon name="schedule" size={20} weight="fill"/>),duotone=renderToStaticMarkup(<NavIcon name="schedule" size={20} weight="duotone"/>);
+ expect(fill).not.toBe(duotone);
  for(const role of ['OWNER','EMPLOYEE'] as const){
   const {sidebar}=shell(role,'/app/schedule');
   expect(sidebar.split('href="/app/schedule"')[1].split('</a>')[0]).toContain(fill);
-  expect(sidebar.split('href="/app"')[1].split('</a>')[0]).not.toContain(renderToStaticMarkup(<NavIcon name="dashboard" size={20} weight="fill"/>));
+  expect(sidebar.split('href="/app"')[1].split('</a>')[0]).toContain(renderToStaticMarkup(<NavIcon name="dashboard" size={20} weight="duotone"/>));
  }
 });
 it('an Employee\'s account menu and sidebar are unchanged by the Manager rules',()=>{

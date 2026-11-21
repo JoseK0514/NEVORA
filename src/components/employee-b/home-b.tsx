@@ -1,5 +1,6 @@
 'use client';
 
+import { TopicIcon } from "@/components/topic-icon";
 import {createContext, useContext, type ReactNode} from 'react';
 import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
@@ -118,7 +119,7 @@ function TeamCard({place}: {place?: string}) {
   return <BCard title="Today’s team" id="b-home-team" meta={place}>
     {/* Phase 4 (EM-016): a plain row that opens the compose page (no third button look on Home); its note is the card's
       * footer at every width. */}
-    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"
+    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><TopicIcon glyph={PencilSimpleIcon} /></BIcon>} title="Message today’s team" sub="Everyone on shift today"
       label="Message today’s team, everyone on shift today"/></BList>
     <BCardNote>{t.teamNote}</BCardNote>
   </BCard>;
@@ -168,7 +169,7 @@ function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; l
         amber On break, amber "Not clocked in · 12 min", Time's words from work-copy), and the standing instruction is the
         grey line under it, so the line reads in the order that matters. A short place name stays whole. */}
       {clockIn && overrun ? <BCallout tone="amber" role="status" title={t.stillClockedIn(clock(clockIn.clockInAt, zone))}>{t.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`), clockIn.locationName)}</BCallout>
-        : <div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
+        : <div className="eb-tint"><BIcon tone="teal"><TopicIcon glyph={ClockIcon} /></BIcon><span className="b-notice__tx">
         {clockIn ? <><span className="b-notice__t eb-state">{clockIn.state === 'ON_BREAK'
             ? <BStatusText dot="amber">On break</BStatusText> : <BStatusText dot="green">Clocked in at {clock(clockIn.clockInAt, zone)}</BStatusText>}</span><span className="b-notice__s">Breaks and clock out on the {placeWhole(shift.locationLabel)} tablet</span></>
           : now && hours ? <><span className="b-notice__t eb-state"><BStatusText dot="amber">{t.notClockedInFor(sinceSpan(Math.round((Date.parse(snapshot.observedAt) - Date.parse(now.startAt)) / 60_000)))}</BStatusText></span><span className="b-notice__s">Clock in on the {placeWhole(shift.locationLabel)} tablet</span></>
@@ -224,7 +225,7 @@ function TodoIcon({item}: {item: AttentionItem}) {
     : item.ref.kind === 'COMMUNICATION' ? MegaphoneIcon : item.ref.kind === 'TIME_CORRECTION' ? PencilSimpleIcon : ClockIcon;
   // Phase 4 (EM-008, EM-017): every to-do opens something, so its lead is the teal circle. Phase 9 (spec 3.2): one that
   // waits on you (required) is the amber circle, as the same notice is in Notifications.
-  return <BIcon tone={item.required ? 'amber' : 'teal'}><Icon weight="bold"/></BIcon>;
+  return <BIcon tone={item.required ? 'amber' : 'teal'}><TopicIcon glyph={Icon} /></BIcon>;
 }
 
 /** Phase 4 (EM-002): the rows Home shows, in the server's order (HomeTaskSummary ranking v1; nothing is re-ranked here).

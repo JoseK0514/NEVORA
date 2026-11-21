@@ -1,3 +1,4 @@
+import { TopicIcon } from "../topic-icon";
 import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect, it, rs} from '@rstest/core';
@@ -128,8 +129,8 @@ it('Final review C (rows 4, 9): a short place name stays whole; fixing your time
   const {ClockIcon} = await import('@phosphor-icons/react/dist/ssr/Clock');
   const fix: HomeTodo = {key: 'k:fix', item: item('fix', false, 'TIME_CORRECTION'), week: false};
   const html = draw({todos: [fix]}), card = html.slice(html.indexOf('id="b-home-todo"'), html.indexOf('</section>', html.indexOf('id="b-home-todo"')));
-  expect(card).toContain(renderToStaticMarkup(<PencilSimpleIcon weight="bold"/>));
-  expect(card).not.toContain(renderToStaticMarkup(<ClockIcon weight="bold"/>));
+  expect(card).toContain(renderToStaticMarkup(<TopicIcon glyph={PencilSimpleIcon} />));
+  expect(card).not.toContain(renderToStaticMarkup(<TopicIcon glyph={ClockIcon} />));
 });
 
 it('privacy: while Home is not released (offline, paused) no private row is drawn', () => {

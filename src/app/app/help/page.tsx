@@ -65,7 +65,7 @@ async function howTo(role: UserRole, proof: SessionMutationProof): Promise<HowTo
       ];
     }
     // Final verification (Nov 18, 2026): one glyph per concept, as on the Employee's own pages: confirming a schedule is
-    // CalendarCheck (CalendarBlank is the Schedule tab's), fixing your time is PencilSimple.
+    // CalendarCheck (CalendarDots is the Schedule tab's), fixing your time is PencilSimple.
     return [
       { href: "/app/schedule", title: "Confirm your schedule", icon: <CalendarCheckIcon weight="bold" /> },
       ...(open("/app/requests") ? [{ href: "/app/requests?tab=new", title: "Ask for time off", icon: <CalendarMinusIcon weight="bold" /> }] : []),

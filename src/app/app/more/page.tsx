@@ -1,3 +1,4 @@
+import { TopicIcon } from "@/components/topic-icon";
 import {readFeatureFlags} from '../../../lib/feature-flags';
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
@@ -114,11 +115,11 @@ export default async function MorePage() {
   const has = (href: string) => navigation.some(entry => entry.href === href);
   const label = (href: string, fallback: string) => navigation.find(entry => entry.href === href)?.label ?? fallback;
   const owner = session.role === "OWNER";
-  // Review B1 (NV-099): every navigation row leads with its Phosphor bold icon (a tinted circle, as Team and Timecards rows
+  // Review B1 (NV-099): every navigation row leads with its Phosphor duotone icon (a tinted circle, as Team and Timecards rows
   // do) and ends with its chevron; a row may end in a grey value before the chevron ("24 h this week").
-  const rowIcons: Record<string, ReactNode> = { "/app/reports": <ChartBarIcon weight="bold" />, "/app/updates": <MegaphoneIcon weight="bold" />,
-    "/app/my-pay": <ReceiptIcon weight="bold" />, "/app/ai-manager": <ChatsCircleIcon weight="bold" />, "/app/settings": <GearSixIcon weight="bold" />,
-    "/app/schedule/settings": <SlidersHorizontalIcon weight="bold" />, "/app/help": <QuestionIcon weight="bold" />, "/app/billing": <CreditCardIcon weight="bold" /> };
+  const rowIcons: Record<string, ReactNode> = { "/app/reports": <TopicIcon glyph={ChartBarIcon} />, "/app/updates": <TopicIcon glyph={MegaphoneIcon} />,
+    "/app/my-pay": <TopicIcon glyph={ReceiptIcon} />, "/app/ai-manager": <TopicIcon glyph={ChatsCircleIcon} />, "/app/settings": <TopicIcon glyph={GearSixIcon} />,
+    "/app/schedule/settings": <TopicIcon glyph={SlidersHorizontalIcon} />, "/app/help": <TopicIcon glyph={QuestionIcon} />, "/app/billing": <TopicIcon glyph={CreditCardIcon} /> };
   const row = (href: string, title: string, value?: ReactNode) =>
     <li key={href}><CorpRow href={href} title={title} value={value} valueTone="soft" icon={rowIcons[href]} one chevron /></li>;
   const settings = owner && pathEnabled("/app/settings", brand.modules);

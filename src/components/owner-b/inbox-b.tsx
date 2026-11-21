@@ -1,7 +1,8 @@
 "use client";
+import { TopicIcon } from "@/components/topic-icon";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
-import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { CalendarDotsIcon } from "@phosphor-icons/react/dist/ssr/CalendarDots";
 import { UserCheckIcon } from "@phosphor-icons/react/dist/ssr/UserCheck";
 import { ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowsLeftRight";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
@@ -68,16 +69,16 @@ const laterLine = (later?: LaterCounts) => !later ? "Plan ahead and earlier this
  * open yet. People's rows (time off, clock-ins) lead with the person's avatar instead. Phase 9 (spec 3.6): one glyph per
  * concept, the sidebar's: CalendarMinus for time off (Sun read as weather), Clock for timecards (ListChecks). */
 function kindIcon(id: string): { tone: "amber" | "teal" | "grey"; icon: ReactNode } {
-  if (id === "swaps") return { tone: "amber", icon: <ArrowsLeftRightIcon weight="bold" /> };
-  if (id === "cant-work") return { tone: "amber", icon: <UserMinusIcon weight="bold" /> };
-  if (id.endsWith("corrections")) return { tone: "amber", icon: <PencilSimpleIcon weight="bold" /> };
-  if (id === "closed-timecards") return { tone: "grey", icon: <ClockIcon weight="bold" /> };
+  if (id === "swaps") return { tone: "amber", icon: <TopicIcon glyph={ArrowsLeftRightIcon} /> };
+  if (id === "cant-work") return { tone: "amber", icon: <TopicIcon glyph={UserMinusIcon} /> };
+  if (id.endsWith("corrections")) return { tone: "amber", icon: <TopicIcon glyph={PencilSimpleIcon} /> };
+  if (id === "closed-timecards") return { tone: "grey", icon: <TopicIcon glyph={ClockIcon} /> };
   // Phase 8 (a.md #43): timecards whose period ended wait on you, so they are amber like every other decision.
-  if (id.endsWith("timecards")) return { tone: "amber", icon: <ClockIcon weight="bold" /> };
-  if (id === "time-off" || id === "requests") return { tone: "amber", icon: <CalendarMinusIcon weight="bold" /> };
-  if (id === "plan") return { tone: "grey", icon: <CalendarBlankIcon weight="bold" /> };
+  if (id.endsWith("timecards")) return { tone: "amber", icon: <TopicIcon glyph={ClockIcon} /> };
+  if (id === "time-off" || id === "requests") return { tone: "amber", icon: <TopicIcon glyph={CalendarMinusIcon} /> };
+  if (id === "plan") return { tone: "grey", icon: <TopicIcon glyph={CalendarDotsIcon} /> };
   if (id === "earlier") return { tone: "grey", icon: <CheckIcon weight="bold" /> };
-  return { tone: "amber", icon: <ClockIcon weight="bold" /> };
+  return { tone: "amber", icon: <TopicIcon glyph={ClockIcon} /> };
 }
 
 export function InboxB({ ready, families, waiting = [], closed = [], total, exact = true, uncheckedReviews = 0, connection, statusLine, todayFailed, onRefresh, back, later }: {
@@ -143,10 +144,10 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
         Phase 9 (spec 3.2): these rows open pages, so their circles are teal, as every row that opens is. */}
       <BCard label="More" id="b-todo-more">
         <BList label="More">
-          <BRow lead={<BIcon tone="teal"><CalendarMinusIcon weight="bold" /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
-          <BRow lead={<BIcon tone="teal"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />
+          <BRow lead={<BIcon tone="teal"><TopicIcon glyph={CalendarMinusIcon} /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
+          <BRow lead={<BIcon tone="teal"><TopicIcon glyph={ArrowsLeftRightIcon} /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />
           {/* Nov 14, 2026 inspection (AR-9): who can work is one tap from the requests it helps decide. */}
-          <BRow lead={<BIcon tone="teal"><UserCheckIcon weight="bold" /></BIcon>} title="Availability" sub="Who can work and when" href="/app/availability" />
+          <BRow lead={<BIcon tone="teal"><TopicIcon glyph={UserCheckIcon} /></BIcon>} title="Availability" sub="Who can work and when" href="/app/availability" />
           <BRow lead={<BIcon tone="teal"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub={laterLine(later)} href="/app/inbox?view=more" label={`Later and done: ${laterLine(later).toLowerCase()}`} />
         </BList>
       </BCard>
@@ -182,11 +183,11 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
         const time = row.title.replace(/^Open all day$/, "all day");
         // Premium pass FA (final verification A #10, B #6): the range is one unit beside Find cover ("Today," then
         // "9:30 PM – 12 AM" on the next line, never "9:30 PM –" over "12 AM").
-        return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={<>{day ? `${day}, ` : null}<span className="b-keep"><BWhen text={day ? time : row.title} /></span></>} sub={parts.join(" · ").replace(/Needs[\s\u00a0](\d+)[\s\u00a0](person|people)/, "Needs $1")} href={row.href} label={row.label}
+        return <BRow key={row.key} lead={<BIcon tone="amber"><TopicIcon glyph={CalendarDotsIcon} /></BIcon>} title={<>{day ? `${day}, ` : null}<span className="b-keep"><BWhen text={day ? time : row.title} /></span></>} sub={parts.join(" · ").replace(/Needs[\s\u00a0](\d+)[\s\u00a0](person|people)/, "Needs $1")} href={row.href} label={row.label}
         trail={<BButtonLink href={row.href} kind="ghost" label={`Find cover: ${row.title}`}>Find cover</BButtonLink>} />;
       }
       // Approved leave over a published shift: the schedule's job ("Fill Maria Rivera’s shift"), no Approve or Decline.
-      if (group.id === "repair") return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={row.title}
+      if (group.id === "repair") return <BRow key={row.key} lead={<BIcon tone="amber"><TopicIcon glyph={CalendarDotsIcon} /></BIcon>} title={row.title}
         chip={row.value ? <BChip tone="amber">{row.value}</BChip> : <BChip tone="amber">Approved time off</BChip>} sub={row.detail} href={row.href} label={row.label}
         trail={<BButtonLink href={row.href} kind="ghost" label={`Fill shift: ${row.title}`}>Fill</BButtonLink>} />;
       // Jose's attendance words (Nov 11, 2026): a shift in progress with no punch is "Not clocked in"; "Missed" is only a

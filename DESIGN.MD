@@ -1,7 +1,7 @@
 ---
 version: "nevora-direction-b-2026-11-08"
 name: "NEVORA Workforce portal"
-description: "Workforce scheduling, time and pay app. Current direction (November 8, 2026): Direction B for every surface: Owner, Manager, Employee and Lead on phones, tablets (768-1023, small desktop with the icon rail) and desktop; sign-in, recovery, activation, policy, 404 and public error pages; and the Clocker kiosk. Inter, teal #0B6E69 with the teal band, canvas #F2F5F4, white 22px cards, pills, Phosphor bold icons, light only. See the Current direction table below and the Direction B sections (approved mocks in docs/product/direction-b/). The Signature and clean-manager v3 tokens below are retained as the base layer and history; where they disagree with Direction B, Direction B wins."
+description: "Workforce scheduling, time and pay app. Current direction (November 8, 2026): Direction B for every surface: Owner, Manager, Employee and Lead on phones, tablets (768-1023, small desktop with the icon rail) and desktop; sign-in, recovery, activation, policy, 404 and public error pages; and the Clocker kiosk. Inter, teal #0B6E69 with the teal band, canvas #F2F5F4, white 22px cards, pills, Phosphor icons, light only. See the Current direction table below and the Direction B sections (approved mocks in docs/product/direction-b/). The Signature and clean-manager v3 tokens below are retained as the base layer and history; where they disagree with Direction B, Direction B wins."
 colors:
   # Signature (superseded by Direction B, Nov 2026; tokens kept as the base layer). Full roles in SIGNATURE-SPEC.md section 3.
   sig-page: "#F7F6F3"
@@ -368,7 +368,7 @@ this one, this one wins.
 
 Direction B in one paragraph: a teal band (`#0C726C` to `#08504C`) carries the page title and its key figures in glass
 tiles; white cards (22px radius, soft layered shadow) sit on the `#F2F5F4` canvas, overlapping the band's lower edge.
-Inter throughout, ink `#111517`, grey `#6A7176`, Phosphor bold icons in tinted circles, pills for actions and chips,
+Inter throughout, ink `#111517`, grey `#6A7176`, Phosphor icons in tinted circles, pills for actions and chips,
 48px+ targets, light only. Status colours: red stops you, amber means wait or check, green is done, teal is information.
 The screenshot harness for checking it is in `tools/ui-scan/`.
 
@@ -401,8 +401,9 @@ item names the lines it supersedes; line numbers are from the file before this s
   (150ms), `--b-dur-enter` (300ms), ease-out. Supersedes "five type roles" and "defined, adopt page by page" in the
   token notes further down. Sign-in reads the shared band, pill and focus tokens; the kiosk reads the palette, radius,
   elevation and motion tokens and keeps its own large type.
-- **Icons.** Every Phosphor icon draws bold; fill marks a filled or current state. Nine duotone icons remain by
-  exception. `src/test/phosphor-icon-weight.test.ts` fails when an icon has no weight.
+- **Icons.** The sidebar, rail and phone tabs use Phosphor duotone at rest and fill for the current destination.
+  Labelled row subjects share `TopicIcon`, which adds four stroke units on the Phosphor grid for small sizes.
+  CalendarDots marks Schedule, NotePencil marks Requests and Numpad marks Clocker PINs. Small action and status marks keep their bold weight.
 - **The desktop and tablet frame (Phase 2, built Nov 15, 2026; see `docs/product/review-2026-11-14/fixes/phase-2/README.md`).**
   From 768px, every role. Tokens in `src/app/b-tokens.css`: `--b-frame-wide` 1080, `--b-frame-read` 812,
   `--b-frame-form` 560; `--b-band-short` 196, `--b-band-sub` 224, `--b-band-strip` 296, `--b-band-figures` 363;

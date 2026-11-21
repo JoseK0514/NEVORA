@@ -1,3 +1,4 @@
+import { TopicIcon } from "../topic-icon";
 import {renderToStaticMarkup} from 'react-dom/server';
 import {describe, expect, it, rs} from '@rstest/core';
 rs.mock('@/app/login/actions', () => ({logout: rs.fn()}));
@@ -83,18 +84,18 @@ describe('Notifications', () => {
     const {CalendarMinusIcon} = await import('@phosphor-icons/react/dist/ssr/CalendarMinus');
     const {XIcon} = await import('@phosphor-icons/react/dist/ssr/X');
     const declined = html.slice(html.indexOf('id="b-message-b"'), html.indexOf('</a>', html.indexOf('id="b-message-b"')));
-    expect(declined).toContain('<span class="b-ico b-ico--grey" aria-hidden="true">' + renderToStaticMarkup(<CalendarMinusIcon weight="bold" />));
+    expect(declined).toContain('<span class="b-ico b-ico--grey" aria-hidden="true">' + renderToStaticMarkup(<TopicIcon glyph={CalendarMinusIcon} />));
     expect(html).not.toContain(renderToStaticMarkup(<XIcon weight="bold" />));
   });
   it('final review C (row 4): confirming your schedule is CalendarCheck and Availability is UserCheck, as on Home and More', async () => {
     const {CalendarCheckIcon} = await import('@phosphor-icons/react/dist/ssr/CalendarCheck');
     const {UserCheckIcon} = await import('@phosphor-icons/react/dist/ssr/UserCheck');
     const html = renderToStaticMarkup(<EmployeeNotificationsB list={list({items: [items[0], {...items[2], id: 'av', label: 'Availability', eventType: 'AVAILABILITY_REMINDER'}]})} />);
-    expect(html).toContain('<span class="b-ico b-ico--amber" aria-hidden="true">' + renderToStaticMarkup(<CalendarCheckIcon weight="bold" />));
+    expect(html).toContain('<span class="b-ico b-ico--amber" aria-hidden="true">' + renderToStaticMarkup(<TopicIcon glyph={CalendarCheckIcon} />));
     const availability = html.slice(html.indexOf('id="b-message-av"'), html.indexOf('</a>', html.indexOf('id="b-message-av"')));
-    expect(availability).toContain(renderToStaticMarkup(<UserCheckIcon weight="bold" />));
+    expect(availability).toContain(renderToStaticMarkup(<TopicIcon glyph={UserCheckIcon} />));
     const more = renderToStaticMarkup(<EmployeeMoreB name="James Ortiz" place="Main Office" availability="Usual week" count={null} has={{availability: true, notifications: true, updates: true}} />);
-    expect(more.slice(more.indexOf('href="/app/availability"'))).toContain(renderToStaticMarkup(<UserCheckIcon weight="bold" />));
+    expect(more.slice(more.indexOf('href="/app/availability"'))).toContain(renderToStaticMarkup(<TopicIcon glyph={UserCheckIcon} />));
   });
   it('the Unread view, the empty states and the opening spinner', () => {
     expect(text(renderToStaticMarkup(<EmployeeNotificationsB list={list({tab: 'unread'})} />))).not.toContain('Pay statement shared');

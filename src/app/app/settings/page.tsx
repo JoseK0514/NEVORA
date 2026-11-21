@@ -1,3 +1,4 @@
+import { TopicIcon } from "@/components/topic-icon";
 import { currentPresentation } from "@/lib/workspace-presentation/current.server";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { wordPreset } from "@/lib/workspace-presentation/words";
@@ -20,7 +21,7 @@ import { CoffeeIcon } from "@phosphor-icons/react/dist/ssr/Coffee";
 import { AirplaneTiltIcon } from "@phosphor-icons/react/dist/ssr/AirplaneTilt";
 import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
 import { DeviceTabletIcon } from "@phosphor-icons/react/dist/ssr/DeviceTablet";
-import { PasswordIcon } from "@phosphor-icons/react/dist/ssr/Password";
+import { NumpadIcon } from "@phosphor-icons/react/dist/ssr/Numpad";
 import { CameraIcon } from "@phosphor-icons/react/dist/ssr/Camera";
 import { ClockCountdownIcon } from "@phosphor-icons/react/dist/ssr/ClockCountdown";
 import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
@@ -59,8 +60,8 @@ export default async function SettingsPage() {
   const tablets = devices === null ? null : waiting ? `${waiting} not set up` : inUse || 0;
   const count = (value: number | null | undefined) => value === null || value === undefined ? undefined : value === 0 ? "None yet" : String(value);
   // Review B1 (NV-247): something waiting ("1 not set up") reads amber; plain counts stay grey.
-  // Review B5 (NV-099): every navigation row leads with its Phosphor bold icon in a tinted circle, as on More, Team and Time.
-  const icons: Record<string, ReactNode> = { "/app/settings/workspace": <BuildingsIcon weight="bold" />, "/app/settings/locations": <MapPinIcon weight="bold" />, "/app/settings/branding": <PaintBrushIcon weight="bold" />, "/app/settings/features": <ToggleRightIcon weight="bold" />, "/app/settings/company-policies": <ScrollIcon weight="bold" />, "/app/settings/positions": <BriefcaseIcon weight="bold" />, "/app/settings/breaks": <CoffeeIcon weight="bold" />, "/app/settings/time-off": <AirplaneTiltIcon weight="bold" />, "/app/schedule/settings": <CalendarCheckIcon weight="bold" />, "/app/settings/clocker": <DeviceTabletIcon weight="bold" />, "/app/settings/clocker/pins": <PasswordIcon weight="bold" />, "/app/settings/clocker/photos": <CameraIcon weight="bold" />, "/app/settings/clocker/matching": <ClockCountdownIcon weight="bold" />, "/app/clocker-recovery?from=settings": <ArrowCounterClockwiseIcon weight="bold" />, "/app/settings/payroll": <CurrencyDollarIcon weight="bold" />, "/app/billing": <CreditCardIcon weight="bold" /> };
+  // Review B5 (NV-099): every navigation row leads with its Phosphor duotone icon in a tinted circle, as on More, Team and Time.
+  const icons: Record<string, ReactNode> = { "/app/settings/workspace": <TopicIcon glyph={BuildingsIcon} />, "/app/settings/locations": <TopicIcon glyph={MapPinIcon} />, "/app/settings/branding": <TopicIcon glyph={PaintBrushIcon} />, "/app/settings/features": <TopicIcon glyph={ToggleRightIcon} />, "/app/settings/company-policies": <TopicIcon glyph={ScrollIcon} />, "/app/settings/positions": <TopicIcon glyph={BriefcaseIcon} />, "/app/settings/breaks": <TopicIcon glyph={CoffeeIcon} />, "/app/settings/time-off": <TopicIcon glyph={AirplaneTiltIcon} />, "/app/schedule/settings": <TopicIcon glyph={CalendarCheckIcon} />, "/app/settings/clocker": <TopicIcon glyph={DeviceTabletIcon} />, "/app/settings/clocker/pins": <TopicIcon glyph={NumpadIcon} />, "/app/settings/clocker/photos": <TopicIcon glyph={CameraIcon} />, "/app/settings/clocker/matching": <TopicIcon glyph={ClockCountdownIcon} />, "/app/clocker-recovery?from=settings": <TopicIcon glyph={ArrowCounterClockwiseIcon} />, "/app/settings/payroll": <TopicIcon glyph={CurrencyDollarIcon} />, "/app/billing": <TopicIcon glyph={CreditCardIcon} /> };
   const row = (href: string, title: string, value?: string | number | null, tone: "soft" | "amber" = "soft") => pathEnabled(href, presentation.modules)
     // Review B5 (NV-247, NV-260): something waiting is an amber chip, not grey or amber text.
     ? <li key={href}><CorpRow href={href} title={title} icon={icons[href]} one value={tone === "amber" || value === null || value === undefined ? undefined : typeof value === "number" ? count(value) : value} valueTone="soft"

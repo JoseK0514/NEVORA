@@ -1,3 +1,4 @@
+import { TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import type {CSSProperties, ReactNode} from 'react';
 import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
@@ -51,16 +52,16 @@ export function EmployeeMoreB({name, place, availability, has, count}: {
       <BCard title="Your work" id="b-more-work">
         <BList>
           {/* Final review C (row 4): Availability is UserCheck, the navigation's glyph, on every Employee screen. */}
-          {has.availability ? <BRow href="/app/availability" lead={grey(<UserCheckIcon weight="bold" />)} title="Availability" sub={availability ?? undefined} /> : null}
-          {has.notifications ? <BRow href="/app/notifications" lead={grey(<BellIcon weight="bold" />)} title="Notifications" chip={count} sub="Schedule, request and pay notices" /> : null}
-          {has.updates ? <BRow href="/app/updates" lead={grey(<MegaphoneIcon weight="bold" />)} title="Updates" sub={accountCopy().updatesSub} /> : null}
-          <BRow href="/app/profile/calendar" lead={grey(<CalendarPlusIcon weight="bold" />)} title="Add shifts to your calendar" sub="Apple, Google or Outlook" />
+          {has.availability ? <BRow href="/app/availability" lead={grey(<TopicIcon glyph={UserCheckIcon} />)} title="Availability" sub={availability ?? undefined} /> : null}
+          {has.notifications ? <BRow href="/app/notifications" lead={grey(<TopicIcon glyph={BellIcon} />)} title="Notifications" chip={count} sub="Schedule, request and pay notices" /> : null}
+          {has.updates ? <BRow href="/app/updates" lead={grey(<TopicIcon glyph={MegaphoneIcon} />)} title="Updates" sub={accountCopy().updatesSub} /> : null}
+          <BRow href="/app/profile/calendar" lead={grey(<TopicIcon glyph={CalendarPlusIcon} />)} title="Add shifts to your calendar" sub="Apple, Google or Outlook" />
         </BList>
       </BCard>
       <BCard title="Help and legal" id="b-more-help">
         <BList>
-          <BRow href="/app/help" lead={grey(<QuestionIcon weight="bold" />)} title="Help" sub="Answers and how to reach support" />
-          <BRow href="/privacy" lead={grey(<ShieldCheckIcon weight="bold" />)} title="Privacy and terms" sub="Privacy policy and terms of use" />
+          <BRow href="/app/help" lead={grey(<TopicIcon glyph={QuestionIcon} />)} title="Help" sub="Answers and how to reach support" />
+          <BRow href="/privacy" lead={grey(<TopicIcon glyph={ShieldCheckIcon} />)} title="Privacy and terms" sub="Privacy policy and terms of use" />
         </BList>
       </BCard>
       {/* Phase 4 (EM-028): Sign out is a control, not a card: a quiet pill with the glyph, under the cards (hugging its
@@ -91,7 +92,7 @@ export function EmployeeHelpB({email, response, signIn, work, report, legal}: {
     <BStack>
       <BCard title="Contact" id="b-help-contact">
         <BList>
-          <BRow href={`mailto:${email}`} lead={<BIcon tone="teal"><EnvelopeSimpleIcon weight="bold" /></BIcon>} title="Email support" sub={email} label={`Email support, ${email}`} />
+          <BRow href={`mailto:${email}`} lead={<BIcon tone="teal"><TopicIcon glyph={EnvelopeSimpleIcon} /></BIcon>} title="Email support" sub={email} label={`Email support, ${email}`} />
         </BList>
         {/* Review B6 (NV-286): one line on when we reply (the full hours are on Support), then the warning as its own note. */}
         {response ? <p className="eb-help-note">{firstSentence(response)}{response.trim() !== firstSentence(response) ? <> <Link className="eb-help-note__a" href="/app/profile/support">Support hours</Link></> : null}</p> : null}
@@ -100,15 +101,15 @@ export function EmployeeHelpB({email, response, signIn, work, report, legal}: {
       </BCard>
       {signIn || work || report.length ? <BCard title="Common questions" id="b-help-questions">
         <ul className="b-list" aria-label="Common questions">
-          {signIn ? <Question icon={<KeyIcon weight="bold" />} title="I can’t sign in" blocks={signIn} /> : null}
-          {work ? <Question icon={<QuestionIcon weight="bold" />} title="Shift, time off or pay" sub="Ask your manager" blocks={work} /> : null}
-          {report.length ? <Question icon={<FlagIcon weight="bold" />} title="Report a problem" sub="Something isn’t working" blocks={report} /> : null}
+          {signIn ? <Question icon={<TopicIcon glyph={KeyIcon} />} title="I can’t sign in" blocks={signIn} /> : null}
+          {work ? <Question icon={<TopicIcon glyph={QuestionIcon} />} title="Shift, time off or pay" sub="Ask your manager" blocks={work} /> : null}
+          {report.length ? <Question icon={<TopicIcon glyph={FlagIcon} />} title="Report a problem" sub="Something isn’t working" blocks={report} /> : null}
         </ul>
       </BCard> : null}
       {legal ? <BCard title="Privacy and terms" id="b-help-legal">
         <BList>
-          <BRow href="/app/profile/privacy" lead={grey(<ShieldCheckIcon weight="bold" />)} title="Privacy Policy" />
-          <BRow href="/app/profile/terms" lead={grey(<ScalesIcon weight="bold" />)} title="Terms of Use" />
+          <BRow href="/app/profile/privacy" lead={grey(<TopicIcon glyph={ShieldCheckIcon} />)} title="Privacy Policy" />
+          <BRow href="/app/profile/terms" lead={grey(<TopicIcon glyph={ScalesIcon} />)} title="Terms of Use" />
           <BRow href="/app/profile/account-deletion" lead={grey(<TrashIcon weight="bold" />)} title="Account deletion" />
         </BList>
       </BCard> : null}

@@ -41,7 +41,6 @@ import { recordNavigation } from "./corp/corp-client";
 import { CorpMotion } from "./corp/corp-motion";
 import { SidebarRailTooltip } from "./sidebar-rail-tooltip";
 import { OFFLINE_HELD_EVENT } from "@/lib/offline-hold";
-import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
 import { B_TABLET } from "@/lib/b-viewport";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretUpIcon } from "@phosphor-icons/react/dist/ssr/CaretUp";
@@ -553,7 +552,7 @@ function AppShellView({
                 <span className="nav-icon">
                   {/* Phase 3 (TB-001, TB-009): the current entry's glyph is filled, in the sidebar and the rail, as the phone's current tab is.
                     * Phase 9: one glyph per concept, the tab bar's own (a pay statement is the receipt for every role). */}
-                  <NavIcon name={item.icon} employee={employee} size={20} weight={active ? "fill" : "bold"} />
+                  <NavIcon name={item.icon} employee={employee} size={20} weight={active ? "fill" : "duotone"} />
                 </span>
                 <span className="nav-label">{item.label}</span>
                 <NavPending />
@@ -584,7 +583,7 @@ function AppShellView({
         </PortalSignout>
 
         {/* Review B2 (NV-011): a Help link above "Powered by" on tablets and desktop. Phase 9: its glyph is the entries' 20px. */}
-        <Link href="/app/help" className="sidebar-help-link" aria-current={pathname === "/app/help" ? "page" : undefined}><QuestionIcon size={20} weight={pathname === "/app/help" ? "fill" : "bold"} aria-hidden="true" /><span className="nav-label">Help</span></Link>
+        <Link href="/app/help" className="sidebar-help-link" aria-current={pathname === "/app/help" ? "page" : undefined}><NavIcon name="help" size={20} weight={pathname === "/app/help" ? "fill" : "duotone"} /><span className="nav-label">Help</span></Link>
         <div className="sidebar-platform-footer">
           <span>{workspaceName}</span>
           <small>{NUVORA_BRAND.poweredBy}</small>
@@ -659,7 +658,7 @@ function AppShellView({
                     {/* Corporate (boards C-Owner, C-Employee): outline glyphs; the current tab is teal and filled (upscale S1: every
                       tab, not Home alone). A Lead has the Employee's tab bar. Phase 9: each tab draws its sidebar entry's glyph
                       (Payroll the wallet, not a card), so a place looks the same on a phone and in the rail. */}
-                    <NavIcon name={item.icon} size={24} weight={active ? "fill" : "bold"} />
+                    <NavIcon name={item.icon} size={24} weight={active ? "fill" : "duotone"} />
                     <span>{item.label}</span>
                     {/* Direction B: the count is visible on the tab too (phones, Owner and Manager); the label above reads it. */}
                     {needsYou !== null && !employee ? <span className="b-tab-badge" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}

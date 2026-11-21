@@ -1,7 +1,9 @@
+import { TopicIcon } from "./topic-icon";
 import { WalletIcon } from "@phosphor-icons/react/dist/ssr/Wallet";
 import { ReceiptIcon } from "@phosphor-icons/react/dist/ssr/Receipt";
-import { HouseIcon } from "@phosphor-icons/react/dist/ssr/House";
-import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { HouseLineIcon } from "@phosphor-icons/react/dist/ssr/HouseLine";
+import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
+import { CalendarDotsIcon } from "@phosphor-icons/react/dist/ssr/CalendarDots";
 import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
 import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { UserCheckIcon } from "@phosphor-icons/react/dist/ssr/UserCheck";
@@ -12,7 +14,7 @@ import { FileTextIcon } from "@phosphor-icons/react/dist/ssr/FileText";
 import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
 import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
-import { ClipboardTextIcon } from "@phosphor-icons/react/dist/ssr/ClipboardText";
+import { NotePencilIcon } from "@phosphor-icons/react/dist/ssr/NotePencil";
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import { BriefcaseIcon } from "@phosphor-icons/react/dist/ssr/Briefcase";
 import { TimerIcon } from "@phosphor-icons/react/dist/ssr/Timer";
@@ -49,8 +51,9 @@ const icons = {
   // Rondo AI (Nov 18, 2026): two speech bubbles, a conversation (Jose: nothing that looks AI-generic, so no sparkle).
   // Messaging a person keeps its single bubble (ChatText); Insights keeps the chart Rondo used to borrow.
   rondo: ChatsCircleIcon,
-  dashboard: HouseIcon,
-  schedule: CalendarBlankIcon,
+  dashboard: HouseLineIcon,
+  help: QuestionIcon,
+  schedule: CalendarDotsIcon,
   calendar: CalendarCheckIcon,
   clock: ClockIcon,
   availability: UserCheckIcon,
@@ -61,7 +64,7 @@ const icons = {
   rules: SlidersHorizontalIcon,
   settings: GearSixIcon,
   coverage: ShieldCheckIcon,
-  requests: ClipboardTextIcon,
+  requests: NotePencilIcon,
   location: MapPinIcon,
   shift: BriefcaseIcon,
   hours: TimerIcon,
@@ -96,9 +99,10 @@ export function NavIcon({
   size?: number;
   employee?: boolean;
   className?: string;
-  /** Review B1 (NV-118): bold by default (the one Phosphor weight); the active tab passes "fill". */
-  weight?: "regular" | "fill" | "bold";
+  /** Controls default to bold. Navigation uses duotone at rest and fill when current. */
+  weight?: "regular" | "fill" | "bold" | "duotone";
 }) {
   const Icon = icons[name];
+  if (weight === "duotone") return <TopicIcon glyph={Icon} size={size} className={className} />;
   return <Icon size={size} weight={weight} color="currentColor" className={className} aria-hidden="true" focusable="false" />;
 }

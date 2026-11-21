@@ -5,7 +5,7 @@ import {keepWhole} from '@/lib/keep-whole';
 import Link from 'next/link';
 import {useRef,useState} from 'react';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
-import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
+import {CalendarDotsIcon} from '@phosphor-icons/react/dist/ssr/CalendarDots';
 import {CalendarMinusIcon} from '@phosphor-icons/react/dist/ssr/CalendarMinus';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
@@ -36,7 +36,7 @@ import {KeepSelectedVisible} from './kit/keep-selected-visible';
 /* Premium pass FA (final verification A #14): one glyph per meaning. "Things to do are waiting" is Things to do's tray (the
  * sidebar's glyph; ListChecks drew a checklist), and a can't-work notice is the person stepping out (UserMinus), as on
  * Things to do; the red WarningCircle is the stop glyph. */
-const icons={schedule:CalendarBlankIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:UserMinusIcon,device:DeviceMobileIcon,operations:TrayIcon,payroll:WalletIcon,statement:ReceiptIcon};
+const icons={schedule:CalendarDotsIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:UserMinusIcon,device:DeviceMobileIcon,operations:TrayIcon,payroll:WalletIcon,statement:ReceiptIcon};
 const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:'Read',confirmed:'Confirmed',unavailable:'Review status unavailable'};
 const actionLabels:Record<NotificationActionState,string>={required:'Action required',available:'Action available',complete:'Action complete',none:'No action required',unavailable:'Action status unavailable'};
 const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All'},{value:'unread',label:'Unread'},{value:'required',label:'Needs action'}];

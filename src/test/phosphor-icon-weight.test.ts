@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import ts from "typescript";
 import { expect, it } from '@rstest/core';
 
-// SY-012 / UI-6 (Nov 15, 2026): DESIGN.MD "Current direction" draws every Phosphor icon bold. An icon with no weight
+// SY-012 / UI-6: actions and status marks use bold. An icon with no weight
 // draws regular, and the `dist/ssr` icons used across the app do not read IconContext, so the weight has to be on the
 // element (or on the one wrapper that renders it). This scan fails with the list of icons that would draw thin.
 // "fill" stays allowed for filled and active states. "duotone" is allowed only in the files below.
@@ -18,6 +18,7 @@ const skippedFolders: Record<string, string> = {
 
 /** Files that keep an explicit duotone icon, each with the reason. */
 const duotoneFiles: Record<string, string> = {
+  "components/topic-icon.tsx": "shared artwork for labelled row subjects",
   "app/app/requests/time-off-form.tsx": "calendar mark beside the request heading, explicit before SY-012",
   "components/auth-access-symbol.tsx": "24px sign-in symbol, explicit before SY-012",
   "components/company-access/employee-invitation-panel.tsx": "22px panel heading mark, explicit before SY-012",
@@ -74,7 +75,7 @@ function offenders(file: string): string[] {
   return found;
 }
 
-it("every Phosphor icon element sets its weight, and it is bold unless the state is filled", () => {
+it("Phosphor icons use explicit weights and only designated artwork uses duotone", () => {
   expect(sources(root).flatMap(offenders)).toEqual([]);
 });
 

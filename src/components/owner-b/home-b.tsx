@@ -1,7 +1,9 @@
 "use client";
+import { TopicIcon } from "@/components/topic-icon";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { durationTotal } from "@/lib/duration-format";
+import { CalendarDotsIcon } from "@phosphor-icons/react/dist/ssr/CalendarDots";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { ClockUserIcon } from "@phosphor-icons/react/dist/ssr/ClockUser";
 import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
@@ -169,7 +171,7 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   if (gapRows.length) {
     const next = gapRows[0];
     // Phase 8 (b.md #46): a row's button is the tinted pill, as on Things to do; the filled teal stays the page's one main action.
-    rows.push(<BRow key="gaps" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={`Cover ${plural(gapRows.length, "open shift", "open shifts")}`}
+    rows.push(<BRow key="gaps" lead={<BIcon tone="amber"><TopicIcon glyph={CalendarDotsIcon} /></BIcon>} title={`Cover ${plural(gapRows.length, "open shift", "open shifts")}`}
       sub={<>{`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}`}<BWhen text={next.title} /></>} href={openHref} label={`Open shifts, ${gapRows.length}`}
       trail={<BButtonLink href={next.href} kind="ghost" label={`Find cover: ${next.title}`}>Find cover</BButtonLink>} />);
   }
@@ -178,7 +180,7 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   const repairs = value.now.filter(isStaffingRepair);
   if (repairs.length) {
     const first = repairs[0], shown = presentItem(first, "Fill shift");
-    rows.push(<BRow key="repairs" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>}
+    rows.push(<BRow key="repairs" lead={<BIcon tone="amber"><TopicIcon glyph={CalendarDotsIcon} /></BIcon>}
       title={repairs.length === 1 ? shown.title : `Fill ${plural(repairs.length, "shift", "shifts")} for approved time off`}
       sub={repairs.length === 1 ? repairWhen(first) : `Next: ${shown.title.replace(/^Fill /, "")}`} href={repairs.length === 1 ? actionCenterNavigation(first).href : "/app/inbox#todo-repair"}
       label={repairs.length === 1 ? `${shown.title}, ${repairWhen(first)}` : `Shifts to fill for approved time off, ${repairs.length}`} />);
@@ -195,13 +197,13 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
     const names = noClockIn.running.map(shift => shift.employeeName), began = noClockIn.running.length === 1 ? at(noClockIn.running[0].startAt) : null;
     // Premium pass FA (final verification A #19, B #25): a row that names several people leads with what they share, the
     // amber attendance circle (a person and a clock), not the first person's face alone; one person keeps their face.
-    rows.push(<BRow key="not-clocked-in" lead={names.length > 1 ? <BIcon tone="amber"><ClockUserIcon weight="bold" /></BIcon> : <BAvatar name={names[0]} ring="late" />} title={firstNames(names)}
+    rows.push(<BRow key="not-clocked-in" lead={names.length > 1 ? <BIcon tone="amber"><TopicIcon glyph={ClockUserIcon} /></BIcon> : <BAvatar name={names[0]} ring="late" />} title={firstNames(names)}
       sub={noClockIn.running.length > 1 ? `${ATTENDANCE_WORDS.notClockedIn} \u00b7 ${noClockIn.running.length}\u00a0people` : began ? `${ATTENDANCE_WORDS.notClockedIn}\u00a0\u00b7 ${whole(`shift began ${began}`)}` : ATTENDANCE_WORDS.notClockedIn}
       href="/app/inbox#todo-not-clocked-in" label={`${ATTENDANCE_WORDS.notClockedIn}: ${names.join(", ")}`} />);
   }
   if (noClockIn.ended.length) {
     const names = noClockIn.ended.map(shift => shift.employeeName), ended = noClockIn.ended.length === 1 ? at(noClockIn.ended[0].endAt) : null;
-    rows.push(<BRow key="missed" lead={names.length > 1 ? <BIcon tone="amber"><ClockUserIcon weight="bold" /></BIcon> : <BAvatar name={names[0]} ring="late" />} title={firstNames(names)}
+    rows.push(<BRow key="missed" lead={names.length > 1 ? <BIcon tone="amber"><TopicIcon glyph={ClockUserIcon} /></BIcon> : <BAvatar name={names[0]} ring="late" />} title={firstNames(names)}
       sub={noClockIn.ended.length > 1 ? plural(noClockIn.ended.length, "missed clock-in", "missed clock-ins") : ended ? `Missed clock-in\u00a0\u00b7 ${whole(`shift ended ${ended}`)}` : "Missed clock-in"}
       href="/app/inbox#todo-missed" label={`Missed clock-ins: ${names.join(", ")}`} />);
   }
@@ -209,7 +211,7 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   // Premium pass FA (coordinator, with FC): fixing time is the pencil on every page and for every role.
   if (value.corrections.length) {
     const names = value.corrections.map(item => item.detail.split(" · ")[0]?.trim()).filter((name): name is string => !!name);
-    rows.push(<BRow key="corrections" lead={<BIcon tone="amber"><PencilSimpleIcon weight="bold" /></BIcon>} title={plural(value.corrections.length, "time correction", "time corrections")}
+    rows.push(<BRow key="corrections" lead={<BIcon tone="amber"><TopicIcon glyph={PencilSimpleIcon} /></BIcon>} title={plural(value.corrections.length, "time correction", "time corrections")}
       sub={firstNames(names)} href="/app/inbox#todo-corrections" label={`Time corrections to review, ${value.corrections.length}${names.length ? `: ${names.join(", ")}` : ""}`} />);
   }
   const requests = [...value.now.filter(item => item.category === "requests"), ...value.requests];
@@ -221,13 +223,13 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
     const who = person && facts?.counterpartName ? `${person} ⇄ ${facts.counterpartName}` : person;
     const spoken = person && facts?.counterpartName ? `${person} and ${facts.counterpartName}` : person;
     const kind = kindWord(item);
-    rows.push(<BRow key={item.id} lead={person ? <BAvatar name={person} /> : <BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>}
+    rows.push(<BRow key={item.id} lead={person ? <BAvatar name={person} /> : <BIcon tone="amber"><TopicIcon glyph={CalendarDotsIcon} /></BIcon>}
       title={who ?? requestKind[item.type] ?? item.title} sub={[who ? kind : null, facts ? shortRange(facts.startDate, facts.endDate) : null].filter(Boolean).join(" · ") || undefined}
       href={facts?.reviewHref ?? "/app/inbox#todo-requests"} label={`${requestKind[item.type] ?? item.title}${spoken ? `, ${spoken}` : ""}`} />);
   }
   const others = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !isStaffingRepair(item));
   // Phase 9 (spec 3.2): these wait on this person, so the circle is amber, with the timecards' Clock (it was a grey calendar).
-  if (rows.length < NEEDS_ROWS && others.length) rows.push(<BRow key="others" lead={<BIcon tone="amber"><ClockIcon weight="bold" /></BIcon>}
+  if (rows.length < NEEDS_ROWS && others.length) rows.push(<BRow key="others" lead={<BIcon tone="amber"><TopicIcon glyph={ClockIcon} /></BIcon>}
     title={plural(others.length, "item to review", "items to review")} sub="Time corrections and timecards" href="/app/inbox#todo-review" />);
   // Phase 4 (U03): a lower bound reads "At least N" in the count pill, and an empty card with a source unread says what
   // could not be checked instead of "Nothing needs you".

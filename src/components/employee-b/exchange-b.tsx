@@ -1,5 +1,6 @@
 'use client';
 
+import { TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import {useEffect, useRef, type ReactNode} from 'react';
 import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
@@ -96,7 +97,7 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
           {refused.length ? <WhyNot refused={refused}/> : null}
           {/* Desktop: the way to more shifts sits beside them (eb-desk). Final review C (row 4): Availability's glyph is the
             * navigation's UserCheck on every Employee screen. */}
-          <div className="eb-desk eb-moreshifts"><BCard label={workCopy().yourAvailability}><BList><BRow href="/app/availability" lead={<BIcon tone="grey"><UserCheckIcon weight="bold"/></BIcon>} title={workCopy().yourAvailability} sub={workCopy().availabilitySub}/></BList></BCard></div>
+          <div className="eb-desk eb-moreshifts"><BCard label={workCopy().yourAvailability}><BList><BRow href="/app/availability" lead={<BIcon tone="grey"><TopicIcon glyph={UserCheckIcon} /></BIcon>} title={workCopy().yourAvailability} sub={workCopy().availabilitySub}/></BList></BCard></div>
         </>}
       </>)}
     </BStack>
@@ -137,9 +138,9 @@ export function ExchangeListB({mode, state, enabled, recoveries, rows, split}: {
         {recoveries}
         {rows === null ? <BCard><BText status>{mode === 'incoming' ? 'Incoming swaps' : 'Your request activity'} couldn’t be checked. Refresh to try again.</BText></BCard>
           // Review B6 (NV-290): For you is a titled card, like Open shifts' "You can pick up".
-          : mode === 'incoming' ? <BCard id="b-exchange-foryou" title="Needs your answer" count={rows.length || undefined}>{list ?? <BEmpty icon={<ArrowsLeftRightIcon weight="bold"/>} title="No swaps need your answer" sub="A request addressed to you will appear here."/>}</BCard>
+          : mode === 'incoming' ? <BCard id="b-exchange-foryou" title="Needs your answer" count={rows.length || undefined}>{list ?? <BEmpty icon={<TopicIcon glyph={ArrowsLeftRightIcon} />} title="No swaps need your answer" sub="A request addressed to you will appear here."/>}</BCard>
           : rows.length ? <BCard id="b-exchange-activity" title="Recent activity">{list}</BCard>
-          : <BCard><BEmpty icon={<ArrowsLeftRightIcon weight="bold"/>} title="No recent shift requests" sub="Start a swap or cover offer from your own schedule."/></BCard>}
+          : <BCard><BEmpty icon={<TopicIcon glyph={ArrowsLeftRightIcon} />} title="No recent shift requests" sub="Start a swap or cover offer from your own schedule."/></BCard>}
         {paned ? paned.pane : <MyScheduleCardB/>}
       </>)}
     </BStack>
@@ -219,7 +220,7 @@ function DetailCardsB({state, enabled, recoveries, detail, timeZone, status, con
           <section className="b-card eb-resp-card" aria-label="Your response">{controls}</section>
           {detail.history === null ? <BCard><BText status>Request history couldn’t be checked. Refresh to try again.</BText></BCard>
             : detail.history.length ? <BCard label="Recorded request history"><details className="eb-why">
-              <summary className="b-row"><BIcon tone="grey"><ClockCounterClockwiseIcon weight="bold"/></BIcon><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Request history</span></span></span>
+              <summary className="b-row"><BIcon tone="grey"><TopicIcon glyph={ClockCounterClockwiseIcon} /></BIcon><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Request history</span></span></span>
                 <CaretDownIcon className="b-chev eb-why__chev" size={18} weight="bold" aria-hidden="true"/></summary>
               <ol className="eb-why__list">{detail.history.map((event, index) => <li key={event.revision + '-' + index}><strong>{event.label}</strong><time dateTime={event.at}>{stamp(event.at, timeZone)}</time>
                 <HistoryTime title="Offered" slot={event.offered}/><HistoryTime title="Requested" slot={event.requested}/></li>)}</ol>

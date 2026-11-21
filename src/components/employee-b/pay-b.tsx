@@ -1,5 +1,6 @@
 'use client';
 
+import { TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 
 import type {ReactNode, RefObject} from 'react';
@@ -72,7 +73,7 @@ export function PayB(props: PayBProps) {
   const empty = state === 'empty';
   const surface = status ? <StatusCard status={status} state={state}/> : null;
   const loadingCard = <BCard title={view === 'history' ? 'Pay history' : 'Recent pay statements'}><p className="b-state" role="status">Loading your statements…</p></BCard>;
-  const emptyCard = <BCard label="Recent pay statements"><BEmpty icon={<ReceiptIcon weight="bold"/>} title="No published statements yet" sub="Your statements appear here after your employer shares them."/></BCard>;
+  const emptyCard = <BCard label="Recent pay statements"><BEmpty icon={<TopicIcon glyph={ReceiptIcon} />} title="No published statements yet" sub="Your statements appear here after your employer shares them."/></BCard>;
   const fallback = loading ? loadingCard : empty ? emptyCard : surface;
 
   if (view === 'paycheck') {
@@ -92,7 +93,7 @@ export function PayB(props: PayBProps) {
               {item.correctedBy && byId.has(item.correctedBy) ? <BRow href={paycheckHref(item.correctedBy)} title="Use the corrected statement" label="Use the corrected statement"/> : null}
               <li className="b-li"><a id={`b-pay-pdf-${item.id}`} className="b-add ep-pdf" href={item.viewUrl ? `${documentHref(item)}/view` : documentHref(item)} {...(item.viewUrl ? {target: '_blank', rel: 'noopener'} : {})}
                 aria-label={`Pay statement (PDF), ${role(item)}, payday ${paydayLong(item.payday)}${item.viewUrl ? ' (opens separately)' : ''}`} onClick={() => onOpenPdf(`b-pay-pdf-${item.id}`)}>
-                <span className="b-ico b-ico--teal" aria-hidden="true"><FileTextIcon weight="bold"/></span><span className="ep-pdf__t">Pay statement (PDF)</span><ArrowSquareOutIcon className="ep-pdf__out" size={18} weight="bold" aria-hidden="true"/></a></li>
+                <span className="b-ico b-ico--teal" aria-hidden="true"><TopicIcon glyph={FileTextIcon} /></span><span className="ep-pdf__t">Pay statement (PDF)</span><ArrowSquareOutIcon className="ep-pdf__out" size={18} weight="bold" aria-hidden="true"/></a></li>
             </BList>
             {/* Phase 9 (spec 3.2): the note qualifies the PDF above it, so it is this card's footer, not a line under it. */}
             <BNote>Downloaded files may contain personal pay information.</BNote>

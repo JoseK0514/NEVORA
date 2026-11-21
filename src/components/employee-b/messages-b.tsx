@@ -1,9 +1,10 @@
 'use client';
 
+import { TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import {Fragment, useState, type MouseEvent, type ReactNode} from 'react';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
-import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
+import {CalendarDotsIcon} from '@phosphor-icons/react/dist/ssr/CalendarDots';
 import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
@@ -80,7 +81,7 @@ type Shared = {recovery?: ReactNode; returnHref?: string | null; status?: BStatu
 // Phase 9 (spec 3.6): one glyph per concept, the navigation's: CalendarMinus for time off, UserMinus for can't work,
 // Megaphone for Updates. Final review C (row 4): UserCheck for Availability (the navigation's), and a schedule notice that
 // asks you to confirm the week is CalendarCheck, as Home's to-do and Schedule's Confirm this week are.
-const KIND_ICON: Record<NotificationKind, typeof BellIcon> = {SCHEDULE: CalendarBlankIcon, TIME_OFF: CalendarMinusIcon, EXCHANGE: ArrowsLeftRightIcon, CALLOUT: UserMinusIcon,
+const KIND_ICON: Record<NotificationKind, typeof BellIcon> = {SCHEDULE: CalendarDotsIcon, TIME_OFF: CalendarMinusIcon, EXCHANGE: ArrowsLeftRightIcon, CALLOUT: UserMinusIcon,
   AVAILABILITY: UserCheckIcon, SELF_TEST: DeviceMobileIcon, COMMUNICATION: MegaphoneIcon, PAYROLL_STATEMENT: ReceiptIcon};
 /* A notice's lead glyph: approved leads with the done check (green); a declined one keeps its kind's glyph in the grey
  * circle (final review C, row 16: the x read as a dismiss control and is not in the spec's set), so "Time off declined" is
@@ -105,14 +106,14 @@ const A = accountCopy();
 function FoldRow({id, items, zone, earlier, open, onToggle}: {id: string; items: EmployeeNotificationItem[]; zone: string; earlier: boolean; open: boolean; onToggle: () => void}) {
   const first = items[0], head = notificationHeadline(first), kind = notificationKindFor(first);
   const unread = items.filter(item => item.reviewState === 'unread').length, required = items.some(item => item.actionState === 'required');
-  const Icon = head.decided === 'approved' ? CheckIcon : !kind ? BellIcon : kind === 'SCHEDULE' && required ? CalendarCheckIcon : KIND_ICON[kind];
+  const Icon = !kind ? BellIcon : kind === 'SCHEDULE' && required ? CalendarCheckIcon : KIND_ICON[kind];
   const tone: BTone = required ? 'amber' : head.decided === 'approved' ? 'green' : 'grey';
   const time = clock(first.at, zone), when = earlier ? `${shortDate(first.at, zone)}, ${time}` : time, phoneWhen = earlier ? shortDate(first.at, zone) : time;
   const object = [head.object, A.folded(items.length)].filter(Boolean).join(' · ');
   return <li className="b-li">
     <button type="button" className={`b-row b-row--link eb-notif eb-fold${unread ? ' eb-notif--unread' : ''}`} id={id} aria-expanded={open} onClick={onToggle}
       aria-label={`${head.title}, ${object.replaceAll(' · ', ', ')}${unread ? `, ${unread} ${A.unread}` : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(first.at, zone)} · ${time}` : time}`}>
-      <BIcon tone={tone}><Icon weight="bold" /></BIcon>
+      <BIcon tone={tone}>{head.decided === 'approved' ? <CheckIcon weight="bold" /> : <TopicIcon glyph={Icon} />}</BIcon>
       <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{head.title}</span></span>
         <span className="b-row__s eb-notif__s">{required ? <BChip tone="amber">{A.actionNeeded}</BChip> : null}
           <span className="eb-notif__o eb-notif__o--w"><Dotted text={object}/></span>
@@ -140,7 +141,7 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
     // state (green check approved, grey x declined); one that needs you is amber (review B1, NV-142); the rest
     // carry their kind's icon, teal because the row opens (EM-017, employee-b-account.css).
     const head = notificationHeadline(item);
-    const Icon = head.decided === 'approved' ? CheckIcon : !kind ? BellIcon : kind === 'SCHEDULE' && required ? CalendarCheckIcon : KIND_ICON[kind];
+    const Icon = !kind ? BellIcon : kind === 'SCHEDULE' && required ? CalendarCheckIcon : KIND_ICON[kind];
     const tone: BTone = required ? 'amber' : head.decided === 'approved' ? 'green' : 'grey';
     const earlier = group === 'Earlier', time = clock(item.at, zone);
     // Phase 4 (EM-009): from 768px one trailing line, the dot then the time (an earlier day leads with its date). On a
@@ -150,7 +151,7 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
     return <li className={inFold ? 'b-li eb-fold__item' : 'b-li'} key={item.id}><Link id={'b-message-' + item.id} className={`b-row b-row--link eb-notif${isUnread ? ' eb-notif--unread' : ''}${head.decided === 'declined' ? ' eb-notif--declined' : ''}${busy ? ' eb-notif--busy' : ''}`} href={item.href} prefetch={false}
       onClick={event => list?.onOpen(event, item.id, item.href)} aria-busy={busy || undefined}
       aria-label={`${head.title}${head.object ? `, ${head.object.replaceAll(' · ', ', ')}` : ''}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
-      <BIcon tone={tone}><Icon weight="bold" /></BIcon>
+      <BIcon tone={tone}>{head.decided === 'approved' ? <CheckIcon weight="bold" /> : <TopicIcon glyph={Icon} />}</BIcon>
       <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{head.title}</span></span>
         <span className={required || head.object ? 'b-row__s eb-notif__s' : 'b-row__s eb-notif__s eb-notif__s--p'}>{required ? <BChip tone="amber">Action needed</BChip> : null}
           {head.object ? <span className="eb-notif__o eb-notif__o--w"><Dotted text={head.object}/></span> : null}
@@ -180,7 +181,7 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
           <ul className="b-list" aria-label={group.name + ' notifications'}>{folds(group.rows).map(fold => fold.items.length === 1 ? notificationRow(fold.items[0], group.name)
             : <Fragment key={fold.key}><FoldRow id={`b-fold-${group.name.toLowerCase()}-${fold.items[0].id}`} items={fold.items} zone={zone} earlier={group.name === 'Earlier'} open={!!opened[fold.key]}
                 onToggle={() => setOpened(current => ({...current, [fold.key]: !current[fold.key]}))}/>{opened[fold.key] ? fold.items.map(item => notificationRow(item, group.name, true)) : null}</Fragment>)}</ul>
-        </BCard>) : <BCard><div className="eb-empty"><BIcon tone="grey"><BellIcon weight="bold" /></BIcon><b>{list.tab === 'unread' ? 'You’re all caught up' : list.partial ? 'Nothing confirmed on this page' : 'No current notifications'}</b>
+        </BCard>) : <BCard><div className="eb-empty"><BIcon tone="grey"><TopicIcon glyph={BellIcon} /></BIcon><b>{list.tab === 'unread' ? 'You’re all caught up' : list.partial ? 'Nothing confirmed on this page' : 'No current notifications'}</b>
           <span>{list.tab === 'unread' ? 'No unread notifications.' : list.partial ? 'Some notices couldn’t be checked. Refresh to check again.' : 'New schedule, request and pay notices will show here.'}{list.more ? ' Older items may be on another page.' : ''}</span></div></BCard>}
       </> : null}
       <Pager pager={pager} />
@@ -229,7 +230,7 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
           <ul className="b-list">{confirm.map(({item, at}) => <li className="b-li" key={item.id}><div className="eb-upd">
             {/* Final review C (row 5): an update that waits for your acknowledgement leads with the amber circle, as the same
               * notice does on Home and in Notifications (it was grey, quieter than the read-only rows under it). */}
-            <div className="b-row eb-upd__head"><BIcon tone="amber"><MegaphoneIcon weight="bold" /></BIcon>
+            <div className="b-row eb-upd__head"><BIcon tone="amber"><TopicIcon glyph={MegaphoneIcon} /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span><BChip tone="amber">{A.actionNeeded}</BChip></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)}`} /></span></span></div>
             {/* Phase 4 (EM-033): a preview is one paragraph (line breaks become spaces) of at most three lines; the update's own page keeps its paragraphs. */}
             {/* Phase 8 (review C, row 32): a hyphenated word ("back-of-house") keeps its hyphens unbreakable here, so the preview's
@@ -245,13 +246,13 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
           {earlier.length ? <ul className="b-list" aria-label="Your updates">{earlier.map(({item, unread, status: state, at}) => <li className="b-li" key={item.id}>
             <Link id={'b-message-' + item.id} className={unread ? 'b-row b-row--link eb-updrow eb-updrow--unread' : 'b-row b-row--link eb-updrow'} href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)}
               aria-label={`${item.title}, ${state}, ${messageTime(at, list.timeZone)}`}>
-              <BIcon tone="grey"><MegaphoneIcon weight="bold" /></BIcon>
+              <BIcon tone="grey"><TopicIcon glyph={MegaphoneIcon} /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)}${unread ? '' : ` · ${state}`}`} /></span></span>
               {unread ? <span className="b-row__end eb-when"><i className="eb-unread" aria-hidden="true" /></span> : null}
               <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
             </Link></li>)}</ul>
           : <>
-            <div className="eb-empty" role={list.partial ? 'status' : undefined}><BIcon tone="grey"><MegaphoneIcon weight="bold" /></BIcon>{list.partial
+            <div className="eb-empty" role={list.partial ? 'status' : undefined}><BIcon tone="grey"><TopicIcon glyph={MegaphoneIcon} /></BIcon>{list.partial
               ? <><b>{rows.length ? 'No confirmed matches on this page' : 'Nothing confirmed on this page'}</b><span>Some current updates couldn’t be checked, so they aren’t listed. {narrowed ? 'Try a different search or show All, or refresh to check again.' : 'Refresh to check again.'}</span></>
               : <><b>{narrowed ? 'No matches on this page' : 'No current updates'}</b><span>{narrowed ? 'Try a different search or show All.' : 'There are no current items on this page.'}{list.more ? ' Older items may be on another page.' : ''}</span></>}</div>
           </>}

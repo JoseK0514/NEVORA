@@ -1,5 +1,6 @@
 'use client';
 
+import { TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import {OwnLeaveNote} from '../leave-staffing/own-leave-note';
 import type {ReactNode} from 'react';
@@ -59,7 +60,7 @@ function TimeOffHero({page, filter, tabs, waiting}: {page: TimeOffPage; filter: 
 function TimeOffRowB({request, filter}: {request: TimeOffView; filter: string}) {
   const pill = timeOffPill(request.status);
   return <BRow href={`/app/requests?requestId=${encodeURIComponent(request.id)}${filter === 'decided' ? '&filter=decided' : ''}`}
-    lead={<BIcon tone="grey"><CalendarMinusIcon weight="bold"/></BIcon>} title={keepWhole(timeOffRange(request))} sub={<Dotted text={timeOffSpan(request)}/>}
+    lead={<BIcon tone="grey"><TopicIcon glyph={CalendarMinusIcon} /></BIcon>} title={keepWhole(timeOffRange(request))} sub={<Dotted text={timeOffSpan(request)}/>}
     // Phase 4 (EM-023): every row ends with its state before the chevron, so "did it go through?" is answered on the row:
     // amber Waiting, green Approved, grey Declined or Withdrawn. (Review B1, NV-280, had left the Waiting tab's rows bare.)
     end={<BChip tone={bTone(pill.tone)}>{pill.text}</BChip>} chevron label={`${timeOffDates(request)}, ${timeOffLength(request)}, ${pill.text}`}/>;
@@ -99,7 +100,7 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
   const stack = state ?? (enabled === false ? <BCard><BText status>Your workplace doesn’t use time off in NEVORA.</BText></BCard> : page === 'new' ? null : <>
     {earlier ? <BCard><div className="eb-status"><p className="b-state">An earlier time-off submission still needs to be checked.</p><Link className="b-link" href="/app/requests?tab=new">Return to my submission</Link></div></BCard> : null}
     {page === 'list' ? <BCard label={filter === 'decided' ? 'Decided requests' : 'Waiting requests'}>
-      {requests.length ? null : <BEmpty icon={<CalendarMinusIcon weight="bold"/>} title={filter === 'decided' ? 'No decisions yet' : 'Nothing waiting right now'}
+      {requests.length ? null : <BEmpty icon={<TopicIcon glyph={CalendarMinusIcon} />} title={filter === 'decided' ? 'No decisions yet' : 'Nothing waiting right now'}
         sub={filter === 'decided' ? 'Approved, declined and withdrawn requests will appear here.' : 'When you send a request, you can follow its status here.'}/>}
       <BList>
         {/* Review B2 (NV-140): waiting soonest first; decided most recently decided first. */}

@@ -1,10 +1,11 @@
 'use client';
 
+import { TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import type {ReactNode} from 'react';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
-import {ClipboardTextIcon} from '@phosphor-icons/react/dist/ssr/ClipboardText';
-import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
+import {NotePencilIcon} from '@phosphor-icons/react/dist/ssr/NotePencil';
+import {CalendarDotsIcon} from '@phosphor-icons/react/dist/ssr/CalendarDots';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {UserMinusIcon} from '@phosphor-icons/react/dist/ssr/UserMinus';
@@ -33,7 +34,7 @@ export type BRequestKind = 'timeOff' | 'shift' | 'callout';
  * concept: CalendarMinus for time off, ArrowsLeftRight for a swap, cover or pickup, UserMinus for can't work. */
 export function RequestTypeIcon({kind}: {kind: BRequestKind}) {
   const Icon = kind === 'timeOff' ? CalendarMinusIcon : kind === 'callout' ? UserMinusIcon : ArrowsLeftRightIcon;
-  return <BIcon tone="grey"><Icon weight="bold"/></BIcon>;
+  return <BIcon tone="grey"><TopicIcon glyph={Icon} /></BIcon>;
 }
 
 export type BRequestRow = {key: string; href: string; kind: BRequestKind; title: string; sub: string; chip: {tone: BTone; text: string}};
@@ -64,7 +65,7 @@ export function OpenShiftsEmptyB() {
   // device read answered); otherwise it would lead to "Your workplace hasn't turned on device alerts".
   const device = useEmployeeDevice()?.snapshot;
   const alerts = !!device && device.state !== 'unavailable';
-  return <><BEmpty icon={<CalendarBlankIcon weight="bold"/>} title="No open shifts right now" sub="When a teammate offers a shift you can work, it shows here."/>
+  return <><BEmpty icon={<TopicIcon glyph={CalendarDotsIcon} />} title="No open shifts right now" sub="When a teammate offers a shift you can work, it shows here."/>
     {/* Review B2 (NV-158): "device", since it shows on computers too. */}
     {alerts ? <Link className="es-empty-state__a" href="/app/profile/device-alerts">Get alerts on this device<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link> : null}</>;
 }
@@ -116,7 +117,7 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
       {waiting ? <BCard id="b-requests-waiting" title={forManager && waiting.length ? 'Waiting for your manager' : 'Waiting'} count={waiting.length || undefined}>
         {extraCount ? null : waitingExtra ?? null}
         {waiting.length ? <BList>{waiting.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>
-          : waitingExtra && !extraCount ? null : <BEmpty icon={<ClipboardTextIcon weight="bold"/>} title="Nothing waiting right now" sub="Requests you send show here until they’re decided."/>}
+          : waitingExtra && !extraCount ? null : <BEmpty icon={<TopicIcon glyph={NotePencilIcon} />} title="Nothing waiting right now" sub="Requests you send show here until they’re decided."/>}
       </BCard> : null}
       {decided && decided.length ? <BCard id="b-requests-decided" title="Decided" link={decidedHref ? {href: decidedHref, label: 'See all', aria: 'See all decided requests'} : undefined}>
         <BList>{decided.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>
@@ -124,8 +125,8 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
       {/* Review B6 (NV-279): phones get the same way to Pick up and swap (under Decided); the second row says what it
         * does and opens Schedule asking for the shift. */}
       {shiftRequests ? <div className="eb-shiftreq"><BCard title="Shift requests"><BList>
-        <BRow href="/app/exchange" lead={<BIcon tone="grey"><ArrowsLeftRightIcon weight="bold"/></BIcon>} title="Pick up and swap" sub="Open shifts, swaps for you, your requests"/>
-        <BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold"/></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/>
+        <BRow href="/app/exchange" lead={<BIcon tone="grey"><TopicIcon glyph={ArrowsLeftRightIcon} /></BIcon>} title="Pick up and swap" sub="Open shifts, swaps for you, your requests"/>
+        <BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><TopicIcon glyph={CalendarDotsIcon} /></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/>
       </BList></BCard></div> : null}
     </BStack>
   </BScreen>;
@@ -135,7 +136,7 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
 export function IncomingB({count, onRetry}: {count: number | null; onRetry: () => void}) {
   if (count === null) return <div className="eb-inline"><span role="status">Swaps for you couldn’t be checked. <Link className="eb-inline__a" href="/app/exchange?tab=foryou">Open swaps for you</Link></span>
     <button className="eb-inline__b" type="button" onClick={onRetry}>Try again</button></div>;
-  return count ? <BList label="Needs your answer"><BRow href="/app/exchange?tab=foryou" lead={<BIcon tone="amber"><ArrowsLeftRightIcon weight="bold"/></BIcon>}
+  return count ? <BList label="Needs your answer"><BRow href="/app/exchange?tab=foryou" lead={<BIcon tone="amber"><TopicIcon glyph={ArrowsLeftRightIcon} /></BIcon>}
     // Phase 8 (review C, row 17): the same words as the notification for it ("Swap request waiting for you").
     title={count === 1 ? accountCopy().swapForYou : `${count} swaps need your answer`} chip={<BChip tone="amber">Needs your answer</BChip>} sub="Review the shifts before responding"
     trail={<BButtonLink href="/app/exchange?tab=foryou" kind="ghost" label={count === 1 ? 'Review the swap request' : 'Review swap requests'}>Review</BButtonLink>}/></BList> : null;
@@ -172,7 +173,7 @@ export function ExchangeHeroB({tab, tabs = true, back = '/app/schedule', counts}
 
 /** The way to start a swap or cover offer: from a shift on your own schedule. */
 export function MyScheduleCardB() {
-  return <BCard label="Swap or give away a shift"><BList><BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold"/></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/></BList></BCard>;
+  return <BCard label="Swap or give away a shift"><BList><BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><TopicIcon glyph={CalendarDotsIcon} /></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/></BList></BCard>;
 }
 
 /** Marks a form's screen (Request time off, Swap shift, Offer for cover, Can't work): while it shows, the shell hides the

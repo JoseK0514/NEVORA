@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CaretLeftIcon, CaretRightIcon, UsersThreeIcon, ClipboardTextIcon,
+import { CaretLeftIcon, CaretRightIcon, UsersThreeIcon, NotePencilIcon,
   ClockIcon, ClockCounterClockwiseIcon, WrenchIcon, LockKeyIcon, CalendarCheckIcon } from "@phosphor-icons/react/ssr";
 
 /** A fraction shown as "n of total" with a quiet bar; the text carries the meaning. */
@@ -51,7 +51,7 @@ export function MobileHomeTools({ weekStart, owner = false }: { weekStart: strin
   const actions = [
     { href: `/app?week=${week}&view=attendance`, label: "Review attendance", Icon: ClockIcon },
     { href: `/app?week=${week}&view=team`, label: "Team overview", Icon: UsersThreeIcon },
-    { href: "/app/inbox?filter=requests", label: "Pending requests", Icon: ClipboardTextIcon },
+    { href: "/app/inbox?filter=requests", label: "Pending requests", Icon: NotePencilIcon },
     { href: `/app?week=${week}&view=activity`, label: "Schedule activity", Icon: ClockCounterClockwiseIcon },
     { href: "/app/clocker-recovery", label: "Clocker recovery", Icon: WrenchIcon },
     { href: "/app/account-recovery", label: "Help someone sign in", Icon: LockKeyIcon },
