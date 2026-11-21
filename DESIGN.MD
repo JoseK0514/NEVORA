@@ -473,6 +473,29 @@ item names the lines it supersedes; line numbers are from the file before this s
     Your week, Coming up. A Lead's column is Today's team, Your week, Coming up.
   - *Supersedes* "Things to do in the right column" for an Employee's desktop Home (near D3 and the Nov 8 Employee
     desktop notes).
+- **Employee, Lead and Clocker final polish, round 1 (built Nov 20, 2026; waits for Jose's review).**
+  - *Home's shortcuts.* The Owner Home's tiles on an Employee's and a Lead's Home: white, 56px, the 36px teal-50
+    circle, two across. Time off (opens the request form), Can't work and Swap shift (Schedule asks for the shift),
+    Fix my time. Time off shows only while its module is on, Can't work and Swap shift only while shift swaps and
+    cover are on. Phones: under Things to do. From 768px: the top of the right column, over Your week
+    (`home-b.tsx`, rules at the end of `employee-b.css`).
+  - *Home's Right now.* Still clocked in after today's shift ended is its own card, "Right now", first on Home (the
+    amber callout, as on Time, with a "Time" link). It leads the left column from 768px and spans a tablet's width.
+    The shift card under it stays about the shift ahead and says only where to clock. Supersedes the callout inside
+    the shift card (Phase 9, spec 1.4).
+  - *A week to confirm is named in its title.* In Notifications a schedule that waits for confirmation reads
+    "Confirm the week of Nov 23" (Spanish: "Confirme la semana del 23 nov"), and the line under it keeps the shift
+    count only, so several weeks waiting are different rows. Without a week the title stays "Confirm your schedule".
+  - *Time's right column.* On desktop, Last week and Your correction requests are one column (20px apart) beside Right
+    now and the week; the second card no longer waits for the left column's row. Tablets and phones are unchanged.
+  - *Secondary buttons.* On Employee and Lead screens and on the Clocker a secondary button (Shift details, Try
+    again, Refresh, Done, Stay on break) is the tinted pill, as on Owner pages. The grey fill is the disabled pair
+    only (the Clocker keypad keeps its grey keys). Supersedes "Employee and Lead pages keep the grey secondary until
+    their own pass" and the Clocker's grey "Done".
+  - *Segments on touch screens.* A segment's link is its 36px thumb in the 44px track; the 48px touch floor for links
+    does not apply to it (the track is the target).
+  - *Clocker.* On a portrait tablet the status pill starts on the band's left edge. "This screen clears after 30
+    seconds." keeps 12px above it everywhere.
 - **Feature screens and Employee screens (built Nov 17, 2026; see `docs/handoffs/2026-11-17-claude-ui-delivery/README.md`).**
   - *Sheets.* One sheet per feature (`b-restrictions.css`, `b-payroll-import.css`, `b-reminders.css`,
     `b-review-details.css`) and two for the Employee and Lead app (`employee-b-work.css`, `employee-b-account.css`),
