@@ -172,9 +172,9 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
             trail={<BChip tone={policy.enabled ? "green" : "grey"}>{policy.enabled ? t.on : t.off}</BChip>} /></li>)}</CorpRows>
           : <div className="pto-empty"><BCallout tone="grey" icon="empty" title={t.emptyTitle}>{t.emptyBody}</BCallout></div>}
         <div className="rs-main pto-adds">
-          {!has("VACATION") ? <Act kind={policies.length ? "quiet" : "teal"} disabled={busy} onClick={() => open(null, "VACATION")}>{t.addVacation}</Act> : null}
-          {!has("SICK") ? <Act kind={has("VACATION") && policies.length === 1 ? "teal" : "quiet"} disabled={busy} onClick={() => open(null, "SICK")}>{t.addSick}</Act> : null}
-          <Act kind="text" disabled={busy} onClick={() => open(null, "OTHER")}>{t.addOther}</Act>
+          {!has("VACATION") ? <Act kind={policies.length ? "ghost" : "teal"} disabled={busy} onClick={() => open(null, "VACATION")}>{t.addVacation}</Act> : null}
+          {!has("SICK") ? <Act kind={has("VACATION") && policies.length === 1 ? "teal" : "ghost"} disabled={busy} onClick={() => open(null, "SICK")}>{t.addSick}</Act> : null}
+          <span className="pto-adds__other"><Act kind="text" disabled={busy} onClick={() => open(null, "OTHER")}>{t.addOther}</Act></span>
         </div>
       </CorpCard>
       <BNote>{t.policiesNote}</BNote>

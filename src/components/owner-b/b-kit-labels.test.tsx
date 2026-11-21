@@ -61,10 +61,10 @@ describe("BCallout", () => {
   it("takes one glyph per meaning, and the triangle is amber's check, the circle red's stop", () => {
     const meanings: BMeaning[] = ["info", "privacy", "wait", "check", "unknown", "offline", "stop", "done", "locked", "empty"];
     expect(new Set(meanings.map(meaning => svgOf(html(<BGlyph meaning={meaning} />)))).size).toBe(meanings.length);
-    expect(svgOf(html(<BCallout tone="amber">x</BCallout>))).toBe(svgOf(html(<BGlyph meaning="check" />)));
-    expect(svgOf(html(<BCallout tone="red">x</BCallout>))).toBe(svgOf(html(<BGlyph meaning="stop" />)));
-    expect(svgOf(html(<BCallout tone="teal" icon="privacy">x</BCallout>))).toBe(svgOf(html(<BGlyph meaning="privacy" />)));
-    expect(svgOf(html(<BCallout tone="amber" icon="unknown">x</BCallout>))).toBe(svgOf(html(<BGlyph meaning="unknown" />)));
+    expect(svgOf(html(<BCallout tone="amber">x</BCallout>))).toBe(svgOf(html(<BGlyph meaning="check" solid />)));
+    expect(svgOf(html(<BCallout tone="red">x</BCallout>))).toBe(svgOf(html(<BGlyph meaning="stop" solid />)));
+    expect(svgOf(html(<BCallout tone="teal" icon="privacy">x</BCallout>))).toBe(svgOf(html(<BGlyph meaning="privacy" solid />)));
+    expect(svgOf(html(<BCallout tone="amber" icon="unknown">x</BCallout>))).toBe(svgOf(html(<BGlyph meaning="unknown" solid />)));
   });
   it("leaves the title out when there is none and draws at most one quiet action", () => {
     const linked = html(<BCallout tone="amber" icon="unknown" title="Not confirmed yet" action={{ label: "Check if it saved", href: "/app/payroll/import" }}>We don’t know if the import saved.</BCallout>);

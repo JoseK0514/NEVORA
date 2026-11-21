@@ -196,6 +196,10 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
   // Release 1 (board O-Activity): Schedule activity is a view of Home's data opened from Schedule.
   if (role !== "EMPLOYEE" && role !== "LEAD" && pathname === "/app" && query.get("view") === "activity" &&
       navigationForRole(role, payroll, context).some(item => item.href === "/app/schedule")) return "/app/schedule";
+  // Final polish (Nov 20, 2026): Posted open shifts opens from Schedule and its back link says "Schedule", so an Owner's
+  // or Manager's sidebar, rail and phone tab light Schedule there (they lit Things to do and Home).
+  if (role !== "EMPLOYEE" && role !== "LEAD" && matches("/app/exchange/open-shifts") &&
+      navigationForRole(role, payroll, context).some(item => item.href === "/app/schedule")) return "/app/schedule";
   // IS-67: an employee's Timecards belongs to the Hours family, so the Pay or Hours tab stays current on it.
   if ((role === "EMPLOYEE" || role === "LEAD") && matches("/app/timecards")) return "/app/my-time";
   // Account deletion opens from Profile, so Profile's place (More) stays current on it.

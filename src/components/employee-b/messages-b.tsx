@@ -102,21 +102,25 @@ function folds(items: EmployeeNotificationItem[]) {
   return out;
 }
 const A = accountCopy();
+/** Final polish, round 2 (H2, N1): the one amber chip of a row that waits on this person. A notice the person must act on
+ * says "Action needed"; a swap or cover request waiting for their answer says "Needs your answer", the Requests page's
+ * words. The chip is the row's last part at every width: title, grey line, chip (the kit row's order). */
+const needsYou = (required: boolean, forYou: boolean) => required ? A.actionNeeded : forYou ? A.needsAnswer : null;
 function FoldRow({id, items, zone, earlier, open, onToggle}: {id: string; items: EmployeeNotificationItem[]; zone: string; earlier: boolean; open: boolean; onToggle: () => void}) {
   const first = items[0], head = notificationHeadline(first), kind = notificationKindFor(first);
   const unread = items.filter(item => item.reviewState === 'unread').length, required = items.some(item => item.actionState === 'required');
   const Icon = head.decided === 'approved' ? CheckIcon : !kind ? BellIcon : kind === 'SCHEDULE' && required ? CalendarCheckIcon : KIND_ICON[kind];
-  const tone: BTone = required ? 'amber' : head.decided === 'approved' ? 'green' : 'grey';
+  const chip = needsYou(required, head.forYou), tone: BTone = chip ? 'amber' : head.decided === 'approved' ? 'green' : 'grey';
   const time = clock(first.at, zone), when = earlier ? `${shortDate(first.at, zone)}, ${time}` : time, phoneWhen = earlier ? shortDate(first.at, zone) : time;
   const object = [head.object, A.folded(items.length)].filter(Boolean).join(' · ');
   return <li className="b-li">
     <button type="button" className={`b-row b-row--link eb-notif eb-fold${unread ? ' eb-notif--unread' : ''}`} id={id} aria-expanded={open} onClick={onToggle}
-      aria-label={`${head.title}, ${object.replaceAll(' · ', ', ')}${unread ? `, ${unread} ${A.unread}` : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(first.at, zone)} · ${time}` : time}`}>
+      aria-label={`${head.title}, ${object.replaceAll(' · ', ', ')}${unread ? `, ${unread} ${A.unread}` : ''}${chip ? `, ${chip.toLowerCase()}` : ''}, ${earlier ? `${longDay(first.at, zone)} · ${time}` : time}`}>
       <BIcon tone={tone}><Icon weight="bold" /></BIcon>
       <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{head.title}</span></span>
-        <span className="b-row__s eb-notif__s">{required ? <BChip tone="amber">{A.actionNeeded}</BChip> : null}
-          <span className="eb-notif__o eb-notif__o--w"><Dotted text={object}/></span>
-          <span className="eb-notif__o eb-notif__o--p"><Dotted text={`${object} · ${phoneWhen}`}/></span></span></span>
+        <span className="b-row__s eb-notif__s"><span className="eb-notif__o eb-notif__o--w"><Dotted text={object}/></span>
+          <span className="eb-notif__o eb-notif__o--p"><Dotted text={`${object} · ${phoneWhen}`}/></span>
+          {chip ? <BChip tone="amber">{chip}</BChip> : null}</span></span>
       <span className="b-row__end eb-when">{unread ? <i className="eb-unread" aria-hidden="true" /> : null}<span className="eb-when__t">{when}</span></span>
       <CaretDownIcon className="b-chev eb-fold__caret" size={18} weight="bold" aria-hidden="true" />
     </button>
@@ -137,11 +141,11 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
   const notificationRow = (item: EmployeeNotificationItem, group: string, inFold = false) => {
     const isUnread = item.reviewState === 'unread', required = item.actionState === 'required', busy = list?.opening === item.id, kind = notificationKindFor(item);
     // Phase 4 (EM-005): the title is the outcome and the sub-line is what it is about. A decision leads with its
-    // state (green check approved, grey x declined); one that needs you is amber (review B1, NV-142); the rest
+    // state (green check approved, grey x declined); one that needs you, or waits for your answer, is amber (review B1, NV-142); the rest
     // carry their kind's icon, teal because the row opens (EM-017, employee-b-account.css).
     const head = notificationHeadline(item);
     const Icon = head.decided === 'approved' ? CheckIcon : !kind ? BellIcon : kind === 'SCHEDULE' && required ? CalendarCheckIcon : KIND_ICON[kind];
-    const tone: BTone = required ? 'amber' : head.decided === 'approved' ? 'green' : 'grey';
+    const chip = needsYou(required, head.forYou), tone: BTone = chip ? 'amber' : head.decided === 'approved' ? 'green' : 'grey';
     const earlier = group === 'Earlier', time = clock(item.at, zone);
     // Phase 4 (EM-009): from 768px one trailing line, the dot then the time (an earlier day leads with its date). On a
     // phone that column would leave a title 96px at 320, so only the dot trails and the time ends the sub-line, once
@@ -149,12 +153,12 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
     const phoneWhen = earlier ? shortDate(item.at, zone) : time;
     return <li className={inFold ? 'b-li eb-fold__item' : 'b-li'} key={item.id}><Link id={'b-message-' + item.id} className={`b-row b-row--link eb-notif${isUnread ? ' eb-notif--unread' : ''}${head.decided === 'declined' ? ' eb-notif--declined' : ''}${busy ? ' eb-notif--busy' : ''}`} href={item.href} prefetch={false}
       onClick={event => list?.onOpen(event, item.id, item.href)} aria-busy={busy || undefined}
-      aria-label={`${head.title}${head.object ? `, ${head.object.replaceAll(' · ', ', ')}` : ''}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
+      aria-label={`${head.title}${head.object ? `, ${head.object.replaceAll(' · ', ', ')}` : ''}${isUnread ? ', unread' : ''}${chip ? `, ${chip.toLowerCase()}` : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
       <BIcon tone={tone}><Icon weight="bold" /></BIcon>
       <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{head.title}</span></span>
-        <span className={required || head.object ? 'b-row__s eb-notif__s' : 'b-row__s eb-notif__s eb-notif__s--p'}>{required ? <BChip tone="amber">Action needed</BChip> : null}
-          {head.object ? <span className="eb-notif__o eb-notif__o--w"><Dotted text={head.object}/></span> : null}
-          <span className="eb-notif__o eb-notif__o--p"><Dotted text={head.object ? `${head.object} · ${phoneWhen}` : phoneWhen}/></span></span></span>
+        <span className={chip || head.object ? 'b-row__s eb-notif__s' : 'b-row__s eb-notif__s eb-notif__s--p'}>{head.object ? <span className="eb-notif__o eb-notif__o--w"><Dotted text={head.object}/></span> : null}
+          <span className="eb-notif__o eb-notif__o--p"><Dotted text={head.object ? `${head.object} · ${phoneWhen}` : phoneWhen}/></span>
+          {chip ? <BChip tone="amber">{chip}</BChip> : null}</span></span>
       <span className="b-row__end eb-when">{busy ? <span className="eb-spin b-spin b-spin--sm" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}
         <span className="eb-when__t">{earlier ? `${shortDate(item.at, zone)}, ${time}` : time}</span></span>
       <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />

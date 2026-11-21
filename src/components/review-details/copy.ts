@@ -66,6 +66,7 @@ const en = {
   // U09: Reports.
   scheduledLegend: 'Scheduled',
   recordedLegend: 'Recorded',
+  figuresLegend: 'Numbers above the bars: recorded hours',
   noPublishedSchedule: 'No published schedule',
   scheduleUnconfirmed: 'Scheduled time not available',
   scheduledExplain: 'The light bar is the time on the published schedule that day. A day with no light bar has no published schedule. It is not hours worked and not pay.',
@@ -76,6 +77,7 @@ const en = {
   coverSeenValue: (filled: number, seen: number) => `${filled} of ${seen} seen`,
   coverSeenExplain: 'This counts the cover requests seen in this period and how many were filled. It is a history of what was recorded, not a measure of how well shifts were staffed.',
   coverNoneSeen: 'No one asked for cover this period.',
+  lateLeftOut: 'Late clock-ins aren’t counted for this period.',
   coverUnread: (n: number) => n === 1 ? '1 older shift change could not be read, so there may be more.' : `${n} older shift changes could not be read, so there may be more.`,
 };
 
@@ -137,6 +139,7 @@ const es: ReviewCopy = {
   fullyStaffedExplain: 'La parte de los periodos programados en que se cubrió cada puesto necesario. Un periodo al que le falta una persona cuenta como no cubierto. No son horas de personal ni paga.',
   scheduledLegend: 'Programado',
   recordedLegend: 'Registrado',
+  figuresLegend: 'Números sobre las barras: horas registradas',
   noPublishedSchedule: 'Sin horario publicado',
   scheduleUnconfirmed: 'Tiempo programado no disponible',
   scheduledExplain: 'La barra clara es el tiempo del horario publicado de ese día. Un día sin barra clara no tiene horario publicado. No son horas trabajadas ni paga.',
@@ -147,6 +150,7 @@ const es: ReviewCopy = {
   coverSeenValue: (filled, seen) => `${filled} de ${seen} vistas`,
   coverSeenExplain: 'Cuenta las solicitudes de cobertura vistas en este periodo y cuántas se completaron. Es un historial de lo registrado, no una medida de qué tan bien se cubrieron los turnos.',
   coverNoneSeen: 'Nadie pidió cobertura en este periodo.',
+  lateLeftOut: 'Las entradas tarde no se cuentan en este periodo.',
   coverUnread: n => n === 1 ? 'No se pudo leer 1 cambio de turno anterior, así que puede haber más.' : `No se pudieron leer ${n} cambios de turno anteriores, así que puede haber más.`,
 };
 

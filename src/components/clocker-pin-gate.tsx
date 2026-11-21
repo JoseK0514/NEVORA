@@ -47,13 +47,25 @@ export async function requestPin(locationKey:string,body:object):Promise<Reply>{
  if(data.state==='verified'&&typeof data.firstName==='string'&&typeof data.expiresAt==='string')return {state:'verified',firstName:data.firstName,expiresAt:data.expiresAt};
  throw new PinRequestError(CLOCKER_PIN_ERROR_FALLBACK,true);
 }
-/** Audit NV-AUDIT-01 (Nov 19, 2026): on a short screen the PIN step opens with its keypad and Continue in view. The page
- * scrolls just far enough to show Continue, never past the card's top; when Continue is already in view nothing moves
- * (the band keeps as much of the screen as it can). */
+/** How far the PIN step scrolls when it opens. Audit NV-AUDIT-01 (Nov 19, 2026): on a short screen the keypad and
+ * Continue come into view, the page scrolling just far enough and never past the card's top (`room`), so the band keeps
+ * as much of the screen as it can. Final polish, round 2 (C3): the language pill under Continue is shown whole or not at
+ * all, never cut by the bottom of the screen. Where the page has to scroll for Continue, it stops with the pill's top at
+ * the screen's edge (Continue keeps the gap the layout puts between the two). Where Continue is already in view and only
+ * the pill is cut, it scrolls until the pill has 8px under it. When everything is in view nothing moves. Viewport pixels. */
+export function pinStepScroll({viewport,cardTop,continueBottom,footTop,footBottom}:{viewport:number;cardTop:number;continueBottom:number;footTop:number|null;footBottom:number|null}):number{
+ const room=Math.max(0,cardTop-8),toContinue=continueBottom+8-viewport;
+ if(footTop===null||footBottom===null)return toContinue>0?Math.min(toContinue,room):0;
+ const toFoot=footBottom+8-viewport;
+ if(toFoot<=0)return 0;
+ if(toContinue>0)return Math.max(0,Math.min(toContinue,footTop-viewport,room));
+ return toFoot<=room?toFoot:0;
+}
 function revealCard(field:HTMLInputElement|null){
- const card=field?.closest('[data-clocker-pin]')?.parentElement,go=field?.form?.querySelector('button[type="submit"]');if(!card||!go)return;
- const over=go.getBoundingClientRect().bottom+8-window.innerHeight;
- if(over>0)window.scrollBy({top:Math.min(over,Math.max(0,card.getBoundingClientRect().top-8)),behavior:'instant'});
+ const entry=field?.closest('[data-clocker-pin]'),card=entry?.parentElement,go=field?.form?.querySelector('button[type="submit"]');if(!entry||!card||!go)return;
+ const foot=entry.querySelector('[data-clocker-foot] button')?.getBoundingClientRect()??null;
+ const top=pinStepScroll({viewport:window.innerHeight,cardTop:card.getBoundingClientRect().top,continueBottom:go.getBoundingClientRect().bottom,footTop:foot?foot.top:null,footBottom:foot?foot.bottom:null});
+ if(top>0)window.scrollBy({top,behavior:'instant'});
 }
 
 export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{locationKey:string;timeZone?:string;punchEnabled?:boolean}){
@@ -238,9 +250,9 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  /* Premium pass (Nov 18, 2026): one glyph per meaning. The lockout keeps its amber Pause (NV-171, Nov 10; listed for Jose).
   * Every other blocked card stops the person: the red WarningCircle, and the Wi-Fi glyph only when the browser reports the
   * network gone (a tablet with working Wi-Fi that can't reach NEVORA never shows Wi-Fi off). */
- const ring=offline||unreachable&&!online?<span className={styles.ring} data-tone="red"><ClockerIcon name="offline" size={28}/></span>
-  :tone==='wait'?<span className={styles.ring} data-tone="amber"><ClockerIcon name="pause" size={28}/></span>
-  :<span className={styles.ring} data-tone="red"><ClockerIcon name="stop" size={28}/></span>;
+ const ring=offline||unreachable&&!online?<span className={styles.ring} data-tone="red"><ClockerIcon name="offline" size={28} mark/></span>
+  :tone==='wait'?<span className={styles.ring} data-tone="amber"><ClockerIcon name="pause" size={28} mark/></span>
+  :<span className={styles.ring} data-tone="red"><ClockerIcon name="stop" size={28} mark/></span>;
  /* One primary action that fits the cause (Nov 10 review, NV-051, NV-052). A pause says when to try again and offers a
   * way to still get time recorded; a tablet that must be set up again says who can do that; no connection keeps Check
   * connection. Every button still clears and re-checks, as before. The focused heading names the state ("Your PIN is
@@ -268,10 +280,10 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  const milestone=warning?seconds<=3?3:10:null;
  return <div className={styles.content} data-align="center" aria-busy={pending} data-clocker-pin={identity?'verified':'entry'} data-clocker-step={identity?undefined:step}>
   {identity&&punchEnabled?<ClockerPunchPanel screenMonotonicExpiresAt={identity.monotonicDeadline} screenExpiresAt={identity.deadline} locationKey={locationKey} timeZone={timeZone} onDone={finish} resume={held} onContinuationChange={receiveDraft}/>:identity?<>
-   <span className={styles.ring}><ClockerIcon name="info" size={28}/></span>
+   <span className={styles.ring}><ClockerIcon name="info" size={28} mark/></span>
    <h1 ref={heading} tabIndex={-1} className={styles.title}>{t('Hi, {name}.',{name:identity.firstName})}</h1><p className={styles.lead}>{t("Your PIN works on this tablet.")}</p>
    {/* Punches are off for the workplace (JR-26): what that means, who can turn it on, and what to do meanwhile. */}
-   <div role="status" data-clocker-punches-off="" className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20}/><p><strong>{t("Clocking in is not turned on for this workplace yet.")}</strong>{t("Nothing was recorded this time.")} {t("Your Owner can ask NEVORA support to turn it on. Until then, ask a manager to record your time.")}</p></div>
+   <div role="status" data-clocker-punches-off="" className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20} mark/><p><strong>{t("Clocking in is not turned on for this workplace yet.")}</strong>{t("Nothing was recorded this time.")} {t("Your Owner can ask NEVORA support to turn it on. Until then, ask a manager to record your time.")}</p></div>
    <div className={styles.stack}><button className={styles.btn} data-kind="secondary" type="button" onClick={()=>void reset()}>{t("Done")}</button></div>
    <p className={styles.clears}>{t("This screen clears after 30 seconds.")}</p>
   </>:<>
@@ -289,7 +301,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
       <input id="clocker-employee-id" ref={idInput} name="employeeId" type="text" inputMode="text" autoCapitalize="characters" autoCorrect="off" autoComplete="off" spellCheck={false} enterKeyHint="next" maxLength={128} onChange={e=>{typed();employeeId.current=e.currentTarget.value;setIdFilled(e.currentTarget.value.trim().length>0);setEditedAt(performance.now());}} aria-describedby="clocker-pin-help"/>
      </div>
      {/* Premium pass (#14): each field's help sits under it, so the language switch is the footer's only control. */}
-     <p id="clocker-pin-help" className={styles.fieldHelp}>{t("Don’t know your Employee ID? Ask your manager.")}</p>
+     <p id="clocker-pin-help" className={styles.fieldHelp} data-size="message">{t("Don’t know your Employee ID? Ask your manager.")}</p>
      <button className={`${styles.btn} ${styles.continue}`} data-kind="primary" type="submit" aria-label={t("Continue")} disabled={!idFilled}><span>{t("Continue")}</span><ClockerIcon name="arrow" size={20}/></button>
     </fieldset>
    </form>:null}
@@ -317,7 +329,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
      :<button className={`${styles.btn} ${styles.continue}`} data-kind="primary" type="submit" aria-label={t("Continue")} disabled={count!==4}><span>{t("Continue")}</span><ClockerIcon name="arrow" size={20}/></button>}
     </fieldset>
    </form>:null}
-   <div className={styles.meta} data-align={blocked||offline?'center':'end'}><ClockerLanguageToggle/></div>
+   <div className={styles.meta} data-clocker-foot="" data-align={blocked||offline?'center':'end'}><ClockerLanguageToggle/></div>
   </>}
   {warning?<aside className={styles.privacy} aria-label={t('Privacy reminder')}><span className={styles.count} aria-hidden="true">{seconds}</span><p aria-hidden="true">{t('Clears in {seconds} s',{seconds})}</p><button type="button" className={styles.btn} data-kind="secondary" onClick={()=>void continueSecurely()}>{t('Keep my place')}</button></aside>:null}
   <p role="status" className={styles.sr}>{milestone?t('This screen clears in {seconds} seconds.',{seconds:milestone}):''}</p>

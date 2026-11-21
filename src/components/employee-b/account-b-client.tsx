@@ -11,7 +11,7 @@ import {CalendarPlusIcon} from '@phosphor-icons/react/dist/ssr/CalendarPlus';
 import {SignOutIcon} from '@phosphor-icons/react/dist/ssr/SignOut';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {BriefcaseIcon} from '@phosphor-icons/react/dist/ssr/Briefcase';
-import {BButton, BButtonLink, BCallout, BCard, BChip, BHero, BIcon, BScreen, BStack, BStatusText} from '../owner-b/b-kit';
+import {BButton, BButtonLink, BCallout, BCard, BChip, BHero, BIcon, BScreen, BStack} from '../owner-b/b-kit';
 import {BCardNote} from './parts';
 import {accountCopy} from './account-copy';
 import type {PrivatePanelState} from '../../lib/private-snapshot-client';
@@ -116,9 +116,9 @@ type CalendarBProps = Omit<CalendarClientState, 'pendingKind'> & {pendingKind?: 
 export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKind, onCommand, onCopy, onRetry, confirmation, open, onOpen, onAsk, onCancel, onConfirm, feedbackRef, confirmRef, resetRef, revokeRef}: CalendarBProps) {
   const available = !paused && status && 'authority' in status, active = available && status.state === 'active', unknown = !!pendingKind;
   const currentUrl = active ? url : null, confirmationCurrent = active && !busy && !unknown && confirmation && confirmation.generation === status.generation;
-  // Final review C (row 16): a link that is off is the normal state, so it is quiet grey words, not a chip (a chip marks
-  // what needs a look; "Active" stays the teal chip).
-  const chip = !available ? null : active ? <BChip tone="teal">Active</BChip> : <BStatusText>{status.state === 'revoked' ? 'Turned off' : 'Off'}</BStatusText>;
+  // Final polish, round 2 (M2): a setting's state in a card header has one look, the chip: teal while it is on ("Active",
+  // "On"), grey while it is off or unavailable, as on Alerts on this device. (Final review C, row 16, drew "Off" as words.)
+  const chip = !available ? null : active ? <BChip tone="teal">Active</BChip> : <BChip>{status.state === 'revoked' ? 'Turned off' : 'Off'}</BChip>;
   return <BScreen back>
     <BHero back={{href: '/app/more', label: 'More'}} title="Add to calendar" titleId="b-calendar-title" sub="Keep your shifts in the calendar you already use" />
     <BStack>
@@ -129,7 +129,7 @@ export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKin
             <p className="b-state" role="status">{status.state === 'unauthorized' ? 'Your access could not be confirmed. Sign in again to manage your link.' : 'Calendar settings could not be checked. Try again to see the current status.'}</p>
             {status.state === 'unauthorized' ? <BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink> : <BButton kind="quiet" full onClick={onRetry}>Try again</BButton>}
           </> : <>
-            <p className="eb-para">Your calendar app picks up schedule changes the next time it refreshes, which can take a while.</p>
+            <p className="eb-para eb-para--even">Your calendar app picks up schedule changes the next time it refreshes, which can take a while.</p>
             {/* Phase 9 (spec 2.2): privacy information is the kit's teal callout with ShieldCheck (no circle in a tint). */}
             <BCallout tone="teal" icon="privacy" title="Keep the link to yourself">Anyone with it can see your shift times and locations.</BCallout>
             {unknown ? <p className="eb-para">Your previous request still needs to be checked before you can change this link.</p>
@@ -191,7 +191,7 @@ type AlertsBProps = {snapshot: DeviceSnapshot | null; paused: boolean; enabled: 
 export function EmployeeAlertsB({confirmationRef, feedbackRef, turnOffRef, ending, ...p}: AlertsBProps) {
   const s = p.snapshot, allowed = p.enabled && !p.paused && !s?.accessChanged, state = allowed ? s?.state : null, busy = state === 'loading' || state === 'pending', cleanup = !!s?.cleanupPending;
   const title = !p.enabled ? 'Your workplace hasn’t turned on device alerts' : p.paused ? 'Device settings paused' : s?.accessChanged ? 'Your access changed' : !s ? 'Checking this device…' : cleanup ? 'Alerts may still be on' : state === 'enabled' ? 'Alerts are on' : state === 'denied' ? 'Permission is blocked' : state === 'revoked' ? 'Device access changed' : state === 'install' ? 'Open from your Home Screen' : state === 'unavailable' ? 'Alerts are unavailable' : state === 'error' ? 'Setup needs a check' : busy ? 'Checking this device…' : 'Alerts are off';
-  const chip = !p.enabled ? <BChip>Unavailable</BChip> : !allowed || !s || busy ? null : cleanup ? <BChip tone="amber">Check</BChip> : state === 'enabled' ? <BChip tone="teal">On</BChip> : state === 'denied' ? <BChip tone="red">Blocked</BChip> : state === 'error' || state === 'revoked' ? <BChip tone="amber">Check</BChip> : <BStatusText>Off</BStatusText>;
+  const chip = !p.enabled ? <BChip>Unavailable</BChip> : !allowed || !s || busy ? null : cleanup ? <BChip tone="amber">Check</BChip> : state === 'enabled' ? <BChip tone="teal">On</BChip> : state === 'denied' ? <BChip tone="red">Blocked</BChip> : state === 'error' || state === 'revoked' ? <BChip tone="amber">Check</BChip> : <BChip>Off</BChip>;
   const settled = allowed && s && !busy && !p.confirm;
   const primary = settled && (state === 'ready' || state === 'dismissed') ? <BButton kind="teal" big full onClick={p.onEnable}>{state === 'dismissed' ? 'Review setup' : 'Turn on alerts'}</BButton>
     : settled && state === 'install' && p.canInstall ? <BButton kind="teal" big full onClick={p.onInstall}>Add to Home Screen</BButton> : null;

@@ -83,7 +83,7 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
    {/* Tablets and desktop (kit form grammar): the actions sit in the card's footer, Cancel or Back then Next or Add, auto
     width on the right. Phones keep them in the header. The same handlers and the same submit as the header. */}
    <CorpFormFooter>
-    {step===1?<Link className="c-btn c-btn--secondary" href="/app/employees">Cancel</Link>:<button type="button" className="c-btn c-btn--secondary" onClick={()=>setStep(1)}>Back</button>}
+    {step===1?<Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet" href="/app/employees">Cancel</Link>:<button type="button" className="c-btn c-btn--secondary b-rowact b-rowact--quiet" onClick={()=>setStep(1)}>Back</button>}
     {step===1?<button key="next" type="button" className="c-btn" onClick={next} disabled={blocked}>Next</button>:<button key="add" type="submit" className="c-btn" disabled={blocked}>Add</button>}
    </CorpFormFooter>
   </EmployeeAccessForm>

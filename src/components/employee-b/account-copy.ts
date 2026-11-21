@@ -7,7 +7,7 @@ export type AccountLang = 'en' | 'es';
 const words = {
   en: {
     // Notifications: the title is the outcome, the sub-line is the object.
-    schedulePublished: 'Schedule published', scheduleUpdated: 'Schedule updated', scheduleConfirm: 'Confirm your schedule',
+    schedulePublished: 'Schedule published', scheduleUpdated: 'Schedule updated', scheduleConfirm: 'Confirm your schedule', scheduleConfirmWeek: (day: string) => `Confirm the week of ${day}`,
     timeOffApproved: 'Time off approved', timeOffDeclined: 'Time off declined', timeOffAnswered: 'Time-off request answered',
     calloutApproved: 'Can’t-work request approved', calloutDeclined: 'Can’t-work request declined', calloutAnswered: 'Can’t-work request answered',
     swapApproved: 'Shift swap approved', swapDeclined: 'Shift swap declined', coverApproved: 'Shift cover approved', coverDeclined: 'Shift cover declined',
@@ -20,7 +20,8 @@ const words = {
     weekOf: (day: string) => `Week of ${day}`, from: (name: string) => `From ${name}`,
     shifts: (n: number) => n === 0 ? 'No shifts for you' : `${n} ${n === 1 ? 'shift' : 'shifts'}`,
     now: {waiting: 'Now waiting', open: 'Now open', 'waiting on a coworker': 'Now waiting on a coworker', 'waiting on a manager': 'Now waiting on a manager', approved: 'Now approved', declined: 'Now declined', cancelled: 'Now cancelled'} as Record<string, string>,
-    actionNeeded: 'Action needed', unread: 'unread',
+    // Final polish, round 2: a swap or cover request that waits for this person carries the Requests page's chip.
+    actionNeeded: 'Action needed', needsAnswer: 'Needs your answer', unread: 'unread',
     // Time off
     waiting: 'Waiting', decided: 'Decided',
     // Availability
@@ -41,7 +42,7 @@ const words = {
     privateTitle: 'Keep private details out of email',
   },
   es: {
-    schedulePublished: 'Horario publicado', scheduleUpdated: 'Horario actualizado', scheduleConfirm: 'Confirme su horario',
+    schedulePublished: 'Horario publicado', scheduleUpdated: 'Horario actualizado', scheduleConfirm: 'Confirme su horario', scheduleConfirmWeek: (day: string) => `Confirme la semana del ${day}`,
     timeOffApproved: 'Tiempo libre aprobado', timeOffDeclined: 'Tiempo libre rechazado', timeOffAnswered: 'Solicitud de tiempo libre respondida',
     calloutApproved: 'Solicitud de ausencia aprobada', calloutDeclined: 'Solicitud de ausencia rechazada', calloutAnswered: 'Solicitud de ausencia respondida',
     swapApproved: 'Cambio de turno aprobado', swapDeclined: 'Cambio de turno rechazado', coverApproved: 'Cobertura de turno aprobada', coverDeclined: 'Cobertura de turno rechazada',
@@ -53,7 +54,7 @@ const words = {
     weekOf: (day: string) => `Semana del ${day}`, from: (name: string) => `De ${name}`,
     shifts: (n: number) => n === 0 ? 'Sin turnos para usted' : `${n} ${n === 1 ? 'turno' : 'turnos'}`,
     now: {waiting: 'Ahora en espera', open: 'Ahora abierta', 'waiting on a coworker': 'Ahora en espera de un compañero', 'waiting on a manager': 'Ahora en espera de un gerente', approved: 'Ahora aprobada', declined: 'Ahora rechazada', cancelled: 'Ahora cancelada'} as Record<string, string>,
-    actionNeeded: 'Requiere acción', unread: 'sin leer',
+    actionNeeded: 'Requiere acción', needsAnswer: 'Necesita su respuesta', unread: 'sin leer',
     waiting: 'En espera', decided: 'Decididas',
     availabilityNoteLead: 'Los días libres sueltos van en', availabilityNoteLink: 'Solicitudes',
     personalNote: 'Su gerente mantiene estos datos al día.', deleteTitle: 'Eliminar mi cuenta', deleteSub: 'Termina su acceso a este espacio de trabajo', signOut: 'Cerrar sesión',

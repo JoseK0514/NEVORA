@@ -14,7 +14,7 @@ export function TimeOffReviewActions({ name, quiet = false, corp = false }: { na
   const approve = useKeepHeight<HTMLButtonElement>(pending);
   // Release 1 (board O-RequestDetail): Decline (outline) and Approve (teal) side by side, full width, 44px.
   if (corp) return <div className="c-btns" aria-busy={pending}>
-    <button className="c-btn c-btn--secondary" type="submit" name="decision" value="DENIED" disabled={pending} aria-label={name && !pending ? `Decline time off for ${name}` : undefined}>{pending && decision === "DENIED" ? "Declining…" : "Decline"}</button>
+    <button className="c-btn c-btn--secondary b-rowact b-rowact--quiet" type="submit" name="decision" value="DENIED" disabled={pending} aria-label={name && !pending ? `Decline time off for ${name}` : undefined}>{pending && decision === "DENIED" ? "Declining…" : "Decline"}</button>
     <button className="c-btn" type="submit" name="decision" value="APPROVED" disabled={pending} aria-label={name && !pending ? `Approve time off for ${name}` : undefined}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</button>
     <span className="c-sr" role="status">{pending ? "Saving your decision…" : ""}</span>
   </div>;

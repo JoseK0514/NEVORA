@@ -60,8 +60,10 @@ export function notificationTitle(item:EmployeeNotificationItem):string{
  * schedule"); `object` is what it is about, from the dates, the name and the count the list sends ("Nov 30 – Dec 2",
  * "Week of Nov 9 · 2 shifts", "Sat, Nov 21 · From Ana Colon"), or null when the list sends none of them (a team update's
  * title and a pay statement's period are not in the read). `decided` is set only for a decision the event type names.
- * Nothing is guessed: without an event type the title stops at "answered" or "updated", as notificationTitle does. */
-export type NotificationHeadline={title:string;object:string|null;decided:'approved'|'declined'|null};
+ * Nothing is guessed: without an event type the title stops at "answered" or "updated", as notificationTitle does.
+ * `forYou` is a swap or cover request that waits for this person's answer (final polish, round 2: drawn amber with
+ * "Needs your answer", as Requests draws it). */
+export type NotificationHeadline={title:string;object:string|null;decided:'approved'|'declined'|null;forYou:boolean};
 const headlineDay=(date:string,locale:string,weekday:boolean)=>new Intl.DateTimeFormat(locale,{timeZone:'UTC',...(weekday?{weekday:'short'}:{}),month:'short',day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
 export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountLang='en'):NotificationHeadline{
  const t=accountCopy(lang),locale=ACCOUNT_LOCALE[lang],subject=item.subject??null,needed=item.actionState==='required',who=notificationName(item);
@@ -72,7 +74,10 @@ export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountL
  const count=/^SCHEDULE_/.test(item.eventType??'')&&typeof item.count==='number'&&Number.isSafeInteger(item.count)&&item.count>=0?t.shifts(item.count):null;
  const later=notificationOutcomeNote(item),now=later?t.now[later.replace(/^Now /,'')]??null:null;
  const forYou=item.actionState==='available'&&(item.eventType==='SWAP_RESPONSE_REQUIRED'||item.eventType==='COVERAGE_INVITATION');
- const object=[dates,count,forYou&&who?t.from(who):null,now].filter(Boolean).join(' · ')||null;
+ // Final polish (Nov 20, 2026): a week to confirm is named in its title ("Confirm the week of Nov 23"), so several
+ // weeks waiting never read as one row repeated; the line under it then keeps the shift count only.
+ const confirmWeek=kind==='SCHEDULE'&&needed&&subject?.kind==='scheduleWeek'?headlineDay(subject.startDate,locale,false):null;
+ const object=[confirmWeek?null:dates,count,forYou&&who?t.from(who):null,now].filter(Boolean).join(' · ')||null;
  const decided=/_APPROVED$/.test(event??'')?'approved' as const:/_DENIED$/.test(event??'')?'declined' as const:null;
  const title=((): string=>{
   switch(event){
@@ -88,7 +93,7 @@ export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountL
   }
   if(forYou)return item.eventType==='SWAP_RESPONSE_REQUIRED'?t.swapForYou:t.coverForYou;
   switch(kind){
-   case 'SCHEDULE':return needed?t.scheduleConfirm:t.scheduleUpdated;
+   case 'SCHEDULE':return confirmWeek?t.scheduleConfirmWeek(confirmWeek):needed?t.scheduleConfirm:t.scheduleUpdated;
    case 'TIME_OFF':return t.timeOffAnswered;
    case 'CALLOUT':return t.calloutAnswered;
    case 'EXCHANGE':return item.actionState==='available'?t.requestForYou:item.actionState==='complete'?t.requestClosed:t.requestUpdated;
@@ -98,7 +103,7 @@ export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountL
    default:return item.label;
   }
  })();
- return {title,object,decided:decided&&kind?decided:null};
+ return {title,object,decided:decided&&kind?decided:null,forYou};
 }
 
 /** Board E-Notifications (upscale B7): All / Unread tabs, then the notices grouped by day in cards, one row per notice.

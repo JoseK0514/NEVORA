@@ -135,7 +135,7 @@ export default async function HelpPage() {
         <ul className="c-rows" aria-label="Common questions">
           {signIn ? <Question title="I can’t sign in" blocks={signIn.blocks} employee={employee} /> : null}
           {/* Review Nov 14 (AR-15): the page is "Help someone sign in" in Team's row, its heading and here. */}
-          {manager && signIn ? <Question title="Someone on my team can’t sign in" detail="Help someone sign in" employee={false}
+          {manager && signIn ? <Question title="Someone on my team can’t sign in" employee={false}
             blocks={[{ p: ["Open ", { href: "/app/account-recovery", text: "Help someone sign in" }, " to verify them and give them a one-time reset link. They never need to share a password or a verification code with you."] }]} /> : null}
           {employee && work ? <Question title="Shift, time off or pay" detail="Ask your manager" blocks={work.blocks} employee /> : null}
           {reportBlocks.length ? <Question title="Report a problem" blocks={reportBlocks} employee={employee} /> : null}

@@ -39,8 +39,8 @@ it('Direction B phone screen: the link card with its chip, the keep-it-private n
  const none=phone(<CalendarSubscriptionView {...base} status={{...ready,state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[]}}/>);
  for(const value of ['Add to calendar','Keep your shifts in the calendar you already use','Your calendar link','>Off<','picks up schedule changes the next time it refreshes','Keep the link to yourself','Anyone with it can see your shift times and locations.','>Create calendar link<','Or add it straight to','Apple Calendar','Google Calendar','Outlook'])expect(none).toContain(value);
  expect(none).toContain('href="/app/more"');expect(none.match(/class="b-btn b-btn--teal b-btn--full b-btn--big"/g)).toHaveLength(1);expect(none).not.toContain('>Get a new link<');
- // Final review C (row 16): an Off link is the normal state, so it is the quiet status words, not a chip; Active stays a chip.
- expect(none).toContain('<span class="b-status">Off</span>');expect(none).not.toContain('b-chip--grey">Off<');
+ // Final polish, round 2 (M2): a setting's state in a card header is one chip: grey while off, teal while Active.
+ expect(none).toContain('b-chip--grey">Off<');expect(none).not.toContain('class="b-status"');
  const active=phone(<CalendarSubscriptionView {...base}/>);expect(active).toContain('b-chip--teal">Active<');expect(active).toContain('>Get a new link<');expect(active).toContain('>Turn off link<');expect(active).toContain('aria-controls="b-calendar-link-confirmation"');
  const once=phone(<CalendarSubscriptionView {...base} url="PRIVATE-ONCE"/>);expect(once).toContain('PRIVATE-ONCE');expect(once).toContain('>Copy calendar link<');expect(once).toContain('id="b-calendar-link"');
  expect(phone(<CalendarSubscriptionView {...base} notice="The result is unknown." pendingKind="ROTATE"/>)).toContain('Retry original request');

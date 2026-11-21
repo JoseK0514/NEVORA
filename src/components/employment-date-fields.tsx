@@ -28,7 +28,8 @@ export function EmploymentDateFields({ idPrefix, value, bonusApplies = true, foc
     termination.current?.setCustomValidity(from && to && to < from ? TERMINATION_BEFORE_HIRE : "");
   };
   // A change clears a refusal the server set on this field, then the order rule is checked again.
-  const changed = (event: ChangeEvent<HTMLInputElement>) => { event.currentTarget.setCustomValidity(""); order(); };
+  // Final polish (Nov 20, 2026): an empty date shows its format in grey, like a placeholder (data-empty; b-foundation.css).
+  const changed = (event: ChangeEvent<HTMLInputElement>) => { event.currentTarget.toggleAttribute("data-empty", !event.currentTarget.value); event.currentTarget.setCustomValidity(""); order(); };
   useEffect(() => {
     if (!focusHire || !hire.current) return;
     hire.current.focus({ preventScroll: true });
@@ -37,13 +38,13 @@ export function EmploymentDateFields({ idPrefix, value, bonusApplies = true, foc
   // Full width, one under another: a half-width "Termination date (optional)" label wraps on phones and misaligns its input.
   return <>
     <CorpField label="Hire date (optional)" htmlFor={id("hire")} help={<span id={id("hire-help")}>{bonusApplies ? "Christmas bonus hours use this date." : "For your records."}</span>}>
-      <input ref={hire} id={id("hire")} className="c-in c-in--date" type="date" name="hireDate" defaultValue={value?.hireDate ?? ""} min={EARLIEST_EMPLOYMENT_DATE} data-underflow={FLOOR} aria-describedby={id("hire-help")} onChange={changed} />
+      <input ref={hire} id={id("hire")} className="c-in c-in--date" type="date" name="hireDate" defaultValue={value?.hireDate ?? ""} data-empty={value?.hireDate ? undefined : ""} min={EARLIEST_EMPLOYMENT_DATE} data-underflow={FLOOR} aria-describedby={id("hire-help")} onChange={changed} />
     </CorpField>
     <CorpField label="Termination date (optional)" htmlFor={id("termination")} help={<span id={id("termination-help")}>For your records only. It doesn’t deactivate anyone.</span>}>
-      <input ref={termination} id={id("termination")} className="c-in c-in--date" type="date" name="terminationDate" defaultValue={value?.terminationDate ?? ""} min={EARLIEST_EMPLOYMENT_DATE} data-underflow={FLOOR} aria-describedby={id("termination-help")} onChange={changed} />
+      <input ref={termination} id={id("termination")} className="c-in c-in--date" type="date" name="terminationDate" defaultValue={value?.terminationDate ?? ""} data-empty={value?.terminationDate ? undefined : ""} min={EARLIEST_EMPLOYMENT_DATE} data-underflow={FLOOR} aria-describedby={id("termination-help")} onChange={changed} />
     </CorpField>
     <CorpField label="Date of birth (optional)" htmlFor={id("birth")} help={<span id={id("birth-help")}>Private. Only Owners and Managers who can edit this profile see it.</span>}>
-      <input id={id("birth")} className="c-in c-in--date" type="date" name="birthDate" defaultValue={value?.birthDate ?? ""} min={EARLIEST_EMPLOYMENT_DATE} data-underflow={FLOOR} autoComplete="off" aria-describedby={id("birth-help")} onChange={changed} />
+      <input id={id("birth")} className="c-in c-in--date" type="date" name="birthDate" defaultValue={value?.birthDate ?? ""} data-empty={value?.birthDate ? undefined : ""} min={EARLIEST_EMPLOYMENT_DATE} data-underflow={FLOOR} autoComplete="off" aria-describedby={id("birth-help")} onChange={changed} />
     </CorpField>
   </>;
 }

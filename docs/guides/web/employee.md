@@ -44,6 +44,11 @@ see [Manager and Lead](manager-lead.md).
 Live **Updates** communications remain under a rollout hold. If that destination
 is unavailable, follow your employer's existing communication channel.
 
+Home's shortcuts open the requests you can start: **Time off**, **Can't work**,
+**Swap shift** and **Fix my time**. A shortcut is absent while your employer has
+that feature turned off. If you are still clocked in after today's shift ended,
+Home leads with a **Right now** card that says so and where to clock out.
+
 On Home, check your current shift information and pending work. Open **Schedule**
 and select the intended week. Review the date, location, start/end time and any
 instructions. You see published work. A manager's draft or an old notification

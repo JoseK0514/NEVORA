@@ -71,7 +71,11 @@ it('M7: Coming up lists the next three shifts across the week boundary in place 
   expect(html.match(/Confirm next week/g)).toHaveLength(1);
   // Direction B: the same one confirm row (with its Review button), the same three shifts and the same links.
   const phone = onlyB(full), phoneText = text(phone);
-  expect(phoneText.match(/Confirm next week’s schedule/g)).toHaveLength(1);expect(phoneText).toContain('Nov 2 – 8 · 5 shifts');expect(phoneText).not.toContain('Oct 26');
+  expect(phoneText.match(/Confirm next week’s schedule/g)).toHaveLength(1);expect(phoneText).toContain('Nov 2 – 8 · 5 shifts');
+  // The week that ends today has no confirm row. Your week (Nov 21, 2026) names this week's range on its own card, so
+  // the check reads Things to do, not the whole screen.
+  const todoCard = phone.slice(phone.indexOf('id="b-home-todo"'), phone.indexOf('</section>', phone.indexOf('id="b-home-todo"')));
+  expect(todoCard).toContain('Confirm next week');expect(text(todoCard)).not.toContain('Oct 26');
   expect(phone).toContain('href="/app/schedule?week=2026-11-02&amp;day=2026-11-03&amp;shift=s-3"');expect(phoneText).toContain('Welcome back, Alexandra');
   expect(phone).not.toContain('ma-onboarding');expect(phone).not.toMatch(/id="(home-shift|home-upcoming|employee-home-todo)"/);
 });

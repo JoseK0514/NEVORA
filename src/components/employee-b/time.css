@@ -82,6 +82,7 @@
  * card's header; the kit gives its sides and its foot. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-hours-now > .b-callout { margin-top: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-flat { align-items: flex-start; padding: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-dayrange__trail { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-quiet { padding: 14px var(--b-inset); font-size: var(--b-fs-body); line-height: 20px; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-teal { color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum { display: flex; flex-direction: column; gap: var(--b-space-2); padding: var(--b-space-2) var(--b-inset) var(--b-space-16); }
@@ -189,6 +190,12 @@
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-wide { display: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-nowrap { white-space: nowrap; }
+  /* Final polish, round 2 (T1): the day rows on Time (this week, a past week's days). Measured at 320px: the title column is
+   * 118px and "8:58 AM – 5:28 PM" needs 127px at 14.5px with its spaces drawn tighter, so one line is not possible with
+   * the minutes kept. The two lines read "8:58 AM –" over "5:28 PM": the dash ends the first line, so no row starts with
+   * one (five in a column read as broken). Every other screen and width keeps the Employee rule (break before the dash). */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-dayrange__lead { display: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-dayrange__trail { display: inline; }
 }
 @media (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > :is(.eb-fix, .c-avail--phone.b-keep) { animation: b-enter var(--b-dur-enter) var(--b-ease-out) 100ms both; }

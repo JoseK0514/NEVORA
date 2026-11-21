@@ -468,7 +468,7 @@ export default async function SchedulePage({
               {moreItems}
             </ActionMenu>
             {/* Review B2 (NV-013): with nothing to publish, the title's action is Add shift (Publish when something waits). */}
-            {publishAction ?? <CorpButtonLink href={addShiftHref} size="sm" aria-label={`Add shift, ${formatWeekRange(weekStart)}`}>Add shift</CorpButtonLink>}
+            {publishAction ?? <CorpButtonLink href={addShiftHref} size="sm" aria-label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</CorpButtonLink>}
           </span>
         </>}
         sub={<><span className="c-sched-sub__long">{todayLong}</span><span className="c-sched-sub__short">{todayShort}</span></>} />

@@ -6,7 +6,7 @@ import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
 import { QuietRow } from "@/components/quiet/quiet";
 import { RequestFace } from "@/components/request-face";
-import { BSegs } from "@/components/owner-b/b-kit";
+import { BSegs, BWhen } from "@/components/owner-b/b-kit";
 import { useLeaveStaffing } from "@/components/leave-staffing/use-leave-staffing";
 import { conflictsFor } from "@/components/leave-staffing/conflict-check";
 import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
@@ -23,7 +23,9 @@ export type WaitingTimeOff = { id: string; employeeName: string; avatar: string;
 export function WholeParts({ text }: { text: string }) {
   // Premium pass FA (final verification A #10): each part stays whole and no line starts or ends with its "·" (the kit's
   // line of facts; the dot used to end the line: "Tue, Nov 24 ·" over "12:00 PM – 8:00 PM ·").
-  return <BSegs className="b-req-nw-line" parts={text.split(" · ")} />;
+  // Final polish (Nov 20, 2026): a time range reads as on Schedule and Things to do, short on a phone ("1–4 PM") and full
+  // from 768px ("1:00 PM – 4:00 PM"): BWhen. A part with no range is drawn as it came.
+  return <BSegs className="b-req-nw-line" parts={text.split(" · ").map((part, index) => <BWhen key={index} text={part} />)} />;
 }
 
 /** Phase 3 (OW-013): at 768px and wider a request is the Things to do row (avatar, name and dates, age, then Decline and

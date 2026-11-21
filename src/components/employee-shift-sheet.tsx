@@ -75,7 +75,7 @@ export function ShiftSheetRow({shift, href, closeHref, title, detail, initiallyO
  * the lead column, hours and place); the sheet shows the shift in full, then Swap, Offer for cover and I can't work. */
 export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, trail, initiallyOpen = false, b}: {shift: ShiftSheetShift; href: string; closeHref: string; lead?: string; title: string; detail: string; trail?: ReactNode; initiallyOpen?: boolean;
   /** Direction B (Employee phones): the same row and sheet, drawn as the phone screen's row (day lead, a chip beside the hours, a chevron). */
-  b?: {lead: ReactNode; chip?: ReactNode; label?: string}}) {
+  b?: {lead: ReactNode; chip?: ReactNode; label?: string; /** The facts line when the caller draws it (Schedule joins a time fact to it on narrow phones); else `detail`. */ sub?: ReactNode}}) {
   const [open, setOpen] = useState(initiallyOpen);
   const id = encodeURIComponent(shift.id);
   // Upscale S5/S12: the details on one line ("Barista · Condado · 8 h"), in a white card under the "Tomorrow, Nov 2" title.
@@ -88,7 +88,7 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
   return <li className={b ? 'b-li' : undefined}>
     {b ? <Link className="b-row b-row--link" href={href} scroll={false} aria-haspopup="dialog" aria-label={b.label} onClick={opener}>
       {b.lead}
-      <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span>{b.chip ?? null}</span><span className="b-row__s"><Dotted text={detail}/></span></span>
+      <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span>{b.chip ?? null}</span><span className="b-row__s">{b.sub ?? <Dotted text={detail}/>}</span></span>
       <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true"/>
     </Link> : <Link className="c-row" href={href} scroll={false} aria-haspopup="dialog" onClick={opener}>
       {lead ? <span className="c-row__lead">{lead}</span> : null}

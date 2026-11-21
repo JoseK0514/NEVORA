@@ -142,7 +142,7 @@ describe("U09: request details in Things to do", () => {
   for (const [name, pick] of [["Direction B", onlyB], ["corporate", withoutB]] as const) {
     it(`${name}: a swap shows both shifts, date, time and place, and an overnight end names its day`, () => {
       const out = text(pick(inbox(items)));
-      expect(out).toContain("Ana Colón ⇄ James Ortiz");
+      expect(out).toContain("Ana Colón and James Ortiz");
       expect(out).toContain("Ana’s shift: Mon, Nov 2 · 8:00 AM – 4:00 PM · Condado");
       expect(out).toContain("James’ shift: Wed, Nov 4 · 10:00 PM – 6:00 AM, ends Thu, Nov 5 · Santurce");
     });

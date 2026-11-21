@@ -27,7 +27,7 @@ import type {CommunicationContext,CommunicationDraft,CommunicationRead} from '..
 type Context=Extract<CommunicationContext,{state:'ready'}>;
 type ComposeValues={type:CommunicationDraft['type'];scopeKind:CommunicationDraft['scope']['kind'];locationId:string;shiftId:string;title:string;body:string;ack:CommunicationDraft['acknowledgement'];expiration:string;useExpiry:boolean};
 type ComposeRetention={values:ComposeValues;revisionId:string|null};
-export function ComposeForm({context,initial,editing,mode,authority,retained,retain,action}:{context:Context;initial?:CommunicationDraft;editing?:Extract<CommunicationRead,{state:'ready'}>;mode:CommunicationMode;authority:string;retained:MutableRefObject<ComposeRetention|null>;retain:(values:ComposeValues,revisionId:string|null)=>void;action:ReturnType<typeof useCommunicationAction>}){
+export function ComposeForm({context,initial,editing,mode,authority,retained,retain,action,onStep}:{/** Final polish (Nov 20, 2026): tells the page which of the two steps is showing (1 write, 2 review), for its step line. */onStep?:(step:1|2)=>void;context:Context;initial?:CommunicationDraft;editing?:Extract<CommunicationRead,{state:'ready'}>;mode:CommunicationMode;authority:string;retained:MutableRefObject<ComposeRetention|null>;retain:(values:ComposeValues,revisionId:string|null)=>void;action:ReturnType<typeof useCommunicationAction>}){
  const [values,setValues]=useState<ComposeValues>(()=>retained.current?.values??{type:initial?.type??(context.management?'LOCATION_ANNOUNCEMENT':'TODAYS_TEAM'),scopeKind:initial?.scope.kind??(context.management?'LOCATION':'TODAYS_TEAM'),locationId:initial?.scope.locationId??context.locations[0]?.id??'',shiftId:initial?.scope.kind==='SHIFT'?initial.scope.sourceShiftId:'',title:initial?.title??'',body:initial?.body??'',ack:initial?.acknowledgement??'OPTIONAL',expiration:initial?.expiresAt??'',useExpiry:!!initial?.expiresAt});
  const [reviewedRevisionId]=useState(()=>retained.current?.revisionId??editing?.revisionId??null);
  const staleEdit=!!editing&&reviewedRevisionId!==editing.revisionId;
@@ -47,6 +47,8 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
  },[error,action.notice,action.hasUnknown]);
  useEffect(()=>{if(preview&&previewHeadingRef.current)revealFeedback(previewHeadingRef.current);},[preview]);
  useEffect(()=>()=>{previewGeneration.current++;},[]);
+ const reviewing=!!preview&&action.notice!=='conflict'&&!staleEdit;
+ useEffect(()=>{onStep?.(reviewing?2:1);},[reviewing,onStep]);
  const titleCount=[...title.trim()].length,bodyCount=[...body.trim()].length;
  function changed(){previewGeneration.current++;setPreview(null);setPreviewing(false);setError(null);setErrorField(null);action.setNotice(null);}
  function draft():CommunicationDraft|null{
@@ -113,6 +115,8 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
    </>:<>
    {/* Quiet (v4, approved Oct 23): Title and Message, then Send to, Ask them to confirm and Expires as rows; Next (top
        right) checks the audience. Shift notes, important updates and Today's team stay under Type. */}
+   {/* Final polish (Nov 20, 2026): Title and Message are one card (.wc-savecard), so it has one shadow on phones too. */}
+   <div className="wc-savecard">
    <div className="q-fl q-first">
     <div className="q-fl__row"><label className="q-fl__label" htmlFor="communication-title">Title</label>{titleCount>100?<span id="communication-title-count" className="q-fl__opt" data-over={titleCount>120||undefined}>{titleCount}/120</span>:<span id="communication-title-count" className="q-sr">{titleCount} of 120 characters</span>}</div>
     <input id="communication-title" className="q-in" placeholder="e.g. Holiday hours" autoComplete="off" autoCapitalize="sentences" enterKeyHint="next" value={title} onChange={e=>{changed();setTitle(e.target.value);}}
@@ -125,7 +129,11 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
     <span className="q-sr" id="compose-body-hint">Plain text. Line breaks are kept.</span>
     {errorField==='body'&&error?<p className="q-fl__error" id="communication-body-error">{error}</p>:null}
    </div>
+   </div>
    {editing?<p className="q-help">Publishing creates a new version. Previous acknowledgements stay with the version they reviewed.</p>:<p className="q-sr">Nothing is published until you review the audience and choose Publish.</p>}
+   {/* Tablets and desktop: the delivery rows are one card whose footer holds Cancel and Next (b-foundation.css,
+       .wc-savecard), as New location and Add shift; phones keep them in the top bar. Same form, same submit. */}
+   <div className="wc-savecard">
    <ul className="q-list" style={{marginTop:24}} aria-label="Delivery">
     <li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Send to</b></span>
      <select id="communication-location" className="q-select-row__control" value={locationId} aria-label="Send to" aria-describedby={scopeKind==='TODAYS_TEAM'?'compose-team-hint':undefined} onChange={e=>{changed();setLocationId(e.target.value);setShiftId('');}}>{context.locations.map(l=><option key={l.id} value={l.id}>{context.locations.length===1&&scopeKind==='LOCATION'?'Everyone':scopeKind==='TODAYS_TEAM'?`Today’s team · ${l.label}`:l.label}</option>)}</select>
@@ -143,6 +151,8 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
     {context.management?<li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Type</b></span><select id="communication-type" className="q-select-row__control" value={type} aria-label="Update type" onChange={e=>{const t=e.target.value as CommunicationDraft['type'];changed();setType(t);setScopeKind(t==='TODAYS_TEAM'?'TODAYS_TEAM':t==='SHIFT_NOTE'?'SHIFT':'LOCATION');}}><option value="LOCATION_ANNOUNCEMENT">Announcement</option><option value="SHIFT_NOTE">Shift note</option><option value="OPERATIONAL_UPDATE">Important update</option><option value="TODAYS_TEAM">Today’s team</option></select><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></label></li>:null}
     {type==='OPERATIONAL_UPDATE'?<li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Who receives it</b></span><select id="communication-scope" className="q-select-row__control" value={scopeKind} aria-label="Who receives it" onChange={e=>{changed();setScopeKind(e.target.value as typeof scopeKind);}}><option value="LOCATION">Location</option><option value="TODAYS_TEAM">Today’s team</option><option value="SHIFT">Published shift</option></select><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></label></li>:null}
    </ul>
+   {reviewing?null:<div className="wc-savefoot wc-savefoot--wide"><Link className="q-btn q-btn--sec" href={editing?'/app/updates/'+editing.id:'/app/updates'}>Cancel</Link><button type="submit" className="q-btn">Next</button></div>}
+   </div>
    {errorField==='expiration'&&error?<p className="q-error" id="communication-expiration-error">{error}</p>:null}
    </>}
   </fieldset>
@@ -170,6 +180,7 @@ function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;m
  const action=useCommunicationAction(mode,authority,result=>router.push('/app/updates/'+result.id),!!context,()=>{retained.current=null;});
  useEffect(()=>{actionRef.current=action;},[action]);
  const editing=(context as (Context&{editing?:Extract<CommunicationRead,{state:'ready'}>})|null)?.editing;
+ const [step,setStep]=useState<1|2>(1);
  const signedOut=(!!resource.value&&'state' in resource.value&&resource.value.state==='unauthorized')||(resource.state.snapshot?.state==='unavailable'&&resource.state.snapshot.reason==='access_denied');
  const offline=resource.state.paused&&typeof navigator!=='undefined'&&navigator.onLine===false;
  // IS-B12: when the form arrives after a failed load (Try again), focus goes to its first field.
@@ -178,14 +189,18 @@ function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;m
  useEffect(()=>{if(composeFailed){hadFailure.current=true;return;}if(context&&hadFailure.current){hadFailure.current=false;if(!document.activeElement||document.activeElement===document.body)document.getElementById('communication-title')?.focus({preventScroll:true});}},[composeFailed,context]);
  // One name per place (A3): Updates' button and this page are both "New update".
  const title=updateId?'Edit update':mode==='manager'?'New update':'Message today’s team';
- const content=<div className="nv-content">{context?<ComposeForm key={authority+':'+(editing?.revisionId??'new')} context={context} initial={editing?.management?.draft} editing={editing} mode={mode} authority={authority} retained={retained} retain={(values,revisionId)=>{retained.current={values,revisionId};}} action={action}/>:<section className="nv-card" role="status" aria-busy={resource.state.refreshing}><div className="wb-body"><div className="wb-receipt"><Tile tone="neutral">{resource.state.refreshing?<ClockIcon size={22} weight="bold"/>:<UsersThreeIcon size={22} weight="bold"/>}</Tile><div><h2 className="wb-strong">{offline?'You’re offline':signedOut?'Your session ended':resource.state.paused?'Paused while you were away':resource.state.refreshing?'Loading the form':'Couldn’t load the form'}</h2><p className="wb-note">{offline?'Connect to the internet, then try again.':signedOut?'Sign in again to keep writing.':resource.state.paused?'Come back to this page to keep writing.':resource.state.refreshing?'Getting your locations and today’s team…':'Check your connection, then try again.'}</p></div></div><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={resource.state.paused||resource.state.refreshing} onClick={resource.refresh}>Try again</button>{signedOut?<Link className="nv-btn" data-kind="secondary" href="/login">Sign in again</Link>:null}</div></div></section>}</div>;
+ const content=<div className="nv-content">{context?<ComposeForm key={authority+':'+(editing?.revisionId??'new')} context={context} initial={editing?.management?.draft} editing={editing} mode={mode} authority={authority} retained={retained} retain={(values,revisionId)=>{retained.current={values,revisionId};}} action={action} onStep={setStep}/>:<section className="nv-card" role="status" aria-busy={resource.state.refreshing}><div className="wb-body"><div className="wb-receipt"><Tile tone="neutral">{resource.state.refreshing?<ClockIcon size={22} weight="bold"/>:<UsersThreeIcon size={22} weight="bold"/>}</Tile><div><h2 className="wb-strong">{offline?'You’re offline':signedOut?'Your session ended':resource.state.paused?'Paused while you were away':resource.state.refreshing?'Loading the form':'Couldn’t load the form'}</h2><p className="wb-note">{offline?'Connect to the internet, then try again.':signedOut?'Sign in again to keep writing.':resource.state.paused?'Come back to this page to keep writing.':resource.state.refreshing?'Getting your locations and today’s team…':'Check your connection, then try again.'}</p></div></div><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={resource.state.paused||resource.state.refreshing} onClick={resource.refresh}>Try again</button>{signedOut?<Link className="nv-btn" data-kind="secondary" href="/login">Sign in again</Link>:null}</div></div></section>}</div>;
  if(mode==='employee'&&!updateId)return <div ref={pageRef} className="nv-page wb-page wb-narrow wb-compose" data-nv-page="">
   <SigPage className={cc.ccRoot} band={<SigBand eyebrow="Team updates · new"><h1 className="sg-head2">Message<br/>today’s team</h1><p className="sg-sub"><span>Write it once. Everyone working today sees it.</span></p><Link className="sg-band-link" href="/app/updates"><CaretLeftIcon size={14} weight="bold" aria-hidden="true"/>Updates</Link></SigBand>}>{content}</SigPage>
  </div>;
  // Quiet (v4, approved Oct 23): a sheet: Cancel, the title, and Next (review the audience) at the top right.
- return <div ref={pageRef} className="q-page wb-compose q-compose" data-nv-page="" data-q-sheet="">
-  <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={updateId?'/app/updates/'+updateId:'/app/updates'}>Cancel</Link>} title={updateId?'Edit update':'New update'}
-   right={context?<button type="submit" form="compose-form" className="q-nav__r q-nav__r--b">Next</button>:undefined}/>
+ // Final polish (Nov 20, 2026): the two steps are named under the title ("Step 1 of 2 · Write"), as Add employee's are
+ // (DESIGN.MD Step flows). Step 2 shows the audience and its one filled Publish, so Next leaves the bar there; changing a
+ // field returns to step 1. From 768px Cancel and Next are in the delivery card's footer (data-wc-save).
+ return <div ref={pageRef} className="q-page wb-compose q-compose" data-nv-page="" data-q-sheet="" data-wc-save={mode==='manager'&&context?'card':undefined}>
+  <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={updateId?'/app/updates/'+updateId:'/app/updates'}>Cancel</Link>}
+   title={<>{updateId?'Edit update':'New update'}{context&&mode==='manager'?<span className="q-nav__step">{`Step ${step} of 2`}<span className="q-nav__stepname">{` · ${step===1?'Write':'Review'}`}</span></span>:null}</>}
+   right={context&&step===1?<button type="submit" form="compose-form" className="q-nav__r q-nav__r--b">Next</button>:undefined}/>
   <h1 className="q-sr">{title}</h1>
   {/* Phase 3 (package D): until the form is here, Owners and Managers get the kit's one state card (it was an older grey
       tile with a disabled Try again while loading). The words are the same; the button shows only when it can act. */}

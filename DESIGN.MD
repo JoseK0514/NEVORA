@@ -480,6 +480,85 @@ item names the lines it supersedes; line numbers are from the file before this s
   and the landscape side band are unchanged. On the receipt, the saved time ("1:41 AM") never splits across lines.
   Rules: the `@media (max-width: 599px)` block in `src/components/clocker.module.css`. *Supersedes* "the location pill
   and date under it" for phones only (Clocker Direction B, Layout).
+
+- **Employee, Lead and Clocker final polish, round 1 (built Nov 20, 2026; waits for Jose's review).**
+  - *Home's shortcuts.* The Owner Home's tiles on an Employee's and a Lead's Home: white, 56px, the 36px teal-50
+    circle, two across. Time off (opens the request form), Can't work and Swap shift (Schedule asks for the shift),
+    Fix my time. Time off shows only while its module is on, Can't work and Swap shift only while shift swaps and
+    cover are on. Phones: under Things to do. From 768px: the top of the right column, over Your week
+    (`home-b.tsx`, rules at the end of `employee-b.css`).
+  - *Home's Right now.* Still clocked in after today's shift ended is its own card, "Right now", first on Home (the
+    amber callout, as on Time, with a "Time" link). It leads the left column from 768px and spans a tablet's width.
+    The shift card under it stays about the shift ahead and says only where to clock. Supersedes the callout inside
+    the shift card (Phase 9, spec 1.4).
+  - *A week to confirm is named in its title.* In Notifications a schedule that waits for confirmation reads
+    "Confirm the week of Nov 23" (Spanish: "Confirme la semana del 23 nov"), and the line under it keeps the shift
+    count only, so several weeks waiting are different rows. Without a week the title stays "Confirm your schedule".
+  - *Time's right column.* On desktop, Last week and Your correction requests are one column (20px apart) beside Right
+    now and the week; the second card no longer waits for the left column's row. Tablets and phones are unchanged.
+  - *Secondary buttons.* On Employee and Lead screens and on the Clocker a secondary button (Shift details, Try
+    again, Refresh, Done, Stay on break) is the tinted pill, as on Owner pages. The grey fill is the disabled pair
+    only (the Clocker keypad keeps its grey keys). Supersedes "Employee and Lead pages keep the grey secondary until
+    their own pass" and the Clocker's grey "Done".
+  - *Segments on touch screens.* A segment's link is its 36px thumb in the 44px track; the 48px touch floor for links
+    does not apply to it (the track is the target).
+  - *Clocker.* On a portrait tablet the status pill starts on the band's left edge. "This screen clears after 30
+    seconds." keeps 12px above it everywhere.
+- **Premium pass: the kit's notices, buttons, labels, counts and marks (built Nov 21, 2026; Jose's board picks 1A, 2B,
+  3A and 4, `.ui-work/emp/board`; all roles and the Clocker).** Colour lives in one small mark; words are ink.
+  - *Secondary and row buttons (1A).* White, one hairline and a soft lift, ink words (`--b-btn-surface`,
+    `--b-btn-surface-ink`, `--b-btn-surface-edge`, `-hover`, `-press` in `b-tokens.css`): the kit's `ghost` and
+    `quiet` buttons, a row's positive action (`b-rowact--go`), the older secondary (`nv-btn`) and the Clocker's
+    secondary. The tinted teal-50 pill is retired. Grey is the disabled pair only (the Clocker keypad keeps grey keys).
+    The teal primary keeps its glow, gains a light top edge and presses to `--b-teal-press`. Supersedes round 1's
+    tinted secondaries, "Pick up … is the tinted pill" and "Approve is always the teal pill".
+  - *Notice (3A).* `BCallout` has no box: the meaning's duotone glyph in a 36px circle of its tone's tint, the title in
+    ink 600, the body in ink2, one action. The card's inset places it. One line centres on the circle. A note that
+    arrives after an action fades up 4px while its mark settles. The Clocker's note is the same with a 40px circle.
+    Supersedes "a tint with a 1px edge in its tone" (Phase 9, spec 2.2).
+  - *Icons in circles (4).* A glyph that stands in a circle (`BIcon`, a notice's mark, the Clocker's rings, action
+    circles and notes) is Phosphor's duotone cut. Navigation, buttons and bare glyphs stay bold; the tick stays bold.
+    "No connection" in a circle is NEVORA's own glyph (`b-glyphs.tsx` `OfflineGlyph`): the Wi-Fi fan cut by one clean
+    stroke, arcs stepping down in strength.
+  - *Status label.* `BChip` has no pill: one 6px dot in the tone's colour (or its tick or stop glyph), then the words
+    in ink2 600. On the band a chip keeps its white pill. The Clocker's state (Off clock, Clocked in, On break) is the
+    same: a dot and ink words. Supersedes the tinted chips with a 1px edge.
+  - *Counts (1A, 2B).* A count beside a title is a grey numeral (13.5/18 600), no circle. In a segment it is the
+    label's colour at 62% (12.5px 600); a count that waits on the person keeps one amber dot. Supersedes "a 20px count
+    pill" (NV-103) and `BCount`'s teal pill.
+  - *Facts between hairlines (Jose's facts pick).* A small block of facts has no grey panel: it sits between two
+    hairlines with 12px of air. On the Clocker, the two figures on Clock out?; in the swap, cover and can't-work forms,
+    the shift and the teammate the request is about.
+  - *Request time off's toggle.* All day / Part of day keeps its 36px thumb inside the 44px track on touch screens.
+  - *Button shape (Jose's pick, Nov 21, 2026; board option C).* Every button has 10px corners (`--b-radius-btn`), 8px
+    at the compact 36px size (`--b-radius-btn-sm`), in place of the pill: the kit's buttons, row actions, the older
+    secondary, Employee form buttons and the Clocker's buttons and language button. Chips, segments and their thumbs,
+    icon circles, avatars, the search field, counts, shortcut tiles and the back circle keep their shapes. Supersedes
+    "every button, chip and segment thumb on B surfaces is a pill" for buttons (B1).
+  - *Label in name.* A control's spoken name contains the words it shows: the Clocker's language button is "Español,
+    switch language to Spanish" ("English, cambiar idioma a inglés"), the phone avatar "More, James Ortiz, JO", and
+    the desktop account button's initials are drawn by CSS beside the visible name.
+  - *Micro-interactions.* A row that opens leans its chevron 2px on hover and press and settles its icon circle to 94%
+    while pressed; a shortcut tile does the same; buttons ease their shade and lift in 150ms. Transform and colour only,
+    nothing plays by itself, all off under reduced motion.
+- **Employee and Clocker final polish, round 2: the audit's remaining findings (built Nov 21, 2026).**
+  - *Home.* A swap or cover request that waits for your answer is amber with "Needs your answer". Under 360px a
+    deadline reads "By Nov 24, 12 PM". Your week's key puts the date range on its own line under 360px.
+  - *Schedule.* "What changed in your schedule" is a 56px row ("What changed" under 360px). Confirm this week carries
+    the amber label and the week and shift count, as on Home. At 320 "Tomorrow" joins the first fact.
+  - *Time.* Under 360px a day row's range ends its first line with the dash ("8:58 AM –" over "5:28 PM"), a local
+    exception to the break-before-the-dash rule. A running total reads "14 h 28 so far" and never splits.
+  - *Pay.* "See your hours" sits on the title's row. A replaced statement reads "Earlier version" over "Replaced by
+    the Nov 13 correction".
+  - *Pick up and swap.* The list leads; "See every posted shift" is its footer link. "Shifts you can't take" with
+    "2 shifts, with the reason". Rows that open are teal circles with the swap arrows.
+  - *Notifications.* Title, grey line, then the label, as everywhere. A swap or cover request for you is amber with
+    "Needs your answer".
+  - *Profile and policy.* A setting's state in a card header is one label. Language and policy footer links have 44px
+    targets.
+  - *Phone tab bar.* 96% white with a 24px blur, so row text does not show through its labels (all roles).
+  - *Clocker.* The Employee ID help line is 15px. On a phone the PIN step rests with the language pill whole or out
+    of view, never cut.
 - **Feature screens and Employee screens (built Nov 17, 2026; see `docs/handoffs/2026-11-17-claude-ui-delivery/README.md`).**
   - *Sheets.* One sheet per feature (`b-restrictions.css`, `b-payroll-import.css`, `b-reminders.css`,
     `b-review-details.css`) and two for the Employee and Lead app (`employee-b-work.css`, `employee-b-account.css`),
@@ -733,6 +812,46 @@ item names the lines it supersedes; line numbers are from the file before this s
     now / change / after; one that would go below zero stops before sending.
   - *Cancel approval* (Team time off › Approved): a quiet text action under the row opens an in-place confirmation;
     the red-edged "Cancel time off" is the commit. The list then says the paid time went back to the balance.
+
+- **Final polish, Owner (Nov 20, 2026).** Jose asked for a last pass on the Owner's screens before production and a
+  Home that reads as a dashboard.
+  - *Today.* Home's "On now" card is "Today": three figures (people scheduled today, their scheduled hours, the most
+    people on at once and its hour), then one bar per hour of today's published schedule, its height the people working
+    in that hour. Past hours are grey, the current hour is teal and labelled "Now", later hours teal-tint. Everything is
+    counted from Today's shifts; a day with no shifts draws no chart. From 768px the people on now keep their rows under
+    it. On phones the card shows too (it was hidden): one row of faces, "5 clocked in", opens the list of everyone. The
+    bars rise once when the read arrives (300ms, 14ms apart) and are still under reduced motion.
+  - *Shortcuts.* Four links: Add shift, Add employee, Send update, Time off (the last two only while their module is
+    on). On desktop they are 36px glass pills on the band, in the rail's column beside the live figures, which now
+    span the main column. On phones and tablets they are white 56px tiles under Things to do (two across; four across
+    from 768px), each with the 36px teal-50 circle. Only one of the two is displayed at a width.
+  - Supersedes "On now is a desktop and tablet card" (MG-011) and the 640px live strip on desktop Home.
+  - *One phone frame.* Back-link pages (the q-nav and c-nav layer) match the main screens: 14px card gutter, title at
+    20, the back circle at 14,6, one band gradient, the first card 20px under the hero's last line with 40px of teal
+    under it, tabs 16px under a title, row dividers edge to edge, cards 12px apart, and the page ends 40px above the tab
+    bar. Supersedes the 16px gutter, the 44px run-under and the inset dividers in the Nov 5 phone notes.
+  - *Desktop bands.* Updates, Notifications, Requests and Exchange end at 296 with their tabs at one height. More,
+    Help, Profile and Notifications share Profile's frame from 768px: no back link, title at 88, the 812 column. Sign
+    out is the More card's last row. The Schedule's first card starts at 244. Create actions on the band lead with a
+    bold Plus. Timecards' in-card tabs are the segmented control.
+  - *Rows.* On phones a person's state sits under the name and its sub-line on every Team row. A ringed avatar keeps
+    the 36px lead (the ring is drawn inside). Two names in a swap are joined by a bold ArrowsLeftRight, said as "and"
+    (`BSwapNames`). An open shift row's title is its time range; day, place and need are its facts line. Decline and
+    Approve sit right-aligned, 8px apart, 112px each on phones.
+  - *Forms.* Posted open shifts is a kit page (card, 560 field block, one filled button) and lights Schedule. Save
+    and Cancel sit in the card footer from 768px on every form; Save appears after a change. New update shows its step
+    line. Date and time fields draw the bold calendar and clock in field-edge grey with a grey empty format.
+  - *Open for Jose:* one date-range form ("Nov 16 – 22" or "Nov 16–22"; both are in use), the kit's own quiet
+    button (still the grey fill, about 75 uses, Employee pages included), and the new Insights line "Late clock-ins
+    aren't counted for this period."
+  - *Three button kinds (round 2).* On Owner and Manager pages a secondary action (Download, Upload, Request time
+    correction, Prepare, Choose dates, Try again) is the tinted pill, whatever older class draws it (`c-btn--secondary`,
+    `q-btn--sec`, `q-bs`, `wc-btn--sec`). Cancel, Decline, Back and Keep are quiet text buttons (`b-rowact--quiet`). The
+    grey fill belongs to the disabled pair only. Employee and Lead pages keep the grey secondary until their own pass.
+  - *Timecard sheet.* "Needs attention" is the kit's amber note with its one action. The decision footer stays at the
+    foot of the sheet on phones and of the panel from 768px. After a save the result is a white card with the kit's
+    done mark. In the list and the sheet only an exception is a chip ("Correction waiting", "Missing clock-out");
+    "Ready to approve" and "Ready to finalize" are quiet text.
 
 ## Previous direction (October 20, 2026; superseded)
 

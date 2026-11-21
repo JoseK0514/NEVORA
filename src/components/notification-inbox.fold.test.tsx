@@ -23,7 +23,8 @@ beforeEach(()=>{host.cursor=0;host.slots=[];onMarkRead.mockClear();});
 
 it('opens a fold in place to list every notification, and marks none read by opening it (Jose, Nov 15, 2026, item 8)',()=>{
  const closed=renderToStaticMarkup(render());
- expect(closed).toContain('3 notifications ·');
+ // Final polish (Nov 20, 2026): the count and the latest time are the kit's facts line (the dot is the line's own).
+ expect(closed).toMatch(/3[ \u00a0]notifications<\/span><span class="b-segs__i"><span class="b-sr"> · <\/span>/);
  expect(fold().props['aria-expanded']).toBe(false);
  expect(fold().props['aria-label']).toContain('3 notifications, 2 unread');
  expect(closed).not.toContain('q-notif-held');

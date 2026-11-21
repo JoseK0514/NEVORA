@@ -33,10 +33,7 @@
     }
   }
 
-  @media (max-width: 767px) {
-    /* MG-011: On now is a desktop and tablet card; on a phone the Clocked in tile opens the same list. */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: none !important; }
-  }
+  /* MG-011 (superseded Nov 20, 2026): Today shows on phones too, as its chart and one row of faces (end of this sheet). */
 
   @media (min-width: 768px) and (max-width: 1023px) {
     /* TB-005: every Home card spans the page; Payday is one horizontal card and This week sets its figures beside its bars. */
@@ -243,3 +240,79 @@
   :is(#c-root, html) .app-shell[data-nv-b] #fw-setup :is(.fw-track, .fw-skel__track) { margin-left: var(--b-inset-wide); margin-right: var(--b-inset-wide); }
   :is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__row { padding: 0 var(--b-inset-wide); }
 }
+
+/* ---------- Final polish (Nov 20, 2026): Home's Today card and shortcuts ---------- */
+/* Today: three figures and one bar per hour of today's published schedule (people working in that hour). Past hours are
+ * grey, the current hour is teal and is labelled "Now". From 768px the people on now keep their rows under the chart; on
+ * a phone they are one row of faces that opens the list of everyone.
+ * Shortcuts: four links. On desktop they are glass pills on the band, in the rail's column beside the live figures; on
+ * phones and tablets they are white tiles under Things to do. Only one of the two is displayed at a width. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:block !important; margin:0 !important; padding:0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-bars:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:grid !important; grid-template-columns:repeat(var(--n), minmax(0, 1fr)) !important; align-items:end !important; gap:3px !important; height:72px !important; margin:0 !important; padding:0 var(--b-inset) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-bars > i:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:block !important; min-height:4px !important; border-radius:3px 3px 1px 1px !important; background:#D3E9E5 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-bars > i[data-state="past"]:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { background:#DFE5E4 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-bars > i[data-state="now"]:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { background:var(--b-teal) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:grid !important; grid-template-columns:repeat(var(--n), minmax(0, 1fr)) !important; gap:3px !important; margin:0 !important; padding:6px var(--b-inset) var(--b-space-16) !important; font-size:12px !important; line-height:16px !important; color:var(--b-grey) !important; font-variant-numeric:tabular-nums !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-l > span:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { min-width:0 !important; overflow:visible !important; white-space:nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-l > span[data-state="now"]:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { color:var(--b-teal) !important; font-weight:700 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on .b-kv > div:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { min-width:0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-faces:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-faces .b-faces:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { margin-right:var(--b-space-2) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy ~ .b-list:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy ~ .b-tdy-faces:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy ~ .b-state:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { border-top:1px solid var(--b-line) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:block !important; margin:0 !important; padding:0 !important; background:none !important; box-shadow:none !important; border-radius:0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:grid !important; grid-template-columns:repeat(2, minmax(0, 1fr)) !important; margin:0 !important; padding:0 !important; list-style:none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { position:relative !important; display:flex !important; align-items:center !important; min-width:0 !important; text-decoration:none !important; font-weight:600 !important; white-space:nowrap !important; transition-property:background-color, scale !important; transition-duration:var(--b-dur-press) !important; transition-timing-function:var(--b-ease-out) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa__l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { min-width:0 !important; overflow:hidden !important; text-overflow:ellipsis !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa__ic:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:grid !important; place-items:center !important; flex:none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { gap:var(--b-space-12) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { gap:var(--b-space-12) !important; min-height:56px !important; padding:0 var(--b-gutter) 0 10px !important; border-radius:18px !important; background:#FFFFFF !important; box-shadow:var(--b-elev-1) !important; color:var(--b-ink) !important; font-size:var(--b-fs-body-sm) !important; line-height:var(--b-lh-body-sm) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__a:active:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { background:color-mix(in srgb, #FFFFFF 96%, var(--b-ink)) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__a:focus-visible:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { outline:var(--b-focus-width) solid var(--b-focus) !important; outline-offset:2px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__ic:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { width:36px !important; height:36px !important; border-radius:18px !important; background:var(--b-teal-50) !important; color:var(--b-teal) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__ic > svg:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { width:18px !important; height:18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:none !important; }
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on > .b-list:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on > a.b-on-more:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-faces:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:block !important; }
+  }
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { gap:var(--b-space-8) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { gap:6px !important; padding:0 10px !important; font-size:var(--b-fs-meta) !important; letter-spacing:-0.01em !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__ic:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { width:20px !important; height:20px !important; border-radius:0 !important; background:none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on .b-kv:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { gap:var(--b-space-16) !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on :is(.b-kv, .b-days-cap, .b-tdy-bars, .b-tdy-l):not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { padding-left:var(--b-inset-wide) !important; padding-right:var(--b-inset-wide) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-bars:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { height:88px !important; gap:4px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { gap:4px !important; }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { grid-template-columns:repeat(4, minmax(0, 1fr)) !important; }
+  }
+  @media (min-width: 1024px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:block !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-home-strip:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { display:grid !important; grid-template-columns:minmax(0, 2fr) minmax(0, 1fr) !important; column-gap:var(--b-space-20) !important; align-items:end !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-home-strip > .b-live:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { max-width:none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { gap:var(--b-space-8) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { gap:var(--b-space-8) !important; height:36px !important; padding:0 var(--b-gutter) 0 var(--b-space-12) !important; border-radius:var(--b-radius-pill) !important; background:var(--b-glass) !important; box-shadow:inset 0 0 0 1px var(--b-glass-edge) !important; color:var(--b-on-band) !important; font-size:var(--b-fs-meta) !important; line-height:var(--b-lh-meta) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6)::after { content:"" !important; position:absolute !important; inset:-4px 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:active:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { background:rgb(255 255 255 / 0.16) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:focus-visible:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { outline:var(--b-focus-width) solid var(--b-focus-on-band) !important; outline-offset:2px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__ic > svg:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { width:16px !important; height:16px !important; }
+  }
+  @media (hover: hover) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:hover:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { background:rgb(255 255 255 / 0.16) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__a:hover:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { background:var(--b-hover) !important; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:active:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { scale:var(--b-press-scale) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-bars > i:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { transform-origin:50% 100% !important; animation:b-home-bar var(--b-dur-enter) var(--b-ease-out) calc(var(--i) * 14ms) both !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-tdy-bars > i:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { animation:none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6) { transition-property:background-color !important; }
+  }
+}
+@keyframes b-home-bar { from { opacity: 0; transform: scaleY(0.4); } to { opacity: 1; transform: scaleY(1); } }

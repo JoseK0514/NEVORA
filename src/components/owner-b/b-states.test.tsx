@@ -27,15 +27,16 @@ describe("the loading placeholder keeps the page's frame", () => {
     expect(html).not.toContain("data-b-band");
   });
   it("draws the page's own title, back row, strip, band height, width and row cards", () => {
-    const html = renderToStaticMarkup(<BLoadingScreen {...loadingShape("/app/notifications", false)} />);
-    // Phase 8: a strip under a title with no sub-line ends its band 32px under the strip, at 264 under a back link.
+    const html = renderToStaticMarkup(<BLoadingScreen {...loadingShape("/app/settings/clocker/pins", false)} />);
+    // Clocker PINs: a back link, a title with no sub-line and the search on the band, which ends at 264 (a band of its own).
+    // (Notifications was this test's page until Nov 20, 2026, when it lost its back link from 768px and took the 296 strip band.)
     expect(html).toContain('class="b-screen b-screen--back" data-b-load="" data-b-band="own" style="--b-band-own:264px" data-b-frame="read"');
     expect(html).not.toContain("data-b-lift");
     expect(html).toContain('data-b-under=""');
     expect(html).toContain('<span class="b-skel b-skel--back" aria-hidden="true"></span>');
-    expect(html).toContain('<h1>Notifications<span class="b-sr"> Loading…</span></h1>');
+    expect(html).toContain('<h1>Clocker PINs<span class="b-sr"> Loading…</span></h1>');
     expect(html).toContain('<span class="b-skel b-skel--strip" aria-hidden="true"></span>');
-    expect(count(html, 'class="b-skel-row"')).toBe(4);
+    expect(count(html, 'class="b-skel-row"')).toBe(6);
     // The cards are placeholders only: nothing in them is read aloud or can take focus.
     expect(html).toContain('<section class="b-card" aria-hidden="true">');
     expect(html).not.toMatch(/<a |<button/);
@@ -59,9 +60,11 @@ describe("the loading placeholder keeps the page's frame", () => {
     for (const path of ["/app", "/app/my-time", "/app/my-pay", "/app/requests/hub"]) expect(loadingShape(path, true).band, path).toBeUndefined();
     // Owner and Manager (package A's settled frame).
     for (const path of ["/app/schedule", "/app/timecards", "/app/employees", "/app/inbox", "/app/availability", "/app/payroll-export", "/app/settings/payroll"]) expect(loadingShape(path, false).band, path).toBe("strip");
-    // Phase 8: a strip under a title with no sub-line: 264 under a back link, 270 on Updates (a sidebar page whose list lifts).
-    for (const path of ["/app/notifications", "/app/requests", "/app/exchange", "/app/settings/clocker/pins"]) expect(loadingShape(path, false).band, path).toBe(264);
-    expect(loadingShape("/app/updates", false)).toMatchObject({ band: 270 });
+    // Polish (Nov 20, 2026): a strip of tabs is one band (296), with or without a sub-line; Notifications has no back link
+    // from 768px. Clocker PINs (search on the band, no tabs strip) keeps 264.
+    for (const path of ["/app/notifications", "/app/requests", "/app/exchange", "/app/updates"]) expect(loadingShape(path, false).band, path).toBe("strip");
+    expect(loadingShape("/app/notifications", false).back).toBeFalsy();
+    expect(loadingShape("/app/settings/clocker/pins", false).band).toBe(264);
     expect(loadingShape("/app/updates", false).back).toBeFalsy();
     expect(loadingShape("/app/updates", false).lift).toBeUndefined();
     for (const path of ["/app/reports", "/app/settings", "/app/more", "/app/help", "/app/profile", "/app/schedule/new", "/app/schedule/publish", "/app/updates/compose", "/app/employees/import", "/app/settings/locations", "/app/anything-else"]) expect(loadingShape(path, false).band, path).toBe("short");
@@ -69,7 +72,9 @@ describe("the loading placeholder keeps the page's frame", () => {
     expect(loadingShape("/app/payroll", false).band).toBe("strip");
     // Title at 88 (no back row) or at 130 (under one).
     for (const path of ["/app/schedule/new", "/app/schedule/publish", "/app/updates/compose", "/app/payroll-export", "/app/settings/payroll", "/app/profile"]) expect(loadingShape(path, false).back, path).toBeFalsy();
-    for (const path of ["/app/more", "/app/help", "/app/my-pay", "/app/employees/new", "/app/schedule/settings", "/app/notifications"]) expect(loadingShape(path, false).back, path).toBe(true);
+    for (const path of ["/app/my-pay", "/app/employees/new", "/app/schedule/settings"]) expect(loadingShape(path, false).back, path).toBe(true);
+    // Polish (Nov 20, 2026): the account pages share Profile's frame, with no back link from 768px.
+    for (const path of ["/app/more", "/app/help", "/app/notifications"]) expect(loadingShape(path, false).back, path).toBeFalsy();
     expect(loadingShape("/app/employees", false).frame).toBe("rail-desktop");
     expect(loadingShape("/app/employees", false).lift).toBeUndefined();
     // Phase 8: Time exports and Payroll settings lift their first card like Payroll (sibling tabs, one frame).
@@ -103,7 +108,9 @@ describe("the loading placeholder keeps the page's frame", () => {
   });
   it("reads the band heights from the frame tokens; its own rules stay still (the one shimmer is b-shimmer.css, Phase 7)", () => {
     for (const kind of ["short", "sub", "strip"]) expect(css).toContain(`.b-screen[data-b-band="${kind}"] { --b-ph-band: calc(var(--b-band-${kind}) - var(--b-title-top)); }`);
-    const block = css.slice(css.indexOf("Phase 2 (package D"));
+    // The placeholder's block ends where the premium pass (notices, buttons, micro-interactions) begins.
+    const block = css.slice(css.indexOf("Phase 2 (package D"), css.indexOf("---------- Premium pass (Nov 20, 2026)"));
+    expect(block.length).toBeGreaterThan(200);
     expect(block).not.toMatch(/animation|@keyframes|transition/);
   });
 });

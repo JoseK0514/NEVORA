@@ -22,6 +22,7 @@ import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
 import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
 import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
 import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
+import { SignOutIcon } from "@phosphor-icons/react/dist/ssr/SignOut";
 import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { PortalSignout } from "@/components/portal-signout";
 import { Dotted } from "@/components/employee-b/parts";
@@ -135,8 +136,8 @@ export default async function MorePage() {
   return <CorpPage className="c-more c-page--narrow" labelledBy="more-title">
     <CorpNav back={{ href: "/app", label: "Home" }} title="More" titleId="more-nav-title" phoneOnly />
     <CorpTitle id="more-title" title="More" wide />
-    {/* Review Nov 11 (OW-032, TB-016): on tablets and desktop the groups read as one card, 560px at most, with Sign out as a
-      quiet pill under it (owner-b-settings.css, by the Sign out section's id); phones keep their separate cards. */}
+    {/* Review Nov 11 (OW-032, TB-016), polish Nov 20, 2026: on tablets and desktop the groups read as one card in the
+      812 column and Sign out is that card's last row (owner-b-settings.css); phones keep their separate cards. */}
     <CorpSection ariaLabel="You"><CorpCard as="div">
       <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={<Dotted text={`${owner ? "Owner" : "Manager"} · ${company}`} />}
         label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} name={name} />} chevron /></li></CorpRows>
@@ -161,7 +162,7 @@ export default async function MorePage() {
       </CorpRows>
     </CorpCard></CorpSection>
     <CorpSection id="more-signout" ariaLabel="Sign out"><CorpCard as="div">
-      <PortalSignout className="c-more__signout"><button type="submit" className="c-row c-row--one c-more__signout-row"><span className="c-row__main"><span className="c-row__title">Sign out</span></span></button></PortalSignout>
+      <PortalSignout className="c-more__signout"><button type="submit" className="c-row c-row--one c-more__signout-row"><span className="c-row__icon" aria-hidden="true"><SignOutIcon weight="bold" /></span><span className="c-row__main"><span className="c-row__title">Sign out</span></span></button></PortalSignout>
     </CorpCard></CorpSection>
   </CorpPage>;
 }

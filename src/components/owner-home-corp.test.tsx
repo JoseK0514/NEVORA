@@ -210,7 +210,9 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
       locationName: "Condado", counterpartName: "James Ortiz", reviewHref: "/app/exchange?tab=requests&requestId=s9" } });
     const out = phone({ value: needsYou([swap], "2026-10-30", []) });
     // Phase 3 (OW-002, OW-007): the people are the title, the kind and the date the line under it; the lead is 36px.
-    expect(out).toContain(">Ana Colon ⇄ James Ortiz<");
+    // Final polish (Nov 20, 2026): the two names are joined by the bold swap glyph, said as "and".
+    expect(out).toContain('class="b-swapnames"');
+    expect(out).not.toContain("⇄");
     expect(out).toContain(">Shift swap · Nov 21<");
     expect(out).toContain('aria-label="Shift request, Ana Colon and James Ortiz"');
     expect(out).toMatch(/<span class="b-av" style="--s:36px;[^"]*" aria-hidden="true">AC<\/span>/);
@@ -282,7 +284,12 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     const out = phone({ today: today([shift("a", "clocked_in"), late, shift("e", "not_clocked_in"), shift("b", "upcoming"), shift("c", "no_punches")]) });
     const card = out.slice(out.indexOf('id="b-home-on"'), out.indexOf('class="b-home-col b-home-col--b"'));
     expect(card).toContain('<a href="/app?view=attendance" class="b-card__a" aria-label="See everyone working today">See everyone</a>');
-    expect(card.match(/<li class="b-li">/g)).toHaveLength(3);
+    // Final polish (Nov 20, 2026): the card leads with today's chart and, for phones, one row of faces; the people's rows
+    // are the "On now" list.
+    expect(card.slice(card.indexOf('aria-label="On now"')).match(/<li class="b-li">/g)).toHaveLength(3);
+    expect(card).toContain('<h2 id="b-home-on-h">Today</h2>');
+    expect(card).toContain("People scheduled by hour");
+    expect(card).toContain('aria-label="2 clocked in. See everyone working today"');
     // Phase 8 (a.md #11): the live word is Team's, "Clocked in". Phase 9 (spec 1.2): the normal state is quiet grey words
     // with the green live dot; only the exceptions are amber chips, with the live dot, and "Not clocked in" says how long.
     expect(card).toContain('<span class="b-status" data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"></span>Clocked in</span>');
@@ -317,7 +324,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(retired).not.toContain("Person unscheduled");
     const matched=phone({today:today([shift("a","clocked_in")]),monitor:monitor(["a"])});
     const matchedCard=matched.slice(matched.indexOf('id="b-home-on"'),matched.indexOf('class="b-home-col b-home-col--b"'));
-    expect(matchedCard.match(/<li class="b-li">/g)).toHaveLength(1);
+    expect(matchedCard.slice(matchedCard.indexOf('aria-label="On now"')).match(/<li class="b-li">/g)).toHaveLength(1);
   });
   it("says coverage as one line with a bar, and nothing about what isn't required (Phase 3, OW-006)", () => {
     const coverage = { state: "ready" as const, staffing: { required: 20160, covered: 11610, percent: 57.6 }, positions: { required: 0, covered: 0, percent: null }, lead: { required: 0, covered: 0, percent: null } };

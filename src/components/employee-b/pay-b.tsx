@@ -51,8 +51,12 @@ export type PayBProps = {
 
 function Row({item, byId}: {item: Statement; byId?: Map<string, Statement>}) {
   const by = item.correctedBy ? byId?.get(item.correctedBy) : undefined;
-  const sub = by ? `Replaced by the ${fmt({month: 'short', day: 'numeric'}).format(utc(by.payday))} correction` : `For work ${period(item.period.startDate, item.period.endDate)}`;
-  return <BRow href={paycheckHref(item.id)} title={item.correctedBy ? <span className="ep-muted">{payday(item.payday)}</span> : payday(item.payday)} chip={tag(item)} sub={sub}
+  // Final polish, round 2 (P2): a statement whose correction is in the list is not a second payday. It reads "Earlier
+  // version" over "Replaced by the Nov 13 correction" (the correction's payday), muted, with no chip (the line says it);
+  // the correction keeps its date and "Corrected". Without the correction at hand it keeps its date and "Replaced".
+  if (by) return <BRow href={paycheckHref(item.id)} title={<span className="ep-muted">Earlier version</span>} sub={`Replaced by the ${fmt({month: 'short', day: 'numeric'}).format(utc(by.payday))} correction`}
+    label={`${paydayLong(item.payday)}, ${role(item)} for ${period(item.period.startDate, item.period.endDate)}`}/>;
+  return <BRow href={paycheckHref(item.id)} title={item.correctedBy ? <span className="ep-muted">{payday(item.payday)}</span> : payday(item.payday)} chip={tag(item)} sub={`For work ${period(item.period.startDate, item.period.endDate)}`}
     label={`${paydayLong(item.payday)}, ${role(item)} for ${period(item.period.startDate, item.period.endDate)}`}/>;
 }
 
@@ -133,17 +137,19 @@ export function PayB(props: PayBProps) {
   const showPayday = !!nextPay && listed && daysUntil !== null && daysUntil >= 0;
   const when = daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`;
   return <BScreen ink>
-    {/* Desktop: Pay history is the band's glass action (eb-desk); the phone reaches it from the Earlier card. */}
-    <BHero title="Pay" titleId="b-pay-title" right={<span className="eb-desk"><BButtonLink href="/app/my-pay?view=history" kind="glass"><ClockCounterClockwiseIcon size={16} weight="bold" aria-hidden="true"/>Pay history</BButtonLink></span>}>
-      {/* Phase 4 (EM-010): the period is plain band text under the date, not a chip; the one glass pill sits beside the
-        * block at 44px (phones) or 48px. */}
+    {/* Final polish, round 2 (P1): See your hours is the band's action on the title's row at every width, as Past timecards
+      * is on Time. Desktop: Pay history follows it there (eb-desk); the phone reaches it from the Earlier card. */}
+    <BHero title="Pay" titleId="b-pay-title" right={<>
+      {showPayday ? <BButtonLink href="/app/my-time" kind="glass" label="See your hours"><ClockIcon size={16} weight="bold" aria-hidden="true"/>See your hours</BButtonLink> : null}
+      <span className="eb-desk"><BButtonLink href="/app/my-pay?view=history" kind="glass"><ClockCounterClockwiseIcon size={16} weight="bold" aria-hidden="true"/>Pay history</BButtonLink></span>
+    </>}>
+      {/* Phase 4 (EM-010): the period is plain band text under the date, not a chip. */}
       {showPayday ? <div className="b-hpad ep-next">
         <div className="ep-next__tx">
           <p className="ep-next__k">Scheduled payday · {when}</p>
           <p className="ep-next__v">{payday(nextPay!.payday)}</p>
           {nextPay!.period ? <p className="ep-next__p">For work {period(nextPay!.period.startDate, nextPay!.period.endDate)}</p> : null}
         </div>
-        <BButtonLink href="/app/my-time" kind="glass" label="See your hours"><ClockIcon size={16} weight="bold" aria-hidden="true"/>See your hours</BButtonLink>
       </div> : null}
     </BHero>
     <BStack>

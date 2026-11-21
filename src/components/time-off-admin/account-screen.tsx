@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
@@ -222,7 +221,7 @@ export function AccountScreen(props: AccountScreenProps) {
       {landed && !attention ? <div className="rs-landed"><CorpCard ariaLabel={t.adjustSaved}><BState silent kind="done" title={t.adjustSaved} /></CorpCard></div> : null}
       <CorpCard id="pto-balances" label={t.balancesCard}>
         {rows.length ? <CorpRows label={t.balancesCard}>{rows.map(r => <li key={r.code}><CorpRow title={r.label} detail={r.enabled ? undefined : t.policyOff} value={hoursText(r.minutes)} valueTone="soft" /></li>)}</CorpRows>
-          : <div className="pto-empty"><BCallout tone="grey" icon="empty" title={t.noPolicies} action={<Link className="rs-link" href="/app/settings/time-off">{t.openPolicies}</Link>} /></div>}
+          : <div className="pto-empty"><BCallout tone="grey" icon="empty" title={t.noPolicies} action={{ label: t.openPolicies, href: "/app/settings/time-off" }} /></div>}
         {rows.some(r => r.policy) ? <div className="rs-main"><Act kind={attention ? "ghost" : "teal"} disabled={busy || !!custody} onClick={() => startAdjust()}>{t.adjust}</Act></div> : null}
       </CorpCard>
       <CorpCard id="pto-history" label={t.historyCard}>

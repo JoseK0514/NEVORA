@@ -38,3 +38,5 @@
 
 /* Closing F1 (NV-088): a fully published week's check is green, like the band's Published chip. */
 :is(#c-root, html) .c-pub .c-pub__done { color: #1D6B45; }
+/* Final polish (round 2 #31): the kit's done mark at the note's size, a bold green check on a green-50 circle (it was a filled dark green disc). */
+:is(#c-root, html) .app-shell[data-nv-b] .c-pub .c-pub__done { box-sizing: border-box; width: 20px; height: 20px; padding: 4px; border-radius: 50%; background: var(--b-green-50); color: var(--b-green); }

@@ -104,7 +104,7 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
       <div className="c-request__who">
         <CorpAvatar name={request.employeeName} initials={initialsOf(request.employeeName)} large />
         <span className="c-row__main"><span className="c-row__title c-row__title--b">{request.employeeName}</span></span>
-        <span className="c-request__status">Waiting</span>
+        <span className="c-request__state"><CorpPill tone="amber">Waiting</CorpPill></span>
       </div>
       <div className="c-request__body">
         <span className="c-big">{dates.title}</span>

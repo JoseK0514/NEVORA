@@ -69,7 +69,7 @@ it("preserves submitted field names, required contact fields and optional email"
   // (each shown at its own width only). Closing F1 (NV-257): tablets and desktop also go back with "‹ Team" over the title.
   expect(html.match(/href="\/app\/employees"/g)).toHaveLength(3);
   expect(html).toMatch(/<a href="\/app\/employees" class="c-formhead__up">.*?Team<\/a>/);
-  expect(html).toMatch(/<div class="c-form-foot"><a href="\/app\/employees" class="c-btn c-btn--secondary">Cancel<\/a><button type="button" class="c-btn">Next<\/button><\/div>/);
+  expect(html).toMatch(/<div class="c-form-foot"><a href="\/app\/employees" class="c-btn c-btn--secondary b-rowact b-rowact--quiet">Cancel<\/a><button type="button" class="c-btn">Next<\/button><\/div>/);
   expect(html).toContain("Email (optional)");
   // Nov 14, 2026 inspection (BR-14): the field says what leaving it empty means, tied to the input for screen readers.
   expect(html).toContain('<span id="new-email-help">Without an email, this person can clock in on the tablet but can’t sign in to NEVORA.</span>');

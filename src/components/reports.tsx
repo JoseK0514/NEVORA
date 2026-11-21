@@ -30,6 +30,7 @@ import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpRow,Corp
 import './reports-corp.css';
 import {scheduledDays} from '@/lib/reports/scheduled-days';
 import {reviewCopy} from './review-details/copy';
+import {BCallout} from './owner-b/b-kit';
 import {Explain} from './review-details/explain';
 const t=reviewCopy();
 type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
@@ -291,7 +292,7 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  // whose clock-ins could not be read, instead of "some".
  const unmatched=new Set(report.attendance.limitations.map(item=>item.entryId)).size,unread=report.attendance.unavailableEmployeeIds.length;
  const lateReason=lateKnown?null:unmatched?`${plural(unmatched,'clock\u2011in','clock\u2011ins')} couldn’t be compared with the schedule.`:unread?`${plural(unread,'person’s','people’s')} clock\u2011ins couldn’t be read.`:'Some clock-ins couldn’t be compared with the schedule.';
- const reasons=[lateReason,cover.observedCoverageRequests?null:t.coverNoneSeen,cover.unclassifiedEvents?t.coverUnread(cover.unclassifiedEvents):null].filter((line):line is string=>!!line);
+ const coverReasons=[cover.observedCoverageRequests?null:t.coverNoneSeen,cover.unclassifiedEvents?t.coverUnread(cover.unclassifiedEvents):null].filter((line):line is string=>!!line);
  const days=wholeWeek(recordedByDay(report),report.period);
  // Phase 4 (U09, OW-026): the published schedule's time per day, behind each day's recorded bar. Sparse: a day in the
  // period with no row has no published schedule (no bar, and the line under the chart names it); never a zero.
@@ -320,7 +321,10 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
     ...(cover.observedCoverageRequests?[{label:t.coverSeen,value:t.coverSeenValue(cover.completedCoverageRequests,cover.observedCoverageRequests)}]:[]),
     {label:'Time off',value:offDays?plural(offDays,'day','days'):'0'},
    ]}/>
-   {reasons.length?<p className="c-ins__reason">{reasons.join(' ')}</p>:null}
+   {/* Polish (Nov 20, 2026): clock-ins that could not be compared are something to check, so the sentence is the kit's
+     amber note (it was a grey line under a lone figure); the quieter facts about cover stay a grey line. */}
+   {lateReason?<div className="c-ins__check"><BCallout tone="amber" icon="check" title={lateReason.replace(/\.$/,'')}>{t.lateLeftOut}</BCallout></div>:null}
+   {coverReasons.length?<p className="c-ins__reason">{coverReasons.join(' ')}</p>:null}
    {/* Phase 8 (a.md #32): the explanation is for the cover figure, so it shows only beside it (one explainer per card). */}
    {cover.observedCoverageRequests?<div className="c-ins__explain"><Explain text={t.coverSeenExplain} label={t.explain}/></div>:null}
   </CorpCard>
@@ -340,7 +344,7 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
    </div><ul className="c-sr" aria-label="Hours by day">{days.filter(day=>day.minutes!==null).map(day=>{const planned=planOf(day.date);
     return <li key={day.date}>{t.dayRecorded(dayLabel(day.date),day.minutes?spoken(BigInt(day.minutes!)*MINUTE_NS):'no hours')}{planned?`, ${planned.state==='scheduled'?t.dayScheduled(spoken(BigInt(planned.minutes)*MINUTE_NS)):planned.state==='none'?t.noPublishedSchedule.toLowerCase():t.scheduleUnconfirmed.toLowerCase()}`:''}</li>;})}</ul>
    {plan?<div className="c-ins__legend">
-    <p className="c-ins__keys"><span><i data-key="recorded" aria-hidden="true"/>{t.recordedLegend}</span><span><i data-key="plan" aria-hidden="true"/>{t.scheduledLegend}</span></p>
+    <p className="c-ins__keys"><span><i data-key="recorded" aria-hidden="true"/>{t.recordedLegend}</span><span><i data-key="plan" aria-hidden="true"/>{t.scheduledLegend}</span>{days.length<=7?<span className="c-ins__keynote">{t.figuresLegend}</span>:null}</p>
     {noPlan.length?<p className="c-ins__reason">{`${t.noPublishedSchedule}: ${named(noPlan)}`}</p>:null}
     {unconfirmed.length?<p className="c-ins__reason">{`${t.scheduleUnconfirmed}: ${named(unconfirmed)}`}</p>:null}
     {report.scheduledByDay?.state==='unpublished'?<p className="c-ins__reason">{t.scheduleIncomplete}</p>:null}

@@ -440,7 +440,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
                 <ul>{listedOpen.map(open => { const day = formatDayLabel(open.date); return <li key={open.id}>
                   <span className="sb-openlist__t c-num">{range(open.startTime, open.endTime) === "All day" ? "All day" : `${compactTime(open.startTime)} – ${compactTime(open.endTime)}`}</span>
                   <span className="sb-openlist__p">{open.location || "No one assigned"}</span>
-                  {ended(open) ? <BChip>Not filled</BChip>
+                  {ended(open) ? <BStatusText>Not filled</BStatusText>
                     : <Link className="b-rowact b-rowact--go sb-openlist__go" href={open.href} aria-label={`Find cover for an open shift, ${day.weekday} ${day.day}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Fill</Link>}
                 </li>; })}</ul>
               </div>
@@ -484,8 +484,10 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       sub={<BSegs parts={[range(shift.startTime, shift.endTime) === "All day" ? "All day" : compactRange(`${clock(shift.startTime)} – ${clock(shift.endTime)}`), shift.position || employee.role, !locationId && bPlaces > 1 ? shift.location : null]} />} chevron={false} /> }; }),
     ...dayOpen.map(open => { const over = ended(open); return { start: open.startTime, node: <BRow key={`open-${open.id}`} lead={<BAvatar open />} title="Open shift"
       sub={<BSegs parts={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), open.location]} />}
-      href={over ? undefined : open.href} label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}
-      trail={over ? <BChip>Not filled</BChip> : <BButtonLink href={open.href} kind="ghost" label={`Fill the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}`}>Fill</BButtonLink>} /> }; }),
+      href={over ? undefined : open.href} label={`${over ? "Open shift, not filled" : "Find cover for the open shift"}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}
+      /* Final polish (Nov 20, 2026): no "Not filled" chip on a row titled "Open shift" (it said the title again, as a chip
+         on a normal fact); a shift that can still be filled carries Fill, one that ended carries nothing. */
+      trail={over ? undefined : <BButtonLink href={open.href} kind="ghost" label={`Fill the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}`}>Fill</BButtonLink>} /> }; }),
   ].sort((a, b) => a.start.localeCompare(b.start));
   const SHOWN_B = 8;
   const bScreen = b && corp ? <BScreen>

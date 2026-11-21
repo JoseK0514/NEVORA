@@ -38,6 +38,8 @@ const en = {
   reference: (id: string) => `Support reference ${id}`,
   offline: 'You’re offline. Connect to remind.',
   needsDeadline: 'Reminders need a deadline. Set one in Scheduling rules.',
+  /** The words of `needsDeadline` that are its one link (to /app/schedule/settings). They must appear in it as written. */
+  needsDeadlineLink: 'Scheduling rules',
   oneTitle: (name: string) => `Remind ${name}?`,
   manyTitle: (count: number) => `Remind ${count} people?`,
   manyTitleNone: 'No one to remind right now',
@@ -105,6 +107,7 @@ const es: ReminderCopy = {
   reference: id => `Referencia de soporte ${id}`,
   offline: 'No hay conexión. Conéctese para recordar.',
   needsDeadline: 'Los recordatorios necesitan una fecha límite. Fíjela en Reglas de horarios.',
+  needsDeadlineLink: 'Reglas de horarios',
   oneTitle: name => `¿Recordar a ${name}?`,
   manyTitle: count => `¿Recordar a ${count} personas?`,
   manyTitleNone: 'Nadie a quien recordar por ahora',

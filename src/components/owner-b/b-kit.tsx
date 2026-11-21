@@ -1,11 +1,13 @@
 import "./owner-b.css";
+import { OfflineGlyph } from "./b-glyphs";
 import Link from "next/link";
-import { isValidElement } from "react";
+import { isValidElement, cloneElement } from "react";
 import type { ReactNode, CSSProperties, Ref } from "react";
 import { BOffline } from "./b-offline";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+import { ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowsLeftRight";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { WifiSlashIcon } from "@phosphor-icons/react/dist/ssr/WifiSlash";
@@ -166,18 +168,21 @@ export function BCount({ children, label, tone }: { children: ReactNode; label?:
 /* Phase 9: one glyph per meaning (spec 2.2). Notes, notices and state cards draw these, bold, so a meaning always has the
  * same shape: the triangle is amber's "check", the circle red's "stop". */
 export type BMeaning = "info" | "privacy" | "wait" | "check" | "unknown" | "offline" | "stop" | "done" | "locked" | "empty";
-export function BGlyph({ meaning }: { meaning: BMeaning }) {
+/** `solid` (premium pass, Nov 20, 2026; Jose's pick 4): the duotone cut, for a glyph that stands in its own circle
+ * (BCallout). The tick has no second tone, so "done" keeps its bold line. */
+export function BGlyph({ meaning, solid }: { meaning: BMeaning; solid?: boolean }) {
+  const weight = solid ? "duotone" : "bold";
   switch (meaning) {
-    case "info": return <InfoIcon weight="bold" aria-hidden="true" />;
-    case "privacy": return <ShieldCheckIcon weight="bold" aria-hidden="true" />;
-    case "wait": return <HourglassMediumIcon weight="bold" aria-hidden="true" />;
-    case "check": return <WarningIcon weight="bold" aria-hidden="true" />;
-    case "unknown": return <QuestionIcon weight="bold" aria-hidden="true" />;
-    case "offline": return <WifiSlashIcon weight="bold" aria-hidden="true" />;
-    case "stop": return <WarningCircleIcon weight="bold" aria-hidden="true" />;
+    case "info": return <InfoIcon weight={weight} aria-hidden="true" />;
+    case "privacy": return <ShieldCheckIcon weight={weight} aria-hidden="true" />;
+    case "wait": return <HourglassMediumIcon weight={weight} aria-hidden="true" />;
+    case "check": return <WarningIcon weight={weight} aria-hidden="true" />;
+    case "unknown": return <QuestionIcon weight={weight} aria-hidden="true" />;
+    case "offline": return solid ? <OfflineGlyph /> : <WifiSlashIcon weight={weight} aria-hidden="true" />;
+    case "stop": return <WarningCircleIcon weight={weight} aria-hidden="true" />;
     case "done": return <CheckIcon weight="bold" aria-hidden="true" />;
-    case "locked": return <LockSimpleIcon weight="bold" aria-hidden="true" />;
-    case "empty": return <TrayIcon weight="bold" aria-hidden="true" />;
+    case "locked": return <LockSimpleIcon weight={weight} aria-hidden="true" />;
+    case "empty": return <TrayIcon weight={weight} aria-hidden="true" />;
   }
 }
 const CALLOUT_MEANING: Record<BTone, BMeaning> = { teal: "info", amber: "check", red: "stop", green: "done", grey: "locked" };
@@ -206,7 +211,7 @@ export function BCallout({ tone, icon, title, children, action, id, role, headin
       ? <Link className="b-callout__a" href={a.href} aria-label={a.aria}>{a.label}</Link>
       : <button type="button" className="b-callout__a" aria-label={a.aria} onClick={a.onClick}>{a.label}</button>; })();
   return <div className="b-callout" data-tone={tone} id={id} role={role}>
-    <span className="b-callout__ic" aria-hidden="true"><BGlyph meaning={icon ?? CALLOUT_MEANING[tone]} /></span>
+    <span className="b-callout__ic" aria-hidden="true"><BGlyph meaning={icon ?? CALLOUT_MEANING[tone]} solid /></span>
     {title ? heading === "h2" ? <h2 className="b-callout__t">{title}</h2> : heading === "h3" ? <h3 className="b-callout__t">{title}</h3> : <p className="b-callout__t">{title}</p> : null}
     {children !== undefined && children !== null && children !== false ? <div className="b-callout__b">{children}</div> : null}
     {act}
@@ -233,7 +238,11 @@ export function BFaces({ names, size = 32 }: { names: string[]; size?: number })
  * controls on a phone's band), 44 (20: call and message), 48 (22: a state card), 56 (28: a finish). The tint says what
  * the row means: teal opens or informs, amber waits on you, red stops, green is done, grey has nothing to do now. */
 export function BIcon({ tone = "teal", children, size }: { tone?: BTone; children: ReactNode; size?: 32 | 36 | 40 | 44 | 48 | 56 }) {
-  return <span className={`b-ico b-ico--${tone}`} data-size={size && size !== 36 ? size : undefined} aria-hidden="true">{children}</span>;
+  // Premium pass (Nov 20, 2026; Jose's pick 4): a glyph inside a circle is Phosphor's duotone cut, whatever weight the
+  // caller wrote (navigation, buttons and bare glyphs keep bold). A child that is not one icon element is left as it is.
+  const glyph = !isValidElement<{ weight?: string; solid?: boolean }>(children) || typeof children.type === "string" ? children
+    : children.type === BGlyph ? cloneElement(children, { solid: true }) : children.props.weight === "bold" ? cloneElement(children, { weight: "duotone" }) : children;
+  return <span className={`b-ico b-ico--${tone}`} data-size={size && size !== 36 ? size : undefined} aria-hidden="true">{glyph}</span>;
 }
 
 type BtnKind = "teal" | "ghost" | "quiet" | "white" | "glass" | "danger";
@@ -304,6 +313,13 @@ export function BWhen({ text }: { text: string }) {
   return <><span className="b-when-s">{keepWhole(short)}</span><span className="b-when-f">{full}</span></>;
 }
 
+/** Final polish (Nov 20, 2026): the two people of a swap in a row title, "Ana Colon ⇄ James Ortiz" with the glyph the
+ * Shift requests rows lead with (Phosphor ArrowsLeftRight, bold, the 16px inline size) in place of a thin text arrow.
+ * It is read "Ana Colon and James Ortiz". Each name stays whole; the glyph stays with the first name. */
+export function BSwapNames({ a, b }: { a: string; b: string }) {
+  return <span className="b-swapnames"><span className="b-swapnames__a">{a.replace(/ /g, "\u00a0")}<ArrowsLeftRightIcon className="b-swapnames__ic" size={16} weight="bold" aria-hidden="true" /></span><span className="b-sr"> and </span><span>{b.replace(/ /g, "\u00a0")}</span></span>;
+}
+
 /** Premium pass FA (final verification A #10, B #8): a line of facts joined by "·" ("Tue, Nov 24 · 12:00 PM – 8:00 PM ·
  * Calle Loíza") that wraps only between facts and never leaves a dot at the start or the end of a line. Each fact is one
  * unit (a time range or "Payday Fri, Nov 6" moves whole); every fact after the first carries its dot in a 13px slot that
@@ -351,7 +367,9 @@ export function BDoneMark({ children, still, on }: { children?: ReactNode;
   still?: boolean;
   /** The mark sits on a tinted block, so its circle is white. */
   on?: "tint" }) {
-  return <span className="b-ico b-ico--green b-donemark" data-still={still ? "" : undefined} data-on={on} aria-hidden="true"><CheckIcon weight="bold" />{children}</span>;
+  // Final polish (Nov 21, 2026; Jose: the check mark "more premium and with motion"): the mark draws its own tick, one
+  // round-capped stroke with pathLength 1, so the sheet can draw it in (b-moments.css) after the disc settles.
+  return <span className="b-ico b-ico--green b-donemark" data-still={still ? "" : undefined} data-on={on} aria-hidden="true"><svg className="b-donemark__tick" viewBox="0 0 24 24" fill="none" focusable="false"><path d="M5.5 12.75l4.25 4.25L18.5 7.75" pathLength={1} stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" /></svg>{children}</span>;
 }
 /** Review F2/F5 (NV-074) and Phase 2 (package D): a page's loading placeholder in Direction B. It keeps the page's frame:
  * the band at the height the page will have, the page's title when it is known (a bar when it is not), the strip the page

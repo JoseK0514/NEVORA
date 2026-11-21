@@ -310,3 +310,40 @@
 @layer nv-b {
   :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block .c-time:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-variant-numeric: normal !important; font-feature-settings: normal !important; }
 }
+
+/* Polish (Nov 20, 2026): "Base scheduled pay", when it is the roster's first card, starts 52px over the band's end like
+ * every sibling's first card (244; it started at 224, 8px under the week stepper). The stepper stays where it is. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-page.c-sched > header.c-title ~ section.cm-roster:has(.c-sched-gridbar .c-sched-week__nav) > section#schedule-labor-cost:first-of-type:not(#pc1):not(#pc2):not(#pc3):not(#pc4):not(#pc5):not(#pc6):not(#pc7) { margin-top: var(--b-space-20) !important; }
+  }
+
+  /* Final polish (Nov 20, 2026; round 2 #10, #26, #27). */
+  @media (max-width: 767px) {
+    /* #10: Delete shift was a white pill with a shadow inside a white card, its label on the left. It is one quiet red
+     * text button, centred in its card. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-shift-page .c-shift__delete .c-shift__delete-row:not(#p10a) { justify-content: center !important; min-height: var(--b-btn-h-full) !important; padding: 0 var(--b-inset) !important; border-radius: var(--b-radius-pill) !important; background: transparent !important; box-shadow: none !important; color: var(--b-red) !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 600 !important; text-align: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-shift-page .c-shift__delete:has(.c-shift__delete-row):not(#p10a) { padding: var(--b-space-4) !important; }
+    /* #26: Save template is the card's full-width primary: 52px, on the field's edges (it drew 40px, 2px inside them). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.q-templates .q-template-form .wc-btn.wc-btn--full:not(#p10a) { box-sizing: border-box !important; display: flex !important; width: 100% !important; height: auto !important; min-height: var(--b-btn-h-full) !important; margin-left: 0 !important; margin-right: 0 !important; border: 0 !important; font-size: 16px !important; line-height: 22px !important; }
+  }
+  @media (min-width: 768px) {
+    /* #27: the New template heading's divider stopped at the 560px field block (900 of 1085). From 768px a card heading
+     * has no divider (owner-b-desktop.css, "card heads"), so this one goes too. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.q-templates .wc-tcard > :is(.wc-cardhead, .q-template-form, .wc-tcard__body):not(#p10a) { border-top: 0 !important; border-bottom: 0 !important; box-shadow: none !important; background-image: none !important; }
+  }
+}
+
+/* ---------- Final polish (Nov 20, 2026; round 2 finding 16): Build and publish on phones is the sheet Add shift is: the
+ * page's one white card starts 16px under the bar, over the band's 44px run-on, and the week, Start from, the locations
+ * and the publish line are its sections, divided by hairlines (as tablets and desktop already draw it). It replaces the
+ * NV-015 rule that pushed a bare week line under an empty stretch of band. ---------- */
+@layer nv-b {
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .c-pub > .c-shift > .c-shift__head + .c-pub__body:not(#fp-1):not(#fp-2):not(#fp-3):not(#fp-4):not(#fp-5):not(#fp-6):not(#fp-7):not(#fp-8):not(#fp-9) { position: relative !important; gap: 0 !important; z-index: 2 !important; margin-top: var(--b-space-16) !important; padding: var(--b-inset) !important; border: 1px solid transparent !important; border-radius: var(--b-radius-card) !important; background: #FFFFFF !important; box-shadow: var(--b-elev-1) !important; }
+    html body .app-shell[data-nv-b] .c-pub .c-pub__body:not(#fp-1):not(#fp-2):not(#fp-3):not(#fp-4):not(#fp-5):not(#fp-6):not(#fp-7):not(#fp-8):not(#fp-9) > :is(.c-card, details.c-card) { margin: 0 calc(-1 * var(--b-inset)) !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
+    html body .app-shell[data-nv-b] .c-pub .c-pub__body:not(#fp-1):not(#fp-2):not(#fp-3):not(#fp-4):not(#fp-5):not(#fp-6):not(#fp-7):not(#fp-8):not(#fp-9) > .c-publish__week { padding-bottom: var(--b-space-16) !important; }
+    html body .app-shell[data-nv-b] .c-pub > .c-shift > .c-shift__head > .c-shift__cancel:not(#fp-1):not(#fp-2):not(#fp-3):not(#fp-4):not(#fp-5):not(#fp-6):not(#fp-7):not(#fp-8):not(#fp-9) { min-width: 44px !important; }
+    html body .app-shell[data-nv-b] .c-pub .c-pub__body:not(#fp-1):not(#fp-2):not(#fp-3):not(#fp-4):not(#fp-5):not(#fp-6):not(#fp-7):not(#fp-8):not(#fp-9) > .c-card ~ :is(.c-note, form.c-publish__go) { margin-top: 0 !important; padding-top: var(--b-space-16) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
+  }
+}

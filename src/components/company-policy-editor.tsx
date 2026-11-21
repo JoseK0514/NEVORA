@@ -105,6 +105,11 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
   const [rawFields,setRawFields]=useState<Record<string,string>>({});
   const [notice,setNotice]=useState(""),[busy,setBusy]=useState(false),[readState,setReadState]=useState<ReadState>("ready");
   const [pending,setPending]=useState<CompanyPolicyCommand|null>(null),[conflict,setConflict]=useState(false),[reviewed,setReviewed]=useState(false);
+  // Final polish (Nov 20, 2026): Save appears after a change (DESIGN.MD Forms), as on Company profile. A draft is changed
+  // once a switch or a field in this scope's form was touched; a fresh draft (another scope, a reload, a save) is not.
+  const formKey=`${scope}:${draftEpoch}`;
+  const [touched,setTouched]=useState<string|null>(null);
+  const dirty=touched===formKey||Object.keys(modes).length>0;
   const current=selectedScope(history,scope||null),company=selectedScope(history,null);
   const writable=!scope||locations.some(item=>item.id===scope&&item.active);
   const editableSettings=draft?.settings;
@@ -159,8 +164,8 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
   function startRecovery(){if(!previousValid||!writable||pending||busy||readState!=="ready")return;setDraft({settings:previousValid.settings,expectedRevision:current.expectedRevision,recoveryFrom:previousValid});setDraftEpoch(value=>value+1);setModes({});setRawFields({});setReviewed(false);setConflict(false);announce(`Draft started from version ${previousValid.revision}. Version ${current.expectedRevision} can’t be used until you save a corrected version.`);}
   // Quiet (v4): at a location, a rule that follows the company is on when the company's rule is on.
   const inheritedOn=(key:(typeof fields)[number][0])=>{const settings=company.state==="valid"?company.selected.settings:null;const rule=key==="overtimeRisk"?settings?.labor?.overtimeRisk:settings?.attendance?.[key];return rule!==undefined&&rule!==null;};
-  return <div className="company-policy-editor q-page q-policies" data-nv-page="">
-    <QuietNav back={{href:"/app/settings",label:"Settings"}} title="Company policies" right={draft?<button type="submit" form="policy-form" className="q-nav__r q-nav__r--b" aria-label="Save policies"
+  return <div className="company-policy-editor q-page q-policies" data-nv-page="" data-wc-save="card">
+    <QuietNav back={{href:"/app/settings",label:"Settings"}} title="Company policies" right={draft&&(dirty||busy||pending!==null)?<button type="submit" form="policy-form" className="q-nav__r q-nav__r--b" aria-label="Save policies"
       disabled={!draft||busy||conflict||!writable||readState!=="ready"||pending!==null||draft.recoveryFrom!==null}>{busy?"Saving…":"Save"}</button>:undefined}/>
     <QuietHeader title="Company policies"/>
     <ul className="q-list" style={{marginTop:16}}><li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b id="company-policy-scope-label">Applies to</b></span>
@@ -174,8 +179,11 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
       {conflict?<section className="policy-state policy-warning"><h2>Your draft needs a fresh review</h2><p>The draft below wasn’t saved. You’re viewing version {current.expectedRevision}. Nothing was merged or overwritten.</p>{current.state==="valid"?<details className="policy-current-comparison"><summary>Compare current saved rules</summary><CurrentPolicyRules settings={current.selected.settings} scope={scope} timeZone={timeZone}/><PrivateLaborReview settings={current.selected.settings} scope={scope} timeZone={timeZone}/></details>:null}<button className="button secondary" type="button" disabled={busy||pending!==null} onClick={()=>{adoptCurrent(history);announce(`Retained draft discarded. Current revision ${current.expectedRevision} loaded.`);}}>Discard draft and use the current version</button></section>:null}
       {draft?<>
         {draft.recoveryFrom?<section className="policy-replacement-review"><h2>Review the complete replacement</h2><p>Started from version {draft.recoveryFrom.revision} · {formatBusinessTimestamp(draft.recoveryFrom.changedAt,timeZone)}. This draft replaces version {draft.expectedRevision} in full. Values in the unusable version can’t be checked.</p><p>Check every attendance rule and the private labor settings below before saving. Saving adds a new version and keeps the history.</p></section>:null}
-        <form id="policy-form" key={`${scope}:${draftEpoch}`} className="employee-form policy-form" aria-busy={busy} onSubmit={event=>{event.preventDefault();void submit(event.currentTarget).catch(()=>announce("Choose threshold minutes and valid effective dates in the company timezone. Times skipped or repeated by daylight saving time need a different selection."));}}>
+        <form id="policy-form" key={formKey} className="employee-form policy-form" aria-busy={busy} onInput={()=>setTouched(formKey)} onChange={()=>setTouched(formKey)} onSubmit={event=>{event.preventDefault();void submit(event.currentTarget).catch(()=>announce("Choose threshold minutes and valid effective dates in the company timezone. Times skipped or repeated by daylight saving time need a different selection."));}}>
         <div className="q-grp"><h2>Tell me about</h2></div>
+        {/* Tablets and desktop: the rules are one card whose footer holds Save (b-foundation.css, .wc-savecard); phones keep
+            the top bar's Save. Same form, same submit. */}
+        <div className="wc-savecard">
         <ul className="q-list q-policy-list">{fields.map(([key, label]) => {
           const rule = (
             key === "overtimeRisk"
@@ -344,6 +352,8 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
             </div>{scope && mode !== "configured" && mode !== "inherit" ? <p className="q-help q-policy__note">Off at this location. <button type="button" className="q-link" onClick={()=>setModes(value=>({...value,[key]:"inherit"}))}>Use company default</button></p> : null}</fieldset></li>
           );
         })}</ul>
+        {(dirty||busy||pending!==null)&&!draft.recoveryFrom?<div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn" aria-label="Save policies" disabled={busy||conflict||!writable||readState!=="ready"||pending!==null}>{busy?"Saving…":"Save"}</button></div>:null}
+        </div>
           {draft.recoveryFrom?<label className="policy-replacement-confirm"><input type="checkbox" checked={reviewed} disabled={busy||pending!==null||conflict||!writable} onChange={event=>setReviewed(event.target.checked)}/><span>I reviewed the complete replacement, including attendance and private labor settings. It replaces version {draft.expectedRevision} in full.</span></label>:null}
           {pending||draft.recoveryFrom?<div className="policy-actions"><button className="q-btn" disabled={busy||conflict||!writable||(!pending&&draft.recoveryFrom!==null&&!reviewed)} type="submit">{busy?"Saving…":pending?"Try saving again":"Save replacement version"}</button></div>:null}
         </form>

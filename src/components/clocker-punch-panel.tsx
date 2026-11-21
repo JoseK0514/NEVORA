@@ -254,11 +254,11 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   attemptAt===null?null:new Intl.DateTimeFormat(locale,{timeZone,hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(attemptAt))):null;
  const others=clockerOthersSavedText(language,otherCount);
  const notice=message&&mode!=='other-person'?left
-  ?<div role="status" data-clocker-notice className={styles.note}><ClockerIcon name="info" size={20}/><p><ClockerText text={message}/></p></div>
+  ?<div role="status" data-clocker-notice className={styles.note}><ClockerIcon name="info" size={20} mark/><p><ClockerText text={message}/></p></div>
   :<p role={mode==='success'?'status':'alert'} data-clocker-notice className={styles.smsg}><ClockerText text={message}/></p>:null;
  return <div className={styles.content} aria-busy={waiting} data-clocker-state={mode} data-align={left?'start':'center'}>
   {mode==='success'?<span className={styles.check}><ClockerIcon name="check" size={52}/></span>
-   :ring?<span className={styles.ring} data-tone={ring[1]==='teal'?undefined:ring[1]}><ClockerIcon name={ring[0]} size={28}/></span>:null}
+   :ring?<span className={styles.ring} data-tone={ring[1]==='teal'?undefined:ring[1]}><ClockerIcon name={ring[0]} size={28} mark/></span>:null}
   {mode==='ready'?<div className={styles.who}>{face()}<h1 ref={heading} tabIndex={-1} className={styles.title}>{t(title,{name:first})}</h1></div>
    :<h1 ref={heading} tabIndex={-1} className={styles.title}>{t(title,{first,name:first})}</h1>}
   {mode==='ready'&&view?<>
@@ -269,13 +269,13 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    </div>
    {pause?.type?<p className={styles.breakContext}><strong>{pause.type.name}</strong>{pause.type.targetMinutes!==null?' · '+t('Suggested: {minutes} min',{minutes:pause.type.targetMinutes}):''}</p>:null}
    {notice}
-   {!online?<div role="status" data-clocker-notice data-clocker-offline="" className={styles.note} data-tone="red"><ClockerIcon name="offline" size={20}/><p>{t('No connection. Wait for it to return before you clock in or out, or tell a manager.')}</p></div>:null}
-   {entry?.status==='CLOCKED_IN'&&!view.breakTypes.length&&!view.atOtherLocation?<div data-clocker-notice className={styles.note}><ClockerIcon name="info" size={20}/><p>{t(view.breaksOff?'Breaks aren’t recorded on the Clocker here.':'There are no breaks to choose here yet. Ask your Owner to add one.')}</p></div>:null}
-   {!actions.length?<div className={styles.other}><span className={styles.ring} data-tone="amber"><ClockerIcon name="building" size={28}/></span><p data-clocker-notice className={styles.smsg}>{t(view.commerceRestriction==='paused'&&!view.atOtherLocation?"New clock-ins are paused for this workplace. Your Owner can restore access. Ask a manager to record your time.":"This shift was started at another location. Use the connected tablet at that location.")}</p></div>:null}
+   {!online?<div role="status" data-clocker-notice data-clocker-offline="" className={styles.note} data-tone="red"><ClockerIcon name="offline" size={20} mark/><p>{t('No connection. Wait for it to return before you clock in or out, or tell a manager.')}</p></div>:null}
+   {entry?.status==='CLOCKED_IN'&&!view.breakTypes.length&&!view.atOtherLocation?<div data-clocker-notice className={styles.note}><ClockerIcon name="info" size={20} mark/><p>{t(view.breaksOff?'Breaks aren’t recorded on the Clocker here.':'There are no breaks to choose here yet. Ask your Owner to add one.')}</p></div>:null}
+   {!actions.length?<div className={styles.other}><span className={styles.ring} data-tone="amber"><ClockerIcon name="building" size={28} mark/></span><p data-clocker-notice className={styles.smsg}>{t(view.commerceRestriction==='paused'&&!view.atOtherLocation?"New clock-ins are paused for this workplace. Your Owner can restore access. Ask a manager to record your time.":"This shift was started at another location. Use the connected tablet at that location.")}</p></div>:null}
    {/* Premium pass (#6): while the tablet is offline the note asks the person to wait, so no action is drawn as the filled
      * next step; Done is. The actions stay where they were and behave as before. */}
    {actions.length?<div className={styles.acts}>{actions.map((action,i)=><button tabIndex={0} data-clocker-action key={action} type="button" className={styles.act} data-kind={i===0&&online?'primary':'secondary'} aria-label={t(labels[action])} onClick={()=>action==='CLOCK_OUT'?setMode('confirm-out'):action==='START_BREAK'?setMode('select-break'):act(action)}>
-    <span className={styles.actIcon}><ClockerIcon name={actionIcons[action]} size={28}/></span>
+    <span className={styles.actIcon}><ClockerIcon name={actionIcons[action]} size={28} mark/></span>
     <span className={styles.actText}>{t(labels[action])}</span>
     <ClockerIcon name="arrow" size={22}/></button>)}</div>:null}
    <div className={styles.panelFoot}>
@@ -290,7 +290,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   {mode==='select-break'&&view?<>
    <p className={styles.lead}>{keep(t("Your break doesn’t end on its own. Tap End break when you’re back."))}</p>
    <div className={styles.acts}>{view.breakTypes.map(type=><button tabIndex={0} key={type.id} className={styles.act} data-kind="secondary" type="button" aria-label={t('Start {name}',{name:type.name})} onClick={()=>act('START_BREAK',type)}>
-    <span className={styles.actIcon}><ClockerIcon name={breakIcon(type.category)} size={28}/></span>
+    <span className={styles.actIcon}><ClockerIcon name={breakIcon(type.category)} size={28} mark/></span>
     <span className={styles.actText}>{type.name}{breakSub(type)?<small>{breakSub(type)}</small>:null}</span>
     <ClockerIcon name="arrow" size={22}/>
    </button>)}</div>

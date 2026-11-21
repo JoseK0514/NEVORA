@@ -20,6 +20,6 @@ export function DeleteShiftConfirm({ warning }: { warning: ReactNode }) {
   return <>
     <p className="c-shift__warn" role="status">{warning}</p>
     <DeleteShiftButton />
-    <button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={() => setAsked(false)}>Keep shift</button>
+    <button type="button" className="c-btn c-btn--secondary c-btn--full b-rowact b-rowact--quiet" onClick={() => setAsked(false)}>Keep shift</button>
   </>;
 }

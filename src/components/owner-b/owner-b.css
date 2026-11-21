@@ -207,6 +207,12 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__trail .b-btn) { padding-top: 10px; padding-bottom: 10px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-decide { display: flex; gap: var(--b-space-8); width: 100%; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-decide > .b-btn { flex: 1; }
+/* Final polish (Nov 20, 2026): on a phone Decline and Approve are a pair on the row's right edge, 8px apart, as from 768px
+ * and as on Time off requests (each filled half the row, so Decline sat centred in the left half, aligned with nothing). */
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-decide { justify-content: flex-end; }
+  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-decide > .b-btn { flex: 0 0 auto; width: 112px; padding: 0; }
+}
 :is(#c-root, html) .app-shell[data-nv-b][data-corp-root] .b-back { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row--link, .b-row__hit[href]) { transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-row--link:active, :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__hit[href]:active) { background-color: var(--b-press-tint); }
@@ -234,8 +240,17 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-av { display: grid; place-items: center; flex: none; width: var(--s, 36px); height: var(--s, 36px); border-radius: 50%; font-size: calc(var(--s, 36px) * 0.36); font-weight: 600; line-height: 1; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-av--open { border: 1.5px dashed #9AA3A8; background: #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-av--open::before { content: "+"; font-size: 18px; font-weight: 500; color: #7D868B; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-av--late { box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--b-amber-solid); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-av--on { box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--b-green-solid); }
+/* Final polish (Nov 20, 2026): the status ring is drawn inside the avatar, so a ringed lead is the same 36px (40 on Team)
+ * as every other lead. It was drawn 4px outside it, and one ringed face in a list read as a larger, 44px avatar. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-av--late { box-shadow: inset 0 0 0 2px var(--b-amber-solid), inset 0 0 0 4px #FFFFFF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-av--on { box-shadow: inset 0 0 0 2px var(--b-green-solid), inset 0 0 0 4px #FFFFFF; }
+/* Final polish: a row's state under its name and sub-line (Team on phones): grey words or an exception chip, one place. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-row__state { display: flex; align-items: center; min-width: 0; margin-top: var(--b-space-4); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-row__state:empty { display: none; }
+/* Final polish: a swap's two names round the bold swap glyph; a name never splits and the glyph stays with the first. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-swapnames { display: inline-flex; flex-wrap: wrap; align-items: center; column-gap: 6px; min-width: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-swapnames__a { display: inline-flex; align-items: center; gap: 6px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-swapnames__ic { flex: none; width: var(--b-ic-inline); height: var(--b-ic-inline); color: var(--b-ink); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-faces .b-av { box-shadow: 0 0 0 2px #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-faces { display: flex; flex: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-faces .b-av + .b-av { margin-left: -6px; position: relative; }
@@ -606,3 +621,82 @@
  * everywhere on the band, and the 16% white edge still draws every pill, tile and track: the frosted Direction B look
  * stays, with the fill a shade quieter. The Clocker and the signed-out pages keep the token's own value. */
 :is(#c-root, html) .app-shell[data-nv-b] { --b-glass: rgb(255 255 255 / 0.08); }
+
+/* ---------- Premium pass (Nov 20, 2026): notices, status labels and counts ----------
+ * Jose: a tinted box with words in it, a tinted pill round a status and a coloured number in a circle look cheap. Each
+ * part keeps its place, size and meaning and is drawn with less: colour lives in one small mark, the words are ink.
+ *
+ * Notice (BCallout; Jose's board pick 3A): no box. The meaning's duotone glyph in a 36px circle of its tone's tint, the
+ * title in ink 600, the body in ink2, one action. One line centres on the circle; more than one starts at its top. */
+:is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout { grid-template-columns: 36px minmax(0, 1fr); column-gap: var(--b-space-12); align-items: start; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+:is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout .b-callout__ic { display: grid; place-items: center; width: 36px; height: 36px; margin: 0; border-radius: 50%; background: var(--b-callout-fill, var(--b-teal-50)); }
+:is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout .b-callout__ic > svg { width: 18px; height: 18px; }
+:is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout > .b-callout__ic + * { margin-top: var(--b-space-2); }
+:is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout:not(:has(> .b-callout__t + *, > .b-callout__b :is(p, ul, ol) + *, > .b-callout__act, > .b-callout__a)) { align-items: center; }
+:is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout:not(:has(> .b-callout__t + *, > .b-callout__b :is(p, ul, ol) + *, > .b-callout__act, > .b-callout__a)) > .b-callout__ic + * { margin-top: 0; }
+@media (forced-colors: active) {
+  :is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout .b-callout__ic { border: 1px solid CanvasText; }
+}
+
+/* Status label (BChip): the words in their tone's ink after one 6px dot (or the chip's own tick or stop glyph). No pill,
+ * no fill, no edge. On the band a chip keeps its white pill (the words need a surface there). */
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip { gap: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip:is(.b-chip--grey, .b-chip--amber, .b-chip--red, .b-chip--green, .b-chip--teal) { color: var(--b-ink2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip.b-chip--red:not([data-dot], [data-icon])::before { background: var(--b-red); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip.b-chip--teal:not([data-dot], [data-icon])::before { background: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip--red > svg { color: var(--b-red); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip--green > svg { color: var(--b-green-solid); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip { color: var(--b-ink); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip:not([data-dot], [data-icon])::before { content: ""; flex: none; display: inline-block; width: var(--b-chip-dot); height: var(--b-chip-dot); margin-inline-end: 6px; border-radius: 50%; background: currentColor; vertical-align: middle; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip.b-chip--grey:not([data-dot], [data-icon])::before { background: var(--b-field-edge); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip.b-chip--amber:not([data-dot], [data-icon])::before { background: var(--b-amber-solid); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip.b-chip--green:not([data-dot], [data-icon])::before { background: var(--b-green-solid); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip[data-dot], :is(#c-root, html) .app-shell[data-nv-b] .b-chip[data-icon] { padding-left: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip > .b-ldot { margin-inline-end: 6px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip > svg { width: 14px; height: 14px; margin-inline-end: 5px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip { padding: 0 var(--b-chip-px); border-radius: var(--b-radius-pill); background: #FFFFFF; }
+/* A chip on a filled day block (the Employee week grid) keeps its white pill too: its words need a surface there. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-wsh .b-chip { padding: 0 var(--b-chip-px); border-radius: var(--b-radius-pill); color: var(--b-ink); }
+@media (forced-colors: active) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-chip::before { forced-color-adjust: none; background: CanvasText; }
+}
+
+/* Count (BCount, BCard's count): a grey tabular numeral beside its label. No circle. A count that waits on the person
+ * (amber) leads with the amber dot. */
+:is(#c-root, html) .app-shell[data-nv-b] :is(.b-pill, .b-count) { display: inline-flex; align-items: center; min-width: 0; height: auto; padding: 0; border-radius: 0; background: none; color: var(--b-grey); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-count[data-tone="amber"] { background: none; color: var(--b-ink2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-count[data-tone="amber"]::before { content: ""; flex: none; width: var(--b-chip-dot); height: var(--b-chip-dot); margin-inline-end: 5px; border-radius: 50%; background: var(--b-amber-solid); }
+
+/* Buttons (Jose's board pick 1A): the secondary button (`ghost`, `quiet`) is white with one hairline and a soft lift,
+ * ink words. The tinted teal-50 pill is retired; the grey fill is the disabled pair only. The teal primary keeps its
+ * glow and gains a light top edge. Hover and press are a shade of the surface, never a new colour. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(.b-btn--ghost, .b-btn--quiet):not(:disabled, [aria-disabled="true"]) { background: var(--b-btn-surface); color: var(--b-btn-surface-ink); box-shadow: var(--b-btn-surface-edge); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(.b-btn--ghost, .b-btn--quiet):not(:disabled, [aria-disabled="true"]):active { background: var(--b-btn-surface-press); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal:not(:disabled, [aria-disabled="true"]) { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), var(--b-elev-glow); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal:not(:disabled, [aria-disabled="true"]):active { background: var(--b-teal-press); }
+@media (hover: hover) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(.b-btn--ghost, .b-btn--quiet):not(:disabled, [aria-disabled="true"]):hover { background: var(--b-btn-surface-hover); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal:not(:disabled, [aria-disabled="true"]):hover { background: var(--b-teal-press); }
+}
+@media (forced-colors: active) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(.b-btn--ghost, .b-btn--quiet) { border: 1px solid ButtonText; }
+}
+
+/* Premium pass (Nov 21, 2026): micro-interactions. Each answers a touch or a pointer within 150ms, moves 2px or scales a
+ * few percent, and uses transform and colour only. Nothing here plays by itself, and all of it is off under reduced
+ * motion (the press tint and the hover shade stay, as colour).
+ * - A row that opens: its chevron leans 2px toward where it leads on hover and press, and its icon circle settles to 94%
+ *   while pressed.
+ * - A shortcut tile: its circle settles with the tile's own press.
+ * - A white or teal button: its lift eases with the hover shade. */
+@media (prefers-reduced-motion: no-preference) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row--link { transition: background-color var(--b-dur-hover) var(--b-ease-out); }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit) > .b-chev:not(.b-chev--down) { transition: translate var(--b-dur-press) var(--b-ease-out), color var(--b-dur-press) var(--b-ease-out); }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row--link:active, .b-row:has(> .b-row__hit[href]:active)) .b-chev:not(.b-chev--down) { translate: 2px 0; color: var(--b-grey); }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-qa__a, .eb-qa__a) :is(.b-ico, .b-qa__ic, .eb-qa__ic) { transition: scale var(--b-dur-press) var(--b-ease-out); }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row--link:active, .b-row:has(> .b-row__hit[href]:active), .b-qa__a:active, .eb-qa__a:active) :is(.b-ico, .b-qa__ic, .eb-qa__ic) { scale: 0.94; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn { transition-property: background-color, box-shadow, scale; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
+  @media (hover: hover) {
+    :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row--link:hover, .b-row:has(> .b-row__hit[href]:hover)) .b-chev:not(.b-chev--down) { translate: 2px 0; color: var(--b-grey); }
+  }
+}

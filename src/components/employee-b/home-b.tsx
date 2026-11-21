@@ -7,6 +7,8 @@ import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {CalendarMinusIcon} from '@phosphor-icons/react/dist/ssr/CalendarMinus';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
+import {UserMinusIcon} from '@phosphor-icons/react/dist/ssr/UserMinus';
+import Link from 'next/link';
 import {BButtonLink, BCallout, BCard, BChip, BHero, BIcon, BList, BLive, BNote, BRow, BScreen, BStack, BState, BStatusText, compactRange, type BLiveItem} from '../owner-b/b-kit';
 import {HOME_SOURCES} from '../../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../../lib/employee-home/types';
@@ -36,7 +38,27 @@ export type HomeBExtras = {
   payday?: string | null;
   /** A Lead: shifts they lead carry the "Shift lead" marker (Direction B, Nov 8, 2026). */
   lead?: boolean;
+  /** Final polish (Nov 20, 2026): Home's shortcuts, the requests this person may start (the caller leaves out a module that is off). */
+  shortcuts?: EmployeeShortcut[];
 };
+
+export type EmployeeShortcut = 'timeOff' | 'callout' | 'swap' | 'fixTime';
+/* Each opens the page that already starts the request: the time-off form, Schedule asking for the shift (review B6,
+ * "bare links"), and Fix my time. The icons are the ones those requests carry everywhere else. */
+const SHORTCUTS: Record<EmployeeShortcut, {href: string; label: string; aria?: string; icon: ReactNode}> = {
+  timeOff: {href: '/app/requests?tab=new', label: 'Time off', aria: 'Request time off', icon: <CalendarMinusIcon weight="bold"/>},
+  callout: {href: '/app/schedule?intent=callout', label: 'Can’t work', aria: 'Can’t work a shift', icon: <UserMinusIcon weight="bold"/>},
+  swap: {href: '/app/schedule?intent=swap', label: 'Swap shift', icon: <ArrowsLeftRightIcon weight="bold"/>},
+  fixTime: {href: '/app/my-time?view=corrections&edit=new', label: 'Fix my time', icon: <PencilSimpleIcon weight="bold"/>},
+};
+/** Home's shortcuts, the Owner Home's tiles (white, 56px, the 36px teal-50 circle): two across on phones under Things to
+ * do, and at the top of the right column on tablets and desktop. */
+function Shortcuts({items}: {items: EmployeeShortcut[]}) {
+  if (!items.length) return null;
+  return <nav className="eb-qa" aria-label="Shortcuts"><ul>
+    {items.map(key => <li key={key}><Link className="eb-qa__a" href={SHORTCUTS[key].href} aria-label={SHORTCUTS[key].aria} prefetch={false}><span className="eb-qa__ic" aria-hidden="true">{SHORTCUTS[key].icon}</span><span className="eb-qa__l">{SHORTCUTS[key].label}</span></Link></li>)}
+  </ul></nav>;
+}
 
 const t = workCopy();
 type Ready = Extract<EmployeeTime, {state: 'ready'}>;
@@ -174,17 +196,32 @@ function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; l
         card's white drew a tint inside a tint on phones). The live fact leads in ink at 600 with its dot (green Clocked in,
         amber On break, amber "Not clocked in · 12 min", Time's words from work-copy), and the standing instruction is the
         grey line under it, so the line reads in the order that matters. A short place name stays whole. */}
-      {clockIn && overrun ? <BCallout tone="amber" role="status" title={t.stillClockedIn(clock(clockIn.clockInAt, zone))}>{t.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`), clockIn.locationName)}</BCallout>
-        : <div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
-        {clockIn ? <><span className="b-notice__t eb-state">{clockIn.state === 'ON_BREAK'
+      {/* Final polish (Nov 20, 2026): a punch left open after the shift ended has its own Right now card above this one
+        * (NowCard), so this card stays about the shift ahead and says only where to clock. */}
+      {<div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
+        {clockIn && !overrun ? <><span className="b-notice__t eb-state">{clockIn.state === 'ON_BREAK'
             ? <BStatusText dot="amber">On break</BStatusText> : <BStatusText dot="green">Clocked in at {clock(clockIn.clockInAt, zone)}</BStatusText>}</span><span className="b-notice__s">Breaks and clock out on the {placeWhole(shift.locationLabel)} tablet</span></>
-          : now && hours ? <><span className="b-notice__t eb-state"><BStatusText dot="amber">{t.notClockedInFor(sinceSpan(Math.round((Date.parse(snapshot.observedAt) - Date.parse(now.startAt)) / 60_000)))}</BStatusText></span><span className="b-notice__s">Clock in on the {placeWhole(shift.locationLabel)} tablet</span></>
+          : now && hours && !clockIn ? <><span className="b-notice__t eb-state"><BStatusText dot="amber">{t.notClockedInFor(sinceSpan(Math.round((Date.parse(snapshot.observedAt) - Date.parse(now.startAt)) / 60_000)))}</BStatusText></span><span className="b-notice__s">Clock in on the {placeWhole(shift.locationLabel)} tablet</span></>
           : <><span className="b-notice__t">Clock in on the {placeWhole(shift.locationLabel)} tablet</span><span className="b-notice__s">Take breaks and clock out there too</span></>}</span></div>}
       {/* On desktop the button sits in the card's footer beside the shift's length (eb-desk is desktop only). Phase 8 (review
         * C, row 30): the day is already in the line under the time, so the footer doesn't say it again. */}
       <div className="eb-shift__bar"><span className="eb-desk eb-shift__when">{lengthOf(shift) ?? ''}</span>
         <BButtonLink href={href} kind="quiet" full label={`Shift details, ${shortDay(shift.date)}`}>Shift details</BButtonLink></div>
     </div>
+  </BCard>;
+}
+
+/** Right now (final polish, Nov 20, 2026): still clocked in after today's shift ended. Time's own card, first on Home,
+ * so the warning is about now and the shift card under it is about the shift ahead. From the two reads Home already
+ * holds; nothing shows while the hours read is unknown. */
+function NowCard({snapshot, week}: {snapshot: HomeSnapshot; week: HomeWeek | null}) {
+  const hours = useContext(HoursRead);
+  const clockIn = hours?.current && hours.current.state !== 'CLOCKED_OUT' ? hours.current : null;
+  const overrun = clockIn ? endedShiftStillOpen(week, snapshot, clockIn.clockInAt) : null;
+  if (!clockIn || !overrun) return null;
+  return <BCard id="b-home-now" title="Right now"
+    link={{href: '/app/my-time', label: 'Time', aria: 'Open Time'}}>
+    <div className="eb-status"><BCallout tone="amber" role="status" title={t.stillClockedIn(clock(clockIn.clockInAt, snapshot.timeZone))}>{t.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`), clockIn.locationName)}</BCallout></div>
   </BCard>;
 }
 
@@ -223,6 +260,19 @@ function ComingUp({week, snapshot, lead, note}: {week: HomeWeek; snapshot: HomeS
   </BCard>;
 }
 
+/** Round 2 (H2): a swap or cover request that waits for this person's answer (the server says it is actionable and gives
+ * it a deadline). Requests draws the same request amber with "Needs your answer", so Home does too. It is not a required
+ * row: the server's order and the one teal Review pill are untouched. */
+export const needsAnswer = (item: AttentionItem) => item.ref.kind === 'EXCHANGE' && item.actionable && !!item.deadlineAt;
+
+/** Round 2 (H4): a to-do's deadline, written twice. `full` is the sentence every width reads aloud and 360px and wider
+ * show ("Respond by Nov 24, 12:00 PM"); `short` is what a narrower phone shows so it keeps one line ("By Nov 24, 12 PM":
+ * no "Respond", and no ":00" on the hour; "12:30 PM" keeps its minutes). */
+export function todoDeadline(at: string, zone: string) {
+  const when = fmt(zone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(at));
+  return {full: `Respond by ${keepWhole(when)}`, short: `By ${keepWhole(when.replace(/:00(?=\D)/, ''))}`};
+}
+
 function TodoIcon({item}: {item: AttentionItem}) {
   // Phase 9 (spec 3.6): one glyph per concept, the navigation's: CalendarMinus for time off, Megaphone for Updates.
   // Final review C (row 4): CalendarCheck is confirming your schedule and PencilSimple is fixing your time, on every
@@ -230,8 +280,9 @@ function TodoIcon({item}: {item: AttentionItem}) {
   const Icon = item.ref.kind === 'SCHEDULE' ? CalendarCheckIcon : item.ref.kind === 'TIME_OFF' ? CalendarMinusIcon : item.ref.kind === 'EXCHANGE' ? ArrowsLeftRightIcon
     : item.ref.kind === 'COMMUNICATION' ? MegaphoneIcon : item.ref.kind === 'TIME_CORRECTION' ? PencilSimpleIcon : ClockIcon;
   // Phase 4 (EM-008, EM-017): every to-do opens something, so its lead is the teal circle. Phase 9 (spec 3.2): one that
-  // waits on you (required) is the amber circle, as the same notice is in Notifications.
-  return <BIcon tone={item.required ? 'amber' : 'teal'}><Icon weight="bold"/></BIcon>;
+  // waits on you (required) is the amber circle, as the same notice is in Notifications. Round 2 (H2): so is a swap or
+  // cover request that waits for your answer.
+  return <BIcon tone={item.required || needsAnswer(item) ? 'amber' : 'teal'}><Icon weight="bold"/></BIcon>;
 }
 
 /** Phase 4 (EM-002): the rows Home shows, in the server's order (HomeTaskSummary ranking v1; nothing is re-ranked here).
@@ -254,7 +305,7 @@ export type HomeBProps = HomeBExtras & {
   weekTodo: (item: AttentionItem) => {title: string; detail: ReactNode};
 };
 
-export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date, place, intro, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday, team, lead}: HomeBProps) {
+export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date, place, intro, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday, team, lead, shortcuts}: HomeBProps) {
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
   // A Lead's hero adds the shift they're on now (Direction B, Nov 8, 2026); Employees' figures are unchanged.
   const now = lead && snapshot ? snapshot.currentShift : null;
@@ -272,13 +323,17 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
   const note = snapshot?.publicationState === 'partial' ? unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations)) : null;
   const todoRow = ({key, item, week: confirm}: HomeTodo) => {
     const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
-    const sub = confirm ? weekTodo(item).detail : item.deadlineAt && snapshot ? `Respond by ${keepWhole(fmt(snapshot.timeZone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : undefined;
+    const deadline = !confirm && item.deadlineAt && snapshot ? todoDeadline(item.deadlineAt, snapshot.timeZone) : null;
+    // Round 2 (H4): under 360px the short form shows; the full sentence stays in the page for screen readers.
+    const sub = confirm ? weekTodo(item).detail : deadline ? <><span className="eb-dl">{deadline.full}</span><span className="eb-dl-s" aria-hidden="true">{deadline.short}</span></> : undefined;
     // Review F2 (NV-078): every required to-do is a row with an amber "Action needed" chip and a chevron; only the most
     // urgent (the first required one) keeps the teal Review pill, so the card has one primary action.
     return item.required
       ? key === firstRequired
         ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} label={`${title}, action needed, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
         : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron label={`${title}, action needed`}/>
+      // Round 2 (H2): a request that waits for your answer says so with Requests' own amber chip, and keeps its chevron.
+      : needsAnswer(item) ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">{t.needsYourAnswer}</BChip>} sub={sub}/>
       : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} sub={sub}/>;
   };
   const firstRequired = todos.find(todo => todo.item.required)?.key;
@@ -303,6 +358,7 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
     </BHero>
     <BStack>
       {snapshot ? <>
+        <NowCard snapshot={snapshot} week={weekShown}/>
         <ShiftCard snapshot={snapshot} lead={lead} heroShows={!!onShift} week={weekShown}/>
         {intro ?? null}
         {/* Review B6 (NV-162, NV-288): Things to do (with its deadlines) comes before a Lead's optional Today's team, so on
@@ -323,7 +379,8 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
           * under the team card instead of waiting for the shift card's row. On a phone it is two cards in the stack. */}
         {/* Nov 21, 2026: Your week joins that column for everyone (hours by day over Coming up), so an Employee's Home
           * uses the Lead's two columns: the shift and the to-dos on the left, the week on the right. */}
-        {team || weekShown ? <div className="eb-side" id="b-home-side">
+        {team || weekShown || shortcuts?.length ? <div className="eb-side" id="b-home-side">
+          {shortcuts?.length ? <Shortcuts items={shortcuts}/> : null}
           {team ? <TeamCard place={(snapshot.currentShift ?? snapshot.nextShift)?.locationLabel}/> : null}
           {weekShown ? <WeekCard week={weekShown} time={!!hoursAuthority}/> : null}
           {weekShown ? <ComingUp week={weekShown} snapshot={snapshot} lead={lead} note={note}/> : note ? <BNote>{note}</BNote> : null}
