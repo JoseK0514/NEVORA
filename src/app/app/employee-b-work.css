@@ -227,6 +227,10 @@
     /* Final polish (Nov 20, 2026): a segment's link is its 36px thumb; the 44px target is the track (b-foundation's
      * ::after). The floor above made the white thumb 48px tall in a 44px track on Time off and Pick up and swap. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) .b-seg > :is(a[href], button) { min-width: 0 !important; min-height: var(--b-seg-item-h) !important; }
+    /* Premium pass (Nov 21, 2026): the same for Request time off's All day / Part of day: its thumb hung 8px below its
+     * track on touch screens. The 36px thumb sits inside the 44px track, and the track is the target. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) .tof-seg.tof-seg.tof-seg > button { height: var(--b-seg-item-h) !important; min-height: var(--b-seg-item-h) !important; margin: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) .tof-seg.tof-seg.tof-seg > button::after { content: "" !important; position: absolute !important; inset: -4px 0 !important; }
   }
 
   /* ---------- Phase 8 (Nov 17, 2026): the final review's fixes (review C) ---------- */
