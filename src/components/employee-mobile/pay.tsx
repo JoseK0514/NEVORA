@@ -117,7 +117,7 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
    </div>:null}
    {nextPay&&listed&&daysUntil!==null&&daysUntil>=0?<section className="em-pay-section em-pay-schedule" aria-labelledby="pay-next-title">
     <h2 id="pay-next-title">Next scheduled payday</h2>
-    <div className="em-pay-next"><CalendarBlankIcon size={22} weight="bold" aria-hidden="true"/><span>
+    <div className="em-pay-next"><CalendarBlankIcon size={22} weight="fill" aria-hidden="true"/><span>
      <strong>{day(nextPay.payday,true)}</strong>
      <small>{[daysUntil===0?'Today':daysUntil===1?'Tomorrow':`In ${daysUntil} days`,nextPay.period?`for ${payPeriod(nextPay.period.startDate,nextPay.period.endDate)}`:null].filter(Boolean).join(' · ')}</small>
      <small>From your workplace’s pay schedule. A statement appears here after your employer shares it.</small>
@@ -129,7 +129,7 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
     :state==='module-off'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,'Pay statements are turned off','Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.')
     :state==='paused'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,errorCode==='OFFLINE'?'You’re offline':'Statements are paused',errorCode==='OFFLINE'?'Reconnect to see your current statements.':'Statements are hidden while NEVORA is in the background. They reload when you return.')
     :state==='error'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,'Couldn’t load your statements','Check your connection, then try again.',<button type="button" className="em-request-secondary" onClick={reload}>Try again</button>,'alert')
-    :state==='empty'?<div className="em-pay-card em-pay-quiet"><FileTextIcon size={22} weight="bold" aria-hidden="true"/><span><strong>No published statements yet</strong><small>Your statements appear here after your employer shares them.</small></span></div>
+    :state==='empty'?<div className="em-pay-card em-pay-quiet"><FileTextIcon size={22} weight="fill" aria-hidden="true"/><span><strong>No published statements yet</strong><small>Your statements appear here after your employer shares them.</small></span></div>
     :arranged?.latest?<section className="em-pay-section" aria-labelledby="pay-latest-heading">
      <h2 id="pay-latest-heading">Latest statement</h2>
      <article className="em-pay-card em-pay-latest" aria-labelledby="pay-latest-title">

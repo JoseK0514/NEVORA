@@ -139,8 +139,8 @@ export default async function EmployeeProfilePage({
             <span className="c-row__detail"><span className="c-person__bits"><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span></span>
               <span className="c-person__state">{employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpMeta>Inactive</CorpMeta>}</span></span>
           </span>
-          {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={`Call ${name}`}><PhoneIcon weight="bold" className="c-ic" aria-hidden="true" /></a> : null}
-          {dial ? <a className="c-person__act" href={`sms:${dial}`} aria-label={`Message ${name}`}><ChatTextIcon weight="bold" className="c-ic" aria-hidden="true" /></a> : null}
+          {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={`Call ${name}`}><PhoneIcon weight="fill" className="c-ic" aria-hidden="true" /></a> : null}
+          {dial ? <a className="c-person__act" href={`sms:${dial}`} aria-label={`Message ${name}`}><ChatTextIcon weight="fill" className="c-ic" aria-hidden="true" /></a> : null}
         </div>
       </CorpCard>
       {hours ? <CorpCard id="person-hours" label="Hours">

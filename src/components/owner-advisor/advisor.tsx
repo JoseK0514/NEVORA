@@ -34,9 +34,9 @@ const starters = [
 /** Rondo's three other pages, as rows with their glyphs (the band no longer carries floating pills). */
 type GuidedTools = { weekly: boolean; knowledge: boolean; business: boolean };
 const TOOLS: { key: keyof GuidedTools; href: string; title: string; icon: ReactNode }[] = [
-  { key: "weekly", href: "/app/ai-manager/weekly", title: "Weekly plan", icon: <CalendarDotsIcon weight="bold" /> },
-  { key: "knowledge", href: "/app/ai-manager/knowledge", title: "Company knowledge", icon: <BookOpenTextIcon weight="bold" /> },
-  { key: "business", href: "/app/ai-manager/business", title: "Business records", icon: <CashRegisterIcon weight="bold" /> },
+  { key: "weekly", href: "/app/ai-manager/weekly", title: "Weekly plan", icon: <CalendarDotsIcon weight="fill" /> },
+  { key: "knowledge", href: "/app/ai-manager/knowledge", title: "Company knowledge", icon: <BookOpenTextIcon weight="fill" /> },
+  { key: "business", href: "/app/ai-manager/business", title: "Business records", icon: <CashRegisterIcon weight="fill" /> },
 ];
 /** `evidence`: the answer's checked business evidence. A business citation that has some opens its figures as a card;
  * every other source, and a business citation without evidence, stays the plain link. */

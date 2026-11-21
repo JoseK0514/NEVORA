@@ -21,7 +21,7 @@ const detect = (): Device => (passkeysAvailable() ? (isPhoneLike() ? "phone" : "
  * is gone): a face scan on phones, a fingerprint on computers. */
 const PasskeyGlyph = ({ phone }: { phone: boolean }) => phone
   ? <ScanSmileyIcon size={20} weight="bold" aria-hidden="true" focusable="false" />
-  : <FingerprintIcon size={20} weight="bold" aria-hidden="true" focusable="false" />;
+  : <FingerprintIcon size={20} weight="fill" aria-hidden="true" focusable="false" />;
 
 /** "Sign in with Face ID" (phones) / "Sign in with a passkey" (computers), under Sign in. Shown only when
  * NEXT_PUBLIC_NEVORA_PASSKEYS=on and the browser has WebAuthn; the server render never includes it. Cancelling the

@@ -20,8 +20,8 @@ function reviewText(item: AttentionReviewed, clock: Clock) {
 
 /** What the issue is about, in the app's own glyphs: timecards (Clock), the schedule (CalendarBlank), its rules (Sliders). */
 const KIND_ICON: Record<AttentionKind, ReactNode> = {
-  clock_in: <ClockIcon weight="bold" />, missing_punches: <ClockIcon weight="bold" />,
-  coverage: <CalendarBlankIcon weight="bold" />, setup: <SlidersHorizontalIcon weight="bold" />,
+  clock_in: <ClockIcon weight="fill" />, missing_punches: <ClockIcon weight="fill" />,
+  coverage: <CalendarBlankIcon weight="fill" />, setup: <SlidersHorizontalIcon weight="bold" />,
 };
 
 /* Needs your attention (Direction B, Nov 18, 2026): one card of issue rows. Each row is a tinted glyph, the title, one facts

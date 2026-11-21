@@ -213,7 +213,7 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
             <li id={`command-finder-${index}`} role="option" aria-selected={index === current} className="command-finder-option" aria-describedby={`command-finder-group-${groupKey(item.group)}`}
               data-group={item.group} onMouseMove={() => { setActive(index); setKeyboard(false); }} onClick={() => go(index)}>
               {/* Review B5 (NV-218): each row leads with its kind: a bolt for actions, a page, a person's initials, a pin. */}
-              <span className="command-finder-ico" data-group={item.group} aria-hidden="true">{item.group === "Actions" ? <LightningIcon weight="bold" /> : item.group === "Pages" ? <FileIcon weight="bold" /> : item.group === "Locations" ? <MapPinIcon weight="bold" /> : finderInitials(item.label)}</span>
+              <span className="command-finder-ico" data-group={item.group} aria-hidden="true">{item.group === "Actions" ? <LightningIcon weight="bold" /> : item.group === "Pages" ? <FileIcon weight="fill" /> : item.group === "Locations" ? <MapPinIcon weight="fill" /> : finderInitials(item.label)}</span>
               <span className="command-finder-label"><span className="command-finder-text">{emphasise(item.label, query)}</span></span>{item.detail ? <span className="command-finder-detail">{item.detail}</span> : null}
             </li>
           </Fragment>)}

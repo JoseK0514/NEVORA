@@ -71,10 +71,10 @@ function ring(p: Props, busy: boolean) {
     if (p.paused) return <Ring tone="grey"><PauseIcon size={28} weight="bold"/></Ring>;
     // Review B1 (NV-208): checking is grey (teal means alerts are on).
     if (busy) return <Ring tone="grey"><HourglassMediumIcon size={28} weight="bold"/></Ring>;
-    if (state === 'enabled') return <Ring tone="teal"><BellRingingIcon size={28} weight="bold"/></Ring>;
+    if (state === 'enabled') return <Ring tone="teal"><BellRingingIcon size={28} weight="fill"/></Ring>;
     if (state === 'denied') return <Ring tone="red"><ProhibitIcon size={28} weight="bold"/></Ring>;
     if (state === 'revoked' || state === 'error') return <Ring tone="amber"><WarningIcon size={28} weight="bold"/></Ring>;
-    return <Ring tone="grey"><BellSlashIcon size={28} weight="bold"/></Ring>;
+    return <Ring tone="grey"><BellSlashIcon size={28} weight="fill"/></Ring>;
 }
 /** Direction B (Nov 9, 2026): the phone app's Alerts page as the browser's Alerts screen draws it: the band with the way
  * back to Notifications, one card with the state as a 64px ring, its explanation and the stacked pill actions, and the
@@ -125,7 +125,7 @@ export function NativeAlertsUnavailableB() {
     <BHero back={{ href: '/app/notifications', label: 'Notifications' }} title="Alerts" titleId="b-native-alerts-title"/>
     <BStack>
       <section className="b-card nd-card" aria-labelledby="nd-device-h">
-        <div className="nd-state"><h2 className="nd-eyebrow" id="nd-device-h">This device</h2><Ring tone="grey"><BellSlashIcon size={28} weight="bold"/></Ring>
+        <div className="nd-state"><h2 className="nd-eyebrow" id="nd-device-h">This device</h2><Ring tone="grey"><BellSlashIcon size={28} weight="fill"/></Ring>
           <p className="nd-text">Your workplace has not made app alerts available. Your notifications remain in NEVORA.</p></div>
       </section>
     </BStack>

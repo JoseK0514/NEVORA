@@ -109,12 +109,12 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       <CorpCard as="div" ariaLabel="Team tools">
         <CorpRows label="Team tools">
           {/* Phase 8 (a.md #39): each tool leads with its circle, as on the phone and in Things to do's rail. */}
-          <li><CorpRow href="/app?view=team" bold icon={<Timer className="c-ic" weight="bold" />} title="Hours this week" detail="Scheduled hours for each person" chevron /></li>
-          <li><CorpRow href="/app/availability" bold icon={<UserCheck className="c-ic" weight="bold" />} title="Availability" detail="Who can work and when" chevron /></li>
+          <li><CorpRow href="/app?view=team" bold icon={<Timer className="c-ic" weight="fill" />} title="Hours this week" detail="Scheduled hours for each person" chevron /></li>
+          <li><CorpRow href="/app/availability" bold icon={<UserCheck className="c-ic" weight="fill" />} title="Availability" detail="Who can work and when" chevron /></li>
           {canImport ? <li><CorpRow href="/app/employees/import" bold icon={<UploadSimple className="c-ic" weight="bold" />} title="Import a staff list" detail="Add many people at once" chevron /></li> : null}
           {/* Board G-O-Team: one row for both ways back in. Its page resets a password and, for an Owner, links to Employee PINs. */}
-          {recovery ? <li><CorpRow href="/app/account-recovery" bold icon={<Key className="c-ic" weight="bold" />} title="Help someone sign in" detail={clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in"} chevron /></li> : null}
-          {!all && employees.some(employee => !employee.active) ? <li><CorpRow href="/app/employees?all=1#team-inactive" bold icon={<UserMinus className="c-ic" weight="bold" />} title="Inactive people" detail={`${employees.filter(employee => !employee.active).length} no longer active`} chevron /></li> : null}
+          {recovery ? <li><CorpRow href="/app/account-recovery" bold icon={<Key className="c-ic" weight="fill" />} title="Help someone sign in" detail={clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in"} chevron /></li> : null}
+          {!all && employees.some(employee => !employee.active) ? <li><CorpRow href="/app/employees?all=1#team-inactive" bold icon={<UserMinus className="c-ic" weight="fill" />} title="Inactive people" detail={`${employees.filter(employee => !employee.active).length} no longer active`} chevron /></li> : null}
         </CorpRows>
       </CorpCard>
     </CorpPage>

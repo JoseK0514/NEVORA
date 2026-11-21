@@ -36,7 +36,7 @@ export function MobileActivationView({phase,passwordReason,mismatch=false,employ
  const t=MOBILE_ACCESS_COPY[lang],u=ACCESS_COPY[lang].activation,chip=workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null,journey=useAccessJourney(),input=useRef<HTMLInputElement>(null),version=useRef({generation:0}),[copyStatus,setCopyStatus]=useState('');
  useEffect(()=>{const lifetime=version.current;lifetime.generation++;return()=>{lifetime.generation++;};},[employeeId,lang]);
  const canSubmit=['ready','pending','unavailable'].includes(phase),signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
- const other=otherSession?<p className="ar-inline" data-tone="info"><UserSwitchIcon size={16} weight="bold" aria-hidden="true"/><span>{otherSession===true?u.otherSessionUnnamed:u.otherSession.replace('{name}',otherSession)}</span></p>:null;
+ const other=otherSession?<p className="ar-inline" data-tone="info"><UserSwitchIcon size={16} weight="fill" aria-hidden="true"/><span>{otherSession===true?u.otherSessionUnnamed:u.otherSession.replace('{name}',otherSession)}</span></p>:null;
  async function copyId(){const current=version.current.generation;try{if(!navigator.clipboard?.writeText)throw Error('unavailable');await navigator.clipboard.writeText(employeeId!);if(current===version.current.generation)setCopyStatus(t.copied);}catch{if(current===version.current.generation){input.current?.focus();input.current?.select();setCopyStatus(t.copyFallback);}}}
  if(phase==='activated'&&employeeId)return <div className="activation-success ma-card" role="status" ref={successRef} tabIndex={-1}>
   <AccessSteps journey="activation" current={3} lang={lang}/>
@@ -60,9 +60,9 @@ export function MobileActivationView({phase,passwordReason,mismatch=false,employ
    {phase==='unavailable'&&!passwordReason&&!mismatch&&!offline?<><div id="activation-unavailable" className="ar-note" role="alert"><BCallout tone="red" title={unavailableNote.title??undefined}>{unavailableNote.body}</BCallout></div><SupportReference reference={supportReference} lang={lang} id="activation-reference"/></>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}><AccessPasswordPair prefix="activation" lang={lang} mismatch={mismatch} newLabel={t.createPassword}/></fieldset>
    <ul className="ar-facts" aria-label={u.factsLabel}>
-    <li><KeyIcon size={16} weight="bold" aria-hidden="true"/><span>{u.passwordFact}</span></li>
-    <li><IdentificationCardIcon size={16} weight="bold" aria-hidden="true"/><span>{u.idFact}</span></li>
-    {passkeys?<li><FingerprintIcon size={16} weight="bold" aria-hidden="true"/><span>{u.passkeyFact}</span></li>:null}
+    <li><KeyIcon size={16} weight="fill" aria-hidden="true"/><span>{u.passwordFact}</span></li>
+    <li><IdentificationCardIcon size={16} weight="fill" aria-hidden="true"/><span>{u.idFact}</span></li>
+    {passkeys?<li><FingerprintIcon size={16} weight="fill" aria-hidden="true"/><span>{u.passkeyFact}</span></li>:null}
    </ul>
    {other}
    <ActivationSubmit pending={phase==='pending'} idle={t.activateAccount} busy={t.activating} className="q-btn"/></form>:null}

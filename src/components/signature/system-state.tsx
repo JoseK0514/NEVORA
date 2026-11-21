@@ -26,7 +26,7 @@ export function SignatureNotFound() {
   </SigBand>}>
     <SigHead id="ss-places" title="Pick up where you left off" />
     <ul className="sg-card" aria-labelledby="ss-places">{places.map(({ href, label, sub, Icon }) => <li key={href}>
-      <Link className={`sg-r ${styles.ssRow}`} href={href}><span className="sg-tile" aria-hidden="true"><Icon size={22} weight="bold" /></span>
+      <Link className={`sg-r ${styles.ssRow}`} href={href}><span className="sg-tile" aria-hidden="true"><Icon size={22} weight="fill" /></span>
         <span className="sg-copy"><b>{label}</b><span>{sub}</span></span><CaretRightIcon className={styles.ssChev} size={16} weight="bold" aria-hidden="true" /></Link>
     </li>)}</ul>
   </SigPage>;

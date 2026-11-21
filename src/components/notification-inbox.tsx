@@ -120,7 +120,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
    const Icon=icons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=rowText(item);
    return <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
     onClick={()=>{if(review==='unread')void markRead(item.id);}}>
-    <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
+    <span className="q-av" aria-hidden="true"><Icon weight="fill" className="q-ic" aria-hidden="true"/></span>
     <span className="q-rt"><b>{text.title}</b><i><BSegs parts={[text.detail,<time key="at" dateTime={item.at}>{ago(item.at)}</time>]}/></i></span>
     {/* Round 5: unread shows, not only in the label (a teal dot), and the row reads as a link (chevron). */}
     {review==='unread'?<span className="q-notif-dot" aria-hidden="true"/>:null}
@@ -155,7 +155,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
        <button type="button" className="q-row q-row--av q-notif-fold" data-unread={unreadIds.length?true:undefined} aria-expanded={open} aria-controls={listId}
         aria-label={`${text.title}, ${count} notifications${unreadIds.length?`, ${unreadIds.length} unread`:''}, latest ${whenLong(item.at,zone)}`}
         onClick={()=>setExpanded(ids=>ids.includes(item.id)?ids.filter(id=>id!==item.id):[...ids,item.id])}>
-        <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
+        <span className="q-av" aria-hidden="true"><Icon weight="fill" className="q-ic" aria-hidden="true"/></span>
         <span className="q-rt"><b>{text.title}</b><i><span className="b-notif-nw">{count} notifications ·</span> <span className="b-notif-nw">latest <time dateTime={item.at}>{ago(item.at)}</time></span></i></span>
         {unreadIds.length?<span className="q-notif-dot" aria-hidden="true"/>:null}
         {chev(open)}
@@ -178,7 +178,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
 
  return <section ref={root} className={styles.inbox} aria-label="Notifications" data-private-view="notifications">
   <header className={styles.toolbar}>
-   <div className={styles.inboxTitle}><BellIcon size={22} weight="bold" aria-hidden="true"/><div><h2>Your alerts</h2>{/* Clean Manager (v3): no helper line for Owners and Managers. */}{onMarkRead?null:<p>Review an update. Take the next step.</p>}</div></div>
+   <div className={styles.inboxTitle}><BellIcon size={22} weight="fill" aria-hidden="true"/><div><h2>Your alerts</h2>{/* Clean Manager (v3): no helper line for Owners and Managers. */}{onMarkRead?null:<p>Review an update. Take the next step.</p>}</div></div>
    {denied?<Link className={styles.refresh} href="/login">Sign in</Link>:<button className={styles.refresh} type="button" data-retry={unavailable?'true':undefined} disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true"/><span>{state.refreshing?'Checking…':unavailable||ready?.coverage==='partial'?'Try again':'Refresh'}</span></button>}
   </header>
   {readNotice?<p className={styles.notice} role="status">{readNotice}</p>:null}
@@ -197,7 +197,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
      const presentation=notificationPresentation(item.label,item.eventType),Icon=icons[presentation.icon];
      const review=item.reviewState??'unavailable',action=item.actionState??'unavailable';
      return <li key={item.id} data-inbox-row><Link className={styles.row} data-unread={review==='unread'} href={item.href} prefetch={false}>
-      <span className={styles.icon}><Icon size={22} weight="bold" aria-hidden="true"/></span>
+      <span className={styles.icon}><Icon size={22} weight="fill" aria-hidden="true"/></span>
       <div className={styles.copy}><div className={styles.rowHeading}><strong>{notificationTitle(item).title}</strong><time dateTime={item.at}>{keepWhole(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',...(zone?{timeZone:zone}:{})}).format(new Date(item.at)))}</time></div>
        <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} weight="bold" aria-hidden="true"/>:null}{reviewLabels[review]}</span>{/* One status per row for Owners and Managers (v3); employees keep both. */}{onMarkRead?null:<span className={styles.action} data-state={action}>{actionLabels[action]}</span>}</div>
        <span className={styles.destination}>{presentation.destination}</span>
@@ -205,13 +205,13 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
       <span className={styles.open}>{presentation.action}<CaretRightIcon size={18} weight="bold" aria-hidden="true"/></span>
      </Link>{onMarkRead&&review==='unread'?<button type="button" className={styles.markRead} disabled={pendingRead!==null} onClick={()=>void markRead(item.id)} aria-label={`Mark ${notificationTitle(item).title} read`}>{pendingRead===item.id?'Marking read…':'Mark read'}</button>:null}</li>;
     })}</ul>
-   </section>)}</div>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="bold" aria-hidden="true"/></span>
+   </section>)}</div>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="fill" aria-hidden="true"/></span>
     <h3>{search?'No matching notifications':filter==='unread'?'No unread notifications in this view':filter==='required'?'No notifications requiring action in this view':ready.coverage==='complete'?'No notifications here.':'No available notifications to show'}</h3>
     <p>{search?'Try another search, or clear it to see your updates.':ready.coverage==='partial'?'This view is incomplete. Retry to check what is available.':'Check Requests and Schedule for their current status.'}</p>
     {search?<button type="button" className={styles.secondary} onClick={()=>setSearch('')}>Clear search</button>:filter!=='all'?<button type="button" className={styles.secondary} onClick={()=>setFilter('all')}>View all notifications</button>:null}
    </div>}
    <footer className={styles.footer}>{onMarkRead?null:<p>Updates about your requests and schedule. Opening one doesn’t complete its action.</p>}<div><Link href={onMarkRead?"/app/inbox?filter=requests":"/app/requests/hub"}>Requests<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link><Link href="/app/schedule">Schedule<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link></div></footer>
-  </>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="bold" aria-hidden="true"/></span><h3>{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Notifications didn’t load':'Loading notifications…'}</h3>{/* OW-019: online, the header's Try again is the one way forward; no line repeats it. */}{unavailable&&!denied&&!state.paused&&!offline?null:<p>{state.paused?'Return to this window while online to check current information.':denied?'Sign in again to see notifications.':unavailable?'Check your connection, then try again.':'Checking your current access.'}</p>}</div>}
+  </>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="fill" aria-hidden="true"/></span><h3>{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Notifications didn’t load':'Loading notifications…'}</h3>{/* OW-019: online, the header's Try again is the one way forward; no line repeats it. */}{unavailable&&!denied&&!state.paused&&!offline?null:<p>{state.paused?'Return to this window while online to check current information.':denied?'Sign in again to see notifications.':unavailable?'Check your connection, then try again.':'Checking your current access.'}</p>}</div>}
   </HoldHeight>
  </section>;
 }

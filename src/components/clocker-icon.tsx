@@ -31,7 +31,7 @@ export type ClockerIconName = 'lock' | 'location' | 'arrow' | 'delete' | 'check'
   | 'refresh' | 'shield' | 'globe' | 'rest' | 'meal' | 'tablet' | 'wait' | 'offline' | 'building' | 'stop' | 'warning' | 'camera'
   | 'info' | 'caret' | 'pause' | 'back' | 'unknown';
 
-/** Clocker icons (Direction B): Phosphor, the app's icon family, bold. Each headline glyph means one thing (Nov 10 review,
+/** Clocker icons (Direction B): Phosphor, the app's icon family. Each headline glyph means one thing (Nov 10 review,
  * NV-171): the cup starts a break and play ends it; the hourglass is work in progress and pause is the tablet's lockout.
  * Premium pass (Nov 18, 2026, spec 3.2 and decision 2): the product's one glyph per meaning. Red stops you: WarningCircle
  * ('stop'). Amber asks you to check: the Warning triangle ('warning'). Not confirmed: the Question ('unknown'), amber.
@@ -45,7 +45,13 @@ const icons: Record<ClockerIconName, Icon> = {
   camera: CameraIcon, info: InfoIcon, caret: CaretDownIcon, pause: PauseIcon, back: ArrowLeftIcon, unknown: QuestionIcon,
 };
 
-export function ClockerIcon({ name, size = 24, weight = 'bold', style }: { name: ClockerIconName; size?: number; weight?: IconWeight; style?: CSSProperties }) {
+// Filled subjects read clearly on the tablet. Keep status and utility marks outlined.
+const filledSubjects: ReadonlySet<ClockerIconName> = new Set([
+  'lock', 'location', 'clock-in', 'clock-out', 'break', 'resume', 'shield',
+  'globe', 'rest', 'meal', 'tablet', 'building', 'camera',
+]);
+
+export function ClockerIcon({ name, size = 24, weight, style }: { name: ClockerIconName; size?: number; weight?: IconWeight; style?: CSSProperties }) {
   const Glyph = icons[name];
-  return <Glyph size={size} weight={weight} aria-hidden="true" focusable="false" style={style} />;
+  return <Glyph size={size} weight={weight ?? (filledSubjects.has(name) ? 'fill' : 'bold')} aria-hidden="true" focusable="false" style={style} />;
 }

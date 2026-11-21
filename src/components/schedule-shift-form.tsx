@@ -123,7 +123,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
         <label className="c-field__label" htmlFor={id("person")}>Person</label>
         <span className="c-shift__control c-shift__person">
           {/* Review B2 (NV-325): before a person is chosen, a person glyph (an empty grey disc read as a broken image). */}
-          <span className={name ? "c-av" : "c-av c-av--grey"} aria-hidden="true">{name ? initialsOf(name) : <UserIcon size={16} weight="bold" />}</span>
+          <span className={name ? "c-av" : "c-av c-av--grey"} aria-hidden="true">{name ? initialsOf(name) : <UserIcon size={16} weight="fill" />}</span>
           <select id={id("person")} className="c-in" name="employeeId" value={person} required autoComplete="off" onChange={event => { changePerson(event.target.value); }}>
             <option value="" disabled>Choose someone</option>
             {active.map(item => <option key={item.id} value={item.id}>{`${item.firstName} ${item.lastName}`}</option>)}

@@ -53,7 +53,7 @@ export function LeaveRepairNote({variant}:{variant:'b'|'corp'}){
  const item=state.status==='ready'?state.read.items.find(entry=>entry.id===repairId&&entry.state==='repair_required')??null:undefined;
  const person=item?.employeeName;
  const first=person?.split(/\s+/)[0]??'they';
- let tone:'amber'|'green'|'grey'='amber',icon=<CalendarXIcon weight="bold"/>,title:string,body:React.ReactNode,action:React.ReactNode=null;
+ let tone:'amber'|'green'|'grey'='amber',icon=<CalendarXIcon weight="fill"/>,title:string,body:React.ReactNode,action:React.ReactNode=null;
  if(state.status==='loading'){tone='grey';title='Checking this repair…';body='Reading the approved time off and the published shift.';}
  else if(state.status==='paused'){tone='grey';title='Repair check paused';body='It checks again when you come back.';}
  else if(state.status==='expired'){icon=<WarningIcon weight="bold"/>;title='This check expired';body='Check again to see whether this shift still needs a replacement.';action=<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>Check again</button>;}

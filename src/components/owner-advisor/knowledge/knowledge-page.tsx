@@ -267,7 +267,7 @@ function Library({ ctx, problem }: { ctx: Ctx; problem: ReactNode }) {
     const summary = entrySummary(entry, ctx.now, ctx.timeZone);
     const isProfile = entry.kind === "profile";
     return <li key={entry.documentId}><CorpRow href={viewHref({ name: "entry", documentId: entry.documentId })}
-      icon={isProfile ? <StorefrontIcon weight="bold" /> : <FileTextIcon weight="bold" />}
+      icon={isProfile ? <StorefrontIcon weight="fill" /> : <FileTextIcon weight="fill" />}
       title={isProfile ? "Business profile" : latest.title}
       detail={isProfile ? `${LOCALE_LABELS[latest.locale]} · updated ${shortDay(latest.createdAt, ctx.timeZone)}` : `${categoryLabel(latest.category)} · ${LOCALE_LABELS[latest.locale]}`}
       value={summary.chip ? <CorpPill tone={summary.chip.tone}>{summary.chip.label}</CorpPill> : summary.value ?? undefined} valueTone="soft" /></li>;
@@ -275,7 +275,7 @@ function Library({ ctx, problem }: { ctx: Ctx; problem: ReactNode }) {
   return <>
     {problem}
     <CorpCard as="div" id="kn-profile"><CorpRows label="Business profile">
-      {profile ? row(profile) : <li><CorpRow href={viewHref({ name: "profile" })} icon={<StorefrontIcon weight="bold" />} title="Write your business profile" detail="What Rondo reads first" /></li>}
+      {profile ? row(profile) : <li><CorpRow href={viewHref({ name: "profile" })} icon={<StorefrontIcon weight="fill" />} title="Write your business profile" detail="What Rondo reads first" /></li>}
     </CorpRows></CorpCard>
     <CorpSection id="kn-docs" label="Documents" aside={<span className="kn-meta">{count} of {KNOWLEDGE_LIMITS.documents}</span>}>
       <CorpCard as="div"><CorpRows label="Documents">
@@ -534,13 +534,13 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
     {problem}
     <CorpSection id="kn-status" label="Status">
       <CorpCard as="div"><CorpRows label="Status">
-        <li><CorpRow icon={entry.archived ? <ArchiveIcon weight="bold" /> : <CheckCircleIcon weight="bold" />}
+        <li><CorpRow icon={entry.archived ? <ArchiveIcon weight="fill" /> : <CheckCircleIcon weight="bold" />}
           title={entry.archived ? "Archived" : !published ? "Not in use yet" : startsLater ? `Starts ${companyTime(published.effectiveFrom, ctx.timeZone)}` : ended ? "Ended" : "In use by Rondo"}
           detail={entry.archived ? "Edit and publish to use it again" : !published ? "Publish a draft to use it"
             : `Version ${number(published.versionId)} · published ${shortDay(published.publishedAt!, ctx.timeZone)}${published.effectiveUntil && !ended ? ` · until ${shortDay(published.effectiveUntil, ctx.timeZone)}` : ""}`} /></li>
         {state.draft ? <li><CorpRow href={viewHref({ name: "version", documentId: entry.documentId, versionId: state.draft.versionId })} icon={<PencilSimpleIcon weight="bold" />}
           title="Draft waiting for review" detail={`Version ${number(state.draft.versionId)} · saved ${shortDay(state.draft.createdAt, ctx.timeZone)}`} /></li> : null}
-        {published?.reviewDue && !entry.archived ? <li><CorpRow icon={<ClockIcon weight="bold" />} title={`Review by ${shortDay(published.reviewDue, ctx.timeZone)}`}
+        {published?.reviewDue && !entry.archived ? <li><CorpRow icon={<ClockIcon weight="fill" />} title={`Review by ${shortDay(published.reviewDue, ctx.timeZone)}`}
           detail={overdue ? undefined : "Still used after this date"} value={overdue ? <CorpPill tone="amber">Past due</CorpPill> : undefined} /></li> : null}
       </CorpRows></CorpCard>
     </CorpSection>
@@ -572,7 +572,7 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
         </div>
       </div></CorpCard>
       : <CorpCard as="div"><CorpRows label="Archive or delete">
-          {entry.archived ? null : <li><CorpRow onClick={() => setConfirm("archive")} icon={<ArchiveIcon weight="bold" />} title="Archive" detail="Rondo stops using it" /></li>}
+          {entry.archived ? null : <li><CorpRow onClick={() => setConfirm("archive")} icon={<ArchiveIcon weight="fill" />} title="Archive" detail="Rondo stops using it" /></li>}
           <li><CorpRow onClick={() => setConfirm("delete")} danger icon={<TrashIcon weight="bold" />} title="Delete" detail="Erases every version" /></li>
         </CorpRows></CorpCard>}
     </CorpSection>

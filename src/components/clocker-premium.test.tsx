@@ -1,6 +1,8 @@
 import {readFileSync} from 'node:fs';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect,it} from '@rstest/core';
+import {CoffeeIcon} from '@phosphor-icons/react/dist/ssr/Coffee';
+import {DeviceTabletIcon} from '@phosphor-icons/react/dist/ssr/DeviceTablet';
 import {QuestionIcon} from '@phosphor-icons/react/dist/ssr/Question';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
@@ -17,6 +19,9 @@ const svg=(node:React.ReactElement)=>renderToStaticMarkup(node);
 const bold={size:24,weight:'bold' as const,'aria-hidden':'true' as const,focusable:'false' as const};
 
 it('draws the product’s glyph for each meaning (spec 3.2, decision 2)',()=>{
+ expect(svg(<ClockerIcon name="break"/>)).toBe(svg(<CoffeeIcon {...bold} weight="fill"/>));
+ expect(svg(<ClockerIcon name="tablet"/>)).toBe(svg(<DeviceTabletIcon {...bold} weight="fill"/>));
+ expect(svg(<ClockerIcon name="break" weight="bold"/>)).toBe(svg(<CoffeeIcon {...bold}/>));
  expect(svg(<ClockerIcon name="unknown"/>)).toBe(svg(<QuestionIcon {...bold}/>));
  expect(svg(<ClockerIcon name="stop"/>)).toBe(svg(<WarningCircleIcon {...bold}/>));
  expect(svg(<ClockerIcon name="warning"/>)).toBe(svg(<WarningIcon {...bold}/>));

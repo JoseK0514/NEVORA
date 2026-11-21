@@ -218,7 +218,7 @@ export function ReminderControlView({id, name, line, phase, lang = 'en', offline
   if (line.kind === 'placeholder') return <span className="b-rem" id={id} data-phase={phase}><i className="b-rem__ph" aria-hidden="true" /><span className="q-sr">{line.text}</span></span>;
   if (line.kind === 'pill') return <span className="b-rem" id={id} data-phase={phase} data-offline={offline || undefined}>
     {offline ? <span className="b-rem__tx" id={why} data-tone="grey"><WifiSlashIcon weight="bold" aria-hidden="true" />{t.offline}</span> : null}
-    <button type="button" className="b-btn b-btn--ghost b-rem__go" aria-haspopup="dialog" aria-label={t.remindAria(name)} aria-describedby={offline ? why : undefined} disabled={offline} onClick={() => onAction('open')}><BellRingingIcon weight="bold" aria-hidden="true" />{line.text}</button>
+    <button type="button" className="b-btn b-btn--ghost b-rem__go" aria-haspopup="dialog" aria-label={t.remindAria(name)} aria-describedby={offline ? why : undefined} disabled={offline} onClick={() => onAction('open')}><BellRingingIcon weight="fill" aria-hidden="true" />{line.text}</button>
   </span>;
   const Icon = ICONS[phase] ?? null;
   const action = line.action, label = line.actionLabel;
@@ -235,5 +235,5 @@ export function ReminderBulkButton() {
   const ui = useContext(Context);
   if (!ui || ui.store.eligible.length < 2) return null;
   const t = reminderCopy[ui.lang];
-  return <button type="button" id={ui.bulkId} className="b-btn b-btn--ghost b-rem__all" aria-haspopup="dialog" disabled={ui.store.offline} onClick={ui.openMany}><BellRingingIcon weight="bold" aria-hidden="true" />{t.remindMany(ui.store.eligible.length)}</button>;
+  return <button type="button" id={ui.bulkId} className="b-btn b-btn--ghost b-rem__all" aria-haspopup="dialog" disabled={ui.store.offline} onClick={ui.openMany}><BellRingingIcon weight="fill" aria-hidden="true" />{t.remindMany(ui.store.eligible.length)}</button>;
 }

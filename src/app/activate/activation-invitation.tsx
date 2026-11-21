@@ -136,7 +136,7 @@ export function ActivationInvitationView({phase,passwordReason,mismatch=false,em
  // U11 (Nov 17, 2026): every step says where the person is and what comes next (the steps line), what they are setting
  // (the facts under the passwords), and ends with "You’re set" and the ID carried to Sign in. One error style under a
  // field; an offline attempt sends nothing; an unknown result is never shown as failed or as done.
- const other=otherSession?<p className="ar-inline" data-tone="info"><UserSwitchIcon size={16} weight="bold" aria-hidden="true"/><span>{otherSession===true?u.otherSessionUnnamed:u.otherSession.replace('{name}',otherSession)}</span></p>:null;
+ const other=otherSession?<p className="ar-inline" data-tone="info"><UserSwitchIcon size={16} weight="fill" aria-hidden="true"/><span>{otherSession===true?u.otherSessionUnnamed:u.otherSession.replace('{name}',otherSession)}</span></p>:null;
  const workspace=workspaceName??t.workspaceUnavailable;
  // Phase 5 follow-up (PB-021, PB-015): the workplace is a chip under the title, as on Sign in, in the states whose line
  // does not already name it (with the form on screen U11's line says whose account it is); what else the page offers
@@ -181,9 +181,9 @@ export function ActivationInvitationView({phase,passwordReason,mismatch=false,em
     <ActivationPasswords quiet lang={lang} mismatch={mismatch} errorId={error?'activation-error':undefined}/>
    </fieldset>
    <ul className="ar-facts" aria-label={u.factsLabel}>
-    <li><KeyIcon size={16} weight="bold" aria-hidden="true"/><span>{u.passwordFact}</span></li>
-    <li><IdentificationCardIcon size={16} weight="bold" aria-hidden="true"/><span>{u.idFact}</span></li>
-    {passkeys?<li><FingerprintIcon size={16} weight="bold" aria-hidden="true"/><span>{u.passkeyFact}</span></li>:null}
+    <li><KeyIcon size={16} weight="fill" aria-hidden="true"/><span>{u.passwordFact}</span></li>
+    <li><IdentificationCardIcon size={16} weight="fill" aria-hidden="true"/><span>{u.idFact}</span></li>
+    {passkeys?<li><FingerprintIcon size={16} weight="fill" aria-hidden="true"/><span>{u.passkeyFact}</span></li>:null}
    </ul>
    {other}
    <ActivationSubmit pending={phase==='pending'} idle={t.activateAccount} busy={t.activatingAccount} className="q-btn"/>

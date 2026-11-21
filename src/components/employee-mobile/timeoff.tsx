@@ -28,7 +28,7 @@ export function PickField({id,name,type,label,value,min,onChange,invalid,describ
  return <div className="c-field"><label className="c-field__label" htmlFor={id}>{label}</label>
   <span className="c-in tof-pick"><span className={value?undefined:'tof-pick__ph'} aria-hidden="true">{shown}</span>
    {/* Direction B (phones): the field's calendar or clock glyph; hidden elsewhere. */}
-   {type==='date'?<CalendarBlankIcon className="tof-pick__ic" weight="bold" aria-hidden="true"/>:<ClockIcon className="tof-pick__ic" weight="bold" aria-hidden="true"/>}
+   {type==='date'?<CalendarBlankIcon className="tof-pick__ic" weight="fill" aria-hidden="true"/>:<ClockIcon className="tof-pick__ic" weight="fill" aria-hidden="true"/>}
    <input id={id} name={name} type={type} required min={min} value={value} aria-invalid={invalid||undefined} aria-describedby={describedBy}
     onClick={event=>{try{event.currentTarget.showPicker();}catch{/* Browsers without showPicker open their own picker. */}}}
     onChange={event=>onChange(event.target.value)}/></span>

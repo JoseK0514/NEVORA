@@ -89,17 +89,21 @@ const icons = {
 
 export type NavIconName = keyof typeof icons;
 
+const controls: ReadonlySet<NavIconName> = new Set([
+  "alert", "publish", "logout", "more", "arrowRight", "refresh", "chevronRight", "export", "sidebar",
+]);
+
 export function NavIcon({
   name,
   size = 18,
   className,
-  weight = "bold",
+  weight = controls.has(name) ? "bold" : "fill",
 }: {
   name: NavIconName;
   size?: number;
   employee?: boolean;
   className?: string;
-  /** Controls default to bold. Navigation uses duotone at rest and fill when current. */
+  /** Topic glyphs use fill and controls use bold. Navigation sets its own resting and selected weights. */
   weight?: "regular" | "fill" | "bold" | "duotone";
 }) {
   const Icon = icons[name];

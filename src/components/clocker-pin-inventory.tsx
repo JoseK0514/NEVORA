@@ -43,7 +43,7 @@ export function ClockerPinInventory({statuses,details={},lang='en'}:{statuses:Ow
    {visible.length?<BCard id="clocker-pins" title={heading}><BList label={t.pinsList}>{visible.map(row)}</BList></BCard>
     :<BCard label={heading}>{wanted
       ?<BState kind="empty" icon={<MagnifyingGlass weight="bold"/>} title={t.pinsNoMatch} line={t.pinsNoMatchBody}><button type="button" className="b-btn b-btn--ghost" onClick={()=>setQuery('')}>{t.pinsClearSearch}</button></BState>
-      :<BState kind="empty" icon={<UsersThreeIcon weight="bold"/>} title={filter==='none'?t.pinsEmptyNone:filter==='set'?t.pinsEmptySet:t.pinsEmptyInactive} line={filter==='none'?t.pinsEmptyNoneBody:filter==='set'?t.pinsEmptySetBody:undefined}>
+      :<BState kind="empty" icon={<UsersThreeIcon weight="fill"/>} title={filter==='none'?t.pinsEmptyNone:filter==='set'?t.pinsEmptySet:t.pinsEmptyInactive} line={filter==='none'?t.pinsEmptyNoneBody:filter==='set'?t.pinsEmptySetBody:undefined}>
         {filter==='set'&&count('none')?<button type="button" className="b-btn b-btn--ghost" onClick={()=>setFilter('none')}>{t.pinsNeed(count('none'))}</button>:null}</BState>}</BCard>}
    <BNote>{t.pinsNote}</BNote>
   </div>

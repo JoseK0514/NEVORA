@@ -83,7 +83,7 @@ function Pushed({ back, title, id, sub }: { back: { href: string; label: string 
  * left-aligned (it was centred with a grey button). */
 export function EmptyCard({ title, detail, action, alert, label = 'Payroll' }: { title: string; detail?: ReactNode; action?: { href: string; label: string }; alert?: boolean; label?: string }) {
   return <CorpCard as="div" ariaLabel={label}>
-    <div className="c-pay__empty"><BState kind={alert ? 'failed' : 'empty'} alert={alert} icon={alert ? undefined : <ReceiptIcon weight="bold" />} title={title} line={detail} action={action ? { label: action.label, href: action.href } : undefined} /></div>
+    <div className="c-pay__empty"><BState kind={alert ? 'failed' : 'empty'} alert={alert} icon={alert ? undefined : <ReceiptIcon weight="fill" />} title={title} line={detail} action={action ? { label: action.label, href: action.href } : undefined} /></div>
   </CorpCard>;
 }
 
@@ -212,13 +212,13 @@ function RunRow({ item, replaced = false }: { item: PayrollRun; replaced?: boole
   const approved = item.status === 'APPROVED';
   // Closing F1 (NV-082): a payroll a correction replaced says so (a grey "Replaced" chip, "Replaced by a correction"; Phase 8, a.md #47: the words the statements use) and is
   // listed right under its correction (byCorrection), indented.
-  if (replaced) return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
+  if (replaced) return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="fill" />}
     title={<>{quietRange(item.period.startDate, item.period.endDate)} <CorpPill tone="neutral">Replaced</CorpPill></>}
     detail={<BSegs parts={['Replaced by a correction', `Payday ${quietDay(item.payday)}`.replace(/ /g, '\u00a0')]} />}
     value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink" chevron />;
   // Round 5 (Nov 7, 2026): drawn like Payroll's Recent payrolls: the receipt icon, a "Correction" pill instead of words in
   // the title, the amount bold. A status that needs the Owner still wins the pill.
-  return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
+  return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="fill" />}
     title={<>{quietRange(item.period.startDate, item.period.endDate)}{approved && item.correctionOf ? <> <CorpPill tone="neutral">Correction</CorpPill></> : null}</>}
     detail={<BSegs parts={[`Payday ${quietDay(item.payday)}`.replace(/ /g, '\u00a0'), approved ? 'Approved' : null]} />}
     value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink"
@@ -311,7 +311,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
     {bStep(3, 'Approve payroll', native ? 'Statements are shared with your team automatically' : 'Then share pay statements')}
   </>;
   const bScreen = <BScreen ink>
-    <BHero title="Payroll" titleId="b-payroll-title" sub={sub || undefined} right={canEditSettings ? <BButtonLink href="/app/settings/payroll" kind="glass" label="Payroll settings"><GearSixIcon size={16} weight="bold" aria-hidden="true" />Settings</BButtonLink> : undefined}>
+    <BHero title="Payroll" titleId="b-payroll-title" sub={sub || undefined} right={canEditSettings ? <BButtonLink href="/app/settings/payroll" kind="glass" label="Payroll settings"><GearSixIcon size={16} weight="fill" aria-hidden="true" />Settings</BButtonLink> : undefined}>
       <p className="b-sub c-pay__scope c-pay__scope--hero">{SCOPE_LINE}</p>
       {current ? <div className="b-hpad">
         <div className="b-hkicker">{/* Premium pass FA (final verification A #6, spec 3.1): how far
@@ -348,7 +348,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
               * card's action, so it doesn't trail after the button. */}
             {timecards ? <Link className="b-step b-step--link" href={timecards.href} aria-label={`Timecards, ${timecards.line}`}>
               {/* Phase 9 (spec 3.6): timecards are the Clock everywhere (the sidebar's Time). */}
-              <span className="b-step__n" aria-hidden="true"><ClockIcon weight="bold" /></span>
+              <span className="b-step__n" aria-hidden="true"><ClockIcon weight="fill" /></span>
               <span className="b-step__tx"><span className="b-step__t">Timecards</span><span className="b-step__s">{keepWhole(timecards.line)}</span></span>
               <CaretRightIcon className="b-step__chev" size={18} weight="bold" aria-hidden="true" />
             </Link> : null}
@@ -367,7 +367,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             // Closing F1 (NV-082): a replaced payroll follows its correction with a grey "Replaced" chip.
             // Premium pass FA (final verification A #30): one payroll row, the one Payroll history draws: a row that opens leads
             // with the teal circle, "Approved" is the last fact of its line, and the amount is "Net".
-            return <BRow key={item.id} href={reviewHref(item.id)} lead={<BIcon tone="teal"><ReceiptIcon weight="bold" /></BIcon>}
+            return <BRow key={item.id} href={reviewHref(item.id)} lead={<BIcon tone="teal"><ReceiptIcon weight="fill" /></BIcon>}
               title={<span className={replaced ? 'c-pay__was' : undefined}>{quietRange(item.period.startDate, item.period.endDate)}</span>} chip={replaced ? <BChip>Replaced</BChip> : item.correctionOf ? <BChip>Correction</BChip> : approved ? undefined : <BChip tone="amber">{statusLabels[item.status]}</BChip>}
               /* Premium pass FA (final verification A #10): "Payday Fri, Nov 6" is one unit and never splits. */
               sub={<BSegs parts={[replaced ? 'Replaced by a correction' : null, `Payday ${quietDay(item.payday)}`.replace(/ /g, '\u00a0'), approved && !replaced ? 'Approved' : null]} />}

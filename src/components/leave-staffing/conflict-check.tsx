@@ -32,7 +32,7 @@ export function LeaveConflictCheck({request,employeeName}:{request:PendingLeave;
  if(!weeks)body=<Line tone="amber" icon={<WarningIcon weight="bold"/>} title="Too long to check here" sub="This request spans more than six weeks. Check each week’s schedule before you decide."/>;
  else if(state.status==='loading')body=<p className="ls-check__state" aria-busy="true">Checking the published schedule…</p>;
  else if(state.status==='paused')body=<p className="ls-check__state">Paused while you’re away. It checks again when you come back.</p>;
- else if(state.status==='expired')body=<Line tone="amber" icon={<ClockCountdownIcon weight="bold"/>} title="This check expired" sub="Check again before you decide." action={<button type="button" className="c-btn c-btn--secondary ls-check__retry" onClick={refresh}>Check again</button>}/>;
+ else if(state.status==='expired')body=<Line tone="amber" icon={<ClockCountdownIcon weight="fill"/>} title="This check expired" sub="Check again before you decide." action={<button type="button" className="c-btn c-btn--secondary ls-check__retry" onClick={refresh}>Check again</button>}/>;
  else if(state.status==='unavailable')body=state.denied
   ?<Line tone="red" icon={<WarningCircleIcon weight="bold"/>} title="Your access changed" sub="Reload the page to check this request with your current access."/>
   :<Line tone="amber" icon={<WarningIcon weight="bold"/>} title="Couldn’t check for shift conflicts" sub="This doesn’t mean there are none. Try again before you decide." action={<button type="button" className="c-btn c-btn--secondary ls-check__retry" onClick={refresh}>Try again</button>}/>;

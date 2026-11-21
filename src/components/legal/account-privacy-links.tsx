@@ -33,7 +33,7 @@ export function AccountPrivacyLinks({ variant = "card", sectionClassName = "", h
       <div className="profile-settings-list">
         {rows.map(({ href, title, meta, Icon }) => (
           <Link key={href} className="profile-setting-row" href={href} prefetch={false}>
-            <span className="profile-setting-copy"><Icon size={20} weight="bold" aria-hidden="true" /><span><strong>{title}</strong><small>{meta}</small></span></span>
+            <span className="profile-setting-copy"><Icon size={20} weight="fill" aria-hidden="true" /><span><strong>{title}</strong><small>{meta}</small></span></span>
             <CaretRightIcon className="profile-setting-caret" size={18} weight="bold" aria-hidden="true" />
           </Link>
         ))}

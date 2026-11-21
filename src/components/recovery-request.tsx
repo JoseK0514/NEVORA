@@ -60,10 +60,10 @@ export function RecoveryRequest({hydrated,busy,done,message,onSubmit,lang='en',m
  // goes with them to Sign in or to the reset page (memory only, for that one move). PB-037: the keyboard's action key.
  const carry=()=>{const field=document.getElementById('recovery-employee-id');const id=(field instanceof HTMLInputElement?field.value.trim():'')||kept.employeeId;if(id)journey.carry(id);};
  return <>
-  <div className="q-hd">{done?<span className="q-auth__mark q-auth__mark--head" aria-hidden="true"><EnvelopeSimpleIcon size={28} weight="bold"/></span>:null}<h1 id="recovery-title">{done?t.checkEmail.title:t.forgotTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}<p>{done?u.requestedSub:t.quiet.forgotSub}</p></div>
+  <div className="q-hd">{done?<span className="q-auth__mark q-auth__mark--head" aria-hidden="true"><EnvelopeSimpleIcon size={28} weight="fill"/></span>:null}<h1 id="recovery-title">{done?t.checkEmail.title:t.forgotTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}<p>{done?u.requestedSub:t.quiet.forgotSub}</p></div>
   {done?<div className="q-card q-auth__card ar-sent">
    <AccessSteps journey="recovery" current={2} lang={lang} named={false}/>
-   <span className="q-auth__mark" aria-hidden="true"><EnvelopeSimpleIcon size={28} weight="bold"/></span>
+   <span className="q-auth__mark" aria-hidden="true"><EnvelopeSimpleIcon size={28} weight="fill"/></span>
    <div className="q-auth__receipt" ref={feedback} role="status" tabIndex={-1} aria-labelledby="recovery-title">
     {message?<p>{authMessage(lang,message)}</p>:null}<BCallout tone="teal">{u.notConfirmed} {t.checkEmail.expires}</BCallout>
    </div>

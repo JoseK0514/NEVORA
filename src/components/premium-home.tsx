@@ -164,7 +164,7 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
     timecards={items.filter(item => item.type === "TIMECARD")} timecardsReady={!!readyActions} businessDay={readyToday?.today ?? day} nextPay={nextPay} payrollStatus={payrollStatus} setup={setup} setupCard={setupCard} billing={billing} liveReaders={liveReaders} week={homeB} />;
   // Quiet (v4, approved Oct 23): top bar, title, Right now, Needs you, Setup. Nothing else on Home.
   return <div className="q-page premium-home cm-home" data-nv-page="" data-live-readers={liveReaders}>
-    <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon weight="bold" className="q-ic" aria-hidden="true" /></QuietBarIcon></QuietBar>
+    <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon weight="fill" className="q-ic" aria-hidden="true" /></QuietBarIcon></QuietBar>
     <QuietHeader title="Today" sub={<>{dateLabel}<span role="status" className="q-sr">{summary}</span></>} />
     <QuietRightNow today={today} monitor={monitor} monitorPending={monitorPending} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
     <div className="cm-home__now" ref={nowColumn}>

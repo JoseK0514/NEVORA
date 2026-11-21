@@ -159,7 +159,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
               id="break-minutes" name="targetMinutes" type="text" inputMode="numeric" pattern="(?:[1-9][0-9]{0,2}|1[0-3][0-9]{2}|14[0-3][0-9]|1440)" maxLength={4}
               defaultValue={selection.type?.targetMinutes ?? ''} placeholder="e.g. 15" />
           </div></FieldErrors> : <div className="wc-fact">
-            <span className="wc-fact__icon" aria-hidden="true">{selection.operation === 'ARCHIVE' ? <ArchiveIcon size={20} weight="bold" /> : <ArrowClockwiseIcon size={20} weight="bold" />}</span>
+            <span className="wc-fact__icon" aria-hidden="true">{selection.operation === 'ARCHIVE' ? <ArchiveIcon size={20} weight="fill" /> : <ArrowClockwiseIcon size={20} weight="bold" />}</span>
             <div><span className="wc-fact__value">{selection.type?.name}</span>
               <span className="wc-fact__note">{selection.operation === 'ARCHIVE' ? 'Breaks already in progress can still end. Recorded settings stay unchanged.' : 'Earlier records stay unchanged.'}</span></div>
           </div>}

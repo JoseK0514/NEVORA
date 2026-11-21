@@ -36,7 +36,7 @@ export function AuthProof({ t }: { t: AuthCopy }) {
   return <ul className="q-auth__proof" aria-label={t.proof.label}>
     <li><ShieldCheckIcon size={20} weight="bold" aria-hidden="true" /><span>{t.proof.security}</span></li>
     <li><TranslateIcon size={20} weight="bold" aria-hidden="true" /><span>{t.proof.languages}</span></li>
-    <li><LifebuoyIcon size={20} weight="bold" aria-hidden="true" /><span>{t.proof.helpBefore}<b>{SUPPORT_EMAIL}</b>{t.proof.helpAfter}</span></li>
+    <li><LifebuoyIcon size={20} weight="fill" aria-hidden="true" /><span>{t.proof.helpBefore}<b>{SUPPORT_EMAIL}</b>{t.proof.helpAfter}</span></li>
   </ul>;
 }
 

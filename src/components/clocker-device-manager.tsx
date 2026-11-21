@@ -221,7 +221,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     const quiet = item.state === 'REVOKED'
       ? <button type="button" className="b-btn b-btn--quiet ck-text" data-clocker-device={item.id} aria-label={t.setUpAgainFor(item.name)} disabled={!hydrated || !active} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{t.setUpAgain}</button>
       : <button type="button" className="b-btn b-btn--quiet ck-text" data-clocker-device={item.id} aria-label={t.manageFor(item.name)} disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device: item }, event)}>{t.manage}</button>;
-    return <BRow key={item.id} lead={<BIcon tone={line.tone === 'amber' ? 'amber' : item.state === 'ACTIVE' ? 'teal' : 'grey'}><DeviceTabletIcon weight="bold" /></BIcon>}
+    return <BRow key={item.id} lead={<BIcon tone={line.tone === 'amber' ? 'amber' : item.state === 'ACTIVE' ? 'teal' : 'grey'}><DeviceTabletIcon weight="fill" /></BIcon>}
       title={item.name} chip={line.chip ? <BChip tone="amber">{line.chip}</BChip> : undefined} sub={<Dotted text={line.sub} />} trail={<span className="ck-acts">{go}{quiet}</span>} />;
   };
 
@@ -240,7 +240,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
         <BList label={t.tabletsList}>{current.map(row)}</BList>
         <div className="ck-foot"><button type="button" className="b-btn b-btn--teal" data-clocker-add="" disabled={!canAdd} onClick={event => open({ operation: 'REGISTER' }, event)}>{t.addTablet}</button></div>
       </BCard> : activeLocations.length ? <BCard label={t.emptyTitle}>
-        <BState kind="empty" icon={<DeviceTabletIcon weight="bold" />} title={t.emptyTitle} line={t.emptyBody}>
+        <BState kind="empty" icon={<DeviceTabletIcon weight="fill" />} title={t.emptyTitle} line={t.emptyBody}>
           <button type="button" className="b-btn b-btn--teal" data-clocker-add="" disabled={!canAdd} onClick={event => open({ operation: 'REGISTER' }, event)}>{t.addFirstTablet}</button>
         </BState>
       </BCard> : null}

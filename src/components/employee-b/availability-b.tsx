@@ -17,8 +17,8 @@ export function AvailabilityB({sub,change,children}:{sub:string;/** Change one w
  return <BScreen back>
   <BHero back={{href:'/app/schedule',label:'Schedule'}} title="Availability" titleId={AVAILABILITY_B_TITLE_ID} sub={sub}>
    {/* Scheduling restrictions (U02): the times agreed with the manager are their own page, one tap from here. */}
-   <div className="b-hrow">{change?<BButtonLink href={change} kind="glass"><CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>Change one week</BButtonLink>:null}
-    <BButtonLink href="/app/availability/agreement" kind="glass"><HandshakeIcon size={16} weight="bold" aria-hidden="true"/>Agreed times</BButtonLink></div>
+   <div className="b-hrow">{change?<BButtonLink href={change} kind="glass"><CalendarBlankIcon size={16} weight="fill" aria-hidden="true"/>Change one week</BButtonLink>:null}
+    <BButtonLink href="/app/availability/agreement" kind="glass"><HandshakeIcon size={16} weight="fill" aria-hidden="true"/>Agreed times</BButtonLink></div>
   </BHero>
   {children?<BStack>{children}</BStack>:null}
  </BScreen>;

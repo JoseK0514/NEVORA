@@ -182,7 +182,7 @@ function NextCard({snapshot, mobile = false}: {snapshot: HomeSnapshot; mobile?: 
     <div className="q-next__top"><span>{now ? 'Scheduled now' : 'Next shift'}</span><span>{now ? `Until ${clock(now.endAt, zone)}` : dayWord(shift, snapshot)}</span></div>
     <b className="q-next__time"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="nv-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></b>
     <span className="q-next__day">{longDay(shift, zone)}</span>
-    <div className="q-next__meta"><MapPinIcon weight="bold" className="q-ic" aria-hidden="true"/><span>{where}</span></div>
+    <div className="q-next__meta"><MapPinIcon weight="fill" className="q-ic" aria-hidden="true"/><span>{where}</span></div>
     <span className="em-mobile-only em-next-action">{now ? "View today’s shift" : "View shift details"}<ArrowRightIcon size={20} weight="bold" aria-hidden="true"/></span>
   </Link>;
 }
@@ -233,7 +233,7 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
 
   return <QuietPage>
     <div className="q-home" data-home-state={viewState} aria-busy={refreshing || loading}>
-      <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon weight="bold" className="q-ic" aria-hidden="true"/></QuietBarIcon></QuietBar>
+      <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon weight="fill" className="q-ic" aria-hidden="true"/></QuietBarIcon></QuietBar>
       <div className="q-hello"><small>{date}</small><h1>{mobile ? 'Today' : name && snapshot ? `${greeting(snapshot.observedAt, snapshot.timeZone)}, ${name}` : 'Home'}</h1></div>
       {snapshot ? <section aria-labelledby="employee-reviewed-next-heading">
         <h2 id="employee-reviewed-next-heading" className={mobile ? "em-section-title" : "nv-sr"}>Your shift</h2>
@@ -262,7 +262,7 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
         </QuietList>
       </QuietSection></div> : null}
       {snapshot && teamMessage ? <QuietSection id="employee-home-team" title="Today’s team" aside={(snapshot.currentShift ?? snapshot.nextShift)?.locationLabel}>
-        <QuietList><QuietRow href="/app/updates/compose" variant="tint" avatar={<MegaphoneIcon weight="bold" className="q-ic" aria-hidden="true"/>} title="Message today’s team" detail="Everyone on shift today"/></QuietList>
+        <QuietList><QuietRow href="/app/updates/compose" variant="tint" avatar={<MegaphoneIcon weight="fill" className="q-ic" aria-hidden="true"/>} title="Message today’s team" detail="Everyone on shift today"/></QuietList>
       </QuietSection> : null}
       {weekShown ? <QuietSection id="employee-home-week" title="This week" aside={weekShown.shifts.length ? `${weekShown.shifts.length} ${weekShown.shifts.length === 1 ? 'shift' : 'shifts'} · ${weekHours(weekShown.shifts)}` : 'No shifts'}>
         <Glance week={weekShown}/>

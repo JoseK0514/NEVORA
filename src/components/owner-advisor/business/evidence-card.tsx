@@ -66,7 +66,7 @@ export function BusinessCitationItem({ source, evidence, lang = "en", initialOpe
   const keys = (event: KeyboardEvent) => { if (event.key === "Escape" && openAt !== null) { event.stopPropagation(); close(); } };
   return <li className="be-item" onKeyDown={keys}>
     <button ref={trigger} type="button" className="be-cite" aria-expanded={openAt !== null} aria-controls={`${id}-card`} aria-label={t.showFigures(source.label)}
-      onClick={() => openAt === null ? open() : close()}><ReceiptIcon weight="bold" aria-hidden="true" /><span>{source.label}</span></button>
+      onClick={() => openAt === null ? open() : close()}><ReceiptIcon weight="fill" aria-hidden="true" /><span>{source.label}</span></button>
     {observed}
     {openAt !== null ? <div ref={card} id={`${id}-card`} className="be-card" role="group" aria-label={t.cardLabel(source.label)} tabIndex={-1}>
       <button type="button" className="be-card__close" aria-label={t.close} onClick={close}><XIcon weight="bold" aria-hidden="true" /></button>

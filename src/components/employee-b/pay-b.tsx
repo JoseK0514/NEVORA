@@ -135,7 +135,7 @@ export function PayB(props: PayBProps) {
   const when = daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`;
   return <BScreen ink>
     {/* Desktop: Pay history is the band's glass action (eb-desk); the phone reaches it from the Earlier card. */}
-    <BHero title="Pay" titleId="b-pay-title" right={<span className="eb-desk"><BButtonLink href="/app/my-pay?view=history" kind="glass"><ClockCounterClockwiseIcon size={16} weight="bold" aria-hidden="true"/>Pay history</BButtonLink></span>}>
+    <BHero title="Pay" titleId="b-pay-title" right={<span className="eb-desk"><BButtonLink href="/app/my-pay?view=history" kind="glass"><ClockCounterClockwiseIcon size={16} weight="fill" aria-hidden="true"/>Pay history</BButtonLink></span>}>
       {/* Phase 4 (EM-010): the period is plain band text under the date, not a chip; the one glass pill sits beside the
         * block at 44px (phones) or 48px. */}
       {showPayday ? <div className="b-hpad ep-next">
@@ -144,7 +144,7 @@ export function PayB(props: PayBProps) {
           <p className="ep-next__v">{payday(nextPay!.payday)}</p>
           {nextPay!.period ? <p className="ep-next__p">For work {period(nextPay!.period.startDate, nextPay!.period.endDate)}</p> : null}
         </div>
-        <BButtonLink href="/app/my-time" kind="glass" label="See your hours"><ClockIcon size={16} weight="bold" aria-hidden="true"/>See your hours</BButtonLink>
+        <BButtonLink href="/app/my-time" kind="glass" label="See your hours"><ClockIcon size={16} weight="fill" aria-hidden="true"/>See your hours</BButtonLink>
       </div> : null}
     </BHero>
     <BStack>
@@ -154,7 +154,7 @@ export function PayB(props: PayBProps) {
       {/* Inspection Nov 14 (EM-003): the card says its state ("Statement ready", or Corrected) and ends in one real button. */}
       {latest ? <BCard id="b-pay-last" title="Last pay statement" chip={tag(latest) ?? <BChip tone="green" icon="check">Statement ready</BChip>}>
         <div className="ep-big"><p className="ep-big__v">{payday(latest.payday)}</p><p className="ep-big__s">For work {period(latest.period.startDate, latest.period.endDate)}</p></div>
-        <div className="ep-act"><BButtonLink href={paycheckHref(latest.id)} kind="teal" full label={`View statement, ${paydayLong(latest.payday)}`}><FileTextIcon size={18} weight="bold" aria-hidden="true"/>View statement</BButtonLink></div>
+        <div className="ep-act"><BButtonLink href={paycheckHref(latest.id)} kind="teal" full label={`View statement, ${paydayLong(latest.payday)}`}><FileTextIcon size={18} weight="fill" aria-hidden="true"/>View statement</BButtonLink></div>
       </BCard> : fallback}
       {earlier.length ? <BCard id="b-pay-recent" title="Earlier" link={ordered.length > 3 ? {href: '/app/my-pay?view=history', label: 'See all', aria: 'See all statements'} : undefined}>
         <BList label="Earlier statements">{earlier.map(item => <Row key={item.id} item={item} byId={byId}/>)}</BList>

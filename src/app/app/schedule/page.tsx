@@ -428,7 +428,7 @@ export default async function SchedulePage({
         : <BButtonLink href={addShiftHref} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>}
     </>,
     location: <ActionMenu id="b-schedule-location-menu" label="Location" title="Location" ariaLabel={`Location: ${locationName}`}
-      triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="bold" aria-hidden="true" />{locationName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>
+      triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="fill" aria-hidden="true" />{locationName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>
       {locationItems}
     </ActionMenu>,
     weekState: bWeekState,

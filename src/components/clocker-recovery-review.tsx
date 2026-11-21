@@ -195,7 +195,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation, lan
     </section>
 
     {/* Final review B #9: the link to Timecards draws Timecards' own glyph, the Clock (the counter-clockwise clock is Time corrections). */}
-    <BCard label={t.timecardsTitle}><BList><BRow href="/app/timecards" lead={<BIcon tone="teal"><ClockIcon weight="bold" /></BIcon>} title={t.timecardsTitle} sub={t.timecardsSub} /></BList></BCard>
+    <BCard label={t.timecardsTitle}><BList><BRow href="/app/timecards" lead={<BIcon tone="teal"><ClockIcon weight="fill" /></BIcon>} title={t.timecardsTitle} sub={t.timecardsSub} /></BList></BCard>
     </div>
   </SettingsFrame>;
   return observation ? <ScopedReadFrame observation={observation}>{content}</ScopedReadFrame> : content;

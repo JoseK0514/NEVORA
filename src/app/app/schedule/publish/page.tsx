@@ -98,7 +98,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
   const allPublished = !drafts.length && !pending?.hasPendingChanges && locations.some(location => location.status === "PUBLISHED");
   const pill = drafts.length || pending?.hasPendingChanges ? <CorpPill tone="amber">{[drafts.length ? plural(drafts.length, "draft", "drafts") : "", pending?.hasPendingChanges ? plural(pending.pendingCount, "change", "changes") : ""].filter(Boolean).join(" · ")}</CorpPill>
     : allPublished ? <CorpPill tone="green">Published</CorpPill> : null;
-  const notified = <CorpNote icon={<BellIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true" />}>{pending?.hasPendingChanges && drafts.length ? "Your team is notified when you publish. Changes to published days go out too." : "Your team is notified when you publish."}</CorpNote>;
+  const notified = <CorpNote icon={<BellIcon weight="fill" className="c-ic c-ic--s" aria-hidden="true" />}>{pending?.hasPendingChanges && drafts.length ? "Your team is notified when you publish. Changes to published days go out too." : "Your team is notified when you publish."}</CorpNote>;
   // Release 1 (board O-BuildPublish): a sheet. The week and its state, Start from (build from availability, copy last
   // week or use a template), each location's state, then the one Publish. Changes held on published days and readiness
   // warnings are listed before the button that publishes them.
@@ -166,7 +166,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
           {owner && (!drafts.length && pending?.hasPendingChanges ? pending.canPublish ? <form action={publishScheduleChangesAction} className="c-publish__go">
             <input type="hidden" name="weekStart" value={weekStart} />
             {params.review === "changes" && review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
-            <CorpNote icon={<BellIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true" />}>Each person with a change is notified once when you publish.</CorpNote>
+            <CorpNote icon={<BellIcon weight="fill" className="c-ic c-ic--s" aria-hidden="true" />}>Each person with a change is notified once when you publish.</CorpNote>
             <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">{`Publish changes${params.review === "changes" && review.length ? " anyway" : ""}`}</EmployeeSubmitButton>
           </form> : <CorpNote>An Owner or company-wide Manager publishes these changes.</CorpNote>
           : drafts.length ? <form action={publishDraftsAction} className="c-publish__go">

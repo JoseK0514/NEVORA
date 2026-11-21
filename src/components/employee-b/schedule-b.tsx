@@ -107,7 +107,7 @@ export function ScheduleB(props: ScheduleBProps) {
     <BHero title="Schedule" titleId="b-schedule-title" sub={sub}
       // Final review C (row 4): one glyph per concept. Availability is UserCheck, the navigation's (it pairs with Can't
       // work's UserMinus); CalendarBlank stays the Schedule's own glyph.
-      right={<BButtonLink href="/app/availability" kind="glass" label="Availability"><UserCheckIcon size={16} weight="bold" aria-hidden="true"/>Availability</BButtonLink>}>
+      right={<BButtonLink href="/app/availability" kind="glass" label="Availability"><UserCheckIcon size={16} weight="fill" aria-hidden="true"/>Availability</BButtonLink>}>
       <Week {...props}/>
     </BHero>
     <BStack>

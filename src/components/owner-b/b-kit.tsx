@@ -177,7 +177,7 @@ export function BGlyph({ meaning }: { meaning: BMeaning }) {
     case "stop": return <WarningCircleIcon weight="bold" aria-hidden="true" />;
     case "done": return <CheckIcon weight="bold" aria-hidden="true" />;
     case "locked": return <LockSimpleIcon weight="bold" aria-hidden="true" />;
-    case "empty": return <TrayIcon weight="bold" aria-hidden="true" />;
+    case "empty": return <TrayIcon weight="fill" aria-hidden="true" />;
   }
 }
 const CALLOUT_MEANING: Record<BTone, BMeaning> = { teal: "info", amber: "check", red: "stop", green: "done", grey: "locked" };
@@ -339,7 +339,7 @@ const STATE_LOOK: Record<BStateKind, { tone: BTone; icon: ReactNode }> = {
   loading: { tone: "grey", icon: <BSpin /> },
   // Review B5 (NV-254): nothing here yet; pass the page's own glyph as `icon`. Nov 14 inspection (SY-023): without one the
   // card shows an empty tray, never the warning glyph (that is the failed kind's).
-  empty: { tone: "grey", icon: <TrayIcon weight="bold" /> },
+  empty: { tone: "grey", icon: <TrayIcon weight="fill" /> },
   // Phase 7 (moments): the server confirmed it. The mark is BDoneMark, drawn by BState itself.
   done: { tone: "green", icon: <CheckIcon weight="bold" /> },
 };

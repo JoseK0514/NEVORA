@@ -528,8 +528,8 @@ export function InboxDetail({ entry, sheet = false }: { entry: InboxEntry; sheet
     <div className="inbox-detail__actions">
       <Button href={entry.href}>{entry.action}</Button>
       {entry.contact ? <>
-        <a className="nv-btn" data-kind="secondary" href={`tel:${entry.contact.phone}`} aria-label={`Call ${entry.contact.name}`}><PhoneIcon size={18} weight="bold" aria-hidden="true" />Call</a>
-        <a className="nv-btn" data-kind="secondary" href={`sms:${entry.contact.phone}`} aria-label={`Text ${entry.contact.name}`}><ChatTextIcon size={18} weight="bold" aria-hidden="true" />Text</a>
+        <a className="nv-btn" data-kind="secondary" href={`tel:${entry.contact.phone}`} aria-label={`Call ${entry.contact.name}`}><PhoneIcon size={18} weight="fill" aria-hidden="true" />Call</a>
+        <a className="nv-btn" data-kind="secondary" href={`sms:${entry.contact.phone}`} aria-label={`Text ${entry.contact.name}`}><ChatTextIcon size={18} weight="fill" aria-hidden="true" />Text</a>
       </> : null}
       {entry.secondary?.map(link => <Link key={link.href} className="nv-btn" data-kind="secondary" href={link.href}>{link.label}</Link>)}
     </div>

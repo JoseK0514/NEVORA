@@ -18,7 +18,7 @@ export function DateField({ id, label, value, onChange, min, required, disabled,
     <label className="c-field__label" htmlFor={id}>{label}</label>
     <span className="c-in oa-date" data-empty={value ? undefined : ""} data-disabled={disabled ? "" : undefined}>
       <span className="oa-date__v" aria-hidden="true">{value ? dayText(value, "en", year) : "Choose a date"}</span>
-      <CalendarBlankIcon weight="bold" className="oa-date__ic" aria-hidden="true" />
+      <CalendarBlankIcon weight="fill" className="oa-date__ic" aria-hidden="true" />
       <input id={id} type="date" value={value} min={min} required={required} disabled={disabled} aria-describedby={describedBy}
         onChange={e => onChange(e.target.value)}
         onClick={e => { try { e.currentTarget.showPicker?.(); } catch { /* Focus is enough where a picker can't open. */ } }} />

@@ -78,7 +78,7 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
     // Approved leave over a published shift reads as the person's shift to fill (scheduling, no decision controls).
     const repair=isStaffingRepair(item)?presentItem(item,action.label,timeZone):null;
     return <article key={item.id} data-action-id={item.id} data-action-kind={item.category}>
-     <span className={styles.icon} aria-hidden="true"><Icon size={20} weight="bold"/></span>
+     <span className={styles.icon} aria-hidden="true"><Icon size={20} weight="fill"/></span>
      <div className={styles.copy}>{nested?null:<><small className={item.priority==='URGENT'&&!past(item)?styles.priority:undefined}><span className="task-tag" data-priority={tag(item).priority}>{past(item)?tag(item).label:item.priority==='URGENT'?'Coverage need':item.priority==='MISSING_INPUT'?'Setup needed':'Review'}</span> {item.category==='timekeeping'?'Timekeeping':item.category==='requests'?'Request':'Scheduling'}</small><h3>{repair?repair.title:item.title}</h3></>}{repair?<p>{repair.detail}</p>:<><p className="manager-desktop-action-detail">{item.detail}</p><p className="manager-mobile-action-detail">{mobileActionDetail(item.detail)}</p></>}</div>
      <Link className={styles.review} href={action.href} aria-label={`${action.label}: ${repair?repair.title:item.title}`}>{action.label}</Link>
     </article>;

@@ -714,7 +714,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           </BList></BCard>:null}
           {/* Phase 9 (spec 3.4): timecards waiting for this person's approval lead with the timecards' Clock in amber (it was a
             * teal Check, the "done" glyph). */}
-          {ready&&cards.length&&!open&&eligible.length?<BCard label="Ready to approve"><div className="b-notice"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon>
+          {ready&&cards.length&&!open&&eligible.length?<BCard label="Ready to approve"><div className="b-notice"><BIcon tone="amber"><ClockIcon weight="fill"/></BIcon>
             <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{/* Review B2 (NV-006): every count names its week. */}{`${rangeText(period)} · ${attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`}`}</span></span>
             <BButton onClick={()=>{setSelecting(true);selectAll(true);}}>Review</BButton></div></BCard>
           :ready&&cards.length&&open&&approvedCount?<BCard label="Approval"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{summaryTitle}</span><span className="b-notice__s">{`You can approve the rest from ${approveFrom(period)}`}</span></span></div></BCard>:null}

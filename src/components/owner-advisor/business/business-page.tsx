@@ -334,7 +334,7 @@ export function Library({ ctx, problem }: { ctx: Ctx; problem?: ReactNode }) {
   const row = (source: BusinessSourceView) => {
     const summary = recordSummary(catalog, source, ctx.now), shown = summary.current[0] ?? summary.drafts[0] ?? summary.versions[0];
     return <li key={source.sourceId}><CorpRow href={viewHref({ name: "record", sourceId: source.sourceId })}
-      icon={source.domain === "SALES" ? <ReceiptIcon weight="bold" /> : <BankIcon weight="bold" />} title={source.name}
+      icon={source.domain === "SALES" ? <ReceiptIcon weight="fill" /> : <BankIcon weight="fill" />} title={source.name}
       detail={[t.domain[source.domain], source.currency, shown?.metadata ? periodText(shown.metadata.window, ctx.timeZone, ctx.locale) : null].filter(Boolean).join(" · ")}
       value={stateValue(t, summary)} valueTone="soft" /></li>;
   };
@@ -393,7 +393,7 @@ export function RecordDetail({ ctx, source, problem, initialConfirm = null }: { 
         <li>{summary.state === "withdrawn" ? <CorpRow icon={<MinusCircleIcon weight="bold" />} title={t.state.withdrawn} detail={t.withdrawnLine} />
           : summary.state === "draft" ? <CorpRow icon={<CheckCircleIcon weight="bold" />} title={t.notInUse} detail={t.notInUseLine} />
           : summary.state === "in_use" ? <CorpRow icon={<CheckCircleIcon weight="bold" />} title={t.inUseTitle} detail={until ? t.currentUntil(momentText(new Date(until).toISOString(), ctx.timeZone, ctx.locale)) : undefined} />
-          : <CorpRow icon={<ClockCounterClockwiseIcon weight="bold" />} title={t.pastTitle} detail={t.pastLine} />}</li>
+          : <CorpRow icon={<ClockCounterClockwiseIcon weight="fill" />} title={t.pastTitle} detail={t.pastLine} />}</li>
         {source.active ? summary.drafts.map(draft => <li key={draft.versionId}><CorpRow href={viewHref({ name: "version", sourceId: source.sourceId, versionId: draft.versionId })} icon={<PencilSimpleIcon weight="bold" />}
           title={t.draftRow} detail={[draft.metadata ? periodText(draft.metadata.window, ctx.timeZone, ctx.locale) : null, draft.metadata ? t.rows(draft.metadata.rowCount) : null].filter(Boolean).join(" · ")} /></li>) : null}
       </CorpRows></CorpCard>

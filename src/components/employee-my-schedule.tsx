@@ -181,7 +181,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps & { corporate?
       <Link className="q-bar__icon" href={`/app/schedule?week=${addDays(weekStart, 7)}${keep}`} aria-label="Next week"><CaretRightIcon weight="bold" className="q-ic" aria-hidden="true" /></Link>
       {weekStart !== currentWeek ? <Link className="q-weeknav__today" href={`/app/schedule?week=${currentWeek}&day=${today}`}>Today</Link> : null}
     </span>}>
-      <QuietBarIcon href="/app/profile#employee-calendar-title" label="Add shifts to your calendar"><CalendarCheckIcon weight="bold" className="q-ic" aria-hidden="true" /></QuietBarIcon>
+      <QuietBarIcon href="/app/profile#employee-calendar-title" label="Add shifts to your calendar"><CalendarCheckIcon weight="fill" className="q-ic" aria-hidden="true" /></QuietBarIcon>
     </QuietBar>
     </div>
     {modules.marketplace ? <QuietSegments label="Schedule views" items={[
@@ -213,7 +213,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps & { corporate?
         <li className="q-confrow">
           {acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}
           <div className="q-row q-row--av">
-            <span className="q-av q-av--tint" aria-hidden="true">{acknowledged ? <CheckIcon weight="bold" className="q-ic" /> : <CalendarCheckIcon weight="bold" className="q-ic" />}</span>
+            <span className="q-av q-av--tint" aria-hidden="true">{acknowledged ? <CheckIcon weight="bold" className="q-ic" /> : <CalendarCheckIcon weight="fill" className="q-ic" />}</span>
             <div className="q-rt"><h2 id="my-review-title" className="q-confrow__t">{acknowledged ? 'You’re up to date' : confirmationNeeded ? 'Confirm this week' : 'Schedule review'}</h2>
               <i>{acknowledged ? 'You’ve confirmed this week.' : confirmationNeeded ? (shifts.length ? 'Your manager asked you to check it' : 'No assignments remain this week. Review the changes, then confirm.') : 'Review the current week again.'}</i></div>
             {acknowledged ? null : confirmation}

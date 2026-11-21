@@ -183,7 +183,7 @@ export function ManagerRondo({ currentWeek, timeZone, read: given }: { currentWe
     return page(<CorpCard as="div"><BState kind="loading" title="Opening Rondo AI" line="Checking your locations." /></CorpCard>);
   }
   const { locations } = context.data;
-  if (!locations.length) return page(<CorpCard as="div"><BState kind="empty" icon={<MapPinIcon weight="bold" />} title="No locations assigned"
+  if (!locations.length) return page(<CorpCard as="div"><BState kind="empty" icon={<MapPinIcon weight="fill" />} title="No locations assigned"
     line="Rondo answers for the locations you manage. Ask your Owner to assign you one." action={{ label: "Return to Home", href: "/app" }} /></CorpCard>);
   const place = locations.find(item => item.id === locationId) ?? locations[0];
   const earliest = addDays(currentWeek, -7), latest = addDays(currentWeek, 56);
@@ -200,7 +200,7 @@ export function ManagerRondo({ currentWeek, timeZone, read: given }: { currentWe
                 </select>
               </CorpField>
             : <div className="c-field"><span className="c-field__label" id="rm-location-label">Location</span>
-                <p className="rm-place" aria-labelledby="rm-location-label"><MapPinIcon weight="bold" aria-hidden="true" /><span>{place.name}</span></p></div>}
+                <p className="rm-place" aria-labelledby="rm-location-label"><MapPinIcon weight="fill" aria-hidden="true" /><span>{place.name}</span></p></div>}
           <div className="c-field">
             <span className="c-field__label" id="rm-week-label">Week</span>
             <div className="wk-week" role="group" aria-labelledby="rm-week-label">
@@ -252,7 +252,7 @@ export function Answer({ question, answer, state, timeZone, hidden, onRetry }: {
     const words = answerText(answer.data);
     const checked = new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(answer.data.observedAt));
     body = <div className="rm-reply">
-      <BIcon tone="teal"><ChatsCircleIcon weight="bold" /></BIcon>
+      <BIcon tone="teal"><ChatsCircleIcon weight="fill" /></BIcon>
       <div className="rm-reply__main">
         <p className="rm-reply__figure">{keepWhole(words.figure)}</p>
         <p className="rm-reply__line">{words.line}</p>

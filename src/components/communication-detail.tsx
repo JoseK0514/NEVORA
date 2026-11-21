@@ -96,7 +96,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
      <div className="wb-update-body">{ready.body}</div>
      {ready.editedAt||ready.expiresAt?<div className="wb-update-facts">
       {ready.editedAt?<p><PencilSimpleIcon size={16} weight="bold" aria-hidden="true"/><span>Edited version · <time dateTime={ready.editedAt}>{stamp(ready.editedAt)}</time></span></p>:null}
-      {ready.expiresAt?<p><ClockIcon size={16} weight="bold" aria-hidden="true"/><span>Available until <time dateTime={ready.expiresAt}>{stamp(ready.expiresAt)}</time></span></p>:null}
+      {ready.expiresAt?<p><ClockIcon size={16} weight="fill" aria-hidden="true"/><span>Available until <time dateTime={ready.expiresAt}>{stamp(ready.expiresAt)}</time></span></p>:null}
      </div>:null}
     </div>
    </section>
@@ -105,7 +105,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
    <section className="nv-card" aria-label="Your review status" aria-busy={pending} ref={receiptRef} tabIndex={-1}>
     <div className="wb-body">
      <p role="status" aria-live="polite" className="nv-sr">{pending?'Confirming your review…':''}</p>
-     <div className="wb-receipt"><span className="communication-result-icon"><Tile tone={acknowledged||markedRead?'done':required?'review':'neutral'}>{acknowledged||markedRead?<CheckCircleIcon size={22} weight="bold"/>:required?<FileTextIcon size={22} weight="bold"/>:<CircleIcon size={22} weight="bold"/>}</Tile></span>
+     <div className="wb-receipt"><span className="communication-result-icon"><Tile tone={acknowledged||markedRead?'done':required?'review':'neutral'}>{acknowledged||markedRead?<CheckCircleIcon size={22} weight="bold"/>:required?<FileTextIcon size={22} weight="fill"/>:<CircleIcon size={22} weight="bold"/>}</Tile></span>
       {acknowledged?<div role="status"><h2 className="wb-strong">Acknowledged</h2><p className="wb-note">You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<div><h2 className="wb-strong">{required?ACK_REQUIRED:'Informational update'}</h2><p className="wb-note">{required?'Recipients must review and acknowledge this version.':'No acknowledgement is required from recipients.'}</p></div>:required?<div><h2 className="wb-strong">Confirm you received this update</h2><p className="wb-note" id="communication-acknowledgement-help">{ACK_WORD} confirms receipt of this version. It does not indicate agreement or attendance.</p></div>:markedRead?<div role="status"><h2 className="wb-strong">Marked read</h2><p className="wb-note">Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No acknowledgement is required.</p></div>:<div><h2 className="wb-strong">No acknowledgement needed</h2><p className="wb-note">You can mark this update as read to keep your updates organized.</p></div>}
      </div>
      {!acknowledged&&!ready.management&&required?<>

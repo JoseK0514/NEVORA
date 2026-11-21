@@ -75,7 +75,7 @@ export function AssistedReceipt({ issued, timeZone, lang = "en", feedback, onSta
       </div>
       <div className="ar-share__side">
         {qr === null ? null : <p className="ar-share__scan">{fill(u.scan, { time: until })}</p>}
-        <p className="ar-share__left"><TimerIcon size={16} weight="bold" aria-hidden="true" /><span>{left}</span></p>
+        <p className="ar-share__left"><TimerIcon size={16} weight="fill" aria-hidden="true" /><span>{left}</span></p>
         <div className="ar-codeacts">
           <button type="button" className="b-btn b-btn--teal" onClick={() => write(resetLink(issued.proof), "link", "linkFailed")}>
             {copied === "link" ? <CheckIcon size={16} weight="bold" aria-hidden="true" /> : <CopySimpleIcon size={16} weight="bold" aria-hidden="true" />}<span>{u.copyLink}</span></button>
@@ -100,10 +100,10 @@ export function AssistedReceipt({ issued, timeZone, lang = "en", feedback, onSta
     <section className="ar-handover" aria-labelledby="assisted-handover-title">
       <h2 className="ar-handover__label" id="assisted-handover-title">{u.handoverLabel}</h2>
       <ul className="ar-handover__rows" id="assisted-proof-hint">
-        <li><span className="ar-handover__ico" aria-hidden="true"><HandshakeIcon size={18} weight="bold" /></span><span className="ar-handover__main"><b>{u.you}</b><span>{fill(u.youDo, { id: issued.employeeId })}</span></span></li>
-        <li><span className="ar-handover__ico" aria-hidden="true"><UserIcon size={18} weight="bold" /></span><span className="ar-handover__main"><b>{u.they}</b><span>{u.theyDo}</span>
+        <li><span className="ar-handover__ico" aria-hidden="true"><HandshakeIcon size={18} weight="fill" /></span><span className="ar-handover__main"><b>{u.you}</b><span>{fill(u.youDo, { id: issued.employeeId })}</span></span></li>
+        <li><span className="ar-handover__ico" aria-hidden="true"><UserIcon size={18} weight="fill" /></span><span className="ar-handover__main"><b>{u.they}</b><span>{u.theyDo}</span>
           <Link className="ar-handover__link" href="/reset-access">{u.seePage}</Link></span></li>
-        <li><span className="ar-handover__ico" aria-hidden="true"><TimerIcon size={18} weight="bold" /></span><span className="ar-handover__main"><b>{u.time}</b><span>{fill(u.timeDo, { time: until })}</span></span></li>
+        <li><span className="ar-handover__ico" aria-hidden="true"><TimerIcon size={18} weight="fill" /></span><span className="ar-handover__main"><b>{u.time}</b><span>{fill(u.timeDo, { time: until })}</span></span></li>
       </ul>
       <p className="ar-handover__after">{u.after}</p>
     </section>

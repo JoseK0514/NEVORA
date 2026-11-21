@@ -127,7 +127,7 @@ export function HomeB(props: HomeBProps) {
   return <BScreen>
     <BHero big eyebrow={eyebrow} title={title} offlineInTitle={!value && offline} sub={<><span role="status" className="b-sr">{props.summary}</span></>}>
       {/* Review B1 (NV-117): the date is a fact on the band, not a glass button. */}
-      <div className="b-hrow"><span className="b-date" aria-hidden="true"><CalendarBlankIcon size={15} weight="bold" />{props.dateLabel}</span></div>
+      <div className="b-hrow"><span className="b-date" aria-hidden="true"><CalendarBlankIcon size={15} weight="fill" />{props.dateLabel}</span></div>
       <BLive label="Right now" items={[
         ...(noClock ? [clockTile] : [{ label: "Clocked in", dot: "live" as const, value: checking ? CORP_NO_VALUE : onShift, small: !checking && scheduled ? `/${scheduled}` : undefined,
           href: checking ? undefined : "/app?view=attendance", aria: checking ? undefined : `Clocked in: ${onShift} of ${scheduled}. Who’s working` },

@@ -72,6 +72,6 @@ it('Final review C (rows 4, 5): Confirm this week waits on you (amber) with the 
   expect(row).toContain('<span class="b-ico b-ico--amber" aria-hidden="true">');
   expect(row).toContain(renderToStaticMarkup(<TopicIcon glyph={CalendarCheckIcon} />));
   const band = html.slice(html.indexOf('href="/app/availability"'), html.indexOf('Availability</a>'));
-  expect(band).toContain(renderToStaticMarkup(<UserCheckIcon size={16} weight="bold" aria-hidden="true"/>));
+  expect(band).toContain(renderToStaticMarkup(<UserCheckIcon size={16} weight="fill" aria-hidden="true"/>));
   expect(band).not.toContain(renderToStaticMarkup(<CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>));
 });

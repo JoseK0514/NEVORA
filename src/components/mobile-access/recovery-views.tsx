@@ -38,7 +38,7 @@ export function MobileRecoveryRequest({hydrated,busy,done,message,onSubmit,lang,
  const offline=noteParts(u.offline),refused=!message||issue==='offline'||done?null:noteParts(authMessage(lang,message));
  return <>
   <AccessCard><AccessSteps journey="recovery" current={done?2:1} lang={lang} named={!done}/>
-  {done?<div className="ma-receipt-mark"><EnvelopeSimpleIcon size={28} weight="bold" aria-hidden="true"/></div>:null}
+  {done?<div className="ma-receipt-mark"><EnvelopeSimpleIcon size={28} weight="fill" aria-hidden="true"/></div>:null}
   <div className="q-hd"><h1>{done?t.received:t.forgotTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}<p>{done?u.requestedSub:t.forgotSub}</p></div>
   {done?<><div className="ma-receipt" ref={feedback} role="status" tabIndex={-1}>{message?<p>{authMessage(lang,message)}</p>:null}<BCallout tone="teal">{u.notConfirmed} {a.checkEmail.expires}</BCallout></div>
    <p className="ma-note ar-sent__next">{a.checkEmail.sub}</p><p className="ma-note ar-sent__limit">{u.askAgain}</p></>:<>

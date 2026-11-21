@@ -44,7 +44,7 @@ export function NotificationBell({authority}:{authority:string}) {
  return <Link href="/app/notifications" className="portal-notification-bell" aria-current={pathname==='/app/notifications'?'page':undefined} aria-label={label} title={label} data-state={ready?'ready':state.refreshing?'loading':'unavailable'}>
   {/* Phase 9 (Nov 18, 2026): one bell, Phosphor Bell bold at the 20px control size, at every width (desktop drew
     * BellSimple and phones Bell). */}
-  <BellIcon size={20} weight="bold" aria-hidden="true" focusable="false"/>
+  <BellIcon size={20} weight="fill" aria-hidden="true" focusable="false"/>
   {typeof count==='number'&&count>0?<span className="portal-notification-count" aria-hidden="true">{count}{partial?'+':''}</span>:!ready&&!state.refreshing?<span className="portal-notification-unavailable" aria-hidden="true">—</span>:null}
  </Link>;
 }

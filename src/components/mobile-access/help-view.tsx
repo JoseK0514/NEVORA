@@ -25,7 +25,7 @@ const Header=({title,sub}:{title:string;sub?:string})=><div className="q-hd"><h1
 /* Review B4 (NV-101 here, NV-198): a disclosure opens in place behind a bold down caret; a row that leads to another page
  * keeps its right caret and shows its topic as a bold glyph in a teal-tinted circle, as on in-app rows. */
 const Caret=()=><CaretDownIcon className="ma-caret" size={16} weight="bold" aria-hidden="true"/>;
-const ChoiceIcon=({icon:Icon}:{icon:typeof QuestionIcon})=><span className="ma-choice__icon" aria-hidden="true"><Icon size={20} weight="bold"/></span>;
+const ChoiceIcon=({icon:Icon}:{icon:typeof QuestionIcon})=><span className="ma-choice__icon" aria-hidden="true"><Icon size={20} weight="fill"/></span>;
 function Disclosure({title,children}:{title:string;children:React.ReactNode}){return <details className="ma-details"><summary>{title}<Caret/></summary>{children}</details>;}
 
 function Draft({message,t,mailto}:{message:string;t:MobileAccessCopy;mailto?:string}) {
@@ -33,7 +33,7 @@ function Draft({message,t,mailto}:{message:string;t:MobileAccessCopy;mailto?:str
  const [status,setStatus]=useState(''),[busy,setBusy]=useState(false);
  useEffect(()=>{const lifetime=version.current;lifetime.generation++;return()=>{lifetime.generation++;};},[message]);
  async function copy(){if(busy)return;const current=version.current.generation;setBusy(true);setStatus('');try{if(!navigator.clipboard?.writeText)throw Error('unavailable');await navigator.clipboard.writeText(message);if(current===version.current.generation)setStatus(mailto?t.supportCopied:t.assistCopied);}catch{if(current===version.current.generation){if(details.current)details.current.open=true;text.current?.focus();text.current?.select();setStatus(mailto?t.supportCopyFallback:t.assistManualCopy);}}finally{if(current===version.current.generation)setBusy(false);}}
- return <div className="ma-draft">{mailto?<><a className="q-btn" href={mailto}><EnvelopeSimpleIcon size={20} weight="bold" aria-hidden="true"/>{t.ownerOpenEmail}</a><p className="ma-note">{t.supportSendHint}</p></>:<p className="ma-note">{t.assistSendHint}</p>}
+ return <div className="ma-draft">{mailto?<><a className="q-btn" href={mailto}><EnvelopeSimpleIcon size={20} weight="fill" aria-hidden="true"/>{t.ownerOpenEmail}</a><p className="ma-note">{t.supportSendHint}</p></>:<p className="ma-note">{t.assistSendHint}</p>}
   <details className="ma-details" ref={details}><summary>{mailto?t.ownerViewDraft:t.assistViewMessage}<Caret/></summary><div className="q-fl"><label htmlFor="access-message">{mailto?t.ownerDraftLabel:t.assistMessageLabel}</label><textarea ref={text} id="access-message" readOnly value={message} rows={7} autoComplete="off" spellCheck={false}/></div></details>
   <button className={`q-btn${mailto?' q-btn--sec':''}`} type="button" disabled={busy} onClick={()=>void copy()}><CopySimpleIcon size={20} weight="bold" aria-hidden="true"/>{t.ownerCopy}</button><p className="ma-note" role="status" aria-live="polite">{status}</p>
  </div>;

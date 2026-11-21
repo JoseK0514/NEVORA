@@ -27,7 +27,7 @@ export function ManagerWeekOverview({days, locations, weekStart, weekLabel, cove
         <p className="manager-chart-note">Planning only. Recorded clock activity is shown above.</p>
       </div>
       <div className="manager-location-plan"><h3>Location readiness</h3>
-        {locations.length ? <ul>{locations.map(location => <li key={location.locationId}><MapPinIcon size={18} weight="bold" aria-hidden="true"/><div><strong>{location.locationName}</strong><span>{locationLabels[location.state]}</span></div>{location.scheduleStatus ? <span className="manager-location-state" data-state={location.scheduleStatus}>{location.scheduleStatus === 'PUBLISHED' ? 'Published' : location.scheduleStatus === 'ARCHIVED' ? 'Archived' : 'Draft'}</span> : null}</li>)}</ul> : <p>No locations are available for this week.</p>}
+        {locations.length ? <ul>{locations.map(location => <li key={location.locationId}><MapPinIcon size={18} weight="fill" aria-hidden="true"/><div><strong>{location.locationName}</strong><span>{locationLabels[location.state]}</span></div>{location.scheduleStatus ? <span className="manager-location-state" data-state={location.scheduleStatus}>{location.scheduleStatus === 'PUBLISHED' ? 'Published' : location.scheduleStatus === 'ARCHIVED' ? 'Archived' : 'Draft'}</span> : null}</li>)}</ul> : <p>No locations are available for this week.</p>}
         {!coverageConfigured ? <p className="manager-chart-note">Coverage rules need setup before readiness can be assessed.</p> : null}
       </div>
     </div>

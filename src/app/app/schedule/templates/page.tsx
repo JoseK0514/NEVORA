@@ -75,7 +75,7 @@ export default async function ScheduleTemplatesPage({
 
       {/* Closing F1 (NV-084): no saved weeks is the kit's empty card (a tinted icon, the state and what a template is for). */}
       {templates.length ? <p className="wc-intro" id="st-library">{`${templates.length} saved ${templates.length === 1 ? "week" : "weeks"}`}</p>
-        : <section className="q-list wc-tcard st-empty" aria-label="Saved weeks"><BState kind="empty" icon={<CalendarBlankIcon weight="bold" />} title="No saved weeks yet"
+        : <section className="q-list wc-tcard st-empty" aria-label="Saved weeks"><BState kind="empty" icon={<CalendarBlankIcon weight="fill" />} title="No saved weeks yet"
           line="Save a week’s shifts as a template, then use it for any week." /></section>}
       {templates.length ? <ul className="wc-cards" aria-labelledby="st-library">
         {templates.map((template, index) => <li className="q-list wc-tcard" key={template.id}>

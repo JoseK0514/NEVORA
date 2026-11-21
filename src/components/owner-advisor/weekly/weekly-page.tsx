@@ -425,7 +425,7 @@ export function Comparison({ data, locations }: { data: WeeklyComparison; locati
         </CorpCard> : null}
         {data.alternatives.length ? <div className={data.alternatives.length > 1 ? "wk-grid wk-grid--two" : "wk-grid"}>
           {data.alternatives.map((option, index) => <OptionCard key={option.id} option={option} index={index} baseline={data.baseline} />)}</div>
-          : <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="bold" />} title="No options to show" line="Nothing to change this week." /></CorpCard>}
+          : <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="fill" />} title="No options to show" line="Nothing to change this week." /></CorpCard>}
       </>
     {data.locations.length ? <CorpCard as="div" label="Locations" count={included.length}>
       <CorpRows label="Locations">
@@ -491,7 +491,7 @@ function Outcome({ result, reviewId, timeZone, locations, onRefresh, onDecline, 
     <span className="wk-acts"><CorpButtonLink href={WEEKLY_PATH} kind="primary" size="md">Compare again</CorpButtonLink>
       {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} onClick={() => onDecline(reviewId)}>Decline it</CorpButton> : null}</span>
   </BState></CorpCard>;
-  if (result.state === "declined") return <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="bold" />} title="Plan declined" line="The schedule didn’t change."
+  if (result.state === "declined") return <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="fill" />} title="Plan declined" line="The schedule didn’t change."
     action={{ label: "Back to options", href: WEEKLY_PATH }} /></CorpCard>;
   if (result.state === "not_saved") return <CorpCard as="div"><BState kind="empty" title="Not saved" line="Nothing from it is on the schedule." action={{ label: "Back to options", href: WEEKLY_PATH }} /></CorpCard>;
   if (result.state === "unavailable" || !result.receipt) return <CorpCard as="div"><BState kind="failed" title="Can’t check this plan right now"
