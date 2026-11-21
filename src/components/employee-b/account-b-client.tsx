@@ -1,12 +1,13 @@
 'use client';
 
-import { TopicIcon } from "@/components/topic-icon";
+import { SolidRowIcon, TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import {useState, type ReactNode, type RefObject} from 'react';
 import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
 import {TrashIcon} from '@phosphor-icons/react/dist/ssr/Trash';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
+import {BellSimpleIcon} from '@phosphor-icons/react/dist/ssr/BellSimple';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
 import {CalendarPlusIcon} from '@phosphor-icons/react/dist/ssr/CalendarPlus';
 import {SignOutIcon} from '@phosphor-icons/react/dist/ssr/SignOut';
@@ -82,15 +83,15 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
         </BCard>
         {/* Phase 4 (EM-030): the same card for an Employee and a Lead; both use both features. */}
         <div className="eb-desk eb-calalerts"><BCard title="Calendar and alerts" id="b-profile-calendar"><ul className="b-list">
-          <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/calendar"><BIcon tone="grey"><TopicIcon glyph={CalendarPlusIcon} /></BIcon>
+          <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/calendar"><BIcon tone="grey"><SolidRowIcon glyph={CalendarPlusIcon} /></BIcon>
             <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Add to calendar</span></span><span className="b-row__s">Apple, Google or Outlook</span></span><Chev /></Link></li>
-          <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/device-alerts"><BIcon tone="grey"><TopicIcon glyph={BellIcon} /></BIcon>
+          <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/device-alerts"><BIcon tone="grey"><SolidRowIcon glyph={BellSimpleIcon} /></BIcon>
             <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Alerts on this device</span></span><span className="b-row__s">{copy.alertsSub}</span></span><Chev /></Link></li>
         </ul></BCard></div>
         {/* Review B6 (NV-293): "Security" when it holds passkeys; "Account" when deletion is all it holds. */}
         {passkeys || policies ? <BCard title={passkeys ? 'Security' : 'Account'} id="b-profile-security">
           <ul className="b-list">
-            {passkeys ? <li className="b-li"><Link id="b-profile-passkeys" className="b-row b-row--link" href="/app/profile/passkeys"><BIcon tone="grey"><TopicIcon glyph={KeyIcon} /></BIcon>
+            {passkeys ? <li className="b-li"><Link id="b-profile-passkeys" className="b-row b-row--link" href="/app/profile/passkeys"><BIcon tone="grey"><SolidRowIcon glyph={KeyIcon} /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Passkeys</span></span></span><Chev /></Link></li> : null}
             {policies ? <li className="b-li"><Link id="b-profile-account-deletion" className="b-row b-row--link" href="/app/account/delete"><BIcon tone="red"><TrashIcon weight="bold" /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{copy.deleteTitle}</span></span><span className="b-row__s">{copy.deleteSub}</span></span><Chev /></Link></li> : null}

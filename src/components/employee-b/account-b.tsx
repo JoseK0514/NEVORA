@@ -1,15 +1,16 @@
-import { TopicIcon } from "@/components/topic-icon";
+import { SolidRowIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import type {CSSProperties, ReactNode} from 'react';
 import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
-import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
-import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
+import {BellSimpleIcon} from '@phosphor-icons/react/dist/ssr/BellSimple';
+import {MegaphoneSimpleIcon} from '@phosphor-icons/react/dist/ssr/MegaphoneSimple';
 import {CalendarPlusIcon} from '@phosphor-icons/react/dist/ssr/CalendarPlus';
 import {ShieldCheckIcon} from '@phosphor-icons/react/dist/ssr/ShieldCheck';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {EnvelopeSimpleIcon} from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
+import {LifebuoyIcon} from '@phosphor-icons/react/dist/ssr/Lifebuoy';
 import {QuestionIcon} from '@phosphor-icons/react/dist/ssr/Question';
 import {FlagIcon} from '@phosphor-icons/react/dist/ssr/Flag';
 import {ScalesIcon} from '@phosphor-icons/react/dist/ssr/Scales';
@@ -52,16 +53,16 @@ export function EmployeeMoreB({name, place, availability, has, count}: {
       <BCard title="Your work" id="b-more-work">
         <BList>
           {/* Final review C (row 4): Availability is UserCheck, the navigation's glyph, on every Employee screen. */}
-          {has.availability ? <BRow href="/app/availability" lead={grey(<TopicIcon glyph={UserCheckIcon} />)} title="Availability" sub={availability ?? undefined} /> : null}
-          {has.notifications ? <BRow href="/app/notifications" lead={grey(<TopicIcon glyph={BellIcon} />)} title="Notifications" chip={count} sub="Schedule, request and pay notices" /> : null}
-          {has.updates ? <BRow href="/app/updates" lead={grey(<TopicIcon glyph={MegaphoneIcon} />)} title="Updates" sub={accountCopy().updatesSub} /> : null}
-          <BRow href="/app/profile/calendar" lead={grey(<TopicIcon glyph={CalendarPlusIcon} />)} title="Add shifts to your calendar" sub="Apple, Google or Outlook" />
+          {has.availability ? <BRow href="/app/availability" lead={grey(<SolidRowIcon glyph={UserCheckIcon} />)} title="Availability" sub={availability ?? undefined} /> : null}
+          {has.notifications ? <BRow href="/app/notifications" lead={grey(<SolidRowIcon glyph={BellSimpleIcon} />)} title="Notifications" chip={count} sub="Schedule, request and pay notices" /> : null}
+          {has.updates ? <BRow href="/app/updates" lead={grey(<SolidRowIcon glyph={MegaphoneSimpleIcon} />)} title="Updates" sub={accountCopy().updatesSub} /> : null}
+          <BRow href="/app/profile/calendar" lead={grey(<SolidRowIcon glyph={CalendarPlusIcon} />)} title="Add shifts to your calendar" sub="Apple, Google or Outlook" />
         </BList>
       </BCard>
       <BCard title="Help and legal" id="b-more-help">
         <BList>
-          <BRow href="/app/help" lead={grey(<TopicIcon glyph={QuestionIcon} />)} title="Help" sub="Answers and how to reach support" />
-          <BRow href="/privacy" lead={grey(<TopicIcon glyph={ShieldCheckIcon} />)} title="Privacy and terms" sub="Privacy policy and terms of use" />
+          <BRow href="/app/help" lead={grey(<SolidRowIcon glyph={LifebuoyIcon} />)} title="Help" sub="Answers and how to reach support" />
+          <BRow href="/privacy" lead={grey(<SolidRowIcon glyph={ShieldCheckIcon} />)} title="Privacy and terms" sub="Privacy policy and terms of use" />
         </BList>
       </BCard>
       {/* Phase 4 (EM-028): Sign out is a control, not a card: a quiet pill with the glyph, under the cards (hugging its
@@ -92,7 +93,7 @@ export function EmployeeHelpB({email, response, signIn, work, report, legal}: {
     <BStack>
       <BCard title="Contact" id="b-help-contact">
         <BList>
-          <BRow href={`mailto:${email}`} lead={<BIcon tone="teal"><TopicIcon glyph={EnvelopeSimpleIcon} /></BIcon>} title="Email support" sub={email} label={`Email support, ${email}`} />
+          <BRow href={`mailto:${email}`} lead={<BIcon tone="teal"><SolidRowIcon glyph={EnvelopeSimpleIcon} /></BIcon>} title="Email support" sub={email} label={`Email support, ${email}`} />
         </BList>
         {/* Review B6 (NV-286): one line on when we reply (the full hours are on Support), then the warning as its own note. */}
         {response ? <p className="eb-help-note">{firstSentence(response)}{response.trim() !== firstSentence(response) ? <> <Link className="eb-help-note__a" href="/app/profile/support">Support hours</Link></> : null}</p> : null}
@@ -101,15 +102,15 @@ export function EmployeeHelpB({email, response, signIn, work, report, legal}: {
       </BCard>
       {signIn || work || report.length ? <BCard title="Common questions" id="b-help-questions">
         <ul className="b-list" aria-label="Common questions">
-          {signIn ? <Question icon={<TopicIcon glyph={KeyIcon} />} title="I can’t sign in" blocks={signIn} /> : null}
-          {work ? <Question icon={<TopicIcon glyph={QuestionIcon} />} title="Shift, time off or pay" sub="Ask your manager" blocks={work} /> : null}
-          {report.length ? <Question icon={<TopicIcon glyph={FlagIcon} />} title="Report a problem" sub="Something isn’t working" blocks={report} /> : null}
+          {signIn ? <Question icon={<SolidRowIcon glyph={KeyIcon} />} title="I can’t sign in" blocks={signIn} /> : null}
+          {work ? <Question icon={<SolidRowIcon glyph={QuestionIcon} />} title="Shift, time off or pay" sub="Ask your manager" blocks={work} /> : null}
+          {report.length ? <Question icon={<SolidRowIcon glyph={FlagIcon} />} title="Report a problem" sub="Something isn’t working" blocks={report} /> : null}
         </ul>
       </BCard> : null}
       {legal ? <BCard title="Privacy and terms" id="b-help-legal">
         <BList>
-          <BRow href="/app/profile/privacy" lead={grey(<TopicIcon glyph={ShieldCheckIcon} />)} title="Privacy Policy" />
-          <BRow href="/app/profile/terms" lead={grey(<TopicIcon glyph={ScalesIcon} />)} title="Terms of Use" />
+          <BRow href="/app/profile/privacy" lead={grey(<SolidRowIcon glyph={ShieldCheckIcon} />)} title="Privacy Policy" />
+          <BRow href="/app/profile/terms" lead={grey(<SolidRowIcon glyph={ScalesIcon} />)} title="Terms of Use" />
           <BRow href="/app/profile/account-deletion" lead={grey(<TrashIcon weight="bold" />)} title="Account deletion" />
         </BList>
       </BCard> : null}

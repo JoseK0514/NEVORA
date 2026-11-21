@@ -1,6 +1,6 @@
 'use client';
 
-import { TopicIcon } from "@/components/topic-icon";
+import { SolidRowIcon, TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import {useEffect, useRef, type ReactNode} from 'react';
 import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
@@ -97,7 +97,7 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
           {refused.length ? <WhyNot refused={refused}/> : null}
           {/* Desktop: the way to more shifts sits beside them (eb-desk). Final review C (row 4): Availability's glyph is the
             * navigation's UserCheck on every Employee screen. */}
-          <div className="eb-desk eb-moreshifts"><BCard label={workCopy().yourAvailability}><BList><BRow href="/app/availability" lead={<BIcon tone="grey"><TopicIcon glyph={UserCheckIcon} /></BIcon>} title={workCopy().yourAvailability} sub={workCopy().availabilitySub}/></BList></BCard></div>
+          <div className="eb-desk eb-moreshifts"><BCard label={workCopy().yourAvailability}><BList><BRow href="/app/availability" lead={<BIcon tone="grey"><SolidRowIcon glyph={UserCheckIcon} /></BIcon>} title={workCopy().yourAvailability} sub={workCopy().availabilitySub}/></BList></BCard></div>
         </>}
       </>)}
     </BStack>

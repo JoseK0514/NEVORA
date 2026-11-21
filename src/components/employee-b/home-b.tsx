@@ -1,6 +1,6 @@
 'use client';
 
-import { TopicIcon } from "@/components/topic-icon";
+import { SolidRowIcon, TopicIcon } from "@/components/topic-icon";
 import {createContext, useContext, type ReactNode} from 'react';
 import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
@@ -119,7 +119,7 @@ function TeamCard({place}: {place?: string}) {
   return <BCard title="Today’s team" id="b-home-team" meta={place}>
     {/* Phase 4 (EM-016): a plain row that opens the compose page (no third button look on Home); its note is the card's
       * footer at every width. */}
-    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><TopicIcon glyph={PencilSimpleIcon} /></BIcon>} title="Message today’s team" sub="Everyone on shift today"
+    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><SolidRowIcon glyph={PencilSimpleIcon} /></BIcon>} title="Message today’s team" sub="Everyone on shift today"
       label="Message today’s team, everyone on shift today"/></BList>
     <BCardNote>{t.teamNote}</BCardNote>
   </BCard>;

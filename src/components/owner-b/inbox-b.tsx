@@ -1,5 +1,5 @@
 "use client";
-import { TopicIcon } from "@/components/topic-icon";
+import { SolidRowIcon, TopicIcon } from "@/components/topic-icon";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { CalendarDotsIcon } from "@phosphor-icons/react/dist/ssr/CalendarDots";
@@ -144,10 +144,10 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
         Phase 9 (spec 3.2): these rows open pages, so their circles are teal, as every row that opens is. */}
       <BCard label="More" id="b-todo-more">
         <BList label="More">
-          <BRow lead={<BIcon tone="teal"><TopicIcon glyph={CalendarMinusIcon} /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
-          <BRow lead={<BIcon tone="teal"><TopicIcon glyph={ArrowsLeftRightIcon} /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />
+          <BRow lead={<BIcon tone="teal"><SolidRowIcon glyph={CalendarMinusIcon} /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
+          <BRow lead={<BIcon tone="teal"><SolidRowIcon glyph={ArrowsLeftRightIcon} /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />
           {/* Nov 14, 2026 inspection (AR-9): who can work is one tap from the requests it helps decide. */}
-          <BRow lead={<BIcon tone="teal"><TopicIcon glyph={UserCheckIcon} /></BIcon>} title="Availability" sub="Who can work and when" href="/app/availability" />
+          <BRow lead={<BIcon tone="teal"><SolidRowIcon glyph={UserCheckIcon} /></BIcon>} title="Availability" sub="Who can work and when" href="/app/availability" />
           <BRow lead={<BIcon tone="teal"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub={laterLine(later)} href="/app/inbox?view=more" label={`Later and done: ${laterLine(later).toLowerCase()}`} />
         </BList>
       </BCard>

@@ -95,7 +95,7 @@ describe('Notifications', () => {
     const availability = html.slice(html.indexOf('id="b-message-av"'), html.indexOf('</a>', html.indexOf('id="b-message-av"')));
     expect(availability).toContain(renderToStaticMarkup(<TopicIcon glyph={UserCheckIcon} />));
     const more = renderToStaticMarkup(<EmployeeMoreB name="James Ortiz" place="Main Office" availability="Usual week" count={null} has={{availability: true, notifications: true, updates: true}} />);
-    expect(more.slice(more.indexOf('href="/app/availability"'))).toContain(renderToStaticMarkup(<TopicIcon glyph={UserCheckIcon} />));
+    expect(more.slice(more.indexOf('href="/app/availability"'))).toContain(renderToStaticMarkup(<UserCheckIcon weight="fill" aria-hidden="true" focusable="false" />));
   });
   it('the Unread view, the empty states and the opening spinner', () => {
     expect(text(renderToStaticMarkup(<EmployeeNotificationsB list={list({tab: 'unread'})} />))).not.toContain('Pay statement shared');

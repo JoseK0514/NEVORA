@@ -1,4 +1,4 @@
-import { TopicIcon } from "@/components/topic-icon";
+import { SolidRowIcon } from "@/components/topic-icon";
 import {readFeatureFlags} from '../../../lib/feature-flags';
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
@@ -16,12 +16,12 @@ import { Temporal } from "@js-temporal/polyfill";
 import { readReports } from "@/lib/reports/service";
 import type { SessionMutationProof } from "@/lib/shift-changes/types";
 import { ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
-import { MegaphoneIcon } from "@phosphor-icons/react/dist/ssr/Megaphone";
+import { MegaphoneSimpleIcon } from "@phosphor-icons/react/dist/ssr/MegaphoneSimple";
 import { ReceiptIcon } from "@phosphor-icons/react/dist/ssr/Receipt";
 import { ChatsCircleIcon } from "@phosphor-icons/react/dist/ssr/ChatsCircle";
 import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
 import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
-import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
+import { LifebuoyIcon } from "@phosphor-icons/react/dist/ssr/Lifebuoy";
 import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
 import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { PortalSignout } from "@/components/portal-signout";
@@ -115,11 +115,11 @@ export default async function MorePage() {
   const has = (href: string) => navigation.some(entry => entry.href === href);
   const label = (href: string, fallback: string) => navigation.find(entry => entry.href === href)?.label ?? fallback;
   const owner = session.role === "OWNER";
-  // Review B1 (NV-099): every navigation row leads with its Phosphor duotone icon (a tinted circle, as Team and Timecards rows
+  // Review B1 (NV-099): every navigation row leads with its filled Phosphor icon (a tinted circle, as Team and Timecards rows
   // do) and ends with its chevron; a row may end in a grey value before the chevron ("24 h this week").
-  const rowIcons: Record<string, ReactNode> = { "/app/reports": <TopicIcon glyph={ChartBarIcon} />, "/app/updates": <TopicIcon glyph={MegaphoneIcon} />,
-    "/app/my-pay": <TopicIcon glyph={ReceiptIcon} />, "/app/ai-manager": <TopicIcon glyph={ChatsCircleIcon} />, "/app/settings": <TopicIcon glyph={GearSixIcon} />,
-    "/app/schedule/settings": <TopicIcon glyph={SlidersHorizontalIcon} />, "/app/help": <TopicIcon glyph={QuestionIcon} />, "/app/billing": <TopicIcon glyph={CreditCardIcon} /> };
+  const rowIcons: Record<string, ReactNode> = { "/app/reports": <SolidRowIcon glyph={ChartBarIcon} />, "/app/updates": <SolidRowIcon glyph={MegaphoneSimpleIcon} />,
+    "/app/my-pay": <SolidRowIcon glyph={ReceiptIcon} />, "/app/ai-manager": <SolidRowIcon glyph={ChatsCircleIcon} />, "/app/settings": <SolidRowIcon glyph={GearSixIcon} />,
+    "/app/schedule/settings": <SolidRowIcon glyph={SlidersHorizontalIcon} />, "/app/help": <SolidRowIcon glyph={LifebuoyIcon} />, "/app/billing": <SolidRowIcon glyph={CreditCardIcon} /> };
   const row = (href: string, title: string, value?: ReactNode) =>
     <li key={href}><CorpRow href={href} title={title} value={value} valueTone="soft" icon={rowIcons[href]} one chevron /></li>;
   const settings = owner && pathEnabled("/app/settings", brand.modules);

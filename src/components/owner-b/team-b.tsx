@@ -1,5 +1,5 @@
 "use client";
-import { TopicIcon } from "@/components/topic-icon";
+import { SolidRowIcon } from "@/components/topic-icon";
 import { useState, type ReactNode } from "react";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
@@ -56,8 +56,8 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
   };
   // Premium pass FA (final verification A #15): Hours this week is the timer, the navigation's glyph for it (ChartBar is
   // Insights').
-  const icon = (name: TeamBToolIcon) => name === "hours" ? <TopicIcon glyph={TimerIcon} /> : name === "availability" ? <TopicIcon glyph={UserCheckIcon} />
-    : name === "import" ? <TopicIcon glyph={UploadSimpleIcon} /> : name === "key" ? <TopicIcon glyph={KeyIcon} /> : <TopicIcon glyph={UserMinusIcon} />;
+  const icon = (name: TeamBToolIcon) => name === "hours" ? <SolidRowIcon glyph={TimerIcon} /> : name === "availability" ? <SolidRowIcon glyph={UserCheckIcon} />
+    : name === "import" ? <SolidRowIcon glyph={UploadSimpleIcon} /> : name === "key" ? <SolidRowIcon glyph={KeyIcon} /> : <SolidRowIcon glyph={UserMinusIcon} />;
   return <BScreen>
     <BHero title="Team" titleId="b-team-title" sub={sub} right={<BButtonLink href="/app/employees/new" kind="white" label={`Add ${person_word}`}><PlusIcon size={17} weight="bold" aria-hidden="true" />Add</BButtonLink>}>
       <EmployeeDirectoryFilters className="b-search b-glass">

@@ -402,7 +402,8 @@ item names the lines it supersedes; line numbers are from the file before this s
   token notes further down. Sign-in reads the shared band, pill and focus tokens; the kiosk reads the palette, radius,
   elevation and motion tokens and keeps its own large type.
 - **Icons.** The sidebar, rail and phone tabs use Phosphor duotone at rest and fill for the current destination.
-  Labelled row subjects share `TopicIcon`, which adds four stroke units on the Phosphor grid for small sizes.
+  Mint destination circles use filled Phosphor silhouettes through `SolidRowIcon`. Duotone row subjects share
+  `TopicIcon`, which adds four stroke units on the Phosphor grid for small sizes.
   CalendarDots marks Schedule, NotePencil marks Requests and Numpad marks Clocker PINs. Small action and status marks keep their bold weight.
 - **The desktop and tablet frame (Phase 2, built Nov 15, 2026; see `docs/product/review-2026-11-14/fixes/phase-2/README.md`).**
   From 768px, every role. Tokens in `src/app/b-tokens.css`: `--b-frame-wide` 1080, `--b-frame-read` 812,

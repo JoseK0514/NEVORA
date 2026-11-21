@@ -1,6 +1,6 @@
 'use client';
 
-import { TopicIcon } from "@/components/topic-icon";
+import { SolidRowIcon, TopicIcon } from "@/components/topic-icon";
 import Link from 'next/link';
 import type {ReactNode} from 'react';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
@@ -125,8 +125,8 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
       {/* Review B6 (NV-279): phones get the same way to Pick up and swap (under Decided); the second row says what it
         * does and opens Schedule asking for the shift. */}
       {shiftRequests ? <div className="eb-shiftreq"><BCard title="Shift requests"><BList>
-        <BRow href="/app/exchange" lead={<BIcon tone="grey"><TopicIcon glyph={ArrowsLeftRightIcon} /></BIcon>} title="Pick up and swap" sub="Open shifts, swaps for you, your requests"/>
-        <BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><TopicIcon glyph={CalendarDotsIcon} /></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/>
+        <BRow href="/app/exchange" lead={<BIcon tone="grey"><SolidRowIcon glyph={ArrowsLeftRightIcon} /></BIcon>} title="Pick up and swap" sub="Open shifts, swaps for you, your requests"/>
+        <BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><SolidRowIcon glyph={CalendarDotsIcon} /></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/>
       </BList></BCard></div> : null}
     </BStack>
   </BScreen>;
@@ -173,7 +173,7 @@ export function ExchangeHeroB({tab, tabs = true, back = '/app/schedule', counts}
 
 /** The way to start a swap or cover offer: from a shift on your own schedule. */
 export function MyScheduleCardB() {
-  return <BCard label="Swap or give away a shift"><BList><BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><TopicIcon glyph={CalendarDotsIcon} /></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/></BList></BCard>;
+  return <BCard label="Swap or give away a shift"><BList><BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><SolidRowIcon glyph={CalendarDotsIcon} /></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/></BList></BCard>;
 }
 
 /** Marks a form's screen (Request time off, Swap shift, Offer for cover, Can't work): while it shows, the shell hides the
