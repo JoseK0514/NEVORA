@@ -496,6 +496,49 @@ item names the lines it supersedes; line numbers are from the file before this s
     does not apply to it (the track is the target).
   - *Clocker.* On a portrait tablet the status pill starts on the band's left edge. "This screen clears after 30
     seconds." keeps 12px above it everywhere.
+- **Premium pass: the kit's notices, buttons, labels, counts and marks (built Nov 21, 2026; Jose's board picks 1A, 2B,
+  3A and 4, `.ui-work/emp/board`; all roles and the Clocker).** Colour lives in one small mark; words are ink.
+  - *Secondary and row buttons (1A).* White, one hairline and a soft lift, ink words (`--b-btn-surface`,
+    `--b-btn-surface-ink`, `--b-btn-surface-edge`, `-hover`, `-press` in `b-tokens.css`): the kit's `ghost` and
+    `quiet` buttons, a row's positive action (`b-rowact--go`), the older secondary (`nv-btn`) and the Clocker's
+    secondary. The tinted teal-50 pill is retired. Grey is the disabled pair only (the Clocker keypad keeps grey keys).
+    The teal primary keeps its glow, gains a light top edge and presses to `--b-teal-press`. Supersedes round 1's
+    tinted secondaries, "Pick up … is the tinted pill" and "Approve is always the teal pill".
+  - *Notice (3A).* `BCallout` has no box: the meaning's duotone glyph in a 36px circle of its tone's tint, the title in
+    ink 600, the body in ink2, one action. The card's inset places it. One line centres on the circle. A note that
+    arrives after an action fades up 4px while its mark settles. The Clocker's note is the same with a 40px circle.
+    Supersedes "a tint with a 1px edge in its tone" (Phase 9, spec 2.2).
+  - *Icons in circles (4).* A glyph that stands in a circle (`BIcon`, a notice's mark, the Clocker's rings, action
+    circles and notes) is Phosphor's duotone cut. Navigation, buttons and bare glyphs stay bold; the tick stays bold.
+    "No connection" in a circle is NEVORA's own glyph (`b-glyphs.tsx` `OfflineGlyph`): the Wi-Fi fan cut by one clean
+    stroke, arcs stepping down in strength.
+  - *Status label.* `BChip` has no pill: one 6px dot in the tone's colour (or its tick or stop glyph), then the words
+    in ink2 600. On the band a chip keeps its white pill. The Clocker's state (Off clock, Clocked in, On break) is the
+    same: a dot and ink words. Supersedes the tinted chips with a 1px edge.
+  - *Counts (1A, 2B).* A count beside a title is a grey numeral (13.5/18 600), no circle. In a segment it is the
+    label's colour at 62% (12.5px 600); a count that waits on the person keeps one amber dot. Supersedes "a 20px count
+    pill" (NV-103) and `BCount`'s teal pill.
+  - *Micro-interactions.* A row that opens leans its chevron 2px on hover and press and settles its icon circle to 94%
+    while pressed; a shortcut tile does the same; buttons ease their shade and lift in 150ms. Transform and colour only,
+    nothing plays by itself, all off under reduced motion.
+- **Employee and Clocker final polish, round 2: the audit's remaining findings (built Nov 21, 2026).**
+  - *Home.* A swap or cover request that waits for your answer is amber with "Needs your answer". Under 360px a
+    deadline reads "By Nov 24, 12 PM". Your week's key puts the date range on its own line under 360px.
+  - *Schedule.* "What changed in your schedule" is a 56px row ("What changed" under 360px). Confirm this week carries
+    the amber label and the week and shift count, as on Home. At 320 "Tomorrow" joins the first fact.
+  - *Time.* Under 360px a day row's range ends its first line with the dash ("8:58 AM –" over "5:28 PM"), a local
+    exception to the break-before-the-dash rule. A running total reads "14 h 28 so far" and never splits.
+  - *Pay.* "See your hours" sits on the title's row. A replaced statement reads "Earlier version" over "Replaced by
+    the Nov 13 correction".
+  - *Pick up and swap.* The list leads; "See every posted shift" is its footer link. "Shifts you can't take" with
+    "2 shifts, with the reason". Rows that open are teal circles with the swap arrows.
+  - *Notifications.* Title, grey line, then the label, as everywhere. A swap or cover request for you is amber with
+    "Needs your answer".
+  - *Profile and policy.* A setting's state in a card header is one label. Language and policy footer links have 44px
+    targets.
+  - *Phone tab bar.* 96% white with a 24px blur, so row text does not show through its labels (all roles).
+  - *Clocker.* The Employee ID help line is 15px. On a phone the PIN step rests with the language pill whole or out
+    of view, never cut.
 - **Feature screens and Employee screens (built Nov 17, 2026; see `docs/handoffs/2026-11-17-claude-ui-delivery/README.md`).**
   - *Sheets.* One sheet per feature (`b-restrictions.css`, `b-payroll-import.css`, `b-reminders.css`,
     `b-review-details.css`) and two for the Employee and Lead app (`employee-b-work.css`, `employee-b-account.css`),
