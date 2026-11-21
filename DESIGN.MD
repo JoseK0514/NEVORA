@@ -917,6 +917,10 @@ item names the lines it supersedes; line numbers are from the file before this s
     the form's own Cancel and back link, the finder and browser Back (where the browser's Navigation API exists);
     closing the tab gets the browser's own prompt. A clean or just-saved form never asks; a multi-step flow asks only
     when leaving the flow. Forms that save each control at once (Features) need none.
+  - *Discard changes on Employee and Lead forms (Nov 21, 2026).* The same question, same look, on: Availability (the
+    Employee page and both older editors), a Lead's "Message today's team", and an Employee's work-restrictions request
+    (leaving, and its own Cancel). Availability keeps a draft per week, so moving between the usual week and a single
+    week never asks; an untouched request and a save in flight never ask.
   - *Open for Jose:* one date-range form ("Nov 16 – 22" or "Nov 16–22").
 
 ## Previous direction (October 20, 2026; superseded)
