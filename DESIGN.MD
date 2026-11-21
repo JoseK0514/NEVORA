@@ -926,6 +926,8 @@ item names the lines it supersedes; line numbers are from the file before this s
     `dateRange` in `src/lib/duration-format.ts` (Spanish keeps day-first: "16–22 nov"), and every shared formatter
     calls it. A time range keeps its spaced dash ("9:00 AM – 5:00 PM") and its short phone form. A range whose ends
     carry weekday names ("Fri, Dec 4 – Sun, Dec 6") stays spaced until Jose decides; the PDFs are unchanged.
+    Employee screens use the same form (Jose, Nov 21, 2026): the week on Home, Schedule and Time, pay periods, time
+    off ranges, notification dates and the timecard header all call `dateRange`; none writes its own dash.
 
 ## Previous direction (October 20, 2026; superseded)
 
