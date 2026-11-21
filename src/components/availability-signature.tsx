@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { DiscardGuard } from "./kit/discard-dialog";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
@@ -67,6 +68,8 @@ function Fields({ initialAvailability, weekStart, locked, card, note }: { initia
     {/* Review F3 (NV-102): the usual week's Save appears once something changed (no disabled bar at rest); a week that is
       due always shows Submit. */}
     {locked || (!weekStart && !dirty) ? null : <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Saving…">{weekStart ? "Submit this week" : "Save"}</EmployeeSubmitButton>}
+    {/* Leaving with hours that are not saved asks first (Jose, Nov 21, 2026); a save in flight and a closed week do not. */}
+    <DiscardGuard dirty={dirty && !disabled} />
     {dirty && !disabled ? <button type="button" className="c-avail__link" onClick={() => setAvailability(initialAvailability)}>Reset changes</button> : null}
     {open && value ? <AvailabilityDaySheet open={!!sheet?.open} onClose={() => setSheet(previous => previous ? { ...previous, open: false } : previous)} day={open.label} closeHref="/app/availability"
       available={value.available} onAvailable={available => updateDay(open.dayOfWeek, { available })} switchLabel={`${open.label} availability`} disabled={disabled}

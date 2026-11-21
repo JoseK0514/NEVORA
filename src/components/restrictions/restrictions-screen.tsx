@@ -16,6 +16,8 @@ import {
 } from "@/lib/scheduling/restrictions-week";
 import { dayText, instantText, restrictionsCopy, type RestrictionsCopy, type RestrictionsLang } from "./copy";
 import { WeekEditor, WeekView } from "./week";
+import { DiscardDialog } from "@/components/kit/discard-dialog";
+import { useDiscardGuard } from "@/components/kit/use-discard-guard";
 
 /* Scheduling restrictions (U02, Nov 17, 2026): the times a manager and an employee agreed the person can be scheduled.
  * One screen for both sides. Owners and Managers open it from the person's page (the corporate kit the Direction B
@@ -94,7 +96,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
    * form it came from is gone). It replaces the toast; the live line above the page says it once. */
   const [landed, setLanded] = useState<{ title: string; checked: boolean } | null>(null);
   const week = useMemo(() => workplaceWeek(props.now ?? new Date(), timeZone), [props.now, timeZone]);
-  const shownStep = useRef(step);
+  const shownStep = useRef(step), draftStart = useRef("");
   const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null);
 
   const reload = useCallback((signal?: AbortSignal): Promise<RestrictionsSnapshot | null> => client.read(employeeId, signal).then(result => {
@@ -204,7 +206,9 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
   const startEdit = (plan?: WeekPlan) => {
     if (!snapshot) return;
     setIssue(null); setProblems([]); setDeciding(null);
-    setDraft({ kind: management ? "SET" : "REQUEST", plan: plan ?? (latest ? planFromUnavailable(latest.unavailable) : openPlan()), week: snapshot.earliestWeek, note: "" });
+    const fresh: Draft = { kind: management ? "SET" : "REQUEST", plan: plan ?? (latest ? planFromUnavailable(latest.unavailable) : openPlan()), week: snapshot.earliestWeek, note: "" };
+    draftStart.current = JSON.stringify(fresh);
+    setDraft(fresh);
     setLanded(null); setStep("edit");
   };
   const toReview = () => {
@@ -227,6 +231,10 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
   };
 
   const busy = custody !== null;
+  /* "Discard changes?" on the Employee's own request (Jose, Nov 21, 2026): leaving, or Cancel, with a request that was
+   * changed and not sent asks first. A request opened and left untouched, one being sent, and the Owner's and
+   * Manager's side of this screen never ask here. */
+  const guard = useDiscardGuard(scope === "employee" && step !== "view" && draft !== null && !busy && JSON.stringify(draft) !== draftStart.current);
   // The week a draft names is never before the bound the last read gave: the picker offers only admissible Mondays.
   const draftWeek = draft && snapshot ? firstAdmissible(draft.week, snapshot.earliestWeek) : draft?.week ?? week;
   const title = step === "edit" ? (management ? t.titleEditManagement : latest ? t.titleEditEmployee : t.askFirst) : step === "review" ? (management ? t.titleReviewManagement : t.titleReviewEmployee) : management ? t.titleManagement : t.titleEmployee;
@@ -294,7 +302,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
         </div>
       </Card>
       {problems.length ? <p className="rs-err rs-err--sum" ref={problemRef} tabIndex={-1} role="alert"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{t.problemSummary(problems.length)}</p> : null}
-      <div className="rs-foot"><Act kind="text" disabled={busy} onClick={() => { setDraft(null); setProblems([]); setStep("view"); }}>{t.cancel}</Act><Act kind="teal" disabled={busy} onClick={toReview}>{t.review}</Act></div>
+      <div className="rs-foot"><Act kind="text" disabled={busy} onClick={() => guard.leave(() => { setDraft(null); setProblems([]); setStep("view"); })}>{t.cancel}</Act><Act kind="teal" disabled={busy} onClick={toReview}>{t.review}</Act></div>
     </>;
   } else if (step === "review" && draft) {
     const unavailable = unavailableFromPlan(draft.plan), date = dayText(draftWeek, t);
@@ -418,5 +426,6 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
   return <Frame kit={kit} title={title} sub={sub} back={back}>
     <p className="rs-sr" role="status" aria-live="polite">{said}</p>
     {body}
+    <DiscardDialog open={guard.asking} onKeep={guard.keep} onDiscard={guard.discard} lang={lang} />
   </Frame>;
 }
