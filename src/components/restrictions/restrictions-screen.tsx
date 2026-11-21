@@ -96,7 +96,9 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
    * form it came from is gone). It replaces the toast; the live line above the page says it once. */
   const [landed, setLanded] = useState<{ title: string; checked: boolean } | null>(null);
   const week = useMemo(() => workplaceWeek(props.now ?? new Date(), timeZone), [props.now, timeZone]);
-  const shownStep = useRef(step), draftStart = useRef("");
+  const shownStep = useRef(step);
+  // The request as it was opened, to tell a changed request from an untouched one ("Discard changes?").
+  const [draftStart, setDraftStart] = useState("");
   const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null);
 
   const reload = useCallback((signal?: AbortSignal): Promise<RestrictionsSnapshot | null> => client.read(employeeId, signal).then(result => {
@@ -207,7 +209,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
     if (!snapshot) return;
     setIssue(null); setProblems([]); setDeciding(null);
     const fresh: Draft = { kind: management ? "SET" : "REQUEST", plan: plan ?? (latest ? planFromUnavailable(latest.unavailable) : openPlan()), week: snapshot.earliestWeek, note: "" };
-    draftStart.current = JSON.stringify(fresh);
+    setDraftStart(JSON.stringify(fresh));
     setDraft(fresh);
     setLanded(null); setStep("edit");
   };
@@ -234,7 +236,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
   /* "Discard changes?" on the Employee's own request (Jose, Nov 21, 2026): leaving, or Cancel, with a request that was
    * changed and not sent asks first. A request opened and left untouched, one being sent, and the Owner's and
    * Manager's side of this screen never ask here. */
-  const guard = useDiscardGuard(scope === "employee" && step !== "view" && draft !== null && !busy && JSON.stringify(draft) !== draftStart.current);
+  const guard = useDiscardGuard(scope === "employee" && step !== "view" && draft !== null && !busy && JSON.stringify(draft) !== draftStart);
   // The week a draft names is never before the bound the last read gave: the picker offers only admissible Mondays.
   const draftWeek = draft && snapshot ? firstAdmissible(draft.week, snapshot.earliestWeek) : draft?.week ?? week;
   const title = step === "edit" ? (management ? t.titleEditManagement : latest ? t.titleEditEmployee : t.askFirst) : step === "review" ? (management ? t.titleReviewManagement : t.titleReviewEmployee) : management ? t.titleManagement : t.titleEmployee;

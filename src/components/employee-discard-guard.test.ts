@@ -24,7 +24,7 @@ it('asks before leaving a Lead’s unsent message to today’s team, as it does 
 });
 it('asks before an Employee leaves or cancels a changed work-restrictions request, and never for an untouched one', async () => {
   const screen = await source('./restrictions/restrictions-screen.tsx');
-  expect(screen).toContain('useDiscardGuard(scope === "employee" && step !== "view" && draft !== null && !busy && JSON.stringify(draft) !== draftStart.current)');
+  expect(screen).toContain('useDiscardGuard(scope === "employee" && step !== "view" && draft !== null && !busy && JSON.stringify(draft) !== draftStart)');
   expect(screen).toContain('onClick={() => guard.leave(() => { setDraft(null); setProblems([]); setStep("view"); })}>{t.cancel}');
   expect(screen).toContain('<DiscardDialog open={guard.asking} onKeep={guard.keep} onDiscard={guard.discard} lang={lang} />');
 });
