@@ -921,7 +921,11 @@ item names the lines it supersedes; line numbers are from the file before this s
     Employee page and both older editors), a Lead's "Message today's team", and an Employee's work-restrictions request
     (leaving, and its own Cancel). Availability keeps a draft per week, so moving between the usual week and a single
     week never asks; an untouched request and a save in flight never ask.
-  - *Open for Jose:* one date-range form ("Nov 16 – 22" or "Nov 16–22").
+  - *Date ranges (Jose, Nov 21, 2026).* A range of dates is written closed: "Nov 16–22" (en dash, no spaces, the
+    month once); across months "Nov 30–Dec 6"; across years "Dec 28, 2026–Jan 3, 2027". One helper writes it,
+    `dateRange` in `src/lib/duration-format.ts` (Spanish keeps day-first: "16–22 nov"), and every shared formatter
+    calls it. A time range keeps its spaced dash ("9:00 AM – 5:00 PM") and its short phone form. A range whose ends
+    carry weekday names ("Fri, Dec 4 – Sun, Dec 6") stays spaced until Jose decides; the PDFs are unchanged.
 
 ## Previous direction (October 20, 2026; superseded)
 
