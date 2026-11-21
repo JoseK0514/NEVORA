@@ -544,6 +544,10 @@ item names the lines it supersedes; line numbers are from the file before this s
     shell): 96px on a receipt (72px on small screens), 64px on the setup card. It settles, draws its tick and sends one
     ring once; a tablet that was already connected is still; reduced motion is a fade only. Supersedes the kiosk's
     Phosphor check on a darker green disc and the setup card's outlined green ring.
+  - *Swap with no one to choose.* The Swap shift form never shows its question over an empty list or a Send button that
+    cannot be pressed. In place of the list it says which answer it is: "No one to swap with right now" (grey note, with
+    "Offer this shift for cover instead" when cover is allowed) or "Teammates' shifts couldn't be checked" (amber note,
+    "Check again"). Both say the shift is still yours.
   - *Micro-interactions.* A row that opens leans its chevron 2px on hover and press and settles its icon circle to 94%
     while pressed; a shortcut tile does the same; buttons ease their shade and lift in 150ms. Transform and colour only,
     nothing plays by itself, all off under reduced motion.
