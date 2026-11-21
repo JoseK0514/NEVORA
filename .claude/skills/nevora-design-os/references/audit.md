@@ -7,7 +7,8 @@ run it on your own UI work before reporting it. It is a review: don't edit files
 
 1. Identify the surface: route, role (Owner, Manager, Lead, Employee, Clocker, public), viewport and state shown.
 2. Read the matching DESIGN.MD section (Current direction, then the dated refinement for that route).
-3. For a live route, render it (see `nevora-ui-readiness`): 320, 390, 768 and 1440px widths, as applicable. For a
+3. For a live route, render it (see `.claude/skills/nevora-ui-readiness/SKILL.md`): 320, 390, 768 and 1440px widths, as
+   applicable. For a
    static image, audit what is visible and list what can't be judged from an image (focus order, motion, screen
    reader output).
 
@@ -45,14 +46,18 @@ run it on your own UI work before reporting it. It is a review: don't edit files
 
 Every data surface needs all of these, designed, not left to defaults:
 
-- **Empty:** says why it's empty and gives the next step (voice.md rule 8). First-run empty differs from filtered empty
+- **Empty:** says why it's empty and gives the next step (`docs/design/voice.md`, "Empty states"). First-run empty differs from filtered empty
   ("No results for 'Ana'. Clear the search").
 - **Loading:** skeleton shaped like the content (`BLoadingScreen`, shimmer after 300ms), no layout jump on arrival.
 - **Error:** what happened, what to do, a retry that keeps the person's input; offline keeps what loaded (`BOffline`).
 - **Success:** confirms the result in place (`BDoneMark`, toast) and says what happens next where relevant.
 - **Partial and edge:** one item, many items, long text, zero values, permission-limited view, disabled with a reason.
 
-Copy is checked against `voice.md` in every lens.
+Copy is checked against `docs/design/voice.md` (product strings, English and Spanish, including its "Before you ship a
+string" checklist) and the cliché ban in `voice.md`, in every lens.
+
+This audit is the working design review either agent runs on a draft. It doesn't replace the independent UI
+certification in `.codex/skills/nevora-independent-ui-oversight/`, which reports to Jose separately.
 
 ## Report format
 

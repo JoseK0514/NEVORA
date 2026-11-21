@@ -1,66 +1,50 @@
-# NEVORA voice and writing standard
+# Voice and writing standard
 
-Applies to interface copy, specs, reviews, docs under `docs/product/`, commit messages and chat reports. Modelled on the
-Google developer documentation style guide (https://developers.google.com/style). Payroll, tax and legal copy that Jose
-has approved stays word for word; flag a problem in it, don't rewrite it.
+Shared by Claude and Codex.
 
-## Tone
+## Product copy: follow `docs/design/voice.md`
 
-Professional, conversational and respectful, without slang (Google: "conversational, friendly, and respectful";
-"conversational ... rather than a formal one"). Write like a capable colleague who respects the reader's time. Not
-cute, not salesy, not apologetic, no exclamation marks.
+Every interface string (labels, buttons, messages, notifications, empty states, assistant answers) in English and Puerto
+Rico Spanish follows **`docs/design/voice.md`**, Jose's approved writing guide (Nov 21, 2026): calm coworker, tú for
+everyone, Dueño for Owner, quiet past-tense confirmations, "what happened, then what to do", neutral facts about people,
+protected strings and its pre-ship checklist. That guide wins over this file. Approved payroll and legal text wins over
+both; flag a problem in it, don't rewrite it.
 
-## Rules
+This file adds two things the guide doesn't cover: the AI-cliché ban (which applies to product copy too) and the
+standard for everything that isn't product copy.
 
-1. **Second person, active voice, present tense.** "You can change your shift", not "Shifts can be changed by users".
-2. **Lead with the point.** The first words of a sentence, row, button or notice say what matters. Put conditions
-   before instructions: "To swap a shift, open Schedule", not "Open Schedule to swap a shift".
-3. **Sentence case** for headings, buttons, tabs and labels. Capitalise names only (NEVORA, Gusto).
-4. **Plain words.** "use" not "utilize", "help" not "facilitate", "start" not "initiate", "about" not "approximately".
-5. **Buttons are verbs that name the result:** "Approve request", "Save shift", "Send to payroll". Not "OK", "Submit",
-   "Click here".
-6. **Numbers as numerals,** units spelled the way the product shows them elsewhere. Dates and times in the reader's
-   format.
-7. **Errors say what happened and what to do next,** in that order, without blame. "We couldn't save the shift. Check
-   your connection and try again." Never "Oops", never an error code alone.
-8. **Empty states say why it's empty and offer the next step.** "No requests yet. When someone asks for time off, it
-   shows here."
-9. **One idea per sentence,** short paragraphs, lists for three or more parallel items.
-10. **No directional or sensory-only instructions.** Not "click the green button on the right"; name the control.
-11. **Inclusive, specific language.** "Manager", "team member" (or the role name the product uses), never gendered
-    defaults. Use they/them for an unnamed person.
+## Specs, docs, reviews, handoffs, commit messages and chat reports
 
-## Words and phrases to cut
+Based on the Google developer documentation style guide (https://developers.google.com/style/highlights,
+https://developers.google.com/style/tone): conversational, friendly and respectful, without slang; not formal.
 
-From Google's tone page and word list (https://developers.google.com/style/tone,
-https://developers.google.com/style/word-list):
+1. Second person and active voice. Say who does what.
+2. Lead with the point; put conditions before instructions ("To swap a shift, open Schedule").
+3. Sentence case for titles and headings.
+4. Numbered lists for sequences; serial commas; interface element names in bold.
+5. One idea per sentence; short paragraphs.
+6. Findings first, ranked by severity; each has location, what's wrong, why it matters, the fix.
+7. State what was checked and how; say plainly what wasn't checked. No praise padding, no restating the request.
 
-- please in instructions; simply, "it's easy", quickly in a procedure; "let's"; "please note", "at this time"
-- click here; above and below for position in the interface (name or link the target instead)
-- allows you to (use "lets you"); could (use "can" where possible); comprise; and/or; and so on; abort
-- access as a verb when a plainer verb fits (see, edit, find, use, view); actionable
-- blacklist and whitelist (use blocklist or denylist, and allowlist)
+Words to avoid, from Google's tone page and word list (https://developers.google.com/style/word-list): please in
+instructions; simply, "it's easy" and quickly in a procedure; "let's"; "please note", "at this time"; click here; above
+and below for interface position; "allows you to" (write "lets you"); could where can works; comprise; and/or; and so
+on; abort; access as a verb when see, edit, find, use or view fits; actionable; blacklist and whitelist (write
+blocklist or denylist, and allowlist). NEVORA additions: utilize, leverage as a verb, facilitate, in order to,
+obviously, of course, e.g. and i.e., a trailing etc.
 
-NEVORA additions: utilize, leverage (as a verb), facilitate, in order to, obviously, of course, e.g. and i.e. (write
-"for example" and "that is"), etc. at the end of a list (write "such as" and give the list).
+## AI clichés: banned everywhere
 
-## AI clichés: banned
-
-Never write these, in product copy or in reports:
+In product copy, specs and reports, in both languages:
 
 - delve, dive into, deep dive, unlock, unleash, elevate, empower, supercharge, seamless(ly), effortless(ly), robust,
-  cutting-edge, game-changer, revolutionize, next-level, world-class (in product copy), bespoke, curated, holistic,
-  synergy, journey (for a task), tapestry, landscape, realm, testament, navigate (meaning "deal with")
-- "In today's fast-paced world", "It's important to note that", "It's worth noting", "Let's explore",
-  "Whether you're X or Y", "Not only X but also Y", "At the end of the day", "Look no further"
+  cutting-edge, game-changer, revolutionize, next-level, world-class, bespoke, curated, holistic, synergy, journey (for
+  a task), tapestry, landscape, realm, testament, navigate (meaning "deal with")
+- "In today's fast-paced world", "It's important to note that", "It's worth noting", "Let's explore", "Whether you're X
+  or Y", "Not only X but also Y", "At the end of the day", "Look no further"
 - "Great question", "Certainly!", "Absolutely!", "I hope this helps", "Feel free to"
-- Rule-of-three padding ("fast, simple and powerful") where only one claim is true
-- Em dash chains used for drama, exclamation marks in product copy, emoji in product copy
+- Spanish equivalents: "sin problemas" or "sin fisuras" as filler, "potenciar", "llevar al siguiente nivel", "en el
+  mundo actual", "es importante destacar que", "sumergirse en"
+- Rule-of-three padding where only one claim is true; em dash chains for drama; exclamation marks; emoji in product copy
 
 If a sentence still works with the cliché removed, remove it. If it doesn't, replace it with the specific fact.
-
-## Report style (for audits, reviews, chat)
-
-- Findings first, ranked by severity; each has location, what is wrong, why it matters, the fix.
-- State what you checked and how. Say plainly what you didn't check.
-- No praise padding, no restating the request.

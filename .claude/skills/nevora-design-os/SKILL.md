@@ -5,6 +5,9 @@ description: NEVORA's design operating system. Load for any NEVORA layout, typog
 
 # NEVORA design operating system
 
+Shared by Claude and Codex. Codex reaches the same files through `.codex/skills/nevora-design-os/SKILL.md` and
+`AGENTS.md`; edit the reference files here, once, so both agents keep working from the same rules.
+
 Five standing rules. Each has a reference file; read the one the task needs.
 
 | # | Standard | Reference |
@@ -20,7 +23,8 @@ Five standing rules. Each has a reference file; read the one the task needs.
 When two sources disagree, the higher one wins:
 
 1. Jose's explicit instruction in the current conversation.
-2. `DESIGN.MD` ("Current direction" first, then the dated refinement for that route) and `.21st/DESIGN.md`.
+2. `DESIGN.MD` ("Current direction" first, then the dated refinement for that route) and `.21st/DESIGN.md`; for product
+   copy, `docs/design/voice.md`.
 3. The live tokens in `src/app/b-tokens.css` (they carry decisions newer than some DESIGN.MD prose, for example the
    10px button radius picked on Nov 21, 2026).
 4. This skill's references, Apple HIG included.
@@ -40,9 +44,11 @@ severity, then offer fixes. Don't rewrite the draft unless Jose asks for changes
 
 ## When building
 
-1. Follow `.claude/skills/nevora-ui-readiness/SKILL.md` for setup, scope and browser evidence.
+1. Follow `.claude/skills/nevora-ui-readiness/SKILL.md` for setup, scope and browser evidence (Codex reads it as a
+   plain file).
 2. Reuse a kit component before writing a new one (`references/design-system.md` lists them).
 3. Use tokens, never raw hex, px sizes or durations that already have a token.
-4. Write copy to `references/voice.md`. Payroll and legal copy stays exactly as approved.
+4. Write product copy to `docs/design/voice.md`, everything else to `references/voice.md`. Payroll and legal copy
+   stays exactly as approved.
 5. Animate to `references/motion-gsap.md`, with a reduced-motion path for every animation.
 6. Run the audit on your own result before reporting it.
