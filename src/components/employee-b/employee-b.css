@@ -237,3 +237,32 @@
 :is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel-card { display: grid; gap: 14px; padding: var(--b-space-20) var(--b-inset) 22px; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel--head { width: 40%; height: 18px; border-radius: var(--b-radius-pill); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel--short { width: 55%; }
+
+/* Your week (Nov 21, 2026; home-week.tsx): seven bars on the card's white. A bar is as tall as the day's hours against the
+ * week's longest day; teal is time worked, the tint with its edge is what the schedule still holds, a day off is a short
+ * grey stub. Each value is written over its bar (ink when worked, grey when only scheduled) and today's weekday is the
+ * tinted pill. The fill moves only where motion is welcome; without it the bar simply shows its state. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw { padding: 6px var(--b-inset) var(--b-space-16); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__d { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; margin: 0; padding: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__v { min-height: var(--b-lh-caption); font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--b-grey); white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__v--done { color: var(--b-ink); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__track { display: flex; align-items: flex-end; justify-content: center; width: 100%; height: 72px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__bar { position: relative; display: block; width: min(100%, 30px); height: calc(var(--h) * 100%); border: 1px solid var(--b-teal-edge); border-radius: 9px; background: var(--b-teal-50); overflow: hidden; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__fill { position: absolute; inset: -1px; background: var(--b-teal); transform: translateY(calc((1 - var(--f)) * 100%)); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__d--off .eb-hw__bar { height: 4px; border-color: transparent; border-radius: 2px; background: var(--b-line); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__l { padding: 2px 6px; border-radius: var(--b-radius-pill); font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); font-weight: 500; color: var(--b-grey); white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__d--today .eb-hw__l { background: var(--b-teal-50); color: var(--b-teal); font-weight: 700; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__key { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-12); margin: 14px 0 0; padding-top: var(--b-space-12); border-top: 1px solid var(--b-line); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__keys { display: flex; flex-wrap: wrap; gap: var(--b-space-4) var(--b-space-16); min-width: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__k { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__k::before { content: ""; flex: none; width: 10px; height: 10px; border: 1px solid var(--b-teal-edge); border-radius: 3px; background: var(--b-teal-50); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__k--done::before { border-color: var(--b-teal); background: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__range { flex: none; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (prefers-reduced-motion: no-preference) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__fill { transition: transform var(--b-dur-enter) var(--b-ease-out); }
+}
+@media (forced-colors: active) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__bar { border-color: CanvasText; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__fill { background: Highlight; forced-color-adjust: none; }
+}

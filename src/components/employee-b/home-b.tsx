@@ -21,6 +21,7 @@ import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourc
 import {BCardNote, BDay, Dotted, Range, shiftEndedWhileOpen, sinceSpan, wallTime} from './parts';
 import './employee-b.css';
 import {reviewCopy} from '../review-details/copy';
+import {HomeWeekCard} from './home-week';
 import type {HomeTaskTotal} from '../../lib/action-center/review-routing';
 
 /* Employee Home on the phone, Direction B (Jose approved the mock "Employee mobile, Direction B", Nov 6, 2026). The
@@ -104,6 +105,12 @@ function HoursProvider({authority, children}: {authority: string; children: Reac
 function HoursFigures({week, payday, onShift, nextShift}: {week: HomeWeek | null; payday?: string | null; onShift?: OnShiftFigure | null; nextShift?: NextShiftFigure | null}) {
   const data = useContext(HoursRead) ?? null;
   return <Figures week={week} payday={payday} worked={data ? workedMinutes(data) : null} onShift={onShift} nextShift={nextShift}/>;
+}
+
+/** Your week (Nov 21, 2026): the hours day by day, from the two reads Home already holds. */
+function WeekCard({week, time}: {week: HomeWeek; time: boolean}) {
+  const hours = useContext(HoursRead);
+  return <HomeWeekCard week={week} hours={hours} time={time}/>;
 }
 
 /** "Starts in 2 h" or "Starts in 45 min" today; otherwise "Tomorrow" or the weekday. */
@@ -314,10 +321,13 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
         </BCard> : null}
         {/* Review B6 (NV-095): a Lead's right column (Today's team over Coming up) is one column on desktop, so it flows
           * under the team card instead of waiting for the shift card's row. On a phone it is two cards in the stack. */}
-        {team ? <div className="eb-side" id="b-home-side">
-          <TeamCard place={(snapshot.currentShift ?? snapshot.nextShift)?.locationLabel}/>
+        {/* Nov 21, 2026: Your week joins that column for everyone (hours by day over Coming up), so an Employee's Home
+          * uses the Lead's two columns: the shift and the to-dos on the left, the week on the right. */}
+        {team || weekShown ? <div className="eb-side" id="b-home-side">
+          {team ? <TeamCard place={(snapshot.currentShift ?? snapshot.nextShift)?.locationLabel}/> : null}
+          {weekShown ? <WeekCard week={weekShown} time={!!hoursAuthority}/> : null}
           {weekShown ? <ComingUp week={weekShown} snapshot={snapshot} lead={lead} note={note}/> : note ? <BNote>{note}</BNote> : null}
-        </div> : weekShown ? <ComingUp week={weekShown} snapshot={snapshot} lead={lead} note={note}/> : note ? <BNote>{note}</BNote> : null}
+        </div> : note ? <BNote>{note}</BNote> : null}
         {!todos.length && !partial ? <BNote>{tasks?.allSet ? 'You’re all set. Nothing needs you right now.' : reviewCopy().nothingToDo}</BNote> : null}
       </> : <BCard title="Next shift" id="b-home-shift">
         {/* Review F2 (NV-075): the shared state card (icon circle, one line, one teal pill), not a full grey button. */}

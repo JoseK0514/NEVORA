@@ -19,6 +19,12 @@ replies only, no device or provider calls. Its states are saved as `native-<stat
   cloud dev container has both).
 - Chromium for Playwright (preinstalled in the cloud container).
 
+The scan runs as the system user named by `SCAN_USER` (default `pgtest`); any non-root user that can write
+`node_modules/.vitest-cache`, `.omo/evidence` and the output folder works, for example `SCAN_USER=postgres`. The output
+folder must be outside the repository and reachable by that user (the app fixture refuses a folder inside the checkout).
+The Clocker flow types the Employee ID before the PIN; its punch receipts still predate face verification and stop
+after the clock-state screens.
+
 ## Usage
 
 ```bash

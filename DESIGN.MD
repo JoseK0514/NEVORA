@@ -459,6 +459,20 @@ item names the lines it supersedes; line numbers are from the file before this s
     notification opens in place and lists each notification, each read on its own. One bell, in the top bar, for every
     role (no Notifications entry in the Employee sidebar or rail). My pay has no back link from 768px. Under "Shift
     lead": "Must be an Owner, Manager or Lead."
+- **Employee and Lead Home: Your week (built Nov 21, 2026; waits for Jose's review).** A white card, "Your week": the
+  week's hours day by day as seven bars (`src/components/employee-b/home-week.tsx`, rules at the end of
+  `employee-b.css`). A bar is as tall as the day's hours against the week's longest day; teal is time worked (the Time
+  tab's own records read, already on Home), the teal tint with its edge is what the published schedule still holds, a
+  day off is a short grey stub. Each value is written over its bar (ink when worked, grey when only scheduled), today's
+  weekday is the tinted pill, a key names the two fills, and the header links to the timecard when Time is on. No new
+  read: without the hours read the card shows the schedule alone, and a week with no shifts and no time shows no card.
+  The bars are decorative; each day is one sentence for screen readers. The fill moves (300ms, ease-out) only without
+  reduced motion.
+  - *Layout.* Your week sits over Coming up in the right column (`.eb-side`), so an Employee's Home uses the Lead's two
+    columns from 768px: the shift and Things to do on the left, the week on the right. Phones: shift, Things to do,
+    Your week, Coming up. A Lead's column is Today's team, Your week, Coming up.
+  - *Supersedes* "Things to do in the right column" for an Employee's desktop Home (near D3 and the Nov 8 Employee
+    desktop notes).
 - **Feature screens and Employee screens (built Nov 17, 2026; see `docs/handoffs/2026-11-17-claude-ui-delivery/README.md`).**
   - *Sheets.* One sheet per feature (`b-restrictions.css`, `b-payroll-import.css`, `b-reminders.css`,
     `b-review-details.css`) and two for the Employee and Lead app (`employee-b-work.css`, `employee-b-account.css`),
