@@ -47,7 +47,7 @@ it.each(['MANAGER','OWNER'])('shows %s the latest completed bonus year inside th
  expect(html).toContain('<section data-authority="company-fixture">');
  // Final verification F (F18): the disclaimer's first sentence is its note's title; the words are Jose's, unchanged.
  expect(html).toContain('<p class="b-callout__t">Informational only</p><div class="b-callout__b">Christmas bonus eligibility, amounts and exemptions depend on employer size and Puerto Rico law. Confirm with your payroll provider or counsel before paying.</div>');
- expect(html).toContain('Nov 15 – Dec 15, 2026');
+ expect(html).toContain('Nov 15–Dec 15, 2026');
  expect(html).toContain('Dec 1, 2026');
  expect(html).toContain('Exemption filing deadline');
  // Review 30 (D11): the year is the band's pill menu: the five years as links, the shown one marked current.

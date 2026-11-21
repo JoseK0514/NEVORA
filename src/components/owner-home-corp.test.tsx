@@ -92,14 +92,14 @@ describe("Owner Home on the corporate kit (board C-Owner)", () => {
     expect(before).toContain('<section id="home-payday" class="c-card" aria-labelledby="home-payday-label">');
     expect(before).toContain(">Tue, Nov 3<");
     expect(before).toContain(">Tomorrow<");
-    expect(before).toContain(">Pay period Oct 26 – Nov 1<");
+    expect(before).toContain(">Pay period Oct 26–Nov 1<");
     expect(before).toContain(">Approve timecards<");
     expect(before).toContain(">You can approve from Mon, Nov 2<");
     expect(before).not.toMatch(/Approve \d/);
     // Once it has ended: the count, with the one verb.
     const after = html({ timecards: open, timecardsReady: true, businessDay: "2026-11-02" }).replace(/\u00a0/g, " ");
     expect(after).toContain(">Review 2 timecards<");
-    expect(after).toContain("Before payroll · Oct 26 – Nov 1");
+    expect(after).toContain("Before payroll · Oct 26–Nov 1");
     expect(after).toContain('href="/app/timecards?start=2026-10-26&amp;end=2026-11-01"');
     // P3: never "approved" — not while loading, not when the read failed, not when there are simply none.
     const loading = html({ value: null, connection: "loading", timecards: [], timecardsReady: false, businessDay: "2026-10-30" });
@@ -360,7 +360,7 @@ it("shows overdue preparation and its exact period alongside the independent upc
   expect(out).toContain("Tue, Nov 3");
   expect(out).toContain("Payroll to prepare");
   expect(out).toContain("Tue, Oct 27");
-  expect(out).toContain("Pay period Oct 19, 2026 – Oct 25, 2026");
+  expect(out).toContain("Pay period Oct 19, 2026–Oct 25, 2026");
   expect(out).toContain("Payday Tue, Oct 27, 2026");
   expect(out).toContain('href="/app/payroll"');
   expect(out).not.toMatch(/late payment|unpaid/i);
@@ -383,7 +383,7 @@ it("keeps every closed review card with its own canonical period link across mul
   ];
   const out = html({timecards: cards, timecardsReady: true, businessDay: "2026-11-02"});
   expect(out).toContain('href="/app/timecards?start=2026-10-19&amp;end=2026-10-25" class="c-row" aria-label="Review 2 timecards. Before payroll · Oct 19–25. Opens Timecards"');
-  expect(out).toContain('href="/app/timecards?start=2026-10-26&amp;end=2026-11-01" class="c-row" aria-label="Review 1 timecard. Before payroll · Oct 26 – Nov 1. Opens Timecards"');
+  expect(out).toContain('href="/app/timecards?start=2026-10-26&amp;end=2026-11-01" class="c-row" aria-label="Review 1 timecard. Before payroll · Oct 26–Nov 1. Opens Timecards"');
   expect(out).not.toContain("Review 3 timecards");
   expect(out).not.toContain('href="/app/timecards"');
 });
@@ -391,6 +391,6 @@ it("keeps every closed review card with its own canonical period link across mul
 it.each(['overdue', 'reviewRequired'] as const)('marks only the %s payroll fact for complete cross-year date wrapping', field => {
   const out = html({payrollStatus: {state: 'ready', [field]: {payday: '2027-01-05', period: {startDate: '2026-12-28', endDate: '2027-01-03'}}}});
   expect(out.match(/<li class="c-home__payroll-fact">/g)).toHaveLength(1);
-  expect(out).toMatch(/<li class="c-home__payroll-fact"><a href="\/app\/payroll"[^>]*>.*?Payday Tue, Jan 5, 2027 · Pay period Dec 28, 2026 – Jan 3, 2027/);
+  expect(out).toMatch(/<li class="c-home__payroll-fact"><a href="\/app\/payroll"[^>]*>.*?Payday Tue, Jan 5, 2027 · Pay period Dec 28, 2026–Jan 3, 2027/);
   expect(out).toContain('<li><div class="c-row"><span class="c-row__main"><span class="c-row__title c-row__title--b">Tue, Nov 3');
 });

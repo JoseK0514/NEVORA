@@ -151,7 +151,7 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
     {state ?? missingRun ?? (run && <PeopleAmounts run={run} />)}
   </CorpPage>;
   return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-review-title">
-    {/* Nov 1 upscale: the payroll's period, payday and status are the subtitle ("Oct 5 – 11 · Payday Tue, Oct 13 · Approved"). */}
+    {/* Nov 1 upscale: the payroll's period, payday and status are the subtitle ("Oct 5–11 · Payday Tue, Oct 13 · Approved"). */}
     <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title={run?.status === 'APPROVED' ? 'Payroll details' : 'Review payroll'} id="payroll-review-title"
       sub={run && !state ? `${periodText(run)} · ${statusLabels[run.status]}${run.status === 'APPROVED' && run.approvedAt ? ` ${approvedDay(run.approvedAt)}` : ''}` : undefined} />
     <Feedback operation={operation} />
@@ -175,7 +175,7 @@ function overduePeriod(data: PayrollRunsResponse | null, today: string) {
 
 /** Owner premium A6 (structure P2), round 2 R3: the pay periods with no payroll come first, as a white card whose title
  * is the screen's one red mark, a grey line naming the oldest period and its payday, and the page's one filled button
- * (Nov 1 upscale, "Prepare Sep 21 – 27") that opens that period on Prepare payroll (it never prepares anything by itself). Only what the page already read: the backlog
+ * (Nov 1 upscale, "Prepare Sep 21–27") that opens that period on Prepare payroll (it never prepares anything by itself). Only what the page already read: the backlog
  * count when it is known, the oldest period and its payday. Shown on Payroll only; Prepare payroll leads with the row. */
 function UnpaidNotice({ data, oldest, href }: { data: PayrollRunsResponse; oldest: PayrollMissingPeriod; href: string }) {
   const count = data.backlog && !data.backlog.overflow ? data.backlog.missingCount : null;
@@ -232,7 +232,7 @@ function NetAmount({ minor }: { minor: string }) {
 }
 
 /** Closing F1 (NV-082): newest first, except that a payroll a correction replaced follows its correction (flagged
- * `replaced`), so "Oct 19 – 25" twice reads as one correction and the run it replaced. */
+ * `replaced`), so "Oct 19–25" twice reads as one correction and the run it replaced. */
 function byCorrection(runs: PayrollRun[]): { item: PayrollRun; replaced: boolean }[] {
   const replacedBy = new Map<string, string>();
   for (const run of runs) if (run.correctionOf && runs.some(other => other.id === run.correctionOf)) replacedBy.set(run.correctionOf, run.id);

@@ -449,7 +449,7 @@ it.each([['prepare','Prepare payroll','href="/app/payroll/prepare"'],['owner','A
  payrollStep=step;
  rs.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[finalized('E1',240),finalized('E2',60)]}));
  await mount();const rendered=html();
- expect(rendered).toContain('aria-label="Next step"');expect(rendered).toContain(`c-row__title--b">${title}<`);expect(rendered).toContain('Every timecard for Sep 21 – 27 is finalized.');expect(rendered).toContain('All 2 finalized');
+ expect(rendered).toContain('aria-label="Next step"');expect(rendered).toContain(`c-row__title--b">${title}<`);expect(rendered).toContain('Every timecard for Sep 21–27 is finalized.');expect(rendered).toContain('All 2 finalized');
  if(link)expect(rendered).toContain(link);else expect(rendered).not.toContain('/app/payroll/prepare');
  expect(rendered).not.toContain('Approve each timecard');
 });
@@ -469,7 +469,7 @@ it('phone: the tile names the step under way, the steps are said once and a fina
  cards=[finalized('E1',8*60+6),finalized('E2',60)];click('This week');await flush();
  const after=html();
  expect(text(after)).toContain('|Finalized|');expect(text(after)).toContain('|Prepare payroll|');expect(after).toContain('href="/app/payroll/prepare"');
- expect(after).toContain('Every timecard for Sep 21 – 27 is finalized.');expect(after).not.toContain('Approve each timecard');
+ expect(after).toContain('Every timecard for Sep 21–27 is finalized.');expect(after).not.toContain('Approve each timecard');
 });
 
 it('after an approval the reviewer moves on when they choose: Next timecard, never on a timer (Jose, Nov 15, 2026)',async()=>{

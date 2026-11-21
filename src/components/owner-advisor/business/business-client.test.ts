@@ -199,9 +199,9 @@ describe("periods and files", () => {
     expect(windowFromDays("2026-11-09", "2026-11-15", uiZone)).toEqual({ fromAt: "2026-11-09T04:00:00.000Z", toAt: "2026-11-16T04:00:00.000Z" });
     expect(windowFromDays("2026-11-15", "2026-11-09", uiZone)).toBeNull();
     expect(windowFromDays("", "2026-11-09", uiZone)).toBeNull();
-    expect(periodText({ fromAt: "2026-11-09T04:00:00.000Z", toAt: "2026-11-16T04:00:00.000Z" }, uiZone)).toBe("Nov 9 – Nov 15, 2026");
+    expect(periodText({ fromAt: "2026-11-09T04:00:00.000Z", toAt: "2026-11-16T04:00:00.000Z" }, uiZone)).toBe("Nov 9–15, 2026");
     expect(periodText({ fromAt: "2026-11-09T04:00:00.000Z", toAt: "2026-11-10T04:00:00.000Z" }, uiZone)).toBe("Nov 9, 2026");
-    expect(periodText({ fromAt: "2026-12-28T04:00:00.000Z", toAt: "2027-01-04T04:00:00.000Z" }, uiZone)).toBe("Dec 28, 2026 – Jan 3, 2027");
+    expect(periodText({ fromAt: "2026-12-28T04:00:00.000Z", toAt: "2027-01-04T04:00:00.000Z" }, uiZone)).toBe("Dec 28, 2026–Jan 3, 2027");
   });
   it("reads column names as written and guesses nothing", () => {
     expect(csvHeader('Order,"Total, with tax","He said ""hi"""\nA-1,12.50,x')).toEqual(["Order", "Total, with tax", 'He said "hi"']);

@@ -39,8 +39,8 @@ it('titles a manager summary by what it gathers, since the list carries no count
  expect(filterNotifications([{id:'summary',label:'Operations need review',at:'2026-11-14T12:00:00Z',href:'/app/notifications/open?notificationId=summary'}],'all','things to do').map(row=>row.id)).toEqual(['summary']);
 });
 it('adds the dates a row is about when the list carries them, and never guesses a kind from its words',()=>{
- expect(notificationTitle({label:'Schedule update',subject:{kind:'scheduleWeek',startDate:'2026-11-09',endDate:'2026-11-15'}})).toEqual({title:'Schedule update',detail:'Week of Nov 9 – 15'});
- expect(notificationTitle({label:'Time-off update',subject:{kind:'requestDate',startDate:'2026-11-30',endDate:'2026-12-02'}})).toEqual({title:'Time-off update',detail:'Nov 30 – Dec 2'});
+ expect(notificationTitle({label:'Schedule update',subject:{kind:'scheduleWeek',startDate:'2026-11-09',endDate:'2026-11-15'}})).toEqual({title:'Schedule update',detail:'Week of Nov 9–15'});
+ expect(notificationTitle({label:'Time-off update',subject:{kind:'requestDate',startDate:'2026-11-30',endDate:'2026-12-02'}})).toEqual({title:'Time-off update',detail:'Nov 30–Dec 2'});
  expect(notificationTitle({label:'Time-off update',subject:{kind:'requestDate',startDate:'2026-11-30',endDate:'2026-11-30'}}).detail).toBe('Nov 30');
  expect(notificationTitle({label:'Team update',subject:null})).toEqual({title:'Team update',detail:null});
  expect(notificationTitle({label:'toString'})).toEqual({title:'toString',detail:null});

@@ -15,6 +15,6 @@ it('shows each day on one row with its hours or Not available (board E-Availabil
 });
 
 it('keeps a week short enough for a card header', () => {
-  expect(availabilityWeekLabel('2026-11-02')).toBe('Nov 2 – 8');
-  expect(availabilityWeekLabel('2026-10-26')).toBe('Oct 26 – Nov 1');
+  expect(availabilityWeekLabel('2026-11-02')).toBe('Nov 2–8');
+  expect(availabilityWeekLabel('2026-10-26')).toBe('Oct 26–Nov 1');
 });

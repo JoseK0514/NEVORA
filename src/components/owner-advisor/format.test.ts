@@ -18,7 +18,7 @@ it("says the server's attention sentences with correct plurals and a 12-hour clo
 it("reads dates, periods, clock ranges and instants the way people say them, in the workspace's zone", () => {
   expect(dayText("2026-11-18")).toBe("Wed, Nov 18");
   expect(dayText("2027-01-04", "en", "2026")).toBe("Mon, Jan 4, 2027");
-  expect(periodText("2026-10-01", "2026-10-07")).toBe("Oct 1 – Oct 7");
+  expect(periodText("2026-10-01", "2026-10-07")).toBe("Oct 1–7");
   expect(periodText("2026-10-01", "2026-10-01")).toBe("Thu, Oct 1");
   expect(clockRange("08:00", "12:00")).toBe("8:00 AM – 12:00 PM");
   expect(clockRange("22:00", "24:00")).toBe("10:00 PM – midnight");

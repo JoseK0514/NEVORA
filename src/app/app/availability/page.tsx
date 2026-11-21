@@ -3,6 +3,7 @@ import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import { getWorkspace } from "@/lib/data/workspaces";
 import { keepWhole } from "@/lib/keep-whole";
+import { dateRange } from "@/lib/duration-format";
 import { businessDate, formatBusinessDateTime } from "@/lib/business-time";
 import { ManagerAvailability } from "@/components/manager-availability";
 import Link from "next/link";
@@ -160,7 +161,7 @@ export default async function AvailabilityPage({
   const deadline = selectedWeek && settings?.availabilityDeadline ? new Date(settings.availabilityDeadline) : null;
   const inZone = (date: Date, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-US", { timeZone: workspace.timeZone, ...options }).format(date);
   const nextWeek = upcomingWeek?.weekStart ?? addDays(currentWeek, 7);
-  const weekLabel = (week: string) => `Week of ${keepWhole(formatWeekRange(week).split(/\s+[–-]\s+/)[0])}`;
+  const weekLabel = (week: string) => `Week of ${keepWhole(dateRange(week, week, { year: "never" }))}`;
   const pill = !selectedWeek ? null : locked ? <CorpPill tone="neutral">Closed</CorpPill>
     : submissionStatus?.submitted ? <CorpPill tone="teal">{submissionStatus.windowCount === 0 ? "Unavailable all week" : "Submitted"}</CorpPill>
     : <CorpPill tone="amber">{deadline ? `Due ${inZone(deadline, { weekday: "short", month: "short", day: "numeric" })}` : "Not submitted"}</CorpPill>;

@@ -13,7 +13,7 @@ import { weekStartFor } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 import { readNotificationConfig } from "@/lib/notifications/config";
 import { communicationAuthority } from "@/lib/communications/service.server";
-import { formatWeekRange } from "@/lib/date-utils";
+import { dateRange } from "@/lib/duration-format";
 import { QuietHeader, QuietList, QuietNav, QuietPage, QuietRow, weekLabel } from "./quiet/quiet";
 
 /** Phase 3.5 Wave A: Team availability on the kit. The week in the band, the counts and the deadline in one card,
@@ -59,7 +59,7 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   try { authority = communicationAuthority(proof); } catch { authority = undefined; }
   const deadlineAt = settings?.availabilityDeadline ? new Date(settings.availabilityDeadline) : null;
   const remind = authority && deadlineAt && Number.isFinite(deadlineAt.getTime()) && !locked && (proof.employee.role === "OWNER" || proof.employee.role === "MANAGER")
-    ? { authority, timeZone, actor: proof.employee.role, weekStart: selectedWeek, expectedDeadline: deadlineAt.toISOString(), week: keepWhole(formatWeekRange(selectedWeek).split(/\s+[–-]\s+/)[0]) } : null;
+    ? { authority, timeZone, actor: proof.employee.role, weekStart: selectedWeek, expectedDeadline: deadlineAt.toISOString(), week: keepWhole(dateRange(selectedWeek, selectedWeek, { year: "never" })) } : null;
   return (<ScopedReadFrame observation={source}>
     <QuietPage className="q-availability">
       <QuietNav back={{ href: "/app/inbox", label: "Things to do" }} />

@@ -172,7 +172,7 @@ describe("U03: the item another reviewer approves stays visible in Things to do"
     // The reviewer's own correction and one they sent for someone else: listed, each with whose it is.
     expect(out).toContain("Your time correction");
     expect(out).toContain("James Ortiz");
-    expect(html).toMatch(/aria-label="Your timecard, Oct 19 – 25\. Another reviewer approves this one\. It needs an Owner or a Manager with company access\."/);
+    expect(html).toMatch(/aria-label="Your timecard, Oct 19–25\. Another reviewer approves this one\. It needs an Owner or a Manager with company access\."/);
     expect(out).not.toMatch(/approves it by|due /i);
   });
   it("the band counts what this person can decide, and says the timecards apart", () => {

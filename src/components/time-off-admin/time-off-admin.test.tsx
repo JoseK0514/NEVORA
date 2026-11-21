@@ -81,7 +81,7 @@ describe('balance', () => {
     expect(account.entries[0].accrual?.qualifyingMinutes).toBe(4800);
   });
   it('explains each entry: from timecards, approved time off, who opened it', () => {
-    expect(entryDetail(account.entries[0], t, base.actors, base.actorId)).toBe('Nov 16, 2026 · From finalized timecards, Nov 1, 2026 – Nov 15, 2026: 80 h worked');
+    expect(entryDetail(account.entries[0], t, base.actors, base.actorId)).toBe('Nov 16, 2026 · From finalized timecards, Nov 1, 2026–Nov 15, 2026: 80 h worked');
     expect(entryDetail(account.entries[2], t, base.actors, base.actorId)).toBe('Nov 1, 2026 · by Jose Natal');
     const html = renderToStaticMarkup(<AccountScreen {...base} initial={{ load: ready }} />);
     for (const text of ['Time off balance', 'Ana Torres', '32 h', 'Earned · Vacation', '+4 h', 'Time off approved · Vacation', '−8 h', 'Opening balance · Vacation', 'Balance from paper records', 'Adjust balance']) expect(html, text).toContain(text);

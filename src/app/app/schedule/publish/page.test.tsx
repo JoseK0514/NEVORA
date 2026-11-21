@@ -38,7 +38,7 @@ beforeEach(() => { f.statuses = [{ locationId: "loc-1", status: "PUBLISHED" }, {
 
 it("names the week, each location's state and shift count, and publishes every draft with one button", async () => {
   const out = await html();
-  expect(out).toContain("<small>Next week</small><b>Nov 2 – 8</b>");
+  expect(out).toContain("<small>Next week</small><b>Nov 2–8</b>");
   expect(out).toContain(">1 draft</span>");
   // Review B1 (NV-071): Published is done, so it reads green.
   expect(out).toMatch(/Condado<\/span><span class="c-row__detail"><span>2 shifts<\/span><\/span><\/span><span class="c-row__trail"><span class="c-pill c-pill--green b-chip b-chip--green">Published/);

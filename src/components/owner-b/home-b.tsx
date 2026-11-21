@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import { durationTotal } from "@/lib/duration-format";
+import { dateRange, durationTotal } from "@/lib/duration-format";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { ClockUserIcon } from "@phosphor-icons/react/dist/ssr/ClockUser";
 import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
@@ -96,8 +96,7 @@ const nextDay = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86_
 // Review B7 (NV-068): a period total is whole hours ("511 h"), through the shared formatter.
 const hoursText = (hours: number) => durationTotal(hours * 60).replace(" ", "\u00a0");
 const firstNames = (names: string[]) => names.length <= 2 ? names.join(", ") : `${names.slice(0, 2).join(", ")} +${names.length - 2}`;
-const shortRange = (start: string, end: string) => start === end ? fmt(start, { month: "short", day: "numeric" })
-  : start.slice(0, 7) === end.slice(0, 7) ? `${fmt(start, { month: "short", day: "numeric" })}–${Number(end.slice(8))}` : `${fmt(start, { month: "short", day: "numeric" })} – ${fmt(end, { month: "short", day: "numeric" })}`;
+const shortRange = (start: string, end: string) => dateRange(start, end, { year: "never" });
 const requestKind: Partial<Record<ActionItem["type"], string>> = { TIME_OFF: "Time-off request", EXCHANGE: "Shift request", CALLOUT: "Can’t-work request" };
 // Phase 3 (OW-002): a request row's title is the person; the line under it says the kind and the dates.
 const requestWord: Partial<Record<ActionItem["type"], string>> = { TIME_OFF: "Time off", EXCHANGE: "Shift swap", CALLOUT: "Can’t work" };

@@ -3,6 +3,7 @@
  * are the backend's own client-safe file, copied unchanged (weekly-contracts.ts). The server stays authoritative for
  * every read and action; these parsers refuse anything malformed so the page never shows a half-understood plan. */
 import { coverageId, coverageUuid } from "./coverage-actions";
+import { dateRange } from "../duration-format";
 import type { CoverageMeasure } from "./coverage-plan-contracts";
 import {
   weeklyMonday, type WeeklyAlternativeSummary, type WeeklyAssignmentView, type WeeklyCommand, type WeeklyComparison, type WeeklyFairness, type WeeklyGap,
@@ -246,9 +247,7 @@ const utc = (date: string) => new Date(`${date}T12:00:00Z`);
 export const dayText = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(utc(date));
 export const addDays = (date: string, amount: number) => new Date(utc(date).getTime() + amount * 86400000).toISOString().slice(0, 10);
 export function weekText(monday: string) {
-  const end = addDays(monday, 6), a = utc(monday), b = utc(end);
-  const month = (d: Date) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", month: "short" }).format(d);
-  return a.getUTCMonth() === b.getUTCMonth() ? `${month(a)} ${a.getUTCDate()} – ${b.getUTCDate()}` : `${month(a)} ${a.getUTCDate()} – ${month(b)} ${b.getUTCDate()}`;
+  return dateRange(monday, addDays(monday, 6), { year: "never" });
 }
 export const MODE_TEXT: Record<WeeklyMode, { label: string; line: string }> = {
   FILL_GAPS_ONLY: { label: "Fill open gaps", line: "Keeps every current shift" },

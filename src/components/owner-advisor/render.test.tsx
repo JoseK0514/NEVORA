@@ -149,7 +149,7 @@ describe("a business citation in an answer", async () => {
       expect(html).toContain(label);
       expect(html, label).toContain(`<dd>${formatBusinessMinor(amount, "USD")}</dd>`);
     }
-    for (const text of ['role="group"', 'aria-label="Figures from Square sales — Owner import (USD)"', 'tabindex="-1"', 'aria-expanded="true"', "Sales<span>Nov 9 – Nov 15, 2026</span>", "not profit", "not tax due",
+    for (const text of ['role="group"', 'aria-label="Figures from Square sales — Owner import (USD)"', 'tabindex="-1"', 'aria-expanded="true"', "Sales<span>Nov 9–15, 2026</span>", "not profit", "not tax due",
       "All locations", "This record only", "Current when checked", "A subtotal of this record, not the whole business", "Square sales", "Open record", "Open as plain text", 'aria-label="Close"',
       `href="/app/ai-manager/business?view=version&amp;record=${uiIds.sales}&amp;version=${uiIds.salesCurrent}"`, `href="${href}"`]) expect(html, text).toContain(text);
   });
@@ -159,7 +159,7 @@ describe("a business citation in an answer", async () => {
     expect(lapsed).not.toContain("Current when checked");
     const past = open([uiEvidence("FINANCE")], during, "en", { ...source, label: "Operating account", href: uiCitationHref("FINANCE") });
     expect(past).toContain("Past period, as recorded then");
-    expect(past).toContain("Cash and bills<span>Oct 1 – Oct 31, 2026</span>");
+    expect(past).toContain("Cash and bills<span>Oct 1–31, 2026</span>");
     expect(past).toContain("Owed to you");
     expect(past).toContain("not cash");
     expect(past).not.toContain("Closing balance from the rows");   // the card states the file's own balance, not a calculated one
@@ -189,7 +189,7 @@ describe("a business citation in an answer", async () => {
   it("renders the card in Spanish with no English label", () => {
     const html = open([uiEvidence("SALES"), uiEvidence("SALES", { state: "unavailable", reason: "MISSING_MAP", sales: null, queryHash: "7".repeat(64) })], later, "es");
     for (const text of ["Ventas netas", "Ingresos netos", "no es ganancia", "Todos los locales", "Solo este registro", "Verificado antes. Pregunte de nuevo para cifras vigentes", "Abrir registro",
-      "Abrir como texto sin formato", "Cifras no disponibles. Los registros principales no están configurados.", 'aria-label="Cerrar"', "9 nov – 15 nov 2026"]) expect(html, text).toContain(text);
+      "Abrir como texto sin formato", "Cifras no disponibles. Los registros principales no están configurados.", 'aria-label="Cerrar"', "9–15 nov 2026"]) expect(html, text).toContain(text);
     const text = html.replace(/<time[^>]*>[^<]*<\/time>/g, " ").replace(/<[^>]+>/g, " ").replace(/Square sales — Owner import \(USD\)|Square sales|Observed/g, " ");
     for (const word of ["Net sales", "Collected", "Refunds", "Fees", "Net receipts", "Tax recorded", "Locations", "Counts", "Checked", "Open record", "Record", "Figures", "not profit", "Sales"]) expect(text, word).not.toContain(word);
   });

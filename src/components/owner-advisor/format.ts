@@ -1,8 +1,9 @@
 /* Rondo AI (Owner) presentation words (Nov 18, 2026). Dates read "Wed, Nov 18", clock times "9:27 PM", periods
- * "Nov 1 – Nov 7", zones "Puerto Rico time". Presentation only: every value is the server's own; nothing here changes
+ * "Nov 1–7", zones "Puerto Rico time". Presentation only: every value is the server's own; nothing here changes
  * what is sent, saved or compared. Calendar dates are the workspace's written day (read at noon UTC, so no zone can move
  * them); instants are read in the workspace's zone when the page knows it, else in the device's (as before). */
 import { formatTime, formatTimeRange } from "@/lib/date-utils";
+import { dateRange } from "@/lib/duration-format";
 
 export type Lang = "en" | "es";
 const LOCALE: Record<Lang, string> = { en: "en-US", es: "es-PR" };
@@ -16,13 +17,13 @@ export function dayText(date: string, lang: Lang = "en", year?: string) {
   return new Intl.DateTimeFormat(LOCALE[lang], { timeZone: "UTC", weekday: "short", month: "short", day: "numeric", ...(withYear ? { year: "numeric" } : {}) }).format(noon(date));
 }
 
-/** "Nov 1 – Nov 7" ("1 nov – 7 nov"); one day reads as that day. The year joins when the period leaves `year`. */
+/** "Nov 1–7" ("1–7 nov"), the app's one date-range form; one day reads as that day. The year joins when the period
+ * leaves `year`. */
 export function periodText(start: string, end: string, lang: Lang = "en", year?: string) {
   if (!isDate(start) || !isDate(end)) return `${start} – ${end}`;
   if (start === end) return dayText(start, lang, year);
   const withYear = !!year && (start.slice(0, 4) !== year || end.slice(0, 4) !== year);
-  const f = new Intl.DateTimeFormat(LOCALE[lang], { timeZone: "UTC", month: "short", day: "numeric", ...(withYear ? { year: "numeric" } : {}) });
-  return `${f.format(noon(start))} – ${f.format(noon(end))}`;
+  return dateRange(start, end, { year: withYear ? "each" : "never", locale: LOCALE[lang] });
 }
 
 /** "8:00 AM – 12:00 PM" from stored "08:00" and "12:00", by the app's own helper: an end at 24:00 reads "midnight" and

@@ -24,7 +24,7 @@ describe("round 2 kit helpers", () => {
   });
   it("matches Payroll's formats", () => {
     expect(periodRange("2026-10-12", "2026-10-18")).toBe("Oct 12–18");
-    expect(periodRange("2026-09-28", "2026-10-04")).toBe("Sep 28 – Oct 4");
+    expect(periodRange("2026-09-28", "2026-10-04")).toBe("Sep 28–Oct 4");
     expect(payDay("2026-10-20")).toBe("Tue, Oct 20");
     expect(hoursText(String(BigInt(24 * 60 + 7) * BigInt(60_000_000_000)))).toBe("24 h 7 min");
     expect(hoursText("0")).toBe("0 h");

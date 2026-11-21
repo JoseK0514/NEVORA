@@ -56,11 +56,11 @@ describe("the figures check", () => {
   });
   it("shows the server's figures in tabular money with the record, its period and its state", () => {
     const result = answer("SALES"), html = figures(result);
-    for (const text of ["Sales · USD", "Nov 9 – Nov 15, 2026", "Net sales", "Collected on sales", "Refunds", "Net receipts", "not profit", "not tax due", "From these records", "Square sales", ">In use<", "Good to know",
+    for (const text of ["Sales · USD", "Nov 9–15, 2026", "Net sales", "Collected on sales", "Refunds", "Net receipts", "not profit", "not tax due", "From these records", "Square sales", ">In use<", "Good to know",
       "A subtotal of this record, not the whole business", "This record only", `href="/app/ai-manager/business?view=version&amp;record=${uiIds.sales}&amp;version=${uiIds.salesCurrent}"`]) expect(html, text).toContain(text);
     expect(html.match(/class="be-num"/g)!.length).toBeGreaterThanOrEqual(8);
     const cash = figures(answer("FINANCE"));
-    for (const text of ["Cash and bills · USD", "Oct 1 – Oct 31, 2026", "Money in", "Money out", "Owed to you", "not cash", "Operating account", ">Past period<", "Past period, as recorded then", "Things to check"]) expect(cash, text).toContain(text);
+    for (const text of ["Cash and bills · USD", "Oct 1–31, 2026", "Money in", "Money out", "Owed to you", "not cash", "Operating account", ">Past period<", "Past period, as recorded then", "Things to check"]) expect(cash, text).toContain(text);
   });
   it.each([...BUSINESS_UNAVAILABLE_CODES])("says unavailable (%s) in one card with its reason, no figures and no zero", reason => {
     const html = figures(answer("SALES", { state: "unavailable", reason, sales: null, citations: [] }));
@@ -115,8 +115,8 @@ describe("main records", () => {
   });
   it("shows what is in use, a draft waiting, and names instead of IDs", () => {
     const html = renderToStaticMarkup(<MapView ctx={ctx()} />);
-    for (const text of ["In use by Rondo", "2 entries", "Draft waiting for review", `href="/app/ai-manager/business?view=map&amp;map=${uiIds.mapDraft}"`, "What counts", "Square sales", "Sales · USD · Nov 9 – Nov 15, 2026 · Condado Café, Santurce Bakery",
-      "Operating account", "Cash · USD · Oct 1 – Oct 31, 2026 · operating", ">Main<", "Accounts", "The whole company", "Change main records",
+    for (const text of ["In use by Rondo", "2 entries", "Draft waiting for review", `href="/app/ai-manager/business?view=map&amp;map=${uiIds.mapDraft}"`, "What counts", "Square sales", "Sales · USD · Nov 9–15, 2026 · Condado Café, Santurce Bakery",
+      "Operating account", "Cash · USD · Oct 1–31, 2026 · operating", ">Main<", "Accounts", "The whole company", "Change main records",
       "Rondo only knows the accounts you list. Shared cash isn’t split by location. Main records are counted once. A cross-check is never added to them."]) expect(html, text).toContain(text);
     expect(html).not.toContain("loc-1");
     expect(button(renderToStaticMarkup(<MapView ctx={ctx("en", { locked: true })} />), "Change main records")).toContain('disabled=""');

@@ -62,7 +62,7 @@ describe("schedule template workflow presentation", () => {
     } }));
     expect(output).toContain('href="/app/schedule?week=2026-10-12"');
     // Quiet (v4): Templates works on the week Schedule opened it for; there is no week stepper here.
-    expect(output).toContain('Oct 12 – 18');
+    expect(output).toContain('Oct 12–18');
   });
   it.each(["2026-10-13", "2030-02-30", "<script>", ""])("uses workspace-local current week for invalid input %s", async week => {
     rs.useFakeTimers(); rs.setSystemTime(new Date("2026-10-12T02:30:00Z"));
@@ -76,7 +76,7 @@ describe("schedule template workflow presentation", () => {
     expect(output).not.toContain("<script>alert");
     expect(output).toContain("&lt;script&gt;");
     expect(output).toContain(">1 shift</b>");
-    expect(output).toContain("Use for Oct 12 – 18");
+    expect(output).toContain("Use for Oct 12–18");
     expect(output).toContain("Archive");
   });
   it("keeps partial application and warning counts visible with a review destination", async () => {

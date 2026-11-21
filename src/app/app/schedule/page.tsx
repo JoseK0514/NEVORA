@@ -64,18 +64,14 @@ formatDayLabel,formatWeekRange,
 weekDates,
 isValidWeekStart,weekStartFor
 } from "@/lib/date-utils";
+import { dateRange } from "@/lib/duration-format";
 import { getWeekSettings } from "@/lib/data/week-settings";
 import {readEmployeeWeeklyReview} from "@/lib/data/employee-weekly-review.server";
 import { employeeRoleLabel } from "@/lib/employee-display";
 
-/** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month end (the v3 mockup's week label). */
+/** "Oct 19–25", or "Oct 26–Nov 1" across a month end (the app's one date-range form). */
 function compactWeekRange(weekStart: string) {
-  const end = addDays(weekStart, 6);
-  const month = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-  const day = (date: string) => Number(date.slice(8));
-  // Premium pass FA (final verification A #8): a range within a month is closed up ("Nov 16–22"), as Payroll and Home
-  // write a pay period; across months it keeps the spaced dash ("Nov 30 – Dec 6").
-  return month(end) === month(weekStart) ? `${month(weekStart)} ${day(weekStart)}–${day(end)}` : `${month(weekStart)} ${day(weekStart)} – ${month(end)} ${day(end)}`;
+  return dateRange(weekStart, addDays(weekStart, 6), { year: "never" });
 }
 
 function validWeek(value?: string) {

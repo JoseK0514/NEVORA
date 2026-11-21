@@ -10,7 +10,7 @@ import {Temporal} from '@js-temporal/polyfill';
 import {projectReports,type PeriodReports,type ReportHours} from '@/lib/reports/project';
 import {formatRecordedHours,parsePeriod,projectTimecard,type Period} from '@/lib/timecards/project';
 import {formatDateRange,formatDisplayDate} from '@/lib/date-utils';
-import {dateRangeText,durationSentence,minutesFromNanoseconds} from '@/lib/duration-format';
+import {dateRange,dateRangeText,durationSentence,minutesFromNanoseconds} from '@/lib/duration-format';
 import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import {PrinterIcon} from '@phosphor-icons/react/dist/ssr/Printer';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -42,14 +42,8 @@ const PERIOD_ERROR='Choose a valid period of 1 to 31 days.';
 const MINUTE_NS=BigInt('60000000000');
 const hours=(value:string)=>value.startsWith('-')?`−${formatRecordedHours(value.slice(1))}`:formatRecordedHours(value);
 const periodLabel=(period:Period)=>formatDateRange(period.startDate,period.endDate);
-/** v3: "Oct 13 – 19, 2026" (the year only where asked), as in the mockups. */
-const rangeText=(period:Period,year=true)=>{
- try{
-  const format=new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',...(year?{year:'numeric' as const}:{}),timeZone:'UTC'});
-  const day=(value:string)=>new Date(`${value}T12:00:00Z`);
-  return keepWhole(format.formatRange(day(period.startDate),day(period.endDate)).replace(/ /g,' '));
- }catch{return keepWhole(periodLabel(period));}
-};
+/** "Oct 13–19, 2026" (the year only where asked): the app's one date-range form. */
+const rangeText=(period:Period,year=true)=>keepWhole(dateRange(period.startDate,period.endDate,{year:year?'end':'never'}));
 const readable=(value:string)=>value.toLowerCase().replaceAll('_',' ');
 const observedLabel=(at:string,timeZone:string)=>{try{return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at)));}catch{return at;}};
 const changeEvents:Record<string,string>={CREATED:'sent',SUBMITTED:'sent',APPROVED:'approved',COMPLETED:'completed',DECLINED:'declined',REJECTED:'declined',CANCELLED:'withdrawn',WITHDRAWN:'withdrawn',EXPIRED:'expired'};
@@ -237,7 +231,7 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
 }
 /** Quiet (v4): "159.5 h". */
 const quietHours=(nanoseconds:string)=>{if(!/^-?\d+$/.test(nanoseconds))return '—';const negative=nanoseconds.startsWith('-');const minutes=Number(BigInt(negative?nanoseconds.slice(1):nanoseconds)/BigInt(60_000_000_000));return `${negative?'−':''}${Math.round(minutes/6)/10} h`;};
-/** "Oct 19 – 23", or "Sep 28 – Oct 4" (the shared date range, BR-1). */
+/** "Oct 19–23", or "Sep 28–Oct 4" (the shared date range, BR-1). */
 const quietRange=(period:Period)=>dateRangeText(period.startDate,period.endDate);
 
 function QuietFigure({title,value,children,href}:{title:string;value:string;children?:React.ReactNode;href?:string}){
@@ -528,8 +522,8 @@ export function Reports({initialPeriod,today,christmasBonus=true}:{initialPeriod
   <div className="c-seg c-ins__seg" role="group" aria-label="Report period" data-report-entrance="">
    {MODES.map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||busy||held)} onClick={()=>choose(item.mode)}>{item.short}</button>)}
   </div>
-  {/* R7 (copy row 174): this week reads "Oct 26 – 31 so far", which says why it stops before Sunday. */}
-  {/* Closing F1 (NV-239): a one-day period reads "Mon, Nov 9 so far", never "Nov 9 – 9 so far". */}
+  {/* R7 (copy row 174): this week reads "Oct 26–31 so far", which says why it stops before Sunday. */}
+  {/* Closing F1 (NV-239): a one-day period reads "Mon, Nov 9 so far", never "Nov 9–9 so far". */}
   <p className="c-ins__range c-num">{`${period.startDate===period.endDate?dayLabel(period.startDate):quietRange(period)}${mode==='now'?' so far':''} · All locations`}</p>
   {custom_}
   {notice&&notice!==PERIOD_ERROR?<p className="c-ins__error" id="report-export-error" role="alert">{notice}</p>:null}

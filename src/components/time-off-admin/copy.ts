@@ -1,5 +1,7 @@
 /* PTO screens (Nov 20, 2026): the Owner's time off policies and each person's balance. English and Spanish for Puerto
  * Rico ("tú"). One key per sentence; a function where a name, a date or an amount goes in. */
+import { dateRange } from "@/lib/duration-format";
+
 export type PtoLang = "en" | "es";
 
 const en = {
@@ -243,5 +245,5 @@ export function dateText(date: string, t: PtoCopy) {
   return new Intl.DateTimeFormat(t.locale, { timeZone: "UTC", month: "short", day: "numeric", year: "numeric" }).format(new Date(Date.UTC(y, mo - 1, d)));
 }
 export function rangeText(start: string, end: string, t: PtoCopy) {
-  return start === end ? dateText(start, t) : `${dateText(start, t)} – ${dateText(end, t)}`;
+  return dateRange(start.slice(0, 10), end.slice(0, 10), { year: "each", locale: t.locale });
 }

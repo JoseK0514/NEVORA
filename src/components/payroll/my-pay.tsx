@@ -3,6 +3,7 @@
 import { readStatements } from './api';
 import { usePayrollResource, PAYROLL_SIGNED_OUT } from './use-payroll';
 import { formatDisplayDate } from '@/lib/date-utils';
+import { dateRange } from '@/lib/duration-format';
 import { Celebration } from '../celebration';
 import type { PayrollStatementsResponse } from '@/lib/payroll/contracts';
 import Link from 'next/link';
@@ -25,10 +26,9 @@ export type NextPay = { payday: string; daysUntil: number; period?: { startDate:
 
 const utc = (date: string) => new Date(`${date}T12:00:00Z`);
 const longDay = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric' }).format(utc(date));
-/** "Sep 21–27", or "Sep 28 – Oct 4" across a month. */
+/** "Sep 21–27", or "Sep 28–Oct 4" across a month (the app's one date-range form). */
 export function periodLabel(start: string, end: string) {
-  const month = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'short' }).format(utc(date));
-  return start.slice(0, 7) === end.slice(0, 7) ? `${month(start)} ${Number(start.slice(8))}–${Number(end.slice(8))}` : `${month(start)} ${Number(start.slice(8))} – ${month(end)} ${Number(end.slice(8))}`;
+  return dateRange(start, end, { year: 'never' });
 }
 const documentHref = (statement: Statement) => `/api/payroll/documents/${encodeURIComponent(statement.id)}`;
 
@@ -66,7 +66,7 @@ export function MyPay({ nextPay = null, statement = null, document = null, corpo
     <QuietHeader title="Pay" />
     {/* A statement link that failed returns here on desktop too, with the same explanation as the phone view. */}
     {document ? <div className="q-emptyblock" role="alert"><p className="q-empty">{document === 'failed' ? 'We couldn’t open that statement. It didn’t pass NEVORA’s file check. Try again later, or ask your manager.' : document === 'temporary' ? 'We couldn’t open that statement just now. Try again in a moment.' : 'That statement isn’t available. It may have been replaced, or your access changed.'}</p></div> : null}
-    {payday ? <div className="q-lead"><b>{`Scheduled payday is ${payday}`}</b><i>{[when, nextPay?.period ? `for ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : null].filter(Boolean).join(' · ')}</i></div> : null}
+    {payday ? <div className="q-lead"><b>{`Scheduled payday is ${payday}`}</b><i>{[when, nextPay?.period ? `for ${periodLabel(nextPay.period.startDate, nextPay.period.endDate)}` : null].filter(Boolean).join(' · ')}</i></div> : null}
     <div className="q-grp" style={{ marginTop: payday ? 32 : 28 }}><h2 id="mp-week">This week</h2></div>
     <QuietList label="This week">
       <QuietRow one href="/app/my-time" title="My time" />
@@ -101,7 +101,7 @@ export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
     <CorpNav back={{ href: '/app/more', label: 'More' }} title="My pay" titleId="mypay-nav-title" phoneOnly />
     <CorpTitle id="mypay-title" title="My pay" wide />
     {payday ? <CorpCard id="mypay-payday" label="Scheduled payday">
-      <CorpRows label="Scheduled payday"><li><CorpRow title={payday} bold detail={nextPay?.period ? `Pay period ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : undefined} value={away} valueTone="soft" /></li></CorpRows>
+      <CorpRows label="Scheduled payday"><li><CorpRow title={payday} bold detail={nextPay?.period ? `Pay period ${periodLabel(nextPay.period.startDate, nextPay.period.endDate)}` : undefined} value={away} valueTone="soft" /></li></CorpRows>
     </CorpCard> : null}
     {loading ? <CorpCard id="mypay-statements" label="Statements"><div className="c-empty c-empty--card" role="status"><span className="c-empty__body">Loading…</span></div></CorpCard>
       : error ? <CorpErrorCard title={error === PAYROLL_SIGNED_OUT ? 'Sign in again to see your statements.' : 'Couldn’t load your statements.'} body={null}

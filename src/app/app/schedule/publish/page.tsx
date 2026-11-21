@@ -17,6 +17,7 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { withOperationalCompany } from "@/lib/company-access/operational-scope.server";
 import { businessDate } from "@/lib/business-time";
 import { addDays, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
+import { dateRange } from "@/lib/duration-format";
 import { listLocations } from "@/lib/data/employees";
 import { getScheduleGenerationReview, type ScheduleGenerationReview } from "@/lib/data/schedule-generation-review";
 import { getSchedulePublishReadiness } from "@/lib/data/schedule-publication-review";
@@ -31,10 +32,7 @@ import "./publish.css";
 
 export const metadata = { title: "Build and publish" };
 
-const range = (weekStart: string) => {
-  const end = addDays(weekStart, 6), month = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-  return `${month(weekStart)} ${Number(weekStart.slice(8))} – ${month(end) === month(weekStart) ? "" : `${month(end)} `}${Number(end.slice(8))}`;
-};
+const range = (weekStart: string) => dateRange(weekStart, addDays(weekStart, 6), { year: "never" });
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
 /** The Owner builds and reviews the full week. Managers review their publication locations. */

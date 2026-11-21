@@ -139,7 +139,7 @@ function timecardRows(items: ActionItem[], day: string, open = true, dateInNote 
     // another reviewer approves, the signed-in person's own included, is its own row under the period, so it stays
     // visible; a card whose review facts are missing says that it could not be checked. Neither is counted.
     const list = all.filter(mine);
-    // Review B5 (NV-243): a period is a title, never a sentence ("Nov 2 – 8", not "Nov 2 – 8.").
+    // Review B5 (NV-243): a period is a title, never a sentence ("Nov 2–8", not "Nov 2–8.").
     const title = plain(period || "This pay period");
     const rest: Row[] = all.filter(item => !mine(item)).map(item => {
       const name = concernsActor(item) ? t.yourTimecard : itemPerson(item) ?? item.detail.split(" · ")[0] ?? title;

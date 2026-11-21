@@ -38,7 +38,7 @@ const isoDay=(date:Date)=>date.toISOString().slice(0,10);
 const written=(nanoseconds:string,write:(minutes:number,zero:string)=>string)=>{const minutes=minutesFromNanoseconds(nanoseconds);return minutes===null?'—':write(minutes,'0 h');};
 const hoursText=(nanoseconds:string)=>written(nanoseconds,durationSentence);
 const hoursFigure=(nanoseconds:string)=>written(nanoseconds,durationRow);
-/** "Oct 19 – 25", or "Sep 28 – Oct 4" (Payroll's one period format, R2). */
+/** "Oct 19–25", or "Sep 28–Oct 4" (Payroll's one period format, R2). */
 const rangeText=periodRange;
 /** This week and the five before it, Monday to Sunday, counted from the page's default week. */
 function weekChoices(){
