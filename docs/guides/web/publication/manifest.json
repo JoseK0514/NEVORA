@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-21",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "af44098119112b4a769d4a90d2141fb6eb6f0cfc",
-  "applicationHash": "e821107232977472c1abcc49ef3bc3b1da2355451f2c47f5e82f619f0b48c446",
+  "sourceSha": "43f558d7af7eb287ae7b1b82dabaeac6a4b77f7f",
+  "applicationHash": "a83bf3ed3a562f7a9855d51dcebc877096620166d82176db0daec5fff9a22d79",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "37461cc1c4d239db0b500a7b191f11b30a8ae74b95974b7aa0b86c92f890ffb1"
@@ -212,7 +212,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "ca0049e4c9856348bb037167590194ea5c51324e32bb0cc74aca3c6efeda9537",
+        "sha256": "3ffc28bdffaf1b3a28aed081137dad7b0f2406c25026f5f44d37a9c4de7dfe9d",
         "pageCount": 7
       }
     },
@@ -335,7 +335,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "79fc3605f5658a0940ad321e28a07ec24f3c21510b5f0809645a58b7279ffe86",
+        "sha256": "a968aef5fe937f4edf639e1f664100b9ba30cd7353ca6c305bce78462a88774b",
         "pageCount": 4
       }
     },
@@ -454,7 +454,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "13f5bced7bb4e586f6fc8dcfa61ef7bb85f108a718346eab36b5d7ee9a3e67c9",
+        "sha256": "14541219035ca00470479681e0648222367629a17e633d2ebf81d4c8f68a3ff5",
         "pageCount": 3
       }
     },
@@ -629,7 +629,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "2a5f8486413d40352114f9e18392c5d380ba724d9d667e3e515e990888a82163",
+        "sha256": "826d93077d7f1df36e935d63aefc9a8ca86444ee1edc06dac19c88b776570b90",
         "pageCount": 5
       }
     },
@@ -659,7 +659,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "977bfa2145ba9b242ee6366e94efc384535f5366583f968ae0e0da95adcbe98f"
+          "sha256": "a3f4336d534178e94702e6ec5f81e90f2e82fb517d30288c4f2a0133f6169705"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -892,7 +892,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "777bc2a6acafed519d6e398ef28973770230e64261c51911e7f1e605f1330301",
+        "sha256": "4def10b5fffc65f280de6c4b9b385900ca253e60d982060fa95b0b605c8d20b7",
         "pageCount": 7
       }
     },
@@ -1087,7 +1087,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "c8eee4f078b2996154050ce70e197bad52ad9b5581110a6fd9dae8610c6e835b",
+        "sha256": "f8d7a072c2ed6794f8ccf73bbadbc28161f2d1855e8d4204defd165d7fc85d17",
         "pageCount": 7
       }
     }
