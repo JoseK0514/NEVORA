@@ -70,7 +70,19 @@ Employee session (`d1152a0f8`, `48a124efa`); this work sits on top of them.
 - Employee forms with the same silent loss (out of scope here): `availability-editor.tsx`, `availability-signature.tsx`,
   the Lead's team message compose, Work restrictions requests.
 
+## Date ranges (added later on Nov 21)
+- Jose: "Use Nov 16–22 across Owner screens"; across months "Nov 30–Dec 6". One helper, `dateRange` in
+  `src/lib/duration-format.ts`; the shared formatters (`dateRangeText`, `formatWeekRange`, `periodRange`,
+  `periodLabel`, `availabilityWeekLabel`, `rangeText`, and the Schedule, Home, Timecards, Insights and Rondo ones)
+  call it. Employee screens that use those formatters changed with them (Availability, My pay, notification titles).
+- Two visible side effects: Spanish payroll import and export periods read "16–22 nov" (they said "16 – 22 de nov");
+  a one-day pay period reads "Oct 12", not "Oct 12–12".
+- Left spaced, for Jose: ranges with weekday names (Time off requests, Things to do, the planning window card).
+  Left as they are: time ranges, server sentences (`formatCalendarRange`), the Christmas bonus year label
+  ("Oct 2025 – Sep 2026"), the PDFs.
+
 ## Open for Jose
+- Should a range with weekday names close its dash too ("Fri, Dec 4–Sun, Dec 6") or stay spaced?
 - One date-range form ("Nov 16 – 22" or "Nov 16–22").
 - New client wording to approve: the result titles and lines in `time-off-admin/copy.ts`, `review-details/copy.ts`
   and `owner-b/moments-copy.ts` (English and Spanish).
