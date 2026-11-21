@@ -57,8 +57,20 @@ Employee session (`d1152a0f8`, `48a124efa`); this work sits on top of them.
   publishes drafts only; a replayed lost Finalize came back "Blocked" although the first attempt had probably saved;
   `/api/notifications` sometimes answers 503 or shows "didn't load" on first open in the harness.
 
+## Asking first (added later on Nov 21, after Jose answered "Yes, all three")
+- Finalize on a timecard, every Decline and Close request, and a Rondo plan decline ask first (`owner-b/ask-step.ts`,
+  `shift-request-decide.tsx`, `decision-parts.tsx`). Client-side step only: unit tests prove nothing is sent when the
+  question shows or on the safe way out, and the original request is sent once on the commit.
+- "Discard changes?" when leaving an edited Owner or Manager form (`kit/use-discard-guard.ts`, `kit/discard-dialog.tsx`).
+  Known gaps: browser Back is caught only where the Navigation API exists (Chromium tested; older browsers may still
+  lose edits on Back); other programmatic `router.push` calls outside the forms and the finder are not intercepted;
+  Add shift and Add employee reload their content when the window loses focus, taking an edit with them.
+- QA scripts that leave a still-dirty form by reload now meet the browser's own prompt, which Playwright accepts by
+  default: `phase-c-breaks-ui-qa.mjs`, `company-setup-qa.mjs`, the two `readiness-*` integration tests. Not run here.
+- Employee forms with the same silent loss (out of scope here): `availability-editor.tsx`, `availability-signature.tsx`,
+  the Lead's team message compose, Work restrictions requests.
+
 ## Open for Jose
-- Should Finalize ask first? Should every Decline ask first? Should leaving an edited settings form ask?
 - One date-range form ("Nov 16 – 22" or "Nov 16–22").
 - New client wording to approve: the result titles and lines in `time-off-admin/copy.ts`, `review-details/copy.ts`
   and `owner-b/moments-copy.ts` (English and Spanish).
