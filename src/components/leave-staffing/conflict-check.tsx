@@ -1,9 +1,9 @@
 'use client';
 import {useMemo} from 'react';
-import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {ClockCountdownIcon} from '@phosphor-icons/react/dist/ssr/ClockCountdown';
+import {BDoneMark} from '../owner-b/b-kit';
 import {useLeaveStaffing,type StaffingState} from './use-leave-staffing';
 import {weeksFor} from '@/lib/time-off-staffing/client';
 import {conflictConsequence,conflictShift,conflictTotal} from '@/lib/time-off-staffing/present';
@@ -36,7 +36,7 @@ export function LeaveConflictCheck({request,employeeName}:{request:PendingLeave;
  else if(state.status==='unavailable')body=state.denied
   ?<Line tone="red" icon={<WarningCircleIcon weight="bold"/>} title="Your access changed" sub="Reload the page to check this request with your current access."/>
   :<Line tone="amber" icon={<WarningIcon weight="bold"/>} title="Couldn’t check for shift conflicts" sub="This doesn’t mean there are none. Try again before you decide." action={<button type="button" className="c-btn c-btn--secondary ls-check__retry" onClick={refresh}>Try again</button>}/>;
- else if(!conflicts?.length)body=<Line tone="green" icon={<CheckIcon weight="bold"/>} title="No published shifts overlap" sub={`${first} isn’t on the published schedule during this time off.`}/>;
+ else if(!conflicts?.length)body=<Line tone="green" icon={null} title="No published shifts overlap" sub={`${first} isn’t on the published schedule during this time off.`}/>;
  else body=<>
   <Line tone="amber" icon={<WarningIcon weight="bold"/>} title={`${first} is on the schedule then`} sub={`${conflictTotal(conflicts)} would need someone else.`}/>
   <ul className="ls-check__list" aria-label="Overlapping published shifts">{conflicts.map(item=><li key={item.id}>
@@ -49,5 +49,5 @@ export function LeaveConflictCheck({request,employeeName}:{request:PendingLeave;
 }
 
 function Line({tone,icon,title,sub,action}:{tone:'green'|'amber'|'red';icon:React.ReactNode;title:string;sub:string;action?:React.ReactNode}){
- return <div className="ls-line"><span className="ls-ring" data-tone={tone} aria-hidden="true">{icon}</span><span className="ls-line__tx"><b>{title}</b><span>{sub}</span></span>{action}</div>;
+ return <div className="ls-line">{tone==='green'?<BDoneMark still/>:<span className="ls-ring" data-tone={tone} aria-hidden="true">{icon}</span>}<span className="ls-line__tx"><b>{title}</b><span>{sub}</span></span>{action}</div>;
 }

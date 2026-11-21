@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { CorpButton, CorpButtonLink } from "@/components/corp/corp";
-import { BCallout, BIcon, BSegs, BSpin } from "@/components/owner-b/b-kit";
+import { BCallout, BDoneMark, BIcon, BSegs, BSpin } from "@/components/owner-b/b-kit";
 import { weekStartFor } from "@/lib/date-utils";
 import { timeZoneLabel } from "@/lib/time-zone-label";
 import type { CoverageActionView, createCoverageActionController } from "./coverage-actions-controller";
@@ -25,7 +24,7 @@ export function CoverageActionPanel({ view, actions }: { view: CoverageActionVie
   const format = (stamp: string, zone: string) => new Date(stamp).toLocaleString("en-US", { timeZone: zone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
   return <section className="c-card oa-draft" aria-label="Reviewed coverage draft" aria-busy={busy}>
     <div className="oa-draft__head">
-      <BIcon tone={receipt ? "green" : "teal"}>{receipt ? <CheckCircleIcon weight="bold" /> : <ClockIcon weight="bold" />}</BIcon>
+      {receipt ? <BDoneMark /> : <BIcon tone="teal"><ClockIcon weight="bold" /></BIcon>}
       <div className="oa-draft__titles"><p className="oa-draft__eyebrow">Coverage · Draft only</p><h2 className="oa-draft__t" ref={heading} tabIndex={-1}>{receipt ? "Draft saved" : r ? "Review draft changes" : view.stage === "uncertain" ? "Check your original request" : "Coverage draft"}</h2></div>
     </div>
     <div className="oa-draft__body">

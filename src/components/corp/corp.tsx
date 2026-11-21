@@ -2,6 +2,7 @@ import { faceTint } from "@/lib/face-tint";
 import { BState } from "../owner-b/b-kit";
 import "./corp.css";
 import Link from "next/link";
+import { cloneElement, isValidElement } from "react";
 import type { ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes, CSSProperties } from "react";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
@@ -129,6 +130,16 @@ export type CorpRowProps = {
   current?: boolean;
 };
 
+/* Premium pass (Nov 21, 2026; Jose's board pick 4): a row's icon stands in a tinted circle on Owner and Manager pages
+ * (b-foundation.css), and a glyph inside a circle is Phosphor's duotone cut, as the kit's BIcon draws it. On Employee
+ * pages the same icon is a bare glyph and stays bold. The server cannot know which, so a bold Phosphor icon is drawn in
+ * both cuts and the sheets show one (corp.css hides the duotone cut; owner-b-pages.css swaps them where the circle is). */
+const cut = (className: string | undefined, name: string) => className ? `${className} ${name}` : name;
+function rowIcon(icon: ReactNode): ReactNode {
+  if (!isValidElement<{ weight?: string; className?: string }>(icon) || typeof icon.type === "string" || icon.props.weight !== "bold") return icon;
+  return <>{cloneElement(icon, { className: cut(icon.props.className, "c-ic--line") })}{cloneElement(icon, { weight: "duotone", className: cut(icon.props.className, "c-ic--duo") })}</>;
+}
+
 /** One list row: optional lead column, avatar or icon; title and 13px detail; value, trail and chevron on the right. */
 export function CorpRow({ title, detail, detailEnd, lead, avatar, icon, value, valueTone, trail, href, onClick, chevron, bold, danger, one, tall, label, id, prefetch, native, disabled, current }: CorpRowProps) {
   const className = `c-row${one ?? !detail ? " c-row--one" : ""}${tall ? " c-row--tall" : ""}${danger ? " c-row--danger" : ""}`;
@@ -136,7 +147,7 @@ export function CorpRow({ title, detail, detailEnd, lead, avatar, icon, value, v
   const body = <>
     {lead !== undefined && lead !== null ? <span className="c-row__lead">{lead}</span> : null}
     {avatar ?? null}
-    {icon ? <span className="c-row__icon" aria-hidden="true">{icon}</span> : null}
+    {icon ? <span className="c-row__icon" aria-hidden="true">{rowIcon(icon)}</span> : null}
     <span className="c-row__main">
       <span className={bold ? "c-row__title c-row__title--b" : "c-row__title"}>{title}</span>
       {detail || detailEnd ? <span className="c-row__detail"><span>{detail}</span>{detailEnd ?? null}</span> : null}

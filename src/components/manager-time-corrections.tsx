@@ -14,7 +14,9 @@ import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-c
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {useManagerCorrectionRecovery} from './manager-correction-recovery';
 import {CorpTitle} from './corp/corp';
-import {BAvatar,BSegs,BState} from './owner-b/b-kit';
+import {BAvatar,BCallout,BSegs,BState} from './owner-b/b-kit';
+import {DecisionResult} from './owner-b/decision-parts';
+import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import Link from 'next/link';
 import {timeZoneLabel} from '@/lib/time-zone-label';
 export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
@@ -25,6 +27,15 @@ const rejectedNotice='Correction declined. The original recorded punch remains u
 /** Only fixed, non-identifying receipt feedback survives a private pause. */
 export function pausedCorrectionNotice(notice:string|null){return [unknownNotice,approvedNotice,rejectedNotice].includes(notice??'')?notice:null;}
 
+/** Final polish (confirmations A #8, #22): a decision's result is the kit's done state (approved) or its grey state (a
+ * declined request is closed: no done mark), a title naming what is now true and one next fact, in the list's card. Any
+ * other notice (a conflict, a block, an answer that did not arrive) is the kit's amber note. `last`: nothing else waits,
+ * so the line says so and no empty state is drawn under it. */
+function CorrectionNotice({notice,last}:{notice:string;last:boolean}){
+  if(notice===approvedNotice)return <div className="manager-corrections-notice" data-result=""><DecisionResult tone="done" title="Correction approved" line={last?'Nothing else is waiting.':'The timecard shows the new times. The original clock times stay in its history.'}/></div>;
+  if(notice===rejectedNotice)return <div className="manager-corrections-notice" data-result=""><DecisionResult tone="closed" icon={<PencilSimpleIcon weight="bold"/>} title="Correction declined" line={last?'Nothing else is waiting.':'The timecard keeps its recorded times.'}/></div>;
+  return <div className="manager-corrections-notice" data-note=""><BCallout tone="amber" icon={notice===unknownNotice?'unknown':'check'} role="status">{notice}</BCallout></div>;
+}
 function requestLabel(item:ManagerCorrectionItem){
   if(item.kind==='MISSING_ENTRY')return 'Missing time';
   if(item.kind==='BREAK_BOUNDARY')return item.breakName?item.breakName+' break':'Recorded break';
@@ -90,7 +101,7 @@ export function ManagerTimeCorrectionsSurface({
       </div>
       {ready?<strong className="manager-corrections-count">{ready.requests.length}</strong>:null}
     </header>
-    {notice?<div className="manager-corrections-notice" role="status">{notice}</div>:null}
+    {notice?<CorrectionNotice notice={notice} last={!!ready&&!ready.requests.length}/>:null}
     {retry?<button className="manager-corrections-retry" type="button" disabled={busyId!==null||mode!=='ready'} onClick={onRetry}>Retry same decision</button>:null}
     {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Your access changed. Sign in again to review corrections.':'Corrections didn’t load. Refresh to try again.'}</small></div>:
       ready?.requests.length?<div className="manager-corrections-list">
@@ -119,7 +130,7 @@ export function ManagerTimeCorrectionsSurface({
             <button className="primary b-rowact b-rowact--go" type="button" aria-label={`Approve correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'APPROVE')}>Approve</button>
           </div>
         </article>)}
-      </div>:<div className="manager-corrections-state">{/* Phase 8 (a.md #10): the kit's empty state (grey tray, one line, one way on), left-aligned at a state card's width. */}
+      </div>:notice===approvedNotice||notice===rejectedNotice?null:<div className="manager-corrections-state">{/* Phase 8 (a.md #10): the kit's empty state (grey tray, one line, one way on), left-aligned at a state card's width. */}
         <BState kind="empty" title="Nothing to fix" line="When someone asks to fix a time, it shows up here." quiet={<Link className="b-link" href="/app/timecards">Go to Timecards</Link>}/></div>}
   </section></>;
 }

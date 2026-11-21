@@ -44,7 +44,8 @@ export async function waitForCalendarCopyReady(page, noticeText) {
 
 export async function waitForReviewedTimeOff(page, requestId) {
   const ready = await page.waitForFunction(id =>
-    [...document.querySelectorAll('.q-timeoff [role="status"]')].some(element => element.textContent === 'Decision saved.') &&
+    // The decision's result is the first row of the list (DecisionResult): its title names the outcome.
+    [...document.querySelectorAll('.q-timeoff .b-dres .b-statecard__t')].some(element => ['Time off approved', 'Time off declined', 'Decision saved'].includes(element.textContent)) &&
     !document.getElementById('request-' + id), requestId);
   await ready.dispose();
 }

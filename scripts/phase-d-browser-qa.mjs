@@ -171,21 +171,21 @@ try{
     // Owner premium: Timecards has no standing Refresh button (it reads fresh on load), so the re-read is a page reload.
     const refreshCards=async()=>{await card.getByRole('button',{name:'Done',exact:true}).click();await mp.reload();await openCard();};
     // Corporate timecard detail (board O-TimecardDetail): the state is the pill beside the name (Approved reads "Ready to
-    // finalize"; a reopened card in an ended week reads "Ready to approve"), and every transition is a revision in Historical revisions.
+    // finalize"; a reopened card in an ended week reads "Ready to approve"), and every transition is a revision in Earlier versions.
     const pillText={Approved:'Ready to finalize',Finalized:'Finalized',Reopened:'Ready to approve'};
-    const cardState=async state=>{await card.locator('.c-tc-sheet__who').getByText(pillText[state],{exact:true}).waitFor();if(state==='Reopened')await card.locator('.c-tc-sheet__history h3').filter({hasText:/· Reopened$/}).last().waitFor({state:'attached'});};
+    const cardState=async state=>{await card.locator('.c-tc-sheet__who').getByText(pillText[state],{exact:true}).waitFor();if(state==='Reopened')await card.locator('.c-tc-sheet__history h3').filter({hasText:/^Reopened$/}).last().waitFor({state:'attached'});};
     await openCard();
     await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await cardState('Approved');
-    await card.getByRole('button',{name:'Finalize period',exact:true}).click();await cardState('Finalized');
+    await card.getByRole('button',{name:'Finalize timecard',exact:true}).click();await cardState('Finalized');
     const frozenRevisions=await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' ORDER BY revision");
     const labels=await q("SELECT name,short_name FROM locations WHERE id='loc-1'");
     await q("UPDATE employees SET first_name='Renamed' WHERE id='D3-E'");await q("UPDATE locations SET name='Renamed historical location',short_name='Renamed' WHERE id='loc-1'");
     await refreshCards();await cardState('Finalized');
-    await card.getByLabel('Reopen reason').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen period',exact:true}).click();await cardState('Reopened');
+    await card.getByRole('button',{name:'Reopen',exact:true}).click();await card.getByLabel('Reason for reopening').fill('Fictional correction review needs a new revision.');await card.getByRole('button',{name:'Reopen timecard',exact:true}).click();await cardState('Reopened');
     assert.deepEqual(await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' AND revision<=(SELECT max(revision)-1 FROM timecard_revisions WHERE employee_id='D3-E') ORDER BY revision"),frozenRevisions);
     await q("UPDATE employees SET first_name='Avery' WHERE id='D3-E'");await q("UPDATE locations SET name=$1,short_name=$2 WHERE id='loc-1'",[labels[0].name,labels[0].short_name]);
     await refreshCards();await cardState('Reopened');checked(engine+': D-AUD-001 actual reopen after employee/location labels change preserves finalized history');
-    assert.match(await card.textContent(),/Historical revisions \(3\)/);checked(engine+': actual Manager approve-finalize-reopen with history');
+    assert.match(await card.textContent(),/Earlier versions \(3\)/);checked(engine+': actual Manager approve-finalize-reopen with history');
     for(const width of [320,375,390,430,768,1024,1440]){
       await mp.setViewportSize({width,height:1000});
       const geometry=await mp.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,overflow:[...document.querySelectorAll('*')].filter(e=>getComputedStyle(e).display!=='none'&&(e.getBoundingClientRect().right+window.scrollX>document.documentElement.clientWidth+2||e.scrollWidth>e.clientWidth+2)).map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width,right:e.getBoundingClientRect().right,scroll:e.scrollWidth,client:e.clientWidth,minWidth:getComputedStyle(e).minWidth,whiteSpace:getComputedStyle(e).whiteSpace})).slice(-25)}));
@@ -238,10 +238,10 @@ try{
       Object.assign(returnReceipt,{stage:'complete',observedAt:current.observedAt,validForMs:current.validForMs,period:current.period,elapsedMs:15000-(returnDeadline-performance.now())});
     },returnDeadline);
     checked(engine+': controlled Manager return hides retired cards and completes a fresh exact-period read within the original deadline');
-    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await cardState('Approved');await card.getByRole('button',{name:'Finalize period',exact:true}).click();await cardState('Finalized');
+    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await cardState('Approved');await card.getByRole('button',{name:'Finalize timecard',exact:true}).click();await cardState('Finalized');
     await mp.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');// Corporate Time exports (board O-TimeExports, Release 1): one page at every width. With no one chosen, Create export
     // exports every finalized timecard; choosing people under "People in this export" exports exactly them.
-    const exportFiles=mp.getByRole('list',{name:'Your files',exact:true});
+    const exportFiles=mp.getByRole('region',{name:'Export ready',exact:true});
     const people=mp.locator('details.c-exp__item').filter({has:mp.locator('summary').filter({hasText:'People in this export'})}),openPeople=async()=>{if(!await people.evaluate(e=>e.open))await people.locator('summary').click();await waitUntilAsync(()=>people.evaluate(e=>e.open));};
     const averyExport=mp.getByRole('checkbox',{name:'Export Avery Period QA',exact:true});
     const exportReceipts=()=>q("SELECT workspace_id,actor_employee_id,operation_id::text,command_hash,payload->>'csvSha256' AS csv_sha256,payload->>'canonicalSha256' AS canonical_sha256 FROM payroll_export_receipts ORDER BY workspace_id,actor_employee_id,operation_id");
@@ -258,9 +258,9 @@ try{
     (report.payrollExports??=[]).push(exportEvidence);assert.equal(firstExport.status,200);
     const firstPayload=await verifyExportReply(firstExport.body,firstExport.command);
     assert.deepEqual(firstExport.command.cards.map(item=>item.employeeId),['D3-E']);
-    await exportFiles.getByRole('button',{name:'Download mapped CSV',exact:true}).waitFor();assert.match(await exportFiles.innerText(),/Time file/);
+    await exportFiles.getByRole('button',{name:'Download CSV',exact:true}).waitFor();assert.match(await exportFiles.innerText(),/Export ready/);
     const firstDownloads=[];
-    for(const [name,extension] of [['Download mapped CSV','csv'],['Download time record (JSON)','json']]){
+    for(const [name,extension] of [['Download CSV','csv'],['Download time record (JSON)','json']]){
       const [file]=await Promise.all([mp.waitForEvent('download'),mp.getByRole('button',{name,exact:true}).click()]);const path=join(evidence,`${engine}-payroll-neutral.${extension}`);await file.saveAs(path);
       const bytes=await readFile(path);firstDownloads.push({extension,filename:file.suggestedFilename(),bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});
     }
@@ -288,7 +288,7 @@ try{
         assert(await mp.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2),`${engine}: duplicate-export feedback overflow ${width}`);
         const screen=join(evidence,`${engine}-export-duplicate-${width}.png`);await mp.screenshot({path:screen,fullPage:true});report.screenshots.push(screen);exportEvidence.freshDuplicate.viewports.push({width,noticeVisible:true,noHorizontalOverflow:true,screenshot:screen});
       }
-      assert.equal(await exportFiles.count(),0);assert.equal(await mp.getByRole('button',{name:'Download mapped CSV',exact:true}).count(),0);assert.equal(await mp.getByRole('button',{name:'Download time record (JSON)',exact:true}).count(),0);assert.equal(await mp.getByRole('button',{name:'Retry same export',exact:true}).count(),0);
+      assert.equal(await exportFiles.count(),0);assert.equal(await mp.getByRole('button',{name:'Download CSV',exact:true}).count(),0);assert.equal(await mp.getByRole('button',{name:'Download time record (JSON)',exact:true}).count(),0);assert.equal(await mp.getByRole('button',{name:'Retry same export',exact:true}).count(),0);
       const afterDuplicate=await exportReceipts();exportEvidence.receiptStorage.afterDuplicate=afterDuplicate;assert.deepEqual(afterDuplicate,afterFirst);assert.equal(afterDuplicate.filter(row=>row.operation_id===duplicate.command.operationId).length,0);assert.deepEqual(duplicateDownloads,[]);
       checked(engine+': R12 fresh duplicate returns already_generated without a second operation/export or UI files');
       // Supported recovery is authenticated exact-command API replay. There is

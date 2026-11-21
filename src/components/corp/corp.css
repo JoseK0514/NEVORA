@@ -66,6 +66,9 @@
 :is(#c-root, html) a.c-row, :is(#c-root, html) button.c-row, :is(#c-root, html) label.c-row { cursor: pointer; }
 :is(#c-root, html) .c-row__lead { flex: none; width: 56px; white-space: nowrap; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--c-ink); font-feature-settings: var(--c-num-features); }
 :is(#c-root, html) .c-row__icon { flex: none; display: grid; place-items: center; width: 22px; height: 22px; color: var(--c-ink2); }
+/* Premium pass (Nov 21, 2026): a bold row icon is also drawn in Phosphor's duotone cut (corp.tsx, rowIcon). It shows only
+ * where the icon stands in a tinted circle (owner-b-pages.css); everywhere else the bold glyph is the one drawn. */
+:is(#c-root, html) .c-row__icon > .c-ic--duo { display: none; }
 :is(#c-root, html) .c-row__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 :is(#c-root, html) .c-row__title { display: block; font-size: 15px; line-height: 20px; font-weight: 500; letter-spacing: -0.13px; color: var(--c-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Zero tolerance for wrapped labels: a row title stays on one line (the row's label carries the full text). */

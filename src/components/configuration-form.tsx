@@ -1,5 +1,6 @@
 "use client";
 
+import { BCallout } from '@/components/owner-b/b-kit';
 import { useRef, useState, type ReactNode, type FormEvent } from "react";
 import { ShiftReviewRecovery, shiftDraftText } from "./shift-review-recovery";
 export type ConfigurationResult = { error?: string; success?: string; updatedAt?: string; issueCode?: string };
@@ -61,17 +62,11 @@ export function ConfigurationForm({
         {children}
       </fieldset>
       {pending ? <p role="status">Saving…</p> : null}
-      {result.error ? (
-        <p role="alert" className="form-error">
-          {result.error}
-        </p>
-      ) : null}
+      {/* Refinement (Nov 20, 2026; Jose: red words on a pink bar look cheap): a refusal is the kit's note (white panel, a
+        * red mark, the reason as its title), announced once. */}
+      {result.error ? <div className="form-result"><BCallout tone="red" role="alert" title={result.error} /></div> : null}
       {shiftVersion !== undefined && (result.issueCode === 'SHIFT_REVIEW_CONFLICT' || result.issueCode === 'ACCESS_DENIED') ? <ShiftReviewRecovery draft={submittedShift} /> : null}
-      {result.success ? (
-        <p role="status" className="form-success">
-          {result.success}
-        </p>
-      ) : null}
+      {result.success ? <div className="form-result"><BCallout tone="green" role="status" title={result.success} /></div> : null}
     </form>
   );
 }

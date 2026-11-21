@@ -10,6 +10,8 @@ import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
 import { CalendarMinusIcon } from "@phosphor-icons/react/dist/ssr/CalendarMinus";
 import { UserMinusIcon } from "@phosphor-icons/react/dist/ssr/UserMinus";
 import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
+import { DecisionAsk } from "@/components/owner-b/decision-parts";
+import { ASK, firstName } from "@/components/time-off-waiting-list";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
@@ -20,7 +22,7 @@ import { conflictShift } from "@/lib/time-off-staffing/present";
 import { reviewCopy } from "@/components/review-details/copy";
 import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
 import { keepWhole } from "@/lib/keep-whole";
-import { BAvatar, BButton, BButtonLink, BCard, BChip, BCount, BGlyph, BHero, BIcon, BList, BRow, BScreen, BSeg, BSegs, BSegsText, BStack, BState, BStatusText, BSwapNames, BWhen, compactRange } from "./b-kit";
+import { BDoneMark, BAvatar, BButton, BButtonLink, BCard, BChip, BCount, BGlyph, BHero, BIcon, BList, BRow, BScreen, BSeg, BSegs, BSegsText, BStack, BState, BStatusText, BSwapNames, BWhen, compactRange } from "./b-kit";
 
 /* Direction B, Things to do on a phone (mock screen "Owner · Things to do"). The same groups, rows, links and counts as the
  * corporate page (groupThingsToDo); the glass chips filter them by job. An open shift's Find cover opens the same coverage
@@ -150,7 +152,7 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
         : cards.length || waiting.length || closed.length ? <>{cards}{/* Review B2 (NV-002): reviews that wait are listed after today's cards. Phase 3
           (MG-005, OW-014): no "· waiting" suffix; what isn't open yet is one grey card at the bottom with no count pill. */}
           {filter === "all" || filter === "review" ? <>{waiting.map(group => <GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} />)}
-            {closed.map(group => <GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} quiet />)}</> : null}</> : exact ? <BCard label="Things to do"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>
+            {closed.map(group => <GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} quiet />)}</> : null}</> : exact ? <BCard label="Things to do"><div className="b-notice"><BDoneMark still /><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>
           : <BCard label="Things to do"><div className="b-notice"><BIcon tone="amber"><BGlyph meaning="unknown" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">{t.nothingListed}</span><span className="b-notice__s">{t.nothingListedLine}</span></span></div></BCard>}
       {ready && uncheckedReviews ? <p className="b-note">{t.correctionsUnchecked(uncheckedReviews)}</p> : null}
       {/* Review B5 (NV-250): on desktop the shortcuts stay in reach while the list scrolls (sticky), with one-line sub-lines.
@@ -177,7 +179,7 @@ export function LaterB({ ready, groups, statusLine, onRefresh, connection = "una
     <BStack>
       {!ready ? <BCard label="Later and done"><ReadState connection={connection} statusLine={statusLine} onRefresh={onRefresh} /></BCard>
         : groups.length ? groups.map(group => <GroupCard key={group.id} group={group} items={none} staffing={idle} checked={unchecked} />)
-        : <BCard label="Later and done"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">Nothing later or done</span><span className="b-notice__s">Planning items and earlier gaps appear here.</span></span></div></BCard>}
+        : <BCard label="Later and done"><div className="b-notice"><BDoneMark still /><span className="b-notice__tx"><span className="b-notice__t">Nothing later or done</span><span className="b-notice__s">Planning items and earlier gaps appear here.</span></span></div></BCard>}
     </BStack>
   </BScreen>;
 }
@@ -215,7 +217,8 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
         const clear = conflicts !== null && conflicts.length === 0;
         const reviewHref = item?.request?.reviewHref ?? row.href;
         const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{`On the schedule: ${conflictShift(conflicts[0])}${conflicts.length > 1 ? ` +${conflicts.length - 1}` : ""}`}</span>
-          : conflicts ? null : <span className="b-leave-note">{!checked.has(requestId) ? "Check the schedule on its page" : staffing.status === "loading" ? "Checking the schedule…" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
+          // Final polish (confirmations A #13): no "Checking the schedule…" under every row while the one read is out.
+          : conflicts || (checked.has(requestId) && staffing.status === "loading") ? null : <span className="b-leave-note">{!checked.has(requestId) ? "Check the schedule on its page" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
         // Phase 3 (OW-012): a row with buttons has no chevron (the row itself opens the request); the buttons end the row.
         return <BRow key={row.key} lead={<BAvatar name={row.title} />} title={row.title} sub={<>{keepParts(row.detail)}{note}</>} href={reviewHref} label={row.label} chevron={false}
           actions={<TimeOffDecisionForm checkHref={reviewHref}>
@@ -245,13 +248,12 @@ function Decide({ name, approve, reviewHref }: { name: string; approve: boolean;
   const decision = data?.get("decision");
   // Review B1 (NV-125): Decline asks once ("Decline Ana's time off?"), so a mis-tap can't decline it; Approve stays one tap.
   const [confirming, setConfirming] = useState<boolean | null>(null);
-  const pair = useRef<HTMLSpanElement>(null);
+  const pair = useRef<HTMLSpanElement>(null), ask = useRef<HTMLDivElement>(null);
   // Focus follows the swap: to Keep when the question opens, back to Decline when it closes (the pressed button is gone).
-  useEffect(() => { if (confirming !== null) pair.current?.querySelector<HTMLButtonElement>("button")?.focus(); }, [confirming]);
-  if (confirming && !pending) return <span ref={pair} className="b-decide b-decide--confirm" role="group" aria-label={`Decline time off for ${name}?`}>
-    <BButton kind="quiet" onClick={() => setConfirming(false)} label={`Keep time off request for ${name}`}>Keep</BButton>
-    <BButton kind="danger" type="submit" name="decision" value="DENIED" label={`Decline time off for ${name}`}>Decline</BButton>
-  </span>;
+  useEffect(() => { if (confirming !== null) (confirming ? ask : pair).current?.querySelector<HTMLButtonElement>("button")?.focus(); }, [confirming]);
+  // Final polish (confirmations A #6, #7): the question in words, in the block Cancel time off uses (decision-parts.tsx).
+  if (confirming && !pending) return <DecisionAsk groupRef={ask} groupLabel={`Decline time off for ${name}?`} question={ASK.question} consequence={ASK.consequence(firstName(name))}
+    keep={ASK.keep} keepLabel={`Keep time off request for ${name}`} onKeep={() => setConfirming(false)} go={ASK.decline} goLabel={`Decline time off for ${name}`} goValue="DENIED" />;
   return <span ref={pair} className="b-decide" aria-busy={pending}>
     <BButton kind="quiet" onClick={() => setConfirming(true)} disabled={pending} busy={pending && decision === "DENIED"} busyLabel="Declining…" label={pending ? undefined : `Decline time off for ${name}`}>Decline</BButton>
     {/* Approve only once the schedule check came back with no overlap; otherwise its page shows the shifts first. */}

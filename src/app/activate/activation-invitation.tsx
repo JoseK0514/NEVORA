@@ -27,6 +27,7 @@ import {MOBILE_ACCESS_COPY} from '@/components/mobile-access/copy';
 import {BCallout} from '@/components/owner-b/b-kit';
 import {noteParts} from '@/components/auth-premium/note-parts';
 import {Whole} from '@/components/auth-premium/whole';
+import {AuthDoneTick} from '@/components/auth-premium/done-tick';
 
 export type ActivationPhase='checking'|'missing'|'ready'|'pending'|'invalid'|'unavailable'|'outcome_unknown'|'activated';
 /** Scrub first. Never retain a query string, encoded/ambiguous proof or history state. */
@@ -143,10 +144,10 @@ export function ActivationInvitationView({phase,passwordReason,mismatch=false,em
  // is a text link under the card.
  const chip=workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null;
  if(phase==='activated'&&employeeId)return <>
-  <div className="q-hd"><span className="q-auth__mark q-auth__mark--done q-auth__mark--head" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span><h1>{u.doneTitle}</h1><p>{u.doneSub}</p></div>
+  <div className="q-hd"><span className="q-auth__mark q-auth__mark--done q-auth__mark--head" aria-hidden="true"><AuthDoneTick/></span><h1>{u.doneTitle}</h1><p>{u.doneSub}</p></div>
   <div className="activation-success q-card" role="status" ref={successRef} tabIndex={-1}>
    <AccessSteps journey="activation" current={3} lang={lang}/>
-   <span className="q-auth__mark q-auth__mark--done" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
+   <span className="q-auth__mark q-auth__mark--done" aria-hidden="true"><AuthDoneTick/></span>
    <p className="q-sr">{a.activatedTitle}. {u.doneTitle}. {u.doneSub}</p>
    <div className="q-fl"><label htmlFor="activation-employee-id">{a.idForSignIn}</label>
     <div className="q-in__wrap"><input id="activation-employee-id" className="q-in" value={employeeId} readOnly autoComplete="off" aria-describedby="activation-employee-id-note" onFocus={event=>event.currentTarget.select()}/><CopyId value={employeeId} a={a}/></div>

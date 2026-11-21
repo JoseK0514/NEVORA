@@ -136,5 +136,5 @@ it('D8 private pause retains only non-identifying operation receipt feedback whi
  const confirmed='Correction approved. The original recorded punch remains unchanged.';
  expect(pausedCorrectionNotice(confirmed)).toBe(confirmed);expect(pausedCorrectionNotice('Avery private outcome')).toBeNull();
  const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} connection="paused" busyId={null} notice={pausedCorrectionNotice(confirmed)} onDecision={()=>{}} onRetry={()=>{}} retry={null}/>);
- expect(html).toContain(confirmed);expect(html).toContain('Updates paused');expect(html).not.toContain('Avery QA');expect(html).not.toContain('Nothing to fix');expect(html).not.toContain('manager-corrections-count');
+ expect(html).toContain('Correction approved');expect(html).toContain('Updates paused');expect(html).not.toContain('Avery QA');expect(html).not.toContain('Nothing to fix');expect(html).not.toContain('manager-corrections-count');
 });

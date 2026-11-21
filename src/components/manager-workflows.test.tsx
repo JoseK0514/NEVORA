@@ -119,7 +119,8 @@ it("names who decided a request and when, once the read includes it (Codex C1), 
   const base = { id: "r1", employeeId: "e1", employeeName: "Fictional Person", startDate: "2026-10-29", endDate: "2026-10-30", status: "APPROVED", createdAt: "2026-10-01T15:00:00.000Z" };
   rs.mocked(listWorkforceLeave).mockResolvedValueOnce({state:'ready',data:[{ ...base, reviewerName: "Fictional Manager", reviewedAt: "2026-10-02T15:00:00.000Z" }],coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000} as never);
   const decided = renderToStaticMarkup(await ManagerTimeOff({ tab: "approved" })).replace(/\u00a0/g, " ");
-  expect(decided).toContain("Approved by Fictional Manager · Oct 2");
+  // Final polish (confirmations A #17): the line is the kit's facts line (BSegs), so its parts are separate elements.
+  expect(decided.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ")).toContain("Approved by Fictional Manager · Oct 2");
   rs.mocked(listWorkforceLeave).mockResolvedValueOnce({state:'ready',data:[base],coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000} as never);
   const older = renderToStaticMarkup(await ManagerTimeOff({ tab: "approved" }));
   expect(older).not.toContain("Approved by");

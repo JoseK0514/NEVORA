@@ -52,9 +52,10 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
   const [custody, setCustody] = useState<Custody | null>(initial?.custody ?? null);
   const [issue, setIssue] = useState<Issue | null>(initial?.issue ?? null);
   const [problems, setProblems] = useState<Problem[]>([]);
-  const [landed, setLanded] = useState(false);
+  // The confirmed save: the fact line under "Policy saved", from the command the server just accepted.
+  const [landed, setLanded] = useState<{ line: string } | null>(null);
   const [said, setSaid] = useState("");
-  const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null), editing = useRef(!!draft);
+  const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null), editing = useRef(!!draft), doneRef = useRef<HTMLElement>(null);
 
   const apply = useCallback((result: Awaited<ReturnType<typeof readPolicies>>) => {
     if (result.kind === "ready") setLoad({ state: "ready", policies: result.policies });
@@ -77,9 +78,11 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
   useEffect(() => {
     if (editing.current === !!draft) return;
     editing.current = !!draft;
+    // A confirmed save lands on its result: the title that says what is now true takes focus, so it is read once.
+    if (!draft && landed && doneRef.current) { doneRef.current.focus({ preventScroll: true }); window.scrollTo({ top: 0 }); return; }
     const title = [...document.querySelectorAll<HTMLElement>(".pto h1")].find(h => h.getClientRects().length > 0);
     if (title) { if (!title.hasAttribute("tabindex")) title.tabIndex = -1; title.focus(); window.scrollTo({ top: 0 }); }
-  }, [draft]);
+  }, [draft, landed]);
   const trouble = custody && custody.status !== "sending" ? custody.status : issue;
   useEffect(() => {
     if (!trouble) return;
@@ -90,11 +93,12 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
   const policies = load.state === "ready" ? [...load.policies].sort((a, b) => policyOrder(a.code, b.code)) : [];
   const busy = custody?.status === "sending" || custody?.status === "checking";
 
-  function open(policy: PtoPolicy | null, kind: Kind) { setIssue(null); setLanded(false); setProblems([]); setDraft(policyDraft(policy, kind, t)); }
+  function open(policy: PtoPolicy | null, kind: Kind) { setIssue(null); setLanded(null); setProblems([]); setDraft(policyDraft(policy, kind, t)); }
   async function send(command: PolicyCommand, again: boolean) {
     setCustody({ command, status: again ? "checking" : "sending" }); setIssue(null);
     const result = await sendSettings(command);
-    if (result.kind === "saved") { setCustody(null); setDraft(null); setLanded(true); setSaid(t.policySaved); await reload(); return; }
+    // The result's title takes focus (the draft effect), so the live line stays empty: a result is said once.
+    if (result.kind === "saved") { setCustody(null); setDraft(null); setLanded({ line: t.policySavedLine(command.label, hoursText(command.fullDayMinutes), command.enabled) }); setSaid(""); await reload(); return; }
     if (result.kind === "unknown") { setCustody({ command, status: again ? "still_unknown" : "unknown" }); setSaid(t.unknownTitle); return; }
     setCustody(null); setIssue(result.kind);
     setSaid(result.kind === "conflict" ? t.conflictTitle : result.kind === "invalid" ? t.invalidTitle : result.kind === "denied" ? t.deniedTitle : t.signedOutTitle);
@@ -163,8 +167,9 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
     const has = (code: string) => policies.some(p => p.code === code);
     body = <>
       {attentionCard}
-      {landed && !attention ? <div className="rs-landed"><CorpCard ariaLabel={t.policySaved}><BState silent kind="done" title={t.policySaved} /></CorpCard></div> : null}
       <CorpCard id="pto-policies" label={t.policiesCard}>
+        {/* Final polish (finding 24): a save's result opens the card it changed: the done mark, what is now true, the fact. */}
+        {landed && !attention ? <BState kind="done" titleRef={doneRef} title={t.policySaved} line={landed.line} /> : null}
         {policies.length ? <CorpRows label={t.policiesCard}>{policies.map(policy => <li key={policy.code}>
           <CorpRow onClick={() => open(policy, "OTHER")} chevron title={policy.label}
             detail={[t.dayLine(hoursText(policy.fullDayMinutes)), policy.earnedMinutesPer100Hours ? t.earnsLine(hoursText(policy.earnedMinutesPer100Hours)) : t.earnsNone,

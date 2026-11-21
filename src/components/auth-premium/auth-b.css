@@ -936,3 +936,21 @@
 @media (max-width: 767px), (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .q-fl:not(.ma-id-receipt .q-fl) :is(.q-in):not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e) { height: 3rem !important; }
 }
+
+/* ---------- The done mark (Nov 21, 2026; Jose: the check mark "premium, with motion, across the board") ----------
+ * A copy of the signed-in app's one done mark (BDoneMark; b-moments.css) for the pages outside the app shell, from the
+ * same tokens (b-tokens.css): the solid green disc, the white tick it draws (AuthDoneTick, done-tick.tsx), the halo and
+ * the glow, at the 56px page-finish size these pages already had. The disc settles, the tick is drawn and one ring
+ * leaves it (transform, opacity and the stroke offset only); under reduced motion it is simply there. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__mark--done, .ar-done__mark):not(#dm1):not(#dm2):not(#dm3):not(#dm4):not(#dm5):not(#dm6):not(#dm7):not(#dm8) { position: relative !important; border-radius: var(--b-radius-pill) !important; background: var(--b-green-solid) !important; color: #FFFFFF !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 4px var(--b-done-halo), var(--b-done-glow) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__mark--done, .ar-done__mark) > svg.q-done-tick:not(#dm1):not(#dm2):not(#dm3):not(#dm4):not(#dm5):not(#dm6):not(#dm7):not(#dm8) { width: 28px !important; height: 28px !important; color: inherit !important; overflow: visible; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__mark--done, .ar-done__mark) > svg.q-done-tick > path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+@media (forced-colors: active) { :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__mark--done, .ar-done__mark):not(#dm1):not(#dm2):not(#dm3):not(#dm4):not(#dm5):not(#dm6):not(#dm7):not(#dm8) { forced-color-adjust: none; background: CanvasText !important; color: Canvas !important; box-shadow: none !important; } }
+@media (prefers-reduced-motion: no-preference) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__mark--done, .ar-done__mark) { animation: q-done-settle var(--b-dur-settle) var(--b-ease-settle) both; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__mark--done, .ar-done__mark) > svg.q-done-tick > path { animation: q-done-check var(--b-dur-draw) var(--b-ease-settle) var(--b-delay-draw) both; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__mark--done, .ar-done__mark)::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 2px var(--b-green-solid); pointer-events: none; animation: q-done-ring var(--b-dur-ring) var(--b-ease-settle) var(--b-delay-ring) both; }
+  @keyframes q-done-settle { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+  @keyframes q-done-check { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes q-done-ring { from { opacity: .5; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
+}

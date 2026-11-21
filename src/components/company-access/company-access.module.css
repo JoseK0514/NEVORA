@@ -59,3 +59,8 @@
 .shiftLink {display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--design-text-primary);text-decoration:none;overflow-wrap:anywhere}
 .shiftLink>svg {flex:0 0 auto;color:var(--design-accent-ink)}
 .shiftLink:hover {color:var(--design-accent-ink)}
+/* Confirmations B (#1, #15, #28): the saved result's actions. One step and a quiet second way on, on one line; the page
+ * finish stacks them centred (the kit's finish; the quiet way is the kit's .b-done__quiet). The invitation confirm keeps its safe exit left and its commit right. */
+.doneActs {align-items:center}
+.confirmActs {justify-content:space-between;margin-top:.5rem}
+@media(max-width:480px){.confirmActs>*{flex:1 1 auto}}

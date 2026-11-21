@@ -65,7 +65,7 @@ try {
     .waitFor();
   const lateness = page.getByRole("group", { name: "Lateness", exact: true });
   await lateness.getByLabel("Configuration").selectOption("configured");
-  await lateness.getByLabel("Threshold minutes").fill("5");
+  await lateness.getByLabel("After how many minutes").fill("5");
   await lateness
     .getByLabel("Effective from (ISO timestamp with timezone)")
     .fill("invalid");
@@ -77,7 +77,7 @@ try {
     .filter({ hasText: "Review thresholds" })
     .waitFor();
   assert.equal(
-    await lateness.getByLabel("Threshold minutes").isEnabled(),
+    await lateness.getByLabel("After how many minutes").isEnabled(),
     true,
   );
   checked("Invalid policy timestamp rejects and keeps fields editable");

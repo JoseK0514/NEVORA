@@ -37,7 +37,7 @@ export function buildPolicySettings(data:FormData,base:CompanyPolicySettings,tim
     if(mode==="none"){section[key]=null;continue;}
     if(mode!=="configured")throw Error("Choose a rule setting.");
     const raw=data.get(`${key}.threshold`);
-    if(raw===null||String(raw).trim()==="")throw Error("Choose threshold minutes for each custom rule.");
+    if(raw===null||String(raw).trim()==="")throw Error("Enter how many minutes for each rule that is on.");
     const old=key==="overtimeRisk"?base.labor?.overtimeRisk:base.attendance?.[key];
     const rule:Record<string,unknown>={thresholdMinutes:Number(raw),comparison:data.get(`${key}.comparison`),effectiveFrom:policyEffectiveInstant(String(data.get(`${key}.effective`)??""),old?.effectiveFrom,timeZone)};
     if(key==="longEntry")Object.assign(rule,{basis:data.get(`${key}.basis`),appliesTo:data.get(`${key}.appliesTo`)});
@@ -68,9 +68,10 @@ export function CurrentPolicyRules({settings,scope,timeZone}: {settings:CompanyP
       return <li key={key}><strong>{label}</strong><p>{rule===null?"Disabled":scope?"Inherit company default":"Disabled by default"}</p></li>;
     }
     const details:Array<[string,string]>=[
-      ["Threshold minutes",String(rule.thresholdMinutes)],
-      ["Comparison",rule.comparison==="GT"?"Greater than":"Greater than or equal"],
-      ["Effective from",formatBusinessTimestamp(rule.effectiveFrom,timeZone)],
+      // Final polish (finding 29): plain words for the stored rule (thresholdMinutes, comparison GT/GTE, effectiveFrom).
+      ["After how many minutes",String(rule.thresholdMinutes)],
+      ["When time is",rule.comparison==="GT"?"More than":"At least"],
+      ["Starts on",formatBusinessTimestamp(rule.effectiveFrom,timeZone)],
     ];
     const longEntry=key==="longEntry"?settings.attendance?.longEntry:null;
     if(longEntry) {
@@ -151,7 +152,7 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
     try{
       const response=await fetch("/api/company-policies",{method:"POST",cache:"no-store",credentials:"same-origin",headers:{"content-type":"application/json","x-nevora-company-policies":"1"},body:JSON.stringify(command)});
       if(response.status===401||response.status===403){denyAccess();return;}
-      if(response.status===400){setPending(null);announce("Check the thresholds and start dates. Your draft is kept; fix it, then save again.");return;}
+      if(response.status===400){setPending(null);announce("Check the minutes and start dates. Your draft is kept; fix it, then save again.");return;}
       if(response.status===409){setPending(null);setConflict(true);announce("Policies changed. Your draft is kept so you can compare; refresh before editing again.");await refresh({retained:null,conflicted:true});return;}
       if(!response.ok)throw Error();
       const body=await response.json() as {state?:string;result?:{revision?:number}};
@@ -179,7 +180,7 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
       {conflict?<section className="policy-state policy-warning"><h2>Your draft needs a fresh review</h2><p>The draft below wasn’t saved. You’re viewing version {current.expectedRevision}. Nothing was merged or overwritten.</p>{current.state==="valid"?<details className="policy-current-comparison"><summary>Compare current saved rules</summary><CurrentPolicyRules settings={current.selected.settings} scope={scope} timeZone={timeZone}/><PrivateLaborReview settings={current.selected.settings} scope={scope} timeZone={timeZone}/></details>:null}<button className="button secondary" type="button" disabled={busy||pending!==null} onClick={()=>{adoptCurrent(history);announce(`Retained draft discarded. Current revision ${current.expectedRevision} loaded.`);}}>Discard draft and use the current version</button></section>:null}
       {draft?<>
         {draft.recoveryFrom?<section className="policy-replacement-review"><h2>Review the complete replacement</h2><p>Started from version {draft.recoveryFrom.revision} · {formatBusinessTimestamp(draft.recoveryFrom.changedAt,timeZone)}. This draft replaces version {draft.expectedRevision} in full. Values in the unusable version can’t be checked.</p><p>Check every attendance rule and the private labor settings below before saving. Saving adds a new version and keeps the history.</p></section>:null}
-        <form id="policy-form" key={formKey} className="employee-form policy-form" aria-busy={busy} onInput={()=>setTouched(formKey)} onChange={()=>setTouched(formKey)} onSubmit={event=>{event.preventDefault();void submit(event.currentTarget).catch(()=>announce("Choose threshold minutes and valid effective dates in the company timezone. Times skipped or repeated by daylight saving time need a different selection."));}}>
+        <form id="policy-form" key={formKey} className="employee-form policy-form" aria-busy={busy} onInput={()=>setTouched(formKey)} onChange={()=>setTouched(formKey)} onSubmit={event=>{event.preventDefault();void submit(event.currentTarget).catch(()=>announce("Enter the minutes and a valid start date in the company time zone. Times skipped or repeated by daylight saving time need a different selection."));}}>
         <div className="q-grp"><h2>Tell me about</h2></div>
         {/* Tablets and desktop: the rules are one card whose footer holds Save (b-foundation.css, .wc-savecard); phones keep
             the top bar's Save. Same form, same submit. */}
@@ -204,7 +205,7 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
               </label>
               <input type="hidden" name={`${key}.mode`} value={mode}/>
               <div className="policy-rule-fields q-rule__body" hidden={mode !== "configured"}><label>
-                Threshold minutes{" "}
+                After how many minutes{" "}
                 <input
                   name={`${key}.threshold`}
                   type="number"
@@ -215,19 +216,19 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
                 />
               </label>
               <label>
-                <span id={`${key}.comparison-label`}> Comparison </span>
+                <span id={`${key}.comparison-label`}> When time is </span>
                 <select
                   aria-labelledby={`${key}.comparison-label`}
                   name={`${key}.comparison`}
                   value={rawFields[`${key}.comparison`] ?? (String(rule?.comparison ?? "GT"))}
                   onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
                 >
-                  <option value="GT">Greater than</option>
-                  <option value="GTE">Greater than or equal</option>
+                  <option value="GT">More than</option>
+                  <option value="GTE">At least</option>
                 </select>
               </label>
               <label>
-                Effective from{" "}
+                Starts on{" "}
                 <input
                   name={`${key}.effective`}
                   type="datetime-local"

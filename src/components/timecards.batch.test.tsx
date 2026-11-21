@@ -30,6 +30,12 @@ const has=(test:(n:ReactElement<Record<string,unknown>>)=>boolean)=>nodes(render
 function enterSelect(){if(manager&&!has(n=>n.type==='input'&&String(n.props['aria-label']??'').startsWith('Select PRIVATE')))click('Select');}
 const check=(label:string,value=true)=>{if(label.startsWith('Select ')&&!has(n=>n.type==='input'&&n.props['aria-label']===label))enterSelect();(control(n=>n.type==='input'&&n.props['aria-label']===label).onChange as (e:unknown)=>void)({target:{checked:value}});};
 const flush=()=>rs.advanceTimersByTimeAsync(0);
+// Final polish (Nov 21, 2026; confirmations review B): the commit names its count ("Approve 2 timecards"); a lost reply
+// offers one action, "Check and continue" in a set's result and "Check again" elsewhere, both the same replay as before.
+const isCommit=(n:ReactElement<Record<string,unknown>>)=>n.type==='button'&&/^(Approve|Finalize) \d+ timecards?$/.test(String(n.props.children));
+const commit=()=>(control(isCommit).onClick as ()=>unknown)();
+const retry=()=>(control(n=>n.type==='button'&&(n.props.children==='Check and continue'||n.props.children==='Check again')).onClick as ()=>unknown)();
+const row=(name:string,tone:string,word:string)=>`<span class="c-tc-flow__n">${name}</span><span class="c-tc-flow__v" data-tone="${tone}">${word}</span>`;
 async function mount(){render();host.mounted=true;cleanup=host.effects[0]();await flush();}
 function transport(outcome:'success'|'unknown'='success',validForMs=45000){rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready(validForMs));const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);if(outcome==='unknown')throw Error('Interrupted');return Response.json({status:'approved',operationId:c.operationId,revision:1});});}
 beforeEach(()=>{actorId='OWNER';manager=true;employeeCorporate=false;payrollStep=undefined;host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];commands=[];rs.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});rs.stubGlobal('window',new EventTarget());rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));rs.stubGlobal('navigator',{onLine:true});});
@@ -78,68 +84,71 @@ it('renders all mixed employee issue reasons without changing their order or exp
 it('requires explicit selection, a rendered reviewed set and fresh confirmation before approval',async()=>{
  transport();await mount();enterSelect();expect(control(n=>n.type==='button'&&n.props.children==='Review selected timecards').disabled).toBe(true);
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE OWNER').disabled).toBe(true);
- check('Select PRIVATE E1');click('Review selected timecards');expect(html()).toContain('Reviewed approval set');expect(html()).toContain('Revision 0');
- expect(control(n=>n.type==='button'&&n.props.children==='Approve selected').disabled).toBe(true);
- check('Confirm reviewed timecards');click('Approve selected');await flush();expect(commands).toHaveLength(1);expect(commands[0].employeeId).toBe('E1');expect(commands[0].action).toBe('APPROVE');
- expect(html()).toContain('approved');expect(html()).toContain('Refresh timecards before reviewing another set.');
+ check('Select PRIVATE E1');click('Review selected timecards');expect(html()).toMatch(/Approve \d+ timecards?\?/);expect(html()).not.toContain('Revision 0');
+ expect(control(n=>isCommit(n)).disabled).toBe(true);
+ check('I checked these hours');commit();await flush();expect(commands).toHaveLength(1);expect(commands[0].employeeId).toBe('E1');expect(commands[0].action).toBe('APPROVE');
+ expect(html()).toContain('1 timecard approved');expect(html()).toContain('See all 1');
 });
 it('shows partial unknown and not-submitted outcomes and retries only the original command',async()=>{
- transport('unknown');await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();
- expect(commands).toHaveLength(1);expect(html()).toContain('Not confirmed');expect(html()).toContain('Not sent');
- const original=commands[0];click('Retry original attempted action');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
+ transport('unknown');await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('I checked these hours');commit();await flush();
+ expect(commands).toHaveLength(1);expect(html()).toContain('Not confirmed');expect(html()).toContain('Not started');
+ const original=commands[0];retry();await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
 });
 it('refresh clears selection and confirmation, requiring a fresh review',async()=>{
- transport();await mount();check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');click('Refresh timecards');await flush();
- expect(html()).not.toContain('Reviewed approval set');expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(false);expect(commands).toHaveLength(0);
+ transport();await mount();check('Select PRIVATE E1');click('Review selected timecards');check('I checked these hours');
+ // The decision has one way out, Cancel: it drops the review and its confirmation and keeps the selection; Refresh then clears that too.
+ click('Cancel');expect(html()).not.toMatch(/Approve \d+ timecards?\?/);expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(true);
+ click('Review selected timecards');expect(control(isCommit).disabled).toBe(true);click('Cancel');click('Refresh timecards');await flush();
+ expect(html()).not.toMatch(/Approve \d+ timecards?\?/);expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(false);expect(commands).toHaveLength(0);
 });
 it('expiry removes private reviewed rows and does not submit remaining commands after an in-flight result',async()=>{
  let resolve!:(response:Response)=>void;rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready(1000));commands.push(JSON.parse(String(init?.body)));return new Promise<Response>(r=>{resolve=r;});});
- await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();await rs.advanceTimersByTimeAsync(1001);
+ await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('I checked these hours');commit();await flush();await rs.advanceTimersByTimeAsync(1001);
  expect(html()).not.toContain('PRIVATE');resolve(Response.json({status:'approved',operationId:commands[0].operationId,revision:1}));await flush();expect(commands).toHaveLength(1);expect(html()).not.toContain('PRIVATE');
 });
-it('window blur clears selection and reviewed private rows',async()=>{transport();await mount();check('Select PRIVATE E1');click('Review selected timecards');window.dispatchEvent(new Event('blur'));expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Reviewed approval set');});
-it('actor replacement hides private reviewed rows and overview before the next effect can run',async()=>{transport();await mount();expect(html()).toContain('Period overview');check('Select PRIVATE E1');click('Review selected timecards');actorId='OTHER';expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Reviewed approval set');expect(html()).not.toContain('Period overview');expect(html()).not.toContain('No timecards to show');expect(commands).toHaveLength(0);});
-it('action change clears the old selected set and review instead of reusing approval confirmation',async()=>{transport();await mount();check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');const action=control(n=>n.type==='select');(action.onChange as (e:unknown)=>void)({target:{value:'FINALIZE'}});expect(html()).not.toContain('Reviewed approval set');expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(false);expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);expect(commands).toHaveLength(0);});
-it('a denied first command clears protected data and stops before submitting the second card',async()=>{rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready());commands.push(JSON.parse(String(init?.body)));return new Response(null,{status:403});});await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();expect(commands).toHaveLength(1);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Retry original attempted action');expect(html()).toContain('Sign in again');});
+it('window blur clears selection and reviewed private rows',async()=>{transport();await mount();check('Select PRIVATE E1');click('Review selected timecards');window.dispatchEvent(new Event('blur'));expect(html()).not.toContain('PRIVATE');expect(html()).not.toMatch(/Approve \d+ timecards?\?/);});
+it('actor replacement hides private reviewed rows and overview before the next effect can run',async()=>{transport();await mount();expect(html()).toContain('Period overview');check('Select PRIVATE E1');click('Review selected timecards');actorId='OTHER';expect(html()).not.toContain('PRIVATE');expect(html()).not.toMatch(/Approve \d+ timecards?\?/);expect(html()).not.toContain('Period overview');expect(html()).not.toContain('No timecards to show');expect(commands).toHaveLength(0);});
+it('action change clears the old selected set and review instead of reusing approval confirmation',async()=>{transport();await mount();check('Select PRIVATE E1');click('Review selected timecards');check('I checked these hours');/* The step is chosen before the decision: the decision shows no step control, so Cancel comes first. */expect(has(n=>n.type==='select')).toBe(false);click('Cancel');const action=control(n=>n.type==='select');(action.onChange as (e:unknown)=>void)({target:{value:'FINALIZE'}});expect(html()).not.toMatch(/Approve \d+ timecards?\?/);expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(false);expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);expect(commands).toHaveLength(0);});
+it('a denied first command clears protected data and stops before submitting the second card',async()=>{rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready());commands.push(JSON.parse(String(init?.body)));return new Response(null,{status:403});});await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('I checked these hours');commit();await flush();expect(commands).toHaveLength(1);expect(html()).not.toContain('PRIVATE');expect(html()).not.toMatch(/Check again|Check and continue/);expect(html()).toContain('Sign in again');});
 it('clears a completed batch whose source deadline passed before the expiry timer runs',async()=>{
  let resolve!:(response:Response)=>void;rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready());commands.push(JSON.parse(String(init?.body)));return new Promise<Response>(r=>{resolve=r;});});
- await mount();check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();
- const now=rs.spyOn(performance,'now').mockReturnValue(50000);try{resolve(Response.json({status:'approved',operationId:commands[0].operationId,revision:1}));await flush();expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Per-card results');}finally{now.mockRestore();}
+ await mount();check('Select PRIVATE E1');click('Review selected timecards');check('I checked these hours');commit();await flush();
+ const now=rs.spyOn(performance,'now').mockReturnValue(50000);try{resolve(Response.json({status:'approved',operationId:commands[0].operationId,revision:1}));await flush();expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('data-stage="result"');}finally{now.mockRestore();}
 });
 it('clears an overdue original retry before sending and retains only its exact recovery identity for a fresh protected read',async()=>{
- transport('unknown');await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();const original=commands[0];
- const now=rs.spyOn(performance,'now').mockReturnValue(50000);try{click('Retry original attempted action');await flush();expect(commands).toHaveLength(1);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Per-card results');expect(html()).not.toContain('Retry original attempted action');}finally{now.mockRestore();}
- click('Refresh timecards');await flush();click('Retry original attempted action');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
+ transport('unknown');await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('I checked these hours');commit();await flush();const original=commands[0];
+ const now=rs.spyOn(performance,'now').mockReturnValue(50000);try{retry();await flush();expect(commands).toHaveLength(1);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('data-stage="result"');expect(html()).not.toMatch(/Check again|Check and continue/);}finally{now.mockRestore();}
+ click('Refresh timecards');await flush();retry();await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
 });
 it('clears private rows and stale outcomes when an original retry receipt arrives after its deadline before the timer runs',async()=>{
  let resolve!:(response:Response)=>void;rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready());const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);if(commands.length===1)throw Error('Interrupted initial attempt');if(commands.length===2)return new Promise<Response>(r=>{resolve=r;});return Response.json({status:'approved',operationId:c.operationId,revision:1});});
- await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();const original=commands[0];click('Retry original attempted action');await flush();
- const now=rs.spyOn(performance,'now').mockReturnValue(50000);try{resolve(Response.json({status:'approved',operationId:original.operationId,revision:1}));await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Per-card results');expect(html()).not.toContain('Retry original attempted action');}finally{now.mockRestore();}
- click('Refresh timecards');await flush();click('Retry original attempted action');await flush();expect(commands).toHaveLength(3);expect(commands[2]).toEqual(original);
+ await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('I checked these hours');commit();await flush();const original=commands[0];retry();await flush();
+ const now=rs.spyOn(performance,'now').mockReturnValue(50000);try{resolve(Response.json({status:'approved',operationId:original.operationId,revision:1}));await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('data-stage="result"');expect(html()).not.toMatch(/Check again|Check and continue/);}finally{now.mockRestore();}
+ click('Refresh timecards');await flush();retry();await flush();expect(commands).toHaveLength(3);expect(commands[2]).toEqual(original);
 });
 it.each([{status:'blocked',reason:'unresolved_time',http:409},{status:'conflict',http:409},{status:'unavailable',http:503}])('replaces the original unknown per-card result with a verified $status retry without submitting remaining cards',async({http,...result})=>{
  rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready());commands.push(JSON.parse(String(init?.body)));if(commands.length===1)throw Error('Interrupted initial attempt');return Response.json(result,{status:http});});
- await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();expect(html()).toContain('PRIVATE E1 · Not confirmed');click('Retry original attempted action');await flush();
- expect(commands).toHaveLength(2);expect(commands[1]).toEqual(commands[0]);expect(html()).toContain(`PRIVATE E1 · ${({blocked:'Blocked',conflict:'Changed. Review it again',unavailable:'Not available'} as Record<string,string>)[result.status]}`);expect(html()).not.toContain('PRIVATE E1 · Not confirmed');expect(html()).toContain('PRIVATE E2 · Not sent');/* Phase 7: a set with any unconfirmed card never shows the success mark. */expect(html()).not.toContain('b-donemark');expect(html()).not.toContain('Retry original attempted action');
+ await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('I checked these hours');commit();await flush();expect(html()).toContain(row('PRIVATE E1','outcome-unknown','Not confirmed'));retry();await flush();
+ expect(commands).toHaveLength(2);expect(commands[1]).toEqual(commands[0]);expect(html()).toContain(row('PRIVATE E1',result.status,({blocked:'Blocked',conflict:'Changed. Review it again',unavailable:'Not available'} as Record<string,string>)[result.status]));expect(html()).not.toContain(row('PRIVATE E1','outcome-unknown','Not confirmed'));expect(html()).toContain(row('PRIVATE E2','not-submitted','Not started'));/* Phase 7: a set with any unconfirmed card never shows the success mark. */expect(html()).not.toContain('b-donemark');expect(html()).not.toMatch(/Check again|Check and continue/);
 });
 
 it('refreshes a 15-second projection early and preserves selection, confirmation and the original reviewed command',async()=>{
  let reads=0;rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards'){reads++;return Response.json({...ready(15000),observedAt:reads===1?'2026-09-29T12:00:00Z':'2026-09-29T12:00:01Z'});}commands.push(JSON.parse(String(init?.body)));throw Error('Fictional unknown result');});
  await mount();const id=rs.spyOn(crypto,'randomUUID');try{
-  check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');
-  await rs.advanceTimersByTimeAsync(14000);expect(reads).toBe(2);expect(html()).toContain('Reviewed approval set');expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(true);expect(control(n=>n.type==='input'&&n.props['aria-label']==='Confirm reviewed timecards').checked).toBe(true);
-  click('Approve selected');await flush();expect(commands).toHaveLength(1);expect(commands[0].operationId).toBe(id.mock.results[0].value);expect(id).toHaveBeenCalledTimes(1);
+  check('Select PRIVATE E1');click('Review selected timecards');check('I checked these hours');
+  await rs.advanceTimersByTimeAsync(14000);expect(reads).toBe(2);expect(html()).toMatch(/Approve \d+ timecards?\?/);expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(true);expect(control(n=>n.type==='input'&&n.props['aria-label']==='I checked these hours').checked).toBe(true);
+  commit();await flush();expect(commands).toHaveLength(1);expect(commands[0].operationId).toBe(id.mock.results[0].value);expect(id).toHaveBeenCalledTimes(1);
  }finally{id.mockRestore();}
 });
 it('keeps the old deadline armed during a single-flight replacement and never revives its late reply',async()=>{
  let reads=0,resolve!:(r:Response)=>void;rs.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):new Promise<Response>(r=>{resolve=r;}));
- await mount();check('Select PRIVATE E1');click('Review selected timecards');await rs.advanceTimersByTimeAsync(14999);expect(reads).toBe(2);expect(html()).toContain('PRIVATE E1');expect(html()).toContain('Reviewed approval set');await rs.advanceTimersByTimeAsync(2);expect(html()).not.toContain('PRIVATE');resolve(Response.json(ready(15000)));await flush();expect(html()).not.toContain('PRIVATE');expect(reads).toBe(2);
+ await mount();check('Select PRIVATE E1');click('Review selected timecards');await rs.advanceTimersByTimeAsync(14999);expect(reads).toBe(2);expect(html()).toContain('PRIVATE E1');expect(html()).toMatch(/Approve \d+ timecards?\?/);await rs.advanceTimersByTimeAsync(2);expect(html()).not.toContain('PRIVATE');resolve(Response.json(ready(15000)));await flush();expect(html()).not.toContain('PRIVATE');expect(reads).toBe(2);
 });
 it('counts initial transit and JSON parsing against the supplied finite budget',async()=>{
  let resolve!:(body:unknown)=>void;rs.stubGlobal('fetch',async()=>({ok:true,status:200,json:()=>new Promise(r=>{resolve=r;})}));await mount();await rs.advanceTimersByTimeAsync(10000);resolve(ready(15000));await flush();expect(html()).toContain('PRIVATE E1');rs.stubGlobal('fetch',()=>new Promise<Response>(()=>{}));await rs.advanceTimersByTimeAsync(5001);expect(html()).not.toContain('PRIVATE');
 });
 it.each([403,503,'malformed'] as const)('retires private selection and review on a replacement %s',async result=>{
- let reads=0;rs.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):result==='malformed'?Response.json({state:'ready',cards:[]}):new Response(null,{status:result}));await mount();check('Select PRIVATE E1');click('Review selected timecards');await rs.advanceTimersByTimeAsync(10000);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Reviewed approval set');expect(commands).toHaveLength(0);
+ let reads=0;rs.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):result==='malformed'?Response.json({state:'ready',cards:[]}):new Response(null,{status:result}));await mount();check('Select PRIVATE E1');click('Review selected timecards');await rs.advanceTimersByTimeAsync(10000);expect(html()).not.toContain('PRIVATE');expect(html()).not.toMatch(/Approve \d+ timecards?\?/);expect(commands).toHaveLength(0);
 });
 it.each(['blur','pagehide'])('fences an early replacement after %s and does not poll a paused view',async event=>{
  let reads=0,resolve!:(r:Response)=>void;rs.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):new Promise<Response>(r=>{resolve=r;}));await mount();await rs.advanceTimersByTimeAsync(10000);window.dispatchEvent(new Event(event));resolve(Response.json(ready(15000)));await flush();await rs.advanceTimersByTimeAsync(31000);expect(reads).toBe(2);expect(html()).not.toContain('PRIVATE');
@@ -150,10 +159,10 @@ it('keeps the loaded timecards offline, fences an early replacement and does not
  let reads=0,resolve!:(r:Response)=>void;rs.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):new Promise<Response>(r=>{resolve=r;}));await mount();await rs.advanceTimersByTimeAsync(10000);window.dispatchEvent(new Event(event));expect(html()).toContain('PRIVATE');resolve(Response.json(ready(15000)));await flush();await rs.advanceTimersByTimeAsync(31000);expect(reads).toBe(2);expect(html()).not.toContain('PRIVATE');
 });
 it('clears a frozen review and selection when a fresh projection changes source facts',async()=>{
- let reads=0;rs.stubGlobal('fetch',async()=>{const result=ready(15000);if(++reads>1)result.cards[0].sourceHash='b'.repeat(32);return Response.json(result);});await mount();check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');await rs.advanceTimersByTimeAsync(10000);expect(html()).toContain('PRIVATE E1');expect(html()).not.toContain('Reviewed approval set');expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(false);expect(commands).toHaveLength(0);
+ let reads=0;rs.stubGlobal('fetch',async()=>{const result=ready(15000);if(++reads>1)result.cards[0].sourceHash='b'.repeat(32);return Response.json(result);});await mount();check('Select PRIVATE E1');click('Review selected timecards');check('I checked these hours');await rs.advanceTimersByTimeAsync(10000);expect(html()).toContain('PRIVATE E1');expect(html()).not.toMatch(/Approve \d+ timecards?\?/);expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(false);expect(commands).toHaveLength(0);
 });
 it('preserves only the original unknown command through a healthy early fresh projection',async()=>{
- let reads=0;rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards'){reads++;return Response.json(ready(15000));}commands.push(JSON.parse(String(init?.body)));throw Error('Fictional response loss');});await mount();check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();await rs.advanceTimersByTimeAsync(14000);expect(reads).toBe(2);expect(html()).toContain('Retry original attempted action');click('Retry original attempted action');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(commands[0]);
+ let reads=0;rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards'){reads++;return Response.json(ready(15000));}commands.push(JSON.parse(String(init?.body)));throw Error('Fictional response loss');});await mount();check('Select PRIVATE E1');click('Review selected timecards');check('I checked these hours');commit();await flush();await rs.advanceTimersByTimeAsync(14000);expect(reads).toBe(2);expect(html()).toContain('Check and continue');retry();await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(commands[0]);
 });
 it('does not start the deferred first read after unmount',async()=>{
  transport();render();host.mounted=true;cleanup=host.effects[0]();cleanup?.();cleanup=undefined;await flush();expect(html()).not.toContain('PRIVATE');expect(commands).toHaveLength(0);
@@ -181,8 +190,8 @@ it('counts Need review as the Inbox does, names the reason on the row and keeps 
  (control(n=>n.type==='button'&&n.props.className==='c-tc-idle__open').onClick as ()=>void)();
  expect(html()).not.toContain('people with no time yet');
  check('Select PRIVATE E2');click('Review selected timecards');
- expect(html()).toContain('Each card commits separately; a stopped set leaves remaining cards unsubmitted. Approval never automatically finalizes time.');
- expect(html()).toContain('I reviewed this exact selected set and its recorded time for approval.');
+ expect(html()).toContain('If something stops, the rest stay as they are.');
+ expect(html()).toContain('I checked these hours');
  expect(commands).toHaveLength(0);
 });
 it('approves from the clean detail sheet with the exact current revision and clears its private content on blur',async()=>{
@@ -198,11 +207,14 @@ it('approves from the clean detail sheet with the exact current revision and cle
  click('Approve with no hours');await flush();
  expect(commands).toHaveLength(1);
  expect(commands[0]).toMatchObject({...period,employeeId:'E1',action:'APPROVE',expectedRevision:0,expectedSourceHash:'a'.repeat(32)});
- expect(html()).toContain('Retry pending action');
+ expect(html()).toContain('Check again');
+ // Review B #12: the open panel carries the one note and its one action; the list behind keeps its mode.
+ expect(html().split('Check again').length).toBe(2);expect(html()).toContain('Your approval isn’t confirmed yet');expect(html()).not.toContain('Selected timecard review');
+ const first=commands[0];click('Check again');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(first);
  window.dispatchEvent(new Event('blur'));
  expect(html()).not.toContain('PRIVATE');
  expect(html()).not.toContain('Approve with no hours');
- expect(html()).not.toContain('Retry pending action');
+ expect(html()).not.toContain('Check again');
 });
 it('retires failed background data and offers Try again to obtain a fresh protected snapshot',async()=>{
  let reads=0;
@@ -210,7 +222,7 @@ it('retires failed background data and offers Try again to obtain a fresh protec
  await mount();check('Select PRIVATE E1');click('Review selected timecards');
  await rs.advanceTimersByTimeAsync(10000);
  expect(html()).not.toContain('PRIVATE');
- expect(html()).not.toContain('Reviewed approval set');
+ expect(html()).not.toMatch(/Approve \d+ timecards?\?/);
  expect(html()).toContain('Couldn’t load timecards');
  expect(html()).toContain('Try again');
  (control(n=>n.props.children==='Try again').onClick as ()=>void)();
@@ -323,42 +335,42 @@ it('phone: Select in the top bar opens eligible cards; self-review stays exclude
  phoneWindow();transport();await mountAll();
  expect(html()).toContain('c-page c-tc"');expect(html()).not.toContain('Selected timecard review');
  click('Select');const page=html();
- expect(page).toContain('Selected timecard review');expect(page).toContain('2 eligible · 1 excluded · Select up to 100 current timecards below.');
+ expect(page).toContain('Selected timecard review');expect(page).toContain('2 ready · 1 can’t be approved yet');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE OWNER').disabled).toBe(true);expect(page).toContain('A different manager must review');
  expect(control(n=>n.type==='button'&&n.props.children==='Review selected timecards').disabled).toBe(true);
  check('Select all eligible timecards');expect(html()).toContain('2 selected');
 });
 it('phone: review the exact set, confirm explicitly, then show each card’s result',async()=>{
  phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Review selected timecards');
- const reviewed=html();expect(reviewed).toContain('Reviewed approval set');expect(reviewed).toContain('Revision 0');expect(reviewed).toContain('Approval never automatically finalizes time.');
- expect(reviewed).toContain('I reviewed this exact selected set and its recorded time for approval.');
- expect(control(n=>n.type==='button'&&n.props.children==='Approve selected').disabled).toBe(true);
- check('Confirm reviewed timecards');click('Approve selected');await flush();
+ const reviewed=html();expect(reviewed).toMatch(/Approve \d+ timecards?\?/);expect(reviewed).not.toContain('Revision 0');expect(reviewed).toContain('If something stops, the rest stay as they are.');
+ expect(reviewed).toContain('I checked these hours');
+ expect(control(n=>isCommit(n)).disabled).toBe(true);
+ check('I checked these hours');commit();await flush();
  expect(commands).toHaveLength(1);expect(commands[0]).toMatchObject({employeeId:'E1',action:'APPROVE',expectedRevision:0});
- const done=html();expect(done).toContain('Per-card results');expect(done).toContain('approved');expect(done).toContain('Refresh timecards before reviewing another set.');
- click('Refresh timecards');await flush();expect(html()).not.toContain('Per-card results');
+ const done=html();expect(done).toContain('data-stage="result"');expect(done).toContain('1 timecard approved');expect(done).not.toContain('1 selected');
+ click('Done');await flush();expect(html()).not.toContain('data-stage="result"');
 });
 it('phone: finalization stays its own action with its own wording',async()=>{
  phoneWindow();transport();await mountAll();click('Select');
  (control(n=>n.type==='select').onChange as (e:unknown)=>void)({target:{value:'FINALIZE'}});
- expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);expect(html()).toContain('0 eligible · 3 excluded');
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);expect(html()).toContain('0 ready · 3 can’t be finalized yet');
 });
 it('phone: a partial unknown result keeps not-submitted cards and retries only the original command',async()=>{
- phoneWindow();transport('unknown');await mountAll();click('Select');check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('Confirm reviewed timecards');click('Approve selected');await flush();
- expect(commands).toHaveLength(1);expect(html()).toContain('Not confirmed');expect(html()).toContain('Not sent');
- const original=commands[0];click('Retry original attempted action');await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
+ phoneWindow();transport('unknown');await mountAll();click('Select');check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('I checked these hours');commit();await flush();
+ expect(commands).toHaveLength(1);expect(html()).toContain('Not confirmed');expect(html()).toContain('Not started');
+ const original=commands[0];retry();await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(original);
 });
 it('resizing desktop → phone mid-review keeps the reviewed set and confirmation; phone → desktop keeps the results',async()=>{
  phoneWindow(false);transport();await mountAll();expect(html()).toContain('c-page c-tc c-tc-desk');
- check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');
- resize(true);const phone=html();expect(phone).toContain('c-page c-tc"');expect(phone).toContain('Reviewed approval set');
- expect(control(n=>n.type==='input'&&n.props['aria-label']==='Confirm reviewed timecards').checked).toBe(true);
- click('Approve selected');await flush();expect(commands).toHaveLength(1);
- resize(false);const desk=html();expect(desk).toContain('c-page c-tc c-tc-desk');expect(desk).toContain('Per-card results');expect(desk).toContain('approved');
+ check('Select PRIVATE E1');click('Review selected timecards');check('I checked these hours');
+ resize(true);const phone=html();expect(phone).toContain('c-page c-tc"');expect(phone).toMatch(/Approve \d+ timecards?\?/);
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='I checked these hours').checked).toBe(true);
+ commit();await flush();expect(commands).toHaveLength(1);
+ resize(false);const desk=html();expect(desk).toContain('c-page c-tc c-tc-desk');expect(desk).toContain('data-stage="result"');expect(desk).toContain('approved');
 });
 it('phone: blur clears the selection and the reviewed private rows',async()=>{
  phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Review selected timecards');window.dispatchEvent(new Event('blur'));
- expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Reviewed approval set');
+ expect(html()).not.toContain('PRIVATE');expect(html()).not.toMatch(/Approve \d+ timecards?\?/);
 });
 
 // Owner premium R10 (copy table 36–38): "In progress" only where the server's period_open issue proves the period hasn't
@@ -387,8 +399,8 @@ it('says how many ready cards have no time and shows each reviewed card’s reco
  expect(mixed).toContain(' · 4 h recorded');
  enterSelect();check('Select all eligible timecards');click('Review selected timecards');
  const reviewed=html();
- expect(reviewed).toContain('PRIVATE E1 · 4 h recorded · Revision 0');
- expect(reviewed).toContain('PRIVATE E2 · No time · Revision 0');
+ expect(reviewed).toContain('<span class="c-tc-flow__n">PRIVATE E1</span><span class="c-tc-flow__v c-num">4 h</span>');
+ expect(reviewed).toContain('<span class="c-tc-flow__n">PRIVATE E2</span><span class="c-tc-flow__v c-num">No time</span>');
  expect(commands).toEqual([]);
 });
 it('says “no time recorded” once when no ready card has time',async()=>{
@@ -467,12 +479,12 @@ it('after an approval the reviewer moves on when they choose: Next timecard, nev
  Object.assign(document,{getElementById:(id:string)=>id==='cm-tc-sheet-title'?{focus}:null});
  click('Approve with no hours');await flush();
  const saved=html();
- expect(saved).toContain('PRIVATE E1’s timecard is approved.');
+ expect(saved).toContain('PRIVATE’s timecard is approved');
  // The next card that still needs approval, skipping the viewer's own.
  expect(saved).toContain('aria-label="Next timecard: PRIVATE E2"');
  // Nothing moves by itself.
  await rs.advanceTimersByTimeAsync(2000);
- expect(html()).toContain('PRIVATE E1’s timecard is approved.');
+ expect(html()).toContain('PRIVATE’s timecard is approved');
  expect(focus).not.toHaveBeenCalled();
  click('Next timecard: PRIVATE E2');
  expect(html()).toContain('id="cm-tc-sheet-title" class="c-row__title c-row__title--b" tabindex="-1">PRIVATE E2<');
@@ -488,4 +500,34 @@ it('Next timecard prefers a card that can be approved now over one waiting on a 
  (person.props.onClick as ()=>void)();
  click('Approve with no hours');await flush();
  expect(html()).toContain('aria-label="Next timecard: PRIVATE E1"');
+});
+
+// Final polish (Nov 21, 2026; confirmations review B #2, #4, #9).
+it('in flight, the pressed button keeps its own label with the busy ring and nothing offers a retry',async()=>{
+ let resolve!:(response:Response)=>void;rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready());commands.push(JSON.parse(String(init?.body)));return new Promise<Response>(r=>{resolve=r;});});
+ await mount();(control(n=>n.type==='button'&&n.props.className==='c-tc-person').onClick as ()=>void)();click('Approve with no hours');await flush();
+ const flying=html();expect(commands).toHaveLength(1);expect(flying).toMatch(/aria-busy="true"[^>]*>.*Approve with no hours/);expect(flying).not.toMatch(/Check again|Retry|Saving timecard action/);/* The only "Saving…" is the page's status line for screen readers. */expect(flying).not.toContain('cm-tc-sheet__message');expect(flying.split('Saving…').length).toBe(2);
+ resolve(Response.json({status:'approved',operationId:commands[0].operationId,revision:1}));await flush();
+ expect(commands).toHaveLength(1);expect(html()).toContain('PRIVATE’s timecard is approved');expect(html()).not.toContain('aria-busy="true"');
+});
+it('a checked set keeps each card’s confirmed state on screen and sends only the original command again',async()=>{
+ rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready());const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);if(commands.length===1)throw Error('Interrupted initial attempt');return Response.json({status:'approved',operationId:c.operationId,revision:1});});
+ await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('I checked these hours');commit();await flush();
+ expect(html()).toContain('1 timecard isn’t confirmed, 1 wasn’t sent');expect(html().split('Check and continue').length).toBe(2);
+ retry();await flush();expect(commands).toHaveLength(2);expect(commands[1]).toEqual(commands[0]);
+ const checked=html();expect(checked).toContain('data-stage="result"');expect(checked).toContain(row('PRIVATE E1','approved','Approved'));expect(checked).toContain(row('PRIVATE E2','not-submitted','Not started'));
+ expect(checked).toContain('1 of 2 approved');expect(checked).not.toContain('0 selected');expect(checked).not.toMatch(/Check again|Check and continue/);expect(checked).not.toContain('b-donemark');
+ // Done is today's Refresh: a fresh protected read, after which nothing of the set remains.
+ click('Done');await flush();expect(html()).not.toContain('data-stage="result"');expect(commands).toHaveLength(2);
+});
+it('a whole confirmed set replaces the select panel: the done state, the names folded, one step',async()=>{
+ transport();await mount();check('Select PRIVATE E1');check('Select PRIVATE E2');click('Review selected timecards');check('I checked these hours');commit();await flush();
+ const done=html();expect(commands).toHaveLength(2);expect(done).toContain('2 timecards approved');expect(done).toContain('See all 2');expect(done).not.toMatch(/\d selected|Selected action|Review selected timecards/);
+ expect(has(n=>n.type==='input'&&String(n.props['aria-label']??'').startsWith('Select PRIVATE'))).toBe(false);
+});
+it('the set’s result stays when a background read brings the approved rows, and goes with the protected snapshot',async()=>{
+ rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards'){const base=ready(15000);return Response.json(commands.length?{...base,cards:base.cards.map(item=>item.source.employeeId==='E1'?{...item,state:'APPROVED',revision:1,history:[{operationId:commands[0].operationId,revision:1,action:'APPROVE',occurredAt:'2026-09-29T12:00:00Z',actorName:'Fictional Reviewer',note:null,sourceHash:'a'.repeat(32),snapshot:item.source}]}:item)}:base);}const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);return Response.json({status:'approved',operationId:c.operationId,revision:1});});
+ await mount();check('Select PRIVATE E1');click('Review selected timecards');check('I checked these hours');commit();await flush();expect(html()).toContain('1 timecard approved');
+ await rs.advanceTimersByTimeAsync(10000);const later=html();expect(later).toContain('data-stage="result"');expect(later).toContain('1 timecard approved');expect(later).not.toContain('0 selected');expect(commands).toHaveLength(1);
+ window.dispatchEvent(new Event('blur'));expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('data-stage="result"');
 });

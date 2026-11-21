@@ -3,7 +3,6 @@ import Link from 'next/link';
 import {useEffect,useRef,type FormEventHandler,type RefCallback} from 'react';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {EnvelopeSimpleIcon} from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
-import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {RecoverySubmit} from '@/components/recovery-submit';
 import {AUTH_COPY,authMessage,type AuthLang} from '@/lib/auth-copy';
 import {AuthValidation,FieldInvalid} from '@/components/auth-premium/auth-validation';
@@ -18,6 +17,7 @@ import {AccessPasswordPair} from './password-pair';
 import {AccessCard,AccessOutside} from './chrome';
 import {BCallout} from '@/components/owner-b/b-kit';
 import {noteParts} from '@/components/auth-premium/note-parts';
+import {AuthDoneTick} from '@/components/auth-premium/done-tick';
 
 /* Review B4 (Nov 10, 2026): the error leads the form card, above the fields, as on Sign in (NV-319); fields name what is
  * missing under themselves (NV-190); disclosures open behind a bold down caret (NV-101 here).
@@ -67,7 +67,7 @@ export function MobileRecoveryReset({hydrated,busy,done,message,onSubmit,proofRe
  const wait=uncertain||issue==='resetUnavailable',offline=noteParts(u.offline);
  useEffect(()=>{if(done||message)feedback.current?.focus();},[done,message]);
  return <><AccessCard><AccessSteps journey="recovery" current={3} lang={lang} named={done}/>
-  {done?<div className="ma-receipt-mark ar-done__mark"><CheckIcon size={28} weight="bold" aria-hidden="true"/></div>:null}
+  {done?<div className="ma-receipt-mark ar-done__mark"><AuthDoneTick/></div>:null}
   <div className="q-hd"><h1>{done?t.resetDone:t.resetTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}{done?null:<p>{t.resetSub}</p>}</div>
   {done?<><div ref={feedback} tabIndex={-1} className="ma-receipt ar-done__line" role="status"><p>{a.reset.doneLine}</p></div>
    <div className="ma-actions"><Link className="q-btn" href="/login">{t.signInNew}</Link></div><p className="ma-note ar-next">{u.doneNote}</p></>:<>

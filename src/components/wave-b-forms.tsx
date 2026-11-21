@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useId, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { unstable_rethrow, useRouter } from "next/navigation";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
-import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+import { BDoneMark } from "@/components/owner-b/b-kit";
 import type { ConfigurationResult } from "@/components/configuration-form";
 import type { PolicyWriteResult } from "@/lib/shift-changes/types";
 
@@ -47,10 +47,10 @@ const plainMessages: Record<string, string> = {
 };
 const plain = (message: string) => plainMessages[message] ?? message;
 
-/** Phase 9 (spec 3.3): a saved line carries the app's one done mark, small: a bold green check in a 28px green-50 circle
- * (premium-wave-a.css, "Saved lines"), never a filled circle. Decorative; the words say what was saved. */
+/** A saved line carries the app's one done mark (BDoneMark at its 36px row size; the line's layout is in
+ * premium-wave-a.css, "Saved lines"). Decorative; the words say what was saved. */
 function SavedMark() {
-  return <span className="wb-saved__mark" aria-hidden="true"><CheckIcon weight="bold" /></span>;
+  return <BDoneMark />;
 }
 
 type Submit = { label: string; pendingLabel: string; ariaLabel?: string; className: string; kind?: "primary" | "secondary" | "danger"; icon?: ReactNode };

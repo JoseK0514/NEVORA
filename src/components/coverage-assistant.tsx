@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
-import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+import { BDoneMark } from "@/components/owner-b/b-kit";
 import { addDays, formatDayLabel, formatTime } from "@/lib/date-utils";
 import { durationText } from "@/lib/duration-text";
 import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpRows,CorpTime,CorpTitle } from "./corp/corp";
@@ -65,7 +65,7 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
     <CorpNav back={{ href: props.backHref, label: "Schedule" }} title="Find cover" titleId="coverage-title" phoneOnly />
     <CorpTitle title="Find cover" wide />
     <ManagerIssueFocus prefix="coverage-" />
-    {props.saved ? <CorpNote icon={<CheckIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>Replacement saved. What’s below is the schedule as it is now.</CorpNote> : null}
+    {props.saved ? <CorpNote icon={<BDoneMark />}>Replacement saved. What’s below is the schedule as it is now.</CorpNote> : null}
     <div className="wa-target" id="coverage-issue" tabIndex={-1}>
       <CorpCard id="coverage-shift" label="Open shift" aside={state ?? undefined}>
         <CorpBody>

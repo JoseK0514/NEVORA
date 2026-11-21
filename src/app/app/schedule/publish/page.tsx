@@ -2,8 +2,10 @@ import Link from "next/link";
 import { randomUUID } from "node:crypto";
 import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
-import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
+import type { ReactNode } from "react";
+import { BDoneMark, BSegs, BWhen } from "@/components/owner-b/b-kit";
 import { CorpBody, CorpButtonLink, CorpCard, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows } from "@/components/corp/corp";
 import { ScheduleCopyForm } from "@/components/schedule-copy-form";
 import { OperationalUnavailable } from "@/components/company-access/operational-unavailable";
@@ -42,13 +44,23 @@ const FIELD_TEXT: Record<SchedulePendingChange["fields"][number], string> = {
 };
 const hm = (value: string) => { const [h, m] = value.split(":").map(Number); return `${(h % 12) || 12}:${String(m).padStart(2, "0")} ${h < 12 || h === 24 ? "AM" : "PM"}`; };
 const shortDay = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${date}T12:00:00Z`));
-/** "Fri, Oct 30 · Time changed · 8:00 AM – 4:00 PM → 9:00 AM – 5:00 PM" */
-function changeDetail(change: SchedulePendingChange) {
+/** Final polish (Nov 20, 2026; confirmations review A #19): a held change's facts, each whole and none said twice. The
+ * chip already says Added or Removed, so those rows read "Wed, Nov 4 · 8:00 AM – 4:00 PM"; a changed shift names what
+ * changed ("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM"). A time range is short on phones and
+ * full from 768px (`BWhen`) and never splits inside a time. */
+function ChangeDetail({ change }: { change: SchedulePendingChange }) {
   const span = (value: SchedulePendingChange["before"]) => value ? `${hm(value.startTime)} – ${hm(value.endTime)}` : "";
-  const what = change.fields.map(field => FIELD_TEXT[field]).join(", ");
-  const times = change.kind === "CHANGED" && change.fields.includes("TIME") ? `${span(change.before)} → ${span(change.after)}` : span(change.after ?? change.before);
-  return [shortDay(change.date), what, times].filter(Boolean).join(" · ");
+  const what = change.kind === "CHANGED" ? change.fields.map(field => FIELD_TEXT[field]).join(", ") : null;
+  const moved = change.kind === "CHANGED" && change.fields.includes("TIME") && change.before && change.after;
+  const times: ReactNode = moved ? <><BWhen text={span(change.before)} />{" → "}<BWhen text={span(change.after)} /></>
+    : span(change.after ?? change.before) ? <BWhen text={span(change.after ?? change.before)} /> : null;
+  return <BSegs parts={[shortDay(change.date), what, times]} />;
 }
+/** One readiness warning: the amber Warning glyph (18px), the count at 600, then what it counts. */
+function Warn({ count, text }: { count?: number; text: string }) {
+  return <li><WarningIcon className="c-publish__warn-ic" size={18} weight="bold" aria-hidden="true" /><span>{count !== undefined ? <><b className="c-num">{count}</b>{" "}</> : null}{text}</span></li>;
+}
+const noun = (n: number, one: string, many: string) => n === 1 ? one : many;
 
 export default async function BuildAndPublishPage({ searchParams }: { searchParams: Promise<{ week?: string; review?: string; location?: string }> }) {
   const session = await requireRoles(MANAGER_ROLES);
@@ -143,7 +155,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
           </CorpCard>
           {pending?.hasPendingChanges ? <CorpCard id="publish-changes" label={`Changes not published (${pending.pendingCount})`}>
             <CorpRows label="Changes not published">{pending.changes.map((change, index) => <li key={`${change.shiftId ?? "row"}-${index}`}>
-              <CorpRow bold title={change.employeeName} detail={changeDetail(change)} trail={<CorpPill tone="amber">{change.kind === "ADDED" ? "Added" : change.kind === "REMOVED" ? "Removed" : "Changed"}</CorpPill>} />
+              <CorpRow bold title={change.employeeName} detail={<ChangeDetail change={change} />} trail={<CorpPill tone="amber">{change.kind === "ADDED" ? "Added" : change.kind === "REMOVED" ? "Removed" : "Changed"}</CorpPill>} />
             </li>)}</CorpRows>
             {pending.truncated ? <p className="c-publish__more">{`And ${pending.pendingCount - pending.changes.length} more`}</p> : null}
           </CorpCard> : null}
@@ -152,14 +164,14 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
               {review.map(({ location, readiness }) => <div key={location.id} className="c-publish__warn">
                 <b>{location.shortName}</b>
                 <ul>
-                  {readiness.coverageGaps > 0 ? <li>{plural(readiness.coverageGaps, "uncovered coverage block", "uncovered coverage blocks")}</li> : null}
-                  {readiness.missingLeadBlocks > 0 ? <li>{plural(readiness.missingLeadBlocks, "block missing a designated lead", "blocks missing a designated lead")}</li> : null}
-                  {readiness.positionNeedsSetup ? <li>Position requirements need setup</li> : null}
-                  {readiness.staffingNeedsSetup ? <li>Staffing requirements need setup</li> : null}
-                  {readiness.coverageNeedsSetup ? <li>Coverage windows need setup</li> : null}
-                  {readiness.underTargetCount > 0 ? <li>{plural(readiness.underTargetCount, "employee below their weekly hour target", "employees below their weekly hour target")}</li> : null}
-                  {readiness.overTargetCount > 0 ? <li>{plural(readiness.overTargetCount, "employee above their weekly hour target", "employees above their weekly hour target")}</li> : null}
-                  {readiness.unconfiguredTargetCount > 0 ? <li>{plural(readiness.unconfiguredTargetCount, "employee without a weekly hour target", "employees without a weekly hour target")}</li> : null}
+                  {readiness.coverageGaps > 0 ? <Warn count={readiness.coverageGaps} text={noun(readiness.coverageGaps, "uncovered coverage block", "uncovered coverage blocks")} /> : null}
+                  {readiness.missingLeadBlocks > 0 ? <Warn count={readiness.missingLeadBlocks} text={noun(readiness.missingLeadBlocks, "block missing a designated lead", "blocks missing a designated lead")} /> : null}
+                  {readiness.positionNeedsSetup ? <Warn text="Position requirements need setup" /> : null}
+                  {readiness.staffingNeedsSetup ? <Warn text="Staffing requirements need setup" /> : null}
+                  {readiness.coverageNeedsSetup ? <Warn text="Coverage windows need setup" /> : null}
+                  {readiness.underTargetCount > 0 ? <Warn count={readiness.underTargetCount} text={noun(readiness.underTargetCount, "employee below their weekly hour target", "employees below their weekly hour target")} /> : null}
+                  {readiness.overTargetCount > 0 ? <Warn count={readiness.overTargetCount} text={noun(readiness.overTargetCount, "employee above their weekly hour target", "employees above their weekly hour target")} /> : null}
+                  {readiness.unconfiguredTargetCount > 0 ? <Warn count={readiness.unconfiguredTargetCount} text={noun(readiness.unconfiguredTargetCount, "employee without a weekly hour target", "employees without a weekly hour target")} /> : null}
                 </ul>
               </div>)}
               <p className="c-publish__lead">Hour counts cover the business week{owner ? " across locations" : " at the reviewed location"}. Publishing makes these schedules visible to your team.</p>
@@ -169,17 +181,21 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
             <input type="hidden" name="weekStart" value={weekStart} />
             {params.review === "changes" && review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
             <CorpNote icon={<BellIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true" />}>Each person with a change is notified once when you publish.</CorpNote>
-            <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">{`Publish changes${params.review === "changes" && review.length ? " anyway" : ""}`}</EmployeeSubmitButton>
+            <div className="c-publish__acts">{review.length ? <Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet c-publish__back" href={scheduleHref}>Back to schedule</Link> : null}
+              <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">{`Publish changes${params.review === "changes" && review.length ? " anyway" : ""}`}</EmployeeSubmitButton>
+            </div>
           </form> : <CorpNote>An Owner or company-wide Manager publishes these changes.</CorpNote>
           : drafts.length ? <form action={publishDraftsAction} className="c-publish__go">
             <input type="hidden" name="weekStart" value={weekStart} />
             {drafts.map(location => <input key={location.id} type="hidden" name="locationId" value={location.id} />)}
             {review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
             {notified}
+            <div className="c-publish__acts">{review.length ? <Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet c-publish__back" href={scheduleHref}>Back to schedule</Link> : null}
             <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">
               {`Publish ${drafts.length === 1 ? drafts[0].shortName : plural(drafts.length, "draft", "drafts")}${pending?.hasPendingChanges ? " and changes" : ""}${review.length ? " anyway" : ""}`}
             </EmployeeSubmitButton>
-          </form> : <CorpNote icon={allPublished ? <CheckIcon className="c-ic c-ic--s c-pub__done" weight="bold" aria-hidden="true" /> : <CheckCircleIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>{locations.some(location => location.status === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>)}
+            </div>
+          </form> : <CorpNote icon={allPublished ? <BDoneMark still /> : <CheckCircleIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>{locations.some(location => location.status === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>)}
         </div>
       </div>
     </CorpPage>

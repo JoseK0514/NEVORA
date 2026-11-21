@@ -550,7 +550,7 @@ function ImportAmounts({ run, capabilities, operation, correction, primary }: { 
   return <PayGroup id="payroll-import" label={correction ? 'Create a linked correction' : 'Import provider amounts'} aside={run.sourceName ? <span className="c-pay__aside">{run.sourceName}</span> : undefined}><CorpBody>
     <b className="c-pay__strong">{correction ? entry.titleCorrection : entry.title}</b>
     <p className="c-pay__detail">{correction ? entry.lineCorrection : entry.line}</p>
-    <p className="c-pay__detail">{capabilities.internalCalculatorAvailable ? 'Historical provider runs retain their imported amounts. Native payroll does not replace the source of this historical review.' : 'NEVORA preserves imported amounts; a statutory calculator is unavailable.'}</p>
+    <p className="c-pay__detail">{capabilities.internalCalculatorAvailable ? 'Historical provider runs retain their imported amounts. Native payroll does not replace the source of this historical review.' : 'NEVORA keeps the amounts you import as they are. It doesn’t calculate taxes or deductions.'}</p>
     {correction ? <p className="c-pay__detail">{SETTLE_NOTE}</p> : null}
     {locked ? <CorpButton full kind={primary ? undefined : 'secondary'} disabled>{correction ? entry.actionCorrection : entry.action}</CorpButton>
       : <CorpButtonLink full href={href} kind={primary ? undefined : 'secondary'}>{correction ? entry.actionCorrection : entry.action}</CorpButtonLink>}

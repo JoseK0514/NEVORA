@@ -85,19 +85,17 @@
 /* Team time off › Approved: "Cancel approval" under each row, opening a confirmation in place. It starts on the row's
  * text edge (after the avatar) and keeps the 44px floor. */
 :is(#c-root, html) .app-shell[data-nv-b] .q-timeoff li.pto-approved { list-style: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel { padding: 0 var(--b-inset) var(--b-space-8) var(--b-space-64); }
-:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel--open { display: flex; flex-direction: column; gap: var(--b-space-4); margin: 0 var(--b-inset) var(--b-space-12) var(--b-space-64);
-  padding: var(--b-space-12); border-radius: var(--b-radius-field); background: var(--b-canvas); }
-:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel__t { margin: 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 700; color: var(--b-ink); outline: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel__t:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: 2px; border-radius: var(--b-radius-small); }
-:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel__s { margin: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); max-width: 60ch; }
-:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff form.pto-cancel__acts { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--b-space-8); margin-top: var(--b-space-4); }
+:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel { display: flex; justify-content: flex-end; padding: 0 var(--b-inset) var(--b-space-8) var(--b-space-64); }
+/* Final polish (confirmations A #6, #17): the open confirmation is the shared question block (.b-ask, owner-b-requests.css). */
+:is(#c-root, html) .app-shell[data-nv-b] .q-timeoff .pto-cancel--open { padding: var(--b-space-12); }
 @layer nv-b {
-  html body .app-shell[data-nv-b] .q-timeoff button.pto-cancel__open { display: inline-flex !important; align-items: center !important; min-height: 44px !important; margin: 0 !important; padding: 0 var(--b-space-4) !important;
-    border: 0 !important; background: none !important; box-shadow: none !important; color: var(--b-ink2) !important; font: 600 var(--b-fs-body-sm)/var(--b-lh-body-sm) Inter, system-ui, sans-serif !important;
-    text-decoration: underline !important; text-underline-offset: 3px !important; cursor: pointer !important; }
-  html body .app-shell[data-nv-b] .q-timeoff button.pto-cancel__open:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
-  html body .app-shell[data-nv-b] .q-timeoff .pto-cancel__acts .b-btn { margin: 0 !important; border: 0 !important; font-family: inherit !important; cursor: pointer !important; }
-  html body .app-shell[data-nv-b] .q-timeoff .pto-cancel__acts .pto-cancel__go { color: var(--b-red) !important; box-shadow: inset 0 0 0 1px var(--b-red) !important; background: #FFFFFF !important; }
-  html body .app-shell[data-nv-b] .q-timeoff .pto-cancel__acts .b-btn:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+  /* "Cancel approval" is a quiet row action (b-rowact--quiet), right-aligned as Decline is: no underline. */
+  html body .app-shell[data-nv-b] .q-timeoff button.pto-cancel__open { display: inline-flex !important; align-items: center !important; justify-content: center !important; min-height: var(--b-btn-h) !important; margin: 0 !important; padding: 0 var(--b-space-12) !important;
+    border: 0 !important; border-radius: var(--b-radius-pill) !important; font-family: Inter, system-ui, sans-serif !important; white-space: nowrap !important; cursor: pointer !important; }
+  @media (min-width: 768px) {
+    /* From 768px the action ends the row, as Decline and Approve do on Waiting; the open question takes the line under it. */
+    html body .app-shell[data-nv-b] .q-timeoff li.pto-approved { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; align-items: center !important; }
+    html body .app-shell[data-nv-b] .q-timeoff li.pto-approved > .pto-cancel:not(.pto-cancel--open) { padding: 0 var(--b-inset-wide) 0 var(--b-space-8) !important; }
+    html body .app-shell[data-nv-b] .q-timeoff li.pto-approved > .pto-cancel--open { grid-column: 1 / -1 !important; }
+  }
 }

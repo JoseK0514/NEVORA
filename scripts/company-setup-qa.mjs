@@ -171,8 +171,8 @@ try {
       await page.goto(`${app.url}/app/settings/company-policies`);
       const lateness = page.getByRole('group', { name: 'Lateness', exact: true });
       await lateness.getByLabel('Rule setting').selectOption('configured');
-      await lateness.getByLabel('Threshold minutes').fill('5');
-      await lateness.getByLabel('Effective from', {exact:true}).fill('2019-12-31T14:00');
+      await lateness.getByLabel('After how many minutes').fill('5');
+      await lateness.getByLabel('Starts on', {exact:true}).fill('2019-12-31T14:00');
       await page.getByRole('button', { name: 'Save policies', exact: true }).click();
       await page.getByRole('status').filter({ hasText: 'Policies saved.' }).waitFor();
       await page.reload();

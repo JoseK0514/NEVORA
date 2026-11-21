@@ -78,6 +78,15 @@ const en = {
   coverSeenExplain: 'This counts the cover requests seen in this period and how many were filled. It is a history of what was recorded, not a measure of how well shifts were staffed.',
   coverNoneSeen: 'No one asked for cover this period.',
   lateLeftOut: 'Late clock-ins aren’t counted for this period.',
+  // Final polish (confirmations A #1, #2): what a decision on a shift request left, in the row it came from. A title
+  // names what is now true; the line is the next fact. Declined and closed are closed requests: no done mark.
+  swapApproved: 'Swap approved', swapApprovedLine: 'The schedule shows the trade now.',
+  swapDeclined: 'Swap declined', bothKeep: (a: string, b: string) => `${a} and ${b} keep their shifts.`,
+  coverApproved: 'Cover approved', hasShiftNow: (name: string) => `${name} has the shift now.`, scheduleShowsIt: 'The schedule shows it now.',
+  coverDeclined: 'Cover declined', keepsShift: (name: string) => `${name} keeps the shift.`,
+  calloutApproved: 'Call-out approved', calloutApprovedLine: 'The shift is off their schedule and still needs cover.',
+  calloutDeclined: 'Call-out declined',
+  requestClosed: 'Request closed',
   coverUnread: (n: number) => n === 1 ? '1 older shift change could not be read, so there may be more.' : `${n} older shift changes could not be read, so there may be more.`,
 };
 
@@ -152,6 +161,13 @@ const es: ReviewCopy = {
   coverNoneSeen: 'Nadie pidió cobertura en este periodo.',
   lateLeftOut: 'Las entradas tarde no se cuentan en este periodo.',
   coverUnread: n => n === 1 ? 'No se pudo leer 1 cambio de turno anterior, así que puede haber más.' : `No se pudieron leer ${n} cambios de turno anteriores, así que puede haber más.`,
+  swapApproved: 'Cambio aprobado', swapApprovedLine: 'El horario ya muestra el cambio.',
+  swapDeclined: 'Cambio rechazado', bothKeep: (a, b) => `${a} y ${b} conservan sus turnos.`,
+  coverApproved: 'Cobertura aprobada', hasShiftNow: name => `${name} ya tiene el turno.`, scheduleShowsIt: 'El horario ya lo muestra.',
+  coverDeclined: 'Cobertura rechazada', keepsShift: name => `${name} conserva el turno.`,
+  calloutApproved: 'Ausencia aprobada', calloutApprovedLine: 'El turno salió de su horario y todavía necesita cobertura.',
+  calloutDeclined: 'Ausencia rechazada',
+  requestClosed: 'Solicitud cerrada',
 };
 
 const words: Record<ReviewLang, ReviewCopy> = {en, es};

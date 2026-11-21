@@ -4,14 +4,14 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type FormEv
 import { DeviceTabletIcon } from '@phosphor-icons/react/dist/ssr/DeviceTablet';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { QuestionIcon } from '@phosphor-icons/react/dist/ssr/Question';
+import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import type { ClockerDeviceView, ClockerLocationView, ClockerOwnerResult } from '../lib/clocker/views';
 import { toast } from './toaster';
 import { SettingsFrame } from '../app/app/settings/wave-c-kit';
 import { ButtonLabel, Field, FieldErrors, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 import { CorpButton } from './corp/corp';
 import { QuietSheet } from './quiet/quiet-sheet';
-import { BCard, BChip, BIcon, BList, BNote, BRow, BState } from './owner-b/b-kit';
-import { Dotted } from './employee-b/parts';
+import { BCard, BChip, BIcon, BList, BNote, BSegsText, BState } from './owner-b/b-kit';
 import { encodeQr, qrPath } from './access-recovery/qr';
 import { setupLink } from './clocker-setup-link';
 import { clockerOwnerCopy, clockerOwnerWhen, type ClockerOwnerCopy, type ClockerOwnerLang } from './clocker-owner-copy';
@@ -81,12 +81,16 @@ export function ClockerSetupTicket({ name, place, clockerKey, code, expiresAt, t
       <textarea id="clocker-setup-code" ref={codeField} className="ck-code__v" value={code} readOnly rows={3} spellCheck={false} autoComplete="off" aria-describedby="clocker-setup-hint" onFocus={event => event.currentTarget.select()} />
       <p className="ck-code__h" id="clocker-setup-hint">{t.codeHelp(place)}</p>
     </div> : null}
+    {/* Confirmations B (#23): one filled button (Done), Copy link as the white button, and the two rarely used ways
+      (the readable code, opening Clocker on this device) as quiet links on one line above them. */}
+    <div className="ck-ticket__links">
+      <button type="button" className="b-btn b-btn--quiet ck-text" aria-expanded={shown} aria-controls="clocker-setup-code" onClick={() => setShown(value => !value)}>{shown ? t.hideCode : t.showCode}</button>
+      {link ? <a className="b-btn b-btn--quiet ck-text" href={link} target="_blank" rel="noopener noreferrer">{t.openHere}</a> : null}
+    </div>
     <div className="ck-ticket__acts">
       <button type="button" className="b-btn b-btn--ghost" disabled={!link} onClick={() => void copy(link, t.linkCopied)}>{t.copyLink}</button>
       {shown ? <button type="button" className="b-btn b-btn--ghost" onClick={() => void copy(code, t.codeCopied)}>{t.copyCode}</button> : null}
-      <button type="button" className="b-btn b-btn--quiet ck-text" aria-expanded={shown} aria-controls="clocker-setup-code" onClick={() => setShown(value => !value)}>{shown ? t.hideCode : t.showCode}</button>
-      {link ? <a className="b-btn b-btn--quiet ck-text" href={link} target="_blank" rel="noopener noreferrer">{t.openHere}</a> : null}
-      <button type="button" className="b-btn b-btn--quiet ck-ticket__done" onClick={onDone}>{t.ticketDone}</button>
+      <button type="button" className="b-btn b-btn--teal ck-ticket__done" onClick={onDone}>{t.ticketDone}</button>
     </div>
     <p role="status" className="ck-ticket__said">{said}</p>
   </div>;
@@ -188,7 +192,10 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       else if (setup?.device.id === result.device.id) setSetup({ ...setup, device: result.device });
       // Phase 8: a new setup code is its own card, and focus moves to its title, so no toast says it again (a result drawn
       // inline sends no toast, Phase 7).
-      if (!result.setup) toast(selection.operation === 'RENAME' ? t.nameSaved : selection.operation === 'REVOKE' ? t.tabletRemoved : t.codeReady);
+      // Confirmations B (#30): a removed tablet's row, in Removed, is the result; a toast would say it a second time
+      // (the hidden status line above the list still reads the new counts). A sheet that was dismissed while the
+      // removal ran keeps its toast: nothing else tells the Owner the answer arrived.
+      if (!result.setup && (selection.operation !== 'REVOKE' || dismissed.current)) toast(selection.operation === 'RENAME' ? t.nameSaved : selection.operation === 'REVOKE' ? t.tabletRemoved : t.codeReady);
       busy.current = false;
       if (result.setup) { returnFocus.current = null; setSelection(null); setError(null); }
       else if (!dismissed.current) close();
@@ -211,18 +218,28 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     : rotateKind === 'replace' ? t.replaceSubmit : t.getCode;
   const rotate = () => { setError(null); setSelection({ operation: 'ROTATE', device: selection!.device }); };
 
-  // One row per tablet: a 36px lead, the name with its exception chip, what and when, then at most one tinted action and
-  // one quiet action. Each button names the tablet for a screen reader. Phase 8 (B #10): the sub-line wraps between its
-  // parts, never inside one ("Connected · Not" / "used yet").
+  // One row per tablet (confirmations B; Jose: "organised"): a 36px lead, the name with its exception as the kit's status
+  // label, the facts line, then ONE action in a fixed column (the white button) and the chevron. The row itself opens
+  // the tablet's options (Manage): its button stretches over the row, and the action sits above it as its own target.
+  // A removed tablet has no options, so its row is not a destination; its one action sets it up again.
   const row = (item: ClockerDeviceView) => {
     const active = locationActive(item), line = tabletLine(item, { place: place(item.locationId), locationActive: active, timeZone, lang });
-    const go = item.state === 'REVOKED' || !active ? null : needsSetup(item)
-      ? <button type="button" className="b-btn b-btn--ghost" data-clocker-code={item.id} aria-label={item.state === 'UNREGISTERED' ? t.getCodeFor(item.name) : t.newCodeFor(item.name)} disabled={!hydrated} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{item.state === 'UNREGISTERED' ? t.getCode : t.newCode}</button> : null;
-    const quiet = item.state === 'REVOKED'
-      ? <button type="button" className="b-btn b-btn--quiet ck-text" data-clocker-device={item.id} aria-label={t.setUpAgainFor(item.name)} disabled={!hydrated || !active} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{t.setUpAgain}</button>
-      : <button type="button" className="b-btn b-btn--quiet ck-text" data-clocker-device={item.id} aria-label={t.manageFor(item.name)} disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device: item }, event)}>{t.manage}</button>;
-    return <BRow key={item.id} lead={<BIcon tone={line.tone === 'amber' ? 'amber' : item.state === 'ACTIVE' ? 'teal' : 'grey'}><DeviceTabletIcon weight="bold" /></BIcon>}
-      title={item.name} chip={line.chip ? <BChip tone="amber">{line.chip}</BChip> : undefined} sub={<Dotted text={line.sub} />} trail={<span className="ck-acts">{go}{quiet}</span>} />;
+    const removedRow = item.state === 'REVOKED';
+    const go = removedRow
+      ? <button type="button" className="b-btn b-btn--ghost ck-trow__go" data-clocker-device={item.id} aria-label={t.setUpAgainFor(item.name)} disabled={!hydrated || !active} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{t.setUpAgain}</button>
+      : !active ? null : needsSetup(item)
+        ? <button type="button" className="b-btn b-btn--ghost ck-trow__go" data-clocker-code={item.id} aria-label={item.state === 'UNREGISTERED' ? t.getCodeFor(item.name) : t.newCodeFor(item.name)} disabled={!hydrated} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{item.state === 'UNREGISTERED' ? t.getCode : t.newCode}</button> : null;
+    const text = <span className="b-row__tx">
+      <span className="b-row__t"><span className="b-row__tt">{item.name}</span>{line.chip ? <BChip tone="amber">{line.chip}</BChip> : null}</span>
+      <span className="b-row__s"><BSegsText text={line.sub} /></span>
+    </span>;
+    const lead = <BIcon tone={line.tone === 'amber' ? 'amber' : item.state === 'ACTIVE' ? 'teal' : 'grey'}><DeviceTabletIcon weight="bold" /></BIcon>;
+    return <li className="b-li" key={item.id}><div className="b-row ck-trow" data-open={removedRow ? undefined : ''} data-act={go ? '' : undefined}>
+      {removedRow ? <div className="ck-trow__main">{lead}{text}</div>
+        : <button type="button" className="ck-trow__main ck-trow__open" data-clocker-device={item.id} aria-label={t.manageFor(item.name)} aria-haspopup="dialog" disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device: item }, event)}>{lead}{text}</button>}
+      <span className="ck-trow__act">{go}</span>
+      {removedRow ? <span className="ck-trow__chev" aria-hidden="true" /> : <CaretRightIcon className="b-chev ck-trow__chev" size={16} weight="bold" aria-hidden="true" />}
+    </div></li>;
   };
 
   const current = devices.filter(item => item.state !== 'REVOKED');
@@ -248,12 +265,14 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       {current.length ? <BNote>{t.tabletsNote}</BNote> : null}
     </div>
     <QuietSheet open={!!selection} onClose={close} labelledBy="clocker-dialog-title">
-      {selection ? <form ref={sheetForm} noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} aria-describedby="clocker-dialog-text" className="c-sheet c-tablet-sheet ck-sheet" {...handlers}>
+      {selection ? <form ref={sheetForm} noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} aria-describedby="clocker-dialog-text" className={`c-sheet c-tablet-sheet ck-sheet${selection.operation === 'REVOKE' ? ' ck-confirm' : ''}`} {...handlers}>
         {/* A tablet's options: its name centred, Done on the right (a changed name saves). A confirm (add, new code,
           replace, remove): Cancel on the left, the question centred, its one action below. */}
         <div className="c-sheet__nav">
-          {options ? <span aria-hidden="true" /> : <button type="button" className="c-sheet-head__l" disabled={pending} onClick={close}
-            data-autofocus={selection.operation === 'REVOKE' || (selection.operation === 'ROTATE' && rotateKind === 'replace') ? '' : undefined}>{t.cancel}</button>}
+          {/* Confirmations B (#13, #14): removing a tablet is a dialog (centred from 768px, a bottom sheet on phones) whose
+            two answers sit together at its foot, so its header is the question alone. */}
+          {options || selection.operation === 'REVOKE' ? <span aria-hidden="true" /> : <button type="button" className="c-sheet-head__l" disabled={pending} onClick={close}
+            data-autofocus={selection.operation === 'ROTATE' && rotateKind === 'replace' ? '' : undefined}>{t.cancel}</button>}
           <h2 className="c-sheet__title" id="clocker-dialog-title">{title}</h2>
           {options ? <button type="button" className="c-sheet__done" disabled={pending} onClick={done}>{pending ? t.saving : t.done}</button> : <span aria-hidden="true" />}
         </div>
@@ -281,7 +300,11 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
             : options ? (device?.state === 'ACTIVE'
               ? <><CorpButton kind="secondary" full disabled={pending || !locationActive(device)} aria-describedby="clocker-replace-help" onClick={rotate}>{t.replaceTablet}</CorpButton><p className="ck-sheet__help" id="clocker-replace-help">{t.replaceHelp}</p></>
               : <CorpButton full disabled={pending || !locationActive(device)} onClick={rotate}>{firstSetup ? t.getCode : t.setUpAgain}</CorpButton>)
-              : <CorpButton type="submit" kind={selection.operation === 'REVOKE' ? 'danger' : 'primary'} full disabled={pending}><ButtonLabel pending={pending} idle={submitLabel} busy={t.saving} /></CorpButton>}
+              : selection.operation === 'REVOKE' ? <div className="ck-confirm__acts">
+                <button type="submit" className="b-btn ck-confirm__go" disabled={pending} aria-busy={pending || undefined}><ButtonLabel pending={pending} idle={submitLabel} busy={t.saving} /></button>
+                <button type="button" className="b-btn b-btn--quiet ck-text ck-confirm__keep" data-autofocus="" disabled={pending} onClick={close}>{t.keepTablet}</button>
+              </div>
+              : <CorpButton type="submit" kind="primary" full disabled={pending}><ButtonLabel pending={pending} idle={submitLabel} busy={t.saving} /></CorpButton>}
           {options && device && device.state !== 'REVOKED' ? <><button type="button" className="c-tablet-sheet__remove" disabled={pending}
             onClick={() => { setError(null); setSelection({ operation: 'REVOKE', device }); }}>{t.removeTablet}</button><p className="ck-sheet__help">{t.pauseNote}</p></> : null}
         </div>

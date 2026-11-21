@@ -138,7 +138,8 @@ describe("words (English and Spanish)", () => {
     for (const [key, value] of Object.entries(copy)) {
       expect(value, key).not.toMatch(/[!—]|\b(simply|just|seamlessly|successfully|oops|simplemente|exitosamente)\b/i);
       expect(value.length, key).toBeLessThanOrEqual(90);
-      expect(value[0], key).toMatch(/[A-ZÁÉÍÓÚÑ0-9]/);
+      // A Spanish question opens with ¿ ("¿Aprobar 3 registros de horas?").
+      expect(value[0] === "¿" ? value[1] : value[0], key).toMatch(/[A-ZÁÉÍÓÚÑ0-9]/);
     }
   });
   it("sent is not approved: a request's title never says it was approved or paid", () => {

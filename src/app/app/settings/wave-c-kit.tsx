@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { QuietBar, QuietHeader, QuietNav } from "@/components/quiet/quiet";
-import { BGlyph, BIcon, type BMeaning, type BTone } from "@/components/owner-b/b-kit";
+import { BDoneMark, BGlyph, BIcon, type BMeaning, type BTone } from "@/components/owner-b/b-kit";
 import { FocusClear, PillTracks } from "./wave-c-focus";
 import "./settings-corp.css";
 
@@ -59,7 +59,8 @@ export type NoticeTone = "done" | "urgent" | "info";
 
 /** Phase 9 (spec 2.1, 2.2): the result stands on the page's canvas under the form's card, so it is the kit's notice card:
  * a white 22px card, the meaning's bold glyph in a 36px tinted circle (green done, red stop, teal information), a 600
- * title over a grey line, and its one action under the words. The words and the action are the callers'. */
+ * title over a grey line, and its one action under the words. The words and the action are the callers'. A done notice
+ * (the server confirmed the save) carries the app's one done mark, BDoneMark at its 36px row size, in place of the tinted circle. */
 const noticeLook: Record<NoticeTone, { tone: BTone; meaning: BMeaning }> = {
   done: { tone: "green", meaning: "done" }, urgent: { tone: "red", meaning: "stop" }, info: { tone: "teal", meaning: "info" },
 };
@@ -70,7 +71,7 @@ export function Notice({ tone, title, children, action }: { tone: NoticeTone; ti
   return (
     <div className="b-card wc-note" data-tone={tone}>
       <div className="b-notice">
-        <BIcon tone={look.tone}><BGlyph meaning={look.meaning} /></BIcon>
+        {tone === "done" ? <BDoneMark /> : <BIcon tone={look.tone}><BGlyph meaning={look.meaning} /></BIcon>}
         <span className="b-notice__tx">
           {title ? <span className="b-notice__t">{title}</span> : null}
           {children ? <span className="b-notice__s">{children}</span> : null}

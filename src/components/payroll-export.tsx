@@ -1,11 +1,10 @@
 'use client';
 import {PayrollPeriodClose} from './payroll-period-close';
 import {useEffect,useRef,useState} from 'react';
-import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CorpNav,CorpTitle} from './corp/corp';
-import {BState} from './owner-b/b-kit';
+import {BSegs,BState} from './owner-b/b-kit';
 import './payroll/payroll-corp.css';
 import {neutralProfile,parseExportProfile,type ExportProfile} from '@/lib/payroll-export/model';
 import {type TimecardItem} from '@/lib/timecards/read-model';
@@ -72,6 +71,10 @@ function IncludedSection({payroll,period,actorId}:{payroll:boolean;period:Period
   </details>
  </section>;
 }
+/** Final polish (Nov 21, 2026): the verified export replaces the form it came from, so focus goes to the result's title
+ * when it arrives (the title is then what is read). A stable callback ref: it runs once when the title mounts and never on
+ * a later render, and the page keeps its one effect (the timecards read). */
+const focusOnArrive=(node:HTMLElement|null)=>{node?.focus({preventScroll:true});};
 export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPeriod:Period;actorId:string;tabs?:PayrollTab[]|null;
  /** MG-010: the workspace's date, so a week that has not ended says when its timecards can be approved. */
  today?:string}){
@@ -202,6 +205,10 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
  // Someone without payroll (a Manager) reaches Time exports from Timecards: the way back goes there, and the page isn't drawn
  // as a money page (its sidebar entry is Time).
  const payroll=!!tabs?.length;
+ // The verified export, for as long as this snapshot holds it (the files were listed under the same condition).
+ const shown=ready&&result?result:null;
+ // Back to the same form: the result leaves the screen; nothing is requested. Focus goes to the form's heading.
+ const anotherExport=()=>{setResult(null);setNotice('');setTimeout(()=>document.getElementById('time-export-send')?.focus(),0);};
  return <div className={`c-page c-payroll c-pay c-exp c-page--narrow${payroll?'':' c-exp--time'}`} data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
   <CorpNav back={payroll?{href:'/app/payroll',label:'Payroll'}:{href:'/app/timecards',label:'Timecards'}} title="Time exports" phoneOnly/>
   <CorpTitle id="time-exports-title" title="Time exports" wide/>
@@ -213,13 +220,26 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
     {weeks.map(w=><option key={w.value} value={w.value}>{w.label}</option>)}
    </select>
   </div>
-  {/* Phase 7 (moments): the verified export is the shared done state; every other notice (not confirmed, already
-    * exported, out of date) keeps the plain callout and never the success mark. Same words, split at the period. */}
-  {result&&notice===FILES_READY?<div className="b-done-host b-done-host--card"><BState kind="done" title="Files ready" line="Download the CSV and its time record."/></div>
-   :notice?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
+  {/* Phase 7 (moments): the verified export is the shared done state (below, where the form was); every other notice (not
+    * confirmed, already exported, out of date) keeps the plain callout and never the success mark. */}
+  {notice&&notice!==FILES_READY?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
   {/* R5: section labels sit above their cards. */}
-  <section className="c-pay__group" aria-labelledby="time-export-send">
-   <div className="c-sec-label c-pay__sec"><h2 id="time-export-send">{profiles.length?'Send to':'File'}</h2></div>
+  {shown?<section className="c-pay__group c-exp__result" aria-label="Export ready">
+   {/* Final polish (Nov 21, 2026): the result stands where the form stood. Facts are the receipt's own rows; the receipt
+     * id, the checksum and the file layout fold under Details; "Make another export" returns to the same form (no request). */}
+   <div className="b-done-host b-done-host--card">
+    <BState kind="done" heading titleRef={focusOnArrive} title="Export ready" line={<BSegs parts={[`${shown.model.rows.length} ${shown.model.rows.length===1?'person':'people'}`,<span key="h" className="c-num">{hoursText(shown.model.rows.reduce((sum,row)=>sum+BigInt(row.recordedNanoseconds),BigInt(0)).toString())}</span>,rangeText(shown.model.period.startDate,shown.model.period.endDate)]}/>}
+     quiet={<button type="button" className="b-done__quiet" onClick={anotherExport}>Make another export</button>}>
+     <div className="c-exp__dls">
+      <button type="button" className="b-btn b-btn--teal" onClick={()=>downloadCurrent(shown.csv,'text/csv;charset=utf-8',`nevora-mapped-${shown.model.period.startDate}-${shown.operationId}.csv`)}>Download CSV</button>
+      <button type="button" className="b-btn b-btn--quiet" aria-label="Download time record (JSON)" onClick={()=>downloadCurrent(stableExportJson(shown.model),'application/json',`nevora-canonical-${shown.model.period.startDate}-${shown.operationId}.json`)}>Download time record</button>
+     </div>
+     <details className="c-exp__more c-exp__details"><summary>Details</summary><dl className="c-exp__receipt"><div><dt>File layout</dt><dd className="c-exp__plain">{`${shown.profile.name}${shown.profileRevision>0?` · Rev. ${shown.profileRevision}`:''}`}</dd></div><div><dt>Receipt</dt><dd>{shown.operationId}</dd></div><div><dt>CSV checksum (SHA-256)</dt><dd>{shown.csvSha256}</dd></div></dl></details>
+    </BState>
+   </div>
+  </section>
+  :<section className="c-pay__group" aria-labelledby="time-export-send">
+   <div className="c-sec-label c-pay__sec"><h2 id="time-export-send" tabIndex={-1}>{profiles.length?'Send to':'File'}</h2></div>
    <div className="c-card">
    {ready?<>
     <ul className="c-rows" aria-label={profiles.length?'Send to':'File'}>
@@ -237,17 +257,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
     </div>
    </>:<div className="c-card__body"><p className="c-payroll__state" role="status" data-export-loading={state==='Loading finalized time'||undefined}>{stateText}</p>{state!=='Loading finalized time'?<button type="button" className="c-btn c-btn--secondary c-btn--md c-pay__gap" disabled={busy} onClick={()=>reload.current()}>Try again</button>:null}</div>}
    </div>
-  </section>
-  {ready&&result?<section className="c-pay__group" aria-labelledby="time-export-files">
-   <div className="c-sec-label c-pay__sec"><h2 id="time-export-files">Your files</h2><span className="c-pay__count">{`${result.model.rows.length} ${result.model.rows.length===1?'person':'people'}`}</span></div>
-   <div className="c-card">
-   <ul className="c-rows" aria-label="Your files">
-    <li><button type="button" className="c-row" aria-label="Download mapped CSV" onClick={()=>downloadCurrent(result.csv,'text/csv;charset=utf-8',`nevora-mapped-${result.model.period.startDate}-${result.operationId}.csv`)}><span className="c-row__main"><span className="c-row__title c-row__title--b">Time file</span><span className="c-row__detail"><span>{`CSV · ${result.profile.name}${result.profileRevision>0?` · Rev. ${result.profileRevision}`:''}`}</span></span></span><DownloadSimpleIcon weight="bold" className="c-ic c-exp__dl" aria-hidden="true"/></button></li>
-    <li><button type="button" className="c-row" aria-label="Download time record (JSON)" onClick={()=>downloadCurrent(stableExportJson(result.model),'application/json',`nevora-canonical-${result.model.period.startDate}-${result.operationId}.json`)}><span className="c-row__main"><span className="c-row__title c-row__title--b">Time record</span><span className="c-row__detail"><span>Exact hours for each timecard</span></span></span><DownloadSimpleIcon weight="bold" className="c-ic c-exp__dl" aria-hidden="true"/></button></li>
-   </ul>
-   <details className="c-exp__more"><summary>Receipt and checksum</summary><dl className="c-exp__receipt"><div><dt>Receipt</dt><dd>{result.operationId}</dd></div><div><dt>CSV SHA-256</dt><dd>{result.csvSha256}</dd></div></dl></details>
-   </div>
-  </section>:null}
+  </section>}
   {ready?<section className="c-pay__group" aria-labelledby="time-export-options">
    <div className="c-sec-label c-pay__sec"><h2 id="time-export-options">Options</h2></div>
    <div className="c-card">

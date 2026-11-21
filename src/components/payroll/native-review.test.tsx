@@ -71,7 +71,7 @@ describe('source-aware payroll review presentation', () => {
     expect(render()).toContain('Import provider amounts');
     expect(render()).toContain('Historical fictional accountant');
     expect(render()).toContain('Historical provider runs retain their imported amounts');
-    expect(render()).not.toContain('a statutory calculator is unavailable');
+    expect(render()).not.toContain('It doesn’t calculate taxes or deductions');
   });
   it('clears private amounts while current access is reloading', () => {
     boundary.loading = true;

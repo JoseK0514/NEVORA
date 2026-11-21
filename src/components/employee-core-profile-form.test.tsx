@@ -54,12 +54,12 @@ it("renders stable identity and account lifecycle guidance (presentation smoke)"
   const status = renderToStaticMarkup(<EmployeeStatusForm employee={{ ...employee, active: true }} locations={locations} actorId="OWNER1" actorRole="OWNER" action={rs.fn()} />);
   expect(status).toContain("Deactivate Sam");
   expect(status).toContain('name="active" value="false"');
-  expect(status).toContain("Deactivation signs them out right away");
-  expect(status).toContain("history is preserved");
+  expect(status).toContain("They’re signed out right away");
+  expect(status).toContain("Their history stays");
   const reactivate = renderToStaticMarkup(<EmployeeStatusForm employee={employee} locations={locations} actorId="OWNER1" actorRole="OWNER" action={rs.fn()} />);
   expect(reactivate).toContain("Reactivate Sam");
   expect(reactivate).toContain('name="active" value="true"');
-  expect(reactivate).toContain("Reactivating needs a fresh sign-in");
+  expect(reactivate).toContain("They sign in again after this");
 });
 
 it("keeps the current inactive primary location visible without offering unrelated inactive locations", () => {

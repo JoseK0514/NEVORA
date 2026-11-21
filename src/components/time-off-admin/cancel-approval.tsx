@@ -16,14 +16,14 @@ export function CancelApproval({ requestId, name, when, lang = "en" }: { request
     else if (wasOpen.current) opener.current?.focus();
     wasOpen.current = open;
   }, [open]);
-  if (!open) return <div className="pto-cancel"><button ref={opener} type="button" className="pto-cancel__open" aria-label={t.cancelApprovedLabel(name, when)} onClick={() => setOpen(true)}>{t.cancelApproved}</button></div>;
-  return <div className="pto-cancel pto-cancel--open" role="group" aria-labelledby={`${id}-t`} lang={lang}>
-    <p className="pto-cancel__t" id={`${id}-t`} ref={title} tabIndex={-1}>{t.cancelConfirmTitle}</p>
-    <p className="pto-cancel__s">{t.cancelConfirmBody}</p>
-    <TimeOffDecisionForm className="pto-cancel__acts" label={t.cancelApprovedLabel(name, when)} waitingLine={t.stillApproved}>
+  if (!open) return <div className="pto-cancel"><button ref={opener} type="button" className="pto-cancel__open b-rowact b-rowact--quiet" aria-label={t.cancelApprovedLabel(name, when)} onClick={() => setOpen(true)}>{t.cancelApproved}</button></div>;
+  return <div className="pto-cancel pto-cancel--open b-ask" role="group" aria-labelledby={`${id}-t`} lang={lang}>
+    <p className="pto-cancel__t b-ask__t" id={`${id}-t`} ref={title} tabIndex={-1}>{t.cancelConfirmTitle}</p>
+    <p className="pto-cancel__s b-ask__s">{t.cancelConfirmBody}</p>
+    <TimeOffDecisionForm className="pto-cancel__acts b-ask__acts" label={t.cancelApprovedLabel(name, when)} waitingLine={t.stillApproved}>
       <input type="hidden" name="requestId" value={requestId} />
-      <button type="button" className="b-btn b-btn--quiet b-rowact b-rowact--quiet" onClick={() => setOpen(false)}>{t.cancelKeep}</button>
-      <button type="submit" name="decision" value="CANCELLED" className="b-btn b-btn--quiet rs-act pto-cancel__go">{t.cancelConfirm}</button>
+      <button type="button" className="b-btn b-btn--quiet b-rowact b-rowact--quiet b-ask__keep" onClick={() => setOpen(false)}>{t.cancelKeep}</button>
+      <button type="submit" name="decision" value="CANCELLED" className="b-btn b-btn--quiet pto-cancel__go b-ask__go">{t.cancelConfirm}</button>
     </TimeOffDecisionForm>
   </div>;
 }

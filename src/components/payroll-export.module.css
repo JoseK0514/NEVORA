@@ -16,14 +16,17 @@
 .selectFrame { display: block; position: relative; min-width: 0; max-width: 100%; }
 .selectFrame::after { content: ''; position: absolute; width: 6px; height: 6px; right: 17px; top: 18px; border-right: 1.5px solid var(--design-text-secondary); border-bottom: 1.5px solid var(--design-text-secondary); transform: rotate(45deg); pointer-events: none; }
 .root select { appearance: none; -webkit-appearance: none; height: 46px; text-overflow: ellipsis; white-space: nowrap; padding-right: 34px; }
-/* Phase 9 (spec 3.5): every button is a pill on the ladder's regular step (44px, 14.5/20 600, 18px sides): Add column the
- * tinted kind (teal-50, teal), a column's Remove a round quiet button, and Save mapping profile the secondary look
- * payroll-corp.css gives it (white with the field ring; Create export is the page's one filled button). Disabled is the one
+/* Phase 9 (spec 3.5): every button is on the ladder's regular step (44px, 14.5/20 600, 18px sides). Nov 21, 2026 (tint
+ * hunt and Jose's shape pick): Add column and Save mapping profile are the white button (--b-btn-surface*, hairline and
+ * soft shadow, ink words, 10px corners), not the teal-50 pill; a column's Remove stays a round quiet button (Create
+ * export is the page's one filled button). Disabled is the one
  * disabled pair with no edge. payroll-corp.css draws the mapping's buttons with stronger selectors (8px corners, 15px 500,
  * its own disabled colours), so the shape, the type and the disabled pair are also set in nv-b (B8) at the end. */
-.button { box-sizing: border-box; display: inline-flex; gap: 8px; justify-content: center; align-items: center; min-height: var(--b-btn-h, 44px); padding: 0 18px; border: 0; border-radius: 999px; background: var(--b-teal-50, #E8F3F1); color: var(--b-teal, #0B6E69); font: inherit; font-size: var(--b-fs-body-sm, .90625rem); font-weight: 600; line-height: var(--b-lh-body-sm, 1.25rem); letter-spacing: 0; cursor: pointer; }
+.button { box-sizing: border-box; display: inline-flex; gap: 8px; justify-content: center; align-items: center; min-height: var(--b-btn-h, 44px); padding: 0 18px; border: 0; border-radius: var(--b-radius-btn, 10px); background: var(--b-btn-surface, #FFFFFF); color: var(--b-btn-surface-ink, #111517); box-shadow: var(--b-btn-surface-edge, 0 0 0 1px rgb(16 40 38 / 0.12), 0 1px 2px rgb(16 40 38 / 0.08)); font: inherit; font-size: var(--b-fs-body-sm, .90625rem); font-weight: 600; line-height: var(--b-lh-body-sm, 1.25rem); letter-spacing: 0; cursor: pointer; }
 .button svg { flex-shrink: 0; }
-.primary { background: #FFFFFF; color: var(--b-ink, #111517); box-shadow: inset 0 0 0 1px var(--b-field-edge, #838A8F); }
+.primary { background: var(--b-btn-surface, #FFFFFF); color: var(--b-btn-surface-ink, #111517); }
+.button:not(:disabled):active { background: var(--b-btn-surface-press, #F0F3F3); }
+@media (hover: hover) { .button:not(:disabled):hover { background: var(--b-btn-surface-hover, #F7F9F9); } }
 .root :is(button,input,select,textarea):disabled { cursor: not-allowed; }
 .button:disabled { background: var(--b-disabled-bg, #F0F2F3); color: var(--b-disabled-ink, #8C9397); box-shadow: none; }
 .root :is(input,select,textarea):disabled { background: #F9FAFB; color: #6B7280; }
@@ -173,7 +176,7 @@
 .root select { overflow:hidden; }
 .selectFrame { overflow:hidden; }
 @layer nv-b {
-  .button { border-radius: var(--b-radius-pill, 999px) !important; font-size: var(--b-fs-body-sm, .90625rem) !important; line-height: var(--b-lh-body-sm, 1.25rem) !important; font-weight: 600 !important; }
+  .button { border-radius: var(--b-radius-btn, 10px) !important; font-size: var(--b-fs-body-sm, .90625rem) !important; line-height: var(--b-lh-body-sm, 1.25rem) !important; font-weight: 600 !important; }
   .button:disabled { background: var(--b-disabled-bg, #F0F2F3) !important; color: var(--b-disabled-ink, #8C9397) !important; box-shadow: none !important; }
   .iconButton:disabled { background: transparent !important; }
 }

@@ -1,8 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { CircleIcon } from "@phosphor-icons/react/dist/ssr/Circle";
-import { BCard, BChip, BList, BRow, BState } from "@/components/owner-b/b-kit";
+import { BCard, BChip, BDoneMark, BList, BRow, BState } from "@/components/owner-b/b-kit";
 import { activationCopy } from "@/lib/activation/copy";
 import type { FirstWeekProgress, FirstWeekStepId } from "@/lib/activation/first-week";
 
@@ -115,7 +114,7 @@ export function FirstWeekSetupCard({ lang = "en", initial }: { lang?: SetupLang;
       {progress.steps.map(step => {
         const done = step.status === "complete", next = step.id === progress.nextStep, title = t.steps[step.id];
         return <BRow key={step.id} href={step.href}
-          lead={<span className="fw-mark" data-done={done || undefined} data-next={next || undefined} aria-hidden="true">{done ? <CheckIcon weight="bold" /> : <CircleIcon weight="bold" />}</span>}
+          lead={done ? <BDoneMark still /> : <span className="fw-mark" data-next={next || undefined} aria-hidden="true"><CircleIcon weight="bold" /></span>}
           title={title} sub={next ? w.next : undefined}
           chip={done ? <BChip tone="green">{t.complete}</BChip> : next ? null : <BChip tone="grey">{t.pending}</BChip>}
           label={w.stepLabel(title, done ? t.complete : t.pending)} />;

@@ -36,7 +36,7 @@ describe('complete reviewed policy command settings',()=>{
   expect(buildPolicySettings(form(),{version:1,labor:{rates:null,budgets:[]}},'America/Puerto_Rico')).toEqual({version:1,labor:{rates:null,budgets:[]}});
  });
  it('does not silently turn an empty custom threshold into zero',()=>{
-  const data=form();data.set('lateness.mode','configured');data.set('lateness.threshold','');expect(()=>buildPolicySettings(data,policyUISettings,'America/Puerto_Rico')).toThrow(/Choose threshold minutes/);
+  const data=form();data.set('lateness.mode','configured');data.set('lateness.threshold','');expect(()=>buildPolicySettings(data,policyUISettings,'America/Puerto_Rico')).toThrow(/Enter how many minutes/);
  });
 });
 
@@ -54,6 +54,6 @@ describe('current rule comparison',()=>{
  });
  it('distinguishes inherited and disabled values without inventing custom details',()=>{
   const html=renderToStaticMarkup(<CurrentPolicyRules settings={{version:1,attendance:{earlyDeparture:null}}} scope="loc-1" timeZone="America/Puerto_Rico"/>);
-  expect(html).toContain('Inherit company default');expect(html).toContain('Disabled');expect(html).not.toContain('Threshold minutes');
+  expect(html).toContain('Inherit company default');expect(html).toContain('Disabled');expect(html).not.toContain('After how many minutes');
  });
 });

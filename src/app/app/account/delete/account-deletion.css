@@ -99,3 +99,16 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) .q-deletion__acts .q-btn.q-deletion__keep { margin-top: var(--b-space-4) !important; }
   }
 }
+
+/* Final polish (Nov 21, 2026; confirmations B, finding 27): the two field errors are the settings forms' field error
+ * (owner-b-settings.css draws the 16px warning glyph and the 13.5/18 red line; no closing period). The consent box's
+ * error is in the box's own row, so on a phone it is inside the consent card: it starts on the consent text's left edge,
+ * 8px under the text, 12px above the card's edge. The consent itself is body size (15.5/22); it was larger than the
+ * sentences around it. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) #deletion-confirm .q-deletion__check .q-rt b { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; letter-spacing: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) #deletion-confirm li > .q-deletion__check-error { margin: calc(-1 * var(--b-space-4)) 0 0 !important; padding-right: var(--b-inset) !important; padding-bottom: var(--b-space-12) !important; text-align: left !important; }
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.q-delete:not(#d8a):not(#d8b):not(#d8c):not(#d8d):not(#d8e):not(#d8f):not(#d8g) #deletion-confirm li > .q-deletion__check-error { padding-left: calc(var(--b-inset) + 32px) !important; }
+  }
+}

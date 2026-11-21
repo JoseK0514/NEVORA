@@ -62,7 +62,9 @@ it("lists readiness warnings per location before Publish anyway confirms", async
   f.warnings["loc-2"] = true;
   const out = await html({ review: "1" });
   expect(out).toContain("Review before publishing");
-  expect(out).toContain("2 uncovered coverage blocks");
+  // One row per warning: the amber Warning glyph, the count at 600, then what it counts.
+  expect(out).toMatch(/<li><svg[^>]*c-publish__warn-ic[^>]*>.*?<\/svg><span><b class="c-num">2<\/b> uncovered coverage blocks<\/span><\/li>/);
+  expect(out).toContain('c-publish__back" href="/app/schedule?week=');
   expect(out).toContain('name="confirmWarnings" value="yes"');
   expect(out).toContain(">Publish 2 drafts anyway<");
   expect(await html()).not.toContain("confirmWarnings");
@@ -81,8 +83,11 @@ it("lists changes to the published week and publishes them once with Publish cha
   const out = await html();
   expect(out).toContain(">2 changes<");
   expect(out).toContain('>Changes not published<span class="c-count c-num">2</span><');
-  expect(out).toContain("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM");
-  expect(out).toMatch(/Sam Ortiz.*Wed, Nov 4 · Added · 8:00 AM – 4:00 PM.*c-pill--amber b-chip b-chip--amber">Added/);
+  // Final polish (confirmations review A #19): the facts are whole parts; the chip alone says Added.
+  const words = out.replace(/<span class="b-when-s">[^<]*<\/span>/g, "").replace(/<[^>]+>/g, "").replace(/[\u00a0\u2060\u202f]/g, m => m === "\u2060" ? "" : " ");
+  expect(words).toContain("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM");
+  expect(words).toMatch(/Sam OrtizWed, Nov 4 · 8:00 AM – 4:00 PMAdded/);
+  expect(words).not.toContain("Added · ");
   expect(out).toContain(">Publish changes<");
   expect(out).toContain("Each person with a change is notified once when you publish.");
   expect(out).not.toContain('name="locationId"');

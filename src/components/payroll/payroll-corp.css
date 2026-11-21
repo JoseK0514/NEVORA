@@ -321,7 +321,8 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 
 /* Closing F1 (NV-255): the section count is the kit's teal-50 count pill (12.5px 700) at every width, with no inner span
    (the desktop band layer styles a label's first span as the 17px title). */
-:is(#c-root, html) .c-pay .c-pay__sec .c-pay__count { display: inline-grid; place-items: center; min-width: 24px; height: 24px; margin-left: 8px; padding: 0 8px; border-radius: 999px; background: #E8F3F1; color: #0B6E69; font-size: 12.5px; line-height: 16px; font-weight: 700; vertical-align: middle; }
+/* Premium pass (Nov 21, 2026; Jose's board pick 1): a count beside a section title is a grey numeral, not a teal pill. */
+:is(#c-root, html) .c-pay .c-pay__sec .c-pay__count { display: inline; margin-left: 8px; padding: 0; border-radius: 0; background: none; color: #6A7176; font-size: 13.5px; line-height: 18px; font-weight: 600; font-variant-numeric: tabular-nums; vertical-align: baseline; }
 :is(#c-root, html) .c-pay .c-pay__sec .c-pay__count * { color: inherit; font: inherit; }
 
 /* Closing F1 (NV-081): an unopened period's quiet "Prepare" pill and the disclosure caret (turns when open). */

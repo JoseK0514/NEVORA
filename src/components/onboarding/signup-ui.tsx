@@ -6,6 +6,7 @@ import { BCallout, type BMeaning, type BTone } from "@/components/owner-b/b-kit"
 import { noteParts } from "@/components/auth-premium/note-parts";
 import type { SignupCopy } from "@/lib/onboarding/signup-copy";
 import "./signup.css";
+import {AuthDoneTick} from '@/components/auth-premium/done-tick';
 
 /** One tinted note in the kit's callout (DESIGN.MD premium pass: amber check, red stop, teal info). */
 export function SignupNote({ tone, icon, id, title, children, focusRef }: { tone: BTone; icon?: BMeaning; id?: string; title?: string; children: ReactNode; focusRef?: RefObject<HTMLDivElement | null> }) {
@@ -17,7 +18,7 @@ export function SignupNote({ tone, icon, id, title, children, focusRef }: { tone
 /** Title block. `done` draws the 56px finish circle with the 28px check above the title. */
 export function SignupHeader({ title, sub, done = false, live = false }: { title: string; sub?: ReactNode; done?: boolean; live?: boolean }) {
   return <div className="q-hd su-hd">
-    {done ? <span className="q-auth__mark q-auth__mark--done q-auth__mark--head" aria-hidden="true"><CheckIcon size={28} weight="bold" /></span> : null}
+    {done ? <span className="q-auth__mark q-auth__mark--done q-auth__mark--head" aria-hidden="true"><AuthDoneTick/></span> : null}
     <h1 tabIndex={-1} data-signup-title="">{title}</h1>
     {sub ? <p role={live ? "status" : undefined}>{sub}</p> : null}
   </div>;

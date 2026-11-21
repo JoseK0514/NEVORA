@@ -44,6 +44,8 @@ const en = {
   needDay: "Enter hours between 0:01 and 24.", needRate: "Enter hours from 0 to 100.", needCap: "Enter hours from 0 to 8,760.",
   problems: (n: number) => n === 1 ? "1 thing to fix above" : `${n} things to fix above`,
   policySaved: "Policy saved",
+  // The fact under the saved title: the policy's name and whether people can use it.
+  policySavedLine: (name: string, hours: string, on: boolean) => on ? `${name} is on at ${hours} a day` : `${name} is off; balances and history stay`,
   // Person › Time off balance
   accountTitle: "Time off balance",
   entry: "Time off balance",
@@ -81,6 +83,11 @@ const en = {
   now: "Now", after: "After",
   back: "Back", saveAdjust: "Save change",
   adjustSaved: "Balance updated",
+  // The fact under the saved title: "Personal balance is now 40 h".
+  adjustSavedLine: (label: string, hours: string) => `${label} balance is now ${hours}`,
+  // The step line under the title of the two-step change.
+  stepEdit: "Step 1 of 2 · Details",
+  stepReview: "Step 2 of 2 · Review",
   belowZero: "This would take the balance below zero, so it can’t be saved.",
   // Results and states
   unknownTitle: "Your change isn’t confirmed yet",
@@ -106,6 +113,12 @@ const en = {
   cancelConfirm: "Cancel time off",
   stillApproved: "This time off is still approved.",
   cancelledNote: "Time off cancelled. Any paid time it used is back in the balance.",
+  // Final polish (confirmations A): a decision's result, drawn in the list's card. A title names what is now true; the
+  // line is the next fact. Declined and cancelled are closed requests: no done mark.
+  cancelledTitle: "Time off cancelled", cancelledLine: "Any paid time it used is back in the balance.",
+  approvedTitle: "Time off approved", approvedLine: "The person can see it in Time off.",
+  declinedTitle: "Time off declined", declinedLine: "The person can see it in Time off.",
+  savedTitle: "Decision saved", nothingWaiting: "Nothing else is waiting.",
 };
 export type PtoCopy = typeof en;
 
@@ -149,6 +162,7 @@ const es: PtoCopy = {
   needDay: "Escribe horas entre 0:01 y 24.", needRate: "Escribe horas de 0 a 100.", needCap: "Escribe horas de 0 a 8,760.",
   problems: n => n === 1 ? "1 cosa por corregir arriba" : `${n} cosas por corregir arriba`,
   policySaved: "Se guardó la política",
+  policySavedLine: (name, hours, on) => on ? `${name} está activa con ${hours} al día` : `${name} está inactiva; los balances y el historial se quedan`,
   accountTitle: "Balance de tiempo libre",
   entry: "Balance de tiempo libre",
   entryLabel: name => `Balance de tiempo libre de ${name}`,
@@ -184,6 +198,9 @@ const es: PtoCopy = {
   now: "Ahora", after: "Después",
   back: "Atrás", saveAdjust: "Guardar cambio",
   adjustSaved: "Se actualizó el balance",
+  adjustSavedLine: (label, hours) => `El balance de ${label} ahora es ${hours}`,
+  stepEdit: "Paso 1 de 2 · Detalles",
+  stepReview: "Paso 2 de 2 · Revisión",
   belowZero: "Esto dejaría el balance por debajo de cero, así que no se puede guardar.",
   unknownTitle: "Tu cambio no está confirmado",
   unknownBody: "No llegó la respuesta, así que puede que ya se haya guardado. Verifica antes de cambiar otra cosa.",
@@ -207,6 +224,10 @@ const es: PtoCopy = {
   cancelConfirm: "Cancelar tiempo libre",
   stillApproved: "Este tiempo libre sigue aprobado.",
   cancelledNote: "Se canceló el tiempo libre. El tiempo pagado que usó volvió al balance.",
+  cancelledTitle: "Tiempo libre cancelado", cancelledLine: "El tiempo pagado que usó volvió al balance.",
+  approvedTitle: "Tiempo libre aprobado", approvedLine: "La persona lo ve en Tiempo libre.",
+  declinedTitle: "Tiempo libre rechazado", declinedLine: "La persona lo ve en Tiempo libre.",
+  savedTitle: "Decisión guardada", nothingWaiting: "No hay nada más en espera.",
 };
 
 export const ptoCopy = (lang: PtoLang): PtoCopy => lang === "es" ? es : en;

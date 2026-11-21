@@ -183,7 +183,7 @@ try {
     await generate.click();
     assert(await generate.isDisabled());
     assert(await page.getByLabel('Period start', {exact: true}).isDisabled());
-    assert.equal(await page.getByRole('button', {name: /Download mapped CSV/}).count(), 0);
+    assert.equal(await page.getByRole('button', {name: /Download CSV/}).count(), 0);
     // B7 wording (NV-020): plain unknown-outcome notice.
     await page.getByText('We couldn’t confirm the export. Try again; it won’t create a second file.', {exact: true}).waitFor();
     assert(await generate.isDisabled());
@@ -191,7 +191,7 @@ try {
     await page.getByRole('heading', {name: 'Your files are ready', exact: true}).waitFor();
     assert.equal(commands.length, 2); assert.deepEqual(commands[0], commands[1]);
     pass(engine + ': actual completed export with dropped response replays same operation and verified receipt');
-    for (const [name, button] of [['mapped.csv', 'Download mapped CSV'], ['canonical.json', 'Download time record (JSON)']]) {
+    for (const [name, button] of [['mapped.csv', 'Download CSV'], ['canonical.json', 'Download time record (JSON)']]) {
       const download = page.waitForEvent('download'); await page.getByRole('button', {name: new RegExp(button)}).click();
       const d = await download; const path = join(evidence, engine + '-' + name); await d.saveAs(path);
       if (name.endsWith('.csv')) assert.match(await readFile(path, 'utf8'), /QA001/);
@@ -208,7 +208,7 @@ try {
     await page.route('**/api/payroll-export', route => route.fulfill({status: 409, json: {state: 'conflict'}}));
     await generate.click(); await page.getByText('The timecards or the file format changed. Refresh and check again.', {exact: true}).waitFor();
     assert.equal(await page.getByRole('button', {name: 'Retry same export', exact: true}).count(), 0);
-    assert.equal(await page.getByRole('button', {name: /Download mapped CSV/}).count(), 0);
+    assert.equal(await page.getByRole('button', {name: /Download CSV/}).count(), 0);
     await page.unroute('**/api/payroll-export');
     pass(engine + ': stale source conflict exposes no verified download or same-operation retry');
     await page.route('**/api/timecards', async route => {const r = await route.fetch(); const body = await r.json(); return route.fulfill({response: r, json: {...body, cards: []}});});

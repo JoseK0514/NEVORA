@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {useSearchParams} from 'next/navigation';
 import {useEffect,useRef,useState} from 'react';
 import {ArrowClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
@@ -22,7 +23,7 @@ import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {SigBand,SigPage} from './signature/signature';
 import cd from './communication-detail-signature.module.css';
 import {ArrowUUpLeftIcon} from '@phosphor-icons/react/dist/ssr/ArrowUUpLeft';
-import {BIcon} from './owner-b/b-kit';
+import {BDoneMark,BIcon,BState} from './owner-b/b-kit';
 import {ReminderControl,ReminderProvider} from './reminders/reminders';
 
 
@@ -30,12 +31,13 @@ import {ReminderControl,ReminderProvider} from './reminders/reminders';
 const ACK_WORD='Ac\u00adknowl\u00adedge\u00adment';
 const ACK_REQUIRED=`${ACK_WORD} required`;
 
-export function CommunicationDetailView({read,paused,pending,notice,onAction,onRefresh,signature=false}:{read:CommunicationRead|null;paused:boolean;pending:boolean;notice:CommunicationNotice;onAction:(kind:'ACKNOWLEDGE'|'MARK_READ'|'WITHDRAW'|'LOOKUP')=>void;onRefresh:()=>void;/** Employee Signature style (phase 3): a Signature band and sheet around the same sections. */signature?:boolean}){
+export function CommunicationDetailView({read,paused,pending,notice,onAction,onRefresh,signature=false,justPublished=false}:{/** Final polish (Nov 21, 2026): this visit follows a publish from New update (Owners and Managers): the result is said once, above the message, from the numbers this read already holds. */justPublished?:boolean;read:CommunicationRead|null;paused:boolean;pending:boolean;notice:CommunicationNotice;onAction:(kind:'ACKNOWLEDGE'|'MARK_READ'|'WITHDRAW'|'LOOKUP')=>void;onRefresh:()=>void;/** Employee Signature style (phase 3): a Signature band and sheet around the same sections. */signature?:boolean}){
  const [reviewed,setReviewed]=useState(false);
  const [confirmWithdraw,setConfirmWithdraw]=useState(false);
  const noticeRef=useRef<HTMLElement>(null);
  const receiptRef=useRef<HTMLElement>(null),withdrawRef=useRef<HTMLButtonElement>(null),confirmRef=useRef<HTMLButtonElement>(null),askedWithdraw=useRef(false);
  const surface=useRef<HTMLElement>(null);
+ const publishedRef=useRef<HTMLElement>(null);
  const ready=!paused&&notice!=='conflict'&&notice!=='blocked'&&notice!=='signed-out'&&read?.state==='ready'?read:null;
  // IS-B12: when the review is recorded and the pressed button goes away, focus lands on the result, not the page.
  const doneNow=!!(ready?.ownAcknowledgedAt||(ready?.acknowledgement!=='REQUIRED'&&ready?.ownReadAt));
@@ -49,6 +51,9 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  const hadFailure=useRef(false);
  const failedNow=!ready&&!(pending&&!read);
  useEffect(()=>{if(failedNow){hadFailure.current=true;return;}if(ready&&hadFailure.current){hadFailure.current=false;if(!document.activeElement||document.activeElement===document.body)surface.current?.focus({preventScroll:true});}},[failedNow,ready]);
+ // The page changed under the person (publish, then this page): focus goes to the result's title, which is then read.
+ const showPublished=justPublished&&!!ready&&!signature;
+ useEffect(()=>{if(showPublished)publishedRef.current?.focus({preventScroll:true});},[showPublished]);
  const stamp=(at:string)=>keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:ready?.timeZone??'UTC',dateStyle:'medium',timeStyle:'short'}).format(new Date(at)));
  // Quiet (v4): "Oct 23, 5:02 PM" — the year only when it isn't this year.
  const short=(at:string)=>{const d=new Date(at),zone=ready?.timeZone??'UTC';const sameYear=new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric'}).format(d)===new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric'}).format(new Date(ready?.observedAt??at));return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',...(sameYear?{}:{year:'numeric'}),hour:'numeric',minute:'2-digit'}).format(d));};
@@ -105,7 +110,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
    <section className="nv-card" aria-label="Your review status" aria-busy={pending} ref={receiptRef} tabIndex={-1}>
     <div className="wb-body">
      <p role="status" aria-live="polite" className="nv-sr">{pending?'Confirming your review…':''}</p>
-     <div className="wb-receipt"><span className="communication-result-icon"><Tile tone={acknowledged||markedRead?'done':required?'review':'neutral'}>{acknowledged||markedRead?<CheckCircleIcon size={22} weight="bold"/>:required?<FileTextIcon size={22} weight="bold"/>:<CircleIcon size={22} weight="bold"/>}</Tile></span>
+     <div className="wb-receipt"><span className="communication-result-icon">{acknowledged||markedRead?<BDoneMark still/>:<Tile tone={required?'review':'neutral'}>{required?<FileTextIcon size={22} weight="bold"/>:<CircleIcon size={22} weight="bold"/>}</Tile>}</span>
       {acknowledged?<div role="status"><h2 className="wb-strong">Acknowledged</h2><p className="wb-note">You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<div><h2 className="wb-strong">{required?ACK_REQUIRED:'Informational update'}</h2><p className="wb-note">{required?'Recipients must review and acknowledge this version.':'No acknowledgement is required from recipients.'}</p></div>:required?<div><h2 className="wb-strong">Confirm you received this update</h2><p className="wb-note" id="communication-acknowledgement-help">{ACK_WORD} confirms receipt of this version. It does not indicate agreement or attendance.</p></div>:markedRead?<div role="status"><h2 className="wb-strong">Marked read</h2><p className="wb-note">Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No acknowledgement is required.</p></div>:<div><h2 className="wb-strong">No acknowledgement needed</h2><p className="wb-note">You can mark this update as read to keep your updates organized.</p></div>}
      </div>
      {!acknowledged&&!ready.management&&required?<>
@@ -138,6 +143,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   <article ref={surface} className="wb-focus-target" tabIndex={-1} data-update-revision={ready.revisionId}>
    <div className="q-hd"><h1 style={{fontSize:28,lineHeight:'34px'}}>{ready.title}</h1>
     <p>{`${short(ready.publishedAt)} · ${required?'Must be read':'Optional'}`}<span className="q-sr">{` · ${category} · ${ready.authorContext}`}</span></p></div>
+   {justPublished?<div className="b-card b-upd-done"><BState kind="done" titleRef={publishedRef} title={audience?`Published to ${audience} ${audience===1?'person':'people'}`:'Update published'} line={people?`Read by ${count} of ${people.length} so far`:undefined}/></div>:null}
    <div className="q-body" style={{whiteSpace:'pre-wrap'}}><p>{ready.body}</p></div>
    {ready.editedAt||ready.expiresAt?<p className="q-help">{[ready.editedAt?`Edited ${stamp(ready.editedAt)}`:null,ready.expiresAt?`Available until ${stamp(ready.expiresAt)}`:null].filter(Boolean).join(' · ')}</p>:null}
    <p role="status" aria-live="polite" className="q-sr">{pending?'Confirming your review…':''}</p>
@@ -161,16 +167,27 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   </article>
  </>;
 }
-function CurrentDetail({read,mode,authority,refresh}:{read:CommunicationRead;mode:CommunicationMode;authority:string;refresh:()=>void}){
+function CurrentDetail({read,mode,authority,refresh,justPublished}:{read:CommunicationRead;mode:CommunicationMode;authority:string;refresh:()=>void;justPublished:boolean}){
  const action=useCommunicationAction(mode,authority,refresh);
  function send(kind:'ACKNOWLEDGE'|'MARK_READ'|'WITHDRAW'|'LOOKUP'){
   if(kind==='LOOKUP'){void action.lookup();return;}if(read.state!=='ready')return;
   const operationId=crypto.randomUUID();void action.send(kind==='MARK_READ'?{kind,operationId,authority,ref:{kind:'COMMUNICATION',id:read.id,version:read.revisionId}}:{kind,operationId,authority,communicationId:read.id,expectedRevisionId:read.revisionId,...(kind==='ACKNOWLEDGE'?{contentHash:read.contentHash}:{})});
  }
- return <CommunicationDetailView read={read} paused={false} pending={action.pending} notice={action.notice} onAction={send} onRefresh={()=>{if(action.notice!=='conflict')action.setNotice(null);refresh();}} signature={mode==='employee'}/>;
+ return <CommunicationDetailView read={read} paused={false} pending={action.pending} notice={action.notice} onAction={send} onRefresh={()=>{if(action.notice!=='conflict')action.setNotice(null);refresh();}} signature={mode==='employee'} justPublished={justPublished}/>;
 }
 export function CommunicationDetail({id,authority,mode}:{id:string;authority:string;mode:CommunicationMode}){
  const recovery=useRef<HTMLElement|null>(null),root=useRef<HTMLDivElement>(null);
+ // Final polish (Nov 21, 2026): New update arrives here with ?published=1 (a client navigation). It is read once and
+ // dropped from the address, so a reload or a shared link shows the page without the result block.
+ const params=useSearchParams();
+ const [justPublished]=useState(()=>mode==='manager'&&params.get('published')==='1');
+ useEffect(()=>{
+  if(!justPublished)return;
+  const query=new URLSearchParams(window.location.search);
+  if(!query.has('published'))return;
+  query.delete('published');const rest=query.toString();
+  window.history.replaceState(window.history.state,'',window.location.pathname+(rest?'?'+rest:'')+window.location.hash);
+ },[justPublished]);
  const resource=useCommunicationResource(mode,authority,'/'+id);const read=resource.value&&'id'in resource.value?resource.value as CommunicationRead:null;
  useEffect(()=>{
   if(read?.state!=='ready'||!recovery.current)return;
@@ -180,5 +197,5 @@ export function CommunicationDetail({id,authority,mode}:{id:string;authority:str
   if(article)revealFeedback(article);
  },[read]);
  const retry=()=>{recovery.current=document.activeElement instanceof HTMLElement?document.activeElement:null;resource.refresh();};
- return <div ref={root} className={mode==='manager'?'q-page wb-update':'nv-page wb-page wb-narrow wb-update'} data-nv-page="">{read?<CurrentDetail key={read.state==='ready'?read.revisionId:'unavailable'} read={read} mode={mode} authority={authority} refresh={resource.refresh}/>:<CommunicationDetailView read={resource.state.snapshot?.state==='unavailable'?{state:['access_denied','session_ended'].includes(resource.state.snapshot.reason)?'unauthorized':resource.state.snapshot.reason==='withdrawn'?'withdrawn':'unavailable',reason:resource.state.snapshot.reason}:null} paused={resource.state.paused} pending={resource.state.refreshing} notice={null} onAction={()=>{}} onRefresh={retry} signature={mode==='employee'}/>}</div>;
+ return <div ref={root} className={mode==='manager'?'q-page wb-update':'nv-page wb-page wb-narrow wb-update'} data-nv-page="">{read?<CurrentDetail key={read.state==='ready'?read.revisionId:'unavailable'} read={read} mode={mode} authority={authority} refresh={resource.refresh} justPublished={justPublished}/>:<CommunicationDetailView read={resource.state.snapshot?.state==='unavailable'?{state:['access_denied','session_ended'].includes(resource.state.snapshot.reason)?'unauthorized':resource.state.snapshot.reason==='withdrawn'?'withdrawn':'unavailable',reason:resource.state.snapshot.reason}:null} paused={resource.state.paused} pending={resource.state.refreshing} notice={null} onAction={()=>{}} onRefresh={retry} signature={mode==='employee'}/>}</div>;
 }

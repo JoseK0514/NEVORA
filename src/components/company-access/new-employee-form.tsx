@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import {useRef,useState,type ReactNode} from 'react';
+import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import type {Location,Position,UserRole} from '@/lib/domain';
 import type {ScopeSelection} from '@/lib/company-access/model';
 import {CorpField,CorpFormFooter} from '@/components/corp/corp';
@@ -39,12 +40,16 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
     {/* Phase 8 (a.md #42): the step line names the step. Final verification F (F14): the count and the name are two
       pieces, so on a narrow phone the name takes its own line and the separator never starts or ends one. */}
     <span className="c-formhead__stepn">{`Step ${step} of 2`}</span><span className="c-formhead__stepsep"> · </span><span className="c-formhead__stepname">{step===1?'Their details':'Where they work'}</span></>}
-   left={added?<FormHeadLink href="/app/employees">Done</FormHeadLink>:step===1?<FormHeadLink href="/app/employees">Cancel</FormHeadLink>:<FormHeadBack onClick={()=>setStep(1)}>Back</FormHeadBack>}
+   /* Final polish (finding 28): once the person is added the page is its finish (Open profile, Add another), so the
+    * bar's left link no longer says "Done" beside it: it is the way back to Team, as the band's own link from 768px. */
+   left={added?<Link className="c-formhead__link c-formhead__back" href="/app/employees"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/>Team</Link>:step===1?<FormHeadLink href="/app/employees">Cancel</FormHeadLink>:<FormHeadBack onClick={()=>setStep(1)}>Back</FormHeadBack>}
    /* Review 30 (D02): Next and Add are separate buttons (their own keys), so the press that opens step 2 can never
     * submit the form: React used to reuse the one element, which had become type="submit" by the time the press ended. */
    right={added?undefined:step===1?<button key="next" type="button" onClick={next} disabled={blocked}>Next</button>:<button key="add" type="submit" form="new-employee-form" disabled={blocked}>Add</button>}/>
   <EmployeeAccessForm id="new-employee-form" action={action} build={(fields,id)=>createCommandFromForm(fields,actorRole,scope,id)} className="c-teamform"
-   done={{title:({first,last})=>`${[first,last].filter(Boolean).join(' ')||'Employee'} added`,line:'Open their profile to review details and manage their account invitation.',next:receipt=>({href:'/app/employees/'+encodeURIComponent(receipt.employeeId),label:'Open profile'})}}
+   /* Final polish (finding 28): the finish is a centred page finish (the 56px mark, "<Name> added", the one filled
+    * Open profile and a quiet Add another); employee-access-form.tsx draws it from `finish` and `quiet`. */
+   done={{finish:true,title:({first,last})=>`${[first,last].filter(Boolean).join(' ')||'Employee'} added`,line:'Open their profile to review details and manage their account invitation.',next:receipt=>({href:'/app/employees/'+encodeURIComponent(receipt.employeeId),label:'Open profile'}),quiet:{href:'/app/employees/new',label:'Add another'}}}
    onSaved={()=>setAdded(true)}
    /* D03: a refused date is on step 1, so the form goes back there before the field is marked. */
    onRefused={fields=>{if(fields.length)setStep(1);}}>

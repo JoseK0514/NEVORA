@@ -270,7 +270,8 @@ describe('the sheet and the code, driven through the component’s handlers', ()
     action.mockResolvedValue({ ok: true, device: { ...tablets[1], state: 'REVOKED' } });
     press('Manage Patio tablet'); button('Remove tablet').onClick({}); settle(); await submit();
     expect(ticket()).toBeUndefined(); expect(inState(code)).toBe(false);
-    expect(toast).toHaveBeenLastCalledWith('Tablet removed. Its time records are kept.');
+    // Confirmations B (#30): the row in Removed is the result, so no toast says it a second time.
+    expect(toast).not.toHaveBeenCalledWith('Tablet removed. Its time records are kept.');
   });
 
   it('the code leaves the page the moment it expires', async () => {
@@ -321,9 +322,12 @@ describe('the sheet and the code, driven through the component’s handlers', ()
     button('Remove tablet').onClick({}); settle();
     expect(sheet().title).toBe('Remove Front counter tablet?');
     expect(sheet().body).toBe('Clocking in and out on this tablet stops right away, and any setup code for it stops working. Time already recorded stays. You can set it up again later.');
-    expect(button('Remove tablet').kind).toBe('danger');
-    expect(focused.at(-1)).toBe('Cancel');
-    button('Cancel').onClick({}); draw();
+    // Confirmations B (#13, #14): the confirm's two answers sit together at its foot: the red-edged commit and the
+    // quiet way out, which is where it starts.
+    expect(button('Remove tablet').className).toContain('ck-confirm__go'); expect(button('Remove tablet').type).toBe('submit');
+    expect(has('Cancel')).toBe(false);
+    expect(focused.at(-1)).toBe('Keep tablet');
+    button('Keep tablet').onClick({}); draw();
     expect(sheet().open).toBe(false); expect(row.focus).toHaveBeenCalledTimes(2);
   });
 

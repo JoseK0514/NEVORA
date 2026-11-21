@@ -1,12 +1,14 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
 import { QuietRow } from "@/components/quiet/quiet";
 import { RequestFace } from "@/components/request-face";
-import { BSegs, BWhen } from "@/components/owner-b/b-kit";
+import { DecisionAsk } from "@/components/owner-b/decision-parts";
+import { useKeptResult } from "@/components/owner-b/kept-result";
+import { BSegs, BState, BWhen } from "@/components/owner-b/b-kit";
 import { useLeaveStaffing } from "@/components/leave-staffing/use-leave-staffing";
 import { conflictsFor } from "@/components/leave-staffing/conflict-check";
 import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
@@ -34,16 +36,25 @@ export function WholeParts({ text }: { text: string }) {
  * waiting request; each row shows the amber "On the schedule" line when approving would leave a published shift uncovered,
  * then the compact Decline and Approve (the same review action as the request's page; Decline asks once). Approve shows only
  * once the check came back with no overlap; otherwise the teal pill is Review, which opens the request with its shifts. */
-export function TimeOffWaitingList({ requests }: { requests: WaitingTimeOff[] }) {
+export function TimeOffWaitingList({ requests, result }: { requests: WaitingTimeOff[];
+  /** Final polish (confirmations A #8, #9): what the last decision left, as the card's first row, so the card keeps its
+   * place on the band. */
+  result?: ReactNode }) {
   const leaves = useMemo(() => requests.map(request => ({ id: request.id, weeks: weeksFor(request.startDate, request.endDate) })), [requests]);
   const weeks = useMemo(() => [...new Set(leaves.flatMap(leave => leave.weeks ?? []))].sort().slice(0, MAX_STAFFING_WEEKS), [leaves]);
   const { state: staffing } = useLeaveStaffing(weeks.length ? { weeks } : null);
   const checked = useMemo(() => new Set(leaves.filter(leave => leave.weeks?.every(week => weeks.includes(week))).map(leave => leave.id)), [leaves, weeks]);
-  return <ul className="q-list q-requests" aria-label="Waiting time off">{requests.map(request => {
+  const kept = useKeptResult(result);
+  // #25: nothing waits and nothing was just decided: the kit's empty state, in the list's card.
+  if (!requests.length && !kept) return <div className="q-list q-emptycard"><BState kind="empty" title="You’re all caught up" line="New time off requests show up here." /></div>;
+  return <ul className="q-list q-requests" aria-label="Waiting time off" aria-busy={staffing.status === "loading" || undefined}>{kept ? <li className="q-result">{kept}</li> : null}{requests.map(request => {
     const conflicts = checked.has(request.id) ? conflictsFor(staffing, request.id) : null;
     const clear = conflicts !== null && conflicts.length === 0;
     const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{`On the schedule: ${conflictShift(conflicts[0])}${conflicts.length > 1 ? ` +${conflicts.length - 1}` : ""}`}</span>
-      : conflicts ? null : <span className="b-leave-note">{!checked.has(request.id) ? "Check the schedule on its page" : staffing.status === "loading" ? "Checking the schedule…" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
+      // Final polish (confirmations A #13): while the one schedule read is out, the rows stay quiet ("Checking the
+      // schedule…" stood under every row at once); the list says it once for screen readers. A check that did not come
+      // back still says so on its row.
+      : conflicts || (checked.has(request.id) && staffing.status === "loading") ? null : <span className="b-leave-note">{!checked.has(request.id) ? "Check the schedule on its page" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
     return <li key={request.id} id={`request-${request.id}`} tabIndex={-1} className="q-request">
       {/* Phase 8 (a.md #12, #25): the person's own face tint, and no chevron on a row that carries its own buttons (OW-012). */}
       <QuietRow bare avatar={<RequestFace name={request.employeeName} initials={request.avatar} />} title={request.employeeName} href={request.href} chevron={false}
@@ -58,6 +69,10 @@ export function TimeOffWaitingList({ requests }: { requests: WaitingTimeOff[] })
   })}</ul>;
 }
 
+/** The words of the Decline question, shared with Things to do (inbox-b.tsx). */
+export const ASK = { question: "Decline this request?", consequence: (first: string) => `${first} is told it was declined.`, keep: "Keep request", decline: "Decline" };
+export const firstName = (name: string) => name.split(/\s+/)[0] || name;
+
 /** Decline and Approve (or Review) under one request; while the decision is out both are disabled and the pressed one says so.
  * Phase 2 (Nov 15, 2026): a list of requests carries no filled primary, as on Things to do. Approve (or Review) is the tinted
  * pill and Decline a quiet text button (`b-rowact`, b-foundation.css); the confirm step (Keep beside the red Decline) is as it was. */
@@ -68,10 +83,10 @@ function WaitingDecide({ name, approve, reviewHref }: { name: string; approve: b
   const [confirming, setConfirming] = useState<boolean | null>(null);
   const pair = useRef<HTMLDivElement>(null);
   useEffect(() => { if (confirming !== null) pair.current?.querySelector<HTMLButtonElement>("button")?.focus(); }, [confirming]);
-  if (confirming && !pending) return <div ref={pair} className="q-acts" role="group" aria-label={`Decline time off for ${name}?`}>
-    <button type="button" className="q-bs" onClick={() => setConfirming(false)} aria-label={`Keep time off request for ${name}`}>Keep</button>
-    <button type="submit" className="q-bs q-bs--stop" name="decision" value="DENIED" aria-label={`Decline time off for ${name}`}>Decline</button>
-  </div>;
+  // Final polish (confirmations A #6, #7, #23): the question is asked in words, in the block Cancel time off uses: the
+  // quiet way out on the left, the red-edged commit on the right. Still one question and the same two taps.
+  if (confirming && !pending) return <DecisionAsk groupRef={pair} groupLabel={`Decline time off for ${name}?`} question={ASK.question} consequence={ASK.consequence(firstName(name))}
+    keep={ASK.keep} keepLabel={`Keep time off request for ${name}`} onKeep={() => setConfirming(false)} go={ASK.decline} goLabel={`Decline time off for ${name}`} goValue="DENIED" />;
   return <div ref={pair} className="q-acts" aria-busy={pending}>
     <button type="button" className="q-bs b-rowact b-rowact--quiet" onClick={() => setConfirming(true)} disabled={pending} aria-label={pending ? undefined : `Decline time off for ${name}`}>{pending && decision === "DENIED" ? "Declining…" : "Decline"}</button>
     {approve ? <button type="submit" className="q-bs q-bs--go b-rowact b-rowact--go" name="decision" value="APPROVED" disabled={pending} aria-label={pending ? undefined : `Approve time off for ${name}`}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</button>

@@ -2,11 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
 import { QuestionIcon } from '@phosphor-icons/react/dist/ssr/Question';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import type { PinActionResult,PinSaveStatus } from '@/app/app/employees/[employeeId]/clocker-pin/actions';
-import { BCard, BIcon, BState } from './owner-b/b-kit';
+import { BCard, BDoneMark, BState } from './owner-b/b-kit';
 import { ReturnToNext } from './team/return-to-next';
 import { clockerOwnerCopy, type ClockerOwnerLang } from './clocker-owner-copy';
 
@@ -92,12 +91,12 @@ export function ClockerPinForm({ employeeId, name = '', initialVersion, action, 
   if (saved) return <BCard label={t.pinDoneSet(name)}>
     <div ref={feedback} tabIndex={-1} className="ck-result">
       <div className="b-statecard" data-kind="done" role="status">
-        <BIcon tone="green"><CheckIcon weight="bold" /></BIcon>
+        <BDoneMark />
         <div className="b-statecard__main">
           <p className="b-statecard__t">{t.pinDoneSet(name)}</p>
           <p className="b-statecard__s">{t.pinDoneBody}</p>
           <span className="ck-result__acts">
-            <Link className="b-btn b-btn--teal" href={origin === 'pins' ? '/app/settings/clocker/pins' : employeeHref}>{origin === 'pins' ? t.pinBackToPins : t.pinBackToPerson(name)}</Link>
+            <Link className="b-btn b-btn--ghost" href={origin === 'pins' ? '/app/settings/clocker/pins' : employeeHref}>{origin === 'pins' ? t.pinBackToPins : t.pinBackToPerson(name)}</Link>
             <button type="button" className="b-btn b-btn--quiet ck-text" onClick={another}>{t.pinAnother}</button>
           </span>
         </div>
