@@ -21,7 +21,7 @@ export async function centralBillingFixture(production=false){
  const admin=new Pool({connectionString:parent.href,max:1,connectionTimeoutMillis:3000}),name='commerce_test_'+randomUUID().replaceAll('-','');
  target.pathname='/'+name;
  const pool=new Pool({connectionString:target.href,max:3,connectionTimeoutMillis:3000,statement_timeout:5000});
- const provider=new StripeFixture(),sockets=new Set<Socket>(),requests:{path:string;method:string;status:number;cookie:boolean;operation:string|null;lang:string|null}[]=[],unexpected:string[]=[];
+ const provider=new StripeFixture('/g/pay/'),sockets=new Set<Socket>(),requests:{path:string;method:string;status:number;cookie:boolean;operation:string|null;lang:string|null}[]=[],unexpected:string[]=[];
  let listener:ReturnType<typeof createServer>|undefined,created=false;
  let uiOrigin='',apiOrigin='';const id=randomUUID(),businessName='Fictional Central <script>untrusted</script> Long Company';
  try{
