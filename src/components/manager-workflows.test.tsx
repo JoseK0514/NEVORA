@@ -143,7 +143,9 @@ describe("management sees every shift in full before deciding (Codex review, Oct
   const shift = (over: Record<string, unknown>) => ({ id: "s", scheduleId: "sched", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2026-10-05", date: "2026-10-05", startTime: "08:00", endTime: "12:00", ...over });
   const plain = (html: string) => html.replace(/ /g, " ");
   /** The words on the page, without tags. */
-  const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  // Final polish (Nov 20, 2026): a time range carries a short form for phones (BWhen's .b-when-s, hidden from 768px) beside
+  // the full one; these checks read the full facts, as a desktop shows them.
+  const text = (html: string) => html.replace(/<span class="b-when-s">[^<]*<\/span>/g, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
   it("a swap shows both employees, full dates, start and end times and locations ahead of Approve", async () => {
     rs.mocked(listPendingCallouts).mockResolvedValue([]);
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "swap", requestRevision: 3, actionable: true, kind: "SWAP", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", targetEmployeeId: "e2", targetEmployeeName: "Fictional Ben", createdAt: "2026-10-03T00:00:00Z",

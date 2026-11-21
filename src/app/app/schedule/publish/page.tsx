@@ -2,6 +2,7 @@ import Link from "next/link";
 import { randomUUID } from "node:crypto";
 import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { CorpBody, CorpButtonLink, CorpCard, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows } from "@/components/corp/corp";
 import { ScheduleCopyForm } from "@/components/schedule-copy-form";
@@ -107,7 +108,8 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
       <div className="c-shift">
         <span className="q-page" data-q-sheet="" hidden />
         <header className="c-shift__head">
-          <Link className="c-shift__cancel" href={scheduleHref}>Cancel</Link>
+          {/* Final polish (Nov 20, 2026): with nothing left to publish there is nothing to cancel, so the way out says Done. */}
+          <Link className="c-shift__cancel" href={scheduleHref}>{drafts.length || pending?.hasPendingChanges ? "Cancel" : "Done"}</Link>
           <h1 className="c-shift__title" id="publish-title">Build and publish</h1>
           <span />
         </header>
@@ -177,7 +179,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
             <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">
               {`Publish ${drafts.length === 1 ? drafts[0].shortName : plural(drafts.length, "draft", "drafts")}${pending?.hasPendingChanges ? " and changes" : ""}${review.length ? " anyway" : ""}`}
             </EmployeeSubmitButton>
-          </form> : <CorpNote icon={<CheckCircleIcon className={allPublished ? "c-ic c-ic--s c-pub__done" : "c-ic c-ic--s"} weight={allPublished ? "fill" : "bold"} aria-hidden="true" />}>{locations.some(location => location.status === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>)}
+          </form> : <CorpNote icon={allPublished ? <CheckIcon className="c-ic c-ic--s c-pub__done" weight="bold" aria-hidden="true" /> : <CheckCircleIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>{locations.some(location => location.status === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>)}
         </div>
       </div>
     </CorpPage>

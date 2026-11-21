@@ -98,7 +98,7 @@ export function NewLocationForm({
         </FieldErrors>
       </fieldset>
       {success ? null : <div className="wc-savefoot wc-savefoot--wide">
-        <Link className="q-btn q-btn--sec" href="/app/settings/locations">Cancel</Link>
+        <Link className="q-btn q-btn--sec b-rowact b-rowact--quiet" href="/app/settings/locations">Cancel</Link>
         <button type="submit" className="q-btn" disabled={pending}>Add</button>
       </div>}
       </div>

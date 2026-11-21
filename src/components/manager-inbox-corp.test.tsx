@@ -245,7 +245,9 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   expect(html).not.toContain('asked for a time correction');
   // A swap names both people in its title; a can't-work request's title is the person (Phase 8, a.md #13), over the
   // day, the shift's time and its place.
-  expect(html).toContain('>Ana Colon ⇄ James Ortiz<');
+  // Final polish (Nov 20, 2026): the two names sit round the bold swap glyph and read "Ana Colon and James Ortiz".
+  expect(html).toMatch(/<span class="b-swapnames"><span class="b-swapnames__a">Ana Colon<svg[^>]*aria-hidden="true"[^>]*>.*?<\/svg><\/span><span class="b-sr"> and <\/span><span>James Ortiz<\/span><\/span>/);
+  expect(html).not.toContain('⇄');
   expect(html).toContain('with James Ortiz"');
   expect(html).toContain('>Luis Torres<');
   expect(html).not.toContain('can’t work Tue');

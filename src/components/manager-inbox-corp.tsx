@@ -18,13 +18,14 @@ import { actionCenterNavigation } from "./action-center-navigation";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import { InboxB, LaterB } from "./owner-b/inbox-b";
+import { BSwapNames } from "./owner-b/b-kit";
 import { isStaffingRepair, repairTitle, repairWhen } from "@/lib/time-off-staffing/present";
 
 /* Things to do (Release 1; approved board O-Inbox, Oct 26). Presentation only: the same action center and Today reads as
  * the Inbox before it, the same review links and the same count as Home and the sidebar badge. One card per kind with its
  * count; each row opens the full review, where the decision is made (no Approve or Decline in the list). */
 
-type Row = { key: string; href: string; label: string; title: string; detail?: string; value?: string; valueTone?: "red" | "soft" | "amber";
+type Row = { key: string; href: string; label: string; title: string; swapWith?: string; detail?: string; value?: string; valueTone?: "red" | "soft" | "amber";
   /** Phase 3 (MG-012): the person the request is from, when the title says more than their name (the row's avatar). */
   person?: string;
   /** Phase 4 (U09): further lines under the detail: the other shift of a swap, a cover request's result. */
@@ -80,7 +81,9 @@ function itemRow(item: ActionItem, timeZone: string, calm = false): Row {
   const covering = item.type === "EXCHANGE" && item.request?.exchangeKind === "COVERAGE";
   // Phase 8 (a.md #13, b.md #44): a can't-work row's title is the person, like every other row; the card already says
   // "Can't work", so the line under it is the day, the shift's time and its place.
-  const title = other && !covering ? `${who} ⇄ ${other}` : who;
+  // Final polish (Nov 20, 2026): the row draws the two names round the bold swap glyph (BSwapNames), so the title is the
+  // requester and `swapWith` the other person (it was one string with a thin text arrow).
+  const title = who, swapWith = other && !covering ? plain(other) : undefined;
   const base = callout ? [callout.startDate === callout.endDate ? dayText(callout.startDate) : `${dayText(callout.startDate)} – ${dayText(callout.endDate)}`,
     callout.partialDay ? `${hhmm(callout.partialDay.start)} – ${hhmm(callout.partialDay.end)}` : "All day", callout.locationName].join(" · ")
     : request ? requestDetail(item, shown.detail) : shown.detail;
@@ -100,7 +103,7 @@ function itemRow(item: ActionItem, timeZone: string, calm = false): Row {
     ...(cover ? [coverOutcomeText(cover, t)] : []),
     ...(item.type === "TIME_CORRECTION" && route === "other_reviewer" ? [t.otherReviewer] : item.type === "TIME_CORRECTION" && route === "unknown" ? [t.reviewUnchecked] : []),
   ].map(line => midnight(plain(line)));
-  return { key: item.id, href: entry.href, label: midnight([other && !covering ? `${entry.label}, with ${other}` : entry.label, ...lines].join(". ")), title: plain(title),
+  return { key: item.id, href: entry.href, label: midnight([other && !covering ? `${entry.label}, with ${other}` : entry.label, ...lines].join(". ")), title: plain(title), ...(swapWith ? { swapWith } : {}),
     detail: needs(midnight(plain(detail))), ...(request && shown.person ? { person: shown.person } : {}), ...(lines.length ? { lines } : {}),
     ...(item.type === "TIME_CORRECTION" && route !== "mine" ? { quiet: true } : {}) };
 }
@@ -288,7 +291,7 @@ export function ManagerInboxCorp({ weekStart, actorId, timeZone, coverageFirst =
 }
 
 const rowOf = (row: Row) => <li key={row.key}>
-  <CorpRow href={row.href} label={row.label} title={row.title} bold detail={row.lines?.length ? <>{row.detail}{row.lines.map(line => <span key={line} className="b-row__more">{line}</span>)}</> : row.detail} value={row.value} valueTone={row.valueTone} chevron />
+  <CorpRow href={row.href} label={row.label} title={row.swapWith ? <BSwapNames a={row.title} b={row.swapWith} /> : row.title} bold detail={row.lines?.length ? <>{row.detail}{row.lines.map(line => <span key={line} className="b-row__more">{line}</span>)}</> : row.detail} value={row.value} valueTone={row.valueTone} chevron />
 </li>;
 
 /** R3: one count voice. The label, then the figure in grey, no brackets ("Open shifts 3"). */

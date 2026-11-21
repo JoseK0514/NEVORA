@@ -96,6 +96,37 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .q-page .q-requests .b-req-age:not(#p3d-1):not(#p3d-2):not(#p3d-3):not(#p3d-4):not(#p3d-5) { display: block !important; margin-top: var(--b-space-2) !important; font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-caption) !important; color: var(--b-grey) !important; }
   }
 
+  /* ---------- Final polish (Nov 20, 2026) ---------- */
+  /* One 36px lead on Time off requests, Shift requests and Notifications (their faces and icon circles drew 32px beside
+   * the 36px leads of Things to do, Team and Home). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page :is(.q-requests, .q-notif-list) .q-row > .q-av:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { flex: 0 0 36px !important; width: 36px !important; height: 36px !important; grid-template-columns: 36px !important; font-size: 13px !important; font-weight: 600 !important; }
+  /* Notifications: the words run to 12px (the row's own gap) before the unread dot or the chevron; the dot and the chevron
+   * each added a margin of their own on top of it. Only a row with a dot keeps the dot's column. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-notif-list .q-row > :is(.q-notif-dot, .q-chev):not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { margin-left: 0 !important; }
+  /* The dot sits 8px from the chevron it belongs with, and a title that still needs two lines breaks evenly, so no
+   * line holds one or two orphaned words ("for you"). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-notif-list .q-row > .q-notif-dot:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { margin-right: calc(-1 * var(--b-space-4)) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-notif-list .q-row > .q-rt > b:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { text-wrap: balance !important; }
+  @media (max-width: 767px) {
+    /* A request row on a phone, the same on both pages: the face sits on the first two lines of the words (it was centred
+     * on however many lines the row had, so it sat lower on Shift requests), the name starts 10px under the row's top edge
+     * on both (it was 10 and 8), and Decline and Approve are a pair on the row's right edge, 8px apart, as from 768px
+     * (Decline sat centred in the left half, aligned with nothing). Each is 112px: "Approving…" with its spinner fits. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-requests > li.q-request > .q-row:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-requests > li.q-request > details > summary.q-row:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { align-items: flex-start !important; min-height: 0 !important; padding-top: var(--b-space-12) !important; padding-bottom: var(--b-space-12) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-requests > li.q-request .q-row > .q-rt:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { margin-top: -2px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-requests > li.q-request .q-acts:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { justify-content: flex-end !important; gap: var(--b-space-8) !important; padding-left: var(--b-inset) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-requests > li.q-request .q-acts > .q-bs:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { flex: 0 0 auto !important; box-sizing: border-box !important; width: 112px !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-requests > li.q-request .q-acts > .q-bs:only-of-type:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { width: auto !important; min-width: 112px !important; padding-left: var(--b-space-16) !important; padding-right: var(--b-space-16) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-requests > li.q-request .q-acts > .q-sr:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { flex: none !important; }
+  }
+  @media (max-width: 767px) {
+    /* Availability: the tab on the band already says "Not sent 1" (or "Sent 9"); the card 75px under it said it again. On
+     * phones the card's heading is kept for screen readers only. Its line stays when it carries "Remind all". */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.q-availability #availability-people > .b-card__h h2:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.q-availability #availability-people > .b-card__h:not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { justify-content: flex-end !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.q-availability #availability-people > .b-card__h:not(:has(> :is(button, a))):not(#pb1):not(#pb2):not(#pb3):not(#pb4):not(#pb5):not(#pb6) { display: none !important; }
+  }
+
   /* ---------- Phase 8 (Nov 17, 2026) ---------- */
   /* a.md #12: a request row's face keeps the person's tint (RequestFace sets it from the name, as BAvatar does). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-av[data-tint]:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { background: var(--av-bg) !important; color: var(--av-fg) !important; box-shadow: none !important; }
@@ -110,4 +141,24 @@
    * requests, Notifications, Updates and Prepare payroll drew their names and periods at 500. The account deletion's consent
    * sentence is a checkbox label, not a row title, and keeps its weight (final regression review #6). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page :is(.q-row:not(.q-deletion__check), .q-request, .q-requests > li) .q-rt > b:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-page.c-pay .c-row__title--b:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-weight: 600 !important; }
+
+  /* Final polish (Nov 20, 2026; round 2 #21): "Waiting" on an open time off request is the kit's amber chip (1px edge). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-request .c-request__who > .c-request__state { flex: none !important; display: inline-flex !important; margin-left: auto !important; }
+  /* Round 2 #6: Decline on the open request is the quiet text button (`b-rowact--quiet`); it keeps the pair's width. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-request__foot .c-btns > .c-btn.b-rowact--quiet:not(:disabled, [aria-disabled="true"]):not(#p10a) { background: transparent !important; color: var(--b-ink2) !important; box-shadow: none !important; }
+}
+
+/* ---------- Final polish (Nov 20, 2026; round 2 findings 13 and 15): New update. The two steps are named under the title
+ * on the band ("Step 1 of 2 · Write"), as Add employee's are: 13/16 on phones, the body size from 768px, in the band's
+ * second white. From 768px the message card and the delivery card (whose footer holds Cancel and Next) keep 16px apart.
+ * The phone frame is the sheet form's (owner-b-settings.css). ---------- */
+@layer nv-b {
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose:not(#fp-1):not(#fp-2):not(#fp-3):not(#fp-4):not(#fp-5):not(#fp-6):not(#fp-7):not(#fp-8):not(#fp-9) > .q-nav .q-nav__step { display: block !important; margin: 0 !important; font: 500 .8125rem/1rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; color: var(--b-on-band-2) !important; text-align: center !important; white-space: nowrap !important; }
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose:not(#fp-1):not(#fp-2):not(#fp-3):not(#fp-4):not(#fp-5):not(#fp-6):not(#fp-7):not(#fp-8):not(#fp-9) > .q-nav .q-nav__step { margin-top: var(--b-space-4) !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; text-align: left !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose:not(#fp-1):not(#fp-2):not(#fp-3):not(#fp-4):not(#fp-5):not(#fp-6):not(#fp-7):not(#fp-8):not(#fp-9) .wc-savecard ~ .wc-savecard { margin-top: var(--b-space-16) !important; }
+    /* Title and Message keep the card's 22px inset now that the card is their wrapper. */
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose:not(#fp-1):not(#fp-2):not(#fp-3):not(#fp-4):not(#fp-5):not(#fp-6):not(#fp-7):not(#fp-8):not(#fp-9) .wc-savecard > .q-fl { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose:not(#fp-1):not(#fp-2):not(#fp-3):not(#fp-4):not(#fp-5):not(#fp-6):not(#fp-7):not(#fp-8):not(#fp-9) .wc-savecard > .q-fl:last-child { padding-bottom: var(--b-inset-wide) !important; }
+  }
 }

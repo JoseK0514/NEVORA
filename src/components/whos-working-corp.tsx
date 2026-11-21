@@ -118,8 +118,12 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
       {/* Review 30 (D29): the folded row says how many clock-ins wait, and a punch open past 12 hours shows its red chip
         here too, so it is seen without opening the review. */}
       <CorpRow onClick={() => setReviewOpen(open => !open)} bold chevron={false}
-        title={<><span className="c-who__name">Clock-ins to check</span>{toCheck ? <BCount>{toCheck}</BCount> : null}{flagged ? <BChip tone="red">{flagged === 1 ? NO_CLOCK_OUT : `${flagged} with ${NO_CLOCK_OUT.charAt(0).toLowerCase()}${NO_CLOCK_OUT.slice(1)}`}</BChip> : null}</>}
+        /* Final polish D3 (#25): the folded row is this card's heading, so its words take the card label's size and weight
+          (17/22 at 700, as "Clocked in" and "Not clocked in" above), and the red chip follows the sub-line instead of
+          sitting between the heading and it. */
+        title={<><span className="c-who__name c-who__check">Clock-ins to check</span>{toCheck ? <BCount>{toCheck}</BCount> : null}</>}
         detail="Times that don’t match the schedule or breaks"
+        detailEnd={flagged ? <BChip tone="red">{flagged === 1 ? NO_CLOCK_OUT : `${flagged} with ${NO_CLOCK_OUT.charAt(0).toLowerCase()}${NO_CLOCK_OUT.slice(1)}`}</BChip> : null}
         trail={<CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" />}
         label={`Clock-ins to check${toCheck ? `, ${toCheck} to review` : ""}${flagged ? `, ${flagged} with no clock-out after 12 hours` : ""}, ${reviewOpen ? "expanded" : "collapsed"}`} />
     </CorpCard> : null}

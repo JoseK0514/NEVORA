@@ -271,8 +271,8 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
   --q-tog-off: var(--b-field-edge);
 }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary { background: #FFFFFF; }
-:is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary .c-chev--down { color: var(--b-grey); transition: rotate var(--b-dur-press) var(--b-ease-out); }
-:is(#c-root, html) body .app-shell[data-nv-b] .c-help__q[open] > summary .c-chev--down { rotate: 180deg; }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary .c-chev--down { color: var(--b-grey); transition: transform var(--b-dur-press) var(--b-ease-out); }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-help__q[open] > summary .c-chev--down { transform: rotate(180deg); } /* round 2 #24: one property. help.css turned it 90deg with `transform` and this rule another 180 with `rotate`, so the open item pointed right */
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a, :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a :is(p, li) { font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a a { display: inline-block; padding-block: 11px; margin-block: -11px; font-size: inherit; }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary .c-chev--down { transition: none; } }
@@ -349,7 +349,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) body .app-shell[data-nv-b] .q-radio[data-on] { border-color: var(--b-teal); background: radial-gradient(circle, var(--b-teal) 0 5px, #FFFFFF 5.5px); }
 :is(#c-root, html) body .app-shell[data-nv-b] label:has(> input[type="radio"]:focus-visible) .q-radio { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .wc-preview:not(#nv-none) { position: relative; outline: 1.5px dashed var(--b-field-edge); outline-offset: 6px; }
-:is(#c-root, html) body .app-shell[data-nv-b] .wc-preview::before { content: "Preview"; position: absolute; top: 12px; right: 14px; z-index: 1; padding: var(--b-space-2) var(--b-space-8); border-radius: var(--b-radius-pill); background: var(--b-quiet); color: var(--b-grey-on-fill); font-size: 12px; line-height: 16px; font-weight: 600; }
+:is(#c-root, html) body .app-shell[data-nv-b] .wc-preview::before { content: "Preview"; position: absolute; top: 12px; right: 14px; z-index: 1; padding: var(--b-space-2) var(--b-space-8); border-radius: var(--b-radius-pill); background: var(--b-quiet); color: var(--b-ink2); font-size: 12px; line-height: 16px; font-weight: 600; box-shadow: inset 0 0 0 1px var(--b-quiet-edge); box-sizing: border-box; height: var(--b-chip-h); padding: 3px var(--b-chip-px); } /* round 2 #21: the kit chip's size and 1px edge */
 @media (min-width: 1024px) {
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] #b-todo-more:not(#nv-none) { position: sticky; top: 84px; align-self: start; }
 }
@@ -950,6 +950,14 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-segs > .b-segs__i:not(#fa-s1):not(#fa-s2):not(#fa-s3) { padding-left: 13px !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-segs > .b-segs__i + .b-segs__i:not(#fa-s1):not(#fa-s2):not(#fa-s3)::before { content: "·"; content: "·" / ""; position: absolute; left: 0; top: 0; width: 13px; text-align: center; font-variant-numeric: normal; }
 }
+/* Final polish D3 (Nov 20, 2026; #30): a name typed with a spaced em dash ("Northside Bakery — Condado") is a facts line
+ * whose separator is the dash: it reads with its dash on one line and may break only there, where the 22px dash slot is
+ * cut off like the dot's, so no line starts or ends on the dash. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-segs.b-segs--dash:not(#fa-s1):not(#fa-s2):not(#fa-s3):not(#fa-s4) { max-width: calc(100% + 22px) !important; margin-left: -22px !important; clip-path: inset(-16px -16px -16px 22px) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-segs.b-segs--dash > .b-segs__i:not(#fa-s1):not(#fa-s2):not(#fa-s3):not(#fa-s4) { padding-left: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-segs.b-segs--dash > .b-segs__i + .b-segs__i:not(#fa-s1):not(#fa-s2):not(#fa-s3):not(#fa-s4)::before { content: "—"; content: "—" / ""; width: 22px; }
+}
 /* Premium pass FA (final verification A #8, B #11): Inter's tabular figures carry a tabular hyphen and dash, so a chip's
  * words ("Missing clock-out", inside a table cell that is tabular) read "clock - out". A chip without the live dot holds
  * words, not a figure that ticks: its figures are proportional. The live chips keep tabular figures (spec 3.1). */
@@ -964,4 +972,19 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
  * Quiet lists painted theirs #A7ACB1 (2.2:1). A disclosure's own caret keeps its grey. */
 @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .q-chev:not(summary .q-chev):not(#fa-s1):not(#fa-s2):not(#fa-s3) { color: var(--b-field-edge) !important; }
+}
+
+/* Final polish (Nov 20, 2026; round 2 finding 18): native date and time fields (`c-in c-in--date`, `c-in c-in--time`).
+ * The browser's own glyph is replaced by Phosphor's bold CalendarBlank or Clock in the field-edge grey, at the field's
+ * right edge where a select keeps its chevron; the browser's picker button stays, invisible, over that corner, so the
+ * same tap opens the same picker. An empty field (data-empty, kept by the form) shows its format in the placeholder
+ * grey. Only where the browser has the picker button (Chromium, Safari); Firefox keeps its own. Nothing moves. */
+@layer nv-b {
+  @supports selector(::-webkit-calendar-picker-indicator) {
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page, dialog) input.c-in:is(.c-in--date, .c-in--time):not(#fp-d1):not(#fp-d2):not(#fp-d3):not(#fp-d4):not(#fp-d5):not(#fp-d6) { position: relative !important; padding-right: 44px !important; background-repeat: no-repeat !important; background-position: right 14px center !important; background-size: 20px 20px !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page, dialog) input.c-in:is(.c-in--date, .c-in--time):not(#fp-d1):not(#fp-d2):not(#fp-d3):not(#fp-d4):not(#fp-d5):not(#fp-d6).c-in--date { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 256 256'%3E%3Cpath fill='%23838A8F' d='M208,28H188V24a12,12,0,0,0-24,0v4H92V24a12,12,0,0,0-24,0v4H48A20,20,0,0,0,28,48V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V48A20,20,0,0,0,208,28ZM68,52a12,12,0,0,0,24,0h72a12,12,0,0,0,24,0h16V76H52V52ZM52,204V100H204V204Z'/%3E%3C/svg%3E") !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page, dialog) input.c-in:is(.c-in--date, .c-in--time):not(#fp-d1):not(#fp-d2):not(#fp-d3):not(#fp-d4):not(#fp-d5):not(#fp-d6).c-in--time { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 256 256'%3E%3Cpath fill='%23838A8F' d='M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm68-84a12,12,0,0,1-12,12H128a12,12,0,0,1-12-12V72a12,12,0,0,1,24,0v44h44A12,12,0,0,1,196,128Z'/%3E%3C/svg%3E") !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page, dialog) input.c-in:is(.c-in--date, .c-in--time):not(#fp-d1):not(#fp-d2):not(#fp-d3):not(#fp-d4):not(#fp-d5):not(#fp-d6)::-webkit-calendar-picker-indicator { position: absolute !important; top: 0 !important; bottom: 0 !important; right: 0 !important; left: auto !important; width: 48px !important; height: auto !important; margin: 0 !important; padding: 0 !important; opacity: 0 !important; cursor: pointer !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page, dialog) input.c-in:is(.c-in--date, .c-in--time):not(#fp-d1):not(#fp-d2):not(#fp-d3):not(#fp-d4):not(#fp-d5):not(#fp-d6)[data-empty]:not(:focus)::-webkit-datetime-edit { color: var(--b-grey) !important; }
+  }
 }

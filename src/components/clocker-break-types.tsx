@@ -14,6 +14,7 @@ import { XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 
 import { toast } from './toaster';
+import { BChip } from './owner-b/b-kit';
 import { breakCategories, type BreakType } from '../lib/clocker/break-types';
 import type { BreakTypeResult } from '../app/app/settings/breaks/actions';
 import { Notice,SettingsFrame } from '../app/app/settings/wave-c-kit';
@@ -119,7 +120,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   const row = (type: BreakType) => <li key={type.id}>
     <button type="button" className={type.targetMinutes === null ? 'q-row q-row--one' : 'q-row'} data-break-type={type.id} aria-label={`Edit ${type.name}`} onClick={event => open({ operation: 'EDIT', type }, event)}>
       <span className="q-rt"><b>{type.name}</b>{type.targetMinutes === null ? null : <i>{`${type.targetMinutes}\u00a0min`}</i>}</span>
-      <span className="q-pill-cat">{categoryLabel(type.category)}</span>
+      <BChip tone="grey">{categoryLabel(type.category)}</BChip>
       <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
     </button>
   </li>;
@@ -171,7 +172,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
             : <button className={selection.operation === 'ARCHIVE' ? 'q-btn q-btn--danger' : 'q-btn'} type="submit" disabled={pending}><ButtonLabel pending={pending} idle={saveLabel} busy="Saving…" /></button>}
           {selection.operation === 'EDIT' && selection.type ? <button className="q-btn q-btn--danger" type="button" disabled={pending}
             onClick={() => { clear(); setError(null); setSelection({ operation: selection.type!.active ? 'ARCHIVE' : 'REACTIVATE', type: selection.type }); }}>{selection.type.active ? 'Archive break type' : 'Reactivate break type'}</button> : null}
-          <button className="q-btn q-btn--sec" type="button" disabled={pending} onClick={close} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
+          <button className="q-btn q-btn--sec b-rowact b-rowact--quiet" type="button" disabled={pending} onClick={close} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
         </FormActions>
       </form> : null}
     </dialog>

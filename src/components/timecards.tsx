@@ -27,7 +27,7 @@ import type {TimecardIssue} from '@/lib/timecards/project';
 import {CorpAvatar,CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpDuration,CorpEmpty,CorpErrorCard,CorpPage,CorpRow,CorpRows,CorpStats,CorpTime,CorpTitle} from './corp/corp';
 import {QuietSheet,SheetCancel} from './quiet/quiet-sheet';
 import './timecards-corp.css';
-import {BAvatar,BButton,BCard,BChip,BDoneMark,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BSegs,BStack,BState,BStatusText} from './owner-b/b-kit';
+import {BAvatar,BButton,BCallout,BCard,BChip,BDoneMark,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BSegs,BStack,BState,BStatusText} from './owner-b/b-kit';
 import {momentsCopy} from './owner-b/moments-copy';
 import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
@@ -446,7 +446,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const approver=ownApprover(viewerIsOwner,owners??[]);
     const ownWaits=(item:TimecardItem)=>isOwn(item)&&!open&&!justSaved(item)&&rowStatus(item).text==='Ready to approve';
     const statusOf=(item:TimecardItem):{text:string;tone:RowTone}=>justSaved(item)?{text:done?.action==='finalized'?'Finalized':'Ready to finalize',tone:'done'}:ownWaits(item)?{text:approver.row,tone:'neutral'}:rowStatus(item);
-    const youChip=<span className="b-chip b-chip--grey c-tc-you">You</span>;
+    // Final polish (Nov 20, 2026): "You" is a fact about the row, not an exception, so it is grey meta beside the name (the
+    // kit's quiet words), not a chip.
+    const youChip=<span className="b-status c-tc-you">You</span>;
     // OW-037: how far the period is, counting the card just saved before the fresh read lands.
     const doneCount=(action:'approved'|'finalized')=>cards.filter(item=>justSaved(item)||(action==='finalized'?item.state==='FINALIZED':isApproved(item))).length;
     // Jose (Nov 15, 2026, item 4): after a card is saved the reviewer moves on when they choose. "Next timecard" opens the
@@ -467,7 +469,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const allApproved=cards.length>0&&cards.every(item=>isApproved(item)||(justSaved(item)&&done?.action==='approved'));
     const rowCue=(item:TimecardItem)=>{const row=statusOf(item);return {text:row.text,act:row.tone==='review'&&(!open||item.card.issues.some(issue=>issue!=='period_open'))};};
     // Review NV-071/NV-104: one status chip on every width (green done, amber when someone can act now, grey otherwise).
-    const toneOf=(item:TimecardItem)=>{const row=statusOf(item);return row.tone==='done'?'green' as const:row.tone==='review'&&rowCue(item).act?'amber' as const:null;};
+    // Final polish (round 2 #22): a chip marks an exception only (a reason the server gave: "Correction waiting", "Missing
+    // clock-out"). "Ready to approve" and "Ready to finalize" are the two normal steps, so they are quiet text (BStatusText).
+    const toneOf=(item:TimecardItem)=>{const row=statusOf(item);return row.tone==='review'&&row.text!=='Ready to approve'&&rowCue(item).act?'amber' as const:null;};
     const status=openItem?statusOf(openItem):null,own=openItem?.card.employeeId===actorId;
     const tone=openItem?employeeTimecardPresentation(openItem.card.issues).tone:'neutral',waiting=!!openItem&&!own&&tone==='neutral'&&openItem.card.issues.length>0;
     // Corporate (Release 1, board O-TimecardDetail): the timecard as the kit's sheet (grabber, swipe down, page locked
@@ -504,18 +508,20 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <CorpAvatar name={openItem.card.employeeName} initials={initialsOf(openItem.card.employeeName)}/>
               <span className="c-row__main"><h3 id="cm-tc-sheet-title" className="c-row__title c-row__title--b" tabIndex={-1}>{openItem.card.employeeName}</h3>
                 <span className="c-row__detail"><span>{keepWhole(`${roleOf(openItem.card)?`${roleOf(openItem.card)} · `:''}${rangeText(period)}`)}</span></span></span>
-              {status?<span className="c-tc-sheet__state"><BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip></span>:null}
+              {status?<span className="c-tc-sheet__state">{toneOf(openItem)?<BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip>:<BStatusText dot={LIVE_DOT[status.text]}>{status.text}</BStatusText>}</span>:null}
             </div>
             <CorpStats items={[{label:'Recorded',value:compactHours(openItem.card.recordedNanoseconds)},{label:'Breaks',value:compactHours(openItem.card.breakNanoseconds)},{label:'Clock-ins',value:openItem.card.entries.length}]}/>
           </section>
           {/* Copy table 42/46: a period that hasn't ended is plain sentences (no heading, no bullet); the approve date is said once,
             beside the decision. Real issues keep their list. */}
           {openItem.card.issues.length?tone==='neutral'?<p className="c-tc-sheet__issue" data-tone="neutral">{`This ${periodNoun(period)} isn’t over. Hours can still change.${waiting&&!pending&&!outcomes?'':` You can approve from ${approveFrom(period)}.`}`}</p>
-            :<div className="c-tc-sheet__issue" data-tone={tone}><b>Needs attention</b>
-            <ul>{openItem.card.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul>
-            <p>Review the entries and resolve open time or corrections before approval.</p>
-            {/* Review B2 (NV-133): a waiting correction has its way in, inside the note (Approve stays disabled under it). */}
-            {openItem.card.issues.includes('pending_correction')?<Link className="c-btn c-btn--primary c-btn--md c-tc-sheet__go" href="/app/timecards/corrections">Review correction</Link>:null}</div>:null}
+            :
+            // Final polish (round 2 #4): the kit's amber note (Warning glyph, 1px edge, ink title, ink2 body). Each issue is a
+            // line of the body; a waiting correction keeps its way in as the note's one action (Review B2, NV-133).
+            <div className="c-tc-sheet__attn"><BCallout tone="amber" title="Needs attention"
+              action={openItem.card.issues.includes('pending_correction')?{label:'Review correction',href:'/app/timecards/corrections'}:undefined}>
+              {openItem.card.issues.map(issue=><p key={issue}>{issueNames[issue]}</p>)}
+              <p>Review the entries and resolve open time or corrections before approval.</p></BCallout></div>:null}
           {exclusionText(openItem)&&!openItem.card.issues.length&&openItem.state!=='APPROVED'?<p className="c-tc-sheet__note">{exclusionText(openItem)}</p>:null}
           <CorpCard id="tc-days" label="Days">
             {days.length?<ul className="c-rows" aria-label="Days with recorded time">{days.map(day=><li key={day.date}><div className="c-row c-tc-day">
@@ -528,7 +534,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {/* Closing F1 (NV-029): the decision is confirmed in the panel at once, in words, while the fresh read runs. */}
           {/* OW-037: the success is a block, not a line: a green circle with a check, the word, and how far the period is. The
             * sentence that names the person stays for screen readers. */}
-          {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status"><BDoneMark on="tint"/>
+          {done?.employeeId===openItem.card.employeeId?<div className="c-tc-sheet__done" role="status"><BDoneMark/>
             <span className="c-tc-sheet__donetx"><b aria-hidden="true">{done.action==='finalized'?'Finalized':'Approved'}</b>
               <span className="c-sr">{`${done.name==='This'?'This':`${done.name}’s`} timecard is ${done.action==='finalized'?'finalized':'approved'}.`}</span>
               <span className="c-num">{`${doneCount(done.action)} of ${cards.length} done`}</span></span>
@@ -542,7 +548,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               openItem.state==='FINALIZED'?<><label className="c-field"><span className="c-field__label">Reopen reason</span><input className="c-in" value={notes[openItem.card.employeeId]??''} maxLength={500} enterKeyHint="done" autoComplete="off" onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>
                 <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} onClick={()=>void act(openItem,'REOPEN')}>Reopen period</button></>:
               own?<p className="c-tc-sheet__note">{approver.card}</p>:null}
-            {!own&&openItem.state!=='FINALIZED'&&!(waiting&&!pending&&!outcomes)?<p className="c-tc-sheet__note">{stepsLine}</p>:null}
+            {!own&&openItem.state!=='FINALIZED'&&!(waiting&&!pending&&!outcomes)&&done?.employeeId!==openItem.card.employeeId?<p className="c-tc-sheet__note">{stepsLine}</p>:null}
           </div>
           {/* OW-039: the one decision is the sheet's footer. On a phone it stays at the bottom of the sheet, above the safe
             * area, while the days scroll under it. */}
@@ -837,7 +843,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 <td data-col="person"><span className="c-tc-who"><button type="button" className="c-tc-person" aria-current={openId===id?'true':undefined} onClick={()=>setOpenId(id)}><CorpAvatar name={name} initials={initialsOf(name)}/><span>{name}</span></button>{isOwn(item)?youChip:null}</span></td>
                 {showRole?<td data-col="role" className="c-tc-muted">{roleOf(item.card)??'—'}</td>:null}
                 <td data-col="recorded" className="c-tc-num"><CorpDuration>{compactHours(item.card.recordedNanoseconds)}</CorpDuration></td>
-                <td data-col="breaks" className="c-tc-num c-tc-muted">{breaks==='0h'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:breaks}</td>
+                <td data-col="breaks" className="c-tc-num c-tc-muted">{breaks==='0h'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:/* Final polish: the unit is drawn as in Recorded beside it (it was a full-size "h" next to a small one). */<CorpDuration>{breaks}</CorpDuration>}</td>
                 {/* OW-016: a chip only where it says something (amber to act on, green done); the usual state is plain grey
                   * text. The status sits at the card's right edge with a chevron, so the row shows it opens. */}
                 <td data-col="status"><span className="c-tc-st">{toneOf(item)?<BChip tone={toneOf(item)??'grey'}>{row.text}</BChip>:<BStatusText dot={LIVE_DOT[row.text]}>{row.text}</BStatusText>}{selecting?null:<CaretRightIcon className="c-tc-chev" weight="bold" aria-hidden="true"/>}</span></td>
@@ -853,7 +859,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               {/* Premium pass FA (final verification A #25): one duration form per column, the total included: the rows' form
                 * to the minute ("211 h 42", "8 h 30"), where the total read "211 h" over rows of "18 h 04". */}
               <td data-col="recorded" className="c-tc-num"><CorpDuration>{compactHours(sumNs(item=>item.card.recordedNanoseconds))}</CorpDuration></td>
-              <td data-col="breaks" className="c-tc-num c-tc-muted">{breaksTotal==='0 min'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:compactHours(sumNs(item=>item.card.breakNanoseconds))}</td>
+              <td data-col="breaks" className="c-tc-num c-tc-muted">{breaksTotal==='0 min'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:<CorpDuration>{compactHours(sumNs(item=>item.card.breakNanoseconds))}</CorpDuration>}</td>
               <td data-col="status"/>
             </tr></tfoot>:null}
           </table></div>

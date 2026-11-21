@@ -45,7 +45,7 @@ function PositionRow({ position, hidden, ready, action, people }: {
           <SettingsForm key={position.updatedAt} action={action} label={`Edit ${position.name}`} disabled={!ready}
             messages={nameMessages} submitLabel="Save position" successTitle="Position saved"
             onResult={result => { if (result.success && !result.error) { toast(result.success); close(); } }}
-            secondary={<button type="button" className="q-btn q-btn--sec" onClick={close}>Cancel</button>}>
+            secondary={<button type="button" className="q-btn q-btn--sec b-rowact b-rowact--quiet" onClick={close}>Cancel</button>}>
             <input type="hidden" name="id" value={position.id} />
             <input type="hidden" name="expectedUpdatedAt" value={position.updatedAt ?? ""} />
             <Field label="Name" id={`${id}-name`} name="name" defaultValue={position.name} required maxLength={80} autoComplete="off" />

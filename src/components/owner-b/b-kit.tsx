@@ -6,6 +6,7 @@ import { BOffline } from "./b-offline";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+import { ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowsLeftRight";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { WifiSlashIcon } from "@phosphor-icons/react/dist/ssr/WifiSlash";
@@ -302,6 +303,13 @@ export function BWhen({ text }: { text: string }) {
   const short = compactRange(text);
   if (short === text) return <>{full}</>;
   return <><span className="b-when-s">{keepWhole(short)}</span><span className="b-when-f">{full}</span></>;
+}
+
+/** Final polish (Nov 20, 2026): the two people of a swap in a row title, "Ana Colon ⇄ James Ortiz" with the glyph the
+ * Shift requests rows lead with (Phosphor ArrowsLeftRight, bold, the 16px inline size) in place of a thin text arrow.
+ * It is read "Ana Colon and James Ortiz". Each name stays whole; the glyph stays with the first name. */
+export function BSwapNames({ a, b }: { a: string; b: string }) {
+  return <span className="b-swapnames"><span className="b-swapnames__a">{a.replace(/ /g, "\u00a0")}<ArrowsLeftRightIcon className="b-swapnames__ic" size={16} weight="bold" aria-hidden="true" /></span><span className="b-sr"> and </span><span>{b.replace(/ /g, "\u00a0")}</span></span>;
 }
 
 /** Premium pass FA (final verification A #10, B #8): a line of facts joined by "·" ("Tue, Nov 24 · 12:00 PM – 8:00 PM ·

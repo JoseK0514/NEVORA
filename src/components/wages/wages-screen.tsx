@@ -294,7 +294,7 @@ export function WagesScreen(props: WagesScreenProps) {
       {attentionCard}
       {landed && !attention ? <div className="rs-landed"><CorpCard ariaLabel={t.savedTitle}><BState silent kind="done" title={t.savedTitle} /></CorpCard></div> : null}
       <CorpCard id="wg-now" label={t.nowTitle}>
-        {!wages.length ? <div className="wg-empty"><BCallout tone="amber" icon="empty" title={t.noRateAnywhere(name)}>{t.noRateHelp}</BCallout></div> : null}
+        {!wages.length ? <div className="wg-empty"><BCallout tone="amber" title={t.noRateAnywhere(name)}>{t.noRateHelp}</BCallout></div> : null}
         <CorpRows label={t.nowTitle}>{shown.map(locationRow)}</CorpRows>
         <div className="rs-main"><Act kind={attention ? "ghost" : "teal"} id="wg-main-action" disabled={busy || !!custody} onClick={startEdit}>{t.change}</Act></div>
       </CorpCard>

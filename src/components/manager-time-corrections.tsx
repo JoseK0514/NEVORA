@@ -14,7 +14,7 @@ import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-c
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {useManagerCorrectionRecovery} from './manager-correction-recovery';
 import {CorpTitle} from './corp/corp';
-import {BSegs,BState} from './owner-b/b-kit';
+import {BAvatar,BSegs,BState} from './owner-b/b-kit';
 import Link from 'next/link';
 import {timeZoneLabel} from '@/lib/time-zone-label';
 export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
@@ -96,7 +96,9 @@ export function ManagerTimeCorrectionsSurface({
       ready?.requests.length?<div className="manager-corrections-list">
         {ready.requests.map(item=><article className="manager-correction-row" key={item.id} tabIndex={-1} id={`correction-${item.id}`}>
           <div className="manager-correction-topline">
-            <div>
+            {/* Final polish D3 (#33): a request row leads with the person's 36px avatar, as every other people row does. */}
+            <div className="manager-correction-who">
+              <BAvatar name={item.employeeName}/>
               <strong>{item.employeeName}</strong>
               {/* Premium pass FA (final verification A #10): the facts wrap whole, never leaving a "·" at a line's end. */}
               <small><BSegs parts={[item.locationName,requestLabel(item)]}/></small>

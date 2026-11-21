@@ -1,4 +1,5 @@
 import { ManagerAttendanceReview } from "./manager-attendance-review";
+import type { HomeShortcut } from './owner-b/home-b';
 import type { CoverageMinutes } from '@/lib/scheduling/coverage-minutes';
 import type { HomePayrollStatus } from '@/lib/payroll/backlog-read';
 import { WhosWorkingCorp } from "./whos-working-corp";
@@ -19,10 +20,11 @@ import type { ReactNode } from 'react';
 import type { ClockMonitor } from '@/lib/time-clock';
 import { PremiumHomeLive, PremiumHomeSurface, type PremiumHomeWeek } from './premium-home';
 import type { NextPay } from './payroll/my-pay';
-import { Avatar, Card, CardBody, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, StatGrid, Status } from './kit/kit';
+import { Avatar, Card, CardBody, FilterPills, KitLink, PageBand, Row, Rows, StatGrid, Status } from './kit/kit';
 import { presentItem } from '@/lib/action-center/present';
 import { ArrowsLeftRightIcon, CalendarBlankIcon, CalendarMinusIcon, PaperPlaneTiltIcon, UserMinusIcon } from '@phosphor-icons/react/ssr';
 import { CorpBody, CorpCard, CorpLink, CorpNav, CorpPage, CorpRows, CorpTitle } from './corp/corp';
+import { BSegs, BSegsText } from './owner-b/b-kit';
 import './schedule-activity.css';
 import type { Today } from '@/lib/today/project';
 import type { ActionCenter } from '@/lib/action-center/project';
@@ -71,6 +73,8 @@ export type DashboardRevisionItem = {
 type Props = {
   /** SCRUM-218: the language of the Owner's first-week setup card (the rest of Home is English today). */
   setupLang?: 'en' | 'es';
+  /** Final polish (Nov 20, 2026): which optional modules are on, so Home's shortcuts only name pages that open. */
+  shortcutModules?: { updates: boolean; timeOff: boolean };
   /** MK1: the next payday from My pay's pay schedule, for Home's Coming up row. */
   nextPay?: NextPay;
   payrollStatus?: HomePayrollStatus | null;
@@ -181,10 +185,10 @@ function ActivityCorp(props: Props) {
   type Event = { key: string; at: string; title: string; detail: ReactNode; href?: string; label?: string; Icon: typeof CalendarBlankIcon; tint?: boolean };
   const events: Event[] = [
     ...(props.latestRevision ? [{ key: "revision", at: props.latestRevision.createdAt, title: revisionSourceLabel(props.latestRevision.sourceType),
-      detail: `${props.weekLabel} · ${clock(props.latestRevision.createdAt)}`, Icon: PaperPlaneTiltIcon, tint: true }] : []),
+      detail: <BSegs parts={[props.weekLabel, clock(props.latestRevision.createdAt)]} />, Icon: PaperPlaneTiltIcon, tint: true }] : []),
     ...dated.slice(0, ACTIVITY_SHOWN).map((item): Event => {
       const shown = presentItem({ ...item, category: item.type === "TIME_OFF" || item.type === "EXCHANGE" || item.type === "CALLOUT" ? "requests" : "scheduling" }, "Open");
-      return { key: item.id, at: item.dateTime!, title: shown.title, detail: <MetaParts text={shown.detail} />, href: item.href,
+      return { key: item.id, at: item.dateTime!, title: shown.title, detail: <BSegsText text={shown.detail} />, href: item.href,
         label: `${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, Icon: ACTIVITY_ICON[item.type] ?? CalendarBlankIcon };
     }),
   ];
@@ -247,7 +251,8 @@ function PremiumOverview(props: Props) {
   // Direction B (phones): This week's hours, shifts per day and people come from this page's own reads; nothing is estimated.
   const homeB = { firstName: props.firstName, days: props.days.map(day => ({ date: day.date, weekday: day.weekday, shiftCount: day.shiftCount })),
     scheduledHours: props.hours.reduce((total, row) => total + row.scheduledHours, 0), people: props.hours.filter(row => row.scheduledHours > 0).length,
-    payrollHref: props.role === 'OWNER' && props.nextPay ? '/app/payroll' : undefined, coverage: props.coverage };
+    payrollHref: props.role === 'OWNER' && props.nextPay ? '/app/payroll' : undefined, coverage: props.coverage,
+    shortcuts: props.shortcutModules ? (['shift', 'employee', ...(props.shortcutModules.updates ? ['update' as const] : []), ...(props.shortcutModules.timeOff ? ['timeOff' as const] : [])] as HomeShortcut[]) : undefined };
   const common = { greeting: `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName, homeB };
   const slots = props.overviewSlots;
   if (slots?.snapshots) return <PremiumHomeSurface {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}

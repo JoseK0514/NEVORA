@@ -199,7 +199,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
 
       {/* Tablets and desktop: the one Save, with Cancel, in the card's footer (phones use the header's). */}
       <CorpFormFooter>
-        <Link className="c-btn c-btn--secondary" href={props.cancelHref}>Cancel</Link>
+        <Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet" href={props.cancelHref}>Cancel</Link>
         <button type="submit" className="c-btn c-shift__submit" disabled={!!props.blocked}>{mode === "edit" ? "Save changes" : "Save shift"}</button>
       </CorpFormFooter>
     </ConfigurationForm>

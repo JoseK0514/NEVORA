@@ -1,11 +1,15 @@
 "use client";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { durationTotal } from "@/lib/duration-format";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { ClockUserIcon } from "@phosphor-icons/react/dist/ssr/ClockUser";
 import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
 import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
+import { CalendarPlusIcon } from "@phosphor-icons/react/dist/ssr/CalendarPlus";
+import { CalendarMinusIcon } from "@phosphor-icons/react/dist/ssr/CalendarMinus";
+import { UserPlusIcon } from "@phosphor-icons/react/dist/ssr/UserPlus";
+import { MegaphoneIcon } from "@phosphor-icons/react/dist/ssr/Megaphone";
 import { CORP_NO_VALUE } from "@/components/corp/corp";
 import { percentText } from "@/components/coverage-minutes/coverage-minutes";
 import type { CoverageMinutes, MinuteObligation } from "@/lib/scheduling/coverage-minutes";
@@ -29,7 +33,7 @@ import { payDay, periodRange } from "@/components/payroll/payroll-format";
 import { keepWhole } from "@/lib/keep-whole";
 import { workCopy } from "@/components/employee-b/work-copy";
 import { notClockedInText } from "@/components/team-live";
-import { BAvatar, BButtonLink, BCard, BChip, BGlyph, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, BStatusText, BWhen, partOfDay, type BLiveItem } from "./b-kit";
+import { BAvatar, BButtonLink, BCard, BChip, BFaces, BGlyph, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, BStatusText, BSwapNames, BWhen, partOfDay, type BLiveItem } from "./b-kit";
 
 /* Direction B, Owner and Manager Home on a phone (mock screen "Owner · Home"). The same reads as the corporate Home: Today's
  * shifts and the clock-in monitor for the live figures, the shared needs-you read for the sentence, the card and the count,
@@ -47,7 +51,26 @@ export type HomeBWeek = {
   payrollHref?: string;
   /** Nov 9, 2026: canonical coverage minutes for the week (schedule health), staffing, positions and lead apart. */
   coverage?: CoverageMinutes;
+  /** Final polish (Nov 20, 2026): Home's shortcuts, the pages this person may open (the caller leaves out a module that is off). */
+  shortcuts?: HomeShortcut[];
 };
+
+export type HomeShortcut = "shift" | "employee" | "update" | "timeOff";
+const SHORTCUTS: Record<HomeShortcut, { href: string; label: string; icon: ReactNode }> = {
+  shift: { href: "/app/schedule/new", label: "Add shift", icon: <CalendarPlusIcon weight="bold" /> },
+  employee: { href: "/app/employees/new", label: "Add employee", icon: <UserPlusIcon weight="bold" /> },
+  update: { href: "/app/updates/compose", label: "Send update", icon: <MegaphoneIcon weight="bold" /> },
+  timeOff: { href: "/app/requests", label: "Time off", icon: <CalendarMinusIcon weight="bold" /> },
+};
+
+/** Home's shortcuts: the same four links on the band (desktop, glass) and as tiles under Things to do (phones and
+ * tablets). Only one of the two is displayed at a width (owner-b-home.css), so each is said once. */
+function Shortcuts({ items, place }: { items: HomeShortcut[]; place: "band" | "stack" }) {
+  if (!items.length) return null;
+  return <nav className={`b-qa b-qa--${place}`} aria-label="Shortcuts"><ul>
+    {items.map(key => <li key={key}><Link className="b-qa__a" href={SHORTCUTS[key].href}><span className="b-qa__ic" aria-hidden="true">{SHORTCUTS[key].icon}</span><span className="b-qa__l">{SHORTCUTS[key].label}</span></Link></li>)}
+  </ul></nav>;
+}
 
 export type HomeBProps = {
   today: Today | null; monitor: ClockMonitor | null; monitorPending: boolean; offline: boolean;
@@ -126,12 +149,15 @@ export function HomeB(props: HomeBProps) {
     <BHero big eyebrow={eyebrow} title={title} offlineInTitle={!value && offline} sub={<><span role="status" className="b-sr">{props.summary}</span></>}>
       {/* Review B1 (NV-117): the date is a fact on the band, not a glass button. */}
       <div className="b-hrow"><span className="b-date" aria-hidden="true"><CalendarBlankIcon size={15} weight="bold" />{props.dateLabel}</span></div>
+      <div className="b-home-strip">
       <BLive label="Right now" items={[
         ...(noClock ? [clockTile] : [{ label: "Clocked in", dot: "live" as const, value: checking ? CORP_NO_VALUE : onShift, small: !checking && scheduled ? `/${scheduled}` : undefined,
           href: checking ? undefined : "/app?view=attendance", aria: checking ? undefined : `Clocked in: ${onShift} of ${scheduled}. Who’s working` },
         attendance]),
         { label: "Open shifts", dot: gaps?.length ? "warn" : undefined, value: gaps ? gaps.length : CORP_NO_VALUE, href: gaps ? openHref : undefined, aria: gaps ? `Open shifts: ${gaps.length}` : undefined },
       ]} />
+      {props.week?.shortcuts ? <Shortcuts items={props.week.shortcuts} place="band" /> : null}
+      </div>
     </BHero>
     <BStack>
       {/* Phase 3 (OW-031, MG-011): two columns on desktop, each stacking on its own, so neither leaves a hole under the
@@ -147,6 +173,7 @@ export function HomeB(props: HomeBProps) {
         {props.setupCard ? props.setup
           : props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
         <NeedsYouCard {...props} gapRows={gapRows} openHref={openHref} />
+        {props.week?.shortcuts ? <Shortcuts items={props.week.shortcuts} place="stack" /> : null}
         {ready ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} /> : null}
       </div>
       <div className="b-home-col b-home-col--b">
@@ -218,7 +245,7 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
     const facts = item.request;
     // Nov 14, 2026 inspection (BR-7): a shift request names both people when the read carries the other one. Phase 3
     // (OW-002, OW-007): the person is the title, the kind and the dates are the line under it, and every lead is 36px.
-    const who = person && facts?.counterpartName ? `${person} ⇄ ${facts.counterpartName}` : person;
+    const who = person && facts?.counterpartName ? <BSwapNames a={person} b={facts.counterpartName} /> : person;
     const spoken = person && facts?.counterpartName ? `${person} and ${facts.counterpartName}` : person;
     const kind = kindWord(item);
     rows.push(<BRow key={item.id} lead={person ? <BAvatar name={person} /> : <BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>}
@@ -255,7 +282,13 @@ function OnNow({ shifts, open, timeZone, observedAt }: { shifts: TodayShift[]; o
   const total = on.length + extra.length;
   const next = shifts.filter(shift => shift.status === "upcoming" || shift.status === "starting").sort(byStart)[0];
   const places = new Set(shifts.map(shift => shift.locationName)).size > 1;
-  return <BCard title="On now" id="b-home-on" link={{ href: "/app?view=attendance", label: "See everyone", aria: "See everyone working today" }}>
+  const onClock = [...on.filter(working).map(shift => shift.employeeName), ...extra.map(person => person.employeeName)];
+  return <BCard title="Today" id="b-home-on" link={{ href: "/app?view=attendance", label: "See everyone", aria: "See everyone working today" }}>
+    <DayChart shifts={shifts} timeZone={timeZone} observedAt={observedAt} />
+    {/* Phones: the people on the clock are one row of faces that opens the list of everyone; from 768px each has a row. */}
+    {onClock.length ? <div className="b-tdy-faces"><BList label="Clocked in now"><BRow lead={<BFaces names={onClock.slice(0, 4)} />} title={`${onClock.length} clocked in`}
+      sub={firstNames(onClock.map(name => name.split(" ")[0]))}
+      href="/app?view=attendance" label={`${onClock.length} clocked in. See everyone working today`} /></BList></div> : null}
     {total ? <BList label="On now">{[...on.map(shift => {
       const waiting = shift.status === "not_clocked_in";
       // Phase 8 (a.md #36): someone still on the clock after their shift ended says so in amber, in the words Employee
@@ -280,6 +313,52 @@ function OnNow({ shifts, open, timeZone, observedAt }: { shifts: TodayShift[]; o
       * everyone, on the rows' text edge (it was grey "+1 more" text that did nothing). */}
     {total > ON_NOW_ROWS ? <Link className="b-on-more" href="/app?view=attendance" aria-label={`See ${total - ON_NOW_ROWS} more working today`}>{`See ${total - ON_NOW_ROWS} more`}</Link> : null}
   </BCard>;
+}
+
+/** Final polish (Nov 20, 2026): today's schedule as one picture. Each bar is one hour of the day and its height is how
+ * many people the published schedule has working in that hour; hours already past are grey, the current hour is teal.
+ * Three figures above it: people scheduled today, their scheduled hours, and the most people on at once. Everything is
+ * counted from Today's shifts (the read Home already has): nothing is estimated, and a day with no shifts draws nothing. */
+const HOUR = 3_600_000;
+export function dayHours(shifts: TodayShift[], observedAt: string) {
+  const spans = shifts.map(shift => ({ id: shift.employeeId, start: Date.parse(shift.startAt), end: Date.parse(shift.endAt) })).filter(span => Number.isFinite(span.start) && span.end > span.start);
+  if (!spans.length) return null;
+  const from = Math.floor(Math.min(...spans.map(span => span.start)) / HOUR) * HOUR;
+  const until = Math.min(from + 24 * HOUR, Math.ceil(Math.max(...spans.map(span => span.end)) / HOUR) * HOUR);
+  const now = Date.parse(observedAt);
+  const hours = Array.from({ length: Math.round((until - from) / HOUR) }, (_, index) => {
+    const at = from + index * HOUR;
+    return { at, people: new Set(spans.filter(span => span.start < at + HOUR && span.end > at).map(span => span.id)).size, state: now >= at + HOUR ? "past" as const : now >= at ? "now" as const : "next" as const };
+  });
+  const peak = hours.reduce((best, hour) => hour.people > best.people ? hour : best, hours[0]);
+  return { hours, peak, people: new Set(spans.map(span => span.id)).size, minutes: Math.round(spans.reduce((total, span) => total + (span.end - span.start), 0) / 60_000) };
+}
+
+function DayChart({ shifts, timeZone, observedAt }: { shifts: TodayShift[]; timeZone: string; observedAt: string }) {
+  const day = dayHours(shifts, observedAt);
+  if (!day) return null;
+  const hourText = (at: number) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric" }).format(new Date(at)).replace(" ", "\u00a0");
+  const max = Math.max(1, day.peak.people);
+  // A label under the first hour, then every third (every fourth on a long day), so the labels never touch.
+  const every = day.hours.length > 15 ? 4 : 3;
+  // A label is about three bars wide on a narrow phone: the hours beside "Now" and the last bar carry none.
+  const nowAt = day.hours.findIndex(hour => hour.state === "now");
+  return <div className="b-tdy">
+    <div className="b-kv">
+      <div><b className="c-num">{day.people}</b><span>{day.people === 1 ? "Person today" : "People today"}</span></div>
+      <div><b className="c-num">{durationTotal(day.minutes).replace(" ", "\u00a0")}</b><span>Scheduled</span></div>
+      <div><b className="c-num">{day.peak.people}</b><span>{`Peak, ${hourText(day.peak.at)}`}</span></div>
+    </div>
+    <p className="b-days-cap">People scheduled by hour</p>
+    <div className="b-tdy-bars" role="img" style={{ "--n": day.hours.length } as CSSProperties}
+      aria-label={`People scheduled by hour: ${day.hours.map(hour => `${hourText(hour.at)} ${hour.people}`).join(", ")}`}>
+      {day.hours.map((hour, index) => <i key={hour.at} data-state={hour.state} style={{ height: `${Math.max(6, Math.round(hour.people / max * 100))}%`, "--i": index } as CSSProperties} />)}
+    </div>
+    <div className="b-tdy-l" aria-hidden="true" style={{ "--n": day.hours.length } as CSSProperties}>
+      {day.hours.map((hour, index) => <span key={hour.at} data-state={hour.state}>{hour.state === "now" ? "Now"
+        : index % every === 0 && index < day.hours.length - 1 && (nowAt < 0 || Math.abs(index - nowAt) > 2) ? hourText(hour.at) : ""}</span>)}
+    </div>
+  </div>;
 }
 
 /** Phase 8 (a.md #5): what Payroll says in red, said on Home in Payroll's own words, from the preparation facts Home

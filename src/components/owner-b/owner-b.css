@@ -207,6 +207,12 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__trail .b-btn) { padding-top: 10px; padding-bottom: 10px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-decide { display: flex; gap: var(--b-space-8); width: 100%; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-decide > .b-btn { flex: 1; }
+/* Final polish (Nov 20, 2026): on a phone Decline and Approve are a pair on the row's right edge, 8px apart, as from 768px
+ * and as on Time off requests (each filled half the row, so Decline sat centred in the left half, aligned with nothing). */
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-decide { justify-content: flex-end; }
+  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-decide > .b-btn { flex: 0 0 auto; width: 112px; padding: 0; }
+}
 :is(#c-root, html) .app-shell[data-nv-b][data-corp-root] .b-back { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row--link, .b-row__hit[href]) { transition-property: background-color; transition-duration: var(--b-dur-hover); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-row--link:active, :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__hit[href]:active) { background-color: var(--b-press-tint); }
@@ -234,8 +240,17 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-av { display: grid; place-items: center; flex: none; width: var(--s, 36px); height: var(--s, 36px); border-radius: 50%; font-size: calc(var(--s, 36px) * 0.36); font-weight: 600; line-height: 1; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-av--open { border: 1.5px dashed #9AA3A8; background: #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-av--open::before { content: "+"; font-size: 18px; font-weight: 500; color: #7D868B; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-av--late { box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--b-amber-solid); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-av--on { box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--b-green-solid); }
+/* Final polish (Nov 20, 2026): the status ring is drawn inside the avatar, so a ringed lead is the same 36px (40 on Team)
+ * as every other lead. It was drawn 4px outside it, and one ringed face in a list read as a larger, 44px avatar. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-av--late { box-shadow: inset 0 0 0 2px var(--b-amber-solid), inset 0 0 0 4px #FFFFFF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-av--on { box-shadow: inset 0 0 0 2px var(--b-green-solid), inset 0 0 0 4px #FFFFFF; }
+/* Final polish: a row's state under its name and sub-line (Team on phones): grey words or an exception chip, one place. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-row__state { display: flex; align-items: center; min-width: 0; margin-top: var(--b-space-4); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-row__state:empty { display: none; }
+/* Final polish: a swap's two names round the bold swap glyph; a name never splits and the glyph stays with the first. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-swapnames { display: inline-flex; flex-wrap: wrap; align-items: center; column-gap: 6px; min-width: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-swapnames__a { display: inline-flex; align-items: center; gap: 6px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-swapnames__ic { flex: none; width: var(--b-ic-inline); height: var(--b-ic-inline); color: var(--b-ink); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-faces .b-av { box-shadow: 0 0 0 2px #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-faces { display: flex; flex: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-faces .b-av + .b-av { margin-left: -6px; position: relative; }
