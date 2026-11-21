@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-19T17:55:25Z",
+  "observedAt": "2026-11-21T21:03:49Z",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "62d791ad702f6b9590f037e3de647062291d42b7",
+      "sha": "1f6602cb94a8f54f87cbb3a12083c2bf7dd9ee78",
       "disposition": "target",
-      "reason": "Published Development base for the Employee Home date-range fix. It includes the November 20 linear Collab integration and the staged Clocker face verification backend."
+      "reason": "Development base of the approved icon candidate 42792d7eb3e67768c63551bd175372aa5e00e378, covering the portal profiles and Clocker."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "9075be11a1e6989ea86942a67a68b28e8179bb92",
+      "sha": "6601ee82a349e45f04192112e1c1a50715c60487",
       "disposition": "held",
-      "reason": "The prior Collab source d00ca97b6b4e301ab05de72684c58e4ae1647186 is preserved in join 87b22d32926120f5225ffee90eec755098321bba and its resolved tree was carried into Development by 2e42ee98a. This scoped integration takes the shared compact date formatter from c3ede1f86 for the Employee Home server fix 2f23dbabb68bf81380f8c4887b1a7947266e7b38. The rest of this Collab head is held for separate integration."
+      "reason": "Held for separate integration. The approved icon candidate descends directly from Development. This collaboration tip contains separate UI and work-restriction changes, manual rebuilds and the bilingual voice guide."
     },
     {
       "branch": "scrum190-signup-ui",
@@ -533,6 +533,13 @@
       "disposition": "superseded",
       "reason": "Jose explicitly authorized this extra branch on November 18, recorded in docs/handoffs/2026-11-18-30-day-phase.md. Exact source is already included through collaboration merge 4e83dfa53; the exception is scoped to this phase, not other branches. November 19 linear publication: this original head is preserved by immutable qualified assembly candidate/backend-completion/20261118-development-combined-02 at05f2553182b387f20495c19070cfbabd50a987ef, which contains the actual integration ancestry. Its byte-identical tree is republished from Development22107 to obey GitHub required linear history; this record does not claim the original head is an ancestor of that linear delivery. The two active source branches remain active and unchanged; the password source retains its exact approved archive. See2026-11-19-linear-development-publication.md and the exact content-equivalence receipt. No source gate or branch ceiling is relaxed.",
       "archiveRef": "refs/tags/archive/branches/2026-11-19/nevora-30-day-phase"
+    },
+    {
+      "branch": "claude/voice-guide-20261121",
+      "sha": "9fc6514a8d2594b65aea87c12bed2adb2baa8416",
+      "disposition": "reference",
+      "reason": "PR #41 changed only docs/design/voice.md. Git blob f218912360d9bf9b6d16cef6482a94e62f69849d is identical on the collaboration tip 6601ee82a. Jose authorized preserving the PR head under this archive, closing the PR and retiring its branch. The guide remains on the collaboration line for separate review.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-21/claude/voice-guide-20261121"
     }
   ],
   "maximumActiveBranches": 3,
