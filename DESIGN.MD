@@ -727,6 +727,46 @@ item names the lines it supersedes; line numbers are from the file before this s
   - *Cancel approval* (Team time off › Approved): a quiet text action under the row opens an in-place confirmation;
     the red-edged "Cancel time off" is the commit. The list then says the paid time went back to the balance.
 
+- **Final polish, Owner (Nov 20, 2026).** Jose asked for a last pass on the Owner's screens before production and a
+  Home that reads as a dashboard.
+  - *Today.* Home's "On now" card is "Today": three figures (people scheduled today, their scheduled hours, the most
+    people on at once and its hour), then one bar per hour of today's published schedule, its height the people working
+    in that hour. Past hours are grey, the current hour is teal and labelled "Now", later hours teal-tint. Everything is
+    counted from Today's shifts; a day with no shifts draws no chart. From 768px the people on now keep their rows under
+    it. On phones the card shows too (it was hidden): one row of faces, "5 clocked in", opens the list of everyone. The
+    bars rise once when the read arrives (300ms, 14ms apart) and are still under reduced motion.
+  - *Shortcuts.* Four links: Add shift, Add employee, Send update, Time off (the last two only while their module is
+    on). On desktop they are 36px glass pills on the band, in the rail's column beside the live figures, which now
+    span the main column. On phones and tablets they are white 56px tiles under Things to do (two across; four across
+    from 768px), each with the 36px teal-50 circle. Only one of the two is displayed at a width.
+  - Supersedes "On now is a desktop and tablet card" (MG-011) and the 640px live strip on desktop Home.
+  - *One phone frame.* Back-link pages (the q-nav and c-nav layer) match the main screens: 14px card gutter, title at
+    20, the back circle at 14,6, one band gradient, the first card 20px under the hero's last line with 40px of teal
+    under it, tabs 16px under a title, row dividers edge to edge, cards 12px apart, and the page ends 40px above the tab
+    bar. Supersedes the 16px gutter, the 44px run-under and the inset dividers in the Nov 5 phone notes.
+  - *Desktop bands.* Updates, Notifications, Requests and Exchange end at 296 with their tabs at one height. More,
+    Help, Profile and Notifications share Profile's frame from 768px: no back link, title at 88, the 812 column. Sign
+    out is the More card's last row. The Schedule's first card starts at 244. Create actions on the band lead with a
+    bold Plus. Timecards' in-card tabs are the segmented control.
+  - *Rows.* On phones a person's state sits under the name and its sub-line on every Team row. A ringed avatar keeps
+    the 36px lead (the ring is drawn inside). Two names in a swap are joined by a bold ArrowsLeftRight, said as "and"
+    (`BSwapNames`). An open shift row's title is its time range; day, place and need are its facts line. Decline and
+    Approve sit right-aligned, 8px apart, 112px each on phones.
+  - *Forms.* Posted open shifts is a kit page (card, 560 field block, one filled button) and lights Schedule. Save
+    and Cancel sit in the card footer from 768px on every form; Save appears after a change. New update shows its step
+    line. Date and time fields draw the bold calendar and clock in field-edge grey with a grey empty format.
+  - *Open for Jose:* one date-range form ("Nov 16 – 22" or "Nov 16–22"; both are in use), the kit's own quiet
+    button (still the grey fill, about 75 uses, Employee pages included), and the new Insights line "Late clock-ins
+    aren't counted for this period."
+  - *Three button kinds (round 2).* On Owner and Manager pages a secondary action (Download, Upload, Request time
+    correction, Prepare, Choose dates, Try again) is the tinted pill, whatever older class draws it (`c-btn--secondary`,
+    `q-btn--sec`, `q-bs`, `wc-btn--sec`). Cancel, Decline, Back and Keep are quiet text buttons (`b-rowact--quiet`). The
+    grey fill belongs to the disabled pair only. Employee and Lead pages keep the grey secondary until their own pass.
+  - *Timecard sheet.* "Needs attention" is the kit's amber note with its one action. The decision footer stays at the
+    foot of the sheet on phones and of the panel from 768px. After a save the result is a white card with the kit's
+    done mark. In the list and the sheet only an exception is a chip ("Correction waiting", "Missing clock-out");
+    "Ready to approve" and "Ready to finalize" are quiet text.
+
 ## Previous direction (October 20, 2026; superseded)
 
 | Surface | Design then | Source |

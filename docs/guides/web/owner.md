@@ -36,6 +36,14 @@ If an operator supplied your initial password, sign in with it and choose a
 different password on the replacement screen. The initial password grants no
 workplace session. After replacement, sign in with your new password.
 
+**Home** leads with what needs you, then **Today**: the people scheduled today,
+their scheduled hours, the busiest hour, and one bar for each hour of today's
+published schedule, with the current hour marked. People who are clocked in
+are listed under it; on a phone they are one row that opens the list of
+everyone. The chart counts the published schedule. It is not an estimate of
+hours worked. Four shortcuts open **Add shift**, **Add employee**, **Send
+update** and **Time off**; the last two show only while their feature is on.
+
 **First-week setup** on Home shows five steps: add a team member, set up
 locations and staffing rules, publish your first schedule, register a time clock
 tablet and review your first timecard. Each step opens its own page, and Home
