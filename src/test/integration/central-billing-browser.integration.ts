@@ -78,6 +78,7 @@ it.each(['chromium','webkit'] as const)('checks the central billing entry, canon
   await page.keyboard.press(engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab');const retry=page.getByRole('button',{name:'Reintentar la solicitud original',exact:true});expect(await retry.evaluate((element:HTMLElement)=>document.activeElement===element)).toBe(true);await page.keyboard.press('Enter');await page.getByRole('heading',{name:'Owned provider navigation witness',exact:true}).waitFor();
   const attempts=fixture.requests.filter(r=>r.path==='/v1/checkout'&&r.method==='POST');expect(attempts).toHaveLength(2);expect(attempts[0].operation).toBe(attempts[1].operation);expect(attempts.map(r=>r.lang)).toEqual(['es','es']);expect(fixture.provider.sessions.size).toBe(1);expect(await fixture.counts()).toEqual({operations:1,intents:1});expect(navigations).toBe(1);retryEvidence={attempts:attempts.length,unchangedKey:attempts[0].operation===attempts[1].operation,languages:attempts.map(r=>r.lang),navigations};
   const session=[...fixture.provider.sessions.values()][0];
+  expect(new URL(page.url()).pathname).toBe('/g/pay/'+session.id);
   expect(session.mode).toBe('setup');expect(session.customer).toBe(originalCoverage.stripe_customer_id);
   expect(fixture.provider.subscriptions.size).toBe(1);expect(session.subscription).toBeNull();
   expect(await fixture.coverage()).toEqual(originalCoverage);

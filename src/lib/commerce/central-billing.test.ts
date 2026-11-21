@@ -26,6 +26,20 @@ it('recovers a lost reply with the exact original key/body and rejects changed a
 });
 it('binds a reviewed plan change to its original plan and language',async()=>{const f=fixture();await f.client.enter(proof);await f.client.action('team','es');const call=f.transport.mock.calls.at(-1)!;expect(call[0]).toBe(origin+'/v1/plan-change');expect(JSON.parse(String(call[1].body))).toEqual({lang:'es',plan:'team'});expect(await f.client.action('small','es')).toEqual({kind:'conflict'});});
 it.each(['http://checkout.stripe.com/c/pay/fake','https://checkout.stripe.com.evil.invalid/c/pay/fake','https://user:secret@checkout.stripe.com/c/pay/fake','https://checkout.stripe.com:444/c/pay/fake','https://billing.stripe.com/elsewhere'])('rejects unsafe financial navigation %s',url=>expect(()=>stripeBillingDestination({url})).toThrow());
+it('navigates to the Stripe Checkout session URL returned by the provider',async()=>{
+ const f=fixture();
+ await f.client.enter(proof);
+ const url='https://checkout.stripe.com/g/pay/cs_test_FictionalSession#fictional';
+ f.transport.mockResolvedValueOnce(json({url}));
+ expect(await f.client.action('checkout','en')).toEqual({kind:'navigate',url});
+});
+it.each([
+ 'https://checkout.stripe.com/g/pay/redirect',
+ 'https://checkout.stripe.com/g/pay/cs_test_FictionalSession/elsewhere',
+ 'https://checkout.stripe.com.evil.invalid/g/pay/cs_test_FictionalSession',
+])('rejects malformed or foreign Stripe Checkout session URLs %s',url=>{
+ expect(()=>stripeBillingDestination({url})).toThrow();
+});
 it('keeps unknown custody when a successful response has an unsafe destination',async()=>{const f=fixture();await f.client.enter(proof);f.transport.mockResolvedValueOnce(json({url:'https://evil.invalid/private'}));expect(await f.client.action('checkout','en')).toEqual({kind:'unknown'});expect(f.client.hasPending()).toBe(true);expect(f.key).toHaveBeenCalledTimes(1);});
 it('does not publish a late financial URL after pause, and settles cancellation before a held transport returns',async()=>{
  const f=fixture();await f.client.enter(proof);let release!:(r:Response)=>void;f.transport.mockImplementationOnce(()=>new Promise<Response>(resolve=>{release=resolve;}));

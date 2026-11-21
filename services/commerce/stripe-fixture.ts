@@ -109,7 +109,7 @@ export class StripeFixture {
     ["prod_nevora", { id: "prod_nevora", object: "product", tax_code: "txcd_10103000" }],
   ]);
   readonly client: Stripe;
-  constructor() {
+  constructor(private readonly checkoutPath: "/c/pay/" | "/g/pay/" = "/c/pay/") {
     this.client = new Stripe("sk_test_fictional", {
       httpClient: Stripe.createFetchHttpClient((input, init) =>
         this.fetch(input, init),
@@ -295,15 +295,16 @@ export class StripeFixture {
         ),
       );
     else if (url.pathname === "/v1/checkout/sessions" && method === "POST") {
-      const id = `cs_fixture_${this.sessions.size + 1}`,
-        customer = form.get("customer")!;
+      const idPrefix = this.checkoutPath === "/g/pay/" ? "cs_test_fixture" : "cs_fixture_";
+      const id = `${idPrefix}${this.sessions.size + 1}`;
+      const customer = form.get("customer")!;
       const session: Session = {
         id,
         object: "checkout.session",
         customer,
         mode: form.get("mode")!,
         status: "open",
-        url: `https://checkout.stripe.com/c/pay/${id}`,
+        url: `https://checkout.stripe.com${this.checkoutPath}${id}`,
         expires_at:
           Number(form.get("expires_at")) ||
           Math.floor(Date.now() / 1000) + 86400,
