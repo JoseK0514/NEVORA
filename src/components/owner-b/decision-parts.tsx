@@ -21,22 +21,31 @@ export function DecisionResult({ tone, title, line, icon, className, silent }: {
   </div>;
 }
 
-/* DecisionAsk: the one question before a negative decision that already asks one (Decline time off, Cancel time off). A
- * 600 question, one consequence line, then the safe way out as quiet text on the left and the red-edged pill that
- * commits on the right, both 44px. The commit is a submit button of the caller's form. */
-export function DecisionAsk({ groupLabel, question, consequence, keep, keepLabel, onKeep, go, goLabel, goValue, groupRef, className, lang }: {
+/* DecisionAsk: the one question before a decision (Decline, Cancel time off, Close request, Finalize a timecard). A
+ * 600 question, one consequence line, then the safe way out as quiet text on the left and the pill that commits on the
+ * right, both 44px. The commit is red-edged (a negative decision) or, with `tone="commit"`, the filled teal of a step
+ * that is not destructive (Finalize). It is a submit button of the caller's form (`goName`, `goValue`; with no value it carries no name, so it adds
+ * nothing to what the form sends), or with `onGo`
+ * a plain button that calls the caller's own handler. `titleRef` makes the question focusable, so focus can move to it
+ * when it appears (ask-step.ts). */
+export function DecisionAsk({ groupLabel, question, consequence, keep, keepLabel, onKeep, go, goLabel, goValue, goName = "decision", onGo, tone, groupRef, titleRef, className, lang }: {
   /** The group's accessible name ("Decline time off for Ana Colon?"). */
   groupLabel: string; question: ReactNode; consequence: ReactNode;
   keep: ReactNode; keepLabel?: string; onKeep: () => void;
-  go: ReactNode; goLabel?: string; goValue: string;
-  groupRef?: Ref<HTMLDivElement>; className?: string; lang?: string;
+  go: ReactNode; goLabel?: string; goValue?: string; goName?: string;
+  /** The commit is the caller's own handler, not a form's submit. */
+  onGo?: () => void;
+  /** "commit": a step forward that is not destructive, so the filled teal button, not the red edge. */
+  tone?: "commit";
+  groupRef?: Ref<HTMLDivElement>; titleRef?: Ref<HTMLParagraphElement>; className?: string; lang?: string;
 }) {
-  return <div ref={groupRef} className={className ? `b-ask ${className}` : "b-ask"} role="group" aria-label={groupLabel} lang={lang}>
-    <p className="b-ask__t">{question}</p>
+  return <div ref={groupRef} className={className ? `b-ask ${className}` : "b-ask"} role="group" aria-label={groupLabel} lang={lang} data-tone={tone}>
+    <p className="b-ask__t" ref={titleRef} tabIndex={titleRef ? -1 : undefined}>{question}</p>
     <p className="b-ask__s">{consequence}</p>
     <div className="b-ask__acts">
       <button type="button" className="b-btn b-btn--quiet b-rowact b-rowact--quiet b-ask__keep" onClick={onKeep} aria-label={keepLabel}>{keep}</button>
-      <button type="submit" name="decision" value={goValue} className="b-btn b-btn--quiet b-ask__go" aria-label={goLabel}>{go}</button>
+      {onGo ? <button type="button" className="b-btn b-btn--quiet b-ask__go" onClick={onGo} aria-label={goLabel}>{go}</button>
+        : <button type="submit" name={goValue === undefined ? undefined : goName} value={goValue} className="b-btn b-btn--quiet b-ask__go" aria-label={goLabel}>{go}</button>}
     </div>
   </div>;
 }

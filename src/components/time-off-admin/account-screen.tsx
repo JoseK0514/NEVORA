@@ -1,4 +1,6 @@
 "use client";
+import { DiscardGuard } from "@/components/kit/discard-dialog";
+import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
@@ -214,7 +216,7 @@ export function AccountScreen(props: AccountScreenProps) {
         </div>
       </CorpCard>
       {problems.length ? <p className="rs-err rs-err--sum" ref={problemRef} tabIndex={-1} role="alert"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{t.problems(problems.length)}</p> : null}
-      <div className="rs-foot"><Act kind="text" disabled={busy} onClick={() => { setDraft(null); setProblems([]); setStep("view"); }}>{t.cancel}</Act><Act kind="teal" disabled={busy} onClick={toReview}>{t.review}</Act></div>
+      <div className="rs-foot"><Act kind="text" disabled={busy} onClick={() => leaveWithDiscardGuard(() => { setDraft(null); setProblems([]); setStep("view"); })}>{t.cancel}</Act><Act kind="teal" disabled={busy} onClick={toReview}>{t.review}</Act></div>
     </>;
   } else if (step === "review" && draft) {
     const row = current(draft), delta = draftDelta(draft) ?? 0, before = row?.minutes ?? 0;
@@ -262,6 +264,9 @@ export function AccountScreen(props: AccountScreenProps) {
     <CorpTitle id={TITLE_ID} title={title} sub={stepLine ? `${name} · ${stepLine}` : name} wide focusTarget />
     <p className="rs-sr" role="status" aria-live="polite">{said}</p>
     {body}
+    {/* Leaving the flow with a typed amount or note that is not saved asks first (Nov 21, 2026). Review and Back are steps of
+      the same flow and never ask; a save that is being checked keeps its own hold. */}
+    <DiscardGuard dirty={!!draft && !custody && (draft.amount.trim() !== "" || draft.note.trim() !== "")} lang={lang} />
   </CorpPage>;
 }
 

@@ -3,6 +3,7 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import Link from 'next/link';
 import {useEffect,useRef,useState,type MutableRefObject} from 'react';
 import {useRouter} from 'next/navigation';
+import {DiscardGuard} from './kit/discard-dialog';
 import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import {PaperPlaneTiltIcon} from '@phosphor-icons/react/dist/ssr/PaperPlaneTilt';
 import {UsersThreeIcon} from '@phosphor-icons/react/dist/ssr/UsersThree';
@@ -93,6 +94,9 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
   </section>
   :<div className={cc.ccSubmit}><button className="sg-cta" disabled={(disabled&&!previewing)||undefined} aria-disabled={previewing||undefined} aria-busy={previewing||undefined} onClick={event=>{if(previewing)event.preventDefault();}} type="submit"><PendingLabel pending={previewing} pendingText="Checking audience…">Preview audience</PendingLabel></button><p className="sg-after">Nothing is published until you review the audience and choose Publish.</p></div>;
  return <form ref={formRef} id="compose-form" className="wb-form" onSubmit={e=>{e.preventDefault();void review();}}>
+  {/* Leaving New update or Edit update with a title or message that is not published asks first (Nov 21, 2026; Owner and
+    Manager only). Next, Edit and Back are steps of this form and never ask; a publish leaves by the router. */}
+  {mode==='manager'?<DiscardGuard dirty={!action.pending&&(title!==(initial?.title??'')||body!==(initial?.body??''))}/>:null}
   <fieldset disabled={disabled} className="wb-form"><legend className="nv-sr">{editing?'Edit update':context.management?'New update':'Message today’s team'}</legend>
    {signature?<>
    <SigHead id="compose-message-heading" title="Message"/>

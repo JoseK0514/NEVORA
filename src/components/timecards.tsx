@@ -29,6 +29,7 @@ import {QuietSheet,SheetCancel} from './quiet/quiet-sheet';
 import './timecards-corp.css';
 import {BAvatar,BBusyLabel,BButton,BCallout,BCard,BChip,BDoneMark,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BSegs,BStack,BState,BStatusText} from './owner-b/b-kit';
 import {momentsCopy} from './owner-b/moments-copy';
+import {DecisionAsk} from './owner-b/decision-parts';
 import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
@@ -401,6 +402,22 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
    });
    return()=>cancelAnimationFrame(frame);
   },[doneKey]);
+  // Jose (Nov 21, 2026): Finalize on a timecard asks first. Tapping "Finalize timecard" (the footer's button, or the quiet
+  // line while other cards still wait) opens the question in its place and sends nothing; "Not yet" brings the button
+  // back; the question's "Finalize timecard" is the same act(card,'FINALIZE') as before, once. The question belongs to
+  // the card it was asked for: another card, another week or a closed panel drops it. Focus moves to the question and,
+  // on "Not yet" or Escape, back to the button that opened it; Escape closes the question before the panel.
+  const [askFinalize,setAskFinalize]=useState<string|null>(null);
+  const finalizeTitle=useRef<HTMLParagraphElement>(null),finalizeOpener=useRef<HTMLButtonElement>(null),finalizeBack=useRef(false);
+  const keepFinalize=useCallback(()=>{finalizeBack.current=true;setAskFinalize(null);},[]);
+  useEffect(()=>{setAskFinalize(current=>current&&current!==openId?null:current);},[openId,period]);
+  useEffect(()=>{
+   if(!askFinalize){if(finalizeBack.current){finalizeBack.current=false;finalizeOpener.current?.focus();}return;}
+   finalizeTitle.current?.focus();
+   const key=(event:KeyboardEvent)=>{if(event.key!=='Escape')return;event.preventDefault();event.stopPropagation();keepFinalize();};
+   document.addEventListener('keydown',key,true);
+   return()=>document.removeEventListener('keydown',key,true);
+  },[askFinalize,keepFinalize]);
   // Reliability R-04: the address names the period. When it changes from outside the period control (the Time tab's
   // link to the bare page, browser history), the page moves to that period, so the screen agrees with a reload.
   // The new address can arrive a moment before the server's default period for it, so both are part of the check.
@@ -518,6 +535,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       if(!next)return;
       event.preventDefault();setOpenId(next.id.slice('timecard-'.length));next.scrollIntoView({block:'nearest'});
     };
+    // The question shows only where its button would be live: this card, approved, nothing in flight, no open issue.
+    const finalizeFirst=openItem?.card.employeeName.trim().split(/\s+/)[0]??'';
+    const finalizeAsk=openItem&&askFinalize===openItem.card.employeeId&&openItem.state==='APPROVED'&&!locked&&!own&&!openItem.card.issues.length
+      ?<DecisionAsk className="c-tc-ask" tone="commit" titleRef={finalizeTitle} groupLabel={M.finalizeAsk(finalizeFirst)} question={M.finalizeAsk(finalizeFirst)} consequence={M.finalizeAskLine}
+        keep={M.notYet} onKeep={keepFinalize} go={M.finalizeTimecard} onGo={()=>{setAskFinalize(null);void act(openItem,'FINALIZE');}}/>:null;
     const sheetNode=<QuietSheet open={sheetOpen} modal={!nonModal} labelledBy="cm-tc-sheet-heading cm-tc-sheet-title" onClose={()=>{userClosedSheet.current=true;closeSheet();}}>
       <div className="c-sheet c-tc-sheet" onKeyDown={nonModal?panelKeys:undefined}>
         <div className="c-sheet__nav c-tc-sheet__bar"><span aria-hidden="true"/><h2 className="c-sheet__title" id="cm-tc-sheet-heading">Timecard</h2>
@@ -567,7 +589,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} aria-busy={flies('REOPEN')||undefined} onClick={()=>void act(openItem,'REOPEN')}>{busyLabel(flies('REOPEN'),M.reopenTimecard)}</button></>
                 :<button type="button" className="c-link c-tc-sheet__quiet" disabled={locked} onClick={()=>setReopenFor(openItem.card.employeeId)}>{M.reopen}</button>:
               own?<p className="c-tc-sheet__note">{approver.card}</p>:null}
-            {!justSaved(openItem)&&!lost&&!own&&openItem.state==='APPROVED'&&!allApproved&&!(waiting&&!pending&&!outcomes)?<button type="button" className="c-link c-tc-sheet__quiet" disabled={locked||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>void act(openItem,'FINALIZE')}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>:null}
+            {!justSaved(openItem)&&!lost&&!own&&openItem.state==='APPROVED'&&!allApproved&&!(waiting&&!pending&&!outcomes)?finalizeAsk??<button ref={finalizeOpener} type="button" className="c-link c-tc-sheet__quiet" disabled={locked||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>setAskFinalize(openItem.card.employeeId)}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>:null}
             {!own&&openItem.state!=='FINALIZED'&&!(waiting&&!pending&&!outcomes)&&done?.employeeId!==openItem.card.employeeId?<p className="c-tc-sheet__note">{stepsLine}</p>:null}
           </div>
           {/* OW-039: the one decision is the sheet's footer. On a phone it stays at the bottom of the sheet, above the safe
@@ -580,7 +602,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             openItem.state==='FINALIZED'||own||(waiting&&!pending&&!outcomes)?null:
             // Round 4: an approved card offers its next step only (Finalize), not Approve again. It is the footer's filled
             // button only once every card is approved; until then it is a quiet line among the actions above.
-            openItem.state==='APPROVED'?allApproved?<div className="c-tc-sheet__foot"><button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>void act(openItem,'FINALIZE')}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button></div>:null:
+            openItem.state==='APPROVED'?allApproved?<div className="c-tc-sheet__foot" data-ask={finalizeAsk?'':undefined}>{finalizeAsk??<button ref={finalizeOpener} type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>setAskFinalize(openItem.card.employeeId)}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>}</div>:null:
             <div className="c-tc-sheet__foot"><button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('APPROVE')||undefined} onClick={()=>void act(openItem,'APPROVE')}>{busyLabel(flies('APPROVE'),openEmpty?'Approve with no hours':'Approve timecard')}</button></div>}
           {openItem.history.length?<details className="c-tc-sheet__more c-tc-sheet__history"><summary>{M.earlierVersions(openItem.history.length)}</summary>
             {openItem.history.map(h=><div key={h.operationId}><h3>{h.action==='APPROVE'?'Approved':h.action==='FINALIZE'?'Finalized':'Reopened'}</h3>

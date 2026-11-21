@@ -1,5 +1,6 @@
 "use client";
 
+import { FormDiscardGuard } from "./kit/discard-dialog";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { ConfigurationForm, type ConfigurationResult } from "./configuration-form";
@@ -205,6 +206,9 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
         <button type="submit" className="c-btn c-shift__submit" disabled={!!props.blocked}>{mode === "edit" ? "Save changes" : "Save shift"}</button>
       </CorpFormFooter>
     </ConfigurationForm>
+    {/* Leaving with a shift that is not saved asks first (Nov 21, 2026). A save leaves through the server's redirect, which
+      is never asked about. */}
+    <FormDiscardGuard form={formId} />
     {props.footer ?? null}
   </div>;
 }

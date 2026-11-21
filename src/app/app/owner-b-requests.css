@@ -276,3 +276,40 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-request__decide:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) > .tod-unknown { padding:var(--b-space-20) var(--b-inset-wide) !important; }
   }
 }
+
+/* ---------- Jose (Nov 21, 2026): every Decline, and Finalize on a timecard, asks first. The same block (.b-ask) in the
+ * places that had one tap: a shift request's row (swap, cover, call-out, Close request), the time off request's own
+ * page, a time correction's card, a timecard's sheet and a Rondo weekly plan. Only its place is here.
+ * - data-tone="commit": the commit is a step forward, not a negative decision (Finalize), so it is the filled teal
+ *   button; the way out stays quiet on the left. ---------- */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-ask[data-tone="commit"]:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) .b-ask__acts > .b-ask__go { background:var(--b-teal) !important; color:#FFFFFF !important; box-shadow:none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-ask[data-tone="commit"]:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) .b-ask__acts > .b-ask__go:active { background:var(--b-teal-press) !important; }
+  /* On every new question the way out starts on the block's left edge (its words on the question's column) and the
+   * commit ends on the right edge. When the two can't share a line (a narrow phone, large text) the way out keeps the
+   * left of the first line and the commit the right of the next. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-ask:is(.tod-ask, .q-shift-ask, .manager-correction-ask, .c-tc-ask, .wk-ask):not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) .b-ask__acts { justify-content:flex-start !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-ask:is(.tod-ask, .q-shift-ask, .manager-correction-ask, .c-tc-ask, .wk-ask):not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) .b-ask__acts > .b-ask__keep { margin-left:calc(-1 * var(--b-space-12)) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-ask:is(.tod-ask, .q-shift-ask, .manager-correction-ask, .c-tc-ask, .wk-ask):not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) .b-ask__acts > .b-ask__go { margin-left:auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-ask:is(.manager-correction-ask, .c-tc-ask, .wk-ask):not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) { margin:0 !important; }
+  /* A shift request's row: the block sits inside the form's fieldset (display: contents), where the buttons were. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page .q-requests > li.q-request form.q-acts-form .shift-change-fields > .b-ask:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) { grid-column:1 / -1 !important; }
+  /* The time off request's own page: a white card on the canvas, across the footer, as the "not confirmed" note is. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-request .c-request__foot:has(.tod-ask):not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) > .c-request__decide { flex:1 1 100% !important; min-width:0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-request .c-request__foot:has(.tod-ask):not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) > .c-note { display:none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-request__decide:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) > .b-ask.tod-ask { margin:0 !important; padding:var(--b-space-16) var(--b-inset) !important; border-radius:var(--b-radius-card) !important; background:#FFFFFF !important; box-shadow:var(--b-elev-1, 0 0 0 1px var(--b-line)) !important; }
+  /* A timecard's sheet: in the footer the block takes the button's place, full width. */
+  /* A timecard's sheet: the sheet's ground and its footer are the canvas grey, so the block is a white card, as the
+   * cards above it are. It takes the place of the quiet line among the actions, or of the footer's button, full width. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] dialog.q-sheet .c-tc-sheet .b-ask.c-tc-ask:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) { align-self:stretch !important; padding:var(--b-space-16) !important; border-radius:var(--b-radius-card) !important; background:#FFFFFF !important; box-shadow:var(--b-elev-1, 0 0 0 1px var(--b-line)) !important; }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-request__decide:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) > .b-ask.tod-ask { padding:var(--b-space-20) var(--b-inset-wide) !important; }
+  }
+}
+
+/* Final polish (Nov 21, 2026): a question asked inside a row has no grey panel (no tint behind words). It is set off by
+ * one hairline above it, on the row's text column. A question that is a card of its own (the request page, the timecard
+ * sheet, a person's page) keeps its white card. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-ask:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7):not(.tod-ask, .c-tc-ask, .c-status-ask) { padding:var(--b-space-12) 0 var(--b-space-4) !important; border-top:1px solid var(--b-line) !important; border-radius:0 !important; background:none !important; box-shadow:none !important; }
+}

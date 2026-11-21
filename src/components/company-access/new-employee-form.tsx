@@ -8,6 +8,7 @@ import type {ScopeSelection} from '@/lib/company-access/model';
 import {CorpField,CorpFormFooter} from '@/components/corp/corp';
 import {ChoiceField,FormHead,FormHeadBack,FormHeadLink,PhoneField} from '@/components/team/team-forms';
 import {ReturnToNext} from '@/components/team/return-to-next';
+import {FormDiscardGuard} from '@/components/kit/discard-dialog';
 import {EmployeeAccessForm} from './employee-access-form';
 import {createCommandFromForm} from './commands';
 import {OperationalScopeSelectionFields} from './manager-operational-scope-fields';
@@ -92,5 +93,8 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
     {step===1?<button key="next" type="button" className="c-btn" onClick={next} disabled={blocked}>Next</button>:<button key="add" type="submit" className="c-btn" disabled={blocked}>Add</button>}
    </CorpFormFooter>
   </EmployeeAccessForm>
+  {/* Leaving the flow with typed details that are not added asks first (Nov 21, 2026). Next and Back are steps of the
+    same form and never ask; once the person is added there is nothing to lose. */}
+  <FormDiscardGuard form="new-employee-form" off={added}/>
  </>;
 }

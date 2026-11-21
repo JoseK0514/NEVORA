@@ -1,5 +1,6 @@
 'use client';
 
+import { FormDiscardGuard } from '@/components/kit/discard-dialog';
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent } from 'react';
 import { CaretRightIcon, PlusIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import { CorpCard, CorpNav, CorpPage, CorpTitle } from '../corp/corp';
@@ -160,7 +161,7 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
   const anchorValue = anchor ? new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${anchor}T12:00:00Z`)) : '';
   const lead = reminderWindow(preferences.automation.reminderLeadDays);
   const reminderValue = !preferences.automation.reminders ? 'Off' : lead === 0 ? 'On payday' : `${lead} ${lead === 1 ? 'day' : 'days'} before`;
-  return <form ref={form} className="c-pset__form" data-form="company" {...formKeys} onSubmit={save} aria-label={`Company defaults, revision ${revision}`}><fieldset disabled={locked} className="c-pset__fields">
+  return <form ref={form} className="c-pset__form" data-form="company" {...formKeys} onSubmit={save} aria-label={`Company defaults, revision ${revision}`}>{/* Leaving with payroll settings that are not saved asks first (Nov 21, 2026); a saved revision starts clean. */}<FormDiscardGuard resetKey={revision} /><fieldset disabled={locked} className="c-pset__fields">
     <PayGroup id="payroll-schedule" label="Pay schedule">
     <details className="c-pset__item"><SettingRow title="How often" value={frequencyLabel} /><div className="c-pset__body wb-form">
       <label>Frequency<select aria-label="Frequency" name="frequency" defaultValue={preferences.schedule.frequency}><option value="WEEKLY">Weekly</option><option value="BIWEEKLY">Every two weeks</option><option value="SEMIMONTHLY">Twice a month</option><option value="MONTHLY">Monthly</option></select></label>
@@ -238,7 +239,7 @@ function ExceptionForm({ employeeId, revision, language, initialRules, preferenc
     setSaving('exception'); const values = new FormData(event.currentTarget);
     try { const chosen = values.get('exceptionLanguage'); void operation.submit({ action: 'SAVE_EXCEPTION', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), exception: { employeeId, language: chosen === 'en' || chosen === 'es' ? chosen : null, rules: native ? initialRules : inherit ? null : rulesFromForm(values, rules) } }); }
     catch (failure) { setError(failure instanceof Error ? failure.message : 'Check this employee exception.'); }
-  }}><fieldset disabled={operation.locked} className="wb-form">
+  }}>{/* Leaving with payroll settings that are not saved asks first (Nov 21, 2026); a saved revision starts clean. */}<FormDiscardGuard resetKey={revision} /><fieldset disabled={operation.locked} className="wb-form">
     <p className="wb-note">Exception revision {revision} · {native ? 'Wage, withholding and deduction details are checked separately from the statement language.' : 'Provider imports still set the actual gross and net pay.'}</p>
     <label>Statement language<select aria-label="Statement language" name="exceptionLanguage" defaultValue={language ?? ''}><option value="">Inherit company language</option><option value="en">English</option><option value="es">Español</option></select></label>
     {!native && <label className="wb-check"><input type="checkbox" checked={inherit} onChange={event => setInherit(event.target.checked)} /><span>Inherit company deduction and contribution rules</span></label>}
@@ -265,7 +266,7 @@ function GrantForm({ employeeId, revision, review, approve, operation }: { emplo
     const problem = flagProblems(event.currentTarget); if (problem) { setError(problem); return; }
     setSaving('access'); const values = new FormData(event.currentTarget);
     void operation.submit({ action: 'SET_GRANT', expectedRevision: revision, reason: String(values.get('reason')).trim(), grant: { employeeId, review: canReview, approve: canApprove } });
-  }}><fieldset disabled={operation.locked} className="wb-form">
+  }}>{/* Leaving with payroll settings that are not saved asks first (Nov 21, 2026); a saved revision starts clean. */}<FormDiscardGuard resetKey={revision} /><fieldset disabled={operation.locked} className="wb-form">
     <label className="wb-check"><input type="checkbox" checked={canReview} onChange={event => { setReview(event.target.checked); if (!event.target.checked) setApprove(false); }} /><span>Review payroll amounts and documents</span></label>
     <label className="wb-check"><input type="checkbox" checked={canApprove} onChange={event => { setApprove(event.target.checked); if (event.target.checked) setReview(true); }} /><span>Approve an exact reviewed payroll revision</span></label>
     <label>Access change reason<textarea name="reason" required maxLength={300} rows={3} /></label>

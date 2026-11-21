@@ -1,5 +1,6 @@
 "use client";
 
+import { leaveWithDiscardGuard } from "./kit/use-discard-guard";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { MagnifyingGlassIcon, XCircleIcon } from "@phosphor-icons/react/ssr";
@@ -146,7 +147,8 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
     const item = results[index];
     if (!item) return;
     close();
-    router.push(item.href);
+    // A form with edits that are not saved asks "Discard changes?" first (kit/use-discard-guard.ts); otherwise at once.
+    leaveWithDiscardGuard(() => router.push(item.href));
   }
   function clear() {
     setQuery(""); setActive(0);

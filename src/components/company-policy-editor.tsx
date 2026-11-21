@@ -1,4 +1,5 @@
 "use client";
+import {DiscardGuard} from "./kit/discard-dialog";
 import {useState,useRef,useEffect} from "react";
 import {ArrowCounterClockwiseIcon} from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import {ShieldWarningIcon} from "@phosphor-icons/react/dist/ssr/ShieldWarning";
@@ -364,5 +365,7 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
       <ul className="q-list">{draft?<li className="q-policy-private"><PrivateLaborReview settings={draft.settings} scope={scope} timeZone={timeZone} open={draft.recoveryFrom!==null}/></li>:null}<li><details className="q-details"><summary className="q-row q-row--one"><span className="q-rt"><b>History</b></span><span className="q-rv q-rv--l">{current.state==="not_configured"?"No changes yet":`Revision ${current.expectedRevision}`}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></summary><div className="q-rule__body"><section className="policy-history"><h2>Policy history</h2><p>Saved versions for this location. A version marked unusable stays in the history but isn’t applied.</p><ul>{history.revisions.filter(item=>item.locationId===(scope||null)).sort((a,b)=>b.revision-a.revision).map(item=><li key={item.operationId}><strong>Revision {item.revision}</strong> · {formatBusinessTimestamp(item.changedAt,timeZone)}<br/>{item.state==="unavailable"?<span className="policy-history-unavailable">This version can’t be used. It stays in the history.</span>:item.revision===current.expectedRevision?"Current saved revision":"Earlier valid revision"}<br/>{item.changedKeys===null?"Change details unavailable":item.changedKeys.map(key=>fields.find(([name])=>key.includes(name))?.[1]??({"labor.compensation":"Compensation reference","labor.rates":"Employee rates","labor.budgets":"Labor budgets","labor.calculationMethod":"Calculation method reference"}[key]??"Policy setting")).join(", ")||"No rule changes"}</li>)}</ul>{!history.revisions.some(item=>item.locationId===(scope||null))?<p>No saved policy changes here yet.</p>:null}</section>
         <button className="q-btn q-btn--sec" type="button" disabled={busy} onClick={()=>void refresh()}>Refresh policy history</button></div></details></li></ul>
     </>}
+    {/* Leaving with rule changes that are not saved asks first (Nov 21, 2026). Not once access has ended or the draft is gone. */}
+    <DiscardGuard dirty={dirty&&draft!==null&&readState!=="unauthorized"}/>
   </div>;
 }

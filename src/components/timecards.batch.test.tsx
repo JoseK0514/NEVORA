@@ -531,3 +531,42 @@ it('the set’s result stays when a background read brings the approved rows, an
  await rs.advanceTimersByTimeAsync(10000);const later=html();expect(later).toContain('data-stage="result"');expect(later).toContain('1 timecard approved');expect(later).not.toContain('0 selected');expect(commands).toHaveLength(1);
  window.dispatchEvent(new Event('blur'));expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('data-stage="result"');
 });
+
+// Jose (Nov 21, 2026): Finalize on a timecard asks first. "Finalize timecard" (the sheet's footer once every card is
+// approved, the quiet line while others still wait) opens the question in its place; nothing is sent until its own
+// "Finalize timecard", which is the one FINALIZE command the button used to send.
+it.each([['footer',true],['quiet line',false]] as const)('Finalize asks first (%s): nothing is sent when the question shows or on Not yet; the commit sends the one FINALIZE',async(_where,everyoneApproved)=>{
+ const {DecisionAsk}=await import('./owner-b/decision-parts');
+ const approvedCard=(id:string)=>{const item=worked(id,60);return {...item,state:'APPROVED',revision:1,history:[{operationId:'22222222-2222-4222-8222-222222222222',revision:1,action:'APPROVE',occurredAt:'2026-09-28T12:00:00Z',actorName:'Fictional Reviewer',note:null,sourceHash:'a'.repeat(32),snapshot:item.source}]};};
+ rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[approvedCard('E1'),everyoneApproved?approvedCard('E2'):worked('E2',60)]});const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);return Response.json({status:'finalized',operationId:c.operationId,revision:2});});
+ await mount();
+ const person=nodes(render()).find(n=>n.type==='button'&&n.props.className==='c-tc-person'&&renderToStaticMarkup(n).includes('PRIVATE E1'))!;
+ (person.props.onClick as ()=>void)();
+ const opener=(n:ReactElement<Record<string,unknown>>)=>n.type==='button'&&n.props.children==='Finalize timecard';
+ const question=()=>nodes(render()).find(n=>n.type===DecisionAsk)?.props as undefined|{onKeep:()=>void;onGo:()=>void;tone:string};
+ expect(has(opener)).toBe(true);expect(question()).toBeUndefined();expect(html()).not.toContain('Finalize PRIVATE’s timecard?');
+ // The first tap opens the question where the button was. Nothing is sent.
+ click('Finalize timecard');
+ expect(html()).toContain('<p class="b-ask__t" tabindex="-1">Finalize PRIVATE’s timecard?</p><p class="b-ask__s">It locks this timecard for payroll. Reopening it needs a reason.</p>');
+ expect(html()).toMatch(/<div class="b-ask__acts"><button type="button" class="[^"]*b-ask__keep">Not yet<\/button><button type="button" class="[^"]*b-ask__go">Finalize timecard<\/button><\/div>/);
+ expect(has(opener)).toBe(false);expect(question()?.tone).toBe('commit');expect(commands).toHaveLength(0);
+ // Not yet: the button is back, nothing was sent.
+ question()!.onKeep();
+ expect(question()).toBeUndefined();expect(has(opener)).toBe(true);expect(commands).toHaveLength(0);
+ // The question's commit sends the same command the button sent, once.
+ click('Finalize timecard');expect(commands).toHaveLength(0);
+ question()!.onGo();await flush();
+ expect(commands).toEqual([{...period,operationId:expect.any(String),employeeId:'E1',expectedRevision:1,expectedSourceHash:'a'.repeat(32),action:'FINALIZE'}]);
+ expect(question()).toBeUndefined();expect(html()).toContain('PRIVATE’s timecard is finalized');
+});
+it('the Finalize question belongs to its card: opening another timecard drops it and sends nothing',async()=>{
+ const {DecisionAsk}=await import('./owner-b/decision-parts');
+ const approvedCard=(id:string)=>{const item=worked(id,60);return {...item,state:'APPROVED',revision:1,history:[{operationId:'22222222-2222-4222-8222-222222222222',revision:1,action:'APPROVE',occurredAt:'2026-09-28T12:00:00Z',actorName:'Fictional Reviewer',note:null,sourceHash:'a'.repeat(32),snapshot:item.source}]};};
+ rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[approvedCard('E1'),approvedCard('E2')]});commands.push(JSON.parse(String(init?.body)) as TimecardCommand);return Response.json({status:'finalized'});});
+ await mount();
+ const open=(name:string)=>{const people=nodes(render()).filter(n=>n.type==='button'&&n.props.className==='c-tc-person');const row=people.find(n=>renderToStaticMarkup(n).includes(name));if(!row)throw Error('rows: '+people.map(n=>renderToStaticMarkup(n).replace(/<[^>]+>/g,'|')).join(' // '));(row.props.onClick as ()=>void)();};
+ open('PRIVATE E1');click('Finalize timecard');expect(has(n=>n.type===DecisionAsk)).toBe(true);
+ open('PRIVATE E2');
+ // The question was asked for E1; E2's sheet shows its own button, not E1's question.
+ expect(has(n=>n.type===DecisionAsk)).toBe(false);expect(has(n=>n.type==='button'&&n.props.children==='Finalize timecard')).toBe(true);expect(commands).toHaveLength(0);
+});

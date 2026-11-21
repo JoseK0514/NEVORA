@@ -6,6 +6,7 @@ import {NavigationLink as Link} from './navigation-link';
 import {useLinkStatus} from 'next/link';
 import {EmployeeMessageProvider,EmployeeMessageReturn} from './employee-mobile/message-session';
 import {AppNavigationProvider,useIdentityReload} from './app-navigation';
+import {releaseDiscardGuards} from './kit/use-discard-guard';
 import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
@@ -231,7 +232,7 @@ function AppShellView({
   useEmployeeNavigationLayout(employee);
   // Refresh the retained layout's server identity without interrupting the destination document's streamed content.
   const identityReload=useIdentityReload(()=>router.refresh());
-  const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')identityReload.request();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router,identityReload]);
+  const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity'){/* The session is no longer this person's: no "Discard changes?" and no browser prompt on the way out. */releaseDiscardGuards();identityReload.request();}else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router,identityReload]);
   const operational=useOperationalNavigation(user.id,user.role,operationalAuthority,accessChanged);
   const inboxCount = useInboxCount(!employee && (user.role === 'OWNER' || operational.navigation?.state === 'ready' && operational.navigation.scope?.mode === 'COMPANY'), pathname);
   // Review B2 (NV-030): menus follow the last current scope while a check is slow, failed or offline.

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSPro
 import Link from "next/link";
 import { keepWhole } from "@/lib/keep-whole";
 import { useRouter } from "next/navigation";
+import { DiscardGuard } from "./kit/discard-dialog";
 import { CaretRightIcon, CheckIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { toast } from "./toaster";
 import { DEFAULT_SEED, brandStyle, contrastReport, deriveBrand, normalizeSeed } from "@/lib/workspace-presentation/derive";
@@ -155,5 +156,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample
       <button type="button" className="q-btn" onClick={() => setPicking(false)}>Done</button>
       <button type="button" className="q-btn q-btn--quiet" onClick={() => choose(DEFAULT_SEED)} disabled={busy !== null || effectiveSeed === DEFAULT_SEED}>Use NEVORA teal</button>
     </dialog>
+    {/* Leaving with a colour or logo that is not saved asks first (Nov 21, 2026). */}
+    <DiscardGuard dirty={dirty} />
   </form>;
 }

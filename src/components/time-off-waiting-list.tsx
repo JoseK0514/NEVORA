@@ -70,7 +70,7 @@ export function TimeOffWaitingList({ requests, result }: { requests: WaitingTime
 }
 
 /** The words of the Decline question, shared with Things to do (inbox-b.tsx). */
-export const ASK = { question: "Decline this request?", consequence: (first: string) => `${first} is told it was declined.`, keep: "Keep request", decline: "Decline" };
+export const ASK = { question: "Decline this request?", consequence: (first: string) => `${first} is told it was declined.`, consequenceAnyone: "They are told it was declined.", keep: "Keep request", decline: "Decline" };
 export const firstName = (name: string) => name.split(/\s+/)[0] || name;
 
 /** Decline and Approve (or Review) under one request; while the decision is out both are disabled and the pressed one says so.

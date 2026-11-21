@@ -87,6 +87,12 @@ const en = {
   calloutApproved: 'Call-out approved', calloutApprovedLine: 'The shift is off their schedule and still needs cover.',
   calloutDeclined: 'Call-out declined',
   requestClosed: 'Request closed',
+  // Jose (Nov 21, 2026): every Decline asks first. The question, then one line with what stays as it is (the declined
+  // result's own line), the safe way out and the commit.
+  askDeclineSwap: 'Decline this swap?', askDeclineCover: 'Decline this cover request?', askDeclineCallout: 'Decline this call-out?',
+  askCloseCover: 'Close this cover request?', askDeclineCorrection: 'Decline this correction?',
+  staysOnShift: (name: string) => `${name} stays on the shift.`, recordedStays: 'The recorded time stays as it is.',
+  keepRequest: 'Keep request', decline: 'Decline', closeRequest: 'Close request',
   coverUnread: (n: number) => n === 1 ? '1 older shift change could not be read, so there may be more.' : `${n} older shift changes could not be read, so there may be more.`,
 };
 
@@ -168,6 +174,10 @@ const es: ReviewCopy = {
   calloutApproved: 'Ausencia aprobada', calloutApprovedLine: 'El turno salió de su horario y todavía necesita cobertura.',
   calloutDeclined: 'Ausencia rechazada',
   requestClosed: 'Solicitud cerrada',
+  askDeclineSwap: '¿Rechazar este cambio?', askDeclineCover: '¿Rechazar esta solicitud de cobertura?', askDeclineCallout: '¿Rechazar esta ausencia?',
+  askCloseCover: '¿Cerrar esta solicitud de cobertura?', askDeclineCorrection: '¿Rechazar esta corrección?',
+  staysOnShift: name => `${name} sigue en el turno.`, recordedStays: 'El tiempo registrado queda como está.',
+  keepRequest: 'Conservar solicitud', decline: 'Rechazar', closeRequest: 'Cerrar solicitud',
 };
 
 const words: Record<ReviewLang, ReviewCopy> = {en, es};

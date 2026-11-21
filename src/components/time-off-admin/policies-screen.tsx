@@ -1,4 +1,6 @@
 "use client";
+import { DiscardGuard } from "@/components/kit/discard-dialog";
+import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
@@ -49,6 +51,8 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
   const t = ptoCopy(lang);
   const [load, setLoad] = useState<Load>(initial?.load ?? { state: "loading" });
   const [draft, setDraft] = useState<Draft | null>(initial?.draft ?? null);
+  // What the open policy form started with: the discard guard asks only once something differs from it.
+  const [opened, setOpened] = useState<string | null>(() => initial?.draft ? JSON.stringify(initial.draft) : null);
   const [custody, setCustody] = useState<Custody | null>(initial?.custody ?? null);
   const [issue, setIssue] = useState<Issue | null>(initial?.issue ?? null);
   const [problems, setProblems] = useState<Problem[]>([]);
@@ -93,7 +97,7 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
   const policies = load.state === "ready" ? [...load.policies].sort((a, b) => policyOrder(a.code, b.code)) : [];
   const busy = custody?.status === "sending" || custody?.status === "checking";
 
-  function open(policy: PtoPolicy | null, kind: Kind) { setIssue(null); setLanded(null); setProblems([]); setDraft(policyDraft(policy, kind, t)); }
+  function open(policy: PtoPolicy | null, kind: Kind) { const next = policyDraft(policy, kind, t); setIssue(null); setLanded(null); setProblems([]); setOpened(JSON.stringify(next)); setDraft(next); }
   async function send(command: PolicyCommand, again: boolean) {
     setCustody({ command, status: again ? "checking" : "sending" }); setIssue(null);
     const result = await sendSettings(command);
@@ -160,7 +164,7 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
         </div>
       </CorpCard>
       {problems.length ? <p className="rs-err rs-err--sum" ref={problemRef} tabIndex={-1} role="alert"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{t.problems(problems.length)}</p> : null}
-      <div className="rs-foot"><Act kind="text" disabled={busy || !!custody} onClick={() => { setDraft(null); setProblems([]); setIssue(null); }}>{t.cancel}</Act>
+      <div className="rs-foot"><Act kind="text" disabled={busy || !!custody} onClick={() => leaveWithDiscardGuard(() => { setDraft(null); setProblems([]); setIssue(null); })}>{t.cancel}</Act>
         <Act kind="teal" busy={custody?.status === "sending"} disabled={busy || !!custody} onClick={save}>{custody?.status === "sending" ? t.saving : t.save}</Act></div>
     </>;
   } else {
@@ -191,5 +195,7 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
     <CorpTitle id={TITLE_ID} title={title} wide focusTarget />
     <p className="rs-sr" role="status" aria-live="polite">{said}</p>
     {body}
+    {/* Leaving with policy edits that are not saved asks first (Nov 21, 2026); a save that is being checked keeps its own hold. */}
+    <DiscardGuard dirty={!!draft && !custody && JSON.stringify(draft) !== opened} lang={lang} />
   </CorpPage>;
 }

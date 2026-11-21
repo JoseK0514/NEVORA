@@ -92,6 +92,10 @@ const en = {
   cardFinalized: (first: string) => first ? `${first}’s timecard is finalized` : "Timecard finalized",
   nextTimecard: "Next timecard",
   finalizeTimecard: "Finalize timecard",
+  // Jose (Nov 21, 2026): Finalize asks first, in the sheet, where its button was.
+  finalizeAsk: (first: string) => first ? `Finalize ${first}’s timecard?` : "Finalize this timecard?",
+  finalizeAskLine: "It locks this timecard for payroll. Reopening it needs a reason.",
+  notYet: "Not yet",
   reopen: "Reopen",
   reopenTimecard: "Reopen timecard",
   reopenReason: "Reason for reopening",
@@ -102,6 +106,11 @@ const en = {
   seeCorrections: "See correction requests",
   endAfterStart: "End time must be after the start",
   loading: "Loading…",
+  // Leaving a form with edits that are not saved (Owner and Manager; kit/discard-dialog.tsx).
+  discardTitle: "Discard changes?",
+  discardLine: "Your edits on this page haven’t been saved.",
+  discardKeep: "Keep editing",
+  discardGo: "Discard changes",
 };
 
 const es: typeof en = {
@@ -176,6 +185,9 @@ const es: typeof en = {
   cardFinalized: (first: string) => first ? `El registro de horas de ${first} está finalizado` : "Registro de horas finalizado",
   nextTimecard: "Siguiente registro",
   finalizeTimecard: "Finalizar registro de horas",
+  finalizeAsk: (first: string) => first ? `¿Finalizar el registro de horas de ${first}?` : "¿Finalizar este registro de horas?",
+  finalizeAskLine: "Cierra este registro de horas para la nómina. Reabrirlo requiere un motivo.",
+  notYet: "Todavía no",
   reopen: "Reabrir",
   reopenTimecard: "Reabrir registro de horas",
   reopenReason: "Motivo de la reapertura",
@@ -185,6 +197,10 @@ const es: typeof en = {
   seeCorrections: "Ver solicitudes de corrección",
   endAfterStart: "La hora de fin debe ser posterior al inicio",
   loading: "Cargando…",
+  discardTitle: "¿Descartar los cambios?",
+  discardLine: "Los cambios de esta página no se han guardado.",
+  discardKeep: "Seguir editando",
+  discardGo: "Descartar cambios",
 };
 
 export const MOMENTS_COPY = { en, es } as const;

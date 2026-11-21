@@ -15,7 +15,9 @@ import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {useManagerCorrectionRecovery} from './manager-correction-recovery';
 import {CorpTitle} from './corp/corp';
 import {BAvatar,BCallout,BSegs,BState} from './owner-b/b-kit';
-import {DecisionResult} from './owner-b/decision-parts';
+import {DecisionAsk,DecisionResult} from './owner-b/decision-parts';
+import {useAskStep} from './owner-b/ask-step';
+import {reviewCopy} from './review-details/copy';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import Link from 'next/link';
 import {timeZoneLabel} from '@/lib/time-zone-label';
@@ -35,6 +37,18 @@ function CorrectionNotice({notice,last}:{notice:string;last:boolean}){
   if(notice===approvedNotice)return <div className="manager-corrections-notice" data-result=""><DecisionResult tone="done" title="Correction approved" line={last?'Nothing else is waiting.':'The timecard shows the new times. The original clock times stay in its history.'}/></div>;
   if(notice===rejectedNotice)return <div className="manager-corrections-notice" data-result=""><DecisionResult tone="closed" icon={<PencilSimpleIcon weight="bold"/>} title="Correction declined" line={last?'Nothing else is waiting.':'The timecard keeps its recorded times.'}/></div>;
   return <div className="manager-corrections-notice" data-note=""><BCallout tone="amber" icon={notice===unknownNotice?'unknown':'check'} role="status">{notice}</BCallout></div>;
+}
+/** Jose (Nov 21, 2026): Decline asks first. The first tap opens the question in place of the two buttons and sends
+ * nothing; "Keep request" brings them back; the question's Decline calls the same `onDecision('REJECT')` as before,
+ * once. Approve stays one tap. */
+function CorrectionDecide({name,disabled,onDecision}:{name:string;disabled:boolean;onDecision:(decision:'APPROVE'|'REJECT')=>void}){
+  const {open,ask,keep,done,titleRef,openerRef}=useAskStep(),t=reviewCopy();
+  if(open&&!disabled)return <DecisionAsk className="manager-correction-ask" titleRef={titleRef} groupLabel={`Decline the correction for ${name}?`} question={t.askDeclineCorrection} consequence={t.recordedStays}
+    keep={t.keepRequest} keepLabel={`Keep the correction request for ${name}`} onKeep={keep} go={t.decline} goLabel={`Decline correction for ${name}`} onGo={()=>{done();onDecision('REJECT');}}/>;
+  return <div className="manager-correction-actions">
+    <button ref={openerRef} className="b-rowact b-rowact--quiet" type="button" aria-label={`Decline correction for ${name}`} disabled={disabled} onClick={ask}>Decline</button>
+    <button className="primary b-rowact b-rowact--go" type="button" aria-label={`Approve correction for ${name}`} disabled={disabled} onClick={()=>onDecision('APPROVE')}>Approve</button>
+  </div>;
 }
 function requestLabel(item:ManagerCorrectionItem){
   if(item.kind==='MISSING_ENTRY')return 'Missing time';
@@ -125,10 +139,7 @@ export function ManagerTimeCorrectionsSurface({
           <p className="manager-correction-reason"><span className="manager-correction-reason__k">Their reason</span><q>{item.reason}</q></p>
           {item.requestedByName?<p className="manager-correction-provenance">Requested by {item.requestedByName} for this employee.</p>:null}
           {item.isSelf?<p className="manager-correction-self" role="note">Another manager or an Owner reviews your own request.</p>:null}
-          <div className="manager-correction-actions">
-            <button className="b-rowact b-rowact--quiet" type="button" aria-label={`Decline correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'REJECT')}>Decline</button>
-            <button className="primary b-rowact b-rowact--go" type="button" aria-label={`Approve correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'APPROVE')}>Approve</button>
-          </div>
+          <CorrectionDecide name={item.employeeName} disabled={item.isSelf||busyId!==null||retry!==null} onDecision={decision=>onDecision(item,decision)}/>
         </article>)}
       </div>:notice===approvedNotice||notice===rejectedNotice?null:<div className="manager-corrections-state">{/* Phase 8 (a.md #10): the kit's empty state (grey tray, one line, one way on), left-aligned at a state card's width. */}
         <BState kind="empty" title="Nothing to fix" line="When someone asks to fix a time, it shows up here." quiet={<Link className="b-link" href="/app/timecards">Go to Timecards</Link>}/></div>}

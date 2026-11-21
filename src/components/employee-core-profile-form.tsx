@@ -1,5 +1,6 @@
 'use client';
 
+import {DiscardGuard} from './kit/discard-dialog';
 import Link from 'next/link';
 import {useEffect,useState,type ReactNode} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
@@ -111,6 +112,8 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
       {baseline.employmentDates?<EmploymentDateFields idPrefix="edit" value={baseline.employmentDates} bonusApplies={bonusApplies} focusHire={returnTo?.focusHire}/>:null}
       {more}
     </EmployeeAccessForm>
+    {/* Leaving with details that are not saved asks first (Nov 21, 2026): the same signal that shows Save. */}
+    <DiscardGuard dirty={changed&&!saved}/>
   </>;
 }
 

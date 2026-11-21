@@ -30,7 +30,9 @@ export function useSheetClose() {
 /** `modal={false}` (Owner Timecards on wide screens, Nov 1 upscale): the same panel opened as a non-modal inspector, so
  * the page behind stays live and unlocked: no scrim, focus stays where it was, Escape still closes it (and its onClose
  * returns focus), and a click outside doesn't close it. Every other sheet is modal, as before. */
-export function QuietSheet({open, onClose, label, labelledBy, children, modal = true}: {open: boolean; onClose: () => void; label?: string; labelledBy?: string; children: ReactNode; modal?: boolean}) {
+/** `role` and `describedBy` (Nov 21, 2026): a question that interrupts ("Discard changes?") is an alertdialog named by its
+ * title and described by its one line. */
+export function QuietSheet({open, onClose, label, labelledBy, describedBy, role, children, modal = true}: {open: boolean; onClose: () => void; label?: string; labelledBy?: string; describedBy?: string; role?: 'alertdialog'; children: ReactNode; modal?: boolean}) {
   const dialog = useRef<HTMLDialogElement>(null);
   // The caller's onClose, when it waits for a sheet that stays open for its exit.
   const closing = useRef<number | undefined>(undefined);
@@ -94,7 +96,7 @@ export function QuietSheet({open, onClose, label, labelledBy, children, modal = 
     return () => { node.removeEventListener('cancel', cancel); node.removeEventListener('close', closed); };
   }, [close]);
 
-  return <dialog ref={dialog} className="q-page q-sheet" aria-label={label} aria-labelledby={labelledBy} tabIndex={-1}
+  return <dialog ref={dialog} className="q-page q-sheet" role={role} aria-label={label} aria-labelledby={labelledBy} aria-describedby={describedBy} tabIndex={-1}
     // A tap on the dim area outside the sheet (the dialog's own box, not its content) closes it.
     onClick={event => { if (modal && event.target === event.currentTarget) close(); }}
     onPointerDown={event => {

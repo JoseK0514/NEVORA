@@ -174,9 +174,12 @@ try{
     // finalize"; a reopened card in an ended week reads "Ready to approve"), and every transition is a revision in Earlier versions.
     const pillText={Approved:'Ready to finalize',Finalized:'Finalized',Reopened:'Ready to approve'};
     const cardState=async state=>{await card.locator('.c-tc-sheet__who').getByText(pillText[state],{exact:true}).waitFor();if(state==='Reopened')await card.locator('.c-tc-sheet__history h3').filter({hasText:/^Reopened$/}).last().waitFor({state:'attached'});};
+    // Jose (Nov 21, 2026): Finalize asks first. The button opens the question in the sheet (timecards.tsx: DecisionAsk,
+    // .b-ask.c-tc-ask, "Finalize <First>’s timecard?"); its own "Finalize timecard" is the commit.
+    const finalizeCard=async()=>{await card.getByRole('button',{name:'Finalize timecard',exact:true}).click();const ask=card.locator('.b-ask.c-tc-ask');await ask.getByText(/^Finalize .+ timecard\?$/).waitFor();await ask.getByRole('button',{name:'Finalize timecard',exact:true}).click();};
     await openCard();
     await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await cardState('Approved');
-    await card.getByRole('button',{name:'Finalize timecard',exact:true}).click();await cardState('Finalized');
+    await finalizeCard();await cardState('Finalized');
     const frozenRevisions=await q("SELECT to_jsonb(t) AS row FROM timecard_revisions t WHERE employee_id='D3-E' ORDER BY revision");
     const labels=await q("SELECT name,short_name FROM locations WHERE id='loc-1'");
     await q("UPDATE employees SET first_name='Renamed' WHERE id='D3-E'");await q("UPDATE locations SET name='Renamed historical location',short_name='Renamed' WHERE id='loc-1'");
@@ -238,7 +241,7 @@ try{
       Object.assign(returnReceipt,{stage:'complete',observedAt:current.observedAt,validForMs:current.validForMs,period:current.period,elapsedMs:15000-(returnDeadline-performance.now())});
     },returnDeadline);
     checked(engine+': controlled Manager return hides retired cards and completes a fresh exact-period read within the original deadline');
-    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await cardState('Approved');await card.getByRole('button',{name:'Finalize timecard',exact:true}).click();await cardState('Finalized');
+    await card.getByRole('button',{name:'Approve timecard',exact:true}).click();await cardState('Approved');await finalizeCard();await cardState('Finalized');
     await mp.goto(app.url+'/app/payroll-export?start=2026-09-21&end=2026-09-27');// Corporate Time exports (board O-TimeExports, Release 1): one page at every width. With no one chosen, Create export
     // exports every finalized timecard; choosing people under "People in this export" exports exactly them.
     const exportFiles=mp.getByRole('region',{name:'Export ready',exact:true});

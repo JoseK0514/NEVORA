@@ -255,7 +255,7 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     await page.getByRole('radio', { name: 'Choose locations', exact: true }).check();
     await page.getByRole('group', { name: 'Locations to plan', exact: true }).getByRole('checkbox').first().check();
     const selected = await compare(); expect(selected.locationScope.kind).toBe('SELECTED'); await review(selected);
-    const declined = response('decline_week_plan'); await page.getByRole('button', { name: 'Decline', exact: true }).click();
+    const declined = response('decline_week_plan'); await page.getByRole('button', { name: 'Decline', exact: true }).click(); /* Jose (Nov 21, 2026): Decline asks first; the question's Decline commits. */ await page.getByRole('group', { name: 'Decline this plan?', exact: true }).getByRole('button', { name: 'Decline', exact: true }).click();
     expect((await result(declined)).state).toBe('declined');
     await page.locator('.wk .b-statecard__t').filter({ hasText: /^Plan declined$/ }).waitFor();
     expect(await q('SELECT count(*)::int n FROM shifts')).toEqual([{ n: priorCount + 4 }]);
@@ -275,7 +275,7 @@ it.each(['chromium', 'webkit'])('%s reviews full weekly changes, rejects stale a
     checks.push(engine + ': BUILD_WEEK exposes complete generated replacements, acknowledgement resets; untrusted name stays literal');
 
     phase = 'session revocation'; await q("DELETE FROM employee_sessions WHERE employee_id='QAOWNER'");
-    const denied = response('decline_week_plan'); await page.getByRole('button', { name: 'Decline', exact: true }).click();
+    const denied = response('decline_week_plan'); await page.getByRole('button', { name: 'Decline', exact: true }).click(); /* Jose (Nov 21, 2026): Decline asks first; the question's Decline commits. */ await page.getByRole('group', { name: 'Decline this plan?', exact: true }).getByRole('button', { name: 'Decline', exact: true }).click();
     const denial = await denied; expect([401,403]).toContain(denial.status());
     await page.locator('.wk').getByRole('alert').getByText('Your session ended', { exact: true }).waitFor();
     expect(await page.locator('.wk').getByText(/Fictional Avery|Fictional Blair/).count()).toBe(0);

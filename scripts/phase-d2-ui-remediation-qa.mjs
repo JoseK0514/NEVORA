@@ -248,6 +248,10 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   // Declines do not consume stale-source approval authority; keyboard Enter is real.
   for(let i=0;i<2;i++){
    const decline=mp.getByRole('button',{name:`Decline correction for ${name}`,exact:true}).first();await decline.focus();await decline.press('Enter');
+   // Jose (Nov 21, 2026): Decline asks first. Enter opened the question (.b-ask.manager-correction-ask, "Decline this
+   // correction?"); its commit carries the same name, and Enter on it declines.
+   const ask=mp.locator('.b-ask.manager-correction-ask');await ask.getByText('Decline this correction?',{exact:true}).waitFor();
+   const commit=ask.getByRole('button',{name:`Decline correction for ${name}`,exact:true});await commit.focus();await commit.press('Enter');
    await mp.getByText('Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
    await mp.waitForFunction(n=>document.querySelectorAll('.manager-correction-row').length===n,1-i);
   }
