@@ -29,7 +29,12 @@ export function takeBillingFragment(location:{hash:string;pathname:string;search
 }
 export function stripeBillingDestination(value:unknown):string{
  if(!object(value)||typeof value.url!=='string'||value.url.length>8192)throw Error('Invalid billing destination');
- const u=new URL(value.url);if(u.protocol!=='https:'||u.username||u.password||u.port||!(u.hostname==='checkout.stripe.com'&&u.pathname.startsWith('/c/')||u.hostname==='billing.stripe.com'&&u.pathname.startsWith('/p/')))throw Error('Invalid billing destination');
+ const u=new URL(value.url);
+ if(u.protocol!=='https:'||u.username||u.password||u.port)throw Error('Invalid billing destination');
+ const checkout=u.hostname==='checkout.stripe.com'&&
+  (u.pathname.startsWith('/c/')||/^\/g\/pay\/cs_(?:test|live)_[A-Za-z0-9]+$/.test(u.pathname));
+ const portal=u.hostname==='billing.stripe.com'&&u.pathname.startsWith('/p/');
+ if(!checkout&&!portal)throw Error('Invalid billing destination');
  return u.href;
 }
 export function parseBillingCatalog(value:unknown):BillingCatalog{
