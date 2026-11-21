@@ -15,7 +15,7 @@ import styles from './clocker.module.css';
  * the kiosk frame (the paused page and the Clocker's not-found page draw it on their band). */
 export function ClockerLanguageToggle({className}:{className?:string}={}) {
   const {locale}=useClockerPresentation();
-  return <button type="button" className={className??styles.lang} data-clocker-language="" aria-label={locale==='en'?'Switch language to Spanish':'Cambiar idioma a inglés'} onClick={()=>changeLocale(locale==='en'?'es':'en')}>
+  return <button type="button" className={className??styles.lang} data-clocker-language="" aria-label={locale==='en'?'Español, switch language to Spanish':'English, cambiar idioma a inglés'} onClick={()=>changeLocale(locale==='en'?'es':'en')}>
     <ClockerIcon name="globe" size={18}/><span lang={locale==='en'?'es':'en'}>{locale==='en'?'Español':'English'}</span>
   </button>;
 }

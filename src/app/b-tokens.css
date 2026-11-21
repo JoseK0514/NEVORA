@@ -47,6 +47,9 @@
   --b-dur-shimmer: 1600ms; --b-delay-shimmer: 300ms; --b-dur-spin: 800ms;
   /* shape and targets */
   --b-radius-card: 22px; --b-radius-pill: 999px; --b-radius-field: 14px; --b-radius-small: 10px;
+  /* Jose's button shape pick (Nov 21, 2026; board option C): buttons have squarer corners, not pills. 10px, and 8px at
+   * the 36px size. Chips, segments and their thumbs, icon circles, avatars, the search field and counts keep their shapes. */
+  --b-radius-btn: 10px; --b-radius-btn-sm: 8px;
   --b-target: 44px; --b-target-touch: 48px;
   /* one segmented control (review F5, NV-103), on the band (glass) and on white: a 44px pill track, 4px in, a 36px pill
    * thumb (the 44px hit area is the track's height), 14/600 labels, 16px item padding, 20px count pills of 12/700 */

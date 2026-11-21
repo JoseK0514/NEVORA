@@ -212,7 +212,7 @@
 .note strong { display: block; margin-bottom: var(--b-space-2); font-weight: 600; color: var(--ck-ink); text-wrap: balance; }
 
 /* Buttons: 56px pills (64px in portrait), press scale .96, hover only on hover-capable screens. */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: var(--ck-btn); padding: var(--b-space-12) var(--b-space-24); border: 0; border-radius: var(--b-radius-pill);
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: var(--ck-btn); padding: var(--b-space-12) var(--b-space-24); border: 0; border-radius: var(--b-radius-btn, 10px); /* Jose's button shape pick, Nov 21, 2026 */
   font-size: var(--b-fs-title-sm); line-height: 1.25; font-weight: 700; letter-spacing: -.005em; text-align: center; text-decoration: none; cursor: pointer; white-space: normal; overflow-wrap: anywhere;
   transition: background-color var(--b-dur-hover) var(--b-ease-out), transform var(--b-dur-press) var(--b-ease-out); }
 .btn[data-kind=primary] { background: var(--ck-accent); color: #FFFFFF; box-shadow: var(--b-elev-glow); }
@@ -252,7 +252,7 @@
 @keyframes ckSpin { to { transform: rotate(360deg); } }
 
 /* Language switch (the existing English/Spanish choice, remembered per tablet). */
-.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-pill); background: var(--ck-soft); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
+.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-btn, 10px); background: var(--ck-soft); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
 .lang:active { transform: scale(var(--b-press-scale)); }
 /* The same switch on a page outside the kiosk frame (the paused page and the Clocker's not-found page): a white pill that
  * reads on the teal band and on the canvas, with a ring that shows on both. It reads only the shared tokens. */
@@ -386,7 +386,7 @@
 .facts dt { font-size: var(--b-fs-meta); color: var(--ck-grey); }
 /* One fact alone takes the row (a break with no suggested length on the receipt). */
 .facts > div:only-child { grid-column: 1 / -1; text-align: center; }
-.facts dd { margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.facts dd { text-wrap: balance; margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
 /* ---------- recorded ---------- */
 .check { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; margin: 6px auto 22px; background: var(--ck-green-fill); color: #FFFFFF; box-shadow: 0 0 0 10px var(--ck-green-wash);

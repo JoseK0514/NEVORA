@@ -94,7 +94,7 @@
 .flow.flow .photoNotice summary:focus-visible, .flow.flow .actions button:focus-visible { outline: 3px solid #0B6E69; outline-offset: 3px; }
 .flow.flow .cameraFrame { border-radius: 18px; }
 .flow.flow .actions { gap: 12px; margin-top: 22px; }
-.flow.flow .actions button { min-height: 56px; padding: 12px 24px; border: 0 !important; border-radius: 999px; font-size: 1.0625rem; font-weight: 700; line-height: 1.25; -webkit-tap-highlight-color: transparent; transition: background-color 140ms ease, transform 120ms ease; }
+.flow.flow .actions button { min-height: 56px; padding: 12px 24px; border: 0 !important; border-radius: 10px; font-size: 1.0625rem; font-weight: 700; line-height: 1.25; -webkit-tap-highlight-color: transparent; transition: background-color 140ms ease, transform 120ms ease; }
 .flow.flow .primary { background: var(--clocker-accent, #0C726C); color: #FFFFFF; box-shadow: 0 8px 18px -8px rgb(11 110 105 / .6); }
 .flow.flow .secondary { background: #FFFFFF; color: #111517; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.12), 0 1px 2px rgb(16 40 38 / 0.08); }
 .flow.flow .quiet { min-height: 56px; background: transparent; color: #0B6E69; font-size: .96875rem; font-weight: 600; }

@@ -618,7 +618,7 @@ function AppShellView({
             lives on Requests). */}
           {accountMenu}
           {/* Corporate phone header: the avatar opens More (profile, settings and the rest). Desktop keeps the account menu. */}
-          <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span>{/* Review F2 (NV-099): a small visible cue that the avatar opens More. */}<i className="c-top-avatar__more" aria-hidden="true"><CaretDownIcon weight="bold" /></i></Link>
+          <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}, ${initials}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span>{/* Review F2 (NV-099): a small visible cue that the avatar opens More. */}<i className="c-top-avatar__more" aria-hidden="true"><CaretDownIcon weight="bold" /></i></Link>
           </div>
         </header>
         {/* Owner premium P7 and P11: the thin progress bar while a page is on its way, and the offline line over the page. */}

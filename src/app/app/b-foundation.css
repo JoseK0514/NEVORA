@@ -1010,3 +1010,18 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     html body .app-shell[data-nv-b] .nv-btn:not([data-kind="primary"], [data-kind="danger"], [data-tone="urgent"]):not(:disabled, [aria-disabled="true"]):hover { background: var(--b-btn-surface-hover) !important; }
   }
 }
+
+/* Label in name (Nov 21, 2026): the desktop account button's initials are decoration beside the visible name, so they are
+ * drawn here and are not text in the button. */
+.portal-account-avatar[data-initials]::before { content: attr(data-initials); }
+
+/* Button shape (Jose's pick, Nov 21, 2026; board option C): every button has 10px corners (`--b-radius-btn`), 8px at the
+ * compact 36px size, in place of the pill. One rule here answers the many per-page pill declarations (the id steps only
+ * outrank them). Not buttons, so unchanged: chips, segments and thumbs, icon circles, avatars, the search field, counts,
+ * the shortcut tiles and the back circle. Supersedes "every button … is a pill" (B1). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-btn, .b-rowact, .nv-btn):not(#bs1):not(#bs2):not(#bs3):not(#bs4):not(#bs5):not(#bs6):not(#bs7) { border-radius: var(--b-radius-btn) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-btn, .b-rowact, .nv-btn):is(.b-btn--compact, [data-size="sm"]):not(#bs1):not(#bs2):not(#bs3):not(#bs4):not(#bs5):not(#bs6):not(#bs7) { border-radius: var(--b-radius-btn-sm) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] :is(.c-btn, .q-btn, .q-bs, .wc-btn, .eb-fix-send, .eb-signout__btn, .eb-btn-outline-danger, .button):not(#bs1):not(#bs2):not(#bs3):not(#bs4):not(#bs5):not(#bs6):not(#bs7) { border-radius: var(--b-radius-btn) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-btn, .b-rowact, .nv-btn):focus-visible:not(#bs1):not(#bs2):not(#bs3):not(#bs4):not(#bs5):not(#bs6):not(#bs7) { border-radius: var(--b-radius-btn) !important; }
+}

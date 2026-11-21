@@ -17,7 +17,9 @@ export const ACCOUNT_MENU_WIDTH = 280;
 export function PortalAccountMenu({ initials, name, detail, current = false, children }: { initials: string; name: string; detail?: string; current?: boolean; children: ReactNode }) {
   return <div className="portal-account-menu">
     <ActionMenu id="portal-account-menu" label={name} ariaLabel={`${name}, account menu`} width={ACCOUNT_MENU_WIDTH} triggerCurrent={current}
-      triggerIcon={<span className="portal-account-avatar" aria-hidden="true">{initials}</span>}>
+      triggerIcon={/* The initials are drawn by CSS (b-foundation.css) from data-initials, so the button's text is the name its label says
+       * (label in name, WCAG 2.5.3): "Sam Cruz" is on screen and in "Sam Cruz, account menu". */
+      <span className="portal-account-avatar" aria-hidden="true" data-initials={initials} />}>
       <div className="portal-account-head">
         <strong className="portal-account-head__name">{name}</strong>
         {detail ? <span className="portal-account-head__detail">{detail}</span> : null}
