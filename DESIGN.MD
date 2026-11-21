@@ -518,6 +518,10 @@ item names the lines it supersedes; line numbers are from the file before this s
   - *Counts (1A, 2B).* A count beside a title is a grey numeral (13.5/18 600), no circle. In a segment it is the
     label's colour at 62% (12.5px 600); a count that waits on the person keeps one amber dot. Supersedes "a 20px count
     pill" (NV-103) and `BCount`'s teal pill.
+  - *Facts between hairlines (Jose's facts pick).* A small block of facts has no grey panel: it sits between two
+    hairlines with 12px of air. On the Clocker, the two figures on Clock out?; in the swap, cover and can't-work forms,
+    the shift and the teammate the request is about.
+  - *Request time off's toggle.* All day / Part of day keeps its 36px thumb inside the 44px track on touch screens.
   - *Micro-interactions.* A row that opens leans its chevron 2px on hover and press and settles its icon circle to 94%
     while pressed; a shortcut tile does the same; buttons ease their shade and lift in 150ms. Transform and colour only,
     nothing plays by itself, all off under reduced motion.
