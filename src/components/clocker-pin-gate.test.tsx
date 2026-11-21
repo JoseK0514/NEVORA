@@ -1,7 +1,7 @@
 import {renderToStaticMarkup} from 'react-dom/server';
 import {afterEach,expect,it,rs} from '@rstest/core';
 import {ClockerPresentation} from './clocker-language';
-import {ClockerPinGate,PinRequestError,requestPin} from './clocker-pin-gate';
+import {ClockerPinGate,PinRequestError,pinStepScroll,requestPin} from './clocker-pin-gate';
 
 afterEach(()=>{ rs.unstubAllGlobals(); });
 const reply=(status:number,body:object)=>rs.fn(async()=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}}));
@@ -94,4 +94,18 @@ it('names who does what, titles each blocked card by its state, and never shows 
  const {clockerText}=await import('./clocker-copy');
  expect(clockerText('es','This tablet needs to be set up again')).toBe('Hay que configurar esta tableta de nuevo');
  expect(clockerText('es','Can’t reach NEVORA')).toBe('No se puede conectar con NEVORA');expect(clockerText('es','Keep my place')).toBe('Guardar mi lugar');
+});
+
+// Final polish, round 2 (C3): the language pill under Continue is shown whole or not at all when the PIN step opens.
+it('stops the PIN step with the language pill whole, or out of view, never cut by the screen',()=>{
+ // Continue is in view and only the pill is cut (817 to 873 on an 844px screen): scroll until the pill has 8px under it.
+ expect(pinStepScroll({viewport:844,cardTop:270,continueBottom:803,footTop:817,footBottom:873})).toBe(37);
+ // Everything is in view, so nothing moves.
+ expect(pinStepScroll({viewport:932,cardTop:270,continueBottom:803,footTop:817,footBottom:873})).toBe(0);
+ // A short phone: the page scrolls for Continue and stops with the pill's top at the screen's edge (no sliver of it).
+ expect(pinStepScroll({viewport:568,cardTop:265,continueBottom:725,footTop:731,footBottom:787})).toBe(163);
+ // Never past the card's top; without a pill it is Continue with 8px under it; a pill that can't be shown stays put.
+ expect(pinStepScroll({viewport:568,cardTop:58,continueBottom:725,footTop:731,footBottom:787})).toBe(50);
+ expect(pinStepScroll({viewport:568,cardTop:265,continueBottom:725,footTop:null,footBottom:null})).toBe(165);
+ expect(pinStepScroll({viewport:844,cardTop:20,continueBottom:803,footTop:817,footBottom:873})).toBe(0);
 });

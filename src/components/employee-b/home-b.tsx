@@ -260,6 +260,19 @@ function ComingUp({week, snapshot, lead, note}: {week: HomeWeek; snapshot: HomeS
   </BCard>;
 }
 
+/** Round 2 (H2): a swap or cover request that waits for this person's answer (the server says it is actionable and gives
+ * it a deadline). Requests draws the same request amber with "Needs your answer", so Home does too. It is not a required
+ * row: the server's order and the one teal Review pill are untouched. */
+export const needsAnswer = (item: AttentionItem) => item.ref.kind === 'EXCHANGE' && item.actionable && !!item.deadlineAt;
+
+/** Round 2 (H4): a to-do's deadline, written twice. `full` is the sentence every width reads aloud and 360px and wider
+ * show ("Respond by Nov 24, 12:00 PM"); `short` is what a narrower phone shows so it keeps one line ("By Nov 24, 12 PM":
+ * no "Respond", and no ":00" on the hour; "12:30 PM" keeps its minutes). */
+export function todoDeadline(at: string, zone: string) {
+  const when = fmt(zone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(at));
+  return {full: `Respond by ${keepWhole(when)}`, short: `By ${keepWhole(when.replace(/:00(?=\D)/, ''))}`};
+}
+
 function TodoIcon({item}: {item: AttentionItem}) {
   // Phase 9 (spec 3.6): one glyph per concept, the navigation's: CalendarMinus for time off, Megaphone for Updates.
   // Final review C (row 4): CalendarCheck is confirming your schedule and PencilSimple is fixing your time, on every
@@ -267,8 +280,9 @@ function TodoIcon({item}: {item: AttentionItem}) {
   const Icon = item.ref.kind === 'SCHEDULE' ? CalendarCheckIcon : item.ref.kind === 'TIME_OFF' ? CalendarMinusIcon : item.ref.kind === 'EXCHANGE' ? ArrowsLeftRightIcon
     : item.ref.kind === 'COMMUNICATION' ? MegaphoneIcon : item.ref.kind === 'TIME_CORRECTION' ? PencilSimpleIcon : ClockIcon;
   // Phase 4 (EM-008, EM-017): every to-do opens something, so its lead is the teal circle. Phase 9 (spec 3.2): one that
-  // waits on you (required) is the amber circle, as the same notice is in Notifications.
-  return <BIcon tone={item.required ? 'amber' : 'teal'}><Icon weight="bold"/></BIcon>;
+  // waits on you (required) is the amber circle, as the same notice is in Notifications. Round 2 (H2): so is a swap or
+  // cover request that waits for your answer.
+  return <BIcon tone={item.required || needsAnswer(item) ? 'amber' : 'teal'}><Icon weight="bold"/></BIcon>;
 }
 
 /** Phase 4 (EM-002): the rows Home shows, in the server's order (HomeTaskSummary ranking v1; nothing is re-ranked here).
@@ -309,13 +323,17 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
   const note = snapshot?.publicationState === 'partial' ? unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations)) : null;
   const todoRow = ({key, item, week: confirm}: HomeTodo) => {
     const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
-    const sub = confirm ? weekTodo(item).detail : item.deadlineAt && snapshot ? `Respond by ${keepWhole(fmt(snapshot.timeZone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : undefined;
+    const deadline = !confirm && item.deadlineAt && snapshot ? todoDeadline(item.deadlineAt, snapshot.timeZone) : null;
+    // Round 2 (H4): under 360px the short form shows; the full sentence stays in the page for screen readers.
+    const sub = confirm ? weekTodo(item).detail : deadline ? <><span className="eb-dl">{deadline.full}</span><span className="eb-dl-s" aria-hidden="true">{deadline.short}</span></> : undefined;
     // Review F2 (NV-078): every required to-do is a row with an amber "Action needed" chip and a chevron; only the most
     // urgent (the first required one) keeps the teal Review pill, so the card has one primary action.
     return item.required
       ? key === firstRequired
         ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} label={`${title}, action needed, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
         : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron label={`${title}, action needed`}/>
+      // Round 2 (H2): a request that waits for your answer says so with Requests' own amber chip, and keeps its chevron.
+      : needsAnswer(item) ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">{t.needsYourAnswer}</BChip>} sub={sub}/>
       : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} sub={sub}/>;
   };
   const firstRequired = todos.find(todo => todo.item.required)?.key;

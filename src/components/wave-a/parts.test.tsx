@@ -11,7 +11,7 @@ import { Status } from "@/components/kit/kit";
 import { Notice } from "./parts";
 
 const html = (node: React.ReactElement) => renderToStaticMarkup(node);
-const glyph = (meaning: BMeaning) => html(<BGlyph meaning={meaning} />);
+const glyph = (meaning: BMeaning) => html(<BGlyph meaning={meaning} solid />);
 const src = (path: string) => readFileSync(join(__dirname, "../..", path), "utf8");
 
 describe("Wave A Notice", () => {

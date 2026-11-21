@@ -55,6 +55,21 @@ it('Phase 4: the phone reads a short reason beside Confirm; the desktop day card
   expect(draw()).toContain('<h2 id="b-my-agenda-h">This week</h2>');
 });
 
+it('round 2 (S2, S4): Confirm this week carries Home’s amber chip when the manager asked; What changed has a short title for narrow phones', () => {
+  const asked = draw({confirm: {...base.confirm!, detail: 'Nov 9 – 15 · 7 shifts', needed: true}}), row = asked.slice(asked.indexOf('es-confirm'), asked.indexOf('es-confirm__act'));
+  expect(row).toContain('<span class="b-row__tt" id="b-my-review-title">Confirm this week</span><span class="b-chip b-chip--amber">Action needed</span></span><span class="b-row__s">Nov 9 – 15 · 7 shifts</span>');
+  // The confirm control is the page's own, untouched, after the words.
+  expect(asked).toContain('<span class="es-confirm__act"><button type="submit" class="employee-action">Confirm</button></span>');
+  // A review nobody asked for has no chip.
+  expect(draw().slice(draw().indexOf('es-confirm'), draw().indexOf('es-confirm__act'))).not.toContain('b-chip');
+  const changes = <details className="schedule-publication-change"><summary><span>What changed in your schedule</span></summary><ul><li>Added Tue</li></ul></details>;
+  const html = draw({changes});
+  // The disclosure keeps its own title (screen readers, 360px and wider); the short one is drawn over it and not read.
+  expect(html).toContain('<summary><span>What changed in your schedule</span></summary>');
+  expect(html).toContain('</details><span class="es-chg__short" aria-hidden="true">What changed</span></div>');
+  expect(draw()).not.toContain('es-chg__short');
+});
+
 it('Phase 4: a day block prints the compact range in two whole halves, so no dash hangs at a line end (EM-014)', () => {
   const day = {date: '2026-11-17', short: 'Tue', day: 17, today: true, selected: true, href: '/app/schedule?week=2026-11-16&day=2026-11-17', label: 'Tuesday, November 17, today',
     shifts: [{key: 's1', time: '9\u00a0AM – 5\u00a0PM', position: 'Barista', place: 'Main Office · 8 h', kind: 'now' as const, chip: null, label: 'Tuesday'}]};
@@ -69,7 +84,7 @@ it('Final review C (rows 4, 5): Confirm this week waits on you (amber) with the 
   const {UserCheckIcon} = await import('@phosphor-icons/react/dist/ssr/UserCheck');
   const html = draw(), row = html.slice(html.indexOf('es-confirm'), html.indexOf('es-confirm__act'));
   expect(row).toContain('<span class="b-ico b-ico--amber" aria-hidden="true">');
-  expect(row).toContain(renderToStaticMarkup(<CalendarCheckIcon weight="bold"/>));
+  expect(row).toContain(renderToStaticMarkup(<CalendarCheckIcon weight="duotone"/>));
   const band = html.slice(html.indexOf('href="/app/availability"'), html.indexOf('Availability</a>'));
   expect(band).toContain(renderToStaticMarkup(<UserCheckIcon size={16} weight="bold" aria-hidden="true"/>));
   expect(band).not.toContain(renderToStaticMarkup(<CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>));

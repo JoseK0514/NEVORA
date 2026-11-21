@@ -50,12 +50,13 @@ function OpenShiftRow({row}: {row: OpenRowB}) {
     trail={row.action ?? undefined} actions={row.status ?? undefined}/>;
 }
 
-/** Why other shifts aren't available: one row that opens the list of refused shifts, each with its reason. */
+/** Shifts you can't take: one row that opens the list of refused shifts, each with its reason. Final polish, round 2 (R7):
+ * the title fits one line on a 320px phone and the line under it says what opens ("2 shifts, with the reason"). */
 function WhyNot({refused}: {refused: OpenEmployeeShift[]}) {
-  return <BCard label="Why other shifts aren’t available">
+  return <BCard label={workCopy().cantTakeTitle}>
     <details className="eb-why">
       <summary className="b-row"><BIcon tone="grey"><InfoIcon weight="bold"/></BIcon>
-        <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Why other shifts aren’t available</span></span><span className="b-row__s">{/* Phase 8 (review C, row 23): what the list holds, not how it is drawn. */}{workCopy().cantTake(refused.length)}</span></span>
+        <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{workCopy().cantTakeTitle}</span></span><span className="b-row__s">{/* Phase 8 (review C, row 23): what the list holds, not how it is drawn. */}{workCopy().cantTake(refused.length)}</span></span>
         <CaretDownIcon className="b-chev eb-why__chev" size={18} weight="bold" aria-hidden="true"/></summary>
       <ul className="eb-why__list">{refused.map(row => <li key={row.id}><strong>{keepWhole(`${dayB(row.date)} · ${formatTime(row.startTime)}`)}</strong><span>{row.location}</span>{row.notice ? <p>{row.notice}</p> : null}</li>)}</ul>
     </details>
@@ -83,14 +84,15 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
     <BStack>
       {state ?? (enabled === false ? <BCard><BText status>Your workplace doesn’t use shift pickup in NEVORA.</BText></BCard> : <>
         {results}
-        <BCard label="Posted open shifts"><BList><BRow href="/app/exchange/open-shifts" title="Posted open shifts" /></BList></BCard>
-        {failed ? <BCard><div className="eb-status"><p className="b-state" role="status">Open shifts couldn’t be checked.</p><BButton kind="quiet" full disabled={refreshing} onClick={onRefresh}>Try again</BButton></div></BCard> : <>
+        {/* Round 2 (R3): the list leads (its card lifts over the band); every state's first card ends with the link. */}
+        {failed ? <BCard><div className="eb-status"><p className="b-state" role="status">Open shifts couldn’t be checked.</p><BButton kind="quiet" full disabled={refreshing} onClick={onRefresh}>Try again</BButton></div><PostedLink/></BCard> : <>
           {rows.length ? <BCard id="b-open-eligible" title="You can pick up" count={rows.length}>
             <BList>{rows.map(row => <OpenShiftRow key={row.shift.id} row={row}/>)}</BList>
             {note ? <BCardNote>{note}</BCardNote> : null}
+            <PostedLink/>
           </BCard> : unconfirmed.length ? <BCard><div className="eb-status"><p className="b-state" role="status">We’re still checking whether you can take some shifts. Refresh to try again.</p>
-            <BButton kind="quiet" full disabled={refreshing} onClick={onRefresh}>Refresh</BButton></div></BCard>
-            : <BCard><OpenShiftsEmptyB/></BCard>}
+            <BButton kind="quiet" full disabled={refreshing} onClick={onRefresh}>Refresh</BButton></div><PostedLink/></BCard>
+            : <BCard><OpenShiftsEmptyB/><PostedLink/></BCard>}
           {unconfirmed.length ? <BCard id="b-open-unconfirmed" title="We couldn’t check these shifts"><BList>{unconfirmed.map(row => <BRow key={row.id} title={keepWhole(`${dayB(row.date)} · ${formatTime(row.startTime)}`)}
             sub={row.notice ? `${row.location} · ${row.notice}` : row.location}/>)}</BList></BCard> : null}
           {refused.length ? <WhyNot refused={refused}/> : null}
@@ -101,6 +103,12 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
       </>)}
     </BStack>
   </BScreen>;
+}
+
+/** Final polish, round 2 (R3): the way to every posted shift is the foot of the Open shifts card (a teal text link under a
+ * hairline), not a lone card above the list. The same destination as before. */
+function PostedLink() {
+  return <p className="eb-cardfoot"><Link className="b-link" href="/app/exchange/open-shifts">See every posted shift<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link></p>;
 }
 
 /** A pickup's outcome and recovery, as one card (its shift has left the list). */

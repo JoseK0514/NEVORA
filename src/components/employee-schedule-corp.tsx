@@ -151,6 +151,12 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
     const soon = startsIn(shift, today, observedAt, timeZone);
     return soon ? <BStatusText>{soon}</BStatusText> : when(shift, today) === 'Tomorrow' ? <BStatusText>Tomorrow</BStatusText> : undefined;
   };
+  // Round 2 (S3): under 360px a time fact has no room beside the time and sat alone on a grey line of its own. There it
+  // leads the facts line instead ("Tomorrow · Customer Support"); 360px and wider keep it beside the time.
+  const bSub = (shift: Shift) => {
+    const fact = shift.isCalloutApproved ? null : startsIn(shift, today, observedAt, timeZone) ?? (when(shift, today) === 'Tomorrow' ? 'Tomorrow' : null);
+    return fact ? <><span className="es-sub-w"><Dotted text={rowDetail(shift)}/></span><span className="es-sub-n"><Dotted text={`${fact} · ${rowDetail(shift)}`}/></span></> : <Dotted text={rowDetail(shift)}/>;
+  };
   // Phase 4 (EM-013): on desktop the card beside "This week" shows one day: the chosen day, else today, else (another
   // week) the first day with a shift. The week card above already shows every day, so nothing is listed twice.
   const wideDay = chosen ? null : weekStart === currentWeek ? today : shifts[0]?.date ?? null;
@@ -177,9 +183,10 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
           label: `${dayFmt(date, { weekday: 'long', month: 'long', day: 'numeric' })}${date === today ? ', today' : ''}${assigned ? ', assigned shift' : ''}${date === chosen ? ', selected day, show the whole week' : ''}` };
       })}
       confirm={review && !acknowledged ? { title: confirmationNeeded ? 'Confirm this week' : 'Schedule review',
-        detail: confirmationNeeded ? (shifts.length ? 'Your manager asked you to check it' : 'No assignments remain this week. Review the changes, then confirm.') : 'Review the current week again.',
-        // Phase 4 (EM-022): on a phone the reason keeps one line beside the button.
-        detailShort: confirmationNeeded && shifts.length ? t.managerAsked : undefined,
+        // Round 2 (S2): the row says what Home's row for the same job says: the week and how many shifts it holds
+        // ("Nov 16 – 22 · 7 shifts"), with Home's amber chip. One line at every width, so no short form is needed.
+        detail: confirmationNeeded ? (shifts.length ? keepWhole(`${weekRange(weekStart)} · ${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'}`) : 'No assignments remain this week. Review the changes, then confirm.') : 'Review the current week again.',
+        needed: confirmationNeeded,
         control: <PhoneOnly fallback={<span className="b-btn b-btn--teal" aria-hidden="true">Confirm</span>}>{confirmation}</PhoneOnly> } : null}
       celebration={review && acknowledged && props.acknowledgedRevisionId ? <PhoneOnly><Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /></PhoneOnly> : null}
       changes={changes && state !== 'unavailable' ? changes : null}
@@ -201,10 +208,10 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
           empty: wideRows ? null : state === 'published' ? (shifts.some(shift => shift.date === wideDay) ? t.noMoreToday : 'Day off today.')
             : shifts.some(shift => shift.date === wideDay) ? t.noMorePublishedToday : emptyScheduleLabel(state) } : null,
         rows: listed.map(shift => <PhoneOnly key={shift.id} fallback={<li className="b-li"><Link className="b-row b-row--link" href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} scroll={false} aria-label={rowLabel(shift)}>
-          {bLead(shift)}<span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{hours(shift)}</span>{bChip(shift) ?? null}</span><span className="b-row__s"><Dotted text={rowDetail(shift)}/></span></span>
+          {bLead(shift)}<span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{hours(shift)}</span>{bChip(shift) ?? null}</span><span className="b-row__s">{bSub(shift)}</span></span>
           <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" /></Link></li>}>
           <ShiftSheetCorpRow shift={sheetShift(shift)} title={hours(shift)} detail={rowDetail(shift)} href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} closeHref={listHref} initiallyOpen={props.selectedShift === shift.id}
-            b={{ lead: bLead(shift), chip: bChip(shift), label: rowLabel(shift) }} />
+            b={{ lead: bLead(shift), chip: bChip(shift), sub: bSub(shift), label: rowLabel(shift) }} />
         </PhoneOnly>) }}
       unpublished={state === 'unpublished' ? (shifts.length ? unpublishedNote(unpublishedNames, publishedNames) : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`) : null}
       // Employee desktop, Direction B (Nov 8, 2026): the whole week as seven days; each day opens as the strip's chosen day.

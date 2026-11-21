@@ -186,7 +186,8 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools { display: flex; gap: var(--b-space-8); margin: var(--b-space-16) var(--b-space-20) 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search { flex: 1; min-width: 0; margin: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::-webkit-search-cancel-button { filter: brightness(0) invert(1); opacity: 0.72; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select { position: relative; display: inline-flex; align-items: center; gap: 6px; flex: none; height: 46px; padding: 0 var(--b-gutter); border-radius: var(--b-radius-field); color: var(--b-on-band); font-size: 14px; font-weight: 600; white-space: nowrap; }
+/* Final polish, round 2 (N3): the filter is the search field's height (it measured 46px beside the field's 44px). */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select { position: relative; display: inline-flex; align-items: center; gap: 6px; flex: none; height: var(--b-seg-h); padding: 0 var(--b-gutter); border-radius: var(--b-radius-field); color: var(--b-on-band); font-size: 14px; font-weight: 600; white-space: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select select { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; font-size: 16px; -webkit-appearance: none; appearance: none; cursor: pointer; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select select option { color: var(--b-ink); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-select svg { flex: none; pointer-events: none; }
@@ -307,6 +308,12 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::placeholder { font-size: var(--b-fs-body); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 6px; margin: var(--b-space-2) 0 -7px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { margin: -7px 0; }
+/* Final polish, round 2 (M5): on phones each policy link is a 44px line box (they were 32px drawn 18px apart, so two
+ * rows of links shared one finger). The words keep their size and colour; the rows sit 44px apart. */
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 0; margin: -4px 0 -8px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { min-height: 44px; margin: 0; }
+}
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx > span .eb-nowrap { white-space: nowrap; text-wrap: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-form { display: none; }
 /* Final review C (row 11): the box sits on the consent's first line (centred on its 22.5px line box; its top margin is in

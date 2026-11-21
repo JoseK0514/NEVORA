@@ -8,6 +8,9 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-btn { min-height: 32px; padding: 0 var(--b-space-12); border-radius: var(--b-radius-pill); font-size: var(--b-fs-meta); }
 /* Inspection Nov 14 (BR-11): See your hours keeps its 32px pill and takes a 44px hit area. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-btn::after { inset: -6px 0; }
+/* Final polish, round 2 (P1): See your hours is on the title's row, centred on "Pay" (the kit's title row ends its
+ * action on the title's last line, which suits a title with a line under it; Pay's has none). */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-title:has(#b-pay-title) { align-items: center; }
 /* A paycheck's date, large, with its work week under it. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big { padding: var(--b-space-2) var(--b-inset) var(--b-space-16); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__k { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }

@@ -49,7 +49,7 @@
 
     /* Tab bar: frosted white, a 56×30 teal pill behind the current tab's icon, 10.5px labels, a visible count (teal: a
      * count is not an alarm; Phase 3, OW-028 and MG-006). */
-    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav { background: rgb(255 255 255 / 0.9) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; box-shadow: 0 -1px 0 rgb(0 0 0 / 0.06) !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav { background: rgb(255 255 255 / 0.96) !important; -webkit-backdrop-filter: blur(24px) saturate(1.4) !important; backdrop-filter: blur(24px) saturate(1.4) !important; box-shadow: 0 -1px 0 rgb(0 0 0 / 0.06) !important; }
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link { position: relative !important; gap: 3px !important; padding-top: var(--b-space-8) !important; color: var(--b-grey) !important; font: 500 10.5px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link::before { content: "" !important; display: block !important; position: absolute !important; top: 5px !important; left: 50% !important; width: 56px !important; height: 30px !important; margin-left: -28px !important; border-radius: var(--b-radius-pill) !important; background: transparent !important; z-index: 0 !important; }
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link.active::before { background: var(--b-teal-50) !important; }

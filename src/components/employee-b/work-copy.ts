@@ -31,7 +31,7 @@ const words = {
     // Phase 8 (review C, Time correction row): what the row opens, without claiming a state.
     correctionsSub: 'Waiting and decided',
     // Phase 8 (review C, row 23 and the copy table): Pick up and swap.
-    cantTake: (count: number) => `${count} ${count === 1 ? 'shift' : 'shifts'} you can’t take`,
+    cantTakeTitle: 'Shifts you can’t take', cantTake: (count: number) => `${count} ${count === 1 ? 'shift' : 'shifts'}, with the reason`,
     yourAvailability: 'Your availability',
     // Phase 8 (review C, row 12): the closed Payroll page offers an Employee their own pay.
     payIsInPay: 'Your pay statements are in Pay.',
@@ -47,6 +47,12 @@ const words = {
     moreEarlierStatements: 'More earlier statements',
     // Phase 9 (spec 1.4): your own clock state on Time once a shift has started with no punch, with how long.
     notClockedInFor: (span: string) => `Not clocked in · ${span}`,
+    // Round 2 (H2): Home's chip for a swap or cover request that waits for you, Requests' own words.
+    needsYourAnswer: 'Needs your answer',
+    // Round 2 (S4): Schedule's "What changed in your schedule" on a phone narrower than 360px.
+    whatChanged: 'What changed',
+    // Round 2 (S2): Schedule's Confirm row carries Home's chip.
+    actionNeeded: 'Action needed',
   },
   es: {
     hours: 'Horas',
@@ -67,7 +73,7 @@ const words = {
     managerAsked: 'Lo pidió tu gerente',
     teamNote: 'Tu mensaje llega a todos en el horario publicado de hoy. No tienen que confirmarlo.',
     correctionsSub: 'En espera y decididas',
-    cantTake: (count: number) => `${count} ${count === 1 ? 'turno que no puedes tomar' : 'turnos que no puedes tomar'}`,
+    cantTakeTitle: 'Turnos que no puedes tomar', cantTake: (count: number) => `${count} ${count === 1 ? 'turno' : 'turnos'}, con el motivo`,
     yourAvailability: 'Tu disponibilidad',
     payIsInPay: 'Tus comprobantes de pago están en Pago.',
     openPay: 'Abrir Pago',
@@ -81,6 +87,9 @@ const words = {
     leadShort: 'Líder',
     moreEarlierStatements: 'Más comprobantes anteriores',
     notClockedInFor: (span: string) => `Sin registrar entrada · ${span}`,
+    needsYourAnswer: 'Necesita tu respuesta',
+    whatChanged: 'Qué cambió',
+    actionNeeded: 'Requiere acción',
   },
 } as const;
 export type WorkCopy = {[K in keyof typeof words.en]: (typeof words.en)[K] extends (...args: infer A) => string ? (...args: A) => string : string};

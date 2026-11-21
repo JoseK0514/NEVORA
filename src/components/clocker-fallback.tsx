@@ -73,7 +73,7 @@ function ErrorBody({ retry }: { retry: () => void }) {
   // one alert. No hidden copy of either.
   useEffect(() => { heading.current?.focus({ preventScroll: true }); }, [online]);
   if (!online) return <Frame>
-    <span className={styles.ring} data-tone="red"><ClockerIcon name="offline" size={28} /></span>
+    <span className={styles.ring} data-tone="red"><ClockerIcon name="offline" size={28} mark/></span>
     <h1 ref={heading} tabIndex={-1} className={styles.title}>{t('No connection')}</h1>
     <p role="alert" className={styles.smsg}>{t('This tablet is offline, so nothing can be recorded right now.')}</p>
     <p className={styles.blockedHint}>{t('Tell a manager so your time gets recorded.')}</p>
@@ -82,7 +82,7 @@ function ErrorBody({ retry }: { retry: () => void }) {
     <div className={styles.meta} data-align="center"><ClockerLanguageToggle /></div>
   </Frame>;
   return <Frame>
-    <span className={styles.ring} data-tone="red"><ClockerIcon name="stop" size={28} /></span>
+    <span className={styles.ring} data-tone="red"><ClockerIcon name="stop" size={28} mark/></span>
     <h1 ref={heading} tabIndex={-1} className={styles.title}>{t('The time clock hit a problem')}</h1>
     <p role="alert" className={styles.smsg}>{keep(t('Tap Try again. If it happens again, ask a manager to record your time.'))}</p>
     <div className={styles.stack}><button type="button" className={styles.btn} data-kind="primary" onClick={retry}><ClockerIcon name="refresh" size={20} />{t('Try again')}</button></div>
@@ -97,7 +97,7 @@ export function ClockerLoadingScreen() {
 function LoadingBody() {
   const t = useClockerCopy();
   return <Frame busy>
-    <span className={styles.ring}><ClockerIcon name="wait" size={28} /></span>
+    <span className={styles.ring}><ClockerIcon name="wait" size={28} mark/></span>
     <h1 className={styles.title}>{t('Checking this tablet…')}</h1>
     <span className={styles.progress} aria-hidden="true"><i /></span>
   </Frame>;

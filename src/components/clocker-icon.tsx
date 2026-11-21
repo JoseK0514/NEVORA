@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { OfflineGlyph } from './owner-b/b-glyphs';
 import type { Icon, IconWeight } from '@phosphor-icons/react';
 import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
@@ -45,7 +46,10 @@ const icons: Record<ClockerIconName, Icon> = {
   camera: CameraIcon, info: InfoIcon, caret: CaretDownIcon, pause: PauseIcon, back: ArrowLeftIcon, unknown: QuestionIcon,
 };
 
-export function ClockerIcon({ name, size = 24, weight = 'bold', style }: { name: ClockerIconName; size?: number; weight?: IconWeight; style?: CSSProperties }) {
+/** `mark` (premium pass, Nov 21, 2026; Jose's pick 4): the glyph stands inside a circle (a ring, an action's circle, a
+ * note's mark), so it is Phosphor's duotone cut. The tick has no second tone and stays bold. */
+export function ClockerIcon({ name, size = 24, weight = 'bold', style, mark }: { name: ClockerIconName; size?: number; weight?: IconWeight; style?: CSSProperties; mark?: boolean }) {
+  if (mark && name === 'offline') return <OfflineGlyph size={size} style={style} />;
   const Glyph = icons[name];
-  return <Glyph size={size} weight={weight} aria-hidden="true" focusable="false" style={style} />;
+  return <Glyph size={size} weight={mark && name !== 'check' ? 'duotone' : weight} aria-hidden="true" focusable="false" style={style} />;
 }

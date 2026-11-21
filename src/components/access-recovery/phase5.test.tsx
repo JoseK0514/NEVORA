@@ -16,7 +16,7 @@ import { noteParts } from "@/components/auth-premium/note-parts";
 import { BGlyph } from "@/components/owner-b/b-kit";
 
 const saysNote = (html: string, message: string) => { const { title, body } = noteParts(message); if (title) expect(html).toContain(`<p class="b-callout__t">${title}</p>`); if (body) expect(html).toContain(body); };
-const glyph = (meaning: Parameters<typeof BGlyph>[0]["meaning"]) => renderToStaticMarkup(<BGlyph meaning={meaning} />);
+const glyph = (meaning: Parameters<typeof BGlyph>[0]["meaning"]) => renderToStaticMarkup(<BGlyph meaning={meaning} solid />);
 
 rs.stubGlobal("React", React);
 

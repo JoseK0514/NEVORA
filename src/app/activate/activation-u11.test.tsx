@@ -11,7 +11,7 @@ import { BGlyph } from "@/components/owner-b/b-kit";
 import { MOBILE_ACCESS_COPY } from "@/components/mobile-access/copy";
 
 const saysNote = (html: string, message: string) => { const { title, body } = noteParts(message); if (title) expect(html).toContain(`<p class="b-callout__t">${title}</p>`); if (body) expect(html).toContain(body); };
-const glyph = (meaning: Parameters<typeof BGlyph>[0]["meaning"]) => renderToStaticMarkup(<BGlyph meaning={meaning} />);
+const glyph = (meaning: Parameters<typeof BGlyph>[0]["meaning"]) => renderToStaticMarkup(<BGlyph meaning={meaning} solid />);
 
 const REFERENCE = "3f2b1c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
 type Props = Partial<Parameters<typeof ActivationInvitationView>[0]>;

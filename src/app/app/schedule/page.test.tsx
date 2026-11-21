@@ -41,7 +41,8 @@ it('loads actual history and renders own changes behind authenticated access',as
  expect(await html()).toContain('What changed in your schedule');expect(await html()).not.toContain('3:00 PM');expect(f.reads.mock.calls.flat()).toContain('coherent');
 });
 it('filters revoked location history on both sides and hides unchanged shifts',async()=>{
- f.after=[...f.before];expect(await html()).not.toContain('What changed');
+ // Round 2 (S4): the phone screen's row also holds a short title for narrow phones ("What changed"), drawn only when the disclosure is there, so this names the disclosure itself.
+ f.after=[...f.before];expect(await html()).not.toContain('What changed in your schedule');expect(await html()).not.toContain('<details');
  f.after=[{...f.before[0],locationId:'110'}];const result=await html();expect(result).toMatch(/>Removed<\/span>/);/* Review B2 (NV-226): the change is a chip */expect(result).not.toContain('Location 110');
 });
 it('push feature off retains canonical review while protected access loss discloses no history',async()=>{

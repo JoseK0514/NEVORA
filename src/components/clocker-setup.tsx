@@ -163,7 +163,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
   const place = <strong>{locationLabel.length <= 28 ? locationLabel.replace(/ /g, '\u00a0') : locationLabel}</strong>;
   const [readyBefore, readyAfter = ''] = t('{device} is ready. Your team can clock in now.', { device: '\u0000' }).split('\u0000');
   const fieldError = error && view === 'type';
-  const punchNote = <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20}/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Punching in isn’t turned on yet. Don’t use this tablet to record time.")} {t("Ask your Owner to contact NEVORA support.")}</p></div>;
+  const punchNote = <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20} mark/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Punching in isn’t turned on yet. Don’t use this tablet to record time.")} {t("Ask your Owner to contact NEVORA support.")}</p></div>;
   return <ClockerShell locationLabel={locationLabel} timeZone={timeZone} brand={brand} workspaceName={workspaceName}
     deviceName={state.state === 'connected' ? state.deviceName : undefined}
     status={uncertain ? offline ? 'offline' : 'unconfirmed' : pending ? 'checking' : connected ? 'connected' : 'setup'}>
@@ -171,17 +171,17 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
     : <div className={`${styles.content} ${setup.root}`} data-align="center" aria-busy={pending} data-clocker-setup={view} data-refused={fieldError ? '' : undefined}>
       {view === 'uncertain' ? <>
         {/* Premium pass (decision 2): a setup that can't be confirmed is the amber Question; no connection is red. */}
-        <span className={styles.ring} data-tone={offline ? 'red' : 'amber'}><ClockerIcon name={offline ? 'offline' : 'unknown'} size={28}/></span>
+        <span className={styles.ring} data-tone={offline ? 'red' : 'amber'}><ClockerIcon name={offline ? 'offline' : 'unknown'} size={28} mark/></span>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t(offline ? 'No connection' : 'Setup not confirmed')}</h1>
       </> : view === 'welcome' ? <>
-        <span className={styles.ring} data-tone="green"><ClockerIcon name="check" size={28}/></span>
+        <span className={styles.ring} data-tone="green"><ClockerIcon name="check" size={28} mark/></span>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t('This tablet is connected to {location}', { location: locationLabel })}</h1>
         <p className={styles.lead}>{readyBefore}<strong>{state.state === 'connected' ? state.deviceName : ''}</strong>{readyAfter}</p>
         {punchEnabled ? null : punchNote}
         <div className={styles.stack}><button className={styles.btn} data-kind="primary" type="button" onClick={() => setWelcome(false)}>{t('Open the time clock')}<ClockerIcon name="arrow" size={20}/></button></div>
         <p className={styles.clears}>{t("Owner access has been signed out on this tablet.")}{punchEnabled ? <>{' '}{t('The time clock opens in a few seconds.')}</> : null}</p>
       </> : view === 'connected' ? <>
-        <span className={styles.ring} data-tone="green"><ClockerIcon name="check" size={28}/></span>
+        <span className={styles.ring} data-tone="green"><ClockerIcon name="check" size={28} mark/></span>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{welcome ? t('This tablet is connected to {location}', { location: locationLabel }) : t("Tablet connected")}</h1>
         {/* One sentence with a placeholder (Nov 10 review, NV-173). */}
         <p className={styles.lead}>{deviceBefore}<strong>{state.state === 'connected' ? state.deviceName : ''}</strong>{deviceAfter}</p>
@@ -189,7 +189,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
         <p className={styles.clears}>{t("Owner access has been signed out on this tablet.")}</p>
         <div className={styles.stack}><button className={styles.btn} data-kind="secondary" type="button" disabled={pending} onClick={check}>{t("Check connection")}</button></div>
       </> : view === 'received' ? <>
-        <span className={styles.ring}><ClockerIcon name="tablet" size={28}/></span>
+        <span className={styles.ring}><ClockerIcon name="tablet" size={28} mark/></span>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t('Setup code received')}</h1>
         <p className={styles.lead}>{placeBefore}{place}{placeAfter} {keep(t('Tap Connect tablet to finish. The code works one time.'))}</p>
         <form onSubmit={connect} className={styles.form}>

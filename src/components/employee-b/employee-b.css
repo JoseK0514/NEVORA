@@ -293,7 +293,16 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__a { border: 1px solid CanvasText; }
 }
 
-/* Final polish (Nov 20, 2026): on Employee and Lead screens a secondary button (Shift details, Try again, Refresh, Check
- * again) is the tinted pill, as on Owner pages. Its grey fill was the disabled grey (#F0F2F3), so a working button read
- * as switched off. Grey now means disabled only. */
-:is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-btn--quiet:not(:disabled, [aria-disabled="true"]) { background: var(--b-teal-50); color: var(--b-teal); }
+/* Premium pass: Employee and Lead secondary buttons are the kit's white button (owner-b.css, pick 1A); no rule here. */
+
+/* Final polish, round 2 (Nov 20, 2026): Home on phones narrower than 360px.
+ * H4: a to-do's deadline shows its short form ("By Nov 24, 12 PM") so it keeps one line; the full sentence ("Respond by
+ * Nov 24, 12:00 PM") stays in the page for screen readers and is what 360px and wider show.
+ * H7: Your week's dates sit on their own line above the key, so the key and the dates share one left edge (the dates
+ * floated at the right between the key's two lines). */
+:is(#c-root, html) .app-shell .b-screen .eb-dl-s { display: none; }
+@media (max-width: 359px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-dl { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-dl-s { display: inline; white-space: nowrap; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__key { flex-direction: column-reverse; align-items: flex-start; gap: var(--b-space-4); }
+}

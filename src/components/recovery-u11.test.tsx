@@ -13,7 +13,7 @@ import { BGlyph } from "./owner-b/b-kit";
 
 /** A message shown as a note (premium pass FD): its short first sentence as the title, the rest as the body, word for word. */
 const saysNote = (html: string, message: string) => { const { title, body } = noteParts(message); if (title) expect(html).toContain(`<p class="b-callout__t">${title}</p>`); if (body) expect(html).toContain(body); };
-const glyph = (meaning: Parameters<typeof BGlyph>[0]["meaning"]) => renderToStaticMarkup(<BGlyph meaning={meaning} />);
+const glyph = (meaning: Parameters<typeof BGlyph>[0]["meaning"]) => renderToStaticMarkup(<BGlyph meaning={meaning} solid />);
 
 const REFERENCE = "3f2b1c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
 const ACCEPTED = "If the details match an active account, we’ll email recovery steps. Can’t use that email? Ask your manager or Owner for help.";

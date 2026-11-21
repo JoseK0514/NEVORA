@@ -988,3 +988,25 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     html body .app-shell[data-nv-b] :is(.c-page, .q-page, dialog) input.c-in:is(.c-in--date, .c-in--time):not(#fp-d1):not(#fp-d2):not(#fp-d3):not(#fp-d4):not(#fp-d5):not(#fp-d6)[data-empty]:not(:focus)::-webkit-datetime-edit { color: var(--b-grey) !important; }
   }
 }
+
+/* Premium pass (Nov 20, 2026): a count inside a segment is a plain numeral in the label's colour at 62%, not a filled
+ * circle (the white thumb's teal circle and the amber one beside "For you" read as stickers). A count that waits on the
+ * person keeps one small amber dot before it. Supersedes "a 20px count pill" in NV-103; the gap and the type stay. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { display: inline-flex !important; align-items: center !important; min-width: 0 !important; height: auto !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: inherit !important; opacity: 0.62 !important; font-size: var(--b-fs-caption) !important; line-height: 16px !important; font-weight: 600 !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { background: none !important; color: inherit !important; opacity: 0.56 !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"]) { background: none !important; color: inherit !important; opacity: 1 !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"])::before { content: "" !important; flex: none !important; width: 6px !important; height: 6px !important; margin-inline-end: 5px !important; border-radius: 50% !important; background: #FFC46B !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.eb-segn--amber, .b-count[data-tone="amber"])::before { background: var(--b-amber-solid) !important; }
+}
+
+/* Premium pass (Jose's board pick 1A): a row's positive action and the older secondary button are the white button with
+ * a hairline (b-tokens --b-btn-surface*), not the tinted pill. Disabled keeps the one disabled pair; busy keeps its look. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-rowact.b-rowact--go:not(#b-ra1):not(#b-ra2):not(#b-ra3):not(:disabled, [aria-disabled="true"]) { background: var(--b-btn-surface) !important; color: var(--b-btn-surface-ink) !important; box-shadow: var(--b-btn-surface-edge) !important; }
+  html body .app-shell[data-nv-b] .nv-btn:not([data-kind="primary"], [data-kind="danger"], [data-tone="urgent"]):not(:disabled, [aria-disabled="true"]) { background: var(--b-btn-surface) !important; color: var(--b-btn-surface-ink) !important; box-shadow: var(--b-btn-surface-edge) !important; }
+  @media (hover: hover) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-rowact.b-rowact--go:not(#b-ra1):not(#b-ra2):not(#b-ra3):not(:disabled, [aria-disabled="true"]):hover { background: var(--b-btn-surface-hover) !important; }
+    html body .app-shell[data-nv-b] .nv-btn:not([data-kind="primary"], [data-kind="danger"], [data-tone="urgent"]):not(:disabled, [aria-disabled="true"]):hover { background: var(--b-btn-surface-hover) !important; }
+  }
+}

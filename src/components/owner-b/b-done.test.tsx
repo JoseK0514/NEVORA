@@ -95,16 +95,20 @@ describe("b-moments.css keeps the motion rules", () => {
     expect(places.length).toBeGreaterThanOrEqual(6);
     for (const context of places) expect(context.some(prelude => /prefers-reduced-motion:\s*no-preference/.test(prelude)), context.join(" > ")).toBe(true);
   });
-  it("animates transform and opacity only, once, on the enter token", () => {
+  it("animates transform and opacity only, once, on the settle tokens", () => {
     const frames = [...sheet.matchAll(/@keyframes ([\w-]+) \{((?:[^{}]*\{[^{}]*\})+)\s*\}/g)];
     expect(frames.map(match => match[1]).sort()).toEqual(["b-done-check", "b-done-ring", "b-done-settle"]);
     for (const [, name, body] of frames) {
       const props = [...body.matchAll(/([a-z-]+):/g)].map(match => match[1]);
-      expect(props.every(prop => prop === "opacity" || prop === "transform"), `${name}: ${props.join(", ")}`).toBe(true);
+      // Final polish (Nov 21, 2026): the tick is drawn, so its keyframe moves the stroke's dash offset and nothing else.
+      const allowed = name === "b-done-check" ? ["stroke-dashoffset"] : ["opacity", "transform"];
+      expect(props.every(prop => allowed.includes(prop)), `${name}: ${props.join(", ")}`).toBe(true);
     }
     const runs = [...sheet.matchAll(/animation: ([^;]+);/g)].map(match => match[1]).filter(run => run !== "none !important");
-    expect(runs).toHaveLength(3);
-    for (const run of runs) expect(run).toMatch(/^b-done-(settle|check|ring) var\(--b-dur-enter\) var\(--b-ease-out\) both$/);
+    // Refinement (Nov 20, 2026): the circle settles, the check follows, one ring leaves (and the celebrated ring), each
+    // on its own token and the settle curve.
+    expect(runs).toHaveLength(4);
+    for (const run of runs) expect(run).toMatch(/^b-done-(settle|check|ring) var\(--b-dur-(settle|draw|ring)\) var\(--b-ease-settle\)( var\(--b-delay-(draw|ring)\))? both$/);
     expect(sheet).not.toMatch(/infinite|cubic-bezier|\d+ms|transition: all|filter:|blur\(/);
   });
   it("a result's card is there at once: the Employee card entrance (300ms wait, rise) is off for it", () => {

@@ -221,3 +221,9 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xsk { border-radius: var(--b-radius-field); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { margin-bottom: 5px; }
+/* Final polish, round 2 (R3): a card's foot. One teal text link (the kit's .b-link, 44px tall) under a hairline, at the
+ * card's inset: "See every posted shift" under Open shifts' list, its empty state and its failed state. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardfoot { display: flex; margin: 0; padding: var(--b-space-2) var(--b-inset) var(--b-space-4); box-shadow: inset 0 1px 0 var(--b-line); }
+@media (min-width: 768px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardfoot { padding-left: var(--b-inset-wide); padding-right: var(--b-inset-wide); }
+}

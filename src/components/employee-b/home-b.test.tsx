@@ -5,7 +5,7 @@ rs.mock('next/link', () => ({default: ({children, scroll: _scroll, prefetch: _pr
 import {HOME_SOURCES} from '../../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../../lib/employee-home/types';
 import type {HomeWeek} from '../employee-home-quiet';
-import {EmployeeHomeB, HoursRead, endedShiftStillOpen, homeTodoPreview, placeWhole, type HomeBProps, type HomeTodo} from './home-b';
+import {EmployeeHomeB, HoursRead, endedShiftStillOpen, homeTodoPreview, needsAnswer, placeWhole, todoDeadline, type HomeBProps, type HomeTodo} from './home-b';
 import {Dotted} from './parts';
 
 /* Phase 4 (Nov 17, 2026), Employee and Lead Home on fictional data: Tuesday, Nov 17, 2026 at 6:00 PM in Puerto Rico. */
@@ -43,7 +43,33 @@ it('EM-002: Home keeps the server’s order and never drops the first required r
   // The required row keeps the one teal Review pill and the amber chip; a lead is the teal circle (EM-008, EM-017), and
   // amber for the one that waits on you (Phase 9, spec 3.2, as in Notifications).
   expect(card.match(/b-btn--teal/g)).toHaveLength(1);expect(card).toContain('b-chip--amber');
-  expect(card).not.toContain('b-ico--grey');expect(card.match(/b-ico--teal/g)).toHaveLength(4);expect(card.match(/b-ico--amber/g)).toHaveLength(1);
+  // Round 2 (H2): the four swap requests here wait for an answer, so they are amber too (five amber circles, no teal one).
+  expect(card).not.toContain('b-ico--grey');expect(card).not.toContain('b-ico--teal');expect(card.match(/b-ico--amber/g)).toHaveLength(5);
+});
+
+it('round 2 (H2, H4): a request that waits for your answer is amber with Requests’ chip; its deadline has a short form for narrow phones', () => {
+  const swap = todo('swap'), fyi: HomeTodo = {key: 'k:fyi', item: {...item('fyi', false, 'TIME_OFF'), label: 'Time off approved', actionable: false, deadlineAt: null}, week: false};
+  expect(needsAnswer(swap.item)).toBe(true);
+  // Not every swap notice waits on you: no deadline, or nothing to act on, keeps the teal circle and no chip.
+  expect(needsAnswer({...swap.item, deadlineAt: null})).toBe(false);expect(needsAnswer({...swap.item, actionable: false})).toBe(false);
+  expect(needsAnswer({...swap.item, ref: {...swap.item.ref, kind: 'TIME_OFF'} as AttentionItem['ref']})).toBe(false);
+  // The server's order stands, and the one teal Review pill stays on the first required row.
+  const html = draw({todos: [swap, fyi, todo('req', true)]}), card = html.slice(html.indexOf('id="b-home-todo"'), html.indexOf('</section>', html.indexOf('id="b-home-todo"')));
+  expect(card.indexOf('item=swap')).toBeLessThan(card.indexOf('item=fyi'));expect(card.indexOf('item=fyi')).toBeLessThan(card.indexOf('item=req'));
+  const row = card.slice(card.indexOf('item=swap'), card.indexOf('item=fyi'));
+  expect(row).toContain('<span class="b-ico b-ico--amber" aria-hidden="true">');
+  expect(row).toContain('<span class="b-chip b-chip--amber">Needs your answer</span>');
+  expect(row).not.toContain('b-btn');expect(row).toContain('b-chev');
+  expect(card.match(/b-btn--teal/g)).toHaveLength(1);expect(card.match(/Needs your answer/g)).toHaveLength(1);expect(card.match(/Action needed/g)).toHaveLength(1);
+  expect(card.slice(card.indexOf('item=fyi'), card.indexOf('item=req'))).toContain('b-ico--teal');
+  // H4: 1:00 PM UTC is 9:00 AM in Puerto Rico. Both forms are in the row; the short one is not read aloud.
+  expect(text(row)).toContain('Respond by Nov 23, 9:00 AM');
+  expect(row).toMatch(/<span class="eb-dl">Respond by Nov[ \u00a0]23,[ \u00a0]9:00[ \u00a0\u202f]AM<\/span><span class="eb-dl-s" aria-hidden="true">By Nov[ \u00a0]23,[ \u00a0]9[ \u00a0\u202f]AM<\/span>/);
+  // The hour loses ":00"; any other minute stays.
+  expect(todoDeadline('2026-11-24T16:00:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 12 PM');
+  expect(todoDeadline('2026-11-24T16:30:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 12:30 PM');
+  expect(todoDeadline('2026-11-24T14:00:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 10 AM');
+  expect(todoDeadline('2026-11-24T16:00:00Z', zone).full.replace(/[\u00a0\u202f]/g, ' ')).toBe('Respond by Nov 24, 12:00 PM');
 });
 
 it('EM-007, EM-025: the hours read as one sentence, the payday is one format, and the shift ahead is the first figure', () => {
@@ -135,8 +161,8 @@ it('Final review C (rows 4, 9): a short place name stays whole; fixing your time
   const {ClockIcon} = await import('@phosphor-icons/react/dist/ssr/Clock');
   const fix: HomeTodo = {key: 'k:fix', item: item('fix', false, 'TIME_CORRECTION'), week: false};
   const html = draw({todos: [fix]}), card = html.slice(html.indexOf('id="b-home-todo"'), html.indexOf('</section>', html.indexOf('id="b-home-todo"')));
-  expect(card).toContain(renderToStaticMarkup(<PencilSimpleIcon weight="bold"/>));
-  expect(card).not.toContain(renderToStaticMarkup(<ClockIcon weight="bold"/>));
+  expect(card).toContain(renderToStaticMarkup(<PencilSimpleIcon weight="duotone"/>));
+  expect(card).not.toContain(renderToStaticMarkup(<ClockIcon weight="duotone"/>));
 });
 
 it('privacy: while Home is not released (offline, paused) no private row is drawn', () => {

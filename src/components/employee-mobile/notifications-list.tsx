@@ -60,8 +60,10 @@ export function notificationTitle(item:EmployeeNotificationItem):string{
  * schedule"); `object` is what it is about, from the dates, the name and the count the list sends ("Nov 30 – Dec 2",
  * "Week of Nov 9 · 2 shifts", "Sat, Nov 21 · From Ana Colon"), or null when the list sends none of them (a team update's
  * title and a pay statement's period are not in the read). `decided` is set only for a decision the event type names.
- * Nothing is guessed: without an event type the title stops at "answered" or "updated", as notificationTitle does. */
-export type NotificationHeadline={title:string;object:string|null;decided:'approved'|'declined'|null};
+ * Nothing is guessed: without an event type the title stops at "answered" or "updated", as notificationTitle does.
+ * `forYou` is a swap or cover request that waits for this person's answer (final polish, round 2: drawn amber with
+ * "Needs your answer", as Requests draws it). */
+export type NotificationHeadline={title:string;object:string|null;decided:'approved'|'declined'|null;forYou:boolean};
 const headlineDay=(date:string,locale:string,weekday:boolean)=>new Intl.DateTimeFormat(locale,{timeZone:'UTC',...(weekday?{weekday:'short'}:{}),month:'short',day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
 export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountLang='en'):NotificationHeadline{
  const t=accountCopy(lang),locale=ACCOUNT_LOCALE[lang],subject=item.subject??null,needed=item.actionState==='required',who=notificationName(item);
@@ -101,7 +103,7 @@ export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountL
    default:return item.label;
   }
  })();
- return {title,object,decided:decided&&kind?decided:null};
+ return {title,object,decided:decided&&kind?decided:null,forYou};
 }
 
 /** Board E-Notifications (upscale B7): All / Unread tabs, then the notices grouped by day in cards, one row per notice.

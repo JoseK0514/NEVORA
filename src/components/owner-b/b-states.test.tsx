@@ -108,7 +108,9 @@ describe("the loading placeholder keeps the page's frame", () => {
   });
   it("reads the band heights from the frame tokens; its own rules stay still (the one shimmer is b-shimmer.css, Phase 7)", () => {
     for (const kind of ["short", "sub", "strip"]) expect(css).toContain(`.b-screen[data-b-band="${kind}"] { --b-ph-band: calc(var(--b-band-${kind}) - var(--b-title-top)); }`);
-    const block = css.slice(css.indexOf("Phase 2 (package D"));
+    // The placeholder's block ends where the premium pass (notices, buttons, micro-interactions) begins.
+    const block = css.slice(css.indexOf("Phase 2 (package D"), css.indexOf("---------- Premium pass (Nov 20, 2026)"));
+    expect(block.length).toBeGreaterThan(200);
     expect(block).not.toMatch(/animation|@keyframes|transition/);
   });
 });
