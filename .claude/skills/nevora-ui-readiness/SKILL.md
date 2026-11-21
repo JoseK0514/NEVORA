@@ -18,6 +18,12 @@ description: Design, polish, implement, or test UI in the NEVORA UI readiness ch
 4. Read `package.json` before installing packages or running build/start scripts.
    Do not copy credentials from another checkout.
 
+## Design operating system
+
+Load `.claude/skills/nevora-design-os/SKILL.md` for every design, copy or motion decision. It holds the Apple HIG
+floors, the token and component index, the voice standard, the GSAP motion standard, and the Impeccable audit to run
+on every draft Jose presents.
+
 ## Product team
 
 For larger UI work (new features, redesigns, trend or competitor reviews), use
