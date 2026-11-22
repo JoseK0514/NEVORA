@@ -16,7 +16,7 @@ assert.ok(evidence && isAbsolute(evidence), 'Pass the absolute evidence director
 const runtime = JSON.parse(await readFile(join(evidence, 'runtime.json'), 'utf8'));
 const { checkpoint, week, actors, profiles } = runtime;
 assert.match(runtime.url, /^http:\/\/127\.0\.0\.1:[0-9]+$/);
-const url = runtime.url.replace('127.0.0.1', 'localhost');
+const url = runtime.url;
 assert.equal(checkpoint, execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), 'Use the checkout that started the sandbox.');
 
 const require = createRequire(new URL('../../tools/ci-browser-runtime/package.json', import.meta.url));
@@ -32,11 +32,11 @@ function record(id, detail) {
   console.log(id, detail);
 }
 
-async function pageFor(viewport, permissions = [], userAgent) {
+async function pageFor(viewport, permissions = [], userAgent, origin = url) {
   const context = await browser.newContext({ viewport, permissions, userAgent, serviceWorkers: 'block' });
   await context.route('**/*', route => {
     const target = new URL(route.request().url());
-    return target.origin === url || target.protocol === 'blob:' ? route.continue() : route.abort();
+    return target.origin === origin || target.protocol === 'blob:' ? route.continue() : route.abort();
   });
   const page = await context.newPage();
   page.setDefaultTimeout(30_000);
@@ -44,9 +44,9 @@ async function pageFor(viewport, permissions = [], userAgent) {
   return page;
 }
 
-async function login(id, viewport = phone, userAgent) {
-  const page = await pageFor(viewport, [], userAgent);
-  await page.goto(url + '/login');
+async function login(id, viewport = phone, userAgent, origin = url) {
+  const page = await pageFor(viewport, [], userAgent, origin);
+  await page.goto(origin + '/login');
   await page.locator('#login-employee-id').fill(id);
   await page.locator('#login-password').fill(TEST_PASSWORD);
   await page.getByRole('button', { name: /^sign in$/i }).click();
@@ -156,11 +156,16 @@ try {
     }
   }
   if (inventoryEnabled) {
+    // The WebAuthn and browser-alert test contracts use localhost. Clocker
+    // provisioning uses the exact numeric loopback origin announced by the app.
+    const origin = url.replace('127.0.0.1', 'localhost');
+    const scanPage = viewport => pageFor(viewport, [], undefined, origin);
+    const scanLogin = (id, viewport, userAgent) => login(id, viewport, userAgent, origin);
     const inventory = await scanInventory({
-      evidence, origin: url, runtime, pageFor, login, priority: results, screenshots: options.includes('--screenshots'),
+      evidence, origin, runtime, pageFor: scanPage, login: scanLogin, priority: results, screenshots: options.includes('--screenshots'),
     });
     try {
-      await checkNativeAlerts({ url, login, employee: profiles.E, evidence, record: (id, detail) => {
+      await checkNativeAlerts({ url: origin, login: scanLogin, employee: profiles.E, evidence, record: (id, detail) => {
         inventoryResults.push({ id, detail, observed: 'asserted workflow' });
         console.log(id, detail);
       } });

@@ -6,6 +6,8 @@ components they render). The **Built with** column says which component family t
 how the page looks. **On screen** is what the Nov 22 screenshot sweep saw (production build, fictional data, Chromium,
 390 and 1440 px); see [Sweep results](#sweep-results-nov-22-2026) below.
 
+[Run the collab QA workspace in Claude Cloud](page-inventory/claude-cloud.md) to get a fresh fictional workspace, role logins and reproducible browser checks from this branch.
+
 ## How to read it
 
 - **Profiles:** O = Owner · M = Manager with company-wide access · Mℓ = Manager limited to some locations · L = Lead ·
