@@ -5,9 +5,9 @@ const controllers:ReturnType<typeof createPrivateSnapshotController<PrivateSnaps
 const ready=(validForMs=15000):PrivateSnapshot=>({state:'ready',observedAt:new Date().toISOString(),validForMs});
 const flush=()=>rs.advanceTimersByTimeAsync(0);
 function deferred(){let resolve!:(value:PrivateSnapshot)=>void;const promise=new Promise<PrivateSnapshot>(done=>{resolve=done;});return {promise,resolve};}
-async function mount(request:(signal:AbortSignal)=>Promise<unknown>,expiryFailure?:(budget:number)=>'read_failed'|'access_denied'){
+async function mount(request:(signal:AbortSignal)=>Promise<unknown>,expiryFailure?:(budget:number)=>'read_failed'|'access_denied',renewal?:{safetyMarginMs:number}){
  const states:PrivatePanelState<PrivateSnapshot>[]=[];
- const controller=createPrivateSnapshotController<PrivateSnapshot>(state=>states.push(state),request,value=>value as PrivateSnapshot,reason=>({state:'unavailable',reason}),expiryFailure);
+ const controller=createPrivateSnapshotController<PrivateSnapshot>(state=>states.push(state),request,value=>value as PrivateSnapshot,reason=>({state:'unavailable',reason}),expiryFailure,renewal);
  controllers.push(controller);controller.start();await flush();return {controller,states};
 }
 beforeEach(()=>{rs.useFakeTimers({toFake:['setTimeout','clearTimeout','Date','performance']});});
@@ -28,6 +28,47 @@ describe('protected snapshot refresh budgets',()=>{
   await rs.advanceTimersByTimeAsync(5999);
   expect(request.mock.calls.length).toBeGreaterThan(1);
   expect(states.filter(state=>state.snapshot?.state==='unavailable')).toEqual([]);
+ });
+
+ it('starts slow Notifications renewal before the old 70% point and keeps the list through its original deadline',async()=>{
+  const initial=deferred(),renewal=deferred(),next=deferred();let calls=0;
+  const request=rs.fn(async()=>{calls++;return calls===1?initial.promise:calls===2?renewal.promise:next.promise;});
+  const {states}=await mount(request,()=> 'read_failed',{safetyMarginMs:6000});
+  await rs.advanceTimersByTimeAsync(3200);
+  const previous=ready(11700);
+  initial.resolve(previous);await flush();
+
+  // 8.5 s remain. A 3.3 s read would overrun the 2.55 s the old schedule left.
+  await rs.advanceTimersByTimeAsync(2499);
+  expect(request).toHaveBeenCalledTimes(1);
+  await rs.advanceTimersByTimeAsync(1);
+  expect(request).toHaveBeenCalledTimes(2);
+  expect(states.at(-1)).toMatchObject({snapshot:previous,refreshing:true});
+  await rs.advanceTimersByTimeAsync(3300);
+  const current=ready(11700);
+  renewal.resolve(current);await flush();
+
+  await rs.advanceTimersByTimeAsync(2700);
+  expect(states.at(-1)?.snapshot).toEqual(current);
+  expect(states.filter(state=>state.snapshot?.state==='unavailable')).toEqual([]);
+ });
+
+ it.each(['fresh','older','failed'] as const)('clears an expired Notifications list while its renewal is pending, then handles a %s result',async result=>{
+  const late=deferred();const signals:AbortSignal[]=[];
+  const previous=ready(8500);
+  const request=rs.fn(async(signal:AbortSignal)=>{signals.push(signal);return signals.length===1?previous:late.promise;});
+  const {states}=await mount(request,()=> 'read_failed',{safetyMarginMs:6000});
+  await rs.advanceTimersByTimeAsync(8499);
+  expect(states.at(-1)).toMatchObject({snapshot:previous,refreshing:true});
+  await rs.advanceTimersByTimeAsync(1);
+  expect(states.at(-1)).toEqual({snapshot:null,refreshing:true,paused:false});
+  expect(signals[1].aborted).toBe(false);
+
+  await rs.advanceTimersByTimeAsync(1000);
+  const current=ready();
+  late.resolve(result==='fresh'?current:result==='older'?{state:'ready',validForMs:15000,observedAt:'2000-01-01T00:00:00Z'}:{state:'unavailable',reason:'read_failed'});
+  await flush();
+  expect(states.at(-1)).toEqual({snapshot:result==='fresh'?current:{state:'unavailable',reason:'read_failed'},refreshing:false,paused:false});
  });
 
  it('expires the original snapshot and aborts a hung renewal without admitting its late response',async()=>{
