@@ -18,6 +18,7 @@ import { ActionMenu } from "@/components/action-menu";
 import {ManagerIssueFocus} from '@/components/manager-issue-focus';
 import { EmployeeMySchedule } from "@/components/employee-my-schedule";
 import './employee-schedule.css';
+import { readScopedCoverageGaps } from "@/lib/data/coverage-repair.server";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { SchedulePublicationChange } from "@/components/schedule-publication-change";
@@ -140,8 +141,12 @@ export default async function SchedulePage({
       if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason} scoped/>;
       if(source.authority!==access.authority)return <OperationalUnavailable title="Schedule unavailable" reason="source_changed" scoped/>;
       // QA A3-05 (Nov 21, 2026): a location Manager with Publish schedules had no way to publish from here.
-      const canPublish=await scopedCanPublish(proof);
-      return withRepair(<ScopedOperationalSchedule publishHref={canPublish?`/app/schedule/publish?week=${encodeURIComponent(weekStart)}`:undefined} data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}{(await currentPresentation()).modules.marketplace ? <Link href="/app/exchange/open-shifts" className="button secondary">Posted open shifts</Link> : null}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
+      const [canPublish,coverage] = await Promise.all([
+        scopedCanPublish(proof),
+        readScopedCoverageGaps(proof,weekStart,source.data.selectedLocationId ?? undefined),
+      ]);
+      const openShifts = coverage.state === 'ready' && coverage.authority === source.authority ? coverage.data : null;
+      return withRepair(<ScopedOperationalSchedule openShifts={openShifts} publishHref={canPublish?`/app/schedule/publish?week=${encodeURIComponent(weekStart)}`:undefined} data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}{(await currentPresentation()).modules.marketplace ? <Link href="/app/exchange/open-shifts" className="button secondary">Posted open shifts</Link> : null}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
     }
   }
   async function renderSchedule(){

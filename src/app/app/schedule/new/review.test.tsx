@@ -84,7 +84,7 @@ rs.mock('@/lib/workforce/authority.server',()=>({assertWorkforcePermission:async
 
 beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.publishDenied=false;});
 
-it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({review:'retained-review'})}));expect(html).toContain('current company-wide management access');expect(state.read).not.toHaveBeenCalled();expect(html).not.toContain('Taylor Rivera');});
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({review:'retained-review'})}));expect(html).toContain('Company-wide access needed');expect(state.read).not.toHaveBeenCalled();expect(html).not.toContain('Taylor Rivera');});
 
 rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>{throw Error('Unexpected scoped read in Company fixture');}}));
 

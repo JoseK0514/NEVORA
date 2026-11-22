@@ -116,7 +116,7 @@ it('a Company denial withholds both repair and generic suggestions before loadin
  m.denied=true;
  for(const query of [params(action().href),{week,date:week,locationId:'loc-1',start:'08:00',end:'12:00',positionId:'barista'}]){
   const html=renderToStaticMarkup(await CoveragePage({searchParams:Promise.resolve(query)}));
-  expect(html).toContain('current company-wide management access');expect(html).not.toContain('Fictional Qualified');expect(html).not.toContain('Review replacement');
+  expect(html).toContain('Company-wide access needed');expect(html).not.toContain('Fictional Qualified');expect(html).not.toContain('Review replacement');
  }
  expect(m.companyLoads).not.toHaveBeenCalled();expect(m.calls).toHaveLength(0);
 });

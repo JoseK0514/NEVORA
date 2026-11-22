@@ -45,3 +45,11 @@ export function coverageRepairUrl(locator: CoverageRepairLocator, fresh = false)
   if (fresh) p.set('refresh', '1');
   return `/app/schedule/coverage?${p}`;
 }
+
+export function coverDraftShiftUrl(period: Pick<CoverageRepairLocator,'weekStart'|'date'|'locationId'|'startTime'|'endTime'|'positionId'>, designatedLead: boolean, employeeId?: string): string {
+  const params = new URLSearchParams({week:period.weekStart,date:period.date,locationId:period.locationId,start:period.startTime,end:period.endTime});
+  if (period.positionId) params.set('positionId',period.positionId);
+  if (designatedLead) params.set('lead','1');
+  if (employeeId) params.set('employeeId',employeeId);
+  return `/app/schedule/new?${params}`;
+}
