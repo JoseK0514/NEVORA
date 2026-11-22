@@ -54,3 +54,17 @@ severity, then offer fixes. Don't rewrite the draft unless Jose asks for changes
 5. Animate to `references/motion-gsap.md`, with a reduced-motion path for every animation.
 6. Apply the density rules in `references/density.md`; take real design choices to Jose as 2–3 rendered options.
 7. Run the audit on your own result before reporting it.
+
+## Page done gate (Jose, Nov 22, 2026)
+
+No page goes to Jose until all four hold. The page queue (https://claude.ai/artifact/5eoN27Lf33fN2zckaE8Y1y, mirrored in
+the Reviewed column of `docs/product/page-inventory.md`) marks a page Finished only when Jose says so.
+
+1. **Direction B for real.** Built from the existing Direction B screens and kit (`owner-b`, `employee-b`, `b-kit`, the
+   Corp layers they restyle). When a role gets "the same screen as another role", reuse that screen's component with the
+   role's data; never a look-alike assembled from generic parts.
+2. **Jose's component picks** (`docs/design/component-picks.md`).
+3. **Every line earns its place.** Each fact once; no line that is always true; no explanation of how the screen works;
+   the place a person is working in is always visible, with a filter when they have more than one.
+4. **Checked, with evidence.** 320, 390, 768, 1440 and 200% text, keyboard, axe, before and after, and the Impeccable
+   audit in `references/audit.md`, reported in its format.
