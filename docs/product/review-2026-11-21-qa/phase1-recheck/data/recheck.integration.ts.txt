@@ -97,6 +97,52 @@ it('re-checks the Phase 1 QA findings',async()=>{
   const own=await login(desk,'QAOWNER');const ownerState=await own.ctx.storageState();
   const P=own.p;
 
+  // DIAG (coordinator follow-up): instrument the lost-reply click on the three Publish forms.
+  await check('DIAG',async()=>{const out:Record<string,unknown>={};
+   const init=()=>{(window as any).__diag=[];addEventListener('error',(e:any)=>(window as any).__diag.push({kind:'window.error',t:performance.now(),message:String(e.message),stack:String(e.error?.stack??'').slice(0,4000)}));
+    addEventListener('unhandledrejection',(e:any)=>(window as any).__diag.push({kind:'unhandledrejection',t:performance.now(),reason:String(e.reason),stack:String(e.reason?.stack??'').slice(0,4000)}));};
+   const st=async(loc:string,ws:string)=>(await q("SELECT status FROM schedules WHERE location_id=$1 AND week_start=$2",[loc,ws]))[0]?.status;
+   const passThrough=async(p:any)=>{let done:(v:any)=>void=()=>{};const result=new Promise<any>(r=>done=r);
+    const handler=async(route:any)=>{const r=route.request();if(r.method()!=='POST'||!r.headers()['next-action'])return route.continue();await p.unroute('**/*',handler).catch(()=>{});
+     try{const res=await route.fetch({maxRedirects:0,timeout:180000});done({status:res.status(),redirect:res.headers()['x-action-redirect']??null,mode:'fulfilled'});await route.fulfill({response:res});}catch(e){done({error:String(e).slice(0,200)});}};
+    await p.route('**/*',handler);return result;};
+   const runCase=async(label:string,ctx:any,path:string,first:RegExp,anyway:string,loc:string,ws:string,waitRe:RegExp,mode='drop')=>{
+    const p=await ctx.newPage();watch(p,label);await go(p,path,3500);
+    const firstBtn=p.locator('main').getByRole('button',{name:first}).first();await firstBtn.waitFor({timeout:120000}).catch(()=>{});const firstLabel=await firstBtn.innerText().catch(()=>null);
+    if(firstLabel&&!firstLabel.includes('anyway')){await firstBtn.click();await p.waitForURL(waitRe,{timeout:60000}).catch(()=>{});await settle(p,2500);}
+    const btn=p.getByRole('button',{name:anyway,exact:true});await btn.waitFor({timeout:30000}).catch(async(e:Error)=>{await shot(p,`DIAG-${label}-stuck`);throw e;});
+    const events:any[]=[];let t0=Date.now();const T=()=>Date.now()-t0;
+    const pending=new Set<Promise<void>>();
+    p.on('console',(m:any)=>events.push({t:T(),kind:'console',type:m.type(),text:m.text().slice(0,4000),loc:m.location()?.url?.replace(app.url,'')+':'+m.location()?.lineNumber}));
+    p.on('pageerror',(e:Error)=>events.push({t:T(),kind:'pageerror',name:e.name,message:e.message,stack:String(e.stack).slice(0,4000)}));
+    p.on('request',(r:any)=>{const h=r.headers();events.push({t:T(),kind:'request',method:r.method(),url:r.url().replace(app.url,''),nextAction:h['next-action']??null,rsc:h['rsc']??null,routerStateTree:h['next-router-state-tree']?'present':null,prefetch:h['next-router-prefetch']??null});});
+    p.on('response',(r:any)=>{const h=r.headers();events.push({t:T(),kind:'response',status:r.status(),method:r.request().method(),url:r.url().replace(app.url,''),contentType:h['content-type']??null,actionRedirect:h['x-action-redirect']??null,failure:h['x-nevora-failure']??null});});
+    p.on('requestfailed',(r:any)=>events.push({t:T(),kind:'requestfailed',method:r.method(),url:r.url().replace(app.url,''),failure:r.failure()?.errorText??null}));
+    p.on('requestfinished',(r:any)=>{if(r.method()==='POST')events.push({t:T(),kind:'requestfinished',method:r.method(),url:r.url().replace(app.url,'')});});
+    // The browser's own view of the action fetch: did it resolve, how much body arrived, did the body stream error?
+    await p.evaluate(()=>{const f=window.fetch;(window as any).__fetchLog=[];window.fetch=async function(this:any,...a:any[]){const i=a[1]||{};const h=new Headers(i.headers||{});const action=h.get('next-action');
+     const rec:any={action:!!action,url:String(a[0]).slice(0,120),t:performance.now()};if(action)(window as any).__fetchLog.push(rec);
+     try{const r=await f.apply(this,a as any);if(action){rec.status=r.status;rec.redirect=r.headers.get('x-action-redirect');rec.resolvedAt=performance.now();
+       const c=r.clone();c.text().then((b:string)=>{rec.bodyBytes=b.length;rec.bodyDoneAt=performance.now();},(e:any)=>{rec.bodyError=String(e);rec.bodyErrorAt=performance.now();});}return r;}
+     catch(e:any){if(action){rec.rejected=String(e);rec.rejectedAt=performance.now();}throw e;}} as any;});
+    const before=await st(loc,ws);const lost=mode==='fulfill'?passThrough(p):dropNextAction(p);t0=Date.now();await btn.click();
+    const dom:any[]=[];let lastKey='';
+    for(let k=0;k<50;k++){const d=await p.evaluate(()=>{const b=document.body.innerText;const c=document.querySelector('.b-callout');return {callout:!!c,calloutText:c?(c.textContent||'').trim().slice(0,160):null,amber:!!document.querySelector('[class*="amber"] .b-callout, .b-callout[class*="amber"], .b-callout--amber'),nothingWasChanged:b.includes('Nothing was changed'),reference:(b.match(/Reference: \S+/)||[null])[0],pending:!!document.querySelector('[aria-busy="true"]'),url:location.pathname+location.search};}).catch((e:Error)=>({evalError:e.message.slice(0,120)}));
+     const key=JSON.stringify(d);if(key!==lastKey){dom.push({t:T(),...d});lastKey=key;}await p.waitForTimeout(100);}
+    const server=await lost;await p.waitForTimeout(1500);
+    const diag=await p.evaluate(()=>(window as any).__diag??null).catch(()=>null);const fetchLog=await p.evaluate(()=>(window as any).__fetchLog??null).catch((e:Error)=>"eval failed: "+e.message.slice(0,100));
+    await shot(p,`DIAG-${label}`);
+    out[label]={path,firstLabel,clicked:anyway,statusBefore:before,statusAfter:await st(loc,ws),server,dom,windowErrors:diag,fetchLog,events};
+    await p.close();};
+   const oc=own.ctx;await oc.addInitScript(init);
+   await runCase('owner-planning-panel',oc,`/app/schedule?week=${W2}&location=loc-1&plan=1`,/^Publish Calle Loíza/,'Publish Calle Loíza anyway','loc-1',W2,/publishCheck=/).catch(e=>{out['owner-planning-panel']={error:String(e?.stack??e).slice(0,600)};});
+   await runCase('owner-build-and-publish-control',oc,`/app/schedule/publish?week=${W3}`,/^Publish /,'Publish 2 drafts anyway','loc-1',W3,/review=1/).catch(e=>{out['owner-build-and-publish-control']={error:String(e?.stack??e).slice(0,600)};});
+   const dan=await login(desk,'OWN-DANI');await dan.ctx.addInitScript(init);
+   await runCase('manager-per-location',dan.ctx,`/app/schedule/publish?week=${W2}`,/^Publish Condado/,'Publish Condado anyway','loc-2',W2,/review=1/).catch(e=>{out['manager-per-location']={error:String(e?.stack??e).slice(0,600)};});
+   await runCase('manager-per-location-fulfill-no-drop',dan.ctx,`/app/schedule/publish?week=${W5}`,/^Publish Condado/,'Publish Condado anyway','loc-2',W5,/review=1/,'fulfill').catch(e=>{out['manager-per-location-fulfill-no-drop']={error:String(e?.stack??e).slice(0,600)};});
+   await dan.ctx.close();
+   await writeFile(ev+'/diag.json',JSON.stringify(out,null,2));return {cases:Object.keys(out)};});
+
   // A3-07: lock waits while one Owner tab loads /app pages for 32 s (the QA's measurement).
   await check('A3-07',async()=>{
    const pages=(process.env.NEVORA_RECHECK_LOCK_PAGES??'/app/schedule,/app/employees,/app/timecards,/app/inbox').split(',');
