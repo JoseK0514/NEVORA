@@ -7,6 +7,7 @@ import {addDays,formatDayLabel,formatTime,formatWeekRange,weekDates} from '@/lib
 import {ManagerClockMonitor} from '@/components/manager-clock-monitor';
 import {NavIcon} from '@/components/nav-icon';
 import {SelectField} from '@/components/select-field';
+import {RootChrome} from '@/components/root-chrome';
 import {ScopedReadFrame,type ScopedObservation} from './scoped-read-frame';
 import styles from './company-access.module.css';
 import {QuietHeader,QuietPage} from '@/components/quiet/quiet';
@@ -65,5 +66,5 @@ export function ScopedOperationalSchedule({data,observation,feedback,publishHref
 export function ScopedShiftReadOnly({data,observation,feedback}:{data:OperationalShiftEditorData;observation:ScopedObservation;feedback?:ReactNode}){
  const unavailable=data.saveAvailability==='unavailable';
  const shift=data.shift,back='/app/schedule?'+new URLSearchParams({week:data.weekStart,location:data.locationId});
- return <div className={styles.scopedPage}><header><h1>{shift?'Shift details':unavailable?'Shift changes unavailable':'Shift changes require company-wide access'}</h1><p>{unavailable?'Changes are currently unavailable. Review these details or return to the schedule.':'Changing this shift requires company-wide access. You can review its recorded details here.'}</p></header><ScopedReadFrame observation={observation}>{feedback}{shift&&<section className={'panel '+styles.stack}><h2>{shift.employeeName}</h2><p>{formatDayLabel(shift.date).weekday}, {formatDayLabel(shift.date).day}</p><p>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</p><p>{data.positionOptions.find(p=>p.id===shift.positionId)?.name??(shift.positionId?'Assigned position unavailable':'No position specified')}</p>{shift.notes&&<p>{shift.notes}</p>}</section>}<Link className="button secondary" href={back}>Back to schedule</Link></ScopedReadFrame></div>;
+ return <div className={styles.scopedPage}><RootChrome/><header><h1>{shift?'Shift details':unavailable?'Shift changes unavailable':'Shift changes require company-wide access'}</h1><p>{unavailable?'Changes are currently unavailable. Review these details or return to the schedule.':'Changing this shift requires company-wide access. You can review its recorded details here.'}</p></header><ScopedReadFrame observation={observation}>{feedback}{shift&&<section className={'panel '+styles.stack}><h2>{shift.employeeName}</h2><p>{formatDayLabel(shift.date).weekday}, {formatDayLabel(shift.date).day}</p><p>{formatTime(shift.startTime)} – {formatTime(shift.endTime)}</p><p>{data.positionOptions.find(p=>p.id===shift.positionId)?.name??(shift.positionId?'Assigned position unavailable':'No position specified')}</p>{shift.notes&&<p>{shift.notes}</p>}</section>}<Link className="button secondary" href={back}>Back to schedule</Link></ScopedReadFrame></div>;
 }

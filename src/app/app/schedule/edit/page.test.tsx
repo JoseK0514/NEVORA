@@ -17,6 +17,7 @@ rs.mock("@/lib/data/positions", () => ({ listPositions: mocks.positions }));
 rs.mock("next/navigation", () => ({ redirect: mocks.redirect }));
 rs.mock("@/app/app/schedule/actions", () => ({ updateShiftAction: rs.fn(), deleteShiftAction: rs.fn() }));
 
+rs.mock('@/components/root-chrome',()=>({RootChrome:()=> <span data-test-root-chrome="" />}));
 beforeEach(() => {
   rs.clearAllMocks();
   mocks.roles.mockResolvedValue({ id: "OWNER", role: "OWNER" });
@@ -95,15 +96,15 @@ beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scope
 
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 
-it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('current company-wide management access');expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(html).not.toContain('name="shiftId"');});
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('Company-wide access needed');expect(html).toContain('This page needs company-wide management access.');expect(html).not.toContain('data-test-root-chrome');expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(html).not.toContain('name="shiftId"');});
 
 const held=rs.hoisted(()=>({read:rs.fn()}));
 rs.mock('@/lib/company-access/operational-read.server',()=>({readSchedulePendingChanges:held.read,readOperationalShiftEditor:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['main']},data:{weekStart:'2026-10-12',locationId:'main',shift:{id:'test-shift',scheduleId:'week',employeeId:'AVERY',employeeName:'Avery Rivera',locationId:'main',weekStart:'2026-10-12',date:'2026-10-14',startTime:'16:00',endTime:'24:00',positionId:'support',notes:'Scoped note',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:operationalPageFixture.saveAvailability==='requires_company'?'PUBLISHED':'DRAFT'},employeeOptions:[{id:'AVERY',name:'Avery Rivera',positionIds:['support']}],positionOptions:[{id:'support',name:'Support'}],sourceVersion:'fixture',saveAvailability:operationalPageFixture.saveAvailability}})}));
 it('uses the actual minimal manual editor for scoped drafts without global employee catalogs',async()=>{
- operationalPageFixture.scoped=true;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('Edit draft shift');expect(html).toContain('name="endTime" value="24:00"');expect(html).toContain('Review deletion');expect(html).not.toContain('Delete this draft shift');expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(mocks.locations).not.toHaveBeenCalled();
+ operationalPageFixture.scoped=true;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('Edit draft shift');expect(html).toContain('data-test-root-chrome');expect(html).toContain('name="endTime" value="24:00"');expect(html).toContain('Review deletion');expect(html).not.toContain('Delete this draft shift');expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(mocks.locations).not.toHaveBeenCalled();
 });
 it.each(['requires_company','unavailable'])('keeps scoped editor read-only when save hint is %s',async saveAvailability=>{
- operationalPageFixture.scoped=true;operationalPageFixture.saveAvailability=saveAvailability;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('Shift details');expect(html).not.toContain('Save changes');expect(html).not.toContain('Save shift');expect(mocks.shift).not.toHaveBeenCalled();
+ operationalPageFixture.scoped=true;operationalPageFixture.saveAvailability=saveAvailability;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('Shift details');expect(html).toContain('data-test-root-chrome');expect(html).not.toContain('Save changes');expect(html).not.toContain('Save shift');expect(mocks.shift).not.toHaveBeenCalled();
 });
 it.each(['available','requires_company','unavailable'])('announces a real scoped edit redirect error in %s while retaining context',async saveAvailability=>{
  operationalPageFixture.scoped=true;operationalPageFixture.saveAvailability=saveAvailability;

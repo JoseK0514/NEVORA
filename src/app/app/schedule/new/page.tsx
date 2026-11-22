@@ -5,6 +5,7 @@ import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.
 import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
 import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
 import {SelectField} from '@/components/select-field';
+import {RootChrome} from '@/components/root-chrome';
 import {assertOperationalAccess,isOperationalAuthorizationError,readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {assertWorkforcePermission} from '@/lib/workforce/authority.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -158,7 +159,7 @@ export default async function NewShiftPage({
   if(access.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={access.reason}/>;
   if(access.scope?.mode!=='COMPANY'){
     if(access.scope?.mode!=='LOCATIONS'||!access.locations.length)return <OperationalUnavailable title="Shift creation unavailable" reason="access_denied"/>;
-    if(params.locationId===undefined)return <ScopedReadFrame observation={scopedObservation(access)}><section className={'panel '+accessStyles.stack}><h1>Choose a location</h1><p>Select a managed location before assigning a shift.</p><form className={accessStyles.stack} method="get" action="/app/schedule/new"><input type="hidden" name="week" value={weekStart}/><SelectField className={accessStyles.search} name="locationId" label="Location" defaultValue="" required options={[{value:'',label:'Select a managed location',disabled:true},...access.locations.map(l=>({value:l.id,label:l.name}))]}/><button className="button primary" type="submit">Continue</button></form></section></ScopedReadFrame>;
+    if(params.locationId===undefined)return <ScopedReadFrame observation={scopedObservation(access)}><section className={'panel '+accessStyles.stack}><RootChrome/><h1>Choose a location</h1><p>Select a managed location before assigning a shift.</p><form className={accessStyles.stack} method="get" action="/app/schedule/new"><input type="hidden" name="week" value={weekStart}/><SelectField className={accessStyles.search} name="locationId" label="Location" defaultValue="" required options={[{value:'',label:'Select a managed location',disabled:true},...access.locations.map(l=>({value:l.id,label:l.name}))]}/><button className="button primary" type="submit">Continue</button></form></section></ScopedReadFrame>;
     const source=await readOperationalShiftEditor(proof,{weekStart,locationId:params.locationId});
     if(source.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={source.reason} scoped/>;
     if(source.authority!==access.authority)return <OperationalUnavailable title="Shift creation unavailable" reason="source_changed" scoped/>;
