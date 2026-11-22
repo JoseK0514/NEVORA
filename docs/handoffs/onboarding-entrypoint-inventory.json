@@ -1511,6 +1511,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/payroll-export/receipts/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "The private list and download require an Owner or Manager session and current company authority. The shared application executor reads only receipts for the bound workspace and actor, checks authority again after the read, and verifies each stored CSV hash.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/payroll-export/route.ts",
       "tags": [
         "request-entrypoint"
