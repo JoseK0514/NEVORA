@@ -140,9 +140,11 @@ export default async function SchedulePage({
       if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason} scoped/>;
       if(source.authority!==access.authority)return <OperationalUnavailable title="Schedule unavailable" reason="source_changed" scoped/>;
       // QA A3-05 (Nov 21, 2026): a location Manager with Publish schedules had no way to publish from here.
-      const [canPublish,coverage] = await Promise.all([
+      const [canPublish,coverage,scopedAbsences] = await Promise.all([
         scopedCanPublish(proof),
         readScopedCoverageGaps(proof,weekStart,source.data.selectedLocationId ?? undefined),
+        // Approved time off at the Manager's own locations (the read derives scope from the actor).
+        readWeeklyApprovedAbsences(proof,weekStart),
       ]);
       const openShifts = coverage.state === 'ready' && coverage.authority === source.authority ? coverage.data : null;
       // Phase 2 direction A (Jose, Nov 22, 2026: "the same screens other Managers have, limited to one location"): the
@@ -192,12 +194,12 @@ export default async function SchedulePage({
               <CorpButtonLink href={scopedAdd} size="sm" aria-label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</CorpButtonLink>
             </span>
           </>}
-          sub={scopedTodayLong} />
+          sub={<><span className="c-sched-sub__long">{scopedTodayLong}</span><span className="c-sched-sub__short">{new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`))}</span></>} />
         <ManagerWeeklyRoster key={`${weekStart}:${data.selectedLocationId ?? "all"}`} employees={scopedRoster} dates={scopedDates} today={today} timeZone={workspace.timeZone}
-          locationId={data.selectedLocationId ?? one?.id} openShifts={scopedOpen}
+          locationId={data.selectedLocationId ?? one?.id} openShifts={scopedOpen} absences={scopedAbsences}
           corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${addDays(weekStart, -7)}${locQuery}`, nextHref: `/app/schedule?week=${addDays(weekStart, 7)}${locQuery}`,
             status: scopedStateCorp, addShiftHref: scopedAdd, todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locQuery}`, observedAt: observedAt.toISOString() }}
-          b={{ sub: scopedTodayLong, coverage: null, weekState: scopedState, toPlan: [],
+          b={{ sub: scopedTodayLong, weekState: scopedState, toPlan: [],
             actions: scopedPublish ? <BButtonLink href={scopedPublish} kind="white" label={`Publish, ${formatWeekRange(weekStart)}`}>Publish</BButtonLink>
               : <BButtonLink href={scopedAdd} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>,
             location: locationControl(true),
