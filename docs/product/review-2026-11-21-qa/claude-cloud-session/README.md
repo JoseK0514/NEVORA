@@ -51,3 +51,9 @@ The screenshots Jose shared during the session, with the audits based on them:
 - `gallery-1440.png`, `gallery-390.png`: the gallery opened in Chromium (0 network requests, 0 errors).
 
 Verification results are in the handoff note under "Premium component kit".
+
+## a4-200-text/
+
+Before (left) and after (right) for QA A4-01 and A4-02, with the browser's default font at 32px (200% text, the method in
+`findings/agent4.md`), on fictional data: Employee Home at 390px and Owner Home at 1440px. The `text100` diff shows the
+normal-size Employee Home unchanged apart from live figures.
