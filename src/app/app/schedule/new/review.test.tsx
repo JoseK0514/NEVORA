@@ -1,7 +1,8 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, rs } from '@rstest/core';
-import { CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
+import { CoverageRepairConflictError, type CoverageRepairLocator } from "@/lib/scheduling/coverage-repair";
+import type { CoverageRepairSelection } from "@/lib/data/coverage-repair.server";
 import NewShiftPage from "./page";
 
 const state = rs.hoisted(() => ({ read: rs.fn(), decode: rs.fn(), proof: { employee: { id: "manager" } } }));
@@ -14,8 +15,13 @@ rs.mock("@/lib/data/workspaces", () => ({ getWorkspace: rs.fn() }));
 rs.mock("@/lib/data/positions", () => ({ listPositions: rs.fn() }));
 rs.mock("@/app/app/schedule/actions", () => ({ createShiftAction: rs.fn() }));
 
-const locator = { version: 1, weekStart: "2030-10-07", gapKey: "gap", locationId: "real-location", date: "2030-10-07", startTime: "20:00", endTime: "24:00", target: "POSITION", positionId: "real-position", reported: { missingStaff: 2, requiresLead: true, positions: [{ positionId: "real-position", missing: 1 }] } };
-const selected = { locator, employeeId: "real-employee", employeeName: "Taylor Rivera", locationName: "Main Office", positionName: "Customer Support", isDesignatedLead: true };
+const locator: CoverageRepairLocator = { version: 1, weekStart: "2030-10-07", gapKey: "gap", locationId: "real-location", date: "2030-10-07", startTime: "20:00", endTime: "24:00", target: "POSITION", positionId: "real-position", reported: { missingStaff: 2, requiresLead: true, positions: [{ positionId: "real-position", missing: 1 }] } };
+const selected: CoverageRepairSelection = {
+  locator, employeeId: "real-employee", employeeName: "Taylor Rivera", locationName: "Main Office",
+  positionName: "Customer Support", isDesignatedLead: true, publication: "DRAFT", replaced: null,
+  shift: { date: locator.date, startTime: locator.startTime, endTime: locator.endTime, minutes: 240 },
+  weekHours: { beforeMinutes: 0, afterMinutes: 240, targetMinutes: null }, warnings: [],
+};
 beforeEach(() => { state.read.mockReset().mockResolvedValue(selected); state.decode.mockReset().mockReturnValue({ locator }); });
 
 it("a published week: the Publish change button is the approval and says who will see it (Phase 2, Nov 22, 2026)", async () => {
@@ -37,6 +43,21 @@ it("shows and submits only the server-reviewed assignment, ignoring forged query
   expect(html).toContain("Customer Support");
   expect(html).toContain("Fills the Customer Support need");
   expect(html).toContain("Open shift");
+});
+it("renders the original assignee, the ranked week hours, and the words for canonical warnings", async () => {
+  state.read.mockResolvedValue({
+    ...selected, replaced: { employeeId: "original", employeeName: "Casey Ortiz" },
+    weekHours: { beforeMinutes: 210, afterMinutes: 450, targetMinutes: 300 },
+    warnings: ["TARGET_HOURS_EXCEEDED", "AVAILABILITY_NOT_SUBMITTED", "PREFERENCE_NOT_MET"],
+  } satisfies CoverageRepairSelection);
+  const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) })).replace(/\u00a0/g, " ");
+  expect(html).toContain("Casey Ortiz");
+  expect(html).toContain("3 h 30 min → 7 h 30 min this week");
+  expect(html).toContain("target 5 h");
+  expect(html).toContain("Goes over their weekly target");
+  expect(html).toContain("Availability not confirmed");
+  expect(html).toContain("the preference does not block assignment");
+  expect(html).not.toContain("TARGET_HOURS_EXCEEDED");
 });
 it("explains the midnight boundary without changing canonical 24:00", async () => {
   // Times and dates are kept whole with no-break spaces; compare the words.

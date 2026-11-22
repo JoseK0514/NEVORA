@@ -13,7 +13,7 @@ import {listPositions} from "@/lib/data/positions";
 import { ScheduleShiftForm } from "@/components/schedule-shift-form";
 import {shiftFormEmployees} from '@/lib/scheduling/shift-form-employee';
 import { CorpBody, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpTitle } from "@/components/corp/corp";
-import { CoverageReview, type CoverageReviewMode, type CoverageReviewProps } from "@/components/coverage-review";
+import { CoverageReview, type CoverageReviewMode } from "@/components/coverage-review";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { keepWhole } from "@/lib/keep-whole";
@@ -94,13 +94,12 @@ export default async function NewShiftPage({
     const { locator } = selected;
     const mode: CoverageReviewMode = scoped ? (scopedDraft ? 'scoped-draft' : 'scoped-ask')
       : !canSave ? 'needs-publish-permission' : selected.publication === 'PUBLISHED' ? 'publish' : 'draft';
-    const extra = selected as typeof selected & Partial<{ replaced: { employeeName: string } | null; weekHours: CoverageReviewProps['weekHours']; warnings: CoverageReviewProps['warnings'] }>;
     return <ScopedReadFrame observation={scopedObservation(source)}><CoverageReview
-      mode={mode} employeeName={selected.employeeName} replacedName={extra.replaced?.employeeName ?? null}
-      date={locator.date} startTime={locator.startTime} endTime={locator.endTime} locationName={selected.locationName}
+      mode={mode} employeeName={selected.employeeName} replacedName={selected.replaced?.employeeName ?? null}
+      shift={selected.shift} locationName={selected.locationName}
       positionName={selected.positionName} isDesignatedLead={selected.isDesignatedLead}
       needLabel={locator.target === "POSITION" ? `the ${selected.positionName ?? "position"} need` : locator.target === "LEAD" ? "the shift lead need" : "the staffing need"}
-      weekHours={extra.weekHours} warnings={extra.warnings}
+      weekHours={selected.weekHours} warnings={selected.warnings}
       backHref={coverageRepairUrl(locator, true)}
       draftHref={scopedDraft ? coverDraftShiftUrl(locator,selected.isDesignatedLead,selected.employeeId) : undefined}
       action={createShiftAction}

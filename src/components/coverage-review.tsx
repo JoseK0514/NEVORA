@@ -7,7 +7,9 @@ import { ConfigurationForm } from "@/components/configuration-form";
 import { CorpBody, CorpCard, CorpNav, CorpPage, CorpTime, CorpTitle } from "@/components/corp/corp";
 import { PendingButton } from "@/components/wave-a/pending-button";
 import { durationText } from "@/lib/duration-text";
-import { addDays, durationMinutes, formatDayLabel, formatTime } from "@/lib/date-utils";
+import { addDays, formatDayLabel, formatTime } from "@/lib/date-utils";
+import type { CoverageRepairSelection } from "@/lib/data/coverage-repair.server";
+import { schedulingIssueMessage, type ValidationIssueCode } from "@/lib/scheduling/validate-shift";
 import type { ConfigurationResult } from "@/components/configuration-form";
 import "@/components/premium/premium.css";
 import "./coverage-review.css";
@@ -16,10 +18,9 @@ import "./coverage-review.css";
 export type CoverageReviewMode = "publish" | "draft" | "needs-publish-permission" | "scoped-draft" | "scoped-ask";
 
 /** A non-blocking check the ranking found for this person. Words live here; the data carries codes. */
-export type CoverageReviewWarning = "OVER_TARGET" | "AVAILABILITY_UNCONFIRMED";
-const warningWords: Record<CoverageReviewWarning, string> = {
-  OVER_TARGET: "Goes over their weekly target",
-  AVAILABILITY_UNCONFIRMED: "Availability not confirmed",
+const warningWords: Partial<Record<ValidationIssueCode, string>> = {
+  TARGET_HOURS_EXCEEDED: "Goes over their weekly target",
+  AVAILABILITY_NOT_SUBMITTED: "Availability not confirmed",
 };
 
 export type CoverageReviewProps = {
@@ -27,17 +28,15 @@ export type CoverageReviewProps = {
   employeeName: string;
   /** Who had this shift; null or missing for an open shift nobody held. */
   replacedName?: string | null;
-  date: string;
-  startTime: string;
-  endTime: string;
+  shift: CoverageRepairSelection["shift"];
   locationName: string;
   positionName?: string;
   isDesignatedLead: boolean;
   /** "the staffing need", "the shift lead need", "the Barista need". */
   needLabel: string;
-  /** The replacement's planned week before and after this shift, when the review data carries it. */
-  weekHours?: { beforeMinutes: number; afterMinutes: number; targetMinutes?: number | null };
-  warnings?: CoverageReviewWarning[];
+  /** The replacement's planned week before and after this shift. */
+  weekHours: CoverageRepairSelection["weekHours"];
+  warnings: CoverageRepairSelection["warnings"];
   backHref: string;
   /** Add shift, prefilled, for a location-limited Manager's draft. */
   draftHref?: string;
@@ -53,13 +52,13 @@ const firstName = (name: string) => name.trim().split(/\s+/)[0];
  * "Publish change" is the approval: it sends the same `publicationConsent` the old checkbox did, and the line above it
  * says what the employee will see. Same data, form action, hidden fields and permission outcomes as before. */
 export function CoverageReview(props: CoverageReviewProps) {
-  const overnight = props.endTime === "24:00" || props.endTime < props.startTime;
-  const nextDay = overnight ? formatDayLabel(addDays(props.date, 1)) : null;
-  const shortDate = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${props.date}T12:00:00Z`));
-  const minutes = durationMinutes(props.startTime, props.endTime);
+  const {date,startTime,endTime,minutes} = props.shift;
+  const overnight = endTime === "24:00" || endTime < startTime;
+  const nextDay = overnight ? formatDayLabel(addDays(date, 1)) : null;
+  const shortDate = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
   const facts = [shortDate, props.locationName, props.positionName, props.isDesignatedLead ? "Shift lead" : null,
     nextDay ? `Ends ${nextDay.weekday},\u00a0${nextDay.day}` : null].filter(Boolean).join(" · ");
-  const warnings = props.warnings ?? [];
+  const warnings = props.warnings;
   const saves = props.mode === "publish" || props.mode === "draft";
   const hours = props.weekHours;
 
@@ -78,15 +77,15 @@ export function CoverageReview(props: CoverageReviewProps) {
         <span>{props.employeeName}</span>
       </p>
       <p className="c-review__when">
-        <span className="c-big"><CorpTime start={formatTime(props.startTime)} end={formatTime(props.endTime)} /></span>
+        <span className="c-big"><CorpTime start={formatTime(startTime)} end={formatTime(endTime)} /></span>
         <span className="c-review__dur">{durationText(minutes)}</span>
       </p>
       <p className="c-line3">{facts}</p>
-      {hours ? <p className="c-review__hours">{`${durationText(hours.beforeMinutes)} → ${durationText(hours.afterMinutes)} this week`}{hours.targetMinutes ? <span className="c-review__muted">{` · target ${durationText(hours.targetMinutes)}`}</span> : null}</p> : null}
+      <p className="c-review__hours">{`${durationText(hours.beforeMinutes)} → ${durationText(hours.afterMinutes)} this week`}{hours.targetMinutes !== null ? <span className="c-review__muted">{` · target ${durationText(hours.targetMinutes)}`}</span> : null}</p>
     </CorpBody>
     <ul className="c-review__checks" aria-label="Checks">
       <li><CheckIcon className="c-review__ok" weight="bold" aria-hidden="true" />{`Fills ${props.needLabel}`}</li>
-      {warnings.map(code => <li key={code} className="c-review__warn"><WarningIcon weight="fill" aria-hidden="true" />{warningWords[code]}</li>)}
+      {warnings.map(code => <li key={code} className="c-review__warn"><WarningIcon weight="fill" aria-hidden="true" />{warningWords[code] ?? schedulingIssueMessage(code)}</li>)}
     </ul>
   </CorpCard>;
 

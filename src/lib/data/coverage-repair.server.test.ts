@@ -10,6 +10,7 @@ import { readCoverageRepair, readCoverageRepairSelection } from './coverage-repa
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { generationSourceSql } from './generation-guards';
 import {applyRestrictionCommand,emptyRestrictionDocument} from '../scheduling/restrictions';
+import { materialShiftTerms, shiftTermsFingerprint, sourceShiftTerms } from '../shift-changes/terms';
 
 
 function fixture() {
@@ -82,8 +83,8 @@ it('returns a resolved gap without an Add or Save candidate when the interval is
   expect(deriveCoverageRepair(r.source, r.locator, true).status).toBe('RESOLVED');
 });
 
-function executorFixture() {
-  const r = fixture(); const batches: SqlStatement[][] = [];
+function executorFixture(r = fixture()) {
+  const batches: SqlStatement[][] = [];
   const executor: SqlExecutor = {
     query: rs.fn(async s => s.text.includes('AS state') ? [{ state: structuredClone(r.state), source: structuredClone(r.source), read_at: '2030-10-07T12:00:00Z' }]
       : [{ id: 'test-workspace', name: 'Fictional', active: true, timeZone: 'America/Puerto_Rico', createdAt: '', updatedAt: '2030-01-01 00:00:00.123456+00' }]) as SqlExecutor['query'],
@@ -93,6 +94,62 @@ function executorFixture() {
   const command = { review, proof: r.proof, actorEmployeeId: 'M', employeeId: 'E', locationId: 'loc-1', weekStart: '2030-10-07', date: '2030-10-07', startTime: '08:00', endTime: '12:00', positionId: 'barista', isDesignatedLead: true };
   return { ...r, batches, executor, review, command };
 }
+
+it('projects an unheld open gap with the ranked weekly totals and only soft warning codes', async () => {
+  const r = fixture();
+  r.source.employee_scheduling_settings.push({ employee_id: 'E', target_weekly_hours: 5 });
+  r.source.schedules.push({ id: 'schedule', location_id: 'loc-1', week_start: r.locator.weekStart, status: 'DRAFT' });
+  r.source.shifts.push({ id: 'other-day', schedule_id: 'schedule', employee_id: 'E', date: '2030-10-08',
+    start_time: '08:00', end_time: '11:30', position_id: 'barista' });
+  const {review,executor} = executorFixture(r);
+  const selected = await readCoverageRepairSelection(review, r.proof, executor);
+  expect(selected.replaced).toBeNull();
+  expect(selected.shift).toEqual({ date: '2030-10-07', startTime: '08:00', endTime: '12:00', minutes: 240 });
+  expect(selected.weekHours).toEqual({ beforeMinutes: 210, afterMinutes: 450, targetMinutes: 300 });
+  expect(selected.warnings).toEqual(['AVAILABILITY_NOT_SUBMITTED', 'TARGET_HOURS_EXCEEDED']);
+});
+
+it('identifies the assignee of an approved call-out covering the selected segment and disregards extra token fields', async () => {
+  const r = fixture();
+  const schedule = { id: 'published', locationId: 'loc-1', weekStart: r.locator.weekStart, status: 'PUBLISHED' as const };
+  const original = { id: 'original', schedule_id: schedule.id, employee_id: 'U', date: r.locator.date, start_time: '07:00',
+    end_time: '13:00', position_id: 'barista', assignment_episode_id: 'episode-u', terms_revision: 1 };
+  r.source.schedules.push({ id: schedule.id, location_id: schedule.locationId, week_start: schedule.weekStart, status: schedule.status });
+  r.source.shifts.push(original);
+  const terms = sourceShiftTerms(original, schedule, String(r.source.workspaces[0].id), String(r.source.workspaces[0].time_zone));
+  r.source.shift_callouts.push({ id: 'callout', shift_id: original.id, employee_id: 'U', status: 'APPROVED',
+    assignment_episode_id: original.assignment_episode_id, source_terms: materialShiftTerms(terms),
+    reviewed_terms_fingerprint: shiftTermsFingerprint(terms) });
+  const {review,executor} = executorFixture(r);
+  const hint = JSON.parse(Buffer.from(review, 'base64url').toString());
+  const forged = Buffer.from(JSON.stringify({ ...hint, replaced: { employeeId: 'FAKE', employeeName: 'Forged name' },
+    weekHours: { beforeMinutes: 99999 }, warnings: ['FAKE_WARNING'] })).toString('base64url');
+  const selected = await readCoverageRepairSelection(forged, r.proof, executor);
+  expect(selected.replaced).toEqual({ employeeId: 'U', employeeName: 'Fictional U' });
+  expect(selected.shift.minutes).toBe(240);
+  expect(selected.weekHours).toEqual({ beforeMinutes: 0, afterMinutes: 240, targetMinutes: null });
+  expect(selected.warnings).toEqual(['AVAILABILITY_NOT_SUBMITTED']);
+});
+
+it.each([false, true])('uses the last published assignment for a removed shift and omits ambiguous names (ambiguous=%s)', async ambiguous => {
+  const r = fixture();
+  r.source.schedules.push({ id: 'published', location_id: 'loc-1', week_start: r.locator.weekStart, status: 'PUBLISHED' });
+  r.source.schedule_publication_revisions = [1, 2, 3].map(revision_number => ({
+    id: `revision-${revision_number}`, week_start: r.locator.weekStart, revision_number,
+  }));
+  const row = { source_shift_id: 'removed-shift', schedule_id: 'published', location_id: 'loc-1',
+    employee_id: 'U', date: r.locator.date, start_time: '08:00:00', end_time: '12:00:00', position_id: 'barista' };
+  r.source.schedule_publication_revision_shifts = [
+    { ...row, revision_id: 'revision-1', employee_id: 'E' },
+    { ...row, revision_id: 'revision-2' },
+    { ...row, revision_id: 'revision-2', source_shift_id: 'other-position', employee_id: 'E', position_id: 'cashier' },
+    { ...row, revision_id: 'revision-2', source_shift_id: 'other-location', employee_id: 'E', location_id: 'loc-2' },
+    ...(ambiguous ? [{ ...row, revision_id: 'revision-2', source_shift_id: 'other-removed-shift', employee_id: 'E' }] : []),
+  ];
+  const {review,executor} = executorFixture(r);
+  const selected = await readCoverageRepairSelection(review, r.proof, executor);
+  expect(selected.replaced).toEqual(ambiguous ? null : { employeeId: 'U', employeeName: 'Fictional U' });
+});
 
 it('requires separate publication consent before confirming a replacement into a published schedule', async () => {
   const r = executorFixture();
