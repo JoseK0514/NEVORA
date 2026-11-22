@@ -137,11 +137,24 @@ it('Add shift preserves the selected second-location destination',async()=>{
 
 it('forged acknowledged query does not manufacture success without canonical receipt',async()=>{const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',acknowledged:'1'})}));expect(output).not.toContain('Schedule confirmed.');});
 
-const operationalPageFixture=rs.hoisted(()=>({denied:false,scoped:false}));
-rs.mock('@/lib/company-access/operational-scope.server',()=>({readOperationalAuthority:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,locations:[{id:'main',name:'Managed location',shortName:'Managed'}],scope:{mode:operationalPageFixture.scoped?'LOCATIONS':'COMPANY',locationIds:operationalPageFixture.scoped?['loc']:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+const operationalPageFixture=rs.hoisted(()=>({denied:false,scoped:false,publish:false}));
+rs.mock('@/lib/workforce/authority.server',()=>({listWorkforcePermissions:async()=>({access:{},permissions:operationalPageFixture.publish?[{locationId:'main',permission:'PUBLISH_SCHEDULE'}]:[]})}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({isOperationalAuthorizationError:()=>false,readOperationalAuthority:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,locations:[{id:'main',name:'Managed location',shortName:'Managed'}],scope:{mode:operationalPageFixture.scoped?'LOCATIONS':'COMPANY',locationIds:operationalPageFixture.scoped?['loc']:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 // Composition only; mounted body lifetime is covered by the browser harness.
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
-beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;});
+beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;operationalPageFixture.publish=false;});
+
+// QA A3-05 (Nov 21, 2026): a location Manager holding Publish schedules had no way to publish from the schedule.
+it('a location Manager with Publish schedules gets Build and publish; one without it keeps the grant note',async()=>{
+ f.role='MANAGER';operationalPageFixture.scoped=true;operationalPageFixture.publish=true;
+ const granted=await html();
+ expect(granted).toMatch(/<a[^>]*href="\/app\/schedule\/publish\?week=[^"]+"[^>]*>Build and publish<\/a>/);
+ expect(granted).toContain('Manage and publish the schedules at your locations.');
+ operationalPageFixture.publish=false;
+ const plain=await html();
+ expect(plain).not.toContain('Build and publish');
+ expect(plain).toContain('Publishing a location needs an Owner’s Publish schedules grant there');
+});
 
 it('company denial withholds global schedule rows and all editing controls',async()=>{f.role='MANAGER';operationalPageFixture.denied=true;const output=await html();expect(output).toContain('current company-wide management access');expect(output).not.toContain('Add shift');expect(output).not.toContain('Publish');expect(f.managerReads).not.toHaveBeenCalled();});
 it('an operational company denial does not remove the Employee self schedule',async()=>{operationalPageFixture.denied=true;const output=await html();expect(output).toContain('c-esched');expect(output).toContain('aria-label="Days in this week"');expect(output).not.toContain('current company-wide management access');expect(f.managerReads).not.toHaveBeenCalled();});

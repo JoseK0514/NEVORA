@@ -10,7 +10,7 @@ rs.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ id: "w", 
 rs.mock("@/lib/business-time", () => ({ businessDate: () => "2026-10-30" }));
 rs.mock("@/lib/company-access/operational-scope.server", () => ({ withOperationalCompany: async (_proof: unknown, load: () => Promise<unknown>) => f.denied || f.role === "MANAGER" ? { state: "unavailable", reason: "access_denied" } : { state: "ready", data: await load(), authority: "fixture", observedAt: "2026-10-30T12:00:00Z", validForMs: 15000 } }));
 rs.mock("@/components/company-access/scoped-read-frame", () => ({ ScopedReadFrame: ({ children }: { children: React.ReactNode }) => children }));
-rs.mock("@/components/company-access/operational-unavailable", () => ({ OperationalUnavailable: ({ title }: { title: string }) => createElement("p", null, title) }));
+rs.mock("@/components/company-access/operational-unavailable", () => ({ OperationalUnavailable: ({ title, closed }: { title: string; closed?: { title: string; line: string } }) => createElement("p", null, closed ? `${title}: ${closed.title}. ${closed.line}` : title) }));
 rs.mock("@/components/schedule-generation-controls", () => ({ ScheduleGenerationControls: () => createElement("div", null, "Build week") }));
 rs.mock("@/components/schedule-copy-form", () => ({ ScheduleCopyForm: ({ label, command }: { label: string; command: { kind: string; weekStart: string } }) => createElement("button", { "data-kind": command.kind, "data-week": command.weekStart }, label) }));
 rs.mock("@/lib/data/employees", () => ({ listLocations: async () => [{ id: "loc-1", shortName: "Condado" }, { id: "loc-2", shortName: "Dorado" }, { id: "loc-3", shortName: "Hato Rey" }] }));
@@ -18,9 +18,9 @@ rs.mock("@/lib/data/schedules", () => ({ listScheduleStatuses: async () => f.sta
 rs.mock("@/lib/data/schedule-generation-review", () => ({ getScheduleGenerationReview: async () => ({ editable: true, attempted: 0, needsSetup: 0, coverage: null, exclusions: [] }) }));
 rs.mock("@/lib/data/schedule-publication-review", () => ({ getSchedulePublishReadiness: async (_week: string, id: string) => ({ hasWarnings: !!f.warnings[id], coverageGaps: f.warnings[id] ? 2 : 0, missingLeadBlocks: 0, underTargetCount: 0, overTargetCount: 0, unconfiguredTargetCount: 0 }) }));
 rs.mock("./actions", () => ({ publishDraftsAction: async () => {} }));
-rs.mock("../actions", () => ({ publishScheduleChangesAction: async () => {} }));
+rs.mock("../actions", () => ({ publishScheduleAction: async () => {}, publishScheduleChangesAction: async () => {} }));
 rs.mock("@/lib/company-access/operational-read.server", () => ({
-  readManagerSchedulePublish: async () => ({
+  readManagerSchedulePublish: async () => f.denied ? { state: "unavailable", reason: "access_denied" } : ({
     state: "ready", authority: "fixture", observedAt: "2026-10-30T12:00:00Z", validForMs: 15000,
     data: { locations: [{ id: "loc-1", name: "Calle Loíza", shortName: "Calle Loíza", status: "DRAFT", shiftCount: 2 }], publishLocationIds: ["loc-1"], review: [] },
   }),
@@ -113,5 +113,22 @@ it("opens publishing for a location-scoped Manager without exposing other locati
   f.role = "MANAGER";
   const out = await html();
   expect(out).toMatch(/Calle Loíza.*2 shifts.*Draft/);
-  expect(out).not.toMatch(/Build and publish unavailable|Condado|Dorado|Hato Rey|Copy last week|name="locationId"/);
+  expect(out).not.toMatch(/Build and publish unavailable|Condado|Dorado|Hato Rey|Copy last week/);
+  // QA A3-05 (Nov 21, 2026): the Manager holds Publish schedules here, so they get that location's own Publish form, and
+  // only that one (no bulk form across locations).
+  expect(out.match(/name="locationId"/g)).toHaveLength(1);
+  expect(out).toContain('name="locationId" value="loc-1"');
+  expect(out).toContain("Publish Calle Loíza");
+  expect(out).not.toContain('value="loc-2"');
+  // It goes through the per-location action, which returns here for that location's warning review.
+  expect(out).toContain('name="from" value="publish"');
+});
+
+it("a Manager without Publish schedules is told which permission is missing, not to sign in again", async () => {
+  f.role = "MANAGER"; f.denied = true;
+  const out = await html();
+  expect(out).toContain("Publishing permission needed");
+  expect(out).toContain("An Owner can give it to you.");
+  expect(out).not.toContain("Company-wide access needed");
+  expect(out).not.toContain("Sign in again");
 });

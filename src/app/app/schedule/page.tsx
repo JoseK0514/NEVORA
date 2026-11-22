@@ -4,7 +4,8 @@ import { readPortalLanguage } from "@/lib/activation/language.server";
 import { PlanningWindowCard, type PlanningWindow } from "@/components/workforce/planning-window-card";
 import { readOperationalPlanningWeek } from "@/lib/company-access/operational-read.server";
 import {scopedObservation} from '@/lib/company-access/observation';
-import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {isOperationalAuthorizationError,readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {listWorkforcePermissions} from '@/lib/workforce/authority.server';
 import {readOperationalSchedule,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
 import {ScopedOperationalSchedule} from '@/components/company-access/scoped-operational-views';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -138,7 +139,9 @@ export default async function SchedulePage({
       const source=await readOperationalSchedule(proof,{weekStart,...(params.location===undefined||params.location==='all'?{}:{locationId:params.location})});
       if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason} scoped/>;
       if(source.authority!==access.authority)return <OperationalUnavailable title="Schedule unavailable" reason="source_changed" scoped/>;
-      return withRepair(<ScopedOperationalSchedule data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}{(await currentPresentation()).modules.marketplace ? <Link href="/app/exchange/open-shifts" className="button secondary">Posted open shifts</Link> : null}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
+      // QA A3-05 (Nov 21, 2026): a location Manager with Publish schedules had no way to publish from here.
+      const canPublish=await scopedCanPublish(proof);
+      return withRepair(<ScopedOperationalSchedule publishHref={canPublish?`/app/schedule/publish?week=${encodeURIComponent(weekStart)}`:undefined} data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}{(await currentPresentation()).modules.marketplace ? <Link href="/app/exchange/open-shifts" className="button secondary">Posted open shifts</Link> : null}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
     }
   }
   async function renderSchedule(){
@@ -544,4 +547,10 @@ export default async function SchedulePage({
   const source=await withOperationalCompany(await requireSessionMutationProof(),renderSchedule);
   if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason}/>;
   return <ScopedReadFrame observation={scopedObservation(source)}>{source.data}</ScopedReadFrame>;
+}
+
+/** Whether this Manager holds Publish schedules at any location they manage. A refusal means no; other failures surface. */
+async function scopedCanPublish(proof:Awaited<ReturnType<typeof requireSessionMutationProof>>):Promise<boolean>{
+  try{return (await listWorkforcePermissions(proof)).permissions.some(grant=>grant.permission==='PUBLISH_SCHEDULE');}
+  catch(error){if(isOperationalAuthorizationError(error))return false;throw error;}
 }

@@ -24,7 +24,7 @@ import { getSchedulePublishReadiness } from "@/lib/data/schedule-publication-rev
 import { listScheduleStatuses, listWeekShifts } from "@/lib/data/schedules";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { publishDraftsAction } from "./actions";
-import { publishScheduleChangesAction } from "../actions";
+import { publishScheduleAction, publishScheduleChangesAction } from "../actions";
 import { readManagerSchedulePublish, readSchedulePendingChanges } from "@/lib/company-access/operational-read.server";
 import type { SchedulePendingChange } from "@/lib/scheduling/pending-changes";
 import { UnconfirmedActionForm } from "@/components/unconfirmed-action-form";
@@ -96,11 +96,16 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
     weekStart,
     ...(params.review === "1" && params.location !== undefined ? { reviewLocationId: params.location } : {}),
   });
-  if (source.state === "unavailable") return <OperationalUnavailable title="Build and publish unavailable" reason={source.reason} />;
+  // QA A3-05 (Nov 21, 2026): a Manager's read is refused when no location grants Publish schedules. Name that grant and who
+  // gives it, instead of "Company-wide access needed… Sign in again".
+  if (source.state === "unavailable") return <OperationalUnavailable title="Build and publish unavailable" reason={source.reason}
+    closed={!owner && source.reason === "access_denied" ? { title: "Publishing permission needed", line: "Publishing needs the Publish schedules permission for at least one of your locations. An Owner can give it to you." } : undefined} />;
   const { locations, review } = source.data;
   const generation = "generation" in source.data ? source.data.generation : null;
   const pending = "pending" in source.data ? source.data.pending : null;
   const drafts = locations.filter(location => location.status === "DRAFT");
+  // QA A3-05: a Manager's read lists only the locations they may publish, so a ready read means they can publish them.
+  const managerCanPublish = !owner && "publishLocationIds" in source.data && source.data.publishLocationIds.length > 0;
   const when = weekStart === currentWeek ? "This week" : weekStart === addDays(currentWeek, 7) ? "Next week" : weekStart === addDays(currentWeek, -7) ? "Last week" : "Week";
   const statePill = (value: string | null) => {
     return value === "PUBLISHED" ? <CorpPill tone="green">Published</CorpPill> : value === "DRAFT" ? <CorpPill tone="amber">Draft</CorpPill> : value === null ? null : <CorpPill tone="neutral">Not started</CorpPill>;
@@ -176,7 +181,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
               <p className="c-publish__lead">Hour counts cover the business week{owner ? " across locations" : " at the reviewed location"}. Publishing makes these schedules visible to your team.</p>
             </CorpBody>
           </CorpCard> : null}
-          {owner && (!drafts.length && pending?.hasPendingChanges ? pending.canPublish ? <UnconfirmedActionForm action={publishScheduleChangesAction} className="c-publish__go" unconfirmed={{ title: "Publishing could not be confirmed. The changes may already be published; check the schedule before you publish again.", check: { label: "Check the schedule", href: scheduleHref } }}>
+          {(owner || managerCanPublish) && (!drafts.length && pending?.hasPendingChanges ? pending.canPublish ? <UnconfirmedActionForm action={publishScheduleChangesAction} className="c-publish__go" unconfirmed={{ title: "Publishing could not be confirmed. The changes may already be published; check the schedule before you publish again.", check: { label: "Check the schedule", href: scheduleHref } }}>
             <input type="hidden" name="weekStart" value={weekStart} />
             {params.review === "changes" && review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
             <CorpNote icon={<BellIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true" />}>Each person with a change is notified once when you publish.</CorpNote>
@@ -184,6 +189,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
               <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">{`Publish changes${params.review === "changes" && review.length ? " anyway" : ""}`}</EmployeeSubmitButton>
             </div>
           </UnconfirmedActionForm> : <CorpNote>An Owner or company-wide Manager publishes these changes.</CorpNote>
+          : drafts.length && !owner ? <ManagerPublishForms weekStart={weekStart} drafts={drafts} reviewed={review.map(item => item.location.id)} scheduleHref={scheduleHref} notified={notified} />
           : drafts.length ? <UnconfirmedActionForm action={publishDraftsAction} className="c-publish__go" unconfirmed={{ title: "Publishing could not be confirmed. The schedules may already be published; check the schedule before you publish again.", check: { label: "Check the schedule", href: scheduleHref } }}>
             <input type="hidden" name="weekStart" value={weekStart} />
             {drafts.map(location => <input key={location.id} type="hidden" name="locationId" value={location.id} />)}
@@ -199,4 +205,30 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
       </div>
     </CorpPage>
   </ScopedReadFrame>;
+}
+
+/** QA A3-05: a Manager publishes each draft location on its own through publishScheduleAction with from=publish, the path
+ * built and tested for them (its warning review returns here for that location, and it rechecks the grant through the write).
+ * "anyway" only on the location whose warnings were reviewed. */
+function ManagerPublishForms({ weekStart, drafts, reviewed, scheduleHref, notified }: {
+  weekStart: string; drafts: { id: string; shortName: string }[]; reviewed: string[]; scheduleHref: string; notified: ReactNode;
+}) {
+  return <div className="c-publish__go">
+    {notified}
+    {drafts.map(location => {
+      const anyway = reviewed.includes(location.id);
+      const locationHref = `${scheduleHref}&location=${encodeURIComponent(location.id)}`;
+      return <UnconfirmedActionForm key={location.id} action={publishScheduleAction} unconfirmed={{
+        title: `Publishing ${location.shortName} could not be confirmed. It may already be published; check the schedule before you publish again.`,
+        check: { label: "Check the schedule", href: locationHref } }}>
+        <input type="hidden" name="weekStart" value={weekStart} />
+        <input type="hidden" name="locationId" value={location.id} />
+        <input type="hidden" name="from" value="publish" />
+        {anyway ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
+        <div className="c-publish__acts">{anyway ? <Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet c-publish__back" href={locationHref}>Back to schedule</Link> : null}
+          <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">{`Publish ${location.shortName}${anyway ? " anyway" : ""}`}</EmployeeSubmitButton>
+        </div>
+      </UnconfirmedActionForm>;
+    })}
+  </div>;
 }
