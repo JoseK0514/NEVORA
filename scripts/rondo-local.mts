@@ -65,10 +65,12 @@ try {
   pg('pg_ctl', ['-D', data, '-l', join(scratch, 'postgres.log'), '-w', 'start', '-o', `-h 127.0.0.1 -p ${port} -k ${scratch}`]);
   process.env.FUEL_TEST_DATABASE_URL = `postgresql://nevora_test:${password}@127.0.0.1:${port}/nevora_exchange_test_rondo_local`;
   process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN = 'yes';
-  if (collab && !production) {
-    smtp = await createOwnedSmtp(body => writeFileSync(join(evidence, 'fictional-signup.eml'), body, { mode: 0o600 }));
-  }
   if (production) https = await startCollabHttps(scratch);
+  const smtpPassword = https && randomBytes(32).toString('base64url');
+  if (collab) {
+    smtp = await createOwnedSmtp(body => writeFileSync(join(evidence, 'fictional-signup.eml'), body, { mode: 0o600 }),
+      https && smtpPassword ? { ...https.tls, password: smtpPassword } : undefined);
+  }
   app = await createOwnedNextApp(evidence, {
     signal: stop.signal, ownerAdvisorEnabled: true, managerAdvisorEnabled: true,
     ownerAdvisorKnowledgeEnabled: true, ownerAdvisorWeeklyEnabled: true,
@@ -77,6 +79,7 @@ try {
       production, portalHttpsOrigin: https?.origin, clockerPinKey: randomBytes(32).toString('hex'), clockerPunchEnabled: true,
       mobileAccessEnabled: true, mobileSupportEnabled: true, nativeAlertsEnabled: true,
       passkeysEnabled: true, deviceAlertsEnabled: true, payrollEnabled: true, signupSmtpPort: smtp?.port,
+      signupSmtpTls: https && smtpPassword ? { certificatePath: https.certificatePath, password: smtpPassword } : undefined,
       initializeDatabase: async ({ executor }) => {
         const directory = 'db/control-migrations';
         for (const file of (await readdir(directory)).filter(name => /^\d{4}_.+\.sql$/.test(name)).sort()) {

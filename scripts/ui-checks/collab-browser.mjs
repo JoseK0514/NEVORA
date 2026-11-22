@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { isAbsolute, join } from 'node:path';
 import { TEST_PASSWORD } from '../../src/test/integration/owned-app-fixture.ts';
@@ -9,6 +9,7 @@ import { scanInventory, finishInventory } from './collab-inventory.mjs';
 import { checkNativeAlerts } from './collab-native.mjs';
 import { checkScopedManager } from './collab-scoped-manager.mjs';
 import { checkSignup } from './collab-signup.mjs';
+import { checkShiftSheets } from './collab-shift-sheets.mjs';
 
 const [evidence, ...options] = process.argv.slice(2);
 assert.ok(options.every(option => ['--inventory', '--inventory-only', '--screenshots', '--signup-only', '--scoped-manager'].includes(option)), 'Unknown collab browser option.');
@@ -154,7 +155,6 @@ async function checkPriority() {
 }
 
 const inventoryOrigin = runtime.production ? url : url.replace('127.0.0.1', 'localhost');
-const scanPage = viewport => pageFor(viewport, [], undefined, inventoryOrigin);
 const scanLogin = (id, viewport, userAgent) => login(id, viewport, userAgent, inventoryOrigin);
 const recordInventory = (id, detail) => {
   inventoryResults.push({ id, detail, observed: 'asserted workflow' });
@@ -162,7 +162,7 @@ const recordInventory = (id, detail) => {
 };
 
 async function captureSignup() {
-  const page = await scanPage(phone);
+  const page = await pageFor(phone, [], undefined, inventoryOrigin);
   try {
     await checkSignup({ origin: inventoryOrigin, page, evidence, record: recordInventory });
   } finally {
@@ -203,10 +203,30 @@ try {
       workflowErrors.push(error);
       inventoryResults.push({ id: 'L1', observed: 'error', detail: String(error.message).split('\n')[0] });
     }
-    const inventory = await scanInventory({
-      evidence, origin: inventoryOrigin, runtime, pageFor: scanPage, login: scanLogin, priority: results, screenshots: options.includes('--screenshots'),
-    });
-    await finishInventory({ inventory, priority: results, extra: inventoryResults, evidence, checkpoint });
+    for (const viewport of [phone, desktop]) {
+      const directory = viewport === phone ? evidence : join(evidence, 'desktop');
+      await mkdir(directory, { recursive: true });
+      const extra = [...inventoryResults];
+      if (!inventoryOnly) {
+        for (const [profile, shift] of [['L', runtime.sourceId], ['E', runtime.targetId]]) {
+          const page = await scanLogin(profiles[profile], viewport);
+          try {
+            await checkShiftSheets({ url: inventoryOrigin, week, shift, profile, page, viewport, evidence: directory,
+              record: (id, detail) => extra.push({ id, detail, profile, observed: 'asserted workflow' }) });
+          } catch (error) {
+            workflowErrors.push(error);
+          } finally {
+            await page.context().close();
+          }
+        }
+      }
+      const inventory = await scanInventory({
+        evidence: directory, origin: inventoryOrigin, runtime,
+        pageFor: () => pageFor(viewport, [], undefined, inventoryOrigin),
+        login: id => scanLogin(id, viewport), priority: results, screenshots: options.includes('--screenshots'),
+      });
+      await finishInventory({ inventory, priority: results, extra, evidence: directory, checkpoint });
+    }
   }
   if (workflowErrors.length) throw new AggregateError(workflowErrors, 'One or more collab browser workflows failed. See the retained evidence.');
 } finally {

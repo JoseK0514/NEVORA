@@ -62,7 +62,7 @@ function concreteRoutes(row, profile, runtime, coverage) {
     case 'C1': return [query(row.route, { week, location: 'all' })];
     case 'C3': return [coverage];
     case 'C4': return [query(row.route, { shiftId: sourceId })];
-    case 'C5': return [query(row.route, { week, date: sourceDate, locationId: 'loc-1', start: '00:00', end: '08:00' })];
+    case 'C5': return [coverage ?? query(row.route, { week, date: sourceDate, locationId: 'loc-1', start: '00:00', end: '08:00' })];
     case 'C6': return [query(row.route, { week: pages.copyWeek })];
     case 'C8': return [query(row.route, { operation: pages.copyId })];
     case 'C14': return [query(row.route, { sourceShiftId: actorShift })];
@@ -95,7 +95,10 @@ async function visit(page, origin, route, row) {
     // App Router can interrupt a navigation in order to apply a Profile
     // section redirect. Require the actual destination before recording it.
     await page.waitForURL(url => url.pathname === '/app/profile', { timeout: 5000 });
-    await page.getByRole('heading', { name: 'Profile', exact: true }).first().waitFor({ timeout: 5000 });
+  }
+  if (['I2', 'I4', 'I5'].includes(row.id) && ['O', 'M', 'Ml'].includes(row.profile)) {
+    await page.waitForURL(url => url.pathname === '/app/profile' && Boolean(url.hash));
+    await page.waitForLoadState('domcontentloaded');
   }
   if (row.id === 'A2') await page.locator('#login-employee-id').waitFor();
   if (!['A1', 'M1', 'M2'].includes(row.id)) {
@@ -103,6 +106,9 @@ async function visit(page, origin, route, row) {
   }
   if (row.id === 'C3') {
     await page.getByRole('heading', { name: 'Review replacement', exact: true }).waitFor();
+  }
+  if (row.id === 'H5') {
+    await page.getByRole('heading', { name: 'Hours worked', exact: true }).waitFor({ timeout: 12000 }).catch(() => {});
   }
   const pending = page.locator('.c-route-state--checking').filter({ has: page.locator('[data-checking]') });
   await pending.first().waitFor({ state: 'detached', timeout: 12_000 }).catch(() => {});
@@ -161,16 +167,20 @@ export async function scanInventory({ evidence, origin, runtime, pageFor, login,
           continue;
         }
         for (const [index, route] of concreteRoutes(row, profile, runtime, coverage).entries()) {
+          const isolated = ['I2', 'I4', 'I5'].includes(row.id);
+          const routePage = isolated ? await page.context().newPage() : page;
           try {
-            const rendered = await visit(page, origin, route, row);
+            const rendered = await visit(routePage, origin, route, { ...row, profile });
             const result = { ...base, ...rendered };
             if (screenshots && rendered.observed !== 'sign-in') {
               result.screenshot = join('inventory', [profile, row.id, index].join('-') + '.png');
-              await page.screenshot({ path: join(evidence, result.screenshot), timeout: 15_000 });
+              await routePage.screenshot({ path: join(evidence, result.screenshot), timeout: 15_000 });
             }
             results.push(result);
           } catch (error) {
             results.push({ ...base, route, observed: 'error', detail: String(error.message).split('\n')[0] });
+          } finally {
+            if (isolated) await routePage.close();
           }
         }
       }
@@ -191,8 +201,8 @@ export async function finishInventory({ inventory, priority, extra, evidence, ch
       observed: special.has(row.id) ? 'separate fixture' : 'manual workflow', detail: special.get(row.id) });
   }
   assert.deepEqual([...new Set(results.map(row => row.id))].sort(), rows.map(row => row.id).sort(), 'Every inventory row must be accounted for.');
-  for (const entry of extra.filter(entry => /^A\d+$/.test(entry.id))) {
-    results.push({ ...entry, profile: 'public' });
+  for (const entry of extra.filter(entry => /^[AC]\d+$/.test(entry.id))) {
+    results.push({ ...entry, profile: entry.profile ?? 'public' });
   }
   const totals = Object.fromEntries([...new Set(results.map(result => result.observed))].sort()
     .map(state => [state, results.filter(result => result.observed === state).length]));

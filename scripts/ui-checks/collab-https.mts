@@ -10,10 +10,12 @@ export async function startCollabHttps(directory: string) {
   const key = join(directory, 'loopback-key.pem');
   const cert = join(directory, 'loopback-cert.pem');
   execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-days', '1',
-    '-subj', '/CN=127.0.0.1', '-keyout', key, '-out', cert], { stdio: 'pipe', timeout: 15_000 });
+    '-subj', '/CN=127.0.0.1', '-addext', 'subjectAltName=IP:127.0.0.1',
+    '-keyout', key, '-out', cert], { stdio: 'pipe', timeout: 15_000 });
+  const tls = { key: await readFile(key), cert: await readFile(cert) };
   let upstream: URL | undefined;
   let host = '';
-  const server = createServer({ key: await readFile(key), cert: await readFile(cert) }, (incoming, outgoing) => {
+  const server = createServer(tls, (incoming, outgoing) => {
     if (incoming.headers.host !== host || !incoming.url?.startsWith('/') || incoming.url.startsWith('//')) {
       outgoing.writeHead(400).end();
       return;
@@ -53,6 +55,8 @@ export async function startCollabHttps(directory: string) {
   host = '127.0.0.1:' + address.port;
   return {
     origin: 'https://' + host,
+    tls,
+    certificatePath: cert,
     forwardTo(url: string) {
       if (!/^http:\/\/127\.0\.0\.1:\d+$/.test(url)) throw Error('Expected an owned loopback Next origin');
       upstream = new URL(url);

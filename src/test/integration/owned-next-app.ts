@@ -180,7 +180,7 @@ const ownedProductionTenantStub = "\nexport function getTenantRuntimeDb(_role: '
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { production?: boolean; portalHttpsOrigin?: string; centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; managerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?:boolean; ownerAdvisorKnowledgeEnabled?:boolean; ownerAdvisorBusinessImportsEnabled?:boolean; ownerAdvisorBusinessRetrievalEnabled?:boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; signupSmtpPort?: number; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { production?: boolean; portalHttpsOrigin?: string; centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; managerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?:boolean; ownerAdvisorKnowledgeEnabled?:boolean; ownerAdvisorBusinessImportsEnabled?:boolean; ownerAdvisorBusinessRetrievalEnabled?:boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; signupSmtpPort?: number; signupSmtpTls?: { certificatePath: string; password: string }; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   const isolatedEnvironment=ownedIsolatedEnvironment(options.isolatedWorkspaces);
   if(options.centralBillingApiOrigin){const api=new URL(options.centralBillingApiOrigin);if(api.origin!==options.centralBillingApiOrigin||api.protocol!=='http:'||!['127.0.0.1','localhost'].includes(api.hostname)||!api.port||api.username||api.password)throw Error('Owned billing UI requires an explicit loopback API');}
   if(options.isolatedWorkspaces){if(options.emptyDatabase!==true||options.commerceRecoveryEnabled)throw Error('Owned isolated admission requires empty unused fallback and explicit commerce transport');await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);}
@@ -205,7 +205,10 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
   if (production && (options.isolatedWorkspaces || options.pinDevTypeReferences)) throw Error('Owned production runtime supports neither isolated workspaces nor dev type references');
   if (options.signupSmtpPort !== undefined) {
     validateOwnedMailOptions({ recoverySmtpPort: options.signupSmtpPort });
-    if (production || options.isolatedWorkspaces) throw Error('Owned signup preview requires the disposable development workspace.');
+    if (options.isolatedWorkspaces || production !== Boolean(options.signupSmtpTls)
+      || (production && !options.portalHttpsOrigin)) {
+      throw Error('Owned production signup requires the HTTPS proxy and authenticated loopback TLS SMTP.');
+    }
   }
   const pinDevTypeReferences = options.pinDevTypeReferences ?? !production;
   const evidence = resolve(evidenceDirectory);
@@ -320,6 +323,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
     sourceManifestHash = hash(manifestBytes); mirrorPrepared = true;
     await verifyMirror();
     const port = await availablePort(), url = `http://127.0.0.1:${port}`;
+    const signupOrigin = options.portalHttpsOrigin ?? url.replace('127.0.0.1', 'localhost');
     const env: NodeJS.ProcessEnv = {
       PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: production ? 'production' : 'development', CI: '1',
       ...isolatedEnvironment,
@@ -335,7 +339,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       ...advisorEnvironment,
       ...(options.ownerAdvisorReplayFixture?{NEVORA_OWNER_ADVISOR_REPLAY_ORIGIN:url}:{}),
       NEVORA_CLOCKER_PUNCH_ENABLED: options.clockerPunchEnabled === true ? 'true' : 'false',
-      NEVORA_CLOCKER_ORIGIN: url,
+      NEVORA_CLOCKER_ORIGIN: options.portalHttpsOrigin ?? url,
       ...ownedMailEnvironment(url,options),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       ...ownedDeviceEnvironment(url,options.deviceAlertsEnabled),
@@ -344,10 +348,15 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
         NEVORA_ONBOARDING_ENABLED: 'true', NEVORA_ONBOARDING_ENVIRONMENT: 'test',
         NEVORA_ONBOARDING_EMAIL_ENABLED: 'true', NEVORA_ONBOARDING_PROVIDER_ENABLED: 'false',
         NEVORA_ONBOARDING_ADMISSION_MODE: 'approved_recipient', NEVORA_STAGING_EMAIL_RECIPIENT: 'qa-signup@example.invalid',
-        NEVORA_SIGNUP_ORIGIN: url.replace('127.0.0.1', 'localhost'),
-        FUEL_PORTAL_ORIGIN: url.replace('127.0.0.1', 'localhost'),
+        NEVORA_SIGNUP_ORIGIN: signupOrigin,
+        FUEL_PORTAL_ORIGIN: signupOrigin,
         NEVORA_RECOVERY_SMTP_HOST: '127.0.0.1', NEVORA_RECOVERY_SMTP_PORT: String(options.signupSmtpPort),
         NEVORA_RECOVERY_FROM: 'signup@example.invalid',
+        ...(options.signupSmtpTls ? {
+          NODE_EXTRA_CA_CERTS: options.signupSmtpTls.certificatePath,
+          NEVORA_RECOVERY_SMTP_USER: 'collab-qa',
+          NEVORA_RECOVERY_SMTP_PASSWORD: options.signupSmtpTls.password,
+        } : {}),
         NEVORA_CONTROL_DATABASE_URL: database.connectionString,
         NEVORA_SIGNUP_SESSION_SECRET: randomBytes(32).toString('base64url'),
         NEVORA_WORKSPACE_TOKEN_SECRET: randomBytes(32).toString('base64url'),

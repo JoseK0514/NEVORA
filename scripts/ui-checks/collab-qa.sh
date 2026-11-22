@@ -17,8 +17,8 @@ ready_attempts=240
 if [[ "${1:-}" == --production ]]; then
   shift
   case "${1:-}" in
-    --scoped-manager|--serve) ;;
-    *) echo "Use --production with --scoped-manager or --serve." >&2; exit 1 ;;
+    --scoped-manager|--serve|--inventory|--inventory-only|--signup-only|--full) ;;
+    *) echo "Use --production with --full, --inventory, --inventory-only, --signup-only, --scoped-manager, or --serve." >&2; exit 1 ;;
   esac
   export NEVORA_COLLAB_PRODUCTION=1
   ready_attempts=600
@@ -54,6 +54,15 @@ fi
 if [[ "${1:-}" == --serve && $# == 1 ]]; then
   cat "$evidence/launcher.log"
   wait "$launcher"
+elif [[ "${1:-}" == --full && $# == 1 ]]; then
+  status=0
+  node "${node_flags[@]}" scripts/ui-checks/collab-browser.mjs "$evidence" --inventory --screenshots || status=1
+  cleanup
+  trap - EXIT
+  mkdir "$evidence/central-billing" "$evidence/step4-local"
+  NEVORA_CENTRAL_BILLING_EVIDENCE="$evidence/central-billing" node scripts/onboarding-owned.mjs --suite central-billing || status=1
+  NEVORA_STEP4_EVIDENCE="$evidence/step4-local" node scripts/onboarding-owned.mjs --suite step4-local || status=1
+  exit "$status"
 else
   node "${node_flags[@]}" scripts/ui-checks/collab-browser.mjs "$evidence" "$@"
 fi
