@@ -35,6 +35,7 @@ export function ConfigurationForm({
   reviewedUpdatedAt,
   reviewedShiftVersion,
   id,
+  holdAfterUnconfirmed = false,
 }: {
   action: (data: FormData) => Promise<ConfigurationResult>;
   children: ReactNode;
@@ -43,6 +44,9 @@ export function ConfigurationForm({
   reviewedShiftVersion?: string;
   /** Quiet (v4): lets a submit in the page's top bar (form="…") send this form. */
   id?: string;
+  /** A location Manager's shift form: after an unconfirmed save the fields stay locked until the schedule is checked
+   * (the scoped editor's rule; the check link opens the shift's day). */
+  holdAfterUnconfirmed?: boolean;
 }) {
   const [result, setResult] = useState<ConfigurationResult>({});
   const [pending, setPending] = useState(false);
@@ -57,7 +61,7 @@ export function ConfigurationForm({
   const [unconfirmed, setUnconfirmed] = useState<{ href: string | null } | null>(null);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (inFlight.current) return;
+    if (inFlight.current || (holdAfterUnconfirmed && unconfirmed)) return;
     inFlight.current = true;
     const data = new FormData(event.currentTarget);
     if (draftUpdatedAt !== undefined) data.set('expectedUpdatedAt', draftUpdatedAt);
@@ -85,7 +89,7 @@ export function ConfigurationForm({
   }
   return (
     <form id={id} onSubmit={submit} className={className} aria-busy={pending}>
-      <fieldset disabled={pending} className="configuration-fields">
+      <fieldset disabled={pending || (holdAfterUnconfirmed && !!unconfirmed)} className="configuration-fields">
         {draftUpdatedAt !== undefined ? <input type="hidden" name="expectedUpdatedAt" value={draftUpdatedAt} /> : null}
         {shiftVersion !== undefined ? <input type="hidden" name="expectedReviewVersion" value={shiftVersion} /> : null}
         {children}

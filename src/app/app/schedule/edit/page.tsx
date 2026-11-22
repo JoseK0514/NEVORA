@@ -1,13 +1,12 @@
 import {scopedObservation} from '@/lib/company-access/observation';
 import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {readOperationalShiftEditor,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
-import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
-import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
+import {ScopedShiftDetails,scopedShiftChoices,scopedShiftPositions,scopedShiftReason} from '@/components/company-access/scoped-shift-sheet';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {listPositions} from "@/lib/data/positions";
-import {ScheduleRouteFeedback} from '@/components/company-access/schedule-route-feedback';
+import {editorErrorText} from '@/components/company-access/schedule-route-feedback';
 import {schedulingIssueMessage} from '@/lib/scheduling/validate-shift';
 import { redirect } from "next/navigation";
 import { DeleteShiftConfirm } from "./delete-shift-button";
@@ -49,7 +48,6 @@ export default async function EditShiftPage({
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
   const shiftId=params.shiftId;
-  const feedback=<ScheduleRouteFeedback destination="editor" error={params.error}/>;
   const proof=await requireSessionMutationProof(),access=await readOperationalAuthority(proof);
   if(access.state==='unavailable')return <OperationalUnavailable title="Shift editor unavailable" reason={access.reason}/>;
   if(access.scope?.mode!=='COMPANY'){
@@ -57,8 +55,33 @@ export default async function EditShiftPage({
     if(source.state==='unavailable')return <OperationalUnavailable title="Shift editor unavailable" reason={source.reason} scoped/>;
     if(source.authority!==access.authority)return <OperationalUnavailable title="Shift editor unavailable" reason="source_changed" scoped/>;
     const observation={authority:source.authority,observedAt:access.observedAt,validForMs:Math.min(access.validForMs,source.validForMs)};
-    if(source.data.saveAvailability!=='available')return <ScopedShiftReadOnly data={source.data} observation={observation} feedback={feedback}/>;
-    return <ScopedReadFrame observation={observation}><ScopedManualShiftForm data={source.data} action={updateShiftAction} deleteAction={deleteShiftAction} feedback={feedback} locationName={access.locations.find(l=>l.id===source.data.locationId)?.name}/></ScopedReadFrame>;
+    const data=source.data,scopedShift=data.shift;
+    if(!scopedShift)redirect("/app/schedule?error=INVALID_SHIFT");
+    // Phase 2 (queue C4-Ml): a location Manager gets the Owner's Edit shift sheet for a draft they may change, and the same
+    // sheet with the shift's facts and one line saying why when they may not. Scoped read, actions and fields unchanged.
+    const place=access.locations.find(l=>l.id===data.locationId),placeName=place?(place.shortName||place.name):data.locationId;
+    const back=`/app/schedule?week=${data.weekStart}&location=${encodeURIComponent(data.locationId)}&day=${scopedShift.date}#schedule-employee-${encodeURIComponent(scopedShift.employeeId)}`;
+    const scopedDay=formatDayLabel(scopedShift.date);
+    // Each fact once (Jose, Nov 23, 2026): the editable sheet's subtitle is its state only (the Date field holds the day);
+    // Shift details' subtitle is the day only (the reason line says why it can't change: published, built, inactive).
+    const scopedState=<span data-tone="amber">Draft</span>;
+    const scopedSubtitle=new Intl.DateTimeFormat("en-US",{weekday:"short",month:"short",day:"numeric",timeZone:"UTC"}).format(new Date(`${scopedShift.date}T12:00:00Z`));
+    const scopedError=params.error?{title:"The shift wasn’t saved",body:editorErrorText(params.error)}:undefined;
+    if(data.saveAvailability!=='available')return <ScopedReadFrame observation={observation}><CorpPage className="c-shift-page" label="Shift details">
+      <ScopedShiftDetails data={data} title="Shift details" subtitle={scopedSubtitle} placeName={placeName} backHref={back} reason={scopedShiftReason(data,placeName)} error={scopedError}/>
+    </CorpPage></ScopedReadFrame>;
+    return <ScopedReadFrame observation={observation}><CorpPage className="c-shift-page" label="Edit shift">
+      <ScheduleShiftForm key={scopedShift.id} mode="edit" formId="edit-shift-form" action={updateShiftAction} reviewedShiftVersion={scopedShift.reviewVersion}
+        employees={scopedShiftChoices([data],{id:scopedShift.employeeId,name:scopedShift.employeeName})} positions={scopedShiftPositions([data])}
+        fixedLocation={placeName} fixedLocationHelp={access.locations.length>1?undefined:null} weekStart={data.weekStart} date={scopedShift.date}
+        employeeId={scopedShift.employeeId} positionId={scopedShift.positionId??""} startTime={scopedShift.startTime} endTime={scopedShift.endTime} keepMidnightEnd
+        isDesignatedLead={scopedShift.isDesignatedLead} notes={scopedShift.notes??""} hidden={{weekStart:data.weekStart,locationId:data.locationId,shiftId:scopedShift.id}} cancelHref={back}
+        subtitle={scopedState} error={scopedError} holdAfterUnconfirmed notePlaceholder="Optional" plainChoices
+        footer={<ActionForm action={deleteShiftAction} reviewedShiftVersion={scopedShift.reviewVersion} shiftDraftFormId="edit-shift-form" className="c-shift__delete" failure={{ title: "The shift wasn’t deleted", body: "Check your connection and try again." }}>
+          <input type="hidden" name="shiftId" value={scopedShift.id} />
+          <DeleteShiftConfirm warning={keepWhole(`${scopedShift.employeeName} won’t be scheduled on ${scopedDay.weekday}, ${scopedDay.day}. This can’t be undone.`)} />
+        </ActionForm>} />
+    </CorpPage></ScopedReadFrame>;
   }
 
   const source=await withOperationalCompany(proof,()=>Promise.all([

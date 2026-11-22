@@ -15,7 +15,7 @@ export function positionAfterEmployeeChange({
   positionId: string;
   nextEmployeeId: string;
   employees: ShiftFormEmployee[];
-  positions: Position[];
+  positions: Pick<Position, "id" | "active">[];
 }) {
   if (!positionId) return "";
   const nextEmployee = employees.find((item) => item.id === nextEmployeeId);

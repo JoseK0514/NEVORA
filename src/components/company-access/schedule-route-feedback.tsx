@@ -41,6 +41,10 @@ function knownMessage(messages:Record<string,string>,code:string){
  const standard=schedulingIssueMessage(code);
  return typeof standard==='string'&&standard.trim()?standard:undefined;
 }
+/** The editor's words for a redirect code (a location Manager's Edit shift); unknown codes get the generic line. */
+export function editorErrorText(code:string){
+ return knownMessage(editorErrors,code)??'The shift could not be updated.';
+}
 
 /** Route hints explain a redirect; they are not transaction receipts. Scoped
  * destinations therefore prompt review instead of certifying a save from a URL.

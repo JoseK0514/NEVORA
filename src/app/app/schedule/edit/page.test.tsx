@@ -101,16 +101,36 @@ it('withholds protected body and commands after current company-scope denial',as
 const held=rs.hoisted(()=>({read:rs.fn()}));
 rs.mock('@/lib/company-access/operational-read.server',()=>({readSchedulePendingChanges:held.read,readOperationalShiftEditor:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['main']},data:{weekStart:'2026-10-12',locationId:'main',shift:{id:'test-shift',scheduleId:'week',employeeId:'AVERY',employeeName:'Avery Rivera',locationId:'main',weekStart:'2026-10-12',date:'2026-10-14',startTime:'16:00',endTime:'24:00',positionId:'support',notes:'Scoped note',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:operationalPageFixture.saveAvailability==='requires_company'?'PUBLISHED':'DRAFT'},employeeOptions:[{id:'AVERY',name:'Avery Rivera',positionIds:['support']}],positionOptions:[{id:'support',name:'Support'}],sourceVersion:'fixture',saveAvailability:operationalPageFixture.saveAvailability}})}));
 it('uses the actual minimal manual editor for scoped drafts without global employee catalogs',async()=>{
- operationalPageFixture.scoped=true;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('Edit draft shift');expect(html).toContain('data-test-root-chrome');expect(html).toContain('name="endTime" value="24:00"');expect(html).toContain('Review deletion');expect(html).not.toContain('Delete this draft shift');expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(mocks.locations).not.toHaveBeenCalled();
+ operationalPageFixture.scoped=true;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));
+ // Phase 2 (C4-Ml): the Owner's Edit shift sheet, fed by the scoped editor read.
+ expect(html).toContain('<span class="c-shift__titles"><h1 class="c-shift__title">Edit shift</h1><span class="c-shift__sub"><span data-tone="amber">Draft</span></span></span>');expect(html).not.toContain('Wed, Oct 14</span>');
+ expect(html).not.toContain('data-test-root-chrome');
+ // A stored 24:00 end goes back as 24:00 (End shows midnight).
+ expect(html).toContain('<input type="hidden" name="endTime" value="24:00"/>');expect(html).toContain('<option value="00:00" selected="">12:00 AM</option>');
+ for(const name of ['employeeId','positionId','date','startTime','isDesignatedLead','notes'])expect(html).toContain(`name="${name}"`);
+ expect(html.match(/name="shiftId" value="test-shift"/g)).toHaveLength(2);
+ // The scoped form's hidden fields (the unconfirmed-save check opens the shift's day from them).
+ expect(html).toContain('<input type="hidden" name="weekStart" value="2026-10-12"/><input type="hidden" name="locationId" value="main"/>');
+ // The Manager's one place, fixed, with no reason line.
+ expect(html).toMatch(/<input id="edit-shift-form-location" class="c-in c-shift__fixed" readOnly="" tabindex="-1" value="Managed"\/>/);expect(html).not.toContain('A shift keeps its location');
+ expect(html).toContain('class="c-shift__delete-row" aria-expanded="false">Delete shift</button>');expect(html).not.toContain('Delete this shift');
+ expect(html).toContain('href="/app/schedule?week=2026-10-12&amp;location=main&amp;day=2026-10-14#schedule-employee-AVERY"');
+ expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(mocks.locations).not.toHaveBeenCalled();
 });
-it.each(['requires_company','unavailable'])('keeps scoped editor read-only when save hint is %s',async saveAvailability=>{
- operationalPageFixture.scoped=true;operationalPageFixture.saveAvailability=saveAvailability;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));expect(html).toContain('Shift details');expect(html).toContain('data-test-root-chrome');expect(html).not.toContain('Save changes');expect(html).not.toContain('Save shift');expect(mocks.shift).not.toHaveBeenCalled();
+it.each([['requires_company','You can’t change a published shift. Ask an Owner.','Published'],['unavailable','Managed is inactive, so this shift can’t be changed.','Draft']])('keeps scoped editor read-only when save hint is %s, with one line that says why',async(saveAvailability,why,state)=>{
+ operationalPageFixture.scoped=true;operationalPageFixture.saveAvailability=saveAvailability;const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));
+ expect(html).toContain('<h1 class="c-shift__title">Shift details</h1>');expect(html).toContain('<span class="c-shift__sub">Wed, Oct 14</span>');expect(html).not.toContain(`>${state}<`);expect(html).toContain(why);
+ expect(html).not.toContain('<form');expect(html).not.toContain('Save changes');expect(html).not.toContain('Save shift');expect(html).not.toContain('data-test-root-chrome');
+ // The facts, each once: the person, the place, the position, the time and the note.
+ for(const fact of ['<dt>Person</dt>','Avery Rivera','<dt>Location</dt><dd>Managed</dd>','<dt>Position</dt><dd>Support</dd>','4:00 PM – midnight','Scoped note'])expect(html).toContain(fact);
+ expect(html).not.toContain('<dt>Shift lead</dt>');
+ expect(mocks.shift).not.toHaveBeenCalled();
 });
 it.each(['available','requires_company','unavailable'])('announces a real scoped edit redirect error in %s while retaining context',async saveAvailability=>{
  operationalPageFixture.scoped=true;operationalPageFixture.saveAvailability=saveAvailability;
  const {default:Page}=await import('./page');const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift',error:'INVALID_SHIFT'})}));
  expect(html).toContain('role="alert"');expect(html).toContain('The shift could not be updated.');expect(html).toContain('Avery Rivera');
- expect(html).toContain('href="/app/schedule?week=2026-10-12&amp;location=main"');
+ expect(html).toContain('href="/app/schedule?week=2026-10-12&amp;location=main&amp;day=2026-10-14#schedule-employee-AVERY"');
  expect(mocks.shift).not.toHaveBeenCalled();expect(mocks.employees).not.toHaveBeenCalled();expect(mocks.locations).not.toHaveBeenCalled();
 });
 it.each(['UNTRUSTED_QUERY_TEXT','constructor'])('scoped edit uses safe generic feedback for unknown redirect code %s',async error=>{

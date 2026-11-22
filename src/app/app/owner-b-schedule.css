@@ -489,3 +489,19 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .c-sched .cm-roster .c-sched-review > a.c-sched-review__all:not(#pN1):not(#pN2):not(#pN3):not(#pN4):not(#pN5):not(#pN6):not(#pN7):not(#pN8):not(#pN9):not(#pN10) { display: none !important; }
   }
 }
+
+/* ---------- Phase 2 (Nov 23, 2026; queue C2-Ml, C4-Ml): Add shift, Edit shift and a location Manager's Shift details ----------
+ * The shift's state on the band ("Draft · Tue, Dec 8"): amber on teal failed contrast, so the word keeps the band's ink and
+ * its weight sets it apart (the word carries the meaning). On phones Cancel, Save and Done keep their width and the title
+ * wraps, balanced, between them (at 320px with 200% text it ran under them). */
+@layer nv-b {
+  html body .app-shell[data-nv-b] .c-shift-page .c-shift__head .c-shift__sub [data-tone="amber"] { color: inherit !important; font-weight: 600 !important; }
+  html body .app-shell[data-nv-b] .c-shift-page .c-shift__head .c-shift__title { text-wrap: balance !important; }
+  /* The sheet's footer buttons are one width (Cancel and Save changes were 120 and 141): 9rem holds "Save changes" and
+   * grows with the reader's text size. */
+  html body .app-shell[data-nv-b] .c-shift-page .c-form-foot > .c-btn { min-width: 9rem !important; }
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .c-shift-page .c-shift > .c-shift__head { grid-template-columns: minmax(min-content, 1fr) auto minmax(min-content, 1fr) !important; }
+    html body .app-shell[data-nv-b] .c-shift-page .c-shift > .c-shift__head :is(.c-shift__title, .c-shift__sub) { white-space: normal !important; text-align: center !important; }
+  }
+}

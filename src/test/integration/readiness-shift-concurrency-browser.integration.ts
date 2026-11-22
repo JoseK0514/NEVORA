@@ -160,7 +160,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         checks.push(`${engine}: held real RSC read blocks next hard navigation until response completion`);
       } finally { if (probeTimer) clearTimeout(probeTimer); holdProbe = false; releaseProbe(); await nextProbe?.catch(() => {}); await p0.unroute(probePattern); await q('DELETE FROM shifts WHERE id=ANY($1::text[])', [[probeSource, probeDestination]]); }
       const edit = async (n: number, note: string, reassign = false) => { if (reassign) await form(n).locator('select[name="employeeId"]').selectOption('MATRIX-OTHER'); await form(n).locator('[name="notes"]').fill(note); await form(n).evaluate((element: HTMLFormElement) => element.requestSubmit()); };
-      const remove = async (n: number) => { const p = page(n); await p.getByRole('button', { name: n ? 'Review deletion' : 'Delete shift', exact: true }).click(); await p.getByRole('button', { name: n ? 'Delete this draft shift' : 'Delete this shift', exact: true }).click(); };
+      const remove = async (n: number) => { const p = page(n); await p.getByRole('button', { name: 'Delete shift', exact: true }).click(); await p.getByRole('button', { name: 'Delete this shift', exact: true }).click(); };
       const refused = async (n: number, version: string, unavailable = false) => { await page(n).getByRole('alert').filter({ hasText: unavailable ? 'You don’t have access to make this change' : 'changed since you opened' }).first().waitFor(); expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version); await page(n).getByRole('button', { name: 'Reload current shift', exact: true }).first().waitFor(); };
       const loseNextResponse = async (n: number, id: string) => {
         const pattern = '**/app/schedule/edit?shiftId=' + id;
@@ -209,7 +209,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
           const id = await seed(generated);
           if (generated && stale === 1) {
             await page(1).evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page(1).waitForLoadState('networkidle'); await page(1).goto(app.url + '/app/schedule/edit?shiftId=' + id);
-            await page(1).getByText('Changing this shift requires company-wide access.', { exact: false }).filter({ visible: true }).waitFor();
+            await page(1).getByText('You can’t change a shift made by Build and publish.', { exact: false }).filter({ visible: true }).waitFor();
             expect(await form(1).count()).toBe(0); await q('DELETE FROM shifts WHERE id=$1', [id]); checks.push(`${engine}: location Manager cannot edit a current generated shift`); continue;
           }
           const generationWriter = generated ? 2 : winner;
@@ -236,7 +236,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version);
         expect(await form(n).locator('[name="notes"]').inputValue()).toBe('Lost response saved once');
         if (n === 0) { await edit(n, 'Lost response saved once'); await refused(n, version); }
-        else { expect(await form(n).locator('fieldset[disabled]').count()).toBeGreaterThan(0); await page(n).getByRole('link', { name: 'Review current schedule', exact: true }).waitFor(); }
+        else { expect(await form(n).locator('fieldset[disabled]').count()).toBeGreaterThan(0); await page(n).getByRole('link', { name: 'Check the schedule', exact: true }).waitFor(); }
         expect(await q('SELECT notes,updated_at::text FROM shifts WHERE id=$1', [id])).toEqual(committed);
         await page(n).unroute(lost.pattern); await q('DELETE FROM shifts WHERE id=$1', [id]);
         checks.push(`${engine}: ${n ? 'location unknown-outcome lock' : 'Company original-review retry'} after committed lost response; row unchanged`);
@@ -250,16 +250,15 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         await remove(n); await lost.wait();
         expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]);
         expect(await form(n).locator('[name="notes"]').inputValue()).toBe('Retained before lost deletion');
-        if (n === 0) {
-          const deletion = await unknownDeletionLock(page(n), version);
-          await deletion.getByRole('button', { name: 'Reload current shift', exact: true }).waitFor();
-          // Even a synthetic programmatic submit cannot bypass the uncertainty
-          // fence; only explicit current-view review can create a new intent.
-          await deletion.evaluate((element: HTMLFormElement) => element.requestSubmit());
-          await deletion.getByRole('alert').filter({ hasText: 'Deletion outcome unknown' }).waitFor();
-        } else { expect(await form(n).locator('fieldset[disabled]').count()).toBeGreaterThan(0); await page(n).getByRole('link', { name: 'Review current schedule', exact: true }).waitFor(); }
+        // Phase 2 (C4-Ml): the location Manager deletes from the same sheet as the Company Manager, with the same lock.
+        const deletion = await unknownDeletionLock(page(n), version);
+        await deletion.getByRole('button', { name: 'Reload current shift', exact: true }).waitFor();
+        // Even a synthetic programmatic submit cannot bypass the uncertainty
+        // fence; only explicit current-view review can create a new intent.
+        await deletion.evaluate((element: HTMLFormElement) => element.requestSubmit());
+        await deletion.getByRole('alert').filter({ hasText: 'Deletion outcome unknown' }).waitFor();
         expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]); await page(n).unroute(lost.pattern);
-        checks.push(`${engine}: ${n ? 'location unknown-outcome lock' : 'Company unknown-outcome lock and copy-before-review'} after lost successful deletion; draft retained and no replay effects`);
+        checks.push(`${engine}: ${n ? 'location' : 'Company'} unknown-outcome lock and copy-before-review after lost successful deletion; draft retained and no replay effects`);
       }
       stage = 'offline';
       const offlineId = await seed(); await open(0, offlineId); await p0.waitForLoadState('networkidle');
