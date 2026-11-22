@@ -12,6 +12,7 @@ import { assertExternalEvidencePath, createOwnedNextApp } from '../src/test/inte
 import { assignOwnedManagerCompanyAccess, grantOwnedManagerWorkforcePermission, seedOwnedApp, seedOwnedScenario, setOwnedEmployeeRole, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
 import { createOwnedSmtp } from '../src/test/integration/owned-smtp';
 import { fixtureProof } from '../src/test/integration/shift-change-api';
+import { startCollabHttps } from './ui-checks/collab-https.mts';
 import { seedCollabPageData, seedScopedManagerCases } from './ui-checks/collab-data.mts';
 
 const bin = process.env.NEVORA_TEST_PG_BIN;
@@ -51,6 +52,7 @@ function pg(command: string, args: string[]) {
 
 let app: Awaited<ReturnType<typeof createOwnedNextApp>> | undefined;
 let startupAttempted = false;
+let https: Awaited<ReturnType<typeof startCollabHttps>> | undefined;
 let smtp: Awaited<ReturnType<typeof createOwnedSmtp>> | undefined;
 try {
   await writeFile(passwordFile, password + '\n', { mode: 0o600 });
@@ -66,12 +68,13 @@ try {
   if (collab && !production) {
     smtp = await createOwnedSmtp(body => writeFileSync(join(evidence, 'fictional-signup.eml'), body, { mode: 0o600 }));
   }
+  if (production) https = await startCollabHttps(scratch);
   app = await createOwnedNextApp(evidence, {
     signal: stop.signal, ownerAdvisorEnabled: true, managerAdvisorEnabled: true,
     ownerAdvisorKnowledgeEnabled: true, ownerAdvisorWeeklyEnabled: true,
     ownerAdvisorBusinessImportsEnabled: true, ownerAdvisorBusinessRetrievalEnabled: false,
     ...(collab ? {
-      production, clockerPinKey: randomBytes(32).toString('hex'), clockerPunchEnabled: true,
+      production, portalHttpsOrigin: https?.origin, clockerPinKey: randomBytes(32).toString('hex'), clockerPunchEnabled: true,
       mobileAccessEnabled: true, mobileSupportEnabled: true, nativeAlertsEnabled: true,
       passkeysEnabled: true, deviceAlertsEnabled: true, payrollEnabled: true, signupSmtpPort: smtp?.port,
       initializeDatabase: async ({ executor }) => {
@@ -82,6 +85,8 @@ try {
       },
     } : {}),
   });
+  https?.forwardTo(app.url);
+  const portalUrl = https?.origin ?? app.url;
   const { executor } = app.database;
   await seedOwnedApp(executor);
   const scenario = await seedOwnedScenario(executor, 'RONDO', 0);
@@ -119,17 +124,17 @@ try {
     const pages = await seedCollabPageData(executor, owner, week);
     const scopedManager = await seedScopedManagerCases(executor, owner);
     const checkpoint = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-    await writeFile(join(evidence, 'runtime.pending.json'), JSON.stringify({ url: app.url, checkpoint, ...scenario, profiles, pages, scopedManager, production }, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
+    await writeFile(join(evidence, 'runtime.pending.json'), JSON.stringify({ url: portalUrl, checkpoint, ...scenario, profiles, pages, scopedManager, production }, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
     await rename(join(evidence, 'runtime.pending.json'), join(evidence, 'runtime.json'));
   }
 
-  console.log((collab ? 'Collab QA sandbox ' : 'Rondo sandbox ') + app.url);
+  console.log((collab ? 'Collab QA sandbox ' : 'Rondo sandbox ') + portalUrl);
   console.log('Fictional sign-in IDs ' + (collab ? Object.values(profiles).join(', ') : 'QAOWNER, QARONDOMANAGER') + '. Read TEST_PASSWORD in src/test/integration/owned-app-fixture.ts.');
   console.log('Sample scheduled week ' + week + '. Ctrl-C stops both processes.');
   if (!stop.signal.aborted) await new Promise<void>(resolve => stop.signal.addEventListener('abort', () => resolve(), { once: true }));
 } finally {
   try {
-    await Promise.all([app?.close(), smtp?.close()]);
+    await Promise.all([app?.close(), smtp?.close(), https?.close()]);
   } finally {
     delete process.env.FUEL_TEST_DATABASE_URL;
     delete process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN;

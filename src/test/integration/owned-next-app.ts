@@ -180,7 +180,7 @@ const ownedProductionTenantStub = "\nexport function getTenantRuntimeDb(_role: '
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { production?: boolean; centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; managerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?:boolean; ownerAdvisorKnowledgeEnabled?:boolean; ownerAdvisorBusinessImportsEnabled?:boolean; ownerAdvisorBusinessRetrievalEnabled?:boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; signupSmtpPort?: number; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { production?: boolean; portalHttpsOrigin?: string; centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; managerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?:boolean; ownerAdvisorKnowledgeEnabled?:boolean; ownerAdvisorBusinessImportsEnabled?:boolean; ownerAdvisorBusinessRetrievalEnabled?:boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; signupSmtpPort?: number; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   const isolatedEnvironment=ownedIsolatedEnvironment(options.isolatedWorkspaces);
   if(options.centralBillingApiOrigin){const api=new URL(options.centralBillingApiOrigin);if(api.origin!==options.centralBillingApiOrigin||api.protocol!=='http:'||!['127.0.0.1','localhost'].includes(api.hostname)||!api.port||api.username||api.password)throw Error('Owned billing UI requires an explicit loopback API');}
   if(options.isolatedWorkspaces){if(options.emptyDatabase!==true||options.commerceRecoveryEnabled)throw Error('Owned isolated admission requires empty unused fallback and explicit commerce transport');await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);}
@@ -200,6 +200,8 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
   // eligible for an exact-SHA mirror; a clean tracked status alone is insufficient.
   const files = trackedApplicationFiles(source);
   const production = ownedProductionRequested(options.production);
+  if (options.portalHttpsOrigin !== undefined && (!production || !/^https:\/\/127\.0\.0\.1:\d+$/.test(options.portalHttpsOrigin)
+      || new URL(options.portalHttpsOrigin).origin !== options.portalHttpsOrigin)) throw Error('Expected an owned production HTTPS origin');
   if (production && (options.isolatedWorkspaces || options.pinDevTypeReferences)) throw Error('Owned production runtime supports neither isolated workspaces nor dev type references');
   if (options.signupSmtpPort !== undefined) {
     validateOwnedMailOptions({ recoverySmtpPort: options.signupSmtpPort });
@@ -337,6 +339,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       ...ownedMailEnvironment(url,options),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       ...ownedDeviceEnvironment(url,options.deviceAlertsEnabled),
+      ...(options.portalHttpsOrigin ? {FUEL_PORTAL_ORIGIN:options.portalHttpsOrigin} : {}),
       ...(options.signupSmtpPort !== undefined ? {
         NEVORA_ONBOARDING_ENABLED: 'true', NEVORA_ONBOARDING_ENVIRONMENT: 'test',
         NEVORA_ONBOARDING_EMAIL_ENABLED: 'true', NEVORA_ONBOARDING_PROVIDER_ENABLED: 'false',

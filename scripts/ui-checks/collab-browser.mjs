@@ -19,7 +19,8 @@ const inventoryEnabled = inventoryOnly || options.includes('--inventory');
 assert.ok(evidence && isAbsolute(evidence), 'Pass the absolute evidence directory of the running collab sandbox.');
 const runtime = JSON.parse(await readFile(join(evidence, 'runtime.json'), 'utf8'));
 const { checkpoint, week, actors, profiles } = runtime;
-assert.match(runtime.url, /^http:\/\/127\.0\.0\.1:[0-9]+$/);
+assert.match(runtime.url, runtime.production
+  ? /^https:\/\/127\.0\.0\.1:[0-9]+$/ : /^http:\/\/127\.0\.0\.1:[0-9]+$/);
 const url = runtime.url;
 assert.equal(checkpoint, execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), 'Use the checkout that started the sandbox.');
 
@@ -37,7 +38,7 @@ function record(id, detail, route) {
 }
 
 async function pageFor(viewport, permissions = [], userAgent, origin = url) {
-  const context = await browser.newContext({ viewport, permissions, userAgent, serviceWorkers: 'block' });
+  const context = await browser.newContext({ viewport, permissions, userAgent, ignoreHTTPSErrors: runtime.production === true, serviceWorkers: 'block' });
   await context.route('**/*', route => {
     const target = new URL(route.request().url());
     return target.origin === origin || target.protocol === 'blob:' ? route.continue() : route.abort();
@@ -152,7 +153,7 @@ async function checkPriority() {
   }
 }
 
-const inventoryOrigin = url.replace('127.0.0.1', 'localhost');
+const inventoryOrigin = runtime.production ? url : url.replace('127.0.0.1', 'localhost');
 const scanPage = viewport => pageFor(viewport, [], undefined, inventoryOrigin);
 const scanLogin = (id, viewport, userAgent) => login(id, viewport, userAgent, inventoryOrigin);
 const recordInventory = (id, detail) => {
