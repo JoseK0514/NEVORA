@@ -185,30 +185,38 @@ export default async function SchedulePage({
           </ActionMenu>;
       const scopedTodayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
       const marketplace = (await currentPresentation()).modules.marketplace;
+      // As Elena's: options that aren't the page's one action sit under "…".
+      const scopedMore = (b: boolean) => marketplace ? <ActionMenu id={b ? "b-scoped-more" : "scoped-more"} label="More" title="Schedule options" ariaLabel="More schedule actions"
+        triggerClassName={b ? "b-ib b-glass" : "c-icon-btn c-sched-more"} triggerContent={<DotsThreeIcon size={20} weight="bold" className={b ? undefined : "c-ic"} aria-hidden="true" />}>
+        <div className="c-menu-card"><Link className="nevora-action-menu-item" href="/app/exchange/open-shifts"><strong>Posted open shifts</strong></Link></div>
+      </ActionMenu> : null;
       return withRepair(<ScopedReadFrame observation={scopedObservation(source)}><CorpPage className="c-sched c-page--wide" labelledBy="schedule-title">
         <CorpTitle id="schedule-title" title="Schedule"
           actions={<>
             {locationControl(false)}
             <span className="c-sched-actions">
+              {scopedMore(false)}
               {scopedPublish ? <CorpButtonLink href={scopedPublish} size="sm" kind="secondary">Publish</CorpButtonLink> : null}
               <CorpButtonLink href={scopedAdd} size="sm" aria-label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</CorpButtonLink>
             </span>
           </>}
           sub={<><span className="c-sched-sub__long">{scopedTodayLong}</span><span className="c-sched-sub__short">{new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`))}</span></>} />
+        {/* As on the company page: the print title (and the first block under the title on desktop, so the roster keeps its
+          place under the week stepper instead of being lifted into the band). */}
+        <p className="mws-print-title" aria-hidden="true">{workspace.name} · {formatWeekRange(weekStart)} · {placeName} · Times in {workspace.timeZone.replaceAll("_", " ")}</p>
         <ManagerWeeklyRoster key={`${weekStart}:${data.selectedLocationId ?? "all"}`} employees={scopedRoster} dates={scopedDates} today={today} timeZone={workspace.timeZone}
           locationId={data.selectedLocationId ?? one?.id} openShifts={scopedOpen} absences={scopedAbsences}
           corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${addDays(weekStart, -7)}${locQuery}`, nextHref: `/app/schedule?week=${addDays(weekStart, 7)}${locQuery}`,
             status: scopedStateCorp, addShiftHref: scopedAdd, todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locQuery}`, observedAt: observedAt.toISOString() }}
           b={{ sub: scopedTodayLong, weekState: scopedState, toPlan: [],
-            actions: scopedPublish ? <BButtonLink href={scopedPublish} kind="white" label={`Publish, ${formatWeekRange(weekStart)}`}>Publish</BButtonLink>
-              : <BButtonLink href={scopedAdd} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>,
+            actions: <>{scopedMore(true)}{scopedPublish ? <BButtonLink href={scopedPublish} kind="white" label={`Publish, ${formatWeekRange(weekStart)}`}>Publish</BButtonLink>
+              : <BButtonLink href={scopedAdd} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>}</>,
             location: locationControl(true),
             notes: <>{repairNote("b")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>{openShifts === null ? <CorpNote>Couldn’t check open shifts. Reload to try again.</CorpNote> : null}</> }}
           notices={<>
             {repairNote("corp")}
             <ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>
             {openShifts === null ? <CorpNote>Couldn’t check open shifts. Reload to try again.</CorpNote> : null}
-            {marketplace ? <CorpNote><Link href="/app/exchange/open-shifts">Posted open shifts</Link></CorpNote> : null}
           </>} />
       </CorpPage></ScopedReadFrame>);
     }
