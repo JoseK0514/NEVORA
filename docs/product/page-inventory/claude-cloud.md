@@ -12,15 +12,16 @@ git switch --detach FETCH_HEAD
 git rev-parse HEAD
 npm ci --ignore-scripts --include=dev
 npm --prefix tools/ci-browser-runtime ci --ignore-scripts
-node tools/ci-browser-runtime/node_modules/playwright/cli.js install chromium
+node tools/ci-browser-runtime/node_modules/playwright/cli.js install chromium webkit
 # Set this if pg_config points to client-only binaries or is missing.
 # export NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin
-bash scripts/ui-checks/collab-qa.sh --inventory --screenshots
+bash scripts/ui-checks/collab-qa.sh --production --full
 ```
 
 Run one suite at a time. On Linux, install the Playwright Chromium OS dependencies if the engine reports a missing library. The isolated launcher requires an environment without `DATABASE_URL` and `FUEL_TEST_DATABASE_URL`. The app listens on an ephemeral loopback port with its own fictional workspace. The browser tests deny other origins. The launcher logs the evidence directory and cleans up its app and database on exit.
 
-- Run `bash scripts/ui-checks/collab-qa.sh` for the focused browser workflow.
+- Run `bash scripts/ui-checks/collab-qa.sh --production --full` for the production-build workspace at phone and desktop widths, followed by the isolated central billing and Step 4 lifecycle suites. The command retains evidence for each suite and returns a failure if a workflow fails.
+- Run `bash scripts/ui-checks/collab-qa.sh --production --inventory --screenshots` for the production-build workspace and browser inventory alone. The browser driver maps the fictional HTTPS hostname to the workspace’s loopback listener and pins the temporary certificate. It blocks DNS for every other hostname in production-test mode.
 - Run `bash scripts/ui-checks/collab-qa.sh --production --scoped-manager` to check B4 and D2 with the Next.js production build and server in a disposable workspace. OpenSSL generates a temporary loopback certificate for the real HTTPS session. It verifies both screens at phone and desktop widths, tests the server feeds against two locations, and makes a fictional decision through the real review UI. Drop `--production` for a faster development-mode run.
 - Run `bash scripts/ui-checks/collab-qa.sh --serve` for manual navigation. Keep that process running while a second shell runs Playwright. Read its `runtime.json` for the app URL, current sample week, real fixture record IDs, and commit SHA. Stop it with Ctrl+C.
 - Run `bash scripts/ui-checks/collab-qa.sh --inventory-only --screenshots` for a route reconnaissance run without changing the kiosk punch state. The full inventory run adds the Clocker screen checks and their evidence.
@@ -39,7 +40,23 @@ The fictional password is the `TEST_PASSWORD` constant in `src/test/integration/
 
 - **Rondo H1.** Open `/app/ai-manager` as each Manager and select **How many hours are scheduled?**. The company-wide Manager can select both locations. The location Manager gets only Main Office. Preset answers use the fictional schedule. Model-backed and custom questions depend on a provider.
 - **Find Cover C5 and Review replacement C3.** Sign in as the location Manager. Open Schedule for the week in `runtime.json` and choose a **Find cover** link in **Open shifts**. The script selects a real gap with an eligible candidate and follows **Review replacement**. It also checks that a direct request for West Office returns the scope notice.
-- **Clocker K8 and K9.** The script uses the Owner's normal settings to connect fictional tablets and set a synthetic PIN. It opens the photo controls and preview using Chromium's fake camera and a test-only policy reply. It stops before upload. A real punch in the disposable database plus an interrupted first request takes the other tablet through **Check if it saved** into **Review current status**. The owner photo settings and review list are J15 and J16.
+- **Clocker K8, K9 and J16.** In production-build mode the fixture connects fictional tablets, records a punch, tests the interrupted-request recovery screen, and uses Chromium’s fake camera with the normal private photo policy and upload endpoints. The Owner opens the stored image in Photo review. The photo lifecycle is configured only inside this disposable test workspace.
+- **Lead and Employee C14–C15.** Open a scheduled shift, then Swap, Offer for cover, and Can’t work. The browser tests all three sheets and Escape dismissal at phone and desktop widths.
+- **Passkeys I5.** The production browser fixture uses Chromium’s virtual authenticator against the same authenticated enrollment and sign-in endpoints used by the app.
+- **Alerts I4 and L1.** The browser suite exercises enrollment and revocation with a fictional push subscription against the actual server endpoints. Native Alerts uses a simulated phone bridge to show off, checking, on, and blocked. External delivery stays off.
+
+For free navigation in the production build, run `bash scripts/ui-checks/collab-qa.sh --production --serve`. Build the Chromium launch options from the printed evidence directory’s `runtime.json`.
+
+```js
+const { url, browserHttps } = runtime;
+const browser = await chromium.launch({ args: [
+  '--host-resolver-rules=MAP ' + new URL(url).hostname
+    + ' 127.0.0.1:' + browserHttps.proxyPort + ', MAP * ~NOTFOUND',
+  '--ignore-certificate-errors-spki-list=' + browserHttps.spki,
+] });
+```
+
+Navigate to `url + '/login'` with one of the fictional profiles above.
 
 ## Read the inventory evidence
 
@@ -49,7 +66,7 @@ Things to Do (B4) shows coverage, clock-ins and reviewable requests for the Mana
 
 ### Signup and verification
 
-For A8 and A9, use `localhost` with the same port as the app URL. The private signup form accepts `qa-signup@example.invalid` and delivers to the fixture's local SMTP inbox. Read `fictional-signup.eml` from the evidence directory for the confirmation link. The browser check follows that link to the verified business form. It uses a synthetic activation link to capture A10 as a form, then leaves it unsubmitted. The registration and owner-activation suites exercise the corresponding isolated writes.
+The private signup form accepts `qa-signup@example.invalid` and sends mail to the fixture’s loopback inbox. The production-build runner uses authenticated TLS for that connection. The browser follows the received link to the verified business form. It opens A10 with a synthetic activation link. The separately owned registration and owner-activation suites cover activation writes.
 
 ### Separate environments in the same checkout
 
@@ -58,7 +75,7 @@ For A8 and A9, use `localhost` with the same port as the app URL. The private si
 | A15–A19 Central billing | Use the central billing browser suite below. It opens all five routes and uses a local billing service and fictional checkout transport. |
 | F3 Staff List Import | The Step 4 local lifecycle suite opens the Owner import form in a routed workspace. The `people` suite covers CSV validation and import. The single-workspace runtime shows the unavailable notice. |
 | J18 Owner Billing and K15 Clocker Paused | Use the Step 4 local lifecycle browser suite below. It provides an isolated workspace and transitions the fictional account to restricted billing. |
-| J16 populated photo review, live photo storage and facial verification | The main fixture opens the Owner settings and empty review list. Server-backed photo workflows need the isolated photo runtime. The kiosk camera and preview run offline in the main check. |
+| Facial verification, provider-backed Rondo and native delivery | The regular browser suite uses fictional input and keeps external delivery disabled. Use the dedicated isolated tests for face matching, model-provider contracts, and notification delivery. |
 
 ```bash
 node tools/ci-browser-runtime/node_modules/playwright/cli.js install chromium webkit

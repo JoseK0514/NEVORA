@@ -12,6 +12,7 @@ import { checkScopedManager } from './collab-scoped-manager.mjs';
 import { checkSignup } from './collab-signup.mjs';
 import { checkShiftSheets } from './collab-shift-sheets.mjs';
 import { checkBrowserPasskey } from './collab-passkey.mjs';
+import { checkBrowserDeviceAlerts } from './collab-device-alerts.mjs';
 
 const [evidence, ...options] = process.argv.slice(2);
 assert.ok(options.every(option => ['--inventory', '--inventory-only', '--screenshots', '--signup-only', '--scoped-manager'].includes(option)), 'Unknown collab browser option.');
@@ -215,11 +216,13 @@ try {
       inventoryResults.push({ id: 'L1', observed: 'error', detail: String(error.message).split('\n')[0] });
     }
     if (runtime.production && !inventoryOnly) {
-      try {
-        await checkBrowserPasskey({ url, login, employee: profiles.E, desktop, evidence,
-          record: (id, detail) => inventoryResults.push({ id, detail, profile: 'E', observed: 'asserted workflow' }) });
-      } catch (error) {
-        workflowErrors.push(error);
+      for (const check of [checkBrowserPasskey, checkBrowserDeviceAlerts]) {
+        try {
+          await check({ url, login, employee: profiles.E, desktop, phone, evidence,
+            record: (id, detail) => inventoryResults.push({ id, detail, profile: 'E', observed: 'asserted workflow' }) });
+        } catch (error) {
+          workflowErrors.push(error);
+        }
       }
     }
     for (const viewport of [phone, desktop]) {
@@ -245,6 +248,17 @@ try {
         login: id => scanLogin(id, viewport), priority: results, screenshots: options.includes('--screenshots'),
       });
       await finishInventory({ inventory, priority: results, extra, evidence: directory, checkpoint });
+      if (runtime.production && !inventoryOnly) {
+        const gaps = inventory.results.filter(row =>
+          ['error', 'sign-in', 'restricted', 'inspect', 'manual workflow'].includes(row.observed) ||
+          (row.observed.startsWith('HTTP ') && !/^M[345]$/.test(row.id)) ||
+          (row.observed === 'notice' && row.id !== 'B10') ||
+          (row.observed === 'redirect' && !['A1', 'I2', 'I4', 'I5'].includes(row.id)));
+        if (gaps.length) {
+          workflowErrors.push(new Error(viewport.width + ' px inventory: ' +
+            gaps.map(row => row.profile + ' ' + row.id + ' ' + row.observed).join(', ')));
+        }
+      }
     }
   }
   if (workflowErrors.length) throw new AggregateError(workflowErrors, 'One or more collab browser workflows failed. See the retained evidence.');
