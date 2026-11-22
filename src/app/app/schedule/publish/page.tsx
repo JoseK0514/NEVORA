@@ -27,6 +27,7 @@ import { publishDraftsAction } from "./actions";
 import { publishScheduleChangesAction } from "../actions";
 import { readManagerSchedulePublish, readSchedulePendingChanges } from "@/lib/company-access/operational-read.server";
 import type { SchedulePendingChange } from "@/lib/scheduling/pending-changes";
+import { UnconfirmedActionForm } from "@/components/unconfirmed-action-form";
 import "@/components/schedule-shift-form.css";
 import "./publish.css";
 
@@ -175,15 +176,15 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
               <p className="c-publish__lead">Hour counts cover the business week{owner ? " across locations" : " at the reviewed location"}. Publishing makes these schedules visible to your team.</p>
             </CorpBody>
           </CorpCard> : null}
-          {owner && (!drafts.length && pending?.hasPendingChanges ? pending.canPublish ? <form action={publishScheduleChangesAction} className="c-publish__go">
+          {owner && (!drafts.length && pending?.hasPendingChanges ? pending.canPublish ? <UnconfirmedActionForm action={publishScheduleChangesAction} className="c-publish__go" unconfirmed={{ title: "Publishing could not be confirmed. The changes may already be published; check the schedule before you publish again.", check: { label: "Check the schedule", href: scheduleHref } }}>
             <input type="hidden" name="weekStart" value={weekStart} />
             {params.review === "changes" && review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
             <CorpNote icon={<BellIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true" />}>Each person with a change is notified once when you publish.</CorpNote>
             <div className="c-publish__acts">{review.length ? <Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet c-publish__back" href={scheduleHref}>Back to schedule</Link> : null}
               <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">{`Publish changes${params.review === "changes" && review.length ? " anyway" : ""}`}</EmployeeSubmitButton>
             </div>
-          </form> : <CorpNote>An Owner or company-wide Manager publishes these changes.</CorpNote>
-          : drafts.length ? <form action={publishDraftsAction} className="c-publish__go">
+          </UnconfirmedActionForm> : <CorpNote>An Owner or company-wide Manager publishes these changes.</CorpNote>
+          : drafts.length ? <UnconfirmedActionForm action={publishDraftsAction} className="c-publish__go" unconfirmed={{ title: "Publishing could not be confirmed. The schedules may already be published; check the schedule before you publish again.", check: { label: "Check the schedule", href: scheduleHref } }}>
             <input type="hidden" name="weekStart" value={weekStart} />
             {drafts.map(location => <input key={location.id} type="hidden" name="locationId" value={location.id} />)}
             {review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
@@ -193,7 +194,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
               {`Publish ${drafts.length === 1 ? drafts[0].shortName : plural(drafts.length, "draft", "drafts")}${pending?.hasPendingChanges ? " and changes" : ""}${review.length ? " anyway" : ""}`}
             </EmployeeSubmitButton>
             </div>
-          </form> : <CorpNote icon={allPublished ? <BDoneMark still /> : <CheckCircleIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>{locations.some(location => location.status === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>)}
+          </UnconfirmedActionForm> : <CorpNote icon={allPublished ? <BDoneMark still /> : <CheckCircleIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>{locations.some(location => location.status === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>)}
         </div>
       </div>
     </CorpPage>

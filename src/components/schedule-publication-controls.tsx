@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { publishScheduleAction } from "@/app/app/schedule/actions";
 import { EmployeeSubmitButton } from "./employee-submit-button";
+import { UnconfirmedActionForm } from "./unconfirmed-action-form";
 import type { getSchedulePublishReadiness } from "@/lib/data/schedule-publication-review";
 
 type Readiness = Awaited<ReturnType<typeof getSchedulePublishReadiness>>;
@@ -40,14 +41,16 @@ export function SchedulePublicationControls({weekStart,locations,review,held}:{
           </ul>
           <p>Employee hour counts cover the business week across locations. Publishing makes this location’s schedule visible to employees.</p>
         </div>:null}
-        <form action={publishScheduleAction}>
+        <UnconfirmedActionForm action={publishScheduleAction} unconfirmed={{
+          title: `Publishing ${location.shortName} could not be confirmed. It may already be published; check the schedule before you publish again.`,
+          check: { label: "Check the schedule", href: `/app/schedule?week=${encodeURIComponent(weekStart)}&location=${encodeURIComponent(location.id)}` } }}>
           <input type="hidden" name="weekStart" value={weekStart}/>
           <input type="hidden" name="locationId" value={location.id}/>
           {readiness?.hasWarnings ? <input type="hidden" name="confirmWarnings" value="yes"/>:null}
           <EmployeeSubmitButton className="button secondary compact-button" pendingText="Publishing…">
             Publish {location.shortName}{readiness?.hasWarnings ? " anyway":""}
           </EmployeeSubmitButton>
-        </form>
+        </UnconfirmedActionForm>
         {readiness?.hasWarnings ? <Link className="button ghost compact-button" href={`/app/schedule?week=${encodeURIComponent(weekStart)}&location=${encodeURIComponent(location.id)}`}>Return to draft</Link>:null}
       </div>;
     })}
