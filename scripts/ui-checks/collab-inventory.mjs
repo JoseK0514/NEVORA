@@ -76,7 +76,7 @@ function concreteRoutes(row, profile, runtime, coverage) {
   }
 }
 
-async function visit(page, origin, route, row) {
+export async function visitInventoryRoute(page, origin, route, row) {
   let response;
   if (row.id === 'C3') {
     // Review links are bound to the signed-in actor. Reopen the same coverage
@@ -110,8 +110,10 @@ async function visit(page, origin, route, row) {
   if (row.id === 'H5') {
     await page.getByRole('heading', { name: 'Hours worked', exact: true }).waitFor({ timeout: 12000 }).catch(() => {});
   }
-  const pending = page.locator('.c-route-state--checking').filter({ has: page.locator('[data-checking]') });
-  await pending.first().waitFor({ state: 'detached', timeout: 12_000 }).catch(() => {});
+  // The shared route wrapper also styles finished notices and 404s. Wait
+  // for either active access-check presentation or a visible loading card.
+  const pending = page.locator('main :is(.c-route-state--checking:has([data-checking]), .c-route-state--checking.c-skel, .b-statecard[data-kind="loading"]):visible');
+  await pending.first().waitFor({ state: 'hidden', timeout: 12_000 }).catch(() => {});
   const pathname = new URL(page.url()).pathname;
   const final = page.url().slice(origin.length);
   const http = response?.status() ?? null;
@@ -124,7 +126,7 @@ async function visit(page, origin, route, row) {
   else if (pathname !== new URL(route, origin).pathname) observed = 'redirect';
   else if (http >= 400 && row.id !== 'B11') observed = 'HTTP ' + http;
   else if (notice || heading.some(text => /^Company-wide access needed$|^Page unavailable$/.test(text))) observed = 'notice';
-  else if (!heading.length || await pending.count() || heading.some(text => /Loading…|Still checking your access/i.test(text))) observed = 'inspect';
+  else if (!heading.length || await pending.count() || heading.some(text => /Loading…|Still checking your access|Couldn.t check your access|View paused/i.test(text))) observed = 'inspect';
   return { route, final, http, observed, heading };
 }
 
@@ -170,7 +172,7 @@ export async function scanInventory({ evidence, origin, runtime, pageFor, login,
           const isolated = ['I2', 'I4', 'I5'].includes(row.id);
           const routePage = isolated ? await page.context().newPage() : page;
           try {
-            const rendered = await visit(routePage, origin, route, { ...row, profile });
+            const rendered = await visitInventoryRoute(routePage, origin, route, { ...row, profile });
             const result = { ...base, ...rendered };
             if (screenshots && rendered.observed !== 'sign-in') {
               result.screenshot = join('inventory', [profile, row.id, index].join('-') + '.png');
