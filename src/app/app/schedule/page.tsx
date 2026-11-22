@@ -7,7 +7,6 @@ import {scopedObservation} from '@/lib/company-access/observation';
 import {isOperationalAuthorizationError,readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {listWorkforcePermissions} from '@/lib/workforce/authority.server';
 import {readOperationalSchedule,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
-import {ScopedScheduleB} from '@/components/company-access/scoped-b';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {ScheduleCopyForm} from '@/components/schedule-copy-form';
@@ -146,7 +145,70 @@ export default async function SchedulePage({
         readScopedCoverageGaps(proof,weekStart,source.data.selectedLocationId ?? undefined),
       ]);
       const openShifts = coverage.state === 'ready' && coverage.authority === source.authority ? coverage.data : null;
-      return withRepair(<ScopedScheduleB openShifts={openShifts} postedHref={(await currentPresentation()).modules.marketplace ? "/app/exchange/open-shifts" : undefined} publishHref={canPublish?`/app/schedule/publish?week=${encodeURIComponent(weekStart)}`:undefined} data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
+      // Phase 2 direction A (Jose, Nov 22, 2026: "the same screens other Managers have, limited to one location"): the
+      // location Manager gets the Direction B Schedule itself (ManagerWeeklyRoster: the band, the glass week, the day card
+      // with avatars and live states), built from the scoped read. Same reads and links as before; nothing company-wide.
+      const data = source.data;
+      const scopedDates = weekDates(weekStart);
+      const shortName = (id: string) => { const l = data.locations.find(x => x.id === id); return l ? (l.shortName || l.name) : ""; };
+      // Everyone on the location's roster, plus anyone holding a shift here who isn't on it (a recorded shift always shows).
+      const people = [...data.roster.map(person => ({ id: person.id, name: `${person.firstName} ${person.lastName}`, role: person.role as string })),
+        ...[...new Map(data.shifts.filter(shift => !data.roster.some(person => person.id === shift.employeeId)).map(shift => [shift.employeeId, { id: shift.employeeId, name: shift.employeeName, role: "EMPLOYEE" }])).values()]];
+      const scopedRoster = people.map(person => ({ ...person,
+        shifts: data.shifts.filter(shift => shift.employeeId === person.id).map(shift => ({ id: shift.id, date: shift.date, startTime: shift.startTime, endTime: shift.endTime,
+          location: shortName(shift.locationId), position: shift.positionName, status: shift.scheduleStatus, lead: shift.isDesignatedLead })) }));
+      const scopedOpen: RosterOpenShift[] = (openShifts ?? []).flatMap(item => {
+        const link = new URL(item.href, "https://nevora.invalid");
+        const date = link.searchParams.get("date") ?? "", startTime = link.searchParams.get("start") ?? "", endTime = link.searchParams.get("end") ?? "";
+        if (!scopedDates.includes(date) || !startTime || !endTime) return [];
+        return [{ id: item.id, date, startTime, endTime, location: shortName(link.searchParams.get("locationId") ?? ""), href: item.href }];
+      });
+      const one = data.locations.length === 1 ? data.locations[0] : null;
+      const selected = data.selectedLocationId ? data.locations.find(l => l.id === data.selectedLocationId) ?? null : one;
+      const placeName = selected ? (selected.shortName || selected.name) : "All your locations";
+      const locQuery = data.selectedLocationId ? `&location=${encodeURIComponent(data.selectedLocationId)}` : "";
+      const scopedAdd = `/app/schedule/new?week=${weekStart}${data.selectedLocationId ? `&locationId=${encodeURIComponent(data.selectedLocationId)}` : ""}`;
+      const scopedPublish = canPublish ? `/app/schedule/publish?week=${encodeURIComponent(weekStart)}` : undefined;
+      const drafts = data.shifts.filter(shift => shift.scheduleStatus === "DRAFT").length;
+      const scopedState = !data.shifts.length ? { text: "Not started", tone: "glass" as const } : drafts ? { text: drafts === data.shifts.length ? "Draft" : `${drafts} ${drafts === 1 ? "draft" : "drafts"}`, tone: "due" as const } : { text: "Published", tone: "ok" as const };
+      const scopedStateCorp = scopedState.tone === "due" ? <span className="c-meta c-sched-weekstate" data-tone="amber">{scopedState.text}</span>
+        : scopedState.tone === "ok" ? <span className="c-meta c-sched-weekstate" data-tone="green"><CheckIcon className="c-sched-weekstate__ic" weight="bold" aria-hidden="true" />Published</span>
+        : <span className="c-meta c-sched-weekstate">{scopedState.text}</span>;
+      const locationControl = (b: boolean) => one
+        ? <span className={b ? "b-btn b-btn--glass" : "c-select-btn c-sched-loc"} aria-label={`Location: ${placeName}`}>{b ? <MapPinIcon size={15} weight="bold" aria-hidden="true" /> : null}{placeName}</span>
+        : <ActionMenu id={b ? "b-scoped-location-menu" : "scoped-location-menu"} label="Location" title="Location" ariaLabel={`Location: ${placeName}`} align="end"
+            triggerClassName={b ? "b-btn b-btn--glass" : "c-select-btn c-sched-loc"} triggerContent={<>{b ? <MapPinIcon size={15} weight="bold" aria-hidden="true" /> : null}{placeName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>
+            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=all`}><strong>All your locations</strong></Link>
+            {data.locations.map(l => <Link key={l.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(l.id)}`}><strong>{l.shortName || l.name}</strong></Link>)}
+          </ActionMenu>;
+      const scopedTodayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
+      const marketplace = (await currentPresentation()).modules.marketplace;
+      return withRepair(<ScopedReadFrame observation={scopedObservation(source)}><CorpPage className="c-sched c-page--wide" labelledBy="schedule-title">
+        <CorpTitle id="schedule-title" title="Schedule"
+          actions={<>
+            {locationControl(false)}
+            <span className="c-sched-actions">
+              {scopedPublish ? <CorpButtonLink href={scopedPublish} size="sm" kind="secondary">Publish</CorpButtonLink> : null}
+              <CorpButtonLink href={scopedAdd} size="sm" aria-label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</CorpButtonLink>
+            </span>
+          </>}
+          sub={scopedTodayLong} />
+        <ManagerWeeklyRoster key={`${weekStart}:${data.selectedLocationId ?? "all"}`} employees={scopedRoster} dates={scopedDates} today={today} timeZone={workspace.timeZone}
+          locationId={data.selectedLocationId ?? one?.id} openShifts={scopedOpen}
+          corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${addDays(weekStart, -7)}${locQuery}`, nextHref: `/app/schedule?week=${addDays(weekStart, 7)}${locQuery}`,
+            status: scopedStateCorp, addShiftHref: scopedAdd, todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locQuery}`, observedAt: observedAt.toISOString() }}
+          b={{ sub: scopedTodayLong, coverage: null, weekState: scopedState, toPlan: [],
+            actions: scopedPublish ? <BButtonLink href={scopedPublish} kind="white" label={`Publish, ${formatWeekRange(weekStart)}`}>Publish</BButtonLink>
+              : <BButtonLink href={scopedAdd} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>,
+            location: locationControl(true),
+            notes: <>{repairNote("b")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>{openShifts === null ? <CorpNote>Couldn’t check open shifts. Reload to try again.</CorpNote> : null}</> }}
+          notices={<>
+            {repairNote("corp")}
+            <ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>
+            {openShifts === null ? <CorpNote>Couldn’t check open shifts. Reload to try again.</CorpNote> : null}
+            {marketplace ? <CorpNote><Link href="/app/exchange/open-shifts">Posted open shifts</Link></CorpNote> : null}
+          </>} />
+      </CorpPage></ScopedReadFrame>);
     }
   }
   async function renderSchedule(){
