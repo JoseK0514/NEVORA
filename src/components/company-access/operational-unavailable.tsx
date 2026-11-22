@@ -6,7 +6,7 @@ import {BButtonLink,BState,BStateScreen} from '../owner-b/b-kit';
 
 /** The page's own name for its band when it is closed to this person: "Christmas bonus hours unavailable" is the page
  * "Christmas bonus hours". */
-const pageName=(title:string)=>title.replace(/\s+unavailable$/i,'')||title;
+const pageName=(title:string)=>title.replace(/\s+(?:is\s+)?unavailable$/i,'')||title;
 
 export function OperationalUnavailable({title='Page unavailable',reason,scoped=false,back,closed}:{title?:string;reason:AccessFailure;scoped?:boolean;
  /** SCRUM-215: a page closed because an action grant is missing names that grant and who decides instead. */
