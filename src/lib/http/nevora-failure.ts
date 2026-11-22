@@ -61,10 +61,10 @@ export function announceFailure(code: NevoraFailure | null) {
 /** A protected read's outcome for createPrivateSnapshotController: data to parse, or the reason to show instead. Every
  * recovery that clears data reads as access_denied (the controller clears the snapshot and stops polling); the rest read
  * as read_failed (shown as "couldn't load", never as zero; the controller reads again on its schedule). */
-export async function privateReadBody(response: Response): Promise<{ok: true; body: unknown} | {ok: false; reason: 'access_denied' | 'read_failed'; failure: NevoraFailure | null; denial: Denial | null}> {
+export async function privateReadBody(response: Response, options?: { inlineAccessDenied?: boolean }): Promise<{ok: true; body: unknown} | {ok: false; reason: 'access_denied' | 'read_failed'; failure: NevoraFailure | null; denial: Denial | null}> {
   const failure = nevoraFailure(response);
   if (response.ok) return {ok: true, body: await response.json()};
-  announceFailure(failure);
+  if (failure !== 'access_denied' || !options?.inlineAccessDenied) announceFailure(failure);
   const denial = denialOf(failure, response.status);
   if (failure) return {ok: false, reason: clearsProtectedData(failureRecovery(failure)) ? 'access_denied' : 'read_failed', failure, denial};
   return {ok: false, reason: response.status === 401 || response.status === 403 ? 'access_denied' : 'read_failed', failure: null, denial};

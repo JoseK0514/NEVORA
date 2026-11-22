@@ -61,3 +61,13 @@ it('announces a refusal as not allowed, and other access changes as before',()=>
   expect(NOT_ALLOWED_MESSAGE).toEqual({title:'You don’t have access to this',body:'Ask the Owner if you need it.'});
  }finally{g.window=before;}
 });
+
+it('lets Things to do own its access-denied card while still announcing session failures', async () => {
+ const dispatchEvent=rs.fn();
+ rs.stubGlobal('window',{dispatchEvent});
+ const options={inlineAccessDenied:true};
+ await expect(privateReadBody(response(403,'access_denied'),options)).resolves.toMatchObject({reason:'access_denied',denial:'not_allowed'});
+ expect(dispatchEvent).not.toHaveBeenCalled();
+ await expect(privateReadBody(response(401,'authentication_required'),options)).resolves.toMatchObject({denial:'signed_out'});
+ expect(dispatchEvent).toHaveBeenCalledTimes(1);
+});

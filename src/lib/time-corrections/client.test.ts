@@ -39,10 +39,14 @@ describe('D2 same-operation response recovery',()=>{
 });
 
 it('keeps a missing review grant in both transport responses',async()=>{
+  const dispatchEvent=rs.fn();
+  rs.stubGlobal('window',{dispatchEvent});
   const refusal={state:'unavailable',reason:'permission_required'};
   rs.stubGlobal('fetch',rs.fn().mockImplementation(()=>Response.json(refusal,{
     status:403,headers:{'X-Nevora-Failure':'access_denied'},
   })));
   await expect(fetchManagerTimeCorrections(new AbortController().signal)).resolves.toEqual(refusal);
+  expect(dispatchEvent).not.toHaveBeenCalled();
   await expect(reviewManagerTimeCorrection(review)).resolves.toEqual({...refusal,httpStatus:403});
+  expect(dispatchEvent).toHaveBeenCalledTimes(1);
 });
