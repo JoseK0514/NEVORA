@@ -118,7 +118,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-title h1 { font-size: var(--b-fs-display); line-height: var(--b-lh-display); font-weight: 700; letter-spacing: -0.03em; color: var(--b-on-band); text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title--big h1 { font-size: 34px; line-height: 40px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-eyebrow { font-size: var(--b-fs-body); line-height: 1.25rem; font-weight: 500; color: var(--b-on-band-2); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-sub { margin-top: var(--b-space-2); font-size: 14px; line-height: 19px; color: var(--b-on-band-2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-sub { margin-top: var(--b-space-2); font-size: 0.875rem; line-height: 1.1875rem; color: var(--b-on-band-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title__right { display: flex; gap: var(--b-space-8); align-items: center; flex: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-hrow { display: flex; flex-wrap: wrap; gap: var(--b-space-8); align-items: center; padding: 14px var(--b-space-20) 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-hpad { padding: var(--b-space-16) var(--b-space-20) 0; }
@@ -160,7 +160,7 @@
  * drew 36px), 48px from 768px (the desktop sheets' band actions, 15.5/22). On a phone the pills keep their type and
  * sides: a wider pill pushed Payroll's "Settings" under its title. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-hero :is(.b-btn--white, .b-btn--glass):not(.b-btn--full, .b-btn--big) { min-height: 40px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-btn--glass:not(.b-btn--full, .b-btn--big) { font-size: 14px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-btn--glass:not(.b-btn--full, .b-btn--big) { font-size: 0.875rem; }
 @media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] .b-hero :is(.b-btn--white, .b-btn--glass):not(.b-btn--full, .b-btn--big) { min-height: var(--b-btn-h-band); } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--full { display: flex; width: 100%; min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 16px; line-height: 22px; }
 /* Phase 9: the "big" full-width primary is the ladder's full step (52px, 16/22 600); only the teal one glows. */

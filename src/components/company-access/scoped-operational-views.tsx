@@ -1,8 +1,7 @@
 'use client';
 import Link from 'next/link';
-import {useState,type ReactNode} from 'react';
-import type {OperationalAuthorityView,OperationalDirectoryData,OperationalShiftEditorData} from '@/lib/company-access/model';
-import {employeeInitials,employeeRoleLabel} from '@/lib/employee-display';
+import type {ReactNode} from 'react';
+import type {OperationalAuthorityView,OperationalShiftEditorData} from '@/lib/company-access/model';
 import {formatDayLabel,formatTime} from '@/lib/date-utils';
 import {ManagerClockMonitor} from '@/components/manager-clock-monitor';
 import {NavIcon} from '@/components/nav-icon';
@@ -11,22 +10,6 @@ import {ScopedReadFrame,type ScopedObservation} from './scoped-read-frame';
 import styles from './company-access.module.css';
 import {QuietHeader,QuietPage} from '@/components/quiet/quiet';
 
-
-export function ScopedEmployeeDirectory({data,observation}:{data:Extract<OperationalDirectoryData,{mode:'LOCATIONS'}>;observation:ScopedObservation}){
- return <ScopedDirectory key={observation.authority} data={data} observation={observation}/>;
-}
-function ScopedDirectory({data,observation}:{data:Extract<OperationalDirectoryData,{mode:'LOCATIONS'}>;observation:ScopedObservation}){
- const [query,setQuery]=useState('');const normalized=query.trim().toLocaleLowerCase();
- const people=data.employees.filter(p=>`${p.firstName} ${p.lastName} ${p.id}`.toLocaleLowerCase().includes(normalized));
- return <div className={styles.scopedPage}><header><h1>Team at your locations</h1><p>Review the people eligible at the locations you manage. Contact details and employee changes require company-wide access.</p></header><ScopedReadFrame observation={observation}>
-  <p className="muted">{data.locations.map(l=>l.name).join(' · ')}</p>
-  <label className={styles.search}>Find a team member<input type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search name or employee ID"/></label>
-  <section className={'panel '+styles.stack} aria-label="Team members">
-   <p>{people.length} {people.length===1?'person':'people'} shown in your managed locations</p>
-   {people.length?people.map(person=><article key={person.id} className={styles.rosterRow}><span className={styles.avatar} aria-hidden="true">{employeeInitials(person.firstName,person.lastName)}</span><div><h2>{person.firstName} {person.lastName}</h2><p>{employeeRoleLabel(person.role)} · {person.id}</p><small>{person.locationIds.map(id=>data.locations.find(l=>l.id===id)?.name).filter(Boolean).join(' · ')}</small></div></article>):<div role="status"><h2>{query?'No matching team members':'No team members in this view'}</h2><p>{query?'Try another name or clear the search.':'There are no eligible team members in the current managed-location view.'}</p>{query&&<button className="button secondary" type="button" onClick={()=>setQuery('')}>Clear search</button>}</div>}
-  </section>
- </ScopedReadFrame></div>;
-}
 
 export function ScopedManagementHome({view}:{view:Extract<OperationalAuthorityView,{state:'ready'}>}){
  // v5 (mockup M01 family): a Manager with no assigned access gets one calm Quiet page; same words, same frame.

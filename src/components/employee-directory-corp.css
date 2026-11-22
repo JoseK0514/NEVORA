@@ -21,3 +21,26 @@
   /* Offline, action pills take the one disabled fill (b-foundation.css); this glyph on the band keeps no fill. */
   html body .app-shell[data-nv-b][data-offline] #main-content .b-search > button.b-search__go[type="submit"] { background: none !important; color: inherit !important; }
 }
+
+/* Phase 2 (Nov 22, 2026): a location Manager's place in the Team band, as on their Schedule. One place is a chip, not a
+ * control, so it keeps the default cursor; several places open the location menu. */
+:is(#c-root, html) .c-team .c-team-loc { gap: var(--b-space-8, 8px); font-size: 0.9375rem; line-height: 1.25rem; }
+:is(#c-root, html) .c-team span.c-team-loc, :is(#c-root, html) .app-shell[data-nv-b] .b-team-place { cursor: default; }
+/* Jose (Nov 23, 2026): titles balance their lines; the band's place chip is a 44px target, as tall as the search field's
+ * tap area and the desktop chip. */
+:is(#c-root, html) .c-team--scoped :is(h1, h2, .b-row__tt, .c-row__title) { text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-team--scoped .b-hero .b-title__right .b-btn--glass { min-height: 44px; }
+
+@layer nv-b {
+  /* A location Manager's Team has no Team tools rail, so from 1024px the title row (and its place chip) ends at the People
+   * card's right edge instead of over the empty rail. */
+  @media (min-width: 1024px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-page.c-team.c-team--scoped > :is(header.c-title, form.c-team-search):not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4):not(#f1ml) { grid-column: 1 !important; }
+  }
+  /* Its phone filters are three, not four: one wrapping row of pills sized to their labels, so no slot is left empty and at
+   * 200% text a label never runs past its pill (each pill grows with its text; the 44px hit area stays). */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team.c-team--scoped .b-filters:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#f1ml) { display: flex !important; flex-wrap: wrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team.c-team--scoped .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#f1ml) { flex: 1 1 auto !important; height: auto !important; min-height: var(--b-seg-item-h) !important; line-height: 1.25 !important; padding-left: var(--b-space-12) !important; padding-right: var(--b-space-12) !important; }
+  }
+}

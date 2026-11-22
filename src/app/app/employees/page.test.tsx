@@ -121,15 +121,15 @@ it("distinguishes no matches from a genuinely empty workforce", async () => {
 });
 
 // Server composition tests; actual mounted finite-body behavior is checked separately.
-const operationalPageFixture=rs.hoisted(()=>({denied:false,scoped:false}));
+const operationalPageFixture=rs.hoisted(()=>({denied:false,scoped:false,multi:false}));
 rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
-beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;});
+beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;operationalPageFixture.multi=false;});
 
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 
-it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({}));expect(html).toContain('current company-wide management access');expect(fixture.events).toEqual(['authorize']);expect(html).not.toContain('Active Person');});
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({}));expect(html).toContain('Company-wide access needed');expect(fixture.events).toEqual(['authorize']);expect(html).not.toContain('Active Person');});
 
 it('uses the released minimal directory projection for a location-scoped Manager',async()=>{
  operationalPageFixture.scoped=true;
@@ -138,8 +138,43 @@ it('uses the released minimal directory projection for a location-scoped Manager
  expect(html).not.toContain('href="/app/employees/local"');expect(html).not.toContain('href="/app/employees/new"');
  expect(fixture.events).toEqual(['authorize']);
 });
+
+it('gives a location Manager the Direction B Team with their place in the band and no access paragraph',async()=>{
+ // Phase 2 (Nov 22, 2026): the company Manager's Team (the phone band and the desktop People card) with the scoped people.
+ operationalPageFixture.scoped=true;
+ const html=renderToStaticMarkup(await EmployeesPage());
+ expect(html).toContain('id="b-team-title"');expect(html).toContain('id="team-title"');
+ expect(html).toContain('class="b-search b-glass"');expect(html).toContain('form class="c-team-search"');
+ // One place: a chip in the band on both layouts, no filter.
+  expect(html.match(/placeholder="Search by name"/g)).toHaveLength(2);
+ expect(html.match(/<span class="b-sr">Location: <\/span>Main<\/span>/g)).toHaveLength(1);
+ expect(html.match(/<span class="c-sr">Location: <\/span>Main<\/span>/g)).toHaveLength(1);
+ expect(html).not.toContain('team-location-menu');
+ // The role on the row; the place is said once, in the band; nothing company-wide.
+ // The role only where it differs from Employee (Jose, Nov 23: no repeated wording).
+ expect(html).not.toContain('>EMPLOYEE<');expect(html).not.toMatch(/company-wide|Team at your locations|local<\/|Team tools|\/app\/availability|\/app\/account-recovery/);
+ // The rows aren't links (the person's page needs company-wide access), so they carry no chevron.
+ expect(html).not.toContain('/app/employees/local');expect(html).not.toContain('c-chev');
+});
+
+it('filters a location Manager with several places by place and keeps the place in the search',async()=>{
+ operationalPageFixture.scoped=true;operationalPageFixture.multi=true;
+ const all=renderToStaticMarkup(await EmployeesPage());
+ expect(all).toContain('aria-label="Location: All your locations"');expect(all).toContain('>LEAD<');expect(all).toContain('Local Person');expect(all).toContain('Other Person');
+ // Under all places, each row names its places.
+ expect(all).toContain('Main');expect(all).toContain('East');
+ const east=renderToStaticMarkup(await EmployeesPage({searchParams:Promise.resolve({location:'east'})}));
+ expect(east).toContain('aria-label="Location: East"');expect(east).toContain('Other Person');expect(east).not.toContain('Local Person');
+ expect(east).toContain('<input type="hidden" name="location" value="east"/>');
+ // A place that isn't the Manager's is ignored.
+ const foreign=renderToStaticMarkup(await EmployeesPage({searchParams:Promise.resolve({location:'elsewhere'})}));
+ expect(foreign).toContain('aria-label="Location: All your locations"');expect(foreign).not.toContain('value="elsewhere"');
+ const searched=renderToStaticMarkup(await EmployeesPage({searchParams:Promise.resolve({q:'zz'})}));
+ expect(searched).toContain('No one matches this search.');expect(searched).toContain('Clear search');
+});
 rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalDirectory:async()=>{
  if(operationalPageFixture.denied)return {state:'unavailable',reason:'access_denied'};
+ if(operationalPageFixture.scoped&&operationalPageFixture.multi)return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc','east']},data:{mode:'LOCATIONS',employees:[{id:'local',firstName:'Local',lastName:'Person',role:'EMPLOYEE',locationIds:['loc']},{id:'other',firstName:'Other',lastName:'Person',role:'LEAD',locationIds:['east']}],locations:[{id:'loc',name:'Main',shortName:'Main',active:true},{id:'east',name:'East',shortName:'East',active:true}]}};
  if(operationalPageFixture.scoped)return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{mode:'LOCATIONS',employees:[{id:'local',firstName:'Local',lastName:'Person',role:'EMPLOYEE',locationIds:['loc']}],locations:[{id:'loc',name:'Main',shortName:'Main',active:true}]}};
  const source=await import('@/lib/data/employees');return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{mode:'COMPANY',employees:await source.listEmployees(),locations:await source.listLocations({includeInactive:true})}};
 }}));
