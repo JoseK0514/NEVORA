@@ -1,5 +1,5 @@
 import {afterEach,expect,it,rs} from '@rstest/core';
-import {NEVORA_FAILURES,clearsProtectedData,denialOf,failureRecovery,nevoraFailure,privateReadBody,FAILURE_MESSAGES} from './nevora-failure';
+import {NEVORA_FAILURES,NOT_ALLOWED_MESSAGE,announceFailure,clearsProtectedData,denialOf,failureRecovery,nevoraFailure,privateReadBody,FAILURE_MESSAGES} from './nevora-failure';
 
 const response=(status:number,failure?:string,body:unknown={state:'unavailable'})=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json',...(failure?{'X-Nevora-Failure':failure}:{})}});
 afterEach(()=>{ rs.unstubAllGlobals(); });
@@ -48,4 +48,16 @@ it('a protected read reports the denial with its reason',async()=>{
  expect(await privateReadBody(response(403,'access_denied'))).toMatchObject({ok:false,reason:'access_denied',denial:'not_allowed'});
  expect(await privateReadBody(response(401,'authentication_required'))).toMatchObject({ok:false,reason:'access_denied',denial:'signed_out'});
  expect(await privateReadBody(response(503,'source_unavailable'))).toMatchObject({ok:false,reason:'read_failed',denial:null});
+});
+
+// QA A3-06 recheck (Nov 22, 2026): the page-level notice tells a refusal ("not allowed") from an ended or changed access.
+it('announces a refusal as not allowed, and other access changes as before',()=>{
+ const seen:unknown[]=[];const target=new EventTarget();
+ const g=globalThis as unknown as {window?:unknown};const before=g.window;
+ g.window={dispatchEvent:(e:Event)=>{seen.push((e as CustomEvent).detail);return target.dispatchEvent(e);}};
+ try{
+  announceFailure('access_denied');announceFailure('actor_mismatch');announceFailure('authentication_required');
+  expect(seen).toEqual([{recovery:'access_ended',notAllowed:true},{recovery:'access_ended',notAllowed:false},{recovery:'sign_in',notAllowed:false}]);
+  expect(NOT_ALLOWED_MESSAGE).toEqual({title:'You don’t have access to this',body:'Ask the Owner if you need it.'});
+ }finally{g.window=before;}
 });

@@ -44,6 +44,10 @@ export const FAILURE_MESSAGES: Record<Exclude<FailureRecovery, 'unavailable' | '
   contract: {title: 'That didn’t go through', body: 'Nothing was saved. Reload the page and try again.'},
 };
 
+/** QA A3-06 recheck (Nov 22, 2026): access_denied clears data like an ended access, but the person is signed in and only
+ * lacks a permission. They were told "Your access changed… Ask your manager", wrong on both counts for a Manager. */
+export const NOT_ALLOWED_MESSAGE = {title: 'You don’t have access to this', body: 'Ask the Owner if you need it.'};
+
 export const FAILURE_EVENT = 'nevora:failure';
 
 /** Tell the page-level notice (NevoraFailureNotice) once per failure. It is a hint for the screen, never authority. */
@@ -51,7 +55,7 @@ export function announceFailure(code: NevoraFailure | null) {
   if (!code || typeof window === 'undefined') return;
   const recovery = failureRecovery(code);
   if (recovery === 'unavailable' || recovery === 'reread') return;
-  window.dispatchEvent(new CustomEvent(FAILURE_EVENT, {detail: {recovery}}));
+  window.dispatchEvent(new CustomEvent(FAILURE_EVENT, {detail: {recovery, notAllowed: code === 'access_denied'}}));
 }
 
 /** A protected read's outcome for createPrivateSnapshotController: data to parse, or the reason to show instead. Every

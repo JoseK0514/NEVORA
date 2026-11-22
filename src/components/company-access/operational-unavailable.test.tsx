@@ -17,8 +17,10 @@ it("draws the no-access state as the closed page: the page's name, the reason, o
   expect(html).toContain("<h1>Employees</h1>");
   expect(html).toContain('<div class="b-statecard" data-kind="locked" role="status">');
   expect(html).toContain("Company-wide access needed");
-  expect(html).toContain("This page needs current company-wide management access. An Owner can give it to you. If your access just changed, sign in again.");
-  expect(html).toMatch(/<a href="\/app" class="b-btn b-btn--ghost">Return to Home<\/a><a href="\/login" class="b-closed-also">Sign in again<\/a>/);
+  expect(html).toContain("This page needs company-wide management access. An Owner can give it to you.");
+  // QA A3-06 recheck (Nov 22, 2026): a signed-in Manager who lacks access is not offered Sign in again.
+  expect(html).toMatch(/<a href="\/app" class="b-btn b-btn--ghost">Return to Home<\/a><\/div>/);
+  expect(html).not.toContain("Sign in again");
   expect(html).not.toContain("b-btn--teal");
   expect(html).not.toContain("Refresh current view");
   expect(html).not.toContain("q-unavailable");
