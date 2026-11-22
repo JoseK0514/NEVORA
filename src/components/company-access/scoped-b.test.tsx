@@ -39,7 +39,8 @@ const observation = { authority: "a", observedAt: "2026-11-22T12:00:00Z", validF
 it("Schedule with one place: no location filter or repeated location, drafts marked, hours sorted with idle people counted", () => {
   const html = renderToStaticMarkup(createElement(ScopedScheduleB, { data: data(), observation, openShifts: [gap] }));
   expect(html).not.toContain('name="location"');
-  expect(html).toContain("Condado · ");
+  expect(html).toContain(">Condado<");
+  expect(html).not.toContain("Condado · ");
   expect(html).toContain("Draft");
   expect(html).toContain("Ana Colon");
   expect(html).toContain("1 person has no shifts");

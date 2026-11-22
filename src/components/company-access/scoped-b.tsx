@@ -45,7 +45,7 @@ export function ScopedHomeB({ view, openShifts, scheduleHref }: {
     <ScopedReadFrame observation={view}>
       <CorpTitle id="scoped-home-title" title={place ?? "Home"} sub={place ? undefined : view.locations.map(l => l.shortName || l.name).join(" · ")} />
       <OpenShiftsCard openShifts={openShifts} limit={3} moreHref={scheduleHref + "#open-shifts"} />
-      <CorpCard label="Shortcuts">
+      <CorpCard ariaLabel="Shortcuts">
         <CorpRows label="Shortcuts">
           <li><CorpRow title="Schedule" icon={<CalendarDotsIcon weight="bold" />} href={scheduleHref} /></li>
           <li><CorpRow title="Add shift" icon={<PlusIcon weight="bold" />} href="/app/schedule/new" /></li>
@@ -72,7 +72,7 @@ export function ScopedScheduleB({ data, observation, feedback, publishHref, open
   const working = hours.filter(p => p.scheduledMinutesInScope > 0), idle = hours.length - working.length;
   return <CorpPage className="c-scoped c-scoped-schedule" labelledBy="scoped-schedule-title">
     <ScopedReadFrame observation={observation}>
-      <CorpTitle id="scoped-schedule-title" title="Schedule" sub={[place, formatWeekRange(data.weekStart)].filter(Boolean).join(" · ")}
+      <CorpTitle id="scoped-schedule-title" title="Schedule" sub={place ?? undefined}
         actions={<>
           {publishHref ? <CorpButtonLink href={publishHref} kind="secondary" size="md">Publish</CorpButtonLink> : null}
           <CorpButtonLink href={create} size="md"><PlusIcon className="c-ic" weight="bold" aria-hidden="true" />Add shift</CorpButtonLink>

@@ -69,7 +69,7 @@ export function CoverageReview(props: CoverageReviewProps) {
   else if (props.mode === "scoped-ask") outcome = <Blocked title="Company-wide access needed">Ask the Owner to make this change.</Blocked>;
   else if (props.mode === "scoped-draft") outcome = <p className="c-review__outcome">Add it as a draft shift, then publish when the week is ready.</p>;
 
-  const card = <CorpCard id="replacement-shift" label="Replacement">
+  const card = <CorpCard id="replacement-shift" ariaLabel="Replacement">
     <CorpBody>
       <p className="c-review__swap">
         <span className={props.replacedName ? undefined : "c-review__open"}>{props.replacedName ?? "Open shift"}</span>
