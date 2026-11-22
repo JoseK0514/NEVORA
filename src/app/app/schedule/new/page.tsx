@@ -5,7 +5,8 @@ import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.
 import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
 import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
 import {SelectField} from '@/components/select-field';
-import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {assertOperationalAccess,isOperationalAuthorizationError,readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {assertWorkforcePermission} from '@/lib/workforce/authority.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {listPositions} from "@/lib/data/positions";
@@ -82,6 +83,10 @@ export default async function NewShiftPage({
         </div>
       </div></ScopedReadFrame>;
     const selected=source.data.selected;
+    // QA S-06 (Nov 21, 2026): on a published week this replacement is a published change, which the writer allows only with
+    // company-wide access and Publish schedules here (commitPublishedWeekChange). Ask first, instead of offering the
+    // acknowledgement and then refusing the save.
+    const canSave=selected.publication!=='PUBLISHED'||await mayChangePublished(proof,selected.locator.locationId);
     const { locator } = selected;
     const day = formatDayLabel(locator.date);
     const overnight = locator.endTime === "24:00" || locator.endTime < locator.startTime;
@@ -108,7 +113,8 @@ export default async function NewShiftPage({
         </Facts>
       </Card>
       <Notice tone="info" quiet title={`This fills ${need}.`}>Anything else this shift still needs stays open on the schedule. Coverage is checked again when you save.</Notice>
-      {selected.publication === 'PUBLISHED' ? <>
+      {selected.publication === 'PUBLISHED' && !canSave ? <Notice tone="review" title="Publishing permission needed">This schedule is published, so saving this replacement also publishes it. You don’t have permission to publish schedules here. Ask the Owner to save it, or to give you that permission.</Notice>
+      : selected.publication === 'PUBLISHED' ? <>
         <Notice tone="info" title="Published schedule change">Saving adds this assignment to the published schedule and may notify the affected employee. Notification delivery is not guaranteed by saving.</Notice>
         <div className={consentStyles.consent}>
           <input id="coverage-publication-consent" type="checkbox" name="publicationConsent" required />
@@ -116,7 +122,7 @@ export default async function NewShiftPage({
         </div>
       </> : <Notice tone="info" quiet title="Draft assignment">Saving adds a draft shift. Publish the schedule separately when you are ready to notify employees.</Notice>}
       <FormActions>
-        <PendingButton pending="Saving…" block>Save replacement</PendingButton>
+        {canSave ? <PendingButton pending="Saving…" block>Save replacement</PendingButton> : null}
         <Link className="nv-btn" data-kind="secondary" data-block="true" href={refreshHref}>Back to coverage</Link>
       </FormActions>
     </ConfigurationForm>
@@ -165,4 +171,16 @@ export default async function NewShiftPage({
         startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} hidden={{ weekStart }} cancelHref={cancelHref} blocked={blocked} />
     </CorpPage>
   </ScopedReadFrame>);
+}
+
+/** The writer's rule for changing a published week: company-wide access and Publish schedules at the location. */
+async function mayChangePublished(proof:Awaited<ReturnType<typeof requireSessionMutationProof>>,locationId:string):Promise<boolean>{
+  try{
+    const company=await assertOperationalAccess(proof,{kind:'COMPANY'});
+    await assertWorkforcePermission(proof,'PUBLISH_SCHEDULE',[locationId],undefined,company);
+    return true;
+  }catch(error){
+    if(isOperationalAuthorizationError(error))return false;
+    throw error;
+  }
 }

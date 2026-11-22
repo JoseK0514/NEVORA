@@ -76,12 +76,32 @@ it("an unavailable data source remains an error rather than a stale or fabricate
 });
 
 // Server composition tests; actual mounted finite-body behavior is checked separately.
-const operationalPageFixture=rs.hoisted(()=>({denied:false}));
-rs.mock('@/lib/company-access/operational-scope.server',()=>({readOperationalAuthority:async()=>({state:'ready',scope:{mode:'COMPANY',locationIds:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+const operationalPageFixture=rs.hoisted(()=>({denied:false,publishDenied:false}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({assertOperationalAccess:async()=>({scope:{mode:'COMPANY'}}),isOperationalAuthorizationError:(error:unknown)=>error instanceof Error&&error.message==='operational_authorization',readOperationalAuthority:async()=>({state:'ready',scope:{mode:'COMPANY',locationIds:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
-beforeEach(()=>{operationalPageFixture.denied=false;});
+rs.mock('@/lib/workforce/authority.server',()=>({assertWorkforcePermission:async()=>{if(operationalPageFixture.publishDenied)throw new Error('operational_authorization');}}));
+
+beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.publishDenied=false;});
 
 it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({searchParams:Promise.resolve({review:'retained-review'})}));expect(html).toContain('current company-wide management access');expect(state.read).not.toHaveBeenCalled();expect(html).not.toContain('Taylor Rivera');});
 
 rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalShiftEditor:async()=>{throw Error('Unexpected scoped read in Company fixture');}}));
+
+// QA S-06 (Nov 21, 2026): a Manager without Publish schedules was offered the publish acknowledgement and then refused.
+it('a published week without the publish permission says so up front, with no acknowledgement and no save',async()=>{
+  operationalPageFixture.publishDenied=true;
+  state.read.mockResolvedValue({ ...selected, publication: "PUBLISHED" });
+  const html=renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
+  expect(html).toContain('Publishing permission needed');
+  expect(html).toContain('Ask the Owner to save it, or to give you that permission.');
+  expect(html).not.toContain('coverage-publication-consent');
+  expect(html).not.toContain('Save replacement');
+  expect(html).toContain('Back to coverage');
+});
+it('a draft week needs no publish permission and keeps its save',async()=>{
+  operationalPageFixture.publishDenied=true;
+  const html=renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
+  expect(html).toContain('Save replacement');
+  expect(html).not.toContain('Publishing permission needed');
+});
