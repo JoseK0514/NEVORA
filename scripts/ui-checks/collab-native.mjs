@@ -38,7 +38,7 @@ export async function checkNativeAlerts({ url, login, employee, evidence, record
       scenario = name;
       await page.evaluate(value => sessionStorage.setItem('collab-native-scenario', value), name);
       await page.reload();
-      await page.locator('[data-native-status]').and(page.getByText(title, { exact: true })).waitFor();
+      await page.locator('[data-native-status]').and(page.getByText(title, { exact: true })).filter({ visible: true }).first().waitFor();
       await page.screenshot({ path: join(evidence, 'native-alerts-' + name + '-390.png') });
       record('L1', 'Phone app Alerts ' + name + ' state using a simulated bridge');
     }
