@@ -1,0 +1,33 @@
+/* Copy receipt (Phase 2, queue C8, Nov 22, 2026). Corp/Direction B cards; sizes in rem so 200% text scales. */
+:is(#c-root, html) .c-copy .c-copy__done { display: flex; align-items: center; gap: 12px; }
+:is(#c-root, html) .c-copy .c-copy__done > .b-donemark { flex: none; }
+:is(#c-root, html) .c-copy .c-copy__line { display: flex; flex-direction: column; gap: 2px; min-width: 0; margin: 0; }
+:is(#c-root, html) .c-copy .c-copy__big { font-size: 1.25rem; line-height: 1.625rem; font-weight: 600; color: var(--c-ink); font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-copy .c-copy__sub { font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink2); font-variant-numeric: tabular-nums; }
+
+/* The main action sits under the result, before the lists, so it stays in reach on a phone. */
+:is(#c-root, html) .c-copy .c-copy__action { display: flex; margin: 4px 0; }
+:is(#c-root, html) .c-copy .c-copy__action > .c-btn { width: 100%; text-decoration: none; }
+
+/* One heading per kind of warning or reason, then its shifts. */
+:is(#c-root, html) .c-copy .c-copy__group + .c-copy__group { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-copy .c-copy__kind { display: flex; align-items: flex-start; gap: 8px; margin: 0; padding: 12px 16px 4px; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-copy .c-copy__warn { width: 1.125rem; height: 1.125rem; margin-top: 0.0625rem; flex: none; color: var(--b-amber, #8A4B00); }
+:is(#c-root, html) .c-copy .c-copy__group .c-rows > li:first-child > .c-row { box-shadow: none; }
+:is(#c-root, html) .c-copy .c-copy__group .c-row__title { white-space: normal; }
+:is(#c-root, html) .c-copy .c-copy__group .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; font-variant-numeric: tabular-nums; }
+
+/* Not confirmed: Review schedule, then the retry, stacked on a phone and side by side from 768px. */
+:is(#c-root, html) .c-copy .c-copy__buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+:is(#c-root, html) .c-copy .c-copy__buttons > .c-btn, :is(#c-root, html) .c-copy .c-copy__buttons .c-copy__retry { width: 100%; text-decoration: none; }
+:is(#c-root, html) .c-copy .c-copy__buttons p { margin: 8px 0 0; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-ink2); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-copy .c-copy__ref { padding: 0 16px 16px; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
+:is(#c-root, html) .c-copy .c-copy__ref > summary { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; color: var(--c-ink2); font-weight: 500; }
+:is(#c-root, html) .c-copy .c-copy__ref > summary:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; border-radius: 4px; }
+:is(#c-root, html) .c-copy .c-copy__ref p { margin: 0; overflow-wrap: anywhere; }
+
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-copy .c-copy__action > .c-btn { width: auto; min-width: 160px; }
+  :is(#c-root, html) .c-copy .c-copy__buttons { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+  :is(#c-root, html) .c-copy .c-copy__buttons > .c-btn, :is(#c-root, html) .c-copy .c-copy__buttons .c-copy__retry { width: auto; min-width: 160px; }
+}

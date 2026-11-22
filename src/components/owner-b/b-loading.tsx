@@ -30,7 +30,7 @@ const MANAGEMENT: Entry[] = [
   ["/app/schedule/new", { ...titled, title: "Add shift" }],
   ["/app/schedule/edit", { ...titled, title: "Edit shift" }],
   ["/app/schedule/publish", { ...titled, title: "Build and publish" }],
-  ["/app/schedule/copy-receipt", { ...form, title: "Copy week" }],
+  ["/app/schedule/copy-receipt", { ...form, cards: [{ head: true, stats: 3 }, { head: true, rows: 3 }] }],
   [/^\/app\/schedule\/.+/, form],
   ["/app/schedule", { title: "Schedule", sub: true, strip: true, action: true, band: "strip", frame: "wide", cards: [{ head: true, rows: 6, avatar: true }] }],
   ["/app/timecards/corrections", { ...detail, title: "Time corrections", cards: [{ rows: 4, avatar: true }] }],
