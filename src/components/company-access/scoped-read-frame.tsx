@@ -45,6 +45,14 @@ function refreshPage(router:{replace:(href:string,options?:{scroll?:boolean})=>v
  // newer page arrived, refresh for real.
  if(version)setTimeout(()=>{if(version.current===before)router.refresh();},1500);
 }
+/** QA S-01 (Nov 21, 2026): on a slow connection a check still running after STUCK_MS was drawn as a failure ("Couldn’t
+ * check your access") although nothing had failed. Only a check that answered unavailable fails; a slow one says it is
+ * still checking. Paused and offline keep their words. */
+export function frameStateWords(phase:'paused'|'expired'|'ready',offline:boolean,checkFailed:boolean):{kind:'offline'|'paused'|'failed'|'loading';title:string;line:string}{
+ if(phase==='paused')return offline?{kind:'offline',title:'You’re offline',line:'Reconnect to see this page.'}:{kind:'paused',title:'View paused',line:'Come back to this window to see current information.'};
+ if(checkFailed)return {kind:'failed',title:'Couldn’t check your access',line:'Try again to load this page.'};
+ return {kind:'loading',title:'Still checking your access',line:'This connection is slow. The page appears when the check finishes.'};
+}
 /** Test seam: a fresh tab. */
 export function resetScopedReadTab(){tab.retiredAt=-Infinity;tab.cutoff=null;tab.fence=null;}
 
@@ -62,6 +70,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  // A replacement view cannot know whether an earlier instance retired while an
  // RSC response was in flight. Mounts therefore use the same fresh barrier.
  const [recovery,setRecovery]=useState<Recovery>({required:true,view:null});
+ // QA S-01: whether the latest check answered (unavailable), as opposed to still running.
+ const [checkFailed,setCheckFailed]=useState(false);
  const required=useRef(true),latest=useRef(-Infinity),retiredThrough=useRef(-Infinity),proactiveVersion=useRef('');
  const anchor=useRef<CurrentAuthority|null>(null);
  const observationRef=useRef(observation),versionRef=useRef('');
@@ -85,6 +95,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
   const controller=createPrivateSnapshotController<AuthoritySnapshot>(state=>{
    if(!active||!required.current)return;
    const current=!state.paused&&state.snapshot?.state==='ready'?state.snapshot:null;
+   const failedNow=!state.paused&&!state.refreshing&&state.snapshot?.state==='unavailable';
+   setCheckFailed(previous=>previous===failedNow?previous:failedNow);
    if(current&&!state.refreshing)noteFence(current);
    setRecovery(previous=>previous.required&&previous.view===current?previous:{required:true,view:current});
    if(current&&!state.refreshing&&!navigation?.pending()){
@@ -107,7 +119,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    return {...result,requestStartedAt};
   },reason=>({state:'unavailable',reason}),()=> 'read_failed');
   function pause(){if(offlineExpiry.current)clearTimeout(offlineExpiry.current);offlineExpiry.current=null;held.current=false;foreground=false;retire('paused');controller.pause();}
-  function recover(tabWide=true){if(keepOffline(held))return;if(offlineExpiry.current)clearTimeout(offlineExpiry.current);offlineExpiry.current=null;held.current=false;foreground=online();retire('expired',tabWide);lastRefresh='';controller.pause();if(foreground)controller.start();}
+  function recover(tabWide=true){if(keepOffline(held))return;setCheckFailed(false);if(offlineExpiry.current)clearTimeout(offlineExpiry.current);offlineExpiry.current=null;held.current=false;foreground=online();retire('expired',tabWide);lastRefresh='';controller.pause();if(foreground)controller.start();}
   // Offline: stop checking (the controller's own pause publishes nothing here while the page is current), record the
   // retirement for the tab, and require a fresh check when the person reconnects. Nothing on screen changes.
   function hold(){
@@ -220,9 +232,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  // the older corporate card with a grey Try again; that copy is gone (the wrapper's class lets the desktop layer draw the
  // Direction B screen there, as it does for the placeholder).
  const offlineNow=typeof navigator!=='undefined'&&!navigator.onLine;
- const kind=body.phase==='paused'?offlineNow?'offline':'paused':'failed';
- const title=kind==='offline'?'You’re offline':kind==='paused'?'View paused':'Couldn’t check your access';
- const line=kind==='offline'?'Reconnect to see this page.':kind==='paused'?'Come back to this window to see current information.':'Try again to load this page.';
+ const {kind,title,line}=frameStateWords(body.phase,offlineNow,checkFailed);
  return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
   <BStateScreen title={title} back={{href:'/app',label:'Home'}} offlineInTitle={kind==='offline'}><BState kind={kind} line={line} action={{label:'Try again',onClick:refreshCurrent}}/></BStateScreen>
  </div>;
