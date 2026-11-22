@@ -57,11 +57,13 @@ export async function checkScopedManager({ runtime, login, captureWidths, record
     const actor = runtime.profiles.Ml;
     const authority = assertFeedCoverage(await readFeeds(manager, { week, actor }), mainOffice, westOffice);
     const inboxLink = manager.locator('a[href="/app/inbox"]').filter({ visible: true }).first();
+    await manager.emulateMedia({ reducedMotion: 'reduce' });
     await inboxLink.click();
     const correctionHref = '/app/timecards/corrections#correction-' + mainOffice.correctionId;
     const correctionLink = manager.locator('main').locator(`a[href="${correctionHref}"]`).filter({ visible: true }).first();
     await correctionLink.waitFor();
     assert.doesNotMatch(await manager.locator('main').innerText(), /West Office|WestScopeWorker/);
+    assert.equal(await manager.locator('main a[href="/app/exchange"], main a[href="/app/availability"]').count(), 0);
     await captureWidths(manager, 'scoped-things-to-do');
     record('B4', 'Location Manager opened Things to Do with scoped coverage, time off, clock-ins and corrections');
     await correctionLink.click();
@@ -82,7 +84,7 @@ export async function checkScopedManager({ runtime, login, captureWidths, record
     assert.equal(forbidden.ok, false);
     assert.deepEqual(forbidden.body, { state: 'unavailable' });
 
-    await row.getByRole('button', { name: /decline/i }).click();
+    await row.getByRole('button', { name: /decline/i }).press('Enter');
     await manager.getByRole('button', { name: 'Decline correction for ' + mainOffice.name + ' Fictional', exact: true }).click();
     await manager.getByText('Correction declined', { exact: true }).first().waitFor();
     record('D2', 'Location Manager reviewed a Main Office correction and could not review a West Office correction');

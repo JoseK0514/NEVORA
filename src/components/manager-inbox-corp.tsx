@@ -312,12 +312,12 @@ const kindOf = (group: Group) => <section key={group.id} id={`todo-${group.id}`}
 
 /** Nov 1 upscale: "More" is its own card under its own label, after the cards: Shift requests and Done and older (what
  * Things to do lists but doesn't count), as plain rows; Time off requests too while no Time off card ends with its link. */
-const moreCard = (timeOffShown: boolean) => <section key="more" id="todo-more" className="c-section c-todo__more" aria-labelledby="todo-more-label">
+const moreCard = (timeOffShown: boolean, scoped: boolean) => <section key="more" id="todo-more" className="c-section c-todo__more" aria-labelledby="todo-more-label">
   <h2 className="c-section__label" id="todo-more-label">More</h2>
   <div className="c-card">
     <CorpRows label="More">
       {timeOffShown ? null : <li><CorpRow href="/app/requests" label="All time off requests" title="Time off requests" one chevron /></li>}
-      <li><CorpRow href="/app/exchange" label="All shift requests" title="Shift requests" one chevron /></li>
+      {!scoped && <li><CorpRow href="/app/exchange" label="All shift requests" title="Shift requests" one chevron /></li>}
       <li><CorpRow href="/app/inbox?view=more" label="Later and done: plan ahead and earlier this week" title="Later and done" one chevron /></li>
     </CorpRows>
   </div>
@@ -368,16 +368,16 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
     body = <>{families.map(family => <div key={family.id} id={`todo-${family.id}`} className="c-card c-todo__card" role="group" aria-label={family.title}>
       {family.groups.map(kindOf)}
     </div>)}{waiting.length + closed.length ? <section className="c-section" aria-labelledby="todo-waiting-label"><h2 className="c-section__label" id="todo-waiting-label">Waiting for review</h2>
-      <div id="todo-card-waiting" className="c-card c-todo__card" role="group" aria-label="Waiting for review">{[...waiting, ...closed].map(kindOf)}</div></section> : null}{moreCard(timeOffShown)}</>;
+      <div id="todo-card-waiting" className="c-card c-todo__card" role="group" aria-label="Waiting for review">{[...waiting, ...closed].map(kindOf)}</div></section> : null}{moreCard(timeOffShown, scoped)}</>;
   }
   // The request lists stay one tap away while the page loads, fails or has nothing waiting.
-  if (!moreView && (!ready || !shown)) body = <>{body}{moreCard(false)}</>;
+  if (!moreView && (!ready || !shown)) body = <>{body}{moreCard(false, scoped)}</>;
   const title = moreView ? "Later and done" : "Things to do";
   // A7: a single-column page, capped at the kit's narrow width on desktop.
   return <CorpPage className="c-todo c-page--narrow" labelledBy="todo-title">
     <div data-todo-state={ready ? (shown ? "ready" : "clear") : connection} hidden />
     {/* Direction B: the phone screen (phones under data-nv-b); tablets and desktop keep the cards below. */}
-    {moreView ? <LaterB ready={!!ready} groups={more} statusLine={summary} onRefresh={onRefresh} connection={connection} /> : <InboxB ready={ready} families={families} waiting={waiting} closed={closed} later={ready ? laterCounts : undefined} total={value ? value.count : null} exact={exact} uncheckedReviews={grouped?.total.uncheckedReviews ?? 0} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back />}
+    {moreView ? <LaterB ready={!!ready} groups={more} statusLine={summary} onRefresh={onRefresh} connection={connection} /> : <InboxB ready={ready} families={families} waiting={waiting} closed={closed} later={ready ? laterCounts : undefined} total={value ? value.count : null} exact={exact} uncheckedReviews={grouped?.total.uncheckedReviews ?? 0} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back scoped={scoped} />}
     {/* Phone: "‹ Home" over the page; when Things to do is a tab of its own the shell hides it and the large title shows. */}
     <CorpNav back={moreView ? { href: "/app/inbox", label: "Things to do" } : { href: "/app", label: "Home" }} title={title} phoneOnly />
     <CorpTitle id="todo-title" title={title} sub={moreView ? undefined : <span role="status" className="c-sr">{summary}</span>} wide />
