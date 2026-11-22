@@ -8,7 +8,10 @@ type InternalInit=RequestInit&{next?:{internal?:unknown}};
 export function createOwnedInternalRedirectFetch(upstream:string,origin:string,original:typeof fetch=fetch):typeof fetch{
  const socket=new URL(upstream),canonical=new URL(origin);
  const collabProduction=process.env.NODE_ENV==='production'&&process.env.NEVORA_OWNED_COLLAB_ORIGIN===OWNED_COLLAB_ORIGIN&&origin===OWNED_COLLAB_ORIGIN;
- if((!collabProduction&&!['test','development'].includes(process.env.NODE_ENV??''))||socket.origin!==upstream||socket.protocol!=='http:'||socket.hostname!=='127.0.0.1'||!socket.port||socket.username||socket.password||canonical.origin!==origin||canonical.protocol!=='https:'||!canonical.hostname.endsWith('.example.invalid')||canonical.port||canonical.username||canonical.password)throw Error('Owned internal redirect identity required');
+ const isolatedProduction=process.env.NODE_ENV==='production'&&process.env.NEVORA_OWNED_ISOLATED_PRODUCTION==='1'&&
+  process.env.NEVORA_WORKSPACE_MODE==='isolated'&&process.env.NEVORA_ONBOARDING_ENVIRONMENT==='test'&&
+  process.env.NEVORA_OWNED_ISOLATED_ORIGINS===JSON.stringify([origin])&&Boolean(process.env.NEVORA_OWNED_ISOLATED_TARGETS);
+ if((!collabProduction&&!isolatedProduction&&!['test','development'].includes(process.env.NODE_ENV??''))||socket.origin!==upstream||socket.protocol!=='http:'||socket.hostname!=='127.0.0.1'||!socket.port||socket.username||socket.password||canonical.origin!==origin||canonical.protocol!=='https:'||!canonical.hostname.endsWith('.example.invalid')||canonical.port||canonical.username||canonical.password)throw Error('Owned internal redirect identity required');
  return async(input,init)=>{
   const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url),marker=(init as InternalInit|undefined)?.next?.internal,base=input instanceof Request?input:null,method=(init?.method??base?.method??'GET').toUpperCase();
   if(url.origin!==upstream||![1,true].includes(marker as number|boolean)||method!=='GET')return original(input,init);

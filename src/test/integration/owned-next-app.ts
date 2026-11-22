@@ -12,7 +12,7 @@ import {createOwnedPgTransport,type OwnedDatabaseIdentity} from './owned-pg-tran
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {createCalendarLogRedactor} from './calendar-log-redaction';
 import {ownedIsolatedEnvironment,verifyOwnedIsolatedRuntime,isolatedTransportAdapter,probeOwnedIsolatedRuntime,type OwnedIsolatedRuntime} from './owned-isolated-runtime';
-import {OWNED_COLLAB_ORIGIN, OWNED_COLLAB_PHOTOS} from './owned-collab-origin';
+import {OWNED_CENTRAL_BILLING_BRANCH, OWNED_CENTRAL_BILLING_ORIGIN, OWNED_COLLAB_ORIGIN, OWNED_COLLAB_PHOTOS} from './owned-collab-origin';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const applicationRoots=['src','public','services','db'];
@@ -168,7 +168,8 @@ export function ownedDeviceEnvironment(origin:string,enabled=false):Record<strin
  * the same mirror with NODE_ENV=production. The default stays
  * `next dev`. The production mirror keeps next-env.d.ts unchanged (the build owns those type paths) and appends a
  * refusing getTenantRuntimeDb to the scratch DB adapter, because a build resolves every import (the same stub as
- * scripts/lib/premium-owned-runtime.mts). Not supported with isolated workspaces (they start their own server entry).
+ * scripts/lib/premium-owned-runtime.mts). Isolated workspaces keep their owned
+ * tenant transport and canonical server entry in both build modes.
  */
 export function ownedProductionRequested(option?: boolean): boolean {
   return option ?? process.env.NEVORA_OWNED_APP_PRODUCTION === '1';
@@ -183,7 +184,16 @@ const ownedProductionTenantStub = "\nexport function getTenantRuntimeDb(_role: '
  */
 export async function createOwnedNextApp(evidenceDirectory: string, options: { production?: boolean; portalHttpsOrigin?: string; centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; managerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?:boolean; ownerAdvisorKnowledgeEnabled?:boolean; ownerAdvisorBusinessImportsEnabled?:boolean; ownerAdvisorBusinessRetrievalEnabled?:boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; signupSmtpPort?: number; signupSmtpTls?: { certificatePath: string; password: string }; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   const isolatedEnvironment=ownedIsolatedEnvironment(options.isolatedWorkspaces);
-  if(options.centralBillingApiOrigin){const api=new URL(options.centralBillingApiOrigin);if(api.origin!==options.centralBillingApiOrigin||api.protocol!=='http:'||!['127.0.0.1','localhost'].includes(api.hostname)||!api.port||api.username||api.password)throw Error('Owned billing UI requires an explicit loopback API');}
+  const production = ownedProductionRequested(options.production);
+  if (options.centralBillingApiOrigin) {
+    const api = new URL(options.centralBillingApiOrigin);
+    const allowed = production
+      ? options.portalHttpsOrigin === OWNED_COLLAB_ORIGIN && api.origin === OWNED_CENTRAL_BILLING_ORIGIN
+      : api.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(api.hostname) && Boolean(api.port);
+    if (!allowed || api.origin !== options.centralBillingApiOrigin || api.username || api.password) {
+      throw Error('Owned billing UI requires its explicit test API');
+    }
+  }
   if(options.isolatedWorkspaces){if(options.emptyDatabase!==true||options.commerceRecoveryEnabled)throw Error('Owned isolated admission requires empty unused fallback and explicit commerce transport');await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);}
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   validateOwnedMailOptions(options);
@@ -200,11 +210,15 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
   // Validate before allocating a runtime or database. Only committed input is
   // eligible for an exact-SHA mirror; a clean tracked status alone is insufficient.
   const files = trackedApplicationFiles(source);
-  const production = ownedProductionRequested(options.production);
   if (options.portalHttpsOrigin !== undefined && (!production || options.portalHttpsOrigin !== OWNED_COLLAB_ORIGIN)) {
     throw Error('Expected the owned collab production HTTPS origin');
   }
-  if (production && (options.isolatedWorkspaces || options.pinDevTypeReferences)) throw Error('Owned production runtime supports neither isolated workspaces nor dev type references');
+  if (production && options.pinDevTypeReferences) throw Error('Owned production runtime cannot use dev type references');
+  if (production && options.isolatedWorkspaces &&
+      (process.env.NEVORA_OWNED_ONBOARDING_PRODUCTION_BUILD !== '1' || options.portalHttpsOrigin ||
+       options.invitationSmtpPort !== undefined || options.recoverySmtpPort !== undefined)) {
+    throw Error('Owned production workspace requires the isolated onboarding runner without external mail');
+  }
   if (options.signupSmtpPort !== undefined) {
     validateOwnedMailOptions({ recoverySmtpPort: options.signupSmtpPort });
     if (options.isolatedWorkspaces || production !== Boolean(options.signupSmtpTls)
@@ -329,6 +343,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
     const env: NodeJS.ProcessEnv = {
       PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: production ? 'production' : 'development', CI: '1',
       ...isolatedEnvironment,
+      ...(production && options.isolatedWorkspaces ? {NEVORA_OWNED_ISOLATED_PRODUCTION:'1'} : {}),
       NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
       NEXT_PUBLIC_NEVORA_PASSKEYS: options.passkeysEnabled === true ? 'on' : 'off',
       ...(options.portalHttpsOrigin && options.passkeysEnabled ? {
@@ -339,7 +354,12 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       // Recovery fixture intentionally has no commerce credential/provider binding.
       // Exact page exceptions still use genuine local session/role admission.
       NEVORA_COMMERCE_ENABLED:options.centralBillingApiOrigin||options.isolatedWorkspaces?.finance||options.commerceRecoveryEnabled===true?'true':'false',
-      ...(options.centralBillingApiOrigin?{NEVORA_BILLING_ENVIRONMENT:'development',NEVORA_BILLING_API_ORIGIN:options.centralBillingApiOrigin}:{}),
+      ...(options.centralBillingApiOrigin ? {
+        NEVORA_BILLING_API_ORIGIN: options.centralBillingApiOrigin,
+        NEVORA_BILLING_ENVIRONMENT: production ? 'staging' : 'development',
+        ...(production ? {NEVORA_WORKSPACE_MODE:'isolated', NEVORA_ONBOARDING_ENVIRONMENT:'test',
+          NEVORA_NEON_BRANCH_ID:OWNED_CENTRAL_BILLING_BRANCH} : {}),
+      } : {}),
       NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED:options.mobileSupportEnabled===true?'true':'false',
       ...ownedPayrollEnvironment(options),
       ...advisorEnvironment,

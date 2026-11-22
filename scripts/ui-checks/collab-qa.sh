@@ -32,6 +32,13 @@ cleanup() {
   kill -TERM "$launcher" 2>/dev/null || true
   wait "$launcher" || true
 }
+onboarding_suite() {
+  if [[ "${NEVORA_COLLAB_PRODUCTION:-}" == 1 ]]; then
+    node scripts/onboarding-owned.mjs --suite "$1" --production
+  else
+    node scripts/onboarding-owned.mjs --suite "$1"
+  fi
+}
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
@@ -60,8 +67,11 @@ elif [[ "${1:-}" == --full && $# == 1 ]]; then
   cleanup
   trap - EXIT
   mkdir "$evidence/central-billing" "$evidence/step4-local"
-  NEVORA_CENTRAL_BILLING_EVIDENCE="$evidence/central-billing" node scripts/onboarding-owned.mjs --suite central-billing || status=1
-  NEVORA_STEP4_EVIDENCE="$evidence/step4-local" node scripts/onboarding-owned.mjs --suite step4-local || status=1
+  NEVORA_CENTRAL_BILLING_EVIDENCE="$evidence/central-billing" onboarding_suite central-billing || status=1
+  NEVORA_STEP4_EVIDENCE="$evidence/step4-local" onboarding_suite step4-local || status=1
+  if [[ "$status" == 0 && "${NEVORA_COLLAB_PRODUCTION:-}" == 1 ]]; then
+    node scripts/ui-checks/collab-full-report.mjs "$evidence" || status=1
+  fi
   exit "$status"
 else
   node "${node_flags[@]}" scripts/ui-checks/collab-browser.mjs "$evidence" "$@"

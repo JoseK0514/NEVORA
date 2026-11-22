@@ -18,9 +18,9 @@ node tools/ci-browser-runtime/node_modules/playwright/cli.js install chromium we
 bash scripts/ui-checks/collab-qa.sh --production --full
 ```
 
-Run one suite at a time. On Linux, install the Playwright Chromium OS dependencies if the engine reports a missing library. The isolated launcher requires an environment without `DATABASE_URL` and `FUEL_TEST_DATABASE_URL`. The app listens on an ephemeral loopback port with its own fictional workspace. The browser tests deny other origins. The launcher logs the evidence directory and cleans up its app and database on exit.
+Run one suite at a time. On Linux, install the Playwright Chromium and WebKit OS dependencies if the engine reports a missing library. The isolated launcher requires an environment without `DATABASE_URL` and `FUEL_TEST_DATABASE_URL`. The app listens on an ephemeral loopback port with its own fictional workspace. The browser tests deny other origins. The launcher logs the evidence directory and cleans up its app and database on exit.
 
-- Run `bash scripts/ui-checks/collab-qa.sh --production --full` for the production-build workspace at phone and desktop widths, followed by the isolated central billing and Step 4 lifecycle suites. The command retains evidence for each suite and returns a failure if a workflow fails.
+- Run `bash scripts/ui-checks/collab-qa.sh --production --full` for all three production-build fixtures. It starts with the profile inventory at phone and desktop widths, then runs central billing and the routed Owner and Clocker workflows. It writes `collab-full-results.json` when all three passes agree on the source commit and the required screenshots are present.
 - Run `bash scripts/ui-checks/collab-qa.sh --production --inventory --screenshots` for the production-build workspace and browser inventory alone. The browser driver maps the fictional HTTPS hostname to the workspace’s loopback listener and pins the temporary certificate. It blocks DNS for every other hostname in production-test mode.
 - Run `bash scripts/ui-checks/collab-qa.sh --production --scoped-manager` to check B4 and D2 with the Next.js production build and server in a disposable workspace. OpenSSL generates a temporary loopback certificate for the real HTTPS session. It verifies both screens at phone and desktop widths, tests the server feeds against two locations, and makes a fictional decision through the real review UI. Drop `--production` for a faster development-mode run.
 - Run `bash scripts/ui-checks/collab-qa.sh --serve` for manual navigation. Keep that process running while a second shell runs Playwright. Read its `runtime.json` for the app URL, current sample week, real fixture record IDs, and commit SHA. Stop it with Ctrl+C.
@@ -72,18 +72,18 @@ The private signup form accepts `qa-signup@example.invalid` and sends mail to th
 
 | Screen | How to exercise it |
 |---|---|
-| A15–A19 Central billing | Use the central billing browser suite below. It opens all five routes and uses a local billing service and fictional checkout transport. |
-| F3 Staff List Import | The Step 4 local lifecycle suite opens the Owner import form in a routed workspace. The `people` suite covers CSV validation and import. The single-workspace runtime shows the unavailable notice. |
-| J18 Owner Billing and K15 Clocker Paused | Use the Step 4 local lifecycle browser suite below. It provides an isolated workspace and transitions the fictional account to restricted billing. |
+| A15–A19 Central billing | The central billing production suite opens all five English and Spanish routes in Chromium and WebKit. It uses the commerce API and isolated SQL with a fictional Stripe checkout fixture. |
+| F3 Staff List Import | Sign in as the Owner of the routed fictional workspace and select **Import a staff list** in Employees. The production suite captures the form in both engines and imports a fictional employee through preview and receipt in both engines. |
+| J18 Owner Billing and K15 Clocker Paused | The routed production suite verifies Owner Billing during a trial and after access pauses. It opens a separate tablet session through its location link and follows the Clocker redirect and retry in both engines. |
 | Facial verification, provider-backed Rondo and native delivery | The regular browser suite uses fictional input and keeps external delivery disabled. Use the dedicated isolated tests for face matching, model-provider contracts, and notification delivery. |
 
 ```bash
 node tools/ci-browser-runtime/node_modules/playwright/cli.js install chromium webkit
 export NEVORA_TEST_PG_BIN="${NEVORA_TEST_PG_BIN:-$(pg_config --bindir)}"
 NEVORA_CENTRAL_BILLING_EVIDENCE="$(mktemp -d /tmp/nevora-billing-qa.XXXXXXXX)" \
-  node scripts/onboarding-owned.mjs --suite central-billing
+  node scripts/onboarding-owned.mjs --suite central-billing --production
 NEVORA_STEP4_EVIDENCE="$(mktemp -d /tmp/nevora-step4-qa.XXXXXXXX)" \
-  node scripts/onboarding-owned.mjs --suite step4-local
+  node scripts/onboarding-owned.mjs --suite step4-local --production
 node scripts/onboarding-owned.mjs --suite registration
 node scripts/onboarding-owned.mjs --suite owner-activation
 node scripts/onboarding-owned.mjs --suite people
