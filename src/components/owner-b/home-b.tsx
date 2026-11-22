@@ -190,7 +190,7 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   if (failed) return <BCard title="Things to do" id="b-home-needs"><BState kind="failed" title="Things to do didn’t load" line="Check your connection, then try again."
     action={onRetry ? { label: "Try again", onClick: onRetry } : undefined} /></BCard>;
   if (!value) return <BCard title="Things to do" id="b-home-needs"><p className="b-state" aria-busy={connection === "loading" || connection === "reconnecting" || undefined}>
-    {offline || connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back." : connection === "access_lost" ? "Sign in again to see what needs you." : "Checking what needs you…"}</p></BCard>;
+    {offline || connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back." : connection === "access_lost" ? "Sign in again to see what needs you." : connection === "not_allowed" ? "You don’t have access to Things to do. Ask the Owner if you need it." : "Checking what needs you…"}</p></BCard>;
   const rows: ReactNode[] = [];
   if (gapRows.length) {
     const next = gapRows[0];

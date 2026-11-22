@@ -71,6 +71,8 @@ function ReadState({ connection, statusLine, onRefresh }: { connection: ActionCe
   if (connection === "offline") return <BState kind="offline" title="You’re offline" line="Things to do updates when you reconnect." />;
   if (connection === "paused") return <BState kind="paused" title="Paused while you’re away" line="It updates when you come back to this page." />;
   if (connection === "access_lost") return <BState kind="locked" title="Your session ended" line="Sign in again to see what needs you." action={{ label: "Sign in", href: "/login" }} />;
+  // QA A3-06 (Nov 21, 2026): signed in, but without access to these tasks. Not a sign-out, so no Sign in button.
+  if (connection === "not_allowed") return <BState kind="locked" title="You don’t have access to Things to do" line="Ask the Owner if you need it." action={{ label: "Try again", onClick: onRefresh }} />;
   return <BState kind="failed" title="Things to do didn’t load" line="Check your connection, then try again." action={{ label: "Try again", onClick: onRefresh }} />;
 }
 
@@ -147,7 +149,7 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
       {/* Phase 2 (package D): one Try again for one failure. When the list failed too, its card under this one carries the
         retry (the same refresh), so this card only says what is missing. */}
       {todayFailed ? <BCard label="Clock-ins"><BState kind="failed" title="Clock-ins can’t be checked right now" line="People who haven’t clocked in may not be listed."
-        action={!ready && !["loading", "reconnecting", "offline", "paused", "access_lost"].includes(connection) ? undefined : { label: "Try again", onClick: onRefresh }} /></BCard> : null}
+        action={!ready && !["loading", "reconnecting", "offline", "paused", "access_lost", "not_allowed"].includes(connection) ? undefined : { label: "Try again", onClick: onRefresh }} /></BCard> : null}
       {!ready ? <BCard label="Things to do"><ReadState connection={connection} statusLine={statusLine} onRefresh={onRefresh} /></BCard>
         : cards.length || waiting.length || closed.length ? <>{cards}{/* Review B2 (NV-002): reviews that wait are listed after today's cards. Phase 3
           (MG-005, OW-014): no "· waiting" suffix; what isn't open yet is one grey card at the bottom with no count pill. */}

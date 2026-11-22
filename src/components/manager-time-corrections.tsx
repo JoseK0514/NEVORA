@@ -21,7 +21,8 @@ import {reviewCopy} from './review-details/copy';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import Link from 'next/link';
 import {timeZoneLabel} from '@/lib/time-zone-label';
-export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
+/** access_lost: signed out or access ended (sign in again). not_allowed: signed in without the corrections permission (QA A3-06). */
+export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'not_allowed'|'paused';
 const changedEvent='nevora:time-correction-changed';
 const unknownNotice='We couldn’t confirm your decision. Try again; it won’t be applied twice.';
 const approvedNotice='Correction approved. The original recorded punch remains unchanged.';
@@ -73,6 +74,9 @@ function noticeFor(result:CorrectionActionResponse){
 
 const reviewAccessLost = (snapshot: ManagerTimeCorrections | null | undefined) =>
   snapshot?.state === 'unavailable' && (snapshot.reason === 'access_denied' || snapshot.reason === 'permission_required');
+/** Both clear the queue; only a missing permission is "not allowed" rather than a sign-out (QA A3-06, Nov 21, 2026). */
+const deniedMode = (snapshot: ManagerTimeCorrections | null | undefined): CorrectionQueueConnection =>
+  snapshot?.state === 'unavailable' && snapshot.reason === 'permission_required' ? 'not_allowed' : 'access_lost';
 
 export function ManagerTimeCorrectionsSurface({
   snapshot,
@@ -98,7 +102,7 @@ export function ManagerTimeCorrectionsSurface({
   onRetry:()=>void;
   retry:CorrectionReviewCommand|null;
 }){
-  const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(reviewAccessLost(snapshot)?'access_lost':'unavailable'):'paused');
+  const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(reviewAccessLost(snapshot)?deniedMode(snapshot):'unavailable'):'paused');
   const mode=requestedMode==='ready'&&snapshot?.state!=='ready'?'unavailable':requestedMode;
   const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
   usePrivateFragmentFocus('correction-',!!ready);
@@ -117,7 +121,7 @@ export function ManagerTimeCorrectionsSurface({
     </header>
     {notice?<CorrectionNotice notice={notice} last={!!ready&&!ready.requests.length}/>:null}
     {retry?<button className="manager-corrections-retry" type="button" disabled={busyId!==null||mode!=='ready'} onClick={onRetry}>Retry same decision</button>:null}
-    {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Your access changed. Sign in again to review corrections.':'Corrections didn’t load. Refresh to try again.'}</small></div>:
+    {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',not_allowed:'You don’t have access to time corrections',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Your access changed. Sign in again to review corrections.':mode==='not_allowed'?'Ask the Owner if you need it.':'Corrections didn’t load. Refresh to try again.'}</small></div>:
       ready?.requests.length?<div className="manager-corrections-list">
         {ready.requests.map(item=><article className="manager-correction-row" key={item.id} tabIndex={-1} id={`correction-${item.id}`}>
           <div className="manager-correction-topline">
@@ -164,7 +168,7 @@ export function ManagerTimeCorrections({actorId,authority,band}:{actorId?:string
       const denied=reviewAccessLost(next.snapshot);
       if(denied){authorityLost.current=true;advanceCommandEpoch();}
       else if(next.snapshot?.state==='ready')authorityLost.current=false;
-      if(denied){recovery?.clear();setRetry(null);setNotice(null);setConnection('access_lost');}
+      if(denied){recovery?.clear();setRetry(null);setNotice(null);setConnection(deniedMode(next.snapshot));}
       else {setConnection(next.paused?resumeMode:next.refreshing?resumeMode:next.snapshot?.state==='ready'?'ready':'unavailable');if(next.snapshot?.state==='ready'&&!next.refreshing)resumeMode='loading';}
     },signal=>fetchManagerTimeCorrections(signal,actorId,authority),parseManagerTimeCorrections,reason=>({state:'unavailable',reason}),()=> 'read_failed');
     const clear=(mode:CorrectionQueueConnection)=>{active=false;resumeMode=mode;controller.pause();setNotice(pausedCorrectionNotice);};

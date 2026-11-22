@@ -216,7 +216,7 @@ export async function replaceCoverageWindowPositionRequirementsAction(data:FormD
  if(!MANAGER_ROLES.includes(proof.employee.role))redirect("/app");
  const actor=proof.employee;
  try {await configurationAdmission(proof,true);await replaceCoverageWindowPositionRequirements({windowId:String(data.get('windowId')??''),requirements:readRequirements(data),actorEmployeeId:actor.id,proof});revalidatePath('/app/schedule/settings');revalidatePath('/app/settings/locations');return {success:'Position quantities updated.'};}
- catch(error){if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))return {error:'Operational access is unavailable. Reload and try again.'};return {error:'Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.'};}
+ catch(error){if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))return {error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.'};return {error:'Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.'};}
 }
 
 export async function saveShiftChangePolicyAction(data:FormData):Promise<import('@/lib/shift-changes/types').PolicyWriteResult>{

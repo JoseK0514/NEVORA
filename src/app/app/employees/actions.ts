@@ -64,7 +64,7 @@ export async function saveEmployeeSchedulingProfileAction(formData: FormData) {
     try{revalidatePath('/app/employees');revalidatePath(`/app/employees/${encodeURIComponent(employeeId)}`);}catch{/* The returned write version establishes a committed save. */}
     return { success: "Scheduling profile updated.", updatedAt: written.updatedAt };
   } catch (error) {
-    if(isOperationalAuthorizationError(error))return {error:'Operational access is unavailable. Reload and try again.'};
+    if(isOperationalAuthorizationError(error))return {error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.'};
     if (error instanceof Error && error.message.includes('profile_stale')) return { error: 'This employee changed since you opened the profile. Reload and review the latest scheduling details.' };
     return {
       error:

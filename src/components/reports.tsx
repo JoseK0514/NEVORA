@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {announceFailure,clearsProtectedData,failureRecovery,nevoraFailure} from '@/lib/http/nevora-failure';
+import {announceFailure,clearsProtectedData,denialOf,failureRecovery,nevoraFailure} from '@/lib/http/nevora-failure';
 import {announceOfflineHeld,offlineListener} from '@/lib/offline-hold';
 import {isPopoverOpen} from './kit/popover-open';
 import type React from 'react';
@@ -33,7 +33,8 @@ import {reviewCopy} from './review-details/copy';
 import {BCallout} from './owner-b/b-kit';
 import {Explain} from './review-details/explain';
 const t=reviewCopy();
-type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
+/** access_lost: signed out (sign in again). not_allowed: signed in without access to insights (QA A3-06). */
+type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost'|'not_allowed';
 /** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
  * and swapped in when verified, so the report only empties if every read fails before expiry.
  * Short-lived snapshots (5s or less) just expire. */
@@ -163,7 +164,7 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
  },[report]);
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
-  return <section className="nv-card wb-report-state" role="status" aria-busy={waiting}><div className="wb-body"><div className="wb-receipt"><Tile tone={waiting?'neutral':'review'}>{waiting?<ClockIcon size={22} weight="bold"/>:<WarningCircleIcon size={22} weight="bold"/>}</Tile><div><h2 className="wb-strong">{({loading:'Loading insights',offline:'You’re offline',reconnecting:'Reconnecting',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',ready:'Couldn’t load insights'})[state]}</h2><p className="wb-note">{state==='access_lost'?'Sign in again with a manager or owner account.':state==='paused'?'Return to this page to see the current numbers.':state==='offline'?'Connect to the internet, then refresh to see this period.':state==='unavailable'?'Check your connection, then try again.':'Getting this period’s numbers…'}</p></div></div>{state==='access_lost'?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div>:null}</div></section>;
+  return <section className="nv-card wb-report-state" role="status" aria-busy={waiting}><div className="wb-body"><div className="wb-receipt"><Tile tone={waiting?'neutral':'review'}>{waiting?<ClockIcon size={22} weight="bold"/>:<WarningCircleIcon size={22} weight="bold"/>}</Tile><div><h2 className="wb-strong">{({loading:'Loading insights',offline:'You’re offline',reconnecting:'Reconnecting',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',not_allowed:'You don’t have access to insights',ready:'Couldn’t load insights'})[state]}</h2><p className="wb-note">{state==='access_lost'?'Sign in again with a manager or owner account.':state==='not_allowed'?'Ask the Owner if you need it.':state==='paused'?'Return to this page to see the current numbers.':state==='offline'?'Connect to the internet, then refresh to see this period.':state==='unavailable'?'Check your connection, then try again.':'Getting this period’s numbers…'}</p></div></div>{state==='access_lost'?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div>:null}</div></section>;
  }
  const requests=[...report.callouts,...report.timeOff];
  const href=timecardsHref(report.period);
@@ -265,8 +266,8 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
   return <CorpCard as="div" ariaLabel="Insights"><CorpBody><div role="status" aria-busy={waiting}>
-   <h2 className="c-ins__title">{({loading:'Loading…',offline:'You’re offline',reconnecting:'Reconnecting…',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',ready:'Couldn’t load insights'})[state]}</h2>
-   {waiting?null:<p className="c-ins__state">{state==='access_lost'?'Sign in again to see insights.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
+   <h2 className="c-ins__title">{({loading:'Loading…',offline:'You’re offline',reconnecting:'Reconnecting…',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',not_allowed:'You don’t have access to insights',ready:'Couldn’t load insights'})[state]}</h2>
+   {waiting?null:<p className="c-ins__state">{state==='access_lost'?'Sign in again to see insights.':state==='not_allowed'?'Ask the Owner if you need it.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
   </div>{state==='access_lost'?<CorpButtonLink href="/login" kind="secondary" size="md">Sign in</CorpButtonLink>:null}</CorpBody></CorpCard>;
  }
  const recorded=BigInt(report.summary.recordedNanoseconds);
@@ -360,8 +361,8 @@ export function QuietReportsView({report,state}:{report:PeriodReports|null;state
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
   return <div className="q-emptyblock q-first" role="status" aria-busy={waiting}>
-   <h2 className="q-emptyblock__title">{({loading:'Loading…',offline:'You’re offline',reconnecting:'Reconnecting…',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',ready:'Couldn’t load insights'})[state]}</h2>
-   {waiting?null:<p className="q-empty">{state==='access_lost'?'Sign in again to see insights.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
+   <h2 className="q-emptyblock__title">{({loading:'Loading…',offline:'You’re offline',reconnecting:'Reconnecting…',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',not_allowed:'You don’t have access to insights',ready:'Couldn’t load insights'})[state]}</h2>
+   {waiting?null:<p className="q-empty">{state==='access_lost'?'Sign in again to see insights.':state==='not_allowed'?'Ask the Owner if you need it.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
    {state==='access_lost'?<div className="q-emptyblock__action"><Link className="q-btn q-btn--sec" href="/login">Sign in</Link></div>:null}
   </div>;
  }
@@ -421,8 +422,8 @@ export function Reports({initialPeriod,today,christmasBonus=true}:{initialPeriod
     const response=await fetch('/api/reports',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-reports':'1'},body:JSON.stringify(period),signal:controller.signal});
     if(!active||current!==generation)return;
     // X-Nevora-Failure (Nov 9, 2026): the page-level notice says why; data-clearing failures read as access ended here.
-    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':'access_lost');return;}}
-    if(response.status===401||response.status===403){clear('access_lost');return;}
+    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':denialOf(code,response.status)==='not_allowed'?'not_allowed':'access_lost');return;}}
+    if(response.status===401||response.status===403){clear(denialOf(null,response.status)==='not_allowed'?'not_allowed':'access_lost');return;}
     const body=await response.json();if(!active||current!==generation)return;if(!response.ok||body?.state!=='ready'||!Number.isSafeInteger(body.validForMs)||body.validForMs<1||body.validForMs>15000)throw new Error('Unavailable');
     const result=projectReports(body.source);if(result.period.startDate!==period.startDate||result.period.endDate!==period.endDate)throw new Error('Incorrect period');
     const remaining=body.validForMs-(performance.now()-started);if(remaining<=0)throw new Error('Expired snapshot');
@@ -443,8 +444,8 @@ export function Reports({initialPeriod,today,christmasBonus=true}:{initialPeriod
    try{
     const response=await fetch('/api/reports/export',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-reports':'1'},body:JSON.stringify(period),signal:exportController.signal});
     if(!active||generation!==current)return;
-    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':'access_lost');return;}}
-    if(response.status===401||response.status===403){clear('access_lost');return;}
+    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':denialOf(code,response.status)==='not_allowed'?'not_allowed':'access_lost');return;}}
+    if(response.status===401||response.status===403){clear(denialOf(null,response.status)==='not_allowed'?'not_allowed':'access_lost');return;}
     if(!response.ok||!response.headers.get('content-type')?.startsWith('text/csv'))throw new Error('Unavailable export');
     const blob=await response.blob();if(!active||generation!==current||!focused||performance.now()>=validUntil)return;
     const url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=`nevora-reports-${period.startDate}-${period.endDate}.csv`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);

@@ -40,7 +40,7 @@ function shiftReturnUrl(shift: { weekStart: string; locationId: string; date: st
   return `${scheduleUrl(shift.weekStart, `&location=${encodeURIComponent(shift.locationId)}&day=${encodeURIComponent(shift.date)}${suffix}`)}#schedule-employee-${encodeURIComponent(shift.employeeId)}`;
 }
 
-const accessError=()=>({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
+const accessError=()=>({error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.',issueCode:'ACCESS_DENIED'});
 const shiftConflict=()=>({error:new ShiftReviewConflictError().message,issueCode:'SHIFT_REVIEW_CONFLICT'});
 const denied=(error:unknown)=>isOperationalAuthorizationError(error)||isManagementAuthorizationError(error);
 /** Re-check the original scope after awaited work; a role alone cannot prove unchanged access. */

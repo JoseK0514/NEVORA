@@ -40,7 +40,7 @@ type Family = { id: string; title: string; groups: Group[] };
 const statusText: Record<ActionCenterConnection, string> = {
   loading: "Checking what needs you…", reconnecting: "Reconnecting…", offline: "You’re offline. This updates when you reconnect.",
   paused: "Paused while you’re away. It updates when you come back.", unavailable: "Things to do isn’t available right now.",
-  access_lost: "Sign in again to see what needs you.", ready: "Things to do isn’t available right now.",
+  access_lost: "Sign in again to see what needs you.", not_allowed: "You don’t have access to Things to do. Ask the Owner if you need it.", ready: "Things to do isn’t available right now.",
 };
 
 const clock = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));

@@ -27,7 +27,7 @@ import type { Today, TodayShift } from "@/lib/today/project";
 
 const statusText = {
   loading: "Loading your Inbox…", reconnecting: "Reconnecting…", offline: "You’re offline. This updates when you reconnect.", paused: "Paused while you’re away. It updates when you come back.",
-  unavailable: "The Inbox isn’t available right now.", access_lost: "Sign in again to see your Inbox.", ready: "The Inbox isn’t available right now.",
+  unavailable: "The Inbox isn’t available right now.", access_lost: "Sign in again to see your Inbox.", not_allowed: "You don’t have access to the Inbox. Ask the Owner if you need it.", ready: "The Inbox isn’t available right now.",
 } as const;
 
 const filters: { value: InboxFilter; label: string }[] = [
@@ -448,7 +448,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         {/* ST-26: the status line comes first, so it stays put. */}
         <p role="status" tabIndex={-1} className="q-empty inbox-status-message" style={{ marginTop: 24 }}>{statusText[connection]}</p>
         {connection === "access_lost" ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link>
-          : connection === "unavailable" || connection === "ready" ? <button type="button" className="q-btn q-btn--sec" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .q-grp h2", ".inbox-status .q-btn"); }}>Try again</button> : null}
+          : connection === "unavailable" || connection === "ready" || connection === "not_allowed" ? <button type="button" className="q-btn q-btn--sec" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .q-grp h2", ".inbox-status .q-btn"); }}>Try again</button> : null}
       </div> : total === 0 ? <div className="inbox-clear">
         <p className="q-empty" role="status" style={{ marginTop: 24 }}>Nothing needs you right now.{ready.limitedAttendance ? " Some attendance comparisons are unavailable." : ""}</p>
       </div> : <>

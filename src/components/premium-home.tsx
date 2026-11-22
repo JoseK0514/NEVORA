@@ -239,7 +239,7 @@ function QuietNeedsYou({ value, timeZone, observedAt, exact = true }: { value: N
 function QuietPending({ connection, onRetry }: { connection: ActionCenterConnection; onRetry?: () => void }) {
   const busy = connection === "loading" || connection === "reconnecting";
   const message = busy ? "Checking what needs you…" : connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back."
-    : connection === "access_lost" ? "Sign in again to see what needs you." : "What needs you isn’t available right now.";
+    : connection === "access_lost" ? "Sign in again to see what needs you." : connection === "not_allowed" ? "You don’t have access to Things to do. Ask the Owner if you need it." : "What needs you isn’t available right now.";
   return <section id="home-needs-you" aria-labelledby="home-needs-you-title" aria-busy={busy || undefined} className={busy ? undefined : "premium-pending-failed"}>
     <div className="q-sec"><h2 id="home-needs-you-title">Things to do</h2></div>
     <p className="q-empty">{message}</p>
