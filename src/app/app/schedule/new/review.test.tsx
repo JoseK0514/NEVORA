@@ -124,7 +124,7 @@ it('a draft week needs no publish permission and keeps its save',async()=>{
   operationalPageFixture.publishDenied=true;
   const html=renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
   expect(html).toContain('Save draft');
-  expect(html).toContain('Added as a draft.');
+  expect(html).toContain('This adds a draft.');
   expect(html).not.toContain('publicationConsent');
   expect(html).not.toContain('Publishing permission needed');
 });

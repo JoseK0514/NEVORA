@@ -1,5 +1,5 @@
 /* Find cover: Review replacement (Phase 2 direction A, Nov 22, 2026). Corp/Direction B card plus the premium button. */
-:is(#c-root, html) .c-review .c-review__form { display: flex; flex-direction: column; gap: 16px; }
+:is(#c-root, html) .c-review .c-review__form { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }
 :is(#c-root, html) .c-review .c-review__swap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 10px; font-size: 20px; line-height: 26px; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-review .c-review__open { color: var(--c-ink2); font-weight: 500; }
 :is(#c-root, html) .c-review .c-review__arrow { width: 18px; height: 18px; color: var(--c-teal); flex: none; }
@@ -21,7 +21,13 @@
 :is(#c-root, html) .c-review .c-review__blocked strong { font-weight: 600; }
 :is(#c-root, html) .c-review .c-review__buttons { display: flex; flex-direction: column; gap: 8px; }
 :is(#c-root, html) .c-review .c-review__buttons .np-button { width: 100%; text-decoration: none; }
+/* Links drawn as buttons keep the button's colours (a page link colour would otherwise win: QA Nov 22, 2.9:1). */
+:is(#c-root, html) :is(#c-root, body) .c-review a.np-button[data-variant='primary'] { color: #FFFFFF; }
+:is(#c-root, html) :is(#c-root, body) .c-review a.np-button[data-variant='quiet'] { color: var(--c-teal); }
+:is(#c-root, html) :is(#c-root, body) .c-review a.np-button[data-variant='secondary'] { color: var(--c-ink); }
+/* Tablets and desktop: the outcome line, then the primary and Cancel side by side from the left (visual order = Tab order). */
 @media (min-width: 768px) {
-  :is(#c-root, html) .c-review .c-review__buttons { flex-direction: row-reverse; justify-content: flex-start; }
+  :is(#c-root, html) .c-review .c-review__buttons { flex-direction: row; justify-content: flex-start; align-items: center; }
   :is(#c-root, html) .c-review .c-review__buttons .np-button { width: auto; min-width: 140px; }
+  :is(#c-root, html) .c-review .c-review__buttons .np-button[data-variant='quiet'] { min-width: 0; padding-inline: 12px; }
 }

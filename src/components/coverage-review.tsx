@@ -64,12 +64,12 @@ export function CoverageReview(props: CoverageReviewProps) {
 
   let outcome: ReactNode = null;
   if (props.mode === "publish") outcome = <p className="c-review__outcome">{`${firstName(props.employeeName)} will see this shift in their schedule. We’ll also send them a notification.`}</p>;
-  else if (props.mode === "draft") outcome = <p className="c-review__outcome">{`Added as a draft. ${firstName(props.employeeName)} won’t see it until you publish the week.`}</p>;
+  else if (props.mode === "draft") outcome = <p className="c-review__outcome">{`This adds a draft. ${firstName(props.employeeName)} won’t see it until you publish the week.`}</p>;
   else if (props.mode === "needs-publish-permission") outcome = <Blocked title="Publishing permission needed">This week is published. Ask the Owner to make this change, or to let you publish.</Blocked>;
   else if (props.mode === "scoped-ask") outcome = <Blocked title="Company-wide access needed">Ask the Owner to make this change.</Blocked>;
   else if (props.mode === "scoped-draft") outcome = <p className="c-review__outcome">Add it as a draft shift, then publish when the week is ready.</p>;
 
-  const card = <CorpCard id="replacement-shift" label="Change">
+  const card = <CorpCard id="replacement-shift" label="Replacement">
     <CorpBody>
       <p className="c-review__swap">
         <span className={props.replacedName ? undefined : "c-review__open"}>{props.replacedName ?? "Open shift"}</span>
@@ -104,11 +104,11 @@ export function CoverageReview(props: CoverageReviewProps) {
   return <CorpPage className="c-cover c-review c-page--narrow np-kit" labelledBy="review-title">
     <CorpNav back={{ href: props.backHref, label: "Coverage" }} title="Review replacement" titleId="review-title" phoneOnly />
     <CorpTitle title="Review replacement" wide />
+    {card}
     {saves ? <ConfigurationForm action={props.action} className="c-review__form">
       {Object.entries(props.hidden).map(([name, value]) => <input type="hidden" name={name} value={value} key={name} />)}
-      {card}
       {actions}
-    </ConfigurationForm> : <div className="c-review__form">{card}{actions}</div>}
+    </ConfigurationForm> : <div className="c-review__form">{actions}</div>}
   </CorpPage>;
 }
 
