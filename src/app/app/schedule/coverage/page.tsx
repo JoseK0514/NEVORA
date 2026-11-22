@@ -83,7 +83,9 @@ export default async function CoverageSuggestionsPage({
       repair
       saved={!scoped && params.saved === '1'}
       reviewOnly={scoped}
-      addShiftHref={!scoped || (review && 'draft' in review && review.draft) ? coverDraftShiftUrl(locator, false) : undefined}
+      addShiftHref={scoped
+        ? review && 'draft' in review && review.draft ? coverDraftShiftUrl(review.locator, review.designatedLead) : undefined
+        : coverDraftShiftUrl({...locator,positionId:undefined}, false)}
       rulesHref={scoped ? undefined : `/app/schedule/settings?week=${encodeURIComponent(locator.weekStart)}`}
       refreshHref={coverageRepairUrl(locator, true)}
       requirements={review?.targets.map(target => ({
