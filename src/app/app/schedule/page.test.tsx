@@ -149,15 +149,15 @@ rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({
 beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;operationalPageFixture.publish=false;});
 
 // QA A3-05 (Nov 21, 2026): a location Manager holding Publish schedules had no way to publish from the schedule.
-it('a location Manager with Publish schedules gets Build and publish; one without it keeps the grant note',async()=>{
+it('a location Manager with Publish schedules gets Publish; one without it gets no publish control (Phase 2, Nov 22, 2026)',async()=>{
  f.role='MANAGER';operationalPageFixture.scoped=true;operationalPageFixture.publish=true;
  const granted=await html();
- expect(granted).toMatch(/<a[^>]*href="\/app\/schedule\/publish\?week=[^"]+"[^>]*>Build and publish<\/a>/);
- expect(granted).toContain('Manage and publish the schedules at your locations.');
+ expect(granted).toMatch(/<a[^>]*href="\/app\/schedule\/publish\?week=[^"]+"[^>]*>Publish<\/a>/);
+ expect(granted).toContain('Add shift');
  operationalPageFixture.publish=false;
  const plain=await html();
- expect(plain).not.toContain('Build and publish');
- expect(plain).toContain('Publishing a location needs an Owner’s Publish schedules grant there');
+ expect(plain).not.toMatch(/href="\/app\/schedule\/publish/);
+ expect(plain).toContain('Add shift');
 });
 
 it('company denial withholds global schedule rows and all editing controls',async()=>{f.role='MANAGER';operationalPageFixture.denied=true;const output=await html();expect(output).toContain('Company-wide access needed');expect(output).not.toContain('Add shift');expect(output).not.toContain('Publish');expect(f.managerReads).not.toHaveBeenCalled();});

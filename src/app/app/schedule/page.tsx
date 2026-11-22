@@ -7,7 +7,7 @@ import {scopedObservation} from '@/lib/company-access/observation';
 import {isOperationalAuthorizationError,readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {listWorkforcePermissions} from '@/lib/workforce/authority.server';
 import {readOperationalSchedule,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
-import {ScopedOperationalSchedule} from '@/components/company-access/scoped-operational-views';
+import {ScopedScheduleB} from '@/components/company-access/scoped-b';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {ScheduleCopyForm} from '@/components/schedule-copy-form';
@@ -146,7 +146,7 @@ export default async function SchedulePage({
         readScopedCoverageGaps(proof,weekStart,source.data.selectedLocationId ?? undefined),
       ]);
       const openShifts = coverage.state === 'ready' && coverage.authority === source.authority ? coverage.data : null;
-      return withRepair(<ScopedOperationalSchedule openShifts={openShifts} publishHref={canPublish?`/app/schedule/publish?week=${encodeURIComponent(weekStart)}`:undefined} data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}{(await currentPresentation()).modules.marketplace ? <Link href="/app/exchange/open-shifts" className="button secondary">Posted open shifts</Link> : null}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
+      return withRepair(<ScopedScheduleB openShifts={openShifts} publishHref={canPublish?`/app/schedule/publish?week=${encodeURIComponent(weekStart)}`:undefined} data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}{(await currentPresentation()).modules.marketplace ? <Link href="/app/exchange/open-shifts" className="c-btn c-btn--secondary c-btn--md">Posted open shifts</Link> : null}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
     }
   }
   async function renderSchedule(){

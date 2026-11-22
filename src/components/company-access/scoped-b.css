@@ -1,0 +1,9 @@
+/* Location Manager Home and Schedule (Phase 2 direction A, Nov 22, 2026), on the Corp/Direction B page. */
+:is(#c-root, html) .c-scoped .c-scoped__cta { flex: none; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-teal); }
+:is(#c-root, html) .c-scoped .c-scoped__week { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-line); }
+:is(#c-root, html) .c-scoped .c-scoped__week strong { font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-scoped .c-scoped__step { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 10px; color: var(--c-teal); }
+:is(#c-root, html) .c-scoped .c-scoped__step svg { width: 20px; height: 20px; }
+:is(#c-root, html) .c-scoped .c-scoped__step:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; }
+:is(#c-root, html) .c-scoped .c-scoped__filter { display: flex; align-items: flex-end; gap: 8px; }
+:is(#c-root, html) .c-scoped .c-scoped__filter > :first-child { flex: 1; min-width: 0; }

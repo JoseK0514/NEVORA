@@ -11,6 +11,8 @@ import {ManagerCorrectionRecoveryBoundary} from '@/components/manager-correction
 import {managerReviewRecoveryKey} from '@/lib/time-corrections/review-recovery';
 import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
 import {ScopedManagementHome} from '@/components/company-access/scoped-operational-views';
+import {ScopedHomeB} from '@/components/company-access/scoped-b';
+import {readScopedCoverageGaps} from '@/lib/data/coverage-repair.server';
 import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {businessDate} from '@/lib/business-time';
@@ -84,7 +86,15 @@ export default async function DashboardPage({
   const proof=await requireSessionMutationProof();
   const authority=await readOperationalAuthority(proof);
   if(authority.state==='unavailable')return <OperationalUnavailable title="Home unavailable" reason={authority.reason}/>;
-  if(authority.scope?.mode!=='COMPANY')return <ScopedManagementHome view={authority}/>;
+  if(authority.scope?.mode!=='COMPANY'){
+    if(authority.scope?.mode!=='LOCATIONS'||!authority.locations.length)return <ScopedManagementHome view={authority}/>;
+    // Phase 2 direction A (Nov 22, 2026): the location Manager's Home, with this week's open shifts from the read the
+    // Schedule already uses. A failed read shows "Couldn't check open shifts" instead of hiding the card.
+    const week=weekStartFor(businessDate(new Date(),(await getWorkspace()).timeZone));
+    const gaps=await readScopedCoverageGaps(proof,week).catch(()=>null);
+    const openShifts=gaps&&gaps.state==='ready'&&gaps.authority===authority.authority?gaps.data:null;
+    return <ScopedHomeB view={authority} openShifts={openShifts} scheduleHref={`/app/schedule?week=${week}`}/>;
+  }
   const retired = retiredViewDestination(params);
   if (retired) redirect(retired);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
