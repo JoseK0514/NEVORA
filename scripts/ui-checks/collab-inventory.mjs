@@ -49,7 +49,7 @@ function sourcePages(rows) {
   });
 }
 
-function concreteRoutes(row, profile, runtime, replacement) {
+function concreteRoutes(row, profile, runtime, coverage) {
   const { week, sourceId, targetId, sourceDate, actors, pages } = runtime;
   const actorShift = profile === 'E' ? targetId : sourceId;
   const query = (route, params) => route + '?' + new URLSearchParams(params);
@@ -60,7 +60,7 @@ function concreteRoutes(row, profile, runtime, replacement) {
     case 'B7': return ['/app/updates/' + pages.updateId];
     case 'B11': return ['/app/fictional-missing-page'];
     case 'C1': return [query(row.route, { week, location: 'all' })];
-    case 'C3': return [replacement];
+    case 'C3': return [coverage];
     case 'C4': return [query(row.route, { shiftId: sourceId })];
     case 'C5': return [query(row.route, { week, date: sourceDate, locationId: 'loc-1', start: '00:00', end: '08:00' })];
     case 'C6': return [query(row.route, { week: pages.copyWeek })];
@@ -78,6 +78,15 @@ function concreteRoutes(row, profile, runtime, replacement) {
 
 async function visit(page, origin, route, row) {
   let response;
+  if (row.id === 'C3') {
+    // Review links are bound to the signed-in actor. Reopen the same coverage
+    // gap and follow a candidate generated for this profile.
+    await page.goto(origin + route);
+    const candidate = page.getByRole('link', { name: /^Review replacement for/ }).first();
+    await candidate.waitFor();
+    route = await candidate.getAttribute('href');
+    assert.ok(route?.startsWith('/app/schedule/new?review='));
+  }
   const target = new URL(route, origin);
   try {
     response = await page.goto(target.href);
@@ -92,6 +101,11 @@ async function visit(page, origin, route, row) {
   if (!['A1', 'M1', 'M2'].includes(row.id)) {
     await page.getByRole('heading').first().waitFor({ state: 'attached', timeout: 4500 }).catch(() => {});
   }
+  if (row.id === 'C3') {
+    await page.getByRole('heading', { name: 'Review replacement', exact: true }).waitFor();
+  }
+  const pending = page.locator('.c-route-state--checking').filter({ has: page.locator('[data-checking]') });
+  await pending.first().waitFor({ state: 'detached', timeout: 12_000 }).catch(() => {});
   const pathname = new URL(page.url()).pathname;
   const final = page.url().slice(origin.length);
   const http = response?.status() ?? null;
@@ -104,7 +118,7 @@ async function visit(page, origin, route, row) {
   else if (pathname !== new URL(route, origin).pathname) observed = 'redirect';
   else if (http >= 400 && row.id !== 'B11') observed = 'HTTP ' + http;
   else if (notice || heading.some(text => /^Company-wide access needed$|^Page unavailable$/.test(text))) observed = 'notice';
-  else if (!heading.length && !['M1', 'M2'].includes(row.id)) observed = 'inspect';
+  else if (!heading.length || await pending.count() || heading.some(text => /Loading…|Still checking your access/i.test(text))) observed = 'inspect';
   return { route, final, http, observed, heading };
 }
 
@@ -113,7 +127,7 @@ export async function scanInventory({ evidence, origin, runtime, pageFor, login,
   const sources = sourcePages(rows);
   assert.equal(sources.filter(row => row.coverage === 'unmapped').length, 0,
     'A route is missing from the page inventory: ' + sources.filter(row => row.coverage === 'unmapped').map(row => row.route).join(', '));
-  const replacement = priority.find(result => result.id === 'C3')?.route;
+  const coverage = priority.find(result => result.id === 'C5')?.route;
   const captures = join(evidence, 'inventory');
   if (screenshots) await mkdir(captures, { recursive: true });
   const results = [];
@@ -137,7 +151,7 @@ export async function scanInventory({ evidence, origin, runtime, pageFor, login,
           results.push({ ...base, route: row.route, observed: 'separate fixture', detail: special.get(row.id) });
           continue;
         }
-        if (row.id === 'C3' && expected.startsWith('✓') && !replacement) {
+        if (row.id === 'C3' && expected.startsWith('✓') && !coverage) {
           results.push({ ...base, route: row.route, observed: 'manual workflow',
             detail: 'Schedule → Find Cover → Review replacement' });
           continue;
@@ -146,7 +160,7 @@ export async function scanInventory({ evidence, origin, runtime, pageFor, login,
           results.push({ ...base, route: row.route, observed: 'outside assigned profile' });
           continue;
         }
-        for (const [index, route] of concreteRoutes(row, profile, runtime, replacement).entries()) {
+        for (const [index, route] of concreteRoutes(row, profile, runtime, coverage).entries()) {
           try {
             const rendered = await visit(page, origin, route, row);
             const result = { ...base, ...rendered };

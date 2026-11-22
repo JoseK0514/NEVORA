@@ -119,16 +119,17 @@ async function checkFindCover(page) {
   await page.getByRole('heading', { name: 'Review replacement', exact: true }).waitFor();
   assert.doesNotMatch(await page.locator('main').innerText(), /West Office/);
   await captureWidths(page, 'location-replacement-review');
-  record('C3', 'Location Manager opened Review replacement for a Main Office coverage gap', page.url().slice(url.length));
+  record('C3', 'Location Manager opened Review replacement for a Main Office coverage gap');
 
   const { target, repair } = selected;
+  const allowedRoute = target.pathname + target.search;
   target.searchParams.set('locationId', 'loc-2');
   target.searchParams.set('repair', JSON.stringify({ ...repair, locationId: 'loc-2' }));
   await page.goto(target.href);
   await page.getByText('Outside the locations you manage', { exact: true }).waitFor();
   assert.equal(await page.getByRole('heading', { name: 'Who can cover', exact: true }).count(), 0);
   assert.doesNotMatch(await page.locator('main').innerText(), /West Office/);
-  record('C5', 'Location Manager opened Find Cover from Schedule and an unassigned location was denied');
+  record('C5', 'Location Manager opened Find Cover from Schedule and an unassigned location was denied', allowedRoute);
 }
 
 async function checkPriority() {
