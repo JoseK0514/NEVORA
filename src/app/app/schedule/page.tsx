@@ -146,7 +146,7 @@ export default async function SchedulePage({
         readScopedCoverageGaps(proof,weekStart,source.data.selectedLocationId ?? undefined),
       ]);
       const openShifts = coverage.state === 'ready' && coverage.authority === source.authority ? coverage.data : null;
-      return withRepair(<ScopedScheduleB openShifts={openShifts} publishHref={canPublish?`/app/schedule/publish?week=${encodeURIComponent(weekStart)}`:undefined} data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}{(await currentPresentation()).modules.marketplace ? <Link href="/app/exchange/open-shifts" className="c-btn c-btn--secondary c-btn--md">Posted open shifts</Link> : null}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
+      return withRepair(<ScopedScheduleB openShifts={openShifts} postedHref={(await currentPresentation()).modules.marketplace ? "/app/exchange/open-shifts" : undefined} publishHref={canPublish?`/app/schedule/publish?week=${encodeURIComponent(weekStart)}`:undefined} data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
     }
   }
   async function renderSchedule(){

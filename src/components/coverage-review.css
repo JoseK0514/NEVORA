@@ -4,7 +4,7 @@
 :is(#c-root, html) .c-review .c-review__open { color: var(--c-ink2); font-weight: 500; }
 :is(#c-root, html) .c-review .c-review__arrow { width: 18px; height: 18px; color: var(--c-teal); flex: none; }
 :is(#c-root, html) .c-review .c-review__when { margin: 0; font-size: 0.9375rem; line-height: 1.375rem; color: var(--c-ink2); font-variant-numeric: tabular-nums; }
-:is(#c-root, html) .c-review .c-review__when strong { font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-review .c-review__when strong { font-size: inherit; line-height: inherit; font-weight: 600; color: var(--c-ink); white-space: nowrap; }
 :is(#c-root, html) .c-review .c-line3 { display: block; margin-top: 2px; }
 :is(#c-root, html) .c-review .c-review__hours { margin: 8px 0 0; font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink); font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .c-review .c-review__muted { color: var(--c-grey); }

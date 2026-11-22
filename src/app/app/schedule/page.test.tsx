@@ -152,7 +152,7 @@ beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scope
 it('a location Manager with Publish schedules gets Publish; one without it gets no publish control (Phase 2, Nov 22, 2026)',async()=>{
  f.role='MANAGER';operationalPageFixture.scoped=true;operationalPageFixture.publish=true;
  const granted=await html();
- expect(granted).toMatch(/<a[^>]*href="\/app\/schedule\/publish\?week=[^"]+"[^>]*>Publish<\/a>/);
+ expect(granted).toMatch(/<a[^>]*href="\/app\/schedule\/publish\?week=[^"]+"[^>]*>Publish week<\/a>/);
  expect(granted).toContain('Add shift');
  operationalPageFixture.publish=false;
  const plain=await html();

@@ -63,7 +63,7 @@ it("renders the original assignee, the ranked week hours, and the words for cano
 it("explains the midnight boundary without changing canonical 24:00", async () => {
   // Times and dates are kept whole with no-break spaces; compare the words.
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) })).replace(/\u00a0/g, " ");
-  expect(html.replace(/<[^>]+>/g, "").replace(/[\u2009\u202f]/g, " ")).toMatch(/8 ?PM – 12 ?AM/);
+  expect(html.replace(/<[^>]+>/g, "").replace(/[\u2009\u202f]/g, " ")).toMatch(/8:00 ?PM – 12:00 ?AM/);
   expect(html.replace(/\u00a0/g, " ")).toContain("Ends Tue, Oct 8");
   expect(html).toContain('name="endTime" value="24:00"');
 });

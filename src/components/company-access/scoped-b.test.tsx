@@ -9,12 +9,13 @@ import { ScopedHomeB, ScopedScheduleB } from "./scoped-b";
 
 const one = [{ id: "loc-2", name: "Northside Bakery — Condado", shortName: "Condado" }];
 const view = { state: "ready", employeeId: "m", role: "MANAGER", source: "OWNER_ASSIGNMENT", scope: { mode: "LOCATIONS" }, scopeRevision: 1, authority: "a", locations: one, observedAt: "2026-11-22T12:00:00Z", validForMs: 15000 } as never;
-const gap = { id: "g1", title: "Open shift", detail: "Mon, Nov 23 · 6:00 AM – 2:00 PM", href: "/app/schedule/coverage?x=1" };
+const gap = { id: "g1", title: "Coverage gap at Condado", detail: "Mon, Nov 23 · 6:00 AM–2:00 PM · Need 1 employee", href: "/app/schedule/coverage?x=1" };
 
 it("Home names the one place in the band, puts open shifts first with Find cover, and drops the access paragraph", () => {
   const html = renderToStaticMarkup(createElement(ScopedHomeB, { view, openShifts: [gap], scheduleHref: "/app/schedule?week=2026-11-23" }));
   expect(html).toContain(">Condado<");
   expect(html).toContain("Find cover");
+  expect(html).not.toContain("Coverage gap at");
   expect(html).toContain('href="/app/schedule/coverage?x=1"');
   expect(html).not.toContain("company-wide");
   expect(html.indexOf("Open shifts")).toBeLessThan(html.indexOf("Clocked in now"));
@@ -53,5 +54,5 @@ it("Schedule with several places keeps the filter and names the location on each
   const html = renderToStaticMarkup(createElement(ScopedScheduleB, { data: data([...one, { id: "loc-3", name: "Northside Bakery — Loíza", shortName: "Loíza" }]), observation, publishHref: "/app/schedule/publish?week=2026-11-23" }));
   expect(html).toContain('name="location"');
   expect(html).toContain(" · Condado");
-  expect(html).toMatch(/href="\/app\/schedule\/publish\?week=2026-11-23"[^>]*>Publish<\/a>/);
+  expect(html).toMatch(/href="\/app\/schedule\/publish\?week=2026-11-23"[^>]*>Publish week<\/a>/);
 });

@@ -54,7 +54,9 @@ export function CoverageReview(props: CoverageReviewProps) {
   const overnight = endTime === "24:00" || endTime < startTime;
   const nextDay = overnight ? formatDayLabel(addDays(date, 1)) : null;
   const shortDate = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-  const time = compactRange(`${formatTime(startTime)} – ${formatTime(endTime)}`);
+  // An overnight or full-day shift keeps both halves ("12:00 AM – 12:00 AM", then "Ends Tue, Dec 8"); "12–12 AM" was ambiguous.
+  const full = `${formatTime(startTime)} – ${formatTime(endTime)}`;
+  const time = overnight ? full : compactRange(full);
   const facts = [props.positionName, props.isDesignatedLead ? "Shift lead" : null, nextDay ? `Ends ${nextDay.weekday},\u00a0${nextDay.day}` : null].filter(Boolean).join(" · ");
   const warnings = props.warnings;
   const saves = props.mode === "publish" || props.mode === "draft";
