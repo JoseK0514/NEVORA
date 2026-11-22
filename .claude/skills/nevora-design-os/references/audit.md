@@ -21,6 +21,8 @@ run it on your own UI work before reporting it. It is a review: don't edit files
 - Type steps follow the eight roles; no ad-hoc sizes; weight and size, not colour alone, separate levels.
 - Grouping matches meaning: related items share a card; unrelated items don't.
 - Scanning order matches the task order. The most frequent action is the easiest to reach (thumb zone on phones).
+- Density (`density.md`): each fact once per screen; rows are a title plus one line; the band holds the title and at
+  most three figures; one main action per card; explanations show once, not on every visit.
 
 ### 2. Spacing and alignment
 

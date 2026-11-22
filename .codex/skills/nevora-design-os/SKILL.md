@@ -22,6 +22,7 @@ them from there and don't copy them here, so both agents keep the same rules.
      `.claude/skills/nevora-design-os/references/voice.md` for the cliché ban and for specs, docs and reports
    - The Impeccable audit (hierarchy, spacing, accessibility, states): `.claude/skills/nevora-design-os/references/audit.md`
    - GSAP motion and reduced motion: `.claude/skills/nevora-design-os/references/motion-gsap.md`
+   - Density rules and how design choices are decided: `.claude/skills/nevora-design-os/references/density.md`
 
 Precedence: Jose's instruction in the conversation, then `DESIGN.MD` and `docs/design/voice.md`, then
 `src/app/b-tokens.css`, then this standard, then generic design guidance. It doesn't authorise brand, font, icon or
