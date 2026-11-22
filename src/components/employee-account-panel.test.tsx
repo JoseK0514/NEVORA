@@ -49,3 +49,12 @@ it('keeps the filters and offers Try again or Sign in when a read fails or the s
  const denied=renderToStaticMarkup(<EmployeeAccountView kind="notifications" state={{snapshot:{state:'unavailable',reason:'access_denied'},paused:false,refreshing:false}} onRetry={()=>{}} onMarkRead={async()=>{}}/>);
  expect(denied).toContain('Filter notifications');expect(denied).toMatch(/<a [^>]*class="b-btn b-btn--teal"[^>]*>Sign in<\/a>/);expect(denied).toContain('href="/login"');expect(denied).not.toContain('Try again');
 });
+
+it('keeps authorized Notifications rows during renewal and uses loading when expiry clears them',()=>{
+ const view=(snapshot:typeof inbox|null)=>renderToStaticMarkup(<EmployeeAccountView kind="notifications" state={{snapshot,paused:false,refreshing:true}} onRetry={()=>{}} onMarkRead={async()=>{}}/>);
+ expect(view(inbox)).toContain('<b>Time off update</b>');
+ const expired=view(null);
+ expect(expired).not.toContain('Time off update');
+ expect(expired).toContain('data-kind="loading"');
+ expect(expired).not.toContain('Notifications didn’t load');
+});
