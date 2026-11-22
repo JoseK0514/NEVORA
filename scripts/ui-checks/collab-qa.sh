@@ -13,6 +13,16 @@ if [[ ! -x "${NEVORA_TEST_PG_BIN:-}/initdb" ]]; then
   echo "Set NEVORA_TEST_PG_BIN to the absolute PostgreSQL binaries directory." >&2
   exit 1
 fi
+ready_attempts=240
+if [[ "${1:-}" == --production ]]; then
+  shift
+  case "${1:-}" in
+    --scoped-manager|--serve) ;;
+    *) echo "Use --production with --scoped-manager or --serve." >&2; exit 1 ;;
+  esac
+  export NEVORA_COLLAB_PRODUCTION=1
+  ready_attempts=600
+fi
 evidence="$(mktemp -d "${TMPDIR:-/tmp}/nevora-collab-qa.XXXXXXXX")"
 echo "Collab QA evidence directory $evidence"
 node_flags=(--conditions=react-server --import ./scripts/node-server-context.mjs --import tsx)
@@ -28,7 +38,7 @@ trap 'exit 143' TERM
 
 # The runtime manifest is published only after migrations, server startup and
 # fictional test data are ready. Leave the next log in the evidence directory.
-for ((attempt=0; attempt<240; attempt++)); do
+for ((attempt=0; attempt<ready_attempts; attempt++)); do
   [[ -s "$evidence/runtime.json" ]] && break
   if ! kill -0 "$launcher" 2>/dev/null; then
     echo "Collab workspace stopped during startup. See $evidence/launcher.log." >&2

@@ -12,6 +12,8 @@ import { needsYou } from "@/lib/action-center/needs-you";
 import { concernsActor, needsYouTotal, reviewRoute, timecardPeriod, type NeedsYouTotal } from "@/lib/action-center/review-routing";
 import { coverOutcomeText, otherShiftLine, swapShifts } from "@/lib/action-center/request-details";
 import { reviewCopy } from "@/components/review-details/copy";
+import { businessDate } from "@/lib/business-time";
+import { weekStartFor } from "@/lib/date-utils";
 import { dateRangeText } from "@/lib/duration-format";
 import { ATTENDANCE_WORDS, itemPerson, presentItem, readableDates, spacedRanges, splitNoClockIn } from "@/lib/action-center/present";
 import { actionCenterNavigation } from "./action-center-navigation";
@@ -171,12 +173,14 @@ const periodEnded = (item: ActionItem, day: string) => { const end = periodEnd(i
 /** Phase 4 (U03): this person may review it (the server's typed actorMayReview). */
 const mine = (item: ActionItem) => reviewRoute(item) === "mine";
 
-function shiftRow(shift: TodayShift, timeZone: string, observedAt: string | undefined, showPlace: boolean): Row {
+function shiftRow(shift: TodayShift, timeZone: string, observedAt: string | undefined, showPlace: boolean, scoped: boolean): Row {
   const entry = shiftEntry(shift, timeZone, observedAt, showPlace);
   const running = shift.status === "not_clocked_in";
   // R7 (copy row 9): the heading says Not clocked in or Missed clock-ins, so the line says only when the shift began or ended.
   const when = `Shift ${running ? "began" : "ended"} ${clock(running ? shift.startAt : shift.endAt, timeZone)}`;
-  return { key: entry.key, href: entry.href, label: entry.label, title: shift.employeeName, detail: plain(showPlace ? `${when} · ${shift.locationName}` : when),
+  const href = scoped ? '/app/schedule?' + new URLSearchParams({ week: weekStartFor(businessDate(new Date(shift.startAt), timeZone)), location: shift.locationId }) : entry.href;
+  const label = scoped ? `View scheduled shift for ${shift.employeeName}` : entry.label;
+  return { key: entry.key, href, label, title: shift.employeeName, detail: plain(showPlace ? `${when} · ${shift.locationName}` : when),
     value: running ? lateBy(shift, observedAt) : undefined, valueTone: "red" };
 }
 
@@ -204,7 +208,7 @@ function planRows(items: ActionItem[], timeZone: string): Row[] {
  * links still land. The headings' counts add up to the sidebar badge. Everything else the action center holds
  * (corrections and timecards that aren't urgent, planning and earlier gaps) is on Older items and is never counted.
  * Presentation only: the same reads and the same counts as before. */
-export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready" }>, today: Today | null, timeZone: string, coverageFirst: boolean) {
+export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready" }>, today: Today | null, timeZone: string, coverageFirst: boolean, scoped = false) {
   const day = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(snapshot.observedAt));
   const value = needsYou(snapshot.items, day, today?.state === "ready" ? today.missed : [], workspaceNow(snapshot.observedAt, timeZone));
   const urgent = value.now, later = value.planning;
@@ -224,8 +228,8 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
   const open: Group = { id: "open", title: "Open shifts", rows: of(["COVERAGE_GAP"], urgent).map(item => gapRow(item, timeZone, day))
     .map(row => ({ ...row, detail: row.detail?.replace(/ (\d+) open$/, " $1\u00a0open") })) };
   const time: Group[] = [
-    { id: "not-clocked-in", title: ATTENDANCE_WORDS.notClockedIn, rows: noClockIn.running.map(shift => shiftRow(shift, timeZone, snapshot.observedAt, places)) },
-    { id: "missed", title: "Missed clock-ins", rows: noClockIn.ended.map(shift => shiftRow(shift, timeZone, snapshot.observedAt, places)) },
+    { id: "not-clocked-in", title: ATTENDANCE_WORDS.notClockedIn, rows: noClockIn.running.map(shift => shiftRow(shift, timeZone, snapshot.observedAt, places, scoped)) },
+    { id: "missed", title: "Missed clock-ins", rows: noClockIn.ended.map(shift => shiftRow(shift, timeZone, snapshot.observedAt, places, scoped)) },
     { id: "now", title: "Needs attention now", rows: urgent.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !timeKinds.includes(item.type) && !isStaffingRepair(item)).map(item => itemRow(item, timeZone)) },
     // Phase 3 (MG-005): corrections that wait on this person can be decided today, so they sit with today's Time kinds
     // and are part of the count (needsYou counts them; the reviewer's own correction is another person's to decide).
@@ -284,10 +288,10 @@ export const toDoSentence = (n: number, exact = true) => n === 0 ? exact ? "Noth
 
 const groupCount = (group: Group) => group.count ?? group.rows.length;
 
-export function ManagerInboxCorp({ weekStart, actorId, timeZone, coverageFirst = false, view = "today" }: { weekStart: string; actorId: string; timeZone: string; coverageFirst?: boolean; view?: "today" | "more" }) {
+export function ManagerInboxCorp({ weekStart, actorId, timeZone, coverageFirst = false, view = "today", scoped = false }: { weekStart: string; actorId: string; timeZone: string; coverageFirst?: boolean; view?: "today" | "more"; scoped?: boolean }) {
   const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId);
   const { snapshot: today, refresh: refreshToday } = useToday();
-  return <ThingsToDoPage snapshot={snapshot} today={today} connection={connection} onRefresh={() => { refresh(); refreshToday(); }} timeZone={timeZone} coverageFirst={coverageFirst} view={view} />;
+  return <ThingsToDoPage snapshot={snapshot} today={today} connection={connection} onRefresh={() => { refresh(); refreshToday(); }} timeZone={timeZone} coverageFirst={coverageFirst} view={view} scoped={scoped} />;
 }
 
 const rowOf = (row: Row) => <li key={row.key}>
@@ -320,13 +324,13 @@ const moreCard = (timeOffShown: boolean) => <section key="more" id="todo-more" c
 </section>;
 
 /** Presentation only: the released action center observation and today's shifts. */
-export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, timeZone, coverageFirst = false, view = "today" }: {
+export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, timeZone, coverageFirst = false, view = "today", scoped = false }: {
   snapshot: ActionCenter | null; today?: Today | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; coverageFirst?: boolean;
   /** "more": Older items, the items Things to do doesn't count (its own page, Back to Things to do). */
-  view?: "today" | "more";
+  view?: "today" | "more"; scoped?: boolean;
 }) {
   const ready = connection === "ready" && snapshot?.state === "ready" ? snapshot : null;
-  const grouped = ready ? groupThingsToDo(ready, today, timeZone, coverageFirst) : null;
+  const grouped = ready ? groupThingsToDo(ready, today, timeZone, coverageFirst, scoped) : null;
   const value = grouped?.value ?? null, more = grouped?.more ?? [], families = grouped?.families ?? [], waiting = grouped?.waiting ?? [], closed = grouped?.closed ?? [];
   const exact = grouped?.total.exact ?? true;
   const moreView = view === "more";

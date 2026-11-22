@@ -234,7 +234,9 @@ function AppShellView({
   const identityReload=useIdentityReload(()=>router.refresh());
   const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity'){/* The session is no longer this person's: no "Discard changes?" and no browser prompt on the way out. */releaseDiscardGuards();identityReload.request();}else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router,identityReload]);
   const operational=useOperationalNavigation(user.id,user.role,operationalAuthority,accessChanged);
-  const inboxCount = useInboxCount(!employee && (user.role === 'OWNER' || operational.navigation?.state === 'ready' && operational.navigation.scope?.mode === 'COMPANY'), pathname);
+  const inboxAuthority = operational.navigation?.state === 'ready' && operational.navigation.scope
+    ? operational.navigation.authority : null;
+  const inboxCount = useInboxCount(!employee ? inboxAuthority : null, pathname);
   // Review B2 (NV-030): menus follow the last current scope while a check is slow, failed or offline.
   const context:NavContext = {...presentation, operational:operational.navigation??undefined};
   const navigation = navigationForRole(user.role, payrollCapabilities, context);

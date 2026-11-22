@@ -156,7 +156,7 @@ export function teamToolsForRole(role: UserRole, context: NavContext = {}): Navi
 export function managementNavigationGroups(items: NavigationItem[], tools: NavigationItem[] = [], role?: UserRole) {
   const manager = role === "MANAGER";
   const definitions = [
-    {label:'', hrefs:manager?['/app','/app/inbox','/app/schedule','/app/timecards','/app/payroll','/app/employees']:['/app','/app/schedule','/app/timecards','/app/payroll','/app/employees','/app/inbox']},
+    {label:'', hrefs:manager?['/app','/app/inbox','/app/schedule','/app/timecards','/app/timecards/corrections','/app/payroll','/app/employees']:['/app','/app/schedule','/app/timecards','/app/payroll','/app/employees','/app/inbox']},
     {label:manager?'':'More', hrefs:['/app/ai-manager','/app/reports','/app/updates','/app/schedule/settings','/app/schedule/templates','/app/availability','/app/exchange','/app/requests','/app/payroll-export','/app/my-pay','/app/settings']},
   ];
   const groups = definitions.map(group=>({label:group.label,items:group.hrefs.flatMap(href=>items.filter(item=>item.href===href))}));
@@ -168,7 +168,7 @@ export function managementNavigationGroups(items: NavigationItem[], tools: Navig
  * orders the items the role already has (plus the team tools passed in), and anything unlisted stays under "More". */
 export function moreNavigationGroups(items: NavigationItem[], tools: NavigationItem[] = []) {
   const definitions = [
-    {label: 'Time and pay', hrefs: ['/app/timecards', '/app/payroll', '/app/payroll-export', '/app/reports']},
+    {label: 'Time and pay', hrefs: ['/app/timecards', '/app/timecards/corrections', '/app/payroll', '/app/payroll-export', '/app/reports']},
     {label: 'Planning', hrefs: ['/app/schedule/templates', '/app/schedule/settings', '/app/updates', '/app/availability', '/app/exchange', '/app/requests']},
     {label: 'Account', hrefs: ['/app/profile', '/app/my-pay', '/app/settings']},
   ];
@@ -253,6 +253,11 @@ function baseNavigation(role: UserRole, payroll?: PayrollCapabilities, operation
     const rondo=ownerAdvisorEnabled&&managerAdvisorEnabled&&(scope?.mode==='COMPANY'||scope?.mode==='LOCATIONS'&&scope.locationIds.length>0)?[RONDO]:[];
     if(scope?.mode==='COMPANY')return [...management,...rondo];
     const allowed=new Set(['/app','/app/profile',...(scope?.mode==='LOCATIONS'&&scope.locationIds.length?['/app/schedule','/app/employees']:[]),...finance.map(item=>item.href)]);
+    if(scope?.mode==='LOCATIONS'&&scope.locationIds.length) {
+      allowed.add('/app/inbox');
+      return [...management.filter(item=>allowed.has(item.href)),
+        { href: '/app/timecards/corrections', label: 'Time corrections', icon: 'clock' }, ...rondo];
+    }
     return [...management.filter(item=>allowed.has(item.href)),...rondo];
   }
 

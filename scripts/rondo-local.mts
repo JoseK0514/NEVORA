@@ -12,12 +12,13 @@ import { assertExternalEvidencePath, createOwnedNextApp } from '../src/test/inte
 import { assignOwnedManagerCompanyAccess, grantOwnedManagerWorkforcePermission, seedOwnedApp, seedOwnedScenario, setOwnedEmployeeRole, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
 import { createOwnedSmtp } from '../src/test/integration/owned-smtp';
 import { fixtureProof } from '../src/test/integration/shift-change-api';
-import { seedCollabPageData } from './ui-checks/collab-data.mts';
+import { seedCollabPageData, seedScopedManagerCases } from './ui-checks/collab-data.mts';
 
 const bin = process.env.NEVORA_TEST_PG_BIN;
 const [evidence, mode, ...extra] = process.argv.slice(2);
 if ((mode !== undefined && mode !== '--collab') || extra.length) throw Error('Usage: scripts/rondo-local.mts EVIDENCE_DIR [--collab]');
 const collab = mode === '--collab';
+const production = collab && process.env.NEVORA_COLLAB_PRODUCTION === '1';
 if (!bin || !isAbsolute(bin) || !evidence || !isAbsolute(evidence)) {
   throw Error('Set NEVORA_TEST_PG_BIN to a PostgreSQL bin directory and pass a new absolute evidence directory outside the repository.');
 }
@@ -62,7 +63,7 @@ try {
   pg('pg_ctl', ['-D', data, '-l', join(scratch, 'postgres.log'), '-w', 'start', '-o', `-h 127.0.0.1 -p ${port} -k ${scratch}`]);
   process.env.FUEL_TEST_DATABASE_URL = `postgresql://nevora_test:${password}@127.0.0.1:${port}/nevora_exchange_test_rondo_local`;
   process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN = 'yes';
-  if (collab) {
+  if (collab && !production) {
     smtp = await createOwnedSmtp(body => writeFileSync(join(evidence, 'fictional-signup.eml'), body, { mode: 0o600 }));
   }
   app = await createOwnedNextApp(evidence, {
@@ -70,7 +71,7 @@ try {
     ownerAdvisorKnowledgeEnabled: true, ownerAdvisorWeeklyEnabled: true,
     ownerAdvisorBusinessImportsEnabled: true, ownerAdvisorBusinessRetrievalEnabled: false,
     ...(collab ? {
-      production: false, clockerPinKey: randomBytes(32).toString('hex'), clockerPunchEnabled: true,
+      production, clockerPinKey: randomBytes(32).toString('hex'), clockerPunchEnabled: true,
       mobileAccessEnabled: true, mobileSupportEnabled: true, nativeAlertsEnabled: true,
       passkeysEnabled: true, deviceAlertsEnabled: true, payrollEnabled: true, signupSmtpPort: smtp?.port,
       initializeDatabase: async ({ executor }) => {
@@ -116,8 +117,9 @@ try {
       await grantOwnedManagerWorkforcePermission(executor, profiles.Ml, 'loc-1', permission);
     }
     const pages = await seedCollabPageData(executor, owner, week);
+    const scopedManager = await seedScopedManagerCases(executor, owner);
     const checkpoint = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-    await writeFile(join(evidence, 'runtime.pending.json'), JSON.stringify({ url: app.url, checkpoint, ...scenario, profiles, pages }, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
+    await writeFile(join(evidence, 'runtime.pending.json'), JSON.stringify({ url: app.url, checkpoint, ...scenario, profiles, pages, scopedManager, production }, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
     await rename(join(evidence, 'runtime.pending.json'), join(evidence, 'runtime.json'));
   }
 

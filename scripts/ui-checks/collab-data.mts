@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { saveBreakType } from '../../src/lib/clocker/break-types.server';
-import { addDays } from '../../src/lib/date-utils';
+import { businessDate } from '../../src/lib/business-time';
+import { createTimeOffRequest } from '../../src/lib/data/requests';
+import { submitTimeCorrection } from '../../src/lib/time-corrections/service';
+import { fixtureProof } from '../../src/test/integration/shift-change-api';
+import { publishScheduleWithRevision } from '../../src/test/integration/management-api';
+import { addDays, weekStartFor } from '../../src/lib/date-utils';
 import { executeCommunicationCommand, previewCommunicationAudience } from '../../src/lib/communications/service.server';
 import { executeScheduleCopy } from '../../src/lib/data/schedule-copy';
 import type { SqlExecutor } from '../../src/lib/notifications/types';
@@ -45,4 +50,36 @@ export async function seedCollabPageData(executor: SqlExecutor, owner: SessionMu
     if (priorPayroll === undefined) delete process.env.NEVORA_PAYROLL_ENABLED;
     else process.env.NEVORA_PAYROLL_ENABLED = priorPayroll;
   }
+}
+
+/** Seed equivalent real work on each side of the Manager's location boundary. */
+export async function seedScopedManagerCases(executor: SqlExecutor, owner: SessionMutationProof) {
+  const zone = 'America/Puerto_Rico';
+  const today = businessDate(new Date(), zone);
+  const week = weekStartFor(today);
+  const worked = addDays(today, -2);
+  const records = [];
+  for (const [location, name] of [['loc-1','MainScopeWorker'], ['loc-2','WestScopeWorker']]) {
+    const employeeId = 'QA-' + name.toUpperCase();
+    const scheduleId = 'scope-qa-' + location;
+    await executor.transaction([
+      { text: "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'Fictional','555-0188','EMPLOYEE',$3)", values: [employeeId, name, location] },
+      { text: 'INSERT INTO employee_location_eligibility VALUES($1,$2)', values: [employeeId, location] },
+      { text: "INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,$2,$3,'DRAFT',$4)", values: [scheduleId, location, week, owner.employee.id] },
+      { text: "INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) VALUES($1,$2,$3,$4,'00:00','00:30','qa-pos')", values: [scheduleId + '-shift', scheduleId, employeeId, today] },
+    ]);
+    const published = await publishScheduleWithRevision({ locationId: location, weekStart: week, managerId: owner.employee.id }, executor);
+    if (!published.published) throw Error('Fictional scope schedule was not published');
+    const worker = await fixtureProof(executor, employeeId);
+    const correction = await submitTimeCorrection(worker, {
+      kind:'MISSING_ENTRY', operationId:randomUUID(), locationId:location, reason:'Fictional location scope correction',
+      proposedStartAt:worked + 'T08:00:00-04:00', proposedEndAt:worked + 'T09:00:00-04:00',
+    }, executor);
+    if (correction.status !== 'pending') throw Error('Fictional scope correction was not submitted');
+    const leaveId = randomUUID();
+    const leaveDay = addDays(today, 2);
+    await createTimeOffRequest({ requestId: leaveId, employeeId, proof: worker, startDate: leaveDay, endDate: leaveDay }, executor);
+    records.push({ location, name, employeeId, correctionId: correction.requestId, leaveId });
+  }
+  return { week, records };
 }

@@ -166,7 +166,7 @@ which are the notice and not-found pages themselves.
 | B1 | Home | `/app` | ✓* | ✓* | ✓* | ✓* | ✓* | B (Owner, Manager, Lead, Employee); Older (Mℓ: scoped Home) | Five versions: Owner, Manager, location Manager (`ScopedManagementHome`), Lead, Employee; first-run onboarding guide | O B 169w 4b · M B 160w 3b · Mℓ **Older** 71w 3b · L B 221w 3b · E B 188w 3b | ☐ |
 | B2 | More (phone menu) | `/app/more` | ✓* | ✓* | ✓* | ✓* | ✓* | Corp + B | Manager/Owner list vs Employee list | O B 23w 1b · M B 24w 1b · Mℓ B 14w 1b · L B 64w 1b · E B 64w 1b | ☐ |
 | B3 | Notifications | `/app/notifications` | ✓ | ✓ | ✓ | ✓ | ✓ | Quiet + B | Owner also sees the billing notice | O B 9w 3b · M **Mixed** 40w 2b · Mℓ B 17w 0b · L B 93w 4b · E B 92w 3b | ☐ |
-| B4 | Things to do (manager inbox) | `/app/inbox` | ✓ | ✓ | n† | → | → | Corp | Lead and Employee go to Requests hub | O B 365w 4b · M B 317w 4b · Mℓ n · L → · E → | ☐ |
+| B4 | Things to do (manager inbox) | `/app/inbox` | ✓ | ✓ | ✓* | → | → | Corp | Lead and Employee go to Requests hub | O B 365w 4b · M B 317w 4b · Mℓ n · L → · E → | ☐ |
 | B5 | Requests hub (employee) | `/app/requests/hub` | n | n | n | ✓ | ✓ | B | Managers see "This Requests page is for employees" | O n · M n · Mℓ n · L B 106w 2b · E B 106w 2b | ☐ |
 | B6 | Updates (messages) | `/app/updates` | ✓* | ✓* | n† | ✓* | ✓* | Mixed | When the Updates module is on | O **Mixed** 47w 3b · M **Mixed** 47w 3b · Mℓ n · L B 52w 3b · E B 52w 3b | ☐ |
 | B7 | Update detail | `/app/updates/[id]` | ✓ | ✓ | n† | ✓ | ✓ | Mixed |  | O **Mixed** 41w 2b · M **Mixed** 41w 2b · Mℓ n · L B 66w 1b · E B 66w 1b | ☐ |
@@ -200,7 +200,7 @@ which are the notice and not-found pages themselves.
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | D1 | Timecards | `/app/timecards` | ✓* | ✓* | n† | →† | →† | Mixed (manager table; B for Employee/Lead hours) | Approve and finalize; bulk bar; inspector | O B 134w 2b · M B 133w 2b · Mℓ n · L → · E → | ☐ |
-| D2 | Time corrections (review) | `/app/timecards/corrections` | ✓ | ✓ (grant) | ✓ (grant) | – | – | Corp | Shows "You don't have access" without the grant | O B 176w 2b · M n · Mℓ n · L – · E – | ☐ |
+| D2 | Time corrections (review) | `/app/timecards/corrections` | ✓ | ✓ (grant) | ✓ (grant) | – | – | Corp | Managers need Review time exceptions for each location on the request | O B 176w 2b · M n · Mℓ n · L – · E – | ☐ |
 | D3 | Fix someone's time (delegated correction) | `/app/timecards/corrections/new/[employeeId]` | ✓ | ✓ | n† | – | – | Corp |  | O B 49w 1b · M B 49w 1b · Mℓ n | ☐ |
 | D4 | My time | `/app/my-time` | n | n | n | ✓ | ✓ | B | Managers see "My time is for employees" | O n · M n · Mℓ n · L B 149w 1b · E B 149w 1b | ☐ |
 | D5 | Clocker recovery review | `/app/clocker-recovery` | ✓ | – | – | – | – | Own | Punches that need review | O B 75w 2b · M – · Mℓ – | ☐ |

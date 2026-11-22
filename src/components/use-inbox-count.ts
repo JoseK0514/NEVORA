@@ -8,13 +8,14 @@ import { announceFailure, nevoraFailure } from "@/lib/http/nevora-failure";
  * on screen), and gives null whenever the count isn't confirmed, so the tab shows no badge rather than a guess. */
 const absent = new Set<string>();
 /** Review fix (38/50): navigations re-ran the read on every pathname change; a count under 20s old is reused. */
-let cached: { at: number; value: number | null } | null = null;
+let cached: { key: string; at: number; value: number | null } | null = null;
 
-export function useInboxCount(enabled: boolean, pathname: string | null): number | null {
+export function useInboxCount(key: string | null, pathname: string | null): number | null {
   // Review fix (38/50): a count under 20s old seeds the state, so navigations reuse it instead of refetching.
-  const [count, setCount] = useState<number | null>(() => (cached && Date.now() - cached.at < 20_000 ? cached.value : null));
+  const [count, setCount] = useState<{ key: string; value: number | null } | null>(() =>
+    cached?.key === key && Date.now() - cached.at < 20_000 ? cached : null);
   useEffect(() => {
-    if (!enabled) return;
+    if (!key) return;
     let active = true;
     let controller: AbortController | null = null;
     // Before Codex's endpoint is merged (and on any build without it), a 404 means "no count here": stop asking for this
@@ -31,17 +32,18 @@ export function useInboxCount(enabled: boolean, pathname: string | null): number
         const body: unknown = response.ok ? await response.json() : null;
         const ready = body && typeof body === "object" && (body as { state?: unknown }).state === "ready" && Number.isInteger((body as { count?: unknown }).count) && (body as { count: number }).count >= 0;
         const value = ready ? (body as { count: number }).count : null;
-        cached = { at: Date.now(), value };
-        if (active) setCount(value);
+        cached = { key, at: Date.now(), value };
+        if (active) setCount({ key, value });
       } catch (error) {
         if (active && !(error instanceof DOMException && error.name === "AbortError")) setCount(null);
       }
     };
     const visibility = () => { if (document.visibilityState === "hidden") { controller?.abort(); setCount(null); } else void read(); };
-    if (!(cached && Date.now() - cached.at < 20_000)) void read();
+    if (cached?.key === key && Date.now() - cached.at < 20_000) setCount(cached);
+    else void read();
     const timer = window.setInterval(() => void read(), 60_000);
     document.addEventListener("visibilitychange", visibility);
     return () => { active = false; controller?.abort(); window.clearInterval(timer); document.removeEventListener("visibilitychange", visibility); };
-  }, [enabled, pathname]);
-  return enabled ? count : null;
+  }, [key, pathname]);
+  return key && count?.key === key ? count.value : null;
 }

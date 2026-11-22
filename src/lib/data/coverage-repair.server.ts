@@ -180,7 +180,7 @@ async function scopedCoverageRead<T>(
   }
 }
 
-export async function readScopedCoverageGaps(proof: SessionMutationProof, weekStart: string, locationId?: string, executor?: SqlExecutor) {
+export async function readScopedCoverageActions(proof: SessionMutationProof, weekStart: string, locationId?: string, executor?: SqlExecutor) {
   if (!isValidWeekStart(weekStart)) return {state:'unavailable' as const,reason:'access_denied' as const};
   return scopedCoverageRead(proof, locationId, (source, locationIds, workspaceId) => {
     const facts = coverageFacts(source, weekStart, workspaceId);
@@ -189,9 +189,14 @@ export async function readScopedCoverageGaps(proof: SessionMutationProof, weekSt
       .filter(block => !block.covered && block.gap !== null && block.requiresLead !== null && block.date >= today)
       .map(block => ({...block,requiresLead:block.requiresLead && !block.leadCovered}));
     return buildManagerActionItems({weekStart,coverageGaps:gaps,availabilityDeadlineSet:true,coverageRulesConfigured:true})
-      .filter(item => item.type === 'COVERAGE_GAP')
-      .map(({id,title,detail,href}) => ({id,title,detail,href}));
+      .filter(item => item.type === 'COVERAGE_GAP');
   }, executor);
+}
+
+export async function readScopedCoverageGaps(proof: SessionMutationProof, weekStart: string, locationId?: string, executor?: SqlExecutor) {
+  const result = await readScopedCoverageActions(proof, weekStart, locationId, executor);
+  if (result.state !== 'ready') return result;
+  return { ...result, data: result.data.map(({id,title,detail,href}) => ({id,title,detail,href})) };
 }
 
 function safeCandidates(facts: SchedulingSourceFacts, locationId: string, candidates: ReturnType<typeof rankForPeriod>) {

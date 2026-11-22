@@ -7,11 +7,13 @@ import { TEST_PASSWORD } from '../../src/test/integration/owned-app-fixture.ts';
 import { checkClocker } from './collab-clocker.mjs';
 import { scanInventory, finishInventory } from './collab-inventory.mjs';
 import { checkNativeAlerts } from './collab-native.mjs';
+import { checkScopedManager } from './collab-scoped-manager.mjs';
 import { checkSignup } from './collab-signup.mjs';
 
 const [evidence, ...options] = process.argv.slice(2);
-assert.ok(options.every(option => ['--inventory', '--inventory-only', '--screenshots', '--signup-only'].includes(option)), 'Unknown collab browser option.');
+assert.ok(options.every(option => ['--inventory', '--inventory-only', '--screenshots', '--signup-only', '--scoped-manager'].includes(option)), 'Unknown collab browser option.');
 const inventoryOnly = options.includes('--inventory-only');
+const scopedOnly = options.includes('--scoped-manager');
 const signupOnly = options.includes('--signup-only');
 const inventoryEnabled = inventoryOnly || options.includes('--inventory');
 assert.ok(evidence && isAbsolute(evidence), 'Pass the absolute evidence directory of the running collab sandbox.');
@@ -174,7 +176,8 @@ try {
   const workflowErrors = [];
   if (!inventoryOnly && !signupOnly) {
     try {
-      await checkPriority();
+      if (!scopedOnly) await checkPriority();
+      await checkScopedManager({ runtime, login, captureWidths, record });
     } catch (error) {
       workflowErrors.push(error);
     } finally {
