@@ -14,6 +14,13 @@ it('keeps saved-key removal available when this browser cannot create credential
 it.each(['loading','paused','unavailable','denied','disabled','ended'] as const)('never renders private metadata or removal review while %s',phase=>{
  const html=render({phase},true,true);expect(html).not.toContain('My phone');expect(html).not.toContain('>Add a passkey<');
 });
+it('fills the disabled Passkeys page with a status and no credential actions',()=>{
+ const html=render({phase:'disabled'});
+ expect(html).toContain('data-passkey-state="disabled"');
+ expect(html).toContain('Passkeys aren’t available here');
+ expect(html).toContain('You can still sign in with your password.');
+ expect(html).not.toContain('Add a passkey');
+});
 it('separates current uncertainty from saved facts and never offers blind mutation retry',()=>{
  const html=render({phase:'unavailable',passkeys:null,needsRefresh:true,notice:'We could not confirm the result.'});expect(html).toContain('Refresh passkeys');expect(html).not.toContain('Try setup again');
 });
