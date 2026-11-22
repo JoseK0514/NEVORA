@@ -12,6 +12,8 @@ import {activateInitialOwner} from '@/lib/onboarding/owner-activation.server';
 import {openOnboardingValue} from '@/lib/onboarding/crypto.server';
 import {verifyOwnedIsolatedRuntime} from './owned-isolated-runtime';
 import {startOwnedDomainProxy} from './owned-domain-proxy';
+import {startOwnedTlsProxy} from './owned-tls-proxy';
+import {checkProductionWorkspaceScreens,type ProductionWorkspaceScreen} from './step4-production-screens';
 import {createOwnedSmtp} from './owned-smtp';
 import {resolveWorkspaceBinding} from '@/lib/workspace-routing/resolver.server';
 import {withWorkspaceBinding} from '@/lib/workspace-routing/context.server';
@@ -41,7 +43,9 @@ import {startOwnedFinanceBridge,ownedHttpRequest} from './owned-isolated-finance
 import {AUTH_COPY,type AuthLang} from '@/lib/auth-copy';
 import {withManagementBrowserEvidence} from './management-browser-evidence';
 
-it('completes the fictional-company lifecycle and restricted recovery resilience on actual owned company databases',async()=>{
+const production=process.env.NEVORA_OWNED_ONBOARDING_PRODUCTION_BUILD==='1';
+it(production?'exercises authenticated billing, staff import and paused Clocker in the production build':
+ 'completes the fictional-company lifecycle and restricted recovery resilience on actual owned company databases',async()=>{
  const root=process.env.NEVORA_STEP4_EVIDENCE;if(!root)throw Error('Explicit Step4 evidence directory required');await mkdir(root,{recursive:true});
  const runtime=createRequire(resolve('tools/ci-browser-runtime/package.json'))('playwright');
  const {observeWindowExceptions}=await import(pathToFileURL(resolve('scripts/browser-navigation-diagnostic.mjs')).href);
@@ -52,8 +56,18 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
  };
  const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),tree=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();
  const stages:{stage:string;state:string}[]=[],network:{path:string;method:string;status:number;ownedDomain:boolean}[]=[],browserDiagnostics:Record<string,unknown>={},ownedAppRoots:string[]=[],matrix:unknown[]=[],matrixClosed:string[]=[];let admissionComplete=false,lifecycleComplete=false,resilienceComplete=false,networkDropped=0;
+ const productionScreens:ProductionWorkspaceScreen[]=[];let productionScreensComplete=false;
  await withOwnedTestResources(async defer=>{
-  defer(async()=>{const ownership=await Promise.all(ownedAppRoots.map(async appRoot=>{const value=JSON.parse(await readFile(join(appRoot,'ownership.json'),'utf8'));return {closed:value.closed===true,sourceVerified:value.sourceVerified===true,mirrorVerified:value.mirrorVerified===true};}));const internalRedirectFailures=(await Promise.all(ownedAppRoots.map(appRoot=>readFile(join(appRoot,'next.log'),'utf8')))).flatMap(log=>log.split('\n').filter(line=>line.includes('failed to get redirect response')||line.includes('Owned isolated ingress: refused-'))).length;const cleanupVerified=ownership.length===2&&ownership.every(value=>value.closed&&value.sourceVerified&&value.mirrorVerified);await writeFile(join(root,'report.json'),JSON.stringify({sourceSha,tree,complete:lifecycleComplete&&resilienceComplete&&cleanupVerified&&internalRedirectFailures===0&&runtimeErrors.length===0&&windowExceptions.length===0&&runtimeErrorsDropped===0,admissionComplete,lifecycleComplete,resilienceComplete,cleanupVerified,internalRedirectFailures,ownership,stages,network,networkDropped,runtimeErrors,windowExceptions,runtimeErrorsDropped,browserDiagnostics,matrix,matrixClosed,scope:'Combined local source; owned provisioning and actual browser password sign-in/SQL/SDK. Explicit local HTTP/domain and Neon SQL transports, controlled application/commerce clock and provider/delivery fixtures. No hosted/TLS/physical-device/legal/provider acceptance.'},null,2));expect(internalRedirectFailures).toBe(0);});
+  defer(async()=>{
+   if(production){
+    const ownership=ownedAppRoots[0]?JSON.parse(await readFile(join(ownedAppRoots[0],'ownership.json'),'utf8')):null;
+    const cleanupVerified=ownership?.closed===true&&ownership.sourceVerified===true&&ownership.mirrorVerified===true;
+    const complete=productionScreensComplete&&cleanupVerified&&Boolean(ownership?.productionBuild)&&runtimeErrors.length===0&&windowExceptions.length===0&&runtimeErrorsDropped===0&&networkDropped===0&&network.every(entry=>entry.ownedDomain);
+    await writeFile(join(root,'production-report.json'),JSON.stringify({sourceSha,tree,production:true,complete,cleanupVerified,stages,productionScreens,network,runtimeErrors,windowExceptions,runtimeErrorsDropped,networkDropped},null,2)+'\n');
+    if(productionScreensComplete)expect(complete).toBe(true);
+    return;
+   }
+   const ownership=await Promise.all(ownedAppRoots.map(async appRoot=>{const value=JSON.parse(await readFile(join(appRoot,'ownership.json'),'utf8'));return {closed:value.closed===true,sourceVerified:value.sourceVerified===true,mirrorVerified:value.mirrorVerified===true};}));const internalRedirectFailures=(await Promise.all(ownedAppRoots.map(appRoot=>readFile(join(appRoot,'next.log'),'utf8')))).flatMap(log=>log.split('\n').filter(line=>line.includes('failed to get redirect response')||line.includes('Owned isolated ingress: refused-'))).length;const cleanupVerified=ownership.length===2&&ownership.every(value=>value.closed&&value.sourceVerified&&value.mirrorVerified);await writeFile(join(root,'report.json'),JSON.stringify({sourceSha,tree,complete:lifecycleComplete&&resilienceComplete&&cleanupVerified&&internalRedirectFailures===0&&runtimeErrors.length===0&&windowExceptions.length===0&&runtimeErrorsDropped===0,admissionComplete,lifecycleComplete,resilienceComplete,cleanupVerified,internalRedirectFailures,ownership,stages,network,networkDropped,runtimeErrors,windowExceptions,runtimeErrorsDropped,browserDiagnostics,matrix,matrixClosed,scope:'Combined local source; owned provisioning and actual browser password sign-in/SQL/SDK. Explicit local HTTP/domain and Neon SQL transports, controlled application/commerce clock and provider/delivery fixtures. No hosted/TLS/physical-device/legal/provider acceptance.'},null,2));expect(internalRedirectFailures).toBe(0);});
   const catalog=await freshOnboardingDatabase();defer(()=>catalog.close());await catalog.pool.query(await readFile(new URL('../../../services/commerce/schema.sql',import.meta.url),'utf8'));
   const store=new CommerceStore(catalog.pool,Buffer.alloc(32,19)),bindingKey=Buffer.alloc(32,23).toString('base64url'),provider=new StripeFixture();
   const f=await onboardingJourneyFixture({commerce:{key:bindingKey,workerKey:Buffer.alloc(32,24).toString('base64url'),enroll:input=>store.enrollWorkspace(input)}});defer(()=>f.close());
@@ -90,18 +104,49 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   await company.resource.db.pool.query(`COMMENT ON DATABASE "${company.resource.db.name}" IS '${marker}'`);
   stages.push({stage:'substituted-company-identity-refused-before-launch',state:'passed'});
   const smtp=await createOwnedSmtp();defer(()=>smtp.close());
-  const app=await createOwnedNextApp(join(root,'app'),{...options,invitationSmtpPort:smtp.port,payrollEnabled:true,clockerPunchEnabled:true,clockerPinKey:Buffer.alloc(32,61).toString('hex')});defer(()=>app.close());
+  const app=await createOwnedNextApp(join(root,'app'),{...options,production,...(production?{}:{invitationSmtpPort:smtp.port}),payrollEnabled:true,clockerPunchEnabled:true,clockerPinKey:Buffer.alloc(32,61).toString('hex')});defer(()=>app.close());
   ownedAppRoots.push(app.root);
   apps.set(company.origin,app);
-  const front='http://alpha.step4.localhost',proxy=await startOwnedDomainProxy(app.url,{[front]:company.origin});defer(()=>proxy.close());
-  const browser=await runtime.chromium.launch({headless:true});defer(()=>browser.close());const context=await browser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}});await watchContext(context,'primary');const page=await context.newPage();page.setDefaultTimeout(15000);
+  const front=production?company.origin:'http://alpha.step4.localhost';
+  const proxy=production?await startOwnedTlsProxy({[front]:app.url}):await startOwnedDomainProxy(app.url,{[front]:company.origin});defer(()=>proxy.close());
+  const contextOptions={serviceWorkers:'block' as const,proxy:{server:proxy.server},ignoreHTTPSErrors:production};
+  const browser=await runtime.chromium.launch({headless:true});defer(()=>browser.close());const context=await browser.newContext(contextOptions);await watchContext(context,'primary');const page=await context.newPage();page.setDefaultTimeout(15000);
   await context.tracing.start({screenshots:true,snapshots:true});defer(()=>context.tracing.stop({path:join(root,'admission-trace.zip')}));
   const observe=(target:typeof page,expectedOrigin=front)=>target.on('response',(response:{url():string;status():number;request():{method():string}})=>{const url=new URL(response.url());if(url.pathname.startsWith('/_next/')||url.pathname.startsWith('/fonts/')||url.pathname.startsWith('/images/'))return;if(network.length<512)network.push({path:url.pathname,method:response.request().method(),status:response.status(),ownedDomain:url.origin===expectedOrigin});else networkDropped++;});observe(page);
   await page.goto(front+'/login');expect(await page.evaluate(()=>({secure:isSecureContext,randomUUID:typeof crypto.randomUUID}))).toEqual({secure:true,randomUUID:'function'});await page.getByLabel('Employee ID',{exact:true}).fill('OWNER-1');await page.getByLabel('Password',{exact:true}).fill(password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(front+'/app');
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='OWNER-1'")).rows).toEqual([{n:1}]);stages.push({stage:'normal-owner-browser-sign-in-on-provisioned-company',state:'passed'});
   const setup=await page.evaluate(async()=>{const response=await fetch('/api/onboarding/state',{credentials:'same-origin',cache:'no-store'});return {status:response.status,body:await response.json()};});
   expect(setup.status).toBe(200);expect(setup.body.state).toBe('ready');expect(setup.body.configuration.people.map((person:{id:string})=>person.id)).toContain('OWNER-1');stages.push({stage:'actual-owner-setup-http-and-company-authority',state:'passed'});
+  await page.goto(front+'/app/employees/import');
+  await page.getByRole('heading',{name:'Import a staff list',exact:true}).first().waitFor();
+  await page.getByRole('textbox',{name:'Staff list',exact:true}).waitFor();
+  await page.screenshot({path:join(root,'owner-staff-list-import.png')});
+  browserDiagnostics.ownerStaffListImport = { formRendered: true, screenshot: 'owner-staff-list-import.png' };
+  await page.goto(front+'/app');
   const billingStatus=await page.evaluate(async()=>{const response=await fetch('/api/commerce/status',{credentials:'same-origin',cache:'no-store'});return {status:response.status,body:await response.json()};});expect(billingStatus.status).toBe(200);expect(billingStatus.body.state).toBe('trial');expect(billingStatus.body.operational).toBe(true);stages.push({stage:'actual-enrolled-catalog-trial-and-company-owner-browser-billing-authority',state:'passed'});
+  if(production){
+   const id=setup.body.configuration.locations[0].id as string;
+   const location=await company.resource.db.pool.query('SELECT clocker_key FROM locations WHERE id=$1',[id]);
+   const trialEnd=(await store.business(company.row.workspace_id)).trialEnd;
+   if(trialEnd===null||!location.rows[0]?.clocker_key)throw Error('Production fixture requires the provisioned trial and location');
+   await checkProductionWorkspaceScreens({
+    runtime,browser,page,contextOptions,origin:front,password,location:{id,clockerKey:location.rows[0].clocker_key},
+    directory:root,watch:watchContext,results:productionScreens,
+    async verifyImport(employeeId){
+     const {rows}=await company.resource.db.pool.query('SELECT id,role,primary_location_id FROM employees WHERE id=$1',[employeeId]);
+     expect(rows).toEqual([{id:employeeId,role:'EMPLOYEE',primary_location_id:id}]);
+    },
+    async pause(){
+     // A canceled subscription after the original trial exercises the real
+     // Clocker document redirect without taking the trial-continuation exception.
+     const result=await catalog.pool.query("UPDATE commerce.businesses SET subscription_status='canceled' WHERE id=$1",[company.row.workspace_id]);
+     expect(result.rowCount).toBe(1);
+     finance.advance(company.origin,trialEnd+60001-realNow());
+    },
+   });
+   productionScreensComplete=true;
+   return;
+  }
   // A cold WebKit document before clock advancement separates browser delivery
   // from financial expiry. Only safe request paths and presentation are retained.
   const probeBrowser=await runtime.webkit.launch({headless:true}),probeContext=await probeBrowser.newContext({serviceWorkers:'block',proxy:{server:proxy.server}});await watchContext(probeContext,'webkit-admission');const probePage=await probeContext.newPage();probePage.setDefaultTimeout(15000);
@@ -234,7 +279,7 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   const verify=async()=>{await tablet.bringToFront();await idle();await tablet.getByLabel('Employee ID',{exact:true}).fill('EMP-1');await tablet.getByRole('button',{name:'Continue',exact:true}).click();await tablet.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await tablet.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});expect(await tablet.locator('input[name=pin]').inputValue()).toBe('');for(const digit of '2468')await tablet.getByRole('button',{name:'Number '+digit,exact:true}).click();await tablet.getByRole('button',{name:'Continue',exact:true}).click();};
   const done=async(action:string)=>{await tablet.getByRole('heading',{name:action+' recorded',exact:true}).waitFor();await tablet.getByRole('button',{name:'Done',exact:true}).click();await idle();};
   await verify();await tablet.getByRole('button',{name:'Clock in',exact:true}).click();await done('Clock in');
-  await verify();await tablet.getByRole('button',{name:'Start break',exact:true}).click();await tablet.getByRole('button',{name:'Start Step4 rest',exact:true}).click();await done('Break start');
+  await verify();await tablet.getByRole('button',{name:'Start break',exact:true}).click();await tablet.getByRole('button',{name:'Start Step4 rest, Suggested: 15 min',exact:true}).click();await done('Break start');
   await verify();await tablet.getByRole('button',{name:'End break',exact:true}).click();await done('Break end');
   await verify();await tablet.getByRole('button',{name:'Clock out',exact:true}).click();await tablet.getByRole('button',{name:'Confirm clock out',exact:true}).click();await done('Clock out');
   expect((await company.resource.db.pool.query('SELECT status FROM time_entries WHERE employee_id=\'EMP-1\'')).rows).toEqual([{status:'CLOCKED_OUT'}]);expect((await company.resource.db.pool.query('SELECT count(*)::int n FROM clocker_command_ledger')).rows).toEqual([{n:4}]);expect((await company.resource.db.pool.query('SELECT count(*)::int n FROM break_entries WHERE break_end_at IS NOT NULL')).rows).toEqual([{n:1}]);stages.push({stage:'published-schedule-domain-service-and-normal-owner-pin-tablet-enrollment-punch-break-browser-flow',state:'passed'});
@@ -265,7 +310,7 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   await tablet.bringToFront();await verify();await tablet.getByRole('button',{name:'Clock in',exact:true}).click();await done('Clock in');
   finance.advance(company.origin,trialEnd+1000-realNow());
   await tablet.reload();await verify();expect(await tablet.getByRole('button',{name:'Clock in',exact:true}).count()).toBe(0);
-  await tablet.getByRole('button',{name:'Start break',exact:true}).click();await tablet.getByRole('button',{name:'Start Step4 rest',exact:true}).click();await done('Break start');await verify();await tablet.getByRole('button',{name:'End break',exact:true}).click();await done('Break end');await verify();await tablet.getByRole('button',{name:'Clock out',exact:true}).click();await tablet.getByRole('button',{name:'Confirm clock out',exact:true}).click();await done('Clock out');await verify();
+  await tablet.getByRole('button',{name:'Start break',exact:true}).click();await tablet.getByRole('button',{name:'Start Step4 rest, Suggested: 15 min',exact:true}).click();await done('Break start');await verify();await tablet.getByRole('button',{name:'End break',exact:true}).click();await done('Break end');await verify();await tablet.getByRole('button',{name:'Clock out',exact:true}).click();await tablet.getByRole('button',{name:'Confirm clock out',exact:true}).click();await done('Clock out');await verify();
   browserDiagnostics.pausedPinBeforeReady=await tablet.locator('[data-clocker-pin]').evaluate((node:HTMLElement)=>({phase:node.dataset.clockerPin,busy:node.getAttribute('aria-busy')}));
   /* Phase 6: the paused-workplace line on the clock screen was reworded. */await tablet.getByText('New clock-ins are paused for this workplace. Your Owner can restore access. Ask a manager to record your time.',{exact:true}).waitFor();expect(await tablet.getByRole('button',{name:'Clock in',exact:true}).count()).toBe(0);
   const clockCall=async(body:unknown)=>tablet.evaluate(async({locationKey,body}:{locationKey:string;body:unknown})=>{const response=await fetch('/api/clocker/'+locationKey+'/punch',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json','x-nevora-clocker':'1'},body:JSON.stringify(body)});return {status:response.status,body:await response.json()};},{locationKey,body});

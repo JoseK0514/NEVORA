@@ -2,7 +2,7 @@
 
 import { useActionState, type FormEvent } from 'react';
 import { CorpCard, CorpRow, CorpRows } from '@/components/corp/corp';
-import { BCallout, BSegs } from '@/components/owner-b/b-kit';
+import { BCallout, BSegs, BState } from '@/components/owner-b/b-kit';
 import { QuietList, QuietRow } from '@/components/quiet/quiet';
 import { formatDayLabel, formatTime } from '@/lib/date-utils';
 import type { OpenShiftResult, OpenShiftView } from '@/lib/scheduling/open-shifts';
@@ -124,6 +124,8 @@ export function OpenShiftBoard({ actorId, management, postId, shifts, locations,
             </button>
           </form> : undefined} />;
       })}
-    </QuietList> : <p className="q-help">There are no posted shifts you can claim right now.</p>}
+    </QuietList> : <CorpCard as="div">
+      <BState kind="empty" title="There are no posted shifts you can claim right now." />
+    </CorpCard>}
   </>;
 }

@@ -5,6 +5,7 @@ import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.
 import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
 import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
 import {SelectField} from '@/components/select-field';
+import {RootChrome} from '@/components/root-chrome';
 import {assertOperationalAccess,isOperationalAuthorizationError,readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {assertWorkforcePermission} from '@/lib/workforce/authority.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -26,8 +27,8 @@ import Link from "next/link";
 import { createShiftAction } from "@/app/app/schedule/actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { requireSessionMutationProof } from "@/lib/auth/session";
-import { decodeCoverageRepairReview, readCoverageRepairSelection } from "@/lib/data/coverage-repair.server";
-import { coverageRepairUrl, CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
+import { decodeCoverageRepairReview, readCoverageRepairSelection, readScopedCoverageRepairSelection } from "@/lib/data/coverage-repair.server";
+import { coverDraftShiftUrl, coverageRepairUrl, CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
   addDays, durationMinutes,
@@ -61,16 +62,25 @@ export default async function NewShiftPage({
   const proof=await requireSessionMutationProof();
   const params = await searchParams;
   if (params.review !== undefined) {
-    const source=await withOperationalCompany(proof,async()=>{
-      try{return {kind:'selected' as const,selected:await readCoverageRepairSelection(params.review!,proof)};}
-      catch(error){
-        if(!(error instanceof CoverageRepairConflictError))throw error;
-        let href='/app/schedule';
-        try{href=coverageRepairUrl(decodeCoverageRepairReview(params.review!,proof).locator,true);}catch{/* No trusted locator. */}
-        return {kind:'conflict' as const,href};
-      }
-    });
-    if(source.state==='unavailable')return <OperationalUnavailable title="Replacement review unavailable" reason={source.reason}/>;
+    const access=await readOperationalAuthority(proof);
+    const scoped=access.state==='ready' && access.scope?.mode==='LOCATIONS';
+    const reviewToken=params.review;
+    const conflict = () => {
+      let href='/app/schedule';
+      try{href=coverageRepairUrl(decodeCoverageRepairReview(reviewToken,proof).locator,true);}catch{/* No trusted locator. */}
+      return {kind:'conflict' as const,href};
+    };
+    const scopedRead = scoped ? await readScopedCoverageRepairSelection(reviewToken,proof) : null;
+    const source = scopedRead
+      ? scopedRead.state==='unavailable' ? scopedRead : {...scopedRead,data:scopedRead.data ? {kind:'selected' as const,selected:scopedRead.data} : conflict()}
+      : await withOperationalCompany(proof,async()=>{
+        try{return {kind:'selected' as const,selected:await readCoverageRepairSelection(reviewToken,proof)};}
+        catch(error){
+          if(!(error instanceof CoverageRepairConflictError))throw error;
+          return conflict();
+        }
+      });
+    if(source.state==='unavailable')return <OperationalUnavailable title="Replacement review unavailable" reason={source.reason} scoped={scoped}/>;
     if(source.data.kind==='conflict')return <ScopedReadFrame observation={scopedObservation(source)}><div className="nv-page wa-page wa-shift" data-nv-page="">
         <PageBand back={{ href:source.data.href, label: "Coverage" }} eyebrow="Replacement" title="Coverage changed" summary="Someone changed this shift since you opened the review." />
         <div className="nv-content wa-narrow">
@@ -86,7 +96,8 @@ export default async function NewShiftPage({
     // QA S-06 (Nov 21, 2026): on a published week this replacement is a published change, which the writer allows only with
     // company-wide access and Publish schedules here (commitPublishedWeekChange). Ask first, instead of offering the
     // acknowledgement and then refusing the save.
-    const canSave=selected.publication!=='PUBLISHED'||await mayChangePublished(proof,selected.locator.locationId);
+    const canSave=!scoped && (selected.publication!=='PUBLISHED'||await mayChangePublished(proof,selected.locator.locationId));
+    const scopedDraft = scoped && 'draft' in selected && selected.draft === true;
     const { locator } = selected;
     const day = formatDayLabel(locator.date);
     const overnight = locator.endTime === "24:00" || locator.endTime < locator.startTime;
@@ -112,8 +123,11 @@ export default async function NewShiftPage({
           <Fact label="Shift lead">{selected.isDesignatedLead ? "Yes, needed" : "Not needed"}</Fact>
         </Facts>
       </Card>
-      <Notice tone="info" quiet title={`This fills ${need}.`}>Anything else this shift still needs stays open on the schedule. Coverage is checked again when you save.</Notice>
-      {selected.publication === 'PUBLISHED' && !canSave ? <Notice tone="review" title="Publishing permission needed">This schedule is published, so saving this replacement also publishes it. You don’t have permission to publish schedules here. Ask the Owner to save it, or to give you that permission.</Notice>
+      {!scoped ? <Notice tone="info" quiet title={`This fills ${need}.`}>Anything else this shift still needs stays open on the schedule. Coverage is checked again when you save.</Notice> : null}
+      {scoped ? scopedDraft
+        ? <Notice tone="info" quiet title="Draft assignment">Open Add shift to confirm the person, time and location.</Notice>
+        : <Notice tone="review" title="Company-wide access needed to save">Ask the Owner to review this replacement.</Notice>
+      : selected.publication === 'PUBLISHED' && !canSave ? <Notice tone="review" title="Publishing permission needed">This schedule is published, so saving this replacement also publishes it. You don’t have permission to publish schedules here. Ask the Owner to save it, or to give you that permission.</Notice>
       : selected.publication === 'PUBLISHED' ? <>
         <Notice tone="info" title="Published schedule change">Saving adds this assignment to the published schedule and may notify the affected employee. Notification delivery is not guaranteed by saving.</Notice>
         <div className={consentStyles.consent}>
@@ -123,6 +137,8 @@ export default async function NewShiftPage({
       </> : <Notice tone="info" quiet title="Draft assignment">Saving adds a draft shift. Publish the schedule separately when you are ready to notify employees.</Notice>}
       <FormActions>
         {canSave ? <PendingButton pending="Saving…" block>Save replacement</PendingButton> : null}
+        {scopedDraft ? <Link className="nv-btn" data-kind="primary" data-block="true"
+          href={coverDraftShiftUrl(locator,selected.isDesignatedLead,selected.employeeId)}>Add draft shift</Link> : null}
         <Link className="nv-btn" data-kind="secondary" data-block="true" href={refreshHref}>Back to coverage</Link>
       </FormActions>
     </ConfigurationForm>
@@ -143,7 +159,7 @@ export default async function NewShiftPage({
   if(access.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={access.reason}/>;
   if(access.scope?.mode!=='COMPANY'){
     if(access.scope?.mode!=='LOCATIONS'||!access.locations.length)return <OperationalUnavailable title="Shift creation unavailable" reason="access_denied"/>;
-    if(params.locationId===undefined)return <ScopedReadFrame observation={scopedObservation(access)}><section className={'panel '+accessStyles.stack}><h1>Choose a location</h1><p>Select a managed location before assigning a shift.</p><form className={accessStyles.stack} method="get" action="/app/schedule/new"><input type="hidden" name="week" value={weekStart}/><SelectField className={accessStyles.search} name="locationId" label="Location" defaultValue="" required options={[{value:'',label:'Select a managed location',disabled:true},...access.locations.map(l=>({value:l.id,label:l.name}))]}/><button className="button primary" type="submit">Continue</button></form></section></ScopedReadFrame>;
+    if(params.locationId===undefined)return <ScopedReadFrame observation={scopedObservation(access)}><section className={'panel '+accessStyles.stack}><RootChrome/><h1>Choose a location</h1><p>Select a managed location before assigning a shift.</p><form className={accessStyles.stack} method="get" action="/app/schedule/new"><input type="hidden" name="week" value={weekStart}/><SelectField className={accessStyles.search} name="locationId" label="Location" defaultValue="" required options={[{value:'',label:'Select a managed location',disabled:true},...access.locations.map(l=>({value:l.id,label:l.name}))]}/><button className="button primary" type="submit">Continue</button></form></section></ScopedReadFrame>;
     const source=await readOperationalShiftEditor(proof,{weekStart,locationId:params.locationId});
     if(source.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={source.reason} scoped/>;
     if(source.authority!==access.authority)return <OperationalUnavailable title="Shift creation unavailable" reason="source_changed" scoped/>;

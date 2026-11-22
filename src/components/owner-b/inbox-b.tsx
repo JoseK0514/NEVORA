@@ -98,14 +98,14 @@ function kindIcon(id: string): { tone: "amber" | "teal" | "grey"; icon: ReactNod
   return { tone: "amber", icon: <ClockIcon weight="bold" /> };
 }
 
-export function InboxB({ ready, families, waiting = [], closed = [], total, exact = true, uncheckedReviews = 0, connection, statusLine, todayFailed, onRefresh, back, later }: {
+export function InboxB({ ready, families, waiting = [], closed = [], total, exact = true, uncheckedReviews = 0, connection, statusLine, todayFailed, onRefresh, back, later, scoped = false }: {
   /** Phase 4 (U03): false when the count is a lower bound (clock-ins unread, or review facts missing): the band says
    * "At least N" and the page never offers all-clear. */
   exact?: boolean; uncheckedReviews?: number;
   ready: Extract<ActionCenter, { state: "ready" }> | null; families: Family[]; waiting?: Group[];
   /** Phase 3 (MG-005): what can't be decided yet (timecards of a pay period still open): one grey card, no count pill. */
   closed?: Group[]; total: number | null; connection: ActionCenterConnection; statusLine: string;
-  todayFailed: boolean; onRefresh: () => void; back: boolean; later?: LaterCounts;
+  todayFailed: boolean; onRefresh: () => void; back: boolean; later?: LaterCounts; scoped?: boolean;
 }) {
   const [filter, setFilter] = useState<Filter>("all");
   const items = new Map((ready?.items ?? []).map(item => [item.id, item]));
@@ -162,9 +162,9 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
       <BCard label="More" id="b-todo-more">
         <BList label="More">
           <BRow lead={<BIcon tone="teal"><CalendarMinusIcon weight="bold" /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
-          <BRow lead={<BIcon tone="teal"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />
+          {!scoped && <BRow lead={<BIcon tone="teal"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />}
           {/* Nov 14, 2026 inspection (AR-9): who can work is one tap from the requests it helps decide. */}
-          <BRow lead={<BIcon tone="teal"><UserCheckIcon weight="bold" /></BIcon>} title="Availability" sub="Who can work and when" href="/app/availability" />
+          {!scoped && <BRow lead={<BIcon tone="teal"><UserCheckIcon weight="bold" /></BIcon>} title="Availability" sub="Who can work and when" href="/app/availability" />}
           <BRow lead={<BIcon tone="teal"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub={laterLine(later)} href="/app/inbox?view=more" label={`Later and done: ${laterLine(later).toLowerCase()}`} />
         </BList>
       </BCard>

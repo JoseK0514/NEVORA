@@ -3,20 +3,20 @@
 import Link, { useLinkStatus } from "next/link";
 import { useState } from "react";
 
-export type CoverPickPerson = { employeeId: string; employeeName: string; detail: string; href: string };
+export type CoverPickPerson = { employeeId: string; employeeName: string; detail: string; href?: string };
 
 const SHOWN = 3;
 const initialsOf = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
 
 /** Assign says it is opening while the review loads (form pattern, pending). */
-function AssignLabel() {
+function AssignLabel({reviewOnly}:{reviewOnly?:boolean}) {
   const { pending } = useLinkStatus();
-  return <span role={pending ? "status" : undefined} aria-live="polite" aria-atomic="true">{pending ? "Opening review…" : "Assign"}</span>;
+  return <span role={pending ? "status" : undefined} aria-live="polite" aria-atomic="true">{pending ? "Opening review…" : reviewOnly ? "Review replacement" : "Assign"}</span>;
 }
 
 /** Find cover (board O-FindCover): "Who can cover" as a radio list in the suggested order, the first one chosen, then
  * Assign, which opens the existing review for the chosen person. Nothing is saved on this page. */
-export function ScheduleCoverPick({ people, repair }: { people: CoverPickPerson[]; repair?: boolean }) {
+export function ScheduleCoverPick({ people, repair, reviewOnly }: { people: CoverPickPerson[]; repair?: boolean; reviewOnly?: boolean }) {
   const [chosen, setChosen] = useState(people[0]?.employeeId ?? "");
   const [all, setAll] = useState(false);
   const person = people.find(item => item.employeeId === chosen) ?? people[0];
@@ -41,8 +41,8 @@ export function ScheduleCoverPick({ people, repair }: { people: CoverPickPerson[
       </ul>
       {shown.length < people.length ? <button type="button" className="c-cover__more" onClick={() => { setAll(true); const next = people.find((item, index) => index >= SHOWN && item.employeeId !== chosen); requestAnimationFrame(() => document.querySelector<HTMLInputElement>(`#coverage-candidate-${CSS.escape(next?.employeeId ?? "")} input`)?.focus()); }}>{`Show ${people.length - shown.length} more`}</button> : null}
     </fieldset>
-    <div className="c-card__foot">
-      <Link className="c-btn c-btn--full" href={person.href} prefetch={false} aria-label={`${repair ? "Review replacement" : "Review shift"} for ${person.employeeName}`}><AssignLabel /></Link>
-    </div>
+    {person?.href ? <div className="c-card__foot">
+      <Link className="c-btn c-btn--full" href={person.href} prefetch={false} aria-label={`${repair ? "Review replacement" : "Review shift"} for ${person.employeeName}`}><AssignLabel reviewOnly={reviewOnly} /></Link>
+    </div> : null}
   </>;
 }

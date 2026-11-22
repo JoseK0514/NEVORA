@@ -170,6 +170,8 @@
     html body .app-shell[data-nv-b][data-employee-mobile] main.page-frame:has(> .em-requests-mobile .b-screen) > :is(.c-page, .q-page, .cm-page, .sig-page, [data-nv-page]):not(.em-requests-mobile) { display: none !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main.page-frame > .em-requests-mobile :is(.c-page, .q-page):has(> .b-screen):not(#e-none):not(#e-none2):not(#e-none3) { max-width: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; background: transparent !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] main.page-frame > .em-requests-mobile .b-screen { display: block !important; }
+    /* Shift changes opened from Schedule use a dialog instead of the page frame. */
+    html body .app-shell[data-nv-b][data-employee-mobile] dialog.q-sheet > .q-sheet__in > .em-requests-mobile:has(> .em-creation.c-embed) { display: block !important; }
     /* Whatever else a page draws beside its screen stays hidden (band strips of the corporate page carry heavy rules). */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page:has(> .b-screen) > :not(.b-screen, .b-keep):not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { display: none !important; }
 

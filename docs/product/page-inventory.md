@@ -6,6 +6,8 @@ components they render). The **Built with** column says which component family t
 how the page looks. **On screen** is what the Nov 22 screenshot sweep saw (production build, fictional data, Chromium,
 390 and 1440 px); see [Sweep results](#sweep-results-nov-22-2026) below.
 
+[Run the collab QA workspace in Claude Cloud](page-inventory/claude-cloud.md) to get a fresh fictional workspace, role logins and reproducible browser checks from this branch.
+
 ## How to read it
 
 - **Profiles:** O = Owner · M = Manager with company-wide access · Mℓ = Manager limited to some locations · L = Lead ·
@@ -164,7 +166,7 @@ which are the notice and not-found pages themselves.
 | B1 | Home | `/app` | ✓* | ✓* | ✓* | ✓* | ✓* | B (Owner, Manager, Lead, Employee); Older (Mℓ: scoped Home) | Five versions: Owner, Manager, location Manager (`ScopedManagementHome`), Lead, Employee; first-run onboarding guide | O B 169w 4b · M B 160w 3b · Mℓ **Older** 71w 3b · L B 221w 3b · E B 188w 3b | ☐ |
 | B2 | More (phone menu) | `/app/more` | ✓* | ✓* | ✓* | ✓* | ✓* | Corp + B | Manager/Owner list vs Employee list | O B 23w 1b · M B 24w 1b · Mℓ B 14w 1b · L B 64w 1b · E B 64w 1b | ☐ |
 | B3 | Notifications | `/app/notifications` | ✓ | ✓ | ✓ | ✓ | ✓ | Quiet + B | Owner also sees the billing notice | O B 9w 3b · M **Mixed** 40w 2b · Mℓ B 17w 0b · L B 93w 4b · E B 92w 3b | ☐ |
-| B4 | Things to do (manager inbox) | `/app/inbox` | ✓ | ✓ | n† | → | → | Corp | Lead and Employee go to Requests hub | O B 365w 4b · M B 317w 4b · Mℓ n · L → · E → | ☐ |
+| B4 | Things to do (manager inbox) | `/app/inbox` | ✓ | ✓ | ✓* | → | → | Corp | Lead and Employee go to Requests hub | O B 365w 4b · M B 317w 4b · Mℓ n · L → · E → | ☐ |
 | B5 | Requests hub (employee) | `/app/requests/hub` | n | n | n | ✓ | ✓ | B | Managers see "This Requests page is for employees" | O n · M n · Mℓ n · L B 106w 2b · E B 106w 2b | ☐ |
 | B6 | Updates (messages) | `/app/updates` | ✓* | ✓* | n† | ✓* | ✓* | Mixed | When the Updates module is on | O **Mixed** 47w 3b · M **Mixed** 47w 3b · Mℓ n · L B 52w 3b · E B 52w 3b | ☐ |
 | B7 | Update detail | `/app/updates/[id]` | ✓ | ✓ | n† | ✓ | ✓ | Mixed |  | O **Mixed** 41w 2b · M **Mixed** 41w 2b · Mℓ n · L B 66w 1b · E B 66w 1b | ☐ |
@@ -179,7 +181,7 @@ which are the notice and not-found pages themselves.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | C1 | Schedule | `/app/schedule` | ✓* | ✓* | ✓* | ✓* | ✓* | B (O, M, L, E); Older (Mℓ: scoped schedule) | Week, day and open-shift views; Employee/Lead confirm the week; planning panel with Publish | O **B/Mixed** 140w 6b · M **B/Mixed** 140w 6b · Mℓ **Older** 392w 2b · L B 79w 3b · E B 78w 3b | ☐ |
 | C2 | Add shift | `/app/schedule/new` | ✓ | ✓ | ✓* | – | – | Mixed; Older (Mℓ form) | Company form vs location Manager form | O B 20w 1b · M B 20w 1b · Mℓ **Older** 13w 1b · L – · E – | ☐ |
-| C3 | **Find cover: Review replacement** | `/app/schedule/new?review=` | ✓ | ✓ | n† | – | – | Older (`kit`, `wave-a`) | Jose, Nov 22: "one of the worst UI"; shows "Publishing permission needed" without the grant | O **Older** 105w 2b · M **Older** 101w 1b · Mℓ n | ☐ |
+| C3 | **Find cover: Review replacement** | `/app/schedule/new?review=` | ✓ | ✓ | ✓ | – | – | Older (`kit`, `wave-a`) | Jose, Nov 22: "one of the worst UI"; shows "Publishing permission needed" without the grant | O **Older** 105w 2b · M **Older** 101w 1b · Mℓ n | ☐ |
 | C4 | Edit shift / shift details | `/app/schedule/edit` | ✓ | ✓ | ✓* | – | – | Mixed; Older (Mℓ read-only) | Delete shift confirm | O B 42w 2b · M B 42w 2b · Mℓ **Older** 28w 1b | ☐ |
 | C5 | Find cover (who can cover) | `/app/schedule/coverage` | ✓ | ✓ | ✓ | – | – | Own (coverage assistant) |  | O B 67w 2b · M B 67w 2b · Mℓ ✗ | ☐ |
 | C6 | Build and publish | `/app/schedule/publish` | ✓ | ✓ (grant) | ✓ (grant) | – | – | Corp + B | Manager needs Publish schedules; one Publish form per draft location | O B 27w 0b · M n · Mℓ n | ☐ |
@@ -198,7 +200,7 @@ which are the notice and not-found pages themselves.
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | D1 | Timecards | `/app/timecards` | ✓* | ✓* | n† | →† | →† | Mixed (manager table; B for Employee/Lead hours) | Approve and finalize; bulk bar; inspector | O B 134w 2b · M B 133w 2b · Mℓ n · L → · E → | ☐ |
-| D2 | Time corrections (review) | `/app/timecards/corrections` | ✓ | ✓ (grant) | ✓ (grant) | – | – | Corp | Shows "You don't have access" without the grant | O B 176w 2b · M n · Mℓ n · L – · E – | ☐ |
+| D2 | Time corrections (review) | `/app/timecards/corrections` | ✓ | ✓ (grant) | ✓ (grant) | – | – | Corp | Managers need Review time exceptions for each location on the request | O B 176w 2b · M n · Mℓ n · L – · E – | ☐ |
 | D3 | Fix someone's time (delegated correction) | `/app/timecards/corrections/new/[employeeId]` | ✓ | ✓ | n† | – | – | Corp |  | O B 49w 1b · M B 49w 1b · Mℓ n | ☐ |
 | D4 | My time | `/app/my-time` | n | n | n | ✓ | ✓ | B | Managers see "My time is for employees" | O n · M n · Mℓ n · L B 149w 1b · E B 149w 1b | ☐ |
 | D5 | Clocker recovery review | `/app/clocker-recovery` | ✓ | – | – | – | – | Own | Punches that need review | O B 75w 2b · M – · Mℓ – | ☐ |

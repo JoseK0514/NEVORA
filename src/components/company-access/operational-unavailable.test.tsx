@@ -37,3 +37,11 @@ it("a location-scoped manager is sent to their schedule, not to sign in", () => 
   expect(html).toContain("Open your schedule");
   expect(html).not.toContain("Sign in again");
 });
+
+it("shows the full account recovery page name in the access-denied band", () => {
+  const title = "Help someone sign in is unavailable";
+  const denied = renderToStaticMarkup(createElement(OperationalUnavailable, { title, reason: "access_denied" }));
+  expect(denied).toContain("<h1>Help someone sign in</h1>");
+  const failed = renderToStaticMarkup(createElement(OperationalUnavailable, { title, reason: "read_failed" }));
+  expect(failed).toContain("<h1>Help someone sign in is unavailable</h1>");
+});

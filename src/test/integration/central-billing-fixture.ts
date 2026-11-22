@@ -8,11 +8,12 @@ import {StripeFixture} from '../../../services/commerce/stripe-fixture';
 import {StripeBilling} from '../../../services/commerce/stripe';
 import {createCommerce} from '../../../services/commerce/service';
 import {dropTestDatabase} from '../../../services/commerce/test-database';
+import {OWNED_CENTRAL_BILLING_ORIGIN,OWNED_COLLAB_ORIGIN} from './owned-collab-origin';
 
 /** Canonical SQL/API/SDK fixture, with controlled legacy installation facts.
  * Normal company Owner authority is exercised by the separate Step4 journey.
  * No external Stripe request, SMTP, current tenant or hosted process is used. */
-export async function centralBillingFixture(){
+export async function centralBillingFixture(production=false){
  if(process.env.NODE_ENV!=='test'||process.env.DATABASE_URL||process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN!=='yes')throw Error('Owned billing fixture required');
  const target=new URL(process.env.FUEL_TEST_DATABASE_URL??'');
  if(target.protocol!=='postgresql:'&&target.protocol!=='postgres:'||target.hostname!=='127.0.0.1'||target.search||!/^nevora_exchange_test_[a-z0-9_]{1,40}$/.test(target.pathname.slice(1)))throw Error('Owned billing database required');
@@ -57,9 +58,11 @@ export async function centralBillingFixture(){
    }catch{unexpected.push('owned_public_api_failure');if(!outgoing.headersSent)outgoing.writeHead(500,{'content-type':'application/json'});outgoing.end('{"error":{"code":"owned_public_api_failure"}}');}
   });
   listener=server;
-  server.on('connection',socket=>{sockets.add(socket);socket.once('close',()=>sockets.delete(socket));});await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));const address=server.address();if(!address||typeof address==='string')throw Error('Owned billing listener unavailable');apiOrigin='http://127.0.0.1:'+address.port;
-  return {apiOrigin,businessName,provider,pool,requests,unexpected,subscriptionScenario,coverage,
-   setUiOrigin(value:string){const url=new URL(value);if(url.origin!==value||url.protocol!=='http:'||url.hostname!=='127.0.0.1'||!url.port)throw Error('Owned UI origin required');uiOrigin=value;},
+  server.on('connection',socket=>{sockets.add(socket);socket.once('close',()=>sockets.delete(socket));});await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));const address=server.address();if(!address||typeof address==='string')throw Error('Owned billing listener unavailable');
+  const upstream='http://127.0.0.1:'+address.port;
+  apiOrigin=production?OWNED_CENTRAL_BILLING_ORIGIN:upstream;
+  return {apiOrigin,upstream,businessName,provider,pool,requests,unexpected,subscriptionScenario,coverage,
+   setUiOrigin(value:string){const url=new URL(value);if(production?value!==OWNED_COLLAB_ORIGIN:url.origin!==value||url.protocol!=='http:'||url.hostname!=='127.0.0.1'||!url.port)throw Error('Owned UI origin required');uiOrigin=value;},
    async handoff(){const proof=randomBytes(32).toString('base64url');await store.handoff(id,proof,Date.now());return proof;},
    async revoke(){await pool.query("DELETE FROM commerce.tokens WHERE purpose='session'");},
    async counts(){return (await pool.query('SELECT (SELECT count(*)::int FROM commerce.billing_operations) operations,(SELECT count(*)::int FROM commerce.checkout_intents) intents')).rows[0] as {operations:number;intents:number};},
