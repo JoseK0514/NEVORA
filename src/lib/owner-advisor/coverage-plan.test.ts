@@ -131,7 +131,7 @@ it("plans today only from the next quarter hour in the company's zone (QA S-09: 
   expect(before.alternatives[0].assignments.map(a => [a.startTime, a.endTime])).toEqual([["08:00", "16:00"]]);
 });
 
-it("proposes a whole-day shift only when whole-day coverage is genuinely ahead, never for a day already under way", async () => {
+it("splits whole-day coverage into capped shifts and never proposes a day's passed hours (QA S-09)", async () => {
   const input = automaticWeek(); input.staffing[0].minimumStaffPerShift = 1;
   input.coverageWindows[0] = { ...input.coverageWindows[0], startTime: "00:00", endTime: "24:00" };
   // 22:42 UTC is 6:42 PM in Puerto Rico on the plan's date: QA S-09 saw 12:00 AM starts at this time.
@@ -140,7 +140,15 @@ it("proposes a whole-day shift only when whole-day coverage is genuinely ahead, 
   expect(proposed.length).toBeGreaterThan(0);
   for (const a of proposed) expect([a.startTime, a.endTime]).toEqual(["18:45", "24:00"]);
   expect(today.baseline?.requiredMinutes).toBe(315);
-  // A later day with coverage set for all 24 hours: the plan's real hours are the whole day.
+  // A later day with coverage set for all 24 hours (Jose, Nov 22, 2026): no 24-hour shift. With no per-shift maximum
+  // configured, each proposed shift is at most 10 hours and together they cover the whole day.
   const ahead = await coverage.compareCoveragePlans(input, { ...metadata, observedAt: "2026-10-04T22:42:00.000Z" }, signal());
-  expect(ahead.alternatives[0].assignments.map(a => [a.startTime, a.endTime])).toEqual([["00:00", "24:00"]]);
+  const shifts = ahead.alternatives[0].assignments.map(a => [a.startTime, a.endTime]);
+  const minutes = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3));
+  const sorted = [...shifts].sort((x, y) => minutes(x[0]) - minutes(y[0]));
+  expect(sorted.length).toBeGreaterThan(1);
+  for (const [start, end] of sorted) expect(minutes(end) - minutes(start)).toBeLessThanOrEqual(600);
+  // Together they cover the whole day without a gap (today's planner splits it 00:00–10:00, 10:00–20:00, 20:00–24:00).
+  expect(sorted[0][0]).toBe("00:00"); expect(sorted.at(-1)![1]).toBe("24:00");
+  for (let i = 1; i < sorted.length; i++) expect(minutes(sorted[i][0])).toBeLessThanOrEqual(minutes(sorted[i - 1][1]));
 });

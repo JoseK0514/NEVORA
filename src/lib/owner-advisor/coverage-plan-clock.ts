@@ -21,3 +21,16 @@ export function firstOpenMinute(date: string, now: string | Date, timeZone: stri
 export function minuteClock(minutes: number) {
   return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
 }
+
+/** Jose (Nov 22, 2026, QA S-09 follow-up): a day plan never proposes, and its save never accepts, a shift longer than
+ * the business's own per-shift maximum or, when none is configured, 10 hours. Whole-day coverage is then offered as
+ * shorter shifts for several people instead of one 24-hour shift. The smallest configured maximum wins, since validation
+ * already blocks anything longer for that person. */
+export const DEFAULT_PLAN_SHIFT_MINUTES = 600;
+export function planShiftCap(employees: readonly { operationalProfile?: { maximumShift?: { status: string; value?: { minutes: number } } } }[]): number {
+  const configured = employees.flatMap(e => {
+    const rule = e.operationalProfile?.maximumShift;
+    return rule?.status === "CONFIGURED" && rule.value && Number.isInteger(rule.value.minutes) && rule.value.minutes >= 60 ? [Math.min(1440, rule.value.minutes)] : [];
+  });
+  return configured.length ? Math.min(...configured) : DEFAULT_PLAN_SHIFT_MINUTES;
+}

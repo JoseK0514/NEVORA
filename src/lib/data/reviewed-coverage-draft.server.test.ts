@@ -18,16 +18,19 @@ it("rejects a combined over-capacity batch and an entire mixed published target"
  const i=input();expect(()=>reviewCoverageDraft(i,"2026-10-05",[terms,{...terms,employeeId:"e2"},{...terms,employeeId:"e3"}],seen)).toThrow();
  i.schedules.push({id:"published",locationId:"loc-1",weekStart:i.weekStart,status:"PUBLISHED"});expect(()=>reviewCoverageDraft(i,"2026-10-05",[terms],seen)).toThrow();
 });
-it("never saves a whole-day 00:00–24:00 shift unless the coverage it fills genuinely spans the whole day (QA S-09)",()=>{
+it("never saves a whole-day 00:00–24:00 shift, and keeps saves inside the coverage they fill (QA S-09)",()=>{
  const wholeDay={...terms,startTime:"00:00",endTime:"24:00"};
  // Coverage is 8:00 AM – 4:00 PM: an all-day shift, or one reaching outside the period, is not what any plan reviewed.
  expect(()=>reviewCoverageDraft(input(),"2026-10-05",[wholeDay],seen)).toThrow(ReviewedDraftConflict);
  expect(()=>reviewCoverageDraft(input(),"2026-10-05",[{...terms,endTime:"17:00"}],seen)).toThrow(ReviewedDraftConflict);
  expect(()=>reviewCoverageDraft(input(),"2026-10-05",[{...terms,startTime:"07:00"}],seen)).toThrow(ReviewedDraftConflict);
  expect(reviewCoverageDraft(input(),"2026-10-05",[terms],seen).assignments.map(a=>[a.startTime,a.endTime])).toEqual([["08:00","16:00"]]);
- // Coverage set for the whole day: the whole day is the reviewed hours, so it is allowed.
+ // Coverage set for the whole day (Jose, Nov 22, 2026): a day plan's shifts are capped at 10 hours with no per-shift
+ // maximum configured, so a 24-hour term is refused and a 10-hour one inside the coverage is saved.
  const i=input();i.coverageWindows[0]={...i.coverageWindows[0],startTime:"00:00",endTime:"24:00"};
- expect(reviewCoverageDraft(i,"2026-10-05",[wholeDay],seen).assignments.map(a=>[a.startTime,a.endTime])).toEqual([["00:00","24:00"]]);
+ expect(()=>reviewCoverageDraft(i,"2026-10-05",[wholeDay],seen)).toThrow(ReviewedDraftConflict);
+ expect(()=>reviewCoverageDraft(i,"2026-10-05",[{...terms,startTime:"00:00",endTime:"10:15"}],seen)).toThrow(ReviewedDraftConflict);
+ expect(reviewCoverageDraft(i,"2026-10-05",[{...terms,startTime:"00:00",endTime:"10:00"}],seen).assignments.map(a=>[a.startTime,a.endTime])).toEqual([["00:00","10:00"]]);
 });
 it("rejects time that has already passed today in the company's zone",()=>{
  // 15:42 UTC on Oct 5 is 11:42 AM in Puerto Rico: plans for today start at 11:45 AM.

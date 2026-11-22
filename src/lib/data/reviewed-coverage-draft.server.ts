@@ -10,7 +10,7 @@ import { allocateAutomaticCapacity } from "../scheduling/generation/reservations
 import { selectGenerationScope } from "../scheduling/generation/scope";
 import type { GenerationInput } from "../scheduling/generation/types";
 import { shiftPeriod } from "../scheduling/periods";
-import { firstOpenMinute } from "../owner-advisor/coverage-plan-clock";
+import { firstOpenMinute, planShiftCap } from "../owner-advisor/coverage-plan-clock";
 import type { CoverageDraftTerms } from "../owner-advisor/coverage-actions";
 import type { SessionMutationProof } from "../shift-changes/types";
 import type { NotificationConfig, SqlStatement } from "../notifications/types";
@@ -50,6 +50,8 @@ export function reviewCoverageDraft(input: GenerationInput, date: string, terms:
   const notBefore = firstOpenMinute(date, observedAt, input.workspace.timeZone);
   const demand = deriveGenerationDemand(input, input.ledger, { date, notBefore });
   if (!terms.length || terms.length > 12 || additions.some(a => !insideReviewedCoverage(demand, a.locationId, shiftPeriod(a))) ||
+      // The plan's shift cap holds at save too (QA S-09 follow-up): a longer term didn't come from a plan.
+      additions.some(a => { const p = shiftPeriod(a); return p.end - p.start > planShiftCap(input.employees); }) ||
       !allocateAutomaticCapacity(input, demand, input.ledger, additions).allowed) throw new ReviewedDraftConflict();
   const assignments = additions.map((a, index) => {
     const employee = input.employees.find(e => e.id === a.employeeId), location = input.locations.find(l => l.id === a.locationId);

@@ -24,3 +24,13 @@ it("leaves other dates whole", () => {
   expect(minuteClock(0)).toBe("00:00");
   expect(minuteClock(1440)).toBe("24:00");
 });
+
+// QA S-09 follow-up (Jose, Nov 22, 2026): a business's own per-shift maximum wins; otherwise 10 hours.
+import { planShiftCap, DEFAULT_PLAN_SHIFT_MINUTES } from "./coverage-plan-clock";
+it("caps plan shifts at the smallest configured maximum, or 10 hours", () => {
+  expect(DEFAULT_PLAN_SHIFT_MINUTES).toBe(600);
+  expect(planShiftCap([])).toBe(600);
+  expect(planShiftCap([{ operationalProfile: { maximumShift: { status: "UNKNOWN" } } }])).toBe(600);
+  expect(planShiftCap([{ operationalProfile: { maximumShift: { status: "CONFIGURED", value: { minutes: 720 } } } }, { operationalProfile: { maximumShift: { status: "CONFIGURED", value: { minutes: 480 } } } }])).toBe(480);
+  expect(planShiftCap([{ operationalProfile: { maximumShift: { status: "CONFIGURED", value: { minutes: 30 } } } }])).toBe(600);
+});

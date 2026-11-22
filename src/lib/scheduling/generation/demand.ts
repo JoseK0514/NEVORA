@@ -152,6 +152,7 @@ export function deriveGenerationDemand(
     if (last) contiguousDurationScore += (last.end - last.start) ** 2;
   }
   return {
+    ...(review?.maxShiftMinutes ? { planShiftCap: review.maxShiftMinutes } : {}),
     ready: issues.length === 0 && locationIds.length > 0,
     locationIds,
     excludedLocations,

@@ -4,13 +4,17 @@ import { addDays, weekStartFor } from '../../date-utils';
 import { businessDateStart } from '../periods';
 
 /** Read-only hypothetical additions, never a generation/write request. `notBefore` is the first minute of
- * `date` (after midnight, business-local) that a review may still use; time before it has passed. */
-export type GenerationReviewScope = { date: string; notBefore?: number };
+ * `date` (after midnight, business-local) that a review may still use; time before it has passed.
+ * `maxShiftMinutes` caps a proposed shift's length (Rondo's day plans, QA S-09 follow-up): whole-day coverage is offered
+ * as shorter shifts for several people instead of one 24-hour shift. Normal generation sets neither. */
+export type GenerationReviewScope = { date: string; notBefore?: number; maxShiftMinutes?: number };
 export function generationDates(input: GenerationInput, review?: GenerationReviewScope) {
   if (!review) return Array.from({ length: 7 }, (_, day) => addDays(input.weekStart, day));
   businessDateStart(review.date);
   if (review.notBefore !== undefined && (!Number.isInteger(review.notBefore) || review.notBefore < 0 || review.notBefore > 1440))
     throw new Error('Read-only review start must be a minute of the selected date.');
+  if (review.maxShiftMinutes !== undefined && (!Number.isInteger(review.maxShiftMinutes) || review.maxShiftMinutes < 60 || review.maxShiftMinutes > 1440))
+    throw new Error('Read-only review shift cap must be between 1 and 24 hours.');
   if (weekStartFor(review.date) !== input.weekStart || input.mode !== 'FILL_GAPS_ONLY')
     throw new Error('Read-only review requires one date in the unchanged commitment week.');
   return [review.date];
