@@ -22,7 +22,7 @@ import type { CompleteReadManifest } from '../complete-read-pages';
 import type { Population } from "../period-close/service";
 import type { PayrollCapabilities,PayrollSettingsRevision,PayrollExceptionRevision,PayrollRun,PayrollReceipt,PayrollSettingsResponse,PayrollRunsResponse,PayrollJob,PayrollImport,PayrollDocument } from "./contracts";
 import { parseSettingsCommand, parseRunCommand, parseImport, PayrollError, uuid, totals, } from "./model";
-import { authority, enabled, guarded, hash, locks, statement as q, workspaceSql as ws, } from "./store";
+import { authority, enabled, guarded, hash, locks, snapshotRead, statement as q, workspaceSql as ws, } from "./store";
 export type Snapshot = {
     source: Source;
     settings: PayrollSettingsRevision;
@@ -70,8 +70,13 @@ async function workspace(ex: SqlExecutor) {
         throw new PayrollError("WORKSPACE_UNAVAILABLE", 503);
     return r.id;
 }
+/** Display flags that choose navigation and page affordances; the /app layout
+ * reads them on every page load. QA A3-07 (Nov 21, 2026): this read no longer
+ * takes the payroll writers' locks. snapshotRead runs the same SELF authority
+ * checks and flag query without them, and every payroll action still
+ * re-authorizes under the writers' unchanged locks. */
 async function capabilities(proof: SessionMutationProof, ex: SqlExecutor): Promise<PayrollCapabilities> {
-    const [r] = await guarded<{
+    const [r] = await snapshotRead<{
         owner: boolean;
         review: boolean;
         approve: boolean;

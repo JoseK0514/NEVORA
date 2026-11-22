@@ -33,11 +33,18 @@ export function managementSessionStatements(proof: SessionIdentityProof, actorEm
   assertManagementProof(proof, actorEmployeeId);
   return [
     { text: 'SELECT token_hash FROM employee_sessions WHERE token_hash=$1 ORDER BY token_hash FOR SHARE', values: [proof.sessionTokenHash] },
-    { text: `SELECT (CASE WHEN EXISTS (
+    managementSessionCheck(proof, actorEmployeeId, roles),
+  ];
+}
+
+/** The same session check without the logout-serializing SHARE row lock. Only
+ * for display reads that commit nothing; every writer keeps the locked form. */
+export function managementSessionCheck(proof: SessionIdentityProof, actorEmployeeId: string, roles: readonly UserRole[] = ['OWNER', 'MANAGER']): SqlStatement {
+  assertManagementProof(proof, actorEmployeeId);
+  return { text: `SELECT (CASE WHEN EXISTS (
       SELECT 1 FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
       WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[])
         AND s.expires_at>clock_timestamp()
         AND NOT EXISTS(SELECT 1 FROM employee_credentials c WHERE c.employee_id=e.id AND c.must_change_password)
-    ) THEN '1' ELSE 'management_authorization' END)::integer`, values: [proof.sessionTokenHash, actorEmployeeId, [...roles]] },
-  ];
+    ) THEN '1' ELSE 'management_authorization' END)::integer`, values: [proof.sessionTokenHash, actorEmployeeId, [...roles]] };
 }

@@ -607,3 +607,30 @@ it('estimates edits against the scoped saved schedule without persisting them or
   await f.q("UPDATE employees SET role='MANAGER' WHERE id='c34-owner'");
   await expect(preview([])).rejects.toThrow(/authorization|ACCESS_DENIED/);
 });
+import {Client} from 'pg';
+import {locks} from '../../lib/payroll/store';
+// QA A3-07 (Nov 21, 2026): every /app load read these flags under the payroll writers' locks.
+it('capability reads take no payroll writer lock and finish exactly while a writer holds them all',async()=>{
+ const manager=await managerProof();
+ await f.q("INSERT INTO employee_sessions VALUES(repeat('c',64),'c34-a',clock_timestamp()+interval '1 day',clock_timestamp())");
+ const employee={...proof,employee:{...proof.employee,id:'c34-a',role:'EMPLOYEE' as const},sessionTokenHash:'c'.repeat(64)};
+ const signedOut={...proof,sessionTokenHash:'d'.repeat(64)};
+ const held:{locktype:string;mode:string;relation:string|null}[]=[];
+ const observed:SqlExecutor={...f.db.executor,transaction:async(statements,signal)=>{
+  const rows=await f.db.executor.transaction([...statements,{text:"SELECT locktype,mode,relation::regclass::text AS relation FROM pg_locks WHERE pid=pg_backend_pid() AND locktype<>'virtualxid' AND mode<>'AccessShareLock'",values:[]}],signal);
+  held.push(...rows.at(-1) as typeof held);return rows.slice(0,-1);
+ }};
+ const writer=new Client({connectionString:f.db.connectionString});await writer.connect();
+ let timer:ReturnType<typeof setTimeout>|undefined;
+ try{
+  await writer.query('BEGIN');
+  for(const s of locks())await writer.query(s.text,[...s.values]);
+  const reads=Promise.all([readPayrollCapabilities(proof,observed),readPayrollCapabilities(manager,observed),readPayrollCapabilities(employee,observed),readPayrollCapabilities(signedOut,observed).then(()=>'allowed',(e:Error)=>e.message)]);
+  const [owner,managed,own,refused]=await Promise.race([reads,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Capability read waited on payroll writer locks')),2000);})]);
+  expect(owner).toMatchObject({enabled:true,canConfigure:true,canReview:true,canApprove:true});
+  expect(managed).toMatchObject({enabled:true,canConfigure:false,canReview:true,canApprove:true});
+  expect(own).toMatchObject({enabled:true,canConfigure:false,canReview:false,canApprove:false});
+  expect(refused).toContain('management_authorization');
+  expect(held).toEqual([]);
+ }finally{clearTimeout(timer);await writer.query('ROLLBACK').catch(()=>{});await writer.end();}
+});
