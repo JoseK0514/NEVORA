@@ -21,7 +21,10 @@ export async function checkShiftSheets({ url, week, shift, profile, page, viewpo
     const sheet = page.getByRole('dialog', { name: 'Change a shift' });
     await sheet.getByRole('heading', { name: title, exact: true }).waitFor();
     await sheet.locator('[data-creation-state="ready"]').waitFor();
-    await page.screenshot({ path: join(evidence, 'shift-' + profile + '-' + viewport.width + '-' + (mode ?? path.split('/').at(-1)) + '.png') });
+    if (title === 'Swap shift') await sheet.locator('input[name="targetShiftId"]').first().waitFor();
+    if (title === 'Can’t work this shift') await sheet.locator('input[name="reasonCode"]').first().waitFor();
+    if (mode === 'cover') await sheet.getByText('Who can take it', { exact: true }).waitFor();
+    await page.screenshot({ animations: 'disabled', path: join(evidence, 'shift-' + profile + '-' + viewport.width + '-' + (mode ?? path.split('/').at(-1)) + '.png') });
     await page.keyboard.press('Escape');
     await page.waitForURL(target => target.pathname === '/app/schedule');
     await sheet.waitFor({ state: 'hidden' });

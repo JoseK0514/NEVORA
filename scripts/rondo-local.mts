@@ -9,7 +9,7 @@ import { isAbsolute, join } from 'node:path';
 import { hashPassword } from '../src/lib/auth/password';
 import { assignOperationalScope, readOwnerOperationalScope } from '../src/lib/company-access/operational-scope.server';
 import { assertExternalEvidencePath, createOwnedNextApp } from '../src/test/integration/owned-next-app';
-import { assignOwnedManagerCompanyAccess, grantOwnedManagerWorkforcePermission, seedOwnedApp, seedOwnedScenario, setOwnedEmployeeRole, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+import { assignOwnedManagerCompanyAccess, grantOwnedManagerWorkforcePermission, seedOwnedApp, seedOwnedScenario, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
 import { createOwnedSmtp } from '../src/test/integration/owned-smtp';
 import { OWNED_COLLAB_PHOTOS } from '../src/test/integration/owned-collab-origin';
 import { fixtureProof } from '../src/test/integration/shift-change-api';
@@ -94,7 +94,7 @@ try {
   const portalUrl = https?.origin ?? app.url;
   const { executor } = app.database;
   await seedOwnedApp(executor);
-  const scenario = await seedOwnedScenario(executor, 'RONDO', 0);
+  const scenario = await seedOwnedScenario(executor, 'RONDO', 0, { mixedRoleSwap: collab });
   const { week, actors } = scenario;
   const managerIds = collab
     ? [['QARONDOMANAGER', 'Location Manager', '555-0198'], ['QACOMPANYMANAGER', 'Company Manager', '555-0197']]
@@ -134,7 +134,6 @@ try {
       ]);
     }
     await assignOwnedManagerCompanyAccess(executor, profiles.M);
-    await setOwnedEmployeeRole(executor, profiles.E, 'EMPLOYEE');
     for (const permission of ['PUBLISH_SCHEDULE', 'APPROVE_LEAVE', 'REVIEW_TIME_EXCEPTION'] as const) {
       await grantOwnedManagerWorkforcePermission(executor, profiles.M, 'loc-1', permission);
       await grantOwnedManagerWorkforcePermission(executor, profiles.M, 'loc-2', permission);
