@@ -161,7 +161,7 @@ async function checkPriority() {
   }
   const owner = await login(profiles.O, desktop);
   try {
-    await checkClocker({ url, actors, evidence, pageFor, owner, record });
+    await checkClocker({ url, actors, evidence, pageFor, owner, record, realPhotos: runtime.production });
   } finally {
     await owner.context().close();
   }
@@ -216,7 +216,8 @@ try {
     }
     if (runtime.production && !inventoryOnly) {
       try {
-        await checkBrowserPasskey({ url, login, employee: profiles.E, desktop, evidence, record });
+        await checkBrowserPasskey({ url, login, employee: profiles.E, desktop, evidence,
+          record: (id, detail) => inventoryResults.push({ id, detail, profile: 'E', observed: 'asserted workflow' }) });
       } catch (error) {
         workflowErrors.push(error);
       }

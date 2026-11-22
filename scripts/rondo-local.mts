@@ -7,10 +7,12 @@ import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { isAbsolute, join } from 'node:path';
 import { hashPassword } from '../src/lib/auth/password';
+import { createCurrentClockerPhotoRuntime } from '../src/lib/clocker/photo-server/runtime.server';
 import { assignOperationalScope, readOwnerOperationalScope } from '../src/lib/company-access/operational-scope.server';
 import { assertExternalEvidencePath, createOwnedNextApp } from '../src/test/integration/owned-next-app';
 import { assignOwnedManagerCompanyAccess, grantOwnedManagerWorkforcePermission, seedOwnedApp, seedOwnedScenario, setOwnedEmployeeRole, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
 import { createOwnedSmtp } from '../src/test/integration/owned-smtp';
+import { OWNED_COLLAB_PHOTOS } from '../src/test/integration/owned-collab-origin';
 import { fixtureProof } from '../src/test/integration/shift-change-api';
 import { startCollabHttps } from './ui-checks/collab-https.mts';
 import { seedCollabPageData, seedScopedManagerCases } from './ui-checks/collab-data.mts';
@@ -66,6 +68,7 @@ try {
   process.env.FUEL_TEST_DATABASE_URL = `postgresql://nevora_test:${password}@127.0.0.1:${port}/nevora_exchange_test_rondo_local`;
   process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN = 'yes';
   if (production) https = await startCollabHttps(scratch);
+  const clockerPinKey = randomBytes(32);
   const smtpPassword = https && randomBytes(32).toString('base64url');
   if (collab) {
     smtp = await createOwnedSmtp(body => writeFileSync(join(evidence, 'fictional-signup.eml'), body, { mode: 0o600 }),
@@ -76,7 +79,7 @@ try {
     ownerAdvisorKnowledgeEnabled: true, ownerAdvisorWeeklyEnabled: true,
     ownerAdvisorBusinessImportsEnabled: true, ownerAdvisorBusinessRetrievalEnabled: false,
     ...(collab ? {
-      production, portalHttpsOrigin: https?.origin, clockerPinKey: randomBytes(32).toString('hex'), clockerPunchEnabled: true,
+      production, portalHttpsOrigin: https?.origin, clockerPinKey: clockerPinKey.toString('hex'), clockerPunchEnabled: true,
       mobileAccessEnabled: true, mobileSupportEnabled: true, nativeAlertsEnabled: true,
       passkeysEnabled: true, deviceAlertsEnabled: true, payrollEnabled: true, signupSmtpPort: smtp?.port,
       signupSmtpTls: https && smtpPassword ? { certificatePath: https.certificatePath, password: smtpPassword } : undefined,
@@ -117,6 +120,19 @@ try {
 
   const profiles = { O: 'QAOWNER', M: 'QACOMPANYMANAGER', Ml: 'QARONDOMANAGER', L: actors[0], E: actors[1] };
   if (collab) {
+    if (production) {
+      const { workspaceId, projectId, branchId } = OWNED_COLLAB_PHOTOS;
+      await executor.query({
+        text: `INSERT INTO clocker_photo_platform_lifecycle
+          (workspace_id,project_id,branch_id,worker_role_name,enabled,cleanup_disclosure,backup_disclosure,attested_until,last_success_at)
+          VALUES($1,$2,$3,'fictional_worker',true,$4,$5,clock_timestamp()+interval '2 hours',clock_timestamp())`,
+        values: [workspaceId, projectId, branchId, 'Fictional photos expire in this disposable workspace.', 'The fictional workspace is deleted at the end of the test.'],
+      });
+      const photos = createCurrentClockerPhotoRuntime(executor, undefined, clockerPinKey);
+      const proof = await photos.portalProof(owner);
+      await photos.service.saveNoticeProfile(proof, { expectedVersion: 0, assistanceContact: 'Fictional front desk', assistanceInstructions: 'Ask the fictional Owner for help.' });
+      await photos.service.savePolicy(proof, { expectedVersion: 0, enabled: true, events: ['CLOCK_OUT'], retentionDays: 7, failureBehavior: 'ALLOW_WITH_EXCEPTION' });
+    }
     await assignOwnedManagerCompanyAccess(executor, profiles.M);
     await setOwnedEmployeeRole(executor, profiles.E, 'EMPLOYEE');
     for (const permission of ['PUBLISH_SCHEDULE', 'APPROVE_LEAVE', 'REVIEW_TIME_EXCEPTION'] as const) {

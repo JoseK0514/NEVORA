@@ -201,8 +201,11 @@ export async function finishInventory({ inventory, priority, extra, evidence, ch
       observed: special.has(row.id) ? 'separate fixture' : 'manual workflow', detail: special.get(row.id) });
   }
   assert.deepEqual([...new Set(results.map(row => row.id))].sort(), rows.map(row => row.id).sort(), 'Every inventory row must be accounted for.');
-  for (const entry of extra.filter(entry => /^[AC]\d+$/.test(entry.id))) {
+  for (const entry of extra.filter(entry => /^[ACI]\d+$/.test(entry.id))) {
     results.push({ ...entry, profile: entry.profile ?? 'public' });
+  }
+  for (const entry of priority.filter(entry => entry.id === 'J16')) {
+    results.push({ ...entry, profile: 'O', observed: 'asserted workflow' });
   }
   const totals = Object.fromEntries([...new Set(results.map(result => result.observed))].sort()
     .map(state => [state, results.filter(result => result.observed === state).length]));

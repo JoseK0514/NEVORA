@@ -12,7 +12,7 @@ import {createOwnedPgTransport,type OwnedDatabaseIdentity} from './owned-pg-tran
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {createCalendarLogRedactor} from './calendar-log-redaction';
 import {ownedIsolatedEnvironment,verifyOwnedIsolatedRuntime,isolatedTransportAdapter,probeOwnedIsolatedRuntime,type OwnedIsolatedRuntime} from './owned-isolated-runtime';
-import {OWNED_COLLAB_ORIGIN} from './owned-collab-origin';
+import {OWNED_COLLAB_ORIGIN, OWNED_COLLAB_PHOTOS} from './owned-collab-origin';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const applicationRoots=['src','public','services','db'];
@@ -350,6 +350,13 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       ...ownedDeviceEnvironment(url,options.deviceAlertsEnabled),
       ...(options.portalHttpsOrigin ? {FUEL_PORTAL_ORIGIN:options.portalHttpsOrigin, NEVORA_OWNED_COLLAB_ORIGIN:options.portalHttpsOrigin} : {}),
+      ...(options.portalHttpsOrigin && options.clockerPunchEnabled ? {
+        NEVORA_ENVIRONMENT: 'staging',
+        NEVORA_CLOCKER_PHOTO_RUNTIME: 'neon-staging-v1',
+        NEVORA_CLOCKER_PHOTO_WORKSPACE: OWNED_COLLAB_PHOTOS.workspaceId,
+        NEVORA_CLOCKER_PHOTO_PROJECT: OWNED_COLLAB_PHOTOS.projectId,
+        NEVORA_CLOCKER_PHOTO_BRANCH: OWNED_COLLAB_PHOTOS.branchId,
+      } : {}),
       ...(options.signupSmtpPort !== undefined ? {
         NEVORA_ONBOARDING_ENABLED: 'true', NEVORA_ONBOARDING_ENVIRONMENT: 'test',
         NEVORA_ONBOARDING_EMAIL_ENABLED: 'true', NEVORA_ONBOARDING_PROVIDER_ENABLED: 'false',

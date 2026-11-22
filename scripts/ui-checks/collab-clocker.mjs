@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 
-export async function checkClocker({ url, actors, evidence, pageFor, owner, record }) {
+export async function checkClocker({ url, actors, evidence, pageFor, owner, record, realPhotos }) {
   const button = (page, name) => page.getByRole('button', { name, exact: true });
   const state = (page, name) => page.locator('[data-clocker-state="' + name + '"]');
 
@@ -55,6 +55,12 @@ export async function checkClocker({ url, actors, evidence, pageFor, owner, reco
     await state(page, expected).waitFor();
   }
 
+  async function previewPhoto(page) {
+    await button(page, 'Open camera').click();
+    await button(page, 'Take photo').click();
+    await button(page, 'Use this photo').waitFor();
+  }
+
   await owner.goto(url + '/app/employees/' + actors[0] + '/clocker-pin');
   const fields = owner.locator('main input:not([type=hidden])');
   await owner.getByText(/set a pin for/i).waitFor();
@@ -103,17 +109,17 @@ export async function checkClocker({ url, actors, evidence, pageFor, owner, reco
   await capture('K6', first, 'Choose a break');
   await button(first, 'Back').click();
 
-  // Use the same fictional photo policy seam as the existing capture harness.
-  // Stop at local preview, before a punch or upload can send an image.
+  // Development has no photo lifecycle binding. The production-build fixture
+  // uses its own policy, private storage and hardware-simulated camera.
   const showPhotoPolicy = async route => {
     if (route.request().postDataJSON()?.operation !== 'state') return route.continue();
     const response = await route.fetch();
     await route.fulfill({ response, json: { ...await response.json(), photoCaptureAvailable: true } });
   };
-  await first.route(punchUrl, showPhotoPolicy);
+  if (!realPhotos) await first.route(punchUrl, showPhotoPolicy);
   const policy = { version: 1, enabled: true, events: ['CLOCK_OUT'], retentionDays: 30, failureBehavior: 'ALLOW_WITH_EXCEPTION', captureMaxBytes: 524288, captureMaxDimension: 640, uploadWindowSeconds: 300 };
   const notice = { policyVersion: 1, profileVersion: 1, companyName: 'Northside QA Workforce', retentionDays: 30, assistanceContact: 'Front desk (fictional)', assistanceInstructions: 'Ask the front desk for help.', cleanupDisclosure: 'Fictional cleanup schedule.', backupDisclosure: 'Fictional backups.' };
-  await first.route('**/api/clocker/*/photos', route => {
+  if (!realPhotos) await first.route('**/api/clocker/*/photos', route => {
     assert.equal(route.request().postDataJSON()?.operation, 'policy');
     return route.fulfill({ json: { policy, notice } });
   });
@@ -125,34 +131,38 @@ export async function checkClocker({ url, actors, evidence, pageFor, owner, reco
   await button(first, 'Confirm clock out').click();
   await button(first, 'Open camera').waitFor();
   await first.screenshot({ path: join(evidence, 'clocker-photo-1024.png') });
-  await button(first, 'Open camera').click();
-  await button(first, 'Take photo').click();
-  await button(first, 'Use this photo').waitFor();
+  await previewPhoto(first);
   await first.screenshot({ path: join(evidence, 'clocker-photo-preview-1024.png') });
   await button(first, 'Cancel').click();
   await first.getByRole('button', { name: 'Use this photo', exact: true }).waitFor({ state: 'hidden' });
-  record('K8', 'Photo and local preview using a simulated policy and camera');
-  await first.unroute(punchUrl, showPhotoPolicy);
+  record('K8', realPhotos ? 'Photo and local preview using the real fixture policy and a synthetic camera' :
+    'Photo and local preview using a simulated policy and camera');
+  if (!realPhotos) await first.unroute(punchUrl, showPhotoPolicy);
 
   // Simulate a second subject only on the recovery state reply. The app must
   // withhold the first subject and never forward a second execute.
+  const actualState = first.waitForResponse(reply => /\/api\/clocker\/[^/]+\/punch$/.test(reply.url()) &&
+    reply.request().postDataJSON()?.operation === 'state');
   await signIn(first);
+  const original = await (await actualState).json();
   await first.route(punchUrl, abortExecute);
-  await button(first, 'Clock out').click();
-  await button(first, 'Confirm clock out').click();
+  if (realPhotos) {
+    await button(first, 'Start break').click();
+    await state(first, 'select-break').getByRole('button', { name: /^Start / }).first().click();
+  } else {
+    await button(first, 'Clock out').click();
+    await button(first, 'Confirm clock out').click();
+  }
   await state(first, 'recovery').waitFor();
   await first.unroute(punchUrl, abortExecute);
   await button(first, 'Check if it saved').click();
   await state(first, 'retry').waitFor();
   await capture('K12', first, 'Retry the original punch when the owned server has no receipt', '-retry');
   await first.route(punchUrl, abortExecute);
-  const changedSubject = async route => {
-    const operation = route.request().postDataJSON()?.operation;
-    assert.equal(operation, 'state');
-    const response = await route.fetch();
-    const body = await response.json();
-    const subject = (body.subject[0] === 'a' ? 'b' : 'a') + body.subject.slice(1);
-    await route.fulfill({ response, json: { ...body, subject, firstName: 'Another fictional person' } });
+  const changedSubject = route => {
+    assert.equal(route.request().postDataJSON()?.operation, 'state');
+    const subject = (original.subject[0] === 'a' ? 'b' : 'a') + original.subject.slice(1);
+    return route.fulfill({ json: { ...original, subject, firstName: 'Another fictional person' } });
   };
   await first.route(punchUrl, changedSubject);
   await button(first, 'Check if it saved').click();
@@ -177,5 +187,28 @@ export async function checkClocker({ url, actors, evidence, pageFor, owner, reco
     await signIn(kiosk, mode);
     await capture('K14', kiosk, 'Simulated ' + mode + ' error screen', '-' + mode);
     await kiosk.context().close();
+  }
+
+  if (realPhotos) {
+    const kiosk = await connect('Collab photo review tablet');
+    await signIn(kiosk);
+    await button(kiosk, 'Clock out').click();
+    await button(kiosk, 'Confirm clock out').click();
+    await previewPhoto(kiosk);
+    const savedPhoto = kiosk.waitForResponse(response => /\/api\/clocker\/[^/]+\/photos$/.test(response.url()) &&
+      response.request().headers()['content-type'] === 'image/jpeg');
+    await button(kiosk, 'Use this photo').click();
+    assert.equal((await (await savedPhoto).json()).state, 'stored');
+    await kiosk.context().close();
+
+    await owner.goto(url + '/app/settings/clocker/photos/review');
+    await owner.getByRole('button', { name: /^Review .*clock out/i }).first().click();
+    await button(owner, 'View private photo').click();
+    const privateImage = owner.getByRole('img', { name: /Private punch photo/ });
+    await privateImage.waitFor();
+    await owner.waitForFunction(() => Array.from(document.images).some(image =>
+      image.alt.startsWith('Private punch photo') && image.naturalWidth > 0));
+    await owner.screenshot({ path: join(evidence, 'clocker-owner-photo-review-1440.png') });
+    record('J16', 'Owner opened the private photo from a real stored fictional clock-out');
   }
 }
