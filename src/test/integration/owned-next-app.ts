@@ -161,12 +161,26 @@ export function ownedDeviceEnvironment(origin:string,enabled=false):Record<strin
 }
 
 /**
+ * Opt-in production runtime for the owned app (QA 1121 gap: "A next build && next start option in the harness").
+ * `production: true`, or NEVORA_OWNED_APP_PRODUCTION=1 in the test process for archived scans that cannot pass the
+ * option, runs Next's production build (`next build` in its compile and generate steps, below) and then `next start` in
+ * the same mirror with NODE_ENV=production. The default stays
+ * `next dev`. The production mirror keeps next-env.d.ts unchanged (the build owns those type paths) and appends a
+ * refusing getTenantRuntimeDb to the scratch DB adapter, because a build resolves every import (the same stub as
+ * scripts/lib/premium-owned-runtime.mts). Not supported with isolated workspaces (they start their own server entry).
+ */
+export function ownedProductionRequested(option?: boolean): boolean {
+  return option ?? process.env.NEVORA_OWNED_APP_PRODUCTION === '1';
+}
+const ownedProductionTenantStub = "\nexport function getTenantRuntimeDb(_role: 'APP' | 'WORKER'): import('@neondatabase/serverless').NeonQueryFunction<false, false> { throw Error('Tenant runtime is outside the owned legacy fixture'); }\n";
+
+/**
  * Real Next development runtime, real login/session/actions and canonical local
  * SQL. The scratch DB adapter is replaced; E can additionally pin Next's exact
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; managerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?:boolean; ownerAdvisorKnowledgeEnabled?:boolean; ownerAdvisorBusinessImportsEnabled?:boolean; ownerAdvisorBusinessRetrievalEnabled?:boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { production?: boolean; centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; managerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?:boolean; ownerAdvisorKnowledgeEnabled?:boolean; ownerAdvisorBusinessImportsEnabled?:boolean; ownerAdvisorBusinessRetrievalEnabled?:boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   const isolatedEnvironment=ownedIsolatedEnvironment(options.isolatedWorkspaces);
   if(options.centralBillingApiOrigin){const api=new URL(options.centralBillingApiOrigin);if(api.origin!==options.centralBillingApiOrigin||api.protocol!=='http:'||!['127.0.0.1','localhost'].includes(api.hostname)||!api.port||api.username||api.password)throw Error('Owned billing UI requires an explicit loopback API');}
   if(options.isolatedWorkspaces){if(options.emptyDatabase!==true||options.commerceRecoveryEnabled)throw Error('Owned isolated admission requires empty unused fallback and explicit commerce transport');await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);}
@@ -185,7 +199,9 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
   // Validate before allocating a runtime or database. Only committed input is
   // eligible for an exact-SHA mirror; a clean tracked status alone is insufficient.
   const files = trackedApplicationFiles(source);
-  const pinDevTypeReferences = options.pinDevTypeReferences ?? true;
+  const production = ownedProductionRequested(options.production);
+  if (production && (options.isolatedWorkspaces || options.pinDevTypeReferences)) throw Error('Owned production runtime supports neither isolated workspaces nor dev type references');
+  const pinDevTypeReferences = options.pinDevTypeReferences ?? !production;
   const evidence = resolve(evidenceDirectory);
   await assertExternalEvidencePath(source,evidenceDirectory);
   await mkdir(evidence, { recursive: true });
@@ -223,7 +239,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
     for (const [name, expected] of Object.entries(mirrorHashes)) if (hash(await readFile(join(mirror, name))) !== expected) throw Error('Application mirror bytes changed: ' + name);
   };
   const manifestPath = join(root, 'ownership.json');
-  const metadata: Record<string, unknown> = { ownerId, source, root, runtime: 'Next development + owned PostgreSQL; substituted DB transport', started: false };
+  const metadata: Record<string, unknown> = { ownerId, source, root, runtime: production ? 'Next production build/start + owned PostgreSQL; substituted DB transport' : 'Next development + owned PostgreSQL; substituted DB transport', started: false };
   await writeFile(manifestPath, JSON.stringify(metadata, null, 2));
   const close = (): Promise<void> => {
     if (closed) return closureFailure ? Promise.reject(closureFailure) : Promise.resolve();
@@ -274,7 +290,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
     await access(join(source, 'node_modules/next/dist/bin/next'));
     copyOwnedDependencies(source, mirror);
     const originalDb = await readFile(join(source, 'src/lib/db.ts'), 'utf8');
-    const adapter = options.isolatedWorkspaces?originalDb:createOwnedDbAdapter(originalDb);
+    const adapter = options.isolatedWorkspaces?originalDb:createOwnedDbAdapter(originalDb)+(production?ownedProductionTenantStub:'');
     await writeFile(join(mirror, 'src/lib/db.ts'), adapter);
     Object.assign(mirrorHashes, hashes, { 'src/lib/db.ts': hash(adapter) });
     const substitutedFiles=options.isolatedWorkspaces?[]:['src/lib/db.ts'];
@@ -293,13 +309,13 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       mirrorHashes['next-env.d.ts'] = hash(derivedTypes);
       substitutedFiles.push('next-env.d.ts');
     }
-    const manifestBytes = JSON.stringify({ checkpoint: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim(), hashes, originalDbHash: hash(originalDb), substitutedDbHash: hash(adapter), substitutedFiles,isolatedTransport, generatedTypeReferences }, null, 2);
+    const manifestBytes = JSON.stringify({ production, checkpoint: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim(), hashes, originalDbHash: hash(originalDb), substitutedDbHash: hash(adapter), substitutedFiles,isolatedTransport, generatedTypeReferences }, null, 2);
     await writeFile(join(root, 'source-manifest.json'), manifestBytes);
     sourceManifestHash = hash(manifestBytes); mirrorPrepared = true;
     await verifyMirror();
     const port = await availablePort(), url = `http://127.0.0.1:${port}`;
     const env: NodeJS.ProcessEnv = {
-      PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: 'development', CI: '1',
+      PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: production ? 'production' : 'development', CI: '1',
       ...isolatedEnvironment,
       NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
       NEXT_PUBLIC_NEVORA_PASSKEYS: options.passkeysEnabled === true ? 'on' : 'off',
@@ -332,6 +348,27 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       ...(options.processOwnerId ? { NEVORA_OWNED_PROCESS_OWNER: options.processOwnerId } : {}),
     };
     options.signal?.throwIfAborted();
+    if (production) {
+      // Next's own two-step build (compile, then generate) produces the same bundles as `next build` but skips its
+      // TypeScript pass, which cannot succeed in the mirror: the mirror has no scripts/ (imported by tests under src/)
+      // and its scratch DB adapter is not typed as the Neon client. Type-check the real checkout with `tsc` instead.
+      // Each step is the owned child until it exits, so close() and an abort stop it like the server.
+      const buildLog = createWriteStream(join(root, 'build.log'));
+      for (const mode of ['compile', 'generate']) {
+        const build = spawn(process.execPath, [join(mirror, 'node_modules/next/dist/bin/next'), 'build', '--experimental-build-mode', mode], { cwd: mirror, env, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'] });
+        child = build;
+        for (const stream of [build.stdout!, build.stderr!]) stream.pipe(createCalendarLogRedactor()).pipe(buildLog, { end: false });
+        const code = await new Promise<number | null>((done, fail) => { build.once('error', fail); build.once('close', done); });
+        if (code !== 0) { buildLog.end(); throw Error(`Owned production build (${mode}) failed (${code}); see ${join(root, 'build.log')}`); }
+        child = undefined;
+        options.signal?.throwIfAborted();
+      }
+      buildLog.end();
+      metadata.productionBuild = { log: join(root, 'build.log'), steps: 'next build --experimental-build-mode compile, then generate' };
+      // The build must not have rewritten any mirrored application input (next-env.d.ts, tsconfig.json).
+      await verifyMirror();
+      options.signal?.throwIfAborted();
+    }
     const log = createWriteStream(join(root, 'next.log'));
     const pilotArgs: string[] = [];
     if (options.ownerAdvisorPilot) {
@@ -341,7 +378,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { c
       pilotArgs.push('--import', join(mirror,preload));
     }
     if(options.ownerAdvisorReplayFixture){const preload='src/test/integration/owner-advisor-replay-preload.mts';metadata.ownerAdvisorReplayFixture={configuration:'fictional-provider-key, original completed request replay only',network:'owned loopback port only; redirects rejected; all external fetches denied',preloadHash:mirrorHashes[preload]};pilotArgs.push('--import',join(mirror,preload));}
-    const serverArgs=options.isolatedWorkspaces?['--import','tsx',join(mirror,'src/test/integration/owned-isolated-next.mts'),String(port)]:[join(mirror,'node_modules/next/dist/bin/next'),'dev','--hostname','127.0.0.1','--port',String(port)];
+    const serverArgs=options.isolatedWorkspaces?['--import','tsx',join(mirror,'src/test/integration/owned-isolated-next.mts'),String(port)]:[join(mirror,'node_modules/next/dist/bin/next'),production?'start':'dev','--hostname','127.0.0.1','--port',String(port)];
     if(options.isolatedWorkspaces)metadata.isolatedIngress={publicOrigin:options.isolatedWorkspaces.origins[0],entryHash:hashes['src/test/integration/owned-isolated-next.mts'],publicPort:443,socket:'owned-ephemeral-loopback-http',productionIngressVerified:false};
     child = spawn(process.execPath, [...pilotArgs,...serverArgs], {
       cwd: mirror, env, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'],
