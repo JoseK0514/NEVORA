@@ -8,7 +8,7 @@ description: NEVORA's design operating system. Load for any NEVORA layout, typog
 Shared by Claude and Codex. Codex reaches the same files through `.codex/skills/nevora-design-os/SKILL.md` and
 `AGENTS.md`; edit the reference files here, once, so both agents keep working from the same rules.
 
-Five standing rules. Each has a reference file; read the one the task needs.
+Six standing rules. Each has a reference file; read the one the task needs.
 
 | # | Standard | Reference |
 |---|---|---|
@@ -17,6 +17,7 @@ Five standing rules. Each has a reference file; read the one the task needs.
 | 3 | Voice: plain, professional, no AI clichés, modelled on Google's developer documentation style guide | `references/voice.md` |
 | 4 | The Impeccable audit runs on every draft Jose presents | `references/audit.md` |
 | 5 | Motion: GSAP for choreographed motion, CSS tokens for state feedback | `references/motion-gsap.md` |
+| 6 | Density (each fact once, two-line rows, three band figures, one main action per card) and how design choices are decided | `references/density.md` |
 
 ## Precedence
 
@@ -51,4 +52,5 @@ severity, then offer fixes. Don't rewrite the draft unless Jose asks for changes
 4. Write product copy to `docs/design/voice.md`, everything else to `references/voice.md`. Payroll and legal copy
    stays exactly as approved.
 5. Animate to `references/motion-gsap.md`, with a reduced-motion path for every animation.
-6. Run the audit on your own result before reporting it.
+6. Apply the density rules in `references/density.md`; take real design choices to Jose as 2–3 rendered options.
+7. Run the audit on your own result before reporting it.
