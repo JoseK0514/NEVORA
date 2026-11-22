@@ -315,3 +315,13 @@
   }
 }
 @keyframes b-home-bar { from { opacity: 0; transform: scaleY(0.4); } to { opacity: 1; transform: scaleY(1); } }
+
+/* A4-02 (QA Nov 21, 2026; WCAG 1.4.4): the band's shortcuts at 200% text on desktop. They stay two across while two fit
+ * (every default-size width from 1024px does) and stack one per row when the larger text needs the band's whole width, so
+ * "Add employee" and "Send update" keep their whole label. A pill grows with its text instead of clipping it. */
+@layer nv-b {
+  @media (min-width: 1024px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#a4b) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#a4b) { height: auto !important; min-height: 36px !important; padding-block: var(--b-space-4) !important; }
+  }
+}

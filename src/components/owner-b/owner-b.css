@@ -117,7 +117,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-title__text { min-width: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title h1 { font-size: var(--b-fs-display); line-height: var(--b-lh-display); font-weight: 700; letter-spacing: -0.03em; color: var(--b-on-band); text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title--big h1 { font-size: 34px; line-height: 40px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-eyebrow { font-size: var(--b-fs-body); line-height: 20px; font-weight: 500; color: var(--b-on-band-2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-eyebrow { font-size: var(--b-fs-body); line-height: 1.25rem; font-weight: 500; color: var(--b-on-band-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-sub { margin-top: var(--b-space-2); font-size: 14px; line-height: 19px; color: var(--b-on-band-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title__right { display: flex; gap: var(--b-space-8); align-items: center; flex: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-hrow { display: flex; flex-wrap: wrap; gap: var(--b-space-8); align-items: center; padding: 14px var(--b-space-20) 0; }
@@ -314,7 +314,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink__k { font-size: var(--b-fs-meta); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--b-on-band-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink__due { padding: var(--b-space-4) var(--b-space-8); border-radius: var(--b-radius-pill); font-size: 12px; font-weight: 700; white-space: nowrap; color: #FFD596; background: rgb(255 196 107 / 0.14); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink__due--ok { color: #9BF0D6; background: rgb(126 240 199 / 0.12); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-ink__big { font-size: var(--b-fs-display); line-height: 34px; font-weight: 700; letter-spacing: -0.025em; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-ink__big { font-size: var(--b-fs-display); line-height: 2.125rem; font-weight: 700; letter-spacing: -0.025em; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink__m { margin-top: -8px; font-size: var(--b-fs-meta); color: var(--b-on-band-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink__segs { display: flex; gap: var(--b-space-4); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink__segs i { flex: 1; height: 6px; border-radius: 3px; background: rgb(255 255 255 / 0.14); }
@@ -343,7 +343,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-notice { display: flex; align-items: center; gap: var(--b-space-12); padding: 14px var(--b-space-16); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-notice__tx { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-notice__t, .b-notice__s) { display: block; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-notice__t { font-size: var(--b-fs-body); line-height: 20px; font-weight: 600; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-notice__t { font-size: var(--b-fs-body); line-height: 1.25rem; font-weight: 600; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-notice__s { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
 /* Phase 9: a notice's one action is the ladder's regular step (44px, 14.5/20 600), as a state card's is. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-notice .b-btn:not(.b-btn--full) { min-height: var(--b-btn-h); padding: 0 var(--b-gutter); font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); }

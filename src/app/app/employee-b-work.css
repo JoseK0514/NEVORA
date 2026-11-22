@@ -303,3 +303,38 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .c-hours > .b-screen .b-stack:has(> #b-hours-week) > #b-hours-side { grid-column: 2 !important; grid-row: 1 / span 7 !important; display: flex !important; flex-direction: column !important; gap: var(--b-space-20) !important; min-width: 0 !important; }
   }
 }
+
+/* A4-01 (QA Nov 21, 2026; WCAG 1.4.4): Home on a phone at 200% text. At the default size nothing here moves: each change
+ * waits until the larger text no longer fits as drawn, then stacks it (Apple HIG: stack rather than truncate).
+ * - The band's two figures sit side by side while both fit, one over the other when they don't. Each tile draws the glass
+ *   edge above it; in the top row that line falls outside the clipped band, so only a stacked tile shows it. (A Lead on
+ *   shift has three tiles whose own lines already divide rows; those tiles are left as they are.)
+ * - A card heading lets its link ("All notifications") and its count ("At least 7") move under the title instead of
+ *   past the card's edge; a to-do's short deadline (under 360px) may wrap.
+ * - A "Customer Support · Main Office" segment that wraps starts its second line clear of the clipped dot column (a
+ *   hanging indent the width of the dot), so "Support" isn't cut to "pport". One line draws exactly as before.
+ * - The shortcuts go one per row when two across would cut their labels.
+ * - Your week becomes a list (day, bar, hours) when its seven columns are narrower than their labels. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .b-live { grid-auto-flow: row !important; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) :is(.b-live:has(> .b-live__i > a[href="#b-home-shift-h"]), .b-live:not(:has(> .b-live__i:nth-child(3)))) > .b-live__i { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) :is(.b-live:has(> .b-live__i > a[href="#b-home-shift-h"]), .b-live:not(:has(> .b-live__i:nth-child(3)))) > .b-live__i::before { content: "" !important; position: absolute !important; inset: -1px 0 auto !important; height: 1px !important; background: var(--b-glass-edge) !important; pointer-events: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) :is(.b-card__h, .b-card__h > h2) { flex-wrap: wrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-dl-s { white-space: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-dots__p { padding-left: 0.85em !important; text-indent: -0.85em !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-dots__p > * { text-indent: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-qa > ul { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw { container-type: inline-size !important; }
+    @container (max-width: 14rem) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__days { grid-template-columns: minmax(0, 1fr) !important; gap: var(--b-space-4) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__d { flex-direction: row !important; align-items: center !important; gap: var(--b-space-8) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__l { order: -1 !important; flex: none !important; width: 3.5em !important; text-align: center !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__track { flex: 1 1 auto !important; align-items: center !important; justify-content: flex-start !important; width: auto !important; height: 1rem !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__bar { width: calc(var(--h) * 100%) !important; height: 100% !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__fill { transform: translateX(calc((var(--f) - 1) * 100%)) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__d--off .eb-hw__bar { width: 1rem !important; height: 4px !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__v { order: 1 !important; flex: none !important; width: 2.5em !important; text-align: right !important; }
+    }
+  }
+}
