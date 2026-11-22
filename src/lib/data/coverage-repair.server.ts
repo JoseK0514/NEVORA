@@ -7,11 +7,12 @@ import type { SessionMutationProof } from '../shift-changes/types';
 import type { SqlExecutor } from '../notifications/types';
 import { addDays, isValidWeekStart } from '../date-utils';
 import { businessDate, shiftBoundaryInstants } from '../business-time';
-import { minutesInWorkweek, shiftPeriod } from '../scheduling/periods';
+import { minutesInWorkweek, shiftPeriod, type ShiftPeriodInput } from '../scheduling/periods';
 import { calculateScheduleHealth } from '../scheduling/schedule-health';
-import { rankCoverageCandidates } from '../scheduling/coverage-ranking';
+import { rankCoverageCandidates, type RankedCoverageCandidate } from '../scheduling/coverage-ranking';
+import type { ValidationIssueCode } from '../scheduling/validate-shift';
 import { CoverageRepairConflictError, parseCoverageRepairLocator, reportedCoverageState, type CoverageRepairLocator } from '../scheduling/coverage-repair';
-import { generationSourceSql, type GenerationSource } from './generation-guards';
+import { generationSourceSql, type GenerationSource, type GenerationSourceRow } from './generation-guards';
 import { mapSchedulingSourceFacts, type SchedulingSourceFacts } from './scheduling-source-facts';
 import { assertManagementProof } from './management-session';
 import { neonNotificationExecutor } from './notification-transactions';
@@ -139,15 +140,80 @@ export async function readCoverageRepair(locator: CoverageRepairLocator, proof: 
   return { ...result, candidates: result.candidates.map(c => ({ employeeId: c.employeeId, employeeName: c.employeeName, role: c.role, primaryLocationId: c.primaryLocationId, scheduledHours: c.scheduledHours, targetHours: c.targetHours, hoursNeeded: c.hoursNeeded, priorUnderTargetWeeks: c.priorUnderTargetWeeks,
     review: createCoverageRepairReview(source, result.locator, c.employeeId, proof) })) };
 }
-export async function readCoverageRepairSelection(token: string, proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
+export type CoverageRepairSelection = {
+  locator: CoverageRepairLocator;
+  employeeId: string;
+  employeeName: string;
+  locationName: string;
+  positionName?: string;
+  isDesignatedLead: boolean;
+  publication: 'DRAFT' | 'PUBLISHED';
+  replaced: { employeeId: string; employeeName: string } | null;
+  shift: { date: string; startTime: string; endTime: string; minutes: number };
+  weekHours: { beforeMinutes: number; afterMinutes: number; targetMinutes: number | null };
+  warnings: ValidationIssueCode[];
+};
+
+export async function readCoverageRepairSelection(token: string, proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<CoverageRepairSelection> {
   const source = await protectedSource(proof, executor); const review = assertCoverageRepairReview(source, token, proof);
   return projectCoverageSelection(source, review);
 }
 
-function projectCoverageSelection(source: GenerationSource, review: ReturnType<typeof assertCoverageRepairReview>) {
+/** A gap can cover a segment of a released shift. Report a person only when
+ * the current release or a removed published assignment identifies one. */
+function replacedAssignee(source: GenerationSource, {locator,workspaceId}: Review, candidate: RankedCoverageCandidate): CoverageRepairSelection['replaced'] {
+  const period = shiftPeriod(locator), previousDay = addDays(locator.date, -1);
+  const matches = (shift: ShiftPeriodInput & { locationId: unknown; positionId?: unknown; isDesignatedLead?: unknown }) => {
+    if (shift.locationId !== locator.locationId || (shift.date !== locator.date && shift.date !== previousDay) ||
+        (locator.positionId && shift.positionId !== locator.positionId) || (locator.target === 'LEAD' && shift.isDesignatedLead !== true)) return false;
+    const original = shiftPeriod(shift);
+    return original.start <= period.start && period.end <= original.end;
+  };
+  const assignees = new Set(candidate.rules.existingShifts
+    .filter(shift => shift.isCalloutApproved && matches(shift))
+    .map(shift => shift.employeeId));
+
+  const liveIds = new Set(source.shifts.map(shift => shift.id));
+  const priorWeek = addDays(locator.weekStart, -7);
+  const revisions = new Map(source.schedule_publication_revisions
+    .filter(row => (row.workspace_id == null || row.workspace_id === workspaceId) && (row.week_start === locator.weekStart || row.week_start === priorWeek))
+    .map(row => [row.id, Number(row.revision_number)]));
+  const lastPublished = new Map<string, { row: GenerationSourceRow; revision: number }>();
+  for (const row of source.schedule_publication_revision_shifts) {
+    const id = row.source_shift_id, revision = revisions.get(row.revision_id);
+    if (typeof id !== 'string' || !id || liveIds.has(id) || revision === undefined) continue;
+    const previous = lastPublished.get(id);
+    if (!previous || revision > previous.revision) lastPublished.set(id, { row, revision });
+  }
+  for (const { row } of lastPublished.values()) {
+    if (typeof row.employee_id === 'string' && matches({ locationId: row.location_id, positionId: row.position_id,
+      isDesignatedLead: row.is_designated_lead, date: String(row.date), startTime: String(row.start_time).slice(0, 5),
+      endTime: String(row.end_time).slice(0, 5) })) assignees.add(row.employee_id);
+  }
+  if (assignees.size !== 1) return null;
+  const [employeeId] = assignees;
+  const employee = source.employees.find(row => row.id === employeeId && (row.workspace_id == null || row.workspace_id === workspaceId));
+  if (typeof employee?.first_name !== 'string' || typeof employee.last_name !== 'string') return null;
+  return { employeeId, employeeName: `${employee.first_name} ${employee.last_name}` };
+}
+
+function projectCoverageSelection(source: GenerationSource, review: ReturnType<typeof assertCoverageRepairReview>): CoverageRepairSelection {
   const candidate = review.result.candidates.find(c => c.employeeId === review.employeeId)!;
-  const publication = source.schedules.find(s => s.location_id === review.locator.locationId && s.week_start === review.locator.weekStart)?.status === 'PUBLISHED' ? 'PUBLISHED' as const : 'DRAFT' as const;
-  return { locator: review.locator, employeeId: candidate.employeeId, employeeName: candidate.employeeName, locationName: review.result.location.shortName, positionName: review.result.position?.name, isDesignatedLead: review.result.designatedLead, publication };
+  const {locator} = review;
+  const {date,startTime,endTime} = locator, period = shiftPeriod(locator);
+  const hours = candidate.evaluation.projectedHours.find(week => week.weekStart === locator.weekStart);
+  if (!hours) throw new CoverageRepairConflictError();
+  const publication = source.schedules.find(s => s.location_id === locator.locationId && s.week_start === locator.weekStart)?.status === 'PUBLISHED' ? 'PUBLISHED' : 'DRAFT';
+  return {
+    locator, employeeId: candidate.employeeId, employeeName: candidate.employeeName,
+    locationName: review.result.location.shortName, positionName: review.result.position?.name,
+    isDesignatedLead: review.result.designatedLead, publication,
+    replaced: replacedAssignee(source, review, candidate),
+    shift: {date,startTime,endTime,minutes:period.end-period.start},
+    weekHours: {beforeMinutes:Math.round(hours.existingHours*60),afterMinutes:Math.round(hours.projectedHours*60),
+      targetMinutes:hours.targetHours === undefined ? null : hours.targetHours*60},
+    warnings: [...new Set(candidate.evaluation.warnings.map(issue => issue.code))],
+  };
 }
 
 /** Recheck the original scope before and after reading, and again after projection.

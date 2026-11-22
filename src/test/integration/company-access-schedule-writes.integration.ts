@@ -234,8 +234,13 @@ it('scoped Find cover opens only assigned locations, projects candidate identiti
   const serialized=JSON.stringify(review);
   for(const blocked of ['Hidden Worker','Secret West','scheduledHours','rule','loc-2'])expect(serialized).not.toContain(blocked);
   const [candidate]=review.data.candidates;
-  expect(await readScopedCoverageRepairSelection(candidate.review,f.manager,ex))
-    .toMatchObject({state:'ready',data:{locationName:review.data.location.shortName,employeeId:'target',draft:true}});
+  const selected=await readScopedCoverageRepairSelection(candidate.review,f.manager,ex);
+  expect(selected).toMatchObject({state:'ready',coverage:{kind:'LOCATIONS',locationIds:['loc-1']},data:{
+    locationName:review.data.location.shortName,employeeId:'target',draft:true,replaced:null,
+    shift:{date:futureWeek,startTime:'10:00',endTime:'11:00',minutes:60},
+    weekHours:{beforeMinutes:0,afterMinutes:60,targetMinutes:null},warnings:['AVAILABILITY_NOT_SUBMITTED'],
+  }});
+  expect(JSON.stringify(selected)).not.toMatch(/Secret West|Hidden Worker|loc-2|existingShifts|rules/);
   const other={...locator,locationId:'loc-2'};
   expect(await readScopedCoverageRepair(other,f.manager,false,ex)).toEqual({state:'unavailable',reason:'access_denied'});
   expect(await readScopedCoverageSuggestions(other,f.manager,false,ex)).toEqual({state:'unavailable',reason:'access_denied'});
