@@ -19,6 +19,7 @@ import {verifyExportReply} from '@/lib/payroll-export/client';
 import {stableExportJson} from '@/lib/payroll-export/json';
 import {selectVisibleFinalized,changeExportSelection} from '@/lib/payroll-export/selection';
 import {PayrollExportMapping} from './payroll-export-mapping';
+import {PayrollExportReceipts} from './payroll-export-receipts';
 import {PayrollTabs,type PayrollTab} from './payroll/payroll-tabs';
 import {payrollImportCopy} from './payroll-import/copy';
 const FILES_READY='Files ready. Download the CSV and its time record.';
@@ -82,6 +83,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
  const [retry,setRetry]=useState<ExportCommand|null>(null),[snapshotActor,setSnapshotActor]=useState<string|null>(null);
  const saveRetry=useRef<ProfileCommand|null>(null),generation=useRef({value:0}),abort=useRef<AbortController|null>(null),reload=useRef<()=>void>(()=>{});
  const mutating=useRef(false),cancelRefresh=useRef<()=>void>(()=>{}),acceptSavedProfile=useRef<(item:SavedExportProfile)=>void>(()=>{});
+ const [receiptsKey,setReceiptsKey]=useState(0);
  const previousActor=useRef(actorId),validUntil=useRef(0),clearProtected=useRef<(message:string,denied?:boolean)=>void>(()=>{});
  const headers={'content-type':'application/json','x-nevora-payroll-export':'1','x-nevora-actor':actorId};
  useEffect(()=>{
@@ -154,7 +156,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
     if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}
     setNotice(body?.state==='already_generated'?'This time record and CSV have already been exported. Use your original downloaded files. No new export was created.':'The timecards or the file format changed. Refresh and check again.');return;
    }
-   if(!response.ok)throw new Error();const verified=await verifyExportReply(await response.json(),command);if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}setResult(verified);setRetry(null);setNotice(FILES_READY);}catch{if(current===generation.current.value)setNotice('We couldn’t confirm the export. Try again; it won’t create a second file.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
+   if(!response.ok)throw new Error();const verified=await verifyExportReply(await response.json(),command);if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}setResult(verified);setReceiptsKey(key=>key+1);setRetry(null);setNotice(FILES_READY);}catch{if(current===generation.current.value)setNotice('We couldn’t confirm the export. Try again; it won’t create a second file.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
  };
  const save=async()=>{
   if(!currentActor){clearProtected.current('Export access ended',true);return;}
@@ -289,6 +291,8 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
    <PayrollExportMapping draft={draft} setDraft={setDraft} cards={cards??[]} reviewed={reviewed} setReviewed={setReviewed} disabled={locked} save={()=>void save()} />
    </div>
   </section>:null}
+  {/* QA A3-03 (Nov 21, 2026): past exports stay downloadable after this page clears a result. */}
+  <PayrollExportReceipts actorId={actorId} refreshKey={receiptsKey}/>
   <IncludedSection payroll={payroll} period={period} actorId={actorId}/>
  </div>;
 }
