@@ -49,8 +49,7 @@ export function ScopedHomeB({ view, openShifts, scheduleHref }: {
   view: Extract<OperationalAuthorityView, { state: "ready" }>; openShifts?: ScopedOpenShift[] | null; scheduleHref: string;
 }) {
   const place = placeName(view.locations);
-  return <CorpPage className="c-scoped c-scoped-home" labelledBy="scoped-home-title">
-    <ScopedReadFrame observation={view}>
+  return <ScopedReadFrame observation={view}><CorpPage className="c-scoped c-scoped-home" labelledBy="scoped-home-title">
       <CorpNav title={place ?? "Home"} titleId="scoped-home-title" phoneOnly />
       <CorpTitle title={place ?? "Home"} sub={place ? undefined : view.locations.map(l => l.shortName || l.name).join(" · ")} wide />
       <OpenShiftsCard openShifts={openShifts} limit={3} moreHref={scheduleHref + "#open-shifts"} />
@@ -62,8 +61,7 @@ export function ScopedHomeB({ view, openShifts, scheduleHref }: {
         </CorpRows>
       </CorpCard>
       <ManagerClockMonitor />
-    </ScopedReadFrame>
-  </CorpPage>;
+  </CorpPage></ScopedReadFrame>;
 }
 
 /** Schedule for a Manager limited to some locations (Phase 2 direction A): the week, open shifts with Find cover, then
@@ -79,8 +77,7 @@ export function ScopedScheduleB({ data, observation, feedback, publishHref, open
   const locationName = (id: string) => { const l = data.locations.find(x => x.id === id); return l ? (l.shortName || l.name) : "Location unavailable"; };
   const hours = [...data.roster].sort((a, b) => b.scheduledMinutesInScope - a.scheduledMinutesInScope);
   const working = hours.filter(p => p.scheduledMinutesInScope > 0), idle = hours.length - working.length;
-  return <CorpPage className="c-scoped c-scoped-schedule" labelledBy="scoped-schedule-title">
-    <ScopedReadFrame observation={observation}>
+  return <ScopedReadFrame observation={observation}><CorpPage className="c-scoped c-scoped-schedule" labelledBy="scoped-schedule-title">
       <CorpNav title="Schedule" titleId="scoped-schedule-title" phoneOnly
         right={<CorpButtonLink href={create} size="sm"><PlusIcon className="c-ic" weight="bold" aria-hidden="true" />Add shift</CorpButtonLink>} />
       <CorpTitle title="Schedule" sub={place ?? undefined} wide
@@ -122,6 +119,5 @@ export function ScopedScheduleB({ data, observation, feedback, publishHref, open
           {idle ? <li><CorpEmptyRow as="div">{`${idle} ${idle === 1 ? "person has" : "people have"} no shifts`}</CorpEmptyRow></li> : null}
         </CorpRows> : <CorpEmptyRow>No one is scheduled this week.</CorpEmptyRow>}
       </CorpCard>
-    </ScopedReadFrame>
-  </CorpPage>;
+  </CorpPage></ScopedReadFrame>;
 }
