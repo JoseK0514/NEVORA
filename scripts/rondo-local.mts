@@ -127,7 +127,8 @@ try {
     const pages = await seedCollabPageData(executor, owner, week);
     const scopedManager = await seedScopedManagerCases(executor, owner);
     const checkpoint = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-    await writeFile(join(evidence, 'runtime.pending.json'), JSON.stringify({ url: portalUrl, checkpoint, ...scenario, profiles, pages, scopedManager, production }, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
+    const browserHttps = https && { proxyPort: https.proxyPort, spki: https.spki };
+    await writeFile(join(evidence, 'runtime.pending.json'), JSON.stringify({ url: portalUrl, checkpoint, ...scenario, profiles, pages, scopedManager, production, browserHttps }, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
     await rename(join(evidence, 'runtime.pending.json'), join(evidence, 'runtime.json'));
   }
 

@@ -12,6 +12,7 @@ import {createOwnedPgTransport,type OwnedDatabaseIdentity} from './owned-pg-tran
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {createCalendarLogRedactor} from './calendar-log-redaction';
 import {ownedIsolatedEnvironment,verifyOwnedIsolatedRuntime,isolatedTransportAdapter,probeOwnedIsolatedRuntime,type OwnedIsolatedRuntime} from './owned-isolated-runtime';
+import {OWNED_COLLAB_ORIGIN} from './owned-collab-origin';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
 const applicationRoots=['src','public','services','db'];
@@ -200,8 +201,9 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
   // eligible for an exact-SHA mirror; a clean tracked status alone is insufficient.
   const files = trackedApplicationFiles(source);
   const production = ownedProductionRequested(options.production);
-  if (options.portalHttpsOrigin !== undefined && (!production || !/^https:\/\/127\.0\.0\.1:\d+$/.test(options.portalHttpsOrigin)
-      || new URL(options.portalHttpsOrigin).origin !== options.portalHttpsOrigin)) throw Error('Expected an owned production HTTPS origin');
+  if (options.portalHttpsOrigin !== undefined && (!production || options.portalHttpsOrigin !== OWNED_COLLAB_ORIGIN)) {
+    throw Error('Expected the owned collab production HTTPS origin');
+  }
   if (production && (options.isolatedWorkspaces || options.pinDevTypeReferences)) throw Error('Owned production runtime supports neither isolated workspaces nor dev type references');
   if (options.signupSmtpPort !== undefined) {
     validateOwnedMailOptions({ recoverySmtpPort: options.signupSmtpPort });
@@ -329,6 +331,10 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       ...isolatedEnvironment,
       NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
       NEXT_PUBLIC_NEVORA_PASSKEYS: options.passkeysEnabled === true ? 'on' : 'off',
+      ...(options.portalHttpsOrigin && options.passkeysEnabled ? {
+        NEVORA_PASSKEY_ORIGIN: options.portalHttpsOrigin,
+        NEVORA_PASSKEY_RP_ID: new URL(options.portalHttpsOrigin).hostname,
+      } : {}),
       NEVORA_MOBILE_ACCESS_ENABLED:options.mobileAccessEnabled===true?'true':'false',
       // Recovery fixture intentionally has no commerce credential/provider binding.
       // Exact page exceptions still use genuine local session/role admission.
@@ -343,7 +349,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       ...ownedMailEnvironment(url,options),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       ...ownedDeviceEnvironment(url,options.deviceAlertsEnabled),
-      ...(options.portalHttpsOrigin ? {FUEL_PORTAL_ORIGIN:options.portalHttpsOrigin} : {}),
+      ...(options.portalHttpsOrigin ? {FUEL_PORTAL_ORIGIN:options.portalHttpsOrigin, NEVORA_OWNED_COLLAB_ORIGIN:options.portalHttpsOrigin} : {}),
       ...(options.signupSmtpPort !== undefined ? {
         NEVORA_ONBOARDING_ENABLED: 'true', NEVORA_ONBOARDING_ENVIRONMENT: 'test',
         NEVORA_ONBOARDING_EMAIL_ENABLED: 'true', NEVORA_ONBOARDING_PROVIDER_ENABLED: 'false',
@@ -411,7 +417,11 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       pilotArgs.push('--import', join(mirror,preload));
     }
     if(options.ownerAdvisorReplayFixture){const preload='src/test/integration/owner-advisor-replay-preload.mts';metadata.ownerAdvisorReplayFixture={configuration:'fictional-provider-key, original completed request replay only',network:'owned loopback port only; redirects rejected; all external fetches denied',preloadHash:mirrorHashes[preload]};pilotArgs.push('--import',join(mirror,preload));}
-    const serverArgs=options.isolatedWorkspaces?['--import','tsx',join(mirror,'src/test/integration/owned-isolated-next.mts'),String(port)]:[join(mirror,'node_modules/next/dist/bin/next'),production?'start':'dev','--hostname','127.0.0.1','--port',String(port)];
+    const serverArgs = options.portalHttpsOrigin
+      ? ['--import', 'tsx', join(mirror, 'src/test/integration/owned-collab-next.mts'), String(port)]
+      : options.isolatedWorkspaces
+        ? ['--import', 'tsx', join(mirror, 'src/test/integration/owned-isolated-next.mts'), String(port)]
+        : [join(mirror, 'node_modules/next/dist/bin/next'), production ? 'start' : 'dev', '--hostname', '127.0.0.1', '--port', String(port)];
     if(options.isolatedWorkspaces)metadata.isolatedIngress={publicOrigin:options.isolatedWorkspaces.origins[0],entryHash:hashes['src/test/integration/owned-isolated-next.mts'],publicPort:443,socket:'owned-ephemeral-loopback-http',productionIngressVerified:false};
     child = spawn(process.execPath, [...pilotArgs,...serverArgs], {
       cwd: mirror, env, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'],
@@ -434,7 +444,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
     while (Date.now() < deadline) {
       options.signal?.throwIfAborted();
       if (child.exitCode !== null) throw new Error('Owned Next process exited before readiness');
-      try { const origin=options.isolatedWorkspaces?.origins[0];const status=origin?await probeOwnedIsolatedRuntime(url,origin,options.signal):(await fetch(`${url}/login`,{redirect:'manual',signal:options.signal?AbortSignal.any([options.signal,AbortSignal.timeout(3000)]):AbortSignal.timeout(3000)})).status;
+      try { const origin=options.portalHttpsOrigin??options.isolatedWorkspaces?.origins[0];const status=origin?await probeOwnedIsolatedRuntime(url,origin,options.signal):(await fetch(`${url}/login`,{redirect:'manual',signal:options.signal?AbortSignal.any([options.signal,AbortSignal.timeout(3000)]):AbortSignal.timeout(3000)})).status;
         if(options.isolatedWorkspaces)startupResponses[status??'io']=(startupResponses[status??'io']??0)+1;if(status!==null&&status>=200&&status<300){ready=true;break;}
       }
       catch { /* A cold compilation can exceed one poll; retain the bounded startup window. */ }

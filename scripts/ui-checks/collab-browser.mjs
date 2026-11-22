@@ -4,12 +4,14 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { isAbsolute, join } from 'node:path';
 import { TEST_PASSWORD } from '../../src/test/integration/owned-app-fixture.ts';
+import { OWNED_COLLAB_ORIGIN } from '../../src/test/integration/owned-collab-origin.ts';
 import { checkClocker } from './collab-clocker.mjs';
 import { scanInventory, finishInventory } from './collab-inventory.mjs';
 import { checkNativeAlerts } from './collab-native.mjs';
 import { checkScopedManager } from './collab-scoped-manager.mjs';
 import { checkSignup } from './collab-signup.mjs';
 import { checkShiftSheets } from './collab-shift-sheets.mjs';
+import { checkBrowserPasskey } from './collab-passkey.mjs';
 
 const [evidence, ...options] = process.argv.slice(2);
 assert.ok(options.every(option => ['--inventory', '--inventory-only', '--screenshots', '--signup-only', '--scoped-manager'].includes(option)), 'Unknown collab browser option.');
@@ -20,14 +22,25 @@ const inventoryEnabled = inventoryOnly || options.includes('--inventory');
 assert.ok(evidence && isAbsolute(evidence), 'Pass the absolute evidence directory of the running collab sandbox.');
 const runtime = JSON.parse(await readFile(join(evidence, 'runtime.json'), 'utf8'));
 const { checkpoint, week, actors, profiles } = runtime;
-assert.match(runtime.url, runtime.production
-  ? /^https:\/\/127\.0\.0\.1:[0-9]+$/ : /^http:\/\/127\.0\.0\.1:[0-9]+$/);
+const browserArgs = ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'];
+if (runtime.production) {
+  assert.equal(runtime.url, OWNED_COLLAB_ORIGIN);
+  const { proxyPort, spki } = runtime.browserHttps;
+  assert.ok(Number.isInteger(proxyPort) && proxyPort >= 1024 && proxyPort <= 65535);
+  assert.match(spki, /^[A-Za-z0-9+/]{43}=$/);
+  browserArgs.push(
+    '--host-resolver-rules=MAP ' + new URL(runtime.url).hostname + ' 127.0.0.1:' + proxyPort + ', MAP * ~NOTFOUND',
+    '--ignore-certificate-errors-spki-list=' + spki,
+  );
+} else {
+  assert.match(runtime.url, /^http:\/\/127\.0\.0\.1:[0-9]+$/);
+}
 const url = runtime.url;
 assert.equal(checkpoint, execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), 'Use the checkout that started the sandbox.');
 
 const require = createRequire(new URL('../../tools/ci-browser-runtime/package.json', import.meta.url));
 const { chromium } = require('playwright');
-const browser = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] });
+const browser = await chromium.launch({ args: browserArgs });
 const results = [];
 const inventoryResults = [];
 const phone = { width: 390, height: 844 };
@@ -39,7 +52,7 @@ function record(id, detail, route) {
 }
 
 async function pageFor(viewport, permissions = [], userAgent, origin = url) {
-  const context = await browser.newContext({ viewport, permissions, userAgent, ignoreHTTPSErrors: runtime.production === true, serviceWorkers: 'block' });
+  const context = await browser.newContext({ viewport, permissions, userAgent, serviceWorkers: runtime.production ? 'allow' : 'block' });
   await context.route('**/*', route => {
     const target = new URL(route.request().url());
     return target.origin === origin || target.protocol === 'blob:' ? route.continue() : route.abort();
@@ -186,8 +199,6 @@ try {
     }
   }
   if (inventoryEnabled) {
-    // The WebAuthn and browser-alert test contracts use localhost. Clocker
-    // provisioning uses the exact numeric loopback origin announced by the app.
     if (!signupOnly) {
       try {
         await captureSignup();
@@ -202,6 +213,13 @@ try {
     } catch (error) {
       workflowErrors.push(error);
       inventoryResults.push({ id: 'L1', observed: 'error', detail: String(error.message).split('\n')[0] });
+    }
+    if (runtime.production && !inventoryOnly) {
+      try {
+        await checkBrowserPasskey({ url, login, employee: profiles.E, desktop, evidence, record });
+      } catch (error) {
+        workflowErrors.push(error);
+      }
     }
     for (const viewport of [phone, desktop]) {
       const directory = viewport === phone ? evidence : join(evidence, 'desktop');

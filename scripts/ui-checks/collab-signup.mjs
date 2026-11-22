@@ -18,7 +18,7 @@ export async function checkSignup({ origin, page, evidence, record }) {
   // Nodemailer may transfer-encode an equals sign and fold the proof link.
   const mail = (await readFile(join(evidence, 'fictional-signup.eml'), 'utf8'))
     .replace(/=\r?\n/g, '').replace(/=3D/g, '=');
-  const verify = mail.match(/https?:\/\/(?:localhost|127\.0\.0\.1):[0-9]+\/onboarding\/verify\?lang=en#proof=[A-Za-z0-9_-]+/)?.[0];
+  const verify = mail.match(/https?:\/\/[a-z0-9.:-]+\/onboarding\/verify\?lang=en#proof=[A-Za-z0-9_-]+/)?.[0];
   assert.ok(verify && new URL(verify).origin === origin, 'No confirmation link in the fictional inbox');
   await page.goto(verify);
   await page.getByLabel('Business name', { exact: true }).waitFor();
