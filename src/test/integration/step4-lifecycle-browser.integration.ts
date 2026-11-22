@@ -105,7 +105,7 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   await page.getByRole('heading',{name:'Import a staff list',exact:true}).first().waitFor();
   await page.getByRole('textbox',{name:'Staff list',exact:true}).waitFor();
   await page.screenshot({path:join(root,'owner-staff-list-import.png')});
-  stages.push({stage:'owner-staff-list-import-form-in-routed-workspace',state:'passed'});
+  browserDiagnostics.ownerStaffListImport = { formRendered: true, screenshot: 'owner-staff-list-import.png' };
   await page.goto(front+'/app');
   const billingStatus=await page.evaluate(async()=>{const response=await fetch('/api/commerce/status',{credentials:'same-origin',cache:'no-store'});return {status:response.status,body:await response.json()};});expect(billingStatus.status).toBe(200);expect(billingStatus.body.state).toBe('trial');expect(billingStatus.body.operational).toBe(true);stages.push({stage:'actual-enrolled-catalog-trial-and-company-owner-browser-billing-authority',state:'passed'});
   // A cold WebKit document before clock advancement separates browser delivery

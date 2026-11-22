@@ -170,12 +170,12 @@ try {
   if (signupOnly) {
     await captureSignup();
   }
-  let priorityError;
+  const workflowErrors = [];
   if (!inventoryOnly && !signupOnly) {
     try {
       await checkPriority();
     } catch (error) {
-      priorityError = error;
+      workflowErrors.push(error);
     } finally {
       await writeFile(join(evidence, 'collab-priority-results.json'), JSON.stringify({ checkpoint, results }, null, 2) + '\n');
     }
@@ -187,6 +187,7 @@ try {
       try {
         await captureSignup();
       } catch (error) {
+        workflowErrors.push(error);
         const id = ['A8', 'A9', 'A10'].find(id => !inventoryResults.some(result => result.id === id));
         inventoryResults.push({ id, observed: 'error', detail: String(error.message).split('\n')[0] });
       }
@@ -194,6 +195,7 @@ try {
     try {
       await checkNativeAlerts({ url: inventoryOrigin, login: scanLogin, employee: profiles.E, evidence, record: recordInventory });
     } catch (error) {
+      workflowErrors.push(error);
       inventoryResults.push({ id: 'L1', observed: 'error', detail: String(error.message).split('\n')[0] });
     }
     const inventory = await scanInventory({
@@ -201,7 +203,7 @@ try {
     });
     await finishInventory({ inventory, priority: results, extra: inventoryResults, evidence, checkpoint });
   }
-  if (priorityError) throw priorityError;
+  if (workflowErrors.length) throw new AggregateError(workflowErrors, 'One or more collab browser workflows failed. See the retained evidence.');
 } finally {
   await browser.close();
 }
