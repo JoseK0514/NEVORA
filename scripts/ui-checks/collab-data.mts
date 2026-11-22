@@ -65,6 +65,8 @@ export async function seedScopedManagerCases(executor: SqlExecutor, owner: Sessi
     await executor.transaction([
       { text: "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'Fictional','555-0188','EMPLOYEE',$3)", values: [employeeId, name, location] },
       { text: 'INSERT INTO employee_location_eligibility VALUES($1,$2)', values: [employeeId, location] },
+      { text: "INSERT INTO employee_positions VALUES($1,'qa-pos')", values: [employeeId] },
+      { text: "INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT $1||'-'||day,$1,day,'00:00','24:00' FROM generate_series(0,6) day", values: [employeeId] },
       { text: "INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,$2,$3,'DRAFT',$4)", values: [scheduleId, location, week, owner.employee.id] },
       { text: "INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) VALUES($1,$2,$3,$4,'00:00','00:30','qa-pos')", values: [scheduleId + '-shift', scheduleId, employeeId, today] },
     ]);

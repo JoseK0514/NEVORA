@@ -39,7 +39,10 @@ export function useInboxCount(key: string | null, pathname: string | null): numb
       }
     };
     const visibility = () => { if (document.visibilityState === "hidden") { controller?.abort(); setCount(null); } else void read(); };
-    if (cached?.key === key && Date.now() - cached.at < 20_000) setCount(cached);
+    const snapshot = cached;
+    if (snapshot?.key === key && Date.now() - snapshot.at < 20_000) {
+      queueMicrotask(() => { if (active && document.visibilityState !== "hidden") setCount(snapshot); });
+    }
     else void read();
     const timer = window.setInterval(() => void read(), 60_000);
     document.addEventListener("visibilitychange", visibility);
