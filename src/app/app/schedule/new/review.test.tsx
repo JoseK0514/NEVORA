@@ -18,18 +18,15 @@ const locator = { version: 1, weekStart: "2030-10-07", gapKey: "gap", locationId
 const selected = { locator, employeeId: "real-employee", employeeName: "Taylor Rivera", locationName: "Main Office", positionName: "Customer Support", isDesignatedLead: true };
 beforeEach(() => { state.read.mockReset().mockResolvedValue(selected); state.decode.mockReset().mockReturnValue({ locator }); });
 
-it("renders published consent with valid notice markup and an explicit stable label outside validation messages", async () => {
+it("a published week: the Publish change button is the approval and says who will see it (Phase 2, Nov 22, 2026)", async () => {
   state.read.mockResolvedValue({ ...selected, publication: "PUBLISHED" });
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
-  expect(html).not.toMatch(/<p class="wa-notice__body"><p>/);
-  expect(html).toContain('id="coverage-publication-consent"');
-  expect(html).toContain('for="coverage-publication-consent"');
-  const consent = html.match(/<input[^>]*id="coverage-publication-consent"[^>]*>/)?.[0];
-  expect(consent).toContain('name="publicationConsent"');
-  expect(consent).toContain('required=""');
-  expect(html).not.toContain('checked=""');
+  expect(html).toContain('<input type="hidden" name="publicationConsent" value="on"/>');
+  expect(html).toContain("Publish change");
+  expect(html).toContain("Taylor will see this shift in their schedule. We’ll also send them a notification.");
+  expect(html).not.toContain('type="checkbox"');
+  expect(html).not.toContain("Save draft");
 });
-
 it("shows and submits only the server-reviewed assignment, ignoring forged query prefills", async () => {
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review", employeeId: "FORGED", positionId: "FORGED", locationId: "FORGED", start: "00:00" }) }));
   expect(state.read).toHaveBeenCalledWith("retained-review", state.proof);
@@ -38,13 +35,14 @@ it("shows and submits only the server-reviewed assignment, ignoring forged query
   expect(html).not.toContain("FORGED");
   expect(html).toContain("Taylor Rivera");
   expect(html).toContain("Customer Support");
-  expect(html).toContain("Anything else this shift still needs stays open on the schedule.");
+  expect(html).toContain("Fills the Customer Support need");
+  expect(html).toContain("Open shift");
 });
 it("explains the midnight boundary without changing canonical 24:00", async () => {
   // Times and dates are kept whole with no-break spaces; compare the words.
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) })).replace(/\u00a0/g, " ");
-  expect(html).toContain("8:00 PM – 12:00 AM");
-  expect(html).toContain("Ends Tue, Oct 8");
+  expect(html.replace(/<[^>]+>/g, "").replace(/[\u2009\u202f]/g, " ")).toMatch(/8:00 ?PM – 12:00 ?AM/);
+  expect(html.replace(/\u00a0/g, " ")).toContain("Ends Tue, Oct 8");
   expect(html).toContain('name="endTime" value="24:00"');
 });
 it("retains a non-Lead staffing repair with no inferred position or Lead flag", async () => {
@@ -52,8 +50,8 @@ it("retains a non-Lead staffing repair with no inferred position or Lead flag", 
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review", lead: "1", positionId: "FORGED" }) }));
   expect(html).toContain('name="positionId" value=""');
   expect(html).not.toContain('name="isDesignatedLead"');
-  expect(html).toContain("Not needed");
-  expect(html).toContain("This fills the staffing requirement.");
+  expect(html).not.toContain("Shift lead");
+  expect(html).toContain("Fills the staffing need");
 });
 it("a stale selection removes the save action and keeps a trusted refresh path", async () => {
   state.read.mockRejectedValue(new CoverageRepairConflictError());
@@ -61,7 +59,8 @@ it("a stale selection removes the save action and keeps a trusted refresh path",
   expect(html).toContain("Coverage changed");
   expect(html).toContain("Open current review");
   expect(html).toContain("refresh=1");
-  expect(html).not.toContain("Save replacement");
+  expect(html).not.toContain("Publish change");
+  expect(html).not.toContain("Save draft");
   expect(html).not.toContain('name="coverageRepairReview"');
 });
 it("an untrusted malformed review falls back to schedule with no submission form", async () => {
@@ -94,14 +93,17 @@ it('a published week without the publish permission says so up front, with no ac
   state.read.mockResolvedValue({ ...selected, publication: "PUBLISHED" });
   const html=renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
   expect(html).toContain('Publishing permission needed');
-  expect(html).toContain('Ask the Owner to save it, or to give you that permission.');
-  expect(html).not.toContain('coverage-publication-consent');
-  expect(html).not.toContain('Save replacement');
+  expect(html).toContain('Ask the Owner to make this change, or to let you publish.');
+  expect(html).not.toContain('publicationConsent');
+  expect(html).not.toContain('Publish change');
+  expect(html).not.toContain('<form');
   expect(html).toContain('Back to coverage');
 });
 it('a draft week needs no publish permission and keeps its save',async()=>{
   operationalPageFixture.publishDenied=true;
   const html=renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
-  expect(html).toContain('Save replacement');
+  expect(html).toContain('Save draft');
+  expect(html).toContain('Added as a draft.');
+  expect(html).not.toContain('publicationConsent');
   expect(html).not.toContain('Publishing permission needed');
 });

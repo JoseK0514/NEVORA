@@ -1,6 +1,5 @@
 import {scopedObservation} from '@/lib/company-access/observation';
 import accessStyles from '@/components/company-access/company-access.module.css';
-import consentStyles from './coverage-consent.module.css';
 import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
 import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
 import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
@@ -11,19 +10,14 @@ import {assertWorkforcePermission} from '@/lib/workforce/authority.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {listPositions} from "@/lib/data/positions";
-import { keepDuration } from "@/components/wave-a/keep-duration";
 import { ScheduleShiftForm } from "@/components/schedule-shift-form";
 import {shiftFormEmployees} from '@/lib/scheduling/shift-form-employee';
-import { CorpPage } from "@/components/corp/corp";
-import { ConfigurationForm } from "@/components/configuration-form";
-import { Card, PageBand } from "@/components/kit/kit";
-import { Fact, Facts, FormActions, Notice } from "@/components/wave-a/parts";
-import { PendingButton } from "@/components/wave-a/pending-button";
+import { CorpBody, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpTitle } from "@/components/corp/corp";
+import { CoverageReview, type CoverageReviewMode, type CoverageReviewProps } from "@/components/coverage-review";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { keepWhole } from "@/lib/keep-whole";
 
-import Link from "next/link";
 import { createShiftAction } from "@/app/app/schedule/actions";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { requireSessionMutationProof } from "@/lib/auth/session";
@@ -31,8 +25,7 @@ import { decodeCoverageRepairReview, readCoverageRepairSelection, readScopedCove
 import { coverDraftShiftUrl, coverageRepairUrl, CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
 import { listEmployees, listLocations } from "@/lib/data/employees";
 import {
-  addDays, durationMinutes,
-  formatDayLabel, formatTime, formatWeekRange,
+  formatWeekRange,
   isDateInWeek,
   isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
@@ -81,17 +74,17 @@ export default async function NewShiftPage({
         }
       });
     if(source.state==='unavailable')return <OperationalUnavailable title="Replacement review unavailable" reason={source.reason} scoped={scoped}/>;
-    if(source.data.kind==='conflict')return <ScopedReadFrame observation={scopedObservation(source)}><div className="nv-page wa-page wa-shift" data-nv-page="">
-        <PageBand back={{ href:source.data.href, label: "Coverage" }} eyebrow="Replacement" title="Coverage changed" summary="Someone changed this shift since you opened the review." />
-        <div className="nv-content wa-narrow">
-          <Card title="This review is out of date">
-            <div className="wa-card-body">
-              <p className="wa-text">Open the review again to see who can cover it now. Nothing was saved.</p>
-              <Link className="nv-btn" data-kind="primary" data-block="true" href={source.data.href}>Open current review</Link>
-            </div>
-          </Card>
-        </div>
-      </div></ScopedReadFrame>;
+    if(source.data.kind==='conflict')return <ScopedReadFrame observation={scopedObservation(source)}>
+      <CorpPage className="c-cover c-page--narrow" labelledBy="review-title">
+        <CorpNav back={{ href: source.data.href, label: "Coverage" }} title="Coverage changed" titleId="review-title" phoneOnly />
+        <CorpTitle title="Coverage changed" wide />
+        <CorpCard label="Nothing was saved">
+          <CorpBody>
+            <p className="c-cover__text">Someone changed this shift after you opened the review.</p>
+            <CorpButtonLink href={source.data.href} full>Open current review</CorpButtonLink>
+          </CorpBody>
+        </CorpCard>
+      </CorpPage></ScopedReadFrame>;
     const selected=source.data.selected;
     // QA S-06 (Nov 21, 2026): on a published week this replacement is a published change, which the writer allows only with
     // company-wide access and Publish schedules here (commitPublishedWeekChange). Ask first, instead of offering the
@@ -99,51 +92,21 @@ export default async function NewShiftPage({
     const canSave=!scoped && (selected.publication!=='PUBLISHED'||await mayChangePublished(proof,selected.locator.locationId));
     const scopedDraft = scoped && 'draft' in selected && selected.draft === true;
     const { locator } = selected;
-    const day = formatDayLabel(locator.date);
-    const overnight = locator.endTime === "24:00" || locator.endTime < locator.startTime;
-    const nextDay = overnight ? formatDayLabel(addDays(locator.date, 1)) : null;
-    const refreshHref = coverageRepairUrl(locator, true);
-    const need = locator.target === "POSITION" ? "the position requirement" : locator.target === "LEAD" ? "the lead requirement" : "the staffing requirement";
-    return <ScopedReadFrame observation={scopedObservation(source)}><div className="nv-page wa-page wa-shift" data-nv-page="">
-      <PageBand back={{ href: refreshHref, label: "Coverage" }} eyebrow={keepWhole(formatWeekRange(locator.weekStart))} title="Review replacement"
-        summary={`${selected.employeeName} for ${keepWhole(`${day.weekday},\u00a0${day.day}`)}.`} />
-      <div className="nv-content wa-narrow">
-      <ConfigurationForm action={createShiftAction} className="wa-form">
-      <input type="hidden" name="coverageRepairReview" value={params.review} />
-      {Object.entries({ weekStart: locator.weekStart, employeeId: selected.employeeId, locationId: locator.locationId,
+    const mode: CoverageReviewMode = scoped ? (scopedDraft ? 'scoped-draft' : 'scoped-ask')
+      : !canSave ? 'needs-publish-permission' : selected.publication === 'PUBLISHED' ? 'publish' : 'draft';
+    const extra = selected as typeof selected & Partial<{ replaced: { employeeName: string } | null; weekHours: CoverageReviewProps['weekHours']; warnings: CoverageReviewProps['warnings'] }>;
+    return <ScopedReadFrame observation={scopedObservation(source)}><CoverageReview
+      mode={mode} employeeName={selected.employeeName} replacedName={extra.replaced?.employeeName ?? null}
+      date={locator.date} startTime={locator.startTime} endTime={locator.endTime} locationName={selected.locationName}
+      positionName={selected.positionName} isDesignatedLead={selected.isDesignatedLead}
+      needLabel={locator.target === "POSITION" ? `the ${selected.positionName ?? "position"} need` : locator.target === "LEAD" ? "the shift lead need" : "the staffing need"}
+      weekHours={extra.weekHours} warnings={extra.warnings}
+      backHref={coverageRepairUrl(locator, true)}
+      draftHref={scopedDraft ? coverDraftShiftUrl(locator,selected.isDesignatedLead,selected.employeeId) : undefined}
+      action={createShiftAction}
+      hidden={{ coverageRepairReview: reviewToken, weekStart: locator.weekStart, employeeId: selected.employeeId, locationId: locator.locationId,
         date: locator.date, startTime: locator.startTime, endTime: locator.endTime, positionId: locator.positionId ?? '',
-        ...(selected.isDesignatedLead ? { isDesignatedLead: 'on' } : {}) }).map(([name, value]) => <input type="hidden" name={name} value={value} key={name} />)}
-      <Card title="Replacement" id="replacement-shift">
-        <Facts label="Replacement shift">
-          <Fact label="Person">{selected.employeeName}</Fact>
-          <Fact label="Day">{keepWhole(`${day.weekday},\u00a0${day.day}, ${locator.date.slice(0, 4)}`)}</Fact>
-          <Fact label="Time">{keepWhole(`${formatTime(locator.startTime)} – ${formatTime(locator.endTime)}`)}<span className="wa-muted">{"\u00a0·"}</span>{" "}<span className="wa-muted nv-keep">{keepDuration(durationMinutes(locator.startTime, locator.endTime))}</span>{nextDay ? <span className="wa-fact__more">{keepWhole(`Ends ${nextDay.weekday},\u00a0${nextDay.day}`)}</span> : null}</Fact>
-          <Fact label="Location">{selected.locationName}</Fact>
-          <Fact label="Position">{selected.positionName ?? "None needed"}</Fact>
-          <Fact label="Shift lead">{selected.isDesignatedLead ? "Yes, needed" : "Not needed"}</Fact>
-        </Facts>
-      </Card>
-      {!scoped ? <Notice tone="info" quiet title={`This fills ${need}.`}>Anything else this shift still needs stays open on the schedule. Coverage is checked again when you save.</Notice> : null}
-      {scoped ? scopedDraft
-        ? <Notice tone="info" quiet title="Draft assignment">Open Add shift to confirm the person, time and location.</Notice>
-        : <Notice tone="review" title="Company-wide access needed to save">Ask the Owner to review this replacement.</Notice>
-      : selected.publication === 'PUBLISHED' && !canSave ? <Notice tone="review" title="Publishing permission needed">This schedule is published, so saving this replacement also publishes it. You don’t have permission to publish schedules here. Ask the Owner to save it, or to give you that permission.</Notice>
-      : selected.publication === 'PUBLISHED' ? <>
-        <Notice tone="info" title="Published schedule change">Saving adds this assignment to the published schedule and may notify the affected employee. Notification delivery is not guaranteed by saving.</Notice>
-        <div className={consentStyles.consent}>
-          <input id="coverage-publication-consent" type="checkbox" name="publicationConsent" required />
-          <label htmlFor="coverage-publication-consent">I also approve publishing this replacement and queuing the applicable employee notifications.</label>
-        </div>
-      </> : <Notice tone="info" quiet title="Draft assignment">Saving adds a draft shift. Publish the schedule separately when you are ready to notify employees.</Notice>}
-      <FormActions>
-        {canSave ? <PendingButton pending="Saving…" block>Save replacement</PendingButton> : null}
-        {scopedDraft ? <Link className="nv-btn" data-kind="primary" data-block="true"
-          href={coverDraftShiftUrl(locator,selected.isDesignatedLead,selected.employeeId)}>Add draft shift</Link> : null}
-        <Link className="nv-btn" data-kind="secondary" data-block="true" href={refreshHref}>Back to coverage</Link>
-      </FormActions>
-    </ConfigurationForm>
-      </div>
-    </div></ScopedReadFrame>;
+        ...(selected.isDesignatedLead ? { isDesignatedLead: 'on' } : {}) }} /></ScopedReadFrame>;
   }
   const workspace = await getWorkspace();
   const todayDate = businessDate(new Date(), workspace.timeZone);
