@@ -177,7 +177,7 @@ try {
   if (!inventoryOnly && !signupOnly) {
     try {
       if (!scopedOnly) await checkPriority();
-      await checkScopedManager({ runtime, login, captureWidths, record });
+      await checkScopedManager({ runtime, login: scanLogin, captureWidths, record });
     } catch (error) {
       workflowErrors.push(error);
     } finally {

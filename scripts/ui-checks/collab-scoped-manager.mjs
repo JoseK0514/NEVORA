@@ -21,7 +21,8 @@ async function readFeeds(page, { week, actor }) {
 }
 
 function assertFeedCoverage(feeds, included, excluded) {
-  for (const feed of feeds) assert.equal(feed.status, 200, JSON.stringify(feed.body));
+  const endpoints = ["Action center", "Corrections", "Today", "Inbox count"];
+  for (const [index, feed] of feeds.entries()) assert.equal(feed.status, 200, endpoints[index] + ": " + JSON.stringify(feed.body));
   const [inbox, corrections, today, count] = feeds.map(feed => feed.body);
   assert.ok(inbox.items.some(item => item.id === 'TIME_CORRECTION:' + included.correctionId));
   const leave = inbox.items.find(item => item.id === 'TIME_OFF:' + included.leaveId);
