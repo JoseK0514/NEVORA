@@ -7,7 +7,6 @@ import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { isAbsolute, join } from 'node:path';
 import { hashPassword } from '../src/lib/auth/password';
-import { createCurrentClockerPhotoRuntime } from '../src/lib/clocker/photo-server/runtime.server';
 import { assignOperationalScope, readOwnerOperationalScope } from '../src/lib/company-access/operational-scope.server';
 import { assertExternalEvidencePath, createOwnedNextApp } from '../src/test/integration/owned-next-app';
 import { assignOwnedManagerCompanyAccess, grantOwnedManagerWorkforcePermission, seedOwnedApp, seedOwnedScenario, setOwnedEmployeeRole, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
@@ -128,10 +127,11 @@ try {
           VALUES($1,$2,$3,'fictional_worker',true,$4,$5,clock_timestamp()+interval '2 hours',clock_timestamp())`,
         values: [workspaceId, projectId, branchId, 'Fictional photos expire in this disposable workspace.', 'The fictional workspace is deleted at the end of the test.'],
       });
-      const photos = createCurrentClockerPhotoRuntime(executor, undefined, clockerPinKey);
-      const proof = await photos.portalProof(owner);
-      await photos.service.saveNoticeProfile(proof, { expectedVersion: 0, assistanceContact: 'Fictional front desk', assistanceInstructions: 'Ask the fictional Owner for help.' });
-      await photos.service.savePolicy(proof, { expectedVersion: 0, enabled: true, events: ['CLOCK_OUT'], retentionDays: 7, failureBehavior: 'ALLOW_WITH_EXCEPTION' });
+      await executor.transaction([
+        { text: "SELECT set_config('nevora.clocker.photo_workspace',$1,true)", values: [workspaceId] },
+        { text: 'SELECT clocker_photo_save_notice($1,$2,0,$3,$4)', values: [workspaceId, owner.employee.id, 'Fictional front desk', 'Ask the fictional Owner for help.'] },
+        { text: "SELECT clocker_photo_save_policy($1,$2,0,true,ARRAY['CLOCK_OUT'],7,'ALLOW_WITH_EXCEPTION')", values: [workspaceId, owner.employee.id] },
+      ]);
     }
     await assignOwnedManagerCompanyAccess(executor, profiles.M);
     await setOwnedEmployeeRole(executor, profiles.E, 'EMPLOYEE');
