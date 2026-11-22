@@ -143,6 +143,43 @@ it('re-checks the Phase 1 QA findings',async()=>{
    await dan.ctx.close();
    await writeFile(ev+'/diag.json',JSON.stringify(out,null,2));return {cases:Object.keys(out)};});
 
+  // DIAG2 (coordinator follow-up): drop the reply inside the page. The next request carrying `next-action` goes to the
+  // server and is answered (the server commits); the page discards the response and the fetch rejects with
+  // TypeError('Failed to fetch'), as a connection lost after the server answered would. fetch is restored after it.
+  await check('DIAG2',async()=>{const out:Record<string,unknown>={};
+   const arm=async(p:any)=>p.evaluate(()=>{const orig=window.fetch;const d:any={armed:true};(window as any).__drop=d;
+    window.fetch=async function(this:any,input:any,init?:any){const h=new Headers(init?.headers??(input instanceof Request?input.headers:undefined));
+     if(d.armed&&h.get('next-action')){d.armed=false;window.fetch=orig;d.sentAt=performance.now();const r=await orig.call(this,input,init);d.status=r.status;d.redirect=r.headers.get('x-action-redirect');
+      try{await r.arrayBuffer();}catch(e){d.bodyError=String(e);}d.droppedAt=performance.now();throw new TypeError('Failed to fetch');}
+     return orig.call(this,input,init);} as any;});
+   const runCase=async(label:string,p:any,opts:{path:string;first?:RegExp;anyway:RegExp;waitRe?:RegExp;db:()=>Promise<unknown>})=>{
+    const consoleErrors:string[]=[];const onC=(m:any)=>{if(m.type()==='error')consoleErrors.push(m.text().slice(0,800));};const onE=(e:Error)=>consoleErrors.push('pageerror: '+e.message.slice(0,400));
+    await go(p,opts.path,3500);
+    if(opts.first){const f=p.getByRole('button',{name:opts.first}).first();await f.waitFor({timeout:120000});await f.click();if(opts.waitRe)await p.waitForURL(opts.waitRe,{timeout:60000}).catch(()=>{});await settle(p,2500);}
+    const btn=p.getByRole('button',{name:opts.anyway}).first();await btn.waitFor({timeout:60000}).catch(async(e:Error)=>{await shot(p,`DIAG2-${label}-stuck`);throw e;});
+    const label2=await btn.innerText();const dbBefore=await opts.db();
+    p.on('console',onC);p.on('pageerror',onE);await arm(p);const t0=Date.now();await btn.click();
+    const dom:any[]=[];let last='';
+    for(let k=0;k<80;k++){const d=await p.evaluate(()=>{const b=document.body.innerText;const a=[...document.querySelectorAll('[role="alert"]')].map(e=>(e.textContent||'').trim().replace(/\s+/g,' ').slice(0,200)).filter(Boolean);
+      const c=document.querySelector('.b-callout');return {alerts:a,amberCallout:!!document.querySelector('.b-callout--amber, .b-callout[data-tone="amber"], [class*="amber"].b-callout')||(!!c&&/could not be confirmed/.test(c.textContent||'')),checkLink:!![...document.querySelectorAll('a')].find(x=>x.textContent?.trim()==='Check the schedule'),nothingWasChanged:b.includes('Nothing was changed'),url:location.pathname+location.search};}).catch((e:Error)=>({evalError:e.message.slice(0,100)}));
+     const key=JSON.stringify(d);if(key!==last){dom.push({t:Date.now()-t0,...d});last=key;}await p.waitForTimeout(100);}
+    const drop=await p.evaluate(()=>(window as any).__drop??null).catch(()=>null);
+    const href=await p.getByRole('link',{name:'Check the schedule'}).first().getAttribute('href').catch(()=>null);
+    await shot(p,`DIAG2-${label}`);p.off('console',onC);p.off('pageerror',onE);
+    const final=dom[dom.length-1]??{};
+    out[label]={clicked:label2,drop,dbBefore,dbAfter:await opts.db(),amberShown:dom.some(x=>x.amberCallout),checkHref:href,nothingWasChangedShown:dom.some(x=>x.nothingWasChanged),final,dom,consoleErrors};};
+   const notes=async()=>(await q("SELECT count(*)::int n FROM notifications").catch(()=>[{n:-1}]))[0].n;
+   const sched=(loc:string|null,ws:string)=>async()=>({schedules:await q(`SELECT location_id,status FROM schedules WHERE week_start=$1 ${loc?"AND location_id='"+loc+"'":''} ORDER BY 1`,[ws]),notifications:await notes()});
+   await runCase('owner-planning-panel',P,{path:`/app/schedule?week=${W2}&location=loc-1&plan=1`,first:/^Publish Calle Loíza$/,anyway:/^Publish Calle Loíza anyway$/,waitRe:/publishCheck=/,db:sched('loc-1',W2)}).catch(e=>{out['owner-planning-panel']={error:String(e?.stack??e).slice(0,500)};});
+   await runCase('owner-build-and-publish-control',P,{path:`/app/schedule/publish?week=${W3}`,first:/^Publish 2 drafts$/,anyway:/^Publish 2 drafts anyway$/,waitRe:/review=1/,db:sched(null,W3)}).catch(e=>{out['owner-build-and-publish-control']={error:String(e?.stack??e).slice(0,500)};});
+   const D=addDays(W4,2);
+   await runCase('owner-add-shift-control',P,{path:`/app/schedule/new?week=${W4}&date=${D}&employeeId=OWN-GABY&locationId=loc-1&start=09:00&end=13:00&positionId=qa-pos`,anyway:/^Save shift$/,
+    db:async()=>({shifts:(await q("SELECT count(*)::int n FROM shifts WHERE employee_id='OWN-GABY' AND date=$1",[D]))[0].n})}).catch(e=>{out['owner-add-shift-control']={error:String(e?.stack??e).slice(0,500)};});
+   const dan=await login(desk,'OWN-DANI');
+   await runCase('manager-per-location',dan.p,{path:`/app/schedule/publish?week=${W2}`,first:/^Publish Condado$/,anyway:/^Publish Condado anyway$/,waitRe:/review=1/,db:sched('loc-2',W2)}).catch(e=>{out['manager-per-location']={error:String(e?.stack??e).slice(0,500)};});
+   await dan.ctx.close();
+   await writeFile(ev+'/diag2.json',JSON.stringify(out,null,2));return {cases:Object.keys(out)};});
+
   // A3-07: lock waits while one Owner tab loads /app pages for 32 s (the QA's measurement).
   await check('A3-07',async()=>{
    const pages=(process.env.NEVORA_RECHECK_LOCK_PAGES??'/app/schedule,/app/employees,/app/timecards,/app/inbox').split(',');

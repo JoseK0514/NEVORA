@@ -23,8 +23,9 @@ No application code was changed.
   - `recheck-after2.json`: A3-02 on the publishing click, and A3-05 to a published week.
   - `recheck-after3.json` and `recheck-before.json`: the same lock measurement on `ef1dfdf1` and on the pre-fix base
     `5cf16928`. `recheck-before.json` also has before screenshots for A3-01, A3-02, A3-05 and A3-06.
-  - `diag-a3-02-run1.json` and `diag-a3-02-run2.json`: a follow-up that records console, page errors, every request
-    and the page's own action `fetch` around the A3-02 click, plus a pass-through control (note 1).
+  - `diag-a3-02-run1.json`, `diag-a3-02-run2.json` and `diag-a3-02-run3-in-page-drop.json`: A3-02 follow-ups. They
+    record the console, page errors, every request and the page's own action `fetch` around the click, a pass-through
+    control, and the final in-page drop (note 1).
 
 ## Results
 
@@ -32,8 +33,8 @@ No application code was changed.
 |---|---|---|---|
 | A3-01 Add shift, lost reply | Owner at 1440 adds Gabriela, Jan 5, 9:00 AM–1:00 PM. The reply is lost after the server answered 200. Then Save shift again. | **PASS** | Amber note "This change could not be confirmed. It may already be on the schedule…" with **Check the schedule** → `/app/schedule?week=2027-01-04&location=loc-1&day=2027-01-05#schedule-employee-OWN-GABY` (the shift is on that day). Database: 0 → 1 shift; still 1 after saving again. The second save says "…It may be the one you just saved; check the schedule…". Before: "Employee already has an overlapping shift." `a3-01-*.png`, `before-a3-01-*.png`, `recheck-after.json` → `A3-01` |
 | A3-02 Publish, lost reply: Build and publish (`/app/schedule/publish`, Owner) | "Publish 2 drafts anyway" (Dec 21), reply lost | **PASS** | Amber "Publishing could not be confirmed. The schedules may already be published…" with **Check the schedule**. Both locations published once (8 notifications, both rows PUBLISHED, the form stays on the page). Before: "This page didn't load. Nothing was changed." `a3-02-build-and-publish-lost-reply-after-1440.png`, `before-a3-02-*.png` |
-| A3-02 Publish, lost reply: planning panel | "Publish Calle Loíza anyway" (Dec 14), reply dropped by the test | **NOT CONFIRMED** (the test didn't drop this reply) | The week published (4 notifications) and the page showed "This page didn't load. Nothing was changed." A follow-up diagnostic shows the harness can't drop this action's reply: the browser still receives the full 200 response, and the error screen also appears when the real response is passed through untouched (note 1). `a3-02-planning-panel-intercepted-error-screen-1440.png`, `recheck-after2.json` → `A3-02a` |
-| A3-02 Publish, lost reply: a Manager's per-location form (new in A3-05) | Daniel, "Publish Condado anyway", reply dropped by the test | **NOT CONFIRMED** (the test didn't drop this reply) | Same as the planning panel: published, then "Nothing was changed". In the diagnostic, the page's own `fetch` resolved 200 with the full body (53,035 bytes), and a pass-through with no drop gave the same error screen (note 1). `a3-02-manager-publish-intercepted-error-screen-1440.png`, `a3-02-manager-publish-passthrough-no-drop-error-screen-1440.png`, `data/diag-a3-02-run*.json` |
+| A3-02 Publish, lost reply: planning panel | "Publish Calle Loíza anyway" (Dec 14), reply dropped in the page after the server answered (note 1) | **PASS** | Amber "Publishing Calle Loíza could not be confirmed. It may already be published; check the schedule before you publish again." with **Check the schedule** → `/app/schedule?week=2026-12-14&location=loc-1`. "Nothing was changed" never appeared. Database: DRAFT → PUBLISHED, 4 notifications (one per person). No console errors. `a3-02-planning-panel-lost-reply-after-1440.png`, `data/diag-a3-02-run3-in-page-drop.json` |
+| A3-02 Publish, lost reply: a Manager's per-location form (new in A3-05) | Daniel, "Publish Condado anyway" (Dec 14), reply dropped in the page (note 1) | **PASS** | The amber unconfirmed note showed 0.8 s after the click. About 7 s later the page re-read itself and showed "Everything planned this week is published." "Nothing was changed" never appeared. Database: DRAFT → PUBLISHED, 4 notifications. No console errors. `a3-02-manager-publish-lost-reply-then-reread-1440.png`, `data/diag-a3-02-run3-in-page-drop.json` |
 | A3-03 Time export kept | Owner exports Nov 2–8 and downloads the CSV. The tab stays open 703 s, then Download CSV again from Recent exports. Elena (another Manager) asks for the receipt. | **PASS** | "Export ready" was gone after the wait. The Recent exports card listed "Nov 2 – Nov 8 · 11 people · Exported Nov 22, 5:13 AM". The second download is byte-identical (SHA-256 `4bf66613…f1f7` both times). Elena: GET lists 0 receipts; POST of the Owner's receipt → **404** `{"state":"not_found"}`. A POST without the export headers → 403. `a3-03-recent-exports-after-1440.png`, `recheck-after.json` → `A3-03:*` |
 | A3-05 Manager publish | Daniel (Condado, with the grant) and Carlos (Condado, no grant), 1440 | **PASS** | Daniel: his schedule shows **Build and publish**. The page has one form, "Publish Condado", then "Publish Condado anyway" after the warning review. Dec 14 became PUBLISHED. Carlos: no Build and publish. The publish page says "Publishing permission needed. Publishing needs the Publish schedules permission… An Owner can give it to you." Before: "Company-wide access needed… sign in again" for both. `a3-05-*.png`, `before-a3-05-*.png`, `recheck-after2.json` → `A3-05`. The new card still carries a "Sign in again" link (note 3). |
 | A3-06 Permission vs. sign-out | Carlos, Daniel and Elena on Things to do, Time corrections and Insights (1440) | **PARTIAL** | Things to do (Carlos, Daniel): "You don't have access to Things to do. Ask the Owner if you need it." (before: "Your session ended. Sign in again"). Time corrections (Elena): "You don't have access to time corrections. Ask the Owner if you need it." (before: "Correction access ended… Sign in again"). Still wrong on both screens: a "Your access changed… Ask your manager if you still need it." toast. Location Managers on Time corrections and Insights still get "Company-wide access needed… If your access just changed, sign in again" with a Sign in again link (unchanged from before). Insights' new "You don't have access to insights" was **not reached** (note 4). `a3-06-*.png`, `before-a3-06-*.png` |
@@ -48,28 +49,30 @@ No application code was changed.
 
 ## Failing, partial and not run
 
-1. **A3-02: the two `publishScheduleAction` forms are not confirmed either way.** Build and publish's "Publish drafts"
-   form (`publishDraftsAction`) showed the amber unconfirmed note after a real drop: the browser's request failed. For
-   the planning panel and the Manager's per-location form, a follow-up diagnostic
-   (`data/diag-a3-02-run1.json` and `run2.json`) showed the drop never reached the browser:
-   - The page's own `fetch` for the action resolved with 200, `x-action-redirect` and the full body (53,035 bytes, no
-     stream error). Playwright logged `requestfinished` and no `requestfailed` for the POST.
-   - The router moved to the redirect target. While rendering `<SchedulePage>`, React's Flight client threw
-     `TypeError: Cannot read properties of null (reading 'enqueueModel')` at `resolveModelChunk` → `processFullStringRow`
-     (`react-server-dom-turbopack`). The console says "The above error occurred in the <SchedulePage> component. It was
-     handled by the <ErrorBoundaryHandler> error boundary." No `pageerror`, no window error, no digest or Reference
-     (a client-side error).
-   - The amber callout never rendered, even briefly (DOM polled every 100 ms for 5 s). No other request failed after the
-     click; operational-authority and RSC reads all answered 200.
-   - Control: intercepting and passing the server's real response straight through (`route.fulfill`, no drop) gave the
-     same TypeError and the same error screen. A normal publish with no interception renders the schedule
-     (`recheck-after2.json` → `A3-05.danielSteps`).
+1. **A3-02: how the lost reply was produced.** In the first runs the reply was dropped with Playwright's `page.route`
+   (`route.fetch`, then `route.abort`). That works for Add shift and "Publish drafts". For the two forms that use
+   `publishScheduleAction`, it never reached the browser:
+   - The page's own `fetch` resolved 200 with the full body (53,035 bytes).
+   - React's Flight client then threw `TypeError: Cannot read properties of null (reading 'enqueueModel')` while
+     rendering `<SchedulePage>`, and the route error said "Nothing was changed".
+   - Passing the real response straight through with `route.fulfill`, with no drop, gave the same error. So that screen
+     came from the interception, not from a lost reply (`data/diag-a3-02-run1.json`, `run2.json`).
 
-   So the "Nothing was changed" screen in these two cases comes from how the test delivers the intercepted response,
-   not from a lost reply. Whether `UnconfirmedActionForm` handles a real lost reply on these forms is still untested. It
-   needs a drop that makes the action `fetch` reject, for example a proxy that resets the connection before the response
-   headers. The Owner control was not re-captured in the diagnostic (its first button was scoped to the wrong element),
-   so the earlier passing run is the only evidence for "Publish drafts".
+   The final method drops the reply inside the page instead. Before the click, `window.fetch` is wrapped so that the
+   next request carrying `next-action` goes to the server, its whole response is read and discarded, and the call
+   throws `TypeError('Failed to fetch')`. The wrapper is then removed. With it, all four cases behaved the same way
+   (`data/diag-a3-02-run3-in-page-drop.json`):
+
+   | Case | Amber note with Check the schedule | "Nothing was changed" | Database | Console errors |
+   |---|---|---|---|---|
+   | Owner, planning panel, "Publish Calle Loíza anyway" | Yes, stays | No | Published once, 4 notifications | None |
+   | Daniel, Build and publish, "Publish Condado anyway" | Yes, then the page re-reads and shows "Everything planned this week is published." | No | Published once, 4 notifications | None |
+   | Owner, Build and publish, "Publish 2 drafts anyway" (control) | Yes, then the same re-read | No | Both locations published once, 8 notifications | None |
+   | Owner, Add shift (control) | Yes, stays, with Check the schedule → the shift's day | No | 1 shift saved | None |
+
+   Small things seen on the planning panel: after the note, "Publish Calle Loíza anyway" is still offered, so the next
+   step depends on the person following the note. The note sits beside "Return to draft" in an uneven row. The panel
+   also says "1 employees without a weekly hour target"; that grammar predates these fixes.
 2. **A3-06's toast.** Things to do and Time corrections now say "You don't have access… Ask the Owner", but the same
    screens also raise "Your access changed. This information was cleared from the screen. Ask your manager if you still
    need it." Nothing changed, and the person is a Manager. This is the toast the QA reported with A3-06.
