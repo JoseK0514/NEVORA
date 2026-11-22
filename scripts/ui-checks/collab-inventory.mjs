@@ -5,7 +5,6 @@ import { join } from 'node:path';
 
 const roles = ['O', 'M', 'Ml', 'L', 'E'];
 const special = new Map([
-  ...['A8', 'A9', 'A10'].map(id => [id, 'Isolated owner signup and activation']),
   ...['A15', 'A16', 'A17', 'A18', 'A19'].map(id => [id, 'Owned central billing browser fixture']),
   ['F3', 'Routed workspace and roster import'],
   ['J18', 'Isolated commerce recovery browser fixture'],
@@ -78,14 +77,29 @@ function concreteRoutes(row, profile, runtime) {
 }
 
 async function visit(page, origin, route, row) {
-  const response = await page.goto(origin + route, { waitUntil: 'domcontentloaded' });
+  let response;
+  const target = new URL(route, origin);
+  try {
+    response = await page.goto(target.href);
+  } catch (error) {
+    if (!['I2', 'I4', 'I5'].includes(row.id)) throw error;
+    // App Router can interrupt a navigation in order to apply a Profile
+    // section redirect. Require the actual destination before recording it.
+    await page.waitForURL(url => url.pathname === '/app/profile', { timeout: 5000 });
+    await page.getByRole('heading', { name: 'Profile', exact: true }).first().waitFor({ timeout: 5000 });
+  }
+  if (row.id === 'A2') await page.locator('#login-employee-id').waitFor();
+  if (!['A1', 'M1', 'M2'].includes(row.id)) {
+    await page.getByRole('heading').first().waitFor({ state: 'attached', timeout: 4500 }).catch(() => {});
+  }
   const pathname = new URL(page.url()).pathname;
   const final = page.url().slice(origin.length);
   const http = response?.status() ?? null;
   const heading = (await page.getByRole('heading').allTextContents()).map(text => text.trim()).filter(Boolean);
   const notice = await page.locator('[data-b-state="locked"], .b-state--locked, .cm-owner-only').count();
   let observed = 'rendered';
-  if (pathname === '/login' && row.id !== 'A2' && row.id !== 'A1') observed = 'sign-in';
+  if (['M1', 'M2'].includes(row.id)) observed = 'development error probe';
+  else if (pathname === '/login' && row.id !== 'A2' && row.id !== 'A1') observed = 'sign-in';
   else if (pathname === '/app/restricted' && row.id !== 'B10') observed = 'restricted';
   else if (pathname !== new URL(route, origin).pathname) observed = 'redirect';
   else if (http >= 400 && row.id !== 'B11') observed = 'HTTP ' + http;
@@ -163,6 +177,9 @@ export async function finishInventory({ inventory, priority, extra, evidence, ch
       observed: special.has(row.id) ? 'separate fixture' : 'manual workflow', detail: special.get(row.id) });
   }
   assert.deepEqual([...new Set(results.map(row => row.id))].sort(), rows.map(row => row.id).sort(), 'Every inventory row must be accounted for.');
+  for (const entry of extra.filter(entry => /^A\d+$/.test(entry.id))) {
+    results.push({ ...entry, profile: 'public' });
+  }
   const totals = Object.fromEntries([...new Set(results.map(result => result.observed))].sort()
     .map(state => [state, results.filter(result => result.observed === state).length]));
   await writeFile(join(evidence, 'collab-inventory-results.json'), JSON.stringify({ checkpoint, inventoryRows: rows.length, sourcePages: sources.length, totals, sources, results }, null, 2) + '\n');

@@ -1,14 +1,16 @@
 // Provider-free browser sandbox. PostgreSQL and Next bind to this checkout’s machine.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { randomBytes, randomUUID } from 'node:crypto';
-import { access, mkdtemp, rename, rm, writeFile } from 'node:fs/promises';
+import { access, mkdtemp, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { isAbsolute, join } from 'node:path';
 import { hashPassword } from '../src/lib/auth/password';
 import { assignOperationalScope, readOwnerOperationalScope } from '../src/lib/company-access/operational-scope.server';
-import { createOwnedNextApp } from '../src/test/integration/owned-next-app';
+import { assertExternalEvidencePath, createOwnedNextApp } from '../src/test/integration/owned-next-app';
 import { assignOwnedManagerCompanyAccess, grantOwnedManagerWorkforcePermission, seedOwnedApp, seedOwnedScenario, setOwnedEmployeeRole, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+import { createOwnedSmtp } from '../src/test/integration/owned-smtp';
 import { fixtureProof } from '../src/test/integration/shift-change-api';
 import { seedCollabPageData } from './ui-checks/collab-data.mts';
 
@@ -22,6 +24,7 @@ if (!bin || !isAbsolute(bin) || !evidence || !isAbsolute(evidence)) {
 if (process.env.DATABASE_URL || process.env.FUEL_TEST_DATABASE_URL) {
   throw Error('Unset DATABASE_URL and FUEL_TEST_DATABASE_URL. The sandbox starts its own cluster.');
 }
+await assertExternalEvidencePath(process.cwd(), evidence);
 await Promise.all(['postgres', 'initdb', 'pg_ctl'].map(file => access(join(bin, file))));
 const port = await new Promise<number>((resolve, reject) => {
   const socket = createServer();
@@ -47,6 +50,7 @@ function pg(command: string, args: string[]) {
 
 let app: Awaited<ReturnType<typeof createOwnedNextApp>> | undefined;
 let startupAttempted = false;
+let smtp: Awaited<ReturnType<typeof createOwnedSmtp>> | undefined;
 try {
   await writeFile(passwordFile, password + '\n', { mode: 0o600 });
   try {
@@ -58,6 +62,9 @@ try {
   pg('pg_ctl', ['-D', data, '-l', join(scratch, 'postgres.log'), '-w', 'start', '-o', `-h 127.0.0.1 -p ${port} -k ${scratch}`]);
   process.env.FUEL_TEST_DATABASE_URL = `postgresql://nevora_test:${password}@127.0.0.1:${port}/nevora_exchange_test_rondo_local`;
   process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN = 'yes';
+  if (collab) {
+    smtp = await createOwnedSmtp(body => writeFileSync(join(evidence, 'fictional-signup.eml'), body, { mode: 0o600 }));
+  }
   app = await createOwnedNextApp(evidence, {
     signal: stop.signal, ownerAdvisorEnabled: true, managerAdvisorEnabled: true,
     ownerAdvisorKnowledgeEnabled: true, ownerAdvisorWeeklyEnabled: true,
@@ -65,7 +72,13 @@ try {
     ...(collab ? {
       production: false, clockerPinKey: randomBytes(32).toString('hex'), clockerPunchEnabled: true,
       mobileAccessEnabled: true, mobileSupportEnabled: true, nativeAlertsEnabled: true,
-      passkeysEnabled: true, deviceAlertsEnabled: true, payrollEnabled: true,
+      passkeysEnabled: true, deviceAlertsEnabled: true, payrollEnabled: true, signupSmtpPort: smtp?.port,
+      initializeDatabase: async ({ executor }) => {
+        const directory = 'db/control-migrations';
+        for (const file of (await readdir(directory)).filter(name => /^\d{4}_.+\.sql$/.test(name)).sort()) {
+          await executor.query({ text: await readFile(join(directory, file), 'utf8'), values: [] });
+        }
+      },
     } : {}),
   });
   const { executor } = app.database;
@@ -114,7 +127,7 @@ try {
   if (!stop.signal.aborted) await new Promise<void>(resolve => stop.signal.addEventListener('abort', () => resolve(), { once: true }));
 } finally {
   try {
-    await app?.close();
+    await Promise.all([app?.close(), smtp?.close()]);
   } finally {
     delete process.env.FUEL_TEST_DATABASE_URL;
     delete process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN;

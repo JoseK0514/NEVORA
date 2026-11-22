@@ -1,6 +1,6 @@
 import {createServer,type Socket} from 'node:net';
 /** Fictional mail capture, bound only to an invocation-owned loopback port. */
-export async function createOwnedSmtp(){
+export async function createOwnedSmtp(onCapture?: (body: string) => void){
  const messages:{recipient:string;body:string}[]=[],sockets=new Set<Socket>();
  let loseAcknowledgement=false;
  const server=createServer(socket=>{
@@ -10,7 +10,7 @@ export async function createOwnedSmtp(){
    buffer+=chunk.toString('utf8');if(buffer.length+body.length>65536){socket.destroy();return;}
    while(buffer.includes('\r\n')){
     const at=buffer.indexOf('\r\n'),line=buffer.slice(0,at);buffer=buffer.slice(at+2);
-    if(data){if(line==='.') {messages.push({recipient,body});data=false;body='';if(loseAcknowledgement){loseAcknowledgement=false;socket.destroy();return;}socket.write('250 captured fictional mail\r\n');}else body+=line+'\r\n';continue;}
+    if(data){if(line==='.') {messages.push({recipient,body});onCapture?.(body);data=false;body='';if(loseAcknowledgement){loseAcknowledgement=false;socket.destroy();return;}socket.write('250 captured fictional mail\r\n');}else body+=line+'\r\n';continue;}
     if(/^EHLO|^HELO/i.test(line))socket.write('250 owned-fixture\r\n');
     else if(/^MAIL FROM:/i.test(line))socket.write('250 sender accepted\r\n');
     else if(/^RCPT TO:/i.test(line)){recipient=line.slice(8).trim();socket.write('250 recipient accepted\r\n');}

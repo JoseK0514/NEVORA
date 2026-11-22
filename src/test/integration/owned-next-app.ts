@@ -1,6 +1,6 @@
 import {OWNED_REPLAY_KEY,OWNED_REPLAY_MODEL} from './owner-advisor-replay-fetch';
 import { assertPilotLedger, validatePilot, PILOT, type OwnerAdvisorPilot } from './owner-advisor-pilot.mjs';
-import { createECDH,createHash, randomUUID } from 'node:crypto';
+import { createECDH,createHash, randomBytes, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
 import { constants, cpSync, createWriteStream, realpathSync } from 'node:fs';
 import { access, copyFile, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, statfs, writeFile } from 'node:fs/promises';
@@ -180,7 +180,7 @@ const ownedProductionTenantStub = "\nexport function getTenantRuntimeDb(_role: '
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { production?: boolean; centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; managerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?:boolean; ownerAdvisorKnowledgeEnabled?:boolean; ownerAdvisorBusinessImportsEnabled?:boolean; ownerAdvisorBusinessRetrievalEnabled?:boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { production?: boolean; centralBillingApiOrigin?:string; isolatedWorkspaces?:OwnedIsolatedRuntime;commerceRecoveryEnabled?:boolean; mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;nativeAlertsEnabled?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; managerAdvisorEnabled?: boolean; ownerAdvisorReplayFixture?:boolean; ownerAdvisorWeeklyEnabled?:boolean; ownerAdvisorKnowledgeEnabled?:boolean; ownerAdvisorBusinessImportsEnabled?:boolean; ownerAdvisorBusinessRetrievalEnabled?:boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; signupSmtpPort?: number; clockerPinKey?: string; clockerPunchEnabled?: boolean; clockerUiV2?:boolean; payrollEnabled?: boolean; nativePayrollEnabled?:boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   const isolatedEnvironment=ownedIsolatedEnvironment(options.isolatedWorkspaces);
   if(options.centralBillingApiOrigin){const api=new URL(options.centralBillingApiOrigin);if(api.origin!==options.centralBillingApiOrigin||api.protocol!=='http:'||!['127.0.0.1','localhost'].includes(api.hostname)||!api.port||api.username||api.password)throw Error('Owned billing UI requires an explicit loopback API');}
   if(options.isolatedWorkspaces){if(options.emptyDatabase!==true||options.commerceRecoveryEnabled)throw Error('Owned isolated admission requires empty unused fallback and explicit commerce transport');await verifyOwnedIsolatedRuntime(options.isolatedWorkspaces);}
@@ -201,6 +201,10 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
   const files = trackedApplicationFiles(source);
   const production = ownedProductionRequested(options.production);
   if (production && (options.isolatedWorkspaces || options.pinDevTypeReferences)) throw Error('Owned production runtime supports neither isolated workspaces nor dev type references');
+  if (options.signupSmtpPort !== undefined) {
+    validateOwnedMailOptions({ recoverySmtpPort: options.signupSmtpPort });
+    if (production || options.isolatedWorkspaces) throw Error('Owned signup preview requires the disposable development workspace.');
+  }
   const pinDevTypeReferences = options.pinDevTypeReferences ?? !production;
   const evidence = resolve(evidenceDirectory);
   await assertExternalEvidencePath(source,evidenceDirectory);
@@ -333,6 +337,23 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { p
       ...ownedMailEnvironment(url,options),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       ...ownedDeviceEnvironment(url,options.deviceAlertsEnabled),
+      ...(options.signupSmtpPort !== undefined ? {
+        NEVORA_ONBOARDING_ENABLED: 'true', NEVORA_ONBOARDING_ENVIRONMENT: 'test',
+        NEVORA_ONBOARDING_EMAIL_ENABLED: 'true', NEVORA_ONBOARDING_PROVIDER_ENABLED: 'false',
+        NEVORA_ONBOARDING_ADMISSION_MODE: 'approved_recipient', NEVORA_STAGING_EMAIL_RECIPIENT: 'qa-signup@example.invalid',
+        NEVORA_SIGNUP_ORIGIN: url.replace('127.0.0.1', 'localhost'),
+        FUEL_PORTAL_ORIGIN: url.replace('127.0.0.1', 'localhost'),
+        NEVORA_RECOVERY_SMTP_HOST: '127.0.0.1', NEVORA_RECOVERY_SMTP_PORT: String(options.signupSmtpPort),
+        NEVORA_RECOVERY_FROM: 'signup@example.invalid',
+        NEVORA_CONTROL_DATABASE_URL: database.connectionString,
+        NEVORA_SIGNUP_SESSION_SECRET: randomBytes(32).toString('base64url'),
+        NEVORA_WORKSPACE_TOKEN_SECRET: randomBytes(32).toString('base64url'),
+        NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY: randomBytes(32).toString('base64url'),
+        NEVORA_PORTAL_BASE_DOMAIN: 'qa-workspaces.example.invalid',
+        NEVORA_ONBOARDING_RETENTION_DAYS: '7', NEVORA_ONBOARDING_VERIFICATION_PLATFORM_LIMIT_15M: '10',
+        NEVORA_ONBOARDING_OPERATOR_REF: 'collab-qa', NEVORA_ONBOARDING_REGION: 'aws-us-east-1',
+        NEVORA_ONBOARDING_TERMS_VERSION: 'collab-qa-terms', NEVORA_ONBOARDING_PRIVACY_VERSION: 'collab-qa-privacy',
+      } : {}),
       // UI scans of the phone app's Alerts page: the fictional test registration settings (no provider credentials, no
       // delivery); the page's own status reads are answered by the scan, never by a provider.
       ...(options.nativeAlertsEnabled?{NATIVE_PUSH_REGISTRATION_ENABLED:'true',NATIVE_PUSH_ENVIRONMENT:'test',NATIVE_PUSH_ORIGIN:'https://nevora.example',

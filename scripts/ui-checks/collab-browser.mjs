@@ -7,10 +7,12 @@ import { TEST_PASSWORD } from '../../src/test/integration/owned-app-fixture.ts';
 import { checkClocker } from './collab-clocker.mjs';
 import { scanInventory, finishInventory } from './collab-inventory.mjs';
 import { checkNativeAlerts } from './collab-native.mjs';
+import { checkSignup } from './collab-signup.mjs';
 
 const [evidence, ...options] = process.argv.slice(2);
-assert.ok(options.every(option => ['--inventory', '--inventory-only', '--screenshots'].includes(option)), 'Unknown collab browser option.');
+assert.ok(options.every(option => ['--inventory', '--inventory-only', '--screenshots', '--signup-only'].includes(option)), 'Unknown collab browser option.');
 const inventoryOnly = options.includes('--inventory-only');
+const signupOnly = options.includes('--signup-only');
 const inventoryEnabled = inventoryOnly || options.includes('--inventory');
 assert.ok(evidence && isAbsolute(evidence), 'Pass the absolute evidence directory of the running collab sandbox.');
 const runtime = JSON.parse(await readFile(join(evidence, 'runtime.json'), 'utf8'));
@@ -147,10 +149,33 @@ async function checkPriority() {
   }
 }
 
+const inventoryOrigin = url.replace('127.0.0.1', 'localhost');
+const scanPage = viewport => pageFor(viewport, [], undefined, inventoryOrigin);
+const scanLogin = (id, viewport, userAgent) => login(id, viewport, userAgent, inventoryOrigin);
+const recordInventory = (id, detail) => {
+  inventoryResults.push({ id, detail, observed: 'asserted workflow' });
+  console.log(id, detail);
+};
+
+async function captureSignup() {
+  const page = await scanPage(phone);
+  try {
+    await checkSignup({ origin: inventoryOrigin, page, evidence, record: recordInventory });
+  } finally {
+    await page.context().close();
+  }
+}
+
 try {
-  if (!inventoryOnly) {
+  if (signupOnly) {
+    await captureSignup();
+  }
+  let priorityError;
+  if (!inventoryOnly && !signupOnly) {
     try {
       await checkPriority();
+    } catch (error) {
+      priorityError = error;
     } finally {
       await writeFile(join(evidence, 'collab-priority-results.json'), JSON.stringify({ checkpoint, results }, null, 2) + '\n');
     }
@@ -158,22 +183,25 @@ try {
   if (inventoryEnabled) {
     // The WebAuthn and browser-alert test contracts use localhost. Clocker
     // provisioning uses the exact numeric loopback origin announced by the app.
-    const origin = url.replace('127.0.0.1', 'localhost');
-    const scanPage = viewport => pageFor(viewport, [], undefined, origin);
-    const scanLogin = (id, viewport, userAgent) => login(id, viewport, userAgent, origin);
+    if (!signupOnly) {
+      try {
+        await captureSignup();
+      } catch (error) {
+        const id = ['A8', 'A9', 'A10'].find(id => !inventoryResults.some(result => result.id === id));
+        inventoryResults.push({ id, observed: 'error', detail: String(error.message).split('\n')[0] });
+      }
+    }
     const inventory = await scanInventory({
-      evidence, origin, runtime, pageFor: scanPage, login: scanLogin, priority: results, screenshots: options.includes('--screenshots'),
+      evidence, origin: inventoryOrigin, runtime, pageFor: scanPage, login: scanLogin, priority: results, screenshots: options.includes('--screenshots'),
     });
     try {
-      await checkNativeAlerts({ url: origin, login: scanLogin, employee: profiles.E, evidence, record: (id, detail) => {
-        inventoryResults.push({ id, detail, observed: 'asserted workflow' });
-        console.log(id, detail);
-      } });
+      await checkNativeAlerts({ url: inventoryOrigin, login: scanLogin, employee: profiles.E, evidence, record: recordInventory });
     } catch (error) {
       inventoryResults.push({ id: 'L1', observed: 'error', detail: String(error.message).split('\n')[0] });
     }
     await finishInventory({ inventory, priority: results, extra: inventoryResults, evidence, checkpoint });
   }
+  if (priorityError) throw priorityError;
 } finally {
   await browser.close();
 }
