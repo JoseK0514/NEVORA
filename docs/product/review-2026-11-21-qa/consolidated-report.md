@@ -1,8 +1,8 @@
 # NEVORA senior UI QA: consolidated report (Nov 21, 2026)
 
 Saved to the repository on Nov 22, 2026, from the text Jose shared, so Claude and Codex work from the same report. The
-per-agent findings files (`findings/agent1.md` to `agent5.md`, `solo.md`, `GAPS.md`) and the screenshots are still in
-`.ui-work/` on Jose's Mac. The fix plan is in
+per-agent findings files are in [`findings/`](findings/) (`agent1.md` to `agent5.md`, `solo.md`, `GAPS.md`); the
+screenshots and scripts are still in `.ui-work/qa1121/` on Jose's Mac. The fix plan is in
 [docs/handoffs/2026-11-22-qa1121-fix-plan.md](../../handoffs/2026-11-22-qa1121-fix-plan.md).
 
 ## Source and environment
