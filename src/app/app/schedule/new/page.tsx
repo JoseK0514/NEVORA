@@ -98,7 +98,6 @@ export default async function NewShiftPage({
       mode={mode} employeeName={selected.employeeName} replacedName={selected.replaced?.employeeName ?? null}
       shift={selected.shift} locationName={selected.locationName}
       positionName={selected.positionName} isDesignatedLead={selected.isDesignatedLead}
-      needLabel={locator.target === "POSITION" ? `the ${selected.positionName ?? "position"} need` : locator.target === "LEAD" ? "the shift lead need" : "the staffing need"}
       weekHours={selected.weekHours} warnings={selected.warnings}
       backHref={coverageRepairUrl(locator, true)}
       draftHref={scopedDraft ? coverDraftShiftUrl(locator,selected.isDesignatedLead,selected.employeeId) : undefined}

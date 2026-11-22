@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
-import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import type { ReactNode } from "react";
 import { ConfigurationForm } from "@/components/configuration-form";
-import { CorpBody, CorpCard, CorpNav, CorpPage, CorpTime, CorpTitle } from "@/components/corp/corp";
+import { CorpBody, CorpCard, CorpNav, CorpPage, CorpTitle } from "@/components/corp/corp";
+import { compactRange } from "@/components/owner-b/b-kit";
 import { PendingButton } from "@/components/wave-a/pending-button";
 import { durationText } from "@/lib/duration-text";
 import { addDays, formatDayLabel, formatTime } from "@/lib/date-utils";
@@ -32,8 +32,6 @@ export type CoverageReviewProps = {
   locationName: string;
   positionName?: string;
   isDesignatedLead: boolean;
-  /** "the staffing need", "the shift lead need", "the Barista need". */
-  needLabel: string;
   /** The replacement's planned week before and after this shift. */
   weekHours: CoverageRepairSelection["weekHours"];
   warnings: CoverageRepairSelection["warnings"];
@@ -52,22 +50,22 @@ const firstName = (name: string) => name.trim().split(/\s+/)[0];
  * "Publish change" is the approval: it sends the same `publicationConsent` the old checkbox did, and the line above it
  * says what the employee will see. Same data, form action, hidden fields and permission outcomes as before. */
 export function CoverageReview(props: CoverageReviewProps) {
-  const {date,startTime,endTime,minutes} = props.shift;
+  const {date,startTime,endTime} = props.shift;
   const overnight = endTime === "24:00" || endTime < startTime;
   const nextDay = overnight ? formatDayLabel(addDays(date, 1)) : null;
   const shortDate = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-  const facts = [shortDate, props.locationName, props.positionName, props.isDesignatedLead ? "Shift lead" : null,
-    nextDay ? `Ends ${nextDay.weekday},\u00a0${nextDay.day}` : null].filter(Boolean).join(" · ");
+  const time = compactRange(`${formatTime(startTime)} – ${formatTime(endTime)}`);
+  const facts = [props.positionName, props.isDesignatedLead ? "Shift lead" : null, nextDay ? `Ends ${nextDay.weekday},\u00a0${nextDay.day}` : null].filter(Boolean).join(" · ");
   const warnings = props.warnings;
   const saves = props.mode === "publish" || props.mode === "draft";
   const hours = props.weekHours;
 
   let outcome: ReactNode = null;
-  if (props.mode === "publish") outcome = <p className="c-review__outcome">{`${firstName(props.employeeName)} will see this shift in their schedule. We’ll also send them a notification.`}</p>;
-  else if (props.mode === "draft") outcome = <p className="c-review__outcome">{`This adds a draft. ${firstName(props.employeeName)} won’t see it until you publish the week.`}</p>;
+  if (props.mode === "publish") outcome = <p className="c-review__outcome">{`We’ll notify ${firstName(props.employeeName)} when you publish.`}</p>;
+  else if (props.mode === "draft") outcome = <p className="c-review__outcome">{`${firstName(props.employeeName)} sees it once you publish the week.`}</p>;
   else if (props.mode === "needs-publish-permission") outcome = <Blocked title="Publishing permission needed">This week is published. Ask the Owner to make this change, or to let you publish.</Blocked>;
   else if (props.mode === "scoped-ask") outcome = <Blocked title="Company-wide access needed">Ask the Owner to make this change.</Blocked>;
-  else if (props.mode === "scoped-draft") outcome = <p className="c-review__outcome">Add it as a draft shift, then publish when the week is ready.</p>;
+  else if (props.mode === "scoped-draft") outcome = <p className="c-review__outcome">Opens Add shift with these details.</p>;
 
   const card = <CorpCard id="replacement-shift" ariaLabel="Replacement">
     <CorpBody>
@@ -76,17 +74,13 @@ export function CoverageReview(props: CoverageReviewProps) {
         <ArrowRightIcon className="c-review__arrow" weight="bold" aria-label="replaced by" />
         <span>{props.employeeName}</span>
       </p>
-      <p className="c-review__when">
-        <span className="c-big"><CorpTime start={formatTime(startTime)} end={formatTime(endTime)} /></span>
-        <span className="c-review__dur">{durationText(minutes)}</span>
-      </p>
-      <p className="c-line3">{facts}</p>
-      <p className="c-review__hours">{`${durationText(hours.beforeMinutes)} → ${durationText(hours.afterMinutes)} this week`}{hours.targetMinutes !== null ? <span className="c-review__muted">{` · target ${durationText(hours.targetMinutes)}`}</span> : null}</p>
+      <p className="c-review__when"><span>{shortDate}</span>{" · "}<strong>{time}</strong>{" · "}<span>{props.locationName}</span></p>
+      {facts ? <p className="c-line3">{facts}</p> : null}
+      <p className="c-review__hours">{`${durationText(hours.afterMinutes)} this week`}{hours.targetMinutes !== null ? <span className="c-review__muted">{` (target ${durationText(hours.targetMinutes)})`}</span> : null}</p>
     </CorpBody>
-    <ul className="c-review__checks" aria-label="Checks">
-      <li><CheckIcon className="c-review__ok" weight="bold" aria-hidden="true" />{`Fills ${props.needLabel}`}</li>
+    {warnings.length ? <ul className="c-review__checks" aria-label="Before you publish">
       {warnings.map(code => <li key={code} className="c-review__warn"><WarningIcon weight="fill" aria-hidden="true" />{warningWords[code] ?? schedulingIssueMessage(code)}</li>)}
-    </ul>
+    </ul> : null}
   </CorpCard>;
 
   const actions = <div className="c-review__actions">

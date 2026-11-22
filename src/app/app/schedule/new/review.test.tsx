@@ -29,7 +29,7 @@ it("a published week: the Publish change button is the approval and says who wil
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
   expect(html).toContain('<input type="hidden" name="publicationConsent" value="on"/>');
   expect(html).toContain("Publish change");
-  expect(html).toContain("Taylor will see this shift in their schedule. We’ll also send them a notification.");
+  expect(html).toContain("We’ll notify Taylor when you publish.");
   expect(html).not.toContain('type="checkbox"');
   expect(html).not.toContain("Save draft");
 });
@@ -41,7 +41,7 @@ it("shows and submits only the server-reviewed assignment, ignoring forged query
   expect(html).not.toContain("FORGED");
   expect(html).toContain("Taylor Rivera");
   expect(html).toContain("Customer Support");
-  expect(html).toContain("Fills the Customer Support need");
+  expect(html).not.toContain("Fills the");
   expect(html).toContain("Open shift");
 });
 it("renders the original assignee, the ranked week hours, and the words for canonical warnings", async () => {
@@ -52,8 +52,9 @@ it("renders the original assignee, the ranked week hours, and the words for cano
   } satisfies CoverageRepairSelection);
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) })).replace(/\u00a0/g, " ");
   expect(html).toContain("Casey Ortiz");
-  expect(html).toContain("3 h 30 min → 7 h 30 min this week");
-  expect(html).toContain("target 5 h");
+  expect(html).toContain("7 h 30 min this week");
+  expect(html).not.toContain("3 h 30 min →");
+  expect(html).toContain("(target 5 h)");
   expect(html).toContain("Goes over their weekly target");
   expect(html).toContain("Availability not confirmed");
   expect(html).toContain("the preference does not block assignment");
@@ -62,7 +63,7 @@ it("renders the original assignee, the ranked week hours, and the words for cano
 it("explains the midnight boundary without changing canonical 24:00", async () => {
   // Times and dates are kept whole with no-break spaces; compare the words.
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) })).replace(/\u00a0/g, " ");
-  expect(html.replace(/<[^>]+>/g, "").replace(/[\u2009\u202f]/g, " ")).toMatch(/8:00 ?PM – 12:00 ?AM/);
+  expect(html.replace(/<[^>]+>/g, "").replace(/[\u2009\u202f]/g, " ")).toMatch(/8 ?PM – 12 ?AM/);
   expect(html.replace(/\u00a0/g, " ")).toContain("Ends Tue, Oct 8");
   expect(html).toContain('name="endTime" value="24:00"');
 });
@@ -72,7 +73,7 @@ it("retains a non-Lead staffing repair with no inferred position or Lead flag", 
   expect(html).toContain('name="positionId" value=""');
   expect(html).not.toContain('name="isDesignatedLead"');
   expect(html).not.toContain("Shift lead");
-  expect(html).toContain("Fills the staffing need");
+  expect(html).not.toContain("Before you publish");
 });
 it("a stale selection removes the save action and keeps a trusted refresh path", async () => {
   state.read.mockRejectedValue(new CoverageRepairConflictError());
@@ -124,7 +125,7 @@ it('a draft week needs no publish permission and keeps its save',async()=>{
   operationalPageFixture.publishDenied=true;
   const html=renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
   expect(html).toContain('Save draft');
-  expect(html).toContain('This adds a draft.');
+  expect(html).toContain('sees it once you publish the week.');
   expect(html).not.toContain('publicationConsent');
   expect(html).not.toContain('Publishing permission needed');
 });
