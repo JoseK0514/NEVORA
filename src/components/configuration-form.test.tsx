@@ -105,7 +105,11 @@ it('an overlap right after an unconfirmed save says it may be the person\'s own 
   expect(note.props.title).toBe('Employee already has an overlapping shift.');
 });
 
-it('a redirect thrown by the action is navigation, not an unconfirmed save', async () => {
+it('a redirect thrown by the action is navigation: no note, and nothing rethrown from the submit handler', async () => {
+  // The router handles the redirect. Rethrowing it from onSubmit left an unhandled rejection after every successful save
+  // (caught by the two-session concurrency test's window error check, Nov 22, 2026).
   const redirect = async () => { const error = new Error('NEXT_REDIRECT') as Error & { digest: string }; error.digest = 'NEXT_REDIRECT;replace;/app/schedule;307;'; throw error; };
-  await expect(submitShift(mount(redirect, 'v1'), shift)).rejects.toThrow('NEXT_REDIRECT');
+  await expect(submitShift(mount(redirect, 'v1'), shift)).resolves.toBeUndefined();
+  const form = mount(redirect, 'v1');
+  expect(form.props.children.some((child: unknown) => child && typeof child === 'object' && 'props' in child && (child as { props: { className?: string } }).props.className === 'form-result')).toBe(false);
 });

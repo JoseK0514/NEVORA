@@ -13,6 +13,11 @@ export const UNCONFIRMED_CHANGE = "This change could not be confirmed. It may al
 /** After an unconfirmed save, an overlap may be the person's own saved shift (QA A3-01). */
 export const UNCONFIRMED_OVERLAP = "This time overlaps a shift already on the schedule. It may be the one you just saved; check the schedule before you change anything.";
 
+/** True for the errors Next.js throws to navigate (redirect, not-found); `unstable_rethrow` rethrows exactly those. */
+function isNavigation(error: unknown): boolean {
+  try { unstable_rethrow(error); return false; } catch { return true; }
+}
+
 /** The day the server returns to after a saved shift (`shiftReturnUrl` in schedule/actions.ts), from the submitted fields. */
 export function shiftCheckHref(data: FormData): string | null {
   const field = (name: string) => String(data.get(name) ?? "").trim();
@@ -68,8 +73,9 @@ export function ConfigurationForm({
       if (saved.success && !saved.error) setUnconfirmed(null);
       if (saved.success && !saved.error && saved.updatedAt && draftUpdatedAt !== undefined) setDraftUpdatedAt(saved.updatedAt);
     } catch (error) {
-      // A redirect or not-found from the action is Next.js navigation, not a failure.
-      unstable_rethrow(error);
+      // A redirect or not-found from the action is Next.js navigation, which the router is already handling: not a failure,
+      // and not ours to rethrow from this event handler (nothing awaits it, so it would be an unhandled rejection).
+      if (isNavigation(error)) return;
       setUnconfirmed({ href: checkHref });
       setResult({ error: checkHref ? UNCONFIRMED_SHIFT : UNCONFIRMED_CHANGE });
     } finally {
