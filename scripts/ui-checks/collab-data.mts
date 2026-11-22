@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { saveBreakType } from '../../src/lib/clocker/break-types.server';
 import { addDays } from '../../src/lib/date-utils';
 import { executeCommunicationCommand, previewCommunicationAudience } from '../../src/lib/communications/service.server';
 import { executeScheduleCopy } from '../../src/lib/data/schedule-copy';
@@ -7,6 +8,9 @@ import type { SessionMutationProof } from '../../src/lib/shift-changes/types';
 import { seedPayrollFixture } from '../../src/test/integration/payroll-fixture';
 
 export async function seedCollabPageData(executor: SqlExecutor, owner: SessionMutationProof, week: string) {
+  const clockerOwner = { employeeId: owner.employee.id, sessionTokenHash: owner.sessionTokenHash };
+  await saveBreakType(clockerOwner, { name: 'Rest break', category: 'REST', targetMinutes: 15, active: true, expectedVersion: 0 }, executor);
+  await saveBreakType(clockerOwner, { name: 'Meal break', category: 'MEAL', targetMinutes: 30, active: true, expectedVersion: 0 }, executor);
   const draft = {
     type: 'LOCATION_ANNOUNCEMENT' as const,
     scope: { kind: 'LOCATION' as const, locationId: 'loc-1' },

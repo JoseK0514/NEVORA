@@ -5,6 +5,7 @@ const generation = '11111111-1111-4111-8111-111111111111';
 export async function checkNativeAlerts({ url, login, employee, evidence, record }) {
   const page = await login(employee, { width: 390, height: 844 }, 'NEVORA-Native/iOS/1');
   try {
+    await page.bringToFront();
     await page.addInitScript(generation => {
       const scenario = sessionStorage.getItem('collab-native-scenario') || 'off';
       const bridge = {

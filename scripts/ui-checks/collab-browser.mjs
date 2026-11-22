@@ -29,8 +29,8 @@ const inventoryResults = [];
 const phone = { width: 390, height: 844 };
 const desktop = { width: 1440, height: 900 };
 
-function record(id, detail) {
-  results.push({ id, detail });
+function record(id, detail, route) {
+  results.push({ id, detail, route });
   console.log(id, detail);
 }
 
@@ -119,7 +119,7 @@ async function checkFindCover(page) {
   await page.getByRole('heading', { name: 'Review replacement', exact: true }).waitFor();
   assert.doesNotMatch(await page.locator('main').innerText(), /West Office/);
   await captureWidths(page, 'location-replacement-review');
-  record('C3', 'Location Manager opened Review replacement for a Main Office coverage gap');
+  record('C3', 'Location Manager opened Review replacement for a Main Office coverage gap', page.url().slice(url.length));
 
   const { target, repair } = selected;
   target.searchParams.set('locationId', 'loc-2');
@@ -191,14 +191,14 @@ try {
         inventoryResults.push({ id, observed: 'error', detail: String(error.message).split('\n')[0] });
       }
     }
-    const inventory = await scanInventory({
-      evidence, origin: inventoryOrigin, runtime, pageFor: scanPage, login: scanLogin, priority: results, screenshots: options.includes('--screenshots'),
-    });
     try {
       await checkNativeAlerts({ url: inventoryOrigin, login: scanLogin, employee: profiles.E, evidence, record: recordInventory });
     } catch (error) {
       inventoryResults.push({ id: 'L1', observed: 'error', detail: String(error.message).split('\n')[0] });
     }
+    const inventory = await scanInventory({
+      evidence, origin: inventoryOrigin, runtime, pageFor: scanPage, login: scanLogin, priority: results, screenshots: options.includes('--screenshots'),
+    });
     await finishInventory({ inventory, priority: results, extra: inventoryResults, evidence, checkpoint });
   }
   if (priorityError) throw priorityError;

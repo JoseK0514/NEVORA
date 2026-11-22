@@ -181,7 +181,7 @@ which are the notice and not-found pages themselves.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | C1 | Schedule | `/app/schedule` | ✓* | ✓* | ✓* | ✓* | ✓* | B (O, M, L, E); Older (Mℓ: scoped schedule) | Week, day and open-shift views; Employee/Lead confirm the week; planning panel with Publish | O **B/Mixed** 140w 6b · M **B/Mixed** 140w 6b · Mℓ **Older** 392w 2b · L B 79w 3b · E B 78w 3b | ☐ |
 | C2 | Add shift | `/app/schedule/new` | ✓ | ✓ | ✓* | – | – | Mixed; Older (Mℓ form) | Company form vs location Manager form | O B 20w 1b · M B 20w 1b · Mℓ **Older** 13w 1b · L – · E – | ☐ |
-| C3 | **Find cover: Review replacement** | `/app/schedule/new?review=` | ✓ | ✓ | n† | – | – | Older (`kit`, `wave-a`) | Jose, Nov 22: "one of the worst UI"; shows "Publishing permission needed" without the grant | O **Older** 105w 2b · M **Older** 101w 1b · Mℓ n | ☐ |
+| C3 | **Find cover: Review replacement** | `/app/schedule/new?review=` | ✓ | ✓ | ✓ | – | – | Older (`kit`, `wave-a`) | Jose, Nov 22: "one of the worst UI"; shows "Publishing permission needed" without the grant | O **Older** 105w 2b · M **Older** 101w 1b · Mℓ n | ☐ |
 | C4 | Edit shift / shift details | `/app/schedule/edit` | ✓ | ✓ | ✓* | – | – | Mixed; Older (Mℓ read-only) | Delete shift confirm | O B 42w 2b · M B 42w 2b · Mℓ **Older** 28w 1b | ☐ |
 | C5 | Find cover (who can cover) | `/app/schedule/coverage` | ✓ | ✓ | ✓ | – | – | Own (coverage assistant) |  | O B 67w 2b · M B 67w 2b · Mℓ ✗ | ☐ |
 | C6 | Build and publish | `/app/schedule/publish` | ✓ | ✓ (grant) | ✓ (grant) | – | – | Corp + B | Manager needs Publish schedules; one Publish form per draft location | O B 27w 0b · M n · Mℓ n | ☐ |

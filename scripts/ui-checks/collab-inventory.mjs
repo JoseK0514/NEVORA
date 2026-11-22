@@ -49,7 +49,7 @@ function sourcePages(rows) {
   });
 }
 
-function concreteRoutes(row, profile, runtime) {
+function concreteRoutes(row, profile, runtime, replacement) {
   const { week, sourceId, targetId, sourceDate, actors, pages } = runtime;
   const actorShift = profile === 'E' ? targetId : sourceId;
   const query = (route, params) => route + '?' + new URLSearchParams(params);
@@ -60,7 +60,7 @@ function concreteRoutes(row, profile, runtime) {
     case 'B7': return ['/app/updates/' + pages.updateId];
     case 'B11': return ['/app/fictional-missing-page'];
     case 'C1': return [query(row.route, { week, location: 'all' })];
-    case 'C3': return []; // Opened from a live Find Cover candidate rather than a canned review reference.
+    case 'C3': return [replacement];
     case 'C4': return [query(row.route, { shiftId: sourceId })];
     case 'C5': return [query(row.route, { week, date: sourceDate, locationId: 'loc-1', start: '00:00', end: '08:00' })];
     case 'C6': return [query(row.route, { week: pages.copyWeek })];
@@ -113,6 +113,7 @@ export async function scanInventory({ evidence, origin, runtime, pageFor, login,
   const sources = sourcePages(rows);
   assert.equal(sources.filter(row => row.coverage === 'unmapped').length, 0,
     'A route is missing from the page inventory: ' + sources.filter(row => row.coverage === 'unmapped').map(row => row.route).join(', '));
+  const replacement = priority.find(result => result.id === 'C3')?.route;
   const captures = join(evidence, 'inventory');
   if (screenshots) await mkdir(captures, { recursive: true });
   const results = [];
@@ -136,9 +137,8 @@ export async function scanInventory({ evidence, origin, runtime, pageFor, login,
           results.push({ ...base, route: row.route, observed: 'separate fixture', detail: special.get(row.id) });
           continue;
         }
-        if (row.id === 'C3') {
-          const covered = profile === 'Ml' && priority.some(result => result.id === 'C3');
-          results.push({ ...base, route: row.route, observed: covered ? 'asserted workflow' : 'manual workflow',
+        if (row.id === 'C3' && expected.startsWith('✓') && !replacement) {
+          results.push({ ...base, route: row.route, observed: 'manual workflow',
             detail: 'Schedule → Find Cover → Review replacement' });
           continue;
         }
@@ -146,7 +146,7 @@ export async function scanInventory({ evidence, origin, runtime, pageFor, login,
           results.push({ ...base, route: row.route, observed: 'outside assigned profile' });
           continue;
         }
-        for (const [index, route] of concreteRoutes(row, profile, runtime).entries()) {
+        for (const [index, route] of concreteRoutes(row, profile, runtime, replacement).entries()) {
           try {
             const rendered = await visit(page, origin, route, row);
             const result = { ...base, ...rendered };

@@ -141,6 +141,11 @@ export async function checkClocker({ url, actors, evidence, pageFor, owner, reco
   await button(first, 'Clock out').click();
   await button(first, 'Confirm clock out').click();
   await state(first, 'recovery').waitFor();
+  await first.unroute(punchUrl, abortExecute);
+  await button(first, 'Check if it saved').click();
+  await state(first, 'retry').waitFor();
+  await capture('K12', first, 'Retry the original punch when the owned server has no receipt', '-retry');
+  await first.route(punchUrl, abortExecute);
   const changedSubject = async route => {
     const operation = route.request().postDataJSON()?.operation;
     assert.equal(operation, 'state');

@@ -46,13 +46,16 @@ Use [the page inventory](../page-inventory.md) for role expectations, route fami
 
 A location Manager's Things to Do (B4) and Time Corrections (D2) still depend on company-wide access in the app. The fixture assigns the real location-scoped permissions to expose the distinction. Owner and Manager account sections such as Privacy, Device Alerts and Passkeys can land on sections of Profile. The two dev-inspect routes are error-boundary probes and have no page UI of their own. The native Alerts screen is exercised in a browser with the phone bridge simulated.
 
+### Signup and verification
+
+For A8 and A9, use `localhost` with the same port as the app URL. The private signup form accepts `qa-signup@example.invalid` and delivers to the fixture's local SMTP inbox. Read `fictional-signup.eml` from the evidence directory for the confirmation link. The browser check follows that link to the verified business form. It uses a synthetic activation link to capture A10 as a form, then leaves it unsubmitted. The registration and owner-activation suites exercise the corresponding isolated writes.
+
 ### Separate environments in the same checkout
 
 | Screen | How to exercise it |
 |---|---|
-| A8–A10 Owner signup, verification and initial activation | The signup pages require the configured signup host; activation needs a one-time workspace proof. The registration and owner-activation suites exercise the isolated flow. The signed-out page tests under `src/app/onboarding/` cover route placement and page states. |
 | A15–A19 Central billing | Use the central billing browser suite below. It opens all five routes and uses a local billing service and fictional checkout transport. |
-| F3 Staff List Import | Use a routed workspace and the `people` suite. The single-workspace QA runtime shows the unavailable notice. |
+| F3 Staff List Import | The Step 4 local lifecycle suite opens the Owner import form in a routed workspace. The `people` suite covers CSV validation and import. The single-workspace runtime shows the unavailable notice. |
 | J18 Owner Billing and K15 Clocker Paused | Use the Step 4 local lifecycle browser suite below. It provides an isolated workspace and transitions the fictional account to restricted billing. |
 | J16 populated photo review, live photo storage and facial verification | The main fixture opens the Owner settings and empty review list. Server-backed photo workflows need the isolated photo runtime. The kiosk camera and preview run offline in the main check. |
 

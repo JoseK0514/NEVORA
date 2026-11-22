@@ -101,6 +101,12 @@ it('completes the fictional-company lifecycle and restricted recovery resilience
   expect((await company.resource.db.pool.query("SELECT count(*)::int n FROM employee_sessions WHERE employee_id='OWNER-1'")).rows).toEqual([{n:1}]);stages.push({stage:'normal-owner-browser-sign-in-on-provisioned-company',state:'passed'});
   const setup=await page.evaluate(async()=>{const response=await fetch('/api/onboarding/state',{credentials:'same-origin',cache:'no-store'});return {status:response.status,body:await response.json()};});
   expect(setup.status).toBe(200);expect(setup.body.state).toBe('ready');expect(setup.body.configuration.people.map((person:{id:string})=>person.id)).toContain('OWNER-1');stages.push({stage:'actual-owner-setup-http-and-company-authority',state:'passed'});
+  await page.goto(front+'/app/employees/import');
+  await page.getByRole('heading',{name:'Import a staff list',exact:true}).first().waitFor();
+  await page.getByRole('textbox',{name:'Staff list',exact:true}).waitFor();
+  await page.screenshot({path:join(root,'owner-staff-list-import.png')});
+  stages.push({stage:'owner-staff-list-import-form-in-routed-workspace',state:'passed'});
+  await page.goto(front+'/app');
   const billingStatus=await page.evaluate(async()=>{const response=await fetch('/api/commerce/status',{credentials:'same-origin',cache:'no-store'});return {status:response.status,body:await response.json()};});expect(billingStatus.status).toBe(200);expect(billingStatus.body.state).toBe('trial');expect(billingStatus.body.operational).toBe(true);stages.push({stage:'actual-enrolled-catalog-trial-and-company-owner-browser-billing-authority',state:'passed'});
   // A cold WebKit document before clock advancement separates browser delivery
   // from financial expiry. Only safe request paths and presentation are retained.
