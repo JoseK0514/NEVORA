@@ -3,7 +3,10 @@ import { randomUUID } from "node:crypto";
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { fictionalProfile } from "@/test/fixtures/shift-changes";
 import type { SqlExecutor } from "@/lib/notifications/types";
+import { businessDate } from "@/lib/business-time";
+import { weekStartFor } from "@/lib/date-utils";
 import type { CoverageActionResult } from "./coverage-actions";
+import { firstOpenMinute, minuteClock } from "./coverage-plan-clock";
 import { advisorService } from "./service.server";
 
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
@@ -48,6 +51,41 @@ it("prepares exact canonical labels without saving; atomically saves the selecte
   const current = await check(review.review.id);
   expect(current.progress).toMatchObject({ state: "current", assignmentsPresent: 2, assignmentsTotal: 2, publishedAssignments: 0, coverage: { remainingBlocks: 0 } });
   expect(current.receipt).toEqual(saved.receipt);
+});
+
+it("saves the plan's exact hours and refuses a whole-day 00:00–24:00 term no plan reviewed (QA S-09)", async () => {
+  const selected = await selection();
+  expect(selected.assignments.map(a => [a.startTime, a.endTime])).toEqual([["08:00", "12:00"], ["08:00", "12:00"]]);
+  const wholeDay = { ...selected, requestId: randomUUID(), assignments: selected.assignments.map(a => ({ ...a, startTime: "00:00", endTime: "24:00" })) };
+  await expect(action(wholeDay)).rejects.toMatchObject({ code: "conflict" });
+  expect(await f.q("SELECT (SELECT count(*)::int FROM shifts) shifts,(SELECT count(*)::int FROM owner_advisor_coverage_reviews) reviews")).toEqual([{ shifts: 0, reviews: 0 }]);
+  const review = await action(selected); await apply(review.review.id);
+  expect(await f.q("SELECT start_time::text s,end_time::text e FROM shifts ORDER BY employee_id")).toEqual([{ s: "08:00:00", e: "12:00:00" }, { s: "08:00:00", e: "12:00:00" }]);
+});
+
+it("for today, proposes and saves only time that hasn't passed in the company's zone, even with whole-day coverage (QA S-09)", async () => {
+  const [{ zone }] = await f.q<{ zone: string }>("SELECT time_zone zone FROM workspaces WHERE singleton");
+  const date = businessDate(new Date(), zone);
+  await f.q(`DELETE FROM coverage_window_position_requirements; DELETE FROM location_coverage_windows; DELETE FROM availability_windows;
+    INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) SELECT 'all-day-'||d,'loc-1',d,'00:00','24:00' FROM generate_series(0,6) d;
+    INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'all-day-av-'||d,'draft-worker',d,'00:00','24:00' FROM generate_series(0,6) d;`);
+  await f.q("INSERT INTO weekly_availability_submissions(employee_id,week_start,uses_normal_availability) VALUES('draft-worker',$1,true) ON CONFLICT DO NOTHING", [weekStartFor(date)]);
+  const result = await call({ op: "inspect", requestId: randomUUID(), tool: { name: "coverage_plan", args: { date } } });
+  if (result.state !== "answered" || !result.answer.coveragePlans) throw Error("Expected comparison");
+  const plans = result.answer.coveragePlans, opens = firstOpenMinute(date, plans.observedAt, plans.timeZone);
+  expect(plans.date).toBe(date); expect(opens).toBeGreaterThan(0);
+  expect(plans.baseline!.requiredMinutes).toBe(1440 - opens);
+  const proposed = plans.alternatives.flatMap(p => p.assignments);
+  for (const a of proposed) { expect(a.startTime >= minuteClock(opens)).toBe(true); expect([a.startTime, a.endTime]).not.toEqual(["00:00", "24:00"]); }
+  if (opens >= 1440) { expect(proposed).toEqual([]); return; }
+  expect(proposed.length).toBeGreaterThan(0);
+  const p = plans.alternatives[0];
+  const review = await action({ op: "prepare_coverage_draft", requestId: randomUUID(), date, sourceVersion: plans.sourceVersion,
+    assignments: p.assignments.map(a => ({ employeeId: a.employeeId, locationId: a.locationId, startTime: a.startTime, endTime: a.endTime, positionId: a.positionId ?? null, isDesignatedLead: a.isDesignatedLead })) });
+  await apply(review.review.id);
+  const rows = await f.q<{ s: string; e: string }>("SELECT left(start_time::text,5) s,left(end_time::text,5) e FROM shifts WHERE date=$1", [date]);
+  expect(rows).toHaveLength(p.assignments.length);
+  for (const row of rows) { expect(row.s >= minuteClock(opens)).toBe(true); expect(row.s).not.toBe("00:00"); }
 });
 
 it("rejects an entire mixed published allocation without saving only the draft subset", async () => {

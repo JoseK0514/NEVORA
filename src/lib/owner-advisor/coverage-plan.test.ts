@@ -112,3 +112,35 @@ it("keeps dense searches bounded, yields, and labels remaining requirements inst
   expect(input).toEqual(before);
   console.info("OWNER_COVERAGE_PLAN_PERFORMANCE", JSON.stringify({ ...result.computation, alternatives: result.alternatives.map(p => ({ status: p.status, assignments: p.assignments.length, remaining: p.remaining.total })) }));
 }, 20000);
+
+it("plans today only from the next quarter hour in the company's zone (QA S-09: clipped, not dropped)", async () => {
+  const input = automaticWeek(); input.staffing[0].minimumStaffPerShift = 1;
+  // 15:42 UTC on Mon Oct 5 is 11:42 AM in Puerto Rico; the 8:00 AM – 4:00 PM period is under way.
+  const today = await coverage.compareCoveragePlans(input, { ...metadata, observedAt: "2026-10-05T15:42:00.000Z" }, signal());
+  expect(today.baseline).toMatchObject({ requiredMinutes: 255, coveredMinutes: 0 });
+  expect(today.alternatives[0]).toMatchObject({ status: "COMPLETE", addedMinutes: 255 });
+  for (const plan of today.alternatives) for (const a of plan.assignments) expect([a.startTime, a.endTime]).toEqual(["11:45", "16:00"]);
+  expect(() => parseCoveragePlans(today)).not.toThrow();
+  // At 4:30 PM the period is over: nothing is proposed, and nothing is claimed as covered.
+  const late = await coverage.compareCoveragePlans(input, { ...metadata, observedAt: "2026-10-05T20:30:00.000Z" }, signal());
+  expect(late.baseline?.requiredMinutes).toBe(0);
+  expect(late.alternatives.flatMap(p => p.assignments)).toEqual([]);
+  expect(late.partial).toBe(true);
+  // The day before, the whole period is still ahead.
+  const before = await coverage.compareCoveragePlans(input, { ...metadata, observedAt: "2026-10-04T15:42:00.000Z" }, signal());
+  expect(before.alternatives[0].assignments.map(a => [a.startTime, a.endTime])).toEqual([["08:00", "16:00"]]);
+});
+
+it("proposes a whole-day shift only when whole-day coverage is genuinely ahead, never for a day already under way", async () => {
+  const input = automaticWeek(); input.staffing[0].minimumStaffPerShift = 1;
+  input.coverageWindows[0] = { ...input.coverageWindows[0], startTime: "00:00", endTime: "24:00" };
+  // 22:42 UTC is 6:42 PM in Puerto Rico on the plan's date: QA S-09 saw 12:00 AM starts at this time.
+  const today = await coverage.compareCoveragePlans(input, { ...metadata, observedAt: "2026-10-05T22:42:00.000Z" }, signal());
+  const proposed = today.alternatives.flatMap(p => p.assignments);
+  expect(proposed.length).toBeGreaterThan(0);
+  for (const a of proposed) expect([a.startTime, a.endTime]).toEqual(["18:45", "24:00"]);
+  expect(today.baseline?.requiredMinutes).toBe(315);
+  // A later day with coverage set for all 24 hours: the plan's real hours are the whole day.
+  const ahead = await coverage.compareCoveragePlans(input, { ...metadata, observedAt: "2026-10-04T22:42:00.000Z" }, signal());
+  expect(ahead.alternatives[0].assignments.map(a => [a.startTime, a.endTime])).toEqual([["00:00", "24:00"]]);
+});

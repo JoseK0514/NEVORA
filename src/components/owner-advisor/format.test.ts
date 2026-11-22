@@ -1,5 +1,5 @@
 import { expect, it } from "@rstest/core";
-import { attentionDetail, clockRange, dayText, periodText, stateText, whenText } from "./format";
+import { attentionDetail, clockRange, dayText, hoursText, periodText, shiftLength, shiftRange, stateText, whenText } from "./format";
 
 it("says the server's attention sentences with correct plurals and a 12-hour clock, and leaves others exactly as written", () => {
   expect(attentionDetail("1 published shifts started without a recorded clock-in. Verify attendance before choosing coverage."))
@@ -23,6 +23,13 @@ it("reads dates, periods, clock ranges and instants the way people say them, in 
   expect(clockRange("08:00", "12:00")).toBe("8:00 AM – 12:00 PM");
   expect(clockRange("22:00", "24:00")).toBe("10:00 PM – midnight");
   expect(clockRange("00:00", "24:00")).toBe("All day");
+  // A person's shift never reads "All day": its hours and length are said outright.
+  expect(shiftRange("00:00", "24:00")).toBe("12:00 AM – midnight");
+  expect(shiftRange("18:45", "24:00")).toBe("6:45 PM – midnight");
+  expect(shiftLength("00:00", "24:00")).toBe("24 h");
+  expect(shiftLength("18:45", "24:00")).toBe("5 h 15 min");
+  expect(hoursText(2880)).toBe("48 h");
+  expect(hoursText(0)).toBe("0 h");
   expect(stateText("DRAFT")).toBe("Draft");
   expect(stateText("IN_REVIEW")).toBe("In review");
   expect(stateText("DRAFT", "es")).toBe("DRAFT");

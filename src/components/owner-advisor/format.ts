@@ -2,8 +2,8 @@
  * "Nov 1–7", zones "Puerto Rico time". Presentation only: every value is the server's own; nothing here changes
  * what is sent, saved or compared. Calendar dates are the workspace's written day (read at noon UTC, so no zone can move
  * them); instants are read in the workspace's zone when the page knows it, else in the device's (as before). */
-import { formatTime, formatTimeRange } from "@/lib/date-utils";
-import { dateRange } from "@/lib/duration-format";
+import { durationMinutes, formatTime, formatTimeRange } from "@/lib/date-utils";
+import { dateRange, durationSentence } from "@/lib/duration-format";
 
 export type Lang = "en" | "es";
 const LOCALE: Record<Lang, string> = { en: "en-US", es: "es-PR" };
@@ -30,6 +30,20 @@ export function periodText(start: string, end: string, lang: Lang = "en", year?:
  * 00:00–24:00 reads "All day". */
 export function clockRange(start: string, end: string) {
   return formatTimeRange(start, end);
+}
+
+/** One person's shift. Unlike clockRange it never reads "All day": a 00:00–24:00 shift is "12:00 AM – midnight", so
+ * a 24-hour assignment reads as hours someone works (QA S-09). Its length is shiftLength ("24 h", "4 h 30 min"). */
+export function shiftRange(start: string, end: string) {
+  return start.slice(0, 5) === "00:00" && end.slice(0, 5) === "24:00" ? `${formatTime(start)} – midnight` : formatTimeRange(start, end);
+}
+export function shiftLength(start: string, end: string) {
+  return durationSentence(durationMinutes(start, end));
+}
+
+/** Minutes said as hours in a sentence: "48 h", "5 h 15 min", "0 h". */
+export function hoursText(minutes: number) {
+  return durationSentence(minutes, "0 h");
 }
 
 /** A server state code said in sentence case in English ("DRAFT" reads "Draft", "IN_REVIEW" "In review"); Spanish

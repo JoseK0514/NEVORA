@@ -57,6 +57,10 @@ export function deriveGenerationDemand(
     // demand, never this identity: adjacent 24h periods may be one reserved need.
     weekDates: Array.from({ length: 7 }, (_, day) => addDays(input.weekStart, day)),
   }).coverageBlocks;
+  // A same-day review measures and fills only the time still ahead (review.notBefore, minutes after
+  // midnight on review.date). Blocks that ended before it drop out; one under way starts at it.
+  // Coverage state is uniform inside a block, so clipping its start never changes what it reports.
+  const notBefore = review?.notBefore ?? 0;
   const blocks = calculateScheduleHealth({
     ...common,
     shifts: ledger,
@@ -68,7 +72,14 @@ export function deriveGenerationDemand(
         c.startTime <= block.startTime &&
         c.endTime >= block.endTime,
     ),
-  );
+  ).flatMap((block) => {
+    if (!notBefore) return [block];
+    const dayStart = businessDateStart(block.date), p = shiftPeriod(block);
+    if (p.end - dayStart <= notBefore) return [];
+    if (p.start - dayStart >= notBefore) return [block];
+    const startTime = `${String(Math.floor(notBefore / 60)).padStart(2, "0")}:${String(notBefore % 60).padStart(2, "0")}`;
+    return [{ ...block, startTime, key: [block.locationId, block.date, startTime, block.endTime].join("|") }];
+  });
   for (const block of blocks) {
     block.positionCoverage.sort((a, b) =>
       a.positionId.localeCompare(b.positionId),

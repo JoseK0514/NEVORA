@@ -111,7 +111,7 @@ it("compares real joint day plans with discoverable keyboard review and private 
         await writeFile(resolve(evidence, `${engine}-discovery.json`), JSON.stringify(discovery, null, 2));
         expect(discovery.focused).toBe(true); expect(discovery.visible).toBe(true);
         await page.keyboard.press(engine === "webkit" && process.platform === "darwin" ? "Alt+Tab" : "Tab");
-        expect(await result.getByText("Review scope and source", { exact: true }).evaluate((el: HTMLElement) => document.activeElement === el)).toBe(true);
+        expect(await result.getByText("What this plan covers", { exact: true }).evaluate((el: HTMLElement) => document.activeElement === el)).toBe(true);
         await page.keyboard.press("Enter");
         await result.getByText(`Source fingerprint: ${plans.sourceVersion}`, { exact: true }).waitFor();
         expect(await result.locator("script").count()).toBe(0);
@@ -142,8 +142,8 @@ it("compares real joint day plans with discoverable keyboard review and private 
         const fresh = await (await nextResponse).json();
         expect(fresh.answer.coveragePlans.sourceVersion).not.toBe(plans.sourceVersion);
         expect(fresh.answer.coveragePlans.alternatives[0].status).not.toBe("COMPLETE");
-        await result.getByRole("article", { name: "Day plan 1", exact: true }).getByRole("heading", { name: /Requirements remain|Search limit reached/ }).waitFor();
-        await result.getByText(/^Remaining requirements/).first().click();
+        await result.getByRole("article", { name: "Day plan 1", exact: true }).getByRole("heading", { name: /Leaves some time uncovered|Search limit reached/ }).waitFor();
+        await result.getByText(/^Time still uncovered/).first().click();
         await result.getByText(/Customer Support: 1 needed/).first().waitFor();
         await page.screenshot({ path: resolve(evidence, `${engine}-remaining.png`), fullPage: true });
         checks.push(`${engine}: a new request uses changed qualifications, new fingerprint and actual remaining position needs`);
