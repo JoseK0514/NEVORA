@@ -24,6 +24,6 @@ export async function readNextPay(timeZone?: string): Promise<NextPay> {
  * payroll read retains current session/Owner checks around the bounded source query. */
 export async function readHomePayrollStatus(proof: SessionMutationProof, ex: SqlExecutor = neonNotificationExecutor()): Promise<HomePayrollStatus | null> {
   if (proof.employee.role !== 'OWNER' || !readFeatureFlags(process.env).payroll) return null;
-  const result = await withOperationalCompany(proof, async () => homePayrollStatus(await readPayrollBacklog(proof, ex, 'OWNER')), ex);
+  const result = await withOperationalCompany(proof, async () => homePayrollStatus(await readPayrollBacklog(proof, ex, 'OWNER', {lockFree: true})), ex);
   return result.state === 'ready' ? result.data : {state: 'unavailable'};
 }

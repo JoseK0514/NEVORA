@@ -5,7 +5,7 @@ import type { PayrollPeriod, PayrollSettingsRevision } from './contracts';
 import { missingPayrollPeriods } from './backlog';
 import { payrollHistorySql } from './history';
 import { date, period } from './model';
-import { guarded, statement } from './store';
+import { guarded, snapshotRead, statement } from './store';
 
 type Backlog = ReturnType<typeof missingPayrollPeriods>;
 export type HomePayrollFact = { payday: string; period: PayrollPeriod };
@@ -25,8 +25,12 @@ function validHistory(row: HistoryRow | undefined): row is HistoryRow {
 
 /** Shared bounded history read. Manager runs intentionally have no company backlog.
  * The existing payroll envelope checks current session/role both before and after the read. */
-export async function readPayrollBacklog(proof: SessionMutationProof, ex: SqlExecutor, permission: 'OWNER' | 'REVIEW' = 'REVIEW'): Promise<Backlog> {
-  const [row] = await guarded<HistoryRow>(proof, permission, statement(proof.employee.role === 'MANAGER'
+/** `lockFree`: QA A3-07 recheck (Nov 22, 2026). Owner Home reads this for display on every load; the writers' locks made
+ * loads queue as the capability read did. snapshotRead keeps the same session and authority checks without them. The
+ * Payroll page's full read keeps `guarded` with its other reads. */
+export async function readPayrollBacklog(proof: SessionMutationProof, ex: SqlExecutor, permission: 'OWNER' | 'REVIEW' = 'REVIEW', options: {lockFree?: boolean} = {}): Promise<Backlog> {
+  const read = options.lockFree ? snapshotRead : guarded;
+  const [row] = await read<HistoryRow>(proof, permission, statement(proof.employee.role === 'MANAGER'
     ? "SELECT CURRENT_DATE::text AS today,'[]'::jsonb AS history,'[]'::jsonb AS originals,false AS overflow"
     : payrollHistorySql), ex);
   if (!validHistory(row)) throw new Error('payroll_history_unavailable');
