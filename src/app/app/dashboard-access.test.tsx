@@ -11,6 +11,8 @@ rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({
 rs.mock('@/components/employee-dashboard',()=>({EmployeeDashboard:()=> <p>Own next shift and clock status</p>}));
 rs.mock('@/components/manager-dashboard',()=>({ManagerDashboard:({pendingRequestCount,role}:{pendingRequestCount:number;role:string})=><p>{role}: {pendingRequestCount} recorded pending requests</p>}));
 rs.mock('@/components/manager-clock-monitor',()=>({ManagerClockMonitor:()=> <p>Existing separately polled monitor</p>}));
+rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalSchedule:async()=>({state:'ready',authority:'fixture',data:{shifts:[]}})}));
+rs.mock('@/lib/workspace-presentation/current.server',()=>({currentPresentation:async()=>({modules:{timeOff:true}})}));
 import Page from './page';const query={searchParams:Promise.resolve({})};
 import {ManagerCorrectionRecoveryBoundary} from '@/components/manager-correction-recovery';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';

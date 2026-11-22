@@ -54,6 +54,11 @@ export type HomeBWeek = {
   coverage?: CoverageMinutes;
   /** Final polish (Nov 20, 2026): Home's shortcuts, the pages this person may open (the caller leaves out a module that is off). */
   shortcuts?: HomeShortcut[];
+  /** Location Manager (Nov 22, 2026): the place this Home is limited to, on the band beside the date (a location menu
+   * when the Manager has more than one). Company-wide Homes have none. */
+  place?: ReactNode;
+  /** False when the week's schedule couldn't be read: This week is left out rather than drawn with zeros. */
+  thisWeek?: false;
 };
 
 export type HomeShortcut = "shift" | "employee" | "update" | "timeOff";
@@ -149,7 +154,7 @@ export function HomeB(props: HomeBProps) {
   return <BScreen>
     <BHero big eyebrow={eyebrow} title={title} offlineInTitle={!value && offline} sub={<><span role="status" className="b-sr">{props.summary}</span></>}>
       {/* Review B1 (NV-117): the date is a fact on the band, not a glass button. */}
-      <div className="b-hrow"><span className="b-date" aria-hidden="true"><CalendarBlankIcon size={15} weight="bold" />{props.dateLabel}</span></div>
+      <div className="b-hrow"><span className="b-date" aria-hidden="true"><CalendarBlankIcon size={15} weight="bold" />{props.dateLabel}</span>{props.week?.place ?? null}</div>
       <div className="b-home-strip">
       <BLive label="Right now" items={[
         ...(noClock ? [clockTile] : [{ label: "Clocked in", dot: "live" as const, value: checking ? CORP_NO_VALUE : onShift, small: !checking && scheduled ? `/${scheduled}` : undefined,
@@ -180,7 +185,7 @@ export function HomeB(props: HomeBProps) {
       <div className="b-home-col b-home-col--b">
         <PayrollNotice status={props.payrollStatus} />
         <PaydayTile {...props} />
-        {props.week ? <ThisWeek week={props.week} today={ready?.today ?? props.businessDay} /> : null}
+        {props.week && props.week.thisWeek !== false ? <ThisWeek week={props.week} today={ready?.today ?? props.businessDay} /> : null}
       </div>
     </BStack>
   </BScreen>;
