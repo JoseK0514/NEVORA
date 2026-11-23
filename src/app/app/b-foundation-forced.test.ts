@@ -11,6 +11,7 @@ it("sits in the kit's layer", () => {
 
 it("marks the chosen tab of every segmented control and keeps a focus outline", () => {
   expect(block).toMatch(/:is\(\.b-seg, \.c-seg, \.q-seg[^{]*\{ outline: 2px solid Highlight !important;/);
+  expect(block).toContain(".c-tc-tabs, .c-tabs, [data-c-tabs]");
   expect(block).toMatch(/:focus-visible[^{]*\{ outline: 2px solid Highlight !important;/);
 });
 
