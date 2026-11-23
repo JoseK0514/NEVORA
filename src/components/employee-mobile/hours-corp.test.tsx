@@ -28,7 +28,7 @@ describe('corporate Time tab (G-E-Time, E-TimeOnClock)',()=>{
  it('shows the clock status, this week and one way to fix a punch, without clock controls or footers',()=>{
   const data=ready({current:open,today:{entries:[open],recordedSeconds:5520,breakSeconds:0}}),plain=text(renderToStaticMarkup(<CorpTimeTab data={data}/>));
   expect(plain).toContain('Current shift');/* B7 wording (NV-119 glossary: Clocked in) */expect(plain).toContain('Clocked in');expect(plain).toMatch(/Clocked in at 7:58\sAM/);expect(plain).toContain('Condado · 1 h 32 min so far');
-  expect(plain).toContain('This week · Oct 26 – Nov 1');expect(plain).toContain('Mon 26');expect(plain).toContain('Tue 27');expect(plain).toContain('8 h 2 min');expect(plain).toContain('30 min break');
+  expect(plain).toContain('This week · Oct 26–Nov 1');expect(plain).toContain('Mon 26');expect(plain).toContain('Tue 27');expect(plain).toContain('8 h 2 min');expect(plain).toContain('30 min break');
   expect(plain).toContain('Fix a missed punch');expect(plain).toContain('Hours include breaks.');
   expect(plain).not.toMatch(/Clocker|Refresh|Your information only|Checked|0h|Clock out<\/button>/);
   expect(timeSubtitle(data)).toBe('Tuesday, October 27 · Condado');
@@ -60,9 +60,9 @@ it('shows the chosen week with its days, then earlier weeks as cards and Show ea
   entries:[{id:'e1',locationId:'l',locationName:'Condado',positionId:null,positionName:null,sourceKind:'RECORDED' as const,adjustmentId:null,recordedVersion:1,startAt:'2026-10-20T11:59:00Z',endAt:'2026-10-20T20:01:00Z',rawStartAt:'2026-10-20T11:59:00Z',rawEndAt:'2026-10-20T20:01:00Z',breaks:[]}]};
  const data={state:'ready',validForMs:1,cards:[{card,state:'APPROVED',history:[]}]} as unknown as Parameters<typeof CorpPastTimecards>[0]['data'];
  const html=renderToStaticMarkup(<CorpPastTimecards authority="a" data={data} period={{startDate:'2026-10-19',endDate:'2026-10-25'}} today="2026-10-27" entryId={null} onRefresh={noop}/>),plain=text(html);
- expect(plain).toContain('Oct 19 – 25');expect(plain).toContain('Approved');expect(plain).toContain('8 h 2 min');expect(plain).toContain('Tue 20');expect(plain).toContain('Later week');
+ expect(plain).toContain('Oct 19–25');expect(plain).toContain('Approved');expect(plain).toContain('8 h 2 min');expect(plain).toContain('Tue 20');expect(plain).toContain('Later week');
  // Four earlier weeks, newest first, each its own card, then Show earlier weeks; no Earlier/Later paging rows below.
- const order=['Oct 12 – 18','Oct 5 – 11','Sep 28 – Oct 4','Sep 21 – 27'].map(range=>plain.indexOf(range));
+ const order=['Oct 12–18','Oct 5–11','Sep 28–Oct 4','Sep 21–27'].map(range=>plain.indexOf(range));
  expect(order.every(at=>at>plain.indexOf('Tue 20'))).toBe(true);expect([...order].sort((a,b)=>a-b)).toEqual(order);
  expect(plain).toContain('Show earlier weeks');expect(plain).not.toContain('Earlier week ');
  expect(html).not.toMatch(/type="date"|View period|Draft|Effective time|Timecard history/);

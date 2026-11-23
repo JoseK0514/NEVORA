@@ -55,7 +55,7 @@ describe("availability review filters", () => {
     expect(offered).not.toMatch(/<button[^>]*b-rem__/);
   });
   it("says why nobody can be reminded when the week has no deadline", () => {
-    expect(renderToStaticMarkup(<AvailabilityTeamList employees={[base]} needsDeadline />)).toContain("Reminders need a deadline. Set one in Scheduling rules.");
+    expect(renderToStaticMarkup(<AvailabilityTeamList employees={[base]} needsDeadline />)).toContain('Reminders need a deadline. Set one in <a href="/app/schedule/settings">Scheduling rules</a>.');
     expect(renderToStaticMarkup(<AvailabilityTeamList employees={[base]} />)).not.toContain("Reminders need a deadline");
   });
 });

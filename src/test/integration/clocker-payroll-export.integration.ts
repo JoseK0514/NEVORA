@@ -4,7 +4,7 @@ import {isManagementAuthorizationError} from '../../lib/data/management-session'
 import {afterEach,beforeEach,describe,expect,it} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
-import {createPayrollExport,readExportProfiles,saveExportProfile,type ExportCommand} from '../../lib/payroll-export/service';
+import {createPayrollExport,listOwnPayrollExportReceipts,readExportProfiles,readOwnPayrollExportReceipt,saveExportProfile,type ExportCommand} from '../../lib/payroll-export/service';
 import {adpRunPaidColumns,canonicalPayrollExport,mappedPayrollCsv,neutralPaidProfile,neutralProfile} from '../../lib/payroll-export/model';
 import {stableExportJson} from '../../lib/payroll-export/json';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
@@ -97,6 +97,27 @@ describe('D6 mapping and immutable export protocol',()=>{
   expect(await createPayrollExport(proof,input,f.db.executor)).toEqual(result);
   await expect(createPayrollExport(proof,{...input,paidTime:{...paidTime,breakTreatments:paidTime.breakTreatments.map(b=>({...b,treatment:'PAID_REST'}))}},f.db.executor)).rejects.toThrow('CONFLICT');
   expect(await f.q('SELECT count(*)::integer n FROM payroll_export_receipts')).toEqual([{n:1}]);
+ });
+ // QA A3-03 (Nov 21, 2026): the page clears a generated file when its view expires and a second export is refused, so the
+ // stored receipt is how the person gets the same file again: their own only, verified, never regenerated.
+ it('reads back only this person\'s own stored export, unchanged, and lists it without names or hours',async()=>{
+  await finalize();const input=await command();
+  const made=await createPayrollExport(proof,input,f.db.executor);
+  expect(await readOwnPayrollExportReceipt(proof,input.operationId,f.db.executor)).toEqual(made);
+  expect(await f.q('SELECT count(*)::integer n FROM payroll_export_receipts')).toEqual([{n:1}]);
+  const listed=await listOwnPayrollExportReceipts(proof,f.db.executor);
+  expect(listed).toEqual([{operationId:input.operationId,createdAt:expect.any(String),period,people:1,csvSha256:made.csvSha256}]);
+  expect(JSON.stringify(listed)).not.toMatch(/c34-a|recordedNanoseconds|employeeName/);
+  await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('a303-other-owner','Other','Owner','a303-other-owner','OWNER','loc-1'); INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('c',64),'a303-other-owner',clock_timestamp()+interval '1 day')");
+  const other:SessionMutationProof={employee:{...proof.employee,id:'a303-other-owner'},sessionTokenHash:'c'.repeat(64)};
+  expect(await readOwnPayrollExportReceipt(other,input.operationId,f.db.executor)).toBeNull();
+  expect(await listOwnPayrollExportReceipts(other,f.db.executor)).toEqual([]);
+  expect(await readOwnPayrollExportReceipt(proof,randomUUID(),f.db.executor)).toBeNull();
+  await expect(readOwnPayrollExportReceipt(proof,'not-a-receipt',f.db.executor)).rejects.toThrow('INVALID_RECEIPT');
+  // The file read back is the file that was downloaded: the table refuses changes, and the read also checks the CSV against
+  // its recorded SHA-256.
+  await expect(f.q("UPDATE payroll_export_receipts SET payload=jsonb_set(payload,'{csv}',to_jsonb('tampered'::text))")).rejects.toThrow('append_only');
+  expect((await readOwnPayrollExportReceipt(proof,input.operationId,f.db.executor))?.csv).toBe(made.csv);
  });
  it('refuses inexact default daily paid hours and accepts a reviewed saved HALF_UP custom mapping',async()=>{
   await f.q("UPDATE time_entries SET clock_out_at='2026-09-22T12:01:00Z' WHERE id='D6-T'");

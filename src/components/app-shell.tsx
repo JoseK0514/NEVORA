@@ -6,6 +6,7 @@ import {NavigationLink as Link} from './navigation-link';
 import {useLinkStatus} from 'next/link';
 import {EmployeeMessageProvider,EmployeeMessageReturn} from './employee-mobile/message-session';
 import {AppNavigationProvider,useIdentityReload} from './app-navigation';
+import {releaseDiscardGuards} from './kit/use-discard-guard';
 import { NotificationBell } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
@@ -231,9 +232,11 @@ function AppShellView({
   useEmployeeNavigationLayout(employee);
   // Refresh the retained layout's server identity without interrupting the destination document's streamed content.
   const identityReload=useIdentityReload(()=>router.refresh());
-  const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity')identityReload.request();else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router,identityReload]);
+  const accessChanged=useCallback((reason:'identity'|'scope')=>{if(reason==='identity'){/* The session is no longer this person's: no "Discard changes?" and no browser prompt on the way out. */releaseDiscardGuards();identityReload.request();}else {window.dispatchEvent(new Event('nevora:notifications-changed'));router.refresh();}},[router,identityReload]);
   const operational=useOperationalNavigation(user.id,user.role,operationalAuthority,accessChanged);
-  const inboxCount = useInboxCount(!employee && (user.role === 'OWNER' || operational.navigation?.state === 'ready' && operational.navigation.scope?.mode === 'COMPANY'), pathname);
+  const inboxAuthority = operational.navigation?.state === 'ready' && operational.navigation.scope
+    ? operational.navigation.authority : null;
+  const inboxCount = useInboxCount(!employee ? inboxAuthority : null, pathname);
   // Review B2 (NV-030): menus follow the last current scope while a check is slow, failed or offline.
   const context:NavContext = {...presentation, operational:operational.navigation??undefined};
   const navigation = navigationForRole(user.role, payrollCapabilities, context);
@@ -618,7 +621,7 @@ function AppShellView({
             lives on Requests). */}
           {accountMenu}
           {/* Corporate phone header: the avatar opens More (profile, settings and the rest). Desktop keeps the account menu. */}
-          <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span>{/* Review F2 (NV-099): a small visible cue that the avatar opens More. */}<i className="c-top-avatar__more" aria-hidden="true"><CaretDownIcon weight="bold" /></i></Link>
+          <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}, ${initials}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span>{/* Review F2 (NV-099): a small visible cue that the avatar opens More. */}<i className="c-top-avatar__more" aria-hidden="true"><CaretDownIcon weight="bold" /></i></Link>
           </div>
         </header>
         {/* Owner premium P7 and P11: the thin progress bar while a page is on its way, and the offline line over the page. */}

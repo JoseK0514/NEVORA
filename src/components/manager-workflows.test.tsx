@@ -14,7 +14,7 @@ import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
 import { listPendingCallouts } from "@/lib/data/callouts";
 
 const access=rs.hoisted(()=>({denied:false}));
-rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({isOperationalAuthorizationError:()=>false,readOperationalAuthority:async()=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',scope:{mode:'COMPANY'},authority:'fixture',locations:[],observedAt:'2026-10-14T12:00:00Z',validForMs:15000},withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 rs.mock("@/lib/auth/session", () => ({ requireSession: rs.fn(),requireSessionMutationProof:async()=>({employee:{id:"reviewer",role:"MANAGER"},sessionTokenHash:"a".repeat(64)}) }));
 rs.mock("@/lib/data/schedule-health", () => ({ listEmployeeHourTargets: rs.fn(async () => []) }));
 rs.mock("@/lib/data/hour-fairness", () => ({ listHourFairness: rs.fn(async () => []) }));
@@ -119,7 +119,8 @@ it("names who decided a request and when, once the read includes it (Codex C1), 
   const base = { id: "r1", employeeId: "e1", employeeName: "Fictional Person", startDate: "2026-10-29", endDate: "2026-10-30", status: "APPROVED", createdAt: "2026-10-01T15:00:00.000Z" };
   rs.mocked(listWorkforceLeave).mockResolvedValueOnce({state:'ready',data:[{ ...base, reviewerName: "Fictional Manager", reviewedAt: "2026-10-02T15:00:00.000Z" }],coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000} as never);
   const decided = renderToStaticMarkup(await ManagerTimeOff({ tab: "approved" })).replace(/\u00a0/g, " ");
-  expect(decided).toContain("Approved by Fictional Manager · Oct 2");
+  // Final polish (confirmations A #17): the line is the kit's facts line (BSegs), so its parts are separate elements.
+  expect(decided.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ")).toContain("Approved by Fictional Manager · Oct 2");
   rs.mocked(listWorkforceLeave).mockResolvedValueOnce({state:'ready',data:[base],coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000} as never);
   const older = renderToStaticMarkup(await ManagerTimeOff({ tab: "approved" }));
   expect(older).not.toContain("Approved by");
@@ -143,7 +144,9 @@ describe("management sees every shift in full before deciding (Codex review, Oct
   const shift = (over: Record<string, unknown>) => ({ id: "s", scheduleId: "sched", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2026-10-05", date: "2026-10-05", startTime: "08:00", endTime: "12:00", ...over });
   const plain = (html: string) => html.replace(/ /g, " ");
   /** The words on the page, without tags. */
-  const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  // Final polish (Nov 20, 2026): a time range carries a short form for phones (BWhen's .b-when-s, hidden from 768px) beside
+  // the full one; these checks read the full facts, as a desktop shows them.
+  const text = (html: string) => html.replace(/<span class="b-when-s">[^<]*<\/span>/g, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
   it("a swap shows both employees, full dates, start and end times and locations ahead of Approve", async () => {
     rs.mocked(listPendingCallouts).mockResolvedValue([]);
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "swap", requestRevision: 3, actionable: true, kind: "SWAP", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", targetEmployeeId: "e2", targetEmployeeName: "Fictional Ben", createdAt: "2026-10-03T00:00:00Z",

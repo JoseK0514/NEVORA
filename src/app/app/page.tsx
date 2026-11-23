@@ -11,6 +11,8 @@ import {ManagerCorrectionRecoveryBoundary} from '@/components/manager-correction
 import {managerReviewRecoveryKey} from '@/lib/time-corrections/review-recovery';
 import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
 import {ScopedManagementHome} from '@/components/company-access/scoped-operational-views';
+import {ScopedHomeB} from '@/components/company-access/scoped-b';
+import {readScopedCoverageGaps} from '@/lib/data/coverage-repair.server';
 import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {businessDate} from '@/lib/business-time';
@@ -77,14 +79,22 @@ export default async function DashboardPage({
     const presentation=await currentPresentation();
     const teamMessage=session.role==='LEAD'&&presentation.modules.updates;
     // Direction B: hours worked this week (the Time tab's own read) and the next payday (pay schedule), Employees and Leads.
-    const b=session.role==='EMPLOYEE'||session.role==='LEAD'?{lead:session.role==='LEAD',hoursAuthority:employeeViewAuthority(proof,'hours'),payday:payrollFeatureEnabled()&&presentation.modules.payStatements?(await readNextPay(workspace.timeZone).catch(()=>null))?.payday??null:null}:undefined;
+    const b=session.role==='EMPLOYEE'||session.role==='LEAD'?{lead:session.role==='LEAD',hoursAuthority:employeeViewAuthority(proof,'hours'),payday:payrollFeatureEnabled()&&presentation.modules.payStatements?(await readNextPay(workspace.timeZone).catch(()=>null))?.payday??null:null,shortcuts:[...(presentation.modules.timeOff?['timeOff'as const]:[]),...(presentation.modules.marketplace?['callout'as const,'swap'as const]:[]),'fixTime'as const]}:undefined;
     return <EmployeeDashboard b={b} intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang="en" timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'||session.role==='LEAD'}/>;
   }
 
   const proof=await requireSessionMutationProof();
   const authority=await readOperationalAuthority(proof);
   if(authority.state==='unavailable')return <OperationalUnavailable title="Home unavailable" reason={authority.reason}/>;
-  if(authority.scope?.mode!=='COMPANY')return <ScopedManagementHome view={authority}/>;
+  if(authority.scope?.mode!=='COMPANY'){
+    if(authority.scope?.mode!=='LOCATIONS'||!authority.locations.length)return <ScopedManagementHome view={authority}/>;
+    // Phase 2 direction A (Nov 22, 2026): the location Manager's Home, with this week's open shifts from the read the
+    // Schedule already uses. A failed read shows "Couldn't check open shifts" instead of hiding the card.
+    const week=weekStartFor(businessDate(new Date(),(await getWorkspace()).timeZone));
+    const gaps=await readScopedCoverageGaps(proof,week).catch(()=>null);
+    const openShifts=gaps&&gaps.state==='ready'&&gaps.authority===authority.authority?gaps.data:null;
+    return <ScopedHomeB view={authority} openShifts={openShifts} scheduleHref={`/app/schedule?week=${week}`}/>;
+  }
   const retired = retiredViewDestination(params);
   if (retired) redirect(retired);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
@@ -117,6 +127,7 @@ export default async function DashboardPage({
   return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={scopedObservation(source.state==='ready'?source:null)}>
     <ManagerDashboard
       setupLang={setupLang}
+      shortcutModules={{updates:modules.updates,timeOff:modules.timeOff}}
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}
       correctionAuthority={reviewAuthority}

@@ -43,6 +43,13 @@ it("respects an Action Center day focus while keeping full-week totals and contr
   expect(output).toContain("12 h assigned this week");
   expect(output).toContain("Full week");
   expect(output).toContain("No assignments on this day");
+  // Nov 21, 2026: the day view is a timeline. 8p to midnight on a 4p–12a axis starts halfway and fills the rest; the
+  // link keeps its name. The week grid carries no axis.
+  expect(output).toMatch(/<span class="cm-tl"><a class="cm-block draft"[^>]*style="left:50%;width:50%"/);
+  expect(output).toContain('<span class="cm-axis" aria-hidden="true"><em style="left:0%">4p</em>');
+  expect(output).toMatch(/Edit Avery Taylor’s shift, [^<]*Main Office, draft/);
+  expect(html()).not.toContain("cm-axis");
+  expect(html()).not.toContain("cm-tl");
 });
 it("offers an actionable empty roster without implying publication", () => {
   const output = html(undefined, []);

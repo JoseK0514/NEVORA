@@ -13,7 +13,12 @@ import type { AuthLang } from "@/lib/auth-copy";
 const t = PASSKEY_COPY.en;
 const subscribe = () => () => {};
 
-type Load = { state: "loading" } | { state: "ready"; passkeys: Passkey[] } | { state: "failed" };
+type Load = { state: "loading" } | { state: "ready"; passkeys: Passkey[] } | { state: "failed" } | { state: "unsupported" };
+
+export function passkeySectionLoad(result: Awaited<ReturnType<typeof listPasskeys>>): Load {
+  if (result.ok) return { state: "ready", passkeys: result.value.passkeys ?? [] };
+  return { state: result.error === "not_supported" ? "unsupported" : "failed" };
+}
 
 /** Profile, every role: "Face ID and passkeys". Set up (named after the device), the saved list with added and
  * last-used dates, and Remove with a confirmation. Nothing renders while NEXT_PUBLIC_NEVORA_PASSKEYS is off. */
@@ -33,12 +38,12 @@ export function PasskeySection({ asRow = false, lang = "en" }: { asRow?: boolean
   const refresh = useCallback(async () => {
     setLoad({ state: "loading" });
     const result = await listPasskeys();
-    setLoad(result.ok ? { state: "ready", passkeys: result.value.passkeys ?? [] } : { state: "failed" });
+    setLoad(passkeySectionLoad(result));
   }, []);
   useEffect(() => {
     if (!flagOn) return;
     let live = true;
-    void listPasskeys().then(result => { if (live) setLoad(result.ok ? { state: "ready", passkeys: result.value.passkeys ?? [] } : { state: "failed" }); });
+    void listPasskeys().then(result => { if (live) setLoad(passkeySectionLoad(result)); });
     return () => { live = false; };
   }, [flagOn]);
   // Keep (the safe choice) takes focus when the confirmation opens.
@@ -47,7 +52,7 @@ export function PasskeySection({ asRow = false, lang = "en" }: { asRow?: boolean
     else if (dialog.current?.open) dialog.current.close();
   }, [confirm]);
 
-  if (!flagOn) return null;
+  if (!flagOn || load.state === "unsupported") return null;
 
   async function add() {
     if (busy) return;

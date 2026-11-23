@@ -17,7 +17,7 @@ it('still rejects two actionable primary rows for the same period',async()=>{con
 it('rejects counting an independent subject in the actionable badge',async()=>{const cards=observations();cards[0].count=2;await expect(read(cards)).rejects.toThrow('displayed timecard count');});
 it('rejects an independent subject name in the actionable group',async()=>{const cards=observations();cards[0].rows[0].label+=' Marco';await expect(read(cards)).rejects.toThrow('Non-reviewable subjects are absent');});
 it('keeps missing review facts visible but uncounted, with an explicit unknown explanation',async()=>{
- const cards=observations();cards[0].rows[0].detail='1 of 3 timecards · Avery';cards[0].rows.push(row('U','Quinn. Who approves this could not be checked','Sep 21 – 27Who approves this could not be checked'));
+ const cards=observations();cards[0].rows[0].detail='1 of 3 timecards · Avery';cards[0].rows.push(row('U','Quinn. Who approves this could not be checked','Sep 21–27Who approves this could not be checked'));
  const [card]=await read(cards,[...sources(),source('U',false)]);expect(card).toMatchObject({count:1,representedCount:1,nonReviewableCount:2});
 });
 it('rejects a quiet independent row presented without its reviewer explanation',async()=>{const cards=observations();cards[0].rows[1].label='Your timecard';await expect(read(cards)).rejects.toThrow('independent reviewer');});

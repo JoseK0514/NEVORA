@@ -1,5 +1,6 @@
 "use client";
 
+import { FormDiscardGuard } from "./kit/discard-dialog";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { ConfigurationForm, type ConfigurationResult } from "./configuration-form";
@@ -8,6 +9,7 @@ import { addDays, formatTime, isValidIsoDate } from "../lib/date-utils";
 import type { Position } from "../lib/domain";
 import type {ShiftFormEmployee} from '../lib/scheduling/shift-form-employee';
 import { CorpFormFooter } from "./corp/corp";
+import { BCallout } from "./owner-b/b-kit";
 import "./schedule-shift-form.css";
 import { UserIcon } from "@phosphor-icons/react/dist/ssr/User";
 import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
@@ -115,8 +117,9 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
     </header>
     <ConfigurationForm action={props.action} reviewedShiftVersion={props.reviewedShiftVersion} id={formId} className="c-shift__form">
       {Object.entries(props.hidden).map(([field, value]) => <input key={field} type="hidden" name={field} value={value} />)}
-      {props.blocked ? <p className="c-shift__alert" role="alert">{props.blocked}</p> : null}
-      {props.error ? <div className="c-shift__alert" role="alert"><b>{props.error.title}</b><span>{props.error.body}</span></div> : null}
+      {/* Premium pass (Nov 21, 2026; Jose's board pick 3A): the kit's red note, not a pink box. Words and alert role unchanged. */}
+      {props.blocked ? <BCallout tone="red" role="alert">{props.blocked}</BCallout> : null}
+      {props.error ? <BCallout tone="red" role="alert" title={props.error.title}>{props.error.body}</BCallout> : null}
       {props.status ?? null}
 
       <div className="c-field">
@@ -199,10 +202,13 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
 
       {/* Tablets and desktop: the one Save, with Cancel, in the card's footer (phones use the header's). */}
       <CorpFormFooter>
-        <Link className="c-btn c-btn--secondary" href={props.cancelHref}>Cancel</Link>
+        <Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet" href={props.cancelHref}>Cancel</Link>
         <button type="submit" className="c-btn c-shift__submit" disabled={!!props.blocked}>{mode === "edit" ? "Save changes" : "Save shift"}</button>
       </CorpFormFooter>
     </ConfigurationForm>
+    {/* Leaving with a shift that is not saved asks first (Nov 21, 2026). A save leaves through the server's redirect, which
+      is never asked about. */}
+    <FormDiscardGuard form={formId} />
     {props.footer ?? null}
   </div>;
 }

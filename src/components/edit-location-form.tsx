@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useTransition, type FormEvent } from "reac
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import type { CatalogLocation } from "@/lib/data/locations";
 import type { ConfigurationResult } from "./configuration-form";
+import { DiscardGuard } from "./kit/discard-dialog";
 import { lower } from "@/lib/workspace-presentation/words";
 
 /** TC-17: the notice title already says it was updated; keep only what the server adds. */
@@ -128,6 +129,8 @@ export function EditLocationForm({ location, action, words = { location: "Locati
       ) : null}
       <p role="status" className="q-sr">{dirty ? "Unsaved changes" : "Saved"}{copyStatus ? `. ${copyStatus}` : ""}</p>
       <noscript><p className="q-help">JavaScript is needed to save changes. Turn it on, then reload this page.</p></noscript>
+      {/* Leaving with edits that are not saved asks first (Nov 21, 2026). */}
+      <DiscardGuard dirty={dirty} />
     </form>
   );
 }

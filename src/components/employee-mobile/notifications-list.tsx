@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {dateRange} from '@/lib/duration-format';
 import {useState,type MouseEvent,type ReactNode} from 'react';
 import type {EmployeeNotificationItem,EmployeeViewSnapshot} from '../../lib/employee-view';
 import type {PrivatePanelState} from '../../lib/private-snapshot-client';
@@ -20,9 +21,9 @@ export function notificationGroup(at:string,zone:string,now=new Date()):'Today'|
 }
 
 const shortDate=(date:string,month=true)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',...(month?{month:'short'}:{}),day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
-/** " for Nov 26", " for Nov 26 – 28" or " for Nov 28 – Dec 2": the dates a notice is about, when the list sends them. */
+/** " for Nov 26", " for Nov 26–28" or " for Nov 28–Dec 2": the dates a notice is about, when the list sends them. */
 const forDates=(subject:EmployeeNotificationItem['subject'])=>!subject?'':subject.startDate===subject.endDate?` for ${shortDate(subject.startDate)}`
- :` for ${shortDate(subject.startDate)} – ${shortDate(subject.endDate,subject.startDate.slice(0,7)!==subject.endDate.slice(0,7))}`;
+ :` for ${dateRange(subject.startDate,subject.endDate,{year:'never'})}`;
 /** Inspection Nov 14 (BR-6, EM-005): a notice's title says what happened instead of naming its category, as far as the
  * list's own fields tell: the kind (from its label), the dates it is about (`subject`) and whether it still needs the
  * person (`actionState`). The list doesn't send a request's outcome or what changed in a schedule, so those titles stop
@@ -57,22 +58,27 @@ export function notificationTitle(item:EmployeeNotificationItem):string{
 }
 
 /** Phase 4 (EM-005): a row in two parts. `title` is the outcome in a few words ("Time off approved", "Confirm your
- * schedule"); `object` is what it is about, from the dates, the name and the count the list sends ("Nov 30 – Dec 2",
+ * schedule"); `object` is what it is about, from the dates, the name and the count the list sends ("Nov 30–Dec 2",
  * "Week of Nov 9 · 2 shifts", "Sat, Nov 21 · From Ana Colon"), or null when the list sends none of them (a team update's
  * title and a pay statement's period are not in the read). `decided` is set only for a decision the event type names.
- * Nothing is guessed: without an event type the title stops at "answered" or "updated", as notificationTitle does. */
-export type NotificationHeadline={title:string;object:string|null;decided:'approved'|'declined'|null};
+ * Nothing is guessed: without an event type the title stops at "answered" or "updated", as notificationTitle does.
+ * `forYou` is a swap or cover request that waits for this person's answer (final polish, round 2: drawn amber with
+ * "Needs your answer", as Requests draws it). */
+export type NotificationHeadline={title:string;object:string|null;decided:'approved'|'declined'|null;forYou:boolean};
 const headlineDay=(date:string,locale:string,weekday:boolean)=>new Intl.DateTimeFormat(locale,{timeZone:'UTC',...(weekday?{weekday:'short'}:{}),month:'short',day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
 export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountLang='en'):NotificationHeadline{
  const t=accountCopy(lang),locale=ACCOUNT_LOCALE[lang],subject=item.subject??null,needed=item.actionState==='required',who=notificationName(item);
  const kind=notificationKindFor(item),event=needed?null:item.eventType??null;
  const dates=!subject?null:subject.kind==='scheduleWeek'?t.weekOf(headlineDay(subject.startDate,locale,false))
   :subject.startDate===subject.endDate?headlineDay(subject.startDate,locale,true)
-  :`${headlineDay(subject.startDate,locale,false)} – ${subject.startDate.slice(0,7)===subject.endDate.slice(0,7)?Number(subject.endDate.slice(8)):headlineDay(subject.endDate,locale,false)}`;
+  :dateRange(subject.startDate,subject.endDate,{year:'never',locale});
  const count=/^SCHEDULE_/.test(item.eventType??'')&&typeof item.count==='number'&&Number.isSafeInteger(item.count)&&item.count>=0?t.shifts(item.count):null;
  const later=notificationOutcomeNote(item),now=later?t.now[later.replace(/^Now /,'')]??null:null;
  const forYou=item.actionState==='available'&&(item.eventType==='SWAP_RESPONSE_REQUIRED'||item.eventType==='COVERAGE_INVITATION');
- const object=[dates,count,forYou&&who?t.from(who):null,now].filter(Boolean).join(' · ')||null;
+ // Final polish (Nov 20, 2026): a week to confirm is named in its title ("Confirm the week of Nov 23"), so several
+ // weeks waiting never read as one row repeated; the line under it then keeps the shift count only.
+ const confirmWeek=kind==='SCHEDULE'&&needed&&subject?.kind==='scheduleWeek'?headlineDay(subject.startDate,locale,false):null;
+ const object=[confirmWeek?null:dates,count,forYou&&who?t.from(who):null,now].filter(Boolean).join(' · ')||null;
  const decided=/_APPROVED$/.test(event??'')?'approved' as const:/_DENIED$/.test(event??'')?'declined' as const:null;
  const title=((): string=>{
   switch(event){
@@ -88,7 +94,7 @@ export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountL
   }
   if(forYou)return item.eventType==='SWAP_RESPONSE_REQUIRED'?t.swapForYou:t.coverForYou;
   switch(kind){
-   case 'SCHEDULE':return needed?t.scheduleConfirm:t.scheduleUpdated;
+   case 'SCHEDULE':return confirmWeek?t.scheduleConfirmWeek(confirmWeek):needed?t.scheduleConfirm:t.scheduleUpdated;
    case 'TIME_OFF':return t.timeOffAnswered;
    case 'CALLOUT':return t.calloutAnswered;
    case 'EXCHANGE':return item.actionState==='available'?t.requestForYou:item.actionState==='complete'?t.requestClosed:t.requestUpdated;
@@ -98,7 +104,7 @@ export function notificationHeadline(item:EmployeeNotificationItem,lang:AccountL
    default:return item.label;
   }
  })();
- return {title,object,decided:decided&&kind?decided:null};
+ return {title,object,decided:decided&&kind?decided:null,forYou};
 }
 
 /** Board E-Notifications (upscale B7): All / Unread tabs, then the notices grouped by day in cards, one row per notice.

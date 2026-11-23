@@ -36,6 +36,33 @@ If an operator supplied your initial password, sign in with it and choose a
 different password on the replacement screen. The initial password grants no
 workplace session. After replacement, sign in with your new password.
 
+**Home** leads with what needs you, then **Today**: the people scheduled today,
+their scheduled hours, the busiest hour, and one bar for each hour of today's
+published schedule, with the current hour marked. People who are clocked in
+are listed under it; on a phone they are one row that opens the list of
+everyone. The chart counts the published schedule. It is not an estimate of
+hours worked. Four shortcuts open **Add shift**, **Add employee**, **Send
+update** and **Time off**; the last two show only while their feature is on.
+
+When NEVORA confirms something you did, the screen says what is now true
+("Swap approved", "7 timecards approved") beside a green check mark, in the place
+where the buttons were. If an answer doesn't arrive, an amber note says the
+result isn't confirmed yet and offers one check; nothing is sent twice.
+
+On the **Schedule**, each shift is a white block with a coloured foot: teal for
+published, grey for draft, amber for an open shift. Open one day on a computer
+or tablet to see it as a timeline, with each shift at its hours; **Full week**
+returns to the grid.
+
+On **Timecards**, **Approve N timecards** asks you to confirm the list first.
+**Finalize timecard** locks one person's timecard for payroll; **Reopen** asks
+for a reason.
+
+NEVORA asks before a step that is hard to take back. **Finalize timecard** and
+every **Decline** show a short question first, and nothing is sent until you
+confirm. If you leave a settings form with unsaved edits, **Discard changes?**
+lets you keep editing or leave without saving.
+
 **First-week setup** on Home shows five steps: add a team member, set up
 locations and staffing rules, publish your first schedule, register a time clock
 tablet and review your first timecard. Each step opens its own page, and Home

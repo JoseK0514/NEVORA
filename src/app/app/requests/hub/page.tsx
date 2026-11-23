@@ -14,7 +14,7 @@ export default async function RequestsHubPage() {
   const proof = await requireSessionMutationProof();
   const { employee } = proof;
   // Review B2 (NV-136): no silent redirect; the page says whose it is and where this person's version is.
-  if (!["EMPLOYEE", "LEAD"].includes(employee.role)) return <OwnerOnlyNotice title="Requests" reason="This Requests page is for employees" help="Your team’s requests are in Things to do." next={{ href: "/app/inbox", label: "Open Things to do" }} />;
+  if (!["EMPLOYEE", "LEAD"].includes(employee.role)) return <OwnerOnlyNotice state title="Requests" reason="This Requests page is for employees" help="Your team’s requests are in Things to do." next={{ href: "/app/inbox", label: "Open Things to do" }} />;
   const { modules } = await currentPresentation();
   // Signature: the hub shows the person's own time-off requests (the same read as Time off's My requests).
   // A failed read shows as unavailable, never as "no requests".

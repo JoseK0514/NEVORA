@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {FAILURE_EVENT,FAILURE_MESSAGES,type FailureRecovery} from '@/lib/http/nevora-failure';
+import {FAILURE_EVENT,FAILURE_MESSAGES,NOT_ALLOWED_MESSAGE,type FailureRecovery} from '@/lib/http/nevora-failure';
 import {BGlyph,type BMeaning} from '../owner-b/b-kit';
 import './leave-staffing.css';
 
@@ -17,12 +17,15 @@ const LOOK:Record<Shown,{tone?:'teal'|'red';meaning:BMeaning}>={
  * sign-in suggestion, no address shown) or the request was malformed (no retry as another command). */
 export function NevoraFailureNotice(){
  const [recovery,setRecovery]=useState<Shown|null>(null);
+ // A refusal from a signed-in session (access_denied) is "not allowed", not "access changed" (QA A3-06).
+ const [notAllowed,setNotAllowed]=useState(false);
  const box=useRef<HTMLDivElement>(null);
  useEffect(()=>{
   const listen=(event:Event)=>{
-   const value=(event as CustomEvent<{recovery?:FailureRecovery}>).detail?.recovery;
+   const detail=(event as CustomEvent<{recovery?:FailureRecovery;notAllowed?:boolean}>).detail,value=detail?.recovery;
    if(!value||value==='unavailable'||value==='reread'||!(value in FAILURE_MESSAGES))return;
    setRecovery(previous=>previous==='sign_in'||previous==='origin'?previous:value as Shown);
+   if(value==='access_ended')setNotAllowed(detail?.notAllowed===true);
    // view_invalid: discard the mounted view and load current authority (a fresh page), at most once a minute so a view
    // that stays invalid can't loop; after that the notice stays and the person reloads.
    if(value==='refresh_view'){let last=0;try{last=Number(sessionStorage.getItem('nv-view-refresh')??0);sessionStorage.setItem('nv-view-refresh',String(Date.now()));}catch{last=Date.now();}
@@ -32,7 +35,7 @@ export function NevoraFailureNotice(){
  },[]);
  useEffect(()=>{if(recovery&&recovery!=='refresh_view')box.current?.focus({preventScroll:true});},[recovery]);
  if(!recovery)return null;
- const message=FAILURE_MESSAGES[recovery],look=LOOK[recovery];
+ const message=recovery==='access_ended'&&notAllowed?NOT_ALLOWED_MESSAGE:FAILURE_MESSAGES[recovery],look=LOOK[recovery];
  return <div ref={box} className="ls-failure" role={recovery==='refresh_view'?'status':'alert'} tabIndex={-1} data-recovery={recovery}>
   <span className="ls-ring" data-tone={look.tone} aria-hidden="true"><BGlyph meaning={look.meaning}/></span>
   <span className="ls-failure__tx"><b>{message.title}</b><span>{message.body}</span></span>

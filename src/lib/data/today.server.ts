@@ -1,4 +1,5 @@
 import 'server-only';
+import { assertOperationalAccess, assertOriginalOperationalAccess, isOperationalAuthorizationError, operationalScopeStatements } from '../company-access/operational-scope.server';
 import type { SqlExecutor } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
 import { projectToday, EARLY_CLOCK_IN_MINUTES, type Today } from '../today/project';
@@ -13,7 +14,10 @@ import { managerLocationsSql, managerScopeStatements, readManagerScopeStorage, t
 // callouts are excluded. Punches are read as recorded; nothing is inferred.
 // Shifts and punches are limited to the locations the actor manages.
 const todaySql = (storage: ManagerScopeStorage) => `WITH observed AS MATERIALIZED (SELECT clock_timestamp() AS at),
-scope AS MATERIALIZED (${managerLocationsSql(storage, '$1', '$4')}),
+scope AS MATERIALIZED (
+ SELECT id FROM (${managerLocationsSql(storage, '$1', '$4')}) authorized
+ WHERE $5::text[] IS NULL OR id=ANY($5)
+),
 day AS (SELECT (o.at AT TIME ZONE $3)::date AS today FROM observed o),
 latest AS (
  SELECT DISTINCT ON (r.week_start) r.id FROM schedule_publication_revisions r CROSS JOIN day d
@@ -44,31 +48,43 @@ SELECT jsonb_build_object('observedAt',o.at,'expiresAt',(SELECT expires_at FROM 
   'publishedSchedule',EXISTS(SELECT 1 FROM schedule_publication_revision_shifts sh WHERE sh.location_id IN(SELECT id FROM scope)),
   'registeredClocks',(SELECT count(*) FROM clocker_devices cd WHERE cd.location_id IN(SELECT id FROM scope) AND cd.active AND cd.credential_hash IS NOT NULL AND cd.revoked_at IS NULL),
   'peopleWithPins',(SELECT count(*) FROM employees e JOIN employee_clocker_pins p ON p.employee_id=e.id AND p.workspace_id=$1 WHERE e.active AND e.primary_location_id IN(SELECT id FROM scope)),
-  'paySchedule',EXISTS(SELECT 1 FROM payroll_setting_revisions ps WHERE ps.workspace_id=$1 AND ps.effective_from<=d.today)),
+  'paySchedule',$5::text[] IS NULL AND EXISTS(SELECT 1 FROM payroll_setting_revisions ps WHERE ps.workspace_id=$1 AND ps.effective_from<=d.today)),
  'shifts',COALESCE((SELECT jsonb_agg(jsonb_build_object('id',s.id,'employeeId',s."employeeId",'employeeName',s."employeeName",'locationId',s."locationId",
    'locationName',s."locationName",'positionName',s."positionName",'date',s.date,'startAt',s.start_at,'endAt',s.end_at) ORDER BY s.start_at,s.id) FROM shift_rows s),'[]'::jsonb),
  'entries',COALESCE((SELECT jsonb_agg(x ORDER BY x."clockInAt",x.id) FROM entry_rows x),'[]'::jsonb)) AS snapshot
 FROM observed o CROSS JOIN day d`;
 
 /** Owner and manager view of today's shifts against recorded punches (B4). */
-export async function readToday(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()): Promise<Today> {
+export async function readToday(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor(), access?: Awaited<ReturnType<typeof assertOperationalAccess>>): Promise<Today> {
   try { assertManagementProof(proof, proof?.employee?.id); } catch { return { state: 'unavailable', reason: 'access_denied' }; }
   try {
-    const workspace = await getWorkspace(executor);
+    const workspace = access?.workspace ?? await getWorkspace(executor);
+    const locationIds = access?.scope.mode === 'LOCATIONS' ? access.scope.locationIds : null;
+    const fence = locationIds && access
+      ? operationalScopeStatements(proof, workspace, {kind:'LOCATIONS',locationIds}, access.authority) : [];
     const storage = await readManagerScopeStorage(executor);
     const guards = [...workspaceReadGuard(workspace),
       { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [proof.employee.id] },
+      ...fence,
       ...managerScopeStatements(storage, workspace.id, proof.employee.id),
       ...managementSessionStatements(proof, proof.employee.id),
     ];
     const result = await executor.transaction([...guards,
-      { text: todaySql(storage), values: [workspace.id, proof.sessionTokenHash, workspace.timeZone, proof.employee.id] },
+      { text: todaySql(storage), values: [workspace.id, proof.sessionTokenHash, workspace.timeZone, proof.employee.id, locationIds] },
+      ...fence,
       ...managementSessionStatements(proof, proof.employee.id),
     ]);
     const row = result[guards.length]?.[0] as { snapshot: unknown } | undefined;
-    return projectToday(row?.snapshot);
+    const today = projectToday(row?.snapshot);
+    if (!locationIds || !access || today.state !== 'ready') return today;
+    await assertOriginalOperationalAccess(proof, access, executor);
+    const validForMs = Math.floor(Math.min(
+      today.validForMs - Math.max(0, Date.now() - Date.parse(today.observedAt)),
+      access.validForMs - Math.max(0, Date.now() - Date.parse(access.observedAt)),
+    ));
+    return validForMs > 0 ? { ...today, validForMs } : { state: 'unavailable', reason: 'read_failed' };
   } catch (error) {
-    if (isManagementAuthorizationError(error)) return { state: 'unavailable', reason: 'access_denied' };
+    if (isManagementAuthorizationError(error) || isOperationalAuthorizationError(error)) return { state: 'unavailable', reason: 'access_denied' };
     if (error && typeof error === 'object' && 'code' in error && ['42P01', '42703', '42883'].includes(String(error.code))) return { state: 'unavailable', reason: 'schema_missing' };
     return { state: 'unavailable', reason: 'read_failed' };
   }

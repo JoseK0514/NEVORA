@@ -8,7 +8,6 @@
 :is(#c-root, html) .app-shell[data-nv-b] .ls-ring svg { width: var(--b-ic-lead); height: var(--b-ic-lead); }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=amber] { background: var(--b-amber-50); color: var(--b-amber); }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=red] { background: var(--b-red-50); color: var(--b-red); }
-:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=green] { background: var(--b-green-50); color: var(--b-green); }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=teal] { background: var(--b-teal-50); color: var(--b-teal); }
 
 /* The request's page: published shifts before Approve (a corporate card, which the Owner/Manager Direction B layer draws). */

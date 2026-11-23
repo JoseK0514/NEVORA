@@ -60,3 +60,56 @@ it('shift retries retain the originally reviewed fingerprint through unrelated p
   const form = mount(action, 'profile-version', 'c'.repeat(64));
   expect(form.props.children.some((child: unknown) => child && typeof child === 'object' && 'type' in child && child.type === ShiftReviewRecovery)).toBe(true);
 });
+
+// QA A3-01 (Nov 21, 2026): a lost reply can follow a completed save, so the form must not say the save failed.
+async function submitShift(form: ReturnType<typeof ConfigurationForm>, fields: Record<string, string>) {
+  const data = new NativeFormData(); for (const [key, value] of Object.entries(fields)) data.set(key, value);
+  await form.props.onSubmit({ preventDefault() {}, currentTarget: { data } } as unknown as FormEvent<HTMLFormElement>);
+}
+type Callout = { props: { tone: string; title: string; action?: { label: string; href: string } } };
+function callout(form: ReturnType<typeof ConfigurationForm>): Callout {
+  const result = form.props.children.find((child: unknown) => child && typeof child === 'object' && 'props' in child && (child as { props: { className?: string } }).props.className === 'form-result');
+  return result.props.children as Callout;
+}
+const shift = { weekStart: '2026-11-16', locationId: 'loc-main', date: '2026-11-18', employeeId: 'emp-ana', startTime: '09:00', endTime: '17:00' };
+const lostReply = async () => { throw new TypeError('Failed to fetch'); };
+
+it('a lost reply on a shift says the outcome is unconfirmed and links to that shift\'s day', async () => {
+  await submitShift(mount(lostReply, 'v1'), shift);
+  const note = callout(mount(lostReply, 'v1'));
+  expect(note.props.tone).toBe('amber');
+  expect(note.props.title).toMatch(/^This change could not be confirmed\. It may already be on the schedule/);
+  expect(note.props.title).not.toMatch(/could not be saved/);
+  expect(note.props.action).toEqual({ label: 'Check the schedule', href: '/app/schedule?week=2026-11-16&location=loc-main&day=2026-11-18#schedule-employee-EMP-ANA' });
+});
+
+it('a lost reply on a form that is not about a shift asks for a reload, with no schedule link', async () => {
+  await submit(mount(lostReply, 'v1'), 'v1');
+  const note = callout(mount(lostReply, 'v1'));
+  expect(note.props.tone).toBe('amber');
+  expect(note.props.title).toMatch(/^This change could not be confirmed\. It may already be saved; reload to check/);
+  expect(note.props.action).toBeUndefined();
+});
+
+it('an overlap right after an unconfirmed save says it may be the person\'s own shift; a confirmed refusal stays red', async () => {
+  let calls = 0;
+  const action = async () => { if (++calls === 1) throw new TypeError('Failed to fetch'); return { error: 'Employee already has an overlapping shift.', issueCode: 'SHIFT_OVERLAP' }; };
+  await submitShift(mount(action, 'v1'), shift);
+  await submitShift(mount(action, 'v1'), shift);
+  expect(callout(mount(action, 'v1')).props.title).toMatch(/^This time overlaps a shift already on the schedule\. It may be the one you just saved/);
+  hooks.slots = [];
+  const refusal = async () => ({ error: 'Employee already has an overlapping shift.', issueCode: 'SHIFT_OVERLAP' });
+  await submitShift(mount(refusal, 'v1'), shift);
+  const note = callout(mount(refusal, 'v1'));
+  expect(note.props.tone).toBe('red');
+  expect(note.props.title).toBe('Employee already has an overlapping shift.');
+});
+
+it('a redirect thrown by the action is navigation: no note, and nothing rethrown from the submit handler', async () => {
+  // The router handles the redirect. Rethrowing it from onSubmit left an unhandled rejection after every successful save
+  // (caught by the two-session concurrency test's window error check, Nov 22, 2026).
+  const redirect = async () => { const error = new Error('NEXT_REDIRECT') as Error & { digest: string }; error.digest = 'NEXT_REDIRECT;replace;/app/schedule;307;'; throw error; };
+  await expect(submitShift(mount(redirect, 'v1'), shift)).resolves.toBeUndefined();
+  const form = mount(redirect, 'v1');
+  expect(form.props.children.some((child: unknown) => child && typeof child === 'object' && 'props' in child && (child as { props: { className?: string } }).props.className === 'form-result')).toBe(false);
+});

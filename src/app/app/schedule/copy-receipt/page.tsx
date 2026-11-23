@@ -10,6 +10,7 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import {
   readScheduleCopyReceipt,
   readScheduleCopyCommand,
+  type CopyOutcome,
 } from "@/lib/data/schedule-copy";
 import { Card, MetaParts, PageBand, StatGrid } from "@/components/kit/kit";
 import { Notice } from "@/components/wave-a/parts";
@@ -96,13 +97,34 @@ export default async function CopyReceiptPage({
   const describedSkipped = skipped.every(described) ? (skipped as unknown as DescribedRow[]) : null;
   const why = new Map<string, number>();
   for (const row of skipped) why.set(reasonText(row.reason), (why.get(reasonText(row.reason)) ?? 0) + 1);
-  const warnings = receipt.rows.flatMap((row) => row.warnings);
+  const warnings = new Map<string, CopyOutcome[]>();
+  for (const row of receipt.rows) {
+    for (const message of new Set(row.warnings.map(warning => warning.message))) {
+      const affected = warnings.get(message);
+      if (affected) affected.push(row);
+      else warnings.set(message, [row]);
+    }
+  }
   const back = `/app/schedule?week=${receipt.command.weekStart}`;
   return <ScopedReadFrame observation={scopedObservation(source)}><Frame title={receipt.reason || !copied.length ? "Nothing copied" : "Week copied"} back={back}
     summary={`${copied.length} ${copied.length === 1 ? "shift" : "shifts"} copied into ${keepWhole(formatWeekRange(receipt.command.weekStart))}.`}>
     {receipt.reason ? <Notice tone="review" title="No shifts were copied">
       {receipt.reason === "TEMPLATE_UNAVAILABLE" ? "The template isn’t available anymore." : "The week it came from changed while copying."} Go back to the schedule and start a new copy.
     </Notice> : null}
+    {warnings.size ? <Card title="Worth a look" id="copy-warnings">
+      <ul className="nv-rows">
+        {[...warnings].map(([message, affected]) => <li key={message}>
+          <div className="nv-row"><div className="nv-row__text">
+            <div className="nv-row__meta wa-ink">{message}</div>
+            <ul className="nv-rows">
+              {affected.map((row) => <li className="nv-row__meta" key={row.sourceId}>
+                {described(row) ? <>{row.employeeName ?? "Open shift"}{" · "}<MetaParts text={rowWhen(row)} /></> : <code className="wa-code">{row.sourceId}</code>}
+              </li>)}
+            </ul>
+          </div></div>
+        </li>)}
+      </ul>
+    </Card> : null}
     <Card title="Result" id="copy-result">
       <StatGrid stats={[{ label: "Copied", value: copied.length }, { label: "Not copied", value: skipped.length }]} />
     </Card>
@@ -117,11 +139,6 @@ export default async function CopyReceiptPage({
     </Card> : why.size ? <Card title="Why some weren’t copied" id="copy-skipped">
       <ul className="nv-rows">
         {[...why].map(([text, count]) => <li key={text}><div className="nv-row"><span className="nv-row__text"><span className="nv-row__title">{text}</span></span><span className="nv-row__trail">{count}</span></div></li>)}
-      </ul>
-    </Card> : null}
-    {warnings.length ? <Card title="Worth a look" id="copy-warnings">
-      <ul className="nv-rows">
-        {warnings.map((warning, index) => <li key={`${warning.code}-${index}`}><div className="nv-row"><span className="nv-row__text"><span className="nv-row__meta wa-ink">{warning.message}</span></span></div></li>)}
       </ul>
     </Card> : null}
     <Card title="Reference" id="copy-reference">

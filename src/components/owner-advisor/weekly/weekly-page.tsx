@@ -10,6 +10,8 @@ import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { BCallout, BState, compactRange } from "@/components/owner-b/b-kit";
+import { DecisionAsk } from "@/components/owner-b/decision-parts";
+import { useAskStep } from "@/components/owner-b/ask-step";
 import { toast } from "@/components/toaster";
 import "@/components/team/team-forms.css";
 import {
@@ -484,12 +486,22 @@ function coverageRows(progress: NonNullable<WeeklyResult["progress"]>, locations
     value={progress.coverage ? coverageText(progress.coverage) : "Not available"} valueTone="soft" /></li>;
 }
 
+/** Jose (Nov 21, 2026): every Decline asks first. Decline opens the question where the plan's buttons were and sends
+ * nothing; "Keep plan" brings them back; the question's Decline is the same `onDecline` as before, once. The line says
+ * only what the declined result already says. */
+export function DeclinePlanStep({ busy, onDecline, children }: { busy: boolean; onDecline: () => void; children: (ask: { onClick: () => void }) => ReactNode }) {
+  const { open, ask, keep, done, titleRef, mark } = useAskStep();
+  if (open && !busy) return <DecisionAsk className="wk-ask" titleRef={titleRef} groupLabel="Decline this plan?" question="Decline this plan?" consequence="The schedule doesn’t change."
+    keep="Keep plan" onKeep={keep} go="Decline" onGo={() => { done(); onDecline(); }} />;
+  return children({ onClick: ask, ...mark });
+}
+
 function Outcome({ result, reviewId, timeZone, locations, onRefresh, onDecline, busy, weeklyEnabled }: { result: WeeklyResult; reviewId: string; timeZone: string; locations: WeeklyLocation[]; onRefresh: () => void; onDecline: (id: string) => void; busy: boolean; weeklyEnabled: boolean }) {
   const when = (iso: string) => new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(iso));
   if (result.state === "stale") return <CorpCard as="div"><BState kind="paused" icon={<WarningIcon weight="bold" />} title="This plan is out of date"
     line="Compare again for current options.">
-    <span className="wk-acts"><CorpButtonLink href={WEEKLY_PATH} kind="primary" size="md">Compare again</CorpButtonLink>
-      {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} onClick={() => onDecline(reviewId)}>Decline it</CorpButton> : null}</span>
+    <DeclinePlanStep busy={busy} onDecline={() => onDecline(reviewId)}>{ask => <span className="wk-acts"><CorpButtonLink href={WEEKLY_PATH} kind="primary" size="md">Compare again</CorpButtonLink>
+      {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} {...ask}>Decline it</CorpButton> : null}</span>}</DeclinePlanStep>
   </BState></CorpCard>;
   if (result.state === "declined") return <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="bold" />} title="Plan declined" line="The schedule didn’t change."
     action={{ label: "Back to options", href: WEEKLY_PATH }} /></CorpCard>;
@@ -576,11 +588,11 @@ function FullPlan({ plan, readReceiptId, baseline, locations, timeZone, now, ack
             <span>I reviewed all proposed changes and remaining gaps</span></label>
         </> : <BCallout tone="amber">{!weeklyEnabled ? "Weekly planning is off." : expired ? "Expired. Compare again."
           : `Can’t be saved${reasons.length ? `: ${reasons.join(", ").toLowerCase()}` : ""}`}</BCallout>}
-        <div className="wk-acts wk-acts--end">
-          {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} onClick={() => onDecline(plan.id)}>Decline</CorpButton> : null}
+        <DeclinePlanStep busy={busy} onDecline={() => onDecline(plan.id)}>{ask => <div className="wk-acts wk-acts--end">
+          {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} {...ask}>Decline</CorpButton> : null}
           {canSave ? <CorpButton kind="primary" size="md" disabled={!acknowledged || busy || approvalLocked} onClick={() => onApprove(plan, readReceiptId!)}>{busy ? "Saving…" : "Save as draft"}</CorpButton>
             : <CorpButtonLink href={WEEKLY_PATH} kind="secondary" size="md" className="b-rowact b-rowact--go">Back to options</CorpButtonLink>}
-        </div>
+        </div>}</DeclinePlanStep>
       </div></CorpBody></CorpCard>
     </CorpSection>
   </>;

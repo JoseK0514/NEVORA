@@ -82,3 +82,35 @@ export async function createPayrollExport(proof:SessionMutationProof,input:unkno
  const results=await executor.transaction([...guards,{text:'SELECT nevora_payroll_export_command($1,$2,$3::uuid,$4,$5::uuid,$6::integer,$7::jsonb) AS result',values:[workspace.id,proof.employee.id,command.operationId,commandHash,command.profileId,command.profileRevision,JSON.stringify(generated)]},...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)]);
  const result=results[guards.length]?.[0] as {result:unknown}|undefined;const verified=payload(result?.result,command);await currentCompany(proof,access,executor);return verified;
 }
+
+/** QA A3-03 (Nov 21, 2026): a generated export's file could be lost for good. The page clears it when its protected view
+ * expires (by design: the CSV carries names and hours), a second export of the same timecards is refused, and the history
+ * had no way back to it. The receipt already holds the exact file this person downloaded, so these read it again:
+ * only the person's own receipts, under current company access before and after the read, never regenerated, and only
+ * when the stored CSV still matches its recorded SHA-256. */
+const RECEIPT_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export type PayrollExportReceiptSummary={operationId:string;createdAt:string;period:{startDate:string;endDate:string};people:number;csvSha256:string};
+function storedPayload(value:unknown,operationId:string):PayrollExportPayload{
+ if(!object(value)||value.operationId!==operationId||typeof value.csv!=='string'||typeof value.csvSha256!=='string'||!object(value.model)||value.model.version!==1||!Array.isArray(value.model.rows))
+  throw new Error('Export receipt could not be verified');
+ if(createHash('sha256').update(value.csv).digest('hex')!==value.csvSha256)throw new Error('Export receipt could not be verified');
+ return value as PayrollExportPayload;
+}
+async function ownReceipts(proof:SessionMutationProof,query:{text:string;values:unknown[]},executor:SqlExecutor){
+ management(proof);
+ const access=await assertOperationalAccess(proof,{kind:'COMPANY'},executor),{workspace,authority}=access;
+ const guards=[...workspaceReadGuard(workspace),...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority)];
+ const result=await executor.transaction([...guards,{text:query.text,values:[workspace.id,proof.employee.id,...query.values]}]);
+ return {rows:(result[guards.length]??[]) as {operation_id:string;created_at:string|Date;payload:unknown}[],recheck:()=>currentCompany(proof,access,executor)};
+}
+export async function readOwnPayrollExportReceipt(proof:SessionMutationProof,operationId:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<PayrollExportPayload|null>{
+ if(!RECEIPT_ID.test(operationId))throw new Error('nevora_export_INVALID_RECEIPT');
+ const {rows,recheck}=await ownReceipts(proof,{text:'SELECT operation_id,created_at,payload FROM payroll_export_receipts WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid',values:[operationId]},executor);
+ const verified=rows[0]?storedPayload(rows[0].payload,operationId):null;await recheck();return verified;
+}
+export async function listOwnPayrollExportReceipts(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<PayrollExportReceiptSummary[]>{
+ const {rows,recheck}=await ownReceipts(proof,{text:'SELECT operation_id,created_at,payload FROM payroll_export_receipts WHERE workspace_id=$1 AND actor_employee_id=$2 ORDER BY created_at DESC LIMIT 10',values:[]},executor);
+ const summaries=rows.flatMap(row=>{try{const p=storedPayload(row.payload,String(row.operation_id));const model=p.model as CanonicalPayrollExport;
+  return [{operationId:String(row.operation_id),createdAt:new Date(row.created_at).toISOString(),period:{startDate:model.period.startDate,endDate:model.period.endDate},people:model.rows.length,csvSha256:p.csvSha256}];}catch{return [];}});
+ await recheck();return summaries;
+}

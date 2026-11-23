@@ -2,13 +2,13 @@ import { beforeEach, expect, it, rs } from '@rstest/core';
 import { getSession } from '@/lib/auth/session';
 import { readToday } from '@/lib/data/today.server';
 import { GET } from './route';
-import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
-rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:rs.fn(async(_proof,load)=>({state:'ready',data:await load()}))}));
+import {assertOperationalAccess,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+rs.mock('@/lib/company-access/operational-scope.server',()=>({assertOperationalAccess:rs.fn(),isOperationalAuthorizationError:rs.fn(),withOperationalCompany:rs.fn(async(_proof,load)=>({state:'ready',data:await load()}))}));
 rs.mock('@/lib/auth/session', () => ({ getSession: rs.fn(), requireSessionMutationProof: rs.fn(async () => ({ employee: { id: 'owner', role: 'OWNER' }, sessionTokenHash: 'a'.repeat(64) })) }));
 rs.mock('@/lib/data/today.server', () => ({ readToday: rs.fn() }));
 const request = (headers: Record<string, string> = { 'X-Nevora-Today': '1' }, url = 'http://localhost/api/manager/today') => new Request(url, { headers });
 const ready = { state: 'ready', observedAt: '2030-10-16T14:00:00.000Z', validForMs: 30000, timeZone: 'America/Puerto_Rico', today: '2030-10-16', counts: { scheduled: 0, clockedIn: 0, late: 0, notClockedIn: 0 }, shifts: [], missed: [] };
-beforeEach(() => { rs.clearAllMocks(); rs.mocked(getSession).mockResolvedValue({ id: 'owner', firstName: 'A', lastName: 'B', role: 'OWNER', primaryLocationId: 'l1' } as never); rs.mocked(readToday).mockResolvedValue(ready as never); });
+beforeEach(() => { rs.clearAllMocks(); rs.mocked(assertOperationalAccess).mockResolvedValue({scope:{mode:'COMPANY'}} as never); rs.mocked(getSession).mockResolvedValue({ id: 'owner', firstName: 'A', lastName: 'B', role: 'OWNER', primaryLocationId: 'l1' } as never); rs.mocked(readToday).mockResolvedValue(ready as never); });
 
 it('requires a session and reads nothing without one', async () => {
   rs.mocked(getSession).mockResolvedValue(null);
@@ -61,4 +61,13 @@ it('does not return Today data after current Company authority changes',async()=
   rs.mocked(withOperationalCompany).mockImplementationOnce(async(_proof,load)=>{await load();return {state:'unavailable',reason:'access_denied'};});
   const response=await GET(request());expect(response.status).toBe(403);
   expect(await response.json()).toEqual({state:'unavailable',reason:'access_denied'});
+});
+
+it('passes the exact admitted locations to the protected Today read', async () => {
+  const access = { scope: { mode: 'LOCATIONS', locationIds: ['loc-1'] } };
+  rs.mocked(getSession).mockResolvedValue({id:'manager',role:'MANAGER'} as never);
+  rs.mocked(assertOperationalAccess).mockResolvedValueOnce(access as never);
+  expect((await GET(request())).status).toBe(200);
+  expect(readToday).toHaveBeenCalledWith(expect.anything(), undefined, access);
+  expect(withOperationalCompany).not.toHaveBeenCalled();
 });

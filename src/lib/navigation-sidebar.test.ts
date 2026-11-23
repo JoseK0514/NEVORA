@@ -63,7 +63,7 @@ describe("desktop sidebar (D3)", () => {
     // A Manager without those destinations gets no entry for them: no pay with payroll off, no rules without company scope.
     expect(sidebarNavigation("MANAGER", navigationForRole("MANAGER", undefined, { operational: company })).map(item => item.href)).not.toContain("/app/my-pay");
     const scoped = { ...company, scope: { mode: "LOCATIONS" as const, locationIds: ["L1"] } };
-    expect(sidebarNavigation("MANAGER", navigationForRole("MANAGER", own, { operational: scoped as never })).map(item => item.href)).toEqual(["/app", "/app/schedule", "/app/employees", "/app/my-pay"]);
+    expect(sidebarNavigation("MANAGER", navigationForRole("MANAGER", own, { operational: scoped as never })).map(item => item.href)).toEqual(["/app", "/app/inbox", "/app/schedule", "/app/employees", "/app/my-pay", "/app/timecards/corrections"]);
     // The Owner's sidebar is unchanged: the same order and the "More" heading, with both pages one step away.
     const owner = managementNavigationGroups(sidebarNavigation("OWNER", navigationForRole("OWNER", payroll)));
     expect(owner.map(group => group.label)).toEqual(["", "More"]);

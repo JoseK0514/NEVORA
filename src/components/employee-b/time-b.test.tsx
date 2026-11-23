@@ -34,9 +34,13 @@ describe('Time tab (e-time)',()=>{
   expect(b).toContain('<h1 id="b-hours-title" tabindex="-1">Time</h1>');expect(plain).toContain('Tue, Oct 27 · Condado');
   expect(plain).toMatch(/This week 8 h 02 8 h 2 min Breaks 30 min/);
   expect(plain).toContain('Right now');expect(plain).toContain('Not clocked in');expect(plain).toContain('Clock in on the Condado tablet');
-  expect(plain).toContain('This week · Oct 26 – Nov 1');expect(plain).toContain('In progress');
+  expect(plain).toContain('This week · Oct 26–Nov 1');expect(plain).toContain('In progress');
   expect(b).toContain('href="/app/my-time?entry=own-1"');expect(b).toContain('id="b-hours-entry-own-1"');expect(plain).toContain('30 min break');
   expect(b).toContain('href="/app/my-time?view=corrections&amp;edit=new"');expect(plain).toContain('Fix a missed punch');expect(plain).toContain('Hours include breaks.');
+  // Final polish, round 2 (T1): a day row's range carries both dashes (time.css shows the leading one from 360px and the
+  // trailing one under it, so a 320px row reads "7:59 AM –" over "4:01 PM"); the link's spoken label is the plain range.
+  expect(b).toContain('<span id="b-hours-entry-own-1"><span class="eb-nb">7:59\u00a0AM<span class="eb-dayrange__trail">\u00a0–</span></span> <span class="eb-nb"><span class="eb-dayrange__lead">–\u00a0</span>4:01\u00a0PM</span></span>');
+  expect(b).toContain('aria-label="Monday, October 26, 7:59 AM – 4:01 PM, 8 h 2 min, 30 min break"');
   // Last week is its own private read: hidden until it arrives.
   expect(plain).not.toContain('Last week');
  });
@@ -67,9 +71,13 @@ describe('Time tab (e-time)',()=>{
   expect(before).toContain('<span class="b-status">In progress</span>');expect(before).not.toContain('b-chip--teal');
  });
  it('says where and since when while on the clock; a cut read shows dashes, not short totals',()=>{
-  const on=text(onlyB(inPage(timeHead,<CorpTimeTab data={ready({current:open,today:{entries:[open],recordedSeconds:5520,breakSeconds:0}})}/>)));
+  const onHtml=onlyB(inPage(timeHead,<CorpTimeTab data={ready({current:open,today:{entries:[open],recordedSeconds:5520,breakSeconds:0}})}/>)),on=text(onHtml);
   // B7 wording (NV-119/NV-035): "Clocked in" status, "correction request" naming.
-  expect(on).toContain('Clocked in');expect(on).toMatch(/Clocked in at 7:58\sAM/);expect(on).toContain('Condado · 1 h 32 min so far');expect(on).toContain('Take breaks and clock out on your location’s tablet.');
+  expect(on).toContain('Clocked in');expect(on).toMatch(/Clocked in at 7:58\sAM/);
+  // Final polish, round 2 (T2, T3): the running total is the rows' compact figure, read with its unit, and "so far" never
+  // leaves it (one no-wrap piece after the place's dot).
+  expect(onHtml).toContain('Condado\u00a0· <span class="eb-nb eb-sofar"><span aria-hidden="true">1 h 32</span><span class="b-sr">1 h 32 min</span>\u00a0so\u00a0far</span>');expect(onHtml).not.toContain('1 h 32 min so far');
+  expect(on).toContain('Take breaks and clock out on your location’s tablet.');
   const cut=text(onlyB(inPage(timeHead,<CorpTimeTab data={ready({recent:{entries:[done],total:40,limit:20}})}/>)));
   expect(cut).toMatch(/This week — Breaks —/);
   const none=onlyB(inPage(timeHead,<CorpTimeTab data={ready({recent:{entries:[],total:0,limit:20}})}/>));
@@ -91,12 +99,12 @@ describe('Past timecards (e-timecards)',()=>{
  const period={startDate:'2026-10-19',endDate:'2026-10-25'};
  it('lists weeks in one card: the later week, this one with its state in words, earlier weeks loading, then Show earlier weeks',()=>{
   const html=inPage(head,<CorpPastTimecards authority="a" data={data} period={period} today="2026-10-27" entryId={null} onRefresh={noop} chosen={false}/>),b=onlyB(html),plain=text(b);
-  expect(plain).toContain('Weeks');expect(plain).toContain('Oct 19 – 25');expect(plain).toContain('1 shift · Approved');expect(plain).toContain('8 h 02');
+  expect(plain).toContain('Weeks');expect(plain).toContain('Oct 19–25');expect(plain).toContain('1 shift · Approved');expect(plain).toContain('8 h 02');
   expect(b).toContain('href="/app/my-time?view=cards&amp;start=2026-10-19&amp;end=2026-10-25"');
   // Employee desktop (Nov 8, 2026) draws the week shown as a detail card before the list (desktop only, eb-desk), so the
   // list's order is read from its own card on.
   const list=plain.slice(plain.indexOf('Weeks'));
-  const order=['Oct 26 – Nov 1','Oct 19 – 25','Oct 12 – 18','Sep 21 – 27','Show earlier weeks','Your correction requests'].map(range=>list.indexOf(range));
+  const order=['Oct 26–Nov 1','Oct 19–25','Oct 12–18','Sep 21–27','Show earlier weeks','Your correction requests'].map(range=>list.indexOf(range));
   expect(order.every(at=>at>=0)).toBe(true);expect([...order].sort((a,b)=>a-b)).toEqual(order);
   expect(plain).toContain('Loading…');expect(plain).toContain('Waiting and decided');expect(list).not.toContain('Tue 20');
   // The corporate page keeps its chosen week in full.

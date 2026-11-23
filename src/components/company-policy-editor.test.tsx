@@ -20,7 +20,7 @@ describe('Owner policy history display',()=>{
   const html=render();expect(html).toContain('Labor settings');expect(html).toContain('Owner-approved compensation reference');expect(html).toContain('12.125 USD');expect(html).toContain('900.50 USD');expect(html).toContain('owner-method');expect(html).toContain('revision 4');
  });
  it('keeps a truly empty company distinct from malformed history',()=>{
-  const html=render([]);expect(html).toContain('q-rv--l">No changes yet<');expect(html).toContain('Save policies');expect(html).not.toContain('Current revision');expect(html).toContain('No saved policy changes');
+  const html=render([]);expect(html).toContain('q-rv--l">No changes yet<');/* Final polish (Nov 20, 2026): Save appears after a change, so an untouched draft shows none. */expect(html).not.toContain('Save policies');expect(html).toContain('data-wc-save="card"');expect(html).not.toContain('Current revision');expect(html).toContain('No saved policy changes');
  });
  it('keeps persisted inactive scope history reachable without offering its correction',()=>{
   const html=render(policyUIRows(false,'retired-location'));expect(html).toContain('retired-location');expect(html).toContain('Historical location');
@@ -36,7 +36,7 @@ describe('complete reviewed policy command settings',()=>{
   expect(buildPolicySettings(form(),{version:1,labor:{rates:null,budgets:[]}},'America/Puerto_Rico')).toEqual({version:1,labor:{rates:null,budgets:[]}});
  });
  it('does not silently turn an empty custom threshold into zero',()=>{
-  const data=form();data.set('lateness.mode','configured');data.set('lateness.threshold','');expect(()=>buildPolicySettings(data,policyUISettings,'America/Puerto_Rico')).toThrow(/Choose threshold minutes/);
+  const data=form();data.set('lateness.mode','configured');data.set('lateness.threshold','');expect(()=>buildPolicySettings(data,policyUISettings,'America/Puerto_Rico')).toThrow(/Enter how many minutes/);
  });
 });
 
@@ -54,6 +54,6 @@ describe('current rule comparison',()=>{
  });
  it('distinguishes inherited and disabled values without inventing custom details',()=>{
   const html=renderToStaticMarkup(<CurrentPolicyRules settings={{version:1,attendance:{earlyDeparture:null}}} scope="loc-1" timeZone="America/Puerto_Rico"/>);
-  expect(html).toContain('Inherit company default');expect(html).toContain('Disabled');expect(html).not.toContain('Threshold minutes');
+  expect(html).toContain('Inherit company default');expect(html).toContain('Disabled');expect(html).not.toContain('After how many minutes');
  });
 });

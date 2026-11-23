@@ -2,8 +2,8 @@
 import {createContext,useContext,useEffect,useMemo,useRef,type ReactNode} from 'react';
 import Link from 'next/link';
 import {CalendarXIcon} from '@phosphor-icons/react/dist/ssr/CalendarX';
-import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
+import {BDoneMark} from '../owner-b/b-kit';
 import {useLeaveStaffing,useStaffingAuthority} from './use-leave-staffing';
 import {conflictShift,minutesText} from '@/lib/time-off-staffing/present';
 import './leave-staffing.css';
@@ -58,7 +58,7 @@ export function LeaveRepairNote({variant}:{variant:'b'|'corp'}){
  else if(state.status==='paused'){tone='grey';title='Repair check paused';body='It checks again when you come back.';}
  else if(state.status==='expired'){icon=<WarningIcon weight="bold"/>;title='This check expired';body='Check again to see whether this shift still needs a replacement.';action=<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>Check again</button>;}
  else if(state.status==='unavailable'){icon=<WarningIcon weight="bold"/>;title=state.denied?'Your access changed':'Couldn’t check this repair';body=state.denied?'Reload the page to see the schedule with your current access.':'This doesn’t mean it’s fixed. Try again.';action=state.denied?null:<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>Try again</button>;}
- else if(!item){tone='green';icon=<CheckIcon weight="bold"/>;title='This shift no longer needs a replacement';body='A published schedule changed it, or the time off changed. Nothing else to do here.';}
+ else if(!item){tone='green';title='This shift no longer needs a replacement';body='A published schedule changed it, or the time off changed. Nothing else to do here.';}
  else{
   title=`Fill ${person}’${/s$/i.test(person!)?'':'s'} shift`;
   body=<>
@@ -70,7 +70,7 @@ export function LeaveRepairNote({variant}:{variant:'b'|'corp'}){
  }
  return <section id={variant==='b'?'leave-repair':'leave-repair-desk'} tabIndex={-1} className={`ls-repair ls-repair--${variant}`} data-tone={tone}
   data-repair={state.status==='ready'?(item?'open':'cleared'):state.status} aria-labelledby={`ls-repair-${variant}-title`} aria-live="polite">
-  <span className="ls-ring" data-tone={tone==='grey'?undefined:tone} aria-hidden="true">{icon}</span>
+  {tone==='green'?<BDoneMark still/>:<span className="ls-ring" data-tone={tone==='grey'?undefined:tone} aria-hidden="true">{icon}</span>}
   <span className="ls-repair__tx"><b id={`ls-repair-${variant}-title`}>{title}</b>{typeof body==='string'?<span>{body}</span>:body}</span>
   {action?<span className="ls-repair__act">{action}</span>:null}
  </section>;

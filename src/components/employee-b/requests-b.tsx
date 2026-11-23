@@ -124,8 +124,10 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
       {/* Review B6 (NV-279): phones get the same way to Pick up and swap (under Decided); the second row says what it
         * does and opens Schedule asking for the shift. */}
       {shiftRequests ? <div className="eb-shiftreq"><BCard title="Shift requests"><BList>
-        <BRow href="/app/exchange" lead={<BIcon tone="grey"><ArrowsLeftRightIcon weight="bold"/></BIcon>} title="Pick up and swap" sub="Open shifts, swaps for you, your requests"/>
-        <BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold"/></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/>
+        {/* Round 2 (R5): both rows open something, so both are teal circles (grey is for facts that do not open), and both
+          * carry the swap arrows, the one glyph for shift requests (Help's "Swap or give away a shift" has it too). */}
+        <BRow href="/app/exchange" lead={<BIcon tone="teal"><ArrowsLeftRightIcon weight="bold"/></BIcon>} title="Pick up and swap" sub="Open shifts, swaps for you, your requests"/>
+        <BRow href="/app/schedule?intent=swap" lead={<BIcon tone="teal"><ArrowsLeftRightIcon weight="bold"/></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/>
       </BList></BCard></div> : null}
     </BStack>
   </BScreen>;
@@ -137,7 +139,9 @@ export function IncomingB({count, onRetry}: {count: number | null; onRetry: () =
     <button className="eb-inline__b" type="button" onClick={onRetry}>Try again</button></div>;
   return count ? <BList label="Needs your answer"><BRow href="/app/exchange?tab=foryou" lead={<BIcon tone="amber"><ArrowsLeftRightIcon weight="bold"/></BIcon>}
     // Phase 8 (review C, row 17): the same words as the notification for it ("Swap request waiting for you").
-    title={count === 1 ? accountCopy().swapForYou : `${count} swaps need your answer`} chip={<BChip tone="amber">Needs your answer</BChip>} sub="Review the shifts before responding"
+    // Round 2 (R4): no filler line under it. This read holds only how many swaps wait (`incoming`), not who sent them,
+    // the shift's day or the answer-by time, so the row says no more than the title, the chip and Review.
+    title={count === 1 ? accountCopy().swapForYou : `${count} swaps need your answer`} chip={<BChip tone="amber">Needs your answer</BChip>}
     trail={<BButtonLink href="/app/exchange?tab=foryou" kind="ghost" label={count === 1 ? 'Review the swap request' : 'Review swap requests'}>Review</BButtonLink>}/></BList> : null;
 }
 
@@ -172,7 +176,7 @@ export function ExchangeHeroB({tab, tabs = true, back = '/app/schedule', counts}
 
 /** The way to start a swap or cover offer: from a shift on your own schedule. */
 export function MyScheduleCardB() {
-  return <BCard label="Swap or give away a shift"><BList><BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold"/></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/></BList></BCard>;
+  return <BCard label="Swap or give away a shift"><BList><BRow href="/app/schedule?intent=swap" lead={<BIcon tone="teal"><ArrowsLeftRightIcon weight="bold"/></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/></BList></BCard>;
 }
 
 /** Marks a form's screen (Request time off, Swap shift, Offer for cover, Can't work): while it shows, the shell hides the

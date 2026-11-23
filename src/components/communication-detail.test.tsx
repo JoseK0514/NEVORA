@@ -45,3 +45,12 @@ it('announces a pending review and offers sign-in after a signed-out action',asy
  const pending=await render({pending:true});expect(pending).toContain('Confirming your review…');
  const denied=await render({notice:'signed-out'});expect(denied).toContain('Your session ended');expect(denied).toContain('href="/login"');expect(denied).not.toContain('Last line');
 });
+// Final polish (Nov 21, 2026): after a publish the manager's page says the result once, from the read's own numbers.
+it('shows the publish result above the message only on the visit that follows a publish',async()=>{
+ const managed={...read,canWithdraw:true,sentCount:2,management:{draft:{},recipients:[{name:'Recipient one',acknowledgedAt:'2026-10-08T12:01:00Z'},{name:'Recipient two',acknowledgedAt:null}]}};
+ const html=await render({read:managed,justPublished:true});
+ expect(html).toContain('Published to 2 people');expect(html).toContain('Read by 1 of 2 so far');
+ expect(html.indexOf('Published to 2 people')).toBeLessThan(html.indexOf('Last line before acknowledgement'));
+ expect(await render({read:managed})).not.toContain('Published to');
+ expect(await render({read:managed,justPublished:true,signature:true})).not.toContain('Published to');
+});

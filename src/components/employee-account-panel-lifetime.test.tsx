@@ -19,13 +19,22 @@ beforeEach(()=>{rs.useFakeTimers({toFake:['setTimeout','clearTimeout','Date','pe
 afterEach(()=>{cleanup?.();cleanup=undefined;rs.unstubAllGlobals();rs.useRealTimers();});
 async function mount(){const panel=EmployeeAccountPanel({kind:'notifications',authority:'bound-view'});cleanup=host.effect!();await rs.advanceTimersByTimeAsync(0);return panel;}
 
-it.each(['Retry','scheduled revalidation'])('clears source-expired rows without inventing lost access and recovers through %s',async recovery=>{
+it('clears source-expired rows while checking again and accepts the next authorized list',async()=>{
  const request=rs.fn().mockResolvedValueOnce(Response.json(ready())).mockImplementation(async()=>Response.json(ready(false)));rs.stubGlobal('fetch',request);
- const panel=await mount();expect(html()).toContain('notificationId=expiring');
- await rs.advanceTimersByTimeAsync(101);
- expect(last().snapshot).toEqual({state:'unavailable',reason:'read_failed'});expect(html()).not.toContain('notificationId=expiring');expect(html()).not.toContain('Sign in');expect(html()).toContain('Try again');
- if(recovery==='Retry'){panel.props.onRetry();await rs.advanceTimersByTimeAsync(0);}else await rs.advanceTimersByTimeAsync(30000);
- expect(request).toHaveBeenCalledTimes(2);expect(last().snapshot).toMatchObject({state:'ready',items:[]});expect(html()).toContain('No notifications here.');expect(host.states.some(state=>state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied')).toBe(false);
+ await mount();expect(html()).toContain('notificationId=expiring');
+ await rs.advanceTimersByTimeAsync(100);
+ expect(last()).toEqual({snapshot:null,refreshing:true,paused:false});expect(html()).not.toContain('notificationId=expiring');expect(html()).not.toContain('Sign in');expect(html()).not.toContain('Try again');
+ await rs.advanceTimersByTimeAsync(900);
+ expect(request).toHaveBeenCalledTimes(2);expect(last().snapshot).toMatchObject({state:'ready',items:[]});expect(html()).toContain('No notifications here.');
+ expect(host.states.some(state=>state.snapshot?.state==='unavailable')).toBe(false);
+});
+
+it('offers Retry after a renewal actually fails and accepts a fresh list on retry',async()=>{
+ const request=rs.fn().mockResolvedValueOnce(Response.json(ready())).mockResolvedValueOnce(new Response(null,{status:503})).mockImplementation(async()=>Response.json(ready(false)));rs.stubGlobal('fetch',request);
+ const panel=await mount();await rs.advanceTimersByTimeAsync(1000);
+ expect(last().snapshot).toEqual({state:'unavailable',reason:'read_failed'});expect(html()).toContain('Try again');expect(html()).not.toContain('notificationId=expiring');
+ panel.props.onRetry();await rs.advanceTimersByTimeAsync(0);
+ expect(request).toHaveBeenCalledTimes(3);expect(last().snapshot).toMatchObject({state:'ready',items:[]});expect(html()).toContain('No notifications here.');
 });
 
 it.each([401,403])('still clears and denies when current revalidation actually returns HTTP %s',async status=>{

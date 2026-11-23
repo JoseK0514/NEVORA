@@ -44,6 +44,10 @@ export const FAILURE_MESSAGES: Record<Exclude<FailureRecovery, 'unavailable' | '
   contract: {title: 'That didn’t go through', body: 'Nothing was saved. Reload the page and try again.'},
 };
 
+/** QA A3-06 recheck (Nov 22, 2026): access_denied clears data like an ended access, but the person is signed in and only
+ * lacks a permission. They were told "Your access changed… Ask your manager", wrong on both counts for a Manager. */
+export const NOT_ALLOWED_MESSAGE = {title: 'You don’t have access to this', body: 'Ask the Owner if you need it.'};
+
 export const FAILURE_EVENT = 'nevora:failure';
 
 /** Tell the page-level notice (NevoraFailureNotice) once per failure. It is a hint for the screen, never authority. */
@@ -51,16 +55,29 @@ export function announceFailure(code: NevoraFailure | null) {
   if (!code || typeof window === 'undefined') return;
   const recovery = failureRecovery(code);
   if (recovery === 'unavailable' || recovery === 'reread') return;
-  window.dispatchEvent(new CustomEvent(FAILURE_EVENT, {detail: {recovery}}));
+  window.dispatchEvent(new CustomEvent(FAILURE_EVENT, {detail: {recovery, notAllowed: code === 'access_denied'}}));
 }
 
 /** A protected read's outcome for createPrivateSnapshotController: data to parse, or the reason to show instead. Every
  * recovery that clears data reads as access_denied (the controller clears the snapshot and stops polling); the rest read
  * as read_failed (shown as "couldn't load", never as zero; the controller reads again on its schedule). */
-export async function privateReadBody(response: Response): Promise<{ok: true; body: unknown} | {ok: false; reason: 'access_denied' | 'read_failed'; failure: NevoraFailure | null}> {
+export async function privateReadBody(response: Response, options?: { inlineAccessDenied?: boolean }): Promise<{ok: true; body: unknown} | {ok: false; reason: 'access_denied' | 'read_failed'; failure: NevoraFailure | null; denial: Denial | null}> {
   const failure = nevoraFailure(response);
   if (response.ok) return {ok: true, body: await response.json()};
-  announceFailure(failure);
-  if (failure) return {ok: false, reason: clearsProtectedData(failureRecovery(failure)) ? 'access_denied' : 'read_failed', failure};
-  return {ok: false, reason: response.status === 401 || response.status === 403 ? 'access_denied' : 'read_failed', failure: null};
+  if (failure !== 'access_denied' || !options?.inlineAccessDenied) announceFailure(failure);
+  const denial = denialOf(failure, response.status);
+  if (failure) return {ok: false, reason: clearsProtectedData(failureRecovery(failure)) ? 'access_denied' : 'read_failed', failure, denial};
+  return {ok: false, reason: response.status === 401 || response.status === 403 ? 'access_denied' : 'read_failed', failure: null, denial};
+}
+
+/** Why a protected request was refused, for what the page says: the person is signed out, or is signed in and lacks
+ * access here. QA A3-06 (Nov 21, 2026): a Manager without a permission was told "Your session ended. Sign in again".
+ * Someone else signed in on this browser (actor_mismatch) is a session problem; a bare 403 is a refusal. Other failures
+ * (origin, view, contract) keep their own recovery: null. */
+export type Denial = 'signed_out' | 'not_allowed';
+export function denialOf(failure: NevoraFailure | null, status: number): Denial | null {
+  if (failure === 'authentication_required' || failure === 'actor_mismatch') return 'signed_out';
+  if (failure === 'access_denied') return 'not_allowed';
+  if (failure) return null;
+  return status === 401 ? 'signed_out' : status === 403 ? 'not_allowed' : null;
 }

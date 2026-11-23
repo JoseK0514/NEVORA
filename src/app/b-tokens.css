@@ -47,6 +47,9 @@
   --b-dur-shimmer: 1600ms; --b-delay-shimmer: 300ms; --b-dur-spin: 800ms;
   /* shape and targets */
   --b-radius-card: 22px; --b-radius-pill: 999px; --b-radius-field: 14px; --b-radius-small: 10px;
+  /* Jose's button shape pick (Nov 21, 2026; board option C): buttons have squarer corners, not pills. 10px, and 8px at
+   * the 36px size. Chips, segments and their thumbs, icon circles, avatars, the search field and counts keep their shapes. */
+  --b-radius-btn: 10px; --b-radius-btn-sm: 8px;
   --b-target: 44px; --b-target-touch: 48px;
   /* one segmented control (review F5, NV-103), on the band (glass) and on white: a 44px pill track, 4px in, a 36px pill
    * thumb (the 44px hit area is the track's height), 14/600 labels, 16px item padding, 20px count pills of 12/700 */
@@ -83,6 +86,16 @@
   --b-teal-edge: #C5DEDB; --b-amber-edge: #EBD8C0; --b-red-edge: #F1CCC8; --b-green-edge: #C7DED1; --b-quiet-edge: #D4D6D8;
   /* one chip (22px, 8px sides, a 6px live dot) and one inline count (20px, the segmented control's count) */
   --b-chip-h: 22px; --b-chip-px: 8px; --b-chip-dot: 6px; --b-count-h: 20px;
+  /* Refinement (Nov 20, 2026): a status label and a note are white with one hairline; colour lives in a 6px dot or in
+   * the note's small mark, never in the words or the fill. */
+  --b-hair: rgb(17 21 23 / 0.12); --b-hair-strong: rgb(17 21 23 / 0.18); --b-teal-press: #095E5A; --b-teal-50-press: #DCECE9;
+  --b-ease-settle: cubic-bezier(0.23, 1, 0.32, 1);
+  /* Premium pass (Nov 20, 2026; Jose's board pick 1A): the secondary and row button is a white surface with one hairline
+   * and a soft lift, ink words. Owner-only button classes read these too. */
+  --b-btn-surface: #FFFFFF; --b-btn-surface-ink: var(--b-ink); --b-btn-surface-edge: 0 0 0 1px rgb(16 40 38 / 0.12), 0 1px 2px rgb(16 40 38 / 0.08); --b-btn-surface-hover: #F7F9F9; --b-btn-surface-press: #F0F3F3;
+  /* the success mark and an arriving note: the circle settles, the check follows, one ring leaves */
+  --b-done-halo: rgb(35 154 109 / 0.14); --b-done-glow: 0 6px 14px -6px rgb(35 154 109 / 0.55);
+  --b-dur-settle: 420ms; --b-dur-draw: 320ms; --b-delay-draw: 120ms; --b-dur-ring: 520ms; --b-delay-ring: 80ms; --b-dur-note: 240ms;
   /* one optical size per icon role: in a chip, inline beside text, a row lead or callout, a control, a state card,
    * the phone tab bar, a finish */
   --b-ic-chip: 12px; --b-ic-inline: 16px; --b-ic-lead: 18px; --b-ic-control: 20px; --b-ic-state: 22px; --b-ic-tab: 24px; --b-ic-finish: 28px;

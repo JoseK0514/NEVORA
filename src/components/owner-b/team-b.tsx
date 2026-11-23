@@ -16,7 +16,7 @@ import { BAvatar, BButtonLink, BCard, BChip, BFilters, BHero, BIcon, BList, BRow
  * Off today: Jose's attendance words, Nov 11, 2026). The chips above the list filter it on the device; search still goes
  * through the page's own search, as before. */
 
-export type TeamBPerson = { id: string; name: string; detail: string; href: string; label: string; active: boolean };
+export type TeamBPerson = { id: string; name: string; detail: string; href: string; active: boolean };
 type Filter = "all" | "working" | "late" | "off";
 export type TeamBToolIcon = "hours" | "availability" | "import" | "key" | "inactive";
 
@@ -49,9 +49,12 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
     // Final regression review: the line under the name is the kit's facts line (BSegs), so at 320 no line starts or ends
     // on the dot ("Front counter · Manager · Calle Loíza · Off today").
     const lateIn = now === "working" && live.clockedInLate.has(person.id);
-    const status = !person.active ? <BChip>Inactive</BChip> : now && now !== "off" ? <TeamLivePill employeeId={person.id} /> : undefined;
-    return <BRow key={person.id} href={person.href} label={person.label} lead={<BAvatar name={person.name} size={40} ring={now === "late" || lateIn ? "late" : now === "working" || now === "break" ? "on" : undefined} />}
-      title={person.name} chip={status} sub={<BSegs parts={[...(person.detail ? person.detail.split(" · ") : []), now === "off" ? "Off today" : null]} />} />;
+    // Final polish (Nov 20, 2026): one place for the state on every row. It was beside the name on one row, between the name
+    // and its line on the next and inside the facts line for "Off today". On phones a status drops under the name and its
+    // sub-line (DESIGN.MD, "Status labels"): the Team live label there, grey words for a normal state, a chip for an exception.
+    const status = !person.active ? <BChip>Inactive</BChip> : now ? <TeamLivePill employeeId={person.id} /> : undefined;
+    return <BRow key={person.id} href={person.href} lead={<BAvatar name={person.name} size={40} ring={now === "late" || lateIn ? "late" : now === "working" || now === "break" ? "on" : undefined} />}
+      title={person.name} sub={<BSegs parts={person.detail ? person.detail.split(" · ") : []} />} extra={status ? <span className="b-row__state">{status}</span> : undefined} />;
   };
   // Premium pass FA (final verification A #15): Hours this week is the timer, the navigation's glyph for it (ChartBar is
   // Insights').

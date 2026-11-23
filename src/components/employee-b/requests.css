@@ -200,7 +200,10 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-withdraw.b-keep .tof-feedback a { color: var(--b-teal); font-weight: 600; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .c-sheet-body.b-keep { gap: 14px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-fields { gap: var(--b-space-16); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep :is(.c-xs-shift, .c-xs-who) { padding: var(--b-space-12) var(--b-gutter); border-radius: var(--b-radius-field); background: var(--b-canvas); box-shadow: none; }
+/* Premium pass (Nov 21, 2026; Jose's facts pick): the shift and the teammate a request is about sit between two
+ * hairlines with 12px of air, no grey panel. Two in a row share the hairline between them. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep :is(.c-xs-shift, .c-xs-who) { padding: var(--b-space-12) 0; border-radius: 0; background: none; box-shadow: inset 0 1px 0 var(--b-line), inset 0 -1px 0 var(--b-line); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep :is(.c-xs-shift, .c-xs-who) + :is(.c-xs-shift, .c-xs-who) { box-shadow: inset 0 -1px 0 var(--b-line); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-shift__label { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-grey); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-shift__time { font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep :is(.c-xs-shift__place, .c-xs-option__main span) { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
@@ -221,3 +224,9 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xsk { border-radius: var(--b-radius-field); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { margin-bottom: 5px; }
+/* Final polish, round 2 (R3): a card's foot. One teal text link (the kit's .b-link, 44px tall) under a hairline, at the
+ * card's inset: "See every posted shift" under Open shifts' list, its empty state and its failed state. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardfoot { display: flex; margin: 0; padding: var(--b-space-2) var(--b-inset) var(--b-space-4); box-shadow: inset 0 1px 0 var(--b-line); }
+@media (min-width: 768px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardfoot { padding-left: var(--b-inset-wide); padding-right: var(--b-inset-wide); }
+}

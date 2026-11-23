@@ -206,10 +206,16 @@ html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-a
   position: relative; display: flex !important; align-items: center !important; gap: 8px; width: 100%; min-height: 48px !important; margin: 0 !important; padding: 0 16px !important;
   border: 0 !important; border-radius: 0 !important; background: none; box-shadow: none !important; text-align: left;
   font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; color: #1A1C1E !important; }
-html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item::before { content: ""; position: absolute; left: 16px; right: 0; bottom: 0; height: 1px; background: #EDEEEF; }
-html body .app-shell .c-sched :is(#schedule-location-menu, #b-schedule-location-menu) .nevora-action-menu-item:last-of-type::before,
-html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card > :last-child .nevora-action-menu-item::before,
-html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card > .nevora-action-menu-item:last-child::before { display: none; }
+html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item::before { content: ""; position: absolute; left: 16px; right: 16px; bottom: 0; height: 1px; background: #EDEEEF; }
+html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .c-menu-card > :last-child .nevora-action-menu-item::before,
+html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .c-menu-card > .nevora-action-menu-item:last-child::before { display: none; }
+/* Final polish (Nov 20, 2026; confirmations review A #21): the current choice's check is Phosphor's bold Check (it drew
+ * the regular one), hairlines are inset on both ends, a row carries no chevron (it opens a page, never a further menu),
+ * and Location is the same grouped list as Schedule options. */
+html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item[aria-current="true"] { font-weight: 600 !important; }
+html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item.nevora-action-menu-item.nevora-action-menu-item[aria-current="true"]::after {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / 16px 16px no-repeat; }
 html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item[aria-current="true"]::after { right: 16px; }
 html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .nevora-action-menu-item > strong { flex: 1 1 auto; min-width: 0; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: inherit !important; color: inherit !important; }
 html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .nevora-action-menu-item > :not(strong):not(.c-menu-value):not(.c-menu-chev) { display: none !important; }
@@ -224,10 +230,12 @@ html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actio
 html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item:active { background: #EDEEEF; }
 /* Phones: the sheet is grey (#F5F6F6) with each group as a white inset card, labels on the cards' text edge. */
 @media (max-width: 760px) {
-  html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions).nevora-action-menu-popover { background: #F5F6F6 !important; padding-bottom: max(28px, env(safe-area-inset-bottom, 0px)) !important; }
-  html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) > .c-menu-head { margin: 0 !important; background: #FFFFFF; }
+  html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)).nevora-action-menu-popover { background: #F5F6F6 !important; padding-bottom: max(28px, env(safe-area-inset-bottom, 0px)) !important; }
+  html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) > .c-menu-head { margin: 0 !important; background: #FFFFFF; }
   html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-label { margin: 16px 32px 8px; }
-  html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card { margin: 0 16px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; overflow: hidden; }
+  html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .c-menu-card { margin: 0 16px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; overflow: hidden; }
+  /* Location has no group label: its card starts 16px under the sheet head. */
+  html body .app-shell .c-sched :is(#schedule-location-menu, #b-schedule-location-menu) .c-menu-group { padding-top: 16px; }
 }
 /* Desktop popover: the two groups one above the other, a hairline between them. */
 @media (min-width: 761px) {

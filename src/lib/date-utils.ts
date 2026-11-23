@@ -1,3 +1,5 @@
+import { dateRange } from "./duration-format";
+
 /**
  * Calendar-label helpers for YYYY-MM-DD values, using UTC noon so host timezone
  * never moves the written day. These are not elapsed-time/payroll calculations;
@@ -38,24 +40,9 @@ export function weekDates(weekStart: string) {
   return Array.from({ length: 7 }, (_, index) => addDays(weekStart, index));
 }
 
+/** A schedule week: "Nov 16–22", or "Nov 30–Dec 6" across a month end (the app's one date-range form). */
 export function formatWeekRange(weekStart: string) {
-  const end = addDays(weekStart, 6);
-  const startDate = new Date(`${weekStart}T12:00:00Z`);
-  const endDate = new Date(`${end}T12:00:00Z`);
-
-  const startLabel = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  }).format(startDate);
-
-  const endLabel = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  }).format(endDate);
-
-  return `${startLabel} – ${endLabel}`;
+  return dateRange(weekStart, addDays(weekStart, 6), { year: "never" });
 }
 
 export function formatDayLabel(date: string) {
@@ -113,11 +100,9 @@ export function formatDisplayDate(date: string) {
   return new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(utcDate(date));
 }
 
-/** A readable period: "Sep 28 – Oct 4, 2026", or both years when they differ. */
+/** A readable period with its year: "Nov 16–22, 2026", "Sep 28–Oct 4, 2026", or both years when they differ. */
 export function formatDateRange(start: string, end: string) {
-  const startYear = start.slice(0, 4), endYear = end.slice(0, 4);
-  if (startYear !== endYear) return `${monthDay.format(utcDate(start))}, ${startYear} – ${monthDay.format(utcDate(end))}, ${endYear}`;
-  return `${monthDay.format(utcDate(start))} – ${monthDay.format(utcDate(end))}, ${endYear}`;
+  return dateRange(start, end, { year: "end" });
 }
 
 /** Workspace calendar dates stay on their written day, independent of server timezone. */

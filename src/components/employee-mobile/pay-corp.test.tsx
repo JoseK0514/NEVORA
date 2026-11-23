@@ -21,7 +21,7 @@ beforeEach(()=>{route.search='';});
 describe('Employee Pay on the kit (G-E-Pay)',()=>{
  it('shows recent pay newest first, labels corrections and never shows figures',()=>{
   const html=render(),plain=text(html);
-  expect(plain).toContain('Pay history');expect(plain).toContain('Recent pay statements');expect(plain).toContain('Thu, Jan 24');expect(plain).toContain('Jan 6 – 19');
+  expect(plain).toContain('Pay history');expect(plain).toContain('Recent pay statements');expect(plain).toContain('Thu, Jan 24');expect(plain).toContain('Jan 6–19');
   expect(plain).toContain('Correction');expect(plain).toContain('Replaced');
   // Upscale S4: the states are grey text, never a (blue) pill.
   expect(html).not.toContain('c-pill');expect(html).toContain('<span class="c-meta">Correction</span>');
@@ -39,7 +39,7 @@ describe('Employee Pay on the kit (G-E-Pay)',()=>{
  it('names the next scheduled payday from the pay schedule without calling it a payment',()=>{
   const plain=text(render({nextPay:{payday:'2030-02-07',daysUntil:3,period:{startDate:'2030-01-20',endDate:'2030-02-02'}}}));
   // Upscale S16: the period in the card head, the payday once as the date, then how far away it is; no pill or filler line.
-  expect(plain).toContain('This pay period · Jan 20 – Feb 2');expect(plain).toContain('Thu, Feb 7 Scheduled payday is in 3 days');expect(plain).toContain('Scheduled payday · In 3 days');
+  expect(plain).toContain('This pay period · Jan 20–Feb 2');expect(plain).toContain('Thu, Feb 7 Scheduled payday is in 3 days');expect(plain).toContain('Scheduled payday · In 3 days');
   expect(plain).not.toContain('Payday Thu, Feb 7');expect(plain).not.toContain('Pay period Jan 20');
   expect(plain).not.toContain('From your workplace’s pay schedule');expect(plain).not.toMatch(/paid|\$/i);
   expect(text(render())).not.toContain('This pay period');
@@ -74,12 +74,12 @@ describe('Employee Pay on the kit (G-E-Pay)',()=>{
 describe('Pay history and Paycheck (E-PayHistory, E-Paycheck)',()=>{
  it('groups every statement by month',()=>{
   const plain=text(render({},'view=history'));
-  expect(plain).toContain('Pay history');expect(plain).toContain('January');expect(plain).toContain('Thu, Jan 10');expect(plain).toContain('Dec 23 – Jan 5');
+  expect(plain).toContain('Pay history');expect(plain).toContain('January');expect(plain).toContain('Thu, Jan 10');expect(plain).toContain('Dec 23–Jan 5');
  });
  it('opens one statement with one PDF row, and the year only outside the current year',()=>{
   // The corporate layout (tablets and desktop); the phone screen (Direction B) is checked after it.
   const full=render({},`paycheck=${ids.correction}`),html=withoutB(full),plain=text(html);
-  /* B7 wording (NV-119 glossary): the document is a "Pay statement" */expect(plain).toContain('Pay statement');expect(plain).toContain('Pay period Jan 6 – 19');expect(plain).toContain('Thu, Jan 24, 2030');
+  /* B7 wording (NV-119 glossary): the document is a "Pay statement" */expect(plain).toContain('Pay statement');expect(plain).toContain('Pay period Jan 6–19');expect(plain).toContain('Thu, Jan 24, 2030');
   expect(plain).toContain('This corrects your earlier statement for the same period.');
   // Upscale S8: one "Pay statement (PDF)" row that opens the document separately.
   expect(html).toContain(`href="/api/payroll/documents/${ids.correction}/view" target="_blank" rel="noopener" aria-label="Pay statement (PDF), corrected statement, payday Thursday, January 24, 2030 (opens separately)"`);

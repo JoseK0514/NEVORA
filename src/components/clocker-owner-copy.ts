@@ -111,6 +111,7 @@ const en = {
   removeTitle: (name: string) => `Remove ${name}?`,
   removeBody: 'Clocking in and out on this tablet stops right away, and any setup code for it stops working. Time already recorded stays. You can set it up again later.',
   removeSubmit: 'Remove tablet',
+  keepTablet: 'Keep tablet',
   // Results.
   nameSaved: 'Tablet name saved.',
   tabletRemoved: 'Tablet removed. Its time records are kept.',
@@ -399,6 +400,7 @@ const es: ClockerOwnerCopy = {
   removeTitle: name => `¿Eliminar ${name}?`,
   removeBody: 'Marcar entrada y salida en esta tableta se detiene de inmediato, y cualquier código de configuración suyo deja de funcionar. El tiempo ya registrado se conserva. Puede configurarla de nuevo después.',
   removeSubmit: 'Eliminar tableta',
+  keepTablet: 'Conservar tableta',
   nameSaved: 'Nombre de la tableta guardado.',
   tabletRemoved: 'Tableta eliminada. Sus registros de tiempo se conservan.',
   codeReady: 'Código de configuración listo. Termine en la tableta.',

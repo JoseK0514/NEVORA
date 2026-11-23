@@ -157,8 +157,8 @@ describe("transport", () => {
 
 describe("words", () => {
   it("says weeks, times and hours the way the schedule does", () => {
-    expect(weekText("2026-11-16")).toBe("Nov 16 – 22");
-    expect(weekText("2026-11-30")).toBe("Nov 30 – Dec 6");
+    expect(weekText("2026-11-16")).toBe("Nov 16–22");
+    expect(weekText("2026-11-30")).toBe("Nov 30–Dec 6");
     expect(clockText("08:00")).toBe("8:00 AM");
     expect(clockText("16:30")).toBe("4:30 PM");
     expect(clockText("00:15")).toBe("12:15 AM");

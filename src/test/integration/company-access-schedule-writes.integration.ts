@@ -3,7 +3,10 @@ import {Client} from 'pg';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {isManagementAuthorizationError} from '../../lib/data/management-session';
 import {deleteGeneratedDraftShift,clearGenerationExclusion} from '../../lib/data/generation-exclusions';
-import {readCoverageRepairSelection} from '../../lib/data/coverage-repair.server';
+import {readCoverageRepairSelection,readScopedCoverageGaps,readScopedCoverageRepair,readScopedCoverageRepairSelection,readScopedCoverageSuggestions} from '../../lib/data/coverage-repair.server';
+import {parseCoverageRepairLocator} from '../../lib/scheduling/coverage-repair';
+import {addDays,weekStartFor} from '../../lib/date-utils';
+import {businessDate} from '../../lib/business-time';
 import {randomUUID} from 'node:crypto';
 import {companyAccessFixture} from './company-access-fixture';
 import {readOwnerOperationalScope,assignOperationalScope,OperationalAuthorizationError} from '../../lib/company-access/operational-scope.server';
@@ -202,5 +205,53 @@ it('original review fences both manual/generated provenance transitions and crea
   await expect(deleteShift('existing-a',f.manager,f.db.executor,generated)).rejects.toMatchObject({code:'SHIFT_REVIEW_CONFLICT'});
   expect(await f.q('SELECT id FROM schedule_generation_exclusions')).toEqual([]);
   expect(await f.q("SELECT assignment_origin,generated_claims FROM shifts WHERE id='existing-a'")).toEqual([{assignment_origin:'MANAGER',generated_claims:null}]);
+ }finally{await f.db.dispose();}
+});
+
+it('scoped Find cover opens only assigned locations, projects candidate identities, and checks cross-location commitments',async()=>{
+ const f=await fixture();
+ try{
+  const ex=f.db.executor;
+  const futureWeek=weekStartFor(addDays(businessDate(new Date(),'America/Puerto_Rico'),14));
+  await f.q(`INSERT INTO location_staffing_settings(location_id,minimum_staff_per_shift,requires_designated_lead)
+   VALUES('loc-1',1,false),('loc-2',1,false)
+   ON CONFLICT(location_id) DO UPDATE SET minimum_staff_per_shift=1,requires_designated_lead=false;
+   INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time)
+   VALUES('qa-gap-a','loc-1',1,'10:00','11:00'),('qa-gap-b','loc-2',1,'10:00','11:00')`);
+  await f.q("UPDATE locations SET name='Only west can see this',short_name='Secret West' WHERE id='loc-2'");
+  await f.q("INSERT INTO employees(id,first_name,last_name,role,primary_location_id,phone) VALUES('west-only','Hidden','Worker','EMPLOYEE','loc-2','5550404'); INSERT INTO employee_location_eligibility VALUES('west-only','loc-2')");
+  const gaps=await readScopedCoverageGaps(f.manager,futureWeek,undefined,ex);
+  if(gaps.state!=='ready')throw Error('No scoped gaps: '+gaps.reason);
+  expect(gaps.coverage).toEqual({kind:'LOCATIONS',locationIds:['loc-1']});
+  const locators=gaps.data.map(item=>parseCoverageRepairLocator(new URL(item.href,'http://localhost').searchParams.get('repair')));
+  expect(locators).toHaveLength(1);
+  const [locator]=locators;
+  expect(locator).toMatchObject({locationId:'loc-1',date:futureWeek,startTime:'10:00',endTime:'11:00'});
+  const review=await readScopedCoverageRepair(locator,f.manager,false,ex);
+  if(review.state!=='ready')throw Error('No scoped review: '+review.reason);
+  expect(review.data.candidates.map(({review: token,...candidate})=>{expect(token).toBeTruthy();return candidate;}))
+    .toEqual([{employeeId:'target',employeeName:'Target QA'}]);
+  const serialized=JSON.stringify(review);
+  for(const blocked of ['Hidden Worker','Secret West','scheduledHours','rule','loc-2'])expect(serialized).not.toContain(blocked);
+  const [candidate]=review.data.candidates;
+  const selected=await readScopedCoverageRepairSelection(candidate.review,f.manager,ex);
+  expect(selected).toMatchObject({state:'ready',coverage:{kind:'LOCATIONS',locationIds:['loc-1']},data:{
+    locationName:review.data.location.shortName,employeeId:'target',draft:true,replaced:null,
+    shift:{date:futureWeek,startTime:'10:00',endTime:'11:00',minutes:60},
+    weekHours:{beforeMinutes:0,afterMinutes:60,targetMinutes:null},warnings:['AVAILABILITY_NOT_SUBMITTED'],
+  }});
+  expect(JSON.stringify(selected)).not.toMatch(/Secret West|Hidden Worker|loc-2|existingShifts|rules/);
+  const other={...locator,locationId:'loc-2'};
+  expect(await readScopedCoverageRepair(other,f.manager,false,ex)).toEqual({state:'unavailable',reason:'access_denied'});
+  expect(await readScopedCoverageSuggestions(other,f.manager,false,ex)).toEqual({state:'unavailable',reason:'access_denied'});
+  const token=JSON.parse(Buffer.from(candidate.review,'base64url').toString());
+  token.locator=other;
+  expect(await readScopedCoverageRepairSelection(Buffer.from(JSON.stringify(token)).toString('base64url'),f.manager,ex))
+    .toEqual({state:'unavailable',reason:'access_denied'});
+
+  await f.q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('qa-cover-west','loc-2',$1,'DRAFT','owner')",[futureWeek]);
+  await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('qa-cover-conflict','qa-cover-west','target',$1,'10:00','11:00')",[futureWeek]);
+  expect(await readScopedCoverageSuggestions(locator,f.manager,false,ex)).toMatchObject({state:'ready',data:{candidates:[]}});
+  expect(await readScopedCoverageRepairSelection(candidate.review,f.manager,ex)).toMatchObject({state:'ready',data:null});
  }finally{await f.db.dispose();}
 });

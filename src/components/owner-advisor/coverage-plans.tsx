@@ -3,17 +3,23 @@ import { useEffect, useRef } from "react";
 import { CorpButton } from "@/components/corp/corp";
 import { BCallout, BCount, BSegs } from "@/components/owner-b/b-kit";
 import type { CoveragePlans } from "@/lib/owner-advisor/coverage-plan-contracts";
+import { firstOpenMinute, minuteClock } from "@/lib/owner-advisor/coverage-plan-clock";
+import { formatTime } from "@/lib/date-utils";
 import { timeZoneLabel } from "@/lib/time-zone-label";
-import { clockRange, dayOf, dayText, whenText } from "./format";
+import { clockRange, dayOf, dayText, hoursText, shiftLength, shiftRange, whenText } from "./format";
 
 const count = (n: number, one: string, many: string) => `${n.toLocaleString("en-US")} ${n === 1 ? one : many}`;
-const states = { COMPLETE: "Configured day requirements met", PARTIAL: "Requirements remain", INVALID: "Setup needs review", BUDGET_EXHAUSTED: "Search limit reached" };
-const locationStates = { INCLUDED: "Included in this day review", ARCHIVED: "Excluded: archived schedule", NEEDS_SETUP: "Excluded: setup needs review", INACTIVE: "Inactive location" };
+const states = { COMPLETE: "Covers all the time that needs someone", PARTIAL: "Leaves some time uncovered", INVALID: "Setup needs review", BUDGET_EXHAUSTED: "Search limit reached" };
+const locationStates = { INCLUDED: "Included", ARCHIVED: "Left out: this week’s schedule is archived", NEEDS_SETUP: "Left out: setup isn’t finished", INACTIVE: "Left out: location is inactive" };
+const listText = (items: string[]) => new Intl.ListFormat("en-US", { type: "conjunction" }).format(items);
 export function comparisonPredatesSave(plans: CoveragePlans | undefined, savedAt?: string | null) {
   return !!plans && !!savedAt && Date.parse(plans.observedAt) <= Date.parse(savedAt);
 }
 /* The day plan comparison (Direction B, Nov 18, 2026): the server's bounded comparison, each plan a block with its people
- * and times, read in the workspace's zone ("8:00 AM – 12:00 PM", "Puerto Rico time"). Words and limits are unchanged. */
+ * and times, read in the workspace's zone ("8:00 AM – 12:00 PM", "Puerto Rico time"). Limits are unchanged.
+ * QA S-09 (Nov 22, 2026): plain words instead of planning jargon (hours, not "configured coverage minutes"); a shift
+ * shows its length and never reads "All day"; for today the page says which earlier times were left out, reading the
+ * same cut-off the server used (firstOpenMinute on the plan's own observation time). */
 export function CoveragePlanResults({ plans, review, lastSavedAt }: { plans: CoveragePlans; lastSavedAt?: string | null; review?: (index: number) => void }) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
@@ -23,51 +29,59 @@ export function CoveragePlanResults({ plans, review, lastSavedAt }: { plans: Cov
     heading.current?.focus({ preventScroll: true });
   }, [plans]);
   const today = dayOf(plans.observedAt, plans.timeZone), year = today.slice(0, 4);
+  const opens = firstOpenMinute(plans.date, plans.observedAt, plans.timeZone);
+  const ahead = opens > 0 ? " for the rest of today" : "";
   return <section aria-label="Day plan comparison" className="oa-result oa-plain">
     <h3 className="oa-sub" ref={heading} tabIndex={-1}>Day plan comparison · {dayText(plans.date, "en", year)}</h3>
-    <p className="oa-facts"><BSegs parts={["Planning ledger, including drafts", timeZoneLabel(plans.timeZone),
-      <>Observed <time dateTime={plans.observedAt}>{whenText(plans.observedAt, plans.timeZone, today)}</time></>]} /></p>
-    <BCallout tone={comparisonPredatesSave(plans, lastSavedAt) ? "amber" : "teal"}>{comparisonPredatesSave(plans, lastSavedAt) ? "This comparison predates your save. Check progress or compare day plans again for current coverage." : "Each plan is a separate hypothetical allocation. Compare one plan at a time. This comparison does not save or publish changes; confirm availability with the people involved before making changes."}</BCallout>
-    {plans.state === "unavailable" ? <p className="oa-para">This company is larger than this review can process. Open Scheduling to review the complete requirements.</p> : <>
-      <details className="oa-fold oa-fold--inline"><summary>Review scope and source</summary>
+    <p className="oa-facts"><BSegs parts={["Includes draft shifts", timeZoneLabel(plans.timeZone),
+      <>Checked <time dateTime={plans.observedAt}>{whenText(plans.observedAt, plans.timeZone, today)}</time></>]} /></p>
+    <BCallout tone={comparisonPredatesSave(plans, lastSavedAt) ? "amber" : "teal"}>{comparisonPredatesSave(plans, lastSavedAt) ? "This comparison predates your save. Check progress or compare day plans again to see current coverage." : "Each plan is a separate option. Pick one; don’t mix parts of two. Nothing is saved or published from here, and nobody is notified. Check with the people involved before you change the schedule."}</BCallout>
+    {plans.state === "unavailable" ? <p className="oa-para">This company is larger than this review can process. Open Scheduling to see everything that needs cover.</p> : <>
+      <details className="oa-fold oa-fold--inline"><summary>What this plan covers</summary>
         <div className="oa-fold__body">
-          <p className="oa-para">Selected date only. Completion covers configured requirements at the included ready locations. Unconfigured or excluded locations need a separate review.</p>
+          <p className="oa-para">Only {dayText(plans.date, "en", year)}, at the locations marked Included. Locations that are left out need their own review in Scheduling.</p>
           <ul className="oa-bullets">{plans.locations.map(l => <li key={l.id}>{l.name} ({l.id}): {locationStates[l.state]}{l.issues.length ? ` · ${l.issues.join(", ")}` : ""}</li>)}</ul>
           <p className="oa-para oa-para--quiet oa-digest">Source fingerprint: {plans.sourceVersion}</p>
         </div>
       </details>
+      {opens > 0 && <p className="oa-para">{opens < 1440
+        ? `Times before ${formatTime(minuteClock(opens))} have passed, so these plans start at ${formatTime(minuteClock(opens))} or later.`
+        : "Today’s hours have passed, so there’s nothing left to plan for today. Choose another date."}</p>}
       <h4 className="oa-sub oa-sub--minor">Current schedule</h4>
-      <p className="oa-para">{count(plans.preservedAssignments, "existing assignment", "existing assignments")} retained in the complete ledger. {plans.baseline!.coveredMinutes} of {plans.baseline!.requiredMinutes} configured coverage minutes are fully covered on this date; {plans.baseline!.remainingBlocks === 1 ? "1 block needs" : `${plans.baseline!.remainingBlocks} blocks need`} review.</p>
-      {plans.baseline!.requiredMinutes === 0 && <p className="oa-para">No configured demand is available in this scope. This does not establish that the business is staffed.</p>}
-      {plans.partial && <p className="oa-para">Review the excluded locations, remaining requirements and search limits below. Some diagnostic details may be omitted; totals remain visible.</p>}
-      {plans.alternatives.map((p, index) => <article key={p.search} className="oa-block" aria-label={`Day plan ${index + 1}`}>
+      <p className="oa-para">{plans.preservedAssignments === 0 ? "No shifts are on the schedule for this day yet." : `${count(plans.preservedAssignments, "shift", "shifts")} already on the schedule ${plans.preservedAssignments === 1 ? "stays as it is" : "stay as they are"}.`} Covered now: {hoursText(plans.baseline!.coveredMinutes)} of the {hoursText(plans.baseline!.requiredMinutes)} that need someone{ahead}. {plans.baseline!.remainingBlocks === 0 ? "No time slots are uncovered." : plans.baseline!.remainingBlocks === 1 ? "1 time slot still needs someone." : `${plans.baseline!.remainingBlocks} time slots still need someone.`}</p>
+      {plans.baseline!.requiredMinutes === 0 && opens < 1440 && <p className="oa-para">No time needs cover{ahead} at the included locations, so there’s nothing to plan. That doesn’t mean the day is staffed.</p>}
+      {plans.partial && <p className="oa-para">Some locations or details are left out of this review. The totals count only what’s included.</p>}
+      {plans.alternatives.map((p, index) => {
+        const wholeDay = [...new Set(p.assignments.filter(a => a.startTime === "00:00" && a.endTime === "24:00").map(a => a.locationName))];
+        return <article key={p.search} className="oa-block" aria-label={`Day plan ${index + 1}`}>
         <h4 className="oa-block__t">Plan {index + 1} · {states[p.status]}</h4>
-        {p.search === "DIFFERENT_FIRST_ASSIGNMENT" && <p className="oa-para">This search excludes the first plan’s first assignment to explore a different allocation.</p>}
-        <p className="oa-para">{count(p.addedMinutes / 60, "planning hour", "planning hours")} added across {count(p.assignments.length, "assignment", "assignments")}. {p.coverage.coveredMinutes} of {p.coverage.requiredMinutes} configured coverage minutes would be fully covered; {p.remaining.total === 1 ? "1 block remains" : `${p.remaining.total} blocks remain`}.</p>
-        <p className="oa-para">{p.publishedTargets ? `${count(p.publishedTargets, "published location", "published locations")} would need a separate publication decision and its existing notification consent.` : "Draft additions would need review in Scheduling and a later publishing decision."}</p>
-        {p.status === "BUDGET_EXHAUSTED" && <p className="oa-para">The bounded search stopped. A better allocation may exist; remaining gaps have not been proved impossible.</p>}
+        {p.search === "DIFFERENT_FIRST_ASSIGNMENT" && <p className="oa-para">This plan leaves out Plan 1’s first assignment to show another option.</p>}
+        <p className="oa-para">Adds {hoursText(p.addedMinutes)} across {count(p.assignments.length, "assignment", "assignments")}. With {p.assignments.length === 1 ? "it" : "them"}, {hoursText(p.coverage.coveredMinutes)} of the {hoursText(p.coverage.requiredMinutes)} that need someone{ahead} would be covered; {p.remaining.total === 0 ? "nothing would be left uncovered" : p.remaining.total === 1 ? "1 time slot would still need someone" : `${p.remaining.total} time slots would still need someone`}.</p>
+        <p className="oa-para">{p.publishedTargets ? `${count(p.publishedTargets, "location in this plan already has", "locations in this plan already have")} a published schedule. Changing it is a separate decision in Scheduling, including whether to notify people.` : "These would be draft assignments. You’d review them in Scheduling and decide later whether to publish."}</p>
+        {wholeDay.length > 0 && <p className="oa-para">Coverage at {listText(wholeDay)} is set for the whole day, so this plan has one person work all 24 hours. If that’s not right, change the coverage periods in Scheduling rules.</p>}
+        {p.status === "BUDGET_EXHAUSTED" && <p className="oa-para">The search stopped at its limit. A better plan may exist, and the uncovered time may still be fillable.</p>}
         <ul className="oa-people">{p.assignments.map((a, n) => <li key={n}>
           <span className="oa-people__who"><strong>{a.employeeName}</strong> <span className="oa-quiet"><span className="b-sr">Employee ID </span>{a.employeeId}</span></span>
-          <span className="oa-facts"><BSegs parts={[a.locationName, clockRange(a.startTime, a.endTime), a.positionName ?? "Staffing", a.isDesignatedLead ? "Designated lead" : null, a.publication === "PUBLISHED" ? "Published schedule" : "Draft schedule"]} /></span>
+          <span className="oa-facts"><BSegs parts={[a.locationName, shiftRange(a.startTime, a.endTime), shiftLength(a.startTime, a.endTime), a.positionName ?? "Team member", a.isDesignatedLead ? "Designated lead" : null, a.publication === "PUBLISHED" ? "Published schedule" : "Draft schedule"]} /></span>
         </li>)}</ul>
-        {!!p.remaining.total && <details className="oa-fold oa-fold--inline"><summary><span>Remaining requirements</span><BCount label={`${p.remaining.total} remaining requirements`}>{p.remaining.total}</BCount></summary>
+        {!!p.remaining.total && <details className="oa-fold oa-fold--inline"><summary><span>Time still uncovered</span><BCount label={`${p.remaining.total} time ${p.remaining.total === 1 ? "slot" : "slots"} still uncovered`}>{p.remaining.total}</BCount></summary>
           <div className="oa-fold__body">
-            <ul className="oa-bullets">{p.remaining.items.map((b, n) => <li key={n}>{b.locationName} · {clockRange(b.startTime, b.endTime)}: {b.missingStaff === null ? "staffing unknown" : `${b.missingStaff} staff needed`}{b.requiresLead ? " · Designated lead needed" : b.requiresLead === null ? " · Lead rule unknown" : ""}
-              {b.positions.map((r, i) => <span key={i}> · {r.name}: {r.missing} needed</span>)}{b.positionsOmitted > 0 && <span> · {b.positionsOmitted} further position requirements</span>}</li>)}</ul>
-            {p.remaining.total > p.remaining.items.length && <p className="oa-para">{p.remaining.total - p.remaining.items.length} further gap blocks are omitted. Review the full schedule.</p>}
+            <ul className="oa-bullets">{p.remaining.items.map((b, n) => <li key={n}>{b.locationName} · {clockRange(b.startTime, b.endTime)}: {b.missingStaff === null ? "staffing not set" : `${b.missingStaff} more ${b.missingStaff === 1 ? "person" : "people"} needed`}{b.requiresLead ? " · Designated lead needed" : b.requiresLead === null ? " · Lead rule not set" : ""}
+              {b.positions.map((r, i) => <span key={i}> · {r.name}: {r.missing} needed</span>)}{b.positionsOmitted > 0 && <span> · {count(b.positionsOmitted, "more position", "more positions")}</span>}</li>)}</ul>
+            {p.remaining.total > p.remaining.items.length && <p className="oa-para">{count(p.remaining.total - p.remaining.items.length, "more time slot isn’t", "more time slots aren’t")} listed. Open the schedule to see them all.</p>}
           </div>
         </details>}
         {!!p.issues.total && <details className="oa-fold oa-fold--inline"><summary><span>Rules and warnings</span><BCount label={`${p.issues.total} rules and warnings`}>{p.issues.total}</BCount></summary>
           <div className="oa-fold__body">
             <ul className="oa-bullets">{p.issues.items.map((i, n) => <li key={n}>{i.message} ({i.code})</li>)}</ul>
-            {p.issues.total > p.issues.items.length && <p className="oa-para">{p.issues.total - p.issues.items.length} further diagnostic categories are omitted.</p>}
+            {p.issues.total > p.issues.items.length && <p className="oa-para">{p.issues.total - p.issues.items.length} more {p.issues.total - p.issues.items.length === 1 ? "isn’t" : "aren’t"} listed.</p>}
           </div>
         </details>}
         {review && (p.assignments.length > 0 && p.status !== "INVALID" && p.assignments.every(a => a.publication === "DRAFT" && a.positionId !== undefined)
           ? <div className="oa-acts"><CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" onClick={e => { e.currentTarget.focus(); review(index); }}>Review draft changes</CorpButton></div>
-          : <p className="oa-para oa-para--quiet">{p.assignments.some(a => a.publication === "PUBLISHED") ? "This allocation includes a published schedule. Review it in Scheduling; this action saves whole draft-only allocations." : "A fresh comparison with exact draft assignments is needed before saving."}</p>)}
-      </article>)}
-      <p className="oa-para oa-para--quiet">These are bounded comparisons, without a guarantee of the best allocation. Source changes require a fresh review in Scheduling. Added hours do not establish financial costs or savings.</p>
+          : <p className="oa-para oa-para--quiet">{!p.assignments.length ? "This plan has no assignments to save." : p.assignments.some(a => a.publication === "PUBLISHED") ? "This plan includes a published schedule, so it can’t be saved from here. Review it in Scheduling." : "Compare day plans again before saving this plan."}</p>)}
+      </article>; })}
+      <p className="oa-para oa-para--quiet">These plans come from a limited search, so a better one may exist. If the schedule changes, compare again. Added hours don’t show labor cost or savings.</p>
     </>}
   </section>;
 }

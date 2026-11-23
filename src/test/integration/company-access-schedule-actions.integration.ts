@@ -68,10 +68,10 @@ it('normal create action rolls its new parent back when assignment creation fail
 it('normal actions deny B targets, forged foreign employee and A publication without private validation results or writes',async()=>{
  const f=await setup();try{
   const before=await f.q('SELECT to_jsonb(s) AS row FROM shifts s ORDER BY id');
-  expect(await createShiftAction(form({employeeId:'FOREIGN'}))).toEqual({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
-  expect(await createShiftAction(form({locationId:'loc-2',employeeId:'FOREIGN'}))).toEqual({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
-  expect(await updateShiftAction(form({shiftId:'foreign-shift',employeeId:'FOREIGN'}))).toEqual({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
-  expect(await deleteShiftAction(form({shiftId:'foreign-shift'}))).toEqual({error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'});
+  expect(await createShiftAction(form({employeeId:'FOREIGN'}))).toEqual({error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.',issueCode:'ACCESS_DENIED'});
+  expect(await createShiftAction(form({locationId:'loc-2',employeeId:'FOREIGN'}))).toEqual({error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.',issueCode:'ACCESS_DENIED'});
+  expect(await updateShiftAction(form({shiftId:'foreign-shift',employeeId:'FOREIGN'}))).toEqual({error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.',issueCode:'ACCESS_DENIED'});
+  expect(await deleteShiftAction(form({shiftId:'foreign-shift'}))).toEqual({error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.',issueCode:'ACCESS_DENIED'});
   await expect(publishScheduleAction(form())).rejects.toMatchObject({destination:'/app/schedule?error=ACCESS_DENIED'});
   expect(await f.q('SELECT to_jsonb(s) AS row FROM shifts s ORDER BY id')).toEqual(before);
   expect(await f.q('SELECT id FROM schedule_publication_revisions')).toEqual([]);
@@ -177,7 +177,7 @@ async function observedTransition(f:ActionFixture,kind:Parameters<typeof transit
  expect(after.scopeRevision).toBe(before.scopeRevision+(kind==='REGRANT'?2:1));
  expect(after.authority).not.toBe(before.authority);
 }
-const generic={error:'Operational access is unavailable. Reload and try again.',issueCode:'ACCESS_DENIED'};
+const generic={error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.',issueCode:'ACCESS_DENIED'};
 const business=(f:ActionFixture)=>f.q("SELECT jsonb_build_object('schedules',(SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM schedules s),'shifts',(SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM shifts s),'leave',(SELECT jsonb_agg(to_jsonb(r) ORDER BY id) FROM time_off_requests r),'publications',(SELECT jsonb_agg(to_jsonb(r) ORDER BY id) FROM schedule_publication_revisions r),'notifications',(SELECT jsonb_agg(to_jsonb(n) ORDER BY id) FROM notifications n)) state");
 async function privateFixture(method:'create'|'update',issue:'APPROVED_TIME_OFF'|'SHIFT_OVERLAP'){
  const f=await setup();try{await choose(f,'COMPANY');await f.q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('action-a','loc-1','2026-10-12','DRAFT','owner')");if(method==='update')await f.q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('editing','action-a','TARGET','2026-10-12','08:00','09:00')");

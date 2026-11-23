@@ -345,11 +345,14 @@ export async function readDelegatedTimeCorrections(proof:SessionMutationProof,em
  * lifetime. Internal capture retains full connected correction footprints for
  * protected consumers; the public rows expose only bounded decision context.
  */
+type ExpectedCorrectionReview = { authority: string; locations: readonly string[] };
+
 async function readManagerTimeCorrectionsCore(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),
   capture?: (value: CorrectionActionCapture) => void,
   allowEmptyWithoutGrant = false,
+  expectedReview?: ExpectedCorrectionReview,
 ): Promise<ManagerTimeCorrections> {
   try { assertManagementProof(proof,proof?.employee?.id); }
   catch { return {state:'unavailable',reason:'access_denied'}; }
@@ -361,6 +364,10 @@ async function readManagerTimeCorrectionsCore(
     const workspace=access.workspace;
     const permitted = proof.employee.role === 'OWNER' ? null : permissions
       .filter(grant => grant.permission === 'REVIEW_TIME_EXCEPTION').map(grant => grant.locationId);
+    if (expectedReview && (
+      access.authority !== expectedReview.authority || !permitted ||
+      JSON.stringify([...permitted].sort()) !== JSON.stringify([...expectedReview.locations].sort())
+    )) return {state:'unavailable',reason:'access_denied'};
     if (permitted?.length === 0) {
       if (!allowEmptyWithoutGrant) return {state:'unavailable',reason:'permission_required'};
       const validForMs = Math.floor(access.validForMs - Math.max(0,Date.now()-Date.parse(access.observedAt)));
@@ -411,9 +418,9 @@ async function readManagerTimeCorrectionsCore(
 export async function readManagerTimeCorrections(
   proof: SessionMutationProof,
   executor: SqlExecutor = neonNotificationExecutor(),
-  { allowEmptyWithoutGrant = false } = {},
+  { allowEmptyWithoutGrant = false, expectedReview }: { allowEmptyWithoutGrant?: boolean; expectedReview?: ExpectedCorrectionReview } = {},
 ): Promise<ManagerTimeCorrections> {
- return readManagerTimeCorrectionsCore(proof,executor,undefined,allowEmptyWithoutGrant);
+ return readManagerTimeCorrectionsCore(proof,executor,undefined,allowEmptyWithoutGrant,expectedReview);
 }
 export async function readManagerTimeCorrectionsWithInternalCapture(proof: SessionMutationProof, executor: SqlExecutor = neonNotificationExecutor()) {
  const retained: {capture: CorrectionActionCapture | null} = {capture:null};

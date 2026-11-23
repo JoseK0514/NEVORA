@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CorpCard } from "@/components/corp/corp";
 import { BChip } from "@/components/owner-b/b-kit";
 import { addDays } from "@/lib/date-utils";
+import { dateRange } from "@/lib/duration-format";
 import { WEEKDAYS } from "./weekdays";
 
 /* SCRUM-215 (Nov 19, 2026): when the company's week doesn't start on Monday, the schedule shows the planning week (GET
@@ -36,7 +37,7 @@ export function PlanningWindowCard({ window: w, viewingWeek, owner, locationQuer
     {parts.length > 1 ? <p className="pw-note">{t.spans}</p> : null}
     <div className="pw-parts">{parts.map(monday => {
       const days = w.days.filter(d => d.scheduleWeekStart === monday);
-      const label = t.part(`${day(monday, t.locale, { month: "short", day: "numeric" })} – ${day(addDays(monday, 6), t.locale, { month: "short", day: "numeric" })}`);
+      const label = t.part(dateRange(monday, addDays(monday, 6), { year: "never", locale: t.locale }));
       return <section key={monday} className="pw-part" aria-label={label}>
         <div className="pw-part__h"><span className="pw-part__t">{label}</span>
           {monday === viewingWeek ? <BChip tone="teal">{t.viewing}</BChip> : <Link className="pw-open" href={`/app/schedule?week=${monday}${locationQuery}`}>{t.open}</Link>}</div>

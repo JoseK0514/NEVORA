@@ -5,7 +5,7 @@ rs.mock('next/link', () => ({default: ({children, scroll: _scroll, prefetch: _pr
 import {HOME_SOURCES} from '../../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../../lib/employee-home/types';
 import type {HomeWeek} from '../employee-home-quiet';
-import {EmployeeHomeB, HoursRead, endedShiftStillOpen, homeTodoPreview, placeWhole, type HomeBProps, type HomeTodo} from './home-b';
+import {EmployeeHomeB, HoursRead, endedShiftStillOpen, homeTodoPreview, needsAnswer, placeWhole, todoDeadline, type HomeBProps, type HomeTodo} from './home-b';
 import {Dotted} from './parts';
 
 /* Phase 4 (Nov 17, 2026), Employee and Lead Home on fictional data: Tuesday, Nov 17, 2026 at 6:00 PM in Puerto Rico. */
@@ -22,7 +22,7 @@ const item = (id: string, required: boolean, kind: AttentionItem['ref']['kind'] 
   href: `/app/notifications?item=${id}`, required, actionable: true, deadlineAt: required ? null : '2026-11-23T13:00:00Z', changedAt: at});
 const todo = (id: string, required = false): HomeTodo => ({key: `k:${id}`, item: item(id, required, required ? 'COMMUNICATION' : 'EXCHANGE'), week: false});
 const props = (patch: Partial<HomeBProps> = {}): HomeBProps => ({snapshot: snapshot(), partial: false, todos: [], week: week(), name: 'James', date: 'Tuesday, Nov 17', place: 'Main Office', waiting: null,
-  loading: false, paused: false, denied: false, refreshing: false, onRetry: () => {}, weekTodo: () => ({title: 'Confirm this week’s schedule', detail: 'Nov 16 – 22'}), payday: '2026-11-27', ...patch});
+  loading: false, paused: false, denied: false, refreshing: false, onRetry: () => {}, weekTodo: () => ({title: 'Confirm this week’s schedule', detail: 'Nov 16–22'}), payday: '2026-11-27', ...patch});
 const draw = (patch: Partial<HomeBProps> = {}) => renderToStaticMarkup(<EmployeeHomeB {...props(patch)}/>);
 const text = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/[  ]/g, ' ').replace(/\s+/g, ' ');
 
@@ -43,7 +43,33 @@ it('EM-002: Home keeps the server’s order and never drops the first required r
   // The required row keeps the one teal Review pill and the amber chip; a lead is the teal circle (EM-008, EM-017), and
   // amber for the one that waits on you (Phase 9, spec 3.2, as in Notifications).
   expect(card.match(/b-btn--teal/g)).toHaveLength(1);expect(card).toContain('b-chip--amber');
-  expect(card).not.toContain('b-ico--grey');expect(card.match(/b-ico--teal/g)).toHaveLength(4);expect(card.match(/b-ico--amber/g)).toHaveLength(1);
+  // Round 2 (H2): the four swap requests here wait for an answer, so they are amber too (five amber circles, no teal one).
+  expect(card).not.toContain('b-ico--grey');expect(card).not.toContain('b-ico--teal');expect(card.match(/b-ico--amber/g)).toHaveLength(5);
+});
+
+it('round 2 (H2, H4): a request that waits for your answer is amber with Requests’ chip; its deadline has a short form for narrow phones', () => {
+  const swap = todo('swap'), fyi: HomeTodo = {key: 'k:fyi', item: {...item('fyi', false, 'TIME_OFF'), label: 'Time off approved', actionable: false, deadlineAt: null}, week: false};
+  expect(needsAnswer(swap.item)).toBe(true);
+  // Not every swap notice waits on you: no deadline, or nothing to act on, keeps the teal circle and no chip.
+  expect(needsAnswer({...swap.item, deadlineAt: null})).toBe(false);expect(needsAnswer({...swap.item, actionable: false})).toBe(false);
+  expect(needsAnswer({...swap.item, ref: {...swap.item.ref, kind: 'TIME_OFF'} as AttentionItem['ref']})).toBe(false);
+  // The server's order stands, and the one teal Review pill stays on the first required row.
+  const html = draw({todos: [swap, fyi, todo('req', true)]}), card = html.slice(html.indexOf('id="b-home-todo"'), html.indexOf('</section>', html.indexOf('id="b-home-todo"')));
+  expect(card.indexOf('item=swap')).toBeLessThan(card.indexOf('item=fyi'));expect(card.indexOf('item=fyi')).toBeLessThan(card.indexOf('item=req'));
+  const row = card.slice(card.indexOf('item=swap'), card.indexOf('item=fyi'));
+  expect(row).toContain('<span class="b-ico b-ico--amber" aria-hidden="true">');
+  expect(row).toContain('<span class="b-chip b-chip--amber">Needs your answer</span>');
+  expect(row).not.toContain('b-btn');expect(row).toContain('b-chev');
+  expect(card.match(/b-btn--teal/g)).toHaveLength(1);expect(card.match(/Needs your answer/g)).toHaveLength(1);expect(card.match(/Action needed/g)).toHaveLength(1);
+  expect(card.slice(card.indexOf('item=fyi'), card.indexOf('item=req'))).toContain('b-ico--teal');
+  // H4: 1:00 PM UTC is 9:00 AM in Puerto Rico. Both forms are in the row; the short one is not read aloud.
+  expect(text(row)).toContain('Respond by Nov 23, 9:00 AM');
+  expect(row).toMatch(/<span class="eb-dl">Respond by Nov[ \u00a0]23,[ \u00a0]9:00[ \u00a0\u202f]AM<\/span><span class="eb-dl-s" aria-hidden="true">By Nov[ \u00a0]23,[ \u00a0]9[ \u00a0\u202f]AM<\/span>/);
+  // The hour loses ":00"; any other minute stays.
+  expect(todoDeadline('2026-11-24T16:00:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 12 PM');
+  expect(todoDeadline('2026-11-24T16:30:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 12:30 PM');
+  expect(todoDeadline('2026-11-24T14:00:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 10 AM');
+  expect(todoDeadline('2026-11-24T16:00:00Z', zone).full.replace(/[\u00a0\u202f]/g, ' ')).toBe('Respond by Nov 24, 12:00 PM');
 });
 
 it('EM-007, EM-025: the hours read as one sentence, the payday is one format, and the shift ahead is the first figure', () => {
@@ -98,7 +124,14 @@ it('Phase 9: the shift card says its time fact as header meta, your clock state 
   // Still clocked in after today's shift ended: an amber callout with the Warning glyph, a title and its line.
   const read = {current: {state: 'CLOCKED_IN', clockInAt: '2026-11-17T13:02:00Z', locationName: 'Main Office'}} as unknown as Parameters<typeof HoursRead.Provider>[0]['value'];
   const late = renderToStaticMarkup(<HoursRead.Provider value={read}><EmployeeHomeB {...props()}/></HoursRead.Provider>);
-  const lateCard = late.slice(late.indexOf('id="b-home-shift"'), late.indexOf('</section>', late.indexOf('id="b-home-shift"')));
+  // Final polish (Nov 20, 2026): it is its own Right now card, first on Home, so it reads as about now; the shift card
+  // under it stays about the shift ahead and says only where to clock.
+  const lateCard = late.slice(late.indexOf('id="b-home-now"'), late.indexOf('</section>', late.indexOf('id="b-home-now"')));
+  const lateShift = late.slice(late.indexOf('id="b-home-shift"'), late.indexOf('</section>', late.indexOf('id="b-home-shift"')));
+  expect(late.indexOf('id="b-home-now"')).toBeGreaterThan(-1);expect(late.indexOf('id="b-home-now"')).toBeLessThan(late.indexOf('id="b-home-shift"'));
+  expect(lateCard).toContain('>Right now</h2>');expect(lateCard).toContain('href="/app/my-time"');
+  expect(lateShift).not.toContain('b-callout');expect(text(lateShift)).toContain('Clock in on the Main Office tablet');expect(text(lateShift)).not.toContain('Clocked in at');
+  expect(html).not.toContain('id="b-home-now"');
   expect(lateCard).toContain('<div class="b-callout" data-tone="amber" role="status">');
   expect(lateCard).toContain('<p class="b-callout__t">Still clocked in since 9:02 AM</p>');
   expect(text(lateCard)).toContain('Your 9 AM – 5 PM shift has ended. Clock out on the Main Office tablet.');
@@ -128,12 +161,28 @@ it('Final review C (rows 4, 9): a short place name stays whole; fixing your time
   const {ClockIcon} = await import('@phosphor-icons/react/dist/ssr/Clock');
   const fix: HomeTodo = {key: 'k:fix', item: item('fix', false, 'TIME_CORRECTION'), week: false};
   const html = draw({todos: [fix]}), card = html.slice(html.indexOf('id="b-home-todo"'), html.indexOf('</section>', html.indexOf('id="b-home-todo"')));
-  expect(card).toContain(renderToStaticMarkup(<PencilSimpleIcon weight="bold"/>));
-  expect(card).not.toContain(renderToStaticMarkup(<ClockIcon weight="bold"/>));
+  expect(card).toContain(renderToStaticMarkup(<PencilSimpleIcon weight="duotone"/>));
+  expect(card).not.toContain(renderToStaticMarkup(<ClockIcon weight="duotone"/>));
 });
 
 it('privacy: while Home is not released (offline, paused) no private row is drawn', () => {
   const html = draw({snapshot: null, paused: true, waiting: 'You’re offline.', todos: [todo('a')], name: undefined});
   expect(html).not.toContain('b-home-todo');expect(html).not.toContain('b-home-upcoming');expect(html).not.toContain('b-live');
   expect(text(html)).toContain('You’re offline.');
+});
+
+it('final polish: Home’s shortcuts open the page that starts each request, and a module that is off has none', () => {
+  const nav = (html: string) => html.match(/<nav class="eb-qa" aria-label="Shortcuts">.*?<\/nav>/)?.[0] ?? '';
+  const all = nav(draw({shortcuts: ['timeOff', 'callout', 'swap', 'fixTime']}));
+  expect([...all.matchAll(/href="([^"]+)"/g)].map(match => match[1].replace(/&amp;/g, '&'))).toEqual(['/app/requests?tab=new', '/app/schedule?intent=callout', '/app/schedule?intent=swap', '/app/my-time?view=corrections&edit=new']);
+  expect(text(all).trim()).toBe('Time off Can’t work Swap shift Fix my time');
+  // The short labels keep their words inside the spoken name.
+  expect(all).toContain('aria-label="Request time off"');
+  // They lead the right column, over Your week and Coming up.
+  const html = draw({shortcuts: ['fixTime']});
+  expect(html.indexOf('class="eb-qa"')).toBeGreaterThan(html.indexOf('id="b-home-side"'));
+  expect(html.indexOf('class="eb-qa"')).toBeLessThan(html.indexOf('id="b-home-upcoming"'));
+  expect(text(nav(html)).trim()).toBe('Fix my time');
+  expect(nav(draw())).toBe('');
+  expect(nav(draw({shortcuts: []}))).toBe('');
 });

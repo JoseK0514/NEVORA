@@ -29,9 +29,9 @@ it('Unread shows only unread notices, and says when there are none',()=>{
 it('a notice says what happened, from its kind, its dates and whether it still needs you (inspection Nov 14, BR-6)',()=>{
  const title=(label:string,extra:Partial<EmployeeNotificationItem>={})=>notificationTitle(item('x','2026-10-30T15:20:00Z',label,extra));
  const week={kind:'scheduleWeek' as const,startDate:'2026-11-09',endDate:'2026-11-15'},day={kind:'requestDate' as const,startDate:'2026-11-26',endDate:'2026-11-26'};
- expect(title('Schedule update',{actionState:'required',subject:week})).toBe('Confirm your schedule for Nov 9 – 15');
- expect(title('Schedule update',{actionState:'complete',subject:week})).toBe('Your schedule for Nov 9 – 15 was updated');expect(title('Schedule update')).toBe('Your schedule was updated');
- expect(title('Time-off update',{subject:{kind:'requestDate',startDate:'2026-11-28',endDate:'2026-12-02'}})).toBe('Your time-off request for Nov 28 – Dec 2 was answered');
+ expect(title('Schedule update',{actionState:'required',subject:week})).toBe('Confirm your schedule for Nov 9–15');
+ expect(title('Schedule update',{actionState:'complete',subject:week})).toBe('Your schedule for Nov 9–15 was updated');expect(title('Schedule update')).toBe('Your schedule was updated');
+ expect(title('Time-off update',{subject:{kind:'requestDate',startDate:'2026-11-28',endDate:'2026-12-02'}})).toBe('Your time-off request for Nov 28–Dec 2 was answered');
  expect(title('Time off update',{subject:null})).toBe('Your time-off request was answered');
  expect(title('Can’t-work update',{subject:day})).toBe('Your can’t-work request for Nov 26 was answered');
  expect(title('Shift request update',{actionState:'available',subject:day})).toBe('You can respond to a shift request for Nov 26');
@@ -56,21 +56,25 @@ it('a tapped notice stays pressed with its own spinner while it opens',()=>{
 it('Phase 4 (EM-005): a headline is the outcome and its object, in English and Spanish, and never guesses',()=>{
  const head=(label:string,extra:Partial<EmployeeNotificationItem>={},lang:'en'|'es'='en')=>notificationHeadline(item('x','2026-10-30T15:20:00Z',label,extra),lang);
  const week={kind:'scheduleWeek' as const,startDate:'2026-11-09',endDate:'2026-11-15'},day={kind:'requestDate' as const,startDate:'2026-11-26',endDate:'2026-11-26'},span={kind:'requestDate' as const,startDate:'2026-11-28',endDate:'2026-12-02'};
- expect(head('Time off approved',{eventType:'TIME_OFF_APPROVED',outcome:'APPROVED',subject:span})).toEqual({title:'Time off approved',object:'Nov 28 – Dec 2',decided:'approved'});
- expect(head('Time off declined',{eventType:'TIME_OFF_DENIED',outcome:'DENIED',subject:day})).toEqual({title:'Time off declined',object:'Thu, Nov 26',decided:'declined'});
+ expect(head('Time off approved',{eventType:'TIME_OFF_APPROVED',outcome:'APPROVED',subject:span})).toEqual({title:'Time off approved',object:'Nov 28–Dec 2',decided:'approved',forYou:false});
+ expect(head('Time off declined',{eventType:'TIME_OFF_DENIED',outcome:'DENIED',subject:day})).toEqual({title:'Time off declined',object:'Thu, Nov 26',decided:'declined',forYou:false});
  expect(head('Time off approved',{eventType:'TIME_OFF_APPROVED',outcome:'CANCELLED',subject:day}).object).toBe('Thu, Nov 26 · Now cancelled');
- expect(head('Schedule published',{eventType:'SCHEDULE_PUBLISHED',count:2,subject:week})).toEqual({title:'Schedule published',object:'Week of Nov 9 · 2 shifts',decided:null});
+ expect(head('Schedule published',{eventType:'SCHEDULE_PUBLISHED',count:2,subject:week})).toEqual({title:'Schedule published',object:'Week of Nov 9 · 2 shifts',decided:null,forYou:false});
  expect(head('Schedule published',{eventType:'SCHEDULE_PUBLISHED',count:0,subject:week}).object).toBe('Week of Nov 9 · No shifts for you');
  // A notice that still needs the person is the action, whatever its event type; one without an event type stops at what is known.
- expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:week})).toEqual({title:'Confirm your schedule',object:'Week of Nov 9 · 4 shifts',decided:null});
- expect(head('Schedule update')).toEqual({title:'Schedule updated',object:null,decided:null});expect(head('Time-off update',{subject:span}).title).toBe('Time-off request answered');
- expect(head('Shift swap',{eventType:'SWAP_RESPONSE_REQUIRED',actionState:'available',names:['Ana Colon'],subject:day})).toEqual({title:'Swap request waiting for you',object:'Thu, Nov 26 · From Ana Colon',decided:null});
- expect(head('Cover',{eventType:'COVERAGE_INVITATION',actionState:'available',subject:day})).toEqual({title:'Cover request waiting for you',object:'Thu, Nov 26',decided:null});
+ expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:week})).toEqual({title:'Confirm the week of Nov 9',object:'4 shifts',decided:null,forYou:false});
+ // Final polish (Nov 20, 2026): the week is in the title, so two weeks waiting are two different rows; without a week the title stays general.
+ expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:{...week,startDate:'2026-11-16',endDate:'2026-11-22'}}).title).toBe('Confirm the week of Nov 16');
+ expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4}).title).toBe('Confirm your schedule');
+ expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:week},'es').title).toMatch(/^Confirme la semana del 9 (de )?nov\.?$/);
+ expect(head('Schedule update')).toEqual({title:'Schedule updated',object:null,decided:null,forYou:false});expect(head('Time-off update',{subject:span}).title).toBe('Time-off request answered');
+ expect(head('Shift swap',{eventType:'SWAP_RESPONSE_REQUIRED',actionState:'available',names:['Ana Colon'],subject:day})).toEqual({title:'Swap request waiting for you',object:'Thu, Nov 26 · From Ana Colon',decided:null,forYou:true});
+ expect(head('Cover',{eventType:'COVERAGE_INVITATION',actionState:'available',subject:day})).toEqual({title:'Cover request waiting for you',object:'Thu, Nov 26',decided:null,forYou:true});
  expect(head('Shift swap',{eventType:'SWAP_APPROVED',subject:day}).title).toBe('Shift swap approved');expect(head('Cover',{eventType:'COVERAGE_DENIED',subject:day}).decided).toBe('declined');
  expect(head('Shift request update',{actionState:'complete'}).title).toBe('Shift request closed');expect(head('Can’t-work update',{eventType:'CALLOUT_APPROVED'}).title).toBe('Can’t-work request approved');
- expect(head('Team update',{actionState:'required'})).toEqual({title:'Acknowledge the team update',object:null,decided:null});expect(head('Team update').title).toBe('New team update');
+ expect(head('Team update',{actionState:'required'})).toEqual({title:'Acknowledge the team update',object:null,decided:null,forYou:false});expect(head('Team update').title).toBe('New team update');
  expect(head('Pay statement update').title).toBe('Pay statement shared');expect(head('Availability update',{actionState:'required'}).title).toBe('Send your availability');
- expect(head('Holiday hours')).toEqual({title:'Holiday hours',object:null,decided:null});
+ expect(head('Holiday hours')).toEqual({title:'Holiday hours',object:null,decided:null,forYou:false});
  // Spanish: every part comes from the copy module and the dates from the es-PR formatter.
  const es=head('Schedule published',{eventType:'SCHEDULE_PUBLISHED',count:2,subject:week},'es');expect(es.title).toBe('Horario publicado');expect(es.object).toMatch(/^Semana del 9 (de )?nov\.? · 2 turnos$/);
  expect(head('Shift swap',{eventType:'SWAP_RESPONSE_REQUIRED',actionState:'available',names:['Ana Colon'],subject:day},'es').object).toMatch(/· De Ana Colon$/);

@@ -8,6 +8,9 @@ import { BCallout, BCount, BIcon, BSegs, BState } from "@/components/owner-b/b-k
 import type { AttentionBriefing, AttentionDisposition, AttentionKind, AttentionReviewed } from "@/lib/owner-advisor/briefing-contracts";
 import { attentionDetail, dayText, whenText, type Clock } from "./format";
 
+/** QA S-09 recheck (Nov 22, 2026): the briefing's basis is a fixed contract value; the person reads plain words. */
+const basisWords = (basis: string) => basis === "Current planning ledger, including drafts" ? "From the current schedule, including drafts" : basis;
+
 function reviewText(item: AttentionReviewed, clock: Clock) {
   if (item.state === "resolved") return item.kind === "coverage" ? "Current planning records meet coverage rules for the tracked periods." : item.kind === "setup" ? "Coverage rules are now configured." : "Recorded punches now cover the tracked shifts.";
   if (item.state === "not_current") return "The original issue no longer matches current records. Resolution is unconfirmed.";
@@ -60,7 +63,7 @@ export function AttentionSection({ briefing, disabled, saving, review, refresh, 
                   <p className="oa-facts"><BSegs parts={[item.locationName, dayText(item.date, "en", year),
                     <>Observed <time dateTime={item.source.observedAt}>{whenText(item.source.observedAt, clock.timeZone, clock.today)}</time></>]} /></p>
                   <p className="oa-item__d">{attentionDetail(item.detail)}</p>
-                  <p className="oa-item__basis">{item.basis}</p>
+                  <p className="oa-item__basis">{basisWords(item.basis)}</p>
                   <div className="oa-acts">
                     <CorpButtonLink native href={item.source.href} kind="secondary" size="md" className="b-rowact b-rowact--go">Review source</CorpButtonLink>
                     <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={disabled || item.disposition === "tracking"} onClick={() => review(item.id, "tracking")}>{item.disposition === "tracking" ? "Tracking" : "Track this issue"}</CorpButton>

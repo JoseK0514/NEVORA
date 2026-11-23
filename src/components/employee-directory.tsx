@@ -3,7 +3,6 @@ import { DEFAULT_WORDS, lower, type WordSlots } from "@/lib/workspace-presentati
 import { Key, MagnifyingGlass, Plus, Timer, UploadSimple, UserCheck, UserMinus } from "@phosphor-icons/react/dist/ssr";
 import type { Employee, Location, Position } from "@/lib/domain";
 import { employeeInitials, employeeRoleLabel } from "@/lib/employee-display";
-import { formatPhoneNumber } from "@/lib/phone";
 import { hasDirectoryFilters, type DirectoryFilters } from "@/lib/employee-directory";
 import { CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "./corp/corp";
 import { EmployeeDirectoryFilters, EmployeeSearchInput } from "./employee-directory-filters";
@@ -52,14 +51,12 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
     const name = `${employee.firstName} ${employee.lastName}`;
     return <li key={employee.id}><CorpRow href={`/app/employees/${encodeURIComponent(employee.id)}`} bold title={name} detail={`${role(employee)} · ${where(employee)}`}
       avatar={<CorpAvatar name={`${employee.firstName} ${employee.lastName}`} initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} />}
-      trail={employee.active ? <TeamLivePill employeeId={employee.id} /> : undefined} chevron
-      label={`${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}`} /></li>;
+      trail={employee.active ? <TeamLivePill employeeId={employee.id} /> : undefined} chevron /></li>;
   };
   // Direction B (Jose approved Nov 5, 2026; mock "Owner · Team"): the phone screen, from the same list, links and search.
   const bPerson = (employee: Employee): TeamBPerson => {
     const name = `${employee.firstName} ${employee.lastName}`;
-    return { id: employee.id, name, detail: `${role(employee)} · ${where(employee)}`, href: `/app/employees/${encodeURIComponent(employee.id)}`, active: employee.active,
-      label: `${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}` };
+    return { id: employee.id, name, detail: `${role(employee)} · ${where(employee)}`, href: `/app/employees/${encodeURIComponent(employee.id)}`, active: employee.active };
   };
   const inactiveCount = employees.filter(employee => !employee.active).length;
   // Nov 14, 2026 inspection: Availability is one tap from Team (AR-9), and an Owner can import a staff list.
@@ -99,7 +96,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
         <TeamDeskPeople peopleLabel={people} limit={all ? undefined : TEAM_SHOWN} rows={active.map(employee => {
           const name = `${employee.firstName} ${employee.lastName}`;
           return { id: employee.id, name, initials: employeeInitials(employee.firstName, employee.lastName), detail: `${role(employee)} · ${where(employee)}`,
-            href: `/app/employees/${encodeURIComponent(employee.id)}`, label: `${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}` };
+            href: `/app/employees/${encodeURIComponent(employee.id)}` };
         })} />
       </CorpSection> : inactive.length ? null : <CorpCard as="div" ariaLabel={people}><CorpBody>
         <p className="c-team__empty">{employees.length ? `No ${people} match “${filters.query}”.` : `No ${people} yet.`}</p>

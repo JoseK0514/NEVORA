@@ -38,6 +38,18 @@ it('the read lower bound includes the employee future-version boundary',async()=
  expect((await readSchedulingRestrictions(owner,'worker',database.executor)).earliestWeek).toBe('2030-10-14');
  await expect(mutateSchedulingRestrictions(owner,'worker',{...command,operationId:'77777777-7777-4777-8777-777777777777',expectedRevision:1},database.executor)).rejects.toMatchObject({code:'locked',earliestWeek:'2030-10-14'});
 });
+it('lets a Lead read their own agreement through a current Lead session',async()=>{
+ await q("UPDATE employees SET role='LEAD' WHERE id='worker'");
+ const lead=await fixtureProof(database.executor,'worker');
+ expect(await readSchedulingRestrictions(lead,'worker',database.executor)).toMatchObject({
+  document:{versions:[],requests:[]},legacyUnconfirmed:true,
+ });
+ await mutateSchedulingRestrictions(owner,'worker',command,database.executor);
+ expect(await readSchedulingRestrictions(lead,'worker',database.executor)).toMatchObject({
+  document:{versions:[{effectiveWeek:command.effectiveWeek,unavailable:command.unavailable}]},legacyUnconfirmed:false,
+ });
+ await expect(readSchedulingRestrictions(lead,'owner',database.executor)).rejects.toMatchObject({code:'denied'});
+});
 it('an employee can request a restriction but cannot approve it or read another employee',async()=>{
  await expect(mutateSchedulingRestrictions(worker,'worker',command,database.executor)).rejects.toThrow('denied');
  const result=await mutateSchedulingRestrictions(worker,'worker',{...command,kind:'REQUEST'},database.executor);

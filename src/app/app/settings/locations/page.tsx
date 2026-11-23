@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { BSegs } from "@/components/owner-b/b-kit";
 import { currentPresentation } from "@/lib/workspace-presentation/current.server";
 import { lower, wordPreset } from "@/lib/workspace-presentation/words";
 import { CaretRight, Plus } from "@phosphor-icons/react/dist/ssr";
@@ -20,6 +22,12 @@ const directoryPath = "/app/settings/locations";
 
 
 
+
+/** The Owner's own name for a place, whole; a spaced em dash is the one place it may break (see the list below). */
+function placeName(name: string): ReactNode {
+  const parts = name.split(" — ");
+  return parts.length > 1 ? <BSegs className="b-segs--dash" parts={parts} /> : name.replace(/ (–) /g, "\u00A0$1 ");
+}
 
 export default async function LocationsPage({ searchParams }: { searchParams?: Promise<Search> } = {}) {
   await requireRoles(["OWNER"]);
@@ -58,13 +66,15 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
       <p className="q-sr" role="status">{activeCount} active of {locations.length} {locations.length === 1 ? place : places}</p>
       {/* Closing F1 (NV-238): the card's title is the page's noun with a count pill ("Locations 2"), as on every index card;
         (NV-248) a long name wraps to two lines instead of being cut. Phase 8: a dash inside the name stays at the end of
-        its line, so no line starts with "— Condado". */}
+        its line, so no line starts with "— Condado". Final polish D3 (#30): the line under the short name is the kit's facts
+        line. A name typed with a spaced em dash ("Northside Bakery — Condado") keeps its dash on one line and breaks only
+        there on a narrow phone, where the dash slot is cut off like a facts dot: no line starts or ends on the dash. */}
       {visible.length ? <ul className="q-list wc-locations" aria-label={words.locations}>
         <li className="wc-cardhead" aria-hidden="true"><span>{words.locations}<span className="wc-count c-num">{activeCount}</span></span></li>
         {visible.map(({ location, readiness, eligibleCount }) => <li key={location.id} data-location={location.id}>
           <Link className={location.name !== location.shortName || readiness.state !== "READY" ? "q-row" : "q-row q-row--one"} href={`${directoryPath}/${encodeURIComponent(location.id)}`} aria-label={`Edit ${location.name}`}>
-            <span className="q-rt"><b>{location.shortName}</b>{location.name !== location.shortName || readiness.state !== "READY" ? <i>{[location.name !== location.shortName ? location.name.replace(/ ([—–]) /g, "\u00A0$1 ") : null,
-              readiness.state === "INACTIVE" ? "Inactive" : readiness.state === "NEEDS_SETUP" ? "Needs setup" : null].filter(Boolean).join(" · ")}</i> : null}</span>
+            <span className="q-rt"><b>{location.shortName}</b>{location.name !== location.shortName || readiness.state !== "READY" ? <i><BSegs parts={[location.name !== location.shortName ? placeName(location.name) : null,
+              readiness.state === "INACTIVE" ? "Inactive" : readiness.state === "NEEDS_SETUP" ? "Needs setup" : null]} /></i> : null}</span>
             <span className="wc-meta">{`${eligibleCount} ${peopleWord(eligibleCount)}`}</span>
             <CaretRight weight="bold" className="q-chev" aria-hidden="true" />
           </Link>

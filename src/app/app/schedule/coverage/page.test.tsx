@@ -27,7 +27,8 @@ rs.mock('@/lib/data/coverage-repair.server',  () => {
     return { ...result, candidates: result.candidates.map(c => ({ ...c, review: actual.createCoverageRepairReview(m.source!, result.locator, c.employeeId, proof) })) };
   }, readCoverageRepairSelection: async (token: string, proof: ReturnType<typeof managementProof>) => {
     const review = actual.assertCoverageRepairReview(m.source, token, proof); const c = review.result.candidates.find(c => c.employeeId === review.employeeId)!;
-    return { locator: review.locator, employeeId: review.employeeId, employeeName: c.employeeName, locationName: review.result.location.shortName, positionName: review.result.position?.name, isDesignatedLead: review.result.designatedLead };
+    return { locator: review.locator, employeeId: review.employeeId, employeeName: c.employeeName, locationName: review.result.location.shortName, positionName: review.result.position?.name, isDesignatedLead: review.result.designatedLead,
+      publication: 'DRAFT' as const, replaced: null, shift: { date: review.locator.date, startTime: review.locator.startTime, endTime: review.locator.endTime, minutes: 240 }, weekHours: { beforeMinutes: 0, afterMinutes: 240, targetMinutes: null }, warnings: [] };
   } };
 });
 rs.mock('@/app/app/schedule/actions', () => ({ createShiftAction: rs.fn() }));
@@ -69,7 +70,7 @@ it('actual manager position/Lead action opens the matching location/interval and
   const form = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve(p) }));
   expect(form).toContain('name="positionId" value="barista"'); expect(form).toContain('name="isDesignatedLead" value="on"');
   expect(form).toContain('name="startTime" value="08:00"'); expect(form).toContain('name="endTime" value="12:00"');
-  expect(form).toContain('Save replacement'); expect(form).not.toContain('<select');
+  expect(form).toContain('Save draft'); expect(form).not.toContain('<select');
   expect((form.match(/type="submit"/g) ?? []).length).toBe(1);
 });
 
@@ -116,7 +117,7 @@ it('a Company denial withholds both repair and generic suggestions before loadin
  m.denied=true;
  for(const query of [params(action().href),{week,date:week,locationId:'loc-1',start:'08:00',end:'12:00',positionId:'barista'}]){
   const html=renderToStaticMarkup(await CoveragePage({searchParams:Promise.resolve(query)}));
-  expect(html).toContain('current company-wide management access');expect(html).not.toContain('Fictional Qualified');expect(html).not.toContain('Review replacement');
+  expect(html).toContain('Company-wide access needed');expect(html).not.toContain('Fictional Qualified');expect(html).not.toContain('Review replacement');
  }
  expect(m.companyLoads).not.toHaveBeenCalled();expect(m.calls).toHaveLength(0);
 });

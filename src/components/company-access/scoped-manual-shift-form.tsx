@@ -5,6 +5,7 @@ import type {OperationalShiftEditorData} from '@/lib/company-access/model';
 import {addDays,formatDayLabel,formatTime,formatWeekRange,isDateInWeek} from '@/lib/date-utils';
 import {ConfigurationForm,type ConfigurationResult} from '@/components/configuration-form';
 import {SelectField} from '@/components/select-field';
+import {RootChrome} from '@/components/root-chrome';
 import {NavIcon} from '@/components/nav-icon';
 import {ShiftReviewRecovery,shiftDraftText} from '@/components/shift-review-recovery';
 import styles from './company-access.module.css';
@@ -55,7 +56,7 @@ function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill=
   }finally{clearTimeout(timer);busy.current=false;setWorking(false);}
  }
  async function remove(){if(!shift||!deleteAction||busy.current||uncertain)return;setRemoving(true);setDeleteConflict(false);const form=editForm.current?.querySelector('form');setDeleteDraft(form?shiftDraftText(new FormData(form)):'');try{const fields=new FormData();fields.set('shiftId',shift.id);const feedback=await perform(fields,deleteAction);setDeleteConflict(feedback.issueCode==='SHIFT_REVIEW_CONFLICT'||feedback.issueCode==='ACCESS_DENIED');setDeleteFeedback(feedback.error??feedback.success??'Review the current schedule before continuing.');}finally{setRemoving(false);}}
- return <div className={styles.scopedPage}><header><h1>{shift?'Edit draft shift':'Create shift'}</h1><p>{locationName??'Your selected location'} · {formatWeekRange(data.weekStart)}</p></header>
+ return <div className={styles.scopedPage}><RootChrome/><header><h1>{shift?'Edit draft shift':'Create shift'}</h1><p>{locationName??'Your selected location'} · {formatWeekRange(data.weekStart)}</p></header>
   {feedback}<div ref={editForm}><ConfigurationForm action={fields=>perform(fields)} reviewedShiftVersion={reviewVersion} className={styles.scopedForm}>
    <fieldset disabled={uncertain||working} className={styles.stack}>
     <input type="hidden" name="weekStart" value={data.weekStart}/><input type="hidden" name="locationId" value={data.locationId}/>{shift&&<input type="hidden" name="shiftId" value={shift.id}/>}

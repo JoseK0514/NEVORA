@@ -156,7 +156,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
         aria-label={`${text.title}, ${count} notifications${unreadIds.length?`, ${unreadIds.length} unread`:''}, latest ${whenLong(item.at,zone)}`}
         onClick={()=>setExpanded(ids=>ids.includes(item.id)?ids.filter(id=>id!==item.id):[...ids,item.id])}>
         <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
-        <span className="q-rt"><b>{text.title}</b><i><span className="b-notif-nw">{count} notifications ·</span> <span className="b-notif-nw">latest <time dateTime={item.at}>{ago(item.at)}</time></span></i></span>
+        <span className="q-rt"><b>{text.title}</b><i>{/* Final polish (Nov 20, 2026): the kit's facts line, so at 320 no line ends on the dot ("3 notifications ·"). */}<BSegs parts={[`${count}\u00a0notifications`,<span key="at" className="b-keep">latest <time dateTime={item.at}>{ago(item.at)}</time></span>]}/></i></span>
         {unreadIds.length?<span className="q-notif-dot" aria-hidden="true"/>:null}
         {chev(open)}
        </button>

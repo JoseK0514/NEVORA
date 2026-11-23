@@ -28,6 +28,7 @@ import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { faceTint } from "@/lib/face-tint";
 import { compactRange, BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSegs, BStack, BStatusText } from "./owner-b/b-kit";
+import { axisPlace, dayAxis, type AxisPlace } from "../lib/scheduling/day-axis";
 import { absencesOn, fullDayAbsence, type WeeklyApprovedAbsences, assignedMinutes, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
 
 /* Manager and Owner Schedule, rebuilt for the clean Manager app (v3, approved Oct 19; spec "Schedule" in
@@ -79,9 +80,12 @@ const editHref = (shift: RosterShift) => `/app/schedule/edit?shiftId=${encodeURI
  * role is on hold, so a shift's lead flag isn't shown (no seal, no "Lead"); the data is unchanged. */
 /** Review B2 (NV-027): `onLeave` marks a shift on a day the person has full-day time off: an amber ring, a warning glyph
  * and "Needs cover", so it never looks like a normal assignment. */
-function Block({ shift, person, onLeave = false }: { shift: RosterShift; person: string; onLeave?: boolean }) {
+/** Nov 21, 2026 (Jose's pick "A: a timeline"): `place` is the day view's capsule, set at its hours on the day's axis; a
+ * shift that runs past midnight is cut flat at the axis end. The link, its name and its title are the same either way. */
+function Block({ shift, person, onLeave = false, place }: { shift: RosterShift; person: string; onLeave?: boolean; place?: AxisPlace }) {
   const hint = [`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`, shift.position, shift.location, shift.status === "PUBLISHED" ? null : statusWord(shift.status), onLeave ? "Needs cover (time off)" : null].filter(Boolean).join(" · ");
-  return <Link className={`cm-block${shift.status === "DRAFT" ? " draft" : ""}${onLeave ? " conflict" : ""}`} href={editHref(shift)} title={hint}>
+  return <Link className={`cm-block${shift.status === "DRAFT" ? " draft" : ""}${onLeave ? " conflict" : ""}`} href={editHref(shift)} title={hint}
+    data-cut={place?.cut || undefined} style={place ? { left: `${place.left}%`, width: `${place.width}%` } : undefined}>
     {onLeave ? <WarningIcon className="cm-block__warn" size={13} weight="bold" aria-hidden="true" /> : null}
     <span aria-hidden="true"><CorpTime>{range(shift.startTime, shift.endTime)}</CorpTime></span>
     {onLeave ? <span className="cm-block__need">Needs cover</span> : null}
@@ -353,6 +357,9 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   </CorpCard> : null;
 
   // ---------- Desktop: people × days ----------
+  // The day view (one day open): a day axis over the shift column, each shift a capsule at its hours (day-axis.ts).
+  const axis = focus !== "all" ? dayAxis(shiftsOn(focus).map(entry => entry.shift)) : null;
+  const axisStep = axis ? `${Math.round((axis.stepHours * 60 / (axis.end - axis.start)) * 1e6) / 1e4}%` : undefined;
   const shown = (employee: RosterEmployee) => employee.shifts.filter(shift => visibleDates.includes(shift.date));
   const scheduled = employees.filter(employee => shown(employee).length);
   const unscheduled = employees.filter(employee => !shown(employee).length);
@@ -378,11 +385,12 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       {visibleDates.map(date => {
         const shifts = employee.shifts.filter(shift => shift.date === date);
         const leave = absencesOn(absences, employee.id, date);
-        return <td key={date} data-today={date === today || undefined}>
+        const blocks = shifts.map(shift => <Block shift={shift} person={employee.name} key={shift.id} onLeave={fullDayAbsence(leave)} place={axis ? axisPlace(axis, shift.startTime, shift.endTime) : undefined} />);
+        return <td key={date} data-today={date === today || undefined} data-tl={axis ? "" : undefined} style={axis ? { "--tl-step": axisStep } as CSSProperties : undefined}>
           {leave.length ? <span className="wb-note">{absenceText(leave)}</span> : !absenceKnown(employee.id) ? <span className="wb-note">Time off unavailable</span> : null}
           {/* Nov 14 inspection (RA-10): an empty day's "+ Add" is a real link (named for the person and day), shown on
             keyboard focus and on touch screens as well as on hover. */}
-          {shifts.length ? shifts.map(shift => <Block shift={shift} person={employee.name} key={shift.id} onLeave={fullDayAbsence(leave)} />)
+          {shifts.length ? axis ? <span className="cm-tl">{blocks}</span> : blocks
             : absenceKnown(employee.id) && !fullDayAbsence(leave) ? <Link className="cm-add" href={newShift(date, employee.id)} aria-label={`Add a shift for ${employee.name}, ${formatDayLabel(date).weekday} ${formatDayLabel(date).day}`}>+ Add</Link> : null}
         </td>;
       })}
@@ -406,7 +414,12 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
         <thead><tr>
           <th scope="col" className="cm-grid__corner">{`${plural(scheduled.length, "person", "people")} · ${durationTotal(totalMinutes)}`}</th>
           {/* Nov 1 upscale: each day's assigned hours under its date ("Mon 26" over "24 h"). */}
-          {visibleDates.map(date => { const hours = durationRow(assignedMinutes(scheduled.flatMap(shown).filter(shift => shift.date === date)), "0 h"); return <th scope="col" key={date} data-today={date === today || undefined}>
+          {visibleDates.map(date => { const hours = durationRow(assignedMinutes(scheduled.flatMap(shown).filter(shift => shift.date === date)), "0 h"); // The day view's column head is the day axis; the day and its hours (said in the card's head and the corner) are read out.
+            if (axis) return <th scope="col" key={date} className="cm-axis-head" data-today={date === today || undefined}>
+              <span className="sr-only">{`${formatDayLabel(date).weekday} ${Number(date.slice(8))}${date === today ? ", today" : ""}, ${hours}`}</span>
+              <span className="cm-axis" aria-hidden="true">{axis.ticks.map(tick => <em key={tick.at} style={{ left: `${tick.at}%` }}>{tick.label}</em>)}</span>
+            </th>;
+            return <th scope="col" key={date} data-today={date === today || undefined}>
             <span>{formatDayLabel(date).weekday}</span> <b>{Number(date.slice(8))}</b>{date === today ? <span className="sr-only">, today</span> : null}
             <span className="cm-grid__dayhours c-num"><span className="sr-only">, </span>{hours}</span>
           </th>; })}
@@ -440,7 +453,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
                 <ul>{listedOpen.map(open => { const day = formatDayLabel(open.date); return <li key={open.id}>
                   <span className="sb-openlist__t c-num">{range(open.startTime, open.endTime) === "All day" ? "All day" : `${compactTime(open.startTime)} – ${compactTime(open.endTime)}`}</span>
                   <span className="sb-openlist__p">{open.location || "No one assigned"}</span>
-                  {ended(open) ? <BChip>Not filled</BChip>
+                  {ended(open) ? <BStatusText>Not filled</BStatusText>
                     : <Link className="b-rowact b-rowact--go sb-openlist__go" href={open.href} aria-label={`Find cover for an open shift, ${day.weekday} ${day.day}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Fill</Link>}
                 </li>; })}</ul>
               </div>
@@ -484,8 +497,10 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       sub={<BSegs parts={[range(shift.startTime, shift.endTime) === "All day" ? "All day" : compactRange(`${clock(shift.startTime)} – ${clock(shift.endTime)}`), shift.position || employee.role, !locationId && bPlaces > 1 ? shift.location : null]} />} chevron={false} /> }; }),
     ...dayOpen.map(open => { const over = ended(open); return { start: open.startTime, node: <BRow key={`open-${open.id}`} lead={<BAvatar open />} title="Open shift"
       sub={<BSegs parts={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), open.location]} />}
-      href={over ? undefined : open.href} label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}
-      trail={over ? <BChip>Not filled</BChip> : <BButtonLink href={open.href} kind="ghost" label={`Fill the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}`}>Fill</BButtonLink>} /> }; }),
+      href={over ? undefined : open.href} label={`${over ? "Open shift, not filled" : "Find cover for the open shift"}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}
+      /* Final polish (Nov 20, 2026): no "Not filled" chip on a row titled "Open shift" (it said the title again, as a chip
+         on a normal fact); a shift that can still be filled carries Fill, one that ended carries nothing. */
+      trail={over ? undefined : <BButtonLink href={open.href} kind="ghost" label={`Fill the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}`}>Fill</BButtonLink>} /> }; }),
   ].sort((a, b) => a.start.localeCompare(b.start));
   const SHOWN_B = 8;
   const bScreen = b && corp ? <BScreen>

@@ -96,6 +96,8 @@ export type GenerationDemand = {
   needs: ConfiguredNeed[];
   coverage: CoverageMeasure;
   score: PartialCoverageScore;
+  /** A review's cap on a proposed shift's length, in minutes (GenerationReviewScope.maxShiftMinutes). */
+  planShiftCap?: number;
 };
 export type GenerationPeriod = {
   locationId: string;

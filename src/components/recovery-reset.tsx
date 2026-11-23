@@ -7,7 +7,6 @@ import {useEffect, useRef, type FormEventHandler, type RefCallback} from 'react'
 import {AuthValidation, FieldInvalid} from './auth-premium/auth-validation';
 import {RecoverySubmit} from './recovery-submit';
 import {AUTH_COPY, authMessage, type AuthLang} from '@/lib/auth-copy';
-import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {ACCESS_COPY} from './access-recovery/copy';
 import {AccessSteps} from './access-recovery/access-steps';
 import {recoveryIssue, recoveryNext} from './access-recovery/recovery-guidance';
@@ -15,6 +14,7 @@ import {SupportReference} from './access-recovery/support-reference';
 import {PasswordPair} from './access-recovery/password-pair';
 import {BCallout} from './owner-b/b-kit';
 import {noteParts} from './auth-premium/note-parts';
+import {AuthDoneTick} from '@/components/auth-premium/done-tick';
 
 export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef, lang = 'en', mobileAccess=false,linkProof=false,onDifferentCode,supportReference=null,workspaceName=null}: {
  workspaceName?: string | null;
@@ -55,10 +55,10 @@ export function RecoveryReset({hydrated, busy, done, message, onSubmit, proofRef
  // the form either way, because AccountRecovery fills it and reads it exactly as before. PB-016: the password pair.
  // PB-017: the finish is the mark, the title, one line and the one filled button.
  return <>
-  <div className="q-hd">{done ? <span className="q-auth__mark q-auth__mark--done q-auth__mark--head" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span> : null}<h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}{done ? null : <p>{t.quiet.resetSub}</p>}</div>
+  <div className="q-hd">{done ? <span className="q-auth__mark q-auth__mark--done q-auth__mark--head" aria-hidden="true"><AuthDoneTick/></span> : null}<h1>{done ? t.resetDoneTitle : t.quiet.resetTitle}</h1>{workspaceName?<div className="q-auth__hd ar-ws"><p>{workspaceName}</p></div>:null}{done ? null : <p>{t.quiet.resetSub}</p>}</div>
   {done ? <div className="q-card q-auth__card ar-done">
    <AccessSteps journey="recovery" current={3} lang={lang}/>
-   <span className="q-auth__mark q-auth__mark--done" aria-hidden="true"><CheckIcon size={28} weight="bold"/></span>
+   <span className="q-auth__mark q-auth__mark--done" aria-hidden="true"><AuthDoneTick/></span>
    <div className="q-auth__receipt" ref={feedback} role="status" tabIndex={-1}><p>{t.reset.doneLine}</p></div>
    <Link href="/login" className="q-btn">{t.signIn}</Link>
    <p className="q-auth__note ar-next">{u.doneNote}</p>

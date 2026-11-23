@@ -3,7 +3,7 @@ import {offlineListener} from '@/lib/offline-hold';
 import Link from 'next/link';
 import {createContext,useContext,useEffect,useRef,useState,type ReactNode} from 'react';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
-import {privateReadBody} from '../lib/http/nevora-failure';
+import {privateReadBody,type Denial} from '../lib/http/nevora-failure';
 import {parseActionCenter,type ActionCenter,type ActionItem} from '../lib/action-center/project';
 import styles from './manager-action-center.module.css';
 import {ArrowClockwiseIcon, CalendarBlankIcon, CaretDownIcon, CheckCircleIcon, ClockIcon, InfoIcon, UserCheckIcon} from '@phosphor-icons/react/ssr';
@@ -15,7 +15,8 @@ import {hasSetupGaps,setupSteps,withoutSetupItems,type SetupSteps} from '../lib/
 import {isPastCoverageGap} from '../lib/action-center/inbox';
 import {isStaffingRepair} from '../lib/time-off-staffing/present';
 import {presentItem} from '../lib/action-center/present';
-type Connection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
+/** access_lost: signed out (sign in again). not_allowed: signed in without access to these tasks (QA A3-06). */
+type Connection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'not_allowed'|'paused';
 type Category='all'|'scheduling'|'requests'|'timekeeping';
 const categoryLabels={scheduling:'Scheduling',requests:'Requests',timekeeping:'Timekeeping'};
 const plural=(n:number,one:string,many:string)=>`${n} ${n===1?one:many}`;
@@ -102,30 +103,32 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
    </div>:null}
    {ready.limitedAttendance?<p className={styles.status}>Some attendance comparisons are unavailable. Check the attendance view for source limitations.</p>:null}
    <div className={styles.provenance}><details className={styles.note}><summary><InfoIcon size={16} weight="bold" aria-hidden="true"/>About these tasks</summary><p>Counts identify review tasks, not policy violations. Attendance observations concern today and open entries; period timecards use the selected week. These sources are checked under current authority and are refreshed together.</p></details></div>
-  </>:<>{status==='loading'||status==='reconnecting'?<SkeletonRows rows={3}/>:null}<p className={status==='loading'||status==='reconnecting'?`${styles.status} nevora-skeleton-status`:styles.status} role="status">{({loading:'Loading tasks',ready:'Tasks unavailable',offline:'Tasks unavailable offline',reconnecting:'Reconnecting to tasks',unavailable:'Tasks unavailable',access_lost:'Task access ended',paused:'Task updates paused'})[status]}{status==='loading'||status==='reconnecting'?'…':`. ${status==='access_lost'?'Sign in with a currently authorized management account.':'The task list is unconfirmed. Refresh a current protected read before reviewing.'}`}</p></>}
+  </>:<>{status==='loading'||status==='reconnecting'?<SkeletonRows rows={3}/>:null}<p className={status==='loading'||status==='reconnecting'?`${styles.status} nevora-skeleton-status`:styles.status} role="status">{({loading:'Loading tasks',ready:'Tasks unavailable',offline:'Tasks unavailable offline',reconnecting:'Reconnecting to tasks',unavailable:'Tasks unavailable',access_lost:'Your session ended',not_allowed:'You don’t have access to these tasks',paused:'Task updates paused'})[status]}{status==='loading'||status==='reconnecting'?'…':`. ${status==='access_lost'?'Sign in with a currently authorized management account.':status==='not_allowed'?'Ask the Owner if you need them.':'The task list is unconfirmed. Refresh a current protected read before reviewing.'}`}</p></>}
   </MobileHomeDisclosure>
  </section>;
 }
 /** The live, authority-checked action center read shared by Home Tasks and the
  * Inbox. It pauses offline and in background tabs and never keeps items past their validity. */
-export function useActionCenter(weekStart:string,actorId:string){
+export function useActionCenter(weekStart:string,actorId:string,inlineAccessDenied=false){
  const [snapshot,setSnapshot]=useState<ActionCenter|null>(null),[connection,setConnection]=useState<Connection>('loading');
  const controller=useRef<ReturnType<typeof createPrivateSnapshotController<ActionCenter>>|null>(null);
+ // Why the last read was refused; the shared ActionCenter shape keeps one access_denied reason for both.
+ const denial=useRef<Denial|null>(null);
  useEffect(()=>{
   const c=createPrivateSnapshotController<ActionCenter>(value=>{
    // IS-P4-01: a re-read (the 30-second poll or Refresh) keeps the confirmed read on screen until the new one lands. The controller still
    // clears it when its validity runs out, when a read fails, offline and in the background, so nothing stale outlives its window.
    if(value.refreshing&&!value.paused&&value.snapshot?.state==='ready')return;
-   setSnapshot(value.refreshing?null:value.snapshot);if(value.paused)setConnection(navigator.onLine?'paused':'offline');else if(value.refreshing)setConnection(previous=>previous==='reconnecting'?'reconnecting':'loading');else if(value.snapshot?.state==='ready')setConnection('ready');else setConnection(value.snapshot?.state==='unavailable'&&value.snapshot.reason==='access_denied'?'access_lost':'unavailable');},async signal=>{
+   setSnapshot(value.refreshing?null:value.snapshot);if(value.paused)setConnection(navigator.onLine?'paused':'offline');else if(value.refreshing)setConnection(previous=>previous==='reconnecting'?'reconnecting':'loading');else if(value.snapshot?.state==='ready')setConnection('ready');else setConnection(value.snapshot?.state==='unavailable'&&value.snapshot.reason==='access_denied'?denial.current==='not_allowed'?'not_allowed':'access_lost':'unavailable');},async signal=>{
    const response=await fetch('/api/manager/action-center',{method:'POST',credentials:'same-origin',cache:'no-store',signal,headers:{'Content-Type':'application/json','X-Nevora-Action-Center':'1','X-Nevora-Actor':actorId},body:JSON.stringify({weekStart})});
    // X-Nevora-Failure (Nov 9, 2026): one shared mapping; anything that clears data reads as access ended, the rest as unavailable.
-   const read=await privateReadBody(response);return read.ok?read.body:{state:'unavailable',reason:read.reason};
+   const read=await privateReadBody(response,{inlineAccessDenied});denial.current=read.ok?null:read.denial;return read.ok?read.body:{state:'unavailable',reason:read.reason};
   },value=>parseActionCenter(value,weekStart),reason=>({state:'unavailable',reason}),()=> 'read_failed');controller.current=c;
   let active=false;
   const current=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;active=document.visibilityState==='visible'&&navigator.onLine;if(active)c.start();else c.pause();},pause=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;c.pause();},online=()=>{setConnection('reconnecting');current();};
   for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.addEventListener(name,current);const offline=offlineListener({pause:()=>pause(),hold:()=>{active=false;c.hold();}});for(const name of ['blur','pagehide'])window.addEventListener(name,pause);window.addEventListener('offline',offline);window.addEventListener('online',online);document.addEventListener('visibilitychange',current);current();
   return()=>{c.stop();controller.current=null;for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.removeEventListener(name,current);for(const name of ['blur','pagehide'])window.removeEventListener(name,pause);window.removeEventListener('offline',offline);window.removeEventListener('online',online);document.removeEventListener('visibilitychange',current);};
- },[weekStart,actorId]);
+ },[weekStart,actorId,inlineAccessDenied]);
  return {snapshot,connection,refresh:()=>controller.current?.refresh()};
 }
 export type ActionCenterConnection=Connection;
@@ -222,7 +225,7 @@ export function ActionIntelligenceSurface({ snapshot, connection, expectedViewId
     </article>)}</div> : ready.state === 'ready' && ready.allClear ? <p role="status">No actions need review in this authorized view.</p> : null}
    {ready.items.length > 20 && !expanded ? <button className="button secondary" type="button" onClick={onExpand} disabled={!onExpand}>Show all {ready.items.length} observed actions</button> : null}
    <p className={styles.note}>Counts include only observed actions in this authorized view. Incomplete or capped sources may contain additional actions. Counts identify review tasks, not policy violations.</p>
-  </> : <p role="status">{({loading: 'Loading actions', ready: 'Actions unavailable', offline: 'Actions unavailable offline', reconnecting: 'Reconnecting to actions', unavailable: 'Actions unavailable', access_lost: 'Action Center access ended', paused: 'Action updates paused'})[status]}. The action list is unconfirmed. Refresh a current protected read before reviewing.</p>}
+  </> : <p role="status">{({loading: 'Loading actions', ready: 'Actions unavailable', offline: 'Actions unavailable offline', reconnecting: 'Reconnecting to actions', unavailable: 'Actions unavailable', access_lost: 'Your session ended', not_allowed: 'You don’t have access to these actions', paused: 'Action updates paused'})[status]}. The action list is unconfirmed. Refresh a current protected read before reviewing.</p>}
   {sections.length ? <div aria-label="Action source status">{sections.map(section =>
    <article key={section.source} data-action-source={section.source}>
     <h3>{section.label}</h3><p>{({complete: 'Checked source', limited: 'Incomplete source', loading: 'Loading', unavailable: 'Read unavailable'})[section.state]}</p>

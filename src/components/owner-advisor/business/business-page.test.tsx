@@ -76,7 +76,7 @@ describe("the business records page", () => {
   });
   it("lists records with mixed states: plain words for the normal ones, a chip only for what needs a look", () => {
     const html = renderToStaticMarkup(<Library ctx={businessContext(catalog, "en", uiNow)} />);
-    for (const text of ["Square sales", "Sales · USD · Nov 9 – Nov 15, 2026", "Operating account", "Cash and bills · USD", "Catering invoices", "Old register", "Withdrawn", "3 records", "Main records", "2 entries", "Check figures", "See what Rondo would read"]) expect(html).toContain(text);
+    for (const text of ["Square sales", "Sales · USD · Nov 9–15, 2026", "Operating account", "Cash and bills · USD", "Catering invoices", "Old register", "Withdrawn", "3 records", "Main records", "2 entries", "Check figures", "See what Rondo would read"]) expect(html).toContain(text);
     expect(html.match(/c-pill--amber/g)).toHaveLength(4);   // two drafts waiting, one draft-only record, and a main-records draft
     expect(html).toContain(">Draft waiting<");
     expect(html).toContain(">Draft<");
@@ -116,8 +116,8 @@ describe("the business records page", () => {
 describe("reviewing a version", () => {
   it("shows every row, the server's totals, what to check, and a publish that waits for the acknowledgement", () => {
     const html = review(uiIds.cashDraft);
-    for (const text of ["Nov 1 – Nov 15, 2026", "Totals in this file", "Money in", "USD 9,986.50", "Money out", "USD 5,045.00", "Owed to you", "not cash", "includes unconfirmed", "Things to check",
-      "Pending cash left out", "Bills not confirmed", "Your own file. NEVORA doesn’t verify it", "Draft totals, for checking only", "Rondo starts using these rows for Nov 1 – Nov 15, 2026.",
+    for (const text of ["Nov 1–15, 2026", "Totals in this file", "Money in", "USD 9,986.50", "Money out", "USD 5,045.00", "Owed to you", "not cash", "includes unconfirmed", "Things to check",
+      "Pending cash left out", "Bills not confirmed", "Your own file. NEVORA doesn’t verify it", "Draft totals, for checking only", "Rondo starts using these rows for Nov 1–15, 2026.",
       "I reviewed the rows, the period and the things to check, and I want Rondo to use this version", "This is your own record. NEVORA doesn’t verify it, and it isn’t an audit.", "Discard draft", "File fingerprint", "Open as plain text"]) expect(html, text).toContain(text);
     expect(html.match(/<li><(?:a|div|button)[^>]*class="c-row[^"]*"/g)!.length).toBeGreaterThanOrEqual(10);
     expect(html).toContain("bal-open");

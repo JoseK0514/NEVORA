@@ -1,5 +1,6 @@
 "use client";
-import Link from "next/link";
+import { DiscardGuard } from "@/components/kit/discard-dialog";
+import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
@@ -66,9 +67,10 @@ export function AccountScreen(props: AccountScreenProps) {
   const [custody, setCustody] = useState<Custody | null>(initial?.custody ?? null);
   const [issue, setIssue] = useState<Issue | null>(initial?.issue ?? null);
   const [problems, setProblems] = useState<Problem[]>([]);
-  const [landed, setLanded] = useState(false);
+  // The confirmed change: which balance, and what it is now (the sum the review showed, then the server's own figure).
+  const [landed, setLanded] = useState<{ code: string; minutes: number } | null>(null);
   const [said, setSaid] = useState("");
-  const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null), shownStep = useRef(step);
+  const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null), shownStep = useRef(step), doneRef = useRef<HTMLElement>(null);
 
   const fetchAll = useCallback(async (signal?: AbortSignal): Promise<Load> => {
     const [account, policies] = await Promise.all([readAccount(employeeId, signal), readPolicies(signal)]);
@@ -93,9 +95,11 @@ export function AccountScreen(props: AccountScreenProps) {
   useEffect(() => {
     if (shownStep.current === step) return;
     shownStep.current = step;
+    // A confirmed change lands on its result: the title that says what is now true takes focus, so it is read once.
+    if (step === "view" && landed && doneRef.current) { doneRef.current.focus({ preventScroll: true }); window.scrollTo({ top: 0 }); return; }
     const title = [...document.querySelectorAll<HTMLElement>(".pto h1")].find(h => h.getClientRects().length > 0);
     if (title) { if (!title.hasAttribute("tabindex")) title.tabIndex = -1; title.focus(); window.scrollTo({ top: 0 }); }
-  }, [step]);
+  }, [step, landed]);
   const trouble = custody && custody.status !== "sending" ? custody.status : issue;
   useEffect(() => {
     if (!trouble) return;
@@ -121,7 +125,7 @@ export function AccountScreen(props: AccountScreenProps) {
     // Vacation first when it exists (the balance most adjustments touch), then any policy in use.
     const first = rows.find(r => r.code === code) ?? rows.find(r => r.code === "VACATION" && r.policy?.enabled) ?? rows.find(r => r.policy?.enabled) ?? rows[0];
     if (!first) return;
-    setIssue(null); setLanded(false); setProblems([]);
+    setIssue(null); setLanded(null); setProblems([]);
     setDraft({ code: first.code, mode: first.hasEntries ? "add" : "opening", amount: "", date: today, note: "" });
     setStep("edit");
   }
@@ -136,7 +140,19 @@ export function AccountScreen(props: AccountScreenProps) {
   async function send(command: PostCommand, again: boolean) {
     setCustody({ command, status: again ? "checking" : "sending" }); setIssue(null);
     const result = await sendSettings(command);
-    if (result.kind === "saved") { setCustody(null); setDraft(null); setStep("view"); setLanded(true); setSaid(t.adjustSaved); await reload(); return; }
+    if (result.kind === "saved") {
+      // The result's title takes focus (the step effect), so the live line stays empty: a result is said once. The same
+      // one reload as before; its balance replaces the review's sum in the fact line.
+      const code = command.policyCode, expected = (rows.find(r => r.code === code)?.minutes ?? 0) + command.quantity;
+      setCustody(null); setDraft(null); setStep("view"); setLanded({ code, minutes: expected }); setSaid("");
+      const next = await fetchAll().catch(() => null);
+      if (next) {
+        apply(next);
+        const fresh = next.state === "ready" ? next.data.account.balances.find(b => b.code === code) : undefined;
+        if (fresh) setLanded(old => old && old.code === code ? { code, minutes: fresh.balanceMinutes } : old);
+      }
+      return;
+    }
     if (result.kind === "unknown") { setCustody({ command, status: again ? "still_unknown" : "unknown" }); setSaid(t.unknownTitle); return; }
     setCustody(null); setIssue(result.kind);
     setSaid(result.kind === "conflict" ? t.conflictTitle : result.kind === "invalid" ? t.invalidTitle : result.kind === "denied" ? t.deniedTitle : t.signedOutTitle);
@@ -159,6 +175,8 @@ export function AccountScreen(props: AccountScreenProps) {
   const attentionCard = attention ? <div className="rs-issue" ref={issueRef} tabIndex={-1}><CorpCard ariaLabel={t.unknownTitle}>{attention}</CorpCard></div> : null;
 
   const title = step === "edit" ? t.adjustTitle : step === "review" ? t.reviewTitle : t.accountTitle;
+  // The step line: under the title on the band from 768px; a phone's bar has no second line, so the card carries it.
+  const stepLine = load.state !== "ready" || !draft ? null : step === "edit" ? t.stepEdit : step === "review" ? t.stepReview : null;
   let body: ReactNode;
   if (load.state === "loading") body = <CorpCard ariaLabel={t.balancesCard}><div className="rs-skel" role="status" aria-busy="true"><span className="rs-sr">{t.loadingAccount}</span>
     <span className="rs-skel__bar rs-skel__bar--head" aria-hidden="true" />{[42, 34, 40].map((w, i) => <span key={i} className="rs-skel__row" aria-hidden="true"><span className="rs-skel__bar rs-skel__bar--day" /><span className="rs-skel__bar" style={{ width: `${w}%` }} /></span>)}</div></CorpCard>;
@@ -175,6 +193,7 @@ export function AccountScreen(props: AccountScreenProps) {
     body = <>
       {attentionCard}
       <CorpCard id="pto-adjust" ariaLabel={t.adjustTitle}>
+        <p className="rs-step">{t.stepEdit}</p>
         <div className="rs-fields">
           <div className="rs-field"><label className="rs-field__l" htmlFor="pto-policy">{t.whichPolicy}</label>
             <select id="pto-policy" className="c-in rs-in" value={draft.code} disabled={busy} onChange={event => { const r = rows.find(x => x.code === event.target.value); set({ code: event.target.value, mode: r && !r.hasEntries ? "opening" : "add" }); }}>
@@ -197,14 +216,17 @@ export function AccountScreen(props: AccountScreenProps) {
         </div>
       </CorpCard>
       {problems.length ? <p className="rs-err rs-err--sum" ref={problemRef} tabIndex={-1} role="alert"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{t.problems(problems.length)}</p> : null}
-      <div className="rs-foot"><Act kind="text" disabled={busy} onClick={() => { setDraft(null); setProblems([]); setStep("view"); }}>{t.cancel}</Act><Act kind="teal" disabled={busy} onClick={toReview}>{t.review}</Act></div>
+      <div className="rs-foot"><Act kind="text" disabled={busy} onClick={() => leaveWithDiscardGuard(() => { setDraft(null); setProblems([]); setStep("view"); })}>{t.cancel}</Act><Act kind="teal" disabled={busy} onClick={toReview}>{t.review}</Act></div>
     </>;
   } else if (step === "review" && draft) {
     const row = current(draft), delta = draftDelta(draft) ?? 0, before = row?.minutes ?? 0;
     const sending = custody?.status === "sending";
     body = <>
       {attentionCard}
-      <CorpCard id="pto-review" label={t.reviewLine(firstName, labelOf(draft.code))}>
+      <CorpCard id="pto-review" label={t.reviewLine(firstName, labelOf(draft.code))}
+        footer={<><Act kind="text" disabled={busy || !!custody} onClick={() => setStep("edit")}>{t.back}</Act>
+          <Act kind="teal" busy={sending} disabled={busy || !!custody} onClick={confirm}>{sending ? t.saving : t.saveAdjust}</Act></>}>
+        <p className="rs-step">{t.stepReview}</p>
         <CorpRows label={t.reviewLine(firstName, labelOf(draft.code))}>
           <li><CorpRow title={t.now} value={hoursText(before)} valueTone="soft" /></li>
           <li><CorpRow title={draft.mode === "opening" ? t.opening : t.change} detail={dateText(draft.date, t)} value={hoursText(delta, true)} valueTone="soft" /></li>
@@ -212,17 +234,16 @@ export function AccountScreen(props: AccountScreenProps) {
         </CorpRows>
         <p className="rs-note rs-note--in">{t.note}: {draft.note.trim()}</p>
       </CorpCard>
-      <div className="rs-foot"><Act kind="text" disabled={busy || !!custody} onClick={() => setStep("edit")}>{t.back}</Act>
-        <Act kind="teal" busy={sending} disabled={busy || !!custody} onClick={confirm}>{sending ? t.saving : t.saveAdjust}</Act></div>
     </>;
   } else {
     const account = data!.account;
     body = <>
       {attentionCard}
-      {landed && !attention ? <div className="rs-landed"><CorpCard ariaLabel={t.adjustSaved}><BState silent kind="done" title={t.adjustSaved} /></CorpCard></div> : null}
       <CorpCard id="pto-balances" label={t.balancesCard}>
+        {/* Final polish (finding 24): a save's result opens the card it changed: the done mark, what is now true, the fact. */}
+        {landed && !attention ? <BState kind="done" titleRef={doneRef} title={t.adjustSaved} line={t.adjustSavedLine(labelOf(landed.code), hoursText(landed.minutes))} /> : null}
         {rows.length ? <CorpRows label={t.balancesCard}>{rows.map(r => <li key={r.code}><CorpRow title={r.label} detail={r.enabled ? undefined : t.policyOff} value={hoursText(r.minutes)} valueTone="soft" /></li>)}</CorpRows>
-          : <div className="pto-empty"><BCallout tone="grey" icon="empty" title={t.noPolicies} action={<Link className="rs-link" href="/app/settings/time-off">{t.openPolicies}</Link>} /></div>}
+          : <div className="pto-empty"><BCallout tone="grey" icon="empty" title={t.noPolicies} action={{ label: t.openPolicies, href: "/app/settings/time-off" }} /></div>}
         {rows.some(r => r.policy) ? <div className="rs-main"><Act kind={attention ? "ghost" : "teal"} disabled={busy || !!custody} onClick={() => startAdjust()}>{t.adjust}</Act></div> : null}
       </CorpCard>
       <CorpCard id="pto-history" label={t.historyCard}>
@@ -240,9 +261,12 @@ export function AccountScreen(props: AccountScreenProps) {
 
   return <CorpPage className="c-page--narrow rs rs--c pto" labelledBy={TITLE_ID} lang={lang}>
     <CorpNav back={{ href: backHref, label: firstName }} title={title} titleId="pto-acc-nav" phoneOnly />
-    <CorpTitle id={TITLE_ID} title={title} sub={name} wide focusTarget />
+    <CorpTitle id={TITLE_ID} title={title} sub={stepLine ? `${name} · ${stepLine}` : name} wide focusTarget />
     <p className="rs-sr" role="status" aria-live="polite">{said}</p>
     {body}
+    {/* Leaving the flow with a typed amount or note that is not saved asks first (Nov 21, 2026). Review and Back are steps of
+      the same flow and never ask; a save that is being checked keeps its own hold. */}
+    <DiscardGuard dirty={!!draft && !custody && (draft.amount.trim() !== "" || draft.note.trim() !== "")} lang={lang} />
   </CorpPage>;
 }
 

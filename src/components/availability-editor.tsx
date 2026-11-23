@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { DiscardGuard } from "./kit/discard-dialog";
 import { useFormStatus } from "react-dom";
 import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
@@ -67,6 +68,8 @@ function AvailabilityFields({ initialAvailability, weekStart, locked }: {
         </div>;
       })}
     </fieldset>
+    {/* Leaving with hours that are not saved asks first (Jose, Nov 21, 2026); a save in flight and a closed week do not. */}
+    <DiscardGuard dirty={dirty && !disabled} />
     <p className="av-input-hint">An end time of midnight includes the rest of that day.</p>
     {weekStart && availableDays === 0 ? <p className="av-zero-note">Submitting with every day unavailable tells your manager you cannot work this week.</p> : null}
     <footer className="av-editor-footer">

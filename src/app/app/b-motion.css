@@ -223,4 +223,20 @@
     html body .app-shell[data-nv-b] :is(dialog:is(.q-sheet, .cm-sheet, .pk-dialog, .wc-dialog, .command-finder), .nevora-action-menu-popover, #manager-more-navigation, .employee-more-navigation, .cm-insights__menu, .portal-device-settings)::backdrop { transition: none !important; animation: none !important; }
     html body .app-shell[data-nv-b] .nevora-toast { translate: none !important; }
   }
+  /* Refinement (Nov 20, 2026): a note that arrives after an action (role status or alert) fades up 4px while its mark
+   * settles from 0.8 (transitions from @starting-style, so nothing replays). Under reduced motion it only fades. */
+  @media (prefers-reduced-motion: no-preference) {
+    :is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout:is([role="status"], [role="alert"]) { transition: opacity var(--b-dur-note) var(--b-ease-settle), transform var(--b-dur-note) var(--b-ease-settle) !important; }
+    :is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout:is([role="status"], [role="alert"]) .b-callout__ic { transition: opacity var(--b-dur-enter) var(--b-ease-settle), transform var(--b-dur-enter) var(--b-ease-settle) !important; }
+    @starting-style {
+      :is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout:is([role="status"], [role="alert"]) { opacity: 0; transform: translateY(4px); }
+      :is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout:is([role="status"], [role="alert"]) .b-callout__ic { opacity: 0; transform: scale(0.8); }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout:is([role="status"], [role="alert"]) { transition: opacity var(--b-dur-hover) linear !important; }
+    @starting-style {
+      :is(#c-root, html) :is(.app-shell[data-nv-b], body) .b-callout:is([role="status"], [role="alert"]) { opacity: 0; }
+    }
+  }
 }

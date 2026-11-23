@@ -16,10 +16,16 @@ const base: PayBProps = {view: 'pay', state: 'ready', ordered, byId: new Map(ord
 const draw = (patch: Partial<PayBProps> = {}) => renderToStaticMarkup(<PayB {...base} {...patch}/>);
 
 it('EM-010: the pay period is plain band text under the date and the hero has one glass pill', () => {
-  const html = draw(), hero = html.slice(html.indexOf('ep-next'), html.indexOf('</header>'));
-  expect(hero).toContain('<p class="ep-next__k">Scheduled payday · In 3 days</p><p class="ep-next__v">Fri, Nov 20</p><p class="ep-next__p">For work Nov 9 – 15</p>');
-  expect(hero).not.toContain('b-chip');expect(hero.match(/b-btn--glass/g)).toHaveLength(1);
-  expect(hero).toContain('aria-label="See your hours"');
+  const html = draw(), hero = html.slice(html.indexOf('<header'), html.indexOf('</header>')), next = hero.slice(hero.indexOf('ep-next'));
+  expect(next).toContain('<p class="ep-next__k">Scheduled payday · In 3 days</p><p class="ep-next__v">Fri, Nov 20</p><p class="ep-next__p">For work Nov 9–15</p>');
+  expect(hero).not.toContain('b-chip');
+  // Final polish, round 2 (P1): See your hours is on the title's row (the band's action, as Past timecards is on Time),
+  // before the desktop's Pay history; the payday block holds no button.
+  const right = hero.slice(hero.indexOf('b-title__right'), hero.indexOf('ep-next'));
+  expect(right).toContain('aria-label="See your hours"');expect(right.indexOf('See your hours')).toBeLessThan(right.indexOf('Pay history'));
+  expect(right.match(/b-btn--glass/g)).toHaveLength(2);expect(next).not.toContain('b-btn');
+  // No scheduled payday to show: no See your hours.
+  expect(draw({daysUntil: null})).not.toContain('See your hours');
   // The locked sentence about who pays stays as it was.
   expect(html).toContain(PAY_SCOPE_LINE);
 });
@@ -33,4 +39,20 @@ it('EM-025: Earlier holds two statements on a phone and up to five from tablets 
   expect(card).toContain('aria-label="See all statements"');
   // Three statements: nothing extra to show.
   expect(draw({ordered: ordered.slice(0, 3)})).not.toContain('More earlier statements');
+});
+
+it('P2: a replaced statement reads "Earlier version" under its correction, not as a second payday', () => {
+  const fixed = {...statement(8, '2026-11-13', '2026-11-02', '2026-11-08'), corrects: ordered[0].id}, old = {...ordered[0], correctedBy: fixed.id};
+  const list = [ordered[1] && statement(9, '2026-11-20', '2026-11-09', '2026-11-15'), fixed, old, ordered[1]];
+  const html = draw({ordered: list, byId: new Map(list.map(item => [item.id, item]))}), card = html.slice(html.indexOf('id="b-pay-recent"'));
+  const rows = [...card.matchAll(/<li class="b-li">(.*?)<\/li>/g)].map(row => row[1]);
+  // The correction keeps its date and "Corrected".
+  expect(rows[0]).toContain('<span class="b-row__tt">Fri, Nov 13</span>');expect(rows[0]).toContain('Corrected');expect(rows[0]).toContain('For work Nov 2–8');
+  // The one it replaced: no date title, no chip, the correction's payday in its line; the link's name is unchanged.
+  expect(rows[1]).toContain('<span class="b-row__tt"><span class="ep-muted">Earlier version</span></span>');expect(rows[1]).toContain('<span class="b-row__s">Replaced by the Nov 13 correction</span>');
+  expect(rows[1]).not.toContain('b-chip');expect(rows[1]).not.toContain('>Fri, Nov 13<');
+  expect(rows[1]).toContain('aria-label="Friday, November 13, 2026, replaced statement for Nov 2–8"');
+  // The correction is not in the list this screen holds: the row keeps its date and "Replaced".
+  const alone = draw({ordered: [list[0], old, ordered[1]], byId: new Map([list[0], old, ordered[1]].map(item => [item.id, item]))});
+  expect(alone).toContain('<span class="ep-muted">Fri, Nov 13</span>');expect(alone).toContain('Replaced</span>');expect(alone).not.toContain('Earlier version');
 });

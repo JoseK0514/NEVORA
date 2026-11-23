@@ -3,17 +3,21 @@
  * Every animation and transition here sits behind prefers-reduced-motion: no-preference.
  *
  * One success pattern for the signed-in app: the kit's done state (`BState kind="done"`, b-kit.tsx).
- * - The mark (`BDoneMark`, .b-donemark): a green-50 circle with a bold green check. It settles once.
+ * - The mark (`BDoneMark`, .b-donemark): a solid green disc with a white tick it draws once (Nov 21, 2026).
  * - Inline (data-size="inline"): the state card's own shape, in place of the form or row the result came from.
  * - Finish (data-size="finish"): the end of a flow. The 56px mark with a 28px check, a centred title, one line, one
  *   filled button: the signed-out finish's geometry (auth-b.css, .q-auth__mark) in the app's done colour.
  * - The celebration (celebration.tsx) is the same mark with one extra: a ring that leaves the mark once. */
 @layer nv-b {
   /* ---------- the mark ---------- */
-  :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark { position: relative !important; display: grid !important; place-items: center !important; flex: none !important; width: 36px; height: 36px; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; background: var(--b-green-50) !important; color: var(--b-green) !important; box-shadow: none !important; }
-  :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark > svg { width: 18px; height: 18px; color: inherit !important; }
-  /* On a tinted block (the saved timecard) the circle is the card's white, so the same mark still reads as a mark. */
-  :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark[data-on="tint"] { background: #FFFFFF !important; }
+  /* Final polish (Nov 21, 2026): a solid green disc with a white tick it draws itself, one top light edge, a soft green
+   * glow under it (the teal primary's glow in green) and a 4px halo. The same mark at 36, 48 and 56px. */
+  :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark { position: relative !important; display: grid !important; place-items: center !important; flex: none !important; width: 36px; height: 36px; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; background: var(--b-green-solid) !important; color: #FFFFFF !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 4px var(--b-done-halo), var(--b-done-glow); }
+  :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark > svg { width: 18px; height: 18px; color: inherit !important; overflow: visible; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark > svg > path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+  /* On a tinted block the disc needs no white plate any more: it is solid. */
+  :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark[data-on="tint"] { background: var(--b-green-solid) !important; }
+  @media (forced-colors: active) { :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark { forced-color-adjust: none; background: CanvasText !important; color: Canvas !important; box-shadow: none; } }
 
   /* ---------- inline result ---------- */
   :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard[data-kind="done"] { display: grid !important; grid-template-columns: 48px minmax(0, 1fr) !important; gap: 14px !important; align-items: start !important; margin: 0 !important; border: 0 !important; background: none !important; box-shadow: none !important; text-align: left !important; }
@@ -67,12 +71,15 @@
 
   @media (prefers-reduced-motion: no-preference) {
     /* The mark settles when the result arrives. A done state that was already true when the page opened is still. */
-    :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark:not([data-still]) { animation: b-done-settle var(--b-dur-enter) var(--b-ease-out) both; }
-    :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark:not([data-still]) > svg { animation: b-done-check var(--b-dur-enter) var(--b-ease-out) both; }
+    /* Final polish (Nov 21, 2026): the disc settles from 0.6 on a strong ease-out, the tick is drawn from its short
+     * arm to its long one a beat later, and one ring leaves the disc once. Times and the curve are tokens. */
+    :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark:not([data-still]) { animation: b-done-settle var(--b-dur-settle) var(--b-ease-settle) both; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark:not([data-still]) > svg > path { animation: b-done-check var(--b-dur-draw) var(--b-ease-settle) var(--b-delay-draw) both; }
+    :is(#c-root, html) body .app-shell[data-nv-b] .b-donemark:not([data-still])::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 2px var(--b-green-solid); pointer-events: none; animation: b-done-ring var(--b-dur-ring) var(--b-ease-settle) var(--b-delay-ring) both; }
     :is(#c-root, html) body .app-shell[data-nv-b] .nevora-celebration[data-playing] { display: block !important; }
-    :is(#c-root, html) body .app-shell[data-nv-b] .nevora-celebration[data-playing] > i { animation: b-done-ring var(--b-dur-enter) var(--b-ease-out) both; }
-    @keyframes b-done-settle { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: none; } }
-    @keyframes b-done-check { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: none; } }
-    @keyframes b-done-ring { from { opacity: .6; transform: scale(1); } to { opacity: 0; transform: scale(1.4); } }
+    :is(#c-root, html) body .app-shell[data-nv-b] .nevora-celebration[data-playing] > i { animation: b-done-ring var(--b-dur-ring) var(--b-ease-settle) var(--b-delay-ring) both; }
+    @keyframes b-done-settle { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+    @keyframes b-done-check { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+    @keyframes b-done-ring { from { opacity: .5; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
   }
 }

@@ -110,6 +110,10 @@ export function enumerateGenerationPeriods(
       }
       // Anchors are input-derived only. Do not recursively add a guessed time grid.
       const anchors = [...boundaries];
+      // A review's shift cap (Rondo's day plans) adds one cut a cap's length after each anchor and before it, once, as
+      // the weekly-hours limit below does, so long coverage can be split between people. Not recursive.
+      const cap = demand.planShiftCap;
+      if (cap) for (const anchor of anchors) { put(anchor + cap); put(anchor - cap); }
       for (const employee of input.employees)
         for (const week of affectedWorkweeks(run)) {
           const weekStart = businessDateStart(week),
@@ -155,6 +159,7 @@ export function enumerateGenerationPeriods(
             unrepresentable = true;
             continue;
           }
+          if (cap && end - start > cap) continue;
           if (periods.length === input.limits.maxPeriods) {
             issues.push({
               code: "BUDGET_EXHAUSTED",

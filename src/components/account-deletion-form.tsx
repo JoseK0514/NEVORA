@@ -13,6 +13,7 @@ import { EyeIcon } from "@phosphor-icons/react/dist/ssr/Eye";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { BDoneMark, BGlyph, BIcon, type BMeaning, type BTone } from "./owner-b/b-kit";
 import { EmployeeDeletionView, type DeletionView } from "./employee-mobile/deletion";
 import { shown as onScreen } from "./employee-b/account-host";
@@ -68,7 +69,7 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
   const outcome = useRef<HTMLDivElement>(null);
   // An Employee's phone screen (Direction B) draws the receipt and the ended outcomes itself; focus the one on screen.
   const outcomeB = useRef<HTMLDivElement>(null);
-  const { errors, handlers } = useFieldErrors({ password: { missing: "Enter your password to confirm it’s you." } });
+  const { errors, handlers } = useFieldErrors({ password: { missing: "Enter your password to confirm it’s you" } });
   const receipt = RECEIPT.has(state.kind);
 
   useEffect(() => {
@@ -76,6 +77,10 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
     const frame = requestAnimationFrame(() => (state.kind === "wrong_password" ? passwordRef.current : ANNOUNCED.has(state.kind) ? onScreen(outcome.current, outcomeB.current) : null)?.focus());
     return () => cancelAnimationFrame(frame);
   }, [state]);
+  // Final polish (finding 27): React clears an action form's fields after every reply, and the consent box's tick went
+  // with them while this page still held it as checked. The box shows what the page holds, so a wrong password leaves the
+  // tick where the person put it. Nothing is sent differently: the tick was never a field of the request.
+  useEffect(() => { if (checkRef.current && checkRef.current.checked !== confirmed) checkRef.current.checked = confirmed; }, [state, confirmed]);
 
   if (phone) {
     const view: DeletionView = { state, pending, retry, confirmed, shown, period, retention };
@@ -128,7 +133,9 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
     </>;
   }
 
-  const passwordError = state.kind === "wrong_password" ? "That password isn’t right. Try again." : errors.password;
+  // A field error has no closing period (DESIGN.MD Forms) and leads with the warning glyph, as the settings forms' do.
+  const passwordError = state.kind === "wrong_password" ? "That password isn’t right" : errors.password;
+  const errorGlyph = <WarningCircleIcon weight="bold" className="q-fl__error-ic" aria-hidden="true" />;
   const look: { tone: BTone; meaning: BMeaning } = state.kind === "failed" ? { tone: "red", meaning: "stop" } : state.kind === "unavailable" ? { tone: "grey", meaning: "locked" }
     : state.kind === "busy" ? { tone: "amber", meaning: "wait" } : { tone: "amber", meaning: "unknown" };
   const checking = retry && state.kind !== "failed";
@@ -187,15 +194,16 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
             <button type="button" className="q-in__eye" onClick={() => setShown(value => !value)} aria-pressed={shown} aria-label={shown ? "Hide password" : "Show password"}>{shown ? <EyeSlashIcon weight="bold" className="q-ic" aria-hidden="true" /> : <EyeIcon weight="bold" className="q-ic" aria-hidden="true" />}</button>
           </div>
           <p className="q-fl__help" id="deletion-password-help">Enter the password you use to sign in.</p>
-          {passwordError ? <p className="q-fl__error" id="deletion-password-error">{passwordError}</p> : null}
+          {passwordError ? <p className="q-fl__error" id="deletion-password-error">{errorGlyph}{passwordError}</p> : null}
         </div>
         <QuietList>
           <li><label className="q-row q-deletion__check" htmlFor="deletion-understand"><span className="q-rt"><b>I understand my NEVORA account will be deleted and I won’t be able to sign in again.</b></span>
             <input ref={checkRef} id="deletion-understand" type="checkbox" className="q-deletion__box" checked={confirmed} disabled={pending}
               onChange={event => { setConfirmed(event.target.checked); if (event.target.checked) setUnchecked(false); }}
-              aria-describedby={unchecked ? "deletion-understand-error" : undefined} aria-invalid={unchecked || undefined} /></label></li>
+              aria-describedby={unchecked ? "deletion-understand-error" : undefined} aria-invalid={unchecked || undefined} /></label>
+            {/* Final polish (finding 27): the box's error is in the box's own row, so on a phone it is inside the card. */}
+            {unchecked ? <p className="q-fl__error q-deletion__check-error" id="deletion-understand-error">{errorGlyph}Check this box to confirm you understand</p> : null}</li>
         </QuietList>
-        {unchecked ? <p className="q-fl__error q-deletion__check-error" id="deletion-understand-error">Check this box to confirm you understand.</p> : null}
         {/* Phase 8 (review B, rows 4 and 16; DESIGN.MD B6): the same flow as the Employee's. Delete my account is a red pill
           * that works from the start (it says what is missing), Keep my account the quiet pill beside it, and "This can't be
           * undone." sits under the red one. From 768px both end on the 560px field block's right edge. */}

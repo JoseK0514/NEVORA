@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import type { ConfigurationResult } from "./configuration-form";
+import { FormDiscardGuard } from "./kit/discard-dialog";
 import { lower } from "@/lib/workspace-presentation/words";
 import { Notice } from "@/app/app/settings/wave-c-kit";
 import { Field,FieldErrors,FormActions,useFieldErrors } from "@/app/app/settings/wave-c-form";
@@ -98,7 +99,7 @@ export function NewLocationForm({
         </FieldErrors>
       </fieldset>
       {success ? null : <div className="wc-savefoot wc-savefoot--wide">
-        <Link className="q-btn q-btn--sec" href="/app/settings/locations">Cancel</Link>
+        <Link className="q-btn q-btn--sec b-rowact b-rowact--quiet" href="/app/settings/locations">Cancel</Link>
         <button type="submit" className="q-btn" disabled={pending}>Add</button>
       </div>}
       </div>
@@ -121,6 +122,8 @@ export function NewLocationForm({
         <Link className="q-btn" href="/app/settings/locations">View {lower(Places)}</Link>
         <button className="q-btn q-btn--sec" type="button" onClick={addAnother}>Add another {place}</button>
       </FormActions> : <button type="submit" className="q-sr" disabled={pending} tabIndex={-1}>{`Add ${place}`}</button>}
+      {/* Leaving with typed entries that are not added asks first (Nov 21, 2026); not once it is added. */}
+      <FormDiscardGuard off={success} />
     </form>
   );
 }

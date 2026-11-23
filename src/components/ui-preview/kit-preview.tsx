@@ -94,7 +94,7 @@ export function KitReviewSample() {
             <Row title="Sent" meta="Fri, Oct 17 at 4:12 PM" />
           </Rows>
         </Card>
-        <Card title="Shifts that week" meta="Oct 26 – Nov 1">
+        <Card title="Shifts that week" meta="Oct 26–Nov 1">
           <Rows label="Scheduled shifts">
             <Row leading={<Tile><CalendarCheckIcon size={20} weight="bold" /></Tile>} title="Tue · 9:00 AM – 5:00 PM" meta="Main Office" trailing={<Duration minutes={480} />} />
             <Row leading={<Tile><ArrowsLeftRightIcon size={20} weight="bold" /></Tile>} title="Thu · 4:00 PM – midnight" meta="Main Office" trailing={<Duration minutes={480} />} />

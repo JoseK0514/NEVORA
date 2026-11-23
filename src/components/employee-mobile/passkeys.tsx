@@ -5,6 +5,8 @@ import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
 import {createPasskeyManager,type PasskeyState} from '../../lib/passkeys/management';
 import {passkeysAvailable,passkeysFlagOn,type Passkey} from '../../lib/passkeys/client';
 import {useEmployeeMobile} from './use-mobile';
+import {BState} from '../owner-b/b-kit';
+import {PASSKEY_COPY} from '../../lib/passkeys/copy';
 import './account-corp.css';
 
 const subscribe=()=>()=>{};
@@ -13,10 +15,13 @@ type ViewProps={mobile?:boolean;state:PasskeyState;supported:boolean;confirm:Pas
 
 /** One presentation on every width (board style): a "Saved passkeys" card with one row per key, the review inline, and
  * one primary Add a passkey. The device ceremony, removal review and refresh are unchanged. */
-export function EmployeePasskeyView({state,supported,confirm,onAdd,onRefresh,onRemove,onReview,onKeep,onCancel,addRef,confirmationRef,feedbackRef}:ViewProps){
+export function EmployeePasskeyView({mobile,state,supported,confirm,onAdd,onRefresh,onRemove,onReview,onKeep,onCancel,addRef,confirmationRef,feedbackRef}:ViewProps){
  const ready=state.phase==='ready',keys=ready?state.passkeys??[]:[],busy=state.busy!==null;
  const reviewed=ready?keys.find(key=>key.id===confirm?.id):null;
- if(state.phase==='disabled'||state.phase==='ended')return null;
+ if(state.phase==='ended')return null;
+ if(state.phase==='disabled')return <div className={mobile?"c-card":undefined} data-passkey-state="disabled">
+  <BState kind="locked" title={PASSKEY_COPY.en.unavailableHere} line={PASSKEY_COPY.en.passwordStillWorks}/>
+ </div>;
  const status=state.phase==='loading'?'Checking your saved passkeys…':state.phase==='paused'&&!busy?'Passkeys are paused. Return to this page to check your account.':state.phase==='unavailable'?(state.needsRefresh?'Check your saved passkeys before starting another request.':'We couldn’t check your passkeys. Refresh to try again.'):null;
  return <>
   <section className="c-card em-passkeys" aria-labelledby="passkeys-title" data-passkey-state={state.phase}>

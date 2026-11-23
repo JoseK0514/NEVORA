@@ -30,7 +30,8 @@ export type ScheduleBProps = {
   nextHref: string;
   days: ScheduleBDay[];
   /** The weekly confirmation, when the manager asked for one and it isn't done yet. */
-  confirm: {title: string; detail: string; /** Phones: the same reason in fewer words, so the row keeps one line. */ detailShort?: string; control: ReactNode} | null;
+  confirm: {title: string; detail: string; /** Phones: the same reason in fewer words, so the row keeps one line. */ detailShort?: string; control: ReactNode;
+    /** Round 2 (S2): the manager asked for it and it isn't done, so the row carries Home's amber "Action needed" chip. */ needed?: boolean} | null;
   celebration: ReactNode;
   changes: ReactNode;
   swap: {title: string; detail: string; doneHref: string} | null;
@@ -122,7 +123,7 @@ export function ScheduleB(props: ScheduleBProps) {
           {/* Final review C (rows 4, 5): the manager asked for this, so it waits on you: the amber circle, as Home's and
             * Notifications' same task, with the glyph for confirming a schedule (CalendarCheck) on every screen. */}
           <BIcon tone="amber"><CalendarCheckIcon weight="bold"/></BIcon>
-          <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt" id="b-my-review-title">{confirm.title}</span></span>
+          <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt" id="b-my-review-title">{confirm.title}</span>{confirm.needed ? <BChip tone="amber">{t.actionNeeded}</BChip> : null}</span>
             {confirm.detailShort ? <><span className="b-row__s eb-phone">{confirm.detailShort}</span><span className="b-row__s eb-desk">{confirm.detail}</span></> : <span className="b-row__s">{confirm.detail}</span>}</span>
           <span className="es-confirm__act">{confirm.control}</span>
         </div>
@@ -138,7 +139,9 @@ export function ScheduleB(props: ScheduleBProps) {
             // Review B2 (NV-275): none to pick up is a fact, not a row to open (grey: it doesn't open, EM-017).
             : open.count === 0 ? <BRow lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title={t.noOpenShifts}/>
             : <BRow href={open.href} label={open.label} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title="Open shifts" sub={open.detail}/> : null}
-          {changes ? <li className="b-li"><div className="es-chg"><BIcon tone="teal"><ClockCounterClockwiseIcon weight="bold"/></BIcon>{changes}</div></li> : null}
+          {/* Round 2 (S4): under 360px the row's title reads "What changed" (the long one left a word alone on a second
+            * line). The disclosure's own title stays in the page for screen readers; this short one is drawn in its place. */}
+          {changes ? <li className="b-li"><div className="es-chg"><BIcon tone="teal"><ClockCounterClockwiseIcon weight="bold"/></BIcon>{changes}<span className="es-chg__short" aria-hidden="true">{t.whatChanged}</span></div></li> : null}
         </ul>
       </section> : null}
       {swap ? <BCard title={<span role="status">{swap.title}</span>} link={{href: swap.doneHref, label: 'Done'}}><BCardNote>{swap.detail}</BCardNote></BCard> : null}

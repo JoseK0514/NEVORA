@@ -1,6 +1,6 @@
 import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
-import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import { redirect } from "next/navigation";
 import { CoverageAssistant } from "@/components/coverage-assistant";
@@ -10,8 +10,8 @@ import { listHourFairness } from "@/lib/data/hour-fairness";
 import { getShiftValidationContext } from "@/lib/data/schedules";
 import { listPositions } from "@/lib/data/positions";
 import { requireSessionMutationProof } from "@/lib/auth/session";
-import { readCoverageRepair } from "@/lib/data/coverage-repair.server";
-import { coverageRepairUrl, parseCoverageRepairLocator, CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
+import { readCoverageRepair,readScopedCoverageRepair,readScopedCoverageSuggestions } from "@/lib/data/coverage-repair.server";
+import { coverDraftShiftUrl, coverageRepairUrl, parseCoverageRepairLocator, CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
 import {
   isDateInWeek,
   isValidWeekStart,
@@ -57,15 +57,17 @@ export default async function CoverageSuggestionsPage({
   await requireRoles(MANAGER_ROLES);
   const proof=await requireSessionMutationProof();
   const params = await searchParams;
+  const access = await readOperationalAuthority(proof);
+  const scoped = access.state === 'ready' && access.scope?.mode === 'LOCATIONS';
   if (params.repair !== undefined) {
     let locator;
     try { locator = parseCoverageRepairLocator(params.repair); }
     catch { redirect('/app/schedule?error=COVERAGE_REVIEW_STALE'); }
-    const source=await withOperationalCompany(proof,async()=>{
+    const source=scoped ? await readScopedCoverageRepair(locator,proof,params.refresh==='1') : await withOperationalCompany(proof,async()=>{
       try{return await readCoverageRepair(locator,proof,params.refresh==='1');}
       catch(error){if(!(error instanceof CoverageRepairConflictError))throw error;return null;}
     });
-    if(source.state==='unavailable')return <OperationalUnavailable title="Coverage review unavailable" reason={source.reason}/>;
+    if(source.state==='unavailable')return <OperationalUnavailable title="Coverage review unavailable" reason={source.reason} scoped={scoped}/>;
     const review=source.data;
     const back = `/app/schedule?week=${encodeURIComponent(locator.weekStart)}&location=${encodeURIComponent(locator.locationId)}`;
     const status = review?.status ?? 'STALE';
@@ -79,9 +81,12 @@ export default async function CoverageSuggestionsPage({
       backHref={back}
       status={status}
       repair
-      saved={params.saved === '1'}
-      addShiftHref={`/app/schedule/new?week=${encodeURIComponent(locator.weekStart)}&date=${encodeURIComponent(locator.date)}&locationId=${encodeURIComponent(locator.locationId)}&start=${encodeURIComponent(locator.startTime)}&end=${encodeURIComponent(locator.endTime)}`}
-      rulesHref={`/app/schedule/settings?week=${encodeURIComponent(locator.weekStart)}`}
+      saved={!scoped && params.saved === '1'}
+      reviewOnly={scoped}
+      addShiftHref={scoped
+        ? review && 'draft' in review && review.draft ? coverDraftShiftUrl(review.locator, review.designatedLead) : undefined
+        : coverDraftShiftUrl({...locator,positionId:undefined}, false)}
+      rulesHref={scoped ? undefined : `/app/schedule/settings?week=${encodeURIComponent(locator.weekStart)}`}
       refreshHref={coverageRepairUrl(locator, true)}
       requirements={review?.targets.map(target => ({
         label: needLabel(target as NeedTarget),
@@ -95,11 +100,8 @@ export default async function CoverageSuggestionsPage({
       candidates={(review?.candidates ?? []).map(candidate => ({
         employeeId: candidate.employeeId,
         employeeName: candidate.employeeName,
-        role: candidate.role,
-        scheduledHours: candidate.scheduledHours,
-        targetHours: candidate.targetHours,
-        hoursNeeded: candidate.hoursNeeded,
-        priorUnderTargetWeeks: candidate.priorUnderTargetWeeks,
+        scheduledHours:candidate.scheduledHours,
+        targetHours:candidate.targetHours,
         href: `/app/schedule/new?review=${encodeURIComponent(candidate.review)}`,
       }))}
     /></ScopedReadFrame>;
@@ -122,6 +124,20 @@ export default async function CoverageSuggestionsPage({
     startTime === endTime
   ) {
     redirect("/app/schedule?error=INVALID_SHIFT");
+  }
+
+  if (scoped) {
+    const period = {weekStart,date,locationId,startTime,endTime,positionId:params.positionId};
+    const designatedLead = params.lead === '1';
+    const source = await readScopedCoverageSuggestions(period,proof,designatedLead);
+    if (source.state === 'unavailable') return <OperationalUnavailable title="Coverage suggestions unavailable" reason={source.reason} scoped/>;
+    const {locationName,positionName,candidates,draft} = source.data;
+    return <ScopedReadFrame observation={scopedObservation(source)}><CoverageAssistant
+      date={date} startTime={startTime} endTime={endTime} locationName={locationName} positionName={positionName}
+      designatedLead={designatedLead} backHref={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(locationId)}`}
+      status="READY" addShiftHref={draft ? coverDraftShiftUrl(period,designatedLead) : undefined}
+      candidates={candidates.map(person => ({...person, href:draft ? coverDraftShiftUrl(period,designatedLead,person.employeeId) : undefined}))}
+    /></ScopedReadFrame>;
   }
 
   const source=await withOperationalCompany(proof,async()=>{

@@ -41,7 +41,8 @@ it('loads actual history and renders own changes behind authenticated access',as
  expect(await html()).toContain('What changed in your schedule');expect(await html()).not.toContain('3:00 PM');expect(f.reads.mock.calls.flat()).toContain('coherent');
 });
 it('filters revoked location history on both sides and hides unchanged shifts',async()=>{
- f.after=[...f.before];expect(await html()).not.toContain('What changed');
+ // Round 2 (S4): the phone screen's row also holds a short title for narrow phones ("What changed"), drawn only when the disclosure is there, so this names the disclosure itself.
+ f.after=[...f.before];expect(await html()).not.toContain('What changed in your schedule');expect(await html()).not.toContain('<details');
  f.after=[{...f.before[0],locationId:'110'}];const result=await html();expect(result).toMatch(/>Removed<\/span>/);/* Review B2 (NV-226): the change is a chip */expect(result).not.toContain('Location 110');
 });
 it('push feature off retains canonical review while protected access loss discloses no history',async()=>{
@@ -136,17 +137,34 @@ it('Add shift preserves the selected second-location destination',async()=>{
 
 it('forged acknowledged query does not manufacture success without canonical receipt',async()=>{const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',acknowledged:'1'})}));expect(output).not.toContain('Schedule confirmed.');});
 
-const operationalPageFixture=rs.hoisted(()=>({denied:false,scoped:false}));
-rs.mock('@/lib/company-access/operational-scope.server',()=>({readOperationalAuthority:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,locations:[{id:'main',name:'Managed location',shortName:'Managed'}],scope:{mode:operationalPageFixture.scoped?'LOCATIONS':'COMPANY',locationIds:operationalPageFixture.scoped?['loc']:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
+const operationalPageFixture=rs.hoisted(()=>({denied:false,scoped:false,publish:false}));
+rs.mock('@/lib/workforce/authority.server',()=>({listWorkforcePermissions:async()=>({access:{},permissions:operationalPageFixture.publish?[{locationId:'main',permission:'PUBLISH_SCHEDULE'}]:[]})}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({isOperationalAuthorizationError:()=>false,readOperationalAuthority:async()=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,locations:[{id:'main',name:'Managed location',shortName:'Managed'}],scope:{mode:operationalPageFixture.scoped?'LOCATIONS':'COMPANY',locationIds:operationalPageFixture.scoped?['loc']:[]}}),withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 // Composition only; mounted body lifetime is covered by the browser harness.
+rs.mock('@/lib/data/coverage-repair.server', () => ({readScopedCoverageGaps: async (_proof: unknown, weekStart: string) => ({
+ state:'ready', authority:'fixture',
+ data:[{id:'local-gap',title:'Coverage gap at Managed location',detail:'8:00 AM–9:00 AM',href:`/app/schedule/coverage?repair=local&date=${weekStart}&start=08:00&end=09:00&locationId=loc`}],
+})}));
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
-beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;});
+beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;operationalPageFixture.publish=false;});
 
-it('company denial withholds global schedule rows and all editing controls',async()=>{f.role='MANAGER';operationalPageFixture.denied=true;const output=await html();expect(output).toContain('current company-wide management access');expect(output).not.toContain('Add shift');expect(output).not.toContain('Publish');expect(f.managerReads).not.toHaveBeenCalled();});
-it('an operational company denial does not remove the Employee self schedule',async()=>{operationalPageFixture.denied=true;const output=await html();expect(output).toContain('c-esched');expect(output).toContain('aria-label="Days in this week"');expect(output).not.toContain('current company-wide management access');expect(f.managerReads).not.toHaveBeenCalled();});
+// QA A3-05 (Nov 21, 2026): a location Manager holding Publish schedules had no way to publish from the schedule.
+it('a location Manager with Publish schedules gets Publish; one without it gets no publish control (Phase 2, Nov 22, 2026)',async()=>{
+ f.role='MANAGER';operationalPageFixture.scoped=true;operationalPageFixture.publish=true;
+ const granted=await html();
+ expect(granted).toMatch(/<a[^>]*href="\/app\/schedule\/publish\?week=[^"]+"[^>]*>Publish<\/a>/);
+ expect(granted).toContain('Add shift');
+ operationalPageFixture.publish=false;
+ const plain=await html();
+ expect(plain).not.toMatch(/href="\/app\/schedule\/publish/);
+ expect(plain).toContain('Add shift');
+});
+
+it('company denial withholds global schedule rows and all editing controls',async()=>{f.role='MANAGER';operationalPageFixture.denied=true;const output=await html();expect(output).toContain('Company-wide access needed');expect(output).not.toContain('Add shift');expect(output).not.toContain('Publish');expect(f.managerReads).not.toHaveBeenCalled();});
+it('an operational company denial does not remove the Employee self schedule',async()=>{operationalPageFixture.denied=true;const output=await html();expect(output).toContain('c-esched');expect(output).toContain('aria-label="Days in this week"');expect(output).not.toContain('Company-wide access needed');expect(f.managerReads).not.toHaveBeenCalled();});
 
 rs.mock('@/lib/company-access/operational-read.server',()=>({readSchedulePendingChanges:async()=>f.pending?{state:'ready',data:f.pending}:{state:'unavailable',reason:'read_failed'},readOperationalSchedule:async(_proof:unknown,query:{weekStart:string;locationId?:string})=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{weekStart:query.weekStart,selectedLocationId:query.locationId??null,locations:[{id:'loc',name:'Managed location',shortName:'Managed',active:true}],shifts:[{id:'local-shift',scheduleId:'local-week',employeeId:'local',employeeName:'Local Shift',locationId:'loc',date:'2026-10-05',startTime:'08:00',endTime:'12:00',positionName:'Recorded position',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:'PUBLISHED'}],roster:[],companyControls:{state:'requires_company'}}})}));
-it('uses the actual scoped schedule DTO without loading the canonical full roster',async()=>{f.role='MANAGER';operationalPageFixture.scoped=true;const output=await html();expect(output).toContain('Local Shift');expect(output).toContain('Recorded position');expect(output).not.toContain('Build and publish');expect(output).not.toContain('Copy previous week');expect(f.managerReads).not.toHaveBeenCalled();});
+it('uses the actual scoped schedule DTO without loading the canonical full roster',async()=>{f.role='MANAGER';operationalPageFixture.scoped=true;const output=await html();expect(output).toContain('Local Shift');expect(output).toContain('Recorded position');const future=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2030-10-07'})}));expect(future).toContain('/app/schedule/coverage?repair=local&amp;date=2030-10-07');expect(future).toContain('Find cover');expect(output).not.toContain('Build and publish');expect(output).not.toContain('Copy previous week');expect(f.managerReads).not.toHaveBeenCalled();});
 
 it.each([
  ['error','INVALID_SHIFT','Couldn’t open that shift. Pick it again from this week.','alert'],

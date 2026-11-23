@@ -161,8 +161,8 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       } finally { if (probeTimer) clearTimeout(probeTimer); holdProbe = false; releaseProbe(); await nextProbe?.catch(() => {}); await p0.unroute(probePattern); await q('DELETE FROM shifts WHERE id=ANY($1::text[])', [[probeSource, probeDestination]]); }
       const edit = async (n: number, note: string, reassign = false) => { if (reassign) await form(n).locator('select[name="employeeId"]').selectOption('MATRIX-OTHER'); await form(n).locator('[name="notes"]').fill(note); await form(n).evaluate((element: HTMLFormElement) => element.requestSubmit()); };
       const remove = async (n: number) => { const p = page(n); await p.getByRole('button', { name: n ? 'Review deletion' : 'Delete shift', exact: true }).click(); await p.getByRole('button', { name: n ? 'Delete this draft shift' : 'Delete this shift', exact: true }).click(); };
-      const refused = async (n: number, version: string, unavailable = false) => { await page(n).getByRole('alert').filter({ hasText: unavailable ? 'Operational access is unavailable' : 'changed since you opened' }).first().waitFor(); expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version); await page(n).getByRole('button', { name: 'Reload current shift', exact: true }).first().waitFor(); };
-      const loseNextResponse = async (n: number, id: string, deletion = false) => {
+      const refused = async (n: number, version: string, unavailable = false) => { await page(n).getByRole('alert').filter({ hasText: unavailable ? 'You don’t have access to make this change' : 'changed since you opened' }).first().waitFor(); expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version); await page(n).getByRole('button', { name: 'Reload current shift', exact: true }).first().waitFor(); };
+      const loseNextResponse = async (n: number, id: string) => {
         const pattern = '**/app/schedule/edit?shiftId=' + id;
         const loss = { intercepted: false, completed: false, failed: false, upstreamStatus: 0 };
         await page(n).route(pattern, async (route: { request(): { method(): string }; fetch(options: { maxRedirects: number }): Promise<{ status(): number }>; abort(reason: string): Promise<void>; continue(): Promise<void> }) => {
@@ -184,7 +184,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         return { pattern, loss, wait: async () => {
           await expect.poll(() => loss.completed, { timeout: 20000 }).toBe(true);
           expect(loss).toMatchObject({ intercepted: true, failed: false, upstreamStatus: 200 });
-          await page(n).getByRole('alert').filter({ hasText: n || deletion ? 'This change could not be confirmed' : 'Changes could not be saved.' }).first().waitFor();
+          await page(n).getByRole('alert').filter({ hasText: 'This change could not be confirmed' }).first().waitFor();
         } };
       };
       for (const stale of [0, 1]) {
@@ -246,7 +246,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         const id = await seed(); await open(n, id); failureShot = () => page(n).screenshot({ path: resolve(evidence, `${engine}-failure.png`), fullPage: true });
         const version = await form(n).locator('[name="expectedReviewVersion"]').inputValue();
         await form(n).locator('[name="notes"]').fill('Retained before lost deletion');
-        const lost = await loseNextResponse(n, id, true);
+        const lost = await loseNextResponse(n, id);
         await remove(n); await lost.wait();
         expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]);
         expect(await form(n).locator('[name="notes"]').inputValue()).toBe('Retained before lost deletion');

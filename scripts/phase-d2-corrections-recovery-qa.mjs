@@ -130,6 +130,8 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      await route.abort('failed');
     });
     await page.getByRole('button',{name:`${decision==='APPROVE'?'Approve':'Decline'} correction for Avery Correction QA`,exact:true}).click();
+    // Jose (Nov 21, 2026): Decline asks first; the question's commit (same name, inside .b-ask.manager-correction-ask) sends it.
+    if(decision!=='APPROVE')await page.locator('.b-ask.manager-correction-ask').getByRole('button',{name:'Decline correction for Avery Correction QA',exact:true}).click();
     // B7 wording (NV-020): the unknown-outcome notice is plain language now.
     await page.getByText('We couldn’t confirm your decision. Try again; it won’t be applied twice.',{exact:true}).waitFor();
     await c.setOffline(true);

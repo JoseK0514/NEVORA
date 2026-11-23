@@ -66,14 +66,15 @@ export async function seedOwnedScenarioOwner(executor: SqlExecutor, label: strin
   return employeeId;
 }
 
-export async function seedOwnedScenario(executor: SqlExecutor, label: string, offset: number) {
+export async function seedOwnedScenario(executor: SqlExecutor, label: string, offset: number, options: { mixedRoleSwap?: boolean } = {}) {
   if (!/^[A-Z0-9]+$/.test(label)) throw new Error('Use an explicit fictional scenario name');
   const q = (text: string, values: readonly unknown[] = []) => executor.query({ text, values });
   const week = weekStartFor(addDays(businessDate(new Date(), 'America/Puerto_Rico'), 14 + offset * 7));
   const actors = [`QA-${label}-A`, `QA-${label}-B`, `QA-${label}-C`];
   const passwordHash = await hashPassword(TEST_PASSWORD);
   for (const [index, id] of actors.entries()) {
-    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,$3,'555-0199','LEAD','loc-1')", [id, `QA ${label}`, ['Avery', 'Blair', 'Casey'][index]]);
+    const role = options.mixedRoleSwap && index === 1 ? 'EMPLOYEE' : 'LEAD';
+    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,$3,'555-0199',$4,'loc-1')", [id, `QA ${label}`, ['Avery', 'Blair', 'Casey'][index], role]);
     await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)', [id, passwordHash]);
     await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1'),($1,'loc-2');", [id]);
     await q("INSERT INTO employee_positions VALUES($1,'qa-pos'),($1,'qa-pos2')", [id]);
@@ -84,7 +85,7 @@ export async function seedOwnedScenario(executor: SqlExecutor, label: string, of
   for (const [index, id] of [sourceId, targetId].entries()) {
     const locationId = ['loc-1', 'loc-2'][index], scheduleId = `qa-${label}-schedule-${index}`;
     await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,$2,$3,'DRAFT','QAOWNER')", [scheduleId, locationId, week]);
-    await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,$2,$3,$4,'08:00','16:00',$5,true)", [id, scheduleId, actors[index], addDays(week, index + 1), ['qa-pos', 'qa-pos2'][index]]);
+    await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id,is_designated_lead) VALUES($1,$2,$3,$4,'08:00','16:00',$5,$6)", [id, scheduleId, actors[index], addDays(week, index + 1), ['qa-pos', 'qa-pos2'][index], !options.mixedRoleSwap]);
     await publishScheduleWithRevision({ locationId, weekStart: week, managerId: 'QAOWNER' }, executor);
   }
   return { label, actors, week, sourceId, targetId, sourceDate: addDays(week, 1), targetDate: addDays(week, 2) };

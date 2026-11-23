@@ -17,8 +17,10 @@ export const SUCCESS_FLAGS = ["submitted", "reviewed", "published", "updated", "
 
 /** D-5: a focused review returns with ?decided=; the page it returns to confirms the outcome once. */
 export const DECISION_MESSAGES: Record<string, string> = {
-  "timeoff-approved": "Time off approved. The employee can see it in Time off.",
-  "timeoff-declined": "Time off declined. The employee can see it in Time off.",
+  // Final polish (confirmations review A #14): one fact. The flag carries no name, so the toast names none (it said "The
+  // employee"); the person's name is on the row and the page this returns to.
+  "timeoff-approved": "Time off approved",
+  "timeoff-declined": "Time off declined",
 };
 
 export function toast(message: string, tone: Tone = "success") {
@@ -79,8 +81,9 @@ export function Toaster() {
     const url = new URL(window.location.href);
     const decided = url.searchParams.get("decided");
     if (decided !== null) {
+      // Final polish (said once): Team time off draws the decision's result inline in its list, so no toast there.
       const message = DECISION_MESSAGES[decided];
-      if (message) toast(message);
+      if (message && pathname !== "/app/requests") toast(message);
       url.searchParams.delete("decided");
     }
     const present = SUCCESS_FLAGS.filter(flag => url.searchParams.has(flag));

@@ -129,7 +129,7 @@ export function homeTodoRows(items: readonly AttentionItem[], snapshot: Pick<Hom
   });
 }
 
-/** "Confirm next week’s schedule" and "Nov 2 – 8 · 4 shifts" (the count when Home read that week). */
+/** "Confirm next week’s schedule" and "Nov 2–8 · 4 shifts" (the count when Home read that week). */
 function weekTodo(item: AttentionItem, week?: HomeWeek | null) {
   const own = week?.weekStart === item.ref.id ? {when: 'this week’s', shifts: week.shifts} : week?.next?.weekStart === item.ref.id ? {when: 'next week’s', shifts: week.next.shifts} : null;
   const count = own ? ` · ${own.shifts.length} ${own.shifts.length === 1 ? 'shift' : 'shifts'}` : '';

@@ -14,10 +14,15 @@ import {CorrectionComparison,PriorCorrectionDecisions} from './time-correction-c
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {useManagerCorrectionRecovery} from './manager-correction-recovery';
 import {CorpTitle} from './corp/corp';
-import {BSegs,BState} from './owner-b/b-kit';
+import {BAvatar,BCallout,BSegs,BState} from './owner-b/b-kit';
+import {DecisionAsk,DecisionResult} from './owner-b/decision-parts';
+import {useAskStep} from './owner-b/ask-step';
+import {reviewCopy} from './review-details/copy';
+import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import Link from 'next/link';
 import {timeZoneLabel} from '@/lib/time-zone-label';
-export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
+/** access_lost: signed out or access ended (sign in again). not_allowed: signed in without the corrections permission (QA A3-06). */
+export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'not_allowed'|'paused';
 const changedEvent='nevora:time-correction-changed';
 const unknownNotice='We couldn’t confirm your decision. Try again; it won’t be applied twice.';
 const approvedNotice='Correction approved. The original recorded punch remains unchanged.';
@@ -25,6 +30,27 @@ const rejectedNotice='Correction declined. The original recorded punch remains u
 /** Only fixed, non-identifying receipt feedback survives a private pause. */
 export function pausedCorrectionNotice(notice:string|null){return [unknownNotice,approvedNotice,rejectedNotice].includes(notice??'')?notice:null;}
 
+/** Final polish (confirmations A #8, #22): a decision's result is the kit's done state (approved) or its grey state (a
+ * declined request is closed: no done mark), a title naming what is now true and one next fact, in the list's card. Any
+ * other notice (a conflict, a block, an answer that did not arrive) is the kit's amber note. `last`: nothing else waits,
+ * so the line says so and no empty state is drawn under it. */
+function CorrectionNotice({notice,last}:{notice:string;last:boolean}){
+  if(notice===approvedNotice)return <div className="manager-corrections-notice" data-result=""><DecisionResult tone="done" title="Correction approved" line={last?'Nothing else is waiting.':'The timecard shows the new times. The original clock times stay in its history.'}/></div>;
+  if(notice===rejectedNotice)return <div className="manager-corrections-notice" data-result=""><DecisionResult tone="closed" icon={<PencilSimpleIcon weight="bold"/>} title="Correction declined" line={last?'Nothing else is waiting.':'The timecard keeps its recorded times.'}/></div>;
+  return <div className="manager-corrections-notice" data-note=""><BCallout tone="amber" icon={notice===unknownNotice?'unknown':'check'} role="status">{notice}</BCallout></div>;
+}
+/** Jose (Nov 21, 2026): Decline asks first. The first tap opens the question in place of the two buttons and sends
+ * nothing; "Keep request" brings them back; the question's Decline calls the same `onDecision('REJECT')` as before,
+ * once. Approve stays one tap. */
+function CorrectionDecide({name,disabled,onDecision}:{name:string;disabled:boolean;onDecision:(decision:'APPROVE'|'REJECT')=>void}){
+  const {open,ask,keep,done,titleRef,openerRef}=useAskStep(),t=reviewCopy();
+  if(open&&!disabled)return <DecisionAsk className="manager-correction-ask" titleRef={titleRef} groupLabel={`Decline the correction for ${name}?`} question={t.askDeclineCorrection} consequence={t.recordedStays}
+    keep={t.keepRequest} keepLabel={`Keep the correction request for ${name}`} onKeep={keep} go={t.decline} goLabel={`Decline correction for ${name}`} onGo={()=>{done();onDecision('REJECT');}}/>;
+  return <div className="manager-correction-actions">
+    <button ref={openerRef} className="b-rowact b-rowact--quiet" type="button" aria-label={`Decline correction for ${name}`} disabled={disabled} onClick={ask}>Decline</button>
+    <button className="primary b-rowact b-rowact--go" type="button" aria-label={`Approve correction for ${name}`} disabled={disabled} onClick={()=>onDecision('APPROVE')}>Approve</button>
+  </div>;
+}
 function requestLabel(item:ManagerCorrectionItem){
   if(item.kind==='MISSING_ENTRY')return 'Missing time';
   if(item.kind==='BREAK_BOUNDARY')return item.breakName?item.breakName+' break':'Recorded break';
@@ -48,6 +74,9 @@ function noticeFor(result:CorrectionActionResponse){
 
 const reviewAccessLost = (snapshot: ManagerTimeCorrections | null | undefined) =>
   snapshot?.state === 'unavailable' && (snapshot.reason === 'access_denied' || snapshot.reason === 'permission_required');
+/** Both clear the queue; only a missing permission is "not allowed" rather than a sign-out (QA A3-06, Nov 21, 2026). */
+const deniedMode = (snapshot: ManagerTimeCorrections | null | undefined): CorrectionQueueConnection =>
+  snapshot?.state === 'unavailable' && snapshot.reason === 'permission_required' ? 'not_allowed' : 'access_lost';
 
 export function ManagerTimeCorrectionsSurface({
   snapshot,
@@ -73,7 +102,7 @@ export function ManagerTimeCorrectionsSurface({
   onRetry:()=>void;
   retry:CorrectionReviewCommand|null;
 }){
-  const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(reviewAccessLost(snapshot)?'access_lost':'unavailable'):'paused');
+  const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(reviewAccessLost(snapshot)?deniedMode(snapshot):'unavailable'):'paused');
   const mode=requestedMode==='ready'&&snapshot?.state!=='ready'?'unavailable':requestedMode;
   const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
   usePrivateFragmentFocus('correction-',!!ready);
@@ -90,13 +119,15 @@ export function ManagerTimeCorrectionsSurface({
       </div>
       {ready?<strong className="manager-corrections-count">{ready.requests.length}</strong>:null}
     </header>
-    {notice?<div className="manager-corrections-notice" role="status">{notice}</div>:null}
+    {notice?<CorrectionNotice notice={notice} last={!!ready&&!ready.requests.length}/>:null}
     {retry?<button className="manager-corrections-retry" type="button" disabled={busyId!==null||mode!=='ready'} onClick={onRetry}>Retry same decision</button>:null}
-    {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Your access changed. Sign in again to review corrections.':'Corrections didn’t load. Refresh to try again.'}</small></div>:
+    {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',not_allowed:'You don’t have access to time corrections',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Your access changed. Sign in again to review corrections.':mode==='not_allowed'?'Ask the Owner if you need it.':'Corrections didn’t load. Refresh to try again.'}</small></div>:
       ready?.requests.length?<div className="manager-corrections-list">
         {ready.requests.map(item=><article className="manager-correction-row" key={item.id} tabIndex={-1} id={`correction-${item.id}`}>
           <div className="manager-correction-topline">
-            <div>
+            {/* Final polish D3 (#33): a request row leads with the person's 36px avatar, as every other people row does. */}
+            <div className="manager-correction-who">
+              <BAvatar name={item.employeeName}/>
               <strong>{item.employeeName}</strong>
               {/* Premium pass FA (final verification A #10): the facts wrap whole, never leaving a "·" at a line's end. */}
               <small><BSegs parts={[item.locationName,requestLabel(item)]}/></small>
@@ -112,12 +143,9 @@ export function ManagerTimeCorrectionsSurface({
           <p className="manager-correction-reason"><span className="manager-correction-reason__k">Their reason</span><q>{item.reason}</q></p>
           {item.requestedByName?<p className="manager-correction-provenance">Requested by {item.requestedByName} for this employee.</p>:null}
           {item.isSelf?<p className="manager-correction-self" role="note">Another manager or an Owner reviews your own request.</p>:null}
-          <div className="manager-correction-actions">
-            <button className="b-rowact b-rowact--quiet" type="button" aria-label={`Decline correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'REJECT')}>Decline</button>
-            <button className="primary b-rowact b-rowact--go" type="button" aria-label={`Approve correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'APPROVE')}>Approve</button>
-          </div>
+          <CorrectionDecide name={item.employeeName} disabled={item.isSelf||busyId!==null||retry!==null} onDecision={decision=>onDecision(item,decision)}/>
         </article>)}
-      </div>:<div className="manager-corrections-state">{/* Phase 8 (a.md #10): the kit's empty state (grey tray, one line, one way on), left-aligned at a state card's width. */}
+      </div>:notice===approvedNotice||notice===rejectedNotice?null:<div className="manager-corrections-state">{/* Phase 8 (a.md #10): the kit's empty state (grey tray, one line, one way on), left-aligned at a state card's width. */}
         <BState kind="empty" title="Nothing to fix" line="When someone asks to fix a time, it shows up here." quiet={<Link className="b-link" href="/app/timecards">Go to Timecards</Link>}/></div>}
   </section></>;
 }
@@ -140,7 +168,7 @@ export function ManagerTimeCorrections({actorId,authority,band}:{actorId?:string
       const denied=reviewAccessLost(next.snapshot);
       if(denied){authorityLost.current=true;advanceCommandEpoch();}
       else if(next.snapshot?.state==='ready')authorityLost.current=false;
-      if(denied){recovery?.clear();setRetry(null);setNotice(null);setConnection('access_lost');}
+      if(denied){recovery?.clear();setRetry(null);setNotice(null);setConnection(deniedMode(next.snapshot));}
       else {setConnection(next.paused?resumeMode:next.refreshing?resumeMode:next.snapshot?.state==='ready'?'ready':'unavailable');if(next.snapshot?.state==='ready'&&!next.refreshing)resumeMode='loading';}
     },signal=>fetchManagerTimeCorrections(signal,actorId,authority),parseManagerTimeCorrections,reason=>({state:'unavailable',reason}),()=> 'read_failed');
     const clear=(mode:CorrectionQueueConnection)=>{active=false;resumeMode=mode;controller.pause();setNotice(pausedCorrectionNotice);};

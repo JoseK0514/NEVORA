@@ -29,7 +29,7 @@ describe('presented action items (Phase 7)', () => {
   });
   it('writes period dates the way people read them (TC-P3-19)', () => {
     const card = presentItem(item({type: 'TIMECARD', category: 'timekeeping', priority: 'REVIEW', title: 'Period timecard needs review', detail: 'Casey Rivera · 2026-10-19–2026-10-25 · Resolve recorded-time exceptions before finalizing.'}), 'Open timecard review');
-    expect(plain(card.detail)).toBe('Casey Rivera · Oct 19 – Oct 25 · Fix recorded-time issues before finalizing.');
+    expect(plain(card.detail)).toBe('Casey Rivera · Oct 19–25 · Fix recorded-time issues before finalizing.');
     expect(card.detail).not.toMatch(/\d{4}-\d{2}/);
   });
   it('titles a time correction with the person and says what they asked for and when (Phase 3, OW-002)', () => {

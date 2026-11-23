@@ -14,7 +14,7 @@
  * Dense grids (the schedule's "8a–4p") and frozen payroll documents keep their own compact forms.
  *
  * Dates and clock times (the Nov 11 plan's formatter set):
- * - dateRangeText: "Nov 9 – 15", "Sep 28 – Oct 4", one day "Nov 9"; years only when the range crosses one.
+ * - dateRangeText: "Nov 9–15", "Sep 28–Oct 4", one day "Nov 9"; years only when the range crosses one.
  * - timeRangeText: "9:00 AM – 5:00 PM" in the zone given; an open end reads "now".
  * - relativeTimeText: "Just now", "12 min ago", "2 h ago", "Yesterday", "Monday", then "Oct 19". */
 const whole = (minutes: number) => Math.max(0, Math.floor(minutes));
@@ -44,7 +44,6 @@ export function minutesFromNanoseconds(nanoseconds: string | bigint): number | n
 }
 
 const isoDay = (date: string) => new Date(`${date}T12:00:00Z`);
-const monthDay = (date: string, year = false) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', ...(year ? { year: 'numeric' as const } : {}) }).format(isoDay(date));
 
 /** The closed en dash of a date range. */
 export const DATE_DASH = '\u2013';
@@ -75,13 +74,10 @@ export function dateRange(startDate: string, endDate: string, options: DateRange
   if (dayAt < monthAt) return `${start.find(part => part.type === 'day')?.value ?? text(start)}${DATE_DASH}${text(end)}`;
   return `${text(start)}${DATE_DASH}${text(end.filter((_, index) => index !== monthAt && index !== monthAt + 1))}`;
 }
-
-/** A span of calendar days (ISO dates, both included): "Nov 9 – 15" inside one month, "Sep 28 – Oct 4" across two,
- * "Dec 28, 2026 – Jan 3, 2027" across a year, and one day as "Nov 9". */
+/** A span of calendar days: "Nov 9–15" inside one month, "Sep 28–Oct 4" across two, "Dec 28, 2026–Jan 3, 2027" across
+ * a year, and one day as "Nov 9" (dateRange with its defaults). */
 export function dateRangeText(startDate: string, endDate: string) {
-  if (startDate === endDate) return monthDay(startDate);
-  if (startDate.slice(0, 4) !== endDate.slice(0, 4)) return `${monthDay(startDate, true)} – ${monthDay(endDate, true)}`;
-  return startDate.slice(0, 7) === endDate.slice(0, 7) ? `${monthDay(startDate)} – ${Number(endDate.slice(8))}` : `${monthDay(startDate)} – ${monthDay(endDate)}`;
+  return dateRange(startDate, endDate);
 }
 
 /** A span of clock time in one zone: "9:00 AM – 5:00 PM". An entry with no end yet reads "9:00 AM – now". */

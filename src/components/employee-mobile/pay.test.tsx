@@ -18,8 +18,8 @@ describe('Employee mobile Pay',()=>{
   expect(latest?.id).toBe(ids.correction);
   expect(earlier.map(item=>item.id)).toEqual([ids.original,ids.old]);
   expect(arrangeStatements([]).latest).toBeNull();
-  expect(payPeriod('2030-01-06','2030-01-19')).toBe('Jan 6 – 19, 2030');
-  expect(payPeriod('2029-12-23','2030-01-05')).toBe('Dec 23 – Jan 5, 2030');
+  expect(payPeriod('2030-01-06','2030-01-19')).toBe('Jan 6–19, 2030');
+  expect(payPeriod('2029-12-23','2030-01-05')).toBe('Dec 23, 2029–Jan 5, 2030');
  });
 
  it('shows the latest statement with deliberate View and Download, and the replaced one labelled',()=>{
@@ -45,7 +45,7 @@ describe('Employee mobile Pay',()=>{
 
  it('names the next scheduled payday from the pay schedule without calling it a payment',()=>{
   const plain=text(render({nextPay:{payday:'2030-02-07',daysUntil:3,period:{startDate:'2030-01-20',endDate:'2030-02-02'}}}));
-  expect(plain).toContain('Next scheduled payday');expect(plain).toContain('Thursday, February 7');expect(plain).toContain('In 3 days · for Jan 20 – Feb 2, 2030');
+  expect(plain).toContain('Next scheduled payday');expect(plain).toContain('Thursday, February 7');expect(plain).toContain('In 3 days · for Jan 20–Feb 2, 2030');
   expect(plain).toContain('From your workplace’s pay schedule. A statement appears here after your employer shares it.');
   expect(text(render())).not.toContain('Next scheduled payday');
  });

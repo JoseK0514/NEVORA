@@ -51,8 +51,8 @@ describe('Planning week', () => {
     const days = ['2026-11-15', '2026-11-16', '2026-11-17', '2026-11-18', '2026-11-19', '2026-11-20', '2026-11-21'].map(date => ({ date, scheduleWeekStart: date === '2026-11-15' ? '2026-11-09' : '2026-11-16' }));
     const html = renderToStaticMarkup(<PlanningWindowCard viewingWeek="2026-11-16" owner={false} locationQuery="" window={{ startsOn: 0, startDate: '2026-11-15', endDate: '2026-11-21', days,
       shifts: [{ date: '2026-11-15', locationId: 'loiza' }, { date: '2026-11-16', locationId: 'loiza' }, { date: '2026-11-16', locationId: 'condado' }], locations: locations.map(({ id, name }) => ({ id, name })), publishLocationIds: ['loiza'] }} />);
-    expect(html).toContain('Schedule week Nov 9 – Nov 15');
-    expect(html).toContain('Schedule week Nov 16 – Nov 22');
+    expect(html).toContain('Schedule week Nov 9–15');
+    expect(html).toContain('Schedule week Nov 16–22');
     expect(html).toContain('href="/app/schedule?week=2026-11-09"');
     expect(html).toContain('2 shifts');
     expect(html).toContain('You can publish: Calle Loíza');

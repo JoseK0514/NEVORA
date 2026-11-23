@@ -1,6 +1,7 @@
 "use client";
 
 
+import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 
@@ -45,7 +46,8 @@ function PositionRow({ position, hidden, ready, action, people }: {
           <SettingsForm key={position.updatedAt} action={action} label={`Edit ${position.name}`} disabled={!ready}
             messages={nameMessages} submitLabel="Save position" successTitle="Position saved"
             onResult={result => { if (result.success && !result.error) { toast(result.success); close(); } }}
-            secondary={<button type="button" className="q-btn q-btn--sec" onClick={close}>Cancel</button>}>
+            /* Cancel with a rename that is not saved asks first (Nov 21, 2026). */
+            secondary={<button type="button" className="q-btn q-btn--sec b-rowact b-rowact--quiet" onClick={() => leaveWithDiscardGuard(close)}>Cancel</button>}>
             <input type="hidden" name="id" value={position.id} />
             <input type="hidden" name="expectedUpdatedAt" value={position.updatedAt ?? ""} />
             <Field label="Name" id={`${id}-name`} name="name" defaultValue={position.name} required maxLength={80} autoComplete="off" />

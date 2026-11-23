@@ -11,7 +11,7 @@ import {CALLOUT_REASONS,creationKey,creationPayload,type CreationDraft,type Crea
 import type {RequestSlot} from '@/lib/employee-exchange';
 import type {PrivatePanelState} from '@/lib/private-snapshot-client';
 import type {EmployeeCreationOperation} from './creation-operation';
-import {BHero,BScreen,BState} from '../owner-b/b-kit';
+import {BCallout,BHero,BScreen,BState} from '../owner-b/b-kit';
 import {momentsCopy} from '../owner-b/moments-copy';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {FormMark} from '../employee-b/requests-b';
@@ -78,7 +78,10 @@ export function CreationView({state,authority,mode,sourceId,draft,operation,onDr
  const back=source?'/app/schedule?week='+source.weekStart+'&day='+source.date+'&shift='+encodeURIComponent(source.id):'/app/schedule';
  const chosen=mode==='swap'?read?.targets?.find(target=>creationKey(target.fields)===draft.targetKey):undefined;
  // A failed or partial swap check gets its own quiet line; every other notice (a verified empty list, a changed shift) shows once.
- const notice=read&&!(mode==='swap'&&(read.partial||read.targets===null))?read.check.notice:null;
+ const notice=read&&!(mode==='swap'&&(read.partial||read.targets===null||!read.targets.length))?read.check.notice:null;
+ // Nov 21, 2026: a swap with no one to choose says so in place of the list, with the step that still works, and draws no
+ // dead Send button. "Couldn't be checked" and "no one right now" are different answers and read differently.
+ const swapEmpty=mode==='swap'&&!!read&&read.targets!==null&&!read.targets.length;
  const status=(text:ReactNode,action?:ReactNode)=><div className="c-xs-state"><p role="status">{text}</p>{action}</div>;
 
  const firstLoad=!read&&!state.paused&&!denied&&state.refreshing&&!state.snapshot;
@@ -109,7 +112,10 @@ export function CreationView({state,authority,mode,sourceId,draft,operation,onDr
     setError(null);onSubmit();
    }}>
     <fieldset className="c-xs-fields" disabled={locked}>
-     {mode==='swap'?<fieldset className="c-xs-group" aria-describedby={error?errorId:undefined}><legend className="c-field__label">Choose a teammate to swap with</legend>
+     {swapEmpty?(read!.partial
+      ?<BCallout tone="amber" role="status" title="Teammates’ shifts couldn’t be checked" action={{label:state.refreshing?'Checking…':'Check again',onClick:onRefresh}}>Your shift is still yours. Try again in a moment.</BCallout>
+      :<BCallout tone="grey" icon="info" title="No one to swap with right now" action={read!.coverage.allowed&&!locked?{label:'Offer this shift for cover instead',href:'/app/exchange/swap?sourceShiftId='+encodeURIComponent(sourceId)+'&mode=cover'}:undefined}>{read!.coverage.allowed?'No teammate has a shift you can take in exchange. You can offer yours to your team.':'No teammate has a shift you can take in exchange. Your shift is still yours.'}</BCallout>)
+     :mode==='swap'?<fieldset className="c-xs-group" aria-describedby={error?errorId:undefined}><legend className="c-field__label">Choose a teammate to swap with</legend>
       {read.targets===null?<p className="c-xs-notice" role="status">Shift options couldn’t be checked. <button className="c-xs-inline" type="button" disabled={state.refreshing} onClick={onRefresh}>Refresh</button></p>
        :read.targets.length?<ul className="c-xs-options">{read.targets.map((target,index)=><li key={target.id}><label className="c-xs-option">
         <span className={index%2?'c-av c-av--grey':'c-av'} aria-hidden="true">{initials(target.person)}</span>
@@ -117,7 +123,7 @@ export function CreationView({state,authority,mode,sourceId,draft,operation,onDr
          {target.endTime<=target.startTime||target.lead?<span>{[target.lead?'Shift lead':null,target.endTime<=target.startTime?`Ends ${day(addDays(target.date,1))} at ${formatTime(target.endTime)}`:null].filter(Boolean).join(' · ')}</span>:null}</span>
         <input className="c-xs-radio" type="radio" name="targetShiftId" value={target.id} checked={draft.targetKey===creationKey(target.fields)} onChange={()=>change({targetKey:creationKey(target.fields)})}/>
        </label></li>)}</ul>
-       :!read.partial&&!read.check.notice?<p className="c-xs-notice">No eligible shifts to swap with right now.</p>:null}
+       :null}
       {read.targets?.length?<p className="c-field__help">{read.partial?<>Some teammates’ shifts couldn’t be checked. <button className="c-xs-inline" type="button" disabled={state.refreshing} onClick={onRefresh}>Refresh</button></>:'You work their shift and they work yours.'}</p>:null}
       {draft.targetKey&&!read.targets?.some(target=>creationKey(target.fields)===draft.targetKey)?<p className="c-xs-notice" role="status">Your selected shift changed or is no longer available. Choose a shift again.</p>:null}
      </fieldset>
@@ -139,7 +145,7 @@ export function CreationView({state,authority,mode,sourceId,draft,operation,onDr
      {mode==='swap'&&read.targets?.length?<p className="c-xs-foot">{chosen?first(chosen.person):'Your teammate'} says yes first, then your manager may need to approve.</p>
       :mode==='cover'?<p className="c-xs-foot">The shift stays yours until someone picks it up and any review is done.</p>:null}
      {error?<p id={errorId} className="c-error" role="alert">{error}</p>:null}
-     <button className={mode==='callout'?'c-btn c-btn--danger c-btn--full':'c-btn c-btn--full'} type="submit" disabled={locked||!sourceReviewed||!read.check.allowed}>{pending?'Submitting…':sendLabels[mode]}</button>
+     {swapEmpty?null:<button className={mode==='callout'?'c-btn c-btn--danger c-btn--full':'c-btn c-btn--full'} type="submit" disabled={locked||!sourceReviewed||!read.check.allowed}>{pending?'Submitting…':sendLabels[mode]}</button>}
     </fieldset>
    </form>
   </>:status(read.check.notice??'This shift isn’t available to your current account. Return to your schedule to choose a shift.');
@@ -149,7 +155,7 @@ export function CreationView({state,authority,mode,sourceId,draft,operation,onDr
   {pending?<p className="c-xs-notice" role="status">{uncertain?'Checking the original submission…':'Submitting your request…'}</p>:null}
   {result&&!resolved?<p className="c-error" role="alert">{shiftChangeFeedback(result)}</p>:null}
   {uncertain?<button className="c-btn c-btn--secondary c-btn--full" type="button" disabled={pending} onClick={onRetry}>Check submission status</button>:null}
-  {mode==='swap'&&read!.coverage.allowed&&!locked?<Link className="c-link c-link--l c-xs-alt" href={'/app/exchange/swap?sourceShiftId='+encodeURIComponent(sourceId)+'&mode=cover'}>Offer this shift for cover instead</Link>:null}
+  {mode==='swap'&&!(swapEmpty&&!read!.partial)&&read!.coverage.allowed&&!locked?<Link className="c-link c-link--l c-xs-alt" href={'/app/exchange/swap?sourceShiftId='+encodeURIComponent(sourceId)+'&mode=cover'}>Offer this shift for cover instead</Link>:null}
  </>:null;
 
  return <div className={`c-page c-xsheet em-creation${inSheet?' c-embed':' c-xsheet--page'}${firstLoad?' c-xsheet--skel':''}`} data-corp="" data-creation-state={state.paused?'paused':read?'ready':denied?'denied':state.refreshing?'loading':'unavailable'} aria-labelledby={titleId}>

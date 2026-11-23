@@ -10,6 +10,7 @@ import {
 import { normalizeBusinessVersion, parseBusinessMap, parseBusinessQuery, parseWindow } from "@/lib/owner-advisor/business/parse";
 import { isBusinessCitationHref } from "@/lib/owner-advisor/business/metrics";
 import { isoInstant, zonedInstant } from "@/lib/owner-advisor/knowledge-client";
+import { dateRange } from "@/lib/duration-format";
 import { checkBusinessFinanceMetrics, checkBusinessSalesMetrics } from "../public-business-evidence";
 
 export const BUSINESS_ENDPOINT = "/api/owner/advisor/business";
@@ -281,13 +282,12 @@ export function windowFromDays(first: string, last: string, timeZone: string): B
   return fromAt && toAt && fromAt < toAt ? { fromAt, toAt } : null;
 }
 export const instantFromLocal = (local: string, timeZone: string) => toInstant(local, timeZone);
-const day = (iso: string, timeZone: string, locale: string, year: boolean) => new Intl.DateTimeFormat(locale, { timeZone, month: "short", day: "numeric", ...(year ? { year: "numeric" } : {}) }).format(new Date(iso));
-/** "Jan 1 – 31, 2026": the period's days in the company's zone (the end instant itself is not part of the period). */
+const localDate = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso));
+/** "Jan 1–31, 2026": the period's days in the company's zone (the end instant itself is not part of the period), in
+ * the app's one date-range form. */
 export function periodText(period: BusinessWindow, timeZone: string, locale = "en-US") {
   const last = new Date(Date.parse(period.toAt) - 1).toISOString();
-  const a = day(period.fromAt, timeZone, locale, false), b = day(last, timeZone, locale, true);
-  const year = (iso: string) => new Intl.DateTimeFormat("en-US", { timeZone, year: "numeric" }).format(new Date(iso));
-  return day(period.fromAt, timeZone, locale, true) === b ? b : year(period.fromAt) === year(last) ? `${a} – ${b}` : `${day(period.fromAt, timeZone, locale, true)} – ${b}`;
+  return dateRange(localDate(period.fromAt, timeZone), localDate(last, timeZone), { year: "end", locale });
 }
 export const momentText = (iso: string, timeZone: string, locale = "en-US") =>
   new Intl.DateTimeFormat(locale, { timeZone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(iso));

@@ -1,4 +1,6 @@
 "use client";
+import { DiscardGuard } from "@/components/kit/discard-dialog";
+import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
@@ -59,9 +61,10 @@ export function WagesScreen(props: WagesScreenProps) {
   const [custody, setCustody] = useState<Custody | null>(initial?.custody ?? null);
   const [issue, setIssue] = useState<Issue | null>(initial?.issue ?? null);
   const [problems, setProblems] = useState<Problem[]>([]);
-  const [landed, setLanded] = useState(false);
+  // The confirmed save: the fact line under "Pay rate saved", built from the draft the server just accepted.
+  const [landed, setLanded] = useState<{ line: string | null } | null>(null);
   const [said, setSaid] = useState("");
-  const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null), shownStep = useRef(step);
+  const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null), shownStep = useRef(step), doneRef = useRef<HTMLElement>(null);
 
   const page = load.state === "ready" ? load.page : null;
   const latest = page?.history[0] ?? null;
@@ -91,12 +94,14 @@ export function WagesScreen(props: WagesScreenProps) {
   useEffect(() => {
     if (shownStep.current === step) return;
     shownStep.current = step;
+    // A confirmed save lands on its result: the title that says what is now true takes focus, so it is read once.
+    if (step === "view" && landed && doneRef.current) { doneRef.current.focus({ preventScroll: true }); window.scrollTo({ top: 0 }); return; }
     const title = [...document.querySelectorAll<HTMLElement>(".wg h1")].find(heading => heading.getClientRects().length > 0);
     if (!title) return;
     if (!title.hasAttribute("tabindex")) title.tabIndex = -1;
     title.focus();
     window.scrollTo({ top: 0 });
-  }, [step]);
+  }, [step, landed]);
   const trouble = custody && custody.status !== "sending" ? custody.status : issue;
   useEffect(() => {
     if (!trouble) return;
@@ -112,7 +117,7 @@ export function WagesScreen(props: WagesScreenProps) {
   }, [defaultLocationIds, wages, locations]);
 
   function startEdit() {
-    setIssue(null); setLanded(false); setProblems([]);
+    setIssue(null); setLanded(null); setProblems([]);
     const ids = defaultLocationIds.filter(id => locations.some(l => l.id === id && l.active));
     setDraft({ mode: "set", locationIds: ids.slice(0, 1), date: today, rate: "", reason: "" });
     setStep("edit");
@@ -133,13 +138,22 @@ export function WagesScreen(props: WagesScreenProps) {
     setStep("review");
   }
   const fromInstant = (date: string) => localDateTimeToInstant(`${date}T00:00`, timeZone);
+  /** "Sofía earns $17.50/h at Condado from Nov 21, 2026", from the draft a confirmed save carried. */
+  function savedLine(saved: Draft | null) {
+    if (!saved) return null;
+    const names = saved.locationIds.map(id => locations.find(l => l.id === id)?.name ?? id);
+    const places = names.length === 1 ? names[0] : names.length === 2 ? t.placesTwo(names[0], names[1]) : t.placesMany(names.length);
+    const minor = saved.mode === "set" ? centsFromDollars(saved.rate) : null;
+    return minor === null ? t.savedStopLine(firstName, places, dateText(saved.date, t)) : t.savedLine(firstName, rateText(minor, t), places, dateText(saved.date, t));
+  }
 
   async function send(command: WageSave, recheck: boolean) {
     setCustody({ command, status: recheck ? "checking" : "sending" }); setIssue(null);
     let result;
     try { result = await saveWages(command); } catch { result = { kind: "unknown" as const }; }
     if (result.kind === "saved") {
-      setCustody(null); setDraft(null); setStep("view"); setLanded(true); setSaid(t.savedTitle);
+      // The result's title takes focus (the step effect), so the live line stays empty: a result is said once.
+      setCustody(null); setLanded({ line: savedLine(draft) }); setDraft(null); setStep("view"); setSaid("");
       await reload().catch(() => undefined);
       return;
     }
@@ -219,6 +233,8 @@ export function WagesScreen(props: WagesScreenProps) {
 
   /* ---- Body ------------------------------------------------------------------------------------------------------- */
   const title = step === "edit" ? t.editTitle : step === "review" && draft ? t.reviewPage : t.title;
+  // The step line: under the title on the band from 768px; a phone's bar has no second line, so the card carries it.
+  const stepLine = load.state !== "ready" || !draft ? null : step === "edit" ? t.stepEdit : step === "review" ? t.stepReview : null;
   let body: ReactNode;
   if (load.state === "loading") body = <Skeleton t={t} />;
   else if (load.state !== "ready") {
@@ -233,6 +249,7 @@ export function WagesScreen(props: WagesScreenProps) {
     body = <>
       {attentionCard}
       <CorpCard id="wg-edit" label={t.editTitle}>
+        <p className="rs-step">{t.stepEdit}</p>
         <div className="rs-fields">
           <div className="rs-field"><span className="rs-field__l" id="wg-mode-l">{t.modeLabel}</span>
             <BFilters label={t.modeLabel} items={[{ key: "set", label: t.modeSet, current: draft.mode === "set", onSelect: () => set({ mode: "set" }) },
@@ -263,7 +280,7 @@ export function WagesScreen(props: WagesScreenProps) {
         </div>
       </CorpCard>
       {problems.length ? <p className="rs-err rs-err--sum" ref={problemRef} tabIndex={-1} role="alert"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{t.problems(problems.length)}</p> : null}
-      <div className="rs-foot"><Act kind="text" disabled={busy} onClick={() => { setDraft(null); setProblems([]); setStep("view"); }}>{t.cancel}</Act><Act kind="teal" disabled={busy} onClick={toReview}>{t.review}</Act></div>
+      <div className="rs-foot"><Act kind="text" disabled={busy} onClick={() => leaveWithDiscardGuard(() => { setDraft(null); setProblems([]); setStep("view"); })}>{t.cancel}</Act><Act kind="teal" disabled={busy} onClick={toReview}>{t.review}</Act></div>
     </>;
   } else if (step === "review" && draft) {
     let from = "";
@@ -273,7 +290,10 @@ export function WagesScreen(props: WagesScreenProps) {
     const sending = custody?.status === "sending";
     body = <>
       {attentionCard}
-      <CorpCard id="wg-review" label={t.reviewTitle(dateText(draft.date, t))}>
+      <CorpCard id="wg-review" label={t.reviewTitle(dateText(draft.date, t))}
+        footer={<><Act kind="text" disabled={busy || !!custody} onClick={() => setStep("edit")}>{t.back}</Act>
+          <Act kind="teal" busy={sending} disabled={busy || !!custody} onClick={confirm}>{sending ? t.saving : t.save}</Act></>}>
+        <p className="rs-step">{t.stepReview}</p>
         <div className="rs-review"><p className="rs-review__p">{t.reviewLine(firstName)}</p></div>
         <CorpRows label={t.locations}>{draft.locationIds.map(id => {
           const location = locations.find(l => l.id === id), before = from ? rateBefore(wages, id, from) : null;
@@ -284,17 +304,16 @@ export function WagesScreen(props: WagesScreenProps) {
         <p className="rs-note rs-note--in">{t.reason}: {draft.reason.trim()}</p>
         <p className="rs-zone">{t.payrollNote}</p>
       </CorpCard>
-      <div className="rs-foot"><Act kind="text" disabled={busy || !!custody} onClick={() => setStep("edit")}>{t.back}</Act>
-        <Act kind="teal" busy={sending} disabled={busy || !!custody} onClick={confirm}>{sending ? t.saving : t.save}</Act></div>
     </>;
   } else {
     const history = [...(page?.history ?? []), ...older.history];
     const next = older.history.length ? older.next : page?.nextBeforeRevision ?? null;
     body = <>
       {attentionCard}
-      {landed && !attention ? <div className="rs-landed"><CorpCard ariaLabel={t.savedTitle}><BState silent kind="done" title={t.savedTitle} /></CorpCard></div> : null}
       <CorpCard id="wg-now" label={t.nowTitle}>
-        {!wages.length ? <div className="wg-empty"><BCallout tone="amber" icon="empty" title={t.noRateAnywhere(name)}>{t.noRateHelp}</BCallout></div> : null}
+        {/* Final polish (finding 24): a save's result opens the card it changed: the done mark, what is now true, the fact. */}
+        {landed && !attention ? <BState kind="done" titleRef={doneRef} title={t.savedTitle} line={landed.line ?? undefined} /> : null}
+        {!wages.length ? <div className="wg-empty"><BCallout tone="amber" title={t.noRateAnywhere(name)}>{t.noRateHelp}</BCallout></div> : null}
         <CorpRows label={t.nowTitle}>{shown.map(locationRow)}</CorpRows>
         <div className="rs-main"><Act kind={attention ? "ghost" : "teal"} id="wg-main-action" disabled={busy || !!custody} onClick={startEdit}>{t.change}</Act></div>
       </CorpCard>
@@ -311,9 +330,12 @@ export function WagesScreen(props: WagesScreenProps) {
 
   return <CorpPage className="c-page--narrow rs rs--c wg" labelledBy={TITLE_ID} lang={lang}>
     <CorpNav back={back} title={title} titleId="wg-nav-title" phoneOnly />
-    <CorpTitle id={TITLE_ID} title={title} sub={name} wide focusTarget />
+    <CorpTitle id={TITLE_ID} title={title} sub={stepLine ? `${name} · ${stepLine}` : name} wide focusTarget />
     <p className="rs-sr" role="status" aria-live="polite">{said}</p>
     {body}
+    {/* Leaving the flow with a typed rate or reason that is not saved asks first (Nov 21, 2026). Review and Back are steps of
+      the same flow and never ask; a save that is being checked keeps its own hold. */}
+    <DiscardGuard dirty={!!draft && !custody && (draft.rate.trim() !== "" || draft.reason.trim() !== "")} lang={lang} />
   </CorpPage>;
 }
 

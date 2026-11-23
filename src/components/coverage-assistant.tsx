@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
-import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+import { BDoneMark } from "@/components/owner-b/b-kit";
 import { addDays, formatDayLabel, formatTime } from "@/lib/date-utils";
 import { durationText } from "@/lib/duration-text";
 import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpRows,CorpTime,CorpTitle } from "./corp/corp";
@@ -13,11 +13,11 @@ export type CoverageEmployee = {
   employeeName: string;
   role?: string;
   primaryLocationName?: string;
-  scheduledHours: number;
+  scheduledHours?: number;
   targetHours?: number;
-  hoursNeeded: number;
-  priorUnderTargetWeeks: number;
-  href: string;
+  hoursNeeded?: number;
+  priorUnderTargetWeeks?: number;
+  href?: string;
 };
 
 export type CoverageAssistantProps = {
@@ -34,6 +34,7 @@ export type CoverageAssistantProps = {
   refreshHref?: string;
   saved?: boolean;
   repair?: boolean;
+  reviewOnly?: boolean;
   /** Add shift, prefilled with this day, time and location (the existing form; its review checks the person). */
   addShiftHref?: string;
   /** Scheduling rules, where this time's coverage need is set. */
@@ -45,6 +46,7 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one 
 
 /** "12h of 32h this week", "18h this week · No target set" (planned hours, not recorded time). */
 function personDetail(employee: CoverageEmployee) {
+  if (employee.scheduledHours === undefined) return 'Available for this shift';
   if (employee.targetHours === undefined) return `${hours(employee.scheduledHours)} this week · No target set`;
   return employee.targetHours > 0 ? `${hours(employee.scheduledHours)} of ${hours(employee.targetHours)} this week` : `${hours(employee.scheduledHours)} this week`;
 }
@@ -65,7 +67,7 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
     <CorpNav back={{ href: props.backHref, label: "Schedule" }} title="Find cover" titleId="coverage-title" phoneOnly />
     <CorpTitle title="Find cover" wide />
     <ManagerIssueFocus prefix="coverage-" />
-    {props.saved ? <CorpNote icon={<CheckIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>Replacement saved. What’s below is the schedule as it is now.</CorpNote> : null}
+    {props.saved ? <CorpNote icon={<BDoneMark />}>Replacement saved. What’s below is the schedule as it is now.</CorpNote> : null}
     <div className="wa-target" id="coverage-issue" tabIndex={-1}>
       <CorpCard id="coverage-shift" label="Open shift" aside={state ?? undefined}>
         <CorpBody>
@@ -85,7 +87,7 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
     </div>
     {/* Copy table 29–33 and R14: plain words, no "lead" (the role is on hold), and no big zero. */}
     {props.status === "READY" ? <CorpCard id="coverage-people" label="Who can cover" aside={count ? <span className="c-meta c-cover__state">{`${plural(count, "person", "people")} free`}</span> : undefined}>
-      {count ? <ScheduleCoverPick repair={props.repair} people={props.candidates.map(employee => ({ employeeId: employee.employeeId, employeeName: employee.employeeName, detail: personDetail(employee), href: employee.href }))} />
+      {count ? <ScheduleCoverPick repair={props.repair} reviewOnly={props.reviewOnly} people={props.candidates.map(employee => ({ employeeId: employee.employeeId, employeeName: employee.employeeName, detail: personDetail(employee), href: employee.href }))} />
         : <CorpBody>
           {/* Owner premium (structure-experience F1/F2): a decision, not a dead end. The same read; the next steps are the
             existing Add shift form (its review checks the person) and the coverage need in Scheduling rules. */}
@@ -103,6 +105,7 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
           : props.status === "RESOLVED" ? <CorpButtonLink href={props.backHref} kind="secondary" full>Back to schedule</CorpButtonLink> : null}
       </CorpBody>
     </CorpCard>}
-    {props.status === "READY" && count ? <CorpNote center>You review the shift before it’s saved.</CorpNote> : null}
+    {props.status === "READY" && props.candidates.some(candidate => candidate.href) && !props.reviewOnly
+      ? <CorpNote center>You review the shift before it’s saved.</CorpNote> : null}
   </CorpPage>;
 }

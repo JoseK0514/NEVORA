@@ -6,14 +6,16 @@ import {requireSessionMutationProof} from '@/lib/auth/session';
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
 import Link from 'next/link';
 import {publishFirstHref} from '@/lib/shift-changes/publish-first';
-import {ShiftChangeForm} from './shift-change-form';
+import {ShiftChangeForm,type ShiftChangeOutcome} from './shift-change-form';
+import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
+import {UserMinusIcon} from '@phosphor-icons/react/dist/ssr/UserMinus';
 import {ShiftChangeHistory} from './shift-change-history';
 import {readShiftChangeHistoryView} from '@/lib/data/shift-change-views';
 import { businessDate } from "@/lib/business-time";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeActivity, type ExchangeRecord } from "@/lib/data/exchanges";
 import { listPendingCallouts, listTeamCalloutHistory, type CalloutRecord } from "@/lib/data/callouts";
-import { PendingButton } from "./wave-a/pending-button";
+import { ShiftRequestDecide, type ShiftAsk } from "./shift-request-decide";
 import { agoLabel, initialsOf, QuietHeader, QuietNav, QuietPage } from "./quiet/quiet";
 import { RequestFace } from "./request-face";
 import { CorpSegments } from "./corp/corp";
@@ -22,6 +24,7 @@ import type { ReactNode } from "react";
 import { WholeParts } from "./time-off-waiting-list";
 import { calloutCoverText, coverOutcomeText } from "@/lib/action-center/request-details";
 import { reviewCopy } from "./review-details/copy";
+import { BState } from "./owner-b/b-kit";
 
 const t = reviewCopy();
 
@@ -113,8 +116,8 @@ function CalloutFacts({ callout, reason, year }: { callout: CalloutRecord; reaso
     <Facts rows={[{ label: `${possessive(callout.employeeName)} shift`, value: shiftLine(callout, year), parts: true }, { label: "Reason", value: reason }, ...(callout.reasonNote ? [{ label: "Note", value: callout.reasonNote }] : []),
       // Phase 4 (U09): what the linked cover requests recorded. History only: it names nobody and is not today's staffing.
       { label: t.coverHistory, value: calloutCoverText(callout.coverage, t) }]} />
-    <p className="q-help">Approving takes the shift off their schedule. It will still need someone to cover it.</p>
-    <p className="q-help">{t.coverHistoryHelp}</p>
+    {/* Jose (Nov 21, 2026): the explaining sentences are one grey paragraph under the facts. */}
+    <p className="q-help"><span>Approving takes the shift off their schedule. It will still need someone to cover it.</span><span>{t.coverHistoryHelp}</span></p>
   </>;
 }
 
@@ -132,14 +135,29 @@ function RequestDetails({ name, line, sent, aged, label, open, children }: { nam
   </details>;
 }
 
-function Decision({ id, revision, decline, approve, allowed, notice, noticeHref, what }: { id: string; revision?: number; decline: string; approve: string; allowed: boolean; notice?: string; noticeHref?: string | null; what: string }) {
+/** Final polish (confirmations A #1, #2): what approving or declining a swap or a cover request leaves, in words. */
+function exchangeOutcome(exchange: ExchangeRecord): ShiftChangeOutcome {
+  const icon = <ArrowsLeftRightIcon weight="bold" />, other = exchange.targetEmployeeName;
+  if (exchange.kind === "SWAP") return { completed: { tone: "done", title: t.swapApproved, line: t.swapApprovedLine },
+    closed: { tone: "closed", icon, title: t.swapDeclined, line: other ? t.bothKeep(exchange.requestedByName, other) : t.keepsShift(exchange.requestedByName) } };
+  return { completed: { tone: "done", title: t.coverApproved, line: other ? t.hasShiftNow(other) : t.scheduleShowsIt },
+    closed: { tone: "closed", icon, title: t.coverDeclined, line: t.keepsShift(exchange.requestedByName) } };
+}
+
+/** Jose (Nov 21, 2026): the question before a Decline (or Close request). Its consequence is the line the declined
+ * result already says, with first names; nothing here says more than the screen holds. */
+const first = (name: string) => name.split(/\s+/)[0] || name;
+function exchangeAsk(exchange: ExchangeRecord, what: string): ShiftAsk {
+  const swap = exchange.kind === "SWAP", other = exchange.targetEmployeeName;
+  return { question: swap ? t.askDeclineSwap : t.askDeclineCover, consequence: swap && other ? t.bothKeep(first(exchange.requestedByName), first(other)) : t.keepsShift(first(exchange.requestedByName)),
+    keep: t.keepRequest, go: t.decline, groupLabel: `Decline the ${what}?`, keepLabel: `Keep the ${what}`, goLabel: `Decline the ${what}` };
+}
+
+function Decision({ id, revision, decline, approve, allowed, notice, noticeHref, what, outcome, ask }: { outcome?: ShiftChangeOutcome; id: string; revision?: number; decline: string; approve: string; allowed: boolean; notice?: string; noticeHref?: string | null; what: string; ask: ShiftAsk }) {
   if (!revision) return <p className="q-help q-acts-note">This request changed. Reload to see the latest.</p>;
-  return <ShiftChangeForm fields={{ requestId: id, expectedRevision: revision }} className="q-acts-form">
+  return <ShiftChangeForm fields={{ requestId: id, expectedRevision: revision }} className="q-acts-form" outcome={outcome}>
     {notice ? <p className="q-help q-acts-note">{notice}{noticeHref ? <> <Link href={noticeHref}>Publish changes</Link></> : null}</p> : null}
-    <div className="q-acts">
-      <PendingButton className="q-bs b-rowact b-rowact--quiet" name="kind" value={decline} pending="Declining…" label={`Decline ${what}`}>Decline</PendingButton>
-      {allowed ? <PendingButton className="q-bs q-bs--go b-rowact b-rowact--go" name="kind" value={approve} pending="Approving…" label={`Approve ${what}`}>Approve</PendingButton> : null}
-    </div>
+    <ShiftRequestDecide decline={decline} declineLabel={`Decline ${what}`} approve={allowed ? approve : undefined} approveLabel={`Approve ${what}`} ask={ask} />
   </ShiftChangeForm>;
 }
 
@@ -199,7 +217,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
         return <li className="q-request" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id} data-selected={requestId === exchange.id ? "true" : undefined}>
           <RequestDetails name={exchange.requestedByName} line={exchangeLine(exchange, year)} sent={sent(exchange.createdAt)} aged={aged(exchange.createdAt)} open={requestId === exchange.id}
             label={`${exchange.requestedByName}, ${exchangeLine(exchange, year)}. Show ${exchange.kind === "SWAP" ? "both shifts" : "the shift"}.`}><ExchangeFacts exchange={exchange} year={year} /></RequestDetails>
-          <Decision id={exchange.id} revision={exchange.requestRevision} decline="MANAGER_DECLINE" approve="MANAGER_APPROVE" allowed={!!approvals.get(exchange.id)?.allowed} notice={approvals.get(exchange.id)?.notice ?? undefined} what={what} />
+          <Decision id={exchange.id} revision={exchange.requestRevision} decline="MANAGER_DECLINE" approve="MANAGER_APPROVE" allowed={!!approvals.get(exchange.id)?.allowed} notice={approvals.get(exchange.id)?.notice ?? undefined} what={what} outcome={exchangeOutcome(exchange)} ask={exchangeAsk(exchange, what)} />
         </li>;
       })}
       {callouts.map(callout => {
@@ -207,20 +225,26 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
         return <li className="q-request" id={`request-${callout.id}`} tabIndex={-1} key={callout.id} data-selected={requestId === callout.id ? "true" : undefined}>
           <RequestDetails name={callout.employeeName} line={`Can’t work · ${when(callout, year)}`} sent={sent(callout.createdAt)} aged={aged(callout.createdAt)} open={requestId === callout.id}
             label={`${callout.employeeName} can’t work ${when(callout, year)}, ${reason}. Show the shift.`}><CalloutFacts callout={callout} reason={reasons[callout.reasonCode] ?? callout.reasonCode} year={year} /></RequestDetails>
-          <Decision id={callout.id} revision={callout.requestRevision} decline="DECLINE_CALLOUT" approve="APPROVE_CALLOUT" allowed={!!approvals.get(callout.id)?.allowed} notice={approvals.get(callout.id)?.notice ?? undefined} noticeHref={publishFirstHref(approvals.get(callout.id)?.notice, callout.weekStart)} what={`the report from ${callout.employeeName}`} />
+          <Decision id={callout.id} revision={callout.requestRevision} decline="DECLINE_CALLOUT" approve="APPROVE_CALLOUT" allowed={!!approvals.get(callout.id)?.allowed} notice={approvals.get(callout.id)?.notice ?? undefined} noticeHref={publishFirstHref(approvals.get(callout.id)?.notice, callout.weekStart)} what={`the report from ${callout.employeeName}`}
+            ask={{ question: t.askDeclineCallout, consequence: t.staysOnShift(first(callout.employeeName)), keep: t.keepRequest, go: t.decline,
+              groupLabel: `Decline the call-out from ${callout.employeeName}?`, keepLabel: `Keep the call-out from ${callout.employeeName}`, goLabel: `Decline the call-out from ${callout.employeeName}` }}
+            outcome={{ completed: { tone: "done", title: t.calloutApproved, line: t.calloutApprovedLine }, closed: { tone: "closed", icon: <UserMinusIcon weight="bold" />, title: t.calloutDeclined, line: t.keepsShift(callout.employeeName) } }} />
         </li>;
       })}
-    </ul> : <p className="q-empty q-first">You’re all caught up.</p>) : null}
+    </ul> : <div className="q-list q-emptycard"><BState kind="empty" title="You’re all caught up" line="New shift requests show up here." /></div>) : null}
 
     {selected.id === "coverage" ? (liveCoverage.length ? <ul className="q-list q-requests" aria-label="Open cover">
       {liveCoverage.map(exchange => <li className="q-request" key={exchange.id}>
         <RequestDetails name={exchange.requestedByName} line={exchangeLine(exchange, year)} sent={sent(exchange.createdAt)} aged={aged(exchange.createdAt)} open={false}
           label={`${exchange.requestedByName}, ${exchangeLine(exchange, year)}. Show the shift.`}><ExchangeFacts exchange={exchange} year={year} /></RequestDetails>
-        {exchange.requestRevision ? <ShiftChangeForm fields={{ kind: "MANAGER_CLOSE", requestId: exchange.id, expectedRevision: exchange.requestRevision }} className="q-acts-form">
-          <div className="q-acts"><PendingButton className="q-bs b-rowact b-rowact--quiet" pending="Closing…" label={`Close the coverage request from ${exchange.requestedByName}. The shift stays with them.`}>Close request</PendingButton></div>
+        {exchange.requestRevision ? <ShiftChangeForm fields={{ kind: "MANAGER_CLOSE", requestId: exchange.id, expectedRevision: exchange.requestRevision }} className="q-acts-form"
+          outcome={{ closed: { tone: "closed", icon: <ArrowsLeftRightIcon weight="bold" />, title: t.requestClosed, line: t.keepsShift(exchange.requestedByName) } }}>
+          <ShiftRequestDecide declineWords={t.closeRequest} pending="Closing…" declineLabel={`Close the coverage request from ${exchange.requestedByName}. The shift stays with them.`}
+            ask={{ question: t.askCloseCover, consequence: t.keepsShift(first(exchange.requestedByName)), keep: t.keepRequest, go: t.closeRequest,
+              groupLabel: `Close the coverage request from ${exchange.requestedByName}?`, keepLabel: `Keep the coverage request from ${exchange.requestedByName}`, goLabel: `Close the coverage request from ${exchange.requestedByName}` }} />
         </ShiftChangeForm> : null}
       </li>)}
-    </ul> : <p className="q-empty q-first">No open cover.</p>) : null}
+    </ul> : <div className="q-list q-emptycard"><BState kind="empty" title="No open cover" line="Cover requests nobody has picked up show up here." /></div>) : null}
 
     {selected.id === "activity" ? (activity.length ? <ul className="q-list q-requests q-done" aria-label="Done">
       {activity.map(item => <li key={item.id}>
@@ -234,6 +258,6 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
             {item.fact ? <><Facts rows={[{ label: item.fact.label, value: item.fact.value }]} />{item.fact.help ? <p className="q-help">{item.fact.help}</p> : null}</> : null}<ShiftChangeHistory events={historyViews.get(item.id)??null}/></div>
         </details>
       </li>)}
-    </ul> : <p className="q-empty q-first">Nothing decided yet.</p>) : null}
+    </ul> : <div className="q-list q-emptycard"><BState kind="empty" title="Nothing decided yet" line="Requests you approve or decline show up here." /></div>) : null}
   </QuietPage></ScopedReadFrame>;
 }

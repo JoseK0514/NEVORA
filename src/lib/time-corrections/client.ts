@@ -51,9 +51,10 @@ async function get(path:string,signal:AbortSignal,actorId?:string,authority?:str
     Accept:'application/json','X-Nevora-Time-Correction':'1',...(actorId?{'X-Nevora-Actor':actorId}:{}),...(authority?{'X-Nevora-Correction-Authority':authority}:{}),
   }});
   // X-Nevora-Failure (Nov 9, 2026): the shared mapping (data-clearing failures read as access ended, the rest unavailable).
+  // The missing-grant state has its own page card. Announce the other transport failures as before.
+  if (await permissionRefusal(response,path)) return {state:'unavailable',reason:'permission_required'} as const;
   const read=await privateReadBody(response);
   if (!read.ok) {
-    if (await permissionRefusal(response,path)) return {state:'unavailable',reason:'permission_required'} as const;
     if (read.reason==='access_denied') return {state:'unavailable',reason:'access_denied'} as const;
     throw new Error('Correction data is unavailable');
   }

@@ -51,3 +51,13 @@
 }
 @media (min-width: 768px) {
 }
+
+/* Polish (Nov 20, 2026): "Estimate" is the card's standing state, so it is grey text (a chip marks an exception); the
+ * note and the footer share the card title's left edge from 768px. */
+:is(#c-root, html) .app-shell[data-nv-b] #schedule-labor-cost .lc-est { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 400; color: var(--b-grey); white-space: nowrap; }
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] #schedule-labor-cost .lc :is(.lc-none, .lc-foot):not(#pc1):not(#pc2):not(#pc3):not(#pc4):not(#pc5):not(#pc6):not(#pc7) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] #schedule-labor-cost .lc details.lc-basis:not(#pc1):not(#pc2):not(#pc3):not(#pc4):not(#pc5):not(#pc6):not(#pc7), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] #schedule-labor-cost .lc details.lc-basis > :is(summary, p):not(#pc1):not(#pc2):not(#pc3):not(#pc4):not(#pc5):not(#pc6):not(#pc7) { margin-left: 0 !important; padding-left: 0 !important; }
+  }
+}

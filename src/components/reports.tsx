@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {announceFailure,clearsProtectedData,failureRecovery,nevoraFailure} from '@/lib/http/nevora-failure';
+import {announceFailure,clearsProtectedData,denialOf,failureRecovery,nevoraFailure} from '@/lib/http/nevora-failure';
 import {announceOfflineHeld,offlineListener} from '@/lib/offline-hold';
 import {isPopoverOpen} from './kit/popover-open';
 import type React from 'react';
@@ -10,7 +10,7 @@ import {Temporal} from '@js-temporal/polyfill';
 import {projectReports,type PeriodReports,type ReportHours} from '@/lib/reports/project';
 import {formatRecordedHours,parsePeriod,projectTimecard,type Period} from '@/lib/timecards/project';
 import {formatDateRange,formatDisplayDate} from '@/lib/date-utils';
-import {dateRangeText,durationSentence,minutesFromNanoseconds} from '@/lib/duration-format';
+import {dateRange,dateRangeText,durationSentence,minutesFromNanoseconds} from '@/lib/duration-format';
 import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import {PrinterIcon} from '@phosphor-icons/react/dist/ssr/Printer';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -30,9 +30,11 @@ import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpRow,Corp
 import './reports-corp.css';
 import {scheduledDays} from '@/lib/reports/scheduled-days';
 import {reviewCopy} from './review-details/copy';
+import {BCallout} from './owner-b/b-kit';
 import {Explain} from './review-details/explain';
 const t=reviewCopy();
-type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
+/** access_lost: signed out (sign in again). not_allowed: signed in without access to insights (QA A3-06). */
+type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost'|'not_allowed';
 /** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
  * and swapped in when verified, so the report only empties if every read fails before expiry.
  * Short-lived snapshots (5s or less) just expire. */
@@ -41,14 +43,8 @@ const PERIOD_ERROR='Choose a valid period of 1 to 31 days.';
 const MINUTE_NS=BigInt('60000000000');
 const hours=(value:string)=>value.startsWith('-')?`−${formatRecordedHours(value.slice(1))}`:formatRecordedHours(value);
 const periodLabel=(period:Period)=>formatDateRange(period.startDate,period.endDate);
-/** v3: "Oct 13 – 19, 2026" (the year only where asked), as in the mockups. */
-const rangeText=(period:Period,year=true)=>{
- try{
-  const format=new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',...(year?{year:'numeric' as const}:{}),timeZone:'UTC'});
-  const day=(value:string)=>new Date(`${value}T12:00:00Z`);
-  return keepWhole(format.formatRange(day(period.startDate),day(period.endDate)).replace(/ /g,' '));
- }catch{return keepWhole(periodLabel(period));}
-};
+/** "Oct 13–19, 2026" (the year only where asked): the app's one date-range form. */
+const rangeText=(period:Period,year=true)=>keepWhole(dateRange(period.startDate,period.endDate,{year:year?'end':'never'}));
 const readable=(value:string)=>value.toLowerCase().replaceAll('_',' ');
 const observedLabel=(at:string,timeZone:string)=>{try{return keepWhole(new Intl.DateTimeFormat('en-US',{timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(at)));}catch{return at;}};
 const changeEvents:Record<string,string>={CREATED:'sent',SUBMITTED:'sent',APPROVED:'approved',COMPLETED:'completed',DECLINED:'declined',REJECTED:'declined',CANCELLED:'withdrawn',WITHDRAWN:'withdrawn',EXPIRED:'expired'};
@@ -168,7 +164,7 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
  },[report]);
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
-  return <section className="nv-card wb-report-state" role="status" aria-busy={waiting}><div className="wb-body"><div className="wb-receipt"><Tile tone={waiting?'neutral':'review'}>{waiting?<ClockIcon size={22} weight="bold"/>:<WarningCircleIcon size={22} weight="bold"/>}</Tile><div><h2 className="wb-strong">{({loading:'Loading insights',offline:'You’re offline',reconnecting:'Reconnecting',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',ready:'Couldn’t load insights'})[state]}</h2><p className="wb-note">{state==='access_lost'?'Sign in again with a manager or owner account.':state==='paused'?'Return to this page to see the current numbers.':state==='offline'?'Connect to the internet, then refresh to see this period.':state==='unavailable'?'Check your connection, then try again.':'Getting this period’s numbers…'}</p></div></div>{state==='access_lost'?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div>:null}</div></section>;
+  return <section className="nv-card wb-report-state" role="status" aria-busy={waiting}><div className="wb-body"><div className="wb-receipt"><Tile tone={waiting?'neutral':'review'}>{waiting?<ClockIcon size={22} weight="bold"/>:<WarningCircleIcon size={22} weight="bold"/>}</Tile><div><h2 className="wb-strong">{({loading:'Loading insights',offline:'You’re offline',reconnecting:'Reconnecting',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',not_allowed:'You don’t have access to insights',ready:'Couldn’t load insights'})[state]}</h2><p className="wb-note">{state==='access_lost'?'Sign in again with a manager or owner account.':state==='not_allowed'?'Ask the Owner if you need it.':state==='paused'?'Return to this page to see the current numbers.':state==='offline'?'Connect to the internet, then refresh to see this period.':state==='unavailable'?'Check your connection, then try again.':'Getting this period’s numbers…'}</p></div></div>{state==='access_lost'?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div>:null}</div></section>;
  }
  const requests=[...report.callouts,...report.timeOff];
  const href=timecardsHref(report.period);
@@ -236,7 +232,7 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
 }
 /** Quiet (v4): "159.5 h". */
 const quietHours=(nanoseconds:string)=>{if(!/^-?\d+$/.test(nanoseconds))return '—';const negative=nanoseconds.startsWith('-');const minutes=Number(BigInt(negative?nanoseconds.slice(1):nanoseconds)/BigInt(60_000_000_000));return `${negative?'−':''}${Math.round(minutes/6)/10} h`;};
-/** "Oct 19 – 23", or "Sep 28 – Oct 4" (the shared date range, BR-1). */
+/** "Oct 19–23", or "Sep 28–Oct 4" (the shared date range, BR-1). */
 const quietRange=(period:Period)=>dateRangeText(period.startDate,period.endDate);
 
 function QuietFigure({title,value,children,href}:{title:string;value:string;children?:React.ReactNode;href?:string}){
@@ -270,8 +266,8 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
   return <CorpCard as="div" ariaLabel="Insights"><CorpBody><div role="status" aria-busy={waiting}>
-   <h2 className="c-ins__title">{({loading:'Loading…',offline:'You’re offline',reconnecting:'Reconnecting…',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',ready:'Couldn’t load insights'})[state]}</h2>
-   {waiting?null:<p className="c-ins__state">{state==='access_lost'?'Sign in again to see insights.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
+   <h2 className="c-ins__title">{({loading:'Loading…',offline:'You’re offline',reconnecting:'Reconnecting…',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',not_allowed:'You don’t have access to insights',ready:'Couldn’t load insights'})[state]}</h2>
+   {waiting?null:<p className="c-ins__state">{state==='access_lost'?'Sign in again to see insights.':state==='not_allowed'?'Ask the Owner if you need it.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
   </div>{state==='access_lost'?<CorpButtonLink href="/login" kind="secondary" size="md">Sign in</CorpButtonLink>:null}</CorpBody></CorpCard>;
  }
  const recorded=BigInt(report.summary.recordedNanoseconds);
@@ -291,7 +287,7 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  // whose clock-ins could not be read, instead of "some".
  const unmatched=new Set(report.attendance.limitations.map(item=>item.entryId)).size,unread=report.attendance.unavailableEmployeeIds.length;
  const lateReason=lateKnown?null:unmatched?`${plural(unmatched,'clock\u2011in','clock\u2011ins')} couldn’t be compared with the schedule.`:unread?`${plural(unread,'person’s','people’s')} clock\u2011ins couldn’t be read.`:'Some clock-ins couldn’t be compared with the schedule.';
- const reasons=[lateReason,cover.observedCoverageRequests?null:t.coverNoneSeen,cover.unclassifiedEvents?t.coverUnread(cover.unclassifiedEvents):null].filter((line):line is string=>!!line);
+ const coverReasons=[cover.observedCoverageRequests?null:t.coverNoneSeen,cover.unclassifiedEvents?t.coverUnread(cover.unclassifiedEvents):null].filter((line):line is string=>!!line);
  const days=wholeWeek(recordedByDay(report),report.period);
  // Phase 4 (U09, OW-026): the published schedule's time per day, behind each day's recorded bar. Sparse: a day in the
  // period with no row has no published schedule (no bar, and the line under the chart names it); never a zero.
@@ -320,7 +316,10 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
     ...(cover.observedCoverageRequests?[{label:t.coverSeen,value:t.coverSeenValue(cover.completedCoverageRequests,cover.observedCoverageRequests)}]:[]),
     {label:'Time off',value:offDays?plural(offDays,'day','days'):'0'},
    ]}/>
-   {reasons.length?<p className="c-ins__reason">{reasons.join(' ')}</p>:null}
+   {/* Polish (Nov 20, 2026): clock-ins that could not be compared are something to check, so the sentence is the kit's
+     amber note (it was a grey line under a lone figure); the quieter facts about cover stay a grey line. */}
+   {lateReason?<div className="c-ins__check"><BCallout tone="amber" icon="check" title={lateReason.replace(/\.$/,'')}>{t.lateLeftOut}</BCallout></div>:null}
+   {coverReasons.length?<p className="c-ins__reason">{coverReasons.join(' ')}</p>:null}
    {/* Phase 8 (a.md #32): the explanation is for the cover figure, so it shows only beside it (one explainer per card). */}
    {cover.observedCoverageRequests?<div className="c-ins__explain"><Explain text={t.coverSeenExplain} label={t.explain}/></div>:null}
   </CorpCard>
@@ -340,7 +339,7 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
    </div><ul className="c-sr" aria-label="Hours by day">{days.filter(day=>day.minutes!==null).map(day=>{const planned=planOf(day.date);
     return <li key={day.date}>{t.dayRecorded(dayLabel(day.date),day.minutes?spoken(BigInt(day.minutes!)*MINUTE_NS):'no hours')}{planned?`, ${planned.state==='scheduled'?t.dayScheduled(spoken(BigInt(planned.minutes)*MINUTE_NS)):planned.state==='none'?t.noPublishedSchedule.toLowerCase():t.scheduleUnconfirmed.toLowerCase()}`:''}</li>;})}</ul>
    {plan?<div className="c-ins__legend">
-    <p className="c-ins__keys"><span><i data-key="recorded" aria-hidden="true"/>{t.recordedLegend}</span><span><i data-key="plan" aria-hidden="true"/>{t.scheduledLegend}</span></p>
+    <p className="c-ins__keys"><span><i data-key="recorded" aria-hidden="true"/>{t.recordedLegend}</span><span><i data-key="plan" aria-hidden="true"/>{t.scheduledLegend}</span>{days.length<=7?<span className="c-ins__keynote">{t.figuresLegend}</span>:null}</p>
     {noPlan.length?<p className="c-ins__reason">{`${t.noPublishedSchedule}: ${named(noPlan)}`}</p>:null}
     {unconfirmed.length?<p className="c-ins__reason">{`${t.scheduleUnconfirmed}: ${named(unconfirmed)}`}</p>:null}
     {report.scheduledByDay?.state==='unpublished'?<p className="c-ins__reason">{t.scheduleIncomplete}</p>:null}
@@ -362,8 +361,8 @@ export function QuietReportsView({report,state}:{report:PeriodReports|null;state
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
   return <div className="q-emptyblock q-first" role="status" aria-busy={waiting}>
-   <h2 className="q-emptyblock__title">{({loading:'Loading…',offline:'You’re offline',reconnecting:'Reconnecting…',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',ready:'Couldn’t load insights'})[state]}</h2>
-   {waiting?null:<p className="q-empty">{state==='access_lost'?'Sign in again to see insights.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
+   <h2 className="q-emptyblock__title">{({loading:'Loading…',offline:'You’re offline',reconnecting:'Reconnecting…',unavailable:'Couldn’t load insights',paused:'Insights paused',access_lost:'Your session ended',not_allowed:'You don’t have access to insights',ready:'Couldn’t load insights'})[state]}</h2>
+   {waiting?null:<p className="q-empty">{state==='access_lost'?'Sign in again to see insights.':state==='not_allowed'?'Ask the Owner if you need it.':state==='paused'?'Come back to this page to see the current numbers.':state==='offline'?'Connect to the internet, then try again.':'Check your connection, then try again.'}</p>}
    {state==='access_lost'?<div className="q-emptyblock__action"><Link className="q-btn q-btn--sec" href="/login">Sign in</Link></div>:null}
   </div>;
  }
@@ -423,8 +422,8 @@ export function Reports({initialPeriod,today,christmasBonus=true}:{initialPeriod
     const response=await fetch('/api/reports',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-reports':'1'},body:JSON.stringify(period),signal:controller.signal});
     if(!active||current!==generation)return;
     // X-Nevora-Failure (Nov 9, 2026): the page-level notice says why; data-clearing failures read as access ended here.
-    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':'access_lost');return;}}
-    if(response.status===401||response.status===403){clear('access_lost');return;}
+    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':denialOf(code,response.status)==='not_allowed'?'not_allowed':'access_lost');return;}}
+    if(response.status===401||response.status===403){clear(denialOf(null,response.status)==='not_allowed'?'not_allowed':'access_lost');return;}
     const body=await response.json();if(!active||current!==generation)return;if(!response.ok||body?.state!=='ready'||!Number.isSafeInteger(body.validForMs)||body.validForMs<1||body.validForMs>15000)throw new Error('Unavailable');
     const result=projectReports(body.source);if(result.period.startDate!==period.startDate||result.period.endDate!==period.endDate)throw new Error('Incorrect period');
     const remaining=body.validForMs-(performance.now()-started);if(remaining<=0)throw new Error('Expired snapshot');
@@ -445,8 +444,8 @@ export function Reports({initialPeriod,today,christmasBonus=true}:{initialPeriod
    try{
     const response=await fetch('/api/reports/export',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-reports':'1'},body:JSON.stringify(period),signal:exportController.signal});
     if(!active||generation!==current)return;
-    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':'access_lost');return;}}
-    if(response.status===401||response.status===403){clear('access_lost');return;}
+    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':denialOf(code,response.status)==='not_allowed'?'not_allowed':'access_lost');return;}}
+    if(response.status===401||response.status===403){clear(denialOf(null,response.status)==='not_allowed'?'not_allowed':'access_lost');return;}
     if(!response.ok||!response.headers.get('content-type')?.startsWith('text/csv'))throw new Error('Unavailable export');
     const blob=await response.blob();if(!active||generation!==current||!focused||performance.now()>=validUntil)return;
     const url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=`nevora-reports-${period.startDate}-${period.endDate}.csv`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -524,8 +523,8 @@ export function Reports({initialPeriod,today,christmasBonus=true}:{initialPeriod
   <div className="c-seg c-ins__seg" role="group" aria-label="Report period" data-report-entrance="">
    {MODES.map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||busy||held)} onClick={()=>choose(item.mode)}>{item.short}</button>)}
   </div>
-  {/* R7 (copy row 174): this week reads "Oct 26 – 31 so far", which says why it stops before Sunday. */}
-  {/* Closing F1 (NV-239): a one-day period reads "Mon, Nov 9 so far", never "Nov 9 – 9 so far". */}
+  {/* R7 (copy row 174): this week reads "Oct 26–31 so far", which says why it stops before Sunday. */}
+  {/* Closing F1 (NV-239): a one-day period reads "Mon, Nov 9 so far", never "Nov 9–9 so far". */}
   <p className="c-ins__range c-num">{`${period.startDate===period.endDate?dayLabel(period.startDate):quietRange(period)}${mode==='now'?' so far':''} · All locations`}</p>
   {custom_}
   {notice&&notice!==PERIOD_ERROR?<p className="c-ins__error" id="report-export-error" role="alert">{notice}</p>:null}

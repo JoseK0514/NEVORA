@@ -77,7 +77,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
   return <UpdateEntrance className="employee-view communication-view updates-page">
    <div className="q-page premium-updates cm-updates c-page--narrow" data-nv-page="">
    {/* Owner premium (visual-craft Updates): a labelled "New update" instead of a bare "+". */}
-   <QuietNav back={{href: '/app/more', label: 'More'}} title="Updates" right={<Link className="q-nav__r updates-new" href="/app/updates/compose">New update</Link>} />
+   <QuietNav back={{href: '/app/more', label: 'More'}} title="Updates" right={<Link className="q-nav__r updates-new" href="/app/updates/compose"><PlusIcon size={15} weight="bold" aria-hidden="true" />New update</Link>} />
    <QuietHeader title="Updates" />
    <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
     {/* Review B5 (NV-258): segment counts read "Needs reply 1", like "Waiting 7" and "All 16". */}<div className="q-seg" role="group" aria-label="Filter updates">

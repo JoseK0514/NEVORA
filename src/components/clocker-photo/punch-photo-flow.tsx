@@ -8,6 +8,7 @@ import {CLOCKER_RECEIPT_CLEAR_MS} from '../clocker-privacy';
 import {ClockerPhotoNotice} from './photo-notice';
 import styles from './photo.module.css';
 import {ClockerIcon,type ClockerIconName} from '../clocker-icon';
+import {DoneTick} from '../owner-b/b-glyphs';
 import {ClockerReceipt,clockTime,receiptFacts,receiptTitles} from '../clocker-receipt';
 import type {PunchAction,PunchSnapshot} from '@/lib/clocker/punch-types';
 import ck from '../clocker.module.css';
@@ -59,7 +60,7 @@ function ActivePhotoFlow({session,timeZone,firstName,snapshot,onExit}:{session:P
  const receipt=state.phase==='complete'&&state.receipt?state.receipt:null;
  const missing=state.photoStatus?.state==='missing';
  return <section className={styles.flow} aria-busy={busy} aria-labelledby="clocker-photo-title">
-  {receipt?<span className={ck.check}><ClockerIcon name="check" size={52}/></span>
+  {receipt?<span className={ck.check}><DoneTick size={52}/></span>
    :rings[state.phase]?<span className={styles.ring} data-tone={rings[state.phase]![1]}><ClockerIcon name={rings[state.phase]![0]} size={28}/></span>:null}
   <h1 id="clocker-photo-title" ref={heading} tabIndex={-1}>{receipt?t(receiptTitles[state.action]):t(state.phase==='ready'?photoTitles[state.action]:titles[state.phase])}</h1>
   {receipt?<div className={styles.receipt}><ClockerReceipt action={state.action} performedAt={receipt.performedAt} commandId={receipt.commandId} timeZone={timeZone} locale={intl} firstName={firstName} facts={receiptFacts(receipt,snapshot,timeZone,intl)}>

@@ -90,3 +90,26 @@
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .c-ins .c-ins__tools .cm-insights__button, :is(#c-root, html) .c-ins .c-ins__counted summary { transition: none; }
 }
+
+/* Polish (Nov 20, 2026). Attendance: the figures start right under the heading (the stat row's own top padding left a
+ * hole under it), the note about clock-ins that could not be compared is the kit's amber note, and on phones every block
+ * of an Insights card starts on the heading's left edge (figures sat 2px left of it). Hours by day: a 1px baseline runs
+ * under all seven days, so a day with no bar is still a place on the axis, and the key says what the numbers count. */
+:is(#c-root, html) .c-ins .c-ins__chart { --c-ins-gap: 8px; gap: var(--c-ins-gap); }
+:is(#c-root, html) .c-ins .c-ins__chart[data-dense] { --c-ins-gap: 2px; }
+:is(#c-root, html) .c-ins .c-ins__pair { position: relative; }
+:is(#c-root, html) .c-ins .c-ins__pair::after { content: ""; position: absolute; left: calc(var(--c-ins-gap) / -2); right: calc(var(--c-ins-gap) / -2); bottom: -1px; height: 1px; background: var(--b-line, #E3E5E6); pointer-events: none; }
+:is(#c-root, html) .c-ins .c-ins__keys .c-ins__keynote { color: var(--b-grey, #6A7176); }
+:is(#c-root, html) .c-ins #ins-attendance .c-ins__check { padding: 0 16px 14px; }
+:is(#c-root, html) .c-ins #ins-attendance .c-ins__check:last-child { padding-bottom: 16px; }
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins #ins-attendance .c-stat:not(#pc1):not(#pc2):not(#pc3):not(#pc4):not(#pc5):not(#pc6):not(#pc7) { padding-top: 0 !important; }
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins :is(.c-ins__labor, .c-ins__chart, .c-ins__counted summary, .c-stats, #ins-attendance .c-ins__check):not(#pc1):not(#pc2):not(#pc3):not(#pc4):not(#pc5):not(#pc6):not(#pc7) { padding-left: var(--b-inset) !important; padding-right: var(--b-inset) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins .c-ins__bar:not(#pc1):not(#pc2):not(#pc3):not(#pc4):not(#pc5):not(#pc6):not(#pc7) { margin-left: var(--b-inset) !important; margin-right: var(--b-inset) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins .c-stats > .c-stat:first-child:not(#pc1):not(#pc2):not(#pc3):not(#pc4):not(#pc5):not(#pc6):not(#pc7) { padding-left: 0 !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins #ins-attendance .c-ins__check:not(#pc1):not(#pc2):not(#pc3):not(#pc4):not(#pc5):not(#pc6):not(#pc7) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+}

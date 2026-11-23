@@ -21,7 +21,7 @@
 .cdRoot :global(section.nv-card:not([aria-label="Update content"]) + section.nv-card):not(#cd) { margin-top: 12px; }
 .cdRoot :global(section.nv-card:not([aria-label="Update content"]) .wb-body):not(#cd) { padding: 20px; }
 .cdRoot :global(.wb-receipt):not(#cd) { display: flex; align-items: flex-start; gap: 14px; }
-.cdRoot :global(.wb-receipt .nv-tile):not(#cd), .cdRoot :global(.communication-result-icon > span):not(#cd) { flex: none; display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 13px; }
+.cdRoot :global(.wb-receipt .nv-tile):not(#cd), .cdRoot :global(.communication-result-icon > span:not(.b-donemark)):not(#cd) { flex: none; display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 13px; }
 .cdRoot :global(.wb-strong):not(#cd) { margin: 0; font: 500 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink); }
 .cdRoot :global(.wb-note):not(#cd) { margin: 4px 0 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
 .cdRoot :global(.wb-check):not(#cd) { display: flex; align-items: center; gap: 12px; min-height: 48px; margin-top: 16px; padding: 0 14px; border-radius: 14px; background: var(--sg-page); font: 500 1rem/1.3125rem var(--sg-font); color: var(--sg-ink); cursor: pointer; }

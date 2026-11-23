@@ -224,6 +224,13 @@
    * Native inline prose links retain their inline layout; checkbox/radio labels supply their hit region. */
   @media (pointer: coarse) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) :is(a[href]:not(.b-back), button, input:not([type="checkbox"], [type="radio"]), select, textarea, summary, label:has(> input:is([type="checkbox"], [type="radio"]))) { min-width: var(--b-target-touch) !important; min-height: var(--b-target-touch) !important; }
+    /* Final polish (Nov 20, 2026): a segment's link is its 36px thumb; the 44px target is the track (b-foundation's
+     * ::after). The floor above made the white thumb 48px tall in a 44px track on Time off and Pick up and swap. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) .b-seg > :is(a[href], button) { min-width: 0 !important; min-height: var(--b-seg-item-h) !important; }
+    /* Premium pass (Nov 21, 2026): the same for Request time off's All day / Part of day: its thumb hung 8px below its
+     * track on touch screens. The 36px thumb sits inside the 44px track, and the track is the target. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) .tof-seg.tof-seg.tof-seg > button { height: var(--b-seg-item-h) !important; min-height: var(--b-seg-item-h) !important; margin: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7) .tof-seg.tof-seg.tof-seg > button::after { content: "" !important; position: absolute !important; inset: -4px 0 !important; }
   }
 
   /* ---------- Phase 8 (Nov 17, 2026): the final review's fixes (review C) ---------- */
@@ -267,3 +274,67 @@
  * short the range breaks before its dash ("9:02 AM" over "– now"), never after it (EM-014's day-block rule, now Home's and
  * Time's too). The `Range` helper in employee-b/parts.tsx draws the two halves. */
 .eb-nb { white-space: nowrap; }
+
+/* Final polish (Nov 20, 2026): Home's Right now card (home-b.tsx NowCard) leads the left column, so the shift, the
+ * to-dos and the right column each move down one row. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) { grid-template-rows: auto auto auto auto 1fr !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) > #b-home-now { grid-column: 1 !important; grid-row: 1 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) > #b-home-shift { grid-row: 2 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) > #b-home-upcoming { grid-row: 3 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) > .b-note { grid-row: 4 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now) > #b-home-todo { grid-row: 1 / span 5 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now):has(> .eb-side) > #b-home-todo { grid-row: 3 / span 3 !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-now):has(> .eb-side) > .eb-side { grid-row: 1 / span 5 !important; }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack:has(> #b-home-now) > #b-home-now { grid-column: 1 / -1 !important; grid-row: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack:has(> #b-home-now) > #b-home-shift { grid-row: 2 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack:has(> #b-home-now) > #b-home-todo { grid-row: 3 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-stack:has(> #b-home-now) > :is(#b-home-upcoming, .eb-side) { grid-row: 3 !important; }
+  }
+}
+
+/* Final polish (Nov 20, 2026): Time's right column (last week over the corrections) is one grid item beside Right now and
+ * the week, with the page's 20px between its cards. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-hours > .b-screen .b-stack:has(> #b-hours-week) > #b-hours-side { grid-column: 2 !important; grid-row: 1 / span 7 !important; display: flex !important; flex-direction: column !important; gap: var(--b-space-20) !important; min-width: 0 !important; }
+  }
+}
+
+/* A4-01 (QA Nov 21, 2026; WCAG 1.4.4): Home on a phone at 200% text. At the default size nothing here moves: each change
+ * waits until the larger text no longer fits as drawn, then stacks it (Apple HIG: stack rather than truncate).
+ * - The band's two figures sit side by side while both fit, one over the other when they don't. Each tile draws the glass
+ *   edge above it; in the top row that line falls outside the clipped band, so only a stacked tile shows it. (A Lead on
+ *   shift has three tiles whose own lines already divide rows; those tiles are left as they are.)
+ * - A card heading lets its link ("All notifications") and its count ("At least 7") move under the title instead of
+ *   past the card's edge; a to-do's short deadline (under 360px) may wrap.
+ * - A "Customer Support · Main Office" segment that wraps starts its second line clear of the clipped dot column (a
+ *   hanging indent the width of the dot), so "Support" isn't cut to "pport". One line draws exactly as before.
+ * - The shortcuts go one per row when two across would cut their labels.
+ * - Your week becomes a list (day, bar, hours) when its seven columns are narrower than their labels. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .b-live { grid-auto-flow: row !important; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) :is(.b-live:has(> .b-live__i > a[href="#b-home-shift-h"]), .b-live:not(:has(> .b-live__i:nth-child(3)))) > .b-live__i { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) :is(.b-live:has(> .b-live__i > a[href="#b-home-shift-h"]), .b-live:not(:has(> .b-live__i:nth-child(3)))) > .b-live__i::before { content: "" !important; position: absolute !important; inset: -1px 0 auto !important; height: 1px !important; background: var(--b-glass-edge) !important; pointer-events: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) :is(.b-card__h, .b-card__h > h2) { flex-wrap: wrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-dl-s { white-space: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-dots__p { padding-left: 0.85em !important; text-indent: -0.85em !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-dots__p > * { text-indent: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-qa > ul { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw { container-type: inline-size !important; }
+    @container (max-width: 14rem) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__days { grid-template-columns: minmax(0, 1fr) !important; gap: var(--b-space-4) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__d { flex-direction: row !important; align-items: center !important; gap: var(--b-space-8) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__l { order: -1 !important; flex: none !important; width: 3.5em !important; text-align: center !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__track { flex: 1 1 auto !important; align-items: center !important; justify-content: flex-start !important; width: auto !important; height: 1rem !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__bar { width: calc(var(--h) * 100%) !important; height: 100% !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__fill { transform: translateX(calc((var(--f) - 1) * 100%)) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__d--off .eb-hw__bar { width: 1rem !important; height: 4px !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__v { order: 1 !important; flex: none !important; width: 2.5em !important; text-align: right !important; }
+    }
+  }
+}

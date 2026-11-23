@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import {dateRange} from '@/lib/duration-format';
 import {EmployeeMobileWeekPicker} from './employee-mobile/week-picker';
 import { keepWhole } from '@/lib/keep-whole';
 import { ALL_MODULES_ON, type EnabledModules } from '@/lib/workspace-presentation/modules';
@@ -90,10 +91,9 @@ export function lengthLabel(minutes: number) {
   return `${hours ? `${hours} ${hours === 1 ? 'hour' : 'hours'}` : ''}${hours && rest ? ' ' : ''}${rest ? `${rest} min` : ''}`;
 }
 
-/** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month. */
+/** "Oct 19–25", or "Oct 26–Nov 1" across a month (the app's one date-range form, Nov 21, 2026). */
 export function weekRange(weekStart: string) {
-  const end = addDays(weekStart, 6);
-  return `${dayFmt(weekStart, { month: 'short', day: 'numeric' })} – ${end.slice(5, 7) !== weekStart.slice(5, 7) ? dayFmt(end, { month: 'short', day: 'numeric' }) : Number(end.slice(8))}`;
+  return dateRange(weekStart, addDays(weekStart, 6), { year: 'never' });
 }
 
 export const hours = (shift: Shift) => keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`);

@@ -120,7 +120,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-state { padding: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .eb-status:first-child { padding-top: 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-list + .b-list > .b-li:first-child { box-shadow: inset 0 1px 0 var(--b-line); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day { width: 36px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day { width: 2.25rem; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day--today b { color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day--past { opacity: 0.55; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardnote { padding: 0 var(--b-inset) var(--b-space-16); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-wrap: pretty; }
@@ -149,12 +149,12 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card__h h2 { text-wrap: balance; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-seg > * { min-height: 34px; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card .b-btn--big { box-shadow: none; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-notice__t { line-height: 21px; text-wrap: pretty; }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-notice__s { line-height: 19px; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-notice__t { line-height: 1.3125rem; text-wrap: pretty; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-notice__s { line-height: 1.1875rem; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-nowrap { white-space: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-shift { padding-top: 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .b-add { padding: var(--b-space-12) var(--b-inset) var(--b-space-16); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-live__l { line-height: 19px; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-live__l { line-height: 1.1875rem; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__h > span:last-child { gap: var(--b-space-4); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__arrow { position: relative; width: 32px; height: 32px; border-radius: var(--b-radius-pill); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__arrow::after { content: ""; position: absolute; inset: -6px -2px; }
@@ -237,3 +237,72 @@
 :is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel-card { display: grid; gap: 14px; padding: var(--b-space-20) var(--b-inset) 22px; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel--head { width: 40%; height: 18px; border-radius: var(--b-radius-pill); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel--short { width: 55%; }
+
+/* Your week (Nov 21, 2026; home-week.tsx): seven bars on the card's white. A bar is as tall as the day's hours against the
+ * week's longest day; teal is time worked, the tint with its edge is what the schedule still holds, a day off is a short
+ * grey stub. Each value is written over its bar (ink when worked, grey when only scheduled) and today's weekday is the
+ * tinted pill. The fill moves only where motion is welcome; without it the bar simply shows its state. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw { padding: 6px var(--b-inset) var(--b-space-16); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__d { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; margin: 0; padding: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__v { min-height: var(--b-lh-caption); font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--b-grey); white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__v--done { color: var(--b-ink); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__track { display: flex; align-items: flex-end; justify-content: center; width: 100%; height: 72px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__bar { position: relative; display: block; width: min(100%, 30px); height: calc(var(--h) * 100%); border: 1px solid var(--b-teal-edge); border-radius: 9px; background: var(--b-teal-50); overflow: hidden; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__fill { position: absolute; inset: -1px; background: var(--b-teal); transform: translateY(calc((1 - var(--f)) * 100%)); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__d--off .eb-hw__bar { height: 4px; border-color: transparent; border-radius: 2px; background: var(--b-line); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__l { padding: 2px 6px; border-radius: var(--b-radius-pill); font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); font-weight: 500; color: var(--b-grey); white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__d--today .eb-hw__l { background: var(--b-teal-50); color: var(--b-teal); font-weight: 700; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__key { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-12); margin: 14px 0 0; padding-top: var(--b-space-12); border-top: 1px solid var(--b-line); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__keys { display: flex; flex-wrap: wrap; gap: var(--b-space-4) var(--b-space-16); min-width: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__k { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__k::before { content: ""; flex: none; width: 10px; height: 10px; border: 1px solid var(--b-teal-edge); border-radius: 3px; background: var(--b-teal-50); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__k--done::before { border-color: var(--b-teal); background: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__range { flex: none; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (prefers-reduced-motion: no-preference) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__fill { transition: transform var(--b-dur-enter) var(--b-ease-out); }
+}
+@media (forced-colors: active) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__bar { border-color: CanvasText; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__fill { background: Highlight; forced-color-adjust: none; }
+}
+
+/* Home's shortcuts (final polish, Nov 20, 2026; home-b.tsx): the Owner Home's tiles. White 56px tiles with the 36px
+ * teal-50 circle, two across at every width: under Things to do on phones, at the top of the right column from 768px. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa { display: block; margin: 0; padding: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa > ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-space-12); margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa > ul > li { min-width: 0; margin: 0; padding: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__a { position: relative; display: flex; align-items: center; gap: var(--b-space-12); min-width: 0; min-height: 56px; padding: 0 var(--b-gutter) 0 10px; border-radius: 18px; background: #FFFFFF; box-shadow: var(--b-elev-1); color: var(--b-ink); font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); font-weight: 600; text-decoration: none; white-space: nowrap; -webkit-tap-highlight-color: transparent; transition-property: background-color, scale; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__a:active { background: color-mix(in srgb, #FFFFFF 96%, var(--b-ink)); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__a:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__ic { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 18px; background: var(--b-teal-50); color: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__ic > svg { width: 18px; height: 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__l { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 359px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa > ul { gap: var(--b-space-8); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__a { gap: 6px; padding: 0 10px; font-size: var(--b-fs-meta); letter-spacing: -0.01em; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__ic { width: 20px; height: 20px; border-radius: 0; background: none; }
+}
+@media (hover: hover) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__a:hover { background: var(--b-hover); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__a:active { scale: var(--b-press-scale); }
+}
+@media (forced-colors: active) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__a { border: 1px solid CanvasText; }
+}
+
+/* Premium pass: Employee and Lead secondary buttons are the kit's white button (owner-b.css, pick 1A); no rule here. */
+
+/* Final polish, round 2 (Nov 20, 2026): Home on phones narrower than 360px.
+ * H4: a to-do's deadline shows its short form ("By Nov 24, 12 PM") so it keeps one line; the full sentence ("Respond by
+ * Nov 24, 12:00 PM") stays in the page for screen readers and is what 360px and wider show.
+ * H7: Your week's dates sit on their own line above the key, so the key and the dates share one left edge (the dates
+ * floated at the right between the key's two lines). */
+:is(#c-root, html) .app-shell .b-screen .eb-dl-s { display: none; }
+@media (max-width: 359px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-dl { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-dl-s { display: inline; white-space: nowrap; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__key { flex-direction: column-reverse; align-items: flex-start; gap: var(--b-space-4); }
+}

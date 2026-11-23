@@ -4,8 +4,9 @@ import { CorpAvatar, CorpCard, CorpRow, CorpRows } from "./corp/corp";
 import { BFilters } from "./owner-b/b-kit";
 import { TeamLivePill, teamStateOf, useTeamLive, type TeamState } from "./team-live";
 
-/** One active person's row, as the server page lays it out (name, "Position · Location", the row's spoken label). */
-export type TeamDeskRow = { id: string; name: string; initials: string; detail: string; href: string; label: string };
+/** One active person's row, as the server page lays it out (name, "Position · Location"). The row's visible content is its
+ * spoken name, so the live status is read too and nothing off screen is added (QA A4-03, Nov 21, 2026). */
+export type TeamDeskRow = { id: string; name: string; initials: string; detail: string; href: string };
 type Filter = "all" | "working" | "late" | "off";
 const inFilter = (filter: Filter, state: TeamState | null) => filter === "all" || (filter === "working" ? state === "working" || state === "break" : state === filter);
 
@@ -28,7 +29,7 @@ export function TeamDeskPeople({ rows, limit, peopleLabel }: { rows: TeamDeskRow
     ]} /> : null}
     {listed.length ? <CorpRows label={peopleLabel}>{listed.map(row => <li key={row.id}>
       <CorpRow href={row.href} bold title={row.name} detail={row.detail} avatar={<CorpAvatar name={row.name} initials={row.initials} />}
-        trail={<TeamLivePill employeeId={row.id} />} chevron label={row.label} />
+        trail={<TeamLivePill employeeId={row.id} />} chevron />
     </li>)}</CorpRows>
       : <p className="c-team__empty c-team__empty--filter" role="status">{filter === "working" ? "No one is clocked in right now." : filter === "late" ? "Everyone on shift has clocked in." : "No one is off today."}</p>}
   </CorpCard>;

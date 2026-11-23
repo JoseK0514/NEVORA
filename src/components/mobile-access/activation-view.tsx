@@ -1,7 +1,6 @@
 'use client';
 import Link from 'next/link';
 import {useEffect,useRef,useState,type FormEvent,type RefObject} from 'react';
-import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {CopySimpleIcon} from '@phosphor-icons/react/dist/ssr/CopySimple';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
@@ -24,6 +23,7 @@ import {AccessCard,AccessOutside} from './chrome';
 import {BCallout} from '@/components/owner-b/b-kit';
 import {noteParts} from '@/components/auth-premium/note-parts';
 import {Whole} from '@/components/auth-premium/whole';
+import {AuthDoneTick} from '@/components/auth-premium/done-tick';
 
 /* Phase 5 (Nov 17, 2026): the phone page carries the guidance every other width has since U11: the steps line, what the
  * person is setting, the next step under every refusal, an offline attempt that sends nothing, an unknown result that is
@@ -40,7 +40,7 @@ export function MobileActivationView({phase,passwordReason,mismatch=false,employ
  async function copyId(){const current=version.current.generation;try{if(!navigator.clipboard?.writeText)throw Error('unavailable');await navigator.clipboard.writeText(employeeId!);if(current===version.current.generation)setCopyStatus(t.copied);}catch{if(current===version.current.generation){input.current?.focus();input.current?.select();setCopyStatus(t.copyFallback);}}}
  if(phase==='activated'&&employeeId)return <div className="activation-success ma-card" role="status" ref={successRef} tabIndex={-1}>
   <AccessSteps journey="activation" current={3} lang={lang}/>
-  <div className="ma-receipt-mark ar-done__mark"><CheckIcon size={28} weight="bold" aria-hidden="true"/></div><div className="q-hd"><h1>{u.doneTitle}</h1><p>{u.doneSub}</p></div>
+  <div className="ma-receipt-mark ar-done__mark"><AuthDoneTick/></div><div className="q-hd"><h1>{u.doneTitle}</h1><p>{u.doneSub}</p></div>
   <div className="ma-id-receipt"><div className="q-fl"><label htmlFor="activation-employee-id">{t.idForSignIn}</label><div className="q-in__wrap"><input ref={input} id="activation-employee-id" className="q-in" value={employeeId} readOnly autoComplete="off" onFocus={e=>e.currentTarget.select()}/><button type="button" className="q-in__eye" aria-label={t.copyId} onClick={()=>void copyId()}><CopySimpleIcon size={20} weight="bold" aria-hidden="true"/></button></div></div><p className="ma-note" aria-live="polite">{copyStatus||t.idReceiptHint}</p></div>
   {other}
   <Link href={loginHref} className="q-btn" onClick={()=>journey.confirm(employeeId)}>{t.continueSignIn}</Link>

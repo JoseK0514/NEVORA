@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
 import { ManagerInboxCorp } from "@/components/manager-inbox-corp";
-import { requireSession } from "@/lib/auth/session";
+import { readOperationalAuthority } from "@/lib/company-access/operational-scope.server";
+import { scopedObservation } from "@/lib/company-access/observation";
+import { ScopedReadFrame } from "@/components/company-access/scoped-read-frame";
+import { OperationalUnavailable } from "@/components/company-access/operational-unavailable";
+import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
@@ -20,6 +24,17 @@ export default async function InboxPage({ searchParams }: { searchParams?: Promi
   const weekStart = weekStartFor(businessDate(new Date(), workspace.timeZone));
   // ?view=more: Older items, the items Things to do lists but doesn't count (Home and the sidebar count the rest).
   const view = (await searchParams)?.view === "more" ? "more" : "today";
+  if (session.role === "MANAGER") {
+    const access = await readOperationalAuthority(await requireSessionMutationProof());
+    if (access.state !== "ready" || !access.scope) {
+      return <OperationalUnavailable title="Things to do" reason={access.state === "ready" ? "access_denied" : access.reason} scoped />;
+    }
+    if (access.scope.mode === "LOCATIONS") {
+      return <ScopedReadFrame observation={scopedObservation(access)}>
+        <ManagerInboxCorp key={access.authority} weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} coverageFirst view={view} scoped />
+      </ScopedReadFrame>;
+    }
+  }
   return <ManagerInboxCorp weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} coverageFirst view={view} />;
 }
 

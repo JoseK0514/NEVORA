@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-19T17:55:25Z",
+  "observedAt": "2026-11-23T03:00:00Z",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "62d791ad702f6b9590f037e3de647062291d42b7",
+      "sha": "1f6602cb94a8f54f87cbb3a12083c2bf7dd9ee78",
       "disposition": "target",
-      "reason": "Published Development base for the Employee Home date-range fix. It includes the November 20 linear Collab integration and the staged Clocker face verification backend."
+      "reason": "Published Development base for Jose's November 22 joined release continuation, including the Employee Home compact approval date range. All subsequent assembly commits are linear descendants of this base."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -488,9 +488,15 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "9075be11a1e6989ea86942a67a68b28e8179bb92",
-      "disposition": "held",
-      "reason": "The prior Collab source d00ca97b6b4e301ab05de72684c58e4ae1647186 is preserved in join 87b22d32926120f5225ffee90eec755098321bba and its resolved tree was carried into Development by 2e42ee98a. This scoped integration takes the shared compact date formatter from c3ede1f86 for the Employee Home server fix 2f23dbabb68bf81380f8c4887b1a7947266e7b38. The rest of this Collab head is held for separate integration."
+      "sha": "b15cf3d81b7ce2a6d72164db83dbb94c81fcf74f",
+      "disposition": "reference",
+      "reason": "Jose authorized the joined Development continuation on November 22. Reviewed delivery is identified by Jira comments 10594 and 10597. This exact Collab head contains Development 1f6602cb9 and is imported with a squash to preserve required linear history. Its full source tree is carried into the assembly before source-inventory reconciliation, diagnosed repairs, the incoming validated Phase 2 backend commits, and final guide regeneration. Exact candidate and branch-push qualification are required."
+    },
+    {
+      "branch": "claude/eager-meitner-wioy6k",
+      "sha": "57e58b92653f9a4b51e5a3dfa00cbf1e22529b71",
+      "disposition": "reference",
+      "reason": "Preserved fourth review ref under Jose's explicit November 22 custody instruction. Claude session session_01N2UNZFBxnmqY4hGAbQjzz3 owns this design-skill delivery. The exact tip is an ancestor of reviewed Collab b15cf3d81 and its content arrives through that linear import. No PR was found for this head. Retention is authorized, and deletion requires separate authorization."
     },
     {
       "branch": "scrum190-signup-ui",
@@ -535,7 +541,14 @@
       "archiveRef": "refs/tags/archive/branches/2026-11-19/nevora-30-day-phase"
     }
   ],
-  "maximumActiveBranches": 3,
+  "maximumActiveBranches": 4,
+  "retainedReviewRefException": {
+    "date": "2026-11-22",
+    "authorizedBy": "Jose's explicit joined Development release continuation request",
+    "branch": "claude/eager-meitner-wioy6k",
+    "sha": "57e58b92653f9a4b51e5a3dfa00cbf1e22529b71",
+    "reason": "Preserve the existing fourth remote review ref and account for custody. The normal three branch policy plus this named retained ref defines this assembly's ceiling."
+  },
   "phase5FinalSourceReconciliation": {
     "date": "2026-11-16",
     "previousCollaboration": "40ccc4e4e5b74b48c8fd86ef50c4ec6efe9b4dd1",

@@ -33,6 +33,14 @@ export function matchesAvailabilityFilter(employee: AvailabilityReviewEmployee, 
   return true;
 }
 
+/** "Reminders need a deadline. Set one in Scheduling rules." with the page's name as the note's one teal link. The
+ * sentence and the link's words come from the reminders copy; a sentence that does not hold them is drawn plain. */
+function NeedsDeadline() {
+  const t = reminderCopy.en, at = t.needsDeadline.indexOf(t.needsDeadlineLink);
+  if (at < 0) return <p className="b-rem-need">{t.needsDeadline}</p>;
+  return <p className="b-rem-need">{t.needsDeadline.slice(0, at)}<Link href="/app/schedule/settings">{t.needsDeadlineLink}</Link>{t.needsDeadline.slice(at + t.needsDeadlineLink.length)}</p>;
+}
+
 /** Quiet (v4, approved Oct 23): Not sent and Sent. A person who hasn't sent opens their page; a person who has
  * opens their hours in place. A deep link (?employeeId=) lands on that person. */
 /** Reminders (U10): what the server page hands over so a reminder can be checked and sent for this week. */
@@ -94,7 +102,7 @@ export function AvailabilityTeamList({ employees, employeeId, before, remind = n
           : <div className="q-row q-row--av">{head}</div>}
         </li>;
       })}
-    </ul>{needsDeadline && filter === "missing" ? <p className="b-rem-need">{reminderCopy.en.needsDeadline}</p> : null}</BCard> : <p className="q-empty q-first">{!employees.length ? "Employees and Leads show here once they’re added." : filter === "missing" ? "Everyone has sent theirs." : "No one has sent theirs yet."}</p>}
+    </ul>{needsDeadline && filter === "missing" ? /* Final polish (Nov 20, 2026): the note names a page, so the page's name is its one teal link. */<NeedsDeadline /> : null}</BCard> : <p className="q-empty q-first">{!employees.length ? "Employees and Leads show here once they’re added." : filter === "missing" ? "Everyone has sent theirs." : "No one has sent theirs yet."}</p>}
     </section>
   </ReminderProvider>;
 }

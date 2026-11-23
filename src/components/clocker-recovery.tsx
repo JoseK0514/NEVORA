@@ -54,7 +54,7 @@ export function ClockerRecoveryHelp({references,otherCount=0,commandId,request,o
  // The button that had focus is gone once the request is saved: hand focus to Back rather than to the page.
  useEffect(()=>{if(sent&&(document.activeElement===document.body||!document.activeElement?.isConnected))back.current?.focus({preventScroll:true});},[sent]);
  return <>
-  <span className={styles.ring}><ClockerIcon name="info" size={28}/></span>
+  <span className={styles.ring}><ClockerIcon name="info" size={28} mark/></span>
   <h1 ref={headingRef} tabIndex={-1} className={styles.title}>{t(many?'Your punches are kept on this tablet':'Your punch is kept on this tablet')}</h1>
   <p className={styles.smsg}>{t(many?'Your Owner can check them. You can leave this screen.':'Your Owner can check it. You can leave this screen.')}</p>
   {unreadable?<p className={styles.smsg}>{t('One saved punch can’t be read. Ask your manager to check it.')}</p>:null}

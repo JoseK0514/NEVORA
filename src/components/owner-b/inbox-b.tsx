@@ -10,6 +10,8 @@ import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
 import { CalendarMinusIcon } from "@phosphor-icons/react/dist/ssr/CalendarMinus";
 import { UserMinusIcon } from "@phosphor-icons/react/dist/ssr/UserMinus";
 import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
+import { DecisionAsk } from "@/components/owner-b/decision-parts";
+import { ASK, firstName } from "@/components/time-off-waiting-list";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
@@ -20,14 +22,14 @@ import { conflictShift } from "@/lib/time-off-staffing/present";
 import { reviewCopy } from "@/components/review-details/copy";
 import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
 import { keepWhole } from "@/lib/keep-whole";
-import { BAvatar, BButton, BButtonLink, BCard, BChip, BCount, BGlyph, BHero, BIcon, BList, BRow, BScreen, BSeg, BSegs, BSegsText, BStack, BState, BStatusText, BWhen } from "./b-kit";
+import { BDoneMark, BAvatar, BButton, BButtonLink, BCard, BChip, BCount, BGlyph, BHero, BIcon, BList, BRow, BScreen, BSeg, BSegs, BSegsText, BStack, BState, BStatusText, BSwapNames, BWhen, compactRange } from "./b-kit";
 
 /* Direction B, Things to do on a phone (mock screen "Owner · Things to do"). The same groups, rows, links and counts as the
  * corporate page (groupThingsToDo); the glass chips filter them by job. An open shift's Find cover opens the same coverage
  * page as its row; a time off request carries Decline and Approve, which post the same review action as the request's own
  * page and come back here. */
 
-type Row = { key: string; href: string; label: string; title: string; detail?: string; value?: string; person?: string; lines?: string[]; quiet?: boolean };
+type Row = { key: string; href: string; label: string; title: string; /** A swap's other person: the title draws both names round the swap glyph. */ swapWith?: string; detail?: string; value?: string; person?: string; lines?: string[]; quiet?: boolean };
 type Group = { id: string; title: string; rows: Row[]; count?: number; note?: string };
 type Family = { id: string; title: string; groups: Group[] };
 type Filter = "all" | "card-open" | "review" | "card-requests";
@@ -44,6 +46,20 @@ const RANGE = new RegExp(`(\\d{1,2}(?::\\d{2})?)${S}([AP]M)${S}–${S}(\\d{1,2}(
 const keepParts = (text?: string): ReactNode => text === undefined ? text : <BSegsText text={keepWhole(text).replace(RANGE, "$1\u00a0$2\u00a0–\u2060\u00a0$3\u00a0$4")} />;
 /** Phase 4 (U09): a row's further lines (the other shift of a swap, a cover request's result, who reviews it). */
 const subOf = (row: Row): ReactNode => row.lines?.length ? <>{keepParts(row.detail)}{row.lines.map(line => <span key={line} className="b-row__more">{keepParts(line)}</span>)}</> : keepParts(row.detail);
+/** Final polish (Nov 20, 2026): a time correction on a phone was five lines with "was" hanging at a line's end. Under 768px
+ * it is two facts lines, each part whole: the day and the change ("Tue, Nov 17 · +20 min"), then the asked time and the
+ * recorded one ("8:42 AM – 5:32 PM · was 9:02 AM – 5:32 PM"). From 768px the one line stays as the read wrote it. A line
+ * this can't take apart is drawn as it came. */
+function correctionSub(row: Row): ReactNode {
+  const [day, times, ...rest] = (row.detail ?? "").split(/[\s\u00a0]+·[\s\u00a0]+/);
+  const was = times?.match(/^(.+?), (was .+)$/);
+  // Only the server's correction line is taken apart: a short date, then at least one clock time.
+  if (!day || !times || rest.length > 1 || !/^[A-Z][a-z]{2},[\s\u00a0][A-Z][a-z]{2}[\s\u00a0]\d/.test(day) || !/\d{1,2}:\d{2}/.test(times)) return subOf(row);
+  const range = (text: string) => keepWhole(compactRange(text)).replace(RANGE, "$1\u00a0$2\u00a0–\u2060\u00a0$3\u00a0$4").replace(/ /g, "\u00a0");
+  const more = row.lines?.map(line => <span key={line} className="b-row__more">{keepParts(line)}</span>);
+  return <><span className="b-when-s"><BSegs parts={[day, rest[0]]} /><span className="b-row__more"><BSegs parts={was ? [range(was[1]), range(was[2])] : [range(times)]} /></span></span>
+    <span className="b-when-f">{keepParts(row.detail)}</span>{more}</>;
+}
 const count = (group: Group) => group.count ?? group.rows.length;
 const familyCount = (family: Family) => family.groups.reduce((total, group) => total + count(group), 0);
 const requestIdOf = (item?: ActionItem) => { try { return item?.request ? new URL(item.request.reviewHref, "https://nevora.invalid").searchParams.get("requestId") : null; } catch { return null; } };
@@ -55,6 +71,8 @@ function ReadState({ connection, statusLine, onRefresh }: { connection: ActionCe
   if (connection === "offline") return <BState kind="offline" title="You’re offline" line="Things to do updates when you reconnect." />;
   if (connection === "paused") return <BState kind="paused" title="Paused while you’re away" line="It updates when you come back to this page." />;
   if (connection === "access_lost") return <BState kind="locked" title="Your session ended" line="Sign in again to see what needs you." action={{ label: "Sign in", href: "/login" }} />;
+  // QA A3-06 (Nov 21, 2026): signed in, but without access to these tasks. Not a sign-out, so no Sign in button.
+  if (connection === "not_allowed") return <BState kind="locked" title="You don’t have access to Things to do" line="Ask the Owner if you need it." action={{ label: "Try again", onClick: onRefresh }} />;
   return <BState kind="failed" title="Things to do didn’t load" line="Check your connection, then try again." action={{ label: "Try again", onClick: onRefresh }} />;
 }
 
@@ -80,14 +98,14 @@ function kindIcon(id: string): { tone: "amber" | "teal" | "grey"; icon: ReactNod
   return { tone: "amber", icon: <ClockIcon weight="bold" /> };
 }
 
-export function InboxB({ ready, families, waiting = [], closed = [], total, exact = true, uncheckedReviews = 0, connection, statusLine, todayFailed, onRefresh, back, later }: {
+export function InboxB({ ready, families, waiting = [], closed = [], total, exact = true, uncheckedReviews = 0, connection, statusLine, todayFailed, onRefresh, back, later, scoped = false }: {
   /** Phase 4 (U03): false when the count is a lower bound (clock-ins unread, or review facts missing): the band says
    * "At least N" and the page never offers all-clear. */
   exact?: boolean; uncheckedReviews?: number;
   ready: Extract<ActionCenter, { state: "ready" }> | null; families: Family[]; waiting?: Group[];
   /** Phase 3 (MG-005): what can't be decided yet (timecards of a pay period still open): one grey card, no count pill. */
   closed?: Group[]; total: number | null; connection: ActionCenterConnection; statusLine: string;
-  todayFailed: boolean; onRefresh: () => void; back: boolean; later?: LaterCounts;
+  todayFailed: boolean; onRefresh: () => void; back: boolean; later?: LaterCounts; scoped?: boolean;
 }) {
   const [filter, setFilter] = useState<Filter>("all");
   const items = new Map((ready?.items ?? []).map(item => [item.id, item]));
@@ -131,12 +149,12 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
       {/* Phase 2 (package D): one Try again for one failure. When the list failed too, its card under this one carries the
         retry (the same refresh), so this card only says what is missing. */}
       {todayFailed ? <BCard label="Clock-ins"><BState kind="failed" title="Clock-ins can’t be checked right now" line="People who haven’t clocked in may not be listed."
-        action={!ready && !["loading", "reconnecting", "offline", "paused", "access_lost"].includes(connection) ? undefined : { label: "Try again", onClick: onRefresh }} /></BCard> : null}
+        action={!ready && !["loading", "reconnecting", "offline", "paused", "access_lost", "not_allowed"].includes(connection) ? undefined : { label: "Try again", onClick: onRefresh }} /></BCard> : null}
       {!ready ? <BCard label="Things to do"><ReadState connection={connection} statusLine={statusLine} onRefresh={onRefresh} /></BCard>
         : cards.length || waiting.length || closed.length ? <>{cards}{/* Review B2 (NV-002): reviews that wait are listed after today's cards. Phase 3
           (MG-005, OW-014): no "· waiting" suffix; what isn't open yet is one grey card at the bottom with no count pill. */}
           {filter === "all" || filter === "review" ? <>{waiting.map(group => <GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} />)}
-            {closed.map(group => <GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} quiet />)}</> : null}</> : exact ? <BCard label="Things to do"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>
+            {closed.map(group => <GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} quiet />)}</> : null}</> : exact ? <BCard label="Things to do"><div className="b-notice"><BDoneMark still /><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>
           : <BCard label="Things to do"><div className="b-notice"><BIcon tone="amber"><BGlyph meaning="unknown" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">{t.nothingListed}</span><span className="b-notice__s">{t.nothingListedLine}</span></span></div></BCard>}
       {ready && uncheckedReviews ? <p className="b-note">{t.correctionsUnchecked(uncheckedReviews)}</p> : null}
       {/* Review B5 (NV-250): on desktop the shortcuts stay in reach while the list scrolls (sticky), with one-line sub-lines.
@@ -144,9 +162,9 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
       <BCard label="More" id="b-todo-more">
         <BList label="More">
           <BRow lead={<BIcon tone="teal"><CalendarMinusIcon weight="bold" /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
-          <BRow lead={<BIcon tone="teal"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />
+          {!scoped && <BRow lead={<BIcon tone="teal"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />}
           {/* Nov 14, 2026 inspection (AR-9): who can work is one tap from the requests it helps decide. */}
-          <BRow lead={<BIcon tone="teal"><UserCheckIcon weight="bold" /></BIcon>} title="Availability" sub="Who can work and when" href="/app/availability" />
+          {!scoped && <BRow lead={<BIcon tone="teal"><UserCheckIcon weight="bold" /></BIcon>} title="Availability" sub="Who can work and when" href="/app/availability" />}
           <BRow lead={<BIcon tone="teal"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub={laterLine(later)} href="/app/inbox?view=more" label={`Later and done: ${laterLine(later).toLowerCase()}`} />
         </BList>
       </BCard>
@@ -163,7 +181,7 @@ export function LaterB({ ready, groups, statusLine, onRefresh, connection = "una
     <BStack>
       {!ready ? <BCard label="Later and done"><ReadState connection={connection} statusLine={statusLine} onRefresh={onRefresh} /></BCard>
         : groups.length ? groups.map(group => <GroupCard key={group.id} group={group} items={none} staffing={idle} checked={unchecked} />)
-        : <BCard label="Later and done"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">Nothing later or done</span><span className="b-notice__s">Planning items and earlier gaps appear here.</span></span></div></BCard>}
+        : <BCard label="Later and done"><div className="b-notice"><BDoneMark still /><span className="b-notice__tx"><span className="b-notice__t">Nothing later or done</span><span className="b-notice__s">Planning items and earlier gaps appear here.</span></span></div></BCard>}
     </BStack>
   </BScreen>;
 }
@@ -174,15 +192,11 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
     {group.note ? <p className="b-card__note">{group.note}</p> : null}
     <BList label={group.title}>{group.rows.map((row) => {
       if (group.id === "open") {
-        // "Today, 12–7 AM" over "Main Office · Needs 1": the day joins the time so the line under it stays short.
-        const parts = (row.detail ?? "").split(" · ");
-        const day = parts.length > 1 && !/Needs|open/.test(parts[0]) ? parts.shift() : undefined;
-        // Review B7 (NV-068): rows keep full times with a spaced en dash from 768px. Jose (Nov 15, 2026, item 5): phones
-        // write the short form ("3–4:30 PM"), as the Schedule's day list does.
-        const time = row.title.replace(/^Open all day$/, "all day");
-        // Premium pass FA (final verification A #10, B #6): the range is one unit beside Find cover ("Today," then
-        // "9:30 PM – 12 AM" on the next line, never "9:30 PM –" over "12 AM").
-        return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={<>{day ? `${day}, ` : null}<span className="b-keep"><BWhen text={day ? time : row.title} /></span></>} sub={parts.join(" · ").replace(/Needs[\s\u00a0](\d+)[\s\u00a0](person|people)/, "Needs $1")} href={row.href} label={row.label}
+        // Final polish (Nov 20, 2026): the title is the time range alone, on one line ("11:30 PM – 12 AM"); the day, the
+        // place and the need are the facts under it ("Today · Calle Loíza · Needs 1"). The day sat in the title and broke
+        // after "Today," on a phone, alone on the first line. Phones write the short range, 768px and up the full one (BWhen).
+        const parts = (row.detail ?? "").split(" · ").map(part => part.replace(/Needs[\s\u00a0](\d+)[\s\u00a0](person|people)/, "Needs $1"));
+        return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={<span className="b-keep"><BWhen text={row.title} /></span>} sub={<BSegs parts={parts} />} href={row.href} label={row.label}
         trail={<BButtonLink href={row.href} kind="ghost" label={`Find cover: ${row.title}`}>Find cover</BButtonLink>} />;
       }
       // Approved leave over a published shift: the schedule's job ("Fill Maria Rivera’s shift"), no Approve or Decline.
@@ -193,9 +207,10 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
       // shift that ended with no punch. Phase 8 (a.md #11): the chip reads as Team's does ("Not clocked in · 49 min").
       // Phase 9 (spec 1.1): the person should be on the clock right now, so the chip carries the live dot.
       // Premium pass FA (final verification A #20, B #26): in the card titled "Not clocked in" every row is that state, so a
-      // chip on each row said the title again; the row says for how long, quietly, with the live dot in amber.
+      // chip on each row said the title again; the row says for how long, quietly. Final polish (Nov 20, 2026): grey meta
+      // with no dot (the amber dot beside "1 h" read as a second, different status from Team's chip).
       if (group.id === "missed" || group.id === "not-clocked-in") return <BRow key={row.key} lead={<BAvatar name={row.title} ring="late" />} title={row.title}
-        chip={row.value ? group.id === "not-clocked-in" ? <BStatusText dot="amber" label={`${ATTENDANCE_WORDS.notClockedIn} · ${row.value}`}>{row.value}</BStatusText>
+        chip={row.value ? group.id === "not-clocked-in" ? <BStatusText label={`${ATTENDANCE_WORDS.notClockedIn} · ${row.value}`}>{row.value}</BStatusText>
           : <BChip tone="amber" dot>{`${ATTENDANCE_WORDS.notClockedIn} · ${row.value}`}</BChip> : undefined} sub={keepParts(row.detail)} href={row.href} label={row.label} />;
       const item = items.get(row.key);
       const requestId = group.id === "time-off" ? requestIdOf(item) : null;
@@ -204,7 +219,8 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
         const clear = conflicts !== null && conflicts.length === 0;
         const reviewHref = item?.request?.reviewHref ?? row.href;
         const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{`On the schedule: ${conflictShift(conflicts[0])}${conflicts.length > 1 ? ` +${conflicts.length - 1}` : ""}`}</span>
-          : conflicts ? null : <span className="b-leave-note">{!checked.has(requestId) ? "Check the schedule on its page" : staffing.status === "loading" ? "Checking the schedule…" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
+          // Final polish (confirmations A #13): no "Checking the schedule…" under every row while the one read is out.
+          : conflicts || (checked.has(requestId) && staffing.status === "loading") ? null : <span className="b-leave-note">{!checked.has(requestId) ? "Check the schedule on its page" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
         // Phase 3 (OW-012): a row with buttons has no chevron (the row itself opens the request); the buttons end the row.
         return <BRow key={row.key} lead={<BAvatar name={row.title} />} title={row.title} sub={<>{keepParts(row.detail)}{note}</>} href={reviewHref} label={row.label} chevron={false}
           actions={<TimeOffDecisionForm checkHref={reviewHref}>
@@ -218,9 +234,10 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
       const review = group.id === "swaps" || group.id === "cant-work";
       // Phase 9 (spec 3.1): a figure ("3" planned items of one kind) is the one inline count, and a period's state ("Pay
       // period ended") is the expected state, so it is quiet grey words beside the title, not a grey chip.
-      return <BRow key={row.key} lead={<BIcon tone={row.quiet ? "grey" : kind.tone}>{kind.icon}</BIcon>} title={row.title}
-        chip={row.value ? /^\d+$/.test(row.value) ? <BCount>{row.value}</BCount> : <BStatusText>{row.value}</BStatusText> : undefined} sub={subOf(row)} href={row.href} label={row.label}
-        trail={review ? <BButtonLink href={row.href} kind="ghost" label={`Review ${row.title}`}>Review</BButtonLink> : undefined} />;
+      // Final polish (Nov 20, 2026): a swap's two names sit round the bold swap glyph (BSwapNames), read "A and B".
+      return <BRow key={row.key} lead={<BIcon tone={row.quiet ? "grey" : kind.tone}>{kind.icon}</BIcon>} title={row.swapWith ? <BSwapNames a={row.title} b={row.swapWith} /> : row.title}
+        chip={row.value ? /^\d+$/.test(row.value) ? <BCount>{row.value}</BCount> : <BStatusText>{row.value}</BStatusText> : undefined} sub={group.id.endsWith("corrections") ? correctionSub(row) : subOf(row)} href={row.href} label={row.label}
+        trail={review ? <BButtonLink href={row.href} kind="ghost" label={`Review ${row.title}${row.swapWith ? ` and ${row.swapWith}` : ""}`}>Review</BButtonLink> : undefined} />;
     })}</BList>
   </BCard>;
 }
@@ -233,13 +250,12 @@ function Decide({ name, approve, reviewHref }: { name: string; approve: boolean;
   const decision = data?.get("decision");
   // Review B1 (NV-125): Decline asks once ("Decline Ana's time off?"), so a mis-tap can't decline it; Approve stays one tap.
   const [confirming, setConfirming] = useState<boolean | null>(null);
-  const pair = useRef<HTMLSpanElement>(null);
+  const pair = useRef<HTMLSpanElement>(null), ask = useRef<HTMLDivElement>(null);
   // Focus follows the swap: to Keep when the question opens, back to Decline when it closes (the pressed button is gone).
-  useEffect(() => { if (confirming !== null) pair.current?.querySelector<HTMLButtonElement>("button")?.focus(); }, [confirming]);
-  if (confirming && !pending) return <span ref={pair} className="b-decide b-decide--confirm" role="group" aria-label={`Decline time off for ${name}?`}>
-    <BButton kind="quiet" onClick={() => setConfirming(false)} label={`Keep time off request for ${name}`}>Keep</BButton>
-    <BButton kind="danger" type="submit" name="decision" value="DENIED" label={`Decline time off for ${name}`}>Decline</BButton>
-  </span>;
+  useEffect(() => { if (confirming !== null) (confirming ? ask : pair).current?.querySelector<HTMLButtonElement>("button")?.focus(); }, [confirming]);
+  // Final polish (confirmations A #6, #7): the question in words, in the block Cancel time off uses (decision-parts.tsx).
+  if (confirming && !pending) return <DecisionAsk groupRef={ask} groupLabel={`Decline time off for ${name}?`} question={ASK.question} consequence={ASK.consequence(firstName(name))}
+    keep={ASK.keep} keepLabel={`Keep time off request for ${name}`} onKeep={() => setConfirming(false)} go={ASK.decline} goLabel={`Decline time off for ${name}`} goValue="DENIED" />;
   return <span ref={pair} className="b-decide" aria-busy={pending}>
     <BButton kind="quiet" onClick={() => setConfirming(true)} disabled={pending} busy={pending && decision === "DENIED"} busyLabel="Declining…" label={pending ? undefined : `Decline time off for ${name}`}>Decline</BButton>
     {/* Approve only once the schedule check came back with no overlap; otherwise its page shows the shifts first. */}

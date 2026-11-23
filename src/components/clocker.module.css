@@ -122,7 +122,8 @@
   .clock { font-size: clamp(72px, 13.5vw, 7.5rem); }
   .under { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
   .date { font-size: 1.125rem; }
-  .foot { margin-top: 14px; flex-direction: row; justify-content: flex-end; }
+  /* Final polish: the status starts on the band's left edge, under the clock and the date (it sat alone on the right). */
+  .foot { margin-top: 14px; flex-direction: row; justify-content: flex-start; }
   .status { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: var(--b-space-8) var(--b-space-16); border-radius: var(--b-radius-pill); }
   /* Phase 8 (#25): every separator has the same 10px on each side (the flex gap before, the margin after). */
   .zone::before, .device::before { content: "·"; margin-inline-end: 10px; }
@@ -134,10 +135,21 @@
 /* Phones (someone may open the link on one): a compact band and a full-width card. */
 @media (max-width: 599px) {
   .page { --ck-btn: 56px; --ck-keyh: 56px; }
-  .band { flex: 0 0 auto; padding: max(18px, env(safe-area-inset-top)) var(--b-space-20) 60px; }
-  .when { padding-top: var(--b-space-12); }
-  .under { margin-top: 10px; }
-  .foot { margin-top: 10px; justify-content: flex-start; }
+  /* Phone band (Nov 21, 2026; Jose asked for it compacted): the band was about a third of a phone's screen, so the PIN step
+   * ran past the fold and the language switch sat under it. Same facts, fewer rows: the date stands beside the clock (two
+   * short lines at the band's right edge), and the place and the tablet's state share a row where both fit and wrap where
+   * they don't. The three wrappers step aside (display: contents) so the band lays its pieces out itself; nothing is
+   * hidden that a phone showed before. Tablets and the side band are untouched. */
+  .band { flex: 0 0 auto; flex-direction: row; flex-wrap: wrap; align-items: center; align-content: flex-start; gap: 0 var(--b-space-8); padding: max(18px, env(safe-area-inset-top)) var(--b-space-20) 60px; }
+  .brand { flex: 0 0 100%; }
+  .when, .under, .foot { display: contents; }
+  /* Rows are spaced by their items' top margins (no row gap), because the row ends after the date with a zero-height
+   * item the row's width: the place never joins the clock's row on a wide phone and squeezes the date. */
+  .clock { order: 1; flex: none; margin-top: var(--b-space-12); }
+  .band::before { content: ""; order: 3; flex: 0 0 100%; height: 0; }
+  .date { order: 2; margin-top: var(--b-space-12); flex: 1 1 0; min-width: 0; text-align: right; text-wrap: balance; }
+  .location { order: 4; min-height: 34px; margin-top: 10px; font-size: .875rem; }
+  .status { order: 5; max-width: 100%; margin-top: 10px; min-height: 34px; padding: 6px var(--b-gutter) 6px var(--b-space-12); }
   .card .title { font-size: 1.625rem; }
   .pin { height: 54px; margin-top: 14px; }
   .keys { gap: 10px; margin-top: var(--b-space-12); }
@@ -145,7 +157,7 @@
   .workspace { min-height: 30px; padding: var(--b-space-4) var(--b-space-12); font-size: .8125rem; }
   .clock { font-size: clamp(48px, calc((100cqi - 88px) / 2.7), 4rem); }
   .clock > span { font-size: min(var(--b-fs-title), .4em); }
-  .date { font-size: 1rem; }
+  .date { font-size: .9375rem; line-height: 1.3; }
   .zone, .device { display: none; }
   .task { margin-top: -44px; padding: 0 max(14px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
   .card { padding: var(--b-space-24) var(--b-space-20) var(--b-space-20); }
@@ -200,29 +212,32 @@
 .content[data-align=center] > .msg > svg, .pinMsg > .msg > svg { display: inline-block; margin: 0 6px 0 0; vertical-align: -3px; }
 /* In-context notices on the ready screens. Premium pass (spec 3.2, #22): the product's callout anatomy by tone, a tint with
  * a 1px edge in its tone, the tone's glyph, an ink title and an ink2 body. Teal information, amber check, red stop. */
-.note { display: flex; gap: var(--b-space-12); align-items: flex-start; margin: var(--b-space-16) 0 0; padding: 14px var(--b-space-16); border-radius: var(--b-radius-field); background: var(--b-teal-50); box-shadow: inset 0 0 0 1px var(--b-teal-edge); color: var(--ck-ink2); font-size: .9375rem; line-height: 1.45; text-align: left; overflow-wrap: anywhere; }
-.note > svg { margin-top: 1px; color: var(--ck-focus); }
-.note[data-tone=amber] { background: var(--ck-amber-wash); box-shadow: inset 0 0 0 1px var(--b-amber-edge); }
-.note[data-tone=amber] > svg { color: var(--ck-amber); }
-.note[data-tone=red] { background: var(--ck-red-wash); box-shadow: inset 0 0 0 1px var(--b-red-edge); }
-.note[data-tone=red] > svg { color: var(--ck-red); }
+/* Premium pass (Nov 21, 2026; Jose's pick 3A): a note has no box. Its duotone glyph stands in a 40px circle of the
+ * tone's tint; the bold line is ink, the rest ink2. */
+.note { display: flex; gap: 14px; align-items: flex-start; margin: var(--b-space-16) 0 0; padding: 0; color: var(--ck-ink2); font-size: .9375rem; line-height: 1.45; text-align: left; overflow-wrap: anywhere; }
+.note > svg { box-sizing: content-box; flex: none; padding: 10px; border-radius: 50%; background: var(--ck-soft); color: var(--ck-focus); }
+.note > p { align-self: center; }
+.note[data-tone=amber] > svg { background: var(--ck-amber-wash); color: var(--ck-amber); }
+.note[data-tone=red] > svg { background: var(--ck-red-wash); color: var(--ck-red); }
 .note p { margin: 0; text-wrap: pretty; }
 .note strong { display: block; margin-bottom: var(--b-space-2); font-weight: 600; color: var(--ck-ink); text-wrap: balance; }
 
 /* Buttons: 56px pills (64px in portrait), press scale .96, hover only on hover-capable screens. */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: var(--ck-btn); padding: var(--b-space-12) var(--b-space-24); border: 0; border-radius: var(--b-radius-pill);
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: var(--ck-btn); padding: var(--b-space-12) var(--b-space-24); border: 0; border-radius: var(--b-radius-btn, 10px); /* Jose's button shape pick, Nov 21, 2026 */
   font-size: var(--b-fs-title-sm); line-height: 1.25; font-weight: 700; letter-spacing: -.005em; text-align: center; text-decoration: none; cursor: pointer; white-space: normal; overflow-wrap: anywhere;
   transition: background-color var(--b-dur-hover) var(--b-ease-out), transform var(--b-dur-press) var(--b-ease-out); }
 .btn[data-kind=primary] { background: var(--ck-accent); color: #FFFFFF; box-shadow: var(--b-elev-glow); }
-.btn[data-kind=secondary] { background: var(--ck-key); color: var(--ck-ink); }
+/* Premium pass (Jose's board pick 1A): a secondary is white with one hairline and a soft lift, ink words. Its grey was
+ * the disabled grey (#F0F2F3), so Done read as switched off. Grey now means disabled, and the keypad. */
+.btn[data-kind=secondary] { background: #FFFFFF; color: var(--ck-ink); box-shadow: 0 0 0 1px rgb(16 40 38 / 0.12), 0 1px 2px rgb(16 40 38 / 0.08); }
 .btn:disabled { cursor: not-allowed; }
 .btn[data-kind=primary]:disabled { background: #E3E7E8; color: var(--b-grey-on-fill); box-shadow: none; }
 /* Disabled controls take explicit colours, not opacity, so their text stays readable (Nov 14 inspection, SY-021). */
-.btn[data-kind=secondary]:disabled { color: var(--ck-grey); }
+.btn[data-kind=secondary]:disabled { background: var(--b-disabled-bg); color: var(--ck-grey); box-shadow: none; }
 .btn:active:not(:disabled) { transform: scale(var(--b-press-scale)); }
 @media (hover: hover) {
   .btn[data-kind=primary]:hover:not(:disabled) { background: var(--ck-accent-hover); }
-  .btn[data-kind=secondary]:hover:not(:disabled) { background: #E6E9EA; }
+  .btn[data-kind=secondary]:hover:not(:disabled) { background: #F7F9F9; }
   .link:hover:not(:disabled) { text-decoration: underline; text-underline-offset: 4px; }
 }
 .stack { display: grid; gap: var(--b-space-12); width: 100%; margin-top: 22px; }
@@ -232,7 +247,9 @@
 .link:disabled { color: var(--ck-grey); cursor: not-allowed; }
 /* Leaving beside a state's own actions: a text link in the same stack, so every gap is 12px (NV-184). */
 .stack > .link { justify-self: center; }
-.clears { margin: var(--b-space-4) 0 0; font-size: var(--b-fs-meta); line-height: 1.35; color: var(--ck-grey); text-align: center; text-wrap: balance; }
+/* Final polish: 12px above the line wherever it sits (it was 4px under Choose a break's and Clock out?'s last button,
+ * so it read as that button's caption). */
+.clears { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-meta); line-height: 1.35; color: var(--ck-grey); text-align: center; text-wrap: balance; }
 /* Premium pass (#20): under a 56px button the line keeps the stack's own 12px, so it no longer crowds the button. */
 .stack + .clears { margin-top: var(--b-space-12); }
 /* A result line in a stack (the help's "Request sent"): one centred paragraph whose icon leads its first line. */
@@ -246,7 +263,7 @@
 @keyframes ckSpin { to { transform: rotate(360deg); } }
 
 /* Language switch (the existing English/Spanish choice, remembered per tablet). */
-.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-pill); background: var(--ck-soft); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
+.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-btn, 10px); background: var(--ck-soft); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
 .lang:active { transform: scale(var(--b-press-scale)); }
 /* The same switch on a page outside the kiosk frame (the paused page and the Clocker's not-found page): a white pill that
  * reads on the teal band and on the canvas, with a ring that shows on both. It reads only the shared tokens. */
@@ -273,6 +290,9 @@
 .meta[data-align=end] { justify-content: flex-end; }
 /* A field's help, under the field (premium pass, #14): the ID step's and the PIN step's, in the same quiet grey. */
 .fieldHelp { margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: 1.4; color: var(--ck-grey); text-align: center; text-wrap: balance; }
+/* Final polish, round 2 (C2): the Employee ID step's help is real help read at arm's length, so it is the size the kiosk's
+ * messages use (15px). The PIN step's line keeps the message slot's size, and the "clears" note stays 13.5px. */
+.fieldHelp[data-size=message] { font-size: .9375rem; }
 
 /* ---------- PIN ---------- */
 .pin { position: relative; width: 100%; height: 60px; margin: var(--b-space-20) 0 0; border-radius: var(--b-radius-field); background: var(--ck-canvas); box-shadow: inset 0 0 0 2px var(--ck-field); }
@@ -338,10 +358,12 @@
 .who { display: flex; align-items: center; gap: 14px; }
 .face { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: 1.375rem; font-weight: 700; }
 .strow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-8) var(--b-space-12); margin: var(--b-space-8) 0 0 66px; }
-.chip { display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: var(--b-space-4) 13px; border-radius: var(--b-radius-pill); font-size: .9375rem; font-weight: 700; background: var(--ck-key); color: var(--ck-ink2); }
-.chip::before { content: ""; width: max(8px, .5333em); height: max(8px, .5333em); border-radius: 50%; background: currentColor; } /* #16: grows with the text */
-.chip[data-state=on] { background: var(--ck-green-wash); color: var(--ck-green); }
-.chip[data-state=break] { background: var(--ck-amber-wash); color: var(--ck-amber); }
+/* Premium pass (Nov 21, 2026): the state is a dot and its words, no pill: grey Off clock, green Clocked in, amber On
+ * break. The words are ink; the colour is the dot. */
+.chip { display: inline-flex; align-items: center; gap: 8px; min-height: 24px; padding: 0; font-size: .9375rem; font-weight: 700; color: var(--ck-ink2); }
+.chip::before { content: ""; flex: none; width: max(8px, .5333em); height: max(8px, .5333em); border-radius: 50%; background: var(--b-field-edge); } /* #16: grows with the text */
+.chip[data-state=on]::before { background: var(--ck-green-fill); }
+.chip[data-state=break]::before { background: var(--b-amber-solid); }
 .detail { margin: 0; font-size: .9375rem; line-height: 1.4; color: var(--ck-grey); overflow-wrap: anywhere; text-wrap: pretty; }
 .detail time { font-weight: 600; color: var(--ck-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .ago { white-space: nowrap; }
@@ -368,24 +390,35 @@
 .panelFoot { margin-top: 18px; }
 
 /* Confirm clock-out facts */
-.facts { display: grid; grid-template-columns: 1fr 1fr; width: 100%; margin: 18px 0 0; border-radius: var(--b-radius-field); background: var(--ck-canvas); text-align: left; }
+/* Premium pass (Nov 21, 2026; Jose's facts pick): no grey panel. The two figures sit between two hairlines. */
+.facts { display: grid; grid-template-columns: 1fr 1fr; width: 100%; margin: 18px 0 0; border-top: 1px solid var(--ck-line); border-bottom: 1px solid var(--ck-line); text-align: left; }
 .facts > div { padding: 14px var(--b-inset); min-width: 0; }
 .facts > div + div { box-shadow: inset 1px 0 0 var(--ck-line); }
 .facts dt { font-size: var(--b-fs-meta); color: var(--ck-grey); }
 /* One fact alone takes the row (a break with no suggested length on the receipt). */
 .facts > div:only-child { grid-column: 1 / -1; text-align: center; }
-.facts dd { margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.facts dd { text-wrap: balance; margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
 /* ---------- recorded ---------- */
-.check { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; margin: 6px auto 22px; background: var(--ck-green-fill); color: #FFFFFF; box-shadow: 0 0 0 10px var(--ck-green-wash);
-  animation: ckPop var(--b-dur-enter) cubic-bezier(.2, .7, .2, 1) both; }
-.check svg { animation: ckDraw 420ms cubic-bezier(.2, .7, .2, 1) 160ms both; }
-@keyframes ckPop { from { transform: scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
-@keyframes ckDraw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+/* The done mark (Nov 21, 2026): the app's one success mark (BDoneMark, b-moments.css) on the kiosk, from the same tokens.
+ * A solid green disc with a top light edge, a soft halo and glow; it settles once, draws its own tick (DoneTick) and one
+ * ring leaves it. data-size="sm" is the setup card's 64px mark; data-still is a state that was already true. */
+.check { position: relative; width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; margin: 6px auto 22px; background: var(--b-green-solid); color: #FFFFFF;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 10px var(--b-done-halo), var(--b-done-glow);
+  animation: ckPop var(--b-dur-settle) var(--b-ease-settle) both; }
+.check svg { overflow: visible; }
+.check svg path { stroke-dasharray: 1; stroke-dashoffset: 0; animation: ckDraw var(--b-dur-draw) var(--b-ease-settle) var(--b-delay-draw) both; }
+.check::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 2px var(--b-green-solid); pointer-events: none; opacity: 0; animation: ckRing var(--b-dur-ring) var(--b-ease-settle) var(--b-delay-ring) both; }
+.check[data-size=sm] { width: 64px; height: 64px; margin: 0 auto 14px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 6px var(--b-done-halo), var(--b-done-glow); }
+.check[data-still], .check[data-still] svg path, .check[data-still]::after { animation: none; }
+@media (forced-colors: active) { .check { forced-color-adjust: none; background: CanvasText; color: Canvas; box-shadow: none; } }
+@keyframes ckPop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes ckDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes ckRing { from { opacity: .5; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
 .hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bye { margin: var(--b-space-8) 0 0; font-size: 1.125rem; font-weight: 600; color: var(--ck-green); }
 .saved { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-body-sm); line-height: 1.45; color: var(--ck-ink2); overflow-wrap: anywhere; text-wrap: balance; }
-.saved time { font-weight: 600; color: var(--ck-ink); }
+.saved time { font-weight: 600; color: var(--ck-ink); white-space: nowrap; } /* "1:41 AM" stays whole (Nov 21, 2026) */
 /* Phase 8 (#11): the clear line is one piece, so a two-line saved line breaks between its two sentences. */
 .clearsIn { display: inline-block; }
 .countdown { display: block; width: 70%; height: 6px; margin: 18px auto 0; border-radius: 3px; background: var(--ck-green-wash); overflow: hidden; }
@@ -469,7 +502,7 @@
 /* ---------- motion: never under reduced motion; the words carry every state ---------- */
 @media (prefers-reduced-motion: reduce) {
   .page *, .page *::before, .page *::after { transition: none !important; scroll-behavior: auto !important; }
-  .pin[data-shake], .spin, .progress > i, .check svg { animation: none !important; }
+  .pin[data-shake], .spin, .progress > i, .check svg path, .check::after { animation: none !important; }
   /* The receipt's bar steps down once a second (a width change, not motion) instead of staying full (NV-304). */
   .countdown > i { animation: ckClear 8s steps(8, end) forwards !important; }
   .check { animation: ckFade 200ms linear both !important; }
@@ -505,8 +538,8 @@
   .pinForm .continue { margin-top: var(--b-space-8); }
   .meta { margin-top: 6px; }
   .ring { width: 52px; height: 52px; margin-bottom: 10px; }
-  .check { width: 72px; height: 72px; margin: var(--b-space-12) auto 14px; box-shadow: 0 0 0 8px var(--ck-green-wash); }
-  .check svg { width: 40px; height: 40px; }
+  .check:not([data-size]) { width: 72px; height: 72px; margin: var(--b-space-12) auto 14px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 8px var(--b-done-halo), var(--b-done-glow); }
+  .check:not([data-size]) svg { width: 40px; height: 40px; }
   .hero { font-size: 2.75rem; }
   .acts { gap: 10px; margin-top: var(--b-space-16); }
   .act { min-height: 72px; }
@@ -523,6 +556,8 @@
   .idEntry input { height: 54px; }
   .privacy { position: fixed; bottom: max(16px, env(safe-area-inset-bottom)); width: calc(100% - 32px); }
   .privacy .btn { flex: 1 0 100%; }
+  /* A phone is read in the hand: the Employee ID help keeps 13.5px there and stays on one line (C2 is for tablets). */
+  .fieldHelp[data-size=message] { font-size: var(--b-fs-meta); }
 }
 /* Review 30 (D35): a portrait tablet with large text (the window is under 56 lines of the reader's text tall: 896px at the
  * default size, so no portrait tablet at the default size takes it). The band and the card give way as on the small
@@ -561,8 +596,27 @@
   .pin { height: 52px; margin-top: var(--b-space-8); }
   .idEntry { margin-top: var(--b-space-12); }
   .idEntry input { height: 52px; }
-  .pinMsg { min-height: 2.6em; margin-top: var(--b-space-4); font-size: .8125rem; }
-  .keys { gap: var(--b-space-8); margin-top: var(--b-space-4); }
+  /* Final polish, round 2 (C4): the slot holds two full lines (2.8em; at 2.6em a two-line refusal pushed the keys down) and
+   * the keys keep 12px under it, as on every other phone (a two-line refusal sat 4px over the keys). The refusal stays
+   * centred text with its glyph in the line: its second line needs the card's whole width to stay on two lines at 320px
+   * (253 of 260px), so a glyph column would make it three lines and move the keypad. */
+  .pinMsg { min-height: 2.8em; margin-top: var(--b-space-4); font-size: .8125rem; }
+  .keys { gap: var(--b-space-8); margin-top: var(--b-space-12); }
+  .pinForm .continue { margin-top: var(--b-space-8); }
+  .meta { margin-top: 6px; }
+}
+/* Final polish, round 2 (C3): a tall phone (48 to 55 lines of text tall: 390x844, 393x852, 412x873). The PIN step ended
+ * 37px under an 844px screen, so the language pill was cut in half by the screen's edge. The band and the card give 40px
+ * of their gaps (no key, field or button changes size), so the step rests whole with the band whole and nothing scrolls.
+ * Between the short phone and this one the page scrolls to show the pill whole (clocker-pin-gate.tsx, pinStepScroll). */
+@media (max-width: 599px) and (min-height: 48em) and (max-height: 55em) {
+  .band { padding-bottom: 52px; }
+  .when { padding-top: var(--b-space-8); }
+  .under { margin-top: var(--b-space-8); }
+  .task { margin-top: -40px; }
+  .card { padding-top: var(--b-space-20); }
+  .pin { margin-top: var(--b-space-8); }
+  .pinMsg { margin-top: var(--b-space-4); }
   .pinForm .continue { margin-top: var(--b-space-8); }
   .meta { margin-top: 6px; }
 }

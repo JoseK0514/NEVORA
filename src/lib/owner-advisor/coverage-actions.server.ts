@@ -85,7 +85,7 @@ export async function coverageAction(store: AdvisorStore, command: CoverageActio
   const input = coverageDraftInput(source, scope[0], scope[1], date, observedAt);
   const terms = command.op === "prepare_coverage_draft" ? command.assignments : initial!.payload.assignments.map(({ employeeId, locationId, startTime, endTime, positionId, isDesignatedLead }) => ({ employeeId, locationId, startTime, endTime, positionId, isDesignatedLead }));
   try {
-    const exact = reviewCoverageDraft(input, date, terms);
+    const exact = reviewCoverageDraft(input, date, terms, observedAt);
     if (command.op === "prepare_coverage_draft") {
       const review: CoverageDraftReview = { id: reviewId, date, timeZone: input.workspace.timeZone, sourceVersion: version,
         preparedAt: observedAt, expiresAt: new Date(Date.parse(observedAt) + 300000).toISOString(), ...exact };

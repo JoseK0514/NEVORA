@@ -1,5 +1,7 @@
 'use client';
 
+import { FormDiscardGuard } from './kit/discard-dialog';
+import { leaveWithDiscardGuard } from './kit/use-discard-guard';
 import ownerStyles from './clocker-owner.module.css';
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
 import { ArchiveIcon } from '@phosphor-icons/react/dist/ssr/Archive';
@@ -14,6 +16,7 @@ import { XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 
 import { toast } from './toaster';
+import { BChip } from './owner-b/b-kit';
 import { breakCategories, type BreakType } from '../lib/clocker/break-types';
 import type { BreakTypeResult } from '../app/app/settings/breaks/actions';
 import { Notice,SettingsFrame } from '../app/app/settings/wave-c-kit';
@@ -76,6 +79,9 @@ export function ClockerBreakTypes({ initialTypes, action }: {
     setError(null);
   }
 
+  // Closing the editor with typed changes that are not saved asks first (Nov 21, 2026); a save closes it directly.
+  const askClose = () => leaveWithDiscardGuard(close);
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy.current || !selection) return;
@@ -119,7 +125,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   const row = (type: BreakType) => <li key={type.id}>
     <button type="button" className={type.targetMinutes === null ? 'q-row q-row--one' : 'q-row'} data-break-type={type.id} aria-label={`Edit ${type.name}`} onClick={event => open({ operation: 'EDIT', type }, event)}>
       <span className="q-rt"><b>{type.name}</b>{type.targetMinutes === null ? null : <i>{`${type.targetMinutes}\u00a0min`}</i>}</span>
-      <span className="q-pill-cat">{categoryLabel(type.category)}</span>
+      <BChip tone="grey">{categoryLabel(type.category)}</BChip>
       <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
     </button>
   </li>;
@@ -140,12 +146,13 @@ export function ClockerBreakTypes({ initialTypes, action }: {
       {archived.map(row)}
     </ul> : null}
     <p className="wc-foot">Changes apply to new breaks only.</p>
-    <dialog ref={dialog} className="wc-dialog" aria-labelledby="break-editor-title" aria-describedby="break-editor-description" onCancel={event => { event.preventDefault(); close(); }}>
+    <dialog ref={dialog} className="wc-dialog" aria-labelledby="break-editor-title" aria-describedby="break-editor-description" onCancel={event => { event.preventDefault(); askClose(); }}>
       {selection ? <form noValidate key={selection.operation + '-' + (selection.type?.id ?? 'new')} onSubmit={submit} aria-busy={pending} className="wc-dialog__form" {...handlers}>
+        <FormDiscardGuard />
         <div className="wc-dialog__head">
           <div><h2 className="wc-dialog__title" id="break-editor-title">{title}</h2>
             <p className="wc-dialog__text" id="break-editor-description">{selection.operation === 'CREATE' ? 'It’s offered for new breaks as soon as you create it.' : editing ? 'Changes apply to future breaks only.' : selection.operation === 'ARCHIVE' ? 'It won’t be offered for new breaks.' : 'It will be offered for new breaks again.'}</p></div>
-          <button type="button" className="wc-dialog__close" aria-label="Close break editor" disabled={pending} onClick={close}><XIcon size={22} weight="bold" aria-hidden="true" /></button>
+          <button type="button" className="wc-dialog__close" aria-label="Close break editor" disabled={pending} onClick={askClose}><XIcon size={22} weight="bold" aria-hidden="true" /></button>
         </div>
         <fieldset className="wc-fieldset" disabled={pending || Boolean(error?.refresh)}>
           {editing ? <FieldErrors errors={errors}><div className="wc-fields">
@@ -171,7 +178,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
             : <button className={selection.operation === 'ARCHIVE' ? 'q-btn q-btn--danger' : 'q-btn'} type="submit" disabled={pending}><ButtonLabel pending={pending} idle={saveLabel} busy="Saving…" /></button>}
           {selection.operation === 'EDIT' && selection.type ? <button className="q-btn q-btn--danger" type="button" disabled={pending}
             onClick={() => { clear(); setError(null); setSelection({ operation: selection.type!.active ? 'ARCHIVE' : 'REACTIVATE', type: selection.type }); }}>{selection.type.active ? 'Archive break type' : 'Reactivate break type'}</button> : null}
-          <button className="q-btn q-btn--sec" type="button" disabled={pending} onClick={close} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
+          <button className="q-btn q-btn--sec b-rowact b-rowact--quiet" type="button" disabled={pending} onClick={askClose} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
         </FormActions>
       </form> : null}
     </dialog>

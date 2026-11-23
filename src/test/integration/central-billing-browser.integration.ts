@@ -6,30 +6,45 @@ import {pathToFileURL} from 'node:url';
 import {createOwnedNextApp} from './owned-next-app';
 import {withOwnedTestResources} from './owned-test-resources';
 import {centralBillingFixture} from './central-billing-fixture';
+import {OWNED_COLLAB_ORIGIN} from './owned-collab-origin';
+import {startOwnedTlsProxy} from './owned-tls-proxy';
 
 it.each(['chromium','webkit'] as const)('checks the central billing entry, canonical SQL/SDK recovery and private retirement in %s',async engine=>{
+ const production=process.env.NEVORA_OWNED_ONBOARDING_PRODUCTION_BUILD==='1';
  const root=process.env.NEVORA_CENTRAL_BILLING_EVIDENCE;if(!root)throw Error('Explicit external evidence directory required');
  const evidence=join(resolve(root),engine);await mkdir(evidence,{recursive:true});
  const runtimeRequire=createRequire(resolve('tools/ci-browser-runtime/package.json')),runtime=runtimeRequire('playwright'),axe=await readFile(runtimeRequire.resolve('axe-core/axe.min.js'),'utf8');
  const {observeWindowExceptions}=await import(pathToFileURL(resolve('scripts/browser-navigation-diagnostic.mjs')).href);
  const checks:string[]=[],errors:string[]=[],foreign:string[]=[],layout:unknown[]=[];let retryEvidence:unknown=null,privacyEvidence:unknown=null,recoveryEvidence:unknown=null;let complete=false,contextClosed=false,browserClosed=false,catalogClosed=false,appRoot='',source:unknown=null,network:unknown[]=[],providerSessions=0,sqlCounts:{operations:number;intents:number}|null=null;const lifecycle:unknown[]=[];
  await withOwnedTestResources(async defer=>{
-  defer(async()=>{const ownership=appRoot?JSON.parse(await readFile(join(appRoot,'ownership.json'),'utf8')):null;await writeFile(join(evidence,'report.json'),JSON.stringify({complete:complete&&contextClosed&&browserClosed&&catalogClosed&&ownership?.closed===true,engine,checks,errors,foreign,layout,contextClosed,browserClosed,catalogClosed,source,network,providerSessions,sqlCounts,retryEvidence,privacyEvidence,recoveryEvidence,lifecycle,scope:'Actual public Next page and canonical commerce SQL/SDK over owned loopback HTTP with controlled legacy installation facts. Normal company Owner proof is separate Step4 evidence. Provider navigation is an intercepted local witness; no hosted, physical-device, real Stripe or payment acceptance.'},null,2));});
-  const fixture=await centralBillingFixture();defer(async()=>{network=fixture.requests.map(({path,method,status,cookie})=>({path,method,status,cookie}));providerSessions=fixture.provider.sessions.size;sqlCounts=await fixture.counts();await fixture.close();catalogClosed=true;});
-  const app=await createOwnedNextApp(evidence,{centralBillingApiOrigin:fixture.apiOrigin});appRoot=app.root;source=app.sourceHashes;defer(()=>app.close());fixture.setUiOrigin(app.url);
+  defer(async()=>{const ownership=appRoot?JSON.parse(await readFile(join(appRoot,'ownership.json'),'utf8')):null;await writeFile(join(evidence,'report.json'),JSON.stringify({complete:complete&&contextClosed&&browserClosed&&catalogClosed&&ownership?.closed===true&&(!production||Boolean(ownership.productionBuild)),engine,production,checks,errors,foreign,layout,contextClosed,browserClosed,catalogClosed,source,network,providerSessions,sqlCounts,retryEvidence,privacyEvidence,recoveryEvidence,lifecycle,scope:'Actual public Next page and canonical commerce SQL/SDK over '+(production?'owned HTTPS':'owned loopback HTTP')+' with controlled legacy installation facts. Normal company Owner proof is separate Step4 evidence. Provider navigation is an intercepted local witness; no hosted, physical-device, real Stripe or payment acceptance.'},null,2));});
+  const fixture=await centralBillingFixture(production);defer(async()=>{network=fixture.requests.map(({path,method,status,cookie})=>({path,method,status,cookie}));providerSessions=fixture.provider.sessions.size;sqlCounts=await fixture.counts();await fixture.close();catalogClosed=true;});
+  const app=await createOwnedNextApp(evidence,{production,centralBillingApiOrigin:fixture.apiOrigin,...(production?{portalHttpsOrigin:OWNED_COLLAB_ORIGIN}:{})});
+  appRoot=app.root;source=app.sourceHashes;defer(()=>app.close());
+  const front=production?OWNED_COLLAB_ORIGIN:app.url;
+  fixture.setUiOrigin(front);
+  const proxy=production?await startOwnedTlsProxy({[front]:app.url,[fixture.apiOrigin]:fixture.upstream}):null;
+  if(proxy)defer(()=>proxy.close());
   const browser=await runtime[engine].launch({headless:true});defer(async()=>{await browser.close();browserClosed=true;});
-  const context=await browser.newContext({serviceWorkers:'block',viewport:{width:390,height:844}});defer(async()=>{await context.close();contextClosed=true;});
-  await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const origin=new URL(route.request().url()).origin;if(![app.url,fixture.apiOrigin].includes(origin)){foreign.push(origin);await route.abort();return;}await route.continue();});
+  const context=await browser.newContext({serviceWorkers:'block',viewport:{width:390,height:844},...(proxy?{proxy:{server:proxy.server},ignoreHTTPSErrors:true}:{})});defer(async()=>{await context.close();contextClosed=true;});
+  await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const origin=new URL(route.request().url()).origin;if(![front,fixture.apiOrigin].includes(origin)){foreign.push(origin);await route.abort();return;}await route.continue();});
   await context.tracing.start({screenshots:true,snapshots:true});defer(()=>context.tracing.stop({path:join(evidence,engine+'-trace.zip')}));
   await observeWindowExceptions(context,(_page:unknown,kind:string)=>errors.push('window:'+kind));
   await context.exposeBinding('observeCentralLifecycle',(_source:unknown,value:unknown)=>{if(lifecycle.length<80)lifecycle.push(value);});await context.addInitScript(()=>{const observe=(event:Event)=>{void (window as unknown as {observeCentralLifecycle(value:unknown):Promise<void>}).observeCentralLifecycle({event:event.type,focus:document.hasFocus(),visible:document.visibilityState,at:performance.now()});};for(const event of ['blur','focus','pagehide','pageshow'])window.addEventListener(event,observe);document.addEventListener('visibilitychange',observe);});
   const page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',()=>errors.push('pageerror'));
   for(const [path,title] of [['/pages/plans','Plan and billing'],['/pages/nevora-billing','Plan and billing'],['/pages/nevora-billing-return','Plan and billing'],['/pages/es-facturacion','Plan y facturación'],['/pages/es-pago','Plan y facturación']]){
-   const response=await page.goto(app.url+path);expect(response?.status()).toBe(200);expect(response?.headers()['referrer-policy']).toBe('no-referrer');expect(response?.headers()['cache-control']).toContain('no-store');expect(response?.headers()['content-security-policy']).toContain("frame-ancestors 'none'");await page.getByRole('heading',{name:title,exact:true}).waitFor();
+   const response=await page.goto(front+path);expect(response?.status()).toBe(200);expect(response?.headers()['referrer-policy']).toBe('no-referrer');expect(response?.headers()['cache-control']).toContain('no-store');expect(response?.headers()['content-security-policy']).toContain("frame-ancestors 'none'");await page.getByRole('heading',{name:title,exact:true}).waitFor();
+   if(production){
+    for(const width of [390,1440]){
+     await page.setViewportSize({width,height:900});
+     await page.screenshot({path:join(evidence,path.split('/').at(-1)+'-'+width+'.png'),animations:'disabled'});
+    }
+    await page.setViewportSize({width:390,height:844});
+   }
   }
-  await page.goto(app.url+'/pages/nevora-billing-return?customer=fictional#handoff='+'x'.repeat(43));await page.getByText('Open Billing from your signed-in workplace Owner account to continue.',{exact:true}).waitFor();expect(await page.evaluate(()=>location.search+location.hash)).toBe('');
+  await page.goto(front+'/pages/nevora-billing-return?customer=fictional#handoff='+'x'.repeat(43));await page.getByText('Open Billing from your signed-in workplace Owner account to continue.',{exact:true}).waitFor();expect(await page.evaluate(()=>location.search+location.hash)).toBe('');
   expect(fixture.requests.filter(r=>r.method==='POST')).toHaveLength(0);checks.push('five canonical English/Spanish entry and callback routes have private headers and issue no mutation without a handoff');
-  await page.goto(app.url+'/pages/plans#handoff='+await fixture.handoff());await page.getByRole('heading',{name:fixture.businessName,exact:true}).waitFor();
+  await page.goto(front+'/pages/plans#handoff='+await fixture.handoff());await page.getByRole('heading',{name:fixture.businessName,exact:true}).waitFor();
   expect(await page.evaluate(()=>location.hash)).toBe('');expect(fixture.requests.filter(r=>r.method==='POST'&&r.path==='/v1/handoff/exchange')).toHaveLength(1);expect(fixture.requests.every(r=>!r.cookie)).toBe(true);
   expect(await page.evaluate(()=>Object.values({...localStorage,...sessionStorage}).some(value=>typeof value==='string'&&/handoff|Bearer/.test(value)))).toBe(false);
   checks.push('one canonical SQL-backed handoff exchange, scrubbed fragment, live public catalog/status and credential-free cross-origin HTTP transport');
@@ -71,7 +86,7 @@ it.each(['chromium','webkit'] as const)('checks the central billing entry, canon
   expect(create?.form.get('custom_text[submit][message]')).toContain(originalCoverage.paid_through.toISOString().slice(0,10));
   await page.goBack();await page.getByRole('heading',{name:'Plan and billing',exact:true}).waitFor();expect(await page.getByText(fixture.businessName,{exact:true}).count()).toBe(0);expect(fixture.requests.filter(r=>r.path==='/v1/checkout'&&r.method==='POST')).toHaveLength(2);
   checks.push('native keyboard intent, actual committed SQL/SDK checkout reply loss, focused recovery alert, unchanged key/body/language retry, one provider session and one intercepted navigation; Back retains no private display or automatic financial replay');
-  await page.goto(app.url+'/pages/nevora-billing#handoff='+await fixture.handoff());await page.getByRole('heading',{name:fixture.businessName,exact:true}).waitFor();
+  await page.goto(front+'/pages/nevora-billing#handoff='+await fixture.handoff());await page.getByRole('heading',{name:fixture.businessName,exact:true}).waitFor();
   let held=false,release!:()=>void,observed!:()=>void;const hold=new Promise<void>(resolve=>{release=resolve;}),started=new Promise<void>(resolve=>{observed=resolve;});defer(()=>release());
   await context.route(fixture.apiOrigin+'/v1/status',async(route:{fetch():Promise<unknown>;fulfill(value:{response:unknown}):Promise<void>;continue():Promise<void>})=>{if(!held){held=true;const response=await route.fetch();observed();await hold;await route.fulfill({response}).catch(()=>{});}else await route.continue();});
   await page.getByRole('button',{name:'Refresh status',exact:true}).click();await started;expect(await page.getByRole('button',{name:'Refresh status',exact:true}).isDisabled()).toBe(true);await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await expect.poll(()=>page.getByText(fixture.businessName,{exact:true}).count()).toBe(0);release();await new Promise(resolve=>setTimeout(resolve,50));expect(await page.getByText(fixture.businessName,{exact:true}).count()).toBe(0);
@@ -82,7 +97,7 @@ it.each(['chromium','webkit'] as const)('checks the central billing entry, canon
   checks.push('controlled blur retires private details before a held actual response returns; focus obtains a fresh read; real catalog session revocation returns denial and removes private data/actions');
   await fixture.subscriptionScenario('active');
   // A fresh entry route reloads the component; hash-only navigation must not reuse retired access.
-  await page.goto(app.url+'/pages/plans#handoff='+await fixture.handoff());
+  await page.goto(front+'/pages/plans#handoff='+await fixture.handoff());
   await page.getByRole('heading',{name:fixture.businessName,exact:true}).waitFor();
   for(const lang of ['en','es']){
    await page.getByRole('button',{name:lang==='en'?'English':'Español',exact:true}).click();

@@ -1,4 +1,5 @@
 import type {ReactNode} from 'react';
+import {dateRange} from '@/lib/duration-format';
 import {formatTime} from '@/lib/date-utils';
 import {CorpButtonLink, CorpCard, CorpLink, CorpPage, CorpRow, CorpRows, CorpTitle} from './corp/corp';
 import './employee-requests-corp.css';
@@ -13,15 +14,13 @@ export type CorpRequestRow = {key: string; href: string; title: string; detail: 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 /** "Thu, Nov 12" */
 export const requestDay = (date: string) => new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(date));
-const monthDay = (date: string) => new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', month: 'short', day: 'numeric'}).format(utcDay(date));
 
 /** A time-off request's dates and length, the same words on phone and desktop: "Fri, Nov 13 · All day",
- * "Nov 11 – 12 · 2 days", "Oct 30 – Nov 2 · 4 days" or "Fri, Nov 13 · 9:00 AM – 1:00 PM". Phase 8 (review C, row 35): part
+ * "Nov 11–12 · 2 days", "Oct 30–Nov 2 · 4 days" or "Fri, Nov 13 · 9:00 AM – 1:00 PM". Phase 8 (review C, row 35): part
  * of a day shows its hours, as Time off does. */
 export function timeOffDetail(request: {startDate: string; endDate: string; startTime?: string | null; endTime?: string | null}) {
-  const sameMonth = request.startDate.slice(0, 7) === request.endDate.slice(0, 7);
   const range = request.startDate === request.endDate ? requestDay(request.startDate)
-    : `${monthDay(request.startDate)} – ${sameMonth ? Number(request.endDate.slice(8)) : monthDay(request.endDate)}`;
+    : dateRange(request.startDate, request.endDate, {year: 'never'});
   const days = Math.round((utcDay(request.endDate).getTime() - utcDay(request.startDate).getTime()) / 86_400_000) + 1;
   return `${range} · ${request.startTime && request.endTime ? `${formatTime(request.startTime)} – ${formatTime(request.endTime)}` : days === 1 ? 'All day' : `${days} days`}`;
 }

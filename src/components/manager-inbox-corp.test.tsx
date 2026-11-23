@@ -139,7 +139,7 @@ it('reads an open shift and a pay period the way the board does', () => {
   // Review B2 (NV-002): timecards that wait are on Things to do now (Waiting for review), not on Later and done.
   const html = page({snapshot: ready(items)});
   // Timecards: one row per period, naming whose cards wait; it opens Time.
-  expect(html).toMatch(/<a class="c-row" href="\/app\/timecards" aria-label="Timecards to approve, Oct 5 – 11, pay period ended: Marco, Priya">/);
+  expect(html).toMatch(/<a class="c-row" href="\/app\/timecards" aria-label="Timecards to approve, Oct 5–11, pay period ended: Marco, Priya">/);
   // Nov 14, 2026 inspection (BR-7): the row says how many cards it holds, then whose.
   expect(html).toContain('<span>2\u00a0timecards · Marco, Priya</span>');
 });
@@ -245,7 +245,9 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   expect(html).not.toContain('asked for a time correction');
   // A swap names both people in its title; a can't-work request's title is the person (Phase 8, a.md #13), over the
   // day, the shift's time and its place.
-  expect(html).toContain('>Ana Colon ⇄ James Ortiz<');
+  // Final polish (Nov 20, 2026): the two names sit round the bold swap glyph and read "Ana Colon and James Ortiz".
+  expect(html).toMatch(/<span class="b-swapnames"><span class="b-swapnames__a">Ana Colon<svg[^>]*aria-hidden="true"[^>]*>.*?<\/svg><\/span><span class="b-sr"> and <\/span><span>James Ortiz<\/span><\/span>/);
+  expect(html).not.toContain('⇄');
   expect(html).toContain('with James Ortiz"');
   expect(html).toContain('>Luis Torres<');
   expect(html).not.toContain('can’t work Tue');
@@ -262,7 +264,7 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   expect(html.replace(/<[^>]+>/g, '')).toContain('1 of 2 timecards · Avery');
   expect(html).not.toContain('Elena');
   // Phase 9 (spec 3.1): the period's state is the expected one, so it is quiet grey words, not a grey chip.
-  expect(html).toMatch(/Oct 5 – 11<\/span><span class="b-status">Pay period ended</);
+  expect(html).toMatch(/Oct 5–11<\/span><span class="b-status">Pay period ended</);
   expect(html).toMatch(/id="b-todo-waiting-timecards-h">Timecards to approve<span class="b-pill">1</);
   // A period still open is one closed card at the bottom (Jose, Nov 15, 2026: "Pay period still open"): its line says the
   // day approval opens, the row says how many and whose; no count pill, no "waiting" suffix.

@@ -43,8 +43,10 @@ it("keeps inactive employees discoverable with an explicit status", async () => 
   // rows carry no pill (R3) and say so to assistive tech.
   expect(html).toContain('id="team-inactive-label">Inactive<span class="c-count c-num">1</span></h2>');
   expect(html).not.toContain('class="c-pill c-pill--neutral">Inactive</span>');
-  // IS-P4-15: the label also says the phone number shown in the desktop table.
-  expect(html).toContain('aria-label="Inactive Person, LEAD, Main, 7875550102, inactive"');
+  // QA A4-03 (Nov 21, 2026): a row's visible content is its spoken name, so no label replaces it (dropping the live
+  // status) or adds the phone number, which no Team row shows.
+  expect(html).not.toContain('aria-label="Inactive Person');
+  expect(html).not.toContain('7875550102');
   expect(html).toContain('href="/app/employees/inactive"');
 });
 

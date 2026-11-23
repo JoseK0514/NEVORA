@@ -1,6 +1,7 @@
 import "./quiet.css";
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
+import { dateRange } from "@/lib/duration-format";
 import { CorpBackLink } from "../corp/corp-client";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
@@ -136,10 +137,8 @@ export function dayLabel(date: string) {
   return new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
 }
 
-/** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month end. */
+/** "Oct 19–25", or "Oct 26–Nov 1" across a month end (the app's one date-range form). */
 export function weekLabel(weekStart: string) {
   const end = new Date(Date.parse(`${weekStart}T12:00:00Z`) + 6 * 86_400_000).toISOString().slice(0, 10);
-  const month = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-  const day = (date: string) => Number(date.slice(8));
-  return `${month(weekStart)} ${day(weekStart)} – ${month(end) === month(weekStart) ? "" : `${month(end)} `}${day(end)}`;
+  return dateRange(weekStart, end, { year: "never" });
 }

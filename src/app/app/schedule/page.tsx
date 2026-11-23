@@ -4,9 +4,9 @@ import { readPortalLanguage } from "@/lib/activation/language.server";
 import { PlanningWindowCard, type PlanningWindow } from "@/components/workforce/planning-window-card";
 import { readOperationalPlanningWeek } from "@/lib/company-access/operational-read.server";
 import {scopedObservation} from '@/lib/company-access/observation';
-import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {isOperationalAuthorizationError,readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {listWorkforcePermissions} from '@/lib/workforce/authority.server';
 import {readOperationalSchedule,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
-import {ScopedOperationalSchedule} from '@/components/company-access/scoped-operational-views';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {ScheduleCopyForm} from '@/components/schedule-copy-form';
@@ -17,6 +17,7 @@ import { ActionMenu } from "@/components/action-menu";
 import {ManagerIssueFocus} from '@/components/manager-issue-focus';
 import { EmployeeMySchedule } from "@/components/employee-my-schedule";
 import './employee-schedule.css';
+import { readScopedCoverageGaps } from "@/lib/data/coverage-repair.server";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { SchedulePublicationChange } from "@/components/schedule-publication-change";
@@ -32,13 +33,12 @@ import { readWeeklyApprovedAbsences } from "@/lib/data/weekly-approved-absences.
 import { loadManagerDashboardData } from "@/lib/data/manager-dashboard";
 import { assignedHours, type RosterEmployee } from "@/lib/scheduling/manager-roster-presentation";
 
-import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { DotsThreeIcon } from "@phosphor-icons/react/dist/ssr/DotsThree";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
-import { BButtonLink, BState } from "@/components/owner-b/b-kit";
+import { BButtonLink, BDoneMark, BSegs, BState } from "@/components/owner-b/b-kit";
 import { momentsCopy } from "@/components/owner-b/moments-copy";
 import "./manager-schedule.css";
 import "./schedule-corp.css";
@@ -65,18 +65,14 @@ formatDayLabel,formatWeekRange,
 weekDates,
 isValidWeekStart,weekStartFor
 } from "@/lib/date-utils";
+import { dateRange } from "@/lib/duration-format";
 import { getWeekSettings } from "@/lib/data/week-settings";
 import {readEmployeeWeeklyReview} from "@/lib/data/employee-weekly-review.server";
 import { employeeRoleLabel } from "@/lib/employee-display";
 
-/** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month end (the v3 mockup's week label). */
+/** "Oct 19–25", or "Oct 26–Nov 1" across a month end (the app's one date-range form). */
 function compactWeekRange(weekStart: string) {
-  const end = addDays(weekStart, 6);
-  const month = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-  const day = (date: string) => Number(date.slice(8));
-  // Premium pass FA (final verification A #8): a range within a month is closed up ("Nov 16–22"), as Payroll and Home
-  // write a pay period; across months it keeps the spaced dash ("Nov 30 – Dec 6").
-  return month(end) === month(weekStart) ? `${month(weekStart)} ${day(weekStart)}–${day(end)}` : `${month(weekStart)} ${day(weekStart)} – ${month(end)} ${day(end)}`;
+  return dateRange(weekStart, addDays(weekStart, 6), { year: "never" });
 }
 
 function validWeek(value?: string) {
@@ -143,7 +139,86 @@ export default async function SchedulePage({
       const source=await readOperationalSchedule(proof,{weekStart,...(params.location===undefined||params.location==='all'?{}:{locationId:params.location})});
       if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason} scoped/>;
       if(source.authority!==access.authority)return <OperationalUnavailable title="Schedule unavailable" reason="source_changed" scoped/>;
-      return withRepair(<ScopedOperationalSchedule data={source.data} observation={scopedObservation(source)} feedback={<>{repairNote("corp")}{(await currentPresentation()).modules.marketplace ? <Link href="/app/exchange/open-shifts" className="button secondary">Posted open shifts</Link> : null}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/></>}/>);
+      // QA A3-05 (Nov 21, 2026): a location Manager with Publish schedules had no way to publish from here.
+      const [canPublish,coverage,scopedAbsences] = await Promise.all([
+        scopedCanPublish(proof),
+        readScopedCoverageGaps(proof,weekStart,source.data.selectedLocationId ?? undefined),
+        // Approved time off at the Manager's own locations (the read derives scope from the actor).
+        readWeeklyApprovedAbsences(proof,weekStart),
+      ]);
+      const openShifts = coverage.state === 'ready' && coverage.authority === source.authority ? coverage.data : null;
+      // Phase 2 direction A (Jose, Nov 22, 2026: "the same screens other Managers have, limited to one location"): the
+      // location Manager gets the Direction B Schedule itself (ManagerWeeklyRoster: the band, the glass week, the day card
+      // with avatars and live states), built from the scoped read. Same reads and links as before; nothing company-wide.
+      const data = source.data;
+      const scopedDates = weekDates(weekStart);
+      const shortName = (id: string) => { const l = data.locations.find(x => x.id === id); return l ? (l.shortName || l.name) : ""; };
+      // Everyone on the location's roster, plus anyone holding a shift here who isn't on it (a recorded shift always shows).
+      const people = [...data.roster.map(person => ({ id: person.id, name: `${person.firstName} ${person.lastName}`, role: person.role as string })),
+        ...[...new Map(data.shifts.filter(shift => !data.roster.some(person => person.id === shift.employeeId)).map(shift => [shift.employeeId, { id: shift.employeeId, name: shift.employeeName, role: "EMPLOYEE" }])).values()]];
+      const scopedRoster = people.map(person => ({ ...person,
+        shifts: data.shifts.filter(shift => shift.employeeId === person.id).map(shift => ({ id: shift.id, date: shift.date, startTime: shift.startTime, endTime: shift.endTime,
+          location: shortName(shift.locationId), position: shift.positionName, status: shift.scheduleStatus, lead: shift.isDesignatedLead })) }));
+      const scopedOpen: RosterOpenShift[] = (openShifts ?? []).flatMap(item => {
+        const link = new URL(item.href, "https://nevora.invalid");
+        const date = link.searchParams.get("date") ?? "", startTime = link.searchParams.get("start") ?? "", endTime = link.searchParams.get("end") ?? "";
+        if (!scopedDates.includes(date) || !startTime || !endTime) return [];
+        return [{ id: item.id, date, startTime, endTime, location: shortName(link.searchParams.get("locationId") ?? ""), href: item.href }];
+      });
+      const one = data.locations.length === 1 ? data.locations[0] : null;
+      const selected = data.selectedLocationId ? data.locations.find(l => l.id === data.selectedLocationId) ?? null : one;
+      const placeName = selected ? (selected.shortName || selected.name) : "All your locations";
+      const locQuery = data.selectedLocationId ? `&location=${encodeURIComponent(data.selectedLocationId)}` : "";
+      const scopedAdd = `/app/schedule/new?week=${weekStart}${data.selectedLocationId ? `&locationId=${encodeURIComponent(data.selectedLocationId)}` : ""}`;
+      const scopedPublish = canPublish ? `/app/schedule/publish?week=${encodeURIComponent(weekStart)}` : undefined;
+      const drafts = data.shifts.filter(shift => shift.scheduleStatus === "DRAFT").length;
+      const scopedState = !data.shifts.length ? { text: "Not started", tone: "glass" as const } : drafts ? { text: drafts === data.shifts.length ? "Draft" : `${drafts} ${drafts === 1 ? "draft" : "drafts"}`, tone: "due" as const } : { text: "Published", tone: "ok" as const };
+      const scopedStateCorp = scopedState.tone === "due" ? <span className="c-meta c-sched-weekstate" data-tone="amber">{scopedState.text}</span>
+        : scopedState.tone === "ok" ? <span className="c-meta c-sched-weekstate" data-tone="green"><CheckIcon className="c-sched-weekstate__ic" weight="bold" aria-hidden="true" />Published</span>
+        : <span className="c-meta c-sched-weekstate">{scopedState.text}</span>;
+      const locationControl = (b: boolean) => one
+        ? <span className={b ? "b-btn b-btn--glass" : "c-select-btn c-sched-loc"} aria-label={`Location: ${placeName}`}>{b ? <MapPinIcon size={15} weight="bold" aria-hidden="true" /> : null}{placeName}</span>
+        : <ActionMenu id={b ? "b-scoped-location-menu" : "scoped-location-menu"} label="Location" title="Location" ariaLabel={`Location: ${placeName}`} align="end"
+            triggerClassName={b ? "b-btn b-btn--glass" : "c-select-btn c-sched-loc"} triggerContent={<>{b ? <MapPinIcon size={15} weight="bold" aria-hidden="true" /> : null}{placeName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>
+            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=all`}><strong>All your locations</strong></Link>
+            {data.locations.map(l => <Link key={l.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(l.id)}`}><strong>{l.shortName || l.name}</strong></Link>)}
+          </ActionMenu>;
+      const scopedTodayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
+      const marketplace = (await currentPresentation()).modules.marketplace;
+      // As Elena's: options that aren't the page's one action sit under "…".
+      const scopedMore = (b: boolean) => marketplace ? <ActionMenu id={b ? "b-scoped-more" : "scoped-more"} label="More" title="Schedule options" ariaLabel="More schedule actions"
+        triggerClassName={b ? "b-ib b-glass" : "c-icon-btn c-sched-more"} triggerContent={<DotsThreeIcon size={20} weight="bold" className={b ? undefined : "c-ic"} aria-hidden="true" />}>
+        <div className="c-menu-card"><Link className="nevora-action-menu-item" href="/app/exchange/open-shifts"><strong>Posted open shifts</strong></Link></div>
+      </ActionMenu> : null;
+      return withRepair(<ScopedReadFrame observation={scopedObservation(source)}><CorpPage className="c-sched c-page--wide" labelledBy="schedule-title">
+        <CorpTitle id="schedule-title" title="Schedule"
+          actions={<>
+            {locationControl(false)}
+            <span className="c-sched-actions">
+              {scopedMore(false)}
+              {scopedPublish ? <CorpButtonLink href={scopedPublish} size="sm" kind="secondary">Publish</CorpButtonLink> : null}
+              <CorpButtonLink href={scopedAdd} size="sm" aria-label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</CorpButtonLink>
+            </span>
+          </>}
+          sub={<><span className="c-sched-sub__long">{scopedTodayLong}</span><span className="c-sched-sub__short">{new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`))}</span></>} />
+        {/* As on the company page: the print title (and the first block under the title on desktop, so the roster keeps its
+          place under the week stepper instead of being lifted into the band). */}
+        <p className="mws-print-title" aria-hidden="true">{workspace.name} · {formatWeekRange(weekStart)} · {placeName} · Times in {workspace.timeZone.replaceAll("_", " ")}</p>
+        <ManagerWeeklyRoster key={`${weekStart}:${data.selectedLocationId ?? "all"}`} employees={scopedRoster} dates={scopedDates} today={today} timeZone={workspace.timeZone}
+          locationId={data.selectedLocationId ?? one?.id} openShifts={scopedOpen} absences={scopedAbsences}
+          corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${addDays(weekStart, -7)}${locQuery}`, nextHref: `/app/schedule?week=${addDays(weekStart, 7)}${locQuery}`,
+            status: scopedStateCorp, addShiftHref: scopedAdd, todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locQuery}`, observedAt: observedAt.toISOString() }}
+          b={{ sub: scopedTodayLong, weekState: scopedState, toPlan: [],
+            actions: <>{scopedMore(true)}{scopedPublish ? <BButtonLink href={scopedPublish} kind="white" label={`Publish, ${formatWeekRange(weekStart)}`}>Publish</BButtonLink>
+              : <BButtonLink href={scopedAdd} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>}</>,
+            location: locationControl(true),
+            notes: <>{repairNote("b")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>{openShifts === null ? <CorpNote>Couldn’t check open shifts. Reload to try again.</CorpNote> : null}</> }}
+          notices={<>
+            {repairNote("corp")}
+            <ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>
+            {openShifts === null ? <CorpNote>Couldn’t check open shifts. Reload to try again.</CorpNote> : null}
+          </>} />
+      </CorpPage></ScopedReadFrame>);
     }
   }
   async function renderSchedule(){
@@ -375,35 +450,49 @@ export default async function SchedulePage({
     const location = locations.find(item => item.id === params.published);
     return location && statusFor(location.id) === "PUBLISHED" ? { title: M.published(location.shortName), line: M.publishedLine(week) } : null;
   })();
-  const updatesOn = publishedMoment ? pathEnabled("/app/updates", (await currentPresentation()).modules) : false;
+  /* Final polish (Nov 20, 2026; confirmations review A #3): publishing held changes answers with the same done card as a
+   * first publication (it was a sentence on the band). The flag is the action's own redirect, as before. */
+  const changesMoment = !publishedMoment && params.changesPublished ? { title: M.changesPublished, line: M.changesPublishedLine } : null;
+  const doneMoment = publishedMoment ?? changesMoment;
+  const doneKey = `${weekStart}:${params.published ?? "changes"}`;
+  const updatesOn = doneMoment ? pathEnabled("/app/updates", (await currentPresentation()).modules) : false;
+  /* Final polish (confirmations review A #4): the day opened after a shift is saved, changed or deleted ("day" in the
+   * address, the actions' own redirect) keeps the Direction B frame. What was saved is one inline done line; the day and
+   * place are a facts line with the way back to the week. Nothing about when this view appears changes. */
+  const reviewDone = params.updated ? <><b>Shift updated</b>{pending ? <span>Publish changes when you’re ready to tell your team.</span> : null}</> : params.deleted ? <b>Shift deleted</b> : null;
+  const reviewContext = (phone: boolean) => reviewDay ? <div className="c-sched-review manager-schedule-context manager-issue-target" id={phone ? undefined : "schedule-review"} tabIndex={phone ? undefined : -1}>
+    {reviewDone ? <p className="c-sched-review__done" role={phone ? undefined : "status"}><BDoneMark /><span className="c-sched-review__dt">{reviewDone}</span></p> : null}
+    <p className="c-sched-review__ctx"><span className="c-sched-review__k">Opened for review</span><span className="b-sr">: </span><BSegs className="c-sched-review__v" parts={[`${formatDayLabel(reviewDay).weekday}, ${formatDayLabel(reviewDay).day}`, locationName]} /></p>
+    <Link className="b-rowact b-rowact--go c-sched-review__all" href={`/app/schedule?week=${weekStart}${locationQuery}`}>Show full week</Link>
+  </div> : null;
   // The location list and the "…" menu's rows, shared by the title row and the Direction B phone hero.
-  const locationItems = <>
+  const locationItems = <div className="c-menu-group"><div className="c-menu-card">
             <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}`} aria-current={selectedLocation === "all" ? "true" : undefined}>All locations</Link>
             {locations.map(location => <Link key={location.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${location.id}`} aria-current={selectedLocation === location.id ? "true" : undefined}>{location.shortName}</Link>)}
-  </>;
+  </div></div>;
   const moreItems = <>
               <div className="c-menu-group" role="group" aria-labelledby="schedule-options-week">
                 <p className="c-menu-label" id="schedule-options-week">This week</p>
                 <div className="c-menu-card">
                 {/* Review B2 (NV-013): Add shift and Build and publish are reachable from the menu at every width (the grid's
                   hover "+ Add" is a pointer-only shortcut). */}
-                <Link className="nevora-action-menu-item" href={addShiftHref}><strong>Add shift</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
-                {(await currentPresentation()).modules.marketplace ? <Link className="nevora-action-menu-item" href="/app/exchange/open-shifts"><strong>Posted open shifts</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link> : null}
-                <Link className="nevora-action-menu-item" href={publishHref}><strong>Build and publish</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                <Link className="nevora-action-menu-item" href={addShiftHref}><strong>Add shift</strong></Link>
+                {(await currentPresentation()).modules.marketplace ? <Link className="nevora-action-menu-item" href="/app/exchange/open-shifts"><strong>Posted open shifts</strong></Link> : null}
+                <Link className="nevora-action-menu-item" href={publishHref}><strong>Build and publish</strong></Link>
                 {/* Review Nov 14 (AR-9): team Availability had no menu entry for an Owner or Manager; it opens here, on the
                   week being planned, before the week is built. */}
-                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`} aria-label="Availability: who can work and when"><strong>Availability</strong><span className="c-menu-value">Who can work and when</span><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`} aria-label="Availability: who can work and when"><strong>Availability</strong><span className="c-menu-value">Who can work and when</span></Link>
                 <ScheduleCopyForm actorId={session.id} className="nevora-action-menu-item c-sched-menu-copy" label={<strong>Copy previous week</strong>} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
-                <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Week templates</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Week templates</strong></Link>
                 <PrintScheduleButton />
                 </div>
               </div>
               <div className="c-menu-group" role="group" aria-labelledby="schedule-options-settings">
                 <p className="c-menu-label" id="schedule-options-settings">Settings</p>
                 <div className="c-menu-card">
-                <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
-                <Link className="nevora-action-menu-item manager-issue-target" id="schedule-deadline" href={`/app/schedule/settings?week=${weekStart}&open=deadline#rules-deadline`} aria-label={`Availability deadline, ${deadlineText}`}><strong>Availability deadline</strong><span className="c-menu-value">{deadlineText}</span><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
-                <Link className="nevora-action-menu-item" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><strong>Activity</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong></Link>
+                <Link className="nevora-action-menu-item manager-issue-target" id="schedule-deadline" href={`/app/schedule/settings?week=${weekStart}&open=deadline#rules-deadline`} aria-label={`Availability deadline, ${deadlineText}`}><strong>Availability deadline</strong><span className="c-menu-value">{deadlineText}</span></Link>
+                <Link className="nevora-action-menu-item" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><strong>Activity</strong></Link>
                 </div>
               </div>
   </>;
@@ -415,10 +504,10 @@ export default async function SchedulePage({
     : counts.published === inView.length ? { text: "Published", tone: "ok" as const }
     : counts.published ? { text: `${counts.published} of ${inView.length} published`, tone: "glass" as const }
     : { text: "Not started", tone: "glass" as const };
-  const bSchedule = publicationReview || params.publishCheck || params.plan === "1" || reviewDay ? undefined : {
+  const bSchedule = publicationReview || params.publishCheck || params.plan === "1" ? undefined : {
     sub: todayLong,
     // Nov 9, 2026: the week's coverage from canonical schedule health, for the chosen location (or all of them).
-    coverage: weekRead?.coverageMinutes ? (selectedLocation === "all" ? weekRead.coverageMinutes.all : weekRead.coverageMinutes.byLocation[selectedLocation] ?? null) : null,
+    coverage: reviewDay ? undefined : weekRead?.coverageMinutes ? (selectedLocation === "all" ? weekRead.coverageMinutes.all : weekRead.coverageMinutes.byLocation[selectedLocation] ?? null) : null,
     actions: <>
       <ActionMenu id="b-schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="b-ib b-glass" triggerContent={<DotsThreeIcon size={20} weight="bold" aria-hidden="true" />}>
         {moreItems}
@@ -440,12 +529,12 @@ export default async function SchedulePage({
     notes: <>
       {repairNote("b")}
       <ScheduleRouteFeedback error={params.error} warning={params.warning} dismissHref={dismissHref}/>
-      {publishedMoment ? <div className="b-sched-done b-done-host--flush"><BState kind="done" title={publishedMoment.title} line={publishedMoment.line}
-        extra={<Celebration kind="SCHEDULE_PUBLISHED" eventKey={`${weekStart}:${params.published}`} confirmed />}
+      {doneMoment ? <div className="b-sched-done b-done-host--flush"><BState kind="done" title={doneMoment.title} line={doneMoment.line}
+        extra={publishedMoment ? <Celebration kind="SCHEDULE_PUBLISHED" eventKey={doneKey} confirmed /> : undefined}
         action={updatesOn ? { label: M.sendUpdate, href: "/app/updates/compose" } : undefined} /></div> : null}
-      {params.changesPublished ? <CorpNote announce>Changes published. Each person with a change can see it in their schedule.</CorpNote> : null}
-      {params.updated ? <CorpNote announce>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
-      {params.deleted ? <CorpNote announce>Shift deleted.</CorpNote> : null}
+      {reviewContext(true)}
+      {!reviewDay && params.updated ? <CorpNote announce>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
+      {!reviewDay && params.deleted ? <CorpNote announce>Shift deleted.</CorpNote> : null}
       {params.deadlineSaved ? <CorpNote announce>Availability deadline updated.</CorpNote> : null}
       {params.copied !== undefined ? <CorpNote announce>{`Copied ${params.copied} shift${params.copied === "1" ? "" : "s"} from the previous week.${Number(params.skipped ?? 0) > 0 ? ` ${params.skipped} skipped because of scheduling conflicts.` : ""}`}</CorpNote> : null}
     </>,
@@ -468,13 +557,12 @@ export default async function SchedulePage({
               {moreItems}
             </ActionMenu>
             {/* Review B2 (NV-013): with nothing to publish, the title's action is Add shift (Publish when something waits). */}
-            {publishAction ?? <CorpButtonLink href={addShiftHref} size="sm" aria-label={`Add shift, ${formatWeekRange(weekStart)}`}>Add shift</CorpButtonLink>}
+            {publishAction ?? <CorpButtonLink href={addShiftHref} size="sm" aria-label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</CorpButtonLink>}
           </span>
         </>}
         sub={<><span className="c-sched-sub__long">{todayLong}</span><span className="c-sched-sub__short">{todayShort}</span></>} />
-      {params.changesPublished ? <CorpNote announce>Changes published. Each person with a change can see it in their schedule.</CorpNote> : null}
-      {params.updated ? <CorpNote announce>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
-      {params.deleted ? <CorpNote announce>Shift deleted.</CorpNote> : null}
+      {!reviewDay && params.updated ? <CorpNote announce>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
+      {!reviewDay && params.deleted ? <CorpNote announce>Shift deleted.</CorpNote> : null}
       {params.deadlineSaved ? <CorpNote announce>Availability deadline updated.</CorpNote> : null}
       {params.copied !== undefined ? (
         <p role="status" className={Number(params.skipped ?? 0) > 0 ? "c-note c-note--warn" : "c-note"}><span>
@@ -497,11 +585,11 @@ export default async function SchedulePage({
           <ScheduleRouteFeedback error={params.error} warning={params.warning} dismissHref={dismissHref}/>
           {/* Phase 7 (moments): the published result is the first card under the band, so the band keeps its week stepper and
             * its height exactly as on a normal load (it used to sit above the stepper and push it onto the canvas). */}
-          {publishedMoment ? (
+          {doneMoment ? (
             <CorpCard as="div" ariaLabel="Published">
               <div className="b-done-host c-sched-done">
-                <BState kind="done" heading title={<span id="schedule-published-title">{publishedMoment.title}</span>} line={publishedMoment.line}
-                  extra={<Celebration kind="SCHEDULE_PUBLISHED" eventKey={`${weekStart}:${params.published}`} confirmed />}
+                <BState kind="done" heading title={<span id="schedule-published-title">{doneMoment.title}</span>} line={doneMoment.line}
+                  extra={publishedMoment ? <Celebration kind="SCHEDULE_PUBLISHED" eventKey={doneKey} confirmed /> : undefined}
                   action={updatesOn ? { label: M.sendUpdate, href: "/app/updates/compose" } : undefined}
                   quiet={<Link className="b-done__quiet" href={`/app?week=${encodeURIComponent(weekStart)}`}>{M.backHome}</Link>} />
               </div>
@@ -527,7 +615,7 @@ export default async function SchedulePage({
               <SchedulePublicationControls weekStart={weekStart} locations={inView} review={publicationReview} held={pending ? { count: pending.pendingCount } : undefined}/>
             </div>
           </section> : null}
-          {reviewDay?<div className="c-note manager-schedule-context manager-issue-target" id="schedule-review" tabIndex={-1}><span>Opened for review: {formatDayLabel(reviewDay).weekday} {formatDayLabel(reviewDay).day} · {locationName}</span> <Link className="c-link" href={`/app/schedule?week=${weekStart}${locationQuery}`}>Show full week</Link></div>:null}
+          {reviewContext(false)}
         </>} />
     </CorpPage>
   );
@@ -536,4 +624,10 @@ export default async function SchedulePage({
   const source=await withOperationalCompany(await requireSessionMutationProof(),renderSchedule);
   if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason}/>;
   return <ScopedReadFrame observation={scopedObservation(source)}>{source.data}</ScopedReadFrame>;
+}
+
+/** Whether this Manager holds Publish schedules at any location they manage. A refusal means no; other failures surface. */
+async function scopedCanPublish(proof:Awaited<ReturnType<typeof requireSessionMutationProof>>):Promise<boolean>{
+  try{return (await listWorkforcePermissions(proof)).permissions.some(grant=>grant.permission==='PUBLISH_SCHEDULE');}
+  catch(error){if(isOperationalAuthorizationError(error))return false;throw error;}
 }

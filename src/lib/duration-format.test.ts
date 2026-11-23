@@ -52,9 +52,9 @@ describe('one duration format (BR-1)', () => {
 
 describe('date and time ranges', () => {
   it('names a span of days once per month and year', () => {
-    expect(dateRangeText('2026-11-09', '2026-11-15')).toBe('Nov 9 – 15');
-    expect(dateRangeText('2026-09-28', '2026-10-04')).toBe('Sep 28 – Oct 4');
-    expect(dateRangeText('2026-12-28', '2027-01-03')).toBe('Dec 28, 2026 – Jan 3, 2027');
+    expect(dateRangeText('2026-11-09', '2026-11-15')).toBe('Nov 9–15');
+    expect(dateRangeText('2026-09-28', '2026-10-04')).toBe('Sep 28–Oct 4');
+    expect(dateRangeText('2026-12-28', '2027-01-03')).toBe('Dec 28, 2026–Jan 3, 2027');
     expect(dateRangeText('2026-11-09', '2026-11-09')).toBe('Nov 9');
   });
   // Jose (Nov 21, 2026): "Nov 16–22" everywhere, and "Nov 30–Dec 6" across months: a closed en dash, no spaces.

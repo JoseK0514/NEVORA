@@ -390,7 +390,5 @@ html body .app-shell[data-nv-b] .wc-feedback > .wc-note { margin: var(--b-space-
 @layer nv-b {
   /* A Wave A notice is spaced by its column's gap, as the old notice was, not by the callout's own 12px. */
   html body .app-shell[data-nv-b] .wa-page .b-callout { margin: 0 !important; }
-  html body .app-shell[data-nv-b] .wb-saved:has(> .wb-saved__mark) { display: flex !important; align-items: center !important; gap: var(--b-space-8) !important; }
-  html body .app-shell[data-nv-b] .wb-saved > .wb-saved__mark { display: grid !important; place-items: center !important; flex: none !important; width: 28px !important; height: 28px !important; margin: 0 !important; border-radius: 50% !important; background: var(--b-green-50) !important; color: var(--b-green) !important; }
-  html body .app-shell[data-nv-b] .wb-saved > .wb-saved__mark > svg { display: block !important; width: var(--b-ic-inline) !important; height: var(--b-ic-inline) !important; margin: 0 !important; }
+  html body .app-shell[data-nv-b] .wb-saved:has(> .b-donemark) { display: flex !important; align-items: center !important; gap: var(--b-space-12) !important; }
 }

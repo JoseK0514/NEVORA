@@ -5,13 +5,12 @@ import {useCallback, useEffect, useId, useRef, useState, useSyncExternalStore} f
 import Link from 'next/link';
 
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
-import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {QuestionIcon} from '@phosphor-icons/react/dist/ssr/Question';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
 import type {RecoveryReview} from '../lib/clocker/recovery-review.server';
 import {SettingsFrame} from '../app/app/settings/wave-c-kit';
-import {BAvatar, BCard, BIcon, BList, BRow, BState} from './owner-b/b-kit';
+import {BAvatar, BCard, BDoneMark, BIcon, BList, BRow, BState} from './owner-b/b-kit';
 import {clockerOwnerCopy, clockerOwnerWhen, type ClockerOwnerLang} from './clocker-owner-copy';
 import './clocker-owner-b.css';
 import {ScopedReadFrame,type ScopedObservation} from './company-access/scoped-read-frame';
@@ -177,7 +176,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation, lan
         : ready ? <div ref={answer} tabIndex={-1} className="ck-result" data-result={receipts.length === 0 ? 'none' : receipts.length === 1 ? 'found' : 'conflict'}>
           <BCard label={receipts.length === 0 ? t.notFoundTitle : receipts.length === 1 ? t.foundTitle : t.conflictTitle}>
             {receipts.length === 1 ? <div className="b-statecard" data-kind="done" role="status">
-              <BIcon tone="green"><CheckIcon weight="bold" /></BIcon>
+              <BDoneMark />
               <div className="b-statecard__main"><p className="b-statecard__t">{t.foundTitle}</p><p className="b-statecard__s">{t.foundBody}</p></div>
             </div>
               : <BState kind="paused" icon={<QuestionIcon weight="bold" />} title={receipts.length ? t.conflictTitle : t.notFoundTitle} line={receipts.length ? t.conflictBody : t.notFoundBody} />}

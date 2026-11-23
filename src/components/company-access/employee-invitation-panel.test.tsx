@@ -25,7 +25,7 @@ describe('invitation availability',()=>{
   const out=html(status({allowedCommands:[]}));
   expect(out).toContain('An Owner sends invitations.');
   expect(out).not.toMatch(/Send invitation|Send new invitation|Cancel invitation/);
-  expect(out).toContain('Refresh invitation');
+  expect(out).toContain('Check invitation');
  });
  it('never calls a configured or accepted delivery a confirmed delivery',()=>{
   const out=html(status({invitation:{id:'i1',state:'ISSUED',issuedAt:'2026-11-15T12:00:00Z',expiresAt:'2026-11-22T12:00:00Z',issuerName:'Fictional Owner'},delivery:'PROVIDER_ACCEPTED',allowedCommands:['ISSUE','REVOKE']}));

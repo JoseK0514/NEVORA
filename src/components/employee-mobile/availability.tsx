@@ -8,6 +8,7 @@ import {availabilityWeekLabel} from '../availability-week-label';
 import {AvailabilityDayRows,AvailabilityDaySheet,AvailabilityTime} from '../availability-corp';
 import {timeZoneLabel} from '@/lib/time-zone-label';
 import {PlanningFrame} from './planning-frame';
+import {DiscardGuard} from '../kit/discard-dialog';
 import {AvailabilityB,AvailabilityStatusB,availabilitySubB} from '../employee-b/availability-b';
 import {BButton,BButtonLink,BState} from '../owner-b/b-kit';
 import {momentsCopy} from '../owner-b/moments-copy';
@@ -43,6 +44,8 @@ export function EmployeeAvailability({authority,selection}:{authority:string;sel
  useEffect(()=>{if(complete&&hasRead)receipt.current?.focus();},[complete,hasRead]);
  const locked=!!read?.data.locked||!!read&&expiredRead===read.observedAt,stale=!!draft&&!!read&&draft.basis!==read.data.basis,blocked=pending||uncertain||complete||locked;
  const change=(update:(draft:Draft)=>Draft)=>{setError(null);setDrafts(previous=>{const stored=previous[selection],d=stored&&stored.basis===draft?.basis?stored:draft;return d?{...previous,[selection]:update(d)}:previous;});};
+ // A draft counts while it differs from what is saved and its save has not been confirmed; a save in flight never asks.
+ const unsaved=!pending&&!uncertain&&Object.entries(drafts).some(([key,stored])=>changedDays(stored).length>0&&ops.peek(key)?.result?.state!=='complete');
  const send=async(command:PlanningCommand)=>{const result=await saveEmployeePlanningAction(command);panel.accept(result);return result;};
  const check=async(command:PlanningCommand)=>{const result=await checkEmployeePlanningAction(command);panel.accept(result);return result;};
  const other=ops.other(selection);
@@ -64,7 +67,7 @@ export function EmployeeAvailability({authority,selection}:{authority:string;sel
  </AvailabilityB>;
  return <PlanningFrame title="Availability" sub={isNormal?'Used to build your future schedules':'Used for the week of '+formatWeekRange(selection)} back="/app/schedule" backLabel="Schedule" selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh} b={b}>
  {read?<div className="c-avail c-avail--phone b-keep" data-availability-status={status}>
-  {other?<CorpCard as="div" ariaLabel="Earlier submission"><div className="c-avail__msg"><p>A submission for another week still needs to be checked.</p><Link className="c-link c-link--l" href={'/app/availability'+(other[0]==='normal'?'':'?week='+other[0])}>Return to that submission</Link></div></CorpCard>:null}
+  {other?<CorpCard as="div" ariaLabel="Earlier submission"><div className="c-avail__msg"><p>A submission for another week still needs to be checked.</p><Link className="c-link c-link--l" href={'/app/availability'+(other[0]==='normal'?'':'?week='+other[0])} data-discard-skip="">Return to that submission</Link></div></CorpCard>:null}
   {complete?<CorpCard as="div" ariaLabel="Submission result"><div className="b-done-host">
    {/* Phase 7 (moments): the saved result is the shared done state in place of the form. Its line is the fact this page's
      * title already carries (what the hours are used for); a closed week offers no step. */}
@@ -72,6 +75,9 @@ export function EmployeeAvailability({authority,selection}:{authority:string;sel
     action={locked?undefined:{label:M.reviewSaved,onClick:()=>{ops.reset(selection);setDrafts(previous=>({...previous,[selection]:draftFrom(read)}));}}}>
     {locked?<p className="b-done__fact">{M.weekClosed}</p>:null}</BState></div></CorpCard>:draft?<>
    {stale?<CorpCard as="div" ariaLabel="Changed saved hours"><div className="c-avail__msg"><h2>Saved hours changed</h2><p>Your edits are still here. Review the saved hours before applying your edited days.</p><details><summary>Current saved hours</summary><dl>{daysFrom(read.data.windows).map(day=><div key={day.dayOfWeek} style={{display:'contents'}}><dt>{dayNames[day.dayOfWeek]}</dt><dd>{daySummary(day)}</dd></div>)}</dl></details><div className="c-btns c-btns--stack"><CorpButton kind="secondary" size="md" disabled={blocked} onClick={()=>change(d=>({...draftFrom(read),days:daysFrom(mergePlanningDraft(read.data.windows,hoursFrom(d.days),changedDays(d))),confirmEmpty:d.confirmEmpty}))}>Keep my edited days</CorpButton><CorpButton kind="secondary" size="md" disabled={pending||uncertain} onClick={()=>change(()=>draftFrom(read))}>Use saved hours</CorpButton></div></div></CorpCard>:null}
+   {/* "Discard changes?" (Jose, Nov 21, 2026): leaving Availability with hours that are not saved asks first. Moving between
+     * the usual week and a single week keeps every draft on this page, so those links never ask (data-discard-skip). */}
+   <DiscardGuard dirty={unsaved}/>
    <form ref={form} className="c-avail__form" noValidate aria-busy={pending} onSubmit={event=>{
     event.preventDefault();if(blocked||stale||!canAct())return;
     const command=parsePlanningCommand({kind:'availability',selection,basis:draft.basis,windows:hoursFrom(draft.days),changedDays:changedDays(draft),confirmEmpty:draft.confirmEmpty});
@@ -86,11 +92,11 @@ export function EmployeeAvailability({authority,selection}:{authority:string;sel
     setError(null);void currentOperation.submit(command,send,canAct);
    }}>
     <CorpCard as="div" ariaLabel={isNormal?'Your usual week':'Hours for this week'} label={isNormal?'Your usual week':availabilityWeekLabel(selection)}
-     aside={isNormal?<CorpLink href={'/app/availability?week='+read.data.nextWeek}>Change one week</CorpLink>:<>{pill}<span className="c-avail__arrows"><Link href={'/app/availability?week='+addDays(selection,-7)} scroll={false} aria-label="Previous week"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/></Link><Link href={'/app/availability?week='+addDays(selection,7)} scroll={false} aria-label="Next week"><CaretRightIcon className="c-ic" weight="bold" aria-hidden="true"/></Link></span></>}>
+     aside={isNormal?<span data-discard-skip="" style={{display:'contents'}}><CorpLink href={'/app/availability?week='+read.data.nextWeek}>Change one week</CorpLink></span>:<>{pill}<span className="c-avail__arrows" data-discard-skip=""><Link href={'/app/availability?week='+addDays(selection,-7)} scroll={false} aria-label="Previous week"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/></Link><Link href={'/app/availability?week='+addDays(selection,7)} scroll={false} aria-label="Next week"><CaretRightIcon className="c-ic" weight="bold" aria-hidden="true"/></Link></span></>}>
      <AvailabilityDayRows days={draft.days.map(day=>({key:day.dayOfWeek,name:dayNames[day.dayOfWeek],hours:day.available?rowHours(day):null,periods:day.periods,label:dayNames[day.dayOfWeek]+', '+daySummary(day),onOpen:()=>openDay(day.dayOfWeek)}))}/>
     </CorpCard>
     {!hoursFrom(draft.days).length?<label className="c-avail__check"><input type="checkbox" name="confirmEmpty" aria-invalid={!!error&&!hoursFrom(draft.days).length||undefined} aria-describedby={error&&!hoursFrom(draft.days).length?errorId:undefined} checked={draft.confirmEmpty} disabled={blocked} onChange={e=>change(d=>({...d,confirmEmpty:e.target.checked}))}/>I am unavailable for the entire {isNormal?'usual week':'week'}.</label>:null}
-    <p className="c-note c-avail__note">{isNormal?<span><span className="eb-avail-lead">Your manager uses this to build the schedule. </span>{/* Phase 4 (EM-032): "Requests" opens Time off, where a day off is asked for. */}One-off days off go in <Link className="eb-avail-req" href="/app/requests">Requests</Link>.</span>:locked?<span>This week is closed. Contact your manager if your availability changed. <Link className="c-link" href="/app/availability">Usual week</Link></span>:<span>{read.data.deadline?'Send by '+zoneDay(read.data.deadline,true)+' ('+timeZoneLabel(read.timeZone)+'). ':''}Hours for this week only; your usual week stays the same. <Link className="c-link" href="/app/availability">Usual week</Link></span>}</p>
+    <p className="c-note c-avail__note">{isNormal?<span><span className="eb-avail-lead">Your manager uses this to build the schedule. </span>{/* Phase 4 (EM-032): "Requests" opens Time off, where a day off is asked for. */}One-off days off go in <Link className="eb-avail-req" href="/app/requests">Requests</Link>.</span>:locked?<span>This week is closed. Contact your manager if your availability changed. <Link className="c-link" data-discard-skip="" href="/app/availability">Usual week</Link></span>:<span>{read.data.deadline?'Send by '+zoneDay(read.data.deadline,true)+' ('+timeZoneLabel(read.timeZone)+'). ':''}Hours for this week only; your usual week stays the same. <Link className="c-link" data-discard-skip="" href="/app/availability">Usual week</Link></span>}</p>
     {errorInSheet?null:errorText}<PlanningFeedback operation={currentOperation} onRetry={()=>{void currentOperation.retry(check,send,()=>panel.allowed());}}/>
     {/* Upscale B4, review F3 (NV-102): the usual week's Save appears once something changes (no disabled bar at rest); a
       week's Submit stays available. */}

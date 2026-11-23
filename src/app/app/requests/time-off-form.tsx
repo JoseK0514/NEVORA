@@ -9,11 +9,8 @@ import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { requestTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime } from "@/lib/date-utils";
+import { dateRange } from "@/lib/duration-format";
 import { revealFeedback } from "@/lib/reveal-feedback";
-
-function dateLabel(date: string) {
-  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-}
 
 /** An unsent request survives switching to My requests and Back (Codex W2). It is kept in memory only
  *  (never browser storage), for the same person, and cleared on Cancel, on submit and on reload. */
@@ -86,7 +83,7 @@ export function TimeOffForm({ requestId, draftOwner = "" }: { requestId: string;
           <h3>Your request at a glance</h3>
           <div className="nto-summary-facts" aria-live="polite" aria-atomic="true">
             <strong>{datesValid ? `${days} ${days === 1 ? "day" : "days"}${partialDay ? " · partial day" : " away"}` : "Choose your time away"}</strong>
-            <p>{datesValid ? `${dateLabel(startDate)}${effectiveEnd !== startDate ? ` – ${dateLabel(effectiveEnd)}` : ""}` : "Your dates will appear here."}</p>
+            <p>{datesValid ? dateRange(startDate, effectiveEnd, { year: "each" }) : "Your dates will appear here."}</p>
             {partialDay && startTime && endTime && !timesInvalid ? <p>{formatTime(startTime)} – {formatTime(endTime)}</p> : null}
           </div>
           <div className="nto-next-step"><ClockIcon size={18} weight="bold" aria-hidden="true" /><p><strong>Manager review comes next</strong><span>Track the decision in My requests. Time away is confirmed when your request is approved.</span></p></div>

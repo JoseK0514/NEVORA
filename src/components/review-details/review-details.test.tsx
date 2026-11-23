@@ -142,7 +142,7 @@ describe("U09: request details in Things to do", () => {
   for (const [name, pick] of [["Direction B", onlyB], ["corporate", withoutB]] as const) {
     it(`${name}: a swap shows both shifts, date, time and place, and an overnight end names its day`, () => {
       const out = text(pick(inbox(items)));
-      expect(out).toContain("Ana Colón ⇄ James Ortiz");
+      expect(out).toContain("Ana Colón and James Ortiz");
       expect(out).toContain("Ana’s shift: Mon, Nov 2 · 8:00 AM – 4:00 PM · Condado");
       expect(out).toContain("James’ shift: Wed, Nov 4 · 10:00 PM – 6:00 AM, ends Thu, Nov 5 · Santurce");
     });
@@ -172,7 +172,7 @@ describe("U03: the item another reviewer approves stays visible in Things to do"
     // The reviewer's own correction and one they sent for someone else: listed, each with whose it is.
     expect(out).toContain("Your time correction");
     expect(out).toContain("James Ortiz");
-    expect(html).toMatch(/aria-label="Your timecard, Oct 19 – 25\. Another reviewer approves this one\. It needs an Owner or a Manager with company access\."/);
+    expect(html).toMatch(/aria-label="Your timecard, Oct 19–25\. Another reviewer approves this one\. It needs an Owner or a Manager with company access\."/);
     expect(out).not.toMatch(/approves it by|due /i);
   });
   it("the band counts what this person can decide, and says the timecards apart", () => {

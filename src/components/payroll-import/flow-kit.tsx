@@ -11,7 +11,7 @@ import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle"
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { FormHead, FormHeadBack, FormHeadLink } from "@/components/team/team-forms";
 import { formatPayrollMoney, formatSignedPayrollMoney } from "@/components/payroll/money";
-import { durationSentence } from "@/lib/duration-format";
+import { dateRange, durationSentence } from "@/lib/duration-format";
 import type { PayrollImportCopy, PayrollImportLang } from "./copy";
 
 export type Lang = PayrollImportLang;
@@ -22,16 +22,9 @@ export type StepAction = { label: string; onClick?: () => void; href?: string; b
   onBlocked?: () => void };
 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
-/** "Oct 12 – 18", "Sep 28 – Oct 4" (Payroll's period format), in the page's language. */
+/** "Oct 12–18", "Sep 28–Oct 4" (the app's one date-range form), in the page's language ("12–18 oct"). */
 export function periodText(startDate: string, endDate: string, locale: string) {
-  // Other languages put the day first ("21–27 sept"): the platform's own range for that language.
-  if (!locale.startsWith("en")) return new Intl.DateTimeFormat(locale, { timeZone: "UTC", month: "short", day: "numeric", ...(startDate.slice(0, 4) !== endDate.slice(0, 4) ? { year: "numeric" as const } : {}) }).formatRange(utcDay(startDate), utcDay(endDate));
-  const month = (date: string) => new Intl.DateTimeFormat(locale, { timeZone: "UTC", month: "short" }).format(utcDay(date)), day = (date: string) => Number(date.slice(8, 10));
-  const years = startDate.slice(0, 4) !== endDate.slice(0, 4);
-  const side = (date: string, withMonth: boolean) => `${withMonth ? `${month(date)} ` : ""}${day(date)}${years ? `, ${date.slice(0, 4)}` : ""}`;
-  // Premium pass FA (final verification A #8): within a month the range is closed up ("Nov 16–22"), as Payroll writes it.
-  const across = years || startDate.slice(0, 7) !== endDate.slice(0, 7);
-  return across ? `${side(startDate, true)} – ${side(endDate, true)}` : `${side(startDate, true)}–${side(endDate, false)}`;
+  return dateRange(startDate, endDate, { locale });
 }
 /** One day: "Tue, Oct 20". */
 export const dayText = (date: string, locale: string) => new Intl.DateTimeFormat(locale, { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(utcDay(date));

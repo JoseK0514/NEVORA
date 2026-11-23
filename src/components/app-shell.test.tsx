@@ -185,7 +185,7 @@ it.each(['MANAGER','OWNER'] as const)('opens %s More from the header avatar and 
  const {html,mobile}=render(role,'/app');
  const header=html.split('<header class="mobile-header">')[1].split('</header>')[0];
  expect(header.match(/href="\/app\/more"/g)).toHaveLength(1);
- expect(header).toMatch(/href="\/app\/more"[^>]*class="c-top-avatar"[^>]*aria-label="More, Sam Cruz"/);
+ expect(header).toMatch(/href="\/app\/more"[^>]*class="c-top-avatar"[^>]*aria-label="More, Sam Cruz, SC"/);
  expect(html).toContain('data-nv-corp=""');
  expect(html).toContain('data-corp-root=""');
  expect(mobile).not.toContain('href="/app/more"');

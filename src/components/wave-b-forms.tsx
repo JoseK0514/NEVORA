@@ -1,9 +1,10 @@
 "use client";
 
+import { FormDiscardGuard } from "./kit/discard-dialog";
 import { createContext, useContext, useEffect, useId, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { unstable_rethrow, useRouter } from "next/navigation";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
-import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
+import { BDoneMark } from "@/components/owner-b/b-kit";
 import type { ConfigurationResult } from "@/components/configuration-form";
 import type { PolicyWriteResult } from "@/lib/shift-changes/types";
 
@@ -47,10 +48,10 @@ const plainMessages: Record<string, string> = {
 };
 const plain = (message: string) => plainMessages[message] ?? message;
 
-/** Phase 9 (spec 3.3): a saved line carries the app's one done mark, small: a bold green check in a 28px green-50 circle
- * (premium-wave-a.css, "Saved lines"), never a filled circle. Decorative; the words say what was saved. */
+/** A saved line carries the app's one done mark (BDoneMark at its 36px row size; the line's layout is in
+ * premium-wave-a.css, "Saved lines"). Decorative; the words say what was saved. */
 function SavedMark() {
-  return <span className="wb-saved__mark" aria-hidden="true"><CheckIcon weight="bold" /></span>;
+  return <BDoneMark />;
 }
 
 type Submit = { label: string; pendingLabel: string; ariaLabel?: string; className: string; kind?: "primary" | "secondary" | "danger"; icon?: ReactNode };
@@ -110,6 +111,7 @@ export function RulesSaveForm({ action, children, bar }: {
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<"saved" | string | null>(null);
   const busy = useRef(false), button = useRef<HTMLButtonElement>(null);
+  const [savedCount, setSavedCount] = useState(0);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy.current) return;
@@ -120,6 +122,7 @@ export function RulesSaveForm({ action, children, bar }: {
     try {
       const saved = await action(data);
       setResult(saved.error ? plain(saved.error) : "saved");
+      if (!saved.error) setSavedCount(count => count + 1);
     } catch {
       setResult("Couldn’t save your changes. They’re still here; try again.");
     } finally {
@@ -127,6 +130,8 @@ export function RulesSaveForm({ action, children, bar }: {
     }
   }
   return <form onSubmit={submit} className="wb-form wb-auto wb-config" aria-busy={pending || undefined}>
+    {/* Leaving Scheduling rules with entries that are not saved asks first (Nov 21, 2026); a save starts clean. */}
+    <FormDiscardGuard resetKey={savedCount} />
     <fieldset aria-disabled={pending || undefined} className="configuration-fields">{children}</fieldset>
     {bar ? <div className="nv-actionbar wb-savebar" role="group" aria-label="Staffing and weekly hours">
       {result === "saved"
@@ -150,6 +155,7 @@ export function InlineConfigForm({ action, children, submit, successText, classN
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<"saved" | string | null>(null);
   const busy = useRef(false);
+  const [savedCount, setSavedCount] = useState(0);
   async function send(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy.current) return;
@@ -157,11 +163,13 @@ export function InlineConfigForm({ action, children, submit, successText, classN
     busy.current = true;
     const restoreFocus = preservePendingFields(event.currentTarget);
     setPending(true); setResult(null);
-    try { const saved = await action(data); setResult(saved.error ? plain(saved.error) : "saved"); }
+    try { const saved = await action(data); setResult(saved.error ? plain(saved.error) : "saved"); if (!saved.error) setSavedCount(count => count + 1); }
     catch { setResult("Couldn’t save your changes. They’re still here; try again."); }
     finally { busy.current = false; setPending(false); restoreFocus(); }
   }
   return <form onSubmit={send} className={className ? `wb-form wb-auto wb-config ${className}` : "wb-form wb-auto wb-config"} aria-busy={pending || undefined}>
+    {/* Leaving Scheduling rules with entries that are not saved asks first (Nov 21, 2026); a save starts clean. */}
+    <FormDiscardGuard resetKey={savedCount} />
     <fieldset aria-disabled={pending || undefined} className="configuration-fields">{children}</fieldset>
     <div className="wb-actions"><button className="nv-btn" data-kind={submit.kind} type="submit" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? submit.pendingLabel : submit.label}</button></div>
     {result === "saved" ? <p className="wb-saved" role="status"><SavedMark /><span>{successText}</span></p>

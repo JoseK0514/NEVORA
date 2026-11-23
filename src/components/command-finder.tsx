@@ -1,5 +1,6 @@
 "use client";
 
+import { leaveWithDiscardGuard } from "./kit/use-discard-guard";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { MagnifyingGlassIcon, XCircleIcon } from "@phosphor-icons/react/ssr";
@@ -7,10 +8,9 @@ import type { UserRole } from "@/lib/domain";
 import { B_WIDE } from "@/lib/b-viewport";
 import type { PayrollCapabilities } from "@/lib/payroll/contracts";
 import { finderItems, finderOverflow, rankFinder, type FinderData } from "@/lib/finder";
-import { LightningIcon } from "@phosphor-icons/react/dist/ssr/Lightning";
-import { FileIcon } from "@phosphor-icons/react/dist/ssr/File";
-import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
-import type { NavContext } from "@/lib/navigation";
+import { navigationForRole, teamToolsForRole, type NavContext } from "@/lib/navigation";
+import type { NavIconName } from "@/components/nav-icon";
+import { finderGlyph } from "@/components/finder-glyph";
 
 /** `offline` is client-only: the phone knew it had no connection, so no request was sent. */
 type Remote = { state: "idle" | "loading" | "ready" | "unavailable" | "offline"; data: FinderData | null; at: number };
@@ -34,7 +34,8 @@ export function finderStatus(state: Remote["state"], query: string, resultCount:
   if (state === "offline") return "People and places unavailable offline";
   if (state === "unavailable") return "People and places are unavailable right now.";
   if (state === "loading") return "Loading people and places…";
-  if (state === "ready" && query.trim() && !resultCount) return "No matches.";
+  // Final polish (confirmations review A #26): the empty answer names what was typed.
+  if (state === "ready" && query.trim() && !resultCount) return `Nothing matches “${query.trim()}”`;
   return "";
 }
 
@@ -104,6 +105,8 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
   const perGroup = role === "EMPLOYEE" || role === "LEAD" ? 16 : 6;
   const all = useMemo(() => finderItems(role, payroll, remote.data, context), [role, payroll, remote.data, context]);
   const results = useMemo(() => rankFinder(all, query, perGroup), [all, query, perGroup]);
+  // Each destination's own glyph, as the sidebar and More draw it.
+  const navIcons = useMemo(() => Object.fromEntries([...teamToolsForRole(role, context), ...navigationForRole(role, payroll, context)].map(entry => [entry.href, entry.icon])) as Record<string, NavIconName>, [role, payroll, context]);
   // Review B5 (NV-216): a typed query that matches more than a group shows says so ("6 of 11 people · keep typing").
   const overflow = useMemo(() => finderOverflow(all, query, perGroup), [all, query, perGroup]);
 
@@ -144,7 +147,8 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
     const item = results[index];
     if (!item) return;
     close();
-    router.push(item.href);
+    // A form with edits that are not saved asks "Discard changes?" first (kit/use-discard-guard.ts); otherwise at once.
+    leaveWithDiscardGuard(() => router.push(item.href));
   }
   function clear() {
     setQuery(""); setActive(0);
@@ -212,14 +216,15 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
             {/* Review B1 (NV-217): each option is described by its group ("Schedule, Actions" vs "Schedule, Pages"). */}
             <li id={`command-finder-${index}`} role="option" aria-selected={index === current} className="command-finder-option" aria-describedby={`command-finder-group-${groupKey(item.group)}`}
               data-group={item.group} onMouseMove={() => { setActive(index); setKeyboard(false); }} onClick={() => go(index)}>
-              {/* Review B5 (NV-218): each row leads with its kind: a bolt for actions, a page, a person's initials, a pin. */}
-              <span className="command-finder-ico" data-group={item.group} aria-hidden="true">{item.group === "Actions" ? <LightningIcon weight="bold" /> : item.group === "Pages" ? <FileIcon weight="bold" /> : item.group === "Locations" ? <MapPinIcon weight="bold" /> : finderInitials(item.label)}</span>
+              {/* Review B5 (NV-218), final polish (A #20): each row leads with its destination's own glyph, a person's initials, a pin. */}
+              <span className="command-finder-ico" data-group={item.group} aria-hidden="true">{item.group === "People" ? finderInitials(item.label) : finderGlyph(item, navIcons)}</span>
               <span className="command-finder-label"><span className="command-finder-text">{emphasise(item.label, query)}</span></span>{item.detail ? <span className="command-finder-detail">{item.detail}</span> : null}
             </li>
           </Fragment>)}
         </ul>
         {overflow.length ? <p className="command-finder-more">{overflow.map(entry => `${entry.shown} of ${entry.total} ${entry.group.toLowerCase()}`).join(" · ")} · keep typing to narrow</p> : null}
-        <p className="command-finder-hint" aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>Enter</kbd> to open · <kbd>Esc</kbd> to close</p>
+        {/* With nothing to move through or open, only the way out is offered. */}
+        <p className="command-finder-hint" aria-hidden="true">{results.length ? <><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>Enter</kbd> to open · </> : null}<kbd>Esc</kbd> to close</p>
       </div>
     </dialog>
   </>;

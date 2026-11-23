@@ -12,6 +12,7 @@ import type { CoverageMeasure, CoveragePlans, DayPlan } from "./coverage-plan-co
 import type { AdvisorStore } from "./store.server";
 import { AdvisorError, type ToolResult } from "./contracts";
 import { checkOwner } from "./authority.server";
+import { firstOpenMinute, planShiftCap } from "./coverage-plan-clock";
 
 const LIMITS = Object.freeze({ maxNodes: 64, maxEvaluations: 2000, maxPeriods: 128 });
 const text = (v: string) => v.slice(0, 120);
@@ -84,8 +85,10 @@ export async function compareCoveragePlans(source: GenerationInput, metadata: Me
     }
     signal.throwIfAborted();
   };
-  // A read-only scope excludes archived targets without omitting their commitments.
-  const review = { date: metadata.date };
+  // A read-only scope excludes archived targets without omitting their commitments. For today, plans
+  // use only the time still ahead in the company's zone (see firstOpenMinute: clipped, not dropped).
+  // Shifts are capped (planShiftCap): whole-day coverage is offered as shorter shifts for several people.
+  const review = { date: metadata.date, notBefore: firstOpenMinute(metadata.date, metadata.observedAt, source.workspace.timeZone), maxShiftMinutes: planShiftCap(source.employees) };
   const archived = new Set(source.schedules.filter(s => s.weekStart === source.weekStart && s.status === "ARCHIVED").map(s => s.locationId));
   const input: GenerationInput = { ...source, mode: "FILL_GAPS_ONLY", limits: { ...LIMITS },
     scope: { kind: "SELECTED", locationIds: source.locations.filter(l => l.active && !archived.has(l.id)).map(l => l.id) } };
@@ -188,7 +191,7 @@ export async function readCoveragePlans(store: AdvisorStore, date: string, incom
   await checkOwner(store.proof, store.original, store.ex);
   signal.throwIfAborted();
   return { observedAt: row.observedAt,
-    sources: [{ label: "Joint day coverage review", href: `/app/schedule?week=${weekStartFor(date)}`, observedAt: row.observedAt }],
+    sources: [{ label: "Schedule, including drafts", href: `/app/schedule?week=${weekStartFor(date)}`, observedAt: row.observedAt }],
     partial: coveragePlans.partial, coveragePlans,
     data: { date, status: coveragePlans.state, scope: "Selected date; ready active locations; hypothetical additions only" },
   };

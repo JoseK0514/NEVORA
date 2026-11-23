@@ -7,6 +7,7 @@ import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle"
 
 import type { ConfigurationResult } from "@/components/configuration-form";
 import { Notice } from "./wave-c-kit";
+import { DiscardGuard, FormDiscardGuard } from "@/components/kit/discard-dialog";
 
 /* Wave C form pattern (PARALLEL.md): labels above fields (48px, the shared WR-55 rule), help 8px under the field,
  * errors in urgent ink with an icon and words, one primary action. The browser still checks
@@ -249,6 +250,7 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
   const form = useRef<HTMLFormElement>(null);
   const baseline = useRef<string | null>(null);
   const [dirty, setDirty] = useState(false);
+  const [savedCount, setSavedCount] = useState(0);
   useEffect(() => {
     if (!saveOnChange || !form.current) return;
     baseline.current = defaultEntries(Array.from(form.current.elements) as DefaultControl[]);
@@ -270,6 +272,8 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
       const saved = await action(data);
       const next = saved.error || saved.success ? saved : { error: "It may not have saved. Your entries are kept; check the page before you try again." };
       if (saveOnChange && saved.success && !saved.error) { baseline.current = formEntries(data); setDirty(false); }
+      // The discard guard starts again from what was just saved.
+      if (saved.success && !saved.error) setSavedCount(count => count + 1);
       setResult(next);
       onResult?.(next);
       if (saved.success && !saved.error && saved.updatedAt && draftUpdatedAt !== undefined) setDraftUpdatedAt(saved.updatedAt);
@@ -297,6 +301,9 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
             : <div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn" disabled={pending || disabled}><ButtonLabel pending={pending} idle={submitLabel} busy={pendingLabel} /></button></div>}
         </div> : fields;
       })()}
+      {/* "Discard changes?" on leaving with unsaved edits (Nov 21, 2026). A form that shows Save after a change uses that
+        same signal; the others compare their fields with where they started. Outside the fieldset, so it is never disabled. */}
+      {saveOnChange ? <DiscardGuard dirty={dirty} /> : <FormDiscardGuard resetKey={savedCount} />}
       <p className="nv-sr" role="status" aria-live="polite">{pending ? pendingLabel : ""}</p>
       {result.error || result.success ? (
         <div ref={feedback} tabIndex={-1} className="wc-feedback" role={result.error ? "alert" : "status"}>

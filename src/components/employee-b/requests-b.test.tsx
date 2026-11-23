@@ -4,8 +4,10 @@ const fixture = rs.hoisted(() => ({read: null as unknown, paused: false}));
 rs.mock('@/app/app/exchange/actions', () => ({shiftChangeAction: rs.fn(), reconcileShiftChangeAction: rs.fn()}));
 rs.mock('@/app/app/employee-planning/actions', () => ({saveEmployeePlanningAction: rs.fn(), checkEmployeePlanningAction: rs.fn()}));
 rs.mock('../employee-mobile/use-planning', () => ({usePlanning: () => ({state: {snapshot: fixture.read ? {state: 'ready'} : null, paused: fixture.paused, refreshing: !fixture.read && !fixture.paused}, read: fixture.read, refresh: () => {}, accept: () => {}, allowed: () => true, live: {current: null}})}));
-import {RequestsHubB, bTone} from './requests-b';
-import {exchangeChip} from './exchange-b';
+import {IncomingB, MyScheduleCardB, RequestsHubB, bTone} from './requests-b';
+import {exchangeChip, OpenShiftsB} from './exchange-b';
+import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
+import {workCopy} from './work-copy';
 import {timeOffRange, timeOffSpan} from './timeoff-b';
 import {EmployeeTimeOff} from '../employee-mobile/timeoff';
 import {onlyB, withoutB} from '../owner-b/test-support';
@@ -17,9 +19,9 @@ const PENDING = '11111111-1111-4111-8111-111111111111';
 beforeEach(() => { fixture.read = null; fixture.paused = false; });
 
 it('reads a time-off request as its dates over its days and length, in today’s words', () => {
-  expect(timeOffRange(request('a', 'PENDING', '2026-11-12', '2026-11-14'))).toBe('Nov 12 – 14');
+  expect(timeOffRange(request('a', 'PENDING', '2026-11-12', '2026-11-14'))).toBe('Nov 12–14');
   expect(timeOffSpan(request('a', 'PENDING', '2026-11-12', '2026-11-14'))).toBe('Thu – Sat · All day · 3 days');
-  expect(timeOffRange(request('b', 'PENDING', '2026-10-30', '2026-11-02'))).toBe('Oct 30 – Nov 2');
+  expect(timeOffRange(request('b', 'PENDING', '2026-10-30', '2026-11-02'))).toBe('Oct 30–Nov 2');
   expect(timeOffRange(request('c', 'PENDING', '2026-11-13', '2026-11-13'))).toBe('Nov 13');
   expect(timeOffSpan(request('c', 'PENDING', '2026-11-13', '2026-11-13'))).toBe('Fri · All day');
   expect(timeOffSpan(request('d', 'PENDING', '2026-11-13', '2026-11-13', ['09:00', '12:00']))).toBe('Fri · 9:00 AM – 12:00 PM');
@@ -34,11 +36,11 @@ it('maps today’s request tones to the B chips and says when a swap waits on yo
 
 it('draws the Requests tab: the white Request time off, what waits on the manager, then what was decided', () => {
   const html = renderToStaticMarkup(<div className="c-page"><RequestsHubB sub="Time off and shift changes you’ve sent" newHref="/app/requests?tab=new" forManager decidedHref="/app/requests?filter=decided"
-    waiting={[{key: 'w', href: '/app/requests?requestId=w', kind: 'timeOff', title: 'Time off', sub: 'Nov 12 – 14 · 3 days', chip: {tone: 'amber', text: 'Waiting'}}]}
+    waiting={[{key: 'w', href: '/app/requests?requestId=w', kind: 'timeOff', title: 'Time off', sub: 'Nov 12–14 · 3 days', chip: {tone: 'amber', text: 'Waiting'}}]}
     decided={[{key: 'd', href: '/app/exchange?tab=requests&requestId=d', kind: 'callout', title: 'Can’t work', sub: 'Mon, Sep 28', chip: {tone: 'red', text: 'Declined'}}]}/></div>);
   expect(html).toMatch(/class="b-btn b-btn--white b-btn--full" href="\/app\/requests\?tab=new">.*Request time off</);
   expect(html).toContain('Waiting for your manager<span class="b-pill">1</span>');
-  expect(html).toContain('aria-label="Time off, Nov 12 – 14 · 3 days, Waiting"');expect(html).toContain('b-chip--amber">Waiting<');
+  expect(html).toContain('aria-label="Time off, Nov 12–14 · 3 days, Waiting"');expect(html).toContain('b-chip--amber">Waiting<');
   expect(html).toContain('href="/app/requests?filter=decided"');expect(html).toContain('b-chip--red">Declined<');
   const empty = renderToStaticMarkup(<RequestsHubB sub="Time off you’ve asked for" newHref={null} forManager decidedHref={null} waiting={[]} decided={[]}/>);
   expect(empty).toContain('Nothing waiting right now');expect(empty).not.toContain('Request time off');expect(empty).not.toContain('Decided');
@@ -89,4 +91,61 @@ it('shows each planning read state in the phone screen with its own action, and 
   fixture.read = {view: 'timeoff', enabled: false, timeZone: 'America/New_York', data: {requests: []}};
   const off = onlyB(renderToStaticMarkup(<EmployeeTimeOff authority="a" selection="list" filter="waiting"/>));
   expect(off).toContain('Your workplace doesn’t use time off in NEVORA.');expect(off).not.toContain('b-seg');
+});
+
+/* Final polish, round 2 (R3 to R7). */
+const openShift = (id: string, check: 'eligible' | 'refused', notice: string | null = null) => ({id, revision: 1, date: '2026-11-24', startTime: '12:00', endTime: '20:00', location: 'Main Office', position: 'Customer Support',
+  check, notice, outcome: check === 'eligible' ? 'completed' as const : null});
+const openScreen = (over: Partial<Parameters<typeof OpenShiftsB>[0]> = {}) => plain(renderToStaticMarkup(<OpenShiftsB state={null} enabled failed={false} refreshing={false} onRefresh={() => {}} results={null}
+  rows={[{shift: openShift('a', 'eligible'), hours: '8 h', nextWeek: true, selected: false, action: <button type="button">Pick up</button>, status: null}]} unconfirmed={[]} refused={[]} note="Yours right away." {...over}/>));
+const POSTED = /<p class="eb-cardfoot"><a class="b-link" href="\/app\/exchange\/open-shifts">See every posted shift<svg/;
+
+it('leads Pick up and swap with the list and ends its card with the way to every posted shift (R3)', () => {
+  const html = openScreen(), stack = html.slice(html.indexOf('class="b-stack"'));
+  // The first card under the band is "You can pick up"; no lone "Posted open shifts" card.
+  expect(stack.indexOf('<section')).toBe(stack.indexOf('<section class="b-card" id="b-open-eligible"'));
+  expect(html).not.toContain('Posted open shifts');expect(html.match(/href="\/app\/exchange\/open-shifts"/g)).toHaveLength(1);
+  const card = stack.slice(0, stack.indexOf('</section>'));
+  expect(card).toMatch(POSTED);expect(card.indexOf('Yours right away.')).toBeLessThan(card.indexOf('eb-cardfoot'));
+});
+
+it('keeps the link in Open shifts’ other states: failed, nothing to pick up, still checking, and leaves it out when pickup is off (R3)', () => {
+  const failed = openScreen({failed: true, rows: []});
+  expect(failed).toContain('Open shifts couldn’t be checked.');expect(failed).toContain('>Try again</button>');expect(failed).toMatch(POSTED);
+  const empty = openScreen({rows: [], note: null});
+  expect(empty).toContain('No open shifts right now');expect(empty).toMatch(POSTED);
+  const checking = openScreen({rows: [], note: null, unconfirmed: [openShift('u', 'refused')]});
+  expect(checking).toContain('>Refresh</button>');expect(checking).toMatch(POSTED);expect(checking.match(/eb-cardfoot/g)).toHaveLength(1);
+  const refreshing = openScreen({failed: true, rows: [], refreshing: true});
+  expect(refreshing).toMatch(/<button[^>]*disabled=""[^>]*>Try again</);
+  expect(openScreen({enabled: false})).not.toContain('eb-cardfoot');
+  expect(openScreen({state: <p>Checking…</p>})).not.toContain('eb-cardfoot');
+});
+
+it('names the refused shifts in one short line and says what the row opens (R7)', () => {
+  const html = openScreen({refused: [openShift('r1', 'refused', 'You have approved time off then'), openShift('r2', 'refused', 'It’s outside your availability')]});
+  expect(html).toContain('aria-label="Shifts you can’t take"');expect(html).toContain('<span class="b-row__tt">Shifts you can’t take</span>');
+  expect(html).toContain('<span class="b-row__s">2 shifts, with the reason</span>');expect(html).not.toContain('Why other shifts');
+  expect(html).toContain('You have approved time off then');
+  expect(workCopy('en').cantTake(1)).toBe('1 shift, with the reason');
+  expect(workCopy('es').cantTakeTitle).toBe('Turnos que no puedes tomar');expect(workCopy('es').cantTake(1)).toBe('1 turno, con el motivo');expect(workCopy('es').cantTake(3)).toBe('3 turnos, con el motivo');
+});
+
+it('says a swap needs your answer once: the title, the amber chip and Review, with no filler line (R4)', () => {
+  const one = renderToStaticMarkup(<IncomingB count={1} onRetry={() => {}}/>);
+  expect(one).toContain('<span class="b-row__tt">Swap request waiting for you</span>');expect(one).toContain('b-chip--amber">Needs your answer<');
+  expect(one).toContain('aria-label="Review the swap request"');expect(one).not.toContain('b-row__s');expect(one).not.toContain('before responding');
+  expect(renderToStaticMarkup(<IncomingB count={3} onRetry={() => {}}/>)).toContain('3 swaps need your answer');
+  expect(renderToStaticMarkup(<IncomingB count={null} onRetry={() => {}}/>)).toContain('Swaps for you couldn’t be checked.');
+  expect(renderToStaticMarkup(<IncomingB count={0} onRetry={() => {}}/>)).toBe('');
+});
+
+it('draws both Shift requests rows, and My requests’ start row, as teal circles with the swap arrows (R5)', () => {
+  const arrows = '<span class="b-ico b-ico--teal" aria-hidden="true">' + renderToStaticMarkup(<ArrowsLeftRightIcon weight="duotone"/>);
+  const hub = renderToStaticMarkup(<RequestsHubB sub="s" newHref={null} forManager decidedHref={null} waiting={[]} decided={[]} shiftRequests/>);
+  const card = hub.slice(hub.indexOf('eb-shiftreq'));
+  expect(card.split(arrows)).toHaveLength(3);expect(card).not.toContain('b-ico--grey');
+  expect(card).toMatch(/href="\/app\/exchange".*Pick up and swap.*href="\/app\/schedule\?intent=swap".*Swap or give away a shift/);
+  const mine = renderToStaticMarkup(<MyScheduleCardB/>);
+  expect(mine).toContain(arrows);expect(mine).not.toContain('b-ico--grey');
 });

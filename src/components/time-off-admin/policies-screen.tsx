@@ -1,4 +1,6 @@
 "use client";
+import { DiscardGuard } from "@/components/kit/discard-dialog";
+import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
@@ -49,12 +51,15 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
   const t = ptoCopy(lang);
   const [load, setLoad] = useState<Load>(initial?.load ?? { state: "loading" });
   const [draft, setDraft] = useState<Draft | null>(initial?.draft ?? null);
+  // What the open policy form started with: the discard guard asks only once something differs from it.
+  const [opened, setOpened] = useState<string | null>(() => initial?.draft ? JSON.stringify(initial.draft) : null);
   const [custody, setCustody] = useState<Custody | null>(initial?.custody ?? null);
   const [issue, setIssue] = useState<Issue | null>(initial?.issue ?? null);
   const [problems, setProblems] = useState<Problem[]>([]);
-  const [landed, setLanded] = useState(false);
+  // The confirmed save: the fact line under "Policy saved", from the command the server just accepted.
+  const [landed, setLanded] = useState<{ line: string } | null>(null);
   const [said, setSaid] = useState("");
-  const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null), editing = useRef(!!draft);
+  const issueRef = useRef<HTMLDivElement>(null), problemRef = useRef<HTMLParagraphElement>(null), editing = useRef(!!draft), doneRef = useRef<HTMLElement>(null);
 
   const apply = useCallback((result: Awaited<ReturnType<typeof readPolicies>>) => {
     if (result.kind === "ready") setLoad({ state: "ready", policies: result.policies });
@@ -77,9 +82,11 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
   useEffect(() => {
     if (editing.current === !!draft) return;
     editing.current = !!draft;
+    // A confirmed save lands on its result: the title that says what is now true takes focus, so it is read once.
+    if (!draft && landed && doneRef.current) { doneRef.current.focus({ preventScroll: true }); window.scrollTo({ top: 0 }); return; }
     const title = [...document.querySelectorAll<HTMLElement>(".pto h1")].find(h => h.getClientRects().length > 0);
     if (title) { if (!title.hasAttribute("tabindex")) title.tabIndex = -1; title.focus(); window.scrollTo({ top: 0 }); }
-  }, [draft]);
+  }, [draft, landed]);
   const trouble = custody && custody.status !== "sending" ? custody.status : issue;
   useEffect(() => {
     if (!trouble) return;
@@ -90,11 +97,12 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
   const policies = load.state === "ready" ? [...load.policies].sort((a, b) => policyOrder(a.code, b.code)) : [];
   const busy = custody?.status === "sending" || custody?.status === "checking";
 
-  function open(policy: PtoPolicy | null, kind: Kind) { setIssue(null); setLanded(false); setProblems([]); setDraft(policyDraft(policy, kind, t)); }
+  function open(policy: PtoPolicy | null, kind: Kind) { const next = policyDraft(policy, kind, t); setIssue(null); setLanded(null); setProblems([]); setOpened(JSON.stringify(next)); setDraft(next); }
   async function send(command: PolicyCommand, again: boolean) {
     setCustody({ command, status: again ? "checking" : "sending" }); setIssue(null);
     const result = await sendSettings(command);
-    if (result.kind === "saved") { setCustody(null); setDraft(null); setLanded(true); setSaid(t.policySaved); await reload(); return; }
+    // The result's title takes focus (the draft effect), so the live line stays empty: a result is said once.
+    if (result.kind === "saved") { setCustody(null); setDraft(null); setLanded({ line: t.policySavedLine(command.label, hoursText(command.fullDayMinutes), command.enabled) }); setSaid(""); await reload(); return; }
     if (result.kind === "unknown") { setCustody({ command, status: again ? "still_unknown" : "unknown" }); setSaid(t.unknownTitle); return; }
     setCustody(null); setIssue(result.kind);
     setSaid(result.kind === "conflict" ? t.conflictTitle : result.kind === "invalid" ? t.invalidTitle : result.kind === "denied" ? t.deniedTitle : t.signedOutTitle);
@@ -156,15 +164,16 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
         </div>
       </CorpCard>
       {problems.length ? <p className="rs-err rs-err--sum" ref={problemRef} tabIndex={-1} role="alert"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{t.problems(problems.length)}</p> : null}
-      <div className="rs-foot"><Act kind="text" disabled={busy || !!custody} onClick={() => { setDraft(null); setProblems([]); setIssue(null); }}>{t.cancel}</Act>
+      <div className="rs-foot"><Act kind="text" disabled={busy || !!custody} onClick={() => leaveWithDiscardGuard(() => { setDraft(null); setProblems([]); setIssue(null); })}>{t.cancel}</Act>
         <Act kind="teal" busy={custody?.status === "sending"} disabled={busy || !!custody} onClick={save}>{custody?.status === "sending" ? t.saving : t.save}</Act></div>
     </>;
   } else {
     const has = (code: string) => policies.some(p => p.code === code);
     body = <>
       {attentionCard}
-      {landed && !attention ? <div className="rs-landed"><CorpCard ariaLabel={t.policySaved}><BState silent kind="done" title={t.policySaved} /></CorpCard></div> : null}
       <CorpCard id="pto-policies" label={t.policiesCard}>
+        {/* Final polish (finding 24): a save's result opens the card it changed: the done mark, what is now true, the fact. */}
+        {landed && !attention ? <BState kind="done" titleRef={doneRef} title={t.policySaved} line={landed.line} /> : null}
         {policies.length ? <CorpRows label={t.policiesCard}>{policies.map(policy => <li key={policy.code}>
           <CorpRow onClick={() => open(policy, "OTHER")} chevron title={policy.label}
             detail={[t.dayLine(hoursText(policy.fullDayMinutes)), policy.earnedMinutesPer100Hours ? t.earnsLine(hoursText(policy.earnedMinutesPer100Hours)) : t.earnsNone,
@@ -172,9 +181,9 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
             trail={<BChip tone={policy.enabled ? "green" : "grey"}>{policy.enabled ? t.on : t.off}</BChip>} /></li>)}</CorpRows>
           : <div className="pto-empty"><BCallout tone="grey" icon="empty" title={t.emptyTitle}>{t.emptyBody}</BCallout></div>}
         <div className="rs-main pto-adds">
-          {!has("VACATION") ? <Act kind={policies.length ? "quiet" : "teal"} disabled={busy} onClick={() => open(null, "VACATION")}>{t.addVacation}</Act> : null}
-          {!has("SICK") ? <Act kind={has("VACATION") && policies.length === 1 ? "teal" : "quiet"} disabled={busy} onClick={() => open(null, "SICK")}>{t.addSick}</Act> : null}
-          <Act kind="text" disabled={busy} onClick={() => open(null, "OTHER")}>{t.addOther}</Act>
+          {!has("VACATION") ? <Act kind={policies.length ? "ghost" : "teal"} disabled={busy} onClick={() => open(null, "VACATION")}>{t.addVacation}</Act> : null}
+          {!has("SICK") ? <Act kind={has("VACATION") && policies.length === 1 ? "teal" : "ghost"} disabled={busy} onClick={() => open(null, "SICK")}>{t.addSick}</Act> : null}
+          <span className="pto-adds__other"><Act kind="text" disabled={busy} onClick={() => open(null, "OTHER")}>{t.addOther}</Act></span>
         </div>
       </CorpCard>
       <BNote>{t.policiesNote}</BNote>
@@ -186,5 +195,7 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
     <CorpTitle id={TITLE_ID} title={title} wide focusTarget />
     <p className="rs-sr" role="status" aria-live="polite">{said}</p>
     {body}
+    {/* Leaving with policy edits that are not saved asks first (Nov 21, 2026); a save that is being checked keeps its own hold. */}
+    <DiscardGuard dirty={!!draft && !custody && JSON.stringify(draft) !== opened} lang={lang} />
   </CorpPage>;
 }

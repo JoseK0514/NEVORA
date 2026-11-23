@@ -66,6 +66,7 @@ const en = {
   // U09: Reports.
   scheduledLegend: 'Scheduled',
   recordedLegend: 'Recorded',
+  figuresLegend: 'Numbers above the bars: recorded hours',
   noPublishedSchedule: 'No published schedule',
   scheduleUnconfirmed: 'Scheduled time not available',
   scheduledExplain: 'The light bar is the time on the published schedule that day. A day with no light bar has no published schedule. It is not hours worked and not pay.',
@@ -76,6 +77,22 @@ const en = {
   coverSeenValue: (filled: number, seen: number) => `${filled} of ${seen} seen`,
   coverSeenExplain: 'This counts the cover requests seen in this period and how many were filled. It is a history of what was recorded, not a measure of how well shifts were staffed.',
   coverNoneSeen: 'No one asked for cover this period.',
+  lateLeftOut: 'Late clock-ins aren’t counted for this period.',
+  // Final polish (confirmations A #1, #2): what a decision on a shift request left, in the row it came from. A title
+  // names what is now true; the line is the next fact. Declined and closed are closed requests: no done mark.
+  swapApproved: 'Swap approved', swapApprovedLine: 'The schedule shows the trade now.',
+  swapDeclined: 'Swap declined', bothKeep: (a: string, b: string) => `${a} and ${b} keep their shifts.`,
+  coverApproved: 'Cover approved', hasShiftNow: (name: string) => `${name} has the shift now.`, scheduleShowsIt: 'The schedule shows it now.',
+  coverDeclined: 'Cover declined', keepsShift: (name: string) => `${name} keeps the shift.`,
+  calloutApproved: 'Call-out approved', calloutApprovedLine: 'The shift is off their schedule and still needs cover.',
+  calloutDeclined: 'Call-out declined',
+  requestClosed: 'Request closed',
+  // Jose (Nov 21, 2026): every Decline asks first. The question, then one line with what stays as it is (the declined
+  // result's own line), the safe way out and the commit.
+  askDeclineSwap: 'Decline this swap?', askDeclineCover: 'Decline this cover request?', askDeclineCallout: 'Decline this call-out?',
+  askCloseCover: 'Close this cover request?', askDeclineCorrection: 'Decline this correction?',
+  staysOnShift: (name: string) => `${name} stays on the shift.`, recordedStays: 'The recorded time stays as it is.',
+  keepRequest: 'Keep request', decline: 'Decline', closeRequest: 'Close request',
   coverUnread: (n: number) => n === 1 ? '1 older shift change could not be read, so there may be more.' : `${n} older shift changes could not be read, so there may be more.`,
 };
 
@@ -137,6 +154,7 @@ const es: ReviewCopy = {
   fullyStaffedExplain: 'La parte de los periodos programados en que se cubrió cada puesto necesario. Un periodo al que le falta una persona cuenta como no cubierto. No son horas de personal ni paga.',
   scheduledLegend: 'Programado',
   recordedLegend: 'Registrado',
+  figuresLegend: 'Números sobre las barras: horas registradas',
   noPublishedSchedule: 'Sin horario publicado',
   scheduleUnconfirmed: 'Tiempo programado no disponible',
   scheduledExplain: 'La barra clara es el tiempo del horario publicado de ese día. Un día sin barra clara no tiene horario publicado. No son horas trabajadas ni paga.',
@@ -147,7 +165,19 @@ const es: ReviewCopy = {
   coverSeenValue: (filled, seen) => `${filled} de ${seen} vistas`,
   coverSeenExplain: 'Cuenta las solicitudes de cobertura vistas en este periodo y cuántas se completaron. Es un historial de lo registrado, no una medida de qué tan bien se cubrieron los turnos.',
   coverNoneSeen: 'Nadie pidió cobertura en este periodo.',
+  lateLeftOut: 'Las entradas tarde no se cuentan en este periodo.',
   coverUnread: n => n === 1 ? 'No se pudo leer 1 cambio de turno anterior, así que puede haber más.' : `No se pudieron leer ${n} cambios de turno anteriores, así que puede haber más.`,
+  swapApproved: 'Cambio aprobado', swapApprovedLine: 'El horario ya muestra el cambio.',
+  swapDeclined: 'Cambio rechazado', bothKeep: (a, b) => `${a} y ${b} conservan sus turnos.`,
+  coverApproved: 'Cobertura aprobada', hasShiftNow: name => `${name} ya tiene el turno.`, scheduleShowsIt: 'El horario ya lo muestra.',
+  coverDeclined: 'Cobertura rechazada', keepsShift: name => `${name} conserva el turno.`,
+  calloutApproved: 'Ausencia aprobada', calloutApprovedLine: 'El turno salió de su horario y todavía necesita cobertura.',
+  calloutDeclined: 'Ausencia rechazada',
+  requestClosed: 'Solicitud cerrada',
+  askDeclineSwap: '¿Rechazar este cambio?', askDeclineCover: '¿Rechazar esta solicitud de cobertura?', askDeclineCallout: '¿Rechazar esta ausencia?',
+  askCloseCover: '¿Cerrar esta solicitud de cobertura?', askDeclineCorrection: '¿Rechazar esta corrección?',
+  staysOnShift: name => `${name} sigue en el turno.`, recordedStays: 'El tiempo registrado queda como está.',
+  keepRequest: 'Conservar solicitud', decline: 'Rechazar', closeRequest: 'Cerrar solicitud',
 };
 
 const words: Record<ReviewLang, ReviewCopy> = {en, es};

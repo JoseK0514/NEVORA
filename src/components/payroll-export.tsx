@@ -1,11 +1,10 @@
 'use client';
 import {PayrollPeriodClose} from './payroll-period-close';
 import {useEffect,useRef,useState} from 'react';
-import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CorpNav,CorpTitle} from './corp/corp';
-import {BState} from './owner-b/b-kit';
+import {BSegs,BState} from './owner-b/b-kit';
 import './payroll/payroll-corp.css';
 import {neutralProfile,parseExportProfile,type ExportProfile} from '@/lib/payroll-export/model';
 import {type TimecardItem} from '@/lib/timecards/read-model';
@@ -20,6 +19,7 @@ import {verifyExportReply} from '@/lib/payroll-export/client';
 import {stableExportJson} from '@/lib/payroll-export/json';
 import {selectVisibleFinalized,changeExportSelection} from '@/lib/payroll-export/selection';
 import {PayrollExportMapping} from './payroll-export-mapping';
+import {PayrollExportReceipts} from './payroll-export-receipts';
 import {PayrollTabs,type PayrollTab} from './payroll/payroll-tabs';
 import {payrollImportCopy} from './payroll-import/copy';
 const FILES_READY='Files ready. Download the CSV and its time record.';
@@ -39,7 +39,7 @@ const isoDay=(date:Date)=>date.toISOString().slice(0,10);
 const written=(nanoseconds:string,write:(minutes:number,zero:string)=>string)=>{const minutes=minutesFromNanoseconds(nanoseconds);return minutes===null?'—':write(minutes,'0 h');};
 const hoursText=(nanoseconds:string)=>written(nanoseconds,durationSentence);
 const hoursFigure=(nanoseconds:string)=>written(nanoseconds,durationRow);
-/** "Oct 19 – 25", or "Sep 28 – Oct 4" (Payroll's one period format, R2). */
+/** "Oct 19–25", or "Sep 28–Oct 4" (Payroll's one period format, R2). */
 const rangeText=periodRange;
 /** This week and the five before it, Monday to Sunday, counted from the page's default week. */
 function weekChoices(){
@@ -72,6 +72,10 @@ function IncludedSection({payroll,period,actorId}:{payroll:boolean;period:Period
   </details>
  </section>;
 }
+/** Final polish (Nov 21, 2026): the verified export replaces the form it came from, so focus goes to the result's title
+ * when it arrives (the title is then what is read). A stable callback ref: it runs once when the title mounts and never on
+ * a later render, and the page keeps its one effect (the timecards read). */
+const focusOnArrive=(node:HTMLElement|null)=>{node?.focus({preventScroll:true});};
 export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPeriod:Period;actorId:string;tabs?:PayrollTab[]|null;
  /** MG-010: the workspace's date, so a week that has not ended says when its timecards can be approved. */
  today?:string}){
@@ -79,6 +83,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
  const [retry,setRetry]=useState<ExportCommand|null>(null),[snapshotActor,setSnapshotActor]=useState<string|null>(null);
  const saveRetry=useRef<ProfileCommand|null>(null),generation=useRef({value:0}),abort=useRef<AbortController|null>(null),reload=useRef<()=>void>(()=>{});
  const mutating=useRef(false),cancelRefresh=useRef<()=>void>(()=>{}),acceptSavedProfile=useRef<(item:SavedExportProfile)=>void>(()=>{});
+ const [receiptsKey,setReceiptsKey]=useState(0);
  const previousActor=useRef(actorId),validUntil=useRef(0),clearProtected=useRef<(message:string,denied?:boolean)=>void>(()=>{});
  const headers={'content-type':'application/json','x-nevora-payroll-export':'1','x-nevora-actor':actorId};
  useEffect(()=>{
@@ -151,7 +156,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
     if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}
     setNotice(body?.state==='already_generated'?'This time record and CSV have already been exported. Use your original downloaded files. No new export was created.':'The timecards or the file format changed. Refresh and check again.');return;
    }
-   if(!response.ok)throw new Error();const verified=await verifyExportReply(await response.json(),command);if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}setResult(verified);setRetry(null);setNotice(FILES_READY);}catch{if(current===generation.current.value)setNotice('We couldn’t confirm the export. Try again; it won’t create a second file.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
+   if(!response.ok)throw new Error();const verified=await verifyExportReply(await response.json(),command);if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current('This export is out of date. Refresh to start again.');return;}setResult(verified);setReceiptsKey(key=>key+1);setRetry(null);setNotice(FILES_READY);}catch{if(current===generation.current.value)setNotice('We couldn’t confirm the export. Try again; it won’t create a second file.');}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
  };
  const save=async()=>{
   if(!currentActor){clearProtected.current('Export access ended',true);return;}
@@ -202,6 +207,10 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
  // Someone without payroll (a Manager) reaches Time exports from Timecards: the way back goes there, and the page isn't drawn
  // as a money page (its sidebar entry is Time).
  const payroll=!!tabs?.length;
+ // The verified export, for as long as this snapshot holds it (the files were listed under the same condition).
+ const shown=ready&&result?result:null;
+ // Back to the same form: the result leaves the screen; nothing is requested. Focus goes to the form's heading.
+ const anotherExport=()=>{setResult(null);setNotice('');setTimeout(()=>document.getElementById('time-export-send')?.focus(),0);};
  return <div className={`c-page c-payroll c-pay c-exp c-page--narrow${payroll?'':' c-exp--time'}`} data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
   <CorpNav back={payroll?{href:'/app/payroll',label:'Payroll'}:{href:'/app/timecards',label:'Timecards'}} title="Time exports" phoneOnly/>
   <CorpTitle id="time-exports-title" title="Time exports" wide/>
@@ -213,13 +222,26 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
     {weeks.map(w=><option key={w.value} value={w.value}>{w.label}</option>)}
    </select>
   </div>
-  {/* Phase 7 (moments): the verified export is the shared done state; every other notice (not confirmed, already
-    * exported, out of date) keeps the plain callout and never the success mark. Same words, split at the period. */}
-  {result&&notice===FILES_READY?<div className="b-done-host b-done-host--card"><BState kind="done" title="Files ready" line="Download the CSV and its time record."/></div>
-   :notice?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
+  {/* Phase 7 (moments): the verified export is the shared done state (below, where the form was); every other notice (not
+    * confirmed, already exported, out of date) keeps the plain callout and never the success mark. */}
+  {notice&&notice!==FILES_READY?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
   {/* R5: section labels sit above their cards. */}
-  <section className="c-pay__group" aria-labelledby="time-export-send">
-   <div className="c-sec-label c-pay__sec"><h2 id="time-export-send">{profiles.length?'Send to':'File'}</h2></div>
+  {shown?<section className="c-pay__group c-exp__result" aria-label="Export ready">
+   {/* Final polish (Nov 21, 2026): the result stands where the form stood. Facts are the receipt's own rows; the receipt
+     * id, the checksum and the file layout fold under Details; "Make another export" returns to the same form (no request). */}
+   <div className="b-done-host b-done-host--card">
+    <BState kind="done" heading titleRef={focusOnArrive} title="Export ready" line={<BSegs parts={[`${shown.model.rows.length} ${shown.model.rows.length===1?'person':'people'}`,<span key="h" className="c-num">{hoursText(shown.model.rows.reduce((sum,row)=>sum+BigInt(row.recordedNanoseconds),BigInt(0)).toString())}</span>,rangeText(shown.model.period.startDate,shown.model.period.endDate)]}/>}
+     quiet={<button type="button" className="b-done__quiet" onClick={anotherExport}>Make another export</button>}>
+     <div className="c-exp__dls">
+      <button type="button" className="b-btn b-btn--teal" onClick={()=>downloadCurrent(shown.csv,'text/csv;charset=utf-8',`nevora-mapped-${shown.model.period.startDate}-${shown.operationId}.csv`)}>Download CSV</button>
+      <button type="button" className="b-btn b-btn--quiet" aria-label="Download time record (JSON)" onClick={()=>downloadCurrent(stableExportJson(shown.model),'application/json',`nevora-canonical-${shown.model.period.startDate}-${shown.operationId}.json`)}>Download time record</button>
+     </div>
+     <details className="c-exp__more c-exp__details"><summary>Details</summary><dl className="c-exp__receipt"><div><dt>File layout</dt><dd className="c-exp__plain">{`${shown.profile.name}${shown.profileRevision>0?` · Rev. ${shown.profileRevision}`:''}`}</dd></div><div><dt>Receipt</dt><dd>{shown.operationId}</dd></div><div><dt>CSV checksum (SHA-256)</dt><dd>{shown.csvSha256}</dd></div></dl></details>
+    </BState>
+   </div>
+  </section>
+  :<section className="c-pay__group" aria-labelledby="time-export-send">
+   <div className="c-sec-label c-pay__sec"><h2 id="time-export-send" tabIndex={-1}>{profiles.length?'Send to':'File'}</h2></div>
    <div className="c-card">
    {ready?<>
     <ul className="c-rows" aria-label={profiles.length?'Send to':'File'}>
@@ -237,17 +259,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
     </div>
    </>:<div className="c-card__body"><p className="c-payroll__state" role="status" data-export-loading={state==='Loading finalized time'||undefined}>{stateText}</p>{state!=='Loading finalized time'?<button type="button" className="c-btn c-btn--secondary c-btn--md c-pay__gap" disabled={busy} onClick={()=>reload.current()}>Try again</button>:null}</div>}
    </div>
-  </section>
-  {ready&&result?<section className="c-pay__group" aria-labelledby="time-export-files">
-   <div className="c-sec-label c-pay__sec"><h2 id="time-export-files">Your files</h2><span className="c-pay__count">{`${result.model.rows.length} ${result.model.rows.length===1?'person':'people'}`}</span></div>
-   <div className="c-card">
-   <ul className="c-rows" aria-label="Your files">
-    <li><button type="button" className="c-row" aria-label="Download mapped CSV" onClick={()=>downloadCurrent(result.csv,'text/csv;charset=utf-8',`nevora-mapped-${result.model.period.startDate}-${result.operationId}.csv`)}><span className="c-row__main"><span className="c-row__title c-row__title--b">Time file</span><span className="c-row__detail"><span>{`CSV · ${result.profile.name}${result.profileRevision>0?` · Rev. ${result.profileRevision}`:''}`}</span></span></span><DownloadSimpleIcon weight="bold" className="c-ic c-exp__dl" aria-hidden="true"/></button></li>
-    <li><button type="button" className="c-row" aria-label="Download time record (JSON)" onClick={()=>downloadCurrent(stableExportJson(result.model),'application/json',`nevora-canonical-${result.model.period.startDate}-${result.operationId}.json`)}><span className="c-row__main"><span className="c-row__title c-row__title--b">Time record</span><span className="c-row__detail"><span>Exact hours for each timecard</span></span></span><DownloadSimpleIcon weight="bold" className="c-ic c-exp__dl" aria-hidden="true"/></button></li>
-   </ul>
-   <details className="c-exp__more"><summary>Receipt and checksum</summary><dl className="c-exp__receipt"><div><dt>Receipt</dt><dd>{result.operationId}</dd></div><div><dt>CSV SHA-256</dt><dd>{result.csvSha256}</dd></div></dl></details>
-   </div>
-  </section>:null}
+  </section>}
   {ready?<section className="c-pay__group" aria-labelledby="time-export-options">
    <div className="c-sec-label c-pay__sec"><h2 id="time-export-options">Options</h2></div>
    <div className="c-card">
@@ -279,6 +291,8 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
    <PayrollExportMapping draft={draft} setDraft={setDraft} cards={cards??[]} reviewed={reviewed} setReviewed={setReviewed} disabled={locked} save={()=>void save()} />
    </div>
   </section>:null}
+  {/* QA A3-03 (Nov 21, 2026): past exports stay downloadable after this page clears a result. */}
+  <PayrollExportReceipts actorId={actorId} refreshKey={receiptsKey}/>
   <IncludedSection payroll={payroll} period={period} actorId={actorId}/>
  </div>;
 }

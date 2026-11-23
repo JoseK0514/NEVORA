@@ -20,8 +20,8 @@ it("renders dated joint evidence, the unchanged baseline, exact people and publi
   expect(html).toContain("Day plan comparison"); expect(html).toContain("Current schedule");
   expect(html).toContain("Thu, Oct 22"); expect(html).toContain("Puerto Rico time"); expect(html).toMatch(/8:00\sAM\s–\s12:00\sPM/);
   expect(html).toContain("&lt;script&gt;unsafe&lt;/script&gt;"); expect(html).not.toContain("<script>");
-  expect(html).toContain("ana"); expect(html).toContain("4 planning hours");
-  expect(html).toContain("publication decision"); expect(html).toContain(plans.sourceVersion);
+  expect(html).toContain("ana"); expect(html).toContain("Adds 4 h across 1 assignment");
+  expect(html).toContain("separate decision in Scheduling"); expect(html).toContain(plans.sourceVersion);
   expect(html).not.toContain("/app/schedule/new?review"); expect(html).not.toContain("<button");
 });
 
@@ -78,4 +78,43 @@ it("formats plan observation in the named workspace timezone rather than the hos
     expect(html).toContain('<time dateTime="2026-10-30T12:00:00.000Z">8:00 AM</time>');
     expect(html).not.toContain('<time dateTime="2026-10-30T12:00:00.000Z">12:00 PM</time>');
   } finally { if (original === undefined) delete process.env.TZ; else process.env.TZ = original; }
+});
+
+const text = (html: string) => html.replace(/<[^>]+>/g, "").replace(/&#x27;/g, "'").replace(/\u00a0|&nbsp;/g, " ");
+it("says hours in plain words, without planning jargon, and keeps the no-save trust line (QA S-09)", () => {
+  const plans = ownerCoveragePlan(); plans.baseline!.requiredMinutes = 2880; plans.alternatives[0].coverage.requiredMinutes = 2880;
+  plans.alternatives[0].coverage.coveredMinutes = 240; plans.alternatives[0].remaining.total = 2; plans.alternatives[0].coverage.remainingBlocks = 2;
+  const html = text(renderToStaticMarkup(<WorkflowResults answer={{ text: "Review", sources: [], coveragePlans: plans }} />));
+  expect(html).toContain("Includes draft shifts");
+  expect(html).toContain("Covered now: 0 h of the 48 h that need someone. 1 time slot still needs someone.");
+  expect(html).toContain("Adds 4 h across 1 assignment. With it, 4 h of the 48 h that need someone would be covered; 2 time slots would still need someone.");
+  expect(html).toContain("Nothing is saved or published from here, and nobody is notified.");
+  expect(html).toContain("8:00 AM – 12:00 PM · 4 h");
+  expect(html).not.toMatch(/ledger|configured coverage minutes|planning hours?|hypothetical|allocation|blocks? remain/i);
+});
+
+it("shows a 24-hour assignment as hours someone works and says why, never as \"All day\"", () => {
+  const plans = ownerCoveragePlan(), plan = plans.alternatives[0];
+  plans.baseline!.requiredMinutes = plan.coverage.requiredMinutes = plan.coverage.coveredMinutes = plan.coverage.requiredObligationMinutes = plan.coverage.fulfilledObligationMinutes = plan.addedMinutes = 1440;
+  plans.baseline!.requiredObligationMinutes = 1440;
+  Object.assign(plan.assignments[0], { startTime: "00:00", endTime: "24:00" });
+  const html = text(renderToStaticMarkup(<WorkflowResults answer={{ text: "Review", sources: [], coveragePlans: plans }} />));
+  expect(html).toContain("12:00 AM – midnight · 24 h");
+  expect(html).not.toContain("All day");
+  expect(html).toContain("Coverage at North is set for the whole day, so this plan has one person work all 24 hours.");
+});
+
+it("says which earlier times were left out when the plan is for today", () => {
+  const plans = ownerCoveragePlan();
+  // 22:42 UTC on Oct 22 is 6:42 PM in Puerto Rico, on the plan's date.
+  plans.observedAt = "2026-10-22T22:42:00.000Z";
+  Object.assign(plans.alternatives[0].assignments[0], { startTime: "18:45", endTime: "22:00" });
+  plans.alternatives[0].addedMinutes = 195;
+  const html = text(renderToStaticMarkup(<WorkflowResults answer={{ text: "Review", sources: [], coveragePlans: plans }} />));
+  expect(html).toContain("Times before 6:45 PM have passed, so these plans start at 6:45 PM or later.");
+  expect(html).toContain("that need someone for the rest of today");
+  plans.observedAt = "2026-10-23T03:50:00.000Z"; // 11:50 PM on Oct 22
+  expect(text(renderToStaticMarkup(<WorkflowResults answer={{ text: "Review", sources: [], coveragePlans: plans }} />))).toContain("Today’s hours have passed, so there’s nothing left to plan for today. Choose another date.");
+  plans.observedAt = "2026-10-21T22:42:00.000Z"; // the day before
+  expect(text(renderToStaticMarkup(<WorkflowResults answer={{ text: "Review", sources: [], coveragePlans: plans }} />))).not.toContain("have passed");
 });

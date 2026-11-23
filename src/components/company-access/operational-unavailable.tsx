@@ -6,7 +6,7 @@ import {BButtonLink,BState,BStateScreen} from '../owner-b/b-kit';
 
 /** The page's own name for its band when it is closed to this person: "Christmas bonus hours unavailable" is the page
  * "Christmas bonus hours". */
-const pageName=(title:string)=>title.replace(/\s+unavailable$/i,'')||title;
+const pageName=(title:string)=>title.replace(/\s+(?:is\s+)?unavailable$/i,'')||title;
 
 export function OperationalUnavailable({title='Page unavailable',reason,scoped=false,back,closed}:{title?:string;reason:AccessFailure;scoped?:boolean;
  /** SCRUM-215: a page closed because an action grant is missing names that grant and who decides instead. */
@@ -22,10 +22,12 @@ export function OperationalUnavailable({title='Page unavailable',reason,scoped=f
   {/* No back link here: the page it leads to (Insights for Christmas bonus hours) needs the same access. */}
   <BStateScreen title={pageName(title)}>
    <BState kind="locked" title={closed?<span lang={closed.lang}>{closed.title}</span>:scoped?'Outside the locations you manage':'Company-wide access needed'}
-    line={closed?<span lang={closed.lang}>{closed.line}</span>:scoped?'This view is not available with your current management access. Return to your schedule to choose a location you manage.':'This page needs current company-wide management access. An Owner can give it to you. If your access just changed, sign in again.'}>
+    line={closed?<span lang={closed.lang}>{closed.line}</span>:scoped?'This view is not available with your current management access. Return to your schedule to choose a location you manage.':'This page needs company-wide management access. An Owner can give it to you.'}>
     <div className="b-state-actions b-closed-actions">
      {scoped?<BButtonLink href="/app/schedule" kind="ghost">Open your schedule</BButtonLink>:<BButtonLink href="/app" kind="ghost">Return to Home</BButtonLink>}
-     {scoped?<Link className="b-closed-also" href="/app">Return to Home</Link>:<Link className="b-closed-also" href="/login">Sign in again</Link>}
+     {/* QA A3-06 recheck (Nov 22, 2026): no "Sign in again" here. The person is signed in and lacks access, which is
+       * checked live on every load, so signing in again never helps (this drops DESIGN.MD's quiet sign-in link). */}
+     {scoped?<Link className="b-closed-also" href="/app">Return to Home</Link>:null}
     </div>
    </BState>
   </BStateScreen>

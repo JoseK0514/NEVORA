@@ -75,6 +75,14 @@ Inter/JetBrains Mono fonts, Phosphor icon family, and established motion.
 Employee home may receive bounded responsive layout improvements; preserve real
 data semantics, navigation, and workflow behavior.
 
+For design, copy or motion work, load `.codex/skills/nevora-design-os/SKILL.md`,
+the design standard shared with Claude: Apple HIG floors, Direction B tokens and
+kit components, the writing standard (with `docs/design/voice.md` for product
+copy), and GSAP for choreographed motion with a reduced-motion path. Whenever
+Jose presents a draft, run its Impeccable audit (hierarchy, spacing,
+accessibility, states) first. It ranks below DESIGN.MD and authorises no brand,
+font or icon change.
+
 Page illustrations and their generation instructions live in
 [public/assets/README.md](public/assets/README.md), with provenance and prompts in
 [public/assets/manifest.json](public/assets/manifest.json). Generate original

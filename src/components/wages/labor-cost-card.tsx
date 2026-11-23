@@ -72,15 +72,18 @@ export function LaborCostCard({ weekStart, locations, lang = "en" }: { weekStart
   const allReady = !loading && ready.length === rows.length;
   const total = allReady ? ready.reduce<bigint | null>((sum, row) => sum === null || row.cost.draft.totalMinor === null ? null : sum + BigInt(row.cost.draft.totalMinor), BigInt(0)) : undefined;
   const noRatesAnywhere = allReady && ready.every(row => row.cost.draft.shiftCount === 0 || (minutesOf(row.cost.draft.coveredNanoseconds) === 0 && row.cost.draft.missingRateShifts > 0)) && ready.some(row => row.cost.draft.shiftCount > 0);
-  const head = loading || failed ? <BChip tone="grey">{t.estimate}</BChip>
-    : total === null || total === undefined ? <span className="lc-head"><BChip tone="grey">{t.estimate}</BChip><BChip tone="amber">{noRatesAnywhere ? t.noRates : t.incomplete}</BChip></span>
-    : <span className="lc-head"><BChip tone="grey">{t.estimate}</BChip><strong className="lc-total">{money(total.toString())}</strong></span>;
+  // "Estimate" is the card's standing state, so it is grey text; a chip marks an exception. While the amber note shows,
+  // the note says "No pay rates" and the header does not repeat it.
+  const est = <span className="lc-est">{t.estimate}</span>;
+  const head = loading || failed ? est
+    : total === null || total === undefined ? <span className="lc-head">{est}{noRatesAnywhere ? null : <BChip tone="amber">{t.incomplete}</BChip>}</span>
+    : <span className="lc-head">{est}<strong className="lc-total">{money(total.toString())}</strong></span>;
 
   return <CorpCard id="schedule-labor-cost" label={t.title} aside={head} lang={lang}>
     {failed ? <BState alert kind="failed" title={t.failedTitle} line={t.failedBody} action={{ label: t.tryAgain, busy: refreshing, busyLabel: t.checking, onClick: refresh }} />
       : <div className="lc">
         <div role="status" aria-busy={loading || undefined} className="lc-sr">{loading ? t.loading : ""}</div>
-        {noRatesAnywhere ? <div className="lc-none"><BCallout tone="amber" icon="empty" title={t.noRatesTitle} action={{ label: t.openTeam, href: "/app/employees" }}>{t.noRatesBody}</BCallout></div>
+        {noRatesAnywhere ? <div className="lc-none"><BCallout tone="amber" icon="check" title={t.noRatesTitle} action={{ label: t.openTeam, href: "/app/employees" }}>{t.noRatesBody}</BCallout></div>
           : <CorpRows label={t.title}>{rows.map(line)}</CorpRows>}
         <div className="lc-foot">
           <details className="lc-basis"><summary>{t.included}</summary><p>{t.basis}</p></details>

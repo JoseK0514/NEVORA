@@ -2,6 +2,10 @@
 
 The tools the premium UI chats use to run a local NEVORA preview with fictional data and check every screen. They run on a Mac or in a Linux cloud machine. Nothing here talks to production, sends email or push, or prints a password.
 
+## Collab branch and Claude Cloud
+
+Use [the collab QA instructions](../../docs/product/page-inventory/claude-cloud.md) for the current five-profile fixture, Clocker and Rondo runs, and page-inventory evidence.
+
 ## What's here
 
 | File | What it does |

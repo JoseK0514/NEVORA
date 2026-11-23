@@ -1,10 +1,12 @@
 'use client';
 
+import {DiscardGuard} from './kit/discard-dialog';
 import Link from 'next/link';
 import {useEffect,useState,type ReactNode} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { ReturnToNext } from './team/return-to-next';
-import {EmployeeAccessForm} from './company-access/employee-access-form';
+import {EmployeeAccessForm,EmployeeSavedBlock,type EmployeeSavedReceipt,type EmployeeSavedState} from './company-access/employee-access-form';
+import {DecisionAsk} from './owner-b/decision-parts';
 import {coreCommandFromForm} from './company-access/commands';
 import {ManagerOperationalScopeFields} from './company-access/manager-operational-scope-fields';
 import type {OwnerScopeContext,ScopeSelection} from '@/lib/company-access/model';
@@ -110,6 +112,8 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
       {baseline.employmentDates?<EmploymentDateFields idPrefix="edit" value={baseline.employmentDates} bonusApplies={bonusApplies} focusHire={returnTo?.focusHire}/>:null}
       {more}
     </EmployeeAccessForm>
+    {/* Leaving with details that are not saved asks first (Nov 21, 2026): the same signal that shows Save. */}
+    <DiscardGuard dirty={changed&&!saved}/>
   </>;
 }
 
@@ -125,9 +129,14 @@ export function SheetField({label,value,href,placeholder}:{label:string;value?:s
 /** Deactivate or reactivate (board O-PersonAccess): the same core command with only the account status changed.
  * Reactivating a Manager asks the Owner to choose their management access first, as the edit form did. */
 export function EmployeeStatusForm({employee,locations,actorId,actorRole,ownerScope=null,action}:{employee:EmployeeManagementProfile;locations:Location[];actorId:string;actorRole:UserRole;ownerScope?:OwnerScopeContext|null;action:(data:FormData)=>Promise<unknown>}){
- return <StatusEditor key={JSON.stringify([actorId,actorRole,employee.id,employee.updatedAt])} employee={employee} locations={locations} actorRole={actorRole} ownerScope={ownerScope} action={action}/>;
+ // Confirmations B (#1): the server's confirmed answer replaces the buttons with the kit's done state: what is now true
+ // and one step back to Team. The page refreshes itself after the save (the rows above show the new account state) and
+ // that refresh remounts the editor below, so the result is kept here, above it, for the rest of the visit.
+ const [result,setResult]=useState<{done:EmployeeSavedState;receipt:EmployeeSavedReceipt}|null>(null);
+ if(result)return <EmployeeSavedBlock done={result.done} names={{first:employee.firstName,last:employee.lastName}} receipt={result.receipt}/>;
+ return <StatusEditor key={JSON.stringify([actorId,actorRole,employee.id,employee.updatedAt])} employee={employee} locations={locations} actorRole={actorRole} ownerScope={ownerScope} action={action} onResult={setResult}/>;
 }
-function StatusEditor({employee,locations,actorRole,ownerScope,action}:{employee:EmployeeManagementProfile;locations:Location[];actorRole:UserRole;ownerScope:OwnerScopeContext|null;action:(data:FormData)=>Promise<unknown>}){
+function StatusEditor({employee,locations,actorRole,ownerScope,action,onResult}:{employee:EmployeeManagementProfile;locations:Location[];actorRole:UserRole;ownerScope:OwnerScopeContext|null;action:(data:FormData)=>Promise<unknown>;onResult:(result:{done:EmployeeSavedState;receipt:EmployeeSavedReceipt})=>void}){
  const [baseline]=useState(()=>({employee,ownerScope}));
  const [confirming,setConfirming]=useState(false),[scope,setScope]=useState<ScopeSelection|null>(null);
  const needsScope=!employee.active&&employee.role==='MANAGER'&&actorRole==='OWNER';
@@ -143,14 +152,20 @@ function StatusEditor({employee,locations,actorRole,ownerScope,action}:{employee
   <input type="hidden" name="primaryLocationId" value={employee.primaryLocationId}/>
   <input type="hidden" name="active" value={String(next)}/>
  </>;
- return <EmployeeAccessForm action={action} employeeId={employee.id} build={(data,id)=>coreCommandFromForm(data,baseline.employee,baseline.ownerScope,actorRole,scope,id)} className="c-status-form">
+ // Confirmations B (#15): the confirm is the shared question block. The command, its fields and the one submit are
+ // unchanged; the confirmed result is handed to the form above (see EmployeeStatusForm).
+ const done:EmployeeSavedState={className:'c-status-done',title:()=>next?`${first} is active again`:`${first} is deactivated`,line:next?'They sign in again to start. Their history is kept.':'They’re signed out. Their history is kept.',
+  next:()=>({href:'/app/employees',label:'Back to Team'})};
+ return <EmployeeAccessForm action={action} employeeId={employee.id} build={(data,id)=>coreCommandFromForm(data,baseline.employee,baseline.ownerScope,actorRole,scope,id)} className="c-status-form"
+  done={done} onSaved={receipt=>onResult({done,receipt})}>
   {fields}
   {needsScope&&(baseline.ownerScope?<ManagerOperationalScopeFields current={baseline.ownerScope} locations={locations.filter(l=>l.active).map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:<p role="alert" className="c-error">Current management access is unavailable. Reload this employee before reactivating a Manager.</p>)}
   {next
    ? <button type="submit" className="c-btn c-btn--secondary c-btn--full">{`Reactivate ${first}`}</button>
    : confirming
-    ? <span className="c-btns"><button type="button" className="c-btn c-btn--secondary" onClick={()=>setConfirming(false)}>Keep active</button><button type="submit" className="c-btn c-btn--danger">{`Deactivate ${first}`}</button></span>
+    ? <DecisionAsk className="c-status-ask" groupLabel={`Deactivate ${first}?`} question={`Deactivate ${first}?`} consequence="They’re signed out right away. Their history stays and you can bring them back."
+       keep="Keep active" onKeep={()=>setConfirming(false)} go="Deactivate" goLabel={`Deactivate ${first}`} goValue="deactivate"/>
     : <button type="button" className="c-btn c-btn--danger c-btn--full" onClick={()=>setConfirming(true)}>{`Deactivate ${first}`}</button>}
-  <p className="c-note c-note--center">{next?'Reactivating needs a fresh sign-in. Their history is preserved.':'Deactivation signs them out right away. Their history is preserved, and you can bring them back later.'}</p>
+  {confirming?null:<p className="c-note c-note--center">{next?'They sign in again after this. Their history is kept.':'They’re signed out right away. Their history stays and you can bring them back.'}</p>}
  </EmployeeAccessForm>;
 }

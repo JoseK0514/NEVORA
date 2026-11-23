@@ -11,12 +11,37 @@ import styles from './company-access.module.css';
 type Saved=Extract<EmployeeCoreAccessResult,{state:'saved'}>['receipt'];
 /** Review 30 (D04): what the done state says once the server confirmed the save. `title` and `line` are given the saved
  * receipt and the names the form held at submit; `next` is the one tinted step. */
-export type EmployeeSavedState={title:(names:{first:string;last:string})=>string;line:ReactNode;next:(receipt:Saved)=>{href:string;label:string}};
+export type EmployeeSavedReceipt=Saved;
+export type EmployeeSavedState={title:(names:{first:string;last:string})=>string;line:ReactNode;next:(receipt:Saved)=>{href:string;label:string};
+ /** A quiet second way on. Its link is a full page load, so a link back to the same form starts it empty ("Add another"). */
+ quiet?:{label:string;href:string};
+ /** The result ends the flow: the kit's page finish (56px mark, centred, the next step as the one filled button). */
+ finish?:boolean;
+ /** The result stands on the canvas, not in a form sheet: its own card class. */
+ className?:string};
 type FieldRefusal={field:string;message:string};
 /** The date fields the server can refuse by name (the inputs share the command's field names). */
 const REFUSABLE=new Set<string>(EMPLOYMENT_DATE_FIELDS);
 /** A field error has no closing period (DESIGN.MD Forms); the server's sentences end with one. */
 const fieldWords=(message:string)=>message.trim().replace(/\.$/,'');
+
+/** Confirmations B (#1, #28): the confirmed save, drawn where the form stood: the done mark, a title that names what is
+ * now true, one line, one step and at most one quiet second way on (DESIGN.MD Phase 7, Success). The screen changed
+ * under the person, so the title takes focus and is read once. A caller whose form is remounted by the page's own
+ * refresh (the account status form) draws this block itself, so the result outlives that refresh. */
+export function EmployeeSavedBlock({id,done,names,receipt}:{id?:string;done:EmployeeSavedState;names:{first:string;last:string};receipt:Saved}){
+ const title=useRef<HTMLElement>(null);
+ useEffect(()=>{title.current?.focus();},[]);
+ const next=done.next(receipt),quiet=done.quiet;
+ // eslint-disable-next-line next-preserved/no-html-link-for-pages -- a full load on purpose: the same route must start empty
+ const second=quiet?<a className="b-done__quiet" href={quiet.href}>{quiet.label}</a>:null;
+ return <section className={`c-card c-teamform-done${done.finish?` ${styles.finish}`:''}${done.className?` ${done.className}`:''}`} aria-labelledby={id?`${id}-done`:undefined}>
+  <BState kind="done" size={done.finish?'finish':undefined} heading titleRef={title} title={<span id={id?`${id}-done`:undefined}>{done.title(names)}</span>} line={done.line}
+   action={done.finish?{href:next.href,label:next.label}:undefined} quiet={done.finish?second:undefined}>
+   {done.finish?null:<div className={`b-state-actions ${styles.doneActs}`}><BButtonLink href={next.href} kind="ghost">{next.label}</BButtonLink>{second}</div>}
+  </BState>
+ </section>;
+}
 
 /** One atomic command; uncertain writes reconcile their original operation ID. */
 export function EmployeeAccessForm({action,build,employeeId,children,className,id,done,onSaved,onRefused}:{action:(data:FormData)=>Promise<unknown>;build:(data:FormData,operationId:string)=>CreateEmployeeWithAccessCommand|EmployeeCoreAccessCommand;employeeId?:string;children:ReactNode;className:string;/** Quiet (v4): lets the page's top-right Save submit it. */id?:string;
@@ -24,13 +49,13 @@ export function EmployeeAccessForm({action,build,employeeId,children,className,i
   * it the confirmed save keeps the sentence under the form (the account status form). */
  done?:EmployeeSavedState;
  /** The done state is on screen: the page's own header actions for this form go away. */
- onSaved?:()=>void;
+ onSaved?:(receipt:Saved)=>void;
  /** Review 30 (D03): the server refused these fields; a step flow shows the step that holds them before they are marked. */
  onRefused?:(fields:string[])=>void}){
  const [pending,setPending]=useState(false),[unknown,setUnknown]=useState(false),[message,setMessage]=useState(''),[blocked,setBlocked]=useState(false),[saved,setSaved]=useState<Saved|null>(null);
  const [refused,setRefused]=useState<FieldRefusal[]>([]),[names,setNames]=useState({first:'',last:''});
  const operation=useRef<{id:string;serialized:string}|null>(null),busy=useRef(false),mounted=useRef(false),abort=useRef<AbortController|null>(null);
- const form=useRef<HTMLFormElement>(null),doneTitle=useRef<HTMLElement>(null);
+ const form=useRef<HTMLFormElement>(null);
  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;abort.current?.abort();};},[]);
  // D03: once the form is usable again, each refused date carries the server's words as its own error. The shared form
  // validation draws it under the field (the warning glyph, aria-invalid, aria-describedby) and moves focus to the first.
@@ -40,9 +65,8 @@ export function EmployeeAccessForm({action,build,employeeId,children,className,i
   setRefused([]);form.current.reportValidity();
  },[pending,refused]);
  // D04: the screen changed under the person, so the result's title takes focus (and is read once, with no live region).
- useEffect(()=>{if(saved&&done)doneTitle.current?.focus();},[saved,done]);
  function apply(value:EmployeeCoreAccessResult,reconcile:boolean){
-  if(value.state==='saved'){setSaved(value.receipt);setUnknown(false);setBlocked(true);operation.current=null;setMessage(done?'':employeeId?'Employee details saved. Reload the employee to review current access before making another change.':'Employee created. Open their profile to review details and manage their account invitation.');if(done)onSaved?.();}
+  if(value.state==='saved'){setSaved(value.receipt);setUnknown(false);setBlocked(true);operation.current=null;setMessage(done?'':employeeId?'Employee details saved. Reload the employee to review current access before making another change.':'Employee created. Open their profile to review details and manage their account invitation.');if(done)onSaved?.(value.receipt);}
   else if(value.state==='outcome_unknown'||reconcile){setUnknown(true);setMessage('The save outcome is not confirmed. Check this save before making another change.');}
   else if(value.state==='invalid'){
    operation.current=null;setUnknown(false);setBlocked(false);
@@ -73,11 +97,7 @@ export function EmployeeAccessForm({action,build,employeeId,children,className,i
  }
  // D04: the confirmed save replaces the form: the done mark, a title that names what is now true, one line and one
  // tinted next step (DESIGN.MD Phase 7, Success). The mark shows only after the server confirmed.
- if(saved&&done){const next=done.next(saved);return <section className="c-card c-teamform-done" aria-labelledby={id?`${id}-done`:undefined}>
-  <BState kind="done" heading titleRef={doneTitle} title={<span id={id?`${id}-done`:undefined}>{done.title(names)}</span>} line={done.line}>
-   <div className="b-state-actions"><BButtonLink href={next.href} kind="ghost">{next.label}</BButtonLink></div>
-  </BState>
- </section>;}
+ if(saved&&done)return <EmployeeSavedBlock id={id} done={done} names={names} receipt={saved}/>;
  return <form ref={form} id={id} onSubmit={submit} className={className} aria-busy={pending}>
   <fieldset disabled={pending||unknown||blocked} className="configuration-fields">{children}</fieldset>
   {pending&&<p role="status">{unknown?'Checking save…':'Saving…'}</p>}

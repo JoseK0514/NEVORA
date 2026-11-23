@@ -25,7 +25,7 @@ it.each([
  expect(html.match(/<form\b/g)).toHaveLength(1);
  // Phase 5 (PB-030): a wait is amber with the hourglass, never the red of a refusal, and the way to reset is on the page.
  expect(html).toMatch(note('amber','alert','login-error'));
- expect(html).toContain(renderToStaticMarkup(<BGlyph meaning="wait"/>));
+ expect(html).toContain(renderToStaticMarkup(<BGlyph meaning="wait" solid/>));
  expect(html).toContain('href="/forgot-access"');
 });
 
@@ -41,8 +41,8 @@ it.each([
  expect(html).toContain(`</span><div class="b-callout__b">${title}.</div></div>`);
  expect(html).not.toContain('b-callout__t');
  // Red's one glyph is the circle, the same as the field errors under it.
- expect(html).toContain(renderToStaticMarkup(<BGlyph meaning="stop"/>));
- expect(html).not.toContain(renderToStaticMarkup(<BGlyph meaning="check"/>));
+ expect(html).toContain(renderToStaticMarkup(<BGlyph meaning="stop" solid/>));
+ expect(html).not.toContain(renderToStaticMarkup(<BGlyph meaning="check" solid/>));
  expect(html).toMatch(/<input(?=[^>]*id="login-employee-id")(?=[^>]*aria-invalid="true")[^>]*>/);
 });
 

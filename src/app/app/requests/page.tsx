@@ -34,6 +34,7 @@ export default async function RequestsPage({
     from?: string;
     filter?: string;
     cancelled?: string;
+    decided?: string;
   }>;
 }) {
   const moduleOff = await moduleGate("timeOff");

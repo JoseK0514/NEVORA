@@ -37,9 +37,11 @@ it("lists every location with its people and status", async () => {
   expect(html).toContain("2 active of 3 locations");
   expect(html.match(/data-location="/g)).toHaveLength(3);
   // Release 1 (board O-Locations): the full name and state under the short name; how many people on the right.
-  expect(html).toContain("East Office · Needs setup");
+  // Final polish D3 (#30): the line is the kit's facts line (BSegs), each fact whole.
+  const facts = html.replace(/<[^>]+>/g, "");
+  expect(facts).toContain("East Office · Needs setup");
   expect(html).toContain('<span class="wc-meta">1 employee</span>');
-  expect(html).toContain("Old Office · Inactive");
+  expect(facts).toContain("Old Office · Inactive");
   // Owner premium R7: the header counts places only; each row already says how many people.
   expect(html).toContain("<span>Locations<span class=\"wc-count c-num\">2</span></span>");
   expect(html).not.toContain("2 locations · 1 employee");

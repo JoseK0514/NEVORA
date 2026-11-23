@@ -35,7 +35,7 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
  }
  async function refresh(){
   if(busy.current||command.current)return;busy.current=true;setPending(true);setConfirm(null);setDeliveryOff(false);const version=generation.current,abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),15000);
-  try{await currentStatus(abort.signal,version);}catch{if(isCurrent(version)){setStatus({state:'unavailable',reason:'read_failed'});setMessage('Current invitation information could not be loaded. Refresh before taking another action.');}}
+  try{await currentStatus(abort.signal,version);}catch{if(isCurrent(version)){setStatus({state:'unavailable',reason:'read_failed'});setMessage('The invitation didn’t load. Check it again before you do anything else.');}}
   finally{clearTimeout(timeout);if(isCurrent(version)){busy.current=false;setPending(false);request.current=null;}}
  }
  async function run(reconcile=false){
@@ -65,7 +65,7 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
     command.current=null;setUncertain(false);setDeliveryOff(true);
    }else{
     command.current=null;setUncertain(false);setStatus({state:'unavailable',reason:'source_changed'});
-    setMessage(result.state==='limited'?`Too many invitation actions. Wait at least ${Math.ceil(result.retryAfterMs/1000)} seconds, then refresh current information.`:result.state==='conflict'?'Employee or invitation information changed. Refresh and review it before choosing a new action.':result.state==='invalid'?result.fieldErrors.map(e=>e.message).join(' '):'Invitation email is unavailable. Refresh current information before trying again.');
+    setMessage(result.state==='limited'?`Too many invitation actions. Wait at least ${Math.ceil(result.retryAfterMs/1000)} seconds, then check the invitation.`:result.state==='conflict'?'This person or their invitation changed. Check the invitation, then choose again.':result.state==='invalid'?result.fieldErrors.map(e=>e.message).join(' '):'The invitation couldn’t be sent. Check the invitation, then try again.');
    }
   }catch{if(isCurrent(version)){setStatus({state:'unavailable',reason:'source_changed'});setUncertain(true);setMessage('The action outcome is not confirmed. Check this action before sending another invitation.');}}
   finally{clearTimeout(timeout);if(isCurrent(version)){busy.current=false;setPending(false);request.current=null;}}
@@ -75,9 +75,9 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
   <h2 id={'invitation-'+employeeId} className={styles.heading}><EnvelopeSimpleIcon size={22} weight="duotone" aria-hidden="true"/> Account invitation</h2>
   {available?<div className={styles.status}>
    <p><strong>{status.eligibility==='ALREADY_ACTIVATED'?'Account activated':status.invitation?invitationText[status.invitation.state]:'No invitation yet'}</strong></p>
-   {status.registeredEmailMasked&&<p>Registered email: {status.registeredEmailMasked}</p>}
-   {status.eligibility==='NO_EMAIL'&&<p>Add a registered email in employee details before sending an invitation. An employee record can still be saved without email.</p>}
-   {status.eligibility==='INACTIVE'&&<p>This employee is inactive. Review their employee details before inviting them.</p>}
+   {status.registeredEmailMasked&&<p>Email: {status.registeredEmailMasked}</p>}
+   {status.eligibility==='NO_EMAIL'&&<p>Add their email in Details before you send an invitation. You can save someone without an email.</p>}
+   {status.eligibility==='INACTIVE'&&<p>This person is deactivated. Bring them back before you invite them.</p>}
    {status.eligibility==='SELF_ISSUE_DENIED'&&<p>Ask another Owner to manage your invitation.</p>}
    {/* Backend (Nov 15, 2026): deliveryAvailable says whether invitation email is configured for this workplace (not that
      * any email arrived). When it isn't, the reason shows before anyone tries to send; a Manager's read is read-only
@@ -85,16 +85,16 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
    {status.eligibility==='INVITABLE'&&!status.deliveryAvailable&&!deliveryOff&&<p>Email invitations aren’t turned on for this workplace yet, so an invitation can’t be sent. Contact <a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
    {status.eligibility==='INVITABLE'&&status.deliveryAvailable&&!status.allowedCommands.length&&<p>An Owner sends invitations.</p>}
    {status.invitation&&<p>{deliveryText[status.delivery]}</p>}
-  </div>:<p role="status">{deniedAccess?'Your access changed, so you can’t manage invitations.':'The invitation didn’t load. Refresh to try again.'}</p>}
-  {receipt&&<div className={styles.receipt}><strong>{receipt.action==='ISSUE'?'Invitation issued':'Invitation canceled'}</strong><p>{deliveryText[receipt.delivery]}</p><small>Refresh to see the current invitation status.</small></div>}
+  </div>:<p role="status">{deniedAccess?'Your access changed, so you can’t manage invitations.':'The invitation didn’t load. Check it again.'}</p>}
+  {receipt&&<div className={styles.receipt}><strong>{receipt.action==='ISSUE'?'Invitation issued':'Invitation canceled'}</strong><p>{deliveryText[receipt.delivery]}</p><small>Check invitation shows where it stands now.</small></div>}
   {message&&<p role={uncertain?'alert':'status'} aria-live="polite">{message}</p>}
   {deliveryOff&&<p role="status" aria-live="polite">Email invitations aren’t turned on for this workplace yet. Contact <a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
-  {confirm&&<div className={styles.receipt} role="group" aria-label="Confirm invitation action"><p>{confirm==='REVOKE'?'Cancel this invitation? The link in their email stops working, and they’ll need a new invitation to activate.':status.state==='ready'&&status.invitation?'Send a new invitation to the registered email? The previous invitation will no longer be usable.':'Send an invitation to the registered employee email?'}</p><div className={styles.actions}><button type="button" className="button primary" disabled={pending} onClick={()=>void run()}>{confirm==='REVOKE'?'Cancel invitation':'Send invitation'}</button><button type="button" className="button secondary" disabled={pending} onClick={()=>setConfirm(null)}>{confirm==='REVOKE'?'Keep invitation':'Don’t send'}</button></div></div>}
+  {confirm&&<div className={styles.receipt} role="group" aria-label="Confirm invitation action"><p>{confirm==='REVOKE'?'Cancel this invitation? The link in their email stops working, and they’ll need a new invitation to activate.':status.state==='ready'&&status.invitation?'Send a new invitation to their email? The earlier one stops working.':'Send an invitation to their email?'}</p><div className={`${styles.actions} ${styles.confirmActs}`}><button type="button" className="button secondary" disabled={pending} onClick={()=>setConfirm(null)}>{confirm==='REVOKE'?'Keep invitation':'Don’t send'}</button><button type="button" className="button primary" disabled={pending} onClick={()=>void run()}>{confirm==='REVOKE'?'Cancel invitation':'Send invitation'}</button></div></div>}
   <div className={styles.actions}>
    {uncertain?<button type="button" className="button secondary" disabled={pending} onClick={()=>void run(true)}>{pending?'Checking…':'Check what happened'}</button>:<>
     {available&&!deliveryOff&&status.allowedCommands.includes('ISSUE')&&<button type="button" className="button primary" disabled={pending||!!confirm} onClick={()=>setConfirm('ISSUE')}>{status.invitation?'Send new invitation':'Send invitation'}</button>}
     {available&&status.allowedCommands.includes('REVOKE')&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>setConfirm('REVOKE')}>Cancel invitation</button>}
-    {!deniedAccess&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>void refresh()}>{pending?'Checking invitation…':'Refresh invitation'}</button>}
+    {!deniedAccess&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>void refresh()}>{pending?'Checking invitation…':'Check invitation'}</button>}
    </>}
    {deniedAccess&&<Link href="/login" className="button secondary">Sign in again</Link>}
   </div>

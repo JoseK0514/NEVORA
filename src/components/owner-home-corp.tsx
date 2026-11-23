@@ -7,6 +7,7 @@ import Link from "next/link";
 import { CORP_NO_VALUE, CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpLink, CorpLoadFailed, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 import { periodLabel, type NextPay } from "@/components/payroll/my-pay";
+import { dateRange } from "@/lib/duration-format";
 import type { ActionCenterConnection } from "./manager-action-center";
 import type { NeedsYou } from "@/lib/action-center/needs-you";
 import { needsYouTotal, paydayReview } from "@/lib/action-center/review-routing";
@@ -186,8 +187,7 @@ function PaydayCard({ nextPay, payrollStatus, timecards, ready, connection, busi
   const period = nextPay?.period ? periodLabel(nextPay.period.startDate, nextPay.period.endDate) : "";
   const label = when ? "Payday" : payrollNeedsAttention ? "Payroll" : "Timecards";
   const payrollFact = (title: string, fact: {payday: string; period: {startDate: string; endDate: string}}) => {
-    const fullDate = (date: string) => new Intl.DateTimeFormat("en-US", {timeZone: "UTC", month: "short", day: "numeric", year: "numeric"}).format(new Date(`${date}T12:00:00Z`));
-    const detail = `Payday ${dayName(fact.payday, "short")}, ${fact.payday.slice(0, 4)} · Pay period ${fullDate(fact.period.startDate)} – ${fullDate(fact.period.endDate)}`;
+    const detail = `Payday ${dayName(fact.payday, "short")}, ${fact.payday.slice(0, 4)} · Pay period ${dateRange(fact.period.startDate, fact.period.endDate, {year: "each"})}`;
     return <li className="c-home__payroll-fact"><CorpRow title={title} detail={detail} href="/app/payroll" chevron label={`${title}. ${detail}. Opens Payroll`} /></li>;
   };
   return <CorpCard id="home-payday" label={label}>

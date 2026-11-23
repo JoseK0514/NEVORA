@@ -210,7 +210,7 @@ export function SignaturePreview() {
 
         <SigHead id="sgp-ticket" title="Ticket" aside="Filled and empty figure" />
         <div className="sg-card">
-          <div className="sg-card-head"><span className="sg-tile"><CalendarBlankIcon size={20} aria-hidden="true" /></span><span className="sg-copy"><b>Filled</b><span>Oct 27 – 28</span></span></div>
+          <div className="sg-card-head"><span className="sg-tile"><CalendarBlankIcon size={20} aria-hidden="true" /></span><span className="sg-copy"><b>Filled</b><span>Oct 27–28</span></span></div>
           <div className="sg-ticket">
             <div><small>From</small><b aria-hidden="true">27</b><span>Monday</span><span>Oct 2026</span></div>
             <i aria-hidden="true"><ArrowRightIcon size={18} /></i>

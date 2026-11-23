@@ -143,11 +143,11 @@ it('keeps the approved break lines when the receipt has no name',()=>{
 // Items 6 to 8: language and shared-tablet honesty.
 it('renders the paused page with the tablet’s own language switch and no sign-in',()=>{
  const en=renderToStaticMarkup(<ClockerPaused from="/clocker/main" unavailable={false} initialLocale="en"/>);
- expect(en).toContain('data-clocker-language=""');expect(en).toContain('aria-label="Switch language to Spanish"');
+ expect(en).toContain('data-clocker-language=""');expect(en).toContain('aria-label="Español, switch language to Spanish"');
  expect(en).toContain('Open billing on your own device.');expect(en).toContain('Until then, ask a manager to record your time.');
  expect(en).not.toContain('/login');expect(en).not.toMatch(/sign in/i);
  const es=renderToStaticMarkup(<ClockerPaused from="/clocker/main" unavailable={false} initialLocale="es"/>);
- expect(es).toContain('aria-label="Cambiar idioma a inglés"');expect(es).toContain('Mientras tanto, pide a un gerente que registre tu tiempo.');expect(es).not.toMatch(/iniciar sesión/i);
+ expect(es).toContain('aria-label="English, cambiar idioma a inglés"');expect(es).toContain('Mientras tanto, pide a un gerente que registre tu tiempo.');expect(es).not.toMatch(/iniciar sesión/i);
 });
 it.each(['en','es'] as const)('renders the Clocker’s own not-found page in %s: who can fix it, one legal line, no sign-in',lang=>{
  const html=renderToStaticMarkup(<ClockerNotFoundBody initialLocale={lang} legal={{en:<p className="q-legal">EN LEGAL</p>,es:<p className="q-legal">ES LEGAL</p>}}/>);

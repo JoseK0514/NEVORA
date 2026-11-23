@@ -51,7 +51,8 @@ export function useEmployeeAccountRead(kind:EmployeeViewKind,authority:string,en
  const control=useRef<ReturnType<typeof createPrivateSnapshotController<EmployeeViewSnapshot>>|null>(null);
  useEffect(()=>{
   // A short snapshot may reflect a source deadline, not lost session access.
-  // Clear it and permit current revalidation; only a server refusal denies.
+  // Notifications can take several seconds to read. Give renewal a fixed head start
+  // while keeping the original snapshot's expiry. Only a server refusal denies.
   const controller=createPrivateSnapshotController<EmployeeViewSnapshot>(setState,async signal=>{
    const response=await fetch(endpoint ?? `/api/employee/${kind}`,{cache:'no-store',credentials:'same-origin',redirect:'error',signal,headers:{Accept:'application/json','X-Nevora-Employee-View':authority}});
    if(response.status===401||response.status===403){
@@ -61,7 +62,7 @@ export function useEmployeeAccountRead(kind:EmployeeViewKind,authority:string,en
     return {state:'unavailable',reason:'access_denied'};
    }
    if(!response.ok)throw Error('View unavailable');return response.json();
-  },value=>parseEmployeeView(value,kind),reason=>({state:'unavailable',reason}),()=> 'read_failed');
+  },value=>parseEmployeeView(value,kind),reason=>({state:'unavailable',reason}),()=> 'read_failed',kind==='notifications'?{safetyMarginMs:6000}:undefined);
   control.current=controller;let mounted=true,ending=false;
   const pause=()=>controller.pause();
   const signout=()=>{ending=true;controller.pause();};

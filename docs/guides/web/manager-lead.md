@@ -29,6 +29,9 @@ You never review your own time off or correction.
 Start at **Home** and **Things to do**. Open the current record before acting;
 old dashboard counts and earlier receipts are not current authorization.
 
+A company-wide Manager's Home also shows **Today** (people scheduled by hour,
+from the published schedule) and shortcuts to the pages they can open.
+
 For planning, open **Schedule**, choose the week and location, and review
 availability and scheduling rules. Create or edit eligible assignments, review
 drafts and publish through the offered review. **Copy previous week** and

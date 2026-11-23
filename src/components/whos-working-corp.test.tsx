@@ -57,6 +57,7 @@ it("says the day of an earlier clock-in and shows the 12-hour flag with the coun
   expect(out).toContain("In since 7:00 AM");
   expect(out).toContain('<span class="c-who__name">Person m</span><span class="b-chip b-chip--red">No clock-out after 12 hours</span>');
   expect(out).not.toContain('<span class="c-who__name">Person s</span>');
-  expect(out).toMatch(/Clock-ins to check<\/span><span class="b-count">2<\/span><span class="b-chip b-chip--red">No clock-out after 12 hours<\/span>/);
+  // Final polish D3 (#25): the count stays beside the heading; the chip follows the sub-line.
+  expect(out).toMatch(/Clock-ins to check<\/span><span class="b-count">2<\/span><\/span><span class="c-row__detail"><span>[^<]*<\/span><span class="b-chip b-chip--red">No clock-out after 12 hours<\/span>/);
   expect(out).toContain('aria-label="Clock-ins to check, 2 to review, 1 with no clock-out after 12 hours, collapsed"');
 });

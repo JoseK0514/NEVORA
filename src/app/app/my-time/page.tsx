@@ -1,4 +1,5 @@
 import { OwnerOnlyNotice } from "@/components/owner-only-notice";
+import {dateRange} from '@/lib/duration-format';
 import {ResponsiveEmployeeHours} from '@/components/employee-mobile/hours';
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {hoursRequestId,hoursRecordId} from '@/lib/employee-hours';
@@ -37,12 +38,11 @@ export default async function MyTimePage({searchParams}:{searchParams:Promise<{v
   const corporate=session.role==='EMPLOYEE'||session.role==='LEAD';
   // Jose, 2026-10-19: when the hours being worked now are paid, from the workspace's pay schedule.
   const pay=await currentPayPeriod();
-  const shortDate=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
 
   // Signature (phase 1): the band says today's date until the punches arrive; the payday line follows the Clocker note.
   const zone=await getWorkspace().then(workspace=>workspace.timeZone).catch(()=>'UTC');
   const todayLabel=new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'long',month:'short',day:'numeric'}).format(new Date());
-  const scheduledPayLine=pay?`Scheduled payday: ${new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}).format(new Date(`${pay.payday}T12:00:00Z`))} for ${pay.period.startDate.slice(0,7)===pay.period.endDate.slice(0,7)?`${shortDate(pay.period.startDate)}–${Number(pay.period.endDate.slice(8))}`:`${shortDate(pay.period.startDate)} – ${shortDate(pay.period.endDate)}`}`:undefined;
+  const scheduledPayLine=pay?`Scheduled payday: ${new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'short',day:'numeric'}).format(new Date(`${pay.payday}T12:00:00Z`))} for ${dateRange(pay.period.startDate,pay.period.endDate,{year:'never'})}`:undefined;
   const today=businessDate(new Date(),zone);let period={startDate:addDays(today,-6),endDate:today};try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{}
   const view=params.view==='cards'?'cards':params.view==='corrections'?'corrections':'records';
   // Corporate (board E-PastTimecards): an Employee's Past timecards open on last week, Monday to Sunday.

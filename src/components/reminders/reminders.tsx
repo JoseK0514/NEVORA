@@ -11,6 +11,7 @@ import {QuestionIcon} from '@phosphor-icons/react/dist/ssr/Question';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {WifiSlashIcon} from '@phosphor-icons/react/dist/ssr/WifiSlash';
 import {QuietSheet, useSheetClose} from '@/components/quiet/quiet-sheet';
+import {BCallout} from '@/components/owner-b/b-kit';
 import {reminderCopy, reminderWhen, type ReminderLang} from './copy';
 import type {ReminderState, ReminderTarget} from './machine';
 import type {ReminderTransport} from './client';
@@ -137,8 +138,8 @@ export function OneBody({titleId, target, state, ui, about, onSend}: {titleId: s
     <h2 ref={heading} id={titleId} tabIndex={-1} className="b-rem-sheet__t">{t.oneTitle(target.name)}</h2>
     <Facts rows={rows} />
     {/* The person's state changed under the open sheet (or the device went offline): say so and keep Send off. */}
-    {!ready && state ? <p className="b-rem-sheet__note" data-tone={ui.line(state).tone} role="status">{ui.line(state).text}</p> : null}
-    {offline ? <p className="b-rem-sheet__note" data-tone="amber" role="status">{t.offline}</p> : null}
+    {!ready && state ? <div className="b-rem-sheet__note"><BCallout tone={ui.line(state).tone === 'amber' ? 'amber' : ui.line(state).tone === 'red' ? 'red' : 'grey'} icon={ui.line(state).tone === 'amber' || ui.line(state).tone === 'red' ? undefined : 'info'} role="status">{ui.line(state).text}</BCallout></div> : null}
+    {offline ? <div className="b-rem-sheet__note"><BCallout tone="amber" icon="offline" role="status">{t.offline}</BCallout></div> : null}
     <div className="b-rem-sheet__acts">
       <button type="button" className="b-btn b-btn--teal b-btn--full" disabled={!ready || offline} onClick={() => { onSend(); close?.(); }}>{t.send}</button>
       <button type="button" className="b-btn b-btn--quiet b-btn--full" onClick={() => close?.()}>{t.cancel}</button>
@@ -174,7 +175,7 @@ export function ManyBody({titleId, open, ui, about, onSend}: {titleId: string; o
     {results ? <p className="b-rem-sheet__sum" role="status" aria-live="polite">{working ? t.resultsWorking : t.resultsSummary(queued, sent.length)}</p>
       : <><Facts rows={facts} /><p className="b-rem-sheet__sum">{t.manyCount(eligible.length, rows.length)}</p></>}
     <ul className="b-rem-people" aria-label={t.people}>{list}</ul>
-    {!results && ui.store.offline ? <p className="b-rem-sheet__note" data-tone="amber" role="status">{t.offline}</p> : null}
+    {!results && ui.store.offline ? <div className="b-rem-sheet__note"><BCallout tone="amber" icon="offline" role="status">{t.offline}</BCallout></div> : null}
     <div className="b-rem-sheet__acts">
       {results ? <button type="button" className="b-btn b-btn--teal b-btn--full" onClick={() => close?.()}>{t.done}</button> : <>
         <button type="button" className="b-btn b-btn--teal b-btn--full" disabled={!eligible.length || ui.store.offline} onClick={() => onSend(eligible.map(row => row.person.employeeId))}>{t.sendMany(eligible.length)}</button>

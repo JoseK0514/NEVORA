@@ -30,7 +30,21 @@ it('keeps failed swap discovery distinct from empty and preserves the separately
 it('shows one explanation for verified-empty swap choices',()=>{
  const snapshot={...read,mode:'swap' as const,targets:[],check:{allowed:false,notice:'No eligible shifts to swap with right now.'}};
  const html=renderToStaticMarkup(<CreationView state={{snapshot,paused:false,refreshing:false}} authority={read.authority} mode="swap" sourceId="own" draft={draft} operation={new EmployeeCreationOperation()} onDraft={()=>{}} onReview={()=>{}} onRefresh={()=>{}} onSubmit={()=>{}} onRetry={()=>{}}/>);
- expect(html.match(/No eligible shifts to swap with right now\./g)).toHaveLength(1);
+ // Nov 21, 2026: the empty answer stands where the list would be, once, with no dead Send button.
+ expect(html.match(/No one to swap with right now/g)).toHaveLength(1);expect(html).not.toContain('No eligible shifts');
+ expect(html).not.toContain('Choose a teammate to swap with');expect(html).not.toContain('Send swap request');
+});
+it('says what still works when a swap has no one to choose (Nov 21, 2026)',()=>{
+ const swap=(snapshot:unknown)=>renderToStaticMarkup(<CreationView state={{snapshot:snapshot as EmployeeCreationSnapshot,paused:false,refreshing:false}} authority={read.authority} mode="swap" sourceId="own" draft={draft} operation={new EmployeeCreationOperation()} onDraft={()=>{}} onReview={()=>{}} onRefresh={()=>{}} onSubmit={()=>{}} onRetry={()=>{}}/>);
+ const empty={...read,mode:'swap' as const,targets:[],partial:false,check:{allowed:false,notice:'No eligible shifts to swap with right now.'}};
+ const offer=swap({...empty,coverage:{allowed:true,notice:null}});
+ expect(offer.match(/Offer this shift for cover instead/g)).toHaveLength(1);expect(offer).toContain('You can offer yours to your team.');
+ const none=swap({...empty,coverage:{allowed:false,notice:null}});
+ expect(none).not.toContain('Offer this shift');expect(none).toContain('Your shift is still yours.');
+ // Teammates exist but none could be checked: a different answer, with the way to try again.
+ const unchecked=swap({...empty,partial:true,check:{allowed:false,notice:'Some shift options couldn’t be checked. Refresh to try again.'},coverage:{allowed:false,notice:null}});
+ expect(unchecked).toContain('Teammates’ shifts couldn’t be checked');expect(unchecked).toContain('>Check again</button>');
+ expect(unchecked).not.toContain('Send swap request');expect(unchecked).not.toContain('No one to swap with');expect(unchecked).not.toContain('Some shift options');
 });
 it('names no one it cannot name: the can’t-work and cover rows are text only, with no icon tile (upscale S10)',()=>{
  const callout=render();expect(callout).toContain('Your manager gets this right away');expect(callout).not.toMatch(/class="c-av/);

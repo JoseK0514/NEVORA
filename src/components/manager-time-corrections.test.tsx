@@ -127,7 +127,7 @@ describe('D2 manager correction surface',()=>{
 });
 
 it.each([
- ['offline','unavailable offline'],['reconnecting','Reconnecting'],['access_lost','access ended'],['unavailable','Correction requests unavailable'],['loading','Loading'],['paused','Updates paused'],
+ ['offline','unavailable offline'],['reconnecting','Reconnecting'],['access_lost','access ended'],['not_allowed','have access to time corrections'],['unavailable','Correction requests unavailable'],['loading','Loading'],['paused','Updates paused'],
 ] as const)('UX-04 %s clears an old ready queue without an empty claim',(connection,label)=>{const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} connection={connection} busyId={null} notice={null} onDecision={rs.fn()} onRetry={rs.fn()} retry={null}/>);expect(html).toContain(label);expect(html).not.toContain('Nothing to fix');expect(html).not.toContain('Avery QA');expect(html).not.toContain('manager-corrections-count');});
 
 it('UX-04 refuses an empty claim even when ready is supplied with a missing snapshot',()=>{const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={null} loading={false} connection="ready" busyId={null} notice={null} onDecision={rs.fn()} onRetry={rs.fn()} retry={null}/>);expect(html).toContain('Correction requests unavailable');expect(html).not.toContain('Nothing to fix');});
@@ -136,5 +136,14 @@ it('D8 private pause retains only non-identifying operation receipt feedback whi
  const confirmed='Correction approved. The original recorded punch remains unchanged.';
  expect(pausedCorrectionNotice(confirmed)).toBe(confirmed);expect(pausedCorrectionNotice('Avery private outcome')).toBeNull();
  const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} connection="paused" busyId={null} notice={pausedCorrectionNotice(confirmed)} onDecision={()=>{}} onRetry={()=>{}} retry={null}/>);
- expect(html).toContain(confirmed);expect(html).toContain('Updates paused');expect(html).not.toContain('Avery QA');expect(html).not.toContain('Nothing to fix');expect(html).not.toContain('manager-corrections-count');
+ expect(html).toContain('Correction approved');expect(html).toContain('Updates paused');expect(html).not.toContain('Avery QA');expect(html).not.toContain('Nothing to fix');expect(html).not.toContain('manager-corrections-count');
+});
+
+// QA A3-06 (Nov 21, 2026): Elena lacked the corrections permission and was told her access ended and to sign in again.
+it('a missing permission says so and asks the Owner, with no sign-in',()=>{
+ const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={{state:'unavailable',reason:'permission_required'}} loading={false} busyId={null} notice={null} onDecision={rs.fn()} onRetry={rs.fn()} retry={null}/>);
+ expect(html).toContain('You don’t have access to time corrections');expect(html).toContain('Ask the Owner if you need it.');
+ expect(html).not.toContain('Sign in');expect(html).not.toContain('access ended');
+ const signedOut=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={{state:'unavailable',reason:'access_denied'}} loading={false} busyId={null} notice={null} onDecision={rs.fn()} onRetry={rs.fn()} retry={null}/>);
+ expect(signedOut).toContain('Sign in again');
 });

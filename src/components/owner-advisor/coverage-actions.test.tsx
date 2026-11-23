@@ -8,11 +8,11 @@ const actions={acknowledge:()=>{},save:async()=>{},recover:async()=>{},check:asy
 it("shows exact review terms, one acknowledgement and a disabled save until acknowledged",()=>{
  const result=ownerCoverageAction();result.review.assignments[0].employeeName="<script>unsafe</script>";
  const html=renderToStaticMarkup(<CoverageActionPanel view={{stage:"review",result,lastSavedAt:null,acknowledged:false,message:""}} actions={actions}/>);
- expect(html).toContain("Review draft changes");expect(html).toContain("&lt;script&gt;unsafe&lt;/script&gt;");expect(html).toContain("8:00 AM – 12:00 PM");expect(html).toContain("0 configured blocks remain");expect(html).toContain("North");expect(html).toContain('type="checkbox"');expect(html).toContain("disabled");
+ expect(html).toContain("Review draft changes");expect(html).toContain("&lt;script&gt;unsafe&lt;/script&gt;");expect(html).toContain("8:00 AM – 12:00 PM · 4 h");expect(html).toContain("No time slots would be left uncovered.");expect(html).not.toMatch(/configured|ledger|minutes/);expect(html).toContain("North");expect(html).toContain('type="checkbox"');expect(html).toContain("disabled");
 });
 it("distinguishes saved drafts, current coverage and publication without declaring resolved or notifying",()=>{
  const html=renderToStaticMarkup(<CoverageActionPanel view={{stage:"saved",result:ownerCoverageAction("coverage_checked"),lastSavedAt:null,acknowledged:false,message:""}} actions={actions}/>);
- expect(html).toContain("Draft saved");expect(html).toContain("0 of 1 published");expect(html).toContain("Check progress");expect(html).toContain("/app/schedule?week=2026-10-19");expect(html).toContain("does not confirm");
+ expect(html).toContain("Draft saved");expect(html).toContain("0 of 1 published");expect(html).toContain("Check progress");expect(html).toContain("/app/schedule?week=2026-10-19");expect(html).toContain("don’t confirm");expect(html).toContain("No schedule was published and nobody was notified.");expect(html).toContain("Covered on Thu, Oct 22: 4 h of the 4 h that need someone.");
 });
 it("hides private details on pause and shows explicit original-request recovery",()=>{
  const html=renderToStaticMarkup(<CoverageActionPanel view={{stage:"uncertain",result:null,lastSavedAt:null,acknowledged:false,message:"Reply unavailable"}} actions={actions}/>);

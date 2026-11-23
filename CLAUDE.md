@@ -24,6 +24,15 @@ Jose's explicit authorization.
 
 UI-only setup notes: `.claude/UI-SETUP.md`.
 
+## Design operating system
+
+Standing standards live in the project skill `/nevora-design-os` (`.claude/skills/nevora-design-os/`): Apple HIG as
+the rulebook for layout, targets, type scaling and colour accessibility; the Direction B tokens and kit as the design
+system; `docs/design/voice.md` for product copy plus the cliché ban and Google developer style for everything else;
+GSAP for choreographed motion. Codex shares it through `AGENTS.md` and `.codex/skills/nevora-design-os/`. Whenever Jose
+presents a draft, run its Impeccable audit (hierarchy, spacing, accessibility, states) before anything else. It sits
+below DESIGN.MD in precedence and doesn't authorise brand, font or icon changes.
+
 ## Product team agents
 
 Eight role agents live in `.claude/agents/`: `ux-researcher`,

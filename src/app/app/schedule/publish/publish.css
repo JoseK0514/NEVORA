@@ -36,5 +36,6 @@
 :is(#c-root, html) .c-pub .c-note { display: flex; align-items: center; gap: 8px; }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-pub .c-pub__caret { transition: none; } }
 
-/* Closing F1 (NV-088): a fully published week's check is green, like the band's Published chip. */
-:is(#c-root, html) .c-pub .c-pub__done { color: #1D6B45; }
+/* Nov 21, 2026: a fully published week's note carries the kit's done mark (BDoneMark, still: it was true on load); the
+ * local green circle is gone. The mark sits 12px from its sentence, as in every other note that carries one. */
+:is(#c-root, html) .c-pub .c-note:has(> .b-donemark) { gap: 12px; }

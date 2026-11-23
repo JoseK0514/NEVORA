@@ -1,5 +1,5 @@
 import {scopedObservation} from '@/lib/company-access/observation';
-import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
@@ -21,13 +21,13 @@ export default async function TimeCorrectionsPage(){
   const session=await requireRoles(MANAGER_ROLES);
   const proof=await requireSessionMutationProof(),access=await readOperationalAuthority(proof);
   if(access.state==='unavailable')return <OperationalUnavailable title="Time corrections unavailable" reason={access.reason}/>;
-  const source=await withOperationalCompany(proof,async()=>null);
-  if(source.state==='unavailable')return <OperationalUnavailable title="Time corrections unavailable" reason={source.reason}/>;
+  if(!access.scope)return <OperationalUnavailable title="Time corrections unavailable" reason="access_denied" scoped/>;
+  const scoped=access.scope.mode==='LOCATIONS';
   const authority=correctionAuthority(proof),workspace=await getWorkspace();
-  return <ManagerCorrectionRecoveryBoundary key={managerReviewRecoveryKey(session.id,authority,source.authority,'time-corrections')}>
-    <ScopedReadFrame observation={scopedObservation(source)}>
+  return <ManagerCorrectionRecoveryBoundary key={managerReviewRecoveryKey(session.id,authority,access.authority,'time-corrections')}>
+    <ScopedReadFrame observation={scopedObservation(access)}>
       <CorpPage className="c-tcx c-page--narrow" labelledBy="tcx-title">
-        <CorpNav back={{href:'/app/timecards',label:'Time'}} title="Time corrections" titleId="tcx-nav-title" phoneOnly/>
+        <CorpNav back={scoped ? {href:'/app/inbox',label:'Things to do'} : {href:'/app/timecards',label:'Time'}} title="Time corrections" titleId="tcx-nav-title" phoneOnly/>
         {/* OW-015 / OW-004: the queue draws the title and its one sub-line (the count, the note about times). */}
         <ManagerTimeCorrections key={authority} actorId={session.id} authority={authority} band={{zone:workspace.timeZone}}/>
       </CorpPage>

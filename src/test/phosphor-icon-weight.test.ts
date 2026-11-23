@@ -27,6 +27,12 @@ const duotoneFiles: Record<string, string> = {
   "components/payroll/payroll-ui.tsx": "23px payroll document tile, explicit before SY-012",
 };
 
+/** Premium pass (Nov 21, 2026; Jose's pick 4): a glyph that stands inside a circle is duotone. The kit decides that in
+ * one place per surface, so only these wrappers may compute a duotone weight. */
+const markWrappers: Record<string, string> = {
+  "components/clocker-icon.tsx": "ClockerIcon `mark`: rings, action circles and notes on the Clocker",
+};
+
 function sources(dir: string): string[] {
   return readdirSync(dir).flatMap(name => {
     const path = join(dir, name);
@@ -63,7 +69,7 @@ function offenders(file: string): string[] {
         const value = weight?.initializer?.getText(source) ?? "";
         const problem = !weight ? "has no weight"
           : /regular|thin|light|undefined|null/.test(value) ? `can draw a weight other than bold or fill: ${value}`
-          : /duotone/.test(value) && !(key in duotoneFiles) ? "is duotone in a file that is not on the duotone list"
+          : /duotone/.test(value) && !(key in duotoneFiles) && !(key in markWrappers) ? "is duotone in a file that is not on the duotone list"
           : "";
         if (problem) found.push(`${key}:${source.getLineAndCharacterOfPosition(node.getStart(source)).line + 1} <${tag}> ${problem}`);
       }

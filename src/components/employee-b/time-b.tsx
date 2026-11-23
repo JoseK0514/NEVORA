@@ -75,6 +75,16 @@ export function HoursRecoveryB({href}:{href:string}){
 function Dur({value}:{value:number}){
  return <><span aria-hidden="true">{compactDuration(value)}</span><span className="b-sr">{boardDuration(value)}</span></>;
 }
+/** Final polish, round 2 (T1): a day row's range on Time. It is the Employee screens' `Range` (each half whole, the break
+ * before the dash) at every width from 360px. Under 360px the title column cannot hold a range with minutes on one line
+ * (measured: 118px against 127px), and every row of the week then started its second line with a dash; there the dash
+ * ends the first line instead ("8:58 AM –" over "5:28 PM"). Both dashes are in the markup and time.css shows one, so
+ * nothing shifts after hydration; the row's link keeps its spoken label. Anything that is not a two-part range is `Range`'s. */
+function DayRange({text}:{text:string}){
+ const halves=text.split(/[\s\u00a0]+–[\s\u00a0]+/);
+ if(halves.length!==2||!halves[0]||!halves[1])return <Range text={text}/>;
+ return <><span className="eb-nb">{halves[0]}<span className="eb-dayrange__trail">{'\u00a0–'}</span></span> <span className="eb-nb"><span className="eb-dayrange__lead">{'–\u00a0'}</span>{halves[1]}</span></>;
+}
 const M=momentsCopy(),W=workCopy();
 const chip=(status:{word:string;tone:StatusTone})=><BChip tone={status.tone}>{status.word}</BChip>;
 /** Phase 9 (spec 1.1, 1.4): a state that stands alone in a card's header. A week still under way ("In progress") is the
@@ -100,21 +110,24 @@ export function TimeTabB({data}:{data:Ready}){
  const status=current?m.onBreak?<BStatusText dot="amber">On break</BStatusText>:<BStatusText dot={overrun?'amber':'green'}>Clocked in</BStatusText>
   :underway?<BStatusText dot="amber">{W.notClockedInFor(since(underway,underway.startTime))}</BStatusText>:<BStatusText>Not clocked in</BStatusText>;
  const headline=overrun&&current?W.stillClockedIn(clockAt(current.clockInAt,zone)):current?m.onBreak&&m.openBreak?`On break since ${clockAt(m.openBreak.startAt,zone)}`:`Clocked in at ${clockAt(current.clockInAt,zone)}`:`Clock in on ${m.tablet}`;
- const line=current?m.onBreak?`${current.locationName} · clocked in at ${clockAt(current.clockInAt,zone)}`:`${current.locationName} · ${boardDuration(current.elapsedSeconds)} so far`:'Take breaks and clock out there too';
+ // Final polish, round 2 (T2, T3): the running total is the rows' compact figure ("13 h 26 so far", read "13 h 26 min so
+ // far"), and it stays whole: the line breaks after the place's dot, never inside the total or before "far".
+ const line:ReactNode=current?m.onBreak?keepWhole(`${current.locationName} · clocked in at ${clockAt(current.clockInAt,zone)}`)
+  :<>{current.locationName}{'\u00a0· '}<span className="eb-nb eb-sofar"><Dur value={current.elapsedSeconds}/>{'\u00a0so\u00a0far'}</span></>:'Take breaks and clock out there too';
  const hint=overrun&&current?W.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`),current.locationName):current?m.onBreak?'End your break on your location’s tablet.':'Take breaks and clock out on your location’s tablet.':null;
  return <HoursBScreen hero={m.week.length?<BLive label="This week at a glance" items={[{label:'This week',value:figure(m.worked)},{label:'Breaks',value:figure(m.breaks)}]}/>:null}>
   <BCard title="Right now" id="b-hours-now" chip={status}>
    {/* Phase 9 (spec 2.2): a punch left open after the shift ended is the kit's amber callout (Warning glyph, a hairline,
      * the 600 title over its lines), as on Home; every other state keeps the plain notice with the teal clock. */}
-   {overrun&&current?<BCallout tone="amber" role="status" title={keepWhole(headline)}><p>{keepWhole(line)}</p>{hint?<p>{hint}</p>:null}</BCallout>
+   {overrun&&current?<BCallout tone="amber" role="status" title={keepWhole(headline)}><p>{line}</p>{hint?<p>{hint}</p>:null}</BCallout>
     :<div className="b-notice eb-now"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
-    <span className="b-notice__t">{keepWhole(headline)}</span><span className="b-notice__s">{keepWhole(line)}</span>{hint?<span className="b-notice__s">{hint}</span>:null}
+    <span className="b-notice__t">{keepWhole(headline)}</span><span className="b-notice__s">{line}</span>{hint?<span className="b-notice__s">{hint}</span>:null}
    </span></div>}
   </BCard>
   <BCard title={<span><span className="eb-wide">This week · </span><span className="eb-nowrap">{rangeLabel(m.weekStart,m.weekEnd)}</span></span>} id="b-hours-week" chip={<BStatusText>In progress</BStatusText>}>
    <BList label="This week’s time">
     {m.week.map(entry=>{const date=dateKey(entry.clockInAt,zone),range=clockRange(entry.clockInAt,entry.clockOutAt,zone);
-     return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date}/>} title={<span id={'b-hours-entry-'+entry.id}><Range text={keepWhole(range)}/></span>}
+     return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date}/>} title={<span id={'b-hours-entry-'+entry.id}><DayRange text={keepWhole(range)}/></span>}
       sub={entry.breakSeconds?`${boardDuration(entry.breakSeconds)} break`:undefined} end={<BValue><span className={entry.clockOutAt?undefined:'eb-teal'}><Dur value={entry.elapsedSeconds}/></span></BValue>}
       label={`${dayLong(date)}, ${range}, ${boardDuration(entry.elapsedSeconds)}${entry.breakSeconds?`, ${boardDuration(entry.breakSeconds)} break`:''}`}/>;})}
     {m.week.length?null:<li className="b-li"><p className="eb-quiet">No time recorded yet this week</p></li>}
@@ -122,12 +135,16 @@ export function TimeTabB({data}:{data:Ready}){
    </BList>
    <BCardNote>Hours include breaks.</BCardNote>
   </BCard>
+  {/* Final polish (Nov 20, 2026): last week and the corrections are one column (the Home's eb-side), so on desktop the
+    * second card follows the first instead of waiting for the left column's row. Phones stack them as before. */}
+  <div className="eb-side" id="b-hours-side">
   {context?<LastWeekB authority={context.authority} date={data.date}/>:null}
   {/* The corrections sit under last week (the right column on desktop). Review F2 (NV-135): phones show them too, so
     * both widths hold the same content. */}
   <div className="eb-corrections"><BCard label="Your correction requests"><BList>
    <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub={W.correctionsSub}/>
   </BList></BCard></div>
+  </div>
  </HoursBScreen>;
 }
 
@@ -194,7 +211,7 @@ function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}
    <div className="eb-sum"><p className="eb-sum__big"><Dur value={seconds(card.recordedNanoseconds)}/></p><p className="eb-sum__line">Hours · includes {boardDuration(seconds(card.breakNanoseconds))} of breaks</p>
     {notes.map(note=><p className="eb-sum__line eb-sum__line--warn" key={note}>{note}</p>)}</div>
    <BList label="Days">{entries.map(entry=>{const length=span(entry.startAt,entry.endAt),date=dateKey(entry.startAt,card.timeZone),times=clockRange(entry.startAt,entry.endAt,card.timeZone);
-    return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date}/>} title={<span id={'b-hours-card-entry-'+entry.id}><Range text={keepWhole(times)}/></span>}
+    return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date}/>} title={<span id={'b-hours-card-entry-'+entry.id}><DayRange text={keepWhole(times)}/></span>}
      end={length===null?<span className="eb-val eb-val--teal">In progress</span>:<BValue><Dur value={length}/></BValue>} label={`${dayLong(date)}, ${times}, ${length===null?'in progress':boardDuration(length)}`}/>;})}</BList>
   </>:<p className="eb-quiet">No hours this week</p>}
  </BCard>;

@@ -5,8 +5,11 @@ import Link from 'next/link';
 import {shiftChangeAction,reconcileShiftChangeAction} from '@/app/app/exchange/actions';
 import {ShiftChangeFormState,shiftChangeFeedback} from './shift-change-form-state';
 import type {ShiftChangeResult} from '../lib/shift-changes/types';
+import {DecisionResult} from './owner-b/decision-parts';
+/** Final polish (confirmations A #1, #2): what a decision left, by the reply's status. Only the Owner and Manager lists pass it. */
+export type ShiftChangeOutcome=Partial<Record<'completed'|'closed',{tone:'done'|'closed';title:string;line:string;icon?:ReactNode}>>;
 type View={pending:boolean;result:ShiftChangeResult|null;uncertain:boolean;offline:boolean};
-export function ShiftChangeForm({fields,children,actions,className='shift-change-form',resolvedHref}:{fields:Readonly<Record<string,string|number>>;children:ReactNode;actions?:ReactNode;className?:string;resolvedHref?:string}){
+export function ShiftChangeForm({fields,children,actions,className='shift-change-form',resolvedHref,outcome}:{/** The result drawn in place of the row's buttons once the server answered (the kit's done state, or the grey state for a declined or closed request). Without it the form says its line under the buttons, as before. */outcome?:ShiftChangeOutcome;fields:Readonly<Record<string,string|number>>;children:ReactNode;actions?:ReactNode;className?:string;resolvedHref?:string}){
  const controller=useRef<ShiftChangeFormState|null>(null),router=useRouter();
  const [view,setView]=useState<View>({pending:false,result:null,uncertain:false,offline:false});
  function update(state:ShiftChangeFormState){setView({pending:state.pending,result:state.result,uncertain:state.uncertain,offline:!navigator.onLine});}
@@ -20,6 +23,8 @@ export function ShiftChangeForm({fields,children,actions,className='shift-change
  }
  async function retry(){const current=controller.current;if(!current)return;const promise=current.retry(reconcileShiftChangeAction,shiftChangeAction);update(current);await promise;update(current);refresh(current);}
  const resolved=view.result&&['completed','pending','closed'].includes(view.result.status);
+ const left=resolved&&outcome&&view.result&&(view.result.status==='completed'||view.result.status==='closed')?outcome[view.result.status]:undefined;
+ if(left)return <form onSubmit={submit} className={className}><DecisionResult tone={left.tone} icon={left.icon} title={left.title} line={left.line}/></form>;
  return <form onSubmit={submit} className={className} aria-busy={view.pending}>
   <fieldset className="shift-change-fields" disabled={view.pending||view.uncertain||!!resolved}>{Object.entries(fields).map(([key,value])=><input key={key} type="hidden" name={key} value={value}/>)}{children}</fieldset>
   {actions?<fieldset className="shift-change-fields" disabled={view.uncertain||!!resolved}>{actions}</fieldset>:null}

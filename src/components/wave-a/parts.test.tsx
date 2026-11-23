@@ -11,7 +11,7 @@ import { Status } from "@/components/kit/kit";
 import { Notice } from "./parts";
 
 const html = (node: React.ReactElement) => renderToStaticMarkup(node);
-const glyph = (meaning: BMeaning) => html(<BGlyph meaning={meaning} />);
+const glyph = (meaning: BMeaning) => html(<BGlyph meaning={meaning} solid />);
 const src = (path: string) => readFileSync(join(__dirname, "../..", path), "utf8");
 
 describe("Wave A Notice", () => {
@@ -38,7 +38,9 @@ describe("Wave C Notice", () => {
   it.each([["done", "green", "done"], ["urgent", "red", "stop"], ["info", "teal", "info"]] as const)("draws %s with the %s %s glyph", (tone, color, meaning) => {
     const markup = html(<WaveCNotice tone={tone} title="Location added" action={<button type="button">Next: staffing</button>}>It opens tomorrow.</WaveCNotice>);
     expect(markup).toContain('class="b-card wc-note"');
-    expect(markup).toContain(`<span class="b-ico b-ico--${color}" aria-hidden="true">${glyph(meaning)}</span>`);
+    // A done notice carries the app's one done mark (BDoneMark, which draws its own tick); the others keep their glyph.
+    if (tone === "done") expect(markup).toContain('<span class="b-ico b-ico--green b-donemark" aria-hidden="true"><svg class="b-donemark__tick"');
+    else expect(markup).toContain(`<span class="b-ico b-ico--${color}" aria-hidden="true">${glyph(meaning)}</span>`);
     // The one action sits under the words, inside the text column.
     expect(markup).toMatch(/<span class="b-notice__s">It opens tomorrow\.<\/span><span class="wc-note__act"><button type="button">Next: staffing<\/button><\/span><\/span>/);
     expect(markup).not.toContain("q-note");
