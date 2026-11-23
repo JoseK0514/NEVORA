@@ -265,6 +265,9 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       </BCard> : null}
       {removed.length ? <BCard id="clocker-removed" title={t.removedCard} count={removed.length}><BList label={t.removedList}>{removed.map(row)}</BList></BCard> : null}
     </div>
+    {/* The sheet keeps the Settings form styles it was built with (fields, the busy label swap), which are scoped to the
+      Settings frame's class; the host draws no box of its own. */}
+    <div className="wc-page ck-sheethost" style={{ display: 'contents' }}>
     <QuietSheet open={!!selection} onClose={close} labelledBy="clocker-dialog-title">
       {selection ? <form ref={sheetForm} noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} aria-describedby="clocker-dialog-text" className={`c-sheet c-tablet-sheet ck-sheet${selection.operation === 'REVOKE' ? ' ck-confirm' : ''}`} {...handlers}>
         {/* A tablet's options: its name centred, Done on the right (a changed name saves). A confirm (add, new code,
@@ -311,6 +314,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
         </div>
       </form> : null}
     </QuietSheet>
+    </div>
   </ClockerOwnerFrame>;
 }
 
