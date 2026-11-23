@@ -12,7 +12,7 @@ import { CorpCard, CorpEmpty, CorpEmptyRow, CorpRow, CorpRows } from './corp/cor
 import { breakCategories, type BreakType } from '../lib/clocker/break-types';
 import type { BreakTypeResult } from '../app/app/settings/breaks/actions';
 import { FieldB, ResultB } from '../app/app/settings/settings-b-form';
-import { ButtonLabel, FieldErrors, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
+import { FieldErrors, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 
 type Selection = { operation: 'CREATE' | 'EDIT' | 'ARCHIVE' | 'REACTIVATE'; type?: BreakType };
 
@@ -133,7 +133,9 @@ export function ClockerBreakTypes({ initialTypes, action }: {
     {archived.length ? <CorpCard id="break-types-archived" label="Archived" count={archived.length}>
       <CorpRows label="Archived break types">{archived.map(row)}</CorpRows>
     </CorpCard> : null}
-    <dialog ref={dialog} className="c-setb-dlg wc-dialog" aria-labelledby="break-editor-title" aria-describedby="break-editor-description" onCancel={event => { event.preventDefault(); askClose(); }}>
+    {/* The dialog is not a child of the page itself, so the page's card rules (full width, the gap between cards) never
+      reach it; display: contents gives its holder no box. */}
+    <div style={{ display: 'contents' }}><dialog ref={dialog} className="c-setb-dlg wc-dialog" aria-labelledby="break-editor-title" aria-describedby="break-editor-description" onCancel={event => { event.preventDefault(); askClose(); }}>
       {selection ? <form noValidate key={selection.operation + '-' + (selection.type?.id ?? 'new')} onSubmit={submit} aria-busy={pending} {...handlers}>
         <FormDiscardGuard />
         <div className="c-setb-dlg__head">
@@ -167,9 +169,9 @@ export function ClockerBreakTypes({ initialTypes, action }: {
             onClick={() => { clear(); setError(null); setSelection({ operation: selection.type!.active ? 'ARCHIVE' : 'REACTIVATE', type: selection.type }); }}>{selection.type.active ? 'Archive break type' : 'Reactivate break type'}</button> : null}
           <button className="c-btn c-btn--secondary" type="button" disabled={pending} onClick={askClose} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
           {error?.refresh ? <button type="button" className="c-btn" onClick={() => window.location.reload()}>Reload</button>
-            : <button className={selection.operation === 'ARCHIVE' ? 'c-btn c-btn--danger' : 'c-btn'} type="submit" disabled={pending}><ButtonLabel pending={pending} idle={saveLabel} busy="Saving…" /></button>}
+            : <button className={selection.operation === 'ARCHIVE' ? 'c-btn c-btn--danger' : 'c-btn'} type="submit" disabled={pending}>{pending ? 'Saving…' : saveLabel}</button>}
         </div>
       </form> : null}
-    </dialog>
+    </dialog></div>
   </>;
 }
