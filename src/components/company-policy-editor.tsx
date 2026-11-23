@@ -4,7 +4,9 @@ import {useState,useRef,useEffect} from "react";
 import {ArrowCounterClockwiseIcon} from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
 import {ShieldWarningIcon} from "@phosphor-icons/react/dist/ssr/ShieldWarning";
 import {CaretRightIcon} from "@phosphor-icons/react/dist/ssr/CaretRight";
-import {QuietHeader,QuietNav} from "./quiet/quiet";
+import {BState} from "./owner-b/b-kit";
+import {CorpFormFooter} from "./corp/corp";
+import {FieldB,ResultB,SwitchRowB} from "@/app/app/settings/settings-b-form";
 import {formatBusinessDateTimeInput,formatBusinessTimestamp,policyEffectiveInstant} from "@/lib/business-time";
 import type {CompanyPolicyHistory,PolicyScopeHistory,PolicyHistoryRevision} from "@/lib/business-improvements/company-policies/history";
 import type {CompanyPolicySettings,CompanyPolicyCommand} from "@/lib/business-improvements/company-policies/model";
@@ -53,9 +55,9 @@ function PrivateLaborReview({settings,scope,timeZone,open=false}:{settings:Compa
   const absent=(value:unknown)=>value===undefined?(scope?"Inherit company default":"Not set"):value===null?"Explicitly not configured":null;
   const location=(id:string|null)=>id?`Location ${id}`:"All locations";
   // Release 1: a row like its siblings ("Policy history"); the values open under it. Editing alerts never changes them.
-  return <details className="policy-private-review q-details" open={open}>
-    <summary className="q-row q-row--one"><span className="q-rt"><b>Labor settings</b></span><span className="q-rv q-rv--l">Owner only</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></summary>
-    <div className="q-rule__body"><p>Pay rates, budgets and pay rules saved with these policies. Changing an alert keeps them as they are.</p>
+  return <details className="policy-private-review cp-details" open={open}>
+    <summary className="c-row c-row--one"><span className="c-row__main"><span className="c-row__title">Labor settings</span></span><span className="c-row__value c-row__value--soft">Owner only</span><CaretRightIcon weight="bold" className="c-chev" aria-hidden="true"/></summary>
+    <div className="cp-details__body"><p>Pay rates, budgets and pay rules saved with these policies. Changing an alert keeps them as they are.</p>
     <dl><div><dt>Compensation reference</dt><dd>{absent(labor?.compensation)??<>{labor!.compensation!.ruleReference}<br/>{labor!.compensation!.breakTreatment==="INCLUDE_ALL_RECORDED_BREAKS"?"Include all recorded breaks":`Exclude break types: ${labor!.compensation!.excludedBreakTypeIds.join(", ")||"None"}`}<br/>Effective {formatBusinessTimestamp(labor!.compensation!.effectiveFrom,timeZone)}</>}</dd></div>
     <div><dt>Employee rates</dt><dd>{absent(labor?.rates)??(labor!.rates!.length?<ul>{labor!.rates!.map(rate=><li key={rate.id}><strong>{rate.rate} {rate.currency}</strong> · {rate.rateUnit==="HOUR"?"per hour":rate.rateUnit==="SHIFT"?"per shift":"per salary period"}<br/>Employee {rate.employeeId} · {location(rate.locationId)} · Reference {rate.id}<br/>{formatBusinessTimestamp(rate.validFrom,timeZone)} — {rate.validUntil?formatBusinessTimestamp(rate.validUntil,timeZone):"No end date"}</li>)}</ul>:"Empty rate override — no explicit rates")}</dd></div>
     <div><dt>Labor budgets</dt><dd>{absent(labor?.budgets)??(labor!.budgets!.length?<ul>{labor!.budgets!.map(budget=><li key={budget.id}><strong>{budget.amount} {budget.currency}</strong> · {location(budget.locationId)} · Reference {budget.id}<br/>{formatBusinessTimestamp(budget.startAt,timeZone)} — {formatBusinessTimestamp(budget.endAt,timeZone)}</li>)}</ul>:"Empty budget override — no explicit budgets")}</dd></div>
@@ -166,206 +168,86 @@ export function CompanyPolicyEditor({history:initialHistory,locations,timeZone}:
   function startRecovery(){if(!previousValid||!writable||pending||busy||readState!=="ready")return;setDraft({settings:previousValid.settings,expectedRevision:current.expectedRevision,recoveryFrom:previousValid});setDraftEpoch(value=>value+1);setModes({});setRawFields({});setReviewed(false);setConflict(false);announce(`Draft started from version ${previousValid.revision}. Version ${current.expectedRevision} can’t be used until you save a corrected version.`);}
   // Quiet (v4): at a location, a rule that follows the company is on when the company's rule is on.
   const inheritedOn=(key:(typeof fields)[number][0])=>{const settings=company.state==="valid"?company.selected.settings:null;const rule=key==="overtimeRisk"?settings?.labor?.overtimeRisk:settings?.attendance?.[key];return rule!==undefined&&rule!==null;};
-  return <div className="company-policy-editor q-page q-policies" data-nv-page="" data-wc-save="card">
-    <QuietNav back={{href:"/app/settings",label:"Settings"}} title="Company policies" right={draft&&(dirty||busy||pending!==null)?<button type="submit" form="policy-form" className="q-nav__r q-nav__r--b" aria-label="Save policies"
-      disabled={!draft||busy||conflict||!writable||readState!=="ready"||pending!==null||draft.recoveryFrom!==null}>{busy?"Saving…":"Save"}</button>:undefined}/>
-    <QuietHeader title="Company policies"/>
-    <ul className="q-list" style={{marginTop:16}}><li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b id="company-policy-scope-label">Applies to</b></span>
-      <select className="q-select-row__control" aria-labelledby="company-policy-scope-label" value={scope} disabled={busy||pending!==null||conflict||readState!=="ready"} onChange={event=>{const next=event.target.value;setScope(next);setDraft(currentDraft(history,next||null));setDraftEpoch(value=>value+1);setModes({});setRawFields({});setReviewed(false);setNotice("");}}><option value="">All locations</option>{scopeOptions.map(item=><option key={item.id} value={item.id}>{item.name}{item.active?"":" · inactive"}</option>)}</select>
-      <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></label></li></ul>
-    <div ref={noticeRef} tabIndex={-1} className="policy-notice" role="status" aria-live="polite">{notice}</div>
-    {readState!=="ready"?<section className="policy-state" aria-busy={readState==="loading"}><h2>{readState==="loading"?"Reading current policies":readState==="unauthorized"?"Policy access ended":"Policies unavailable"}</h2><p>{readState==="loading"?"Editing is paused while the current history is checked.":readState==="unauthorized"?"Sign in with current Owner access to continue.":"Editing is paused. Retry the read to verify current policies; your draft remains in memory."}</p>{readState==="unauthorized"?<a className="button secondary" href="/login">Sign in again</a>:<button className="button secondary" type="button" disabled={readState==="loading"||busy} onClick={()=>void refresh()}><ArrowCounterClockwiseIcon size={18} weight="bold" aria-hidden="true"/>Retry read</button>}</section>:<>
-      {scope&&company.state==="unavailable"?<section className="policy-state policy-warning"><h2>Company defaults need a correction</h2><p>Company version {company.expectedRevision} can’t be used. This location’s own rules don’t confirm the attendance rules it inherits. Check the company default separately.</p></section>:null}
-      {!writable?<section className="policy-state"><h2>Historical location</h2><p>This location is inactive or was removed. You can still see its policy history, but you can’t change it.</p></section>:null}
-      {current.state==="unavailable"?<section className="policy-state policy-warning"><div className="policy-state-heading"><ShieldWarningIcon size={24} weight="bold" aria-hidden="true"/><h2>Version {current.expectedRevision} can’t be used</h2></div><p>Attendance rules are off until you save a corrected version. The history is kept, and earlier versions weren’t turned back on.</p>{previousValid&&writable?<><p>Version {previousValid.revision} from {formatBusinessTimestamp(previousValid.changedAt,timeZone)} can be used to start a full replacement.</p><button className="button secondary" type="button" disabled={busy||pending!==null} onClick={startRecovery}>Start from version {previousValid.revision}</button></>:<p>Correction is held until a complete replacement can be reviewed, including attendance and private labor settings.</p>}</section>:null}
-      {conflict?<section className="policy-state policy-warning"><h2>Your draft needs a fresh review</h2><p>The draft below wasn’t saved. You’re viewing version {current.expectedRevision}. Nothing was merged or overwritten.</p>{current.state==="valid"?<details className="policy-current-comparison"><summary>Compare current saved rules</summary><CurrentPolicyRules settings={current.selected.settings} scope={scope} timeZone={timeZone}/><PrivateLaborReview settings={current.selected.settings} scope={scope} timeZone={timeZone}/></details>:null}<button className="button secondary" type="button" disabled={busy||pending!==null} onClick={()=>{adoptCurrent(history);announce(`Retained draft discarded. Current revision ${current.expectedRevision} loaded.`);}}>Discard draft and use the current version</button></section>:null}
+  const disabledAll=busy||pending!==null||conflict||!writable;
+  const showSave=(dirty||busy||pending!==null)&&!!draft&&!draft.recoveryFrom;
+  const field=(key:string,name:string,label:string,control:{kind?:"select";type?:string;min?:string;max?:string;fallback:string;options?:[string,string][]})=>{
+    const id=`${key}.${name}`;
+    const value=rawFields[id]??control.fallback;
+    const onChange=(event:{target:{name:string;value:string}})=>setRawFields(values=>({...values,[event.target.name]:event.target.value}));
+    return control.kind==="select"
+      ?<FieldB kind="select" id={`cp-${key}-${name}`} name={id} label={label} value={value} onChange={onChange}>{control.options!.map(([v,l])=><option key={v} value={v}>{l}</option>)}</FieldB>
+      :<FieldB id={`cp-${key}-${name}`} name={id} label={label} type={control.type} min={control.min} max={control.max} value={value} onChange={onChange}/>;
+  };
+  // Settings in Direction B (Nov 23, 2026): the page's frame (band, ‹ Settings, the title and the phone's Save) is
+  // SettingsPageB in page.tsx; this editor draws the cards, each a direct child of the page. Wording is unchanged.
+  return <>
+    <section className="c-card" aria-labelledby="company-policy-scope-label"><div className="c-setb-fields cp-scope">
+      <div className="c-field c-setb-field"><label className="c-field__label" id="company-policy-scope-label" htmlFor="company-policy-scope">Applies to</label>
+      <select id="company-policy-scope" className="c-in" value={scope} disabled={busy||pending!==null||conflict||readState!=="ready"} onChange={event=>{const next=event.target.value;setScope(next);setDraft(currentDraft(history,next||null));setDraftEpoch(value=>value+1);setModes({});setRawFields({});setReviewed(false);setNotice("");}}><option value="">All locations</option>{scopeOptions.map(item=><option key={item.id} value={item.id}>{item.name}{item.active?"":" · inactive"}</option>)}</select></div>
+    </div></section>
+    {notice?<ResultB innerRef={noticeRef} tone="info">{notice}</ResultB>:<div ref={noticeRef} tabIndex={-1} className="c-sr" role="status" aria-live="polite"/>}
+    {readState!=="ready"?<section className="c-card policy-state" aria-busy={readState==="loading"}><BState silent kind={readState==="loading"?"loading":readState==="unauthorized"?"locked":"failed"} title={readState==="loading"?"Reading current policies":readState==="unauthorized"?"Policy access ended":"Policies unavailable"} line={readState==="loading"?"Editing is paused while the current history is checked.":readState==="unauthorized"?"Sign in with current Owner access to continue.":"Editing is paused. Retry the read to verify current policies; your draft remains in memory."}><span className="cp-acts">{readState==="unauthorized"?<a className="c-btn c-btn--secondary" href="/login">Sign in again</a>:<button className="c-btn c-btn--secondary" type="button" disabled={readState==="loading"||busy} onClick={()=>void refresh()}><ArrowCounterClockwiseIcon weight="bold" className="c-ic" aria-hidden="true"/>Retry read</button>}</span></BState></section>:<>
+      {scope&&company.state==="unavailable"?<section className="c-card policy-state"><BState silent kind="paused" title="Company defaults need a correction" line={<>Company version {company.expectedRevision} can’t be used. This location’s own rules don’t confirm the attendance rules it inherits. Check the company default separately.</>}/></section>:null}
+      {!writable?<section className="c-card policy-state"><BState silent kind="locked" title="Historical location" line="This location is inactive or was removed. You can still see its policy history, but you can’t change it."/></section>:null}
+      {current.state==="unavailable"?<section className="c-card policy-state"><BState silent kind="paused" icon={<ShieldWarningIcon weight="bold"/>} title={<>Version {current.expectedRevision} can’t be used</>} line="Attendance rules are off until you save a corrected version. The history is kept, and earlier versions weren’t turned back on.">{previousValid&&writable?<><p className="cp-more">Version {previousValid.revision} from {formatBusinessTimestamp(previousValid.changedAt,timeZone)} can be used to start a full replacement.</p><span className="cp-acts"><button className="c-btn c-btn--secondary" type="button" disabled={busy||pending!==null} onClick={startRecovery}>Start from version {previousValid.revision}</button></span></>:<p className="cp-more">Correction is held until a complete replacement can be reviewed, including attendance and private labor settings.</p>}</BState></section>:null}
+      {conflict?<section className="c-card policy-state"><BState silent kind="paused" title="Your draft needs a fresh review" line={<>The draft below wasn’t saved. You’re viewing version {current.expectedRevision}. Nothing was merged or overwritten.</>}>{current.state==="valid"?<details className="policy-current-comparison cp-details"><summary className="c-row c-row--one"><span className="c-row__main"><span className="c-row__title">Compare current saved rules</span></span><CaretRightIcon weight="bold" className="c-chev" aria-hidden="true"/></summary><div className="cp-details__body"><CurrentPolicyRules settings={current.selected.settings} scope={scope} timeZone={timeZone}/><PrivateLaborReview settings={current.selected.settings} scope={scope} timeZone={timeZone}/></div></details>:null}<span className="cp-acts"><button className="c-btn c-btn--secondary" type="button" disabled={busy||pending!==null} onClick={()=>{adoptCurrent(history);announce(`Retained draft discarded. Current revision ${current.expectedRevision} loaded.`);}}>Discard draft and use the current version</button></span></BState></section>:null}
       {draft?<>
-        {draft.recoveryFrom?<section className="policy-replacement-review"><h2>Review the complete replacement</h2><p>Started from version {draft.recoveryFrom.revision} · {formatBusinessTimestamp(draft.recoveryFrom.changedAt,timeZone)}. This draft replaces version {draft.expectedRevision} in full. Values in the unusable version can’t be checked.</p><p>Check every attendance rule and the private labor settings below before saving. Saving adds a new version and keeps the history.</p></section>:null}
-        <form id="policy-form" key={formKey} className="employee-form policy-form" aria-busy={busy} onInput={()=>setTouched(formKey)} onChange={()=>setTouched(formKey)} onSubmit={event=>{event.preventDefault();void submit(event.currentTarget).catch(()=>announce("Enter the minutes and a valid start date in the company time zone. Times skipped or repeated by daylight saving time need a different selection."));}}>
-        <div className="q-grp"><h2>Tell me about</h2></div>
-        {/* Tablets and desktop: the rules are one card whose footer holds Save (b-foundation.css, .wc-savecard); phones keep
-            the top bar's Save. Same form, same submit. */}
-        <div className="wc-savecard">
-        <ul className="q-list q-policy-list">{fields.map(([key, label]) => {
-          const rule = (
-            key === "overtimeRisk"
-              ? editableSettings?.labor?.overtimeRisk
-              : editableSettings?.attendance?.[key]
-          ) as Record<string, unknown> | null | undefined;
+        {draft.recoveryFrom?<section className="c-card policy-state"><BState silent kind="paused" title="Review the complete replacement" line={<>Started from version {draft.recoveryFrom.revision} · {formatBusinessTimestamp(draft.recoveryFrom.changedAt,timeZone)}. This draft replaces version {draft.expectedRevision} in full. Values in the unusable version can’t be checked.</>}><p className="cp-more">Check every attendance rule and the private labor settings below before saving. Saving adds a new version and keeps the history.</p></BState></section>:null}
+        {/* The rules are one card: the switch rows, each rule's fields under its row, the legal line as the card's note and
+            Save in its footer (tablets and desktop) or on the band (phones), shown once something changed. */}
+        <form id="policy-form" key={formKey} className="c-card c-setb-form policy-form" aria-labelledby="policy-form-label" aria-busy={busy}
+          data-save-on-change="" data-dirty={showSave?"":undefined}
+          onInput={()=>setTouched(formKey)} onChange={()=>setTouched(formKey)} onSubmit={event=>{event.preventDefault();void submit(event.currentTarget).catch(()=>announce("Enter the minutes and a valid start date in the company time zone. Times skipped or repeated by daylight saving time need a different selection."));}}>
+        <div className="c-card__head"><h2 className="c-card__label" id="policy-form-label">Tell me about</h2></div>
+        <ul className="c-rows q-policy-list">{fields.map(([key, label]) => {
+          const rule = (key === "overtimeRisk" ? editableSettings?.labor?.overtimeRisk : editableSettings?.attendance?.[key]) as Record<string, unknown> | null | undefined;
           const mode=modes[key] ?? (rule === undefined ? "inherit" : rule === null ? "none" : "configured");
+          const str=(name:string,fallback:string)=>rule?.[name]!==undefined&&rule?.[name]!==null?String(rule[name]):fallback;
           return (
-            <li key={key} className="q-policy"><fieldset disabled={busy || pending !== null || conflict || !writable}>
-              <legend className="q-sr">{label}</legend>
+            <li key={key} className="cp-rule"><fieldset disabled={disabledAll} className="c-setb-fieldset">
+              <legend className="c-sr">{label}</legend>
               {/* Quiet (v4): on is a custom threshold; off disables the rule (or keeps the default when nothing was saved).
                   At a location, a rule that follows the company shows the company's state and says so. */}
-              <label className="q-row q-row--one q-policy__row">
-                <span className="q-rt"><b>{rowNames[key]}</b>{scope && mode === "inherit" ? <i>Company default</i> : null}</span>
-                <input type="checkbox" role="switch" className="q-tog" aria-label={rowNames[key]}
-                  checked={mode === "configured" || (mode === "inherit" && !!scope && inheritedOn(key))}
-                  onChange={event=>setModes(value=>({...value,[key]:event.target.checked?"configured":scope||rule!==undefined?"none":"inherit"}))}/>
-              </label>
+              <SwitchRowB id={`cp-${key}`} label={rowNames[key]} description={scope && mode === "inherit" ? "Company default" : undefined} disabled={disabledAll}
+                checked={mode === "configured" || (mode === "inherit" && !!scope && inheritedOn(key))}
+                onChange={on=>setModes(value=>({...value,[key]:on?"configured":scope||rule!==undefined?"none":"inherit"}))}/>
               <input type="hidden" name={`${key}.mode`} value={mode}/>
-              <div className="policy-rule-fields q-rule__body" hidden={mode !== "configured"}><label>
-                After how many minutes{" "}
-                <input
-                  name={`${key}.threshold`}
-                  type="number"
-                  min="0"
-                  max="525600"
-                  value={rawFields[`${key}.threshold`] ?? (rule ? String(rule.thresholdMinutes) : "")}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                />
-              </label>
-              <label>
-                <span id={`${key}.comparison-label`}> When time is </span>
-                <select
-                  aria-labelledby={`${key}.comparison-label`}
-                  name={`${key}.comparison`}
-                  value={rawFields[`${key}.comparison`] ?? (String(rule?.comparison ?? "GT"))}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                >
-                  <option value="GT">More than</option>
-                  <option value="GTE">At least</option>
-                </select>
-              </label>
-              <label>
-                Starts on{" "}
-                <input
-                  name={`${key}.effective`}
-                  type="datetime-local"
-                  value={rawFields[`${key}.effective`] ?? (formatBusinessDateTimeInput(rule?.effectiveFrom ? String(rule.effectiveFrom) : undefined,timeZone))}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                />
-              </label>
-              {key === "longEntry" && (
-                <>
-                  <label>
-                <span id={`${key}.basis-label`}> Time basis </span>
-                <select
-                      aria-labelledby={`${key}.basis-label`}
-                  name={`${key}.basis`}
-                      value={rawFields[`${key}.basis`] ?? (String(rule?.basis ?? "RECORDED_ELAPSED"))}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                    >
-                      <option value="RECORDED_ELAPSED">Recorded elapsed</option>
-                      <option value="EFFECTIVE_ELAPSED">
-                        Effective elapsed after corrections
-                      </option>
-                    </select>
-                  </label>
-                  <label>
-                <span id={`${key}.appliesTo-label`}> Entries </span>
-                <select
-                      aria-labelledby={`${key}.appliesTo-label`}
-                  name={`${key}.appliesTo`}
-                      value={rawFields[`${key}.appliesTo`] ?? (String(rule?.appliesTo ?? "BOTH"))}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                    >
-                      <option value="OPEN">Currently open</option>
-                      <option value="CLOSED">Completed</option>
-                      <option value="BOTH">Open and completed</option>
-                    </select>
-                  </label>
-                </>
-              )}
-              {key === "missingClockIn" && (
-                <label>
-                <span id={`${key}.cutoff-label`}> Check-in window ends </span>
-                <select
-                    aria-labelledby={`${key}.cutoff-label`}
-                  name={`${key}.cutoff`}
-                    value={rawFields[`${key}.cutoff`] ?? (String(rule?.cutoff ?? "AFTER_SCHEDULE_END"))}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                  >
-                    <option value="AFTER_SCHEDULE_START">
-                      After published start
-                    </option>
-                    <option value="AFTER_SCHEDULE_END">
-                      After published end
-                    </option>
-                  </select>
-                </label>
-              )}
-              {key === "overtimeRisk" && (
-                <>
-                  <label>
-                <span id={`${key}.basis-label`}> Time basis </span>
-                <select
-                      aria-labelledby={`${key}.basis-label`}
-                  name={`${key}.basis`}
-                      value={rawFields[`${key}.basis`] ?? (String(
-                        rule?.basis ?? "EFFECTIVE_ELAPSED_INCLUDING_BREAKS",
-                      ))}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                    >
-                      <option value="RECORDED_ELAPSED_INCLUDING_BREAKS">
-                        Recorded elapsed including breaks
-                      </option>
-                      <option value="EFFECTIVE_ELAPSED_INCLUDING_BREAKS">
-                        Effective elapsed including breaks
-                      </option>
-                    </select>
-                  </label>
-                  <label>
-                <span id={`${key}.window-label`}> Window </span>
-                <select
-                      aria-labelledby={`${key}.window-label`}
-                  name={`${key}.window`}
-                      value={rawFields[`${key}.window`] ?? (String(rule?.window ?? "BUSINESS_WEEK"))}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                    >
-                      <option value="BUSINESS_DAY">Business day</option>
-                      <option value="BUSINESS_WEEK">Business week</option>
-                    </select>
-                  </label>
-                  <label>
-                <span id={`${key}.aggregation-label`}> Aggregation </span>
-                <select
-                      aria-labelledby={`${key}.aggregation-label`}
-                  name={`${key}.aggregation`}
-                      value={rawFields[`${key}.aggregation`] ?? (String(rule?.aggregation ?? "COMPANY"))}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                    >
-                      <option value="COMPANY">Across the company</option>
-                      <option value="LOCATION">At this location</option>
-                    </select>
-                  </label>
-                  <label>
-                    Business day starts{" "}
-                    <input
-                      type="time"
-                      name={`${key}.boundary`}
-                      value={rawFields[`${key}.boundary`] ?? (String(rule?.dayBoundaryTime ?? "00:00"))}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                    />
-                  </label>
-                  <label>
-                <span id={`${key}.weekStart-label`}> Week starts on </span>
-                <select
-                      aria-labelledby={`${key}.weekStart-label`}
-                  name={`${key}.weekStart`}
-                      value={rawFields[`${key}.weekStart`] ?? (String(rule?.weekStartsOn ?? 1))}
-                  onChange={event=>setRawFields(values=>({...values,[event.target.name]:event.target.value}))}
-                    >{["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map((day,i)=><option key={day} value={i}>{day}</option>)}</select>
-                  </label>
-                </>
-              )}
-              {scope ? <button type="button" className="q-link q-policy__default" onClick={()=>setModes(value=>({...value,[key]:"inherit"}))}>Use company default</button> : null}
-            </div>{scope && mode !== "configured" && mode !== "inherit" ? <p className="q-help q-policy__note">Off at this location. <button type="button" className="q-link" onClick={()=>setModes(value=>({...value,[key]:"inherit"}))}>Use company default</button></p> : null}</fieldset></li>
+              <div className="c-setb-fields cp-rule__fields policy-rule-fields" hidden={mode !== "configured"}>
+                {field(key,"threshold","After how many minutes",{type:"number",min:"0",max:"525600",fallback:rule?String(rule.thresholdMinutes):""})}
+                {field(key,"comparison","When time is",{kind:"select",fallback:str("comparison","GT"),options:[["GT","More than"],["GTE","At least"]]})}
+                {field(key,"effective","Starts on",{type:"datetime-local",fallback:formatBusinessDateTimeInput(rule?.effectiveFrom ? String(rule.effectiveFrom) : undefined,timeZone)})}
+                {key === "longEntry" ? <>
+                  {field(key,"basis","Time basis",{kind:"select",fallback:str("basis","RECORDED_ELAPSED"),options:[["RECORDED_ELAPSED","Recorded elapsed"],["EFFECTIVE_ELAPSED","Effective elapsed after corrections"]]})}
+                  {field(key,"appliesTo","Entries",{kind:"select",fallback:str("appliesTo","BOTH"),options:[["OPEN","Currently open"],["CLOSED","Completed"],["BOTH","Open and completed"]]})}
+                </> : null}
+                {key === "missingClockIn" ? field(key,"cutoff","Check-in window ends",{kind:"select",fallback:str("cutoff","AFTER_SCHEDULE_END"),options:[["AFTER_SCHEDULE_START","After published start"],["AFTER_SCHEDULE_END","After published end"]]}) : null}
+                {key === "overtimeRisk" ? <>
+                  {field(key,"basis","Time basis",{kind:"select",fallback:str("basis","EFFECTIVE_ELAPSED_INCLUDING_BREAKS"),options:[["RECORDED_ELAPSED_INCLUDING_BREAKS","Recorded elapsed including breaks"],["EFFECTIVE_ELAPSED_INCLUDING_BREAKS","Effective elapsed including breaks"]]})}
+                  {field(key,"window","Window",{kind:"select",fallback:str("window","BUSINESS_WEEK"),options:[["BUSINESS_DAY","Business day"],["BUSINESS_WEEK","Business week"]]})}
+                  {field(key,"aggregation","Aggregation",{kind:"select",fallback:str("aggregation","COMPANY"),options:[["COMPANY","Across the company"],["LOCATION","At this location"]]})}
+                  {field(key,"boundary","Business day starts",{type:"time",fallback:str("dayBoundaryTime","00:00")})}
+                  {field(key,"weekStart","Week starts on",{kind:"select",fallback:str("weekStartsOn","1"),options:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map((day,i)=>[String(i),day] as [string,string])})}
+                </> : null}
+                {scope ? <span><button type="button" className="c-link cp-default" onClick={()=>setModes(value=>({...value,[key]:"inherit"}))}>Use company default</button></span> : null}
+              </div>
+              {scope && mode !== "configured" && mode !== "inherit" ? <p className="cp-note">Off at this location. <button type="button" className="c-link cp-default" onClick={()=>setModes(value=>({...value,[key]:"inherit"}))}>Use company default</button></p> : null}
+            </fieldset></li>
           );
         })}</ul>
-        {(dirty||busy||pending!==null)&&!draft.recoveryFrom?<div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn" aria-label="Save policies" disabled={busy||conflict||!writable||readState!=="ready"||pending!==null}>{busy?"Saving…":"Save"}</button></div>:null}
-        </div>
-          {draft.recoveryFrom?<label className="policy-replacement-confirm"><input type="checkbox" checked={reviewed} disabled={busy||pending!==null||conflict||!writable} onChange={event=>setReviewed(event.target.checked)}/><span>I reviewed the complete replacement, including attendance and private labor settings. It replaces version {draft.expectedRevision} in full.</span></label>:null}
-          {pending||draft.recoveryFrom?<div className="policy-actions"><button className="q-btn" disabled={busy||conflict||!writable||(!pending&&draft.recoveryFrom!==null&&!reviewed)} type="submit">{busy?"Saving…":pending?"Try saving again":"Save replacement version"}</button></div>:null}
+        {draft.recoveryFrom?<label className="c-row cp-confirm policy-replacement-confirm"><input type="checkbox" className="cp-check" checked={reviewed} disabled={disabledAll} onChange={event=>setReviewed(event.target.checked)}/><span className="c-row__main"><span className="c-row__title cp-confirm__t">I reviewed the complete replacement, including attendance and private labor settings. It replaces version {draft.expectedRevision} in full.</span></span></label>:null}
+        <p className="c-setb-cardnote q-policy-legal">Alerts only flag times for you to check, from each rule’s start date. They never change pay.</p>
+        {showSave?<CorpFormFooter><button type="submit" className="c-btn" disabled={busy||conflict||!writable||readState!=="ready"||pending!==null}>{busy?"Saving…":"Save"}</button></CorpFormFooter>:null}
+        {pending||draft.recoveryFrom?<><CorpFormFooter><button className="c-btn" disabled={busy||conflict||!writable||(!pending&&draft.recoveryFrom!==null&&!reviewed)} type="submit">{busy?"Saving…":pending?"Try saving again":"Save replacement version"}</button></CorpFormFooter>
+          <div className="c-only-phone c-setb-phoneacts"><button className="c-btn" disabled={busy||conflict||!writable||(!pending&&draft.recoveryFrom!==null&&!reviewed)} type="submit">{busy?"Saving…":pending?"Try saving again":"Save replacement version"}</button></div></>:null}
         </form>
-      </>:null}
-      <p className="q-help q-policy-legal">Alerts only flag times for you to check, from each rule’s start date. They never change pay.</p>
-      <div className="q-grp"><h2>Records</h2></div>
-      <ul className="q-list">{draft?<li className="q-policy-private"><PrivateLaborReview settings={draft.settings} scope={scope} timeZone={timeZone} open={draft.recoveryFrom!==null}/></li>:null}<li><details className="q-details"><summary className="q-row q-row--one"><span className="q-rt"><b>History</b></span><span className="q-rv q-rv--l">{current.state==="not_configured"?"No changes yet":`Revision ${current.expectedRevision}`}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></summary><div className="q-rule__body"><section className="policy-history"><h2>Policy history</h2><p>Saved versions for this location. A version marked unusable stays in the history but isn’t applied.</p><ul>{history.revisions.filter(item=>item.locationId===(scope||null)).sort((a,b)=>b.revision-a.revision).map(item=><li key={item.operationId}><strong>Revision {item.revision}</strong> · {formatBusinessTimestamp(item.changedAt,timeZone)}<br/>{item.state==="unavailable"?<span className="policy-history-unavailable">This version can’t be used. It stays in the history.</span>:item.revision===current.expectedRevision?"Current saved revision":"Earlier valid revision"}<br/>{item.changedKeys===null?"Change details unavailable":item.changedKeys.map(key=>fields.find(([name])=>key.includes(name))?.[1]??({"labor.compensation":"Compensation reference","labor.rates":"Employee rates","labor.budgets":"Labor budgets","labor.calculationMethod":"Calculation method reference"}[key]??"Policy setting")).join(", ")||"No rule changes"}</li>)}</ul>{!history.revisions.some(item=>item.locationId===(scope||null))?<p>No saved policy changes here yet.</p>:null}</section>
-        <button className="q-btn q-btn--sec" type="button" disabled={busy} onClick={()=>void refresh()}>Refresh policy history</button></div></details></li></ul>
+      </>:<p className="c-note q-policy-legal">Alerts only flag times for you to check, from each rule’s start date. They never change pay.</p>}
+      <section className="c-card" aria-labelledby="policy-records-label">
+        <div className="c-card__head"><h2 className="c-card__label" id="policy-records-label">Records</h2></div>
+        <ul className="c-rows">{draft?<li className="q-policy-private"><PrivateLaborReview settings={draft.settings} scope={scope} timeZone={timeZone} open={draft.recoveryFrom!==null}/></li>:null}<li><details className="cp-details"><summary className="c-row c-row--one"><span className="c-row__main"><span className="c-row__title">History</span></span><span className="c-row__value c-row__value--soft">{current.state==="not_configured"?"No changes yet":`Revision ${current.expectedRevision}`}</span><CaretRightIcon weight="bold" className="c-chev" aria-hidden="true"/></summary><div className="cp-details__body policy-history"><p>Saved versions for this location. A version marked unusable stays in the history but isn’t applied.</p><ul>{history.revisions.filter(item=>item.locationId===(scope||null)).sort((a,b)=>b.revision-a.revision).map(item=><li key={item.operationId}><strong>Revision {item.revision}</strong> · {formatBusinessTimestamp(item.changedAt,timeZone)}<br/>{item.state==="unavailable"?<span className="policy-history-unavailable">This version can’t be used. It stays in the history.</span>:item.revision===current.expectedRevision?"Current saved revision":"Earlier valid revision"}<br/>{item.changedKeys===null?"Change details unavailable":item.changedKeys.map(key=>fields.find(([name])=>key.includes(name))?.[1]??({"labor.compensation":"Compensation reference","labor.rates":"Employee rates","labor.budgets":"Labor budgets","labor.calculationMethod":"Calculation method reference"}[key]??"Policy setting")).join(", ")||"No rule changes"}</li>)}</ul>{!history.revisions.some(item=>item.locationId===(scope||null))?<p>No saved policy changes here yet.</p>:null}
+        <span className="cp-acts"><button className="c-btn c-btn--secondary" type="button" disabled={busy} onClick={()=>void refresh()}>Refresh policy history</button></span></div></details></li></ul>
+      </section>
     </>}
     {/* Leaving with rule changes that are not saved asks first (Nov 21, 2026). Not once access has ended or the draft is gone. */}
     <DiscardGuard dirty={dirty&&draft!==null&&readState!=="unauthorized"}/>
-  </div>;
+  </>;
 }

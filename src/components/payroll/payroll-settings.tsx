@@ -3,7 +3,8 @@
 import { FormDiscardGuard } from '@/components/kit/discard-dialog';
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent } from 'react';
 import { CaretRightIcon, PlusIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
-import { CorpCard, CorpNav, CorpPage, CorpTitle } from '../corp/corp';
+import { CorpCard } from '../corp/corp';
+import { SettingsPageB } from '@/app/app/settings/settings-b';
 import { PayGroup } from './pay-group';
 import { Feedback } from './payroll-feedback';
 import { PayDateField } from './pay-date-field';
@@ -80,11 +81,11 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
   const actorName = latest ? data?.employees.find(employee => employee.id === latest.actorId)?.name : undefined;
   // Corporate (Release 1, board O-PayrollSettings): grouped rows; each opens its own fields in place. Saving asks for the
   // effective date and a reason, as before. On desktop the Time and pay tabs lead here, so there is no Back.
-  return <CorpPage className="c-pay c-pset c-page--narrow" labelledBy="payroll-settings-title">
-    <CorpNav back={{ href: '/app/payroll', label: 'Payroll' }} title="Payroll settings" phoneOnly />
-    {/* Phase 8 (review B #35): the band says what payroll does, as Payroll above the same tabs does (the approved scope
-      sentence, unchanged); "US dollars" read as a stray fact, and the currency is fixed. */}
-    <CorpTitle id="payroll-settings-title" title="Payroll settings" sub="Calculate pay and share statements. You pay your team outside NEVORA." wide />
+  // Settings in Direction B (Nov 23, 2026): the shared Settings frame (‹ Payroll and the title on a phone's band, the
+  // large title and the approved scope sentence on tablets and desktop), then the Time and pay tabs.
+  /* Phase 8 (review B #35): the band says what payroll does, as Payroll above the same tabs does (the approved scope
+     sentence, unchanged); "US dollars" read as a stray fact, and the currency is fixed. */
+  return <SettingsPageB className="c-pay c-pset" titleId="payroll-settings-title" title="Payroll settings" back={{ href: '/app/payroll', label: 'Payroll' }} sub="Calculate pay and share statements. You pay your team outside NEVORA.">
     <PayrollTabs items={tabs} current="/app/settings/payroll" />
     <BusinessZone.Provider value={timeZone}><SavingForm.Provider value={savingForm}>
     <KeepFocusClear />
@@ -103,7 +104,7 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
     </>}
     {!data && !resource.loading && nativeSources !== null ? <div className="payroll-workflow"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div> : null}
     </SavingForm.Provider></BusinessZone.Provider>
-  </CorpPage>;
+  </SettingsPageB>;
 }
 
 /** Review B5 (NV-024): change dates are the company's day, not the device's. */
@@ -191,8 +192,8 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       <p className="wb-note">This saves how you plan to pay. NEVORA hasn’t tested the file with your bank. It makes a standard payment file; it doesn’t send payments or confirm that your bank processed them.</p>
     </div></details>}
     </PayGroup>
-    <div className="c-pset__save wb-form"><PayDateField name="effectiveFrom" label="Effective date" required defaultValue={today(zone)} /><label>Reason for change<input name="reason" autoComplete="off" required maxLength={300} /></label><ImpactPreview data={data} /><p className="wb-note">Approved payroll doesn’t change. Drafts that aren’t approved yet need a new review after settings or exceptions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden /><span>{error}</span></p>}
-      <button type="submit" className="c-btn c-btn--full" aria-disabled={locked}><PendingLabel pending={operation.busy && savingId === 'company'} pendingText="Saving…">Save company preferences</PendingLabel></button></div>
+    <div className="c-card c-pset__savecard"><div className="c-pset__save wb-form"><PayDateField name="effectiveFrom" label="Effective date" required defaultValue={today(zone)} /><label>Reason for change<input name="reason" autoComplete="off" required maxLength={300} /></label><ImpactPreview data={data} /><p className="wb-note">Approved payroll doesn’t change. Drafts that aren’t approved yet need a new review after settings or exceptions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden /><span>{error}</span></p>}
+      <button type="submit" className="c-btn c-btn--full" aria-disabled={locked}><PendingLabel pending={operation.busy && savingId === 'company'} pendingText="Saving…">Save company preferences</PendingLabel></button></div></div>
   </fieldset></form>;
 }
 
