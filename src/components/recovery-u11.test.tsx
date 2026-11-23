@@ -146,7 +146,8 @@ describe("help someone sign in (signed in: English on screen, Spanish proven her
   it.each(["en", "es"] as const)("before: the three steps, how long a code lasts and who can't be helped this way, in %s", lang => {
     const u = ACCESS_COPY[lang].assisted, html = assisted(lang);
     for (const line of [u.howLabel, ...u.how, u.lasts, u.limits]) expect(html).toContain(line);
-    expect(html).toContain('<section class="ar-how b-card" aria-labelledby="assisted-how-title">');
+    // Phase 2 (Nov 23, 2026): the steps sit in a closed "How this works" row that opens to them (density rule 5).
+    expect(html).toContain('<details class="ar-how b-card" id="assisted-how"><summary class="ar-how__label"><span id="assisted-how-title">');
   });
 
   it.each(["en", "es"] as const)("with a code: what the helper does, what the other person does, and until when, in %s", lang => {
