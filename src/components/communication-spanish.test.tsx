@@ -34,8 +34,8 @@ it('renders a Lead’s message to today’s team and the refused states in Spani
 });
 it('renders an update to confirm in Spanish',()=>{
  const words=text(es(detail()));
- for(const w of ['Lectura obligatoria','Revisé este aviso','Confirmar que lo leí','8 oct'])expect(words).toContain(w);
- for(const w of ['Must be read','I have reviewed','Confirm I read it','Updates','Oct'])expect(hasWord(words,w)).toBe(false);
+ for(const w of ['Debe confirmarse','Revisé este aviso','Confirmar que lo leí','8 oct'])expect(words).toContain(w);
+ for(const w of ['Must be confirmed','I have reviewed','Confirm I read it','Updates','Oct'])expect(hasWord(words,w)).toBe(false);
  const done=text(es(detail({read:{...read,ownAcknowledgedAt:'2026-10-08T12:01:00Z'}})));expect(done).toContain('Confirmado');expect(done).not.toContain('Confirmed');
 });
 it('renders the manager’s Confirmed list and publish result in Spanish',()=>{

@@ -43,3 +43,10 @@ it('preserves the blocked state without showing private form content or publicat
  const html=render({action:{...action,notice:'blocked'}});expect(html).toContain('Your current permission does not allow publication.');
  expect(html).toContain('Return to updates');expect(html).not.toContain('communication-title');expect(html).not.toContain('Preview audience');
 });
+it('names the confirmation rule the DEC6 way in review and in the Manager list',async()=>{
+ const {readFileSync}=await import('node:fs');
+ for(const f of ['communication-compose.tsx','messages-manager-b.tsx','communication-detail.tsx','communication-copy.ts']){const src=readFileSync(new URL('./'+f,import.meta.url),'utf8');expect(src).not.toContain('Must be read');}
+ // G98: the words moved unchanged into the en/es table (communication-copy.ts); compose reads them from there.
+ const compose=readFileSync(new URL('./communication-copy.ts',import.meta.url),'utf8');
+ expect(compose).toContain("mustBeConfirmed: 'Must be confirmed', confirmingOptional: 'Confirming is optional'");
+});

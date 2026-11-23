@@ -40,7 +40,7 @@ const en = {
   paused: 'Paused while you were away', connect: 'Connect to the internet, then try again.', checkConnection: 'Check your connection, then try again.',
   tryAgain: 'Try again', checkStatus: 'Check status', checking: 'Checking…', updates: 'Updates', reviewLatest: 'Review latest',
   checkBeforeRetry: 'Check status before trying again.', couldntConfirmCheck: 'We couldn’t confirm the result. Check status before trying again.',
-  editUpdate: 'Edit update', edit: 'Edit', mustBeRead: 'Must be read', optional: 'Optional', message: 'Message', cancel: 'Cancel',
+  editUpdate: 'Edit update', edit: 'Edit', mustBeConfirmed: 'Must be confirmed', confirmingOptional: 'Confirming is optional', optional: 'Optional', message: 'Message', cancel: 'Cancel',
   publishing: 'Publishing…', publishUpdate: 'Publish update',
   // Compose: checks.
   chooseShift: 'Choose a current published shift.',
@@ -132,7 +132,7 @@ const es: typeof en = {
   paused: 'En pausa mientras no estabas', connect: 'Conéctate a internet y vuelve a intentarlo.', checkConnection: 'Revisa tu conexión y vuelve a intentarlo.',
   tryAgain: 'Intentar de nuevo', checkStatus: 'Verificar estado', checking: 'Verificando…', updates: 'Avisos', reviewLatest: 'Revisar lo más reciente',
   checkBeforeRetry: 'Verifica el estado antes de volver a intentarlo.', couldntConfirmCheck: 'No pudimos confirmar el resultado. Verifica el estado antes de volver a intentarlo.',
-  editUpdate: 'Editar aviso', edit: 'Editar', mustBeRead: 'Lectura obligatoria', optional: 'Opcional', message: 'Mensaje', cancel: 'Cancelar',
+  editUpdate: 'Editar aviso', edit: 'Editar', mustBeConfirmed: 'Debe confirmarse', confirmingOptional: 'Confirmar es opcional', optional: 'Opcional', message: 'Mensaje', cancel: 'Cancelar',
   publishing: 'Publicando…', publishUpdate: 'Publicar aviso',
   chooseShift: 'Elige un turno publicado vigente.',
   validDateTime: (zone: string) => `Elige una fecha y hora válidas en la ${zone}.`,

@@ -1,5 +1,4 @@
 // G98 (Phase 2): the posted open shifts board follows the signed-in person's language (PortalLangProvider).
-import {createElement} from 'react';
 import {expect,it,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {PortalLangProvider} from '@/lib/i18n/portal-lang';
