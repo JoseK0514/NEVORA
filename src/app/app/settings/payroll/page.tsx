@@ -11,13 +11,16 @@ import { payrollTabs } from '@/components/payroll/payroll-tabs';
 import { OwnerOnlyNotice } from '@/components/owner-only-notice';
 import '../../payroll-export/payroll-page.css';
 import '../../payroll/payroll-workflow.css';
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import { SETTINGS_COPY } from "../settings-copy";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Payroll settings" };
+export async function generateMetadata() { return { title: SETTINGS_COPY[await readPageLang()].payrollSettings }; }
 
 /** Review F3 (NV-136): someone without payroll setup access is told why (and offered Payroll), never moved to Home. */
-function NoPayrollSetup() {
-  return <OwnerOnlyNotice state title="Payroll settings" reason="Payroll settings need payroll setup access" help="Ask an Owner with payroll access if something here needs to change." next={{ href: '/app/payroll', label: 'Open Payroll' }} />;
+async function NoPayrollSetup() {
+  const lang = await readPageLang(), t = SETTINGS_COPY[lang];
+  return <OwnerOnlyNotice state lang={lang} title={t.payrollSettings} reason={t.payrollSetupNeeded} help={t.payrollSetupHelp} next={{ href: '/app/payroll', label: t.openPayroll }} />;
 }
 
 export default async function PayrollSettingsPage({ searchParams }: { searchParams: Promise<{ open?: string | string[] }> }) {
