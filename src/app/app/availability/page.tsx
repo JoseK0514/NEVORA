@@ -1,4 +1,5 @@
 import {ResponsiveEmployeePlanning} from '@/components/employee-mobile/planning';
+import { readPortalLanguage } from "@/lib/activation/language.server";
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import { getWorkspace } from "@/lib/data/workspaces";
@@ -188,12 +189,12 @@ export default async function AvailabilityPage({
     {params.saved ? <p className="c-note" role="status">{selectedWeek ? "Your availability for this schedule week has been updated." : "Your usual week has been updated."}</p> : null}
   </>;
 
-  const proof=await requireSessionMutationProof();
+  const proof=await requireSessionMutationProof(),lang=(await readPortalLanguage(proof).catch(()=>null))?.language??'en';
   return (
     <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="availability" selection={selectedWeek??'normal'}><CorpPage className="c-avail c-page--narrow">
       {/* Direction B (phones): the phone page replaces this one once it loads; until then the same hero, not the old layout. */}
-      <AvailabilityB sub={availabilitySubB(selectedWeek ?? null, selectedWeek ? formatWeekRange(selectedWeek) : undefined)} change={selectedWeek ? null : `/app/availability?week=${nextWeek}`}>
-        <AvailabilityStatusB message="Loading your planning…" />
+      <AvailabilityB lang={lang} sub={availabilitySubB(selectedWeek ?? null, selectedWeek ? formatWeekRange(selectedWeek) : undefined, lang)} change={selectedWeek ? null : `/app/availability?week=${nextWeek}`}>
+        <AvailabilityStatusB lang={lang} message="Loading your planning…" />
       </AvailabilityB>
       <CorpNav back={{ href: "/app/schedule", label: "Schedule" }} title="Availability" phoneOnly />
       <CorpTitle wide title="Availability" sub={sub} />

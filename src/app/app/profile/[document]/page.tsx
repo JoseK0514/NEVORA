@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { readPortalLanguage } from "@/lib/activation/language.server";
 import {notFound,redirect} from 'next/navigation';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import {POLICY_DOCUMENTS,POLICY_FACTS,POLICY_OPERATOR,policiesVisible} from '@/lib/legal/policies';
@@ -21,7 +22,7 @@ export default async function EmployeePolicyPage({params}:{params:Promise<{docum
  const sub=doc.effective?`Effective ${POLICY_FACTS.EFFECTIVE_DATE??'[CONFIRM_EFFECTIVE_DATE]'} · ${POLICY_OPERATOR}`:POLICY_OPERATOR;
  const back='/app/profile#profile-'+(doc.slug==='account-deletion'?'privacy':doc.slug);
  // Direction B on an Employee's phone (mock e-privacy, e-terms): the same text and links, before the Quiet page it replaces there.
- return <><BHost><EmployeeDocumentB doc={doc} sub={sub} back={back} documents={POLICY_DOCUMENTS}/></BHost><EmployeeProfileDocumentFrame title={doc.title} sub={sub} back={back}>
+ return <><BHost><EmployeeDocumentB lang={(await readPortalLanguage(proof).catch(()=>null))?.language??'en'} doc={doc} sub={sub} back={back} documents={POLICY_DOCUMENTS}/></BHost><EmployeeProfileDocumentFrame title={doc.title} sub={sub} back={back}>
   <p className="em-document-summary">{doc.summary}</p>
   {doc.sections.map((section,index)=><details className="em-document-section" key={section.heading} open={index===0}>
    <summary><span>{section.heading}</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary>

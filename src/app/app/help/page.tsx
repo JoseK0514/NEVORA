@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { readPortalLanguage } from "@/lib/activation/language.server";
 import type { ReactNode } from "react";
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
@@ -97,7 +98,7 @@ export default async function HelpPage() {
   const reportBlocks = [...(contact?.blocks.slice(1) ?? []), ...(report?.blocks ?? [])];
   return <CorpPage className="c-help c-page--narrow" labelledBy="help-title">
     {/* Direction B on an Employee's phone (mock e-help): the same content, links and questions. */}
-    {employee ? <EmployeeHelpB email={SUPPORT_EMAIL} response={response ?? null} signIn={signIn?.blocks ?? null} work={work?.blocks ?? null} report={reportBlocks} legal={legal} /> : null}
+    {employee ? <EmployeeHelpB lang={(await readPortalLanguage(await requireSessionMutationProof()).catch(()=>null))?.language??'en'} email={SUPPORT_EMAIL} response={response ?? null} signIn={signIn?.blocks ?? null} work={work?.blocks ?? null} report={reportBlocks} legal={legal} /> : null}
     {/* How to for an Employee or Lead: one more Direction B card, kept under the screen's own cards (b-keep) at every
       width. The inner b-screen gives the card the kit's own tokens, resets and desktop sizes; it holds no hero or stack. */}
     {employee && jobs.length ? <div className="b-keep c-help__how">

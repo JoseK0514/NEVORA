@@ -41,7 +41,7 @@ export function ProfileSettingRows({lang}: {lang: AuthLang}) {
   const t = employeeTeamCopy(usePortalLang());
   return <>
     <ChoiceSheetRow done={t.done} title={t.language} value={lang === 'es' ? 'Español' : 'English'} current={lang} options={[['en', 'English'], ['es', 'Español']] as const}
-      onPick={next => { if (next !== lang) switchTo(next); }} note={t.languageNote}/>
+      onPick={next => { if (next !== lang) switchTo(next); }}/>
     <ChoiceSheetRow done={t.done} title={t.appearance} value={t.theme[theme]} current={theme} options={[['system', t.theme.system], ['light', t.theme.light], ['dark', t.theme.dark]] as const}
       onPick={setThemeChoice} note={t.appearanceNote}/>
   </>;

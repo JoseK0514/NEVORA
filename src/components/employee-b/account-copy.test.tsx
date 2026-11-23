@@ -45,3 +45,7 @@ describe('account copy', () => {
     expect(notificationHeadline(item({eventType: 'PAYROLL_STATEMENT'}), 'es').title).toBe('Comprobante de pago compartido');
   });
 });
+
+it('Profile no longer says Spanish is limited to the sign-in pages (lead, Nov 23: the choice now applies everywhere)', () => {
+  for (const lang of ['en', 'es'] as const) expect(Object.keys(accountCopy(lang).profile)).not.toContain('languageHint');
+});

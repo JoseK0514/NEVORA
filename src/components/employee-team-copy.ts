@@ -51,7 +51,7 @@ const en = {
   // Profile sections (employee-profile-tabs.tsx)
   tabs: ['Details', 'Scheduling'] as readonly string[], profileSections: 'Employee profile sections',
   // Profile settings rows (employee-profile-rows.tsx)
-  language: 'Language', languageNote: 'Used on the sign-in pages for now.', appearance: 'Appearance', appearanceNote: 'For this device.',
+  language: 'Language', appearance: 'Appearance', appearanceNote: 'For this device.',
   theme: {system: 'Match this phone', light: 'Light', dark: 'Dark'} as Record<ThemeChoice, string>,
   // Account panel and work details (employee-account-panel.tsx, employee-profile-details.tsx)
   profile: 'Profile', workDetails: 'Work details', locations: 'Locations', timeZone: 'Time zone',
@@ -106,7 +106,7 @@ const es: typeof en = {
   deactivateConsequence: 'Su sesión se cierra de inmediato. Su historial se queda y puedes reactivarlo.', keepActive: 'Mantener activo',
   reactivateNote: 'Después de esto, inicia sesión otra vez. Su historial se conserva.',
   tabs: ['Detalles', 'Horarios'], profileSections: 'Secciones del perfil del empleado',
-  language: 'Idioma', languageNote: 'Por ahora se usa en las páginas de inicio de sesión.', appearance: 'Apariencia', appearanceNote: 'Para este dispositivo.',
+  language: 'Idioma', appearance: 'Apariencia', appearanceNote: 'Para este dispositivo.',
   theme: {system: 'Igual que este teléfono', light: 'Claro', dark: 'Oscuro'},
   profile: 'Perfil', workDetails: 'Datos de trabajo', locations: 'Localidades', timeZone: 'Zona horaria',
   name: 'Nombre', company: 'Empresa', workLocations: 'Localidades de trabajo', appAccess: 'Acceso a la app',

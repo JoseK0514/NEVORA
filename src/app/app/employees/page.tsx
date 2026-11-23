@@ -1,4 +1,5 @@
 import {scopedObservation} from '@/lib/company-access/observation';
+import {readPortalLanguage} from '@/lib/activation/language.server';
 import {readOperationalDirectory} from '@/lib/company-access/operational-read.server';
 import {ScopedTeam} from '@/components/company-access/scoped-team';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -39,6 +40,6 @@ export default async function EmployeesPage({ searchParams }: {
   let positions: Awaited<ReturnType<typeof listPositions>>;
   try { positions = await listPositions({ includeInactive: true }); }
   catch { return <OperationalUnavailable title="Employees unavailable" reason="read_failed"/>; }
-  return <ScopedReadFrame observation={scopedObservation(source)}><EmployeeDirectory clockerRecovery={actor.role==='OWNER'} canImport={actor.role==='OWNER'&&rosterImportAvailable()} positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
+  return <ScopedReadFrame observation={scopedObservation(source)}><EmployeeDirectory lang={(await readPortalLanguage(await requireSessionMutationProof()).catch(()=>null))?.language??'en'} clockerRecovery={actor.role==='OWNER'} canImport={actor.role==='OWNER'&&rosterImportAvailable()} positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
     visibleEmployees={filterDirectoryEmployees(employees, filters, new Map(positions.map(position => [position.id, position.name])))} showAll={(params as DirectorySearchParams).all === '1'} /></ScopedReadFrame>;
 }

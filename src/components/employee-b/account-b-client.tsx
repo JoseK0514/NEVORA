@@ -74,8 +74,8 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
         </BCard>
         <BCard title={t.display} id="b-profile-display">
           <ul className="b-list"><li className="b-li"><div className="b-row eb-pref">
-            <span className="b-row__tx"><span className="b-row__t" id="b-profile-language">{t.language}</span><span className="b-row__s" id="b-profile-language-hint">{t.languageHint}</span></span>
-            <div className="eb-lseg" role="group" aria-labelledby="b-profile-language" aria-describedby="b-profile-language-hint">
+            <span className="b-row__tx"><span className="b-row__t" id="b-profile-language">{t.language}</span></span>
+            <div className="eb-lseg" role="group" aria-labelledby="b-profile-language">
               {([['en', 'English'], ['es', 'Español']] as const).map(([code, name]) => <button key={code} type="button" lang={code} aria-pressed={lang === code} onClick={() => { if (code !== lang) switchTo(code); }}>{name}</button>)}
             </div>
           </div></li></ul>
