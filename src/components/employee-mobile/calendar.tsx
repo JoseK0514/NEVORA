@@ -43,6 +43,7 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
      <p role="status">{status.state==='unauthorized'?'Your access could not be confirmed. Sign in again to manage your link.':'Calendar settings could not be checked. Try again to see the current status.'}</p>
      {status.state==='unauthorized'?<Link className="c-btn c-btn--secondary c-btn--full" href="/login">Sign in</Link>:<button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={onRetry}>Try again</button>}
     </>:<>
+     <p>Your calendar app picks up schedule changes the next time it refreshes, which can take a while.</p>
      <p>Anyone with the link can see your shift times and locations, so keep it to yourself.</p>
      {unknown?<p className="em-calendar-extra">Your previous request still needs to be checked before you can change this link.</p>
       :active?currentUrl?<div className="em-calendar-secret">

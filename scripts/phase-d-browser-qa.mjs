@@ -137,8 +137,16 @@ try{
     // Time's pushed "Past timecards" page (/app/my-time?view=cards) on every screen. The period card carries the recorded
     // total and its breaks; each day row opens that day's punches, where "Request a correction" lives.
     const cardsUrl='/app/my-time?view=cards&start=2026-09-21&end=2026-09-27',periodCard=ep.locator(':is(#hours-timecard,#b-hours-timecard):visible');
-    const pastCards=async()=>{await ep.waitForURL(u=>u.pathname+u.search===cardsUrl);await ep.locator('.c-hours[data-hours-view="cards"][data-hours-state="ready"]').waitFor();await ep.getByRole('heading',{name:'Past timecards',exact:true,level:1}).waitFor();await periodCard.waitFor();const laterLink=ep.locator('.c-hours').getByRole('link',{name:/\b1 shift, 8 h$/});await laterLink.waitFor();assert.equal(await laterLink.getAttribute('href'),'/app/my-time?view=cards&start=2026-09-28&end=2026-10-04','The adjacent week must have its actual seeded shift and eight-hour total, not an unavailable read');};
+    const laterUrl='/app/my-time?view=cards&start=2026-09-28&end=2026-10-04';
+    const laterLink=ep.locator(`.c-hours a[href="${laterUrl}"]:visible`);
+    const pastCards=async(expected=cardsUrl)=>{await ep.waitForURL(u=>u.pathname+u.search===expected);await ep.locator('.c-hours[data-hours-view="cards"][data-hours-state="ready"]').waitFor();await ep.getByRole('heading',{name:'Past timecards',exact:true,level:1}).waitFor();await periodCard.waitFor();};
     await pastCards();assert.equal(await periodCard.count(),1);
+    await laterLink.click();await pastCards(laterUrl);
+    const adjacentPunches=periodCard.locator('a[href*="entry="]:visible');await adjacentPunches.first().waitFor();
+    assert.equal(await adjacentPunches.count(),1,'The adjacent week shows the single seeded shift');
+    assert.match(await adjacentPunches.first().getAttribute('href'),/entry=D3-LATER$/);
+    assert.match(await periodCard.locator('.c-big,.eb-sum__big').locator('[aria-hidden="true"]:visible').innerText(),/^8\s*h$/,'The adjacent week shows its eight recorded hours');
+    await ep.goto(app.url+cardsUrl);await pastCards();
     assert.match(await periodCard.locator('.c-big,.eb-sum__big').locator('[aria-hidden="true"]:visible').innerText(),/^8\s*h$/);assert(await periodCard.getByText('Hours · includes 30 min of breaks',{exact:true}).isVisible());checked(engine+': employee self period and break totals');
     await periodCard.locator('a[href*="entry=D3-UI"]').click();await ep.waitForURL(u=>u.pathname==='/app/my-time'&&u.searchParams.get('entry')==='D3-UI');
     await ep.getByRole('heading',{name:'Punches',exact:true}).waitFor();await ep.getByRole('link',{name:'Request a correction',exact:true}).waitFor();

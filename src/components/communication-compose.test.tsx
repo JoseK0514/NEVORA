@@ -48,4 +48,6 @@ it('names the confirmation rule the DEC6 way in review and in the Manager list',
  for(const f of ['communication-compose.tsx','messages-manager-b.tsx','communication-detail.tsx']){const src=readFileSync(new URL('./'+f,import.meta.url),'utf8');expect(src).not.toContain('Must be read');}
  const compose=readFileSync(new URL('./communication-compose.tsx',import.meta.url),'utf8');
  expect(compose).toContain("'Must be confirmed':'Confirming is optional'");
+ expect(compose).toContain('id="compose-requirement-label">Ask them to confirm</b>');
+ expect(compose).toContain('aria-labelledby="compose-requirement-label" aria-describedby="compose-requirement-hint"');
 });

@@ -52,9 +52,10 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     const signedInReads=Promise.all(['/api/notifications','/api/manager/inbox-count'].map(path=>page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname===path&&response.status()===200).then((response:{finished():Promise<unknown>})=>response.finished())));
     await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await signedInReads;
     surfacePhase='timecards';await mark('timecards:start');await page.locator('a[href="/app/timecards"]:visible').first().click();await page.waitForURL(app.url+'/app/timecards');
-    await page.locator('[id="timecard-'+target.id+'"] button:visible, button[aria-label^="Unavailable '+target.id+',"]:visible').first().click();
-    // Preserve the ordinary supported person deep link across protected-tree remounts.
-    await page.evaluate((id:string)=>{history.replaceState(history.state,'',location.pathname+location.search+'#timecard-'+id);},target.id);
+    // Use the supported person deep link from the Inbox so recovery after a blur
+    // opens the current authorized timecard without restoring its retired draft.
+    const personLink = '/app/timecards#timecard-'+encodeURIComponent(target.id);
+    await page.goto(app.url+personLink);
     await page.locator('dialog[open]').waitFor();
     const start=page.getByRole('button',{name:'Close open punch',exact:true});await start.focus();await page.keyboard.press('Enter');
     const end=page.getByLabel('Confirmed end time (America/Puerto_Rico)',{exact:true}),reason=page.getByLabel('Reason for closing',{exact:true});await end.waitFor();

@@ -30,7 +30,7 @@ const bundle=await project('esbuild').build({
   build.onResolve({filter:/^next\/(link|image|navigation)$/},args=>({path:args.path,namespace:'fixture'}));
   build.onLoad({filter:/.*/,namespace:'fixture'},args=>({contents:args.path==='next/navigation'
    ?'export const usePathname=()=>"/fixture";export const useSearchParams=()=>new URLSearchParams();export const useRouter=()=>({refresh(){},push(){},replace(){},back(){},prefetch(){}});'
-   :'import React from "react";export default function Element({children,...props}){return React.createElement('+JSON.stringify(args.path==='next/link'?'a':'img')+',props,children);}',loader:'js',resolveDir:source}));
+   :(args.path==='next/link'?'export const useLinkStatus=()=>({pending:false});':'')+'import React from "react";export default function Element({children,...props}){return React.createElement('+JSON.stringify(args.path==='next/link'?'a':'img')+',props,children);}',loader:'js',resolveDir:source}));
  }}],
 });
 // The component's CSS module ships with it; serve the scoped stylesheet next to the script (nothing is written to disk).

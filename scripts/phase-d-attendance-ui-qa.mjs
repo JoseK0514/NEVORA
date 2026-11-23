@@ -319,7 +319,9 @@ try {
     assert.doesNotMatch((await page.locator('.c-who .c-title__sub').first().innerText()).trim(), /\d{1,2}:\d{2}/, 'The subtitle is the day, without the read time');
     assert.equal(await page.locator('.attendance-review').count(), 0, 'review stays collapsed until opened');
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
-    await page.getByRole('button', { name: 'Clock-ins to check, 1 to review, collapsed', exact: true }).click();
+    const reviewToggle = page.getByRole('button', { name: /^Clock-ins to check 1 Times that don’t match the schedule or breaks/, expanded: false });
+    await reviewToggle.click();
+    await page.getByRole('button', { name: /^Clock-ins to check 1 Times that don’t match the schedule or breaks/, expanded: true }).waitFor();
     await page.getByRole('heading', { name: /^Today’s clock-ins\s*1 to review$/, level: 2 }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     checked(engine + ': attendance review opens from Who’s working');

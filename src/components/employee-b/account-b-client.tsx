@@ -129,6 +129,7 @@ export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKin
             <p className="b-state" role="status">{status.state === 'unauthorized' ? 'Your access could not be confirmed. Sign in again to manage your link.' : 'Calendar settings could not be checked. Try again to see the current status.'}</p>
             {status.state === 'unauthorized' ? <BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink> : <BButton kind="quiet" full onClick={onRetry}>Try again</BButton>}
           </> : <>
+            <p className="eb-para eb-para--even">Your calendar app picks up schedule changes the next time it refreshes, which can take a while.</p>
             {/* Phase 9 (spec 2.2): privacy information is the kit's teal callout with ShieldCheck (no circle in a tint). */}
             <BCallout tone="teal" icon="privacy" title="Keep the link to yourself">Anyone with it can see your shift times and locations.</BCallout>
             {unknown ? <p className="eb-para">Your previous request still needs to be checked before you can change this link.</p>
