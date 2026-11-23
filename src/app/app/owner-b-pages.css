@@ -100,6 +100,10 @@
     html body .app-shell[data-nv-b] :is(.c-shift__head, .c-formhead) {
       display: grid !important; align-items: center !important; gap: var(--b-space-8) !important; padding-bottom: 18px !important; margin-left: -16px !important; margin-right: -16px !important;
     }
+    /* Final fixes K (Nov 23, 2026): a sheet page (Add shift, Edit shift, Paid time export) is inset by the gutter (14px), so
+     * its band reaches the screen's edges with the gutter, not 16px (it ran 2px past each edge, 394px on a 390px phone).
+     * The padding matches, so the band's words keep their place. */
+    html body .app-shell[data-nv-b] :is(.c-sheetpage, .c-shift-page) :is(.c-shift__head, .c-formhead):not(#sg1):not(#sg2) { margin-left: calc(-1 * var(--b-gutter)) !important; margin-right: calc(-1 * var(--b-gutter)) !important; padding-left: var(--b-gutter) !important; padding-right: var(--b-gutter) !important; }
     html body .app-shell[data-nv-b] :is(.c-shift__head, .c-formhead) :is(h1, .c-shift__title, .c-formhead__t) { color: var(--b-on-band) !important; font: 700 var(--b-fs-title-sm)/var(--b-lh-title-sm) Inter, "Inter Fallback", -apple-system, sans-serif !important; text-align: center !important; }
     html body .app-shell[data-nv-b] :is(.c-shift__head, .c-formhead) :is(.c-shift__sub, .c-formhead__step) { color: var(--b-on-band-2) !important; }
     html body .app-shell[data-nv-b] :is(.c-shift__cancel, .c-formhead__l, .c-formhead__link):not(.c-formhead__r) { color: var(--b-on-band) !important; font-weight: 600 !important; min-height: 44px !important; display: inline-flex !important; align-items: center !important; }

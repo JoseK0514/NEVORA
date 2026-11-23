@@ -118,7 +118,7 @@ html body #employee-mobile[data-nv-corp] .c-pill.b-chip.c-pill--amber { box-shad
  * prop; 32px is for top-bar utilities only, which are not kit buttons. One primary (teal) per screen and one secondary
  * style: white, a 1px #D5D8DA inset ring, ink 15/500, radius 8. No teal outline buttons. */
 :is(#c-root, html) .c-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; min-width: 0; margin: 0; padding: 0 16px; border: 0; border-radius: 8px;
-  background: var(--c-teal); color: #FFFFFF !important; font-size: 15px; line-height: 20px; font-weight: 600; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color 120ms ease-out, transform 120ms ease-out; }
+  background: var(--c-teal); color: #FFFFFF !important; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color 120ms ease-out, transform 120ms ease-out; }
 @media (hover: hover) { :is(#c-root, html) .c-btn:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--c-teal-hover); } }
 :is(#c-root, html) .c-btn:active:not(:disabled):not([aria-disabled="true"]) { transform: scale(.98); }
 :is(#c-root, html) .c-btn--full { display: flex; width: 100%; }
