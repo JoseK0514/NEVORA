@@ -116,3 +116,43 @@ entry, outline on the brand, collapse button and Help) but only 5.9:1 on the sid
 tint. In the sidebar the ring is now #08504C (the band's dark end): 9.0:1 and 8.2:1, same width and shape, for every
 focusable control in the sidebar. Checked by keyboard Tab for both roles (`img/sidebar-focus-*`); unfocused, the sidebar
 and pages are unchanged (the only differences were a loading frame, the "read at" time and the focus the Tab walk left).
+
+## Follow-up 5: sidebar workplace name and J17 filters at 200% text (14:10 UTC)
+- `5b2023f7` + `90559bbe`: the Employee and Lead sidebar's workplace name had a fixed 17px/18px line height while its
+  font is rem, so at 200% its two clamped lines overlapped each other and the role line. The name's line height is now
+  1.0625rem/1.125rem and the role line 0.75rem/0.9375rem (both the same at the default size); the name still clamps to
+  two lines, and the full name is in the card's `title`. At 1440 with 200% text it now reads "Northside / QA…" over
+  "Employee". At 768 the sidebar is the rail (no name). The Owner's card already wrapped cleanly. At the default size the
+  sidebar is pixel-identical (Owner and Employee, 768 and 1440).
+- J17 Clocker PINs: its filter is a `.c-seg`, so the segment commits (`cd348986`, `735e06ee`, `b171c7fd`) already make
+  it grow and fit: at 390 with 200% text "No PIN 12" and "PIN set 0" sit inside their pills
+  (`img/j17-pins-owner-390-200pct.webp`). No further change; default size identical at 390, 768 and 1440.
+
+## Follow-up 6: band title in rem, phone band button 44px (14:25 UTC)
+- `e14b4904`: the band title is rem everywhere it was px: 2rem/2.375rem (32/38px) on desktop titles (`.c-title`,
+  `.q-hd`, the B band, sheet pages, `--bs-big-fs/lh`) and 2.125rem/2.5rem (34/40px) for the phone's big title and
+  `.b-hbig`. At 768 and 1440 every page matches before (only live data differs); at 390 with 200% text no title is
+  clipped, overlaps or overflows (Home, Timecards, Payroll, Schedule, Team, Updates; Employee Home and Schedule).
+- `05fedbf6`: the phone band's action button (`.b-hero` white or glass, not full or big) has a 44px minimum, up from
+  40px. This is the one intended change at the default size, at 390 only: Team's "Add", Payroll's "Settings",
+  Schedule's band action and Timecards' "Select" (the same glass button; none to select in this fictional week). Pages
+  with such a button are 4px taller. 768 and up already used 48px.
+
+## Follow-up 7: phone band titles and CorpPill in rem (14:45 UTC)
+Merged `origin/claude-codex-collab-nevora` (f73c450b, includes ef0905bf) first as `d8e3932a`. The shared versions were kept
+for Things to do, Employee Home and their tests; one stale Things to do assertion now follows "All" without a count.
+- `d8761477`: corp titles in rem: `.c-title h1`, `.c-nav__title`, `.c-skel__title` 1.75rem/2.125rem (28/34px), the
+  phone nav title 1.375rem/1.75rem (22/28px) and 1.0625rem/1.375rem (17/22px).
+- `43f2fd27`: the shared phone band title (`owner-b-pages.css`, `.c-nav--phone .c-nav__title, .q-nav__t`) and the quiet
+  page titles (`.q-hd h1`, owner-b-pages and b-foundation) from `font: 700 28px/34px` to `1.75rem/2.125rem`.
+- `0723d7cb`: CorpPill (`.c-pill`, corp.css 13/18px; owner-b-desktop and owner-b-pages `--b-fs-count`/16px) in rem, its
+  height `max(22px, 1.375rem)`.
+- `src/app/app/kit-text-rem.test.ts` guards these sizes, the segment cap and the band h1.
+- Measured at 390 (computed sizes at 100% → 200%): Week templates' phone title 28px → 28px before, 28 → 56px after
+  (wraps to two lines); the Insights pill "… under plan" 12px/22px tall → 24px/44px; Insights title 28 → 56px; Updates
+  30 → 60px. At the default size every page is identical at 390, 768 and 1440 (only live hours and the bell differ).
+- Gap: Rondo (`/app/ai-manager`, `/weekly`) shows "Page not found" in the scan because the scan's app server doesn't
+  pass `NEVORA_OWNER_ADVISOR_ENABLED`, so I couldn't capture "Weekly plan" or "Rondo AI". Their titles use the shared
+  rule fixed here, and Rondo's own rules (`weekly.css`, `advisor.css`) already set 1.75rem.
+- Seen: at 390 with 200% text Insights' four period tabs wrap onto two rows inside a taller track (readable, no
+  overlap); a page-level decision whether that strip should scroll instead.

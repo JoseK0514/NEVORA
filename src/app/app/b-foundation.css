@@ -483,7 +483,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
    * page's hero (they were 28px ink on the canvas under an empty bar). */
   @media (max-width: 767px) {
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child { position: relative !important; z-index: 1 !important; margin: 0 calc(50% - 50vw) !important; padding: 0 var(--b-space-16) 18px !important; border: 0 !important; border-radius: 0 !important; background: #08504C !important; box-shadow: 0 -16px 0 #08504C !important; color: var(--b-on-band-2) !important; }
-    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child h1 { margin: 0 !important; font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child h1 { margin: 0 !important; font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child p { margin: var(--b-space-2) 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child + * { margin-top: var(--b-space-16) !important; }
   }
@@ -836,7 +836,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     --b-title-top: 76px; --b-title-top-back: 118px;
     --b-band-short: 150px; --b-band-sub: 190px; --b-band-strip: 258px; --b-band-figures: 276px;
     --bs-frame-top: var(--b-space-12); --bs-pay-head: 63px;
-    --bs-big-fs: 32px; --bs-big-lh: 38px; --bs-live-gap: var(--b-space-16); --bs-tile-pad: 10px var(--b-space-16);
+    --bs-big-fs: 2rem; --bs-big-lh: 2.375rem; --bs-live-gap: var(--b-space-16); --bs-tile-pad: 10px var(--b-space-16);
     --bs-fig-fs: 22px; --bs-fig-lh: 28px; --bs-figtitle-h: 38px; --bs-live-h: 0px;
     --bs-rail-entry: 48px; --bs-rail-pill-py: 3px;
   }
