@@ -109,3 +109,7 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row[aria-disabled="true"] > .q-tog:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border-color: GrayText !important; }
   }
 }
+
+/* Package X (Nov 23, 2026): "What you can approve" values ("Not granted", a place's name) break only between words; at
+ * 200% text on a phone "Not granted" broke inside "granted". */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile .ma .q-row > .q-rv:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4) { overflow-wrap: normal !important; word-break: normal !important; hyphens: none !important; }
