@@ -49,7 +49,7 @@
     html body .app-shell[data-nv-b] :is(.c-nav--phone .c-nav__right, .q-nav__r, .q-nav > :last-child:not(.q-nav__t):not(.q-nav__l)) { grid-column: 2 !important; grid-row: 1 !important; }
     html body .app-shell[data-nv-b] :is(.c-nav--phone .c-nav__title, .q-nav__t) {
       grid-area: title !important; justify-self: start !important; margin: 6px 0 0 !important; padding: 0 !important; max-width: none !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; text-align: left !important;
-      font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important;
+      font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important;
     }
     html body .app-shell[data-nv-b] :is(.c-nav__title, .q-nav__t):empty { display: none !important; }
     html body .app-shell[data-nv-b] :is(.c-nav--phone .c-nav__right, .q-nav > :last-child:not(.q-nav__t):not(.q-nav__l)) { grid-area: right !important; justify-self: end !important; }
@@ -69,7 +69,7 @@
       background: #08504C !important; box-shadow: 0 -14px 0 #08504C !important;
     }
     html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd { padding-top: 0 !important; }
-    html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd h1 { font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; margin: 0 !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd h1 { font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; margin: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd p { margin: var(--b-space-2) 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2) !important; }
     html body .app-shell[data-nv-b] .c-page > .c-nav--phone ~ .c-phone-sub { display: block !important; font-size: 14px !important; line-height: 19px !important; }
     /* Segmented controls on the hero are frosted glass with a white thumb. */

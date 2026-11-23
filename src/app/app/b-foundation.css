@@ -483,7 +483,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
    * page's hero (they were 28px ink on the canvas under an empty bar). */
   @media (max-width: 767px) {
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child { position: relative !important; z-index: 1 !important; margin: 0 calc(50% - 50vw) !important; padding: 0 var(--b-space-16) 18px !important; border: 0 !important; border-radius: 0 !important; background: #08504C !important; box-shadow: 0 -16px 0 #08504C !important; color: var(--b-on-band-2) !important; }
-    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child h1 { margin: 0 !important; font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child h1 { margin: 0 !important; font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child p { margin: var(--b-space-2) 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child + * { margin-top: var(--b-space-16) !important; }
   }

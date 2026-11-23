@@ -29,3 +29,12 @@ describe('kit text in rem', () => {
     expect(css('app/b-tokens.css')).toContain('--b-seg-fs: min(0.875rem, 20px);');
   });
 });
+
+describe('phone band titles in rem', () => {
+  it('the shared phone nav title and the quiet page titles are 28/34px at 100% and grow with text', () => {
+    for (const sheet of ['app/app/owner-b-pages.css', 'app/app/b-foundation.css']) {
+      expect(css(sheet)).not.toContain('font: 700 28px/34px');
+      expect(css(sheet)).toContain('font: 700 1.75rem/2.125rem Inter');
+    }
+  });
+});
