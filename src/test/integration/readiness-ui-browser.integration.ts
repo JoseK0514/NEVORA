@@ -117,9 +117,11 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         }
         await page.screenshot({ path: resolve(evidence, `${engine}-${actor}-conflict.png`), fullPage: true });
         checks.push(`${engine} ${actor}: edit/delete reject original stale review, keep draft, keyboard confirmation, 320/390/768/1440`);
-        await page.getByRole('button', { name: 'Reload current shift', exact: true }).first().click();
-        await form.locator('[name="notes"]').waitFor();
-        expect(await form.locator('[name="notes"]').inputValue()).toBe('Concurrent edit');
+        await Promise.all([
+          page.waitForNavigation({ waitUntil: 'load' }),
+          page.getByRole('button', { name: 'Reload current shift', exact: true }).first().click(),
+        ]);
+        await expect.poll(() => form.locator('[name="notes"]').inputValue(), { timeout: 20000 }).toBe('Concurrent edit');
         await form.locator('[name="notes"]').fill('Fresh reviewed edit');
         const savedScheduleReady = waitForRead('/api/manager/today');
         await form.evaluate((element: HTMLFormElement) => element.requestSubmit());
@@ -147,11 +149,10 @@ it('connects original shift reviews and explicit period history in owned Chromiu
           await history.getByRole('button', { name: 'Load history', exact: true }).click();
           await history.getByText('More events are available.', { exact: true }).waitFor();
           expect(await history.locator('li').count()).toBe(50);
-          await history.getByRole('button', { name: 'Load older events', exact: true }).focus(); await page.keyboard.press('Enter');
+          await history.getByRole('button', { name: 'Load older events', exact: true }).and(page.locator(':enabled')).press('Enter');
           await history.getByText(/100 of 1001 events loaded/).waitFor();
           for (let i = 0; i < 19; i++) {
-            await history.getByRole('button', { name: 'Load older events', exact: true }).focus();
-            await page.keyboard.press('Enter');
+            await history.getByRole('button', { name: 'Load older events', exact: true }).and(page.locator(':enabled')).press('Enter');
             await expect.poll(() => history.locator('li').count(), { timeout: 20000 }).toBe(Math.min(150 + i * 50, 1001));
           }
           await history.getByText('All events in this history snapshot are loaded.', { exact: true }).waitFor();

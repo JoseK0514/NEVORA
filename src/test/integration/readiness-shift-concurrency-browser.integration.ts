@@ -123,8 +123,11 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         p.on('framenavigated', (frame: { url(): string }) => { if (frame === p.mainFrame()) trace({ engine, index: n, event: 'document', resource: kind(frame.url()) }); });
         p.on('pageerror', () => { trace({ engine, index: n, event: 'pageerror' }); if (runtimeFailureTraces.length < 8) runtimeFailureTraces.push({ engine, index: n, events: [...runtimeTrace] }); else failureTracesOmitted++; });
         stage = 'login';
-        await p.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => { const url = new URL(route.request().url()); if (['http:', 'https:'].includes(url.protocol) && url.origin !== app.url) await route.abort(); else await route.continue(); });
+        await p.route((url: URL) => ['http:', 'https:'].includes(url.protocol) && url.origin !== app.url,
+          (route: { abort(): Promise<void> }) => route.abort());
         await p.goto(app.url + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill(n === 2 ? 'MATRIX-SECOND' : n ? 'MATRIX-LOCAL' : 'MATRIX-COMPANY'); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL(app.url + '/app');
+        await p.locator('main h1').filter({ visible: true }).first().waitFor();
+        await p.waitForLoadState('load');
       }
       const form = (n: number) => page(n).locator('form').filter({ has: page(n).locator('[name="employeeId"]') });
       const drainRouterReads = async (n: number) => {
@@ -141,6 +144,10 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         await p.locator('main h1').filter({ visible: true }).first().waitFor();
         await expect.poll(() => pendingAuthorityReads[n].size, { timeout: 20000 }).toBe(0);
         await p.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+        // Retiring private polling can coincide with an already queued router
+        // refresh. Let that real navigation settle before leaving its document.
+        await p.waitForLoadState('networkidle');
+        await drainRouterReads(n);
         await p.goto(app.url + '/app/schedule/edit?shiftId=' + id);
         await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' });
         await expect.poll(() => form(n).evaluate((element: HTMLFormElement) =>
