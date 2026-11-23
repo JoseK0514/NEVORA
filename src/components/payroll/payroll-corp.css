@@ -327,6 +327,10 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 
 /* Closing F1 (NV-081): an unopened period's quiet "Prepare" pill and the disclosure caret (turns when open). */
 :is(#c-root, html) .c-pay .c-row .c-pay__rowpill { flex: none; display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; background: #F0F2F3; color: #3F464B; font-size: 0.875rem; line-height: 1.125rem; font-weight: 600; white-space: nowrap; }
+/* Sweep 1: at large text a row's words never run under its pill. The text keeps at least 7.5rem (it has more at normal
+ * size from 320 up, so nothing moves there); when that and the pill don't fit, the pill drops to its own line. */
+:is(#c-root, html) .c-pay .c-row:has(> .c-pay__rowpill) { flex-wrap: wrap; }
+:is(#c-root, html) .c-pay .c-row:has(> .c-pay__rowpill) > .c-row__main { min-width: 7.5rem; }
 :is(#c-root, html) .c-pay .c-row .c-pay__caret { flex: none; width: 16px; height: 16px; margin-left: 4px; color: #6A7176; transition: rotate 150ms ease-out; }
 :is(#c-root, html) .c-pay .c-row[aria-expanded="true"] .c-pay__caret { rotate: 180deg; }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-pay .c-row .c-pay__caret { transition: none; } }
