@@ -351,3 +351,10 @@
   html body .app-shell[data-nv-b][data-employee-mobile] .c-page:has(> .b-screen--back) > .b-keep.eb-keep { padding: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
 } }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__body { padding-inline: var(--b-inset); font-size: 0.875rem; line-height: 1.25rem; }
+/* B8 Write an update at 1440 with 200% text (Phase 2 gate, Nov 23): the intro line ("Send an update to today's team…")
+ * stayed on one line and ran 578px past the card, so the page scrolled sideways. It wraps inside the form now. Same layer
+ * and weight as the shared compose rules in employee-b-desktop.css, which set it with layered !important. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] :is(.em-message-compose, .em-message-preview) :is(p, h2, .em-message-information):not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#eb-wrap) { min-width: 0 !important; max-width: 100% !important; white-space: normal !important; overflow-wrap: break-word !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] .em-message-compose:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#eb-wrap) { min-width: 0 !important; max-width: min(100%, var(--b-frame-form, 100%)) !important; }
+}
