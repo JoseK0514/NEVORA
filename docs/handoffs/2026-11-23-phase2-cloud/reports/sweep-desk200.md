@@ -142,3 +142,19 @@ Merged c32ae519 first (`46edf364`).
   it. It needs a layout decision: footer in flow with the centring offset compensated, or links inside the card. The
   form's button labels (`sig-btn__idle`, 17px) and step labels stay fixed; they are in the auth package.
 - Still fixed on every desktop page: the header account name (15px, account menu trigger).
+
+## Evening items (17:20 UTC): checkbox, Save changes, Confirm, sheet width
+Merged the shared tip first (`2d43fd72`).
+- `9cbb1a65`: the kit checkbox is rem (1.25rem box, 0.875rem check, 0.375rem corners; 20/14/6px at 100%), so
+  Timecards' Select boxes grow with text.
+- `9c712df8`: corp buttons (`.c-btn`, 15/20px → 0.9375rem/1.25rem; C4's "Save changes", the c-btn secondaries) and
+  the sheet back link (`.c-formhead__link`, "‹ Time exports") are rem. A band tab row with three or more items (Timecards'
+  This week / Last week / Earlier on phones) fell back to `.b-seg > * { 14px }`; now it takes the capped segment size.
+- Employee Schedule's "Confirm": not reported fixed at 390 on this tip; it's a kit button, already rem since `af09aadb`.
+- `8cf3a719`: on phones the sheet band (`.c-shift__head`, `.c-formhead`) pulled 16px past a 14px gutter, so Add shift,
+  Edit shift, Paid time export and Add person were 392px wide on a 390px phone. It now uses the gutter. Full-page width
+  is 390, and the visible 390px is pixel-identical before and after on all four.
+- Default size at 390 and 1440 (Home, Settings, Scheduling rules, Timecards, the four sheet pages; Employee Schedule):
+  identical apart from live data. Tests in `kit-text-rem.test.ts`; the whole `src/components` suite passes (3268).
+- Seen: Employee Schedule at 390 with 200% text, the "Action needed" chip in the band is cut (ellipsis). The day labels
+  ("Mon", 12px) and "Added Mon, Nov 23" (15px) stay fixed: Employee screens.
