@@ -488,6 +488,10 @@
   @container c-sched (min-width: 560px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .c-sched .cm-roster .c-sched-review > a.c-sched-review__all:not(#pN1):not(#pN2):not(#pN3):not(#pN4):not(#pN5):not(#pN6):not(#pN7):not(#pN8):not(#pN9):not(#pN10) { display: none !important; }
   }
+
+  /* Recheck (Nov 23, 2026), Jose's "Front co…" at 768: in the week grid a shift's position wraps whole words inside its
+   * block instead of ending in an ellipsis. The day view (one day, timeline) keeps its one-line rule above. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .c-sched .cm-sched-slot .cm-grid:not([data-days="1"]) .cm-block > .cm-block__pos:not(#pN1):not(#pN2):not(#pN3):not(#pN4):not(#pN5):not(#pN6):not(#pN7):not(#pN8):not(#pN9) { overflow: visible !important; text-overflow: clip !important; white-space: normal !important; overflow-wrap: break-word !important; text-wrap: balance !important; }
 }
 
 /* ---------- Phase 2 (Nov 23, 2026; queue C2-Ml, C4-Ml): Add shift, Edit shift and a location Manager's Shift details ----------
