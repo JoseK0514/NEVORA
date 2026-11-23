@@ -106,3 +106,17 @@ headline halves ("Your week," / "in one place.") touch but don't overlap.
 | `span.c-empty__body` | 1 | /app/settings/time-off |
 | `dt.` | 1 | /app/settings/company-policies |
 | `dd.` | 1 | /app/settings/company-policies |
+
+## Follow-up: C3, C4 and B7 (16:40 UTC)
+Reached with fictional data, as the lead suggested. My local copy of the harness gained a step (`NEVORA_SCAN_IDS=1`, not
+committed) that takes the first Find cover candidate's review link from Home (C3), the first shift's edit link from
+Schedule (C4, `shiftId=own-this-OWN-SOFI-0`) and the first update's link from Updates (B7, a seeded update, so nothing
+is sent). Copy last week wasn't found on Publish for Dec 7–13 in this run; C8 was captured by the core session.
+- C3 Review replacement (1024, 1440, 200%): no clipping, overlap or fixed text.
+- B7 Update detail: the card's count "3 of 9" (`.b-card__meta`, kit) stayed 14px. Now rem.
+- C4 Edit shift: the desktop sheet title stayed 32px and its "Published" line had a fixed 20px line height, so they
+  touched at 200% (`img/c4-edit-shift-owner-1440-200pct-before.webp`). Both are rem now (`owner-b-desktop.css`). "Save
+  changes" (`c-shift__submit`) still stays 15px: a Schedule form rule, listed for Schedule.
+- `72c60fd1`. Default size before/after at 1024 and 1440: C3, C4 and Updates pixel-identical; B7 differs only by the
+  update's sent time (a new fictional update each run). The whole `src/components` suite passes (3250 tests).
+- I2 Policy document: no document in the fictional workspace, so it's skipped.
