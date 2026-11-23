@@ -137,3 +137,22 @@ and pages are unchanged (the only differences were a loading frame, the "read at
   40px. This is the one intended change at the default size, at 390 only: Team's "Add", Payroll's "Settings",
   Schedule's band action and Timecards' "Select" (the same glass button; none to select in this fictional week). Pages
   with such a button are 4px taller. 768 and up already used 48px.
+
+## Follow-up 7: phone band titles and CorpPill in rem (14:45 UTC)
+Merged `origin/claude-codex-collab-nevora` (f73c450b, includes ef0905bf) first as `d8e3932a`. The shared versions were kept
+for Things to do, Employee Home and their tests; one stale Things to do assertion now follows "All" without a count.
+- `d8761477`: corp titles in rem: `.c-title h1`, `.c-nav__title`, `.c-skel__title` 1.75rem/2.125rem (28/34px), the
+  phone nav title 1.375rem/1.75rem (22/28px) and 1.0625rem/1.375rem (17/22px).
+- `43f2fd27`: the shared phone band title (`owner-b-pages.css`, `.c-nav--phone .c-nav__title, .q-nav__t`) and the quiet
+  page titles (`.q-hd h1`, owner-b-pages and b-foundation) from `font: 700 28px/34px` to `1.75rem/2.125rem`.
+- `0723d7cb`: CorpPill (`.c-pill`, corp.css 13/18px; owner-b-desktop and owner-b-pages `--b-fs-count`/16px) in rem, its
+  height `max(22px, 1.375rem)`.
+- `src/app/app/kit-text-rem.test.ts` guards these sizes, the segment cap and the band h1.
+- Measured at 390 (computed sizes at 100% → 200%): Week templates' phone title 28px → 28px before, 28 → 56px after
+  (wraps to two lines); the Insights pill "… under plan" 12px/22px tall → 24px/44px; Insights title 28 → 56px; Updates
+  30 → 60px. At the default size every page is identical at 390, 768 and 1440 (only live hours and the bell differ).
+- Gap: Rondo (`/app/ai-manager`, `/weekly`) shows "Page not found" in the scan because the scan's app server doesn't
+  pass `NEVORA_OWNER_ADVISOR_ENABLED`, so I couldn't capture "Weekly plan" or "Rondo AI". Their titles use the shared
+  rule fixed here, and Rondo's own rules (`weekly.css`, `advisor.css`) already set 1.75rem.
+- Seen: at 390 with 200% text Insights' four period tabs wrap onto two rows inside a taller track (readable, no
+  overlap); a page-level decision whether that strip should scroll instead.
