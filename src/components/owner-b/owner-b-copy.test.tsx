@@ -61,19 +61,26 @@ const home = (lang?: "en" | "es", extra: Partial<ComponentProps<typeof HomeB>> =
   nextPay={{ payday: "2026-11-27", daysUntil: 5, period: { startDate: "2026-11-09", endDate: "2026-11-22" } }} lang={lang} {...extra} />));
 
 it("renders Home in English as before, and in Puerto Rico Spanish when the person's language is Spanish", () => {
-  const en = home();
-  for (const words of ["Clocked in", "Not clocked in", "Open shifts", "Things to do", "Cover an open shift", "Find cover", "Add shift", "Send update", "Today", "This week", "Shifts by day", "Scheduled payday"])
-    expect(en).toContain(words);
-  const es = home("es");
-  for (const words of ["En turno", "Sin marcar entrada", "Turnos dispo\u00adnibles", "Pendientes", "Cubrir un turno dispo\u00adnible", "Cubrir", "Añadir turno",
-    "Enviar aviso", "Días libres", "Hoy", "Esta semana", "Turnos por día", "Día de pago programado", "Buenas tardes, Daniel", "a. m."])
-    expect(es).toContain(words);
-  const pay = home("es", { week: { ...week, payrollHref: "/app/payroll" } });
-  for (const words of ["En 5 días", "Período de pago 9–22 nov", "Preparar nómina"]) expect(pay).toContain(words);
-  expect(renderToStaticMarkup(<HomeB today={today} monitor={monitor} monitorPending={false} offline={false} value={value} connection="ready" timecards={[]} timecardsReady
-    dateLabel="" summary="" greeting="" lang="es" />)).toContain('aria-label="Ahora mismo"');
-  for (const english of ["Open shifts", "Things to do", "Find cover", "Add shift", "This week", "Scheduled payday", "Pay period", "Clocked in", " AM", " PM", "Good "])
-    expect(es).not.toContain(english);
+  // The greeting follows the workspace's hour (partOfDay reads the clock), so the test fixes it: 2:00 PM in Puerto Rico.
+  rs.useFakeTimers({ toFake: ["Date"] });
+  rs.setSystemTime(new Date("2026-11-22T18:00:00Z"));
+  try {
+    const en = home();
+    for (const words of ["Clocked in", "Not clocked in", "Open shifts", "Things to do", "Cover an open shift", "Find cover", "Add shift", "Send update", "Today", "This week", "Shifts by day", "Scheduled payday"])
+      expect(en).toContain(words);
+    const es = home("es");
+    for (const words of ["En turno", "Sin marcar entrada", "Turnos dispo\u00adnibles", "Pendientes", "Cubrir un turno dispo\u00adnible", "Cubrir", "Añadir turno",
+      "Enviar aviso", "Días libres", "Hoy", "Esta semana", "Turnos por día", "Día de pago programado", "Buenas tardes, Daniel", "a. m."])
+      expect(es).toContain(words);
+    const pay = home("es", { week: { ...week, payrollHref: "/app/payroll" } });
+    for (const words of ["En 5 días", "Período de pago 9–22 nov", "Preparar nómina"]) expect(pay).toContain(words);
+    expect(renderToStaticMarkup(<HomeB today={today} monitor={monitor} monitorPending={false} offline={false} value={value} connection="ready" timecards={[]} timecardsReady
+      dateLabel="" summary="" greeting="" lang="es" />)).toContain('aria-label="Ahora mismo"');
+    for (const english of ["Open shifts", "Things to do", "Find cover", "Add shift", "This week", "Scheduled payday", "Pay period", "Clocked in", " AM", " PM", "Good "])
+      expect(es).not.toContain(english);
+  } finally {
+    rs.useRealTimers();
+  }
 });
 
 it("says Home's states and the payroll notice in Spanish", () => {
