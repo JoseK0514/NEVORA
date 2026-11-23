@@ -1,0 +1,648 @@
+[
+ {
+  "id": "D2-owner",
+  "row": "D2",
+  "page": "Time corrections · Owner",
+  "section": "Time",
+  "note": "Each request names the person and location once, the recorded and asked-for times read \"Nov 19, 6:00 AM – 2:41 PM\", and Decline asks before it declines. Fixed today: \"Clock in / Clock out\" no longer repeats on every card.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D2-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D2-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D2-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: Approve is the outlined row action (b-rowact--go), not solid teal; a kit decision for every decision row."
+  ]
+ },
+ {
+  "id": "D2-manager",
+  "row": "D2",
+  "page": "Time corrections · Manager, company-wide, with Review time exceptions",
+  "section": "Time",
+  "note": "With the grant, Elena gets the same queue as the Owner.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D2-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D2-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D2-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D2-manager-nogrant",
+  "row": "D2",
+  "page": "Time corrections · Manager, company-wide, without the grant",
+  "section": "Time",
+  "note": "Without the grant the page says once that they don’t have access and to ask the Owner. Fixed today: the band no longer describes a queue they can’t open.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D2-manager-nogrant-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D2-manager-nogrant-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D2-manager-nogrant-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D2-locmgr",
+  "row": "D2",
+  "page": "Time corrections · Location Manager (Condado), with Review time exceptions",
+  "section": "Time",
+  "note": "With the grant Daniel opens the queue for his location; nothing is waiting at Condado, so it shows the empty state with a link to Timecards.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D2-locmgr-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D2-locmgr-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D2-locmgr-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D2-locmgr-nogrant",
+  "row": "D2",
+  "page": "Time corrections · Location Manager (Condado), without the grant",
+  "section": "Time",
+  "note": "Without the grant Daniel sees the same one-card “no access” state as Elena.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D2-locmgr-nogrant-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D2-locmgr-nogrant-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D2-locmgr-nogrant-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D3-owner",
+  "row": "D3",
+  "page": "Fix someone’s time · Owner",
+  "section": "Time",
+  "note": "One form in one card: what to correct, start, end, reason, and a confirmation that another manager approves it. Fixed today: the title showed twice on phones and “another manager” was said twice.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D3-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D3-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D3-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The confirmation checkbox text is a size larger than the field labels (shared management-close form style)."
+  ]
+ },
+ {
+  "id": "D3-manager",
+  "row": "D3",
+  "page": "Fix someone’s time · Manager, company-wide",
+  "section": "Time",
+  "note": "Same form as the Owner.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D3-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D3-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D3-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D3-locmgr",
+  "row": "D3",
+  "page": "Fix someone’s time · Location Manager (Condado)",
+  "section": "Time",
+  "note": "Closed for a location Manager: “Company-wide access needed”. Fixed today: the band names this page instead of “Time corrections”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D3-locmgr-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D3-locmgr-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D3-locmgr-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D4-lead",
+  "row": "D4",
+  "page": "My time · Lead",
+  "section": "Time",
+  "note": "Right now, this week with each shift, last week’s total and the way to fix a missed punch. Fixed today: rows are read by what they show (they had different screen-reader names).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D4-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D4-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D4-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D4-employee",
+  "row": "D4",
+  "page": "My time · Employee",
+  "section": "Time",
+  "note": "Same screen as the Lead, here with nothing recorded yet this week. Fixed today: the empty line sits on the card’s text edge.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D4-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D4-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D4-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D4-owner-notice",
+  "row": "D4",
+  "page": "My time · Owner (notice)",
+  "section": "Time",
+  "note": "My time is for employees; one card points to Timecards.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D4-owner-notice-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D4-owner-notice-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D4-owner-notice-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D4-manager-notice",
+  "row": "D4",
+  "page": "My time · Manager (notice)",
+  "section": "Time",
+  "note": "Same notice as the Owner.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D4-manager-notice-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D4-manager-notice-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D4-manager-notice-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D5-owner",
+  "row": "D5",
+  "page": "Clocker recovery review · Owner",
+  "section": "Time",
+  "note": "Help requests from tablets, then Check a code, then the way to Timecards.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D5-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D5-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D5-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Built on the older Settings frame (wave-c-kit SettingsFrame, q-/wc- classes) restyled to Direction B; moves with the Settings packages.",
+   "Kit/shell: the band back link is 32px tall at 1440 on frames other than the Corp nav (Settings frame, sheet header); needs the 44px hit area the Corp back link has (G5)."
+  ]
+ },
+ {
+  "id": "D5-manager-restricted",
+  "row": "D5",
+  "page": "Clocker recovery review · Manager (restricted)",
+  "section": "Time",
+  "note": "Owner-only: the Manager lands on “That page is for Owners”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D5-manager-restricted-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/D5-manager-restricted-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D5-manager-restricted-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Shared Restricted page: the band back link and its button both say Home."
+  ]
+ },
+ {
+  "id": "F2-owner",
+  "row": "F2",
+  "page": "Add person · Owner",
+  "section": "Team",
+  "note": "Two-step Add employee form; Next in the phone band, Cancel and Next under the card from 768.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F2-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F2-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F2-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the phone sheet header’s Next is 40px tall.",
+   "Kit/shell: the band back link is 32px tall at 1440 on frames other than the Corp nav (Settings frame, sheet header); needs the 44px hit area the Corp back link has (G5)."
+  ]
+ },
+ {
+  "id": "F2-manager",
+  "row": "F2",
+  "page": "Add person · Manager, company-wide",
+  "section": "Team",
+  "note": "Same form as the Owner.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F2-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F2-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F2-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F2-locmgr",
+  "row": "F2",
+  "page": "Add person · Location Manager (Condado)",
+  "section": "Team",
+  "note": "Closed for a location Manager. Fixed today: the band says “Add employee” instead of “Employee creation”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F2-locmgr-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F2-locmgr-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F2-locmgr-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F3-owner-off",
+  "row": "F3",
+  "page": "Import a staff list · Owner",
+  "section": "Team",
+  "note": "This test app has no company workspace routing, so the Owner sees “isn’t available for this workplace yet” and Add one person; the import itself wasn’t captured.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F3-owner-off-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F3-owner-off-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F3-owner-off-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Capture the import form on a build with isolated workspace routing.",
+   "Back link says Home on a Team page (shared OwnerOnlyNotice)."
+  ]
+ },
+ {
+  "id": "F3-manager-notice",
+  "row": "F3",
+  "page": "Import a staff list · Manager (notice)",
+  "section": "Team",
+  "note": "Importing is for Owners; the card names the Owner and offers Add one person.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F3-manager-notice-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F3-manager-notice-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F3-manager-notice-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F5-owner",
+  "row": "F5",
+  "page": "Person’s pay rate · Owner",
+  "section": "Team",
+  "note": "Rates per location, history, and the Owners-only payroll note. Pay wording unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F5-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F5-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F5-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Two notes stack when no rate is set (the no-rate callout and the Owners-only note); the note is approved pay wording, so it is left for Jose."
+  ]
+ },
+ {
+  "id": "F5-manager-restricted",
+  "row": "F5",
+  "page": "Person’s pay rate · Manager (restricted)",
+  "section": "Team",
+  "note": "Owner-only: the Manager lands on “That page is for Owners”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F5-manager-restricted-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F5-manager-restricted-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F5-manager-restricted-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F6-owner",
+  "row": "F6",
+  "page": "When they can be scheduled · Owner",
+  "section": "Team",
+  "note": "No agreement yet: one amber note, the link to the hours they entered, and the two choices. Fixed today: the separate availability note no longer repeats what the amber note says.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F6-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F6-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F6-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F6-manager",
+  "row": "F6",
+  "page": "When they can be scheduled · Manager, company-wide",
+  "section": "Team",
+  "note": "Same screen as the Owner.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F6-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F6-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F6-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F6-locmgr",
+  "row": "F6",
+  "page": "When they can be scheduled · Location Manager (Condado)",
+  "section": "Team",
+  "note": "Closed for a location Manager; the band reads “Employee profile” (the profile read it shares with Pay rate and Time off).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F6-locmgr-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F6-locmgr-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F6-locmgr-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Name the closed band after this page; needs a page-name option in OperationalUnavailable (shared)."
+  ]
+ },
+ {
+  "id": "F7-owner",
+  "row": "F7",
+  "page": "Time off balance · Owner",
+  "section": "Team",
+  "note": "No time off policies yet: a link to set them up, an empty history, and a note on how balances work.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F7-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F7-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F7-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F8-owner",
+  "row": "F8",
+  "page": "Clocker PIN · Owner",
+  "section": "Team",
+  "note": "Set a PIN: two rows of four boxes and Save. Fixed today: “4 digits” and the person’s name were each said twice.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F8-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F8-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F8-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Built on the older Settings frame (wave-c-kit), like D5.",
+   "Kit/shell: the band back link is 32px tall at 1440 on frames other than the Corp nav (Settings frame, sheet header); needs the 44px hit area the Corp back link has (G5)."
+  ]
+ }
+]
