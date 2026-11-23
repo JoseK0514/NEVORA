@@ -9,6 +9,9 @@ rs.mock('@/lib/auth/session',()=>({
  requireSession:async()=>({id:'actor',role:fixture.role}),
  requireSessionMutationProof:async()=>({employee:{id:'actor',role:fixture.role},sessionTokenHash:'a'.repeat(64)}),
 }));
+// Rondo Spanish (G98): the person's language; a failed read is English.
+const language=rs.hoisted(()=>({value:'en' as 'en'|'es',fail:false}));
+rs.mock('@/lib/activation/language.server',()=>({readPortalLanguage:async()=>{if(language.fail)throw Error('language_source_unavailable');return {state:'ready',savedLanguage:null,language:language.value};}}));
 rs.mock('next/link',()=>({default:({href,children,prefetch:_prefetch,...props}:React.ComponentProps<'a'>&{prefetch?:boolean})=>createElement('a',{href,...props},children)}));
 rs.mock('next/navigation',()=>({redirect:(href:string)=>{throw Error(`redirect:${href}`);},usePathname:()=>'/app/reports/christmas-bonus',useRouter:()=>({refresh:()=>undefined,replace:()=>undefined,push:()=>undefined})}));
 rs.mock('@/lib/company-access/operational-scope.server',()=>({
@@ -34,7 +37,7 @@ rs.mock('@/lib/reports/christmas-bonus.server',()=>({readChristmasBonusReport:as
   summary:{people:3,reached:1,checkBreaks:0,needsHireDate:1,notConfirmed:0,unfinalizedDays:3,peopleWithUnfinalizedDays:1}}};
 }}));
 
-beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.unavailable=false;fixture.timeZone='America/Puerto_Rico';fixture.read.mockClear();fixture.workspace.mockClear();rs.useFakeTimers();rs.setSystemTime(new Date('2026-11-18T16:00:00Z'));});
+beforeEach(()=>{language.value='en';language.fail=false;fixture.role='MANAGER';fixture.denied=false;fixture.unavailable=false;fixture.timeZone='America/Puerto_Rico';fixture.read.mockClear();fixture.workspace.mockClear();rs.useFakeTimers();rs.setSystemTime(new Date('2026-11-18T16:00:00Z'));});
 afterEach(()=>{rs.useRealTimers();});
 
 it.each(['MANAGER','OWNER'])('shows %s the latest completed bonus year inside the current authority frame, with the disclaimer and key dates',async role=>{
@@ -102,4 +105,29 @@ it.each(['America/New_York','America/Santo_Domingo','UTC'])('closes the report f
  expect(html).toMatch(/<a [^>]*href="\/app\/reports"[^>]*>/);
  expect(html).not.toContain('Ana Rivera');
  expect(fixture.workspace).toHaveBeenCalled();expect(fixture.read).not.toHaveBeenCalled();
+});
+// Rondo Spanish (G98): the page and the report follow the person's language; a failed language read is English.
+it('shows the report in Spanish, with es-PR dates and the reviewed disclaimer, and no English page words',async()=>{
+ language.value='es';
+ const html=renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})})).replace(/[\u00a0\u202f]/g,' ');
+ const text=html.replace(/<[^>]+>/g,'');
+ expect(html).toContain('<p class="b-callout__t">Solo informativo</p>');
+ expect(html).toContain('Horas para el bono de Navidad');expect(html).toContain('Todas las localidades');
+ expect(html).toContain('15 nov–15 dic 2026');expect(html).toContain('1 dic 2026');
+ expect(text).toContain('812 h de 700 h · Contratación: 2 mar 2016 · ID E1');
+ expect(text).toContain('1 persona tiene tiempo registrado en 3 días que todavía no están en una tarjeta de tiempo finalizada.');
+ expect(html).toContain('Abrir tarjetas de tiempo');expect(html).toContain('oct 2025 – sep 2026');
+ for(const english of ['Informational only','Christmas bonus hours','Payment window','Hired ','At a glance','Open Timecards','All locations'])expect(html).not.toContain(english);
+});
+it('writes the closed, other time zone and failed states in Spanish',async()=>{
+ language.value='es';fixture.role='EMPLOYEE';
+ expect(renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})}))).toContain('Las horas para el bono de Navidad son para dueños y gerentes');
+ fixture.role='MANAGER';fixture.timeZone='UTC';
+ const other=renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})}));
+ expect(other).toContain('Las horas para el bono de Navidad aplican a empresas en Puerto Rico');expect(other).toContain('Abrir Informes');
+ fixture.timeZone='America/Puerto_Rico';fixture.unavailable=true;
+ const failed=renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})}));
+ expect(failed).toContain('No pudimos cargar las horas para el bono de Navidad');expect(failed).toContain('No se cambió nada.');
+ language.fail=true;fixture.unavailable=false;
+ expect(renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})}))).toContain('Informational only');
 });

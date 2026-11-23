@@ -11,6 +11,7 @@ import { clockText, periodText } from "./business-client";
 import { BUSINESS_COPY, BUSINESS_LOCALE, type BusinessCopy, type BusinessLang } from "./copy";
 import { financeFigures, salesFigures, type Figure } from "./figures";
 import { viewHref } from "./views";
+import { useAdvisorLang } from "../lang";
 import "./business.css";
 
 /* The evidence card in a Rondo answer (Nov 17, 2026). A business citation is a button; it opens the figures the answer
@@ -51,7 +52,9 @@ export function evidenceCardModel(href: string, evidence: BusinessModelEvidence[
 
 /** One source line of an answer. A business citation with checked evidence becomes a button and its card; anything else,
  * or a citation whose evidence can't be shown exactly, is the same plain link as every other source. */
-export function BusinessCitationItem({ source, evidence, lang = "en", initialOpenAt = null }: { source: AdvisorSource; evidence?: BusinessModelEvidence[]; lang?: BusinessLang; initialOpenAt?: number | null }) {
+export function BusinessCitationItem({ source, evidence, lang: langProp, initialOpenAt = null }: { source: AdvisorSource; evidence?: BusinessModelEvidence[]; lang?: BusinessLang; initialOpenAt?: number | null }) {
+  // An explicit language wins (tests); otherwise the person's Rondo language.
+  const advisorLang = useAdvisorLang(), lang: BusinessLang = langProp ?? advisorLang;
   const t = BUSINESS_COPY[lang], locale = BUSINESS_LOCALE[lang];
   const [openAt, setOpenAt] = useState<number | null>(initialOpenAt);
   const trigger = useRef<HTMLButtonElement>(null), card = useRef<HTMLDivElement>(null);
@@ -59,7 +62,7 @@ export function BusinessCitationItem({ source, evidence, lang = "en", initialOpe
   // Judged once, at a fixed moment, so the card's words don't change between two renders.
   const [judgedAt] = useState(() => initialOpenAt ?? Date.now());
   const model = evidenceCardModel(source.href, evidence, t, locale, openAt ?? judgedAt);
-  const observed = <span>Observed <time dateTime={source.observedAt}>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(source.observedAt))}</time></span>;
+  const observed = <span>{t.observed} <time dateTime={source.observedAt}>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(source.observedAt))}</time></span>;
   if (!model) return <li><a href={source.href}>{source.label}</a>{observed}</li>;
   const close = () => { setOpenAt(null); trigger.current?.focus(); };
   const open = () => { setOpenAt(Date.now()); requestAnimationFrame(() => card.current?.focus()); };

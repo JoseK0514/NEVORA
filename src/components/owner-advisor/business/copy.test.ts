@@ -43,7 +43,19 @@ describe("business records copy", () => {
     for (const lang of langs) for (const [path, text] of strings(BUSINESS_COPY[lang])) expect(banned.test(text), `${lang}.${path}: ${text}`).toBe(false);
   });
   it("does not leave an English sentence in the Spanish entries", () => {
-    const same = strings(BUSINESS_COPY.es).filter(([path, text], index) => text === strings(BUSINESS_COPY.en)[index][1] && /[a-z]{4,}/i.test(text) && !/^(Rondo|Rondo AI|OK|Euros \(EUR\))$/.test(text) && !path.startsWith("currencyName"));
+    const same = strings(BUSINESS_COPY.es).filter(([path, text], index) => text === strings(BUSINESS_COPY.en)[index][1] && /[a-z]{4,}/i.test(text) && !/^(Rondo|Rondo AI|OK|Euros \(EUR\)|bytes)$/.test(text) && !path.startsWith("currencyName"));
     expect(same).toEqual([]);
+  });
+  it("has the same key set in English and Spanish, at every depth", () => {
+    const shape = (value: unknown): unknown => typeof value === "function" ? "fn" : Array.isArray(value) ? value.map(shape)
+      : value && typeof value === "object" ? Object.fromEntries(Object.keys(value).sort().map(key => [key, shape((value as Record<string, unknown>)[key])])) : typeof value;
+    expect(shape(BUSINESS_COPY.es)).toEqual(shape(BUSINESS_COPY.en));
+  });
+  it("speaks Spanish with tú and says localidad, never usted or local", () => {
+    const usted = /\b[Ss]us? (sesión|conexión|registros|archivos?|acceso|cambio|zona horaria|borrador|publicación)\b|\b(usted|Usted|Revise|Inicie|Añada|Publique|Elija|Indique|Escriba|Cargue|Pregunte|Lea|Vea|Divídalo|Guárdelo|Manténgalo|Revísela|Conserve|suyo|le deben|Le deben)\b/u;
+    for (const [path, text] of strings(BUSINESS_COPY.es)) {
+      expect(usted.test(text), `${path}: ${text}`).toBe(false);
+      expect(/\blocal(es)?\b/i.test(text), `${path}: ${text}`).toBe(false);
+    }
   });
 });
