@@ -9,8 +9,8 @@ it("says the server's attention sentences with correct plurals and a 12-hour clo
   expect(attentionDetail("1 finished published shifts have no recorded punches. Review the records before correcting time."))
     .toBe("1 finished published shift has no recorded punches. Review the records before correcting time.");
   expect(attentionDetail("1 planning periods need review, starting 23:30. Maximum staffing shortfall: 1. Includes draft commitments; verify published staffing separately."))
-    .toBe("1 planning period needs review, starting 11:30 PM. Maximum staffing shortfall: 1. Includes draft commitments; verify published staffing separately.");
-  expect(attentionDetail("3 planning periods need review, starting 09:00. Maximum staffing shortfall: 2.")).toBe("3 planning periods need review, starting 9:00 AM. Maximum staffing shortfall: 2.");
+    .toBe("1 planning period needs review, starting 11:30 PM. Maximum staffing shortfall:\u00a01. Includes draft commitments; verify published staffing separately.");
+  expect(attentionDetail("3 planning periods need review, starting 09:00. Maximum staffing shortfall: 2.")).toBe("3 planning periods need review, starting 9:00 AM. Maximum staffing shortfall:\u00a02.");
   const other = "Coverage cannot be fully assessed until missing or invalid staffing and coverage rules are reviewed.";
   expect(attentionDetail(other)).toBe(other);
 });

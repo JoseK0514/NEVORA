@@ -164,7 +164,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     const quiet = [shift("b", "upcoming"), shift("c", "no_punches")];
     const none = phone({ today: { ...today(quiet), clockerRegistered: false } as Today, monitor: monitor([]), setup: <span>setup</span> });
     // Gaps G39 (Nov 23, 2026): the tile is named by what it shows, with no label that words it differently.
-    expect(none).toContain('<a href="/app/settings/clocker" class="b-live__a"><span class="b-live__l">Time clock</span> <span class="b-live__v">Not set up</span>');
+    expect(none).toContain('<a href="/app/settings/clocker" class="b-live__a"><span class="b-live__l">Time clock</span><span class="b-sr">\u00a0</span><span class="b-live__v">Not set up</span>');
     expect(none).not.toContain('href="/app?view=attendance" class="b-live__a"');
     expect(none).not.toContain('href="/app/inbox#todo-missed" class="b-live__a"');
     expect(none).toContain("Open shifts");
@@ -175,7 +175,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     const shifts = [shift("a", "clocked_in"), ...quiet];
     for (const registered of [true, undefined, false]) {
       const out = phone({ today: { ...today(shifts), ...(registered === undefined ? {} : { clockerRegistered: registered }) } as Today, setup: <span>setup</span> });
-      expect(out).toContain('<a href="/app?view=attendance" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--live" aria-hidden="true"></span>Clocked in</span> <span class="b-live__v">1<small>/3</small></span>');
+      expect(out).toContain('<a href="/app?view=attendance" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--live" aria-hidden="true"></span>Clocked in</span><span class="b-sr">\u00a0</span><span class="b-live__v">1<small>/3</small></span>');
       expect(out).not.toContain(">Time clock<");
       expect(out).not.toContain("Not set up");
     }
@@ -189,7 +189,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     // Gaps G39 (Nov 23, 2026): each figure's spoken name is its visible text (no aria-label).
     expect(out).toContain('<a href="/app?view=attendance" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--live" aria-hidden="true"></span>Clocked in</span>');
     // B7 wording (NV-123): the stat and the row use one name ("Missed", as on the corporate Home).
-    expect(out).toContain('<a href="/app/inbox#todo-missed" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--warn" aria-hidden="true"></span>Missed</span> <span class="b-live__v">1</span>');
+    expect(out).toContain('<a href="/app/inbox#todo-missed" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--warn" aria-hidden="true"></span>Missed</span><span class="b-sr">\u00a0</span><span class="b-live__v">1</span>');
     expect(out).not.toMatch(/class="b-live__a" aria-label=/);
     expect(out).toContain('aria-label="Find cover: Barista 1:00 PM – 3:00 PM">Find cover</a>');
     // B7 wording (NV-068): outside the dense week grid, ranges keep full times with a spaced en dash.
@@ -202,18 +202,18 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     // Nov 11, 2026 decision; Nov 14 inspection (BR-9). A shift that began and has no punch is never called missed.
     const running = phone({ value: needsYou(items, "2026-10-30", [shift("b", "not_clocked_in")]) });
     expect(running).toContain('<a href="/app/inbox#todo-not-clocked-in" class="b-live__a">');
-    expect(running).toContain('>Not clocked in</span> <span class="b-live__v">1</span>');
+    expect(running).toContain('>Not clocked in</span><span class="b-sr">\u00a0</span><span class="b-live__v">1</span>');
     expect(running).toMatch(/>Not clocked in\s·\sshift\sbegan\s\d{1,2}:\d{2}\s?[AP]M</);
     expect(running).not.toMatch(/Missed|missed/);
     // Both kinds: the live tile counts who is waiting to clock in, and each kind has its own row.
     const both = phone({ value: needsYou(items, "2026-10-30", [shift("b", "not_clocked_in"), shift("c", "no_punches")]) });
-    expect(both).toContain('<a href="/app/inbox#todo-not-clocked-in" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--warn" aria-hidden="true"></span>Not clocked in</span> <span class="b-live__v">1</span>');
+    expect(both).toContain('<a href="/app/inbox#todo-not-clocked-in" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--warn" aria-hidden="true"></span>Not clocked in</span><span class="b-sr">\u00a0</span><span class="b-live__v">1</span>');
     // Gaps G39: the two rows are named by what they show (the person, then what and when), with no aria-label.
     expect(both).not.toMatch(/aria-label="(Not clocked in|Missed clock-ins):/);
     expect(both).toMatch(/>Not clocked in\s·\sshift\sbegan\s/);
     expect(both).toMatch(/>Missed clock-in\s·\sshift\sended\s/);
     // Nobody waiting and nothing missed: the tile keeps its name with a zero.
-    expect(phone({ value: needsYou(items, "2026-10-30", []) })).toContain('>Not clocked in</span> <span class="b-live__v">0</span>');
+    expect(phone({ value: needsYou(items, "2026-10-30", []) })).toContain('>Not clocked in</span><span class="b-sr">\u00a0</span><span class="b-live__v">0</span>');
   });
   it("names both people on a shift request, says which timecards Payday counts, and leads with setup until it is done", () => {
     // Nov 14 inspection (BR-7): the other person in a swap or cover, when the read carries them.
@@ -255,9 +255,9 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(notice).toMatch(/>Oct 12–18 has no payroll</);
     expect(notice).toMatch(/>Scheduled payday was Fri,\sOct\s23</);
     expect(notice).toMatch(/href="\/app\/payroll\/prepare#unpaid-2026-10-12" class="b-btn b-btn--teal b-btn--full"[^>]*>Prepare Oct 12–18</);
-    // The notice sits before the payday tile, whose own button steps back to glass.
+    // The notice sits before the payday tile, which has no Prepare button of its own then (Core check, Nov 23, 2026).
     expect(out.indexOf("has no payroll")).toBeLessThan(out.indexOf('class="b-ink"'));
-    expect(out).toContain('<a href="/app/payroll" class="b-btn b-btn--glass b-btn--full" aria-label="Prepare payroll">');
+    expect(out).not.toContain('aria-label="Prepare payroll"');
     // A schedule that needs review is amber and opens Payroll; a status that couldn't be read says so, never calm.
     const review = phone({ week: payrollWeek, payrollStatus: { state: "ready", reviewRequired: overdue.overdue } });
     expect(review).toContain(">Payroll schedule needs review<");
@@ -278,7 +278,9 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(open).toContain('<section class="b-ink" aria-label="Timecards">');
     expect(open).toContain('<span class="b-ink__k">Timecards</span><span class="b-ink__due">Open now</span>');
     expect(open).toMatch(/<div class="b-ink__big">2\sto approve<\/div>/);
-    expect(open).toContain("<span>2 of 3 timecards · Pay period ended</span><span>Scheduled payday Tue,\u00a0Nov\u00a03</span>");
+    // Core check (Nov 23, 2026): the count is said once, in the big line.
+    expect(open).toContain("<span>Pay period ended</span><span>Scheduled payday Tue,\u00a0Nov\u00a03</span>");
+    expect(open).not.toContain("2 of 3 timecards");
     expect(open).toContain("Another reviewer approves your timecard");
     expect(open).toContain('<a href="/app/timecards" class="b-btn b-btn--white b-btn--full" aria-label="Review timecards">');
     expect(open).not.toMatch(/Prepare payroll|Open timecards/);
@@ -320,6 +322,10 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     // Gaps G56 (Nov 23, 2026): while Things to do's read is on its way, Today waits for it (it would list them, then drop
     // them and move).
     for (const connection of ["loading", "reconnecting"] as const) expect(phone({ value: null, connection, today: today([shift("e", "not_clocked_in")]) })).not.toContain('id="b-home-on"');
+    // Gaps G73 (Nov 23, 2026): the cards below Things to do (Payday, This week) wait for its read too, so its growth moves
+    // nothing and the Timecards tile never switches content mid-load; a failed read releases them.
+    for (const connection of ["loading", "reconnecting"] as const) expect(phone({ value: null, connection, timecardsReady: false })).toContain('<div class="b-home-col b-home-col--b"></div>');
+    expect(phone({ value: null, connection: "unavailable", timecardsReady: false })).toContain("Not available right now");
     expect(card).toMatch(/9:00\sAM\s–\s5:00\sPM/);
     expect(card).not.toMatch(/Person b|Person c/);
     // Nobody on: the card says so and names the next start; it never lists a shift that hasn't begun.

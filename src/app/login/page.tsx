@@ -69,7 +69,6 @@ export default async function LoginPage({
       <Link href={`/activate${returnQuery}`}>{t.setUpAccount}</Link>
     </nav>
     {mobile ? <details id="login-id-help" className="ma-details ma-only"><summary>{mt.idHelp}<CaretDownIcon className="ma-caret" size={16} weight="bold" aria-hidden="true"/></summary><p>{mt.idHelpBody}</p></details> : null}
-    {t.appLanguageNote ? <p className="q-auth__langnote">{t.appLanguageNote}</p> : null}
   </>;
 
   // Quiet (v4, approved Oct 23): the wordmark and Español, the greeting and the workspace, two fields, Sign in, Face ID,

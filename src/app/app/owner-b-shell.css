@@ -42,7 +42,7 @@
       position: absolute !important; margin: 0 !important;
     }
     html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-unavailable { display: none !important; }
-    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .c-top-avatar > span { display: contents !important; background: none !important; color: var(--b-on-band) !important; font: 700 var(--b-fs-meta)/1 Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .c-top-avatar > span { display: contents !important; background: none !important; color: var(--b-on-band) !important; font: 700 min(var(--b-fs-meta), 13.5px)/1 Inter, "Inter Fallback", -apple-system, sans-serif !important; }
     html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.portal-notification-bell, .c-top-avatar):focus-visible { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: -2px !important; }
     html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.brand, .login-brand-lockup):focus-visible { outline: 2px solid var(--b-focus-on-band) !important; outline-offset: 2px !important; }
     html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .c-progress { z-index: 32 !important; }

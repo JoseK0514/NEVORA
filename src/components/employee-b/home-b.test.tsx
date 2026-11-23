@@ -92,7 +92,9 @@ it('EM-007, EM-025: the hours read as one sentence, the payday is one format, an
   const html = draw(), strip = html.slice(html.indexOf('class="b-live b-glass"'), html.indexOf('</ul>', html.indexOf('class="b-live b-glass"')));
   const plain = text(strip);
   expect(plain).toContain('Next shift Tomorrow 9:00 AM Customer Support · Main Office');
-  expect(strip).toContain('aria-label="Next shift, Tomorrow, 9:00 AM to 5:00 PM"'.replace(/ /g, strip.includes('9:00 AM') ? ' ' : ' '));
+  // Final fixes K7 and core screens check (Nov 23, 2026): each figure's link is named by its visible text (no aria-label).
+  expect(strip).not.toContain('aria-label="Next shift');
+  expect(strip).not.toMatch(/<a [^>]*aria-label=/);
   // No hours read in this render: scheduled hours stand alone with their caption.
   expect(plain).toContain('Hours 32 h scheduled this week');
   expect(plain).toContain('Scheduled payday Fri, Nov 27 in 10 days');
@@ -114,7 +116,7 @@ it('EM-015: a Lead who leads every listed shift reads it once beside the title; 
 
 it('EM-016: Today’s team is a plain row that opens the compose page, with its note as the card’s footer', () => {
   const html = draw({lead: true, team: true}), card = html.slice(html.indexOf('id="b-home-team"'), html.indexOf('</section>', html.indexOf('id="b-home-team"')));
-  expect(card).toContain('<a class="b-row b-row--link" href="/app/updates/compose" aria-label="Message today’s team, everyone on shift today">');
+  expect(card).toContain('<a class="b-row b-row--link" href="/app/updates/compose">');
   expect(card).not.toContain('b-btn');expect(card).toContain('class="b-chev"');
   expect(card).toContain('<p class="eb-cardnote">Your message goes to everyone on today’s published schedule. They don’t have to acknowledge it.</p>');
 });
@@ -159,7 +161,8 @@ it('Phase 9: the shift card says its time fact as header meta, your clock state 
   const onCard = on.slice(on.indexOf('id="b-home-shift"'), on.indexOf('</section>', on.indexOf('id="b-home-shift"')));
   expect(onCard).not.toContain('b-callout');expect(onCard).not.toContain('data-tone="green"><svg');
   expect(onCard).toMatch(/<span class="b-notice__t eb-state"><span class="b-status" data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"><\/span>Clocked in at 9:02\sAM<\/span><\/span><span class="b-notice__s">Breaks and clock out on the Main\u00a0Office tablet<\/span>/);
-  expect(on).toContain('<span class="b-card__meta">Until 9:00 PM</span>');
+  // Each fact once: the range ends at 9:00 PM, so the card has no "Until 9:00 PM" meta.
+  expect(onCard).not.toContain('b-card__meta');expect(onCard).toContain('On shift now');
   // On break: amber live dot. A shift under way with no punch: Time's words from work-copy, "Not clocked in · 9 h" (the
   // shift started at 9 AM, Home was read at 6 PM), with the amber dot.
   const pause = renderToStaticMarkup(<HoursRead.Provider value={{current: {...(read as {current: object}).current, state: 'ON_BREAK'}} as typeof read}><EmployeeHomeB {...props({snapshot: current})}/></HoursRead.Provider>);
@@ -201,4 +204,9 @@ it('final polish: Home’s shortcuts open the page that starts each request, and
   expect(text(nav(html)).trim()).toBe('Fix my time');
   expect(nav(draw())).toBe('');
   expect(nav(draw({shortcuts: []}))).toBe('');
+});
+
+it('Core screens check: a Lead on shift now reads the range in the band, split after its dash so a narrow tile can wrap it', () => {
+  const html = draw({lead: true}), strip = html.includes('class="b-live b-glass"') ? html.slice(html.indexOf('class="b-live b-glass"'), html.indexOf('</ul>', html.indexOf('class="b-live b-glass"'))) : '';
+  if (strip.includes('On shift now')) { expect(strip).toMatch(/<span class="eb-nb">[^<]+\u00a0–<\/span> <span class="eb-nb">/); expect(strip).not.toMatch(/<a [^>]*aria-label=/); }
 });

@@ -1,9 +1,9 @@
 'use client';
 
 import {Fragment,useEffect,useRef,useState,type FormEvent,type ReactNode} from 'react';
-import {FieldErrorLine} from './form-validation';
 import type {ClockerScheduleGrace} from '@/lib/clocker/schedule-grace.server';
-import {CorpCard} from './corp/corp';
+import {CorpFormFooter} from './corp/corp';
+import {FieldB} from '@/app/app/settings/settings-b-form';
 import {BCallout,type BMeaning,type BTone} from './owner-b/b-kit';
 import {clockerOwnerCopy,type ClockerOwnerLang} from './clocker-owner-copy';
 
@@ -79,36 +79,35 @@ export function ClockerGraceSettings({initial,saveAction,readAction,lang='en'}:{
     }catch{setResult({kind:'readFailed',focus:false});}
     finally{busy.current=false;setPending(false);}
   }
-  const described=invalid?'clocker-grace-error clocker-grace-help':'clocker-grace-help';
-  const words:Record<Result,string>={saved:t.graceSaved,reloaded:t.graceReloaded,changed:t.graceChanged,unknown:t.graceNotConfirmed,readFailed:t.graceReloadFailed,ownerOnly:t.graceOwnerOnly,refused:t.graceRefused};
+    const words:Record<Result,string>={saved:t.graceSaved,reloaded:t.graceReloaded,changed:t.graceChanged,unknown:t.graceNotConfirmed,readFailed:t.graceReloadFailed,ownerOnly:t.graceOwnerOnly,refused:t.graceRefused};
   const look=result?LOOK[result.kind]:null;
-  return <CorpCard as="div" ariaLabel={t.matchingTitle}>
-    <form id="clocker-grace-form" onSubmit={save} className="c-grace__form" aria-busy={pending} aria-labelledby="clocker-grace-title" noValidate>
+  // Final fixes S2 (G85): the form is the card, its field is the Settings FieldB (label, outlined field with its unit, the one
+  // error line, the help), and Save stands where every Settings form has it: on a phone's band (the page's `phoneRight`,
+  // shown while `data-dirty` is set) and in the card's footer from 768px, at its right edge. Reload setting, when a save
+  // couldn't be confirmed, is the card's own footer at every width. The result stands under the card.
+  const dirty=(changed||pending)&&!mustReload;
+  return <>
+    <form id="clocker-grace-form" onSubmit={save} className="c-card c-setb-form c-grace__form" aria-busy={pending} aria-labelledby="clocker-grace-title" noValidate
+      data-save-on-change="" data-dirty={dirty?'':undefined}>
       <h2 className="c-sr" id="clocker-grace-title">{t.matchingTitle}</h2>
-      <fieldset disabled={pending} className="c-grace__fields">
+      <fieldset disabled={pending} className="c-setb-fieldset c-grace__fields">
         <legend className="c-sr">{t.matchingTitle}</legend>
-        <div className="c-field c-grace__field">
-          <label className="c-field__label" htmlFor="clocker-grace-minutes">{t.graceLabel}</label>
-          <span className="c-grace__minutes">
-            <input ref={input} id="clocker-grace-minutes" name="earlyClockInGraceMinutes" className="c-in" type="number" min={0} max={30} step={1}
-              inputMode="numeric" enterKeyHint="done" required value={draft} aria-invalid={invalid||undefined} aria-describedby={described}
-              onChange={event=>{setDraft(event.target.value);if(invalid&&graceDraftValid(event.target.value.trim()))setInvalid(false);if(result&&!mustReload)setResult(null);}}/>
-            <span aria-hidden="true">{t.graceUnit}</span>
-          </span>
-          {/* D24: the one field error (the forms' 16px warning glyph, red, no closing period). */}
-          {invalid?<p id="clocker-grace-error" className="field-error" role="alert"><FieldErrorLine>{t.graceInvalid}</FieldErrorLine></p>:null}
-          <span id="clocker-grace-help" className="c-field__help">{wholeWords(t.graceHelp)}</span>
+        <div className="c-card__body c-setb-fields">
+          <FieldB label={t.graceLabel} id="clocker-grace-minutes" name="earlyClockInGraceMinutes" unit={t.graceUnit} inputRef={input as never}
+            type="number" min={0} max={30} step={1} inputMode="numeric" enterKeyHint="done" required value={draft}
+            error={invalid?t.graceInvalid:undefined} help={wholeWords(t.graceHelp)} helpId="clocker-grace-help"
+            onChange={event=>{setDraft(event.target.value);if(invalid&&graceDraftValid(event.target.value.trim()))setInvalid(false);if(result&&!mustReload)setResult(null);}}/>
         </div>
-        <p className="c-grace__note">{wholeWords(t.graceNote)}</p>
+        <p className="c-setb-cardnote">{wholeWords(t.graceNote)}</p>
       </fieldset>
+      {mustReload?<div className="c-card__foot c-grace__foot" ref={foot}>
+        <button ref={reloadButton} type="button" className="c-btn" disabled={pending} onClick={()=>void reload()}>{t.graceReload}</button>
+      </div>:dirty?<div ref={foot} style={{display:'contents'}}><CorpFormFooter>
+        <button type="submit" disabled={pending} className="c-btn">{pending?t.saving:t.graceSave}</button>
+      </CorpFormFooter></div>:null}
     </form>
-    {result&&look?<div ref={said} className="c-grace__result" tabIndex={result.focus?-1:undefined}>
+    {result&&look?<div ref={said} className="c-grace__result c-setb-result" tabIndex={result.focus?-1:undefined}>
       <BCallout tone={look.tone} icon={look.icon} role={result.focus?undefined:look.tone==='green'||look.tone==='teal'?'status':'alert'}>{words[result.kind]}</BCallout>
     </div>:null}
-    {mustReload||changed||pending?<div className="c-card__foot c-grace__foot" ref={foot}>
-      {mustReload
-        ?<button ref={reloadButton} type="button" className="c-btn" disabled={pending} onClick={()=>void reload()}>{t.graceReload}</button>
-        :<button type="submit" form="clocker-grace-form" disabled={pending} className="c-btn">{pending?t.saving:t.graceSave}</button>}
-    </div>:null}
-  </CorpCard>;
+  </>;
 }

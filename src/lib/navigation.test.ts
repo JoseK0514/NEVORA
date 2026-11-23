@@ -204,3 +204,17 @@ describe('Rondo AI in the navigation', () => {
     expect(mobileMoreForRole('MANAGER', undefined, context).some(item => item.href === '/app/ai-manager')).toBe(true);
   });
 });
+
+// Final fixes K (Nov 23, 2026): every page of the Schedule family lights Schedule on a phone, for every role; Payroll's
+// exports and settings light Payroll; time off and Things to do stay with Home.
+describe("phone tab for each section's pages", () => {
+  const full: PayrollCapabilities = { ...payroll, canConfigure: true, canReview: true, canApprove: true };
+  const schedulePages = ["/app/availability", "/app/availability/agreement", "/app/exchange", "/app/exchange/swap", "/app/exchange/callout", "/app/exchange/open-shifts", "/app/schedule/templates", "/app/schedule/settings", "/app/schedule/publish"];
+  it.each([["OWNER", full, {}], ["MANAGER", payroll, { operational: company }], ["LEAD", payroll, {}], ["EMPLOYEE", payroll, {}]] as const)("%s", (role, caps, context) => {
+    for (const path of schedulePages) expect([path, activeMobileTab(role, path, caps, context as never)]).toEqual([path, "/app/schedule"]);
+  });
+  it("Payroll's exports and settings light Payroll; time off and Things to do light Home", () => {
+    for (const path of ["/app/payroll-export", "/app/payroll-export/paid-time", "/app/settings/payroll"]) expect(activeMobileTab("OWNER", path, full)).toBe("/app/payroll");
+    for (const path of ["/app/requests", "/app/inbox"]) expect(activeMobileTab("OWNER", path, full)).toBe("/app");
+  });
+});

@@ -2,7 +2,7 @@
 import "./whos-working-corp.css";
 import { useEffect, useState, type ReactNode } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react/ssr";
-import { CorpAvatar, CorpBody, CorpButton, CorpCard, CorpNav, CorpPage, CorpRow, CorpTitle } from "./corp/corp";
+import { CorpAvatar, CorpBody, CorpButton, CorpCard, CorpCount, CorpNav, CorpPage, CorpRow, CorpTitle } from "./corp/corp";
 import { BChip, BCount, BSegs } from "./owner-b/b-kit";
 import { AttendanceReviewProvider, openPastLimitEntries, sinceLabel, useSharedAttendanceReview } from "./manager-attendance-review";
 import { useClockMonitor } from "./clean/use-clock-monitor";
@@ -25,7 +25,7 @@ const lateBy = (start: string, observedAt: string) => {
 };
 const SHOWN = 5;
 /** R3: one count voice. The label, then the figure in grey, no brackets ("Clocked in 2"). */
-const headed = (title: string, n: number) => <>{title}<span className="c-count c-num">{n}</span></>;
+const headed = (title: string, n: number) => <>{title}<CorpCount>{n}</CorpCount></>;
 const REVIEW_FRAGMENT = /^#(?:review$|attendance-.)/;
 const CORRECTION_FRAGMENT = /^#correction-./;
 
