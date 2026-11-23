@@ -692,6 +692,8 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
   white-space: nowrap !important; text-overflow: ellipsis !important; color: #1A1C1E !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; }
 :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option .command-finder-detail { flex: none !important; margin: 0 !important; color: #6B7075 !important; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; text-align: right !important; }
 :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option[aria-selected="true"] { background: #E6F1EF !important; box-shadow: inset 3px 0 0 #0B6E69 !important; } /* Review B1 (NV-063): the leading bar is the position cue (6.09:1). */
+/* Signed-in Spanish check (axe, 1440): the selected row's grey detail ("Schedule › More") was 4.33:1 on its tint; one step darker on that row only (5.9:1). */
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option[aria-selected="true"] .command-finder-detail { color: #575C61 !important; }
 :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option[aria-selected="true"] .command-finder-label { color: #0B6E69 !important; font-weight: 600 !important; }
 :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-match { color: inherit; font-weight: 600; }
 @media (max-width: 760px) {
