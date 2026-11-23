@@ -156,3 +156,18 @@ for Things to do, Employee Home and their tests; one stale Things to do assertio
   rule fixed here, and Rondo's own rules (`weekly.css`, `advisor.css`) already set 1.75rem.
 - Seen: at 390 with 200% text Insights' four period tabs wrap onto two rows inside a taller track (readable, no
   overlap); a page-level decision whether that strip should scroll instead.
+
+## Follow-up 8: band title and its button at 320px with 200% text (15:05 UTC)
+Merged `origin/claude-codex-collab-nevora` at da3283a0 first (`85006fc5`). The Timecards Select band block at the end of
+`owner-b-desktop.css` is back, and the shared Things to do test was kept. The phone title and CorpPill items the lead
+listed were already in `d8761477`, `43f2fd27` and `0723d7cb`.
+- Cause: at 320px Payroll's band (`owner-b-time-pay.css`, `.c-page.c-pay`, which the Employee's Pay page also is) was a
+  two-column grid with `minmax(0, 1fr)` for the title. A one-word title can't wrap, so at 200% "Payroll" ran under
+  Settings and "Pay" under "See your hours". The kit's phone wrap rule never applied there.
+- `be2055e8`: the same rule as a wrapping row. The title is first and grows (`min-width: min-content`), the button
+  second and not shrinking, the sub-lines full width after. When both fit (the default size) they share the row as
+  before; when they don't, the button drops under the title.
+- Default size, before and after: Payroll and My pay are pixel-identical at 320, 390, 768 and 1440. Every other
+  difference across Owner Home, Team, Timecards and Schedule and Employee Home and Time is live minutes and fictional
+  to-do data. At 320 with 200% text, nothing overlaps (`img/title-button-*`).
+- Tests: `kit-text-rem.test.ts` covers the rule. The whole `src/components` suite passes (3209 tests, 0 failures).
