@@ -255,9 +255,9 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(notice).toMatch(/>Oct 12–18 has no payroll</);
     expect(notice).toMatch(/>Scheduled payday was Fri,\sOct\s23</);
     expect(notice).toMatch(/href="\/app\/payroll\/prepare#unpaid-2026-10-12" class="b-btn b-btn--teal b-btn--full"[^>]*>Prepare Oct 12–18</);
-    // The notice sits before the payday tile, whose own button steps back to glass.
+    // The notice sits before the payday tile, which has no Prepare button of its own then (Core check, Nov 23, 2026).
     expect(out.indexOf("has no payroll")).toBeLessThan(out.indexOf('class="b-ink"'));
-    expect(out).toContain('<a href="/app/payroll" class="b-btn b-btn--glass b-btn--full" aria-label="Prepare payroll">');
+    expect(out).not.toContain('aria-label="Prepare payroll"');
     // A schedule that needs review is amber and opens Payroll; a status that couldn't be read says so, never calm.
     const review = phone({ week: payrollWeek, payrollStatus: { state: "ready", reviewRequired: overdue.overdue } });
     expect(review).toContain(">Payroll schedule needs review<");
@@ -278,7 +278,9 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(open).toContain('<section class="b-ink" aria-label="Timecards">');
     expect(open).toContain('<span class="b-ink__k">Timecards</span><span class="b-ink__due">Open now</span>');
     expect(open).toMatch(/<div class="b-ink__big">2\sto approve<\/div>/);
-    expect(open).toContain("<span>2 of 3 timecards · Pay period ended</span><span>Scheduled payday Tue,\u00a0Nov\u00a03</span>");
+    // Core check (Nov 23, 2026): the count is said once, in the big line.
+    expect(open).toContain("<span>Pay period ended</span><span>Scheduled payday Tue,\u00a0Nov\u00a03</span>");
+    expect(open).not.toContain("2 of 3 timecards");
     expect(open).toContain("Another reviewer approves your timecard");
     expect(open).toContain('<a href="/app/timecards" class="b-btn b-btn--white b-btn--full" aria-label="Review timecards">');
     expect(open).not.toMatch(/Prepare payroll|Open timecards/);

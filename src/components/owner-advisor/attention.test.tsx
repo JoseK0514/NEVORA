@@ -75,5 +75,5 @@ it("says a group's draft note and its shared source link once, and keeps each pl
   expect(html.match(/Includes draft commitments; verify published staffing separately\./g)).toHaveLength(1);
   expect(html.match(/Review source/g)).toHaveLength(1);
   expect(html.match(/Not relevant today/g)).toHaveLength(2);
-  expect(html).toContain("1 planning period needs review, starting 5:00 PM. Maximum staffing shortfall: 1.</p>");
+  expect(html).toContain("1 planning period needs review, starting 5:00 PM. Maximum staffing shortfall:\u00a01.</p>");
 });
