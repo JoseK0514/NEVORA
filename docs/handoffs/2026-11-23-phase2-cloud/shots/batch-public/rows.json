@@ -1,0 +1,742 @@
+[
+ {
+  "id": "A1-public-en",
+  "row": "A1",
+  "page": "Start (redirect) (English)",
+  "section": "Signed out and public",
+  "note": "Signed out, “/” goes straight to Sign in in one hop; these are the Sign in page it lands on.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A1-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A1-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A1-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 200% text (390) “Sign in with a passkey” wraps and the “Where do I find my Employee ID?” chevron sits apart at the right edge."
+  ]
+ },
+ {
+  "id": "A1-public-es",
+  "row": "A1",
+  "page": "Start (redirect) (Spanish)",
+  "section": "Signed out and public",
+  "note": "Spanish: the passkey button label wraps to two lines on phones and tablets (blocking, needs a shorter label). Otherwise clean.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A1-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A1-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A1-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "Spanish passkey button “Iniciar sesión con una llave de acceso” wraps to two lines at 390 and 768 (57px vs 52px for Iniciar sesión). Needs a shorter Spanish label (copy decision, shared auth copy); not changed."
+  ],
+  "endSweep": []
+ },
+ {
+  "id": "A2-public-en",
+  "row": "A2",
+  "page": "Sign in (English)",
+  "section": "Signed out and public",
+  "note": "Clean: one teal Sign in, outlined passkey button, aligned edges, no overflow at any width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A2-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A2-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A2-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 200% text (390) “Sign in with a passkey” wraps and the “Where do I find my Employee ID?” chevron sits apart at the right edge."
+  ]
+ },
+ {
+  "id": "A2-public-es",
+  "row": "A2",
+  "page": "Sign in (Spanish)",
+  "section": "Signed out and public",
+  "note": "Spanish: the passkey button label wraps to two lines on phones and tablets (blocking, needs a shorter label). Otherwise clean.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A2-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A2-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A2-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "Spanish passkey button “Iniciar sesión con una llave de acceso” wraps to two lines at 390 and 768 (57px vs 52px for Iniciar sesión). Needs a shorter Spanish label (copy decision, shared auth copy); not changed."
+  ],
+  "endSweep": []
+ },
+ {
+  "id": "A3-public-en",
+  "row": "A3",
+  "page": "Welcome (English)",
+  "section": "Signed out and public",
+  "note": "Clean: one teal Sign in, single card, nothing repeated.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A3-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A3-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A3-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A3-public-es",
+  "row": "A3",
+  "page": "Welcome (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean: one teal Sign in, single card, nothing repeated.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A3-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A3-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A3-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A4-public-en",
+  "row": "A4",
+  "page": "Forgot access (English)",
+  "section": "Signed out and public",
+  "note": "Clean: step bar, one teal action, links under the card.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A4-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A4-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A4-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 200% text (390) “Email me a reset link” wraps to two lines."
+  ]
+ },
+ {
+  "id": "A4-public-es",
+  "row": "A4",
+  "page": "Forgot access (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean: step bar, one teal action, links under the card.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A4-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A4-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A4-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A5-public-en",
+  "row": "A5",
+  "page": "Reset access (English)",
+  "section": "Signed out and public",
+  "note": "Clean, opened without a code. The step bar reads “Step 3 of 3” with no step name, unlike Forgot access and Activate.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A5-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A5-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A5-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Step bar with no step name (“Step 3 of 3”) when opened without a code."
+  ]
+ },
+ {
+  "id": "A5-public-es",
+  "row": "A5",
+  "page": "Reset access (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean, opened without a code. The step bar reads “Step 3 of 3” with no step name, unlike Forgot access and Activate.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A5-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A5-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A5-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A6-public-en",
+  "row": "A6",
+  "page": "Activate account (English)",
+  "section": "Signed out and public",
+  "note": "Clean, opened without an invitation: one teal “Get invitation help”, then “Already set up? Sign in”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A6-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A6-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A6-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A6-public-es",
+  "row": "A6",
+  "page": "Activate account (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean, opened without an invitation: one teal “Get invitation help”, then “Already set up? Sign in”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A6-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A6-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A6-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A7-public-en",
+  "row": "A7",
+  "page": "Access help (English)",
+  "section": "Signed out and public",
+  "note": "Clean: five help rows with icons on one edge; the back link reads “Back” where the other pages say “Sign in”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A7-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A7-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A7-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Back link reads “Back”; other public pages read “‹ Sign in”."
+  ]
+ },
+ {
+  "id": "A7-public-es",
+  "row": "A7",
+  "page": "Access help (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean: five help rows with icons on one edge; the back link reads “Back” where the other pages say “Sign in”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A7-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A7-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A7-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A7-id-public-en",
+  "row": "A7",
+  "page": "Access help: Find your Employee ID (English)",
+  "section": "Signed out and public",
+  "note": "Clean topic page with one teal Sign in.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A7-id-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A7-id-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A7-id-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A7-id-public-es",
+  "row": "A7",
+  "page": "Access help: Find your Employee ID (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean topic page with one teal Sign in.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A7-id-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A7-id-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A7-id-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A8-public-en",
+  "row": "A8",
+  "page": "Owner sign-up (English)",
+  "section": "Signed out and public",
+  "note": "Clean, private-test mode (fictional approved address only). The title sits in the card, not the teal band, and is left aligned, unlike A4–A6.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A8-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A8-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A8-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Title in the card and left aligned on phones and tablets; A4–A6 put it centred in the card under the band. No back link to Sign in."
+  ]
+ },
+ {
+  "id": "A8-public-es",
+  "row": "A8",
+  "page": "Owner sign-up (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean, private-test mode (fictional approved address only). The title sits in the card, not the teal band, and is left aligned, unlike A4–A6.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A8-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A8-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A8-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A9-public-en",
+  "row": "A9",
+  "page": "Verify email (sign-up) (English)",
+  "section": "Signed out and public",
+  "note": "Fixed: the title no longer shows a dark box when the page opens (d3eb96c7). Shown without an email link, so it asks you to open the link.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A9-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A9-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A9-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Console shows a 401 when the page opens without a sign-up session (the resume check); harmless but noisy."
+  ]
+ },
+ {
+  "id": "A9-public-es",
+  "row": "A9",
+  "page": "Verify email (sign-up) (Spanish)",
+  "section": "Signed out and public",
+  "note": "Fixed: the title no longer shows a dark box when the page opens (d3eb96c7). Shown without an email link, so it asks you to open the link.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A9-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A9-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A9-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A10-public-en",
+  "row": "A10",
+  "page": "Activate business (Owner) (English)",
+  "section": "Signed out and public",
+  "note": "Clean, opened without the sign-up link: one teal “Back to signup”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A10-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A10-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A10-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A10-public-es",
+  "row": "A10",
+  "page": "Activate business (Owner) (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean, opened without the sign-up link: one teal “Back to signup”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A10-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A10-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A10-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A11-public-en",
+  "row": "A11",
+  "page": "Privacy policy (English)",
+  "section": "Signed out and public",
+  "note": "Clean; desktop shows the contents card beside the text. Legal text unchanged and stays in English on the Spanish page, as designed.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A11-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A11-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A11-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A11-public-es",
+  "row": "A11",
+  "page": "Privacy policy (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean; desktop shows the contents card beside the text. Legal text unchanged and stays in English on the Spanish page, as designed.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A11-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A11-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A11-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A12-public-en",
+  "row": "A12",
+  "page": "Terms (English)",
+  "section": "Signed out and public",
+  "note": "Clean; same layout as Privacy. Legal text unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A12-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A12-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A12-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A12-public-es",
+  "row": "A12",
+  "page": "Terms (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean; same layout as Privacy. Legal text unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A12-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A12-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A12-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A13-public-en",
+  "row": "A13",
+  "page": "Support (English)",
+  "section": "Signed out and public",
+  "note": "Clean: email card, response time, common questions, mailing address. No overflow.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A13-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A13-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A13-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A13-public-es",
+  "row": "A13",
+  "page": "Support (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean: email card, response time, common questions, mailing address. No overflow.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A13-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A13-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A13-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A14-public-en",
+  "row": "A14",
+  "page": "Account deletion (public info) (English)",
+  "section": "Signed out and public",
+  "note": "Clean, but its only action “Start deletion request” is an outlined button, not Solid teal; worth a decision.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A14-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A14-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A14-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Only action is an outlined button; component picks say the main action is Solid teal."
+  ]
+ },
+ {
+  "id": "A14-public-es",
+  "row": "A14",
+  "page": "Account deletion (public info) (Spanish)",
+  "section": "Signed out and public",
+  "note": "Clean, but its only action “Start deletion request” is an outlined button, not Solid teal; worth a decision.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A14-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A14-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A14-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
