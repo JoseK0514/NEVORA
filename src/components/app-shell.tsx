@@ -558,6 +558,7 @@ function AppShellView({
               <Link
                 key={item.href}
                 href={item.href}
+                intent="auto"
                 className={active ? "nav-link active" : "nav-link"}
                 // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
                 aria-current={active ? (activeTool?.href === item.href || (item.href === activeHref && !pageItem && !deeper) ? "page" : "true") : undefined}
@@ -657,9 +658,10 @@ function AppShellView({
                   <Link
                     key={item.href}
                     href={item.href}
-                    // Phase 1: the tabs load in full ahead of the tap. The access frame still checks each page when it opens, and its
-                    // periodic refresh re-renders only the open page, so these prefetches are not repeated every few seconds.
-                    prefetch
+                    // Phase 1: the tabs load in full ahead of the tap. The access frame still checks each page when it opens.
+                    // Gap closure (Nov 23, 2026): on intent (touch start, pointer, focus), not on sight, so the frame's renewals no
+                    // longer fetch every tab again (each renewal cleared the router cache: 36 extra reads a minute).
+                    intent="full"
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
                     // Review Nov 14 (BR-4): More and the pages it opens light no tab, so a lit tab is always the page's own place.
                     aria-current={active ? "page" : undefined}
