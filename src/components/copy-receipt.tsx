@@ -65,10 +65,11 @@ const described = (row: Row): row is Row & { date: string; startTime: string; en
 const sortKey = (row: Row) => described(row) ? `${row.date} ${row.startTime}` : `~${row.sourceId}`;
 const byWhen = (a: Row, b: Row) => sortKey(a).localeCompare(sortKey(b));
 
-// Each part stays whole at 200% text ("9 AM – 5 PM" never splits inside), and a " · " never starts a line.
-const whole = (text: string) => text.replace(/ /g, "\u00a0");
+// A time keeps its "AM" or "PM", a range wraps only after its dash ("8:00 AM –" / "4:00 PM"), and a " · " never starts a
+// line. "All day" stays whole.
+const rangeBreaks = (text: string) => text.replace(/(\d) ([AP]M)/g, "$1\u00a0$2").replace(/ \u2013 /g, "\u00a0\u2013 ").replace(/^All day$/, "All\u00a0day");
 const DOT = "\u00a0· ";
-const timeOf = (row: Row & { startTime: string; endTime: string }) => whole(compactRange(formatTimeRange(row.startTime, row.endTime)));
+const timeOf = (row: Row & { startTime: string; endTime: string }) => rangeBreaks(compactRange(formatTimeRange(row.startTime, row.endTime)));
 const personOf = (row: Row) => described(row) ? row.employeeName ? shortName(row.employeeName) : "Open shift" : "Shift";
 
 /** One row per person in a group, with their days: "Mon, Tue · 6 AM – 2 PM; Thu · 2–10 PM". The summary names the week
