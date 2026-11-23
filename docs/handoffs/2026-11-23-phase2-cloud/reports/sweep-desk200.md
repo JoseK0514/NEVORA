@@ -158,3 +158,22 @@ Merged the shared tip first (`2d43fd72`).
   identical apart from live data. Tests in `kit-text-rem.test.ts`; the whole `src/components` suite passes (3268).
 - Seen: Employee Schedule at 390 with 200% text, the "Action needed" chip in the band is cut (ellipsis). The day labels
   ("Mon", 12px) and "Added Mon, Nov 23" (15px) stay fixed: Employee screens.
+
+## Auth footer, sign-in button and account name (Jose's decision, 18:00 UTC)
+Merged the shared tip first (`52363d7f`).
+- `53ce46f0`: on desktop (from 1024px) the legal footer (`.q-auth__foot`) is in the flow, in the page grid's last row,
+  instead of absolute over it. The links stay outside the card, as decided. Measured at the default size: the card sits
+  at a fixed 144px top margin (it isn't vertically centred) and the last row was empty (0px) with the 74px footer hanging
+  in it, so on pages whose column fits the viewport the footer draws exactly where it did.
+- `42fc69a0`: the sign-in button (`.q-btn`, 17px) and the header account name (15px/20px) are rem.
+- **Default size, every public page at 390, 1024 and 1440:** 45 of 51 shots pixel-identical, including A1 Start, A2
+  Sign in (with its error states) and Activate. **Not identical:** A4 Forgot (1024, 1440) and A5 Reset (both states).
+  Their column plus its bottom room (140px) is taller than the free space, so the in-flow footer starts below that room:
+  Forgot's page goes from 900 to 955px and Reset's from 943 to 1017px. The footer moves 55–74px down, below the fold.
+  On Reset this also removes a 2px overlap the footer had with "Need a reset link?" at the default size. Making these
+  identical would mean letting the footer overlap the column's bottom room by a fixed amount, which brings the 200%
+  overlap back, so I left it for your call (`img/auth-forgot-1440-before/after`).
+- **200% text:** the footer is below the links with no overlap on Sign in, Forgot, Reset and Activate at 1440 and 390
+  (`img/auth-signin-1440-200pct-before` → `auth-signin-1440-200pct`). The header account name grows. Step labels
+  ("Step 1 of 3…") are screen-reader text, not drawn, so left as is.
+- Tests in `kit-text-rem.test.ts`; the whole `src/components` suite passes (3278).

@@ -139,3 +139,11 @@ describe('kit checkbox, corp buttons, tab fallback and sheet band (Nov 23, eveni
     expect(css('app/app/owner-b-pages.css')).toContain(':is(.c-sheetpage, .c-shift-page) :is(.c-shift__head, .c-formhead):not(#sg1):not(#sg2) { margin-left: calc(-1 * var(--b-gutter)) !important; margin-right: calc(-1 * var(--b-gutter)) !important; padding-left: var(--b-gutter) !important; padding-right: var(--b-gutter) !important; }');
   });
 });
+
+describe('sign-in pages and the header account name (Jose, Nov 23)', () => {
+  it('the legal footer is in the flow on desktop, the sign-in button label and the account name are rem', () => {
+    expect(css('components/auth-premium/auth-b.css')).toContain('main.q-page.q-auth.q-auth:not(.q-doc):not(#mobile-access-page) > .q-auth__foot:not(#af1):not(#af2) { position: static !important; }');
+    expect(css('components/quiet/quiet.css')).toMatch(/\.q-btn \{[^}]*font-size: 1\.0625rem;/);
+    expect(css('app/app/corp-shell.css')).toContain('.portal-account-menu .nevora-action-menu-trigger { font: 400 0.9375rem/1.25rem Inter');
+  });
+});
