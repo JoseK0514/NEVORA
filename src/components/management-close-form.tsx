@@ -7,6 +7,7 @@ import {parseManagementCloseCommand} from '@/lib/management-close/validation';
 import type {ManagementCloseContext} from '@/lib/management-close/contracts';
 import {rememberClose,pendingClose,forgetClose,type CloseAttempt} from '@/lib/management-close/recovery';
 import styles from './management-close-form.module.css';
+import {CorpBody,CorpCard} from './corp/corp';
 
 type View=Extract<ManagementCloseContext,{state:'ready'}>|{state:'ready';closed:true;observedAt:string;validForMs:number;authority:string}|{state:'unavailable';reason:string};
 const focused=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
@@ -86,23 +87,31 @@ export function ManagementCloseForm({timeEntryId,actorId,timeZone,recoveryScope,
   return <p role="status" className="c-tc-sheet__note">{message}</p>;
  }
  if(!opened)return <button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={()=>{setOpened(true);setMessage('Checking current punch…');}}>Close open punch</button>;
- return <section className={styles.form} aria-label="Close open punch">
-  <h3>{attempt?'Confirm original close':'Close open punch'}</h3>
-  {view?.state==='ready'&&!('closed'in view)?<form className={styles.form} onSubmit={submit}>
-   <p className="c-tc-sheet__note">{view.target.employeeName} · {view.target.locationName}. Started {formatBusinessDateTime(view.target.clockInAt,timeZone)}.</p>
-   {view.target.openBreakStartedAt?<p className="c-tc-sheet__note">The open break ends at the same selected time.</p>:null}
-   <fieldset className={styles.fields} disabled={!!attempt||phase==='saving'}>
-    <div className="c-field"><label className="c-field__label" htmlFor={fieldId+'-end'}>Confirmed end time ({timeZone})</label><input id={fieldId+'-end'} ref={endField} className="c-in" type="datetime-local" value={localEnd} onChange={e=>{setLocalEnd(e.target.value);setConfirmed(false);}} step={60} required autoComplete="off"/></div>
-    <div className="c-field"><label className="c-field__label" htmlFor={fieldId+'-reason'}>Reason for closing</label><textarea id={fieldId+'-reason'} className="c-in" rows={3} maxLength={500} value={reason} onChange={e=>{setReason(e.target.value);setConfirmed(false);}} required autoComplete="off"/></div>
-    <label className={styles.confirmation}><input className="c-tc-box" type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/><span>I verified this end time and reason.</span></label>
-   </fieldset>
-   {!attempt?<button type="submit" className="c-btn c-btn--full" disabled={!confirmed||!localEnd||!reason.trim()}>Record close</button>:null}
-  </form>:<p className="c-tc-sheet__note">{view?.state==='ready'?'This punch is already closed.':view?.state==='unavailable'?'Current punch information is unavailable.':'Checking current punch…'}</p>}
-  {message?<p className="c-tc-sheet__note" role="status">{message}</p>:null}
-  <div className={styles.actions}>
-   {attempt?<button type="button" className="c-btn c-btn--secondary" disabled={phase==='saving'||view?.state!=='ready'} onClick={()=>void submit()}>{phase==='saving'?'Recording…':'Retry same close'}</button>:null}
-   <button type="button" className="c-link" disabled={phase==='saving'} onClick={()=>{if(focused())controller.current?.start();}}>Refresh current punch</button>
-   {!attempt?<button type="button" className="c-link" onClick={()=>{setOpened(false);setView(null);setLocalEnd('');setReason('');setConfirmed(false);setMessage('');}}>Cancel close</button>:null}
-  </div>
- </section>;
+ // Jose (Nov 23, 2026, "not B2 compliant"): the open form is a kit card beside the sheet's others: the card heading, the
+ // punch's facts and the status line left-aligned, outlined fields, "I verified…" as a check row, and the kit buttons on
+ // the card's edges (Cancel left, the decision right; each full width when they no longer fit side by side).
+ const ready=view?.state==='ready'&&!('closed'in view)?view:null;
+ return <CorpCard id={fieldId+'-close'} label={attempt?'Confirm original close':'Close open punch'}>
+  <CorpBody>
+   <div className={`${styles.body} c-tc-close`}>
+    {ready?<p className={styles.facts}>{ready.target.employeeName} · {ready.target.locationName}. Started {formatBusinessDateTime(ready.target.clockInAt,timeZone)}.</p>
+     :<p className={styles.facts}>{view?.state==='ready'?'This punch is already closed.':view?.state==='unavailable'?'Current punch information is unavailable.':'Checking current punch…'}</p>}
+    {ready?.target.openBreakStartedAt?<p className={styles.facts}>The open break ends at the same selected time.</p>:null}
+    {ready?<form id={fieldId+'-form'} className={styles.form} onSubmit={submit}>
+     <fieldset className={styles.fields} disabled={!!attempt||phase==='saving'}>
+      <div className="c-field"><label className="c-field__label" htmlFor={fieldId+'-end'}>Confirmed end time ({timeZone})</label><input id={fieldId+'-end'} ref={endField} className="c-in" type="datetime-local" value={localEnd} onChange={e=>{setLocalEnd(e.target.value);setConfirmed(false);}} step={60} required autoComplete="off"/></div>
+      <div className="c-field"><label className="c-field__label" htmlFor={fieldId+'-reason'}>Reason for closing</label><textarea id={fieldId+'-reason'} className="c-in" rows={3} maxLength={500} value={reason} onChange={e=>{setReason(e.target.value);setConfirmed(false);}} required autoComplete="off"/></div>
+      <label className={styles.confirmation}><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/><span>I verified this end time and reason.</span></label>
+     </fieldset>
+    </form>:null}
+    {message?<p className={styles.facts} role="status">{message}</p>:null}
+    <button type="button" className={`c-link ${styles.refresh}`} disabled={phase==='saving'} onClick={()=>{if(focused())controller.current?.start();}}>Refresh current punch</button>
+    <div className={styles.actions}>
+   {!attempt?<button type="button" className="c-btn c-btn--secondary" onClick={()=>{setOpened(false);setView(null);setLocalEnd('');setReason('');setConfirmed(false);setMessage('');}}>Cancel close</button>:null}
+   {attempt?<button type="button" className="c-btn" disabled={phase==='saving'||view?.state!=='ready'} onClick={()=>void submit()}>{phase==='saving'?'Recording…':'Retry same close'}</button>
+    :ready?<button type="submit" form={fieldId+'-form'} className="c-btn" disabled={!confirmed||!localEnd||!reason.trim()}>Record close</button>:null}
+    </div>
+   </div>
+  </CorpBody>
+ </CorpCard>;
 }

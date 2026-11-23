@@ -177,3 +177,34 @@ Merged the shared tip first (`52363d7f`).
   (`img/auth-signin-1440-200pct-before` → `auth-signin-1440-200pct`). The header account name grows. Step labels
   ("Step 1 of 3…") are screen-reader text, not drawn, so left as is.
 - Tests in `kit-text-rem.test.ts`; the whole `src/components` suite passes (3278).
+
+## Insights range contrast and Employee Schedule at 200% (lead, 17:19 UTC)
+Merged the shared tip first (`a5fe8da5`).
+- `9c807031`, Insights (`/app/reports`): on desktop the date range line (`p.c-ins__range`, "Mon, Nov 23 so far · All
+  locations") sits at 134–154px, inside the title's border-image band (it paints down to about 196px). axe read its white
+  words on the canvas, 1.08:1, at 1024 and 1440. This is the G48 case: it measured the canvas, not what's on screen. From
+  768px the line now paints the band at its height, `--b-band-solid` 84% toward black, with no glass (it has none).
+  The pair is now 5.96:1, and it holds at 200% text because the fill is on the line itself.
+  **axe `/app/reports`:** clean at 390, 1024 and 1440 (before: 1 color-contrast at 1024 and 1440). 390 isn't touched;
+  there the line sits under the glass segment and was already clean.
+  **Default size:** the line's box moves at most 3 levels a channel (the band's own fall across 20px). The other changed
+  pixels on the page are live data ("so far" hours moved with the clock between runs) and the bell's unread dot.
+  At 200% text on 1440 the fill shows as a faint, slightly darker strip, because the band lightens toward its bottom
+  edge behind it (`img/insights-1440-200pct-before` → `-after`).
+  Test beside the G48 one in `b-foundation.test.ts`; that's the kit's contrast pattern (it pins the paint and its
+  `nv-b` / `min-width: 768px` context).
+- `93e46599`, Employee Schedule at 390 with 200% text:
+  - "Added Mon, Nov 23" in the schedule changes list (`.schedule-publication-change li strong`) goes from 15px/20px to
+    0.9375rem/1.25rem. The probe that lists text that doesn't grow at 200% no longer lists the seven "Added …" lines.
+    The list is folded by default, so the shots don't show it.
+  - Week day labels: the band's week strip (`.b-week__d`, "Mon") was already 0.75rem on this tip (`7d0b7b77`). Measured
+    24px at 200%. Home's mini week labels (`.b-days-l`, 12px) go to 0.75rem as well.
+  - "Action needed" chip: on this tip it already wraps at 200% (DS-16, `@container not style(--nv-rem: 16px)`).
+    Measured `white-space: normal`, no overflow, 88px tall (two lines), not cut. No change; the test pins it.
+  - Still fixed at 200%: the tab bar labels (Home, Schedule, Time, Pay, Requests, 10.5px). Not in this ask.
+  - Default size: Employee Schedule at 390 and 1440 is pixel-identical before and after.
+- Shots: `img/insights-{390,1024,1440}-{before,after}`, `insights-390-200pct-*`, `insights-1440-200pct-*`,
+  `emp-schedule-{390,1440}-{before,after}`, `emp-schedule-390-200pct-*`. In the full-page 200% shots the fixed tab bar is
+  drawn mid-page, over the chip. That's how the capture works, not the layout.
+- Tests: `kit-text-rem.test.ts` and `b-foundation.test.ts` (74 pass). The whole `src/components` + `src/app` suite
+  passes (4922).
