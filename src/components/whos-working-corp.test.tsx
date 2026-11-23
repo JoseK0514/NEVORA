@@ -16,7 +16,7 @@ const html = (props: Partial<ComponentProps<typeof WhosWorkingView>>) => renderT
 it("lists who is clocked in (earliest first), who isn't in yet with how late, and shifts that ended with no clock-in", () => {
   const out = html({ monitor: monitor([person("b", "2026-10-30T11:58:00Z"), person("a", "2026-10-30T09:54:00Z", { state: "ON_BREAK", breakStartAt: "2026-10-30T12:10:00Z" })]),
     today: today([shift("c", "not_clocked_in", "2026-10-30T12:00:00Z"), shift("d", "no_punches", "2026-10-30T04:00:00Z")]) });
-  expect(out).toContain('>Clocked in<span class="c-count c-num">2</span><');
+  expect(out).toContain('>Clocked in<span class="c-count c-num"><span class="sr-only">\u00a0</span>2</span><');
   expect(out.replace(/\u202f/g, " ")).toContain('<span class="c-meta c-num">Updated 8:24 AM</span>');
   expect(out).not.toContain(">Live<");
   expect(out).not.toContain("c-pill");
@@ -25,10 +25,10 @@ it("lists who is clocked in (earliest first), who isn't in yet with how late, an
   const words = out.replace(/[\u00a0\u202f]/g, " ");
   expect(words).toContain("On break since 8:10 AM");
   expect(words).toContain("In since 7:58 AM");
-  expect(out).toContain('>Not clocked in<span class="c-count c-num">1</span><');
+  expect(out).toContain('>Not clocked in<span class="c-count c-num"><span class="sr-only">\u00a0</span>1</span><');
   expect(words).toContain("Due 8:00 AM");
   expect(out).toContain("c-row__value--amber\">24 min<");
-  expect(out).toContain('>Missed clock-ins<span class="c-count c-num">1</span><');
+  expect(out).toContain('>Missed clock-ins<span class="c-count c-num"><span class="sr-only">\u00a0</span>1</span><');
   expect(out).toContain('href="/app/timecards#timecard-d"');
   expect(out).toContain('<a class="c-nav__back" href="/app">');
 });
