@@ -19,6 +19,9 @@ import { ATTENDANCE_WORDS } from "../lib/action-center/present";
 import { notClockedInText } from "./team-live";
 import { lateText } from "../lib/action-center/request-details";
 import { reviewCopy } from "./review-details/copy";
+import { TEAM_COPY } from "./team-copy";
+import { ATTENDANCE } from "./owner-b/owner-b-copy";
+import type { PortalLang } from "@/lib/i18n/portal-lang";
 import type { Today, TodayShift } from "../lib/today/project";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
@@ -123,20 +126,20 @@ function DayTime({ start, end }: { start: string; end: string }) {
 
 /** Today's live state for one rostered shift, from the same Today read Home uses (matched by person and start time).
  * `problem`: a missed or late clock-in, which may take the screen's one red. */
-function liveState(shift: RosterShift, employeeId: string, today: Today | null, timeZone: string): { text: string; tone: "teal" | "blue" | "neutral" | "late"; problem?: true } | null {
+function liveState(shift: RosterShift, employeeId: string, today: Today | null, timeZone: string, lang: PortalLang = "en"): { text: string; tone: "teal" | "blue" | "neutral" | "late"; problem?: true } | null {
   if (today?.state !== "ready" || shift.date !== today.today) return null;
   const hhmm = (iso: string) => new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(iso));
   const live: TodayShift | undefined = today.shifts.find(row => row.employeeId === employeeId && hhmm(row.startAt) === shift.startTime.slice(0, 5));
   if (!live) return null;
   // Phase 9 (spec 3.1): one word for someone on the clock, "Clocked in" (it was "Working" here only), and a late arrival
   // says so in the words Home and Team use ("Clocked in late · 9 min"), so one person reads the same on every page.
-  if (live.status === "clocked_in") return live.late ? { text: lateText(live, ATTENDANCE_WORDS.late, reviewCopy()), tone: "late" } : { text: "Clocked in", tone: "teal" };
-  if (live.status === "on_break") return { text: "On break", tone: "blue" };
-  if (live.status === "no_punches") return { text: ATTENDANCE_WORDS.missed, tone: "neutral", problem: true };
+  if (live.status === "clocked_in") return live.late ? { text: lateText(live, lang === "es" ? TEAM_COPY.es.late : ATTENDANCE_WORDS.late, reviewCopy(lang)), tone: "late" } : { text: TEAM_COPY[lang].clockedIn, tone: "teal" };
+  if (live.status === "on_break") return { text: TEAM_COPY[lang].onBreak, tone: "blue" };
+  if (live.status === "no_punches") return { text: lang === "es" ? ATTENDANCE.es.missed : ATTENDANCE_WORDS.missed, tone: "neutral", problem: true };
   if (live.status === "not_clocked_in") {
     const minutes = Math.floor((Date.parse(today.observedAt) - Date.parse(live.startAt)) / 60_000);
     // Jose's attendance words: a started shift with no punch is "Not clocked in · 24 min", never "late".
-    return { text: notClockedInText(Math.max(minutes, 1)), tone: "neutral", problem: true };
+    return { text: notClockedInText(Math.max(minutes, 1), lang), tone: "neutral", problem: true };
   }
   return null;
 }
@@ -175,6 +178,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   /** Direction B phone screen (shown under the shell's data-nv-b); needs `corp`. */
   b?: RosterB;
 }) {
+  const rosterLang = usePortalLang();
   const [phoneDay, setPhoneDay] = useState(reviewDay ?? (dates.includes(today) ? today : dates[0]));
   // Desktop: the full week, or one day when an Action Center link opened it (kept, with Full week to go back).
   const [focus, setFocus] = useState(reviewDay ?? "all");
@@ -297,13 +301,13 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   // first problem in time order (an open shift still to come, or a missed or late clock-in) has red text; nothing else on
   // the row is red (no ring, the "+" stays grey). The rest stay quiet. Open shifts that are over carry no alert.
   const problems = [
-    ...dayShifts.flatMap(entry => liveState(entry.shift, entry.employee.id, todayRead, timeZone)?.problem ? [{ start: entry.shift.startTime, key: entry.shift.id }] : []),
+    ...dayShifts.flatMap(entry => liveState(entry.shift, entry.employee.id, todayRead, timeZone, rosterLang)?.problem ? [{ start: entry.shift.startTime, key: entry.shift.id }] : []),
     ...dayOpen.filter(open => !ended(open)).map(open => ({ start: open.startTime, key: open.id })),
   ].sort((a, b) => a.start.localeCompare(b.start));
   const redKey = problems[0]?.key ?? null;
   // R3: a row's state is trailing 13px text, not a pill: grey, the one red problem in red, Draft and Changed in amber.
   const statePill = (shift: RosterShift, employeeId: string) => {
-    const live = liveState(shift, employeeId, todayRead, timeZone);
+    const live = liveState(shift, employeeId, todayRead, timeZone, rosterLang);
     if (live) return <span className="c-meta c-sched-state" data-tone={live.problem && redKey === shift.id ? "red" : undefined}>{live.text}</span>;
     return shift.status === "DRAFT" ? <span className="c-meta c-sched-state" data-tone="amber">Draft</span> : corp?.changedShiftIds?.includes(shift.id) ? <span className="c-meta c-sched-state" data-tone="amber">Changed</span> : null;
   };
@@ -417,7 +421,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     </div> : null}
     <div className="cm-grid__scroll">
       <table className="cm-grid" data-days={visibleDates.length}>
-        <caption className="sr-only">{`Team schedule. Times in ${timeZone.split("/").at(-1)?.replaceAll("_", " ") ?? timeZone}. Select a shift to edit.`}</caption>
+        <caption className="sr-only">{rosterLang === "es" ? `Horario del equipo. Horas de ${timeZone.split("/").at(-1)?.replaceAll("_", " ") ?? timeZone}. Selecciona un turno para editarlo.` : `Team schedule. Times in ${timeZone.split("/").at(-1)?.replaceAll("_", " ") ?? timeZone}. Select a shift to edit.`}</caption>
         <thead><tr>
           <th scope="col" className="cm-grid__corner">{`${plural(scheduled.length, "person", "people")} · ${durationTotal(totalMinutes)}`}</th>
           {/* Nov 1 upscale: each day's assigned hours under its date ("Mon 26" over "24 h"). */}
@@ -489,7 +493,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   // ("Not clocked in · 24 min") and without it once the shift is over ("Missed"). A draft and a change waiting to be
   // published keep their amber chips.
   const bLive = (shift: RosterShift, employeeId: string): { state?: ReactNode; text?: string; ring?: "late" | "on" } => {
-    const live = liveState(shift, employeeId, todayRead, timeZone);
+    const live = liveState(shift, employeeId, todayRead, timeZone, rosterLang);
     if (live) return live.tone === "teal" ? { state: <BStatusText dot="green">{live.text}</BStatusText>, text: live.text, ring: "on" }
       : live.tone === "late" ? { state: <BChip tone="amber" dot>{live.text}</BChip>, text: live.text, ring: "late" }
       : live.tone === "blue" ? { state: <BStatusText>{live.text}</BStatusText>, text: live.text, ring: "on" }

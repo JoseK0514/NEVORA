@@ -128,6 +128,10 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
       title = es ? ES.notConfirmed : 'Schedule not confirmed';
       detail = person ? es ? ES.notConfirmedBy(person) : `${person} hasn’t confirmed their published schedule.` : detail;
       break;
+    case 'DEADLINE_MISSING':
+      // Signed-in Spanish: the server's one sentence for a missing deadline (assistance/manager-actions.ts).
+      if (es) { title = 'Fecha límite de disponibilidad'; if (/^Set the availability deadline/.test(detail)) detail = 'Fija la fecha límite de disponibilidad antes de que el equipo termine de enviar su disponibilidad.'; }
+      break;
     case 'AVAILABILITY_MISSING':
       title = es ? ES.notSent : 'Availability not sent';
       detail = person ? es ? ES.notSentBy(person) : `${person} hasn’t sent availability yet.` : es ? ES.notSentYet : 'Not sent yet.';
