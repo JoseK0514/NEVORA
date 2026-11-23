@@ -1,0 +1,25 @@
+/* Help someone sign in, Direction B (Phase 2, Nov 23, 2026). The page is the corporate kit the Direction B layers dress
+ * (CorpPage, band title, white raised cards, outlined fields, the solid teal action); these rules only space the form's
+ * own pieces on the kit's 4/8 scale. Text sizes are the kit's rem tokens, so 200% text scales. */
+.ar-assisted .ar-assisted__form { display: flex; flex-direction: column; gap: var(--b-space-12, 12px); margin: 0; }
+.ar-assisted .ar-assisted__fields { display: flex; flex-direction: column; gap: var(--b-space-20, 20px); min-width: 0; margin: 0; border: 0; }
+.ar-assisted .ar-assisted__fields .c-field__label { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); }
+.ar-assisted .ar-assisted__fields :is(.c-field__help, .c-error) { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); }
+.ar-assisted .ar-assisted__fields textarea.c-in { height: auto; min-height: 6rem; }
+/* The confirmation: its words left, the switch right, one 44px row that grows with the text. */
+.ar-assisted .ar-assisted__confirm { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-16, 16px); min-height: 44px; cursor: pointer; }
+.ar-assisted .ar-assisted__confirm-tx { min-width: 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); }
+.ar-assisted .ar-assisted__confirm-tx b { font-weight: 600; }
+.ar-assisted .ar-assisted__confirm-error { margin-top: calc(var(--b-space-12, 12px) * -1); }
+.ar-assisted .ar-assisted__feedback { display: flex; flex-direction: column; gap: var(--b-space-8, 8px); outline: none; }
+.ar-assisted .ar-assisted__feedback:focus-visible { outline: 2px solid var(--b-teal); outline-offset: 2px; border-radius: 12px; }
+/* How this works: a 44px disclosure row; its steps open under it. */
+.ar-assisted .ar-assisted__details > summary { list-style: none; cursor: pointer; }
+.ar-assisted .ar-assisted__details > summary::-webkit-details-marker { display: none; }
+.ar-assisted .ar-assisted__details[open] .ar-assisted__caret { transform: rotate(180deg); }
+.ar-assisted .ar-assisted__how-body { padding-top: 0; }
+.ar-assisted .ar-assisted__how-body .ar-before { margin: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .ar-assisted .ar-assisted__caret { transition: transform 200ms ease-out; }
+}
+.ar-assisted .ar-how__note { margin: var(--b-space-12, 12px) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
