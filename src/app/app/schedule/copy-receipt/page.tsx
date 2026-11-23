@@ -32,6 +32,6 @@ export default async function CopyReceiptPage({
   const {receipt,command}=source.data;
   // The scoped frame wraps the Corp page, so the phone band rules find the page's own title (one title, not two).
   return <ScopedReadFrame observation={scopedObservation(source)}>
-    {receipt ? <CopyReceiptView receipt={receipt} /> : <CopyUnconfirmed operationId={operation} command={command} actorId={proof.employee.id} />}
+    {receipt ? <CopyReceiptView receipt={receipt} /> : <CopyUnconfirmed command={command} actorId={proof.employee.id} />}
   </ScopedReadFrame>;
 }

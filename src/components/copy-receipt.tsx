@@ -112,6 +112,12 @@ function group<T>(rows: Row[], keys: (row: Row) => T[], label: (key: T, row: Row
   return [...groups].map(([id, value]) => ({ id, ...value, rows: value.rows.sort(byWhen) }));
 }
 
+/** A kind's heading: under the card's heading (h3), or the card's own heading when the card has none (h2). */
+function Kind({ level, id, children }: { level: 2 | 3; id: string; children: ReactNode }) {
+  const Tag = level === 2 ? "h2" : "h3";
+  return <Tag className="c-copy__kind" id={id}>{children}</Tag>;
+}
+
 function Frame({ title, back, children }: { title: string; back: string; children: ReactNode }) {
   return <CorpPage className="c-copy c-page--narrow" labelledBy="copy-title">
     <CorpNav back={{ href: back, label: "Schedule" }} title={title} titleId="copy-title" phoneOnly />
@@ -169,7 +175,7 @@ export function CopyReceiptView({ receipt }: { receipt: CopyReceipt }) {
     {/* When nothing was copied the band already says so: the list keeps its reasons, without a second "Not copied". */}
     {reasons.length ? <CorpCard id="copy-skipped" label={copied.length ? "Not copied" : undefined} ariaLabel={copied.length ? undefined : "Not copied"} aside={copied.length ? count(skipped.length) : undefined}>
       {reasons.map((reason, index) => <section className="c-copy__group" key={reason.id} aria-labelledby={`copy-reason-${index}`}>
-        <h3 className="c-copy__kind" id={`copy-reason-${index}`}><span>{reason.label}</span></h3>
+        <Kind level={copied.length ? 3 : 2} id={`copy-reason-${index}`}><span>{reason.label}</span></Kind>
         <PersonRows rows={reason.rows} withPlace={withPlace} />
       </section>)}
     </CorpCard> : null}
@@ -178,7 +184,7 @@ export function CopyReceiptView({ receipt }: { receipt: CopyReceipt }) {
 
 /** The copy may or may not have run (the receipt isn't there). Checking the week comes first; a retry reuses the same
  * operation, so it never copies a shift twice. */
-export function CopyUnconfirmed({ operationId, command, actorId }: { operationId: string; command: CopyCommand | null; actorId: string }) {
+export function CopyUnconfirmed({ command, actorId }: { command: CopyCommand | null; actorId: string }) {
   const back = command ? `/app/schedule?week=${command.weekStart}` : "/app/schedule";
   const into = command ? ` into ${formatWeekRange(command.weekStart)}` : "";
   return <Frame title="Copy not confirmed" back={back}>
@@ -189,10 +195,6 @@ export function CopyUnconfirmed({ operationId, command, actorId }: { operationId
           <CorpButtonLink href={back}>Review schedule</CorpButtonLink>
           {command ? <ScheduleCopyForm actorId={actorId} command={command} label="Retry this copy" className="c-btn c-btn--secondary c-copy__retry" /> : null}
         </div>
-        <details className="c-copy__ref">
-          <summary>Reference</summary>
-          <p><code>{operationId}</code></p>
-        </details>
       </BState>
     </CorpCard>
   </Frame>;

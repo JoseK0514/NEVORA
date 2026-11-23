@@ -34,7 +34,6 @@ it('offers safe schedule inspection without inviting a new copy when the outcome
  expect(html).toContain('Don’t start a new copy');
  expect(html).toContain('Copy not confirmed');
  expect(html).not.toContain('Retry this copy');
- expect(html).toContain(operationId);
 });
 
 it('offers the same operation as a retry when only the command was stored',async()=>{
