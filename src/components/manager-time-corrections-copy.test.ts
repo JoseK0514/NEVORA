@@ -21,7 +21,7 @@ it('follows the copy rules and the glossary: tú, Rechazar and Aprobar, no excla
   const es = MANAGER_TIME_CORRECTIONS_COPY.es, text = say(es);
   expect(text).not.toMatch(/[!¡]|\busted\b|\bTiempo libre\b|registro de horas/i);
   expect(es.decline).toBe('Rechazar');expect(es.approve).toBe('Aprobar');expect(es.heading).toBe('Solicitudes de corrección');
-  expect(es.bandNote('America/Puerto_Rico')).toBe('Correcciones que pidió tu equipo. Las horas originales siempre se guardan. Horas en hora de Puerto Rico.');
+  expect(es.bandNote('America/Puerto_Rico')).toBe('Correcciones que pidió tu equipo. Las horas originales siempre se guardan. Hora de Puerto Rico.');
   expect(MANAGER_TIME_CORRECTIONS_COPY.en.bandNote('America/Puerto_Rico')).toBe('Fixes your team asked for. Original times are always kept. Times in Puerto Rico time.');
 });
 

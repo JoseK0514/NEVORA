@@ -19,7 +19,7 @@ const draw = (patch: Record<string, unknown> = {}) => renderToStaticMarkup(<Mana
 
 it('draws the queue and a request’s review in Spanish', () => {
   const html = draw();
-  for (const text of ['Correcciones de tiempo', '1 en espera · Correcciones que pidió tu equipo', 'hora de Puerto Rico', 'Tiempo faltante', 'Tiempo faltante aprobado',
+  for (const text of ['Correcciones de tiempo', '1 en espera · Correcciones que pidió tu equipo', 'Hora de Puerto Rico', 'Tiempo faltante', 'Tiempo faltante aprobado',
     'Su razón', 'Pedida por Rosa M. para este empleado.', 'La tarjeta de tiempo cambió después de esta solicitud', '>Rechazar<', '>Aprobar<',
     'aria-label="Aprobar la corrección de Avery QA"', 'a. m.'])
     expect(html, text).toContain(text);

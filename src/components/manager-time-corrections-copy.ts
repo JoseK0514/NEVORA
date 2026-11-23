@@ -76,7 +76,7 @@ const es: typeof en = {
   decline: 'Rechazar', approve: 'Aprobar',
   missingTime: 'Tiempo faltante', namedBreak: (name: string) => 'Descanso: ' + name, recordedBreak: 'Descanso registrado',
   waiting: (count: number) => `${count} en espera · `,
-  bandNote: (zone: string) => `Correcciones que pidió tu equipo. Las horas originales siempre se guardan. Horas en ${place(zone) ? `hora de ${place(zone)}` : zone}.`,
+  bandNote: (zone: string) => `Correcciones que pidió tu equipo. Las horas originales siempre se guardan. ${place(zone) ? `Hora de ${place(zone)}` : `Horas en ${zone}`}.`,
   title: 'Correcciones de tiempo', heading: 'Solicitudes de corrección',
   headerNote: 'Las correcciones de horas pasadas esperan aquí tu decisión. El registro original del Clocker se guarda.',
   retry: 'Reintentar la misma decisión',
