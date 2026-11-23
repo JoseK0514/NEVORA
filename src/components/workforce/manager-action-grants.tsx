@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CorpCard } from "@/components/corp/corp";
 import { BChip, BSpin, BState } from "@/components/owner-b/b-kit";
@@ -56,11 +57,12 @@ async function sendGrant(command: Command): Promise<{ kind: "saved"; revision: n
   } catch { return { kind: "unknown" }; }
 }
 
-export function ManagerActionGrants({ employeeId, firstName, locations, scopeLocationIds, manager, lang = "en" }: {
+export function ManagerActionGrants({ employeeId, firstName, locations, scopeLocationIds, manager, lang: langProp }: {
   employeeId: string; firstName: string; locations: { id: string; name: string; active: boolean }[];
   /** The Manager's current management scope: null for none, "all" for company-wide. */
   scopeLocationIds: string[] | "all" | null; manager: boolean; lang?: PermissionLang;
 }) {
+  const lang = useViewLang(langProp);
   const t = permissionCopy(lang);
   const [load, setLoad] = useState<Load>({ state: "loading" });
   const [grants, setGrants] = useState<Map<Key, Grant>>(new Map());

@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {scopedObservation} from '@/lib/company-access/observation';
 import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {readOperationalShiftEditor,readSchedulePendingChanges} from '@/lib/company-access/operational-read.server';
@@ -27,7 +28,7 @@ import {
 } from "@/app/app/schedule/actions";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Edit shift" };
+export const generateMetadata = routeTitle("editShift");
 
 /* The editor's own error lines are the table's `edit.errors` (LOCATION_NOT_ELIGIBLE, SHIFT_OVERLAP …). */
 

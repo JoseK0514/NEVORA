@@ -183,7 +183,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                   <label className="c-field"><span className="c-field__label">{t.end}</span><input className="c-in" type="time" name="endTime" required aria-describedby="rules-end-hint" /><span className="c-field__help" id="rules-end-hint">{t.endHint}</span></label>
                   <label className="c-field c-rf-wide-phone"><span className="c-field__label">{t.minimumStaff} <span className="c-rf-optional">{t.optional}</span></span><input className="c-in" type="number" name="minimumStaff" min={1} max={100} step={1} placeholder={t.locationDefault} aria-describedby="rules-staff-hint" /><span className="c-field__help" id="rules-staff-hint">{t.staffHint}</span></label>
                 </div>
-                <PositionQuotaFields positions={positions.filter(position => position.active)} />
+                <PositionQuotaFields lang={lang} positions={positions.filter(position => position.active)} />
               </InlineConfigForm>
             </details> : <p className="c-rf-help">{t.addLocationFirst} <Link className="c-link" href="/app/settings/locations">{t.locations}</Link></p>}
             {coverageGroups.map(group => (
@@ -199,7 +199,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                       </div>
                       <details className="c-rf-disc c-rf-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>
                         <summary className="c-rf-disc__sum c-rf-disc__sum--small"><span className="c-rules__tx"><span className="c-rf-disc__label">{t.quantities}</span></span><span className="c-rules__v">{window.positionRequirements.length ? t.quantitiesSet(window.positionRequirements.length) : t.optional}</span><CaretDownIcon className="c-rules__chev" weight="bold" aria-hidden="true" /></summary>
-                        <InlineConfigForm action={replaceCoverageWindowPositionRequirementsAction} submit={{ label: t.saveQuantities, pendingLabel: t.saving, kind: "secondary" }} successText={t.quantitiesSaved}><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields positions={positions} requirements={window.positionRequirements} legendHidden /></InlineConfigForm>
+                        <InlineConfigForm action={replaceCoverageWindowPositionRequirementsAction} submit={{ label: t.saveQuantities, pendingLabel: t.saving, kind: "secondary" }} successText={t.quantitiesSaved}><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields lang={lang} positions={positions} requirements={window.positionRequirements} legendHidden /></InlineConfigForm>
                       </details>
                     </li>
                   ))}

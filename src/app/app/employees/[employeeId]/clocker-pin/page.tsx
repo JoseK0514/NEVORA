@@ -1,3 +1,5 @@
+import {readPageLang} from '@/lib/i18n/page-lang.server';
+import {EMPLOYEES_COPY} from '../../employees-copy';
 import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
@@ -12,7 +14,7 @@ import { readPinKey } from '@/lib/clocker/pin-crypto.server';
 import { saveClockerPinAction,checkClockerPinSaveAction } from './actions';
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Clocker PIN" };
+export async function generateMetadata() { return { title: EMPLOYEES_COPY[await readPageLang()].clockerPin }; }
 export const dynamic='force-dynamic';
 
 /** One person's Clocker PIN (Phase 6): the form, or a closed state that says why and where to go. Back names where it returns. */
@@ -30,7 +32,7 @@ export default async function EmployeeClockerPinPage({params,searchParams}:{para
   }
   return {employee,allowed,pin};
  });
- if(source.state==='unavailable')return <OperationalUnavailable title="Clocker PIN unavailable" reason={source.reason}/>;
+ if(source.state==='unavailable')return <OperationalUnavailable lang={await readPageLang()} title={EMPLOYEES_COPY[await readPageLang()].clockerPinUnavailable} reason={source.reason}/>;
  const {employee,allowed,pin}=source.data;if(!employee)notFound();
  const name=`${employee.firstName} ${employee.lastName}`;
  // Opened from the list of PINs, Back returns there; otherwise to the person's page.

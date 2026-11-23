@@ -2,24 +2,20 @@
 import { useEffect, useState } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import type { readAttendancePolicies } from "@/lib/business-improvements/attendance-policy/service";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { CONFIGURED_ATTENDANCE_COPY } from "./configured-attendance-policies-copy";
 type Result = Awaited<ReturnType<typeof readAttendancePolicies>>;
-const names: Record<string, string> = {
-  missing_clock_in: "No clock-in",
-  missing_clock_out: "No clock-out",
-  policy_lateness: "Lateness",
-  policy_early_departure: "Early departure",
-  unusually_long_entry: "Unusually long entry",
-  overtime_risk: "Actual-time overtime risk",
-};
-const checkedAt = (value: string) => {
+type Words = (typeof CONFIGURED_ATTENDANCE_COPY)["en"];
+const checkedAt = (value: string, t: Words) => {
   const date = new Date(value.replace(" ", "T").replace(/([+-]\d{2})$/, "$1:00"));
-  return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(date) : "just now";
+  return Number.isFinite(date.getTime()) ? t.times(new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(date)) : t.justNow;
 };
-const minutes = (ns: string) =>
-  `${(Number(BigInt(ns) / BigInt(1000000000)) / 60).toFixed(1)} minutes`;
+const minutes = (ns: string, t: Words) =>
+  t.minutes((Number(BigInt(ns) / BigInt(1000000000)) / 60).toFixed(1));
 export function ConfiguredAttendancePolicies() {
+  const t = CONFIGURED_ATTENDANCE_COPY[usePortalLang()], names = t.names;
   const [result, setResult] = useState<Result | null>(null),
-    [status, setStatus] = useState("Loading configured attendance comparisons");
+    [status, setStatus] = useState(t.loading);
   useEffect(() => {
     let active = true,
       controller: AbortController | null = null,
@@ -33,9 +29,9 @@ export function ConfiguredAttendancePolicies() {
       setStatus(message);
     };
     const load = async () => {
-      clear("Loading configured attendance comparisons");
+      clear(t.loading);
       if (document.visibilityState === "hidden" || !navigator.onLine) {
-        setStatus("Policy observations unavailable while offline or hidden");
+        setStatus(t.offlineHidden);
         return;
       }
       const current = generation;
@@ -61,23 +57,19 @@ export function ConfiguredAttendancePolicies() {
         setStatus("");
         expiry = setTimeout(
           () =>
-            clear(
-              "Policy observations expired. Refresh to review current facts.",
-            ),
+            clear(t.expired),
           Math.min(body.validForMs, 45000),
         );
       } catch {
         if (active && current === generation)
-          clear(
-            "Configured attendance observations unavailable. Refresh to try again.",
-          );
+          clear(t.unavailable);
       }
     };
     const visible = () =>
         document.visibilityState === "hidden"
-          ? clear("Policy observations paused")
+          ? clear(t.paused)
           : void load(),
-      offline = () => clear("Policy observations unavailable offline");
+      offline = () => clear(t.offline);
     void load();
     window.addEventListener("focus", load);
     window.addEventListener("online", load);
@@ -93,26 +85,22 @@ export function ConfiguredAttendancePolicies() {
       window.removeEventListener("offline", offline);
       document.removeEventListener("visibilitychange", visible);
     };
-  }, []);
+  }, [t]);
   // Final verification F (F02): a quiet disclosure row inside the attendance review's card, above its footer, with a
   // 16px caret that turns when it opens (details and summary carry the expanded state), never a card of its own.
   return (
     <details className="c-arev__compare">
       <summary className="c-arev__compare-s">
-        <span>What we compare</span>
+        <span>{t.whatWeCompare}</span>
         <CaretDownIcon className="c-arev__compare-ic" weight="bold" aria-hidden="true" />
       </summary>
       <div className="c-arev__compare-b">
-      <p>
-        Factual comparisons use configured thresholds and saved source
-        revisions. They do not establish absence, disciplinary outcomes,
-        overtime pay, or processed payroll.
-      </p>
+      <p>{t.disclaimer}</p>
       {status && <p role="status">{status}</p>}
       {result?.state === "ready" && (
         <>
           {/* TC-32: a readable check time; source hashes and revision numbers stay out of the manager's view. */}
-          <p>Checked {checkedAt(result.observedAt)}</p>
+          <p>{t.checked(checkedAt(result.observedAt, t))}</p>
           {result.locations.map((location) => (
             <section key={location.locationId}>
               <h3>
@@ -125,19 +113,19 @@ export function ConfiguredAttendancePolicies() {
                   <li key={d.kind}>
                     <strong>{names[d.kind]}</strong>:{" "}
                     {d.reason === "policy_not_selected"
-                      ? "Not configured"
+                      ? t.notConfigured
                       : d.state === "unverifiable"
-                        ? "Unverifiable — complete source evidence is unavailable"
-                        : `${d.observations.length} observations`}
+                        ? t.unverifiable
+                        : t.observations(d.observations.length)}
                     {d.observations.map((o) => (
                       <div key={o.measurementId}>
                         {result.labels.employees.find(
                           (e) => e.id === o.employeeId,
                         )?.name ?? o.employeeId}{" "}
-                        · observed {minutes(o.valueNanoseconds)} · threshold{" "}
-                        {minutes(o.thresholdNanoseconds)}
+                        · {t.observed} {minutes(o.valueNanoseconds, t)} · {t.threshold}{" "}
+                        {minutes(o.thresholdNanoseconds, t)}
                         <details>
-                          <summary>Source reference</summary>
+                          <summary>{t.sourceReference}</summary>
                           {o.sourceVersion}
                         </details>
                       </div>

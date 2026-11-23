@@ -38,3 +38,11 @@ it("reads dates, periods, clock ranges and instants the way people say them, in 
   expect(whenText("2026-11-19T01:27:26Z", "America/Puerto_Rico", "2026-11-18")).toBe("9:27 PM");
   expect(whenText("2026-11-19T01:27:26Z", "America/Puerto_Rico", "2026-11-19")).toBe("Wed, Nov 18, 9:27 PM");
 });
+
+it("says the server's attention sentences in Spanish (signed-in Spanish)", () => {
+  expect(attentionDetail("1 published shifts started without a recorded clock-in. Verify attendance before choosing coverage.", "es"))
+    .toBe("1 turno publicado empezó sin entrada marcada. Verifica la asistencia antes de buscar cobertura.");
+  const plan = attentionDetail("2 planning periods need review, starting 23:30. Maximum staffing shortfall: 1. A designated lead is missing. Includes draft commitments; verify published staffing separately.", "es");
+  expect(plan).toBe("2 períodos de planificación necesitan revisión, desde las 11:30 p. m. Mayor falta de personal: 1. Falta un líder designado. Incluye compromisos en borrador; verifica aparte el personal publicado.");
+  expect(attentionDetail("Something new.", "es")).toBe("Something new.");
+});

@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import { randomUUID } from 'node:crypto';
 import { CorpCard, CorpNav, CorpPage, CorpTitle } from '@/components/corp/corp';
 import { BState } from '@/components/owner-b/b-kit';
@@ -8,7 +9,7 @@ import { readPortalLanguage } from '@/lib/activation/language.server';
 import { OpenShiftBoard } from './open-shift-board';
 import { exchangeCopy } from '../exchange-copy';
 
-export const metadata = { title: exchangeCopy().titlePosted };
+export const generateMetadata = routeTitle("openShifts");
 
 export default async function OpenShiftsPage() {
   const off = await moduleGate('marketplace');

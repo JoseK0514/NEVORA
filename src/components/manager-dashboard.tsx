@@ -82,6 +82,8 @@ type Props = {
   overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode; setup?: ReactNode; /** Fictional snapshots for the premium Home preview. */ snapshots?: { today: Today; actions: ActionCenter; monitor?: ClockMonitor } };
   /** Workspace date for the Home band, e.g. "Sunday, October 18". */
   dateLabel?: string;
+  /** Signed-in Spanish: Home's greeting in the person's language (app/page.tsx); English when left out. */
+  greeting?: string;
   role?: "OWNER" | "MANAGER";
   actorId?: string;
   correctionAuthority?:string;
@@ -253,7 +255,7 @@ function PremiumOverview(props: Props) {
     scheduledHours: props.hours.reduce((total, row) => total + row.scheduledHours, 0), people: props.hours.filter(row => row.scheduledHours > 0).length,
     payrollHref: props.role === 'OWNER' && props.nextPay ? '/app/payroll' : undefined, coverage: props.coverage,
     shortcuts: props.shortcutModules ? (['shift', 'employee', ...(props.shortcutModules.updates ? ['update' as const] : []), ...(props.shortcutModules.timeOff ? ['timeOff' as const] : [])] as HomeShortcut[]) : undefined };
-  const common = { greeting: `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName, homeB };
+  const common = { greeting: props.greeting ?? `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName, homeB };
   const slots = props.overviewSlots;
   if (slots?.snapshots) return <PremiumHomeSurface {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;

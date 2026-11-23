@@ -413,14 +413,15 @@ export type BLoadingShape = { title?: ReactNode; back?: boolean; sub?: boolean; 
   route?: string };
 const LOADING_CARDS: BLoadingCard[] = [{ head: true, lines: 3 }, { head: true, lines: 3 }];
 const SKEL_WIDTHS = ["52%", "40%", "60%", "46%", "36%", "56%", "44%", "50%"];
-export function BLoadingScreen({ title, back, sub, strip, action, band, frame = "rail", lift = true, cards = LOADING_CARDS, state, shell, route }: BLoadingShape = {}) {
+export function BLoadingScreen({ title, back, sub, strip, action, band, frame = "rail", lift = true, cards = LOADING_CARDS, state, shell, route, loadingText = "Loading…" }: BLoadingShape & {
+  /** Signed-in Spanish: the spoken loading word ("Cargando…"); English when left out. */ loadingText?: string } = {}) {
   return <div className={back ? "b-screen b-screen--back" : "b-screen"} data-b-load="" data-b-shell={shell} data-b-for={route} data-b-band={typeof band === "number" ? "own" : band}
     style={typeof band === "number" ? { ["--b-band-own" as string]: `${band}px` } : undefined} data-b-frame={state ? "state" : frame} data-b-lift={lift && !state ? "" : undefined} data-b-under={lift ? undefined : ""}>
     <header className="b-hero">
       {back ? <span className="b-skel b-skel--back" aria-hidden="true" /> : null}
       <div className="b-title">
         <div className="b-title__text">
-          <h1>{title ?? <span className="b-skel b-skel--title" aria-hidden="true" />}{state ? null : <span className="b-sr">{title ? " " : ""}Loading…</span>}</h1>
+          <h1>{title ?? <span className="b-skel b-skel--title" aria-hidden="true" />}{state ? null : <span className="b-sr">{title ? " " : ""}{loadingText}</span>}</h1>
           {sub ? <span className="b-skel b-skel--sub" aria-hidden="true" /> : null}
         </div>
         {action ? <span className="b-skel b-skel--action" aria-hidden="true" /> : null}

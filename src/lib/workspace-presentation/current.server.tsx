@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { ModuleOff } from "@/components/module-off";
+import { readPageLang } from "@/lib/i18n/page-lang.server";
 import { getSession } from "../auth/session";
 import { getWorkspace } from "../data/workspaces";
 import { ALL_MODULES_ON, type ModuleId } from "./modules";
@@ -42,5 +43,5 @@ export async function moduleGate(id: ModuleId) {
   const [session, workspace] = await Promise.all([getSession(), getWorkspace().catch(() => null)]);
   // Release 1: while Updates' activation is held, it isn't the company's switch that keeps it off.
   const held = id === "updates" && await updatesActivationHeld();
-  return <ModuleOff module={id} workspaceName={workspace?.name ?? "Your company"} owner={session?.role === "OWNER"} held={held} />;
+  return <ModuleOff module={id} workspaceName={workspace?.name ?? "Your company"} owner={session?.role === "OWNER"} held={held} lang={await readPageLang()} />;
 }

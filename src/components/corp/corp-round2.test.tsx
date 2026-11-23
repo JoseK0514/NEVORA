@@ -10,6 +10,12 @@ describe("round 2 kit helpers", () => {
     expect(renderToStaticMarkup(<CorpTime start="12a" end="6a" />)).toBe('<span class="c-time">12<span class="c-ampm">a</span>⁠ ⁠– 6<span class="c-ampm">a</span></span>');
     expect(timeRangeText("9:00 AM", "5:00 PM")).toBe("9:00 AM – 5:00 PM");
   });
+  it("writes the half of the day in Spanish when asked (signed-in Spanish)", () => {
+    const text = (html: string) => html.replace(/<[^>]+>/g, "").replace(/\u2060/g, "").replace(/[\u2009\u202f]/g, " ");
+    expect(text(renderToStaticMarkup(<CorpTime lang="es">{"7:00 AM – 3:00 PM"}</CorpTime>))).toBe("7:00 a.\u00a0m. – 3:00 p.\u00a0m.");
+    expect(text(renderToStaticMarkup(<CorpTime lang="es">{"7:00 a.\u00a0m."}</CorpTime>))).toBe("7:00 a.\u00a0m.");
+    expect(renderToStaticMarkup(<CorpTime>{"8:00 AM"}</CorpTime>)).toContain('<span class="c-ampm">AM</span>');
+  });
   it("leaves words alone", () => {
     expect(renderToStaticMarkup(<CorpTime>{"Mon, Nov 2 · 4 people"}</CorpTime>)).toBe('<span class="c-time">Mon, Nov 2 · 4 people</span>');
   });

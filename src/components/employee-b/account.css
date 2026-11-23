@@ -208,6 +208,9 @@
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts { grid-template-columns: auto minmax(0, 1fr); }
 }
+/* Signed-in Spanish (Nov 23, 2026): at 200% text "✓ Confirmar" is wider than half the row, so the two buttons stack
+ * once a label no longer fits (a 7.5rem column grows with the text size); at 100% they stay side by side. English keeps its layout. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts:lang(es):not(#e-none) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr)); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update { padding: var(--b-space-16) var(--b-inset) 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-4) var(--b-space-8); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__head h2 { font-size: var(--b-fs-title); line-height: var(--b-lh-title); font-weight: 700; letter-spacing: -0.015em; text-wrap: balance; overflow-wrap: break-word; }

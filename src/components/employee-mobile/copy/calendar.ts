@@ -1,0 +1,58 @@
+/* Signed-in Spanish (Nov 23, 2026): the words on the Employee calendar subscription page (calendar.tsx, the tablet and
+ * desktop cards), in English and Puerto Rico Spanish (docs/design/voice.md: tú, sentence case, infinitive buttons, the
+ * glossary: "Turno", "localidad", "gerente", "Iniciar sesión", "Intentar de nuevo"). English is byte for byte what the
+ * screen said before. The calendar apps' names and setup steps come from employee-b/account-b-client.tsx and are not
+ * here. The privacy lines are literal translations, for Jose's review. */
+const en = {
+  active: 'Active', turnedOff: 'Turned off', off: 'Off',
+  subscription: 'Subscription',
+  paused: 'Calendar settings paused. Return to this window to check your link.',
+  saving: 'Saving your calendar request…',
+  checking: 'Checking your calendar link…',
+  unauthorized: 'Your access could not be confirmed. Sign in again to manage your link.',
+  unchecked: 'Calendar settings could not be checked. Try again to see the current status.',
+  signIn: 'Sign in', tryAgain: 'Try again',
+  keepPrivate: 'Anyone with the link can see your shift times and locations, so keep it to yourself.',
+  previousPending: 'Your previous request still needs to be checked before you can change this link.',
+  linkLabel: 'Your private calendar link',
+  shownOnce: 'Shown once. Copy it now, or reset it later to get a new link.',
+  privacyOnce: 'For your privacy the link is shown only once. Get a new link if you need to copy it again.',
+  revoked: 'Future access through the previous link has stopped.',
+  noLocation: 'No eligible work location is currently available. Ask your manager to review your access.',
+  copyLink: 'Copy calendar link', createLink: 'Create calendar link',
+  retryOriginal: 'Retry original request',
+  providers: 'Or add it straight to',
+  newTab: ' (opens a new tab)',
+  confirmRotate: 'Get a new calendar link?', confirmRevoke: 'Turn off your calendar link?',
+  rotateBody: 'The old link stops working right away. Copy the new link and add it to your calendar app again.',
+  revokeBody: 'Your calendar app will no longer receive shifts through this link. Events already copied may remain in the app.',
+  keepLink: 'Keep current link', getNew: 'Get a new link', turnOff: 'Turn off link',
+  oldStops: 'The old link stops working right away.',
+};
+const es: typeof en = {
+  active: 'Activa', turnedOff: 'Desactivada', off: 'Inactiva',
+  subscription: 'Suscripción',
+  paused: 'Ajustes del calendario en pausa. Vuelve a esta ventana para verificar tu enlace.',
+  saving: 'Guardando tu solicitud del calendario…',
+  checking: 'Verificando tu enlace del calendario…',
+  unauthorized: 'No pudimos confirmar tu acceso. Inicia sesión de nuevo para administrar tu enlace.',
+  unchecked: 'No pudimos verificar los ajustes del calendario. Inténtalo de nuevo para ver el estado actual.',
+  signIn: 'Iniciar sesión', tryAgain: 'Intentar de nuevo',
+  keepPrivate: 'Cualquier persona con el enlace puede ver las horas y las localidades de tus turnos, así que no lo compartas.',
+  previousPending: 'Tu solicitud anterior todavía tiene que verificarse antes de que puedas cambiar este enlace.',
+  linkLabel: 'Tu enlace privado del calendario',
+  shownOnce: 'Se muestra una sola vez. Cópialo ahora o restablécelo luego para obtener un enlace nuevo.',
+  privacyOnce: 'Por tu privacidad, el enlace se muestra una sola vez. Obtén un enlace nuevo si necesitas copiarlo otra vez.',
+  revoked: 'El enlace anterior ya no da acceso de aquí en adelante.',
+  noLocation: 'No hay una localidad de trabajo elegible disponible en este momento. Pide a tu gerente que revise tu acceso.',
+  copyLink: 'Copiar enlace del calendario', createLink: 'Crear enlace del calendario',
+  retryOriginal: 'Reintentar solicitud original',
+  providers: 'O añádelo directamente a',
+  newTab: ' (abre una pestaña nueva)',
+  confirmRotate: '¿Obtener un enlace nuevo del calendario?', confirmRevoke: '¿Desactivar tu enlace del calendario?',
+  rotateBody: 'El enlace anterior deja de funcionar enseguida. Copia el enlace nuevo y añádelo otra vez a tu aplicación de calendario.',
+  revokeBody: 'Tu aplicación de calendario ya no recibirá turnos mediante este enlace. Los eventos ya copiados pueden quedarse en la aplicación.',
+  keepLink: 'Mantener enlace actual', getNew: 'Obtener enlace nuevo', turnOff: 'Desactivar enlace',
+  oldStops: 'El enlace anterior deja de funcionar enseguida.',
+};
+export const calendarCopy = {en, es};

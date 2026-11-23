@@ -3,14 +3,16 @@ import type {ReactElement,ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import type {TimecardCommand} from '../lib/timecards/service';
-const host=rs.hoisted(()=>({cursor:0,mounted:false,slots:[] as {value:unknown}[],effects:[] as (()=>void|(()=>void))[]}));
+const host=rs.hoisted(()=>({cursor:0,mounted:false,slots:[] as {value:unknown}[],effects:[] as (()=>void|(()=>void))[],lang:'en' as 'en'|'es'}));
 rs.mock('react',()=>({...rstestOriginal0,
  useState:(initial:unknown)=>{const i=host.cursor++;const slot=host.slots[i]??(host.slots[i]={value:typeof initial==='function'?(initial as ()=>unknown)():initial});return [slot.value,(next:unknown)=>{slot.value=typeof next==='function'?(next as (old:unknown)=>unknown)(slot.value):next;}];},
  useRef:(initial:unknown)=>{const i=host.cursor++;return (host.slots[i]??(host.slots[i]={value:{current:initial}})).value;},
  useCallback:(callback:unknown)=>callback,
+ useContext:(context:{_currentValue:unknown})=>context._currentValue,
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
 }));
 rs.mock('./clean/top-bar-slot',()=>({useTopBarSlot:()=>null}));
+rs.mock('@/lib/i18n/portal-lang',()=>({usePortalLang:()=>host.lang}));
 rs.mock('next/navigation',()=>({useSearchParams:()=>null}));
 import {Timecards} from './timecards';
 import {QuietSheet} from './quiet/quiet-sheet';
@@ -38,7 +40,7 @@ const retry=()=>(control(n=>n.type==='button'&&(n.props.children==='Check and co
 const row=(name:string,tone:string,word:string)=>`<span class="c-tc-flow__n">${name}</span><span class="c-tc-flow__v" data-tone="${tone}">${word}</span>`;
 async function mount(){render();host.mounted=true;cleanup=host.effects[0]();await flush();}
 function transport(outcome:'success'|'unknown'='success',validForMs=45000){rs.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready(validForMs));const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);if(outcome==='unknown')throw Error('Interrupted');return Response.json({status:'approved',operationId:c.operationId,revision:1});});}
-beforeEach(()=>{actorId='OWNER';manager=true;employeeCorporate=false;payrollStep=undefined;host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];commands=[];rs.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});rs.stubGlobal('window',new EventTarget());rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));rs.stubGlobal('navigator',{onLine:true});});
+beforeEach(()=>{host.lang='en';actorId='OWNER';manager=true;employeeCorporate=false;payrollStep=undefined;host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];commands=[];rs.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});rs.stubGlobal('window',new EventTarget());rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));rs.stubGlobal('navigator',{onLine:true});});
 afterEach(()=>{cleanup?.();cleanup=undefined;rs.unstubAllGlobals();rs.useRealTimers();});
 it('shows employee period information and keeps approval controls out of the employee view',async()=>{
  manager=false;employeeCorporate=true;actorId='E1';
@@ -264,6 +266,27 @@ function closeSheet(kind:'escape'|'done'|'automatic'='escape'){
 function openFirstSheet(){
  (control(n=>n.type==='button'&&n.props.className==='c-tc-person').onClick as ()=>void)();
 }
+// Signed-in Spanish (Nov 23, 2026): the manager's Timecards in Spanish on a phone and from 768px, in the person's language
+// from the portal (tú, the glossary, "16–22 nov"); no English words from the screen are left.
+it('renders the phone list in Spanish',async()=>{
+ host.lang='es';phoneWindow();transport();await mountAll();
+ const page=html();
+ expect(page).toContain('>Tarjetas de tiempo<');
+ expect(page).toContain('Esta semana');expect(page).toContain('Semana pasada');
+ expect(page).toContain('>Equipo<');expect(page).toContain('Herramientas de tiempo');
+ expect(page).not.toMatch(/>(This week|Last week|Team|Time tools|Time exports|Ready to approve|Recorded)</);
+});
+it('renders the wide list, the sheet and the review in Spanish',async()=>{
+ host.lang='es';transport();await mount();
+ const page=html();
+ expect(page).toContain('Resumen del período');
+ expect(page).toMatch(/>Persona<|>Registrado</);
+ expect(page).not.toMatch(/>(Person|Recorded|Breaks|Status|Period overview)</);
+ openFirstSheet();
+ const sheet=html().slice(html().indexOf('c-tc-sheet__who'));
+ expect(sheet).toContain('Días');expect(sheet).toContain('Entradas y correcciones');
+ expect(sheet).not.toMatch(/>(Days|Clock-ins and fixes|Request time correction|Approve timecard)</);
+});
 // Jose's review (Nov 23, 2026): with a correction waiting, the sheet offers no second request and no grey Approve; one line
 // says why it can't be approved yet, and the attention note sits in the person's card.
 it('a waiting correction: no second request, no dead Approve, one line says why',async()=>{

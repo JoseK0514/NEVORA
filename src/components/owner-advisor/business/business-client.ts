@@ -12,6 +12,8 @@ import { isBusinessCitationHref } from "@/lib/owner-advisor/business/metrics";
 import { isoInstant, zonedInstant } from "@/lib/owner-advisor/knowledge-client";
 import { dateRange } from "@/lib/duration-format";
 import { checkBusinessFinanceMetrics, checkBusinessSalesMetrics } from "../public-business-evidence";
+import type { Lang } from "../format";
+import { BUSINESS_COPY } from "./copy";
 
 export const BUSINESS_ENDPOINT = "/api/owner/advisor/business";
 export const BUSINESS_HEADER = "x-nevora-business-evidence";
@@ -317,7 +319,7 @@ export function csvHeader(text: string): string[] | null {
   return cells.every(header => header && header.length <= 128) && new Set(cells).size === cells.length && cells.length <= 21 ? cells : null;
 }
 export const utf8Bytes = (value: string) => new TextEncoder().encode(value).length;
-export const sizeText = (bytes: number) => bytes < 1024 ? `${bytes} bytes` : `${(bytes / 1024).toFixed(bytes < 10240 ? 1 : 0)} KB`;
+export const sizeText = (bytes: number, lang: Lang = "en") => bytes < 1024 ? `${bytes} ${BUSINESS_COPY[lang].bytes}` : `${(bytes / 1024).toFixed(bytes < 10240 ? 1 : 0)} KB`;
 /** A short opaque label for where the rows come from ("Square POS" → "square-pos"); null when nothing usable is left. */
 export function namespaceFrom(value: string): string | null {
   const slug = value.normalize("NFKD").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-+|-+$/g, "").toLowerCase().slice(0, 64);

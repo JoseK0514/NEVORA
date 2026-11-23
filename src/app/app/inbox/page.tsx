@@ -9,13 +9,16 @@ import { isManagerRole } from "@/lib/auth/permissions";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { weekStartFor } from "@/lib/date-utils";
+import { readPageLang } from "@/lib/i18n/page-lang.server";
 import "./inbox.css";
+
+const INBOX_TITLE = { en: "Things to do", es: "Pendientes" } as const;
 
 /** Things to do (Release 1, board O-Inbox): Managers' one place for what needs a decision. Reads through the existing
  * authority-checked action center; each row opens the full review. Call and Text live on the person's page, so this
  * page no longer reads the company directory's phone numbers. When Things to do is a phone tab (payroll review off), the
  * shell marks it as a tab's own page and the Back header steps aside (corp-shell.css). */
-export const metadata = { title: "Things to do" };
+export async function generateMetadata() { return { title: INBOX_TITLE[await readPageLang()] }; }
 
 export default async function InboxPage({ searchParams }: { searchParams?: Promise<{ view?: string }> } = {}) {
   const session = await requireSession();
@@ -27,7 +30,7 @@ export default async function InboxPage({ searchParams }: { searchParams?: Promi
   if (session.role === "MANAGER") {
     const access = await readOperationalAuthority(await requireSessionMutationProof());
     if (access.state !== "ready" || !access.scope) {
-      return <OperationalUnavailable title="Things to do" reason={access.state === "ready" ? "access_denied" : access.reason} scoped />;
+      return <OperationalUnavailable lang={await readPageLang()} title={INBOX_TITLE[await readPageLang()]} reason={access.state === "ready" ? "access_denied" : access.reason} scoped />;
     }
     if (access.scope.mode === "LOCATIONS") {
       return <ScopedReadFrame observation={scopedObservation(access)}>

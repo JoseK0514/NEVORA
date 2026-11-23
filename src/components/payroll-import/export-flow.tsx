@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 
 /* Paid time and export by batch (U01): the page. Four steps in the Add employee sheet frame: decide every recorded
  * break, see the plan, send each batch, finish. Who is included comes from POST /api/period-close (READ) and the breaks
@@ -37,7 +38,8 @@ async function post(path: string, headers: Record<string, string>, body: string)
   finally { clearTimeout(timer); }
 }
 
-export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, timeZone }: { lang?: PayrollImportLang; actorId: string; workspaceId: string; period: Period; timeZone: string }) {
+export function PaidTimeExportFlow({ lang: langProp, actorId, workspaceId, period, timeZone }: { lang?: PayrollImportLang; actorId: string; workspaceId: string; period: Period; timeZone: string }) {
+  const lang = useViewLang(langProp);
   const copy = payrollImportCopy[lang];
   const [work, setWork, dropWork] = useHeld<Work>(`export:${workspaceId}:${actorId}:${period.startDate}:${period.endDate}`, emptyWork,retireWork);
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" }), [busy, setBusy] = useState(false);

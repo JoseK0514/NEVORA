@@ -8,12 +8,13 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {BCard, BIcon, BSeg, BSegs, BState} from './owner-b/b-kit';
 import {CorpSegments} from './corp/corp';
 import {useEmployeeAccountRead} from './employee-account-panel';
-import {notificationIcons, reviewLabels, rowFacts, rowText} from './notification-inbox';
+import {notificationIcons, rowFacts, rowText} from './notification-inbox';
 import {notificationGroup} from './employee-mobile/notifications-list';
 import {ManagerMessagesPage, ManagerStateCard, type ManagerListStatus} from './messages-manager-b';
 import {collapseNotifications, notificationPresentation, notificationTitle} from '../lib/notification-inbox-view';
-import {relativeTimeText} from '../lib/duration-format';
 import type {EmployeeNotificationItem} from '../lib/employee-view';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {NOTIFICATION_COPY, relativeTimeFor} from './notification-copy';
 
 /* Notifications for Owners and Managers, Direction B (Phase 2, package Messages, Nov 23, 2026; B3). The same read
  * (/api/notifications), the same Mark read on open and the same folds as before (notification-inbox.tsx), drawn as the
@@ -25,6 +26,7 @@ const GROUPS = ['Today', 'Yesterday', 'Earlier'] as const;
 
 export function ManagerNotifications({authority, notice}: {authority: string; /** The Owner's plan and billing notice, while it applies. */ notice?: ReactNode}) {
   const {state, refresh} = useEmployeeAccountRead('notifications', authority, '/api/notifications');
+  const lang = usePortalLang(), t = NOTIFICATION_COPY[lang];
   const [filter, setFilter] = useState<Filter>('all');
   const [expanded, setExpanded] = useState<string[]>([]);
   const [readFailed, setReadFailed] = useState(false);
@@ -49,11 +51,11 @@ export function ManagerNotifications({authority, notice}: {authority: string; /*
   const now = new Date();
   const groups = GROUPS.map(name => ({name, rows: collapseNotifications(sorted.filter(item => notificationGroup(item.at, zone ?? 'UTC', now) === name))})).filter(group => group.rows.length);
   // A relative time never breaks inside itself on a narrow phone ("5 h ago", not "5 / h ago").
-  const ago = (at: string) => relativeTimeText(at, undefined, zone).replace(/(\d+) (h|min|d|days?|hours?|minutes?)\b/g, '$1 $2');
+  const ago = (at: string) => relativeTimeFor(lang, at, zone).replace(/(\d+) (h|min|d|days?|hours?|minutes?)\b/g, '$1 $2');
   const lead = (item: EmployeeNotificationItem) => { const Icon = notificationIcons[notificationPresentation(item.label, item.eventType).icon]; return <BIcon tone={item.actionState === 'required' ? 'amber' : 'grey'}><Icon weight="bold" /></BIcon>; };
   const dot = (on: boolean) => on ? <span className="b-row__end mb-when"><i className="mb-dot" aria-hidden="true" /></span> : null;
   const row = (item: EmployeeNotificationItem, held = false) => {
-    const review = item.reviewState ?? 'unavailable', text = rowText(item), facts = held ? rowFacts(item) : [];
+    const review = item.reviewState ?? 'unavailable', text = rowText(item, lang), facts = held ? rowFacts(item, lang) : [];
     return <li className={held ? 'b-li mb-held' : 'b-li'} key={item.id}>
       <Link className="b-row b-row--link" href={item.href} prefetch={false} onClick={() => { if (review === 'unread') void markRead(item.id); }}
 >
@@ -64,22 +66,22 @@ export function ManagerNotifications({authority, notice}: {authority: string; /*
           {held ? facts.length ? <span className="b-row__s"><time dateTime={item.at}>{ago(item.at)}</time></span> : null
             : <span className="b-row__s"><BSegs parts={[text.detail, <time key="at" dateTime={item.at}>{ago(item.at)}</time>]} /></span>}
         </span>
-        {dot(review === 'unread')}{review === 'unread' ? <span className="b-sr">{`, ${reviewLabels.unread}`}</span> : null}
+        {dot(review === 'unread')}{review === 'unread' ? <span className="b-sr">{`, ${t.reviewUnread}`}</span> : null}
         <CaretRightIcon className="b-chev" size={16} weight="bold" aria-hidden="true" />
       </Link>
     </li>;
   };
   const status: ManagerListStatus | null = ready ? null
-    : state.paused ? {kind: offline ? 'offline' : 'paused', title: 'Notifications paused', line: 'Come back to this window while online.'}
-    : denied ? {kind: 'locked', title: 'Your session ended', line: 'Sign in again to see notifications.', action: {label: 'Sign in', href: '/login'}}
-    : unavailable ? {kind: 'failed', title: 'Notifications didn’t load', line: offline ? 'Check your connection, then try again.' : undefined, action: {label: 'Try again', onClick: refresh, busy: state.refreshing}}
-    : {kind: 'loading', title: 'Loading notifications…'};
+    : state.paused ? {kind: offline ? 'offline' : 'paused', title: t.pausedTitle, line: t.pausedLine}
+    : denied ? {kind: 'locked', title: t.sessionTitle, line: t.sessionLine, action: {label: t.signIn, href: '/login'}}
+    : unavailable ? {kind: 'failed', title: t.failedTitle, line: offline ? t.offlineLine : undefined, action: {label: t.tryAgain, onClick: refresh, busy: state.refreshing}}
+    : {kind: 'loading', title: t.loading};
   const cards = <>
     {notice}
     {status ? <ManagerStateCard status={status} /> : <>
-      {ready?.coverage === 'partial' ? <p className="b-note mb-note" role="status">Some notifications couldn’t be checked.</p> : null}
-      {groups.length ? groups.map(group => <BCard key={group.name} title={group.name} id={'notifications-' + group.name.toLowerCase()}>
-        <ul className="b-list" aria-label={group.name + ' notifications'}>{group.rows.map(({item, count, unreadIds, items}) => {
+      {ready?.coverage === 'partial' ? <p className="b-note mb-note" role="status">{t.partial}</p> : null}
+      {groups.length ? groups.map(group => <BCard key={group.name} title={t.groups[group.name] ?? group.name} id={'notifications-' + group.name.toLowerCase()}>
+        <ul className="b-list" aria-label={lang === 'es' ? t.groupList(t.groups[group.name] ?? group.name) : group.name + ' notifications'}>{group.rows.map(({item, count, unreadIds, items}) => {
           if (count === 1) return row(item);
           // A fold (repeats of one summary) says how many and the latest; opening it lists each one under it.
           const open = expanded.includes(item.id), listId = `notif-fold-${item.id}`, text = notificationTitle(item);
@@ -88,28 +90,28 @@ export function ManagerNotifications({authority, notice}: {authority: string; /*
               onClick={() => setExpanded(ids => ids.includes(item.id) ? ids.filter(id => id !== item.id) : [...ids, item.id])}>
               {lead(item)}
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{text.title}</span></span>
-                <span className="b-row__s"><BSegs parts={[`${count} notifications`, <span key="at">latest <time dateTime={item.at}>{ago(item.at)}</time></span>]} /></span></span>
-              {dot(unreadIds.length > 0)}{unreadIds.length ? <span className="b-sr">{`, ${unreadIds.length} unread`}</span> : null}
+                <span className="b-row__s"><BSegs parts={[t.foldCount(count), <span key="at">{t.latest} <time dateTime={item.at}>{ago(item.at)}</time></span>]} /></span></span>
+              {dot(unreadIds.length > 0)}{unreadIds.length ? <span className="b-sr">{t.foldUnread(unreadIds.length)}</span> : null}
               <CaretDownIcon className="b-chev mb-caret" data-open={open || undefined} size={16} weight="bold" aria-hidden="true" />
             </button></li>
-            {open ? <li className="b-li mb-fold"><ul className="b-list" id={listId} aria-label={`${text.title}, ${count} notifications`}>{items.map(one => row(one, true))}</ul></li> : null}
+            {open ? <li className="b-li mb-fold"><ul className="b-list" id={listId} aria-label={t.foldList(text.title, count)}>{items.map(one => row(one, true))}</ul></li> : null}
           </Fragment>;
         })}</ul>
       </BCard>)
       // MG-008: an empty list doesn't mean nothing is waiting. Requests are decided in Things to do, so the card leads there.
-      : <BCard label="Notifications"><BState kind="empty" icon={<BellIcon weight="bold" />} title={filter === 'unread' ? 'You’re all caught up' : 'Nothing new'}
-        line={filter === 'unread' ? 'Nothing unread. Earlier notifications stay under All.' : 'Requests from your team are in Things to do.'}
-        action={filter === 'unread' ? undefined : {label: 'Open Things to do', href: '/app/inbox'}} /></BCard>}
-      {readFailed ? <p className="b-note mb-note" role="status">We couldn’t mark that one read.</p> : null}
-      <p className="b-sr" role="status" aria-live="polite">{sorted.length} {sorted.length === 1 ? 'notification' : 'notifications'}{filter === 'unread' ? ' unread' : ''}</p>
+      : <BCard label={t.title}><BState kind="empty" icon={<BellIcon weight="bold" />} title={filter === 'unread' ? t.caughtUp : t.nothingNew}
+        line={filter === 'unread' ? t.nothingUnread : t.requestsThere}
+        action={filter === 'unread' ? undefined : {label: t.openThingsToDo, href: '/app/inbox'}} /></BCard>}
+      {readFailed ? <p className="b-note mb-note" role="status">{t.readFailed}</p> : null}
+      <p className="b-sr" role="status" aria-live="polite">{t.count(sorted.length, filter === 'unread')}</p>
     </>}
   </>;
   const tabs = ready && ready.items.length ? [
-    {key: 'all', label: 'All', current: filter === 'all', onSelect: () => setFilter('all')},
-    {key: 'unread', label: unread ? <>Unread<span className="b-sr"> </span><span className="mb-segn">{unread}</span></> : 'Unread', current: filter === 'unread', onSelect: () => setFilter('unread'), aria: undefined as string | undefined},
+    {key: 'all', label: t.all, current: filter === 'all', onSelect: () => setFilter('all')},
+    {key: 'unread', label: unread ? <>{t.unread}<span className="b-sr"> </span><span className="mb-segn">{unread}</span></> : t.unread, current: filter === 'unread', onSelect: () => setFilter('unread'), aria: undefined as string | undefined},
   ] : null;
-  return <ManagerMessagesPage className="mb-notifs" titleId="notifications-title" title="Notifications" back={{href: '/app', label: 'Home'}} deskBack
-    phoneBand={tabs ? <BSeg label="Show notifications" items={tabs} /> : null}
-    band={tabs ? <CorpSegments label="Show notifications" items={tabs.map(tab => ({key: tab.key, label: tab.label, current: tab.current, onSelect: tab.onSelect, ariaLabel: tab.aria}))} /> : null}
+  return <ManagerMessagesPage className="mb-notifs" titleId="notifications-title" title={t.title} back={{href: '/app', label: t.home}} deskBack
+    phoneBand={tabs ? <BSeg label={t.show} items={tabs} /> : null}
+    band={tabs ? <CorpSegments label={t.show} items={tabs.map(tab => ({key: tab.key, label: tab.label, current: tab.current, onSelect: tab.onSelect, ariaLabel: tab.aria}))} /> : null}
     cards={cards} busy={state.refreshing} />;
 }

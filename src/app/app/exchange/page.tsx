@@ -133,7 +133,7 @@ export default async function ExchangePage({
   // B3: shifts the claim rules refuse are listed apart, with the rules named.
   const refused=(id:string)=>{const view=acceptViews.get(id);return view&&!view.allowed&&view.refusal!==undefined?view:null;};
   const claimable=available.filter(e=>!refused(e.id));
-  const blocked=available.flatMap(e=>{const view=refused(e.id);return view?[{id:e.id,date:e.sourceShift.date,startTime:e.sourceShift.startTime,endTime:e.sourceShift.endTime,location:e.sourceShift.locationName,position:e.sourceShift.positionName??null,reasons:refusalLines(view)}]:[];});
+  const blocked=available.flatMap(e=>{const view=refused(e.id);return view?[{id:e.id,date:e.sourceShift.date,startTime:e.sourceShift.startTime,endTime:e.sourceShift.endTime,location:e.sourceShift.locationName,position:e.sourceShift.positionName??null,reasons:refusalLines(view, lang)}]:[];});
   const assignedShifts=assigned.filter(s=>{try{return Date.parse(shiftBoundaryInstants(s,workspace.timeZone).endAt)>new Date().getTime();}catch{return true;}});
   const selectedHistory=params.requestId?await readShiftChangeHistoryView(proof!,params.requestId).catch(()=>null):[];
   // An own report on a shift with held edits shows its published version in history too.
@@ -146,7 +146,7 @@ export default async function ExchangePage({
     const view = params.tab === "foryou" || (!!params.requestId && incoming.some(row => row.id === params.requestId)) ? "foryou" : activeView;
     const otherName = (row: (typeof visibleActivity)[number]) => marketplaceDisplayName(row.requestedByEmployeeId === session.id ? (row.targetEmployeeName ?? row.targetShift?.employeeName ?? "") : row.requestedByName);
     const when = (shift: { date: string; startTime: string; endTime: string }) => keepWhole(`${marketplaceDate(shift.date)} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`);
-    const place = (shift: Parameters<typeof shiftPlace>[0]) => shiftPlace(shift, zone);
+    const place = (shift: Parameters<typeof shiftPlace>[0]) => shiftPlace(shift, zone, lang);
     const exchangeWord = (status: string) => status === "OPEN" ? t.offered : status === "EMPLOYEE_PENDING" ? t.awaitingEmployee : status === "MANAGER_PENDING" ? t.manualReview : status === "APPROVED" ? t.completed : t.status(status);
     const calloutWord = (callout: (typeof visibleCallouts)[number]) => callout.status === "PENDING" ? t.waiting : callout.status === "APPROVED" ? (callout.releaseApplies ? t.approvedReleased : t.approvedStillYours) : t.status(callout.status);
     const yours = visibleActivity.length + visibleCallouts.length;
@@ -160,7 +160,7 @@ export default async function ExchangePage({
           { href: "/app/exchange?tab=requests", label: t.yoursTab, current: view === "requests" },
         ]} />
         {params.error ? <p className="q-help q-help--alert" role="alert">{t.errors[params.error] ?? schedulingIssueMessage(params.error) ?? t.sendFailed}</p> : null}
-        {operation ? <p className="q-help" role="status">{shiftChangeFeedback(operation)}</p> : null}
+        {operation ? <p className="q-help" role="status">{shiftChangeFeedback(operation, lang)}</p> : null}
 
         {view === "available" ? <>
           <QuietList><QuietRow href="/app/exchange/open-shifts" title={t.postedOpenShifts} /></QuietList>

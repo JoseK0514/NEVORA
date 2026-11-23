@@ -1,0 +1,51 @@
+/* Signed-in Spanish (es-rest): the words of the Owner-reviewed operational rules (operational-rule-fields.tsx), English as
+ * written and Puerto Rico Spanish. The disclaimer is approved legal wording in English; its Spanish is for Jose's review. */
+const en = {
+  rules: {
+    minimumRest: "Minimum rest", maximumShift: "Maximum shift duration", maximumDaily: "Maximum daily duration",
+    breaks: "Scheduled breaks", projectedOvertime: "Projected overtime routing",
+  },
+  status: { UNKNOWN: "Unknown — needs review", NOT_APPLICABLE: "Reviewed not applicable", CONFIGURED: "Configured" },
+  reviewStatus: "Review status",
+  breakAfter: "Break required after (minutes)",
+  minimumBreak: "Minimum break (minutes)",
+  breakPayment: "Break payment",
+  chooseExplicitly: "Choose explicitly", paid: "Paid", unpaid: "Unpaid",
+  weeklyThreshold: "Weekly threshold (minutes)",
+  routing: "Routing", chooseRouting: "Choose routing", managerReview: "Manager review", allow: "Allow when otherwise valid",
+  duration: "Duration (minutes)",
+  timeBasis: "Time basis", chooseTimeBasis: "Choose time basis", elapsed: "Elapsed time", wallClock: "Wall clock time",
+  dailyWindow: "Daily window", chooseWindow: "Choose window", businessDay: "Business calendar day", rolling: "Rolling 24 hours",
+  summary: "Owner-reviewed operational rules",
+  disclaimer: "Scheduled projections are not worked time, proof of breaks taken, final overtime pay or legal certification. Review applicability explicitly; no values are inferred from the employee’s role.",
+  saving: "Saving…",
+  save: "Save operational review",
+  unknown: "Unknown",
+  notApplicable: "Reviewed not applicable",
+  lastReview: (at: string) => `Last Owner review: ${at}`,
+};
+const es: typeof en = {
+  rules: {
+    minimumRest: "Descanso mínimo", maximumShift: "Duración máxima del turno", maximumDaily: "Duración máxima por día",
+    breaks: "Descansos programados", projectedOvertime: "Manejo de horas extra proyectadas",
+  },
+  status: { UNKNOWN: "Desconocido — por revisar", NOT_APPLICABLE: "Revisado, no aplica", CONFIGURED: "Configurado" },
+  reviewStatus: "Estado de la revisión",
+  breakAfter: "Descanso requerido después de (minutos)",
+  minimumBreak: "Descanso mínimo (minutos)",
+  breakPayment: "Pago del descanso",
+  chooseExplicitly: "Elige una opción", paid: "Pagado", unpaid: "No pagado",
+  weeklyThreshold: "Límite semanal (minutos)",
+  routing: "Manejo", chooseRouting: "Elige el manejo", managerReview: "Revisión del gerente", allow: "Permitir si todo lo demás es válido",
+  duration: "Duración (minutos)",
+  timeBasis: "Base de tiempo", chooseTimeBasis: "Elige la base de tiempo", elapsed: "Tiempo transcurrido", wallClock: "Hora del reloj",
+  dailyWindow: "Período diario", chooseWindow: "Elige el período", businessDay: "Día calendario de la empresa", rolling: "24 horas corridas",
+  summary: "Reglas operativas revisadas por el dueño",
+  disclaimer: "Las proyecciones del horario no son tiempo trabajado, prueba de descansos tomados, pago final de horas extra ni certificación legal. Revisa explícitamente si aplican; ningún valor se deduce del rol del empleado.",
+  saving: "Guardando…",
+  save: "Guardar revisión operativa",
+  unknown: "Desconocido",
+  notApplicable: "Revisado, no aplica",
+  lastReview: (at: string) => `Última revisión del dueño: ${at}`,
+};
+export const OPERATIONAL_RULE_FIELDS_COPY = { en, es };

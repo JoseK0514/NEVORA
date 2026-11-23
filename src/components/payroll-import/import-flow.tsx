@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 
 /* Import pay from another payroll system (U01): the page. Five steps in the Add employee sheet frame: add a file, match
  * people, review amounts, confirm, result. The team comes from GET /api/payroll/settings and the payroll from GET
@@ -37,7 +38,8 @@ async function ask(path: string, body?: string): Promise<{ status: number; body:
   finally { clearTimeout(timer); }
 }
 
-export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }: { lang?: PayrollImportLang; runId: string | null; recoveryScope: string; actorId: string }) {
+export function PayrollImportFlow({ lang: langProp, runId, recoveryScope, actorId }: { lang?: PayrollImportLang; runId: string | null; recoveryScope: string; actorId: string }) {
+  const lang = useViewLang(langProp);
   const copy = payrollImportCopy[lang], referenceKey = `nevora-payroll-operation:${recoveryScope}`;
   const [work, setWork, dropWork] = useHeld<Work>(`import:${recoveryScope}:${actorId}:${runId ?? ""}`, emptyWork,retireWork);
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" }), [reading, setReading] = useState(false), [editing, setEditing] = useState<{ index: number; field: AmountField } | null>(null);

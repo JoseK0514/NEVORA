@@ -1,0 +1,48 @@
+/* Signed-in Spanish (es-rest): the words of "Help someone sign in" that are not in the access-recovery copy module
+ * (assisted-recovery.tsx), English as written and Puerto Rico Spanish. A method's value is the sentence the server
+ * records, so it stays English; only its label is translated. */
+const en = {
+  methods: { photo: 'In person, photo ID', know: 'In person, I know them', records: 'Workplace records', other: 'Something else' },
+  employee: 'Employee', settings: 'Settings', team: 'Team',
+  missingId: 'Enter the employee’s ID.',
+  missingAttestation: 'Describe how you verified their identity.',
+  shortAttestation: 'Write at least 10 characters about how you verified them.',
+  missingConfirm: 'Confirm you verified their identity yourself.',
+  title: 'Help someone sign in',
+  verify: 'Verify the employee',
+  employeeId: 'Employee ID',
+  idPlaceholder: 'As shown on their Team page',
+  howChecked: 'How you checked',
+  confirmed: 'I confirmed who they are',
+  confirmHint: 'I independently confirmed this employee’s identity and can hand over this link securely.',
+  checkAgainst: 'Check against details you already have, not a new email or phone number they give you. You don’t need documents, codes or other personal details.',
+  describe: 'Describe how you checked',
+  describePlaceholder: 'For example: in person, with their workplace badge',
+  signIn: 'Sign in',
+  clockerPin: 'Clocker PIN',
+  resetPin: 'Reset a Clocker PIN',
+  resetPinDetail: 'Set a new PIN for someone who forgot theirs',
+};
+const es: typeof en = {
+  methods: { photo: 'En persona, con identificación con foto', know: 'En persona, conozco a la persona', records: 'Registros de la empresa', other: 'Otra forma' },
+  employee: 'Empleado', settings: 'Configuración', team: 'Equipo',
+  missingId: 'Ingresa el ID del empleado.',
+  missingAttestation: 'Describe cómo verificaste su identidad.',
+  shortAttestation: 'Escribe al menos 10 caracteres sobre cómo lo verificaste.',
+  missingConfirm: 'Confirma que verificaste su identidad tú mismo.',
+  title: 'Ayudar a alguien a iniciar sesión',
+  verify: 'Verificar al empleado',
+  employeeId: 'ID del empleado',
+  idPlaceholder: 'Como aparece en su página del Equipo',
+  howChecked: 'Cómo lo verificaste',
+  confirmed: 'Confirmé quién es',
+  confirmHint: 'Confirmé por mi cuenta la identidad de este empleado y puedo entregarle este enlace de forma segura.',
+  checkAgainst: 'Compara con datos que ya tienes, no con un correo electrónico o teléfono nuevo que te den. No necesitas documentos, códigos ni otros datos personales.',
+  describe: 'Describe cómo lo verificaste',
+  describePlaceholder: 'Por ejemplo: en persona, con su identificación del trabajo',
+  signIn: 'Iniciar sesión',
+  clockerPin: 'PIN del Clocker',
+  resetPin: 'Restablecer un PIN del Clocker',
+  resetPinDetail: 'Crea un PIN nuevo para alguien que olvidó el suyo',
+};
+export const ASSISTED_RECOVERY_COPY = { en, es };

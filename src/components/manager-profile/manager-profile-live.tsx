@@ -11,6 +11,8 @@ import { phoneDisplay } from '@/components/team/phone';
 import { createPrivateSnapshotController, type PrivatePanelState } from '@/lib/private-snapshot-client';
 import { revealFeedback } from '@/lib/reveal-feedback';
 import { MANAGER_ALERTS_ENDPOINT, MANAGER_PROFILE_ENDPOINT, parseManagerProfile, type ManagerAlertTopic, type ManagerProfileSnapshot } from './contract';
+import { usePortalLang } from '@/lib/i18n/portal-lang';
+import { MANAGER_PROFILE_COPY, topicWords, type ManagerProfileWords } from './manager-profile-copy';
 
 /** What the page already knows from today's session and workspace reads. */
 export type ManagerProfileIdentity = {
@@ -37,13 +39,13 @@ export type ManagerProfileIdentity = {
  * or "Manager, Calle Loíza, Condado". The line under it says what that access covers. A Manager kept to some locations
  * has the Schedule and the Team only (src/lib/navigation.ts), so their line says that. Until the read arrives (or when it
  * fails) only what the session knows is said: the role, and what is closed to every Manager. */
-export function managerAccess(locations: { scope: 'all' | 'assigned'; names: string[] } | null, word = 'locations') {
-  const closed = 'Payroll and Settings are for Owners.';
-  if (!locations) return { value: 'Manager', covers: closed };
+export function managerAccess(locations: { scope: 'all' | 'assigned'; names: string[] } | null, word = 'locations', t: ManagerProfileWords = MANAGER_PROFILE_COPY.en) {
+  const closed = t.closed;
+  if (!locations) return { value: t.manager, covers: closed };
   // Phase 2 (Nov 23, 2026): the band already says "Manager", so the value is only the reach ("All locations").
-  if (locations.scope === 'all') return { value: `All ${word}`, covers: `Schedule, time, team and requests. ${closed}` };
-  if (!locations.names.length) return { value: 'Manager', covers: closed };
-  return { value: locations.names.join(', '), covers: `Schedule and team at your ${word}. ${closed}` };
+  if (locations.scope === 'all') return { value: t.allPlaces(word), covers: t.coversAll(closed) };
+  if (!locations.names.length) return { value: t.manager, covers: closed };
+  return { value: locations.names.join(', '), covers: t.coversSome(word, closed) };
 }
 
 export type AlertSave = { pending: boolean; error: null | 'offline' | 'signed_out' | 'failed' };
@@ -75,13 +77,13 @@ export const ALERT_TOPIC_COUNT = { owner: 5, manager: 4 } as const;
 /** Every state of the read lives in space the card already has, so nothing moves when it changes: loading and
  * pause are words in the head line; a failed read or an ended session puts its action there and its words in the
  * rows it couldn't fill. A screen reader hears the full sentence once. */
-function readState(state: View['state']) {
-  if (state.paused) return { kind: 'paused' as const, head: typeof navigator !== 'undefined' && !navigator.onLine ? 'You’re offline' : 'Updates paused' };
+function readState(state: View['state'], t: ManagerProfileWords) {
+  if (state.paused) return { kind: 'paused' as const, head: typeof navigator !== 'undefined' && !navigator.onLine ? t.offline : t.paused, offline: typeof navigator !== 'undefined' && !navigator.onLine };
   const snapshot = state.snapshot;
-  if (!snapshot) return { kind: 'loading' as const, head: 'Checking…' };
+  if (!snapshot) return { kind: 'loading' as const, head: t.checking };
   if (snapshot.state === 'ready') return { kind: 'ready' as const, head: null };
-  if (snapshot.reason === 'access_denied') return { kind: 'denied' as const, head: null, row: 'Sign in to see this', said: 'Your session ended. Sign in again to see your contact details, locations and alert choices.' };
-  return { kind: 'failed' as const, head: null, row: 'Couldn’t load', said: 'We couldn’t load your contact details, locations and alert choices.' };
+  if (snapshot.reason === 'access_denied') return { kind: 'denied' as const, head: null, row: t.deniedRow, said: t.deniedSaid };
+  return { kind: 'failed' as const, head: null, row: t.failedRow, said: t.failedSaid };
 }
 
 /** Two labels in one cell: the button keeps the wider one's width, so it never moves under the finger. */
@@ -89,9 +91,9 @@ function Labels({ busy, idle, working }: { busy: boolean; idle: string; working:
   return <span className="pmp-label-stack"><span data-shown={!busy}>{idle}</span><span data-shown={busy}>{working}</span></span>;
 }
 
-function Placeholder({ text }: { text?: string }) {
+function Placeholder({ text, t = MANAGER_PROFILE_COPY.en }: { text?: string; t?: ManagerProfileWords }) {
   if (text) return <span className="pmp-muted">{text}</span>;
-  return <><span aria-hidden="true">–</span><span className="sr-only">Not shown yet</span></>;
+  return <><span aria-hidden="true">–</span><span className="sr-only">{t.notShown}</span></>;
 }
 
 /** Contact values break only between their parts: an address after the @ and before dots, a phone number at its
@@ -120,14 +122,16 @@ function Phone({ number }: { number: string }) {
   return <Parts parts={parts.map((part, index) => index ? ` ${part}` : part)} />;
 }
 
-function saveMessage(error: AlertSave['error']) {
-  if (error === 'offline') return 'Not saved. You’re offline.';
-  if (error === 'signed_out') return 'Not saved. Sign in again.';
-  return 'Not saved. Try again.';
+function saveMessage(error: AlertSave['error'], t: ManagerProfileWords = MANAGER_PROFILE_COPY.en) {
+  if (error === 'offline') return t.notSavedOffline;
+  if (error === 'signed_out') return t.notSavedSignIn;
+  return t.notSavedRetry;
 }
 
 /** One alert switch. Without onToggle (re-reading, or a size-holding copy) it reads as busy and ignores presses. */
-function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: ManagerAlertTopic; save?: AlertSave; on: boolean; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void; skeleton?: boolean }) {
+function TopicRow({ topic: read, save, on, onToggle, skeleton = false, t = MANAGER_PROFILE_COPY.en }: { topic: ManagerAlertTopic; save?: AlertSave; on: boolean; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void; skeleton?: boolean; t?: ManagerProfileWords }) {
+  // The words in the person's language; the save still sends the read's own topic.
+  const topic = topicWords(read, t);
   const busy = !!save?.pending || !onToggle;
   // Loading rows: the expected words drawn as grey text-shaped bars, so each row is exactly a ready row's size.
   if (skeleton) return <li aria-hidden="true"><div className="nv-row pmp-switch-row pmp-topic-placeholder">
@@ -137,13 +141,13 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: Mana
   return <li>
     {/* While busy it says so and ignores presses, but stays enabled, so keyboard focus stays on it. */}
     <button type="button" role="switch" aria-checked={on} className="q-row pmp-switch-row" style={{ paddingLeft: 36 }} data-topic={topic.id}
-      aria-disabled={busy || undefined} aria-busy={save?.pending || undefined} onClick={() => { if (!busy) onToggle?.(topic, !on); }}>
+      aria-disabled={busy || undefined} aria-busy={save?.pending || undefined} onClick={() => { if (!busy) onToggle?.(read, !on); }}>
       <span className="q-rt"><b>{topic.label}</b>
         {/* The detail, "Saving…" and a failed save share one cell sized to the longest, so the row never changes height. */}
         <i className="pmp-meta-stack">
           <span data-shown={!save?.pending && !save?.error}>{topic.detail}</span>
-          <span data-shown={!!save?.pending}>Saving…</span>
-          <span data-shown={!save?.pending && !!save?.error} className="pmp-save-error"><span>{saveMessage(save?.error ?? 'offline')}</span></span>
+          <span data-shown={!!save?.pending}>{t.saving}</span>
+          <span data-shown={!save?.pending && !!save?.error} className="pmp-save-error"><span>{saveMessage(save?.error ?? 'offline', t)}</span></span>
         </i></span>
       <span className="q-tog" aria-checked={on} aria-hidden="true" />
     </button>
@@ -151,21 +155,22 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: Mana
 }
 
 export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, rowHeights = null, accountCards = null, authority = null }: View) {
+  const lang = usePortalLang(), t = MANAGER_PROFILE_COPY[lang];
   const ready = !state.paused && state.snapshot?.state === 'ready' ? state.snapshot : null;
-  const read = readState(state), row = 'row' in read ? read.row : undefined;
+  const read = readState(state, t), row = 'row' in read ? read.row : undefined;
   // Approved set: without payroll an Owner isn't told about payroll, even if the read lists the topic (switched off).
   const visible = (snapshot: Ready | null): Ready | null => snapshot && identity.payrollAlerts === false ? { ...snapshot, alerts: snapshot.alerts.filter(topic => topic.id !== 'payroll-ready') } : snapshot;
   // Re-reading after a return keeps the last values on screen; paused, offline and failed keep only their size.
   const shown = visible(ready ?? (read.kind === 'loading' ? held : null));
   const sized = !shown && read.kind !== 'denied' ? visible(held) : null;
   const cell = (value: (snapshot: Ready) => ReactNode) => shown ? value(shown)
-    : sized ? <span className="pmp-hold"><span className="pmp-hold-value" aria-hidden="true">{value(sized)}</span><span className="pmp-hold-note"><Placeholder text={row} /></span></span>
-    : <Placeholder text={row} />;
+    : sized ? <span className="pmp-hold"><span className="pmp-hold-value" aria-hidden="true">{value(sized)}</span><span className="pmp-hold-note"><Placeholder text={row} t={t} /></span></span>
+    : <Placeholder text={row} t={t} />;
   const note = read.kind === 'paused'
-    ? read.head === 'You’re offline' ? 'You’re offline. Your alert choices show again when you’re back online.' : 'Updates paused. Your alert choices show again when you come back to this window.'
-    : read.kind === 'denied' ? 'Your session ended. Sign in again to see your alert choices.' : 'Your alert choices couldn’t load.';
+    ? read.offline ? t.noteOffline : t.notePaused
+    : read.kind === 'denied' ? t.noteDenied : t.noteFailed;
   const rowStyle = (row: string) => read.kind === 'denied' && rowHeights?.[row] ? { minHeight: rowHeights[row] } : undefined;
-  const said = read.kind === 'failed' && retried === 'failed' ? 'Still couldn’t load your contact details, locations and alert choices.' : 'said' in read ? read.said : '';
+  const said = read.kind === 'failed' && retried === 'failed' ? t.stillFailed : 'said' in read ? read.said : '';
   // What sizes the alert list while there is no ready read: the last read, or else the role's expected topics.
 
   // Quiet (v4, approved Oct 23): who you are, three detail rows, then Notifications (its choices fold under it), this phone's
@@ -173,55 +178,55 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   const onCount = shown ? shown.alerts.filter(topic => overrides[topic.id] ?? topic.on).length : null;
   // Final review B #24: a locked value's reason line has no closing period, as Company profile's ("Locked while you have
   // shifts") and the field errors.
-  const changeLine = `${identity.changedBy || 'An Owner'} can change this`;
+  const changeLine = t.changeLine(identity.changedBy);
   // Package X: the place reads as it does everywhere else in the app ("Condado", not "Northside Bakery — Condado").
   const places = shown ? { ...shown.locations, names: shown.locations.names.map(name => identity.placeNames?.[name] ?? name) } : null;
-  const access = managerAccess(places, identity.locationsWord);
+  const access = managerAccess(places, identity.locationsWord, t);
   return <>
     <div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{identity.name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase()}</span>
-      <div><h1>{identity.name}</h1><p><Dotted text={`${identity.owner ? 'Owner' : 'Manager'} · ${identity.company}`} /></p></div></div>
+      <div><h1>{identity.name}</h1><p><Dotted text={`${identity.owner ? t.owner : t.manager} · ${identity.company}`} lang={lang} /></p></div></div>
     <p className="q-sr" role="alert" id="profile-read-said">{said}</p>
-    <p className="q-sr" role="status">{read.kind === 'paused' ? read.head : read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</p>
-    <ul className="q-list" id="profile-details-list" tabIndex={-1} aria-label="Your details" style={{ marginTop: 24 }}>
+    <p className="q-sr" role="status">{read.kind === 'paused' ? read.head : read.kind === 'ready' && retried === 'loaded' ? t.loaded : ''}</p>
+    <ul className="q-list" id="profile-details-list" tabIndex={-1} aria-label={t.details} style={{ marginTop: 24 }}>
       {/* Review B5 (NV-259): Phone follows Email's pattern: an Owner edits it on their team page (a chevron); otherwise it is
         read-only and says so with a lock. */}
       <li data-row="phone" style={rowStyle('phone')}>{identity.owner
-        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`}><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
+        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`}><span className="q-rt"><b>{t.phone}</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>{t.notAdded}</span>)}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
         // Review Nov 11 (MG-013): a Manager's read-only value says who can change it, in a grey line under it (it was a bare lock).
         // Phase 8 (B #33): the value keeps the 16px lock beside it, as Company profile's locked values do (B5).
-        : <div className="q-row q-row--one pmp-fixed"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /><span className="sr-only">{`, ${changeLine}`}</span></span></span></div>}</li>
+        : <div className="q-row q-row--one pmp-fixed"><span className="q-rt"><b>{t.phone}</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>{t.notAdded}</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /><span className="sr-only">{`, ${changeLine}`}</span></span></span></div>}</li>
       <li data-row="email" style={rowStyle('email')}>{shown && !shown.contact.email && identity.owner
         // Nov 1 upscale: one trailing pattern, label + grey value + chevron (no teal "Add").
-        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`}><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">Not added</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
+        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`}><span className="q-rt"><b>{t.email}</b></span><span className="q-rv q-rv--l">{t.notAdded}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
         // MG-013: on a phone the address sits under its label with the row's whole width (manager-profile rules in
         // owner-b-settings.css), so it stays on one line; if it must break, it still breaks only after the @ or before a
         // dot (TC-02). A Manager's says who can change it, and is laid out as their locked Phone is (Phase 8, B #33).
         : identity.owner
-          ? <div className="q-row q-row--one pmp-email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>Not added</span>)}</span></div>
-          : <div className="q-row q-row--one pmp-email pmp-fixed"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>Not added</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /><span className="sr-only">{`, ${changeLine}`}</span></span></span></div>}</li>
-      <li><div className="q-row q-row--one"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{identity.timeZone.replace(/ time$/, '')}</span></div></li>
+          ? <div className="q-row q-row--one pmp-email"><span className="q-rt"><b>{t.email}</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>{t.notAdded}</span>)}</span></div>
+          : <div className="q-row q-row--one pmp-email pmp-fixed"><span className="q-rt"><b>{t.email}</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>{t.notAdded}</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /><span className="sr-only">{`, ${changeLine}`}</span></span></span></div>}</li>
+      <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.timeZone}</b></span><span className="q-rv q-rv--l">{identity.timeZone.replace(/ time$/, '')}</span></div></li>
       {/* Review Nov 11 (MG-013): what a Manager's access reaches, and what it covers. */}
-      {identity.owner ? null : <li data-row="access"><div className="q-row pmp-access"><span className="q-rt"><b>Access</b><i>{access.covers}</i></span>
+      {identity.owner ? null : <li data-row="access"><div className="q-row pmp-access"><span className="q-rt"><b>{t.access}</b><i>{access.covers}</i></span>
         <span className="q-rv q-rv--l">{access.value}</span></div></li>}
     </ul>
-    {read.kind === 'failed' ? <button type="button" className="q-btn q-btn--quiet" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={() => onRetry('details')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
-    {read.kind === 'denied' ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : null}
+    {read.kind === 'failed' ? <button type="button" className="q-btn q-btn--quiet" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={() => onRetry('details')}><Labels busy={retrying} idle={t.tryAgain} working={t.tryingAgain} /></button> : null}
+    {read.kind === 'denied' ? <Link className="q-btn q-btn--quiet" href="/login">{t.signIn}</Link> : null}
     {authority}
-    <ul className="q-list" style={{ marginTop: 32 }} aria-label="Notifications and account">
-      <li><details className="q-details" id="profile-notifications"><summary className="q-row q-row--one"><span className="q-rt"><b>Notifications</b></span>
-        <span className="q-rv q-rv--l">{onCount === null ? read.head ?? '' : onCount ? 'On' : 'Off'}</span><CaretDownIcon className="q-chev q-chev--down" weight="bold" aria-hidden="true" /></summary>
-        <ul className="q-list" id="profile-alerts-list" tabIndex={-1} aria-label="You’re told about">
-          {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} />)
-            : <li><p className="q-help" style={{ margin: '0 20px 12px 36px' }}>{read.kind === 'loading' ? 'Checking…' : note}</p>
-              {read.kind === 'failed' ? <button type="button" className="q-btn q-btn--sec" aria-busy={retrying || undefined} onClick={() => onRetry('alerts')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}</li>}
-          <li><Link className="q-row q-row--one" href="/app/notifications" style={{ paddingLeft: 36 }}><span className="q-rt"><b>All notifications</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>
+    <ul className="q-list" style={{ marginTop: 32 }} aria-label={t.notificationsAndAccount}>
+      <li><details className="q-details" id="profile-notifications"><summary className="q-row q-row--one"><span className="q-rt"><b>{t.notifications}</b></span>
+        <span className="q-rv q-rv--l">{onCount === null ? read.head ?? '' : onCount ? t.on : t.off}</span><CaretDownIcon className="q-chev q-chev--down" weight="bold" aria-hidden="true" /></summary>
+        <ul className="q-list" id="profile-alerts-list" tabIndex={-1} aria-label={t.toldAbout}>
+          {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} t={t} />)
+            : <li><p className="q-help" style={{ margin: '0 20px 12px 36px' }}>{read.kind === 'loading' ? t.checking : note}</p>
+              {read.kind === 'failed' ? <button type="button" className="q-btn q-btn--sec" aria-busy={retrying || undefined} onClick={() => onRetry('alerts')}><Labels busy={retrying} idle={t.tryAgain} working={t.tryingAgain} /></button> : null}</li>}
+          <li><Link className="q-row q-row--one" href="/app/notifications" style={{ paddingLeft: 36 }}><span className="q-rt"><b>{t.allNotifications}</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>
         </ul>
         <p className="q-sr" role="status">{announcement}</p>
       </details></li>
       {identity.deviceAlerts
         // Nov 1 upscale: a row like its neighbours (label and chevron; the settings it opens say whether they're on), named
         // for the device in hand: "this phone" on a phone, "this device" on tablets and desktop.
-        ? <li><button type="button" className="q-row q-row--one" id="profile-device-alerts" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this <span className="pmp-device-phone">phone</span><span className="pmp-device-other">device</span></b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></button></li>
+        ? <li><button type="button" className="q-row q-row--one" id="profile-device-alerts" popoverTarget="portal-device-settings"><span className="q-rt"><b>{t.alertsOnThis}<span className="pmp-device-phone">{t.thisPhone}</span><span className="pmp-device-other">{t.thisDevice}</span></b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></button></li>
         : null}
       {accountCards}
     </ul>
@@ -238,6 +243,7 @@ function focusedTopic(): string | null {
 
 export function ManagerProfileLive({ identity, initial = null, accountCards = null, authority = null }: { identity: ManagerProfileIdentity; initial?: Ready | null; accountCards?: ReactNode; authority?: ReactNode }) {
   const [state, setState] = useState<PrivatePanelState<ManagerProfileSnapshot>>({ snapshot: null, paused: false, refreshing: true });
+  const words = MANAGER_PROFILE_COPY[usePortalLang()];
   const [saves, setSaves] = useState<Record<string, AlertSave>>({});
   const [overrides, setOverrides] = useState<Record<string, { on: boolean; basis: string }>>({});
   const [held, setHeld] = useState<Ready | null>(initial);
@@ -366,7 +372,7 @@ export function ManagerProfileLive({ identity, initial = null, accountCards = nu
     if (!error) setOverrides(current => ({ ...current, [topic.id]: { on, basis: savedBasis } }));
     setSaves(current => ({ ...current, [topic.id]: { pending: false, error } }));
     // Each failure is spoken once with its own topic; a repeat of the same words still changes the region.
-    if (error) setAnnounced(current => ({ text: `${topic.label}: ${saveMessage(error)}`, count: current.count + 1 }));
+    if (error) setAnnounced(current => ({ text: `${topicWords(topic, words).label}: ${saveMessage(error, words)}`, count: current.count + 1 }));
     // A saved choice is re-read; an ended session is re-read too, so the card's head offers Sign in.
     if (error === 'signed_out') restoreTo.current = focusedTopic();
     if (!error || error === 'signed_out') control.current?.refresh();

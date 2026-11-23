@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 import { useEffect, useId, useRef, useState } from "react";
 import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
 import { ptoCopy, type PtoLang } from "./copy";
@@ -7,7 +8,8 @@ import { ptoCopy, type PtoLang } from "./copy";
  * reviewTimeOffAction takes `decision: "CANCELLED"`; the server gives back the exact paid time the approval used and
  * tells the person. One tap opens the confirmation in place; the decision form handles a lost answer as for Approve and
  * Decline (the check reads the list again; a request still approved brings the button back). */
-export function CancelApproval({ requestId, name, when, lang = "en" }: { requestId: string; name: string; when: string; lang?: PtoLang }) {
+export function CancelApproval({ requestId, name, when, lang: langProp }: { requestId: string; name: string; when: string; lang?: PtoLang }) {
+  const lang = useViewLang(langProp);
   const t = ptoCopy(lang), id = useId();
   const [open, setOpen] = useState(false);
   const title = useRef<HTMLParagraphElement>(null), opener = useRef<HTMLButtonElement>(null), wasOpen = useRef(false);

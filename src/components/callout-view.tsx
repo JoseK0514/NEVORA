@@ -1,4 +1,8 @@
+"use client";
+
 import "./shift-change-desktop.css";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { swapCopy } from "./swap-copy";
 import { ReviewedCalloutForm } from "./reviewed-callout-form";
 import { CalloutSentBoundary } from "./wave-a/callout-sent";
 import { QuietPage } from "./quiet/quiet";
@@ -16,10 +20,11 @@ export function CalloutView({
   fields: Readonly<Record<string, string>> | null;
   error?: string;
 }) {
+  const t = swapCopy(usePortalLang()).callout;
   return (
     <CalloutSentBoundary shift={shift}>
       <QuietPage className="q-shiftchange">
-        <ReviewedCalloutForm fields={fields} shift={shift} error={error ? (error === "details" ? "Add a few words about the reason when you choose Other." : "Choose a reason first.") : undefined} />
+        <ReviewedCalloutForm fields={fields} shift={shift} error={error ? (error === "details" ? t.details : t.reason) : undefined} />
       </QuietPage>
     </CalloutSentBoundary>
   );

@@ -4,6 +4,8 @@ import './availability-corp.css';
 import type {InputHTMLAttributes, ReactNode} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {QuietSheet, SheetCancel} from './quiet/quiet-sheet';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {availabilityCopy} from './availability-copy';
 
 /* Availability on the corporate kit (Release 1, board E-Availability), shared by the phone and desktop pages. Look only:
  * each page keeps its own reads, drafts, field names, validation and saving. One card of seven one-line day rows (day,
@@ -33,14 +35,15 @@ function bar(period: {startTime: string; endTime: string}) {
 
 export function AvailabilityDayRows({days}: {days: AvailabilityDayRow[]}) {
   const bars = days.some(day => day.periods);
-  return <ul className="c-avail__days" aria-label="Availability by day">
-    {bars ? <li className="c-avail__axis" aria-hidden="true"><span>6:00 AM</span><span>12:00 PM</span><span>6:00 PM</span><span>12:00 AM</span></li> : null}
+  const words = availabilityCopy(usePortalLang());
+  return <ul className="c-avail__days" aria-label={words.rows.byDay}>
+    {bars ? <li className="c-avail__axis" aria-hidden="true">{['06:00', '12:00', '18:00', '00:00'].map(time => <span key={time}>{words.time(time)}</span>)}</li> : null}
     {days.map(day => <li key={day.key}>
       <button type="button" className="c-avail__day" aria-haspopup="dialog" aria-label={day.label} onClick={day.onOpen}>
         <span className="c-avail__name">{day.name}</span>
         {bars ? <span className="c-avail__line" aria-hidden="true">{(day.hours ? day.periods ?? [] : []).map((period, index) => {
           const at = bar(period); return at ? <i key={index} style={at}/> : null; })}</span> : null}
-        <span className={day.hours ? 'c-avail__hours' : 'c-avail__hours c-avail__hours--off'}>{day.hours ?? 'Not available'}</span>
+        <span className={day.hours ? 'c-avail__hours' : 'c-avail__hours c-avail__hours--off'}>{day.hours ?? words.rows.notAvailable}</span>
         <CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/>
       </button>
     </li>)}
@@ -61,14 +64,15 @@ export function AvailabilityDaySheet({open, onClose, day, closeHref, available, 
   switchLabel: string; disabled: boolean; children?: ReactNode; footer?: ReactNode;
 }) {
   const titleId = `avail-day-${day.toLowerCase()}`;
+  const t = availabilityCopy(usePortalLang()).rows;
   return <QuietSheet open={open} labelledBy={titleId} onClose={onClose}>
     <div className="c-sheet c-avail-sheet" data-corp="">
-      <div className="c-sheet__nav"><span/><h2 className="c-sheet__title" id={titleId}>{day}</h2><SheetCancel href={closeHref} className="c-sheet__done">Done</SheetCancel></div>
+      <div className="c-sheet__nav"><span/><h2 className="c-sheet__title" id={titleId}>{day}</h2><SheetCancel href={closeHref} className="c-sheet__done">{t.done}</SheetCancel></div>
       <fieldset className="c-avail-sheet__fields" disabled={disabled}>
-        <legend className="nv-sr">{day} availability</legend>
+        <legend className="nv-sr">{t.legend(day)}</legend>
         <div className="c-card">
           <label className="c-avail-sheet__switch">
-            <span>Available</span>
+            <span>{t.available}</span>
             <input type="checkbox" role="switch" className="c-switch" aria-label={switchLabel} checked={available} onChange={event => onAvailable(event.target.checked)}/>
           </label>
           {available ? children : null}

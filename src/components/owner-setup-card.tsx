@@ -6,14 +6,16 @@ import Link from 'next/link';
 import {createContext, useContext, useId, type ReactNode} from 'react';
 import type {SetupProgress} from '@/lib/today/project';
 import {CaretRightIcon, CheckIcon, CircleIcon, SquaresFourIcon} from '@phosphor-icons/react/ssr';
-import {lower} from '@/lib/workspace-presentation/words';
+import {lower, WORD_PRESETS} from '@/lib/workspace-presentation/words';
 import {hasSetupGaps, setupDoneCount, type SetupSteps} from '@/lib/action-center/setup';
 import {usePresentation} from './presentation-context';
 import {useHomeSetupSteps} from './manager-action-center';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {OWNER_HOME_COPY, type OwnerHomeCopy} from './owner-home-copy';
 
 /** Two whole strings, so B5 can translate them; never "missing". */
-export function hoursReason(count: number, words: {person: string; people: string}) {
-  return count === 1 ? `1 ${lower(words.person)} has no weekly hour target.` : `${count} ${lower(words.people)} have no weekly hour target.`;
+export function hoursReason(count: number, words: {person: string; people: string}, t: OwnerHomeCopy = OWNER_HOME_COPY.en) {
+  return t.hoursReason(count, lower(words.person), lower(words.people));
 }
 
 /** The caret stays with the last word; it is an icon, so it isn't read aloud. */
@@ -26,9 +28,10 @@ function StepLink({href, label, describedBy}: {href: string; label: string; desc
 
 /* Phase 9: a done step carries the one done mark's bold check (no filled circle); an open step keeps its bold ring. */
 function Step({done, title, children}: {done: boolean; title: string; children?: ReactNode}) {
+  const t = OWNER_HOME_COPY[usePortalLang()];
   return <li className="owner-setup-step" data-state={done ? 'done' : 'open'}>
     {done ? <CheckIcon className="owner-setup-mark" size={20} weight="bold" aria-hidden="true"/> : <CircleIcon className="owner-setup-mark" size={20} weight="bold" aria-hidden="true"/>}
-    {done ? <p className="owner-setup-done-row"><strong>{title}</strong><span className="owner-setup-done">Done</span></p> : <div className="owner-setup-open">{children}</div>}
+    {done ? <p className="owner-setup-done-row"><strong>{title}</strong><span className="owner-setup-done">{t.done}</span></p> : <div className="owner-setup-open">{children}</div>}
   </li>;
 }
 
@@ -36,6 +39,7 @@ function Step({done, title, children}: {done: boolean; title: string; children?:
  * reports, each linked to the section that fixes it. No motion, no celebration. */
 export function OwnerSetupCard({steps, locationCount}: {steps: SetupSteps | null; locationCount: number}) {
   const {words} = usePresentation();
+  const lang = usePortalLang(), t = OWNER_HOME_COPY[lang];
   const id = useId();
   if (!steps || !hasSetupGaps(steps)) return null;
   const done = setupDoneCount(steps);
@@ -43,19 +47,19 @@ export function OwnerSetupCard({steps, locationCount}: {steps: SetupSteps | null
   return <div className="home-layout-setup">
     <section className="owner-setup-card" aria-labelledby={`${id}-title`}>
       <div className="owner-setup-summary">
-        <h2 id={`${id}-title`}>Finish setting up</h2>
-        <p className="owner-setup-count"><span>{done}</span> of 2 done</p>
+        <h2 id={`${id}-title`}>{t.finishSettingUp}</h2>
+        <p className="owner-setup-count"><span>{done}</span> {t.ofTwoDone}</p>
         <span className="home-progress owner-setup-progress" aria-hidden="true"><span style={{width: `${done * 50}%`}}/></span>
       </div>
       <ul className="owner-setup-steps">
-        <Step done={!steps.coverageOpen} title="Coverage periods">
+        <Step done={!steps.coverageOpen} title={t.coveragePeriods}>
           {locationCount === 0
-            ? <><StepLink href="/app/settings/locations" label="Add a location" describedBy={coverageReason}/><p id={coverageReason}>Then set its staffing and coverage periods.</p></>
-            : <><StepLink href="/app/schedule/settings#coverage-staffing" label="Set coverage periods" describedBy={coverageReason}/><p id={coverageReason}>Each location needs a minimum staff count, a lead rule and a coverage period.</p></>}
+            ? <><StepLink href="/app/settings/locations" label={t.addLocation} describedBy={coverageReason}/><p id={coverageReason}>{t.thenSetStaffing}</p></>
+            : <><StepLink href="/app/schedule/settings#coverage-staffing" label={t.setCoverage} describedBy={coverageReason}/><p id={coverageReason}>{t.eachLocationNeeds}</p></>}
         </Step>
-        <Step done={steps.missingTargets === 0} title="Weekly hour targets">
-          <StepLink href="/app/schedule/settings#target-hours" label="Set weekly hour targets" describedBy={hoursReasonId}/>
-          <p id={hoursReasonId}>{hoursReason(steps.missingTargets, words)}</p>
+        <Step done={steps.missingTargets === 0} title={t.weeklyTargets}>
+          <StepLink href="/app/schedule/settings#target-hours" label={t.setTargets} describedBy={hoursReasonId}/>
+          <p id={hoursReasonId}>{hoursReason(steps.missingTargets, lang === 'es' ? (WORD_PRESETS.find(preset => preset.en.person === words.person)?.es ?? words) : words, t)}</p>
         </Step>
       </ul>
     </section>
@@ -70,17 +74,18 @@ export function OwnerSetupCardLive({locationCount}: {locationCount: number}) {
 /** Clean Manager (v3): the same two checks as one slim row on Home, linking to the next open step.
  * It disappears when setup is complete. The full card above stays for its other callers. */
 export function OwnerSetupRow({steps, locationCount}: {steps: SetupSteps | null; locationCount: number}) {
+  const t = OWNER_HOME_COPY[usePortalLang()];
   if (!steps || !hasSetupGaps(steps)) return null;
   const done = setupDoneCount(steps);
   const next = steps.coverageOpen
-    ? locationCount === 0 ? {href: '/app/settings/locations', label: 'add a location'} : {href: '/app/schedule/settings#coverage-staffing', label: 'set coverage periods'}
-    : {href: '/app/schedule/settings#target-hours', label: 'set weekly hour targets'};
-  return <section className="nv-card cm-setup" aria-label="Finish setting up">
+    ? locationCount === 0 ? {href: '/app/settings/locations', label: t.steps.location} : {href: '/app/schedule/settings#coverage-staffing', label: t.steps.setCoverage}
+    : {href: '/app/schedule/settings#target-hours', label: t.steps.setTargets};
+  return <section className="nv-card cm-setup" aria-label={t.finishSettingUp}>
     <ul className="nv-rows">
       <li><Link className="nv-row" href={next.href} data-leading="true">
         <span className="nv-tile" data-tone="accent" aria-hidden="true"><SquaresFourIcon size={18} weight="bold"/></span>
-        <span className="nv-row__text"><span className="nv-row__title">Finish setting up</span><span className="nv-row__meta">{`Next: ${next.label}`}</span></span>
-        <span className="nv-row__trail">{`${done} of 2`}</span>
+        <span className="nv-row__text"><span className="nv-row__title">{t.finishSettingUp}</span><span className="nv-row__meta">{t.next(next.label)}</span></span>
+        <span className="nv-row__trail">{t.doneOf(done, 2)}</span>
         <CaretRightIcon className="nv-row__chev" size={18} weight="bold" aria-hidden="true"/>
       </Link></li>
     </ul>
@@ -93,13 +98,14 @@ export function OwnerSetupRowLive({locationCount}: {locationCount: number}) {
 
 /** Quiet (v4): Home's Setup section, one row naming the next step. Gone once setup is complete. */
 export function OwnerSetupQuiet({steps, locationCount}: {steps: SetupSteps | null; locationCount: number}) {
+  const t = OWNER_HOME_COPY[usePortalLang()];
   if (!steps || !hasSetupGaps(steps)) return null;
   const done = setupDoneCount(steps);
   const next = steps.coverageOpen
-    ? locationCount === 0 ? {href: '/app/settings/locations', label: 'add a location'} : {href: '/app/schedule/settings#coverage-staffing', label: 'set coverage periods'}
-    : {href: '/app/schedule/settings#target-hours', label: 'set weekly hour targets'};
-  return <QuietSection id="home-setup" title="Setup">
-    <QuietList label="Setup"><QuietRow href={next.href} title={`${done} of 2 steps done`} detail={`Next, ${next.label}`} /></QuietList>
+    ? locationCount === 0 ? {href: '/app/settings/locations', label: t.steps.location} : {href: '/app/schedule/settings#coverage-staffing', label: t.steps.setCoverage}
+    : {href: '/app/schedule/settings#target-hours', label: t.steps.setTargets};
+  return <QuietSection id="home-setup" title={t.setup}>
+    <QuietList label={t.setup}><QuietRow href={next.href} title={t.stepsDone(done)} detail={t.nextComma(next.label)} /></QuietList>
   </QuietSection>;
 }
 
@@ -116,17 +122,17 @@ export type SetupItem = {done: boolean; step: string; href: string};
  * add the team, a published schedule, a registered time clock, clock-in PINs and (with payroll) the pay schedule. With
  * no facts the list is the two checks alone, so a missing read is never shown as more setup done. A registered tablet
  * is only that: it doesn't say punching is on. */
-export function setupItems(steps: SetupSteps, locationCount: number, progress: SetupProgress | null, payroll: boolean): SetupItem[] {
+export function setupItems(steps: SetupSteps, locationCount: number, progress: SetupProgress | null, payroll: boolean, t: OwnerHomeCopy = OWNER_HOME_COPY.en): SetupItem[] {
   const items: SetupItem[] = [];
-  if (progress) items.push({done: progress.teamSize > 1, step: 'add your team', href: '/app/employees'});
-  items.push(locationCount === 0 ? {done: !steps.coverageOpen, step: 'add a location', href: '/app/settings/locations'}
-    : {done: !steps.coverageOpen, step: 'coverage periods', href: '/app/schedule/settings#coverage-staffing'});
-  items.push({done: steps.missingTargets === 0, step: 'weekly hour targets', href: '/app/schedule/settings#target-hours'});
+  if (progress) items.push({done: progress.teamSize > 1, step: t.steps.team, href: '/app/employees'});
+  items.push(locationCount === 0 ? {done: !steps.coverageOpen, step: t.steps.location, href: '/app/settings/locations'}
+    : {done: !steps.coverageOpen, step: t.steps.coverage, href: '/app/schedule/settings#coverage-staffing'});
+  items.push({done: steps.missingTargets === 0, step: t.steps.targets, href: '/app/schedule/settings#target-hours'});
   if (progress) {
-    items.push({done: progress.publishedSchedule, step: 'publish a schedule', href: '/app/schedule'});
-    items.push({done: progress.registeredClocks > 0, step: 'register a time clock tablet', href: '/app/settings/clocker'});
-    items.push({done: progress.peopleWithPins > 0, step: 'set clock-in PINs', href: '/app/settings/clocker/pins'});
-    if (payroll) items.push({done: progress.paySchedule, step: 'set your pay schedule', href: '/app/settings/payroll'});
+    items.push({done: progress.publishedSchedule, step: t.steps.publish, href: '/app/schedule'});
+    items.push({done: progress.registeredClocks > 0, step: t.steps.clock, href: '/app/settings/clocker'});
+    items.push({done: progress.peopleWithPins > 0, step: t.steps.pins, href: '/app/settings/clocker/pins'});
+    if (payroll) items.push({done: progress.paySchedule, step: t.steps.pay, href: '/app/settings/payroll'});
   }
   return items;
 }
@@ -134,11 +140,12 @@ export function setupItems(steps: SetupSteps, locationCount: number, progress: S
 /** Corporate Home (Release 1): setup is one row inside Things to do, so Home keeps three cards.
  * R7 (copy row 5): "1 of 2 done · Next: weekly hour targets"; with the server's facts, "3 of 7 done · Next: …". */
 export function OwnerSetupCorp({steps, locationCount, progress = null, payroll = false}: {steps: SetupSteps | null; locationCount: number; progress?: SetupProgress | null; payroll?: boolean}) {
+  const t = OWNER_HOME_COPY[usePortalLang()];
   if (!steps) return null;
-  const items = setupItems(steps, locationCount, progress, payroll), next = items.find(item => !item.done);
+  const items = setupItems(steps, locationCount, progress, payroll, t), next = items.find(item => !item.done);
   if (!next) return null;
   const done = items.filter(item => item.done).length;
-  return <div id="home-setup" className="c-home__setup"><CorpRow href={next.href} title="Finish setting up" detail={`${done} of ${items.length} done · Next: ${next.step}`} chevron /></div>;
+  return <div id="home-setup" className="c-home__setup"><CorpRow href={next.href} title={t.finishSettingUp} detail={t.doneNext(done, items.length, next.step)} chevron /></div>;
 }
 
 export function OwnerSetupCorpLive({locationCount, payroll = false}: {locationCount: number; payroll?: boolean}) {

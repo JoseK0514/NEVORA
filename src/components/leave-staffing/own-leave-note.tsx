@@ -3,7 +3,8 @@ import {useMemo} from 'react';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {useLeaveStaffing} from './use-leave-staffing';
 import {weeksFor} from '@/lib/time-off-staffing/client';
-import {dayText,rangeText} from '@/lib/time-off-staffing/present';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {LEAVE_STAFFING_COPY} from './leave-staffing-copy';
 import {Dotted} from '../employee-b/parts';
 import {BCard,BList,BRow,BIcon,BDoneMark} from '../owner-b/b-kit';
 import './leave-staffing.css';
@@ -16,21 +17,22 @@ export function OwnLeaveNote({request}:{request:{id:string;status:string;startDa
  const open=request.status==='PENDING'||request.status==='APPROVED';
  const weeks=useMemo(()=>open?weeksFor(request.startDate,request.endDate):null,[open,request.startDate,request.endDate]);
  const {state,refresh}=useLeaveStaffing(weeks?{weeks,requestId:request.id}:null);
+ const lang=usePortalLang(),t=LEAVE_STAFFING_COPY[lang];
  if(!open||!weeks)return null;
  if(state.status==='loading'||state.status==='paused')return null;
- if(state.status!=='ready')return <BCard id="b-timeoff-shifts" label="Your shifts during this time off"><div className="ls-own ls-own--quiet" role="status">
-  <span>{state.status==='expired'?'This check of your shifts expired.':'We couldn’t check your scheduled shifts for these dates.'}</span>
-  {state.status==='unavailable'&&state.denied?null:<button type="button" className="b-btn b-btn--quiet" onClick={refresh}>Check again</button>}
+ if(state.status!=='ready')return <BCard id="b-timeoff-shifts" label={t.yourShifts}><div className="ls-own ls-own--quiet" role="status">
+  <span>{state.status==='expired'?t.ownExpired:t.ownCouldntCheck}</span>
+  {state.status==='unavailable'&&state.denied?null:<button type="button" className="b-btn b-btn--quiet" onClick={refresh}>{t.checkAgain}</button>}
  </div></BCard>;
  const items=state.read.items.filter(item=>item.requestId===request.id);
  if(!items.length)return null;
  const approved=items.every(item=>item.employeeInstruction==='approved_leave');
- return <BCard id="b-timeoff-shifts" title="Your shifts during this time off">
-  {approved?<div className="ls-own"><BDoneMark still/><span><b>Your time off is approved</b><span>You don’t need to come in for these hours.</span></span></div>:null}
-  <BList label="Published shifts during this time off">{items.map(item=><BRow key={item.id} lead={<BIcon tone="grey"><InfoIcon weight="bold"/></BIcon>} title={dayText(item.date)}
-   sub={<Dotted text={`${rangeText(item.startTime,item.endTime)} · ${item.locationName} · ${approved?'Still on the published schedule':'On the published schedule'}`}/>}/>)}</BList>
+ return <BCard id="b-timeoff-shifts" title={t.yourShifts}>
+  {approved?<div className="ls-own"><BDoneMark still/><span><b>{t.approvedTitle}</b><span>{t.approvedSub}</span></span></div>:null}
+  <BList label={t.publishedDuring}>{items.map(item=><BRow key={item.id} lead={<BIcon tone="grey"><InfoIcon weight="bold"/></BIcon>} title={t.day(item.date)}
+   sub={<Dotted text={`${t.range(item.startTime,item.endTime)} · ${item.locationName} · ${approved?t.stillOnSchedule:t.onPublished}`} lang={lang}/>}/>)}</BList>
   <p className="ls-own__note">{approved
-   ?'Your manager will take care of these shifts. You don’t need to find cover or swap them.'
-   :'Your manager will see these shifts when they decide. You don’t need to do anything now.'}</p>
+   ?t.managerTakesCare
+   :t.managerWillSee}</p>
  </BCard>;
 }

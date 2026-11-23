@@ -227,6 +227,21 @@
 /* Final polish, round 2 (R3): a card's foot. One teal text link (the kit's .b-link, 44px tall) under a hairline, at the
  * card's inset: "See every posted shift" under Open shifts' list, its empty state and its failed state. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardfoot { display: flex; margin: 0; padding: var(--b-space-2) var(--b-inset) var(--b-space-4); box-shadow: inset 0 1px 0 var(--b-line); }
+/* Signed-in Spanish (Nov 23, 2026): at 200% text "Ver todos los turnos publicados" is wider than the card; the link wraps
+ * (its caret stays with the last word) instead of running off the edge. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardfoot > .b-link { min-width: 0; white-space: normal; text-wrap: balance; }
 @media (min-width: 768px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardfoot { padding-left: var(--b-inset-wide); padding-right: var(--b-inset-wide); }
+}
+
+/* Signed-in Spanish (Nov 23, 2026): Pick up and swap's three places ("Disponibles", "Para ti", "Mis solicitudes") wrap onto
+ * more rows once a label no longer fits a third of the bar (a 6.5rem column grows with the text size, so this happens at
+ * large text, not at 100% on a 390px phone). English keeps the kit's three columns. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-xseg:lang(es) > .b-seg { grid-auto-flow: row; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr)); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-xseg:lang(es) > .b-seg > * { white-space: normal; text-align: center; }
+/* The phone tab rules set the track with !important, one of them inside the nv-b layer (b-foundation.css), where an
+ * important declaration outranks any unlayered one; so the Spanish wrap sits in that layer too, with a stronger selector. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-hero .eb-xseg:lang(es) > .b-seg:not([data-slide]):not(#h-none):not(#h-none2):not(#h-none3):not(#h-none4):not(#h-none5):not(#h-none6):not(#h-none7) { grid-auto-flow: row !important; grid-auto-columns: auto !important; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr)) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-hero .eb-xseg:lang(es) > .b-seg:not([data-slide]) > :is(a, button):not(#h-none):not(#h-none2):not(#h-none3):not(#h-none4):not(#h-none5):not(#h-none6):not(#h-none7) { white-space: normal !important; text-align: center; }
 }

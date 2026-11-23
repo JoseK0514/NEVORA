@@ -1,0 +1,1179 @@
+[
+ {
+  "id": "A1-fc",
+  "row": "A1",
+  "page": "Start",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: the screen-reader ownership line in the footer was English without lang=\"en\" (A4-07); now marked. Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A1-en-after-390.webp",
+    "before": "img/A1-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A1-en-after-1440.webp",
+    "before": "img/A1-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A1-es-after-390.webp",
+    "before": "img/A1-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A1-es-after-1440.webp",
+    "before": "img/A1-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A2-fc",
+  "row": "A2",
+  "page": "Sign in",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: the footer's English ownership line is now marked lang=\"en\" (A4-07). Forced colours: no defect (the show-password eye is an icon button, visible).",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A2-en-after-390.webp",
+    "before": "img/A2-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A2-en-after-1440.webp",
+    "before": "img/A2-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A2-es-after-390.webp",
+    "before": "img/A2-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A2-es-after-1440.webp",
+    "before": "img/A2-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A3-fc",
+  "row": "A3",
+  "page": "Welcome",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A3-en-after-390.webp",
+    "before": "img/A3-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A3-en-after-1440.webp",
+    "before": "img/A3-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A3-es-after-390.webp",
+    "before": "img/A3-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A3-es-after-1440.webp",
+    "before": "img/A3-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A4-fc",
+  "row": "A4",
+  "page": "Forgot access",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A4-en-after-390.webp",
+    "before": "img/A4-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A4-en-after-1440.webp",
+    "before": "img/A4-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A4-es-after-390.webp",
+    "before": "img/A4-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A4-es-after-1440.webp",
+    "before": "img/A4-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A5-fc",
+  "row": "A5",
+  "page": "Reset access",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: the password rules' dots vanished; they now keep the text colour (access-recovery.css). Spanish: footer ownership line marked lang=\"en\".",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A5-en-after-390.webp",
+    "before": "img/A5-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A5-en-after-1440.webp",
+    "before": "img/A5-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A5-es-after-390.webp",
+    "before": "img/A5-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A5-es-after-1440.webp",
+    "before": "img/A5-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A6-fc",
+  "row": "A6",
+  "page": "Activate account",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A6-en-after-390.webp",
+    "before": "img/A6-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A6-en-after-1440.webp",
+    "before": "img/A6-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A6-es-after-390.webp",
+    "before": "img/A6-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A6-es-after-1440.webp",
+    "before": "img/A6-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A7-fc",
+  "row": "A7",
+  "page": "Access help",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A7-en-after-390.webp",
+    "before": "img/A7-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A7-en-after-1440.webp",
+    "before": "img/A7-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A7-es-after-390.webp",
+    "before": "img/A7-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A7-es-after-1440.webp",
+    "before": "img/A7-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A8-fc",
+  "row": "A8",
+  "page": "Owner sign-up",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A8-en-after-390.webp",
+    "before": "img/A8-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A8-en-after-1440.webp",
+    "before": "img/A8-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A8-es-after-390.webp",
+    "before": "img/A8-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A8-es-after-1440.webp",
+    "before": "img/A8-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A9-fc",
+  "row": "A9",
+  "page": "Verify email",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A9-en-after-390.webp",
+    "before": "img/A9-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A9-en-after-1440.webp",
+    "before": "img/A9-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A9-es-after-390.webp",
+    "before": "img/A9-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A9-es-after-1440.webp",
+    "before": "img/A9-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A10-fc",
+  "row": "A10",
+  "page": "Activate business",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A10-en-after-390.webp",
+    "before": "img/A10-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A10-en-after-1440.webp",
+    "before": "img/A10-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A10-es-after-390.webp",
+    "before": "img/A10-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A10-es-after-1440.webp",
+    "before": "img/A10-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A11-fc",
+  "row": "A11",
+  "page": "Privacy policy",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". The policy text itself is English on the Spanish page and is marked lang=\"en\" (approved wording, unchanged). Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A11-en-after-390.webp",
+    "before": "img/A11-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A11-en-after-1440.webp",
+    "before": "img/A11-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A11-es-after-390.webp",
+    "before": "img/A11-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A11-es-after-1440.webp",
+    "before": "img/A11-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A12-fc",
+  "row": "A12",
+  "page": "Terms",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". The terms text is English and marked lang=\"en\" (approved wording, unchanged). Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A12-en-after-390.webp",
+    "before": "img/A12-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A12-en-after-1440.webp",
+    "before": "img/A12-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A12-es-after-390.webp",
+    "before": "img/A12-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A12-es-after-1440.webp",
+    "before": "img/A12-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A13-fc",
+  "row": "A13",
+  "page": "Support",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A13-en-after-390.webp",
+    "before": "img/A13-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A13-en-after-1440.webp",
+    "before": "img/A13-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A13-es-after-390.webp",
+    "before": "img/A13-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A13-es-after-1440.webp",
+    "before": "img/A13-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A14-fc",
+  "row": "A14",
+  "page": "Account deletion",
+  "section": "Z3 forced colours and language",
+  "note": "Spanish: footer ownership line marked lang=\"en\". Forced colours: no defect.",
+  "shots": [
+   {
+    "label": "Phone (EN), forced colours",
+    "after": "img/A14-en-after-390.webp",
+    "before": "img/A14-en-before-390.webp"
+   },
+   {
+    "label": "Desktop (EN), forced colours",
+    "after": "img/A14-en-after-1440.webp",
+    "before": "img/A14-en-before-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone (ES), forced colours",
+    "after": "img/A14-es-after-390.webp",
+    "before": "img/A14-es-before-390.webp"
+   },
+   {
+    "label": "Desktop (ES), forced colours",
+    "after": "img/A14-es-after-1440.webp",
+    "before": "img/A14-es-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B1-fc",
+  "row": "B1",
+  "page": "Home (Employee)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B1-after-390.webp",
+    "before": "img/B1-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B1-after-1440.webp",
+    "before": "img/B1-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B2-fc",
+  "row": "B2",
+  "page": "More (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B2-after-390.webp",
+    "before": "img/B2-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B2-after-1440.webp",
+    "before": "img/B2-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B3-fc",
+  "row": "B3",
+  "page": "Notifications (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: the unread dot vanished (mb-dot) and, at 1440, All and Unread on the corporate segment looked the same; the dot now keeps the text colour and the chosen tab has a Highlight outline.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B3-after-390.webp",
+    "before": "img/B3-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B3-after-1440.webp",
+    "before": "img/B3-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B4-fc",
+  "row": "B4",
+  "page": "Things to do (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B4-after-390.webp",
+    "before": "img/B4-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B4-after-1440.webp",
+    "before": "img/B4-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B5-fc",
+  "row": "B5",
+  "page": "Requests hub (Employee)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: the amber dot beside Needs your answer in the band vanished (b-dot); it now keeps the text colour.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B5-after-390.webp",
+    "before": "img/B5-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B5-after-1440.webp",
+    "before": "img/B5-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B6-fc",
+  "row": "B6",
+  "page": "Updates (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B6-after-390.webp",
+    "before": "img/B6-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B6-after-1440.webp",
+    "before": "img/B6-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B7-fc",
+  "row": "B7",
+  "page": "Update detail (Employee)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B7-after-390.webp",
+    "before": "img/B7-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B7-after-1440.webp",
+    "before": "img/B7-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B8-fc",
+  "row": "B8",
+  "page": "Compose (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B8-after-390.webp",
+    "before": "img/B8-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B8-after-1440.webp",
+    "before": "img/B8-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B9-fc",
+  "row": "B9",
+  "page": "Help (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B9-after-390.webp",
+    "before": "img/B9-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B9-after-1440.webp",
+    "before": "img/B9-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B10-fc",
+  "row": "B10",
+  "page": "Restricted (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B10-after-390.webp",
+    "before": "img/B10-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B10-after-1440.webp",
+    "before": "img/B10-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B11-fc",
+  "row": "B11",
+  "page": "Page not found (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/B11-after-390.webp",
+    "before": "img/B11-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/B11-after-1440.webp",
+    "before": "img/B11-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C1-fc",
+  "row": "C1",
+  "page": "Schedule (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: the week strip's has-shifts and open-shift dots and the Open shifts legend dot vanished; they now keep the text colour.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C1-after-390.webp",
+    "before": "img/C1-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C1-after-1440.webp",
+    "before": "img/C1-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C2-fc",
+  "row": "C2",
+  "page": "Add shift (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C2-after-390.webp",
+    "before": "img/C2-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C2-after-1440.webp",
+    "before": "img/C2-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C4-fc",
+  "row": "C4",
+  "page": "Edit shift (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: same week-strip dots as Schedule, now kept in the text colour.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C4-after-390.webp",
+    "before": "img/C4-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C4-after-1440.webp",
+    "before": "img/C4-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C5-fc",
+  "row": "C5",
+  "page": "Find cover (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: same week-strip dots as Schedule, now kept in the text colour.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C5-after-390.webp",
+    "before": "img/C5-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C5-after-1440.webp",
+    "before": "img/C5-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C6-fc",
+  "row": "C6",
+  "page": "Build and publish (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C6-after-390.webp",
+    "before": "img/C6-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C6-after-1440.webp",
+    "before": "img/C6-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C7-fc",
+  "row": "C7",
+  "page": "Templates (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C7-after-390.webp",
+    "before": "img/C7-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C7-after-1440.webp",
+    "before": "img/C7-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C8-fc",
+  "row": "C8",
+  "page": "Copy receipt (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C8-after-390.webp",
+    "before": "img/C8-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C8-after-1440.webp",
+    "before": "img/C8-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C9-fc",
+  "row": "C9",
+  "page": "Scheduling rules (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C9-after-390.webp",
+    "before": "img/C9-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C9-after-1440.webp",
+    "before": "img/C9-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C10-fc",
+  "row": "C10",
+  "page": "Availability (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C10-after-390.webp",
+    "before": "img/C10-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C10-after-1440.webp",
+    "before": "img/C10-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C11-fc",
+  "row": "C11",
+  "page": "Availability agreement (Employee)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C11-after-390.webp",
+    "before": "img/C11-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C11-after-1440.webp",
+    "before": "img/C11-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C12-fc",
+  "row": "C12",
+  "page": "Shift changes (Employee)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C12-after-390.webp",
+    "before": "img/C12-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C12-after-1440.webp",
+    "before": "img/C12-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C13-fc",
+  "row": "C13",
+  "page": "Open shifts (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C13-after-390.webp",
+    "before": "img/C13-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C13-after-1440.webp",
+    "before": "img/C13-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C14-fc",
+  "row": "C14",
+  "page": "Ask for a swap (Employee)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: the calendar's has-shift dots (b-week strip) now keep the text colour.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C14-after-390.webp",
+    "before": "img/C14-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C14-after-1440.webp",
+    "before": "img/C14-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C15-fc",
+  "row": "C15",
+  "page": "Can't work (Employee)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: the calendar's has-shift dots now keep the text colour.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C15-after-390.webp",
+    "before": "img/C15-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C15-after-1440.webp",
+    "before": "img/C15-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D1-fc",
+  "row": "D1",
+  "page": "Timecards (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: the chosen filter (All, In progress, Approved) looked like the others; it now has a Highlight outline (d9a946ab).",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/D1-after-390.webp",
+    "before": "img/D1-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/D1-after-1440.webp",
+    "before": "img/D1-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D2-fc",
+  "row": "D2",
+  "page": "Time corrections (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/D2-after-390.webp",
+    "before": "img/D2-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/D2-after-1440.webp",
+    "before": "img/D2-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D3-fc",
+  "row": "D3",
+  "page": "Fix someone's time (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/D3-after-390.webp",
+    "before": "img/D3-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/D3-after-1440.webp",
+    "before": "img/D3-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D4-fc",
+  "row": "D4",
+  "page": "My time (Employee)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/D4-after-390.webp",
+    "before": "img/D4-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/D4-after-1440.webp",
+    "before": "img/D4-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D5-fc",
+  "row": "D5",
+  "page": "Clocker recovery (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours on: no defect found on this page.",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/D5-after-390.webp",
+    "before": "img/D5-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/D5-after-1440.webp",
+    "before": "img/D5-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "E1-fc",
+  "row": "E1",
+  "page": "Time off (Owner)",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: Waiting, Approved and Declined (corporate segment) looked the same; the chosen tab now has a Highlight outline. Decline and Approve read as plain text before; their edges come from the kit button rule (Timecards session).",
+  "shots": [
+   {
+    "label": "Phone, forced colours",
+    "after": "img/E1-after-390.webp",
+    "before": "img/E1-before-390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/E1-after-1440.webp",
+    "before": "img/E1-before-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "SHELL-fc",
+  "row": "Shell",
+  "page": "Top bar and phone header",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: Search, the bell and the account menu (desktop) and the bell, avatar and Add shift (phone header) had no edge, and the bell’s glyph stayed white on the forced background (it vanished). Each now has a ButtonText edge and the glyph is ButtonText (5511429e, b35fb837).",
+  "shots": [
+   {
+    "label": "Owner, Phone, forced colours",
+    "before": "img/SHELL-o-before-390.webp",
+    "after": "img/SHELL-o-after-390.webp"
+   },
+   {
+    "label": "Owner, Desktop, forced colours",
+    "before": "img/SHELL-o-before-1440.webp",
+    "after": "img/SHELL-o-after-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Employee, Phone, forced colours",
+    "before": "img/SHELL-e-before-390.webp",
+    "after": "img/SHELL-e-after-390.webp"
+   },
+   {
+    "label": "Employee, Desktop, forced colours",
+    "before": "img/SHELL-e-before-1440.webp",
+    "after": "img/SHELL-e-after-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]

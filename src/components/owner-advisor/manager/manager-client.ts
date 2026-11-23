@@ -6,6 +6,8 @@ import {
   MANAGER_ADVISOR_HEADER, MANAGER_ADVISOR_QUESTIONS,
   type ManagerAdvisorDay, type ManagerAdvisorLocation, type ManagerAdvisorQuestion, type ManagerAdvisorResponse,
 } from "@/lib/owner-advisor/manager-contracts";
+import type { Lang } from "../format";
+import { MANAGER_COPY } from "./manager-copy";
 
 export const MANAGER_RONDO_PATH = "/api/manager/advisor";
 
@@ -82,41 +84,40 @@ export async function readManagerRondo<T extends ManagerRondoContext | ManagerRo
 
 /* ---------- Words ---------- */
 
-const plural = (n: number, one: string, many: string) => `${n.toLocaleString("en-US")} ${n === 1 ? one : many}`;
+const LOCALE: Record<Lang, string> = { en: "en-US", es: "es-PR" };
+const count = (n: number, lang: Lang) => n.toLocaleString(LOCALE[lang]);
 /** "8 h", "7 h 30 min", "45 min": planned time from the schedule, never rounded to look like a whole number. */
-export function minutesText(minutes: number) {
+export function minutesText(minutes: number, lang: Lang = "en") {
   const h = Math.floor(minutes / 60), m = Math.round(minutes % 60);
   if (!minutes) return "0 h";
   if (!h) return `${m} min`;
-  return m ? `${h.toLocaleString("en-US")} h ${m} min` : `${h.toLocaleString("en-US")} h`;
+  return m ? `${count(h, lang)} h ${m} min` : `${count(h, lang)} h`;
 }
 
-export const QUESTION_TEXT: Record<ManagerAdvisorQuestion, string> = {
-  published_shifts: "How many shifts are published?",
-  draft_shifts: "How many shifts are drafts?",
-  scheduled_minutes: "How many hours are scheduled?",
-  released_shifts: "How many shifts were released?",
-};
+/** The four guided questions, in the person's language (`QUESTION_TEXT` is the English). */
+export const questionText = (lang: Lang = "en") => MANAGER_COPY[lang].questions;
+export const QUESTION_TEXT: Record<ManagerAdvisorQuestion, string> = MANAGER_COPY.en.questions;
 /** The order the questions are offered in: what is out first, then what is still being built, the hours, the exceptions. */
 export const QUESTION_ORDER: ManagerAdvisorQuestion[] = ["published_shifts", "draft_shifts", "scheduled_minutes", "released_shifts"];
 
 /** The answer's figure (said large) and the sentence under it. */
-export function answerText(answer: Pick<ManagerRondoAnswer, "question" | "value">): { figure: string; line: string } {
-  const n = answer.value;
+export function answerText(answer: Pick<ManagerRondoAnswer, "question" | "value">, lang: Lang = "en"): { figure: string; line: string } {
+  const n = answer.value, t = MANAGER_COPY[lang];
   switch (answer.question) {
-    case "published_shifts": return { figure: plural(n, "shift", "shifts"), line: n ? "The team can see these shifts." : "Nothing is published for this week." };
-    case "draft_shifts": return { figure: plural(n, "draft", "drafts"), line: n ? "The team sees them once you publish." : "No drafts for this week." };
-    case "scheduled_minutes": return { figure: minutesText(n), line: "Planned time from the schedule. Timecards show hours worked." };
-    case "released_shifts": return { figure: plural(n, "shift", "shifts"), line: n ? "Each one followed an approved “Can’t work” request. They aren’t in the draft or published counts." : "No shifts released this week." };
+    case "published_shifts": return { figure: t.shifts(count(n, lang), n === 1), line: n ? t.publishedLine : t.publishedNone };
+    case "draft_shifts": return { figure: t.drafts(count(n, lang), n === 1), line: n ? t.draftLine : t.draftNone };
+    case "scheduled_minutes": return { figure: minutesText(n, lang), line: t.minutesLine };
+    case "released_shifts": return { figure: t.shifts(count(n, lang), n === 1), line: n ? t.releasedLine : t.releasedNone };
   }
 }
 
 /** One day's facts for the week list: published, drafts, released; zero facts are left out. */
-export function dayFacts(day: ManagerAdvisorDay): string[] {
+export function dayFacts(day: ManagerAdvisorDay, lang: Lang = "en"): string[] {
+  const t = MANAGER_COPY[lang];
   const facts = [
-    day.publishedShifts ? plural(day.publishedShifts, "shift", "shifts") : "",
-    day.draftShifts ? plural(day.draftShifts, "draft", "drafts") : "",
-    day.releasedShifts ? `${day.releasedShifts.toLocaleString("en-US")} released` : "",
+    day.publishedShifts ? t.shifts(count(day.publishedShifts, lang), day.publishedShifts === 1) : "",
+    day.draftShifts ? t.drafts(count(day.draftShifts, lang), day.draftShifts === 1) : "",
+    day.releasedShifts ? t.released(count(day.releasedShifts, lang), day.releasedShifts === 1) : "",
   ].filter(Boolean);
-  return facts.length ? facts : ["No shifts"];
+  return facts.length ? facts : [t.noShifts];
 }

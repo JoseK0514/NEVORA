@@ -280,6 +280,10 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__ic { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 18px; background: var(--b-teal-50); color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__ic > svg { width: 18px; height: 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__l { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* Signed-in Spanish (Nov 23, 2026): a label longer than its tile ("No puedo trabajar", "Corregir mi tiempo") takes a second
+ * line instead of an ellipsis; English labels fit on one line, so they don't change. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__a { padding-block: 6px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__l { white-space: normal; text-wrap: balance; overflow-wrap: break-word; }
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa > ul { gap: var(--b-space-8); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-qa__a { gap: 6px; padding: 0 10px; font-size: var(--b-fs-meta); letter-spacing: -0.01em; }

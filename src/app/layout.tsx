@@ -2,10 +2,8 @@ import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import {AccessJourneyProvider} from "@/components/mobile-access/journey";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { cookies } from "next/headers";
 import {DocumentAppearanceScripts} from "./document-appearance-scripts";
 import { readAuthLang } from "../lib/auth-lang.server";
-import { SESSION_COOKIE } from "../lib/auth/session-cookie";
 import { WebAnalytics } from "../components/web-analytics";
 import { NUVORA_BRAND } from "../lib/brand";
 import { readFeatureFlags } from "../lib/feature-flags";
@@ -37,11 +35,11 @@ const TEXT_SCALE_SCRIPT = `(function(){var d=document.documentElement;function s
  * Authentication belongs to app/app/layout.tsx, not this public document root.
  */
 /** Review 30 (D37): the document's language. Signed out, the pages speak the sign-in language (the nv-lang choice, else the
- * browser's), so a Spanish page's title is read with Spanish rules; signed in, the app is English until a stored language
- * is decided (DESIGN.MD), so a session keeps "en". The Clocker sets its own from the tablet's choice once it starts.
- * Outside a request (tests, static rendering) it is English. */
+ * browser's), so a Spanish page's title is read with Spanish rules. Signed-in Spanish (gap closure, Nov 23, 2026): signed in,
+ * the same nv-lang choice or browser language starts the document (this public root has no session proof to read the
+ * Profile choice), and the app's PortalLangProvider then sets the person's own language (saved choice first) on <html>.
+ * The Clocker sets its own from the tablet's choice once it starts. Outside a request (tests, static rendering) it is English. */
 async function documentLang(): Promise<"en" | "es"> {
-  try { if ((await cookies()).has(SESSION_COOKIE)) return "en"; } catch { return "en"; }
   return readAuthLang();
 }
 

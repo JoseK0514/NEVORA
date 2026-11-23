@@ -8,6 +8,8 @@ import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle"
 import type { ConfigurationResult } from "@/components/configuration-form";
 import { Notice } from "./wave-c-kit";
 import { DiscardGuard, FormDiscardGuard } from "@/components/kit/discard-dialog";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { SETTINGS_COPY } from "./settings-copy";
 
 /* Wave C form pattern (PARALLEL.md): labels above fields (48px, the shared WR-55 rule), help 8px under the field,
  * errors in urgent ink with an icon and words, one primary action. The browser still checks
@@ -18,19 +20,20 @@ export type FieldMessages = Record<string, Partial<Record<Validity | "fallback",
 const ErrorsContext = createContext<Record<string, string>>({});
 
 type Control = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
-function message(control: Control, messages: FieldMessages) {
+function message(control: Control, messages: FieldMessages, fallback = "Check this entry") {
   const words = messages[control.name] ?? {}, validity = control.validity;
   return (validity.valueMissing && words.missing)
     || (validity.patternMismatch && words.pattern)
     || ((validity.rangeUnderflow || validity.rangeOverflow || validity.stepMismatch || validity.badInput) && words.range)
     || ((validity.tooLong || validity.tooShort) && words.length)
     || (validity.typeMismatch && words.type)
-    || words.fallback || "Check this entry";
+    || words.fallback || fallback;
 }
 
 /** Field errors for one form: spread `handlers` on the <form>, wrap fields in <FieldErrors>. */
 export function useFieldErrors(messages: FieldMessages, onInvalid?: (control: Control) => void) {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const fallback = SETTINGS_COPY[usePortalLang()].checkThisEntry;
   const first = useRef<Control | null>(null);
   const handlers = {
     onInvalidCapture(event: FormEvent<HTMLFormElement>) {
@@ -38,7 +41,7 @@ export function useFieldErrors(messages: FieldMessages, onInvalid?: (control: Co
       if (!control.name) return;
       event.preventDefault();
       onInvalid?.(control);
-      setErrors(current => ({ ...current, [control.name]: message(control, messages) }));
+      setErrors(current => ({ ...current, [control.name]: message(control, messages, fallback) }));
       if (!first.current) {
         first.current = control;
         requestAnimationFrame(() => { first.current?.focus(); first.current = null; });
@@ -216,8 +219,8 @@ export function defaultEntries(controls: Iterable<DefaultControl>) {
 
 /** The settings save form: the browser posts once per tap, entries stay on failure,
  * and the outcome appears just above the buttons and takes focus. */
-export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {}, submitLabel, pendingLabel = "Saving…",
-  secondary, successTitle = "Saved", showServerSuccess = true, errorTitle = "Not saved", onResult, className, sticky = false, disabled = false, label, id, topSave = false, cardSave = false, saveOnChange = false }: {
+export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {}, submitLabel, pendingLabel: givenPending,
+  secondary, successTitle: givenSuccess, showServerSuccess = true, errorTitle: givenError, onResult, className, sticky = false, disabled = false, label, id, topSave = false, cardSave = false, saveOnChange = false }: {
   /** Review Nov 11 (OW-024): Save shows only once an entry differs from what was loaded or last saved (as Availability
    * does). The form says so with data-dirty; the page's top-bar Save (phones) follows it in owner-b-settings.css. */
   saveOnChange?: boolean;
@@ -245,6 +248,9 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
   disabled?: boolean;
   label?: string;
 }) {
+  // Signed-in Spanish: the form's own defaults follow the person's language; a caller's words are its own.
+  const t = SETTINGS_COPY[usePortalLang()];
+  const pendingLabel = givenPending ?? t.saving, successTitle = givenSuccess ?? t.saved, errorTitle = givenError ?? t.notSaved;
   const [result, setResult] = useState<ConfigurationResult>({});
   const [pending, setPending] = useState(false);
   const [draftUpdatedAt, setDraftUpdatedAt] = useState(reviewedUpdatedAt);
@@ -276,7 +282,7 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
     clear();
     try {
       const saved = await action(data);
-      const next = saved.error || saved.success ? saved : { error: "It may not have saved. Your entries are kept; check the page before you try again." };
+      const next = saved.error || saved.success ? saved : { error: t.mayNotHaveSaved };
       if (saveOnChange && saved.success && !saved.error) { baseline.current = formEntries(data); setDirty(false); }
       // The discard guard starts again from what was just saved.
       if (saved.success && !saved.error) setSavedCount(count => count + 1);
@@ -284,7 +290,7 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
       onResult?.(next);
       if (saved.success && !saved.error && saved.updatedAt && draftUpdatedAt !== undefined) setDraftUpdatedAt(saved.updatedAt);
     } catch {
-      const failed = { error: "Your entries are kept. Try again." };
+      const failed = { error: t.entriesKept };
       setResult(failed);
       onResult?.(failed);
     } finally {

@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {ResponsiveEmployeeCreation} from '@/components/employee-mobile/creation';
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import { getWorkspace } from "@/lib/data/workspaces";
@@ -10,11 +11,9 @@ import {readShiftChangeTerms} from "@/lib/data/shift-change-snapshot";
 import {matchesCalloutShift} from "@/lib/shift-changes/displayed-terms";
 import { requireSelfService } from "@/lib/auth/permissions";
 import { getCalloutShift } from "@/lib/data/exchanges";
-import { exchangeCopy } from "../exchange-copy";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-// Static (no session at this point): English. Spanish is in the table for when the title can follow the person.
-export const metadata = { title: exchangeCopy().titleCallout };
+export const generateMetadata = routeTitle("callout");
 
 
 export default async function CalloutPage({

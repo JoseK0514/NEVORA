@@ -17,6 +17,8 @@ rs.mock('react',()=>({...actualReact,
  useRef:(initial:unknown)=>slot(()=>({current:initial})),
  useCallback:(callback:unknown,deps?:unknown[])=>{const s=slot<{deps?:unknown[];callback:unknown}>(()=>({deps,callback}));if(!deps||!s.deps||deps.some((d,i)=>d!==s.deps![i])){s.deps=deps;s.callback=callback;}return s.callback;},
  useMemo:(make:()=>unknown)=>make(),
+ // Signed-in Spanish: components read the person's language (usePortalLang); outside a provider it is the default, English.
+ useContext:(context:{_currentValue:unknown})=>context._currentValue,
  useId:()=>slot(()=>`id:${host.path}`),
  useTransition:()=>[false,(run:()=>void)=>run()],
  useEffect:(run:()=>void|(()=>void),deps?:unknown[])=>{const s=slot<Effect>(()=>({}));const changed=!deps||!s.deps||deps.some((d,i)=>d!==s.deps![i]);if(changed){s.deps=deps;host.pending.push(()=>{s.cleanup?.();s.cleanup=run();});}},

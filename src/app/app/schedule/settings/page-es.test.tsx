@@ -39,8 +39,8 @@ it("draws Scheduling rules in Puerto Rico Spanish, with the language set on the 
   expect(html).toContain('aria-label="FUEL – 2: personal mínimo por turno"');
   const out = text(html);
   for (const words of ["Metas de horas semanales", "1 persona", "Empleado · ", "Personal por localidad", "Personal mínimo", "Líder de turno", "Cobertura recurrente",
-    "Añadir periodo de cobertura", "La semana empieza el", "No disponible", "Fecha límite de disponibilidad", "vie, 4 oct", "Semana del 7–13 dic",
-    "Hora de America/Puerto Rico. Déjalo en blanco para borrarla.", "Solicitudes de turnos", "Ese periodo de cobertura ya existe.", "Periodo de cobertura quitado.", "lunes", "a. m."])
+    "Añadir período de cobertura", "La semana empieza el", "No disponible", "Fecha límite de disponibilidad", "vie, 4 oct", "Semana del 7–13 dic",
+    "Hora de America/Puerto Rico. Déjalo en blanco para borrarla.", "Solicitudes de turnos", "Ese período de cobertura ya existe.", "Período de cobertura quitado.", "lunes", "a. m."])
     expect(out).toContain(words);
   for (const english of ["Scheduling rules", "Weekly hour targets", "Staffing per location", "Recurring coverage", "Week starts on", "Availability deadline",
     "Shift requests", "That coverage period already exists.", "Monday", " AM", " PM"])

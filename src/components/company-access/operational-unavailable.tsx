@@ -7,7 +7,7 @@ import {accessCopy,type AccessLang} from './access-copy';
 
 /** The page's own name for its band when it is closed to this person: "Christmas bonus hours unavailable" is the page
  * "Christmas bonus hours" (and "Horario no disponible" is "Horario"). */
-const pageName=(title:string)=>title.replace(/\s+(?:(?:is\s+)?unavailable|no\s+(?:está\s+)?disponible)$/i,'')||title;
+const pageName=(title:string)=>title.replace(/\s+(?:(?:is\s+)?unavailable|no\s+(?:está\s+)?disponibles?)$/i,'')||title;
 
 export function OperationalUnavailable({title,reason,scoped=false,back,closed,lang}:{title?:string;reason:AccessFailure;scoped?:boolean;
  /** SCRUM-215: a page closed because an action grant is missing names that grant and who decides instead. */

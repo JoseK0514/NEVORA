@@ -10,7 +10,9 @@ import { weekStartFor } from "@/lib/date-utils";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { OwnerAdvisor } from "@/components/owner-advisor/advisor";
 import { ManagerRondo } from "@/components/owner-advisor/manager/manager-rondo";
-export const metadata = { title: "Rondo AI" };
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { ROUTE_COPY } from '../route-copy';
+export async function generateMetadata() { return { title: ROUTE_COPY[await readPageLang()].rondo }; }
 /* Rondo AI. An Owner with company-wide authority gets the Owner adviser. A Manager gets the Manager view when both the
  * adviser's switch and the Manager switch are on (contract docs/handoffs/2026-11-18-rondo-manager-ui-contract.md); the
  * Manager API checks the Manager's current locations on every read, so this page only opens the door and names the

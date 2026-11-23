@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {readFeatureFlags} from '../../../lib/feature-flags';
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
@@ -43,7 +44,7 @@ import type { PortalLang } from "@/lib/i18n/portal-lang";
 /** Signed-in Spanish: the person's language (Profile choice, then the sign-in cookie, then the browser's); English if the read fails. */
 const langOf = (proof: SessionMutationProof): Promise<PortalLang> => readPortalLanguage(proof).then(result => result.language as PortalLang).catch((): PortalLang => "en");
 
-export const metadata = { title: "More" };
+export const generateMetadata = routeTitle("more");
 
 
 /** Corporate (Release 1, board E-More): an Employee's More opens from the header avatar, with Home as its back link. The
@@ -52,18 +53,19 @@ export const metadata = { title: "More" };
  * read leaves the value out. */
 async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstName: string; lastName: string; workspaceName: string }) {
   const [proof, brand] = await Promise.all([requireSessionMutationProof(), currentBrand()]);
-  const has = new Set(navigationForRole("EMPLOYEE", undefined, { modules: brand.modules, words: wordPreset(brand.words).en }).map(entry => entry.href));
+  const lang = await langOf(proof);
+  const has = new Set(navigationForRole("EMPLOYEE", undefined, { modules: brand.modules, words: wordPreset(brand.words)[lang] }).map(entry => entry.href));
   const [profile, availability] = await Promise.all([
     readEmployeeProfile(proof).catch(() => null),
-    has.has("/app/availability") ? listAvailability(proof.employee.id).then(availabilitySummary).catch(() => null) : Promise.resolve(null),
+    has.has("/app/availability") ? listAvailability(proof.employee.id).then(windows => availabilitySummary(windows, lang)).catch(() => null) : Promise.resolve(null),
   ]);
   const locations = profile?.state === "ready" && profile.kind === "profile" ? profile.profile.locations : [];
   const name = `${firstName} ${lastName}`;
-  const lang = await langOf(proof), W = SHELL_WORDS[lang], L = (label: string) => navLabel(label, lang);
+  const W = SHELL_WORDS[lang], L = (label: string) => navLabel(label, lang);
   const count = <NotificationCount authority={employeeViewAuthority(proof, "notifications")} />;
   return <CorpPage className="c-more c-more--employee" labelledBy="more-title">
     {/* Direction B on a phone (mock e-more): the same rows, links, values and Sign out. */}
-    <EmployeeMoreB name={name} place={[...locations, workspaceName].join(" · ")} availability={availability}
+    <EmployeeMoreB lang={lang} name={name} place={[...locations, workspaceName].join(" · ")} availability={availability}
       has={{ availability: has.has("/app/availability"), notifications: has.has("/app/notifications"), updates: has.has("/app/updates") }} count={count} />
     <CorpNav back={{ href: "/app", label: L("Home") }} title={L("More")} titleId="more-title" />
     <CorpCard as="div" ariaLabel={L("Profile")}>

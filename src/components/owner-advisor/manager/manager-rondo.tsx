@@ -11,9 +11,12 @@ import { keepWhole } from "@/lib/keep-whole";
 import { addDays, weekText } from "@/lib/owner-advisor/weekly-client";
 import type { ManagerAdvisorDay, ManagerAdvisorQuestion } from "@/lib/owner-advisor/manager-contracts";
 import {
-  QUESTION_ORDER, QUESTION_TEXT, answerText, dayFacts, minutesText, readManagerRondo,
+  QUESTION_ORDER, answerText, dayFacts, minutesText, readManagerRondo,
   type ManagerRondoAnswer, type ManagerRondoContext, type ManagerRondoQuery, type ManagerRondoRead, type ManagerRondoWeek,
 } from "./manager-client";
+import { MANAGER_COPY, type ManagerCopy } from "./manager-copy";
+import { useAdvisorLang } from "../lang";
+import { dayText as langDayText, periodText, type Lang } from "../format";
 import "../weekly/weekly.css";
 import "./manager-rondo.css";
 
@@ -31,9 +34,16 @@ export type ManagerRondoReader = <T extends ManagerRondoContext | ManagerRondoWe
 const stepAway = () => document.visibilityState === "hidden" || !document.hasFocus();
 const lease = <T extends { validForMs: number },>(data: T, receivedAt: number): Lease<T> => ({ data, until: receivedAt + data.validForMs });
 /** "Mon, Nov 30": the day column, as the schedule names a day. */
-const dayText = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${date}T12:00:00Z`));
+const dayText = (date: string, lang: Lang = "en") => lang === "en"
+  ? new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${date}T12:00:00Z`))
+  : langDayText(date, lang);
+/** "Nov 30 – Dec 6" ("30 nov – 6 dic"): English keeps the schedule's own helper. */
+const weekWords = (monday: string, lang: Lang) => lang === "en" ? weekText(monday) : periodText(monday, addDays(monday, 6), lang);
+/** The retry's busy words: English keeps the kit's own default. */
+const busyWords = (lang: Lang, t: ManagerCopy) => lang === "en" ? undefined : t.checkingBusy;
 
 export function ManagerRondo({ currentWeek, timeZone, read: given }: { currentWeek: string; timeZone: string; read?: ManagerRondoReader }) {
+  const lang = useAdvisorLang(), t = MANAGER_COPY[lang];
   const read = useMemo<ManagerRondoReader>(() => given ?? ((query, signal) => readManagerRondo(query, signal)), [given]);
   const [context, setContext] = useState<Lease<ManagerRondoContext> | null>(null);
   const [contextFault, setContextFault] = useState<Fault | null>(null);
@@ -170,61 +180,61 @@ export function ManagerRondo({ currentWeek, timeZone, read: given }: { currentWe
 
   /* ---------- Render ---------- */
   const head = <>
-    <CorpNav back={{ href: "/app/more", label: "More" }} title="Rondo AI" titleId="rm-nav-title" phoneOnly />
-    <CorpTitle wide id="rm-title" title="Rondo AI" sub="Ask about your schedule" />
+    <CorpNav back={{ href: "/app/more", label: t.more }} title={t.title} titleId="rm-nav-title" phoneOnly />
+    <CorpTitle wide id="rm-title" title={t.title} sub={t.sub} />
   </>;
   const page = (body: React.ReactNode) => <CorpPage className="c-page--narrow wk rm" labelledBy="rm-title">{head}{body}</CorpPage>;
 
   if (closed) return page(<ClosedCard why={closed} />);
   if (!context) {
     if (hidden) return page(<HiddenCard onShow={showAgain} />);
-    if (contextFault) return page(<CorpCard as="div"><BState kind="failed" alert title="Couldn’t open Rondo AI" line="Check your connection, then try again."
-      action={{ label: "Try again", onClick: () => void loadContext(), busy: contextBusy }} /></CorpCard>);
-    return page(<CorpCard as="div"><BState kind="loading" title="Opening Rondo AI" line="Checking your locations." /></CorpCard>);
+    if (contextFault) return page(<CorpCard as="div"><BState kind="failed" alert title={t.openFailed} line={t.checkConnection}
+      action={{ label: t.tryAgain, onClick: () => void loadContext(), busy: contextBusy, busyLabel: busyWords(lang, t) }} /></CorpCard>);
+    return page(<CorpCard as="div"><BState kind="loading" title={t.opening} line={t.checkingLocations} /></CorpCard>);
   }
   const { locations } = context.data;
-  if (!locations.length) return page(<CorpCard as="div"><BState kind="empty" icon={<MapPinIcon weight="bold" />} title="No locations assigned"
-    line="Rondo answers for the locations you manage. Ask your Owner to assign you one." action={{ label: "Return to Home", href: "/app" }} /></CorpCard>);
+  if (!locations.length) return page(<CorpCard as="div"><BState kind="empty" icon={<MapPinIcon weight="bold" />} title={t.noLocations}
+    line={t.noLocationsLine} action={{ label: t.returnHome, href: "/app" }} /></CorpCard>);
   const place = locations.find(item => item.id === locationId) ?? locations[0];
   const earliest = addDays(currentWeek, -7), latest = addDays(currentWeek, 56);
   const offered = QUESTION_ORDER.filter(item => context.data.questions.includes(item));
 
   return page(<>
-    <CorpSection id="rm-pick" label="Location and week">
+    <CorpSection id="rm-pick" label={t.pickSection}>
       <CorpCard as="div"><CorpBody>
         <div className="rm-pick">
           {locations.length > 1
-            ? <CorpField label="Location" htmlFor="rm-location">
+            ? <CorpField label={t.location} htmlFor="rm-location">
                 <select className="c-in" id="rm-location" value={place.id} onChange={event => pick(event.target.value, week)}>
                   {locations.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
                 </select>
               </CorpField>
-            : <div className="c-field"><span className="c-field__label" id="rm-location-label">Location</span>
+            : <div className="c-field"><span className="c-field__label" id="rm-location-label">{t.location}</span>
                 <p className="rm-place" aria-labelledby="rm-location-label"><MapPinIcon weight="bold" aria-hidden="true" /><span>{place.name}</span></p></div>}
           <div className="c-field">
-            <span className="c-field__label" id="rm-week-label">Week</span>
+            <span className="c-field__label" id="rm-week-label">{t.week}</span>
             <div className="wk-week" role="group" aria-labelledby="rm-week-label">
-              <button type="button" className="wk-step" aria-label="Previous week" disabled={week <= earliest} onClick={() => pick(place.id, addDays(week, -7))}><CaretLeftIcon weight="bold" aria-hidden="true" /></button>
-              <span className="wk-week__text" aria-live="polite"><BSegs parts={[keepWhole(weekText(week)), week === currentWeek ? <span key="now" className="wk-week__now">{"This\u00a0week"}</span> : null]} /></span>
-              <button type="button" className="wk-step" aria-label="Next week" disabled={week >= latest} onClick={() => pick(place.id, addDays(week, 7))}><CaretRightIcon weight="bold" aria-hidden="true" /></button>
+              <button type="button" className="wk-step" aria-label={t.previousWeek} disabled={week <= earliest} onClick={() => pick(place.id, addDays(week, -7))}><CaretLeftIcon weight="bold" aria-hidden="true" /></button>
+              <span className="wk-week__text" aria-live="polite"><BSegs parts={[keepWhole(weekWords(week, lang)), week === currentWeek ? <span key="now" className="wk-week__now">{t.thisWeek}</span> : null]} /></span>
+              <button type="button" className="wk-step" aria-label={t.nextWeek} disabled={week >= latest} onClick={() => pick(place.id, addDays(week, 7))}><CaretRightIcon weight="bold" aria-hidden="true" /></button>
             </div>
           </div>
         </div>
       </CorpBody></CorpCard>
     </CorpSection>
 
-    <CorpSection id="rm-ask" label="Ask Rondo">
+    <CorpSection id="rm-ask" label={t.askSection}>
       <CorpCard as="div">
         <Answer question={question} answer={answer} state={answerState} timeZone={timeZone} hidden={hidden && !answer && !!question}
           onRetry={() => question && ask(question)} />
-        <CorpRows label="Questions Rondo can answer">
-          {offered.map(item => <li key={item} className={item === question ? "rm-q rm-q--on" : "rm-q"}><CorpRow one title={QUESTION_TEXT[item]} onClick={() => ask(item)}
-            label={item === question ? `${QUESTION_TEXT[item]} Asked.` : undefined} /></li>)}
+        <CorpRows label={t.questionsLabel}>
+          {offered.map(item => <li key={item} className={item === question ? "rm-q rm-q--on" : "rm-q"}><CorpRow one title={t.questions[item]} onClick={() => ask(item)}
+            label={item === question ? t.asked(t.questions[item]) : undefined} /></li>)}
         </CorpRows>
       </CorpCard>
     </CorpSection>
 
-    <CorpSection id="rm-week" label="Published shifts and planned hours">
+    <CorpSection id="rm-week" label={t.weekSection}>
       <WeekCard summary={summary} state={summaryState} hidden={hidden} now={now} onRetry={() => void loadWeek(place.id, week)} onShow={showAgain} />
     </CorpSection>
   </>);
@@ -232,43 +242,46 @@ export function ManagerRondo({ currentWeek, timeZone, read: given }: { currentWe
 
 /* ---------- Pieces ---------- */
 export function ClosedCard({ why }: { why: Closed }) {
-  if (why === "session") return <CorpCard as="div"><BState kind="locked" alert title="Your session ended" line="Sign in again to use Rondo AI." action={{ label: "Sign in", href: "/login" }} /></CorpCard>;
-  if (why === "disabled") return <CorpCard as="div"><BState kind="locked" title="Rondo AI is off" line="Managers in this workspace don’t have it yet." action={{ label: "Return to Home", href: "/app" }} /></CorpCard>;
-  return <CorpCard as="div"><BState kind="locked" alert title="No access to Rondo AI" line="Ask your Owner to assign you a location." action={{ label: "Return to Home", href: "/app" }} /></CorpCard>;
+  const t = MANAGER_COPY[useAdvisorLang()];
+  if (why === "session") return <CorpCard as="div"><BState kind="locked" alert title={t.sessionEnded} line={t.sessionLine} action={{ label: t.signIn, href: "/login" }} /></CorpCard>;
+  if (why === "disabled") return <CorpCard as="div"><BState kind="locked" title={t.off} line={t.offLine} action={{ label: t.returnHome, href: "/app" }} /></CorpCard>;
+  return <CorpCard as="div"><BState kind="locked" alert title={t.noAccess} line={t.noAccessLine} action={{ label: t.returnHome, href: "/app" }} /></CorpCard>;
 }
 
 function HiddenCard({ onShow }: { onShow: () => void }) {
-  return <CorpCard as="div"><BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title="Details hidden" line="Rondo hides answers when you switch away or the connection drops." action={{ label: "Show again", onClick: onShow }} /></CorpCard>;
+  const t = MANAGER_COPY[useAdvisorLang()];
+  return <CorpCard as="div"><BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title={t.hidden} line={t.hiddenLine} action={{ label: t.showAgain, onClick: onShow }} /></CorpCard>;
 }
 
 /** Rondo's reply to the question asked: the figure large, the sentence that says what it counts, and where and when. */
 export function Answer({ question, answer, state, timeZone, hidden, onRetry }: {
   question: ManagerAdvisorQuestion | null; answer: Lease<ManagerRondoAnswer> | null; state: "idle" | "loading" | Fault; timeZone: string; hidden: boolean; onRetry: () => void;
 }) {
+  const lang = useAdvisorLang(), t = MANAGER_COPY[lang];
   if (!question) return null;
   let body: React.ReactNode;
   if (answer) {
-    const words = answerText(answer.data);
-    const checked = new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(answer.data.observedAt));
+    const words = answerText(answer.data, lang);
+    const checked = new Intl.DateTimeFormat(lang === "en" ? "en-US" : "es-PR", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(answer.data.observedAt));
     body = <div className="rm-reply">
       <BIcon tone="teal"><ChatsCircleIcon weight="bold" /></BIcon>
       <div className="rm-reply__main">
         <p className="rm-reply__figure">{keepWhole(words.figure)}</p>
         <p className="rm-reply__line">{words.line}</p>
-        <p className="rm-reply__meta"><BSegs parts={[answer.data.location.name, weekText(answer.data.weekStart), `Checked ${checked}`]} /></p>
+        <p className="rm-reply__meta"><BSegs parts={[answer.data.location.name, weekWords(answer.data.weekStart, lang), t.checkedAt(checked)]} /></p>
       </div>
     </div>;
   } else if (state === "loading") {
-    body = <div className="rm-reply rm-reply--wait" aria-busy="true"><BIcon tone="grey"><BSpin /></BIcon><div className="rm-reply__main"><p className="rm-reply__line">Rondo is checking the schedule…</p></div></div>;
+    body = <div className="rm-reply rm-reply--wait" aria-busy="true"><BIcon tone="grey"><BSpin /></BIcon><div className="rm-reply__main"><p className="rm-reply__line">{t.answerWait}</p></div></div>;
   } else if (state === "invalid") {
-    body = <BCallout tone="amber" icon="check" title="Rondo can’t answer that here">Choose another week or location, then ask again.</BCallout>;
+    body = <BCallout tone="amber" icon="check" title={t.cantAnswer}>{t.cantAnswerLine}</BCallout>;
   } else if (state === "unavailable") {
-    body = <BCallout tone="red" icon="stop" title="Couldn’t get an answer" action={{ label: "Try again", onClick: onRetry }}>Check your connection, then try again.</BCallout>;
+    body = <BCallout tone="red" icon="stop" title={t.answerFailed} action={{ label: t.tryAgain, onClick: onRetry }}>{t.checkConnection}</BCallout>;
   } else if (hidden) {
-    body = <p className="rm-reply__line rm-reply__line--quiet">Answer hidden. Ask again to see it.</p>;
+    body = <p className="rm-reply__line rm-reply__line--quiet">{t.answerHidden}</p>;
   } else return null;
   return <div className="rm-answer" aria-live="polite">
-    <p className="rm-answer__asked"><span className="b-sr">You asked: </span>{QUESTION_TEXT[question]}</p>
+    <p className="rm-answer__asked"><span className="b-sr">{t.youAsked}</span>{t.questions[question]}</p>
     {body}
   </div>;
 }
@@ -277,15 +290,16 @@ export function WeekCard({ summary, state, hidden, now, onRetry, onShow }: {
   summary: Lease<ManagerRondoWeek> | null; state: "idle" | "loading" | Fault; hidden: boolean; now: number; onRetry: () => void; onShow: () => void;
 }) {
   void now;
+  const lang = useAdvisorLang(), t = MANAGER_COPY[lang];
   if (summary) return <><CorpCard as="div">
-    <CorpRows label={`Week of ${weekText(summary.data.weekStart)}`}>
-      {summary.data.days.map((day: ManagerAdvisorDay) => <li key={day.date}><CorpRow title={dayText(day.date)} detail={<BSegs parts={dayFacts(day)} />}
-        value={minutesText(day.scheduledMinutes)} valueTone={day.scheduledMinutes ? undefined : "soft"} /></li>)}
+    <CorpRows label={t.weekOf(weekWords(summary.data.weekStart, lang))}>
+      {summary.data.days.map((day: ManagerAdvisorDay) => <li key={day.date}><CorpRow title={dayText(day.date, lang)} detail={<BSegs parts={dayFacts(day, lang)} />}
+        value={minutesText(day.scheduledMinutes, lang)} valueTone={day.scheduledMinutes ? undefined : "soft"} /></li>)}
     </CorpRows>
   </CorpCard></>;
-  if (state === "loading") return <CorpCard as="div"><BState kind="loading" title="Checking the week" line="Reading the schedule for this location." /></CorpCard>;
-  if (state === "invalid") return <CorpCard as="div"><BState kind="paused" title="Rondo can’t read this week" line="Choose another week or location." /></CorpCard>;
-  if (state === "unavailable") return <CorpCard as="div"><BState kind="failed" alert title="Couldn’t check this week" line="Check your connection, then try again." action={{ label: "Try again", onClick: onRetry }} /></CorpCard>;
+  if (state === "loading") return <CorpCard as="div"><BState kind="loading" title={t.checkingWeek} line={t.readingWeek} /></CorpCard>;
+  if (state === "invalid") return <CorpCard as="div"><BState kind="paused" title={t.cantReadWeek} line={t.cantReadWeekLine} /></CorpCard>;
+  if (state === "unavailable") return <CorpCard as="div"><BState kind="failed" alert title={t.weekFailed} line={t.checkConnection} action={{ label: t.tryAgain, onClick: onRetry }} /></CorpCard>;
   if (hidden) return <HiddenCard onShow={onShow} />;
-  return <CorpCard as="div"><BState kind="loading" title="Checking the week" line="Reading the schedule for this location." /></CorpCard>;
+  return <CorpCard as="div"><BState kind="loading" title={t.checkingWeek} line={t.readingWeek} /></CorpCard>;
 }

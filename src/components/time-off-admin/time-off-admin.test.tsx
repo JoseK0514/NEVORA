@@ -48,7 +48,7 @@ describe('policies', () => {
     const html = renderToStaticMarkup(<PoliciesScreen initial={{ load: { state: 'ready', policies: [] } }} />);
     expect(html).toContain('No time off policies yet'); expect(html).toContain('Add Vacation'); expect(html).toContain('Add Sick');
     const es = renderToStaticMarkup(<PoliciesScreen lang="es" initial={{ load: { state: 'ready', policies: [vacation] } }} />);
-    expect(es).toContain('Políticas de tiempo libre'); expect(es).toContain('8 h al día'); expect(es).toContain('lang="es"');
+    expect(es).toContain('Políticas de días libres'); expect(es).toContain('8 h al día'); expect(es).toContain('lang="es"');
   });
   it('edits with every field, the code fixed after creation, and an unconfirmed save kept', () => {
     const html = renderToStaticMarkup(<PoliciesScreen initial={{ load: { state: 'ready', policies: [vacation] }, draft: policyDraft(vacation, 'OTHER', t) }} />);

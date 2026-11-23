@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
@@ -12,13 +13,20 @@ import {christmasBonusApplies} from '@/lib/reports/christmas-bonus';
 import {Reports} from '@/components/reports';
 import {ReportsEntrance} from '@/components/reports-entrance';
 import {OwnerOnlyNotice} from '@/components/owner-only-notice';
-export const metadata = { title: "Insights" };
+import {readPortalLanguage} from '@/lib/activation/language.server';
+import {REPORTS_COPY} from '@/components/reports-copy';
+export const generateMetadata = routeTitle("insights");
 
 export default async function ReportsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession();
+  // Rondo Spanish (G98): the page's own words follow the person's language (Reports reads it from the portal); a failed
+  // read is English.
+  const proof=await requireSessionMutationProof();
+  let lang:'en'|'es'='en';try{lang=(await readPortalLanguage(proof)).language;}catch{/* English */}
+  const t=REPORTS_COPY[lang];
   // Review F2 (NV-136): a closed page says why, never a silent redirect to Home.
-  if(!isManagerRole(session.role))return <OwnerOnlyNotice state title="Insights" reason="Insights is for Owners and Managers" help="Your own hours are on Time." next={{href:'/app/my-time',label:'Open Time'}}/>;
-  const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Insights unavailable" reason={access.reason}/>;
+  if(!isManagerRole(session.role))return <OwnerOnlyNotice state lang={lang} title={t.insights} reason={t.closedReason} help={t.ownHours} next={{href:'/app/my-time',label:t.openTime}}/>;
+  const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailableTitle} reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   // MK5 / PD4: the default is this week so far, Monday to today (the This week preset); Last week is one tap away.

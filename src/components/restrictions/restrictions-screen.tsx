@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CalendarXIcon } from "@phosphor-icons/react/dist/ssr/CalendarX";
@@ -80,7 +81,8 @@ function Skeleton({ kit, t }: { kit: Kit; t: RestrictionsCopy }) {
 }
 
 export function RestrictionsScreen(props: RestrictionsScreenProps) {
-  const { scope, employeeId, actorId, view, timeZone, name, firstName, backHref, availabilityHref, ownerRecord, lang = "en", initial } = props;
+  const { scope, employeeId, actorId, view, timeZone, name, firstName, backHref, availabilityHref, ownerRecord, lang: langProp, initial } = props;
+  const lang = useViewLang(langProp);
   const t = restrictionsCopy(lang), kit: Kit = scope === "employee" ? "b" : "corp", management = scope === "management";
   const back = { href: backHref, label: management ? firstName : t.backAvailability };
   const client = useMemo(() => props.client ?? createRestrictionsClient({ scope, actorId, view }), [props.client, scope, actorId, view]);

@@ -13,13 +13,15 @@ import {parsePeriod} from '@/lib/timecards/project';
 import {Timecards} from '@/components/timecards';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 import {payrollFeatureEnabled,readPayrollCapabilities} from '@/lib/payroll/service';
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { ROUTE_COPY } from '../route-copy';
 
-export const metadata = { title: "Timecards" };
+export async function generateMetadata() { return { title: ROUTE_COPY[await readPageLang()].timecards }; }
 export default async function TimecardsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession(),workspace=await getWorkspace(),params=await searchParams;
   const proof=isManagerRole(session.role)?await requireSessionMutationProof():null;
   const access=proof?await withOperationalCompany(proof,async()=>null):null;
-  if(access?.state==='unavailable')return <OperationalUnavailable title="Timecards unavailable" reason={access.reason}/>;
+  if(access?.state==='unavailable')return <OperationalUnavailable lang={await readPageLang()} title={ROUTE_COPY[await readPageLang()].timecardsUnavailable} reason={access.reason}/>;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}

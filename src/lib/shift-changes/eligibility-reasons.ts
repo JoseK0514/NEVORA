@@ -49,6 +49,25 @@ export const REASON_TEXT: Record<EligibilityReason, string> = {
   unconfirmed: 'Your manager needs to confirm some rules',
 };
 
+/** Signed-in Spanish: the same reasons in Puerto Rico Spanish with tú (English above is unchanged). */
+export const REASON_TEXT_ES: Record<EligibilityReason, string> = {
+  time_off: 'Tienes días libres aprobados en ese momento',
+  overlap: 'Ya trabajas a esa hora',
+  same_day: 'Ya tienes un turno ese día',
+  availability: 'Está fuera de tu disponibilidad',
+  weekly_hours: 'Pasaría tu límite de horas semanales',
+  daily_hours: 'Pasaría el límite de horas diarias',
+  rest: 'No hay suficiente descanso entre tus turnos',
+  shift_length: 'Es más largo que el límite de duración del turno',
+  break: 'El descanso requerido no cabe',
+  position: 'Necesita un puesto para el que no estás configurado',
+  role: 'Necesita un rol para el que no estás configurado',
+  location: 'No estás configurado para trabajar en esta localidad',
+  lead: 'Necesita un líder de turno calificado',
+  coverage: 'Dejaría corta la cobertura requerida',
+  unconfirmed: 'Tu gerente tiene que confirmar algunas reglas',
+};
+
 export function eligibilityReasons(issues: readonly Pick<ShiftChangeIssue, 'code'>[]): EligibilityReason[] {
   const found = new Set(issues.map(issue => BY_CODE[issue.code]).filter((reason): reason is EligibilityReason => reason !== undefined));
   return ORDER.filter(reason => found.has(reason));
@@ -58,9 +77,18 @@ export type ClaimRefusal = { reasons?: readonly EligibilityReason[]; refusal?: '
 
 /** Lines shown under a shift that can't be claimed. A refusal without named
  * rules says so plainly instead of guessing which rule it was. */
-export function refusalLines(value: ClaimRefusal): string[] {
-  if (value.reasons?.length) return value.reasons.map(reason => REASON_TEXT[reason]);
-  if (value.refusal === 'review') return [REASON_TEXT.unconfirmed];
-  if (value.refusal === 'stale') return ['This shift just changed. Check again shortly'];
-  return ['It doesn’t fit the current rules for this shift'];
+export function refusalLines(value: ClaimRefusal, lang: 'en' | 'es' = 'en'): string[] {
+  const text = lang === 'es' ? REASON_TEXT_ES : REASON_TEXT;
+  if (value.reasons?.length) return value.reasons.map(reason => text[reason]);
+  if (value.refusal === 'review') return [text.unconfirmed];
+  if (value.refusal === 'stale') return [lang === 'es' ? 'Este turno acaba de cambiar. Vuelve a revisar en un momento' : 'This shift just changed. Check again shortly'];
+  return [lang === 'es' ? 'No cumple las reglas actuales de este turno' : 'It doesn’t fit the current rules for this shift'];
+}
+
+/** Signed-in Spanish: a claim check's `notice` is the English reasons joined ("You already work during this time. You
+ * already have a shift that day."). This says each known reason in the person's language; an unknown sentence stays. */
+export function reasonNotice(notice: string, lang: 'en' | 'es' = 'en'): string {
+  if (lang === 'en') return notice;
+  const byText = new Map((Object.keys(REASON_TEXT) as EligibilityReason[]).map(reason => [REASON_TEXT[reason], REASON_TEXT_ES[reason]]));
+  return notice.replace(/\.$/, '').split('. ').map(part => byText.get(part) ?? part).join('. ') + (notice.endsWith('.') ? '.' : '');
 }

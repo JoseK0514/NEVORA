@@ -7,11 +7,12 @@ import { weekStartFor } from "@/lib/date-utils";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { listLocations } from "@/lib/data/locations";
 import { coverageUuid } from "@/lib/owner-advisor/coverage-actions";
-import { CorpCard, CorpPage, CorpTitle } from "@/components/corp/corp";
-import { BState } from "@/components/owner-b/b-kit";
 import { WeeklyPage } from "@/components/owner-advisor/weekly/weekly-page";
+import { WeeklyOpenError } from "@/components/owner-advisor/weekly/weekly-open-error";
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { ROUTE_COPY } from '../../route-copy';
 
-export const metadata = { title: "Weekly plan" };
+export async function generateMetadata() { return { title: ROUTE_COPY[await readPageLang()].weeklyPlan }; }
 
 /* Rondo's weekly plan (contract docs/handoffs/2026-11-16-rondo-weekly-ui-contract.md in Codex's candidate). The page is
  * behind the parent adviser's door: a company-wide Owner with NEVORA_OWNER_ADVISOR_ENABLED. With the weekly switch off it
@@ -28,10 +29,7 @@ export default async function WeeklyPlanPage({ searchParams }: { searchParams: P
   const params = await searchParams;
   const review = typeof params.review === "string" && coverageUuid(params.review) ? params.review.toLowerCase() : null;
   const read = await withOperationalCompany(proof, async () => Promise.all([getWorkspace(), listLocations()]));
-  if (read.state !== "ready") return <CorpPage className="c-page--narrow" labelledBy="wk-title">
-    <CorpTitle id="wk-title" title="Weekly plan" />
-    <CorpCard as="div"><BState kind="failed" alert title="Couldn’t open weekly planning" line="Your access or the connection changed. Check it, then try again." action={{ label: "Try again", href: review ? `/app/ai-manager/weekly?review=${review}` : "/app/ai-manager/weekly" }} /></CorpCard>
-  </CorpPage>;
+  if (read.state !== "ready") return <WeeklyOpenError review={review} />;
   const [workspace, locations] = read.data;
   return <WeeklyPage timeZone={workspace.timeZone} currentWeek={weekStartFor(businessDate(new Date(), workspace.timeZone))}
     locations={locations.map(location => ({ id: location.id, name: location.name }))} weeklyEnabled={weeklyEnabled} reviewId={review} />;

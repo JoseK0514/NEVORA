@@ -1,0 +1,245 @@
+[
+ {
+  "id": "j4-features",
+  "row": "J4",
+  "page": "Features",
+  "section": "Owner \u00b7 forced colours",
+  "note": "The feature switches vanished in forced colours, so on, off and locked looked the same. They now keep an edge and thumb; on is the Highlight track, locked is grey with the lock.",
+  "shots": [
+   {
+    "label": "Before (forced colours)",
+    "after": "img/j4-features-before-fc.webp"
+   },
+   {
+    "label": "After (forced colours)",
+    "after": "img/j4-features-after-fc.webp"
+   },
+   {
+    "label": "Normal colours (unchanged)",
+    "after": "img/j4-features-normal.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "j13-clocker",
+  "row": "J13",
+  "page": "Clocker devices",
+  "section": "Owner \u00b7 forced colours",
+  "note": "\"Get setup code\" lost its edge and a focused tablet row showed no ring. Both now keep a system-colour line.",
+  "shots": [
+   {
+    "label": "Before (forced colours)",
+    "after": "img/j13-clocker-before-fc.webp"
+   },
+   {
+    "label": "After (forced colours)",
+    "after": "img/j13-clocker-after-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "f2-add-person",
+  "row": "F2",
+  "page": "Add person",
+  "section": "Owner \u00b7 forced colours",
+  "note": "The step dots vanished. They now keep a border, and the current step stays filled.",
+  "shots": [
+   {
+    "label": "Before (forced colours)",
+    "after": "img/f2-add-person-before-fc.webp"
+   },
+   {
+    "label": "After (forced colours)",
+    "after": "img/f2-add-person-after-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "j3-branding",
+  "row": "J3",
+  "page": "Branding",
+  "section": "Owner \u00b7 forced colours",
+  "note": "The colour swatch vanished. It keeps the chosen colour with an edge.",
+  "shots": [
+   {
+    "label": "Before (forced colours)",
+    "after": "img/j3-branding-before-fc.webp"
+   },
+   {
+    "label": "After (forced colours)",
+    "after": "img/j3-branding-after-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "j18-billing",
+  "row": "J18",
+  "page": "Billing",
+  "section": "Owner \u00b7 forced colours",
+  "note": "\"Open billing in Velani\" and \"Refresh status\" read as plain text. They keep a button edge (the Clocker paused page shares this frame).",
+  "shots": [
+   {
+    "label": "Before (forced colours)",
+    "after": "img/j18-billing-before-fc.webp"
+   },
+   {
+    "label": "After (forced colours)",
+    "after": "img/j18-billing-after-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "j7-location",
+  "row": "J7",
+  "page": "Edit location",
+  "section": "Owner \u00b7 forced colours",
+  "note": "Switches keep an edge and thumb in forced colours (same fix as Features).",
+  "shots": [
+   {
+    "label": "After (forced colours)",
+    "after": "img/j7-location-after-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "j11-policies",
+  "row": "J11",
+  "page": "Company policies",
+  "section": "Owner \u00b7 forced colours",
+  "note": "Switches keep an edge and thumb in forced colours (same fix as Features).",
+  "shots": [
+   {
+    "label": "After (forced colours)",
+    "after": "img/j11-policies-after-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "j15-photos",
+  "row": "J15",
+  "page": "Clocker photos",
+  "section": "Owner \u00b7 forced colours",
+  "note": "Switches keep an edge and thumb in forced colours (same fix as Features).",
+  "shots": [
+   {
+    "label": "After (forced colours)",
+    "after": "img/j15-photos-after-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "i1-language",
+  "row": "I1",
+  "page": "Profile (Employee)",
+  "section": "Employee \u00b7 forced colours",
+  "note": "\"English\" and \"Espa\u00f1ol\" looked the same in forced colours. The chosen language is now the Highlight pair.",
+  "shots": [
+   {
+    "label": "Before (forced colours)",
+    "after": "img/i1-language-before-fc.webp"
+   },
+   {
+    "label": "After (forced colours)",
+    "after": "img/i1-language-after-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k13-privacy",
+  "row": "K13",
+  "page": "Someone else's punch in progress",
+  "section": "Clocker \u00b7 forced colours, English and Spanish",
+  "note": "Checked, no change needed: in forced colours the buttons keep edges and the countdown, status dot and links stay visible; no English on the Spanish screens beyond names the Owner typed.",
+  "shots": [
+   {
+    "label": "English (forced colours)",
+    "after": "img/k13-en-fc.webp"
+   },
+   {
+    "label": "Spanish (forced colours)",
+    "after": "img/k13-es-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k15-paused",
+  "row": "K15",
+  "page": "Clocker paused",
+  "section": "Clocker \u00b7 forced colours, English and Spanish",
+  "note": "Checked, no change needed in English or Spanish.",
+  "shots": [
+   {
+    "label": "English (forced colours)",
+    "after": "img/k15-en-fc.webp"
+   },
+   {
+    "label": "Spanish (forced colours)",
+    "after": "img/k15-es-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "kit-skeleton",
+  "row": "Kit",
+  "page": "Loading skeleton (Pay rate while loading)",
+  "section": "Owner \u00b7 forced colours, 390",
+  "note": "A loading page showed empty cards in forced colours. Each skeleton block now keeps a grey edge.",
+  "shots": [
+   {
+    "label": "Before (forced colours)",
+    "after": "img/kit-skeleton-before-fc.webp"
+   },
+   {
+    "label": "After (forced colours)",
+    "after": "img/kit-skeleton-after-fc.webp"
+   },
+   {
+    "label": "Normal colours (unchanged)",
+    "after": "img/kit-skeleton-normal.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "shell-progress",
+  "row": "Shell",
+  "page": "Page-loading bar (tab tap, waiting for the page)",
+  "section": "Owner \u00b7 forced colours, 390",
+  "note": "The loading bar at the top vanished in forced colours. It now has a Highlight fill (top 60px shown, enlarged).",
+  "shots": [
+   {
+    "label": "Before (forced colours)",
+    "after": "img/shell-progress-before-fc.webp"
+   },
+   {
+    "label": "After (forced colours)",
+    "after": "img/shell-progress-after-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]

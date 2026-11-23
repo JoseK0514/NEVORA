@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
@@ -13,7 +14,7 @@ import {SheetMarker} from '@/components/team/team-forms';
 import {PaidTimeExportFlow} from '@/components/payroll-import/export-flow';
 import {readPortalLanguage} from '@/lib/activation/language.server';
 
-export const metadata = { title: "Paid time export" };
+export const generateMetadata = routeTitle("paidTime");
 
 /** U01: paid time and export by batch. The same people as Time exports (Owners and Managers with the whole company;
  * the same closed-page card and the same company check), for the period that page was showing. */

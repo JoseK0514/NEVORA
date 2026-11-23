@@ -10,6 +10,9 @@ type Slot={value?:unknown;deps?:readonly unknown[];pending?:()=>void|(()=>void);
 type Frame={cursor:number;slots:Slot[]};
 const host=rs.hoisted(()=>({scope:'reports' as 'reports'|'view',frames:{reports:{cursor:0,slots:[]} as Frame,view:{cursor:0,slots:[]} as Frame},writes:[] as {scope:string;slot:number;value:unknown}[],content:null as unknown}));
 rs.mock('react',()=>({...rstestOriginal0,
+ // Rondo Spanish (G98): Reports reads the person's language from context; called directly (outside a render) it gets the
+ // context's default, English, as a page outside the provider does.
+ useContext:(context:React.Context<unknown>)=>{try{return rstestOriginal0.useContext(context);}catch{return (context as unknown as {_currentValue:unknown})._currentValue;}},
  useState:(initial:unknown)=>{const scope=host.scope,frame=host.frames[scope],index=frame.cursor++;const slot=frame.slots[index]??(frame.slots[index]={value:typeof initial==='function'?(initial as ()=>unknown)():initial});return [slot.value,(next:unknown)=>{slot.value=typeof next==='function'?(next as (old:unknown)=>unknown)(slot.value):next;host.writes.push({scope,slot:index,value:slot.value});}];},
  useRef:(initial:unknown)=>{const frame=host.frames[host.scope],index=frame.cursor++;const slot=frame.slots[index]??(frame.slots[index]={value:{current:initial}});if(host.scope==='view')(slot.value as {current:unknown}).current=host.content;return slot.value;},
  useEffect:(effect:()=>void|(()=>void),deps?:readonly unknown[])=>{const frame=host.frames[host.scope],index=frame.cursor++,old=frame.slots[index];if(!old||!deps||!old.deps||deps.length!==old.deps.length||deps.some((value,i)=>!Object.is(value,old.deps![i]))){const slot=old??(frame.slots[index]={});slot.deps=deps;slot.pending=effect;}},

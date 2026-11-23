@@ -12,8 +12,10 @@ import { BSegs, BState, BWhen } from "@/components/owner-b/b-kit";
 import { useLeaveStaffing } from "@/components/leave-staffing/use-leave-staffing";
 import { conflictsFor } from "@/components/leave-staffing/conflict-check";
 import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
-import { conflictShift } from "@/lib/time-off-staffing/present";
+import { LEAVE_STAFFING_COPY } from "@/components/leave-staffing/leave-staffing-copy";
 import "@/components/leave-staffing/leave-staffing.css";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { TIME_COPY } from "@/components/time-copy";
 
 /** One waiting request as the server page lays it out. */
 export type WaitingTimeOff = { id: string; employeeName: string; avatar: string; startDate: string; endDate: string; when: string; ago?: string;
@@ -45,16 +47,18 @@ export function TimeOffWaitingList({ requests, result }: { requests: WaitingTime
   const { state: staffing } = useLeaveStaffing(weeks.length ? { weeks } : null);
   const checked = useMemo(() => new Set(leaves.filter(leave => leave.weeks?.every(week => weeks.includes(week))).map(leave => leave.id)), [leaves, weeks]);
   const kept = useKeptResult(result);
+  const lang = usePortalLang();
+  const t = TIME_COPY[lang];
   // #25: nothing waits and nothing was just decided: the kit's empty state, in the list's card.
-  if (!requests.length && !kept) return <div className="q-list q-emptycard"><BState kind="empty" title="You’re all caught up" line="New time off requests show up here." /></div>;
-  return <ul className="q-list q-requests" aria-label="Waiting time off" aria-busy={staffing.status === "loading" || undefined}>{kept ? <li className="q-result">{kept}</li> : null}{requests.map(request => {
+  if (!requests.length && !kept) return <div className="q-list q-emptycard"><BState kind="empty" title={t.allCaughtUp} line={t.newShowUpHere} /></div>;
+  return <ul className="q-list q-requests" aria-label={t.waitingTimeOff} aria-busy={staffing.status === "loading" || undefined}>{kept ? <li className="q-result">{kept}</li> : null}{requests.map(request => {
     const conflicts = checked.has(request.id) ? conflictsFor(staffing, request.id) : null;
     const clear = conflicts !== null && conflicts.length === 0;
-    const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{`On the schedule: ${conflictShift(conflicts[0])}${conflicts.length > 1 ? ` +${conflicts.length - 1}` : ""}`}</span>
+    const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{t.onSchedule(LEAVE_STAFFING_COPY[lang].shift(conflicts[0]), conflicts.length - 1)}</span>
       // Final polish (confirmations A #13): while the one schedule read is out, the rows stay quiet ("Checking the
       // schedule…" stood under every row at once); the list says it once for screen readers. A check that did not come
       // back still says so on its row.
-      : conflicts || (checked.has(request.id) && staffing.status === "loading") ? null : <span className="b-leave-note">{!checked.has(request.id) ? "Check the schedule on its page" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
+      : conflicts || (checked.has(request.id) && staffing.status === "loading") ? null : <span className="b-leave-note">{!checked.has(request.id) ? t.checkOnPage : staffing.status === "expired" ? t.checkExpired : staffing.status === "paused" ? t.checkPaused : t.couldntCheck}</span>;
     return <li key={request.id} id={`request-${request.id}`} tabIndex={-1} className="q-request">
       {/* Phase 8 (a.md #12, #25): the person's own face tint, and no chevron on a row that carries its own buttons (OW-012). */}
       <QuietRow bare avatar={<RequestFace name={request.employeeName} initials={request.avatar} />} title={request.employeeName} href={request.href} chevron={false}
@@ -70,7 +74,8 @@ export function TimeOffWaitingList({ requests, result }: { requests: WaitingTime
 }
 
 /** The words of the Decline question, shared with Things to do (inbox-b.tsx). */
-export const ASK = { question: "Decline this request?", consequence: (first: string) => `${first} is told it was declined.`, consequenceAnyone: "They are told it was declined.", keep: "Keep request", decline: "Decline" };
+/** The English words (Things to do imports them); TIME_COPY[lang].ask has both languages. */
+export const ASK = TIME_COPY.en.ask;
 export const firstName = (name: string) => name.split(/\s+/)[0] || name;
 
 /** Decline and Approve (or Review) under one request; while the decision is out both are disabled and the pressed one says so.
@@ -79,18 +84,19 @@ export const firstName = (name: string) => name.split(/\s+/)[0] || name;
 function WaitingDecide({ name, approve, reviewHref }: { name: string; approve: boolean; reviewHref: string }) {
   const { pending, data } = useFormStatus();
   const decision = data?.get("decision");
+  const t = TIME_COPY[usePortalLang()];
   // Review B1 (NV-125): Decline asks once, so a mis-tap can't decline it; Approve stays one tap.
   const [confirming, setConfirming] = useState<boolean | null>(null);
   const pair = useRef<HTMLDivElement>(null);
   useEffect(() => { if (confirming !== null) pair.current?.querySelector<HTMLButtonElement>("button")?.focus(); }, [confirming]);
   // Final polish (confirmations A #6, #7, #23): the question is asked in words, in the block Cancel time off uses: the
   // quiet way out on the left, the red-edged commit on the right. Still one question and the same two taps.
-  if (confirming && !pending) return <DecisionAsk groupRef={pair} groupLabel={`Decline time off for ${name}?`} question={ASK.question} consequence={ASK.consequence(firstName(name))}
-    keep={ASK.keep} keepLabel={`Keep time off request for ${name}`} onKeep={() => setConfirming(false)} go={ASK.decline} goLabel={`Decline time off for ${name}`} goValue="DENIED" />;
+  if (confirming && !pending) return <DecisionAsk groupRef={pair} groupLabel={t.declineForAsk(name)} question={t.ask.question} consequence={t.ask.consequence(firstName(name))}
+    keep={t.ask.keep} keepLabel={t.keepFor(name)} onKeep={() => setConfirming(false)} go={t.ask.decline} goLabel={t.declineFor(name)} goValue="DENIED" />;
   return <div ref={pair} className="q-acts" aria-busy={pending}>
-    <button type="button" className="q-bs b-rowact b-rowact--quiet" onClick={() => setConfirming(true)} disabled={pending} aria-label={pending ? undefined : `Decline time off for ${name}`}>{pending && decision === "DENIED" ? "Declining…" : "Decline"}</button>
-    {approve ? <button type="submit" className="q-bs q-bs--go b-rowact b-rowact--go" name="decision" value="APPROVED" disabled={pending} aria-label={pending ? undefined : `Approve time off for ${name}`}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</button>
-      : <Link className="q-bs q-bs--go b-rowact b-rowact--go" href={reviewHref} aria-label={`Review time off for ${name}`}>Review</Link>}
-    <span className="q-sr" role="status">{pending ? "Saving your decision…" : ""}</span>
+    <button type="button" className="q-bs b-rowact b-rowact--quiet" onClick={() => setConfirming(true)} disabled={pending} aria-label={pending ? undefined : t.declineFor(name)}>{pending && decision === "DENIED" ? t.declining : t.decline}</button>
+    {approve ? <button type="submit" className="q-bs q-bs--go b-rowact b-rowact--go" name="decision" value="APPROVED" disabled={pending} aria-label={pending ? undefined : t.approveFor(name)}>{pending && decision === "APPROVED" ? t.approving : t.approve}</button>
+      : <Link className="q-bs q-bs--go b-rowact b-rowact--go" href={reviewHref} aria-label={t.reviewFor(name)}>{t.review}</Link>}
+    <span className="q-sr" role="status">{pending ? t.saving : ""}</span>
   </div>;
 }

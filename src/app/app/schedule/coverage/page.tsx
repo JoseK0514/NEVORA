@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
@@ -22,7 +23,7 @@ import { readPortalLanguage } from "@/lib/activation/language.server";
 import { scheduleWords, type ScheduleLang } from "../schedule-copy";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Coverage" };
+export const generateMetadata = routeTitle("coverage");
 
 /** What a coverage gap still needs, in words. Codex C2 adds a numeric `count` (and `positionName` on POSITION targets);
  * until that read reaches this branch, the server's sentence ("2 employees missing", "Cashier: 1 missing") is reworded,

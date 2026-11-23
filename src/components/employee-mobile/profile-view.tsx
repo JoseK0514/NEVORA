@@ -6,6 +6,8 @@ import type {PrivatePanelState} from '../../lib/private-snapshot-client';
 import type {EmployeeViewSnapshot} from '../../lib/employee-view';
 import {timeZoneLabel} from '../../lib/time-zone-label';
 import {CorpCard,CorpRow,CorpRows} from '../corp/corp';
+import {useMobileCopy} from './mobile-lang';
+import {profileViewCopy} from './copy/profile-view';
 
 /** The Employee ID a person signs in with, from the page's session (inspection Nov 14, BR-13). The profile read doesn't
  * carry it, so the page hands it down beside the read; like the rows from the read, it is hidden while the view is paused. */
@@ -18,18 +20,18 @@ export function EmployeeMobileProfileView({state,onRetry}:{state:PrivatePanelSta
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const phase=state.paused?'paused':ready?'ready':denied?'denied':state.refreshing?'loading':'unavailable';
  const value=(text:string|undefined)=>text??'–';
- const signInId=useContext(ProfileSignInId);
+ const signInId=useContext(ProfileSignInId),t=useMobileCopy(profileViewCopy);
  return <div className="em-account-personal" data-private-view="profile" data-profile-state={phase}>
-  <CorpCard id="profile-personal" label="Personal info">
-   <CorpRows label="Your work profile">
-    <li><CorpRow title="Name" bold one value={value(ready?.profile.name)} valueTone="soft"/></li>
-    <li><CorpRow title="Employee ID" bold detail="You sign in with this ID." value={value(state.paused?undefined:signInId)} valueTone="soft"/></li>
-    <li><CorpRow title="Locations" bold one value={value(ready?.profile.locations.join(' · '))} valueTone="soft"/></li>
-    <li><CorpRow title="Time zone" bold one value={value(ready?timeZoneLabel(ready.profile.timeZone).replace(/ time$/,''):undefined)} valueTone="soft"/></li>
+  <CorpCard id="profile-personal" label={t.personalInfo}>
+   <CorpRows label={t.workProfile}>
+    <li><CorpRow title={t.name} bold one value={value(ready?.profile.name)} valueTone="soft"/></li>
+    <li><CorpRow title={t.employeeId} bold detail={t.signInWithId} value={value(state.paused?undefined:signInId)} valueTone="soft"/></li>
+    <li><CorpRow title={t.locations} bold one value={value(ready?.profile.locations.join(' · '))} valueTone="soft"/></li>
+    <li><CorpRow title={t.timeZone} bold one value={value(ready?timeZoneLabel(ready.profile.timeZone).replace(/ time$/,''):undefined)} valueTone="soft"/></li>
    </CorpRows>
    {ready?null:<div className="c-card__body c-card__body--tight em-account-personal-status">
-    <p className="c-note" role="status">{state.paused?'Profile paused. Return to this window while online to refresh.':denied?'Your access changed. Sign in again to check your current details.':state.refreshing?'Checking your current work details…':'We couldn’t load your details.'}</p>
-    {denied?<Link className="c-link" href="/login">Sign in</Link>:phase==='unavailable'?<button className="c-link em-profile-retry" type="button" onClick={onRetry}>Try again</button>:null}
+    <p className="c-note" role="status">{state.paused?t.paused:denied?t.denied:state.refreshing?t.checking:t.failed}</p>
+    {denied?<Link className="c-link" href="/login">{t.signIn}</Link>:phase==='unavailable'?<button className="c-link em-profile-retry" type="button" onClick={onRetry}>{t.tryAgain}</button>:null}
    </div>}
   </CorpCard>
  </div>;

@@ -1,0 +1,138 @@
+/* Signed-in Spanish (Nov 23, 2026): the words on the Employee and Lead Time screens (time-b.tsx): the Time tab, one day,
+ * Past timecards, Your correction requests and Fix my time, in English and Puerto Rico Spanish (docs/design/voice.md: tú,
+ * Marcación, En turno, Tarjeta de tiempo, Solicitud de corrección). English is the approved wording, unchanged. Words the
+ * shared Time model writes in English (status words, request kinds, timecard notes, the tablet's name) are looked up
+ * here by their English text, so the model stays shared with the corporate pages. */
+export type TimeLang = 'en' | 'es';
+
+const en = {
+  // Frame and states
+  tryAgain: 'Try again', signIn: 'Sign in', timeStatus: 'Time status', timeAccess: 'Time access',
+  paused: 'Your time records are paused. Return to this page or reconnect to refresh.',
+  denied: 'Your access changed. Sign in again to continue.',
+  checking: 'Checking your current time records…',
+  failed: 'Your records couldn’t be checked.',
+  earlierRequest: 'Earlier request', earlierStillChecked: 'An earlier correction request still needs to be checked.',
+  returnFirst: 'Return to it before starting a new one.', checkEarlier: 'Check your earlier request',
+  // Time tab
+  onBreak: 'On break', clockedIn: 'Clocked in', notClockedIn: 'Not clocked in',
+  onBreakSince: (time: string) => `On break since ${time}`,
+  clockedInAt: (time: string) => `Clocked in at ${time}`,
+  clockInOn: (tablet: string) => `Clock in on ${tablet}`,
+  placeClockedInAt: (place: string, time: string) => `${place} · clocked in at ${time}`,
+  soFar: ' so far',
+  takeBreaksThere: 'Take breaks and clock out there too',
+  endBreakHint: 'End your break on your location’s tablet.',
+  clockOutHint: 'Take breaks and clock out on your location’s tablet.',
+  atAGlance: 'This week at a glance', thisWeek: 'This week', breaks: 'Breaks',
+  rightNow: 'Right now', thisWeekDot: 'This week · ', inProgress: 'In progress',
+  weekTime: 'This week’s time', breakSub: (duration: string) => `${duration} break`,
+  noTimeYet: 'No time recorded yet this week', fixMissed: 'Fix a missed punch', includeBreaks: 'Hours include breaks.',
+  yourRequests: 'Your correction requests',
+  lastWeek: 'Last week', noHoursRecorded: 'No hours recorded', notApprovedYet: 'Not approved yet',
+  // One day
+  hours: 'Hours', soFarShort: ' so far', punches: 'Punches', location: 'Location', requestCorrection: 'Request a correction',
+  // Past timecards
+  pausedShort: 'Paused', loading: 'Loading…', couldntCheck: 'Couldn’t be checked', noHoursYet: 'No hours yet',
+  countSoFar: (count: string) => `${count} so far`, noHoursThisWeek: 'No hours this week',
+  hoursIncludes: (duration: string) => `Hours · includes ${duration} of breaks`,
+  days: 'Days', weeks: 'Weeks', showEarlier: 'Show earlier weeks', earlierWeeks: 'Earlier weeks',
+  // Corrections
+  correctionRequests: 'Correction requests', waiting: 'Waiting', decided: 'Decided', decisions: 'Decisions', waitingForReview: 'Waiting for review',
+  noDecided: 'No decided requests', nothingWaiting: 'Nothing waiting for review',
+  nothingDecided: 'Nothing decided in your recent history.', stayHere: 'Requests you send stay here until your manager decides.',
+  openFromTime: 'To fix a day you already clocked, open it from Time.',
+  showingRecent: (count: number) => `Showing your ${count} most recent requests.`,
+  // One correction
+  breakNamed: (name: string) => `Break · ${name}`, times: 'Times', recorded: 'Recorded', noPunches: 'No punches recorded',
+  youAskedFor: 'You asked for', onTimecard: 'On your timecard', sent: 'Sent',
+  decision: 'Decision', yourNote: 'Your note', decidedBy: (status: string, by: string) => `${status} by ${by}`, managersNote: 'Manager’s note',
+  earlierDecisions: 'Earlier decisions for this time', approved: 'Approved', declined: 'Declined',
+  managerReviews: 'Your manager reviews this request. Your original punches stay unchanged.',
+  changedTimecard: 'Changed timecard', timecardChanged: 'Your timecard changed after this request. Check the current times before sending another request.',
+  requestAnother: 'Request another correction',
+  // Fix my time receipts
+  close: 'Close', submissionResult: 'Submission result', submissionStatus: 'Submission status',
+  checkingRequest: 'Checking your request…', checkingWhether: 'We’re checking whether your request was sent.',
+  couldntConfirm: 'We couldn’t confirm your request was sent. Check it before you send another.',
+  sending: 'Sending your request…', checkStatus: 'Check request status',
+  // /app/timecards
+  time: 'Time', pastTimecards: 'Past timecards', openingLabel: 'Opening your timecards', opening: 'Opening your timecards…', openPast: 'Open past timecards',
+  // The shared model's English words
+  statusWords: {} as Record<string, string>,
+  kinds: {} as Record<string, string>,
+  issues: {} as Record<string, string>,
+  shifts: (n: number) => `${n} ${n === 1 ? 'shift' : 'shifts'}`,
+  tablet: (text: string) => text,
+};
+
+const es: typeof en = {
+  tryAgain: 'Intentar de nuevo', signIn: 'Iniciar sesión', timeStatus: 'Estado de tu tiempo', timeAccess: 'Acceso a tu tiempo',
+  paused: 'Tus registros de tiempo están en pausa. Vuelve a esta página o reconéctate para actualizar.',
+  denied: 'Tu acceso cambió. Inicia sesión de nuevo para continuar.',
+  checking: 'Verificando tus registros de tiempo…',
+  failed: 'No pudimos verificar tus registros.',
+  earlierRequest: 'Solicitud anterior', earlierStillChecked: 'Todavía hay que verificar una solicitud de corrección anterior.',
+  returnFirst: 'Vuelve a ella antes de empezar otra.', checkEarlier: 'Verificar tu solicitud anterior',
+  onBreak: 'En descanso', clockedIn: 'En turno', notClockedIn: 'Sin marcar entrada',
+  onBreakSince: (time: string) => `En descanso desde las ${time}`,
+  clockedInAt: (time: string) => `Marcaste entrada a las ${time}`,
+  clockInOn: (tablet: string) => `Marca entrada en ${tablet}`,
+  placeClockedInAt: (place: string, time: string) => `${place} · entrada a las ${time}`,
+  soFar: ' hasta ahora',
+  takeBreaksThere: 'Marca tus descansos y tu salida allí también',
+  endBreakHint: 'Termina tu descanso en la tableta de tu localidad.',
+  clockOutHint: 'Marca tus descansos y tu salida en la tableta de tu localidad.',
+  atAGlance: 'Esta semana de un vistazo', thisWeek: 'Esta semana', breaks: 'Descansos',
+  rightNow: 'Ahora', thisWeekDot: 'Esta semana · ', inProgress: 'En curso',
+  weekTime: 'Tu tiempo de esta semana', breakSub: (duration: string) => `${duration} de descanso`,
+  noTimeYet: 'Todavía no hay tiempo registrado esta semana', fixMissed: 'Corregir una marcación', includeBreaks: 'Las horas incluyen los descansos.',
+  yourRequests: 'Tus solicitudes de corrección',
+  lastWeek: 'Semana pasada', noHoursRecorded: 'Sin horas registradas', notApprovedYet: 'Sin aprobar todavía',
+  hours: 'Horas', soFarShort: ' hasta ahora', punches: 'Marcaciones', location: 'Localidad', requestCorrection: 'Pedir una corrección',
+  pausedShort: 'En pausa', loading: 'Cargando…', couldntCheck: 'No pudimos verificarla', noHoursYet: 'Sin horas todavía',
+  countSoFar: (count: string) => `${count} hasta ahora`, noHoursThisWeek: 'Sin horas esta semana',
+  hoursIncludes: (duration: string) => `Horas · incluye ${duration} de descansos`,
+  days: 'Días', weeks: 'Semanas', showEarlier: 'Ver semanas anteriores', earlierWeeks: 'Semanas anteriores',
+  correctionRequests: 'Solicitudes de corrección', waiting: 'En espera', decided: 'Decididas', decisions: 'Decisiones', waitingForReview: 'En espera de revisión',
+  noDecided: 'No hay solicitudes decididas', nothingWaiting: 'Nada en espera de revisión',
+  nothingDecided: 'No hay nada decidido en tu historial reciente.', stayHere: 'Las solicitudes que envías se quedan aquí hasta que tu gerente decida.',
+  openFromTime: 'Para corregir un día que ya marcaste, ábrelo desde Tiempo.',
+  showingRecent: (count: number) => `Se muestran tus ${count} solicitudes más recientes.`,
+  breakNamed: (name: string) => `Descanso · ${name}`, times: 'Horas', recorded: 'Registrado', noPunches: 'Sin marcaciones registradas',
+  youAskedFor: 'Pediste', onTimecard: 'En tu tarjeta de tiempo', sent: 'Enviada',
+  decision: 'Decisión', yourNote: 'Tu nota', decidedBy: (status: string, by: string) => `${status} por ${by}`, managersNote: 'Nota del gerente',
+  earlierDecisions: 'Decisiones anteriores sobre este tiempo', approved: 'Aprobada', declined: 'Rechazada',
+  managerReviews: 'Tu gerente revisa esta solicitud. Tus marcaciones originales no cambian.',
+  changedTimecard: 'Tarjeta de tiempo cambiada', timecardChanged: 'Tu tarjeta de tiempo cambió después de esta solicitud. Revisa las horas actuales antes de enviar otra solicitud.',
+  requestAnother: 'Pedir otra corrección',
+  close: 'Cerrar', submissionResult: 'Resultado del envío', submissionStatus: 'Estado del envío',
+  checkingRequest: 'Verificando tu solicitud…', checkingWhether: 'Estamos verificando si tu solicitud se envió.',
+  couldntConfirm: 'No pudimos confirmar que tu solicitud se envió. Verifícala antes de enviar otra.',
+  sending: 'Enviando tu solicitud…', checkStatus: 'Verificar estado de la solicitud',
+  time: 'Tiempo', pastTimecards: 'Tarjetas de tiempo anteriores', openingLabel: 'Abriendo tus tarjetas de tiempo', opening: 'Abriendo tus tarjetas de tiempo…', openPast: 'Abrir tarjetas anteriores',
+  statusWords: {
+    Approved: 'Aprobada', Finalized: 'Finalizada', Reopened: 'Reabierta', 'Needs review': 'Requiere revisión', 'In progress': 'En curso',
+    'Not approved yet': 'Sin aprobar todavía', Waiting: 'En espera', Declined: 'Rechazada', 'Waiting for review': 'En espera de revisión',
+    'Clocked in': 'En turno', 'On break': 'En descanso',
+  },
+  kinds: {'Clock in and out': 'Entrada y salida', Break: 'Descanso', 'Missed shift': 'Turno sin marcar'},
+  issues: {
+    'An entry is still missing its clock-out.': 'A una entrada todavía le falta la salida.',
+    'A break is still in progress.': 'Hay un descanso todavía en curso.',
+    'A correction is waiting for review.': 'Hay una corrección en espera de revisión.',
+    'Some time entries overlap.': 'Algunas entradas de tiempo se solapan.',
+  },
+  shifts: (n: number) => `${n} ${n === 1 ? 'turno' : 'turnos'}`,
+  tablet: (text: string) => {
+    const place = /^the (.+) tablet$/.exec(text);
+    if (text === 'the tablet where you work') return 'la tableta donde trabajas';
+    return place ? `la tableta de ${place[1]}` : text;
+  },
+};
+
+export const TIME_COPY: Record<TimeLang, typeof en> = {en, es};
+export type TimeCopy = typeof en;
+export const timeCopy = (lang: TimeLang = 'en'): TimeCopy => TIME_COPY[lang];
+/** A word from the shared Time model in this language (English when there is no entry). */
+export const timeWord = (copy: TimeCopy, map: 'statusWords' | 'kinds' | 'issues', word: string) => copy[map][word] ?? word;

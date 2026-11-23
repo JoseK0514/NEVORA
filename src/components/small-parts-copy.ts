@@ -1,0 +1,90 @@
+/* Signed-in Spanish (es-rest): the words of small shared parts, English as written and Puerto Rico Spanish
+ * (docs/design/voice.md). quiet-sheet, policy-save-form, configuration-form, module-off, blocked-open-shifts,
+ * position-quota-fields, update-visual, theme-switch, print-schedule-button, signature/sig-overlays. */
+const en = {
+  sheet: { cancel: 'Cancel', done: 'Done' },
+  policy: {
+    unconfirmed: 'Save outcome could not be confirmed. Reload the current revision before saving again; your entries are preserved.',
+    saving: 'Saving…',
+    saved: 'Owner review saved.',
+    changed: 'This policy changed. Reload and review the current values before saving again.',
+    reload: 'Reload current policy',
+  },
+  configuration: {
+    unconfirmedShift: 'This change could not be confirmed. It may already be on the schedule; check it before you save again. Your entries are kept.',
+    unconfirmedChange: 'This change could not be confirmed. It may already be saved; reload to check before you save again. Your entries are kept until you reload.',
+    unconfirmedOverlap: 'This time overlaps a shift already on the schedule. It may be the one you just saved; check the schedule before you change anything.',
+    checkSchedule: 'Check the schedule',
+  },
+  moduleOff: {
+    heldTitle: (name: string) => `${name} are coming in a later release`,
+    heldBody: (lower: string) => `NEVORA doesn’t offer ${lower} yet. Nothing has been deleted.`,
+    offTitle: (name: string) => `${name} is turned off`,
+    offBody: (workspace: string, lower: string) => `${workspace} doesn’t use ${lower} in NEVORA right now. Nothing has been deleted.`,
+    turnOn: 'Turn it on in Settings',
+    askManager: 'Ask your manager if you need it.',
+    home: 'Back to Home ›',
+    names: null as Record<string, string> | null,
+  },
+  blocked: {
+    whyOthers: 'Why other shifts aren’t available',
+    whyThis: 'Why you can’t pick this up',
+    changed: 'Availability changed?',
+    update: 'Update your availability',
+  },
+  quota: {
+    legend: 'Position quantities',
+    optional: 'Optional',
+    help: 'Enter a whole number from 1 to 100. Leave blank to remove only that position quota.',
+    inactive: 'Inactive. Clear this quota or reactivate the position.',
+    quantity: (name: string) => `${name} quantity`,
+  },
+  updateKinds: { TODAYS_TEAM: "Today's team", SHIFT_NOTE: 'Shift note', OPERATIONAL_UPDATE: 'Important update', LOCATION_ANNOUNCEMENT: 'Location announcement' } as Record<string, string>,
+  theme: { label: 'Appearance', system: 'System', light: 'Light', dark: 'Dark' },
+  print: 'Print schedule',
+  overlays: { close: 'Close', dismiss: 'Dismiss' },
+};
+const es: typeof en = {
+  sheet: { cancel: 'Cancelar', done: 'Listo' },
+  policy: {
+    unconfirmed: 'No pudimos confirmar si se guardó. Vuelve a cargar la versión actual antes de guardar otra vez; lo que ingresaste se conserva.',
+    saving: 'Guardando…',
+    saved: 'Revisión del dueño guardada.',
+    changed: 'Esta política cambió. Vuelve a cargarla y revisa los valores actuales antes de guardar otra vez.',
+    reload: 'Volver a cargar la política',
+  },
+  configuration: {
+    unconfirmedShift: 'No pudimos confirmar este cambio. Puede que ya esté en el horario; revísalo antes de guardar otra vez. Lo que ingresaste se conserva.',
+    unconfirmedChange: 'No pudimos confirmar este cambio. Puede que ya se haya guardado; vuelve a cargar para verificar antes de guardar otra vez. Lo que ingresaste se conserva hasta que vuelvas a cargar.',
+    unconfirmedOverlap: 'Esta hora se solapa con un turno que ya está en el horario. Puede ser el que acabas de guardar; revisa el horario antes de cambiar algo.',
+    checkSchedule: 'Revisar el horario',
+  },
+  moduleOff: {
+    heldTitle: (name: string) => `${name}: llega en una versión futura`,
+    heldBody: (lower: string) => `NEVORA todavía no ofrece ${lower}. No se borró nada.`,
+    offTitle: (name: string) => `Función desactivada: ${name}`,
+    offBody: (workspace: string, lower: string) => `${workspace} no usa ${lower} en NEVORA ahora. No se borró nada.`,
+    turnOn: 'Activar en Configuración',
+    askManager: 'Pregúntale a tu gerente si lo necesitas.',
+    home: 'Volver a Inicio ›',
+    names: { timeOff: 'Días libres', marketplace: 'Cambios de turno y cubiertas', updates: 'Avisos de la empresa', payStatements: 'Comprobantes de pago', breaks: 'Descansos en el Clocker' },
+  },
+  blocked: {
+    whyOthers: 'Por qué otros turnos no están disponibles',
+    whyThis: 'Por qué no puedes tomar este turno',
+    changed: '¿Cambió tu disponibilidad?',
+    update: 'Actualizar tu disponibilidad',
+  },
+  quota: {
+    legend: 'Cantidad por puesto',
+    optional: 'Opcional',
+    help: 'Ingresa un número entero del 1 al 100. Déjalo en blanco para quitar solo la cantidad de ese puesto.',
+    inactive: 'Inactivo. Borra esta cantidad o reactiva el puesto.',
+    quantity: (name: string) => `${name}, cantidad`,
+  },
+  updateKinds: { TODAYS_TEAM: 'El equipo de hoy', SHIFT_NOTE: 'Nota del turno', OPERATIONAL_UPDATE: 'Aviso importante', LOCATION_ANNOUNCEMENT: 'Aviso de la localidad' },
+  theme: { label: 'Apariencia', system: 'Sistema', light: 'Claro', dark: 'Oscuro' },
+  print: 'Imprimir horario',
+  overlays: { close: 'Cerrar', dismiss: 'Descartar' },
+};
+export const SMALL_PARTS_COPY = { en, es };

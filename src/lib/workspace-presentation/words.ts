@@ -10,7 +10,7 @@ export type WordPreset = { id: WordPresetId; name: string; en: WordSlots; es: Wo
 export const WORD_PRESETS: WordPreset[] = [
   { id: "standard", name: "Standard",
     en: { person: "Employee", people: "Employees", location: "Location", locations: "Locations" },
-    es: { person: "Empleado", people: "Empleados", location: "Ubicación", locations: "Ubicaciones" } },
+    es: { person: "Empleado", people: "Empleados", location: "Localidad", locations: "Localidades" } },
   { id: "retail", name: "Retail",
     en: { person: "Associate", people: "Associates", location: "Store", locations: "Stores" },
     es: { person: "Asociado", people: "Asociados", location: "Tienda", locations: "Tiendas" } },

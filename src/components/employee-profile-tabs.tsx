@@ -1,15 +1,18 @@
 "use client";
 
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { employeeTeamCopy } from "./employee-team-copy";
 import { useId, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
 
 const subscribe = () => () => {};
 const clientSnapshot = () => true;
 const serverSnapshot = () => false;
-const tabs = ["Details", "Scheduling"] as const;
+const tabs = [0, 1] as const;
 
 /** Two views of one person: Details and Scheduling. A real tab list once the page is interactive;
  * before that, plain links to both sections (both stay visible). */
 export function EmployeeProfileTabs({ details, scheduling }: { details: ReactNode; scheduling: ReactNode }) {
+  const t = employeeTeamCopy(usePortalLang());
   const id = useId();
   const enhanced = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   const [selected, setSelected] = useState(0);
@@ -33,8 +36,8 @@ export function EmployeeProfileTabs({ details, scheduling }: { details: ReactNod
 
   return (
     <div className="wa-tabs">
-      <div className="wa-segments" role={enhanced ? "tablist" : "navigation"} aria-label="Employee profile sections">
-        {tabs.map((label, index) => enhanced ? (
+      <div className="wa-segments" role={enhanced ? "tablist" : "navigation"} aria-label={t.profileSections}>
+        {tabs.map(index => t.tabs[index]).map((label, index) => enhanced ? (
           <button
             key={label}
             ref={node => { buttons.current[index] = node; }}
@@ -56,7 +59,7 @@ export function EmployeeProfileTabs({ details, scheduling }: { details: ReactNod
       </div>
       {[details, scheduling].map((content, index) => (
         <div
-          key={tabs[index]}
+          key={index}
           id={panelId(index)}
           className="wa-tabpanel"
           role={enhanced ? "tabpanel" : undefined}

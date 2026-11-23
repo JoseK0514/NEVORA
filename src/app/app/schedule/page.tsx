@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import type { ReactNode } from "react";
 import { LaborCostCard } from "@/components/wages/labor-cost-card";
 import { readPortalLanguage } from "@/lib/activation/language.server";
@@ -77,7 +78,7 @@ function validWeek(value?: string) {
   );
 }
 
-export const metadata = { title: "Schedule" };
+export const generateMetadata = routeTitle("schedule");
 
 export default async function SchedulePage({
   searchParams,
@@ -295,7 +296,7 @@ export default async function SchedulePage({
     const openHref = (row: ExchangeRecord) => `/app/exchange?tab=available#request-${encodeURIComponent(row.id)}`;
     const openShifts = openCoverage && ownActivity ? {
       available: offered.filter(row => !refused(row.id)).map(row => toOpenShift(row, openHref(row))),
-      unavailable: offered.flatMap(row => { const check = refused(row.id); return check ? [{ ...toOpenShift(row, openHref(row)), reasons: refusalLines(check) }] : []; }),
+      unavailable: offered.flatMap(row => { const check = refused(row.id); return check ? [{ ...toOpenShift(row, openHref(row)), reasons: refusalLines(check, lang) }] : []; }),
       requested: ownActivity.filter(row => row.kind === 'COVERAGE' && row.status === 'MANAGER_PENDING' && row.targetEmployeeId === session.id && row.sourceShift.date >= today)
         .map(row => toOpenShift(row, `/app/exchange?tab=requests&requestId=${encodeURIComponent(row.id)}`)),
     } : null;
@@ -306,6 +307,7 @@ export default async function SchedulePage({
       ) : employeeAcknowledgement.acknowledged ? <span className="employee-quiet-status success">{t.confirmed}</span> : <span className="employee-quiet-status">{t.confirmationUnavailable}</span>
     ) : undefined;
     return <EmployeeMySchedule
+      lang={(await readPortalLanguage(await requireSessionMutationProof()).catch(()=>null))?.language??'en'}
       corporate={session.role === 'EMPLOYEE' || session.role === 'LEAD'}
       lead={session.role === 'LEAD'}
       modules={modules}
