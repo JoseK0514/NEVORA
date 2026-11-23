@@ -18,7 +18,7 @@ import {addDays, weekStartFor} from '../../lib/date-utils';
 import type {EmployeeTime} from '../../lib/employee-time';
 import {workCopy} from './work-copy';
 import {useHours} from '../employee-mobile/use-hours';
-import {boardDuration, compactDuration} from '../employee-mobile/hours-model';
+import {compactDuration} from '../employee-mobile/hours-model';
 import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type HomeWeek} from '../employee-home-quiet';
 import {BCardNote, BDay, Dotted, Range, shiftEndedWhileOpen, sinceSpan, wallTime} from './parts';
 import './employee-b.css';
@@ -97,21 +97,28 @@ export type OnShiftFigure = {range: string; line: string | null; aria: string};
  * Phones leave it out: the shift card is the next thing on the screen (the stylesheet finds it by its link to the card's
  * heading, #b-home-shift-h). */
 export type NextShiftFigure = {label: string; value: string; line: string | null; aria: string};
+/** A range split after its dash, each time kept whole, so a narrow tile breaks it as "8:00 AM –" over "4:00 PM". */
+function RangeValue({range}: {range: string}) {
+  const [start, end] = range.split(/[\s\u00a0]*–[\s\u00a0]*/);
+  return end ? <><span className="eb-nb">{start}{'\u00a0–'}</span> <span className="eb-nb">{end}</span></> : <>{range}</>;
+}
 function Figures({week, payday, worked, onShift, nextShift}: {week: HomeWeek | null; payday?: string | null; worked: number | null; onShift?: OnShiftFigure | null; nextShift?: NextShiftFigure | null}) {
   const scheduled = week ? week.shifts.reduce((sum, shift) => { const a = minutesOf(shift.startTime), b = minutesOf(shift.endTime); return sum + (b > a ? b - a : b + 1440 - a); }, 0) : null;
-  const items: BLiveItem[] = onShift ? [{label: 'On shift now', dot: 'live', value: onShift.range, meta: onShift.line ?? undefined, href: '#b-home-shift', aria: onShift.aria}]
-    : nextShift ? [{label: nextShift.label, value: nextShift.value, meta: nextShift.line ?? undefined, href: '#b-home-shift-h', aria: nextShift.aria}] : [];
+  // Core screens check (Nov 23, 2026): each figure's link is named by its visible text (axe label-content-name-mismatch),
+  // and a Lead's range breaks after its dash ("8:00 AM –" over "4:00 PM") instead of running into Hours at 768px.
+  const items: BLiveItem[] = onShift ? [{label: 'On shift now', dot: 'live', value: <RangeValue range={onShift.range}/>, meta: onShift.line ?? undefined, href: '#b-home-shift'}]
+    : nextShift ? [{label: nextShift.label, value: nextShift.value, meta: nextShift.line ?? undefined, href: '#b-home-shift-h'}] : [];
   // Phase 4 (EM-007): the figure and its caption read as one sentence ("17 h of 56 h", "worked this week"). Worked time
   // reads as the Time tab writes it ("43 h 34"); the scheduled total stays in hours.
   // Phase 8 (review C, row 11): under 360px the figure stands alone and "of 56 h this week" is the line under it, so the
   // figure clears the tile's divider (employee-b-work.css shows one of the two lines).
   if (worked !== null && scheduled) items.push({label: t.hours, value: compactDuration(worked * 60), small: `\u00a0${t.ofHours(hoursNumber(scheduled))}`,
-    meta: <><span className="eb-of-w">{t.workedThisWeek}</span><span className="eb-of-n">{t.ofHoursThisWeek(hoursNumber(scheduled))}</span></>, href: '/app/my-time', aria: `Hours, ${boardDuration(worked * 60)} worked of ${hoursNumber(scheduled)} scheduled this week`});
-  else if (worked !== null) items.push({label: t.hours, value: compactDuration(worked * 60), meta: t.workedThisWeek, href: '/app/my-time', aria: `Hours, ${boardDuration(worked * 60)} worked this week`});
-  else if (scheduled !== null) items.push({label: t.hours, value: `${hoursNumber(scheduled)} h`, meta: t.scheduledThisWeek, href: '/app/schedule', aria: `Hours, ${hoursNumber(scheduled)} scheduled this week`});
+    meta: <><span className="eb-of-w">{t.workedThisWeek}</span><span className="eb-of-n">{t.ofHoursThisWeek(hoursNumber(scheduled))}</span></>, href: '/app/my-time'});
+  else if (worked !== null) items.push({label: t.hours, value: compactDuration(worked * 60), meta: t.workedThisWeek, href: '/app/my-time'});
+  else if (scheduled !== null) items.push({label: t.hours, value: `${hoursNumber(scheduled)} h`, meta: t.scheduledThisWeek, href: '/app/schedule'});
   // Phase 4 (EM-007): one format for the date at every width ("Fri, Nov 20"), as on Pay, and how far off it is.
   if (payday && week) items.push({label: 'Scheduled payday', value: fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(payday)),
-    meta: daysAway(payday, week.today), href: '/app/my-pay', aria: `Scheduled payday, ${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(utcDay(payday))}`});
+    meta: daysAway(payday, week.today), href: '/app/my-pay'});
   return items.length ? <BLive label="This week at a glance" items={items}/> : null;
 }
 
@@ -147,8 +154,7 @@ function TeamCard({place}: {place?: string}) {
   return <BCard title="Today’s team" id="b-home-team" meta={place}>
     {/* Phase 4 (EM-016): a plain row that opens the compose page (no third button look on Home); its note is the card's
       * footer at every width. */}
-    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"
-      label="Message today’s team, everyone on shift today"/></BList>
+    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"/></BList>
     <BCardNote>{t.teamNote}</BCardNote>
   </BCard>;
 }
