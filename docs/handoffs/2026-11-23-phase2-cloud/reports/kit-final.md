@@ -116,3 +116,14 @@ entry, outline on the brand, collapse button and Help) but only 5.9:1 on the sid
 tint. In the sidebar the ring is now #08504C (the band's dark end): 9.0:1 and 8.2:1, same width and shape, for every
 focusable control in the sidebar. Checked by keyboard Tab for both roles (`img/sidebar-focus-*`); unfocused, the sidebar
 and pages are unchanged (the only differences were a loading frame, the "read at" time and the focus the Tab walk left).
+
+## Follow-up 5: sidebar workplace name and J17 filters at 200% text (14:10 UTC)
+- `5b2023f7` + `90559bbe`: the Employee and Lead sidebar's workplace name had a fixed 17px/18px line height while its
+  font is rem, so at 200% its two clamped lines overlapped each other and the role line. The name's line height is now
+  1.0625rem/1.125rem and the role line 0.75rem/0.9375rem (both the same at the default size); the name still clamps to
+  two lines, and the full name is in the card's `title`. At 1440 with 200% text it now reads "Northside / QA…" over
+  "Employee". At 768 the sidebar is the rail (no name). The Owner's card already wrapped cleanly. At the default size the
+  sidebar is pixel-identical (Owner and Employee, 768 and 1440).
+- J17 Clocker PINs: its filter is a `.c-seg`, so the segment commits (`cd348986`, `735e06ee`, `b171c7fd`) already make
+  it grow and fit: at 390 with 200% text "No PIN 12" and "PIN set 0" sit inside their pills
+  (`img/j17-pins-owner-390-200pct.webp`). No further change; default size identical at 390, 768 and 1440.
