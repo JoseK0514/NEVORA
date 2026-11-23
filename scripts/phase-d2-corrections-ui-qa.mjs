@@ -218,11 +218,14 @@ try{
   checked(engine+': keyboard focus reaches employee-specific approval control');
   await approve.click();
   await mp.locator('.manager-corrections-notice[data-result]').getByText('Correction approved',{exact:true}).waitFor();
-  await mp.getByText('Nothing to fix',{exact:true}).waitFor();
-  checked(engine+': manager approves through real D2 API and inbox clears');
+  assert.equal(await mp.locator('.manager-correction-row').count(),0);
+  assert.equal(await mp.locator('.manager-corrections-count').textContent(),'0');
 
   const managerState=await owner.request.get(app.url+'/api/manager/time-corrections',{headers:{'X-Nevora-Time-Correction':'1'}});
   assert.deepEqual((await managerState.json()).requests,[]);
+  await mp.reload({waitUntil:'networkidle'});
+  await mp.getByText('Nothing to fix',{exact:true}).waitFor();
+  checked(engine+': manager approves through real D2 API and inbox stays empty after reload');
   await owner.close();
 
   const employeeAfter=await context(browser);
