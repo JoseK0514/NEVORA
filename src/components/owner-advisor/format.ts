@@ -79,12 +79,32 @@ export type Clock = { timeZone?: string; today?: string };
 
 /** The server's attention sentences, said correctly: "1 published shift started …", "starting 11:30 PM". Only these
  * known forms change; any other sentence is shown exactly as the server wrote it. */
-export function attentionDetail(detail: string) {
-  return detail
+export function attentionDetail(detail: string, lang: Lang = "en") {
+  const en = detail
     .replace(/^1 published shifts started without a recorded clock-in\./, "1 published shift started without a recorded clock-in.")
     .replace(/^1 finished published shifts have no recorded punches\./, "1 finished published shift has no recorded punches.")
     .replace(/^1 planning periods need review,/, "1 planning period needs review,")
     .replace(/(planning periods? needs? review, starting )(\d{2}:\d{2})\./, (_match, lead: string, time: string) => `${lead}${formatTime(time)}.`)
     // Rondo follow-up (Nov 23): the figure stays on the line with its label ("shortfall: 1." never leaves "1." alone).
     .replace(/(shortfall:) (\d+)/, "$1\u00a0$2");
+  return lang === "es" ? attentionDetailEs(en) : en;
+}
+
+/** Signed-in Spanish: the server's attention sentences (owner-advisor/briefing.ts, fixed English patterns) in Puerto Rico
+ * Spanish with tú. A sentence the patterns don't know stays as the server wrote it. */
+function attentionDetailEs(text: string) {
+  const n = (count: string, one: string, many: string) => count === "1" ? one : many;
+  return text
+    .replace(/^(\d+) published shifts? started without a recorded clock-in\. Verify attendance before choosing coverage\./, (_m, c: string) =>
+      `${c} ${n(c, "turno publicado empezó", "turnos publicados empezaron")} sin entrada marcada. Verifica la asistencia antes de buscar cobertura.`)
+    .replace(/^(\d+) finished published shifts? (?:has|have) no recorded punches\. Review the records before correcting time\./, (_m, c: string) =>
+      `${c} ${n(c, "turno publicado terminado no tiene", "turnos publicados terminados no tienen")} marcas registradas. Revisa los registros antes de corregir el tiempo.`)
+    .replace(/^Coverage cannot be fully assessed until missing or invalid staffing and coverage rules are reviewed\./,
+      "No se puede evaluar toda la cobertura hasta que revises las reglas de personal y de cobertura que faltan o no son válidas.")
+    .replace(/^(\d+) planning periods? needs? review, starting ([^.]+(?:\.[^.]*m\.)?)\./, (_m, c: string, time: string) =>
+      `${c} ${n(c, "período de planificación necesita", "períodos de planificación necesitan")} revisión, desde las ${spanishTimes(time, "es").replace(/\.$/, "")}.`)
+    .replace(/Maximum staffing shortfall:\s(\d+)\./, "Mayor falta de personal:\u00a0$1.")
+    .replace(/ A designated lead is missing\./, " Falta un líder designado.")
+    .replace(/ Unfilled positions: ([^.]*)\./, " Puestos sin cubrir: $1.")
+    .replace(/Includes draft commitments; verify published staffing separately\./, "Incluye compromisos en borrador; verifica aparte el personal publicado.");
 }

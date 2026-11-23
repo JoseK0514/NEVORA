@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {scopedObservation} from '@/lib/company-access/observation';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -10,7 +11,7 @@ import { readPortalLanguage } from "@/lib/activation/language.server";
 import { readAuthLang } from "@/lib/auth-lang.server";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Copied schedule" };
+export const generateMetadata = routeTitle("copied");
 
 /** Copy receipt (Phase 2, queue C8): the result of a schedule copy, drawn by CopyReceiptView. Same reads, access check
  * and retry as before: the receipt proves what was copied; without one, the stored command allows only a safe retry. */

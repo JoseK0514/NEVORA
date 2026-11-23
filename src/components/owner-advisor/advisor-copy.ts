@@ -67,6 +67,8 @@ const en = {
     basisFromSchedule: "From the current schedule, including drafts",
     /** Printed once under a group's title; the server's own sentence (briefing.ts) is matched separately, in English. */
     draftNote: "Includes draft commitments; verify published staffing separately.",
+    /** The server's titles by kind (owner-advisor/briefing.ts), so Spanish can say them. */
+    kinds: { clock_in: "Check shifts without a clock-in", coverage: "Review today's planning gaps", missing_punches: "Review finished shifts without punches", setup: "Complete coverage rules" } as Record<string, string>,
     reviewSource: "Review source",
     tracking: "Tracking",
     track: "Track this issue",
@@ -267,6 +269,7 @@ const es: AdvisorCopy = {
     observed: "Visto",
     basisFromSchedule: "Del horario actual, incluidos los borradores",
     draftNote: "Incluye compromisos en borrador; verifica aparte el personal publicado.",
+    kinds: { clock_in: "Revisa los turnos sin entrada marcada", coverage: "Revisa las brechas de planificación de hoy", missing_punches: "Revisa los turnos terminados sin marcas", setup: "Completa las reglas de cobertura" },
     reviewSource: "Revisar fuente",
     tracking: "En seguimiento",
     track: "Dar seguimiento",

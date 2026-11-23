@@ -78,7 +78,7 @@ export function AttentionSection({ briefing, disabled, saving, review, refresh, 
     const detail = inGroup.note ? item.detail.slice(0, -inGroup.note.length).trimEnd() : item.detail;
     return <>
       {facts.some(Boolean) ? <p className="oa-facts"><BSegs parts={facts} /></p> : null}
-      <p className="oa-item__d">{attentionDetail(detail)}</p>
+      <p className="oa-item__d">{attentionDetail(detail, lang)}</p>
       {oneBasis || groupBasis ? null : <p className="oa-item__basis">{basisWords(item.basis, t)}</p>}
       <div className={inGroup.href ? "oa-acts oa-acts--att oa-acts--three" : "oa-acts oa-acts--att"}>
         {inGroup.href ? null : reviewLink(item.source.href)}
@@ -104,7 +104,7 @@ export function AttentionSection({ briefing, disabled, saving, review, refresh, 
               : <ol className="oa-items">{groups.map(group => <li key={group.items[0].id} className="oa-item">
                 <BIcon tone="amber">{KIND_ICON[group.items[0].kind]}</BIcon>
                 <div className="oa-item__main">
-                  <h3 className="oa-item__t">{group.title}</h3>
+                  <h3 className="oa-item__t">{t.kinds[group.items[0].kind] ?? group.title}</h3>
                   {group.items.length === 1 ? itemBody(group.items[0], true) : (() => {
                     const groupBasis = !oneBasis && group.items.every(item => item.basis === group.items[0].basis);
                     const inGroup = groupShared(group);
@@ -125,7 +125,7 @@ export function AttentionSection({ briefing, disabled, saving, review, refresh, 
               <summary><span>{t.followThrough}</span><BCount label={t.reviewedCount(briefing.reviewed.length)}>{briefing.reviewed.length}</BCount></summary>
               <ul className="oa-items oa-items--quiet">{briefing.reviewed.map(item => <li key={item.id} className="oa-item oa-item--flat">
                 <div className="oa-item__main">
-                  <h3 className="oa-item__t">{item.title}</h3>
+                  <h3 className="oa-item__t">{t.kinds[item.kind] ?? item.title}</h3>
                   <p className="oa-facts"><BSegs parts={[item.locationName, dayText(item.date, lang, year)]} /></p>
                   <p className="oa-item__d">{reviewText(item, clock, t, lang)}</p>
                   {item.state === "open" && item.disposition !== "tracking"

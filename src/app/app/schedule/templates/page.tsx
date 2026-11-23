@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
@@ -26,7 +27,7 @@ import {
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. Review Nov 14 (AR-15): the page's own name, as in
  * the menus and its heading. */
-export const metadata = { title: "Week templates" };
+export const generateMetadata = routeTitle("templates");
 
 export default async function ScheduleTemplatesPage({
   searchParams,

@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import Link from "next/link";
 import { randomUUID } from "node:crypto";
 import { BellIcon } from "@phosphor-icons/react/dist/ssr/Bell";
@@ -31,7 +32,7 @@ import { UnconfirmedActionForm } from "@/components/unconfirmed-action-form";
 import "@/components/schedule-shift-form.css";
 import "./publish.css";
 
-export const metadata = { title: "Build and publish" };
+export const generateMetadata = routeTitle("publish");
 
 const range = (weekStart: string) => dateRange(weekStart, addDays(weekStart, 6), { year: "never" });
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;

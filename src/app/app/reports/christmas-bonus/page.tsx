@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
@@ -13,7 +14,7 @@ import {OwnerOnlyNotice} from '@/components/owner-only-notice';
 import {BRouteError} from '@/components/owner-b/b-route-error';
 import {readPortalLanguage} from '@/lib/activation/language.server';
 import {CHRISTMAS_BONUS_COPY} from '@/components/christmas-bonus-copy';
-export const metadata = { title: "Christmas bonus hours" };
+export const generateMetadata = routeTitle("christmasBonus");
 
 /** Insights' Christmas bonus hours: the same authority as Insights (Owners and Managers with current company-wide
  * access; Leads and Employees get the closed notice and nothing is read). Only workspaces whose business time zone

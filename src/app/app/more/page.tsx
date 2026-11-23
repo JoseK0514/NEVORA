@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {readFeatureFlags} from '../../../lib/feature-flags';
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
@@ -43,7 +44,7 @@ import type { PortalLang } from "@/lib/i18n/portal-lang";
 /** Signed-in Spanish: the person's language (Profile choice, then the sign-in cookie, then the browser's); English if the read fails. */
 const langOf = (proof: SessionMutationProof): Promise<PortalLang> => readPortalLanguage(proof).then(result => result.language as PortalLang).catch((): PortalLang => "en");
 
-export const metadata = { title: "More" };
+export const generateMetadata = routeTitle("more");
 
 
 /** Corporate (Release 1, board E-More): an Employee's More opens from the header avatar, with Home as its back link. The

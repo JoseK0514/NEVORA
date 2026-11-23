@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import type { ReactNode } from "react";
 import { LaborCostCard } from "@/components/wages/labor-cost-card";
 import { readPortalLanguage } from "@/lib/activation/language.server";
@@ -81,7 +82,7 @@ function validWeek(value?: string) {
   );
 }
 
-export const metadata = { title: "Schedule" };
+export const generateMetadata = routeTitle("schedule");
 
 const M = momentsCopy();
 

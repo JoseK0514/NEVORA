@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {ResponsiveEmployeeCreation} from '@/components/employee-mobile/creation';
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {randomUUID} from 'node:crypto';
@@ -19,7 +20,7 @@ import {
 } from "@/lib/data/exchanges";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Swap or offer a shift" };
+export const generateMetadata = routeTitle("swap");
 
 
 export default async function SwapPage({

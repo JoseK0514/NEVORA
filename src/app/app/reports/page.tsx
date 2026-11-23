@@ -1,3 +1,4 @@
+import { routeTitle } from "@/app/app/route-titles";
 import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
@@ -14,7 +15,7 @@ import {ReportsEntrance} from '@/components/reports-entrance';
 import {OwnerOnlyNotice} from '@/components/owner-only-notice';
 import {readPortalLanguage} from '@/lib/activation/language.server';
 import {REPORTS_COPY} from '@/components/reports-copy';
-export const metadata = { title: "Insights" };
+export const generateMetadata = routeTitle("insights");
 
 export default async function ReportsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession();
