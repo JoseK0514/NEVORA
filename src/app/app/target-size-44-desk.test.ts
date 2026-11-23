@@ -80,5 +80,9 @@ describe('placeholder contrast (release batch)', () => {
     expect(read('./owner-b-pages.css')).toContain('[data-employee-mobile] .b-week__arrow:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h):not(#r44i)::after { top: 50% !important; left: 50% !important; right: auto !important; bottom: auto !important; width: max(100%, 44px) !important; height: max(100%, 44px) !important; translate: -50% -50% !important; }');
     expect(read('./owner-b-pages.css')).toContain('aside.sidebar nav.sidebar-nav:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { box-sizing: border-box !important; width: calc(100% + 4px) !important; max-width: none !important; padding-inline: 2px !important; margin-inline: -2px !important; }');
   });
+
+  it("Team's first row of filters sits above the second, so both rows' 4px rings reach 44px", () => {
+    expect(read('./owner-b-home.css')).toContain('.c-page.c-team .b-filters:has(> :nth-child(4)) > button:nth-child(-n+2):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 1 !important; }');
+  });
 });
 
