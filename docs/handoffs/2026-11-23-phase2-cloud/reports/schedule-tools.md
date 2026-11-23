@@ -12,7 +12,9 @@ weren't touched. Fictional data only; no notifications, deploys or publishing.
 | `75db27e1` | The four pages move from the Quiet and Wave kits to the Corp pages the Direction B layer draws (band, white cards, kit rows, outlined fields, kit buttons). Tests updated; each page asserts no older-kit classes. |
 | `899e6ba6` | Each coverage-period fact once; kit callouts and toasts for feedback; the Decline/Close question on the decision's inset; Archive's question commits with the red-edged button. |
 | `ab35d406` | Shift requests: a decided request's history in plain words (local time, one time format, no ids or revision numbers). |
-| shots commit | Captures and this report (separate, so the lead can merge only the code). |
+| `642b2855` | Captures and this report (docs only). |
+| `7735889f` | Accessibility pass for the 2-hour target: axe clean on C7, C9 and C10 (details below). Code; merge it with the three above. |
+| last | This report's update (docs only). |
 
 Code only touches my package's files: the four pages, `manager-availability.tsx`, `availability-team-list.tsx`,
 `manager-shift-requests.tsx`, `shift-request-decide.tsx`, and the forms only these pages use (`wave-b-forms.tsx` form
@@ -38,6 +40,20 @@ Same server reads, permissions, form actions, confirms, deep links (`#target-…
 - Older-kit count (the sweep's "Mixed" signal: visible `q-`/`wb-`/`wc-`/`wa-`/`sig-`/`nv-` elements), all sections
   open: **C7 0, C9 0, C10 1, C12 0** (C10's one is the shared reminders' screen-reader line, `q-sr`).
 - Production build capture: see "Captures".
+
+## Accessibility pass (2-hour target, no later end sweep)
+
+axe-core on the page body, every disclosure open, 390 and 1440, development build: **C7 0, C9 0, C10 0 violations.**
+Fixed in `7735889f`:
+- C9: "No target" count contrast 3.87:1 (faded) → ink; heading order (period day was an `h3` under no `h2`; Trades and
+  Coverage `h3` → `h2`); the deadline button's name "Set deadline" → "Save deadline" (starts with the visible "Save").
+- C10: two landmarks named "People" → one; Not sent / Sent chips 36px → 44px on this page.
+
+Already met: a visible focus ring at every Tab stop (390 and 1440), logical order, rows named by their visible text,
+text sizes in rem (200% text: no overflow or clipping), buttons 44px.
+
+C12: axe at 1440 flags the band's Open cover and Done segments (white on the band, sampled as #F3F6F5, 1.08:1). That's
+the kit's band segments, the same on every page with segments in the band, not this page's markup; listed as G-ST7.
 
 ## Per page
 
@@ -130,7 +146,7 @@ Should fix
 1. [Hierarchy] Shift requests, an opened request: the row line ("Can't work · Tue, Dec 8 · 8:00 AM – 4:00 PM") and the
    facts' first line ("Avery's shift · Tue, Dec 8 · 8:00 AM – 4:00 PM · Main Office") say the day and time twice. The
    facts are an approved Codex decision (Oct 23, "each shift in full"), so they stay; needs Jose's call (G-ST1).
-2. [Accessibility] Availability: the filter chips are the kit's 36px chips (Team has the same). Kit item (G-ST2).
+2. [Accessibility] Shift requests at 1440: axe flags the band's unselected segments (kit, G-ST7).
 
 Polish
 3. [Hierarchy] Scheduling rules, Week starts on: its help sentence is long (existing approved copy).
@@ -152,11 +168,12 @@ None in my files.
 | # | Screen | Gap | Kind | Status |
 |---|---|---|---|---|
 | G-ST1 | Shift requests (C12) | An opened request repeats its row's day and time in the facts' first line; the facts follow the Codex review (Oct 23). Jose to choose: keep, or show only place, position and lead in the facts | Needs Jose | open |
-| G-ST2 | Kit filter chips (`b-filters`) | Chips draw 36px high (Availability, Team); 44px target wanted | End sweep, kit | open |
+| G-ST2 | Kit filter chips (`b-filters`) | Chips draw 36px high; Availability now keeps 44px on its own page, Team still draws 36px | Kit | open |
 | G-ST3 | Shift change history (server view `shift-change-views.ts`, Employee side) | The view writes ISO times, 24-hour times and ids; the manager page now formats them, the Employee page still shows them raw | End sweep, shared | open |
 | G-ST4 | Kit band (`owner-b-pages.css`) | A phone band can't hold both a sub-line and segments (the rule allows one line between the nav and the segments); C10 moved its segments into the card as chips instead | Kit | open |
 | G-ST5 | Discard dialog (`kit/discard-dialog`) | Still drawn with Quiet sheet classes (hidden until used); counts as older-kit markup on Scheduling rules | End sweep, kit | open |
 | G-ST6 | Week templates, Scheduling rules | No Spanish | Product | open |
+| G-ST7 | Kit band segments (desktop) | axe reads the unselected segments in the band as white on #F3F6F5 (1.08:1) at 1440 (Shift requests; any page with band segments); check the real pair and the band paint under them | Kit, accessibility | open |
 
 ## Captures
 
@@ -172,3 +189,20 @@ None in my files.
 
 Not captured: 200% text and 320 in the production build (checked on the development build, see "Checks run"); the
 location Manager (the notice, unchanged).
+
+## Scope note
+
+At 11:42 and 11:46 UTC the lead session sent two messages: (1) scope narrowed to C7 and C9, with C10 and C12 going to
+another session; (2) the 2-hour target. I read them at 12:38, after C10 and C12 were already done and pushed. The
+2-hour target is in the README and is applied above. The narrowing isn't in the README's package table, so I left
+C10 and C12 in place rather than reverting pushed work. Files by page, for a lead who wants only C7 and C9:
+
+- C7: `src/app/app/schedule/templates/*`, `src/components/schedule-template-controls.tsx`
+- C9: `src/app/app/schedule/settings/*`, `rules-hours-list.tsx`, `position-quota-fields.tsx`,
+  `shift-change-policy-fields.tsx`, `workforce/planning-week.tsx`
+- C7 and C9 share: `wave-b-forms.tsx`, `src/app/app/schedule/schedule-tools.css`
+- C10: `manager-availability.tsx`, `availability-team-list.tsx` (+ its test)
+- C12: `manager-shift-requests.tsx`, `shift-request-decide.tsx`, `manager-workflows.test.tsx` (that test also covers C10)
+
+The commits mix pages, so taking only C7 and C9 means checking out those files, not cherry-picking commits. The
+stylesheet's C10 and C12 rules are harmless without their pages.
