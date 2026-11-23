@@ -17,6 +17,7 @@ Fictional data, production build (`NEVORA_OWNED_APP_PRODUCTION=1`), Chromium, si
 | 5582e46d, 4fb23cbe, 27186f09 | C12, E1, B5 | Band tabs wrap their own label and grow at 200% text instead of overlapping; rules sit in the `nv-b` layer because the shared band rules use layered `!important` |
 | 4a68d143 | E1 | A Time off row's screen-reader name is its visible text (rule 7) |
 | 37e0fd83 | C10 | A day's hours wrap at 200% text instead of ending in "…" |
+| 1683948e | B5 | At 320 with 200% text a row's grey line and its chip show in full instead of ending in "…" |
 | c3d502d7 | Empty states (C12, E1, B5) | Title and line in rem; at 200% text the lines overlapped |
 
 All changes are in `src/components/employee-b/*` (`messages-b.tsx`, `timeoff-b.tsx`, `requests-b.test.tsx`,
@@ -79,3 +80,11 @@ names against visible text, targets under 44px, Tab order with focus rings at 14
 `shots/staff/img/<row>-<l|e>-<390|768|1440|390t200>.webp` (quality 80), 72 images; `rows.json` has one entry per page per
 role (`-l` Lead, `-e` Employee). Phone and tablet shots are viewport screenshots scrolled down the page and stitched,
 so the fixed tab bar sits only at the bottom and hides no row. `390t200` is 390 with the root font size at 200%.
+
+## Follow-up after the final captures (13:50)
+- Lead item: Employee Time off "9:00 AM – :00 PM" at 200% text. Already fixed here by a1cbc2c8 and 9d68ad9d; the kit
+  session's capture came from origin before those were merged. Rechecked on 59350479 (this branch merged with origin
+  8f05f419), Employee, production build: Time off and the Requests hub at 320, 390 (both with 200% text) and 1440, with no
+  clipping, overflow, overlap or axe findings.
+- 1683948e fixes what that recheck found on the hub at 320 with 200% text ("swaps for yo…", "Needs your ans…").
+  The B5 rows' shots above were taken before this fix and look the same at 390.
