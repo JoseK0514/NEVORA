@@ -97,9 +97,16 @@ export type OnShiftFigure = {range: string; line: string | null};
  * Phones leave it out: the shift card is the next thing on the screen (the stylesheet finds it by its link to the card's
  * heading, #b-home-shift-h). */
 export type NextShiftFigure = {label: string; value: string; line: string | null};
+/** A range split after its dash, each time kept whole, so a narrow tile breaks it as "8:00 AM –" over "4:00 PM". */
+function RangeValue({range}: {range: string}) {
+  const [start, end] = range.split(/[\s\u00a0]*–[\s\u00a0]*/);
+  return end ? <><span className="eb-nb">{start}{'\u00a0–'}</span> <span className="eb-nb">{end}</span></> : <>{range}</>;
+}
 function Figures({week, payday, worked, onShift, nextShift}: {week: HomeWeek | null; payday?: string | null; worked: number | null; onShift?: OnShiftFigure | null; nextShift?: NextShiftFigure | null}) {
   const scheduled = week ? week.shifts.reduce((sum, shift) => { const a = minutesOf(shift.startTime), b = minutesOf(shift.endTime); return sum + (b > a ? b - a : b + 1440 - a); }, 0) : null;
-  const items: BLiveItem[] = onShift ? [{label: 'On shift now', dot: 'live', value: onShift.range, meta: onShift.line ?? undefined, href: '#b-home-shift'}]
+  // Core screens check (Nov 23, 2026): each figure's link is named by its visible text (axe label-content-name-mismatch),
+  // and a Lead's range breaks after its dash ("8:00 AM –" over "4:00 PM") instead of running into Hours at 768px.
+  const items: BLiveItem[] = onShift ? [{label: 'On shift now', dot: 'live', value: <RangeValue range={onShift.range}/>, meta: onShift.line ?? undefined, href: '#b-home-shift'}]
     : nextShift ? [{label: nextShift.label, value: nextShift.value, meta: nextShift.line ?? undefined, href: '#b-home-shift-h'}] : [];
   // Phase 4 (EM-007): the figure and its caption read as one sentence ("17 h of 56 h", "worked this week"). Worked time
   // reads as the Time tab writes it ("43 h 34"); the scheduled total stays in hours.
@@ -147,8 +154,7 @@ function TeamCard({place}: {place?: string}) {
   return <BCard title="Today’s team" id="b-home-team" meta={place}>
     {/* Phase 4 (EM-016): a plain row that opens the compose page (no third button look on Home); its note is the card's
       * footer at every width. */}
-    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"
-      label="Message today’s team, everyone on shift today"/></BList>
+    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"/></BList>
     <BCardNote>{t.teamNote}</BCardNote>
   </BCard>;
 }
