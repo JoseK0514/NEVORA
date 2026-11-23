@@ -540,6 +540,17 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const finalizeAsk=openItem&&askFinalize===openItem.card.employeeId&&openItem.state==='APPROVED'&&!locked&&!own&&!openItem.card.issues.length
       ?<DecisionAsk className="c-tc-ask" tone="commit" titleRef={finalizeTitle} groupLabel={M.finalizeAsk(finalizeFirst)} question={M.finalizeAsk(finalizeFirst)} consequence={M.finalizeAskLine}
         keep={M.notYet} onKeep={keepFinalize} go={M.finalizeTimecard} onGo={()=>{setAskFinalize(null);void act(openItem,'FINALIZE');}}/>:null;
+    // Jose's review (Nov 23, 2026): why an open timecard can't be approved (or finalized) yet, in one line, in place of a dead
+    // button. Only real issues block; a period still running keeps its own sentence above.
+    const blockedWhy=openItem&&!own&&!locked&&!justSaved(openItem)&&!lost&&openItem.state!=='FINALIZED'&&openItem.card.issues.length&&tone!=='neutral'
+      ?`${openItem.state==='APPROVED'?'Finalize':'Approve'} after ${openItem.card.issues.includes('pending_correction')?'the waiting correction is reviewed'
+        :openItem.card.issues.some(issue=>issue==='open_entry'||issue==='open_break')?'the open time is closed'
+        :openItem.card.issues.includes('overlapping_time')?'the overlapping time is fixed':'the issues above are resolved'}.`:null;
+    // Jose's review (Nov 23, 2026): when the footer holds Approve (or Finalize), "Request time correction" sits in the footer
+    // above it, so the sticky footer never covers it and the two actions share one edge.
+    const requestLink=openItem&&!own&&!locked&&!openItem.card.issues.includes('pending_correction')?<Link className={btn('secondary')} href={'/app/timecards/corrections/new/'+encodeURIComponent(openItem.card.employeeId)}>Request time correction</Link>:null;
+    const approveFoot=!!openItem&&!(justSaved(openItem)||(doneHere&&nextUp))&&!(lost&&pending)&&!(openItem.state==='FINALIZED'||own||(waiting&&!pending&&!outcomes)||blockedWhy)
+      &&(openItem.state!=='APPROVED'||allApproved);
     const sheetNode=<QuietSheet open={sheetOpen} modal={!nonModal} labelledBy="cm-tc-sheet-heading cm-tc-sheet-title" onClose={()=>{userClosedSheet.current=true;closeSheet();}}>
       <div className="c-sheet c-tc-sheet" onKeyDown={nonModal?panelKeys:undefined}>
         <div className="c-sheet__nav c-tc-sheet__bar"><span aria-hidden="true"/><h2 className="c-sheet__title" id="cm-tc-sheet-heading">Timecard</h2>
@@ -555,8 +566,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               {status&&!(openItem.card.issues.length&&tone!=='neutral')?<span className="c-tc-sheet__state">{toneOf(openItem)?<BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip>:<BStatusText dot={LIVE_DOT[status.text]}>{status.text}</BStatusText>}</span>:null}
             </div>
             <CorpStats items={[{label:'Recorded',value:compactHours(openItem.card.recordedNanoseconds)},{label:'Breaks',value:compactHours(openItem.card.breakNanoseconds)},{label:'Clock-ins',value:openItem.card.entries.length}]}/>
-          </section>
-          {/* Copy table 42/46: a period that hasn't ended is plain sentences (no heading, no bullet); the approve date is said once,
+            {/* Jose's review (Nov 23, 2026): the note sits in the person's card, on its left edge, not between the cards.
+              * Copy table 42/46: a period that hasn't ended is plain sentences (no heading, no bullet); the approve date is said once,
             beside the decision. Real issues keep their list. */}
           {openItem.card.issues.length?tone==='neutral'?<p className="c-tc-sheet__issue" data-tone="neutral">{`This ${periodNoun(period)} isn’t over. Hours can still change.${waiting&&!pending&&!outcomes?'':` You can approve from ${approveFrom(period)}.`}`}</p>
             :
@@ -566,6 +577,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               action={openItem.card.issues.includes('pending_correction')?{label:'Review correction',href:'/app/timecards/corrections'}:undefined}>
               {/* Gate check (Nov 23, 2026): the issues are the note; the line on how to clear them before approval is gone. */}
               {openItem.card.issues.map(issue=><p key={issue}>{issueNames[issue]}</p>)}</BCallout></div>:null}
+          </section>
           <CorpCard id="tc-days" label="Days">
             {days.length?<ul className="c-rows" aria-label="Days with recorded time">{days.map(day=><li key={day.date}><div className="c-row c-tc-day">
               <span className="c-tc-day__date">{day.label}</span>
@@ -582,7 +594,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <span className="c-num">{(done.action==='finalized'?M.batchPartFinalized:M.batchPartApproved)(doneCount(done.action),cards.length)}</span></span></div>:null}
           <div className="c-tc-sheet__actions">
             {/* Nov 14 inspection: the viewer is fixing someone else's time here, so the button says so (same delegated correction). */}
-            {!own&&!locked?<Link className={btn('secondary')} href={'/app/timecards/corrections/new/'+encodeURIComponent(openItem.card.employeeId)}>Request time correction</Link>:null}
+            {/* Jose's review (Nov 23, 2026): with a correction already waiting, the note's "Review correction" is the next step,
+              * so a second request isn't offered here. */}
+            {approveFoot?null:requestLink}
             {!own&&managementRecoveryScope?<ManagementCloseForm key={managementRecoveryScope+':'+actorId+':'+openItem.card.employeeId} recoveryScope={managementRecoveryScope} actorId={actorId} timeZone={openItem.card.timeZone}
               timeEntryId={openItem.card.entries.find(entry=>entry.sourceKind==='RECORDED'&&!entry.endAt&&!entry.rawEndAt)?.id} onClosed={()=>void refresh(period,true)}/>:null}
             {/* Review B #8: undoing a finalized card is one quiet "Reopen"; choosing it shows the reason field and its button. */}
@@ -591,8 +605,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} aria-busy={flies('REOPEN')||undefined} onClick={()=>void act(openItem,'REOPEN')}>{busyLabel(flies('REOPEN'),M.reopenTimecard)}</button></>
                 :<button type="button" className="c-link c-tc-sheet__quiet" disabled={locked} onClick={()=>setReopenFor(openItem.card.employeeId)}>{M.reopen}</button>:
               own?<p className="c-tc-sheet__note">{approver.card}</p>:null}
-            {!justSaved(openItem)&&!lost&&!own&&openItem.state==='APPROVED'&&!allApproved&&!(waiting&&!pending&&!outcomes)?finalizeAsk??<button ref={finalizeOpener} type="button" className="c-link c-tc-sheet__quiet" disabled={locked||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>setAskFinalize(openItem.card.employeeId)}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>:null}
-            {!own&&openItem.state!=='FINALIZED'&&!(waiting&&!pending&&!outcomes)&&done?.employeeId!==openItem.card.employeeId?<p className="c-tc-sheet__note">{stepsLine}</p>:null}
+            {!justSaved(openItem)&&!lost&&!own&&!blockedWhy&&openItem.state==='APPROVED'&&!allApproved&&!(waiting&&!pending&&!outcomes)?finalizeAsk??<button ref={finalizeOpener} type="button" className="c-link c-tc-sheet__quiet" disabled={locked||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>setAskFinalize(openItem.card.employeeId)}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>:null}
+            {/* Jose's review (Nov 23, 2026): an open issue blocks approval, so the sheet says why in one line instead of a grey
+              * button with no reason; the steps line steps aside for it. */}
+            {blockedWhy?<p className="c-tc-sheet__note c-tc-sheet__why">{blockedWhy}</p>
+              :!own&&openItem.state!=='FINALIZED'&&!(waiting&&!pending&&!outcomes)&&done?.employeeId!==openItem.card.employeeId?<p className="c-tc-sheet__note">{stepsLine}</p>:null}
           </div>
           {/* OW-039: the one decision is the sheet's footer. On a phone it stays at the bottom of the sheet, above the safe
             * area, while the days scroll under it. Review B #2, #16: while the save is in flight the button keeps its own
@@ -601,11 +618,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {justSaved(openItem)||(doneHere&&nextUp)?nextUp?<div className="c-tc-sheet__foot"><button type="button" className={`${btn('primary')} c-tc-sheet__next`} aria-label={`${M.nextTimecard}: ${nextUp.card.employeeName}`} onClick={()=>openNext(nextUp)}>{M.nextTimecard}</button></div>:null:
             lost&&pending?<div className="c-tc-sheet__foot" data-note=""><BCallout tone="amber" icon="unknown" role="status" title={M.unknownTitle[pending.action]}
               action={<button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={()=>void act(openItem,pending.action)}>{M.checkAgain}</button>}>{M.unknownLine}</BCallout></div>:
-            openItem.state==='FINALIZED'||own||(waiting&&!pending&&!outcomes)?null:
+            openItem.state==='FINALIZED'||own||(waiting&&!pending&&!outcomes)||blockedWhy?null:
             // Round 4: an approved card offers its next step only (Finalize), not Approve again. It is the footer's filled
             // button only once every card is approved; until then it is a quiet line among the actions above.
-            openItem.state==='APPROVED'?allApproved?<div className="c-tc-sheet__foot" data-ask={finalizeAsk?'':undefined}>{finalizeAsk??<button ref={finalizeOpener} type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>setAskFinalize(openItem.card.employeeId)}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>}</div>:null:
-            <div className="c-tc-sheet__foot"><button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('APPROVE')||undefined} onClick={()=>void act(openItem,'APPROVE')}>{busyLabel(flies('APPROVE'),openEmpty?'Approve with no hours':'Approve timecard')}</button></div>}
+            openItem.state==='APPROVED'?allApproved?<div className="c-tc-sheet__foot" data-ask={finalizeAsk?'':undefined}>{finalizeAsk?null:requestLink}{finalizeAsk??<button ref={finalizeOpener} type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>setAskFinalize(openItem.card.employeeId)}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>}</div>:null:
+            <div className="c-tc-sheet__foot">{requestLink}<button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('APPROVE')||undefined} onClick={()=>void act(openItem,'APPROVE')}>{busyLabel(flies('APPROVE'),openEmpty?'Approve with no hours':'Approve timecard')}</button></div>}
           {openItem.history.length?<details className="c-tc-sheet__more c-tc-sheet__history"><summary>{M.earlierVersions(openItem.history.length)}</summary>
             {openItem.history.map(h=><div key={h.operationId}><h3>{h.action==='APPROVE'?'Approved':h.action==='FINALIZE'?'Finalized':'Reopened'}</h3>
               <p>{stampShort(h.occurredAt,openItem.card.timeZone)} · {h.actorName}{h.note?` · ${h.note}`:''}</p>
