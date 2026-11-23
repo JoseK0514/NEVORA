@@ -104,9 +104,9 @@ describe("BLive", () => {
       { label: "This week", value: "32 h", meta: "Mon to Sun" },
     ]} />);
     expect(markup).not.toContain('aria-label="Not clocked in');
-    // Final fixes K7: the space is screen-reader text, so a flex tile's name keeps it; an item's `aria` is not read.
+    // Final fixes K7: the space is screen-reader text, so a flex tile's name keeps it; a tile takes no aria-label.
     expect(markup).toContain('Not clocked in</span><span class="b-sr">\u00a0</span><span class="b-live__v">');
-    expect(html(<BLive label="x" items={[{ label: "Hours", value: "8 h", href: "/h", aria: "Hours, 8 worked" }]} />)).not.toContain("aria-label=\"Hours");
+    expect(markup).not.toContain("aria-label=\"Clocked in");
     const tiles = [...markup.matchAll(/<li class="b-live__i">([\s\S]*?)<\/li>/g)].map(match => text(match[1]));
     expect(tiles).toEqual(["Not clocked in 0", "Clocked in 3/12", "This week 32 h Mon to Sun"]);
   });
