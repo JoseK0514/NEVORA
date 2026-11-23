@@ -34,7 +34,7 @@ import {OwnerOnlyNotice} from '@/components/owner-only-notice';
 import {ClosedSettingsLine, closedSettingsSubject} from './closed-line';
 
 const text = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/[\s ]+/g, ' ').trim();
-const es = (node: React.ReactNode) => text(renderToStaticMarkup(createElement(PortalLangProvider, {lang: 'es'}, node)));
+const es = (node: React.ReactNode) => text(renderToStaticMarkup(createElement(PortalLangProvider, {lang: 'es', children: node})));
 /** Every key path of a copy table (function values count as leaves). */
 const paths = (value: unknown, prefix = ''): string[] => value && typeof value === 'object'
   ? Object.entries(value).flatMap(([key, inner]) => paths(inner, `${prefix}${key}.`)) : [prefix];
