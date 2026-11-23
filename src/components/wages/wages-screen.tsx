@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 import { DiscardGuard } from "@/components/kit/discard-dialog";
 import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
@@ -51,7 +52,8 @@ function Skeleton({ t }: { t: WagesCopy }) {
 }
 
 export function WagesScreen(props: WagesScreenProps) {
-  const { employeeId, name, firstName, backHref, timeZone, today, locations, defaultLocationIds, actors, actorId, lang = "en", initial } = props;
+  const { employeeId, name, firstName, backHref, timeZone, today, locations, defaultLocationIds, actors, actorId, lang: langProp, initial } = props;
+  const lang = useViewLang(langProp);
   const t = wagesCopy(lang);
   const now = useMemo(() => props.now ?? new Date(), [props.now]);
   const [load, setLoad] = useState<Load>(initial?.load ?? { state: "loading" });

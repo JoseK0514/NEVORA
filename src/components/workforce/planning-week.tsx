@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { WEEKDAYS } from "./weekdays";
@@ -18,8 +19,9 @@ const words = {
 };
 type Command = { kind: "PLANNING_CALENDAR"; operationId: string; startsOn: number; expectedRevision: number };
 
-export function PlanningWeekFields({ startsOn, revision, canEdit, owner, lang = "en", labelHidden = false }: { startsOn: number; revision: number; canEdit: boolean; owner: string; lang?: "en" | "es";
+export function PlanningWeekFields({ startsOn, revision, canEdit, owner, lang: langProp, labelHidden = false }: { startsOn: number; revision: number; canEdit: boolean; owner: string; lang?: "en" | "es";
   /** Phase 2 (C9): the rule's own row already names it ("Week starts on"), so the field's label is read only. */ labelHidden?: boolean }) {
+  const lang = useViewLang(langProp);
   const t = words[lang], days = WEEKDAYS[lang], router = useRouter();
   const [value, setValue] = useState(startsOn);
   const [saved, setSaved] = useState({ startsOn, revision });
@@ -57,3 +59,4 @@ export function PlanningWeekFields({ startsOn, revision, canEdit, owner, lang = 
     {state !== "unknown" ? <button type="submit" className="c-btn c-btn--secondary" disabled={locked || value === saved.startsOn} aria-busy={state === "saving" || undefined}>{state === "saving" ? t.saving : t.save}</button> : null}
   </form>;
 }
+export { words as PLANNING_WEEK_WORDS };

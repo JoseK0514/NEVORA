@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
 import { CorpCard, CorpRow, CorpRows } from "@/components/corp/corp";
@@ -16,7 +17,8 @@ import { costCopy, type CostLang } from "./cost-copy";
 
 type Row = { id: string; name: string; state: "loading" } | { id: string; name: string; state: "ready"; cost: LaborCost } | { id: string; name: string; state: "unavailable" };
 
-export function LaborCostCard({ weekStart, locations, lang = "en" }: { weekStart: string; locations: { id: string; name: string }[]; lang?: CostLang }) {
+export function LaborCostCard({ weekStart, locations, lang: langProp }: { weekStart: string; locations: { id: string; name: string }[]; lang?: CostLang }) {
+  const lang = useViewLang(langProp);
   const t = costCopy(lang);
   const [rows, setRows] = useState<Row[]>(locations.map(location => ({ ...location, state: "loading" as const })));
   const [hidden, setHidden] = useState(false);
