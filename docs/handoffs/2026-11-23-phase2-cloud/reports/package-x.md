@@ -21,8 +21,8 @@ Checks: `tsc --noEmit` clean; oxlint clean on the changed paths; tests pass in `
   workspace routing is configured (isolated workspace mode with a control database); the capture build runs the single
   company mode, so the Owner sees "Staff list import isn't available for this workplace yet." To show the three steps,
   the real step components (`AddListStep`, `ReviewStep` with two rows to fix, `DoneStep`) were rendered with fictional
-  rows and placed into the signed-in Owner page with the app's CSS. These rows are marked "static" in the sheet: they
-  show layout, words and states, not the live server answers. A live capture needs the step 4 isolated-workspace
+  rows and placed into the signed-in Owner page with the app's CSS. Every one of these captures is labelled "rendered from the component, not the live import" (sheet and `rows.json`):
+  they show layout, words and states, not the live server answers. A live capture needs the step 4 isolated-workspace
   lifecycle test (`src/test/integration/step4-production-screens.ts` already screenshots the import).
 - **Manager and location Manager:** the closed page ("Importing a staff list is for Owners", the Owner named once, Add
   one person), now back to Team.
@@ -47,6 +47,12 @@ profile's hidden "·" separators.
 - States: add, check with rows to fix, done (static); closed for Managers; not available for the Owner in this build.
 
 ## Left
+Proposed ledger row:
+
+| Row | Page | Problem | Next step |
+|---|---|---|---|
+| G-X1 | F3 Import a staff list (Owner) | The live import (check, import, the server's row errors) can't be captured on the desk/scoped capture build: the page and `/api/onboarding/roster` need workspace routing (isolated mode with a control database). The Owner steps in `shots/package-x/` are rendered from the component, not the live import. | Extend the step 4 isolated-workspace lifecycle test (`step4-production-screens.ts`) for 390, 768, 1440 and 200% text. |
+
 - Live Owner import captures need the isolated-workspace fixture (see above).
 - End sweep (proposed rows): I1 detail values (555-0126, Not added, Puerto Rico, Condado) are fixed px and don't grow at
   200% text, while the labels do. F3 step 1 opens with a paragraph on how the import works ("Paste rows from a
