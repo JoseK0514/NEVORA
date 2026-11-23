@@ -1,0 +1,98 @@
+[
+ {
+  "id": "A1",
+  "row": "A1",
+  "page": "Start (redirect) (English)",
+  "section": "Signed out and public",
+  "note": "Signed out, “/” goes straight to Sign in in one hop; unchanged from the last capture.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A1-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A1-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A1-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A1",
+  "row": "A1",
+  "page": "Start (redirect) (Spanish)",
+  "section": "Signed out and public",
+  "note": "Signed out, “/” goes straight to Sign in. The note that the app shows in English after sign-in is gone; the page now spaces exactly like English.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A1-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A1-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A1-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A2",
+  "row": "A2",
+  "page": "Sign in (English)",
+  "section": "Signed out and public",
+  "note": "Unchanged: pixel-identical to the previous capture at all three widths.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A2-public-en-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A2-public-en-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A2-public-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A2",
+  "row": "A2",
+  "page": "Sign in (Spanish)",
+  "section": "Signed out and public",
+  "note": "The note “Por ahora, la aplicación se muestra en inglés después de iniciar sesión.” is gone. “¿Necesitas ayuda?” and the footer now sit where English has them, with no gap; no overflow at any width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/A2-public-es-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/A2-public-es-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/A2-public-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
