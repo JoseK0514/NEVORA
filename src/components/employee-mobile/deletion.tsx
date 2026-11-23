@@ -1,5 +1,5 @@
 'use client';
-import {useState,type Ref,type RefObject} from 'react';
+import {useState,type ReactNode,type Ref,type RefObject} from 'react';
 import Link from 'next/link';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {EyeIcon} from '@phosphor-icons/react/dist/ssr/Eye';
@@ -16,7 +16,10 @@ export {receivedAt};
 export type DeletionView={state:DeletionFormState;pending:boolean;retry:boolean;confirmed:boolean;shown:boolean;period:string|null;retention:string|null};
 type Props={account:{name:string;role:string;employeeId:string};view:DeletionView;action(formData:FormData):void;outcomeRef?:RefObject<HTMLDivElement|null>;
  /** The phone screen's outcome (receipt or ended), focused instead of outcomeRef when it is the one on screen. */
- outcomeRefB?:RefObject<HTMLDivElement|null>;passwordRef?:Ref<HTMLInputElement>;onPassword(value:string):void;onShown():void;onConfirmed(value:boolean):void;workplace?:string|null};
+ outcomeRefB?:RefObject<HTMLDivElement|null>;passwordRef?:Ref<HTMLInputElement>;onPassword(value:string):void;onShown():void;onConfirmed(value:boolean):void;workplace?:string|null;
+ /** Owners and Managers (Nov 23, 2026: the same screen as the Employee's): where "What may be kept" opens, the Owner's
+  * workspace line, a quiet "Keep my account" under the red button, and the last-Owner card in place of the form. */
+ manager?:{keptHref:string;ownerNote?:ReactNode;lastOwner?:ReactNode}};
 
 
 const missing=(token:string)=><mark className="legal-unresolved">[CONFIRM_{token}]</mark>;
@@ -26,7 +29,7 @@ const support=(reference?:string)=><a className="em-delete-link" href={`mailto:$
  * account-deletion-form.tsx: the same action, password check, confirmation and outcomes. The consequences are the
  * service's actual ones (sessions, passkeys and calendar feeds end in the accepting transaction; alerts need a session;
  * erasure follows the runbook later). Nothing here decides an outcome. */
-export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB,passwordRef,onPassword,onShown,onConfirmed,workplace}:Props){
+export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB,passwordRef,onPassword,onShown,onConfirmed,workplace,manager}:Props){
  const {state,pending,retry,confirmed,shown,period}=view;
  const [invalid,setInvalid]=useState<'password'|'confirm'|null>(null);
  // Whether a password is typed for the current reply (the owner clears the field after each one): the phone's Delete
@@ -40,7 +43,8 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB
  return <CorpPage className="em-account em-delete" labelledBy="deletion-page-title">
   <CorpNav phoneOnly back={!receipt&&!ended?{href:'/app/profile#profile-account-deletion',label:'Profile'}:undefined} title={title} titleId="deletion-page-title"/>
   <CorpTitle wide title={title}/>
-  <EmployeeDeleteB state={state} period={period} workplace={workplace} outcomeRef={outcomeRefB} missingPeriod={missing('DELETION_COMPLETION_PERIOD')} support={support}/>
+  {manager?.lastOwner?<div className="em-account-stack">{manager.lastOwner}</div>:<>
+  <EmployeeDeleteB state={state} period={period} workplace={workplace} outcomeRef={outcomeRefB} missingPeriod={missing('DELETION_COMPLETION_PERIOD')} support={support} keptHref={manager?.keptHref} ownerNote={manager?.ownerNote}/>
   {/* On a phone the form stays this one (b-keep): its first two cards are the screen's, the rest is "Confirm it’s you". */}
   <div className={receipt||ended?'em-account-stack':'em-account-stack b-keep eb-delete-keep'} data-deletion-state={state.kind}>
    {receipt?<>
@@ -74,8 +78,8 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB
     </section>
     <section className="c-card eb-desk" aria-labelledby="deletion-kept-title">
      <div className="c-card__head"><h2 className="c-card__label" id="deletion-kept-title">What {workplace??'your employer'} keeps</h2></div>
-     <div className="c-card__body em-delete-copy"><p>Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</p></div>
-     <ul className="c-rows"><li><Link className="c-row c-row--one" href="/app/profile/account-deletion"><span className="c-row__main"><span className="c-row__title c-row__title--b c-link--l em-delete-kept">What may be kept</span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li></ul>
+     <div className="c-card__body em-delete-copy"><p>Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</p>{manager?.ownerNote?<p>{manager.ownerNote}</p>:null}</div>
+     <ul className="c-rows"><li><Link className="c-row c-row--one" href={manager?.keptHref??'/app/profile/account-deletion'}><span className="c-row__main"><span className="c-row__title c-row__title--b c-link--l em-delete-kept">What may be kept</span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li></ul>
     </section>
     {!pending&&(state.kind==='failed'||state.kind==='unavailable'||state.kind==='uncertain'||state.kind==='busy'||(checking&&state.kind==='wrong_password'))?<div className={`c-callout${state.kind==='failed'?' c-callout--red':''} em-delete-outcome`} ref={outcomeRef} tabIndex={-1} role="alert" aria-labelledby="deletion-outcome-title">
      <div><b id="deletion-outcome-title">{state.kind==='failed'?'Your request wasn’t sent':state.kind==='unavailable'?'Account deletion isn’t available right now':state.kind==='busy'?'Too many tries':'We don’t know yet if your request was saved'}</b>
@@ -105,10 +109,12 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB
     <div className="eb-delete-go">
     {state.kind!=='unavailable'?<button type="submit" className="c-btn c-btn--danger c-btn--full em-delete-confirm" data-armed={armed?'':undefined} disabled={pending}>{pending?(checking?'Checking…':'Sending request…'):checking?'Check my request':'Delete my account'}</button>:null}
     <p className="c-note c-note--center">This can’t be undone.</p>
+    {manager?<Link className="c-btn c-btn--secondary c-btn--full em-delete-keep" href="/app/profile" aria-disabled={pending||undefined} tabIndex={pending?-1:undefined} onClick={event=>{if(pending)event.preventDefault();}}>Keep my account</Link>:null}
     </div>
     </div>
    </form>}
   </div>
+  </>}
  </CorpPage>;
 }
 
