@@ -43,7 +43,8 @@ const en = {
   anOwner: "an Owner",
   // Escalation notes where an action is refused.
   publishDenied: (owners: string) => `You can’t publish here. Publishing this location isn’t part of your access, so ask ${owners}, or publish the locations you can.`,
-  leaveDenied: (owners: string) => `Time-off decisions aren’t part of your access. ${owners} decides time off at your locations.`,
+  // Queue review (Nov 23, 2026), each fact once: the band and title already say time off.
+  leaveDenied: (owners: string) => `${owners} decides requests at your locations.`,
   leaveDeniedTitle: "Time off is decided by an Owner",
   exceptionDenied: (owners: string) => `Reviewing time exceptions isn’t part of your access, or this one is your own. Ask ${owners} to review it.`,
 };
@@ -82,7 +83,7 @@ const es: PermissionCopy = {
   youUnavailable: "No se pudo cargar lo que puedes aprobar. Recarga la página para intentarlo de nuevo.",
   anOwner: "un dueño",
   publishDenied: owners => `No puedes publicar aquí. Publicar esta ubicación no es parte de tu acceso; pregúntale a ${owners} o publica las ubicaciones que sí puedes.`,
-  leaveDenied: owners => `Las decisiones de tiempo libre no son parte de tu acceso. ${owners} decide el tiempo libre en tus ubicaciones.`,
+  leaveDenied: owners => `${owners} decide las solicitudes en tus ubicaciones.`,
   leaveDeniedTitle: "Un dueño decide el tiempo libre",
   exceptionDenied: owners => `Revisar excepciones de tiempo no es parte de tu acceso, o esta es tuya. Pídele a ${owners} que la revise.`,
 };

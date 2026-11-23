@@ -536,6 +536,9 @@
 /* Nor Someone else's punch is waiting (K13, Phase 2): its one action is Done, which the pill covered on a portrait tablet,
  * and there is no place to keep. The screen still clears on time. */
 .content:has([data-clocker-state=other-person]) > .privacy { display: none; }
+/* The paused page (K15, Phase 2): from 1024px the panel's "Powered by VELANI LLC" names the company, so the © line under
+ * the card steps aside; phones and portrait tablets have no panel and keep it. */
+@media (min-width: 1024px) { .pausedLegal { display: none; } }
 /* A small landscape tablet (800x600; Phase 6): the whole PIN step, with Continue and the language switch, fits the
  * screen. After the component rules it adjusts, like the phone block below. Keys and buttons hold the 56px floor; only the gaps, the card's padding and the headline give way.
  * Review 30 (D35): counted in lines of text (40em is 640px at the default size), so a 1024x768 tablet at 200% text takes it. */

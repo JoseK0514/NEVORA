@@ -1,0 +1,242 @@
+[
+ {
+  "id": "d1-owner-list",
+  "row": "D1",
+  "page": "Timecards",
+  "section": "Owner: list",
+  "note": "Timecards list. On phones the band says the week once and the Team card carries the count; from 768 the text is rem, so 200% text scales evenly.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/d1-owner-list-320.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/d1-owner-list-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/d1-owner-list-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/d1-owner-list-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone 200% text",
+    "after": "img/d1-owner-list-390-200.webp"
+   },
+   {
+    "label": "Tablet 200% text",
+    "after": "img/d1-owner-list-768-200.webp"
+   },
+   {
+    "label": "Phone 320 200% text",
+    "after": "img/d1-owner-list-320-200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "d1-owner-sheet",
+  "row": "D1",
+  "page": "Timecards",
+  "section": "Owner: sheet",
+  "note": "A person's week (last week). An issue is said once, in the amber note. At large text the sheet wraps the name, stacks the figures and puts times under the date.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/d1-owner-sheet-320.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/d1-owner-sheet-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/d1-owner-sheet-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/d1-owner-sheet-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone 200% text",
+    "after": "img/d1-owner-sheet-390-200.webp"
+   },
+   {
+    "label": "Tablet 200% text",
+    "after": "img/d1-owner-sheet-768-200.webp"
+   },
+   {
+    "label": "Phone 320 200% text",
+    "after": "img/d1-owner-sheet-320-200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "d1-owner-review",
+  "row": "D1",
+  "page": "Timecards",
+  "section": "Owner: review",
+  "note": "Select and review on last week. From 768, Select is visible on the band as the glass action.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/d1-owner-review-320.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/d1-owner-review-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/d1-owner-review-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/d1-owner-review-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone 200% text",
+    "after": "img/d1-owner-review-390-200.webp"
+   },
+   {
+    "label": "Tablet 200% text",
+    "after": "img/d1-owner-review-768-200.webp"
+   },
+   {
+    "label": "Phone 320 200% text",
+    "after": "img/d1-owner-review-320-200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "d1-elena-list",
+  "row": "D1",
+  "page": "Timecards",
+  "section": "Manager (Elena): list",
+  "note": "Timecards list. On phones the band says the week once and the Team card carries the count; from 768 the text is rem, so 200% text scales evenly.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/d1-elena-list-320.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/d1-elena-list-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/d1-elena-list-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/d1-elena-list-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone 200% text",
+    "after": "img/d1-elena-list-390-200.webp"
+   },
+   {
+    "label": "Tablet 200% text",
+    "after": "img/d1-elena-list-768-200.webp"
+   },
+   {
+    "label": "Phone 320 200% text",
+    "after": "img/d1-elena-list-320-200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "d1-elena-sheet",
+  "row": "D1",
+  "page": "Timecards",
+  "section": "Manager (Elena): sheet",
+  "note": "A person's week (last week). An issue is said once, in the amber note. At large text the sheet wraps the name, stacks the figures and puts times under the date.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/d1-elena-sheet-320.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/d1-elena-sheet-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/d1-elena-sheet-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/d1-elena-sheet-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone 200% text",
+    "after": "img/d1-elena-sheet-390-200.webp"
+   },
+   {
+    "label": "Tablet 200% text",
+    "after": "img/d1-elena-sheet-768-200.webp"
+   },
+   {
+    "label": "Phone 320 200% text",
+    "after": "img/d1-elena-sheet-320-200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "d1-elena-review",
+  "row": "D1",
+  "page": "Timecards",
+  "section": "Manager (Elena): review",
+  "note": "Select and review on last week. From 768, Select is visible on the band as the glass action.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/d1-elena-review-320.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/d1-elena-review-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/d1-elena-review-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/d1-elena-review-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone 200% text",
+    "after": "img/d1-elena-review-390-200.webp"
+   },
+   {
+    "label": "Tablet 200% text",
+    "after": "img/d1-elena-review-768-200.webp"
+   },
+   {
+    "label": "Phone 320 200% text",
+    "after": "img/d1-elena-review-320-200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]

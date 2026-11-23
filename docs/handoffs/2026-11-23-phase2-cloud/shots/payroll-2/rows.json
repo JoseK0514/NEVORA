@@ -1,0 +1,214 @@
+[
+ {
+  "id": "G8-o",
+  "row": "G8",
+  "page": "Time exports",
+  "section": "Payroll and exports",
+  "note": "The Owner's Time exports for this week. The waiting line now reads 'Timecards can be approved from Mon, Nov 30.' because the Week field already shows Nov 23–29.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G8-o-390-v1.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G8-o-390-text200-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G8-o-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G8-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "The selected tab repeats the band title at 768 and 1440 (payroll-tabs.tsx, item 4, other session)."
+  ],
+  "endSweep": [
+   "Payroll tabs are 36px tall (kit G88)."
+  ]
+ },
+ {
+  "id": "G8-m",
+  "row": "G8",
+  "page": "Time exports (Manager)",
+  "section": "Payroll and exports",
+  "note": "The company-wide Manager's Time exports. The week appears once, and the line no longer repeats 'Go to Timecards' because the back link already goes there.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G8-m-390-v1.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G8-m-390-text200-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G8-m-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G8-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The band back link 'Timecards' is under 44px (kit G88)."
+  ]
+ },
+ {
+  "id": "G9-o-m",
+  "row": "G9",
+  "page": "Paid time export",
+  "section": "Payroll and exports",
+  "note": "Paid time export before anyone is included. 'Time exports' now appears once (the back link); the button reads 'Review who's included'. The Owner and the company-wide Manager see the same screen; the shots are the Owner's.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G9-o-390-v1.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G9-o-390-text200-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G9-o-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G9-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The back link 'Time exports' is under 44px at 768 (kit G88)."
+  ]
+ },
+ {
+  "id": "G10-ml",
+  "row": "G10",
+  "page": "My pay (location Manager)",
+  "section": "Payroll and exports",
+  "note": "Daniel's My pay is now the Employee Pay screen with his own statements, titled My pay. It has none yet, so it shows the Employee's empty state.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-ml-390-v1.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-ml-390-text200-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-ml-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-ml-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "From 768 the Manager shell hides .b-screen, so Owners and Managers see the Employee's corporate desktop half (This pay period, Recent pay statements) instead of the B desktop. That needs a shell change (Package K, same cause as Final fixes F10)."
+  ]
+ },
+ {
+  "id": "G10-o",
+  "row": "G10",
+  "page": "My pay (Owner)",
+  "section": "Payroll and exports",
+  "note": "The Owner's My pay is the same Employee Pay screen with the Owner's statements.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-o-390-v1.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-o-390-text200-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-o-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Same desktop shell note as G10-ml."
+  ]
+ },
+ {
+  "id": "G10-e-l",
+  "row": "G10",
+  "page": "Pay (Employee, Lead)",
+  "section": "Payroll and exports",
+  "note": "The Earlier card's replaced statement now shows its payday ('Fri, Nov 13', muted) and 'Replaced by the correction'. Rows are named by their visible text. The Lead's screen is identical; the shots are the Employee's (James).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-e-390-v1.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-e-390-text200-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-e-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 200% text the band and card sub-lines (For work…) stay at fixed px (kit text sizes)."
+  ]
+ },
+ {
+  "id": "G10-e-hist",
+  "row": "G10",
+  "page": "Pay history",
+  "section": "Payroll and exports",
+  "note": "Pay history uses the same rows, so the replaced statement keeps its date here too.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-e-hist-390-v1.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-e-hist-390-text200-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-e-hist-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-e-hist-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Back link 'Pay' under 44px at 768/1440 (kit G88)."
+  ]
+ }
+]
