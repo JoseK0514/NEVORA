@@ -1,5 +1,4 @@
 import {readFeatureFlags} from '../../../lib/feature-flags';
-import { readPortalLanguage } from "@/lib/activation/language.server";
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
 import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/service";
 import { readOperationalAuthority } from "@/lib/company-access/operational-scope.server";
