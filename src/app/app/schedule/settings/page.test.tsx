@@ -68,8 +68,8 @@ beforeEach(() => {
 it("keeps every rule group and native fragment destination available from section navigation", async () => {
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(html).toMatch(/<h1[^>]*>Scheduling rules<\/h1>/);
-  // Release 1 (board O-ScheduleRules): five rows that open in place, in the board's order, each with what it means.
-  const order = ["Weekly hour targets", "Staffing per location", "Recurring coverage", "Availability deadline", "Shift requests"].map(name => html.indexOf(`<b>${name}</b>`));
+  // Release 1 (board O-ScheduleRules): rows that open in place, in the board's order, each with what it means.
+  const order = ["Weekly hour targets", "Staffing per location", "Recurring coverage", "Availability deadline", "Shift requests"].map(name => html.indexOf(`<span class="c-rules__t">${name}</span>`));
   expect(order.every(index => index > 0)).toBe(true);
   expect([...order].sort((a, b) => a - b)).toEqual(order);
   for (const id of ["rules-deadline", "rules-policy"]) {
@@ -78,6 +78,8 @@ it("keeps every rule group and native fragment destination available from sectio
   // Sections keep the ids other pages link to (Owner setup, Team member detail).
   for (const id of ["coverage-staffing", "target-hours", "coverage-windows"]) expect(html).toContain(`id="${id}"`);
   expect(html).toContain('id="staffing-loc-1"');
+  // Phase 2 (C9): Direction B for real, so the rules carry no older-kit parts (Quiet, Wave B).
+  expect(html).not.toMatch(/class="[^"]*\b(?:q-(?!sheet|page q-sheet|sr")|wb-|wc-|wa-|sig-|nv-)/);
   expect(html).toContain('Save staffing and hours');
   expect(html).toMatch(/href="\/app\/schedule\?week=\d{4}-\d{2}-\d{2}"/);
 });
@@ -97,7 +99,7 @@ it("gives empty staffing and employee groups actionable setup paths without crea
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(html).toContain('href="/app/settings/locations"');
   expect(html).toContain('href="/app/employees"');
-  expect(html).toContain('Add a location first. <a href="/app/settings/locations" class="q-link">Locations</a>');
+  expect(html).toContain('Add a location first. <a href="/app/settings/locations" class="c-link">Locations</a>');
   expect(html).not.toContain('name="locationId"');
 });
 
@@ -122,7 +124,9 @@ it("exposes route validation and success feedback with alert/status semantics", 
 
 it("retains Owner policy editing and Manager read-only policy access", async () => {
   const manager = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
-  expect(manager).toContain('How trades and coverage work');
+  // Phase 2 (C9): the Manager reads the policy under the rule's own row, with who sets it.
+  expect(manager).toContain('An Owner sets these.');
+  expect(manager).toContain('How requests are approved');
   expect(manager).not.toContain('Save trade policy');
   rs.mocked(requireRoles).mockResolvedValue({id:"reviewer",role:"OWNER",firstName:"QA",lastName:"Reviewer",primaryLocationId:"loc-1"});
   const owner = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));

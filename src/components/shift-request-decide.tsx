@@ -1,9 +1,8 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { PendingButton } from "./wave-a/pending-button";
-import { PendingLabel } from "./employee-submit-button";
 import { guardSingleSubmit } from "./wave-a/single-submit";
 import { DecisionAsk } from "./owner-b/decision-parts";
+import { BBusyLabel } from "./owner-b/b-kit";
 import { useAskStep } from "./owner-b/ask-step";
 
 /* Jose (Nov 21, 2026): Decline on a swap, a cover request or a call-out, and Close request on open cover, ask first.
@@ -31,20 +30,39 @@ export function ShiftRequestDecide({ decline, declineWords = "Decline", pending 
     if (!form) return;
     guardSingleSubmit(form);
     const onSubmit = (event: SubmitEvent) => setDeclining(!!(event.submitter as HTMLElement | null)?.closest(".b-ask"));
-    const sync = () => { const now = form.getAttribute("aria-busy") === "true"; setBusy(now); if (now) closeAsk(); else setDeclining(false); };
+    let was = false;
+    const sync = () => {
+      const now = form.getAttribute("aria-busy") === "true"; setBusy(now);
+      if (now) closeAsk(); else setDeclining(false);
+      // IS-WA-2 (as PendingButton did): when the answer comes back as a line under the buttons, bring it into view and
+      // move focus to it, so the outcome is seen and read. A decided request draws its result in place instead.
+      if (was && !now) requestAnimationFrame(() => {
+        const result = form.querySelector<HTMLElement>(":scope > [role=alert], :scope > .form-error, :scope > .form-success");
+        if (!result) return;
+        if (!result.hasAttribute("tabindex")) result.tabIndex = -1;
+        result.scrollIntoView({ block: "center" });
+        result.focus({ preventScroll: true });
+      });
+      was = now;
+    };
     form.addEventListener("submit", onSubmit, true);
     const observer = new MutationObserver(sync);
     observer.observe(form, { attributes: true, attributeFilter: ["aria-busy"] });
     return () => { form.removeEventListener("submit", onSubmit, true); observer.disconnect(); };
   }, [form, closeAsk]);
-  if (open && !busy) return <DecisionAsk className="q-shift-ask" groupRef={host} titleRef={titleRef} groupLabel={ask.groupLabel} question={ask.question} consequence={ask.consequence}
+  if (open && !busy) return <DecisionAsk className="c-shreq__ask" groupRef={host} titleRef={titleRef} groupLabel={ask.groupLabel} question={ask.question} consequence={ask.consequence}
     keep={ask.keep} keepLabel={ask.keepLabel} onKeep={keep} go={ask.go} goLabel={ask.goLabel} goName="kind" goValue={decline} />;
   const saying = busy && declining;
-  return <div className="q-acts" ref={host}>
-    <button ref={openerRef} type="button" className="q-bs b-rowact b-rowact--quiet" data-busy={saying ? "true" : undefined} disabled={busy && !saying} aria-disabled={saying || undefined} aria-busy={saying || undefined}
+  const approving = busy && !declining && !!approve;
+  return <div className="c-shreq__acts" ref={host}>
+    <button ref={openerRef} type="button" className="c-btn c-btn--secondary b-rowact b-rowact--quiet" data-busy={saying ? "true" : undefined} disabled={busy && !saying} aria-disabled={saying || undefined} aria-busy={saying || undefined}
       aria-label={saying ? undefined : declineLabel} onClick={() => { if (!busy) openAsk(); }}>
-      <PendingLabel className="wa-btn__words" pending={saying} pendingText={pending}>{declineWords}</PendingLabel>
+      <BBusyLabel busy={saying} busyLabel={pending}>{declineWords}</BBusyLabel>
     </button>
-    {approve ? <PendingButton className="q-bs q-bs--go b-rowact b-rowact--go" name="kind" value={approve} pending="Approving…" label={approveLabel}>Approve</PendingButton> : null}
+    {/* Phase 2 (C12): Approve is the kit's busy label too (it was the older pending label); one tap, the form's own submit. */}
+    {approve ? <button type="submit" className="c-btn b-rowact b-rowact--go" name="kind" value={approve} aria-label={approving ? undefined : approveLabel}
+      aria-disabled={approving || undefined} aria-busy={approving || undefined} disabled={busy && !approving}
+      onClick={event => { if (event.currentTarget.form?.getAttribute("aria-busy") === "true") event.preventDefault(); }}>
+      <BBusyLabel busy={approving} busyLabel="Approving…">Approve</BBusyLabel></button> : null}
   </div>;
 }

@@ -61,10 +61,12 @@ it("distinguishes missing, intentionally unavailable and submitted windows witho
   const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"})).replace(/\u00a0/g, " ");
   // Quiet (v4): Not sent and Sent carry the counts; seeded hours on someone who hasn't sent don't count or show.
   // R12 / copy table 14: the kit's segmented control. Nov 1 upscale: counts read "Not sent 1", the figure in the kit's count style.
-  expect(html).toContain(">Not sent<span class=\"c-count c-num\">1</span></button>"); expect(html).toContain(">Sent<span class=\"c-count c-num\">2</span></button>");
+  // Phase 2 (C10): Not sent and Sent are the people card's filter chips (as on Team), each count said there only.
+  expect(html).toContain(">Not sent<b>1</b></button>"); expect(html).toContain(">Sent<b>2</b></button>");
   expect(html).not.toMatch(/\(\d+\)<\/button>/);
-  expect(html).toContain("2 of 3 sent");
-  expect(html).toContain('aria-label="Missing Person, No primary location, not sent"'); expect(html).not.toContain("7:00 AM");
+  expect(html).not.toContain("2 of 3 sent");
+  expect(html).not.toMatch(/class="[^"]*\b(?:q-(?!sheet|page q-sheet|sr")|wb-|wc-|wa-|sig-|nv-)/);
+  expect(html).toMatch(/Missing Person<\/span><span class="c-row__detail"><span>No primary location<\/span>/); expect(html).not.toContain("7:00 AM");
   // A link to someone who has sent opens the Sent list with their hours.
   const sent = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28",employeeId:"available"})).replace(/\u00a0/g, " ");
   expect(sent).toContain("6:00 AM – 2:00 PM"); expect(sent).toContain("Unavailable all week"); expect(sent).not.toContain("7:00 AM");
@@ -111,7 +113,9 @@ it('H12 actionable manager exception explains its reason outside the action grid
  rs.mocked(readShiftChangeAvailability).mockResolvedValueOnce({allowed:true,notice:'Projected scheduled overtime needs manager review.'});
  const html=renderToStaticMarkup(await ManagerShiftRequests({timeZone:'America/Puerto_Rico'}));
  expect(html).toContain('>Approve<');expect(html).toContain('Projected scheduled overtime needs manager review.');
- expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="q-acts"'));
+ // Phase 2 (C12): Direction B for real, so a waiting request carries no older-kit parts (Quiet, Wave, Signature).
+ expect(html).not.toMatch(/class="[^"]*\b(?:q-(?!sheet|page q-sheet|sr")|wb-|wc-|wa-|sig-|nv-)/);
+ expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="c-shreq__acts"'));
  expect(html).not.toMatch(/operationalProfile|weeklyMinutes|classification/);
 });
 
@@ -172,7 +176,7 @@ describe("management sees every shift in full before deciding (Codex review, Oct
     expect(namedFacts).toContain("Fictional Ana’s shift Mon, Oct 5 · 6:00 PM – 2:00 AM, ends Tue, Oct 6 · North Office");
     expect(namedFacts).toContain("Picked up by Fictional Ben");
     // OW-011: a request over a day old carries its age under the dates (phones and tablets show that line).
-    expect(named).toContain('<span class="q-rt__line b-req-age">11 d ago</span>');
+    expect(named).toContain('<span class="c-shreq__age">11 d ago</span>');
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([cover]);
     expect(text(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" }))))).toContain("Result Nobody has picked it up yet");
   });
@@ -198,6 +202,6 @@ describe("management sees every shift in full before deciding (Codex review, Oct
   it("a deep-linked request opens with its shifts showing", async () => {
     rs.mocked(listPendingCallouts).mockResolvedValue([]);
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "linked", requestRevision: 1, kind: "COVERAGE", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", createdAt: "2026-10-03T00:00:00Z", sourceShift: shift({}) as never }]);
-    expect(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", requestId: "linked" }))).toMatch(/<details class="q-details q-request__details" open="">/);
+    expect(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", requestId: "linked" }))).toMatch(/<details class="c-shreq__details" open="">/);
   });
 });
