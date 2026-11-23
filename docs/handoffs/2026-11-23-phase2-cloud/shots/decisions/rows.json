@@ -158,5 +158,225 @@
   ],
   "blocking": [],
   "endSweep": []
+ },
+ {
+  "id": "DEC6-lead-updates",
+  "row": "B6",
+  "page": "Updates (Lead)",
+  "section": "Home",
+  "note": "DEC6: the filter reads \"To confirm\" and the row's button \"Confirm\".",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC6-lead-updates-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC6-lead-updates-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC6-lead-updates-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "One row's screen-reader name differs from its text (axe label-content-name-mismatch on #b-message-…); also before DEC6."
+  ]
+ },
+ {
+  "id": "DEC6-lead-update-detail",
+  "row": "B7",
+  "page": "Update detail (Lead)",
+  "section": "Home",
+  "note": "DEC6: \"Confirm that you’ve read it. Opening it doesn’t count.\" and \"Confirm I read it\".",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC6-lead-update-detail-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC6-lead-update-detail-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC6-lead-update-detail-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC6-owner-update-detail",
+  "row": "B7",
+  "page": "Update detail (Owner)",
+  "section": "Home",
+  "note": "DEC6: the recipients card reads \"Confirmed · 0 of 10\".",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC6-owner-update-detail-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC6-owner-update-detail-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC6-owner-update-detail-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC7-person-access",
+  "row": "F4",
+  "page": "Person › Access and sign-in",
+  "section": "Team",
+  "note": "DEC7: Reset password reads \"Give them a link to set a new password\".",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC7-person-access-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC7-person-access-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC7-person-access-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC7-help-sign-in",
+  "row": "F9",
+  "page": "Help someone sign in",
+  "section": "Team",
+  "note": "DEC7: the band line reads \"Give someone a link to set a new password.\"",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC7-help-sign-in-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC7-help-sign-in-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC7-help-sign-in-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC8-timecards",
+  "row": "D1",
+  "page": "Timecards, last week",
+  "section": "Time",
+  "note": "DEC8: the steps line is gone from the page; the summary reads \"to approve · to finalize\". The line stays in the timecard sheet and the Select bar.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC8-timecards-last-week-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC8-timecards-last-week-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC8-timecards-last-week-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC9-clocker-offline",
+  "row": "K3",
+  "page": "Clocker offline (English and Spanish)",
+  "section": "Clocker",
+  "note": "DEC9: the band keeps \"No connection\"; the card reads \"Time can’t be recorded / This tablet is offline.\" (\"No se puede registrar el tiempo / Esta tableta está sin conexión.\").",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC9-clocker-offline-en-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC9-clocker-offline-en-390t.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/DEC9-clocker-offline-en-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone",
+    "after": "img/DEC9-clocker-offline-es-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC9-clocker-offline-es-390t.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/DEC9-clocker-offline-es-1024.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC10-clocker-unknown-id",
+  "row": "K4",
+  "page": "Clocker unknown Employee ID (English and Spanish)",
+  "section": "Clocker",
+  "note": "DEC10: \"Check your Employee ID and PIN, or ask your manager.\" (\"Revisa tu ID de empleado y tu PIN, o pide ayuda a tu gerente.\").",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC10-clocker-unknown-id-en-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC10-clocker-unknown-id-en-390t.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/DEC10-clocker-unknown-id-en-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone",
+    "after": "img/DEC10-clocker-unknown-id-es-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC10-clocker-unknown-id-es-390t.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/DEC10-clocker-unknown-id-es-1024.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
  }
 ]
