@@ -36,6 +36,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
      await q("UPDATE time_entries SET status='ON_BREAK' WHERE id=$1",[target.entry]);
      await q("INSERT INTO break_entries(id,time_entry_id,break_start_at) VALUES('UI-OPEN-BREAK',$1,clock_timestamp()-interval '1 hour')",[target.entry]);
     }
+    const targetRow=()=>page.getByRole("button").filter({has:page.getByText("Unavailable "+target.id,{exact:true})});
     let surfacePhase='login';const mark=(phase:string)=>checkpoint(engine+':'+actor+':'+phase);
     await mark('login:start');
     await page.addInitScript(()=>{
@@ -55,7 +56,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     // Use the actual shell link so a forced document navigation does not cancel Home initialization.
     const navigation=page.getByRole('navigation',{name:index?'Mobile navigation':'Primary navigation',exact:true});
     await navigation.locator('a[href="/app/timecards"]').click();await page.waitForURL(app.url+'/app/timecards');
-    await page.locator('[id="timecard-'+target.id+'"] button:visible, button[aria-label^="Unavailable '+target.id+',"]:visible').first().click();
+    await targetRow().click();
     // Preserve the ordinary supported person deep link across protected-tree remounts.
     await page.evaluate((id:string)=>{history.replaceState(history.state,'',location.pathname+location.search+'#timecard-'+id);},target.id);
     await page.locator('dialog[open]').waitFor();
@@ -97,7 +98,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
      // Retire the whole protected tree and remount it, then close/reopen its inspector.
      await page.evaluate(()=>window.dispatchEvent(new Event('blur')));releaseResponse();expect(await page.getByRole('button',{name:'Record close',exact:true}).count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
      await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
-     await page.locator('.cm-tc-done').click();await page.locator('[id="timecard-'+target.id+'"] button:visible, button[aria-label^="Unavailable '+target.id+',"]:visible').first().click();await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
+     await page.locator('.cm-tc-done').click();await targetRow().click();await page.getByRole('button',{name:'Retry same close',exact:true}).waitFor();
      // Replace the cookie from another tab: the original tab must not offer the
      // Owner's private recovery to a different actor. Returning as the Owner
      // re-establishes fresh authority without replacing the business operation.

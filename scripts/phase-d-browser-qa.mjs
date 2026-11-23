@@ -176,7 +176,7 @@ try{
      const showEarlier=ep.getByRole('button',{name:'Show earlier weeks',exact:true});await showEarlier.focus();assert(await showEarlier.evaluate(e=>document.activeElement===e));await ep.keyboard.press(nativeTab);assert(await ep.getByRole('link',{name:/^Your correction requests/}).evaluate(e=>document.activeElement===e),'Tab moves from Show earlier weeks to Your corrections');assert.equal(await ep.getByRole('link',{name:/^Your correction requests/}).getAttribute('href'),'/app/my-time?view=corrections','The focused correction link retains its canonical destination');}checked(engine+': period keyboard focus');
     const {context:management,page:mp}=await context(browser,'D3-M');await mp.goto(app.url+url);
     const card=mp.getByRole('dialog');
-    const timecardOpener=()=>mp.getByRole('button',{name:/^(Avery|Renamed) Period QA(?:,|$)/});
+    const timecardOpener=()=>mp.getByRole('button').filter({has:mp.getByText(/^(Avery|Renamed) Period QA$/,{exact:true})});
     const openCard=async()=>{await timecardOpener().click();await card.getByRole('heading',{name:/^(Avery|Renamed) Period QA$/}).waitFor();};
     // Owner premium: Timecards has no standing Refresh button (it reads fresh on load), so the re-read is a page reload.
     const refreshCards=async()=>{await card.getByRole('button',{name:'Done',exact:true}).click();await mp.reload();await openCard();};

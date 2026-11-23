@@ -38,3 +38,11 @@ Exact candidate `ac8ed370cea31df8445e1023079ad07a38058b27` passed [Mobile Access
 - The updated Clocker replay verifies each break's current exact label before changing it and still checks stored data. The owned Chromium and WebKit replay passed 104 checks at `756226965185a14d4afe786f3216297caf7d6308`. The Rondo replay checks the exact visible coverage receipt and selects the location's actions within its issue group. Its prior failure traces are retained.
 
 The branch ceiling remains an independent failure. Jose's Development hold stays in effect while the refs are preserved. No hosted acceptance or promotion is inferred from candidate verification.
+
+## Browser follow-up after `7daf584a`
+
+Candidate `7daf584a1e834369887b2bfbcd20aa3bbe457a01` passed a source-bound local production build, typecheck and all 28 Rondo checks across Chromium and WebKit. Its full Phase D Chromium run measured all seven employee widths, preserved the selected period and received the complete HTTP 200 timecard response on foreground return. The fixture then timed out opening the employee row. The failure screenshot shows the correct employee on screen. The phone row's accessible name now includes visible recorded time and status, so the follow-up locates the exact employee name within the row button and retains the original 15-second recovery deadline.
+
+The timecard close fixture now follows the active shell's Timecards link on both desktop and phone. This removes the forced document navigation that cut short startup reads, without introducing a requirement that disabled Commerce return success. It retains the real sign-in reads, opening the exact employee, personnel privacy, operation reconciliation and zero browser errors.
+
+Communications reached the withdrawal confirmation after selecting the shorter reviewed label. The captured failure screenshot then showed the correct withdrawal result rendered as a paragraph. The management result now exposes that same title as a heading, and the focused static regression was verified failing before and passing after the fix. The original browser heading, confirmation, audience and receipt assertions remain.
