@@ -12,6 +12,25 @@ branch.
 - Settings pages build on the shared parts on branch `claude-codex-collab-nevora-settings-base`
   (`src/app/app/settings/settings-b*.tsx`, `settings-b.css`). Additive changes only; say so in the report.
 
+## Late packages (lead, Nov 23, 14:20 UTC): rest of the app
+Jose's standing instruction for Phase 2 is the full app, not only the first 12 packages ("not the 12 package the full
+app"), and to keep starting new work as each part finishes ("if we have finish something continue creating sessions for
+new work"). These packages carry that out. Each session merges `origin/claude-codex-collab-nevora` (9596f934 or later)
+into its own branch first, pushes only to its own branch, and follows the Rules below. That includes the earlier
+"don't capture" lines in briefs, which these packages replace for the pages listed.
+
+| Package | Session branch | Pages |
+|---|---|---|
+| R: recapture held rows | `claude-codex-collab-nevora-core` | B1-O, B1-M, B2-Ml, B4-O-M, B9-O, B9-M, F9 (O, M), E1-M, J17 |
+| X | `claude-codex-collab-nevora-settings-final` | F3 Import a staff list (O, M, Mℓ) to Direction B; I1-Ml Profile matched to I1-O/M |
+| M | `claude-codex-collab-nevora-staff` | C12 Shift changes (O, M) to Direction B; C10 Availability (O) checked against C10-M |
+| P | `claude-codex-collab-nevora-batch-public` | A15 Plans, A16 Billing, A17 Billing return, A18 Facturación, A19 Pago |
+| K3 | `claude-codex-collab-nevora-clocker-states` | K3 Enter Employee ID (EN, ES) |
+| Z: regression sweep | `claude-codex-collab-nevora-sweep-1` | Every Jose-approved row: axe, 390 at 200% text, 1440; fix regressions only |
+
+Package P wording rule: billing, price, tax and legal wording stays word for word. Only a line that repeats another may
+come out, never be reworded, and each one removed is listed in the report for Jose. No real checkout or payment.
+
 ## Read first
 1. `CLAUDE.md`, `DESIGN.MD`, `.claude/skills/nevora-design-os/SKILL.md` (with its references; the page done gate is at
    the end), `docs/design/voice.md`, `docs/design/component-picks.md`.

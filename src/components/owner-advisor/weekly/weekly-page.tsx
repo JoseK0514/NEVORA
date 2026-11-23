@@ -357,7 +357,7 @@ function PlanForm({ week, setWeek, currentWeek, mode, setMode, scopeKind, setSco
           <span className="c-field__label" id="wk-week-label">Week</span>
           <div className="wk-week" role="group" aria-labelledby="wk-week-label">
             <button type="button" className="wk-step" aria-label="Previous week" disabled={week <= earliest} onClick={() => setWeek(addDays(week, -7))}><CaretLeftIcon weight="bold" aria-hidden="true" /></button>
-            <span className="wk-week__text" aria-live="polite">{weekText(week)}{week === currentWeek ? <span className="wk-week__now"> · This week</span> : null}</span>
+            <span className="wk-week__text" aria-live="polite">{weekText(week)}{week === currentWeek ? <span className="wk-week__now">{" ·\u00a0This\u00a0week"}</span> : null}</span>
             <button type="button" className="wk-step" aria-label="Next week" disabled={week >= latest} onClick={() => setWeek(addDays(week, 7))}><CaretRightIcon weight="bold" aria-hidden="true" /></button>
           </div>
         </div>
