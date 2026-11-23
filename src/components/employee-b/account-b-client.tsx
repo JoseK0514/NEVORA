@@ -237,12 +237,8 @@ export function EmployeeAlertsB({confirmationRef, feedbackRef, turnOffRef, endin
 
 /** Delete account (board E-DeleteAccount), the parts that aren't the form: what we delete and what your workplace keeps
  * (the form follows this screen, b-keep); the receipt; or the signed-out and changed-account outcomes. */
-export function EmployeeDeleteB({state, period, workplace, outcomeRef, missingPeriod, support, keptHref = '/app/profile/account-deletion', ownerNote}: {
+export function EmployeeDeleteB({state, period, workplace, outcomeRef, missingPeriod, support}: {
   state: DeletionFormState; period: string | null; workplace?: string | null; outcomeRef?: RefObject<HTMLDivElement | null>;
-  /** Where "What may be kept" opens: the Profile's policy page for Employees and Leads, the public page for Owners and Managers. */
-  keptHref?: string;
-  /** An Owner's extra line under what the workplace keeps (the workspace stays open; how to close it). */
-  ownerNote?: ReactNode;
   /** The unresolved-fact marker the page shows for a missing period. */
   missingPeriod: ReactNode; support: (reference?: string) => ReactNode;
 }) {
@@ -282,8 +278,7 @@ export function EmployeeDeleteB({state, period, workplace, outcomeRef, missingPe
         </BCard>
         <BCard title={`What ${workplace ?? 'your employer'} keeps`} id="b-deletion-kept">
           <p className="eb-para eb-para--lg eb-pad">Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</p>
-          {ownerNote ? <p className="eb-para eb-para--lg eb-pad">{ownerNote}</p> : null}
-          <ul className="b-list eb-list-top"><li className="b-li"><Link className="b-row b-row--link" href={keptHref}><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">What may be kept</span></span></span><Chev /></Link></li></ul>
+          <ul className="b-list eb-list-top"><li className="b-li"><Link className="b-row b-row--link" href="/app/profile/account-deletion"><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">What may be kept</span></span></span><Chev /></Link></li></ul>
         </BCard>
       </>}
     </BStack>

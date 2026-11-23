@@ -2,10 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
-import { LockSimpleIcon } from '@phosphor-icons/react/dist/ssr/LockSimple';
-import { Dotted } from '@/components/employee-b/parts';
+import { CorpCard, CorpRow } from '@/components/corp/corp';
 
 import { phoneDisplay } from '@/components/team/phone';
 import { createPrivateSnapshotController, type PrivatePanelState } from '@/lib/private-snapshot-client';
@@ -123,26 +121,27 @@ function saveMessage(error: AlertSave['error']) {
   return 'Not saved. Try again.';
 }
 
-/** One alert switch. Without onToggle (re-reading, or a size-holding copy) it reads as busy and ignores presses. */
+/** One alert switch, a kit row: the topic and its line left, the switch right. Without onToggle (re-reading, or a
+ * size-holding copy) it reads as busy and ignores presses. */
 function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: ManagerAlertTopic; save?: AlertSave; on: boolean; onToggle?: (topic: ManagerAlertTopic, on: boolean) => void; skeleton?: boolean }) {
   const busy = !!save?.pending || !onToggle;
   // Loading rows: the expected words drawn as grey text-shaped bars, so each row is exactly a ready row's size.
-  if (skeleton) return <li aria-hidden="true"><div className="nv-row pmp-switch-row pmp-topic-placeholder">
-    <span className="nv-row__text"><span className="nv-row__title"><span className="pmp-ghost">{topic.label}</span></span><span className="nv-row__meta"><span className="pmp-ghost">{topic.detail}</span></span></span>
-    <span className="pmp-switch" data-on="false" />
+  if (skeleton) return <li aria-hidden="true"><div className="c-row pmp-switch-row pmp-topic-placeholder">
+    <span className="c-row__main"><span className="c-row__title c-row__title--b"><span className="pmp-ghost">{topic.label}</span></span><span className="c-row__detail"><span className="pmp-ghost">{topic.detail}</span></span></span>
+    <span className="c-switch" aria-checked="false" />
   </div></li>;
   return <li>
     {/* While busy it says so and ignores presses, but stays enabled, so keyboard focus stays on it. */}
-    <button type="button" role="switch" aria-checked={on} className="q-row pmp-switch-row" style={{ paddingLeft: 36 }} data-topic={topic.id}
+    <button type="button" role="switch" aria-checked={on} className="c-row pmp-switch-row" data-topic={topic.id}
       aria-disabled={busy || undefined} aria-busy={save?.pending || undefined} onClick={() => { if (!busy) onToggle?.(topic, !on); }}>
-      <span className="q-rt"><b>{topic.label}</b>
+      <span className="c-row__main"><span className="c-row__title c-row__title--b">{topic.label}</span>
         {/* The detail, "Saving…" and a failed save share one cell sized to the longest, so the row never changes height. */}
-        <i className="pmp-meta-stack">
+        <span className="c-row__detail pmp-meta-stack">
           <span data-shown={!save?.pending && !save?.error}>{topic.detail}</span>
           <span data-shown={!!save?.pending}>Saving…</span>
           <span data-shown={!save?.pending && !!save?.error} className="pmp-save-error"><span>{saveMessage(save?.error ?? 'offline')}</span></span>
-        </i></span>
-      <span className="q-tog" aria-checked={on} aria-hidden="true" />
+        </span></span>
+      <span className="c-switch" aria-checked={on} aria-hidden="true" />
     </button>
   </li>;
 }
@@ -165,62 +164,47 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   const said = read.kind === 'failed' && retried === 'failed' ? 'Still couldn’t load your contact details, locations and alert choices.' : 'said' in read ? read.said : '';
   // What sizes the alert list while there is no ready read: the last read, or else the role's expected topics.
 
-  // Quiet (v4, approved Oct 23): who you are, three detail rows, then Notifications (its choices fold under it), this phone's
-  // alerts, Privacy and terms, and Sign out in red.
+  // Phase 2 (Nov 23, 2026): Direction B for real, the Employee Profile's frame and cards (CorpPage, band title, white
+  // raised cards, kit rows). Personal info (name, role, company, contact, time zone), Notifications (the alert switches,
+  // this device's alerts, All notifications), then the account cards. A Manager's read-only details say once, under the
+  // card, who can change them (Jose: it repeated on every field).
   const onCount = shown ? shown.alerts.filter(topic => overrides[topic.id] ?? topic.on).length : null;
-  // Final review B #24: a locked value's reason line has no closing period, as Company profile's ("Locked while you have
-  // shifts") and the field errors.
-  const changeLine = `${identity.changedBy || 'An Owner'} can change this`;
+  const changeNote = `${identity.changedBy || 'An Owner'} can change these details.`;
   const access = managerAccess(shown ? shown.locations : null, identity.locationsWord);
+  const value = (node: ReactNode) => <span className="pmp-value">{node}</span>;
   return <>
-    <div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{identity.name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase()}</span>
-      <div><h1>{identity.name}</h1><p><Dotted text={`${identity.owner ? 'Owner' : 'Manager'} · ${identity.company}`} /></p></div></div>
-    <p className="q-sr" role="alert" id="profile-read-said">{said}</p>
-    <p className="q-sr" role="status">{read.kind === 'paused' ? read.head : read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</p>
-    <ul className="q-list" id="profile-details-list" tabIndex={-1} aria-label="Your details" style={{ marginTop: 24 }}>
-      {/* Review B5 (NV-259): Phone follows Email's pattern: an Owner edits it on their team page (a chevron); otherwise it is
-        read-only and says so with a lock. */}
-      <li data-row="phone" style={rowStyle('phone')}>{identity.owner
-        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Phone, edit"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
-        // Review Nov 11 (MG-013): a Manager's read-only value says who can change it, in a grey line under it (it was a bare lock).
-        // Phase 8 (B #33): the value keeps the 16px lock beside it, as Company profile's locked values do (B5).
-        : <div className="q-row q-row--one pmp-fixed"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>None</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /></span><small className="pmp-fixed__why">{changeLine}</small></span></div>}</li>
-      <li data-row="email" style={rowStyle('email')}>{shown && !shown.contact.email && identity.owner
-        // Nov 1 upscale: one trailing pattern, label + grey value + chevron (no teal "Add").
-        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Email, not added. Add an email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">Not added</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
-        // MG-013: on a phone the address sits under its label with the row's whole width (manager-profile rules in
-        // owner-b-settings.css), so it stays on one line; if it must break, it still breaks only after the @ or before a
-        // dot (TC-02). A Manager's says who can change it, and is laid out as their locked Phone is (Phase 8, B #33).
-        : identity.owner
-          ? <div className="q-row q-row--one pmp-email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>None</span>)}</span></div>
-          : <div className="q-row q-row--one pmp-email pmp-fixed"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>None</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /></span><small className="pmp-fixed__why">{changeLine}</small></span></div>}</li>
-      <li><div className="q-row q-row--one"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{identity.timeZone.replace(/ time$/, '')}</span></div></li>
-      {/* Review Nov 11 (MG-013): what a Manager's access reaches, and what it covers. */}
-      {identity.owner ? null : <li data-row="access"><div className="q-row pmp-access"><span className="q-rt"><b>Access</b><i>{access.covers}</i></span>
-        <span className="q-rv q-rv--l">{access.value}</span></div></li>}
-    </ul>
-    {read.kind === 'failed' ? <button type="button" className="q-btn q-btn--quiet" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={() => onRetry('details')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
-    {read.kind === 'denied' ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : null}
+    <p className="c-sr" role="alert" id="profile-read-said">{said}</p>
+    <p className="c-sr" role="status">{read.kind === 'paused' ? read.head : read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</p>
+    <CorpCard id="profile-details" label="Personal info" footer={read.kind === 'failed'
+      ? <button type="button" className="c-btn c-btn--secondary c-btn--full" aria-busy={retrying || undefined} aria-describedby="profile-read-said" onClick={() => onRetry('details')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button>
+      : read.kind === 'denied' ? <Link className="c-btn c-btn--full" href="/login">Sign in</Link> : undefined}>
+      <ul className="c-rows" id="profile-details-list" tabIndex={-1} aria-label="Your details">
+        <li><CorpRow title="Name" bold one value={value(identity.name)} /></li>
+        {identity.owner ? <li><CorpRow title="Role" bold one value={value('Owner')} /></li>
+          : <li data-row="access"><CorpRow title="Role" bold detail={access.covers} value={value(access.value)} /></li>}
+        <li><CorpRow title="Company" bold one value={value(identity.company)} /></li>
+        <li data-row="phone" style={rowStyle('phone')}><CorpRow title="Phone" bold one value={<span className="pmp-value pmp-contact">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>{identity.owner ? 'Not added' : 'None'}</span>)}</span>} /></li>
+        <li data-row="email" style={rowStyle('email')}><CorpRow title="Email" bold one value={<span className="pmp-value pmp-contact pmp-email">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>{identity.owner ? 'Not added' : 'None'}</span>)}</span>} /></li>
+        <li><CorpRow title="Time zone" bold one value={value(identity.timeZone.replace(/ time$/, ''))} /></li>
+      </ul>
+      {identity.owner ? null : <p className="pmp-card-note">{changeNote}</p>}
+    </CorpCard>
     {authority}
-    <ul className="q-list" style={{ marginTop: 32 }} aria-label="Notifications and account">
-      <li><details className="q-details" id="profile-notifications"><summary className="q-row q-row--one"><span className="q-rt"><b>Notifications</b></span>
-        <span className="q-rv q-rv--l">{onCount === null ? read.head ?? '' : onCount ? 'On' : 'Off'}</span><CaretDownIcon className="q-chev q-chev--down" weight="bold" aria-hidden="true" /></summary>
-        <ul className="q-list" id="profile-alerts-list" tabIndex={-1} aria-label="You’re told about">
-          {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} />)
-            : <li><p className="q-help" style={{ margin: '0 20px 12px 36px' }}>{read.kind === 'loading' ? 'Checking…' : note}</p>
-              {read.kind === 'failed' ? <button type="button" className="q-btn q-btn--sec" aria-busy={retrying || undefined} onClick={() => onRetry('alerts')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}</li>}
-          <li><Link className="q-row q-row--one" href="/app/notifications" style={{ paddingLeft: 36 }}><span className="q-rt"><b>All notifications</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>
-        </ul>
-        <p className="q-sr" role="status">{announcement}</p>
-      </details></li>
-      {identity.deviceAlerts
-        // Nov 1 upscale: a row like its neighbours (label and chevron; the settings it opens say whether they're on), named
-        // for the device in hand: "this phone" on a phone, "this device" on tablets and desktop.
-        ? <li><button type="button" className="q-row q-row--one" id="profile-device-alerts" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this <span className="pmp-device-phone">phone</span><span className="pmp-device-other">device</span></b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></button></li>
-        : null}
-      {accountCards}
-    </ul>
-    {/* Owner premium A9: Sign out lives once, at the end of More (phone) and in the sidebar (desktop), not here too. */}
+    <CorpCard id="profile-notifications" label="Notifications" aside={<span className="pmp-aside">{onCount === null ? read.head ?? '' : onCount ? 'On' : 'Off'}</span>}>
+      <ul className="c-rows" id="profile-alerts-list" tabIndex={-1} aria-label="You’re told about">
+        {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} />)
+          : <li className="pmp-topics-note"><p className="c-row__detail">{read.kind === 'loading' ? 'Checking…' : note}</p>
+            {read.kind === 'failed' ? <button type="button" className="c-btn c-btn--secondary c-btn--full" aria-busy={retrying || undefined} onClick={() => onRetry('alerts')}><Labels busy={retrying} idle="Try again" working="Trying again…" /></button> : null}
+            {read.kind === 'denied' ? <Link className="c-btn c-btn--full" href="/login">Sign in</Link> : null}</li>}
+        {identity.deviceAlerts
+          // A row like its neighbours, named for the device in hand: "this phone" on a phone, "this device" elsewhere.
+          ? <li><button type="button" className="c-row c-row--one" id="profile-device-alerts" popoverTarget="portal-device-settings"><span className="c-row__main"><span className="c-row__title c-row__title--b">Alerts on this <span className="pmp-device-phone">phone</span><span className="pmp-device-other">device</span></span></span><CaretRightIcon weight="bold" className="c-chev" aria-hidden="true" /></button></li>
+          : null}
+        <li><CorpRow href="/app/notifications" title="All notifications" bold one /></li>
+      </ul>
+      <p className="c-sr" role="status">{announcement}</p>
+    </CorpCard>
+    {accountCards}
   </>;
 }
 

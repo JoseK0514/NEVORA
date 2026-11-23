@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { QuietNav } from '@/components/quiet/quiet';
+import { CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from '@/components/corp/corp';
+import { policiesVisible } from '@/lib/legal/policies';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { navigationForRole } from '@/lib/navigation';
 import { headers } from 'next/headers';
@@ -17,7 +17,6 @@ import { listEmployees } from '@/lib/data/employees';
 import { ownerNames } from '@/components/owner-only-notice';
 import { wordPreset } from '@/lib/workspace-presentation/words';
 import { PasskeySection } from '@/components/passkeys/passkey-section';
-import { AccountPrivacyLinks } from '@/components/legal/account-privacy-links';
 import './manager-profile-upscale.css';
 import { readPortalLanguage } from '@/lib/activation/language.server';
 import { listWorkforcePermissions } from '@/lib/workforce/authority.server';
@@ -56,28 +55,42 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
       locationNames = Object.fromEntries(catalog.map(location => [location.id, location.shortName || location.name]));
     } catch { authority = { state: 'unavailable' }; }
   }
-  return <div className="q-page premium-manager-profile c-page--narrow" data-nv-page="">
-    <QuietNav back={{ href: "/app/more", label: "More" }} right={owner ? <Link className="q-nav__r" href={`/app/employees/${encodeURIComponent(proof.employee.id)}?edit=1`}>Edit</Link> : undefined} />
-    <div className="pmp-content">
-      <ManagerProfileLive key={proof.employee.id} initial={initial} identity={{
-        employeeId: proof.employee.id,
-        name: `${proof.employee.firstName} ${proof.employee.lastName}`.trim(),
-        owner,
-        company: workspace.name,
-        timeZone: timeZoneLabel(workspace.timeZone),
-        payHref: offersPay ? '/app/my-pay' : null,
-        // Review B5 (NV-061): in the phone app the row opens the app's own alert settings, so it follows the app's
-        // registration config (as the shell's device popover does), not the browser's web-push switch.
-        deviceAlerts: nativeApp ? !!readNativeRegistrationConfig(process.env) : readNotificationConfig(process.env).featureEnabled,
-        payrollAlerts: payrollFeatureEnabled(),
-        changedBy,
-        locationsWord: wordPreset(brand.words).en.locations.toLowerCase(),
-      }} authority={authority ? <ManagerAuthoritySection authority={authority} locationNames={locationNames} owners={changedBy} lang={profileLang} /> : null} accountCards={<>
-        {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}
-        {/* Codex B-01: the passkeys row is a list item like its neighbours; the item hides while passkeys are off. */}
-        <li className="pmp-passkeys"><PasskeySection asRow /></li>
-        <AccountPrivacyLinks variant="quiet" />
-      </>} />
-    </div>
-  </div>;
+  // Phase 2 (Nov 23, 2026): the Employee Profile's Direction B frame (CorpPage; "‹ More" and the title in the phone band,
+  // the large title on tablets and desktop), its cards and rows. An Owner's Edit sits in the band.
+  const edit = owner ? <CorpButtonLink href={`/app/employees/${encodeURIComponent(proof.employee.id)}?edit=1`} kind="secondary" size="sm">Edit</CorpButtonLink> : undefined;
+  const policies = policiesVisible();
+  return <CorpPage className="premium-manager-profile pmp-b c-page--narrow" labelledBy="profile-title">
+    <CorpNav phoneOnly back={{ href: "/app/more", label: "More" }} title="Profile and settings" titleId="profile-title" right={edit} />
+    <CorpTitle wide title="Profile and settings" actions={edit} />
+    <ManagerProfileLive key={proof.employee.id} initial={initial} identity={{
+      employeeId: proof.employee.id,
+      name: `${proof.employee.firstName} ${proof.employee.lastName}`.trim(),
+      owner,
+      company: workspace.name,
+      timeZone: timeZoneLabel(workspace.timeZone),
+      payHref: offersPay ? '/app/my-pay' : null,
+      // Review B5 (NV-061): in the phone app the row opens the app's own alert settings, so it follows the app's
+      // registration config (as the shell's device popover does), not the browser's web-push switch.
+      deviceAlerts: nativeApp ? !!readNativeRegistrationConfig(process.env) : readNotificationConfig(process.env).featureEnabled,
+      payrollAlerts: payrollFeatureEnabled(),
+      changedBy,
+      locationsWord: wordPreset(brand.words).en.locations.toLowerCase(),
+    }} authority={authority ? <ManagerAuthoritySection authority={authority} locationNames={locationNames} owners={changedBy} lang={profileLang} /> : null} accountCards={<>
+      {/* As on the Employee Profile: Security holds passkeys (the row hides while they are off) and Delete my account;
+        * the policies and Support are their own card. Each hides while the policies are unpublished. */}
+      <CorpCard id="profile-security" label="Security">
+        <CorpRows>
+          <li className="pmp-passkeys"><PasskeySection asRow /></li>
+          {policies ? <li><CorpRow id="profile-account-deletion" href="/app/account/delete" title="Delete my account" bold one danger /></li> : null}
+        </CorpRows>
+      </CorpCard>
+      {policies ? <CorpCard id="profile-privacy" label="Privacy and terms">
+        <CorpRows>
+          <li><CorpRow href="/privacy" title="Privacy Policy" bold one prefetch={false} /></li>
+          <li><CorpRow href="/terms" title="Terms of Use" bold one prefetch={false} /></li>
+          <li><CorpRow href="/support" title="Support" bold one prefetch={false} /></li>
+        </CorpRows>
+      </CorpCard> : null}
+    </>} />
+  </CorpPage>;
 }

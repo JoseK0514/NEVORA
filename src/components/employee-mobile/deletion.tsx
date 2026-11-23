@@ -44,9 +44,10 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB
   <CorpNav phoneOnly back={!receipt&&!ended?{href:'/app/profile#profile-account-deletion',label:'Profile'}:undefined} title={title} titleId="deletion-page-title"/>
   <CorpTitle wide title={title}/>
   {manager?.lastOwner?<div className="em-account-stack">{manager.lastOwner}</div>:<>
-  <EmployeeDeleteB state={state} period={period} workplace={workplace} outcomeRef={outcomeRefB} missingPeriod={missing('DELETION_COMPLETION_PERIOD')} support={support} keptHref={manager?.keptHref} ownerNote={manager?.ownerNote}/>
+  {/* Owners and Managers: the kit cards on every width (the Employee's phone screen is tied to the Employee shell). */}
+  {manager?null:<EmployeeDeleteB state={state} period={period} workplace={workplace} outcomeRef={outcomeRefB} missingPeriod={missing('DELETION_COMPLETION_PERIOD')} support={support} />}
   {/* On a phone the form stays this one (b-keep): its first two cards are the screen's, the rest is "Confirm it’s you". */}
-  <div className={receipt||ended?'em-account-stack':'em-account-stack b-keep eb-delete-keep'} data-deletion-state={state.kind}>
+  <div className={receipt||ended||manager?'em-account-stack':'em-account-stack b-keep eb-delete-keep'} data-deletion-state={state.kind}>
    {receipt?<>
     <div className="c-card" ref={outcomeRef} tabIndex={-1} role="status" aria-labelledby="deletion-done-title">
      <div className="c-card__head"><h2 className="c-card__label">Your request</h2><div className="c-card__aside"><CorpPill tone="teal">Received</CorpPill></div></div>
@@ -89,7 +90,7 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB
        :'The connection ended before NEVORA answered. Enter your password again and choose Check my request to find out. If it wasn’t saved, this sends your deletion request now, so only check if you still want your account deleted.'}</p>
       {state.kind==='uncertain'||(checking&&state.kind!=='unavailable')?<p>You can also email {support()}. We’ll never ask for your password.</p>:null}</div>
     </div>:null}
-    <div className="eb-confirm"><h2 className="eb-confirm__h">Confirm it’s you</h2>
+    {(()=>{const fields=<>
     <div className="c-field">
      <label className="c-field__label" htmlFor="deletion-password">Enter your password to confirm</label>
      <span className="c-in__wrap"><input className="c-in em-delete-password" ref={passwordRef} id="deletion-password" name="password" type={shown?'text':'password'} autoComplete="current-password" required disabled={pending}
@@ -111,7 +112,9 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB
     <p className="c-note c-note--center">This can’t be undone.</p>
     {manager?<Link className="c-btn c-btn--secondary c-btn--full em-delete-keep" href="/app/profile" aria-disabled={pending||undefined} tabIndex={pending?-1:undefined} onClick={event=>{if(pending)event.preventDefault();}}>Keep my account</Link>:null}
     </div>
-    </div>
+    </>;
+    return manager?<section className="c-card ad-confirm" aria-labelledby="deletion-confirm-title"><div className="c-card__head"><h2 className="c-card__label" id="deletion-confirm-title">Confirm it’s you</h2></div><div className="c-card__body ad-confirm__body">{fields}</div></section>
+     :<div className="eb-confirm"><h2 className="eb-confirm__h">Confirm it’s you</h2>{fields}</div>;})()}
    </form>}
   </div>
   </>}
