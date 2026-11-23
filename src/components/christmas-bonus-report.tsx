@@ -82,9 +82,9 @@ export function ChristmasBonusView({ report, choices }: { report: ChristmasBonus
   return <CorpPage className="c-bonus c-page--narrow" labelledBy="bonus-title">
     <CorpNav back={{ href: "/app/reports", label: "Insights" }} title="Christmas bonus hours" titleId="bonus-nav-title" phoneOnly />
     {/* D11: the year is the band's pill (a menu), as Insights keeps its period; on a phone it sits under the title. */}
-    <CorpTitle id="bonus-title" title="Christmas bonus hours" sub="All locations" wide
-      actions={<BonusYearMenu id="bonus-year-menu" current={year.endYear} choices={years} />} />
-    <div className="c-phone-sub c-bonus__phoneyear"><BonusYearMenu id="bonus-year-menu-phone" current={year.endYear} choices={years} /></div>
+    <CorpTitle id="bonus-title" title="Christmas bonus hours" sub={<>{keepWhole(formatDateRange(year.startDate, year.endDate))} · All locations</>} wide
+      actions={<BonusYearMenu id="bonus-year-menu" current={year.endYear} choices={years} text="Bonus year" />} />
+    <div className="c-phone-sub c-bonus__phoneyear"><BonusYearMenu id="bonus-year-menu-phone" current={year.endYear} choices={years} text={formatDateRange(year.startDate, year.endDate)} /></div>
     <CorpCard id="bonus-about" ariaLabel="About this report">
       {/* The disclaimer is the kit's information note (Jose's words unchanged as its body). */}
       <BCallout tone="teal" icon="info" title={DISCLAIMER_TITLE.replace(/\.$/, "")}>{DISCLAIMER_REST.join(" ")}</BCallout>
