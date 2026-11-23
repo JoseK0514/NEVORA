@@ -111,7 +111,7 @@ const en = {
 };
 const es: typeof en = {
   title: 'Ajustes de nómina', payroll: 'Nómina',
-  scope: 'Calcula la nómina y comparte los comprobantes. Tú le pagas a tu equipo fuera de NEVORA.',
+  scope: 'Calcula el pago y comparte los comprobantes. Tú le pagas a tu equipo fuera de NEVORA.',
   loading: 'Cargando los ajustes de nómina…', tryAgain: 'Intentar de nuevo',
   unsavedStart: 'Estas son preferencias iniciales sin guardar. Elige los ajustes de tu empresa y una fecha de vigencia.',
   unsavedNative: 'La nómina en NEVORA usa el tiempo registrado verificado y los datos de nómina de cada empleado.',
