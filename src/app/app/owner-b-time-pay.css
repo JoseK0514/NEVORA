@@ -263,13 +263,16 @@
    * keeps its dash tight (Inter's tabular dash is wide). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hkicker__when:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 500 !important; color: var(--b-on-band-2) !important; white-space: nowrap !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hbig:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-variant-numeric: normal !important; font-feature-settings: normal !important; }
-  /* #6: at 320px the Settings pill keeps the title's row; the cadence line wraps under both. */
+  /* #6: at 320px the Settings pill keeps the title's row; the cadence line wraps under both. Final fixes K (Nov 23, 2026):
+   * a wrapping row instead of a two-column grid, so when the title and the pill no longer fit side by side (200% text:
+   * "Payroll" with Settings, "Pay" with "See your hours") the pill drops under the title instead of covering it. At the
+   * default size the title fills the row and the pill ends it, as the grid drew. */
   @media (max-width: 359px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; align-items: center !important; column-gap: var(--b-space-12) !important; row-gap: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; column-gap: var(--b-space-12) !important; row-gap: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: contents !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > *:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 1 / -1 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > h1:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 1 !important; grid-row: 1 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title > .b-title__right:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 2 !important; grid-row: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > *:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 2 !important; flex: 0 0 100% !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > h1:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 0 !important; flex: 1 1 auto !important; min-width: min-content !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title > .b-title__right:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 1 !important; flex: none !important; }
   }
   /* #17: Payroll history's View and Download end on the card's text edge, where the amounts and chevrons above end. */
   @media (min-width: 768px) {
@@ -535,4 +538,23 @@
       :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table .c-tc-st > :is(.b-status, .b-chip):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { flex: 0 1 auto !important; min-width: 0 !important; }
     }
   }
+}
+
+/* The phone select and review view (the Corp layout under 768px, Nov 23, 2026 follow-up): its title, week words, review
+ * button, count and hours were fixed px, so at 200% text they stayed small beside text that doubled. Each is now the
+ * same size in rem (24/30, 13/18, 13, 15/20 at a 16px root), and the fixed heights become minimums of the same values,
+ * so the default size is unchanged and the controls grow with the text. Cancel keeps its width and the review button
+ * moves under it, at the right edge, when the two no longer fit side by side. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) > header.c-title h1:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 1.5rem !important; line-height: 1.875rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) > header.c-title .c-title__sub:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) > header.c-title .c-title__sub .b-segs__i:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: inherit !important; line-height: inherit !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-seg:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { height: auto !important; min-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-seg > button:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.8125rem !important; height: auto !important; min-height: 36px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot .c-btn:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.9375rem !important; line-height: 1.25rem !important; height: auto !important; min-height: 48px !important; padding-top: 4px !important; padding-bottom: 4px !important; white-space: normal !important; text-align: center !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { height: auto !important; flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot > .c-tc-flow__cancel:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { flex: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot > .c-btn:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { margin-left: auto !important; max-width: 100% !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-rows :is(.c-row__value, .c-row__value .c-num):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.9375rem !important; line-height: 1.25rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-rows .c-row:not(.c-tc-day):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { height: auto !important; }
 }
