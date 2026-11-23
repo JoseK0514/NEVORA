@@ -100,7 +100,8 @@ it('unknown mandatory rules never expose a generic management Approve',async()=>
 });
 
 rs.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:rs.fn(async()=>({allowed:false,notice:'Needs Owner rule review'}))}));
-rs.mock('@/lib/data/shift-change-views',()=>({readShiftChangeHistoryView:async()=>[]}));
+const history=rs.hoisted(()=>({events:[] as unknown[]}));
+rs.mock('@/lib/data/shift-change-views',()=>({readShiftChangeHistoryView:async()=>history.events}));
 
 it('missing current revision never fabricates a mutation identity',async()=>{
  rs.mocked(listPendingCallouts).mockResolvedValue([{id:'missing-revision',shiftId:'s',employeeId:'e1',employeeName:'Fictional',locationId:'loc',locationName:'North',weekStart:'2026-10-05',date:'2026-10-05',startTime:'08:00',endTime:'12:00',reasonCode:'OTHER',status:'PENDING',createdAt:'2026-10-03T00:00:00Z'}]);
@@ -204,4 +205,21 @@ describe("management sees every shift in full before deciding (Codex review, Oct
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "linked", requestRevision: 1, kind: "COVERAGE", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", createdAt: "2026-10-03T00:00:00Z", sourceShift: shift({}) as never }]);
     expect(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", requestId: "linked" }))).toMatch(/<details class="c-shreq__details" open="">/);
   });
+});
+
+it("Phase 2 (C12): a decided request's history reads in plain words, each shift once", async () => {
+  rs.mocked(listTeamExchangeActivity).mockResolvedValueOnce([]);
+  const { listTeamCalloutHistory } = await import("@/lib/data/callouts");
+  rs.mocked(listTeamCalloutHistory).mockResolvedValueOnce([{ id: "done-1", shiftId: "s", employeeId: "e1", employeeName: "Fictional Blair", locationId: "loc", locationName: "North", weekStart: "2026-12-07", date: "2026-12-09", startTime: "08:00", endTime: "16:00", reasonCode: "ILLNESS", status: "APPROVED", releaseApplies: true, createdAt: "2026-11-23T11:42:37.000Z", coverage: [] }] as never);
+  history.events = [
+    { revision: 1, event: "created", at: "2026-11-23T11:42:37.000Z", source: "2026-12-09 · 08:00 – 16:00 · Location loc-2 · Position qa-pos2 · No shift lead", target: null, mode: null },
+    { revision: 2, event: "completed", at: "2026-11-23T12:28:16.000Z", source: "2026-12-10 · 09:00 – 17:00 · Location loc-2 · Position qa-pos2 · Shift lead", target: null, mode: "MANAGER" },
+  ];
+  const html = renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", tab: "activity" })).replace(/\u00a0/g, " ");
+  history.events = [];
+  expect(html).toContain("Created · Nov 23, 7:42 AM");
+  expect(html).toContain("Completed by a manager · Nov 23, 8:28 AM");
+  // The first step's shift is the row's own line, so it isn't repeated; the changed one is said in full.
+  expect(html).toContain("Thu, Dec 10 · 9:00 AM – 5:00 PM · Shift lead");
+  expect(html).not.toMatch(/revision \d|loc-2|qa-pos2|2026-11-23T|16:00/);
 });
