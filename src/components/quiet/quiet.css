@@ -230,7 +230,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-qa .q-bs[aria-disabled="true"] { color: var(--q-faint) !important; }
 /* A row whose value is typed in place, and a row that opens to show more fields. */
 :is(#q-root, html) .q-input-row input { flex: 1; min-width: 0; min-height: 0; height: 52px; padding: 0; border: 0; background: none; color: var(--q-ink); font: inherit; font-size: 17px; line-height: 22px; text-align: right; outline: none; }
-:is(#q-root, html) .q-input-row input::placeholder { color: var(--q-faint); }
+:is(#q-root, html) .q-input-row input::placeholder { color: var(--q-tab); } /* 4.5:1 or more on white, as every field (release batch, Nov 23) */
 :is(#q-root, html) .q-input-row:focus-within { box-shadow: inset 0 -2px 0 var(--q-ink); }
 :is(#q-root, html) .q-details > summary { list-style: none; cursor: pointer; }
 :is(#q-root, html) .q-details > summary::-webkit-details-marker { display: none; }
