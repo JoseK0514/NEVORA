@@ -300,7 +300,7 @@ export function EmployeeUpdateB({back, item, busy, onAction, withdraw, onWithdra
         </BCard>
         {item.canWithdraw ? <BCard title="Your published update" id="b-update-withdraw">
           <div className="eb-status">{withdraw ? <>
-            <p className="eb-para">Withdraw this version? It will no longer be available to its recipients. This does not undo earlier reading or acknowledgement.</p>
+            <p className="eb-para">Withdraw this version? It will no longer be available to its recipients. This doesn’t undo earlier reads or confirmations.</p>
             <div className="eb-btns"><BButton kind="quiet" disabled={busy} onClick={() => onWithdraw(false)}>Keep update</BButton><button type="button" className="b-btn eb-btn-danger" disabled={busy} onClick={() => onAction('WITHDRAW')}>Confirm withdrawal</button></div>
           </> : <button type="button" className="b-btn eb-btn-danger-quiet b-btn--full" disabled={busy} onClick={() => onWithdraw(true)}>Withdraw update</button>}</div>
         </BCard> : null}
