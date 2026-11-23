@@ -1085,3 +1085,18 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] :is(.c-btn, .q-btn, .q-bs, .wc-btn, .eb-fix-send, .eb-signout__btn, .eb-btn-outline-danger, .button):not(#bs1):not(#bs2):not(#bs3):not(#bs4):not(#bs5):not(#bs6):not(#bs7) { border-radius: var(--b-radius-btn) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-btn, .b-rowact, .nv-btn):focus-visible:not(#bs1):not(#bs2):not(#bs3):not(#bs4):not(#bs5):not(#bs6):not(#bs7) { border-radius: var(--b-radius-btn) !important; }
 }
+
+/* Z3 (A4-05, Nov 23, 2026): forced colours (Windows High Contrast and similar). The mode drops fills and box-shadows, so a
+ * button drawn only by its fill read as plain text (Decline and Approve on Time off, Save shift, New update), the chosen
+ * tab of a corporate segment looked like the others, focus rings drawn as shadows vanished on fields, and status dots
+ * drawn as fills disappeared. Each gets a real edge in a system colour. Same layer and !important as the kit rules that
+ * set `border: 0` on these buttons, with more weight so this wins; nothing changes outside forced colours. */
+@layer nv-b {
+  @media (forced-colors: active) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.b-btn, .c-btn, .q-bs, .q-btn, .b-rowact, .nv-btn, button.primary, .rs-act, .c-select-btn, .c-icon-btn, .command-finder-trigger, .nevora-action-menu-trigger):not(.b-row, .c-row, .q-row):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { border: 1px solid ButtonText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.b-btn, .c-btn, .q-bs, .q-btn, .b-rowact, .nv-btn, button.primary):is(:disabled, [aria-disabled="true"]):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { border-color: GrayText !important; color: GrayText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.b-seg, .c-seg, .q-seg, .b-filters, .eb-lseg, .c-pay-tabs, .c-tc-seg, [role="tablist"]) > :is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [aria-selected="true"]):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { outline: 2px solid Highlight !important; outline-offset: -2px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(input, select, textarea, button, a, summary, [tabindex]):focus-visible:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { outline: 2px solid Highlight !important; outline-offset: 2px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.mb-dot, .b-dot, .eb-unread, .b-week__d > i.has, .b-week__d > i.gap):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { forced-color-adjust: none !important; background: CanvasText !important; }
+  }
+}
