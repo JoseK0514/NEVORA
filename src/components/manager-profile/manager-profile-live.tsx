@@ -127,16 +127,16 @@ function TopicRow({ topic, save, on, onToggle, skeleton = false }: { topic: Mana
   const busy = !!save?.pending || !onToggle;
   // Loading rows: the expected words drawn as grey text-shaped bars, so each row is exactly a ready row's size.
   if (skeleton) return <li aria-hidden="true"><div className="c-row pmp-switch-row pmp-topic-placeholder">
-    <span className="c-row__main"><span className="c-row__title c-row__title--b"><span className="pmp-ghost">{topic.label}</span></span><span className="c-row__detail"><span className="pmp-ghost">{topic.detail}</span></span></span>
+    <span className="pmp-topic"><span className="pmp-topic__t"><span className="pmp-ghost">{topic.label}</span></span><span className="pmp-topic__s"><span className="pmp-ghost">{topic.detail}</span></span></span>
     <span className="c-switch" aria-checked="false" />
   </div></li>;
   return <li>
     {/* While busy it says so and ignores presses, but stays enabled, so keyboard focus stays on it. */}
     <button type="button" role="switch" aria-checked={on} className="c-row pmp-switch-row" data-topic={topic.id}
       aria-disabled={busy || undefined} aria-busy={save?.pending || undefined} onClick={() => { if (!busy) onToggle?.(topic, !on); }}>
-      <span className="c-row__main"><span className="c-row__title c-row__title--b">{topic.label}</span>
+      <span className="pmp-topic"><span className="pmp-topic__t">{topic.label}</span>
         {/* The detail, "Saving…" and a failed save share one cell sized to the longest, so the row never changes height. */}
-        <span className="c-row__detail pmp-meta-stack">
+        <span className="pmp-topic__s pmp-meta-stack">
           <span data-shown={!save?.pending && !save?.error}>{topic.detail}</span>
           <span data-shown={!!save?.pending}>Saving…</span>
           <span data-shown={!save?.pending && !!save?.error} className="pmp-save-error"><span>{saveMessage(save?.error ?? 'offline')}</span></span>
@@ -188,8 +188,9 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         <li data-row="phone" style={rowStyle('phone')}><CorpRow href={editHref} title="Phone" bold one value={<span className="pmp-value pmp-contact">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>{identity.owner ? 'Not added' : 'None'}</span>)}</span>} /></li>
         <li data-row="email" style={rowStyle('email')}><CorpRow href={editHref} title="Email" bold one value={<span className="pmp-value pmp-contact pmp-email">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>{identity.owner ? 'Not added' : 'None'}</span>)}</span>} /></li>
         <li><CorpRow title="Time zone" bold one value={value(identity.timeZone.replace(/ time$/, ''))} /></li>
+        {/* Said once, on the rows' own inset (Jose: it repeated on every field). */}
+        {identity.owner ? null : <li><div className="c-row c-row--one pmp-card-note"><span className="c-row__main"><span className="c-row__detail"><span>{changeNote}</span></span></span></div></li>}
       </ul>
-      {identity.owner ? null : <p className="pmp-card-note">{changeNote}</p>}
     </CorpCard>
     {authority}
     <CorpCard id="profile-notifications" label="Notifications" aside={<span className="pmp-aside">{onCount === null ? read.head ?? '' : onCount ? 'On' : 'Off'}</span>}>
