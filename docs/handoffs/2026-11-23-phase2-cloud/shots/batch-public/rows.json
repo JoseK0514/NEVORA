@@ -4,7 +4,7 @@
   "row": "A1",
   "page": "Start (redirect) (English)",
   "section": "Signed out and public",
-  "note": "Signed out, “/” goes straight to Sign in in one hop; these are the Sign in page it lands on.",
+  "note": "Signed out, “/” goes straight to Sign in in one hop; these are the Sign in page it lands on. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -21,16 +21,14 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "At 200% text (390) “Sign in with a passkey” wraps and the “Where do I find my Employee ID?” chevron sits apart at the right edge."
-  ]
+  "endSweep": []
  },
  {
   "id": "A1-public-es",
   "row": "A1",
   "page": "Start (redirect) (Spanish)",
   "section": "Signed out and public",
-  "note": "Spanish: the passkey button label wraps to two lines on phones and tablets (blocking, needs a shorter label). Otherwise clean.",
+  "note": "Fixed: the Spanish passkey button now reads “Usar llave de acceso” and fits on one line from 320px (it wrapped to two). Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -46,9 +44,7 @@
     "desk": true
    }
   ],
-  "blocking": [
-   "Spanish passkey button “Iniciar sesión con una llave de acceso” wraps to two lines at 390 and 768 (57px vs 52px for Iniciar sesión). Needs a shorter Spanish label (copy decision, shared auth copy); not changed."
-  ],
+  "blocking": [],
   "endSweep": []
  },
  {
@@ -56,11 +52,15 @@
   "row": "A2",
   "page": "Sign in (English)",
   "section": "Signed out and public",
-  "note": "Clean: one teal Sign in, outlined passkey button, aligned edges, no overflow at any width.",
+  "note": "One teal Sign in and an outlined passkey button, edges aligned, no overflow. The workspace chip now grows with larger text. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
     "after": "img/A2-public-en-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/A2-public-en-390-200pct.webp"
    },
    {
     "label": "Tablet",
@@ -74,7 +74,7 @@
   ],
   "blocking": [],
   "endSweep": [
-   "At 200% text (390) “Sign in with a passkey” wraps and the “Where do I find my Employee ID?” chevron sits apart at the right edge."
+   "At 200% text, “Sign in with a passkey” and “Where do I find my Employee ID?” wrap to two lines (no overlap or cut-off)."
   ]
  },
  {
@@ -82,11 +82,15 @@
   "row": "A2",
   "page": "Sign in (Spanish)",
   "section": "Signed out and public",
-  "note": "Spanish: the passkey button label wraps to two lines on phones and tablets (blocking, needs a shorter label). Otherwise clean.",
+  "note": "Fixed: the Spanish passkey button now reads “Usar llave de acceso” and fits on one line from 320px (it wrapped to two). Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
     "after": "img/A2-public-es-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/A2-public-es-390-200pct.webp"
    },
    {
     "label": "Tablet",
@@ -98,9 +102,7 @@
     "desk": true
    }
   ],
-  "blocking": [
-   "Spanish passkey button “Iniciar sesión con una llave de acceso” wraps to two lines at 390 and 768 (57px vs 52px for Iniciar sesión). Needs a shorter Spanish label (copy decision, shared auth copy); not changed."
-  ],
+  "blocking": [],
   "endSweep": []
  },
  {
@@ -108,7 +110,7 @@
   "row": "A3",
   "page": "Welcome (English)",
   "section": "Signed out and public",
-  "note": "Clean: one teal Sign in, single card, nothing repeated.",
+  "note": "One teal Sign in in a single card; nothing repeated. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -132,7 +134,7 @@
   "row": "A3",
   "page": "Welcome (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean: one teal Sign in, single card, nothing repeated.",
+  "note": "One teal Sign in in a single card; nothing repeated. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -156,7 +158,7 @@
   "row": "A4",
   "page": "Forgot access (English)",
   "section": "Signed out and public",
-  "note": "Clean: step bar, one teal action, links under the card.",
+  "note": "Step bar, one teal action, links under the card. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -173,16 +175,14 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "At 200% text (390) “Email me a reset link” wraps to two lines."
-  ]
+  "endSweep": []
  },
  {
   "id": "A4-public-es",
   "row": "A4",
   "page": "Forgot access (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean: step bar, one teal action, links under the card.",
+  "note": "Step bar, one teal action, links under the card. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -206,7 +206,7 @@
   "row": "A5",
   "page": "Reset access (English)",
   "section": "Signed out and public",
-  "note": "Clean, opened without a code. The step bar reads “Step 3 of 3” with no step name, unlike Forgot access and Activate.",
+  "note": "Opened without a code. The step bar reads “Step 3 of 3” with no step name, unlike Forgot access and Activate. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -224,7 +224,7 @@
   ],
   "blocking": [],
   "endSweep": [
-   "Step bar with no step name (“Step 3 of 3”) when opened without a code."
+   "Polish: the step bar shows “Step 3 of 3” with no step name when opened without a code."
   ]
  },
  {
@@ -232,7 +232,7 @@
   "row": "A5",
   "page": "Reset access (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean, opened without a code. The step bar reads “Step 3 of 3” with no step name, unlike Forgot access and Activate.",
+  "note": "Opened without a code. The step bar reads “Step 3 of 3” with no step name, unlike Forgot access and Activate. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -256,7 +256,7 @@
   "row": "A6",
   "page": "Activate account (English)",
   "section": "Signed out and public",
-  "note": "Clean, opened without an invitation: one teal “Get invitation help”, then “Already set up? Sign in”.",
+  "note": "Opened without an invitation: one teal “Get invitation help”, then “Already set up? Sign in”. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -280,7 +280,7 @@
   "row": "A6",
   "page": "Activate account (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean, opened without an invitation: one teal “Get invitation help”, then “Already set up? Sign in”.",
+  "note": "Opened without an invitation: one teal “Get invitation help”, then “Already set up? Sign in”. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -304,7 +304,7 @@
   "row": "A7",
   "page": "Access help (English)",
   "section": "Signed out and public",
-  "note": "Clean: five help rows with icons on one edge; the back link reads “Back” where the other pages say “Sign in”.",
+  "note": "Five help rows with icons on one edge. The back link reads “Back”, which returns to where you came from. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -321,16 +321,14 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "Back link reads “Back”; other public pages read “‹ Sign in”."
-  ]
+  "endSweep": []
  },
  {
   "id": "A7-public-es",
   "row": "A7",
   "page": "Access help (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean: five help rows with icons on one edge; the back link reads “Back” where the other pages say “Sign in”.",
+  "note": "Five help rows with icons on one edge. The back link reads “Back”, which returns to where you came from. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -354,7 +352,7 @@
   "row": "A7",
   "page": "Access help: Find your Employee ID (English)",
   "section": "Signed out and public",
-  "note": "Clean topic page with one teal Sign in.",
+  "note": "Topic page with one teal Sign in. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -378,7 +376,7 @@
   "row": "A7",
   "page": "Access help: Find your Employee ID (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean topic page with one teal Sign in.",
+  "note": "Topic page with one teal Sign in. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -402,7 +400,7 @@
   "row": "A8",
   "page": "Owner sign-up (English)",
   "section": "Signed out and public",
-  "note": "Clean, private-test mode (fictional approved address only). The title sits in the card, not the teal band, and is left aligned, unlike A4–A6.",
+  "note": "Private-test mode (fictional approved address only). The title sits in the card and is left aligned, unlike A4–A6. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -420,7 +418,7 @@
   ],
   "blocking": [],
   "endSweep": [
-   "Title in the card and left aligned on phones and tablets; A4–A6 put it centred in the card under the band. No back link to Sign in."
+   "Polish: on sign-up (A8–A10) the title is left aligned in the card and there is no “‹ Sign in” link, unlike A4–A6."
   ]
  },
  {
@@ -428,7 +426,7 @@
   "row": "A8",
   "page": "Owner sign-up (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean, private-test mode (fictional approved address only). The title sits in the card, not the teal band, and is left aligned, unlike A4–A6.",
+  "note": "Private-test mode (fictional approved address only). The title sits in the card and is left aligned, unlike A4–A6. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -452,7 +450,7 @@
   "row": "A9",
   "page": "Verify email (sign-up) (English)",
   "section": "Signed out and public",
-  "note": "Fixed: the title no longer shows a dark box when the page opens (d3eb96c7). Shown without an email link, so it asks you to open the link.",
+  "note": "Fixed: the title no longer shows a dark box when the page opens. Shown without an email link, so it asks you to open the link.",
   "shots": [
    {
     "label": "Phone",
@@ -470,7 +468,7 @@
   ],
   "blocking": [],
   "endSweep": [
-   "Console shows a 401 when the page opens without a sign-up session (the resume check); harmless but noisy."
+   "Polish: the console logs a 401 when the page opens without a sign-up session (the resume check)."
   ]
  },
  {
@@ -478,7 +476,7 @@
   "row": "A9",
   "page": "Verify email (sign-up) (Spanish)",
   "section": "Signed out and public",
-  "note": "Fixed: the title no longer shows a dark box when the page opens (d3eb96c7). Shown without an email link, so it asks you to open the link.",
+  "note": "Fixed: the title no longer shows a dark box when the page opens. Shown without an email link, so it asks you to open the link.",
   "shots": [
    {
     "label": "Phone",
@@ -502,7 +500,7 @@
   "row": "A10",
   "page": "Activate business (Owner) (English)",
   "section": "Signed out and public",
-  "note": "Clean, opened without the sign-up link: one teal “Back to signup”.",
+  "note": "Opened without the sign-up link: one teal “Back to signup”. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -526,7 +524,7 @@
   "row": "A10",
   "page": "Activate business (Owner) (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean, opened without the sign-up link: one teal “Back to signup”.",
+  "note": "Opened without the sign-up link: one teal “Back to signup”. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -550,7 +548,7 @@
   "row": "A11",
   "page": "Privacy policy (English)",
   "section": "Signed out and public",
-  "note": "Clean; desktop shows the contents card beside the text. Legal text unchanged and stays in English on the Spanish page, as designed.",
+  "note": "Desktop shows the contents card beside the text. Legal text unchanged; it stays in English on the Spanish page, as designed. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -574,7 +572,7 @@
   "row": "A11",
   "page": "Privacy policy (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean; desktop shows the contents card beside the text. Legal text unchanged and stays in English on the Spanish page, as designed.",
+  "note": "Desktop shows the contents card beside the text. Legal text unchanged; it stays in English on the Spanish page, as designed. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -598,7 +596,7 @@
   "row": "A12",
   "page": "Terms (English)",
   "section": "Signed out and public",
-  "note": "Clean; same layout as Privacy. Legal text unchanged.",
+  "note": "Same layout as Privacy. Legal text unchanged. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -622,7 +620,7 @@
   "row": "A12",
   "page": "Terms (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean; same layout as Privacy. Legal text unchanged.",
+  "note": "Same layout as Privacy. Legal text unchanged. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -646,7 +644,7 @@
   "row": "A13",
   "page": "Support (English)",
   "section": "Signed out and public",
-  "note": "Clean: email card, response time, common questions, mailing address. No overflow.",
+  "note": "Email card, response time, common questions and mailing address. No overflow. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -670,7 +668,7 @@
   "row": "A13",
   "page": "Support (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean: email card, response time, common questions, mailing address. No overflow.",
+  "note": "Email card, response time, common questions and mailing address. No overflow. Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -694,7 +692,7 @@
   "row": "A14",
   "page": "Account deletion (public info) (English)",
   "section": "Signed out and public",
-  "note": "Clean, but its only action “Start deletion request” is an outlined button, not Solid teal; worth a decision.",
+  "note": "“Start deletion request” is the outlined pill inside the card, as decided in Phase 5 (PB-024). Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
@@ -711,16 +709,14 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "Only action is an outlined button; component picks say the main action is Solid teal."
-  ]
+  "endSweep": []
  },
  {
   "id": "A14-public-es",
   "row": "A14",
   "page": "Account deletion (public info) (Spanish)",
   "section": "Signed out and public",
-  "note": "Clean, but its only action “Start deletion request” is an outlined button, not Solid teal; worth a decision.",
+  "note": "“Start deletion request” is the outlined pill inside the card, as decided in Phase 5 (PB-024). Footer links are now 44px targets and text sizes follow the reader's setting (same look at the default size).",
   "shots": [
    {
     "label": "Phone",
