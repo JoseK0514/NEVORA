@@ -19,6 +19,12 @@ it('offers one primary to create a link when there is none',()=>{
  const html=corp(<CalendarSubscriptionView {...base} status={{...ready,state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[]}}/>);
  expect(html).toContain('>Off<');expect(html).toContain('>Create calendar link<');expect(html.match(/class="c-btn"/g)).toHaveLength(1);expect(html).not.toContain('>Get a new link<');
 });
+it('explains refresh delays in both calendar layouts',()=>{
+ const view=<CalendarSubscriptionView {...base}/>;
+ const message='Your calendar app picks up schedule changes the next time it refreshes, which can take a while.';
+ expect(corp(view)).toContain(message);
+ expect(phone(view)).toContain(message);
+});
 it('does not offer issuance while current canonical eligibility is absent',()=>{
  const html=corp(<CalendarSubscriptionView {...base} status={{...ready,state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[],canIssue:false}}/>);expect(html).toContain('No eligible work location');expect(html).not.toContain('>Create calendar link<');
 });

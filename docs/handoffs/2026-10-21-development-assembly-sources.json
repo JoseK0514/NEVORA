@@ -364,7 +364,7 @@
     },
     {
       "branch": "development",
-      "sha": "1f6602cb94a8f54f87cbb3a12083c2bf7dd9ee78",
+      "sha": "b5264836e9093d88dc32edc70924bda601c823d5",
       "disposition": "target",
       "reason": "Published Development base for Jose's November 22 joined release continuation, including the Employee Home compact approval date range. All subsequent assembly commits are linear descendants of this base."
     },
@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "ece147e7f6160f1feeb8c640a09fe3b95eeef439",
+      "sha": "6b79dd25a86858ccf237490e998192eefd9b9a42",
       "disposition": "reference",
-      "reason": "Jose authorized the joined Development continuation on November 22. Reviewed delivery b15cf3d81b7ce2a6d72164db83dbb94c81fcf74f is identified by Jira comments 10594 and 10597 and imported with a squash to preserve required linear history. Subsequent commits through this recorded head contain the time-format pass, Location Manager Team/Home/shift UI, Schedule/replacement rechecks, Copy receipt redesign, gaps ledger and inbox operational-access unit fixture. The inbox fixture overlaps the independently verified integration repair. These commits remain a separate reference delivery pending review and qualification, as the coordinating Phase 2 handoff directs preserving the exact reviewed candidate during live source drift. This assembly includes the validated four-commit Phase 2 backend handoff, diagnosed repairs and regenerated guides. Exact candidate and branch-push qualification are required."
+      "reason": "Review source for the English assembly over b5264836. Reviewed English content was reconciled from this tree into a linear Development candidate. The new signed-in Spanish shell and provider are reserved for SCRUM-91. See 2026-11-23-english-development-assembly.md for source custody and gates."
     },
     {
       "branch": "claude/eager-meitner-wioy6k",
@@ -540,6 +540,234 @@
       "disposition": "superseded",
       "reason": "Jose explicitly authorized this extra branch on November 18, recorded in docs/handoffs/2026-11-18-30-day-phase.md. Exact source is already included through collaboration merge 4e83dfa53; the exception is scoped to this phase, not other branches. November 19 linear publication: this original head is preserved by immutable qualified assembly candidate/backend-completion/20261118-development-combined-02 at05f2553182b387f20495c19070cfbabd50a987ef, which contains the actual integration ancestry. Its byte-identical tree is republished from Development22107 to obey GitHub required linear history; this record does not claim the original head is an ancestor of that linear delivery. The two active source branches remain active and unchanged; the password source retains its exact approved archive. See2026-11-19-linear-development-publication.md and the exact content-equivalence receipt. No source gate or branch ceiling is relaxed.",
       "archiveRef": "refs/tags/archive/branches/2026-11-19/nevora-30-day-phase"
+    },
+    {
+      "branch": "claude-codex-collab-nevora-account",
+      "sha": "ba21804201cd30d0d29114b2e63e8b157e59f4f0",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-alerts",
+      "sha": "ee222b0da2eb35f40f9e006f0f5f2d7f73e8e473",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-clocker",
+      "sha": "743212e8cce365ea269c703fa200563d64f4f66d",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-nav",
+      "sha": "c5d8273e14f9061e925739e62a3034298f9782a4",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-public",
+      "sha": "8571f14124e3908d497850a48d5f4d22424c46b9",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-time-team",
+      "sha": "7c00717aa3afdc84c75da9e8550823792445d9f9",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-clocker-states",
+      "sha": "6ae27d6082615419e7a3a05d4321312dedbe935b",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-core",
+      "sha": "e2c0e8d9fbe2ec084dbc9330aa34ccf437c6bc82",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-core-options",
+      "sha": "9943126429dd0ab1ce8aa2735bae2635536d6f14",
+      "disposition": "reference",
+      "reason": "No changed executable paths relative to its latest shared Collab ancestor. Package evidence and options remain at the recorded tip."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-ds-pages",
+      "sha": "9df9da52b313f434ccee35b6922d5fdef2adaa42",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-employee",
+      "sha": "84e8109b3ef8eec100cc0c0e26880e772b239403",
+      "disposition": "held",
+      "reason": "Spanish area package held on its exact ref for the separate SCRUM-91 release."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-mobile",
+      "sha": "2cd9ed8cdeafcf3c0dfc4b23027ecd51a8352dc5",
+      "disposition": "held",
+      "reason": "Spanish area package held on its exact ref for the separate SCRUM-91 release."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-owner",
+      "sha": "6de7c2dc234498f55915def4b57b46cdb748f698",
+      "disposition": "held",
+      "reason": "Spanish area package held on its exact ref for the separate SCRUM-91 release."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-payroll",
+      "sha": "89824b49d72d18380d4a2206e425b37f2527e276",
+      "disposition": "held",
+      "reason": "Spanish area package held on its exact ref for the separate SCRUM-91 release."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-rest",
+      "sha": "eced81af42d78c15e927886653dd3dbae966d7fd",
+      "disposition": "held",
+      "reason": "Spanish area package held on its exact ref for the separate SCRUM-91 release."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-rondo",
+      "sha": "9ceeb06ec2a9d8361d7df95ae4d288d0a418f123",
+      "disposition": "held",
+      "reason": "Spanish area package held on its exact ref for the separate SCRUM-91 release."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-kit-final",
+      "sha": "2af257e43bf27c3ac2b23847697a3e0a783b6e90",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-messages",
+      "sha": "867fdc8766a6a7af803ece27b7228281d6f19e01",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-messages-2",
+      "sha": "170d012272d95c44a4f73cc11f1e1627dc2840be",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-payroll-2",
+      "sha": "d9282e7191beb86505c9d0696800702b1097885f",
+      "disposition": "held",
+      "reason": "Mixed English and Spanish checkpoint. English changes are admitted through the reviewed Collab tree where present. Hold the independent tip for SCRUM-91."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-prodcheck",
+      "sha": "19c9b09fe482bb21035ee3a0fe7132bc8b13bdf4",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-profile",
+      "sha": "a25021850a460f47c1f38874463dc4d955d4de73",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-qa",
+      "sha": "879b8b1bfac343232e7c303df3f960ebfaad1a89",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-requests-account",
+      "sha": "ea2601e589a26806d9ab39a82e661710ab20c2cc",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-rondo",
+      "sha": "8a400c4213c23ab9dceb2b63aa0157574cad6665",
+      "disposition": "reference",
+      "reason": "No changed executable paths relative to its latest shared Collab ancestor. Package evidence and options remain at the recorded tip."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-schedule-tools",
+      "sha": "a2381a1671c9b51cd246d4ec447b78da5f96579c",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-schedule-tools-2",
+      "sha": "dcc12231d4cc93b919c09235e97671625e757dd1",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-screens-final",
+      "sha": "fbef7cf5e88c04101725be461ea0eaeab493b30f",
+      "disposition": "held",
+      "reason": "Mixed English and Spanish checkpoint. English changes are admitted through the reviewed Collab tree where present. Hold the independent tip for SCRUM-91."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-2",
+      "sha": "5032ed10b57321922934bfd95e4bc24445de197d",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-base",
+      "sha": "cbc3d4bc7287b7beffb9d0fcc327824e579b6133",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-billing",
+      "sha": "528f77995e9f5ba41ac8f3a6f32ebc48e9ed8b9a",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-final",
+      "sha": "109e6acc8121eec07449b207360e995f820842a8",
+      "disposition": "reference",
+      "reason": "No changed executable paths relative to its latest shared Collab ancestor. Package evidence and options remain at the recorded tip."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-locations",
+      "sha": "0e21bbbcaacfe8a1af73c8d096073fd4e228a2b5",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-policies",
+      "sha": "27a6143487f614748b36be9010da57594c4d5d73",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-positions",
+      "sha": "db6508e85d38bbf5742e15a689fb3706237db1d4",
+      "disposition": "reference",
+      "reason": "English package custody. The reviewed Collab tree supplies the admitted changes. Independent branch content has not been overlaid."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-staff",
+      "sha": "8545c61dace4df690723747017875fc71be8f2eb",
+      "disposition": "held",
+      "reason": "Mixed English and Spanish checkpoint. English changes are admitted through the reviewed Collab tree where present. Hold the independent tip for SCRUM-91."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-sweep-1",
+      "sha": "156a1735574e7e31576a9f56efc7e6577fa2a7f8",
+      "disposition": "reference",
+      "reason": "Reviewed English fixes in Collab supply the release input. The broader WebKit diagnostic exceptions are held. Development retains the existing strict runtime assertions."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-timecards-final",
+      "sha": "8e9c11eada97c532a69496963132be4eae3b2b04",
+      "disposition": "held",
+      "reason": "Mixed English and Spanish checkpoint. English changes are admitted through the reviewed Collab tree where present. Hold the independent tip for SCRUM-91."
     }
   ],
   "maximumActiveBranches": 3,
@@ -610,5 +838,320 @@
     "developmentBase": "1e846a358d453d1b418155572ccd24df85b5fa00",
     "provenance": "The immutable temporary-sources-74b66a54 candidate preserves both original tips. Development contains their prior linear publication and the independent Compensation release. The updated candidate preserves that release, including its developer guide, and carries forward the remaining Scheduling/PTO, Setup, recovery and QA changes. Archive the exact 30-day tip after verified publication.",
     "priorLinearCandidate": "2826b98c8d3ea25a1babb7b1b21d65a1f4c42878"
+  },
+  "englishCollabReconciliation": {
+    "baseDevelopment": "b5264836e9093d88dc32edc70924bda601c823d5",
+    "previousRecordedCollab": "ece147e7f6160f1feeb8c640a09fe3b95eeef439",
+    "previousReviewedMergeBase": "b15cf3d81b7ce2a6d72164db83dbb94c81fcf74f",
+    "reviewedCollab": "6b79dd25a86858ccf237490e998192eefd9b9a42",
+    "spanishIssue": "SCRUM-91",
+    "remoteHeadCount": 41,
+    "remoteBranchCeilingRetained": 3,
+    "packages": [
+      {
+        "package": "account",
+        "sha": "ba21804201cd30d0d29114b2e63e8b157e59f4f0",
+        "commonCollabAncestor": "b40f60e9962104b0e2c278559368b40e2d92cd6d",
+        "executablePaths": 14,
+        "byteIdenticalToCollab": 0,
+        "disposition": "reference"
+      },
+      {
+        "package": "alerts",
+        "sha": "ee222b0da2eb35f40f9e006f0f5f2d7f73e8e473",
+        "commonCollabAncestor": "59d645cb69689819fc67053ea9db94ebb91ffc8d",
+        "executablePaths": 7,
+        "byteIdenticalToCollab": 6,
+        "disposition": "reference"
+      },
+      {
+        "package": "batch-clocker",
+        "sha": "743212e8cce365ea269c703fa200563d64f4f66d",
+        "commonCollabAncestor": "703b811f27857388486722e81fea01fa71187f45",
+        "executablePaths": 7,
+        "byteIdenticalToCollab": 5,
+        "disposition": "reference"
+      },
+      {
+        "package": "batch-nav",
+        "sha": "c5d8273e14f9061e925739e62a3034298f9782a4",
+        "commonCollabAncestor": "2f2387a96d496c480ac872d9347ba60aebd106b9",
+        "executablePaths": 14,
+        "byteIdenticalToCollab": 8,
+        "disposition": "reference"
+      },
+      {
+        "package": "batch-public",
+        "sha": "8571f14124e3908d497850a48d5f4d22424c46b9",
+        "commonCollabAncestor": "8c9c04c93662cb733e90b8885c867cbac05a52f6",
+        "executablePaths": 2,
+        "byteIdenticalToCollab": 2,
+        "disposition": "reference"
+      },
+      {
+        "package": "batch-time-team",
+        "sha": "7c00717aa3afdc84c75da9e8550823792445d9f9",
+        "commonCollabAncestor": "4c2b006267cb38245364bbe209bb7f0d39b75f19",
+        "executablePaths": 1,
+        "byteIdenticalToCollab": 0,
+        "disposition": "reference"
+      },
+      {
+        "package": "clocker-states",
+        "sha": "6ae27d6082615419e7a3a05d4321312dedbe935b",
+        "commonCollabAncestor": "552ceed3c8643b6e34f403291a025b3f12068ab4",
+        "executablePaths": 6,
+        "byteIdenticalToCollab": 0,
+        "disposition": "reference"
+      },
+      {
+        "package": "core",
+        "sha": "e2c0e8d9fbe2ec084dbc9330aa34ccf437c6bc82",
+        "commonCollabAncestor": "655d4e79c301f2d630246160ee1275084ba8ab34",
+        "executablePaths": 4,
+        "byteIdenticalToCollab": 4,
+        "disposition": "reference"
+      },
+      {
+        "package": "core-options",
+        "sha": "9943126429dd0ab1ce8aa2735bae2635536d6f14",
+        "commonCollabAncestor": "7a79c96c789d7caaa220390cde92cccb581e61ab",
+        "executablePaths": 0,
+        "byteIdenticalToCollab": 0,
+        "disposition": "reference"
+      },
+      {
+        "package": "ds-pages",
+        "sha": "9df9da52b313f434ccee35b6922d5fdef2adaa42",
+        "commonCollabAncestor": "7201e71c29e17c10c62d62f5f652a2324a75020e",
+        "executablePaths": 4,
+        "byteIdenticalToCollab": 4,
+        "disposition": "reference"
+      },
+      {
+        "package": "es-employee",
+        "sha": "84e8109b3ef8eec100cc0c0e26880e772b239403",
+        "commonCollabAncestor": "32732335b3c43bd3563548da5136062e86f108fd",
+        "executablePaths": 641,
+        "byteIdenticalToCollab": 2,
+        "disposition": "held"
+      },
+      {
+        "package": "es-mobile",
+        "sha": "2cd9ed8cdeafcf3c0dfc4b23027ecd51a8352dc5",
+        "commonCollabAncestor": "7ae2ff19e50be2a2240319c58b6668e575266cb2",
+        "executablePaths": 101,
+        "byteIdenticalToCollab": 0,
+        "disposition": "held"
+      },
+      {
+        "package": "es-owner",
+        "sha": "6de7c2dc234498f55915def4b57b46cdb748f698",
+        "commonCollabAncestor": "91c08d1932e39a1925a1d8915e31fe4d486d202f",
+        "executablePaths": 682,
+        "byteIdenticalToCollab": 0,
+        "disposition": "held"
+      },
+      {
+        "package": "es-payroll",
+        "sha": "89824b49d72d18380d4a2206e425b37f2527e276",
+        "commonCollabAncestor": "7ae2ff19e50be2a2240319c58b6668e575266cb2",
+        "executablePaths": 33,
+        "byteIdenticalToCollab": 0,
+        "disposition": "held"
+      },
+      {
+        "package": "es-rest",
+        "sha": "eced81af42d78c15e927886653dd3dbae966d7fd",
+        "commonCollabAncestor": "32732335b3c43bd3563548da5136062e86f108fd",
+        "executablePaths": 666,
+        "byteIdenticalToCollab": 2,
+        "disposition": "held"
+      },
+      {
+        "package": "es-rondo",
+        "sha": "9ceeb06ec2a9d8361d7df95ae4d288d0a418f123",
+        "commonCollabAncestor": "8006f3b4351fde6022ca9073bd53baed87b79ece",
+        "executablePaths": 56,
+        "byteIdenticalToCollab": 0,
+        "disposition": "held"
+      },
+      {
+        "package": "kit-final",
+        "sha": "2af257e43bf27c3ac2b23847697a3e0a783b6e90",
+        "commonCollabAncestor": "91c08d1932e39a1925a1d8915e31fe4d486d202f",
+        "executablePaths": 10,
+        "byteIdenticalToCollab": 10,
+        "disposition": "reference"
+      },
+      {
+        "package": "messages",
+        "sha": "867fdc8766a6a7af803ece27b7228281d6f19e01",
+        "commonCollabAncestor": "2f2387a96d496c480ac872d9347ba60aebd106b9",
+        "executablePaths": 12,
+        "byteIdenticalToCollab": 4,
+        "disposition": "reference"
+      },
+      {
+        "package": "messages-2",
+        "sha": "170d012272d95c44a4f73cc11f1e1627dc2840be",
+        "commonCollabAncestor": "b40f60e9962104b0e2c278559368b40e2d92cd6d",
+        "executablePaths": 6,
+        "byteIdenticalToCollab": 0,
+        "disposition": "reference"
+      },
+      {
+        "package": "payroll-2",
+        "sha": "d9282e7191beb86505c9d0696800702b1097885f",
+        "commonCollabAncestor": "7d0b7b7769bdd61c47d31e99738501a0ba8bd959",
+        "executablePaths": 4,
+        "byteIdenticalToCollab": 0,
+        "disposition": "held"
+      },
+      {
+        "package": "prodcheck",
+        "sha": "19c9b09fe482bb21035ee3a0fe7132bc8b13bdf4",
+        "commonCollabAncestor": "552ceed3c8643b6e34f403291a025b3f12068ab4",
+        "executablePaths": 4,
+        "byteIdenticalToCollab": 4,
+        "disposition": "reference"
+      },
+      {
+        "package": "profile",
+        "sha": "a25021850a460f47c1f38874463dc4d955d4de73",
+        "commonCollabAncestor": "76c63b8fa115f86aab018eed3c868e075b4edff5",
+        "executablePaths": 10,
+        "byteIdenticalToCollab": 8,
+        "disposition": "reference"
+      },
+      {
+        "package": "qa",
+        "sha": "879b8b1bfac343232e7c303df3f960ebfaad1a89",
+        "commonCollabAncestor": "4ecde9551afd8e426b58b9fd4c706d9edbd68aa3",
+        "executablePaths": 2,
+        "byteIdenticalToCollab": 1,
+        "disposition": "reference"
+      },
+      {
+        "package": "requests-account",
+        "sha": "ea2601e589a26806d9ab39a82e661710ab20c2cc",
+        "commonCollabAncestor": "2f2387a96d496c480ac872d9347ba60aebd106b9",
+        "executablePaths": 13,
+        "byteIdenticalToCollab": 5,
+        "disposition": "reference"
+      },
+      {
+        "package": "rondo",
+        "sha": "8a400c4213c23ab9dceb2b63aa0157574cad6665",
+        "commonCollabAncestor": "9bf94ef50ae3ef5fa2caa50a1b8b690aeaa59de3",
+        "executablePaths": 0,
+        "byteIdenticalToCollab": 0,
+        "disposition": "reference"
+      },
+      {
+        "package": "schedule-tools",
+        "sha": "a2381a1671c9b51cd246d4ec447b78da5f96579c",
+        "commonCollabAncestor": "2f2387a96d496c480ac872d9347ba60aebd106b9",
+        "executablePaths": 18,
+        "byteIdenticalToCollab": 15,
+        "disposition": "reference"
+      },
+      {
+        "package": "schedule-tools-2",
+        "sha": "dcc12231d4cc93b919c09235e97671625e757dd1",
+        "commonCollabAncestor": "b40f60e9962104b0e2c278559368b40e2d92cd6d",
+        "executablePaths": 7,
+        "byteIdenticalToCollab": 0,
+        "disposition": "reference"
+      },
+      {
+        "package": "screens-final",
+        "sha": "fbef7cf5e88c04101725be461ea0eaeab493b30f",
+        "commonCollabAncestor": "6b79dd25a86858ccf237490e998192eefd9b9a42",
+        "executablePaths": 649,
+        "byteIdenticalToCollab": 0,
+        "disposition": "held"
+      },
+      {
+        "package": "settings-2",
+        "sha": "5032ed10b57321922934bfd95e4bc24445de197d",
+        "commonCollabAncestor": "b40f60e9962104b0e2c278559368b40e2d92cd6d",
+        "executablePaths": 13,
+        "byteIdenticalToCollab": 2,
+        "disposition": "reference"
+      },
+      {
+        "package": "settings-base",
+        "sha": "cbc3d4bc7287b7beffb9d0fcc327824e579b6133",
+        "commonCollabAncestor": "b40f60e9962104b0e2c278559368b40e2d92cd6d",
+        "executablePaths": 4,
+        "byteIdenticalToCollab": 1,
+        "disposition": "reference"
+      },
+      {
+        "package": "settings-billing",
+        "sha": "528f77995e9f5ba41ac8f3a6f32ebc48e9ed8b9a",
+        "commonCollabAncestor": "b40f60e9962104b0e2c278559368b40e2d92cd6d",
+        "executablePaths": 14,
+        "byteIdenticalToCollab": 8,
+        "disposition": "reference"
+      },
+      {
+        "package": "settings-final",
+        "sha": "109e6acc8121eec07449b207360e995f820842a8",
+        "commonCollabAncestor": "0e283e499febd1ea4cd8e72c3535140edf671b3f",
+        "executablePaths": 0,
+        "byteIdenticalToCollab": 0,
+        "disposition": "reference"
+      },
+      {
+        "package": "settings-locations",
+        "sha": "0e21bbbcaacfe8a1af73c8d096073fd4e228a2b5",
+        "commonCollabAncestor": "b40f60e9962104b0e2c278559368b40e2d92cd6d",
+        "executablePaths": 11,
+        "byteIdenticalToCollab": 5,
+        "disposition": "reference"
+      },
+      {
+        "package": "settings-policies",
+        "sha": "27a6143487f614748b36be9010da57594c4d5d73",
+        "commonCollabAncestor": "b40f60e9962104b0e2c278559368b40e2d92cd6d",
+        "executablePaths": 12,
+        "byteIdenticalToCollab": 6,
+        "disposition": "reference"
+      },
+      {
+        "package": "settings-positions",
+        "sha": "db6508e85d38bbf5742e15a689fb3706237db1d4",
+        "commonCollabAncestor": "b40f60e9962104b0e2c278559368b40e2d92cd6d",
+        "executablePaths": 11,
+        "byteIdenticalToCollab": 4,
+        "disposition": "reference"
+      },
+      {
+        "package": "staff",
+        "sha": "8545c61dace4df690723747017875fc71be8f2eb",
+        "commonCollabAncestor": "91c08d1932e39a1925a1d8915e31fe4d486d202f",
+        "executablePaths": 683,
+        "byteIdenticalToCollab": 0,
+        "disposition": "held"
+      },
+      {
+        "package": "sweep-1",
+        "sha": "156a1735574e7e31576a9f56efc7e6577fa2a7f8",
+        "commonCollabAncestor": "552ceed3c8643b6e34f403291a025b3f12068ab4",
+        "executablePaths": 5,
+        "byteIdenticalToCollab": 4,
+        "disposition": "reference"
+      },
+      {
+        "package": "timecards-final",
+        "sha": "8e9c11eada97c532a69496963132be4eae3b2b04",
+        "commonCollabAncestor": "32732335b3c43bd3563548da5136062e86f108fd",
+        "executablePaths": 13,
+        "byteIdenticalToCollab": 2,
+        "disposition": "held"
+      }
+    ]
   }
 }

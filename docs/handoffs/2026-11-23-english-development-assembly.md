@@ -1,0 +1,20 @@
+# November 23 English Development assembly
+
+SCRUM-83 and SCRUM-167. This candidate started from Development `b5264836e9093d88dc32edc70924bda601c823d5`. The incoming reviewed Collab source is `6b79dd25a86858ccf237490e998192eefd9b9a42`, with the final reviewed UI at `4597febf3`. The three-way content baseline is the earlier reviewed `b15cf3d81b7ce2a6d72164db83dbb94c81fcf74f`, imported by `a70dccf4c`. The resulting application is a linear continuation of Development.
+
+## Package custody
+
+The [source inventory](2026-10-21-development-assembly-sources.json) records every package's exact tip, its shared Collab ancestor, the count of its changed executable paths and the count of byte-identical paths in Collab. Matching paths corroborate inclusion. Differing paths may contain later Collab edits, unmerged work, or different packaging. The admitted source is the reviewed Collab tree. No package tip was merged wholesale. The English parts of the mixed Payroll, screens, Staff and Timecards branches travel through that reviewed source only.
+
+SCRUM-91 keeps `es-employee`, `es-mobile`, `es-owner`, `es-payroll`, `es-rest` and `es-rondo` on their original refs, alongside the unreleased Spanish work on those four mixed branches. The signed-in shell and provider changes from `61dd266da` and `960579cf1` are held for this sequence. After the English checkpoint, integrate and verify the existing shell language contract first, then the area deliveries, checking saved preference, Spanish layouts and regulated wording. Existing bilingual routes and the reviewed G98 language selection for the paid-time and schedule-copy receipt stay in the English candidate.
+
+## Backend and browser evidence
+
+- The isolated assembly kept the Development Action Center Company and explicit assigned-scope contracts. The Collab `company-access-foundation` run failed two assertions against its older default behavior. The new G17 scoped person read retains the roster fields and the Manager's current locations. It does not grant full employee detail, editing, or private metadata.
+- Chat 2 delivered `feb7ef9511bed01f8fe07c6bb85c15f033c80c6d`, applied as `230bfc489`. Its independently verified scope is the exact HTTPS Checkout host and current `/g/pay/` link shape. The standalone tagged tree `f8f0605984d8ee9be4db47d8302eb4187d016b23` passed 63 focused tests, 249 disposable PostgreSQL commerce tests and both browser engines for billing. Hosted Checkout remains open. The restored staging binding returned `503 not_ready` and the sandbox webhook destination was disabled.
+- Chat 3 delivered no merge patch. Its owned replay reproduced Schedule's workspace contention with a deliberate lock hold. Correction approval persisted once and produced no alert or push rows. The physical iPad and protected hosted worker acceptance remain under their staging issues.
+- The [original Collab CI attempt](https://github.com/JoseK0514/NEVORA/actions/runs/45272668924/attempts/1) had nine successful and fourteen failed jobs including the aggregates. Its separate [Mobile Access workflow](https://github.com/JoseK0514/NEVORA/actions/runs/45272669058) passed. Original logs, screenshots and reports were retained outside the checkout. They distinguish the stale Clocker framework shim, revised controls and route labels, the removed calendar refresh caveat and the WebKit notification read diagnostics. The latter still require exact candidate evidence with the existing strict checks. The English review independently recorded a 36 px Publish explainer target on the current draft week at 390 px. The future-week check passed on that review source only.
+
+## Publication
+
+The source checker reports 41 remote branches against the three-branch ceiling. Jose directed keeping the refs and holding Development. The existing CI and Mobile Access candidate workflows may qualify the frozen tree without updating Development. No staging deployment is selected by this assembly. Main and production remain subject to Jose's separate approval.
