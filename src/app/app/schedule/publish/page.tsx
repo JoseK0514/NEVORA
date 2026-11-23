@@ -94,7 +94,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
   });
   // QA A3-05 (Nov 21, 2026): a Manager's read is refused when no location grants Publish schedules. Name that grant and who
   // gives it, instead of "Company-wide access needed… Sign in again".
-  if (source.state === "unavailable") return <OperationalUnavailable title={t.unavailable} reason={source.reason}
+  if (source.state === "unavailable") return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason}
     closed={!owner && source.reason === "access_denied" ? { title: t.permissionTitle, line: t.permissionLine, ...(lang === "es" ? { lang } : {}) } : undefined} />;
   const { locations, review } = source.data;
   const generation = "generation" in source.data ? source.data.generation : null;

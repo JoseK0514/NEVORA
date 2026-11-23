@@ -52,7 +52,7 @@ export default async function ScheduleTemplatesPage({
   const t=scheduleWords(lang).templates;
   const weekLabel = weekRange(weekStart, lang);
   const source=await withOperationalCompany(proof,()=>listScheduleTemplates(proof));
-  if(source.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason}/>;
   const templates=source.data;
   const hasFeedback = Boolean(params.error || params.saved || params.archived || params.applied !== undefined);
 

@@ -74,7 +74,7 @@ export default async function NewShiftPage({
           return conflict();
         }
       });
-    if(source.state==='unavailable')return <OperationalUnavailable title={t.reviewUnavailable} reason={source.reason} scoped={scoped}/>;
+    if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.reviewUnavailable} reason={source.reason} scoped={scoped}/>;
     if(source.data.kind==='conflict')return <ScopedReadFrame observation={scopedObservation(source)}>
       <CorpPage className="c-cover c-page--narrow" labelledBy="review-title" lang={pageLang}>
         <CorpNav back={{ href: source.data.href, label: t.coverage }} title={t.coverageChanged} titleId="review-title" phoneOnly />
@@ -121,9 +121,9 @@ export default async function NewShiftPage({
       : isDateInWeek(todayDate, weekStart) ? todayDate : weekStart;
 
   const access=await readOperationalAuthority(proof);
-  if(access.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={access.reason}/>;
+  if(access.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={access.reason}/>;
   if(access.scope?.mode!=='COMPANY'){
-    if(access.scope?.mode!=='LOCATIONS'||!access.locations.length)return <OperationalUnavailable title={t.unavailable} reason="access_denied"/>;
+    if(access.scope?.mode!=='LOCATIONS'||!access.locations.length)return <OperationalUnavailable lang={lang} title={t.unavailable} reason="access_denied"/>;
     // Phase 2 (queue C2-Ml): a location Manager gets the Owner's Add shift sheet, fed by the scoped editor read of each of
     // their places. One place is fixed in the sheet; several are its Location field (no separate "Choose a location" step).
     // An explicit destination that isn't theirs still goes to the guarded read, which refuses it; it is never swapped.
@@ -132,8 +132,8 @@ export default async function NewShiftPage({
     const sources=await Promise.all(placeIds.map(locationId=>readOperationalShiftEditor(proof,{weekStart,locationId})));
     const reads:OperationalShiftEditorData[]=[];let validForMs=access.validForMs;
     for(const source of sources){
-      if(source.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={source.reason} scoped/>;
-      if(source.authority!==access.authority)return <OperationalUnavailable title={t.unavailable} reason="source_changed" scoped/>;
+      if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason} scoped/>;
+      if(source.authority!==access.authority)return <OperationalUnavailable lang={lang} title={t.unavailable} reason="source_changed" scoped/>;
       reads.push(source.data);validForMs=Math.min(validForMs,source.validForMs);
     }
     const observation={authority:access.authority,observedAt:access.observedAt,validForMs};
@@ -142,7 +142,7 @@ export default async function NewShiftPage({
     if(!open.length){
       const shown=reads.find(read=>read.locationId===params.locationId)??reads[0];
       return <ScopedReadFrame observation={observation}><CorpPage className="c-shift-page" label={t.title} lang={pageLang}>
-        <ScopedShiftDetails data={shown} title={t.title} placeName={placeName(shown.locationId)} backHref={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(shown.locationId)}`} reason={scopedShiftReason(shown,placeName(shown.locationId))}/>
+        <ScopedShiftDetails lang={lang} data={shown} title={t.title} placeName={placeName(shown.locationId)} backHref={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(shown.locationId)}`} reason={scopedShiftReason(shown,placeName(shown.locationId),lang)}/>
       </CorpPage></ScopedReadFrame>;
     }
     const fixed=open.length===1?open[0].locationId:null;
@@ -165,7 +165,7 @@ export default async function NewShiftPage({
     listLocations(),
     listPositions(),
   ]));
-  if(source.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason}/>;
   const [employees,locations,positions]=source.data;
   const locationId = locations.some(location => location.id === params.locationId) ? params.locationId! : "";
   // W2: Back returns to the day and person the form was opened for, when it was opened for one.

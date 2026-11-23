@@ -135,11 +135,11 @@ export default async function SchedulePage({
   const withRepair = (node: ReactNode) => leaveRepair ? <LeaveRepairProvider key={`${weekStart}:${leaveRepair.id}`} weekStart={weekStart} employeeId={leaveRepair.employeeId} repairId={leaveRepair.id}>{node}</LeaveRepairProvider> : node;
   if(manager){
     const proof=await requireSessionMutationProof(),access=await readOperationalAuthority(proof);
-    if(access.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={access.reason}/>;
+    if(access.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={access.reason}/>;
     if(access.scope?.mode!=='COMPANY'){
       const source=await readOperationalSchedule(proof,{weekStart,...(params.location===undefined||params.location==='all'?{}:{locationId:params.location})});
-      if(source.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={source.reason} scoped/>;
-      if(source.authority!==access.authority)return <OperationalUnavailable title={t.unavailable} reason="source_changed" scoped/>;
+      if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason} scoped/>;
+      if(source.authority!==access.authority)return <OperationalUnavailable lang={lang} title={t.unavailable} reason="source_changed" scoped/>;
       // QA A3-05 (Nov 21, 2026): a location Manager with Publish schedules had no way to publish from here.
       const [canPublish,coverage,scopedAbsences] = await Promise.all([
         scopedCanPublish(proof),
@@ -221,10 +221,10 @@ export default async function SchedulePage({
             actions: <>{scopedMore(true)}{scopedPublish ? <BButtonLink href={scopedPublish} kind="white" label={t.withWeek(t.publish, formatWeekRange(weekStart))}>{t.publish}</BButtonLink>
               : !scopedRoster.length ? <BButtonLink href={scopedAdd} kind="white" label={t.withWeek(t.addShift, formatWeekRange(weekStart))}><PlusIcon size={15} weight="bold" aria-hidden="true" />{t.addShift}</BButtonLink> : null}</>,
             location: locationControl(true),
-            notes: <>{repairNote("b")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>{openShifts === null ? <CorpNote>{t.openShiftsUnchecked}</CorpNote> : null}</> }}
+            notes: <>{repairNote("b")}<ScheduleRouteFeedback lang={lang} error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>{openShifts === null ? <CorpNote>{t.openShiftsUnchecked}</CorpNote> : null}</> }}
           notices={<>
             {repairNote("corp")}
-            <ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>
+            <ScheduleRouteFeedback lang={lang} error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>
             {openShifts === null ? <CorpNote>{t.openShiftsUnchecked}</CorpNote> : null}
           </>} />
       </CorpPage></ScopedReadFrame>);
@@ -542,7 +542,7 @@ export default async function SchedulePage({
     }),
     notes: <>
       {repairNote("b")}
-      <ScheduleRouteFeedback error={params.error} warning={params.warning} dismissHref={dismissHref}/>
+      <ScheduleRouteFeedback lang={lang} error={params.error} warning={params.warning} dismissHref={dismissHref}/>
       {doneMoment ? <div className="b-sched-done b-done-host--flush"><BState kind="done" title={doneMoment.title} line={doneMoment.line}
         extra={publishedMoment ? <Celebration kind="SCHEDULE_PUBLISHED" eventKey={doneKey} confirmed /> : undefined}
         action={updatesOn ? { label: M.sendUpdate, href: "/app/updates/compose" } : undefined} /></div> : null}
@@ -594,7 +594,7 @@ export default async function SchedulePage({
         b={bSchedule}
         notices={<>
           {/* Review F3 (NV-090): route errors and warnings sit under the band, above the grid, not inside the band. */}
-          <ScheduleRouteFeedback error={params.error} warning={params.warning} dismissHref={dismissHref}/>
+          <ScheduleRouteFeedback lang={lang} error={params.error} warning={params.warning} dismissHref={dismissHref}/>
           {/* Phase 7 (moments): the published result is the first card under the band, so the band keeps its week stepper and
             * its height exactly as on a normal load (it used to sit above the stepper and push it onto the canvas). */}
           {doneMoment ? (
@@ -634,7 +634,7 @@ export default async function SchedulePage({
   }
   if(!manager)return renderSchedule();
   const source=await withOperationalCompany(await requireSessionMutationProof(),renderSchedule);
-  if(source.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason}/>;
   return <ScopedReadFrame observation={scopedObservation(source)}>{source.data}</ScopedReadFrame>;
 }
 

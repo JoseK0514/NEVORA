@@ -69,7 +69,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
   ]);
     return {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions,workspace,weekStart,weekSettings};
   });
-  if(source.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason}/>;
   // SCRUM-215: the planning calendar, through the same read GET /api/workforce/settings uses. A failed read shows the row as unavailable.
   const calendar=await readWorkforceSettings(proof).then(settings=>settings.calendar).catch(()=>null);
   const {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions,workspace,weekStart,weekSettings}=source.data;

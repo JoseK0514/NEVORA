@@ -71,7 +71,7 @@ export default async function CoverageSuggestionsPage({
       try{return await readCoverageRepair(locator,proof,params.refresh==='1');}
       catch(error){if(!(error instanceof CoverageRepairConflictError))throw error;return null;}
     });
-    if(source.state==='unavailable')return <OperationalUnavailable title={t.reviewUnavailable} reason={source.reason} scoped={scoped}/>;
+    if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.reviewUnavailable} reason={source.reason} scoped={scoped}/>;
     const review=source.data;
     const back = `/app/schedule?week=${encodeURIComponent(locator.weekStart)}&location=${encodeURIComponent(locator.locationId)}`;
     const status = review?.status ?? 'STALE';
@@ -134,7 +134,7 @@ export default async function CoverageSuggestionsPage({
     const period = {weekStart,date,locationId,startTime,endTime,positionId:params.positionId};
     const designatedLead = params.lead === '1';
     const source = await readScopedCoverageSuggestions(period,proof,designatedLead);
-    if (source.state === 'unavailable') return <OperationalUnavailable title={t.suggestionsUnavailable} reason={source.reason} scoped/>;
+    if (source.state === 'unavailable') return <OperationalUnavailable lang={lang} title={t.suggestionsUnavailable} reason={source.reason} scoped/>;
     const {locationName,positionName,candidates,draft} = source.data;
     return <ScopedReadFrame observation={scopedObservation(source)}><CoverageAssistant
       date={date} startTime={startTime} endTime={endTime} locationName={locationName} positionName={positionName}
@@ -191,7 +191,7 @@ export default async function CoverageSuggestionsPage({
   );
     return {locations,positions,candidates};
   });
-  if(source.state==='unavailable')return <OperationalUnavailable title={t.suggestionsUnavailable} reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.suggestionsUnavailable} reason={source.reason}/>;
   const {locations,positions,candidates}=source.data;
   const location = locations.find((item) => item.id === locationId);
   const position = positions.find(item => item.id === params.positionId);

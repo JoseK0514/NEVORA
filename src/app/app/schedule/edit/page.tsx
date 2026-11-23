@@ -46,11 +46,11 @@ export default async function EditShiftPage({
   const proof=await requireSessionMutationProof(),access=await readOperationalAuthority(proof);
   let lang:ScheduleLang='en';try{lang=(await readPortalLanguage(proof)).language;}catch{/* English */}
   const t=scheduleWords(lang).edit,pageLang=lang==='es'?'es':undefined,dayLabel=(date:string)=>lang==='es'?esDayLabel(date):formatDayLabel(date);
-  if(access.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={access.reason}/>;
+  if(access.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={access.reason}/>;
   if(access.scope?.mode!=='COMPANY'){
     const source=await readOperationalShiftEditor(proof,{shiftId});
-    if(source.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={source.reason} scoped/>;
-    if(source.authority!==access.authority)return <OperationalUnavailable title={t.unavailable} reason="source_changed" scoped/>;
+    if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason} scoped/>;
+    if(source.authority!==access.authority)return <OperationalUnavailable lang={lang} title={t.unavailable} reason="source_changed" scoped/>;
     const observation={authority:source.authority,observedAt:access.observedAt,validForMs:Math.min(access.validForMs,source.validForMs)};
     const data=source.data,scopedShift=data.shift;
     if(!scopedShift)redirect("/app/schedule?error=INVALID_SHIFT");
@@ -63,9 +63,9 @@ export default async function EditShiftPage({
     // Shift details' subtitle is the day only (the reason line says why it can't change: published, built, inactive).
     const scopedState=<span data-tone="amber">{t.draft}</span>;
     const scopedSubtitle=shortDay(scopedShift.date,lang);
-    const scopedError=params.error?{title:t.notSaved,body:editorErrorText(params.error)}:undefined;
+    const scopedError=params.error?{title:t.notSaved,body:editorErrorText(params.error,lang)}:undefined;
     if(data.saveAvailability!=='available')return <ScopedReadFrame observation={observation}><CorpPage className="c-shift-page" label={t.details} lang={pageLang}>
-      <ScopedShiftDetails data={data} title={t.details} subtitle={scopedSubtitle} placeName={placeName} backHref={back} reason={scopedShiftReason(data,placeName)} error={scopedError}/>
+      <ScopedShiftDetails lang={lang} data={data} title={t.details} subtitle={scopedSubtitle} placeName={placeName} backHref={back} reason={scopedShiftReason(data,placeName,lang)} error={scopedError}/>
     </CorpPage></ScopedReadFrame>;
     return <ScopedReadFrame observation={observation}><CorpPage className="c-shift-page" label={t.title} lang={pageLang}>
       <ScheduleShiftForm key={scopedShift.id} mode="edit" formId="edit-shift-form" action={updateShiftAction} reviewedShiftVersion={scopedShift.reviewVersion}
@@ -87,7 +87,7 @@ export default async function EditShiftPage({
     listLocations({includeInactive:true}),
     listPositions({includeInactive:true}),
   ]));
-  if(source.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason}/>;
   const [shift,employees,locations,positions]=source.data;
 
   if (!shift) {
