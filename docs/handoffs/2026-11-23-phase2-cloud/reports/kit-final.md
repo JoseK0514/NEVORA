@@ -1,0 +1,71 @@
+# Package K: kit and shell (final fixes, Nov 23, 2026)
+
+Branch `claude-codex-collab-nevora-kit-final`, from `1480ed4c`. Fictional data, throwaway local Postgres, production scan
+harness (`tools/ui-scan/desk.sh`, with a local, uncommitted copy that also runs axe-core and a 200%-text pass). No deploys.
+
+## Commits
+| Commit | Item | What changed |
+|---|---|---|
+| `452f5e37` | K7 | `BLive`: the space between label, figure and line is screen-reader text (`.b-sr`, no-break space). A bare space between flex items was dropped from the name. The item's `aria` is no longer read, so a tile's name is its visible words. |
+| `cfcdf808` | K8, G74 | `CorpCount` carries the same screen-reader space, so headings read "Clocked in 2"; Who's working's `headed()` uses `CorpCount`. |
+| `19487309` | K6 | `owner-b.css`: `.b-day span` 12px → 0.75rem (and the day column `max(44px, 2.75rem)`), `.b-card__a` 14px → 0.875rem, `.b-chip` 12/16 → 0.75rem/1rem with height `max(var(--b-chip-h), 1.375rem)`, row chip line-height `max(22px, 1.375rem)`. Same at the default size. |
+| `8ad4d3db` | K5, G79 | Header avatar initials capped at 13.5px (`min(var(--b-fs-meta), 13.5px)`), so they stay in the 40px circle at 200% text. |
+| `998b4c17` | K4, G88 | State card title 16/22px → 1rem/1.375rem; title and line wrap; buttons and "also" links in a state card may wrap inside the card. Same at the default size. |
+| `7c882d98` | K2, G-ST7/G87 | The G48 band paint also goes under section tabs on quiet pages (`.q-page > .q-hd ~ nav.c-seg`, Time off requests). |
+| `05dbcd63` | tests | Two more tests updated for the screen-reader space. |
+
+Tests updated with each commit (markup only): corp-upscale, whos-working, employees page, schedule publish page,
+owner-home-corp, employee home-b, b-kit-labels, b-foundation, scoped-home, notifications-list.
+
+## Item by item
+1. **G48 (browser check):** axe at 768 and 1440 finds no contrast failures on the Payroll tabs, Team search, Schedule
+   (`nav.c-week`) or Shift requests (`nav.c-seg`). Confirmed; no change.
+2. **G-ST7 / G87:** Shift requests already passed after G48. Time off requests (Owner) failed: 2 nodes at 1.08:1 at
+   768 and 1440 (white on #f3f6f5) because its tabs sit under `.q-hd`, not `header.c-title`. Fixed in `7c882d98`; axe
+   now finds 0 at 390, 768 and 1440. On screen the strip changes by ≤5 levels a channel (not visible).
+3. **G88 targets:** no change needed. The drawn sizes stay (36px segments, 32px back link from 768, 40px phone band
+   buttons) and each already has a 44px or larger hit area: segment `::after` (b-foundation.css, `inset: -6px 0` /
+   `calc(-1 * --b-seg-pad)`), `.b-btn::after` `height: max(100%, 44px)` (owner-b.css), back link G5. axe `target-size`
+   finds nothing on any captured page.
+4. **G88 closed card at 200%:** state card text and buttons now wrap inside the card (`998b4c17`). The Manager-without-
+   grant closed page itself wasn't reachable with the scan's fictional roles. The Who's working and request pages at 390
+   with 200% text show nothing clipped (audit `clipped: []`).
+5. **G79 avatar:** fixed (`8ad4d3db`); seen at 390 with 200% text on Owner Home and Team.
+6. **Fixed px kit text:** fixed (`19487309`).
+7. **BLive names:** fixed (`452f5e37`); axe finds 0 on Employee Home at 390, 768 and 1440.
+8. **G74:** fixed (`cfcdf808`). Things to do (`manager-inbox-corp.tsx`) has its own copy of `headed()` with the same
+   problem; it's a screen file, so it's listed below rather than changed.
+9. **B8 loading card:** no change. The card's children fade in (`b-arrive`, b-shimmer.css); a one-off axe read during
+   the fade sees part-transparent text. With reduced motion (the scan's setting) and at rest it passes.
+10. **Phone app device settings re-check:** the Owner's Device settings popover opens at 390 and 1440. All ten phone-app
+    Alerts states (ready, enabled, denied, revoked, error, loading, two confirmations, paused) have no overflow. The red
+    "Turn off alerts" has white words. axe finds 0 on the pages.
+
+## No change at the default size (before/after)
+BEFORE was captured from `1480ed4c` and AFTER from the fixes, in the same production scan: Owner Home, Team, Schedule,
+Timecards, Payroll and Settings at 390, 768 and 1440, plus Employee Home. Pixel diff: Home 390/768/1440 and Payroll and
+Settings at 390 are identical. Every other difference is live data: the bell's unread dot, "Schedule read at 9:02 →
+9:08 AM", and the clocked hours and minutes on Timecards and Employee Home. Inspected side by side; no layout, size or
+alignment changes. No page overflows horizontally at any width.
+
+## Impeccable audit (kit changes)
+- Hierarchy: unchanged at the default size. At 200% text, chips, day labels, card links and state-card titles now grow
+  with the body text instead of staying small.
+- Spacing: unchanged; the screen-reader spaces are absolutely positioned and take no room.
+- Accessibility: figure and count names match their visible words (label in name). Time off tabs now pass contrast.
+  Targets stay at 44px hit areas.
+- States: state card (closed, failed, loading) wraps at 200% text; the loading fade is a measuring artefact only.
+
+## Left, as proposed ledger rows (end sweep)
+| Row | Where | What | Owner |
+|---|---|---|---|
+| K-1 | Things to do (`manager-inbox-corp.tsx` `headed()`) | Same "Title2" name as G74: use `CorpCount` | screens |
+| K-2 | Timecards 390 (`.b-row--link[type=button]`, 12 rows) | axe label-content-name-mismatch | Timecards |
+| K-3 | Payroll 390 (`.b-step--link`, `.b-link`), 768/1440 (Prepare row) | axe label-content-name-mismatch | Payroll |
+| K-4 | Callers that still pass `aria` to `BLive` items (Employee Home and others) | Now unused; remove when those files are next touched | screens |
+| K-5 | Device settings popover, fictional "unavailable" state | "Device setup needs attention." above "Device setup is unavailable…": near repeat | Alerts |
+| K-6 | Closed-page card (Manager without a grant) | Re-capture at 390 with 200% text once a fictional role without the grant is seeded | QA |
+
+Checks run: `tsc --noEmit` clean; oxlint clean on the changed TSX; unit tests beside every change pass. Full suite: the
+only other failures are in `src/lib/tenancy/**` (they need commit `7c628e37`) and `src/lib/operations/managed-runtime.test.ts`; none touch the files changed here.
+Captures: `shots/kit-final/` (webp, quality 80) and `rows.json`.
