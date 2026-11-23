@@ -160,3 +160,18 @@ describe('Employee Schedule at 200% text (Nov 23, late)', () => {
     expect(kit).toContain('@container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); white-space: normal; overflow: visible; text-overflow: clip; } }');
   });
 });
+
+describe('release sweep, 200% text on phones (Nov 23)', () => {
+  it("a Manager's approval value goes under its label once text is enlarged", () => {
+    const sheet = css('app/app/owner-b-settings.css');
+    const at = sheet.indexOf('@media (max-width: 767px) { @container not style(--nv-rem: 16px) {');
+    expect(at).toBeGreaterThan(0);
+    const block = sheet.slice(at, sheet.indexOf('} }', at));
+    expect(block).toContain('.q-row.pmp-access:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#z2t) { grid-template-columns: minmax(0, 1fr) !important; }');
+    expect(block).toContain(':not(#z2t) > .q-rv { grid-column: 1 !important; grid-row: 2 !important; justify-self: start !important; text-align: left !important; }');
+    expect(block).toContain(':not(#z2t) > .q-rt > i { grid-row: 3 !important; }');
+  });
+  it("a row's status chip under the name wraps once text is enlarged", () => {
+    expect(css('components/owner-b/owner-b.css')).toContain('@container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__state > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); max-width: 100%; flex: 0 1 auto; white-space: normal; overflow-wrap: break-word; } }');
+  });
+});
