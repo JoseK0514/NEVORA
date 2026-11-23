@@ -38,10 +38,10 @@ async function enroll(owner,p,name){
  const code=await registerTestTablet(owner,name);
  await goto(p,'/clocker/2');await p.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();await p.evaluate(()=>document.fonts.ready);await shot(p,name.includes('Second')?'second-tablet-setup':name.split(' ')[0]+'-setup');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect tablet',exact:true}).click();await idle(p);
 }
-async function editBreak(owner,name,category,minutes){
+async function editBreak(owner,previousName,name,category,minutes){
  await goto(owner,'/app/settings/breaks');const row=owner.getByRole('list',{name:'Configured break types',exact:true}).locator('button#break-type-ui-rest');
- assert.match((await row.innerText()).trim(),/^(Fixture rest|Future rest)\b/);await row.click();const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();
- await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel(/^Reference time/).fill(String(minutes));
+ await row.getByText(previousName,{exact:true}).waitFor();await row.click();const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();
+ const breakName=d.getByLabel('Break name',{exact:true});assert.equal(await breakName.inputValue(),previousName);await breakName.fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel(/^Reference time/).fill(String(minutes));
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
 }
 async function idle(p){await p.getByRole('heading',{name:'Enter your Employee ID',exact:true}).waitFor();await p.waitForFunction(()=>{const i=document.querySelector('input[name=employeeId]');return i&&!i.matches(':disabled');});assert.equal(await p.getByLabel('Employee ID',{exact:true}).inputValue(),'','Retired identity must clear before the next person');}
@@ -216,14 +216,14 @@ try{
    await t.getByRole('button',{name:'Back',exact:true}).click();
   }
   await t.getByRole('button',{name:'Start break',exact:true}).click();
-  await editBreak(ownerPage,'Meal reference','MEAL',30);
+  await editBreak(ownerPage,'Fixture rest','Meal reference','MEAL',30);
   await t.getByRole('button',{name:'Start Fixture rest, Suggested: 15 min',exact:true}).click();await t.getByRole('button',{name:'Check if it saved',exact:true}).waitFor();
   assert.equal(await count(),typedStart+1,'A changed type cannot record from a stale choice');
   await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,typedStart+1);await t.getByRole('button',{name:'Start break',exact:true}).click();
   assert.equal(await t.getByRole('button',{name:'Start Fixture rest, Suggested: 15 min',exact:true}).count(),0);
   await t.getByRole('button',{name:/^Start Meal reference(,|$)/}).click();await success(t,'Break start');await done(t);
   checked(engine+': stale break selection rejects safely, then requires an explicit current type');
-  await editBreak(ownerPage,'Future rest','REST',5);await archiveBreak(ownerPage,'Archive');
+  await editBreak(ownerPage,'Meal reference','Future rest','REST',5);await archiveBreak(ownerPage,'Archive');
   await verify(t);await t.getByRole('button',{name:'End break',exact:true}).waitFor();await t.getByText('Meal reference',{exact:true}).waitFor();
   await t.getByText('Suggested: 30 min',{exact:false}).waitFor();assert.equal(await t.getByText('Future rest',{exact:true}).count(),0);
   const captured=(await q("SELECT break_type_snapshot AS settings FROM break_entries b JOIN time_entries t ON t.id=b.time_entry_id WHERE t.employee_id='PUNCH-A' ORDER BY b.break_start_at DESC LIMIT 1"))[0].settings;
@@ -233,7 +233,7 @@ try{
   assert.equal(await t.getByRole('button',{name:'Start break',exact:true}).count(),0);
   await t.getByRole('button',{name:'Clock out',exact:true}).click();await t.getByRole('button',{name:'Confirm clock out',exact:true}).click();await success(t,'Clock out');await done(t);
   assert.equal(await count(),typedStart+4);checked(engine+': archived types preserve captured settings, allow End Break and never invent a new type');
-  await archiveBreak(ownerPage,'Reactivate');await editBreak(ownerPage,'Fixture rest','REST',15);
+  await archiveBreak(ownerPage,'Reactivate');await editBreak(ownerPage,'Future rest','Fixture rest','REST',15);
   const longName='Alexandria'+('x'.repeat(65));await q("UPDATE employees SET first_name=$1,updated_at=clock_timestamp() WHERE id='PUNCH-A'",[longName]);
   await t.setViewportSize({width:320,height:740});await verify(t);await t.getByRole('heading',{name:'Hi, '+longName+'.',exact:true}).waitFor();await geometry(t,engine+': complete long name at 320px');await shot(t,engine+'-long-name-320');
   await t.getByRole('heading',{name:'Hi, '+longName+'.',exact:true}).focus();await t.keyboard.press('Tab');

@@ -45,8 +45,8 @@ let app,smtp,currentPage,recoveryEmployee,lifecycle='setup';const browsers=[],pi
 const url='/app/timecards?start=2026-09-21&end=2026-09-27';
 async function issueAssistedRecovery(page,employeeId,attestation){
  await page.getByLabel('Employee ID',{exact:true}).fill(employeeId);
- await page.getByRole('combobox',{name:'How you checked who they are',exact:true}).selectOption('other');
- await page.getByRole('textbox',{name:'How you checked',exact:true}).fill(attestation);
+ await page.getByRole('combobox',{name:'How you checked',exact:true}).selectOption('other');
+ await page.getByRole('textbox',{name:'Describe how you checked',exact:true}).fill(attestation);
  await page.getByRole('switch',{name:'I confirmed who they are',exact:true}).check();
  await page.getByRole('button',{name:'Make reset link',exact:true}).click();
  await page.getByRole('button',{name:'Show code',exact:true}).click();
