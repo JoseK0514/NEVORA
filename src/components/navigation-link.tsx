@@ -1,7 +1,7 @@
 'use client';
 import NextLink,{useLinkStatus} from 'next/link';
-import {useEffect,useRef,useState,type ComponentProps} from 'react';
-import {useRouter} from 'next/navigation';
+import {useContext,useEffect,useRef,useState,type ComponentProps} from 'react';
+import {AppRouterContext} from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import type {PrefetchKind} from 'next/dist/client/components/router-reducer/router-reducer-types';
 import {useAppNavigation} from './app-navigation';
 import type {NavigationAttempt,NavigationCoordinator} from '@/lib/navigation-coordinator';
@@ -31,8 +31,9 @@ function Completion({attempt,coordinator}:{readonly attempt:NavigationAttempt|nu
  return null;
 }
 export function NavigationLink({children,onNavigate,onClickCapture,intent,...rest}:Props){
- const coordinator=useAppNavigation(),destination=useRef<string|null>(null),router=useRouter();
- const props=intent&&typeof rest.href==='string'?{...rest,...intentProps((href,options)=>router.prefetch(href,options),rest.href,intent,rest)}:rest;
+ // The router useRouter() reads, without its throw: outside the app router (static renders, tests) nothing is prefetched.
+ const coordinator=useAppNavigation(),destination=useRef<string|null>(null),router=useContext(AppRouterContext);
+ const props=intent&&typeof rest.href==='string'?{...rest,...intentProps((href,options)=>router?.prefetch(href,options),rest.href,intent,rest)}:rest;
  const [attempt,setAttempt]=useState<NavigationAttempt|null>(null);
  if(!coordinator)return <NextLink {...props} onNavigate={onNavigate} onClickCapture={onClickCapture}>{children}</NextLink>;
  return <NextLink {...props} onClickCapture={event=>{
