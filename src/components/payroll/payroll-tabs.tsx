@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { UserRole } from '@/lib/domain';
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 import { payrollTabsFor } from '@/lib/navigation';
+import { usePayrollCopy } from './payroll-copy';
 
 export type PayrollTab = { href: string; label: string };
 
@@ -15,8 +16,9 @@ export function payrollTabs(role: UserRole, payroll?: PayrollCapabilities): Payr
 /** 44px text tabs with a 2px teal line under the current one, on tablets and desktop (a phone reaches these pages from
  * Payroll's rows and title buttons). */
 export function PayrollTabs({ items, current }: { items: PayrollTab[] | null | undefined; current: string }) {
+  const t = usePayrollCopy();
   if (!items?.length) return null;
-  return <nav className="c-pay-tabs" aria-label="Payroll pages">
+  return <nav className="c-pay-tabs" aria-label={t.settings.payrollPages}>
     {items.map(item => <Link key={item.href} href={item.href} className="c-pay-tabs__tab" aria-current={item.href === current ? 'page' : undefined}>{item.label}</Link>)}
   </nav>;
 }
