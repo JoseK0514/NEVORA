@@ -1,0 +1,121 @@
+[
+ {
+  "id": "I2-e-l",
+  "row": "I2",
+  "page": "Policy document (Privacy Policy)",
+  "section": "Profile and account",
+  "note": "Each section title shows once now: one In this policy list with Who we are open first, at every width. The repeated intro and the current page in the footer are gone; the policy text is unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/I2-e-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I2-e-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/I2-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I2-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the band's back link (Profile) is 32px tall at 768 and 1440 (BHero, b-kit)."
+  ]
+ },
+ {
+  "id": "I3-e-l",
+  "row": "I3",
+  "page": "Calendar subscription",
+  "section": "Profile and account",
+  "note": "The link card is titled Subscription, so it no longer repeats Create calendar link, and the line about how calendar apps refresh is gone.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/I3-e-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I3-e-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/I3-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I3-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I4-e-l",
+  "row": "I4",
+  "page": "Device alerts",
+  "section": "Profile and account",
+  "note": "Shown in the error state (the capture blocks service workers). The card says We couldn't verify this device and gives the instruction once; the notice under it only says setup could not finish and who can help.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/I4-e-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I4-e-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/I4-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I4-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit and foundation: button labels (Check again, Turn off alerts) and the status chip keep fixed px text at 200% (BButton, BChip, b-foundation.css).",
+   "Kit: the band's back link (Notifications) is 32px tall at 768 and 1440."
+  ]
+ },
+ {
+  "id": "I5-e-l",
+  "row": "I5",
+  "page": "Passkeys",
+  "section": "Profile and account",
+  "note": "Saved passkeys is one card on the column's edges at every width (served over the test HTTPS origin, no saved passkeys). The empty state says None yet instead of repeating the heading.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/I5-e-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I5-e-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/I5-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I5-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the band's back link (Profile) is 32px tall at 768 and 1440."
+  ]
+ }
+]
