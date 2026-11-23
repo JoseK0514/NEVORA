@@ -14,6 +14,8 @@ const MONTHS: Record<string, string> = {
   Jan: 'ene', Feb: 'feb', Mar: 'mar', Apr: 'abr', Jun: 'jun', Jul: 'jul', Aug: 'ago', Sep: 'sep', Sept: 'sep', Oct: 'oct', Nov: 'nov', Dec: 'dic',
 };
 const MONTH = Object.keys(MONTHS).sort((a, b) => b.length - a.length).join('|');
+/** A space as a formatted value may hold it: plain, no-break (keepWhole) or narrow no-break. */
+const SP = '[ \\u00a0\\u202f]';
 const DAY = Object.keys(DAYS).sort((a, b) => b.length - a.length).join('|');
 
 /** "7:00 AM" → "7:00 a. m."; "12 PM" → "12 p. m.". Spacing before AM/PM (plain, no-break or narrow no-break) is kept. */
@@ -29,9 +31,9 @@ export function esDate(text: string, lang: FormatLang = 'es'): string {
   if (lang !== 'es') return text;
   let out = text;
   // "Dec 7 – 13" (same month) → "7–13 dic"
-  out = out.replace(new RegExp(`\\b(${MONTH})\\.? (\\d{1,2}) ?[–-] ?(\\d{1,2})\\b(?!:)`, 'g'), (_m, mon: string, a: string, b: string) => `${a}–${b} ${MONTHS[mon]}`);
+  out = out.replace(new RegExp(`\\b(${MONTH})\\.?(${SP})(\\d{1,2})${SP}?[–-]${SP}?(\\d{1,2})\\b(?!:)`, 'g'), (_m, mon: string, space: string, a: string, b: string) => `${a}–${b}${space}${MONTHS[mon]}`);
   // "Dec 7" → "7 dic" ("Dec 7, 2026" → "7 dic 2026")
-  out = out.replace(new RegExp(`\\b(${MONTH})\\.? (\\d{1,2})(?:, (\\d{4}))?\\b(?!:)`, 'g'), (_m, mon: string, d: string, y?: string) => `${d} ${mon.length > 4 ? 'de ' : ''}${MONTHS[mon]}${y ? ` ${y}` : ''}`);
+  out = out.replace(new RegExp(`\\b(${MONTH})\\.?(${SP})(\\d{1,2})(?:,${SP}(\\d{4}))?\\b(?!:)`, 'g'), (_m, mon: string, space: string, d: string, y?: string) => `${d}${space}${mon.length > 4 ? `de${space}` : ''}${MONTHS[mon]}${y ? `${space}${y}` : ''}`);
   // A bare month name ("December 2026") → "diciembre 2026"
   out = out.replace(new RegExp(`\\b(${MONTH})\\b`, 'g'), (m: string) => MONTHS[m] ?? m);
   out = out.replace(new RegExp(`\\b(${DAY})\\b`, 'g'), (m: string) => DAYS[m] ?? m);

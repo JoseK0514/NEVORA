@@ -16,6 +16,8 @@ import type { EmployeeManagementProfile } from "@/lib/data/employees";
 import type { Location, UserRole } from "@/lib/domain";
 import type { EmploymentDates } from "@/lib/employment-dates";
 import { EmploymentDateFields } from "./employment-date-fields";
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {employeeTeamCopy} from './employee-team-copy';
 
 type EmployeeCoreProfileProps={
  employee:EmployeeManagementProfile;locations:Location[];actorId:string;actorRole:UserRole;
@@ -33,7 +35,6 @@ type EmployeeCoreProfileProps={
   * goes back to that report. */
  returnTo?:{href:string;label:string;focusHire?:boolean};
 };
-const roleNames:Record<UserRole,string>={OWNER:'Owner',MANAGER:'Manager',LEAD:'Lead',EMPLOYEE:'Employee'};
 
 export function EmployeeCoreProfileForm(props:EmployeeCoreProfileProps){
  return <EmployeeCoreProfileEditor key={JSON.stringify([props.actorId,props.actorRole,props.employee.id])} {...props}/>;
@@ -44,15 +45,16 @@ export function EmployeeCoreProfileForm(props:EmployeeCoreProfileProps){
 function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null,action,cancelHref,more,employmentDates,bonusApplies=true,returnTo}:EmployeeCoreProfileProps){
   // Editable drafts retain the versions they were opened against. An RSC refresh
   // must not silently attach dirty fields to a newer employee/access revision.
+  const t=employeeTeamCopy(usePortalLang()),roleNames=t.roles;
   const [baseline]=useState(()=>({employee,ownerScope,employmentDates}));
   const [role,setRole]=useState(employee.role),[scope,setScope]=useState<ScopeSelection|null>(null),[saved,setSaved]=useState(false);
   const active=String(employee.active);
   const needsScope=actorRole==='OWNER'&&role==='MANAGER'&&active==='true'&&(baseline.employee.role!=='MANAGER'||!baseline.employee.active);
   const roleOptions = [
-    { value: "EMPLOYEE", label: "Employee" },
-    { value: "LEAD", label: "Lead" },
-    { value: "MANAGER", label: "Manager" },
-    ...(actorRole === "OWNER" ? [{ value: "OWNER", label: "Owner" }] : []),
+    { value: "EMPLOYEE", label: roleNames.EMPLOYEE },
+    { value: "LEAD", label: roleNames.LEAD },
+    { value: "MANAGER", label: roleNames.MANAGER },
+    ...(actorRole === "OWNER" ? [{ value: "OWNER", label: roleNames.OWNER }] : []),
   ];
   const primary=locations.find(location=>location.id===employee.primaryLocationId);
   const locationOptions = locations
@@ -61,7 +63,7 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
       value: location.id,
       label:
         location.id === employee.primaryLocationId && !location.active
-          ? `${location.shortName} (Inactive — can only be retained while inactive)`
+          ? t.inactiveLocationOption(location.shortName)
           : location.shortName,
     }));
   const formId=`employee-core-${employee.id}`;
@@ -82,33 +84,33 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
 
   return <>
     {/* Review 30 (D04): once the save is confirmed the sheet's Save goes and Cancel reads Done; the result replaces the form. */}
-    <FormHead titleId="person-edit-title" title="Edit employee" left={<FormHeadLink href={cancelHref??`/app/employees/${encodeURIComponent(employee.id)}`}>{saved?'Done':'Cancel'}</FormHeadLink>}
-      right={saved||!changed?undefined:<button type="submit" form={formId}>Save</button>}/>
+    <FormHead titleId="person-edit-title" title={t.editEmployee} left={<FormHeadLink href={cancelHref??`/app/employees/${encodeURIComponent(employee.id)}`}>{saved?t.done:t.cancel}</FormHeadLink>}
+      right={saved||!changed?undefined:<button type="submit" form={formId}>{t.save}</button>}/>
     <EmployeeAccessForm id={formId} action={action} employeeId={employee.id} build={(fields,id)=>coreCommandFromForm(fields,baseline.employee,baseline.ownerScope,actorRole,scope,id)} className="c-teamform employee-core-profile-form"
-      done={{title:({first,last})=>`${[first,last].filter(Boolean).join(' ')||'Employee'}’s details saved`,line:returnTo?'Christmas bonus hours show the saved details.':'Their profile shows what was saved.',
-        next:()=>returnTo??{href:`/app/employees/${encodeURIComponent(employee.id)}`,label:'Open profile'}}}
+      done={{title:({first,last})=>t.savedTitle([first,last].filter(Boolean).join(' ')),line:returnTo?t.savedLineBonus:t.savedLine,
+        next:()=>returnTo??{href:`/app/employees/${encodeURIComponent(employee.id)}`,label:t.openProfile}}}
       onSaved={()=>setSaved(true)}>
       <input type="hidden" name="employeeId" value={employee.id} />
       <input type="hidden" name="active" value={active} />
       <ReturnToNext />
       <div className="c-field__row">
-        <CorpField label="First name" htmlFor="edit-first"><input id="edit-first" className="c-in" name="firstName" defaultValue={employee.firstName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing="Enter a first name" /></CorpField>
-        <CorpField label="Last name" htmlFor="edit-last"><input id="edit-last" className="c-in" name="lastName" defaultValue={employee.lastName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing="Enter a last name" /></CorpField>
+        <CorpField label={t.firstName} htmlFor="edit-first"><input id="edit-first" className="c-in" name="firstName" defaultValue={employee.firstName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing={t.enterFirstName} /></CorpField>
+        <CorpField label={t.lastName} htmlFor="edit-last"><input id="edit-last" className="c-in" name="lastName" defaultValue={employee.lastName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing={t.enterLastName} /></CorpField>
       </div>
-      <CorpField label="Mobile phone" htmlFor="edit-phone"><PhoneField id="edit-phone" name="phone" defaultValue={employee.phone} autoComplete="off" enterKeyHint="next" required missing="Enter a mobile phone number" /></CorpField>
-      <CorpField label="Email (optional)" htmlFor="edit-email"><input id="edit-email" className="c-in" name="email" type="email" inputMode="email" defaultValue={employee.email ?? ""} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" maxLength={254} placeholder="name@example.com" /></CorpField>
+      <CorpField label={t.mobilePhone} htmlFor="edit-phone"><PhoneField id="edit-phone" name="phone" defaultValue={employee.phone} autoComplete="off" enterKeyHint="next" required missing={t.enterPhone} /></CorpField>
+      <CorpField label={t.emailOptional} htmlFor="edit-email"><input id="edit-email" className="c-in" name="email" type="email" inputMode="email" defaultValue={employee.email ?? ""} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" maxLength={254} placeholder={t.emailPlaceholder} /></CorpField>
       <div className="c-field__row">
-        <CorpField label="Role" htmlFor="edit-role"><select id="edit-role" className="c-in" name="role" value={role} required onChange={event=>setRole(event.target.value as UserRole)}>
+        <CorpField label={t.role} htmlFor="edit-role"><select id="edit-role" className="c-in" name="role" value={role} required onChange={event=>setRole(event.target.value as UserRole)}>
           {roleOptions.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
         </select></CorpField>
-        <CorpField label="Location" htmlFor="edit-location"><select id="edit-location" className="c-in" name="primaryLocationId" defaultValue={employee.primaryLocationId} required data-missing="Choose a location">
+        <CorpField label={t.location} htmlFor="edit-location"><select id="edit-location" className="c-in" name="primaryLocationId" defaultValue={employee.primaryLocationId} required data-missing={t.chooseLocation}>
           {locationOptions.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}
         </select></CorpField>
       </div>
-      {primary?.active===false?<p className="c-note c-note--warn">Choose an active location before reactivating this employee.</p>:null}
-      {role!==baseline.employee.role?<p className="c-callout" role="status"><span><b>{`${roleNames[baseline.employee.role]} to ${roleNames[role]} when you save`}</b>
-        {role==='MANAGER'&&actorRole!=='OWNER'?'An Owner assigns their management access after this. No access is granted automatically.':null}</span></p>:null}
-      {needsScope&&(baseline.ownerScope?<ManagerOperationalScopeFields current={baseline.ownerScope} locations={locations.filter(l=>l.active).map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:<p role="alert" className="c-error">Current management access is unavailable. Reload this employee before promoting or reactivating a Manager.</p>)}
+      {primary?.active===false?<p className="c-note c-note--warn">{t.chooseActiveLocation}</p>:null}
+      {role!==baseline.employee.role?<p className="c-callout" role="status"><span><b>{t.roleChange(roleNames[baseline.employee.role],roleNames[role])}</b>
+        {role==='MANAGER'&&actorRole!=='OWNER'?t.ownerAssignsAccess:null}</span></p>:null}
+      {needsScope&&(baseline.ownerScope?<ManagerOperationalScopeFields current={baseline.ownerScope} locations={locations.filter(l=>l.active).map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:<p role="alert" className="c-error">{t.scopeUnavailablePromote}</p>)}
       {baseline.employmentDates?<EmploymentDateFields idPrefix="edit" value={baseline.employmentDates} bonusApplies={bonusApplies} focusHire={returnTo?.focusHire}/>:null}
       {more}
     </EmployeeAccessForm>
@@ -119,9 +121,10 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
 
 /** A picker-looking field that opens its own sheet ("Positions › Barista"). */
 export function SheetField({label,value,href,placeholder}:{label:string;value?:string;href:string;placeholder?:string}){
+ const none=employeeTeamCopy(usePortalLang()).none;
  return <div className="c-field"><span className="c-field__label">{label}</span>
-  <Link className="c-in c-pick" href={href} aria-label={`${label}: ${value||placeholder||'None'}`}>
-   <span className={value?'c-pick__value':'c-pick__value c-pick__value--none'}>{value||placeholder||'None'}</span>
+  <Link className="c-in c-pick" href={href} aria-label={`${label}: ${value||placeholder||none}`}>
+   <span className={value?'c-pick__value':'c-pick__value c-pick__value--none'}>{value||placeholder||none}</span>
    <CaretRightIcon className="c-ic c-ic--s c-chev" weight="bold" aria-hidden="true"/>
   </Link></div>;
 }
@@ -137,6 +140,7 @@ export function EmployeeStatusForm({employee,locations,actorId,actorRole,ownerSc
  return <StatusEditor key={JSON.stringify([actorId,actorRole,employee.id,employee.updatedAt])} employee={employee} locations={locations} actorRole={actorRole} ownerScope={ownerScope} action={action} onResult={setResult}/>;
 }
 function StatusEditor({employee,locations,actorRole,ownerScope,action,onResult}:{employee:EmployeeManagementProfile;locations:Location[];actorRole:UserRole;ownerScope:OwnerScopeContext|null;action:(data:FormData)=>Promise<unknown>;onResult:(result:{done:EmployeeSavedState;receipt:EmployeeSavedReceipt})=>void}){
+ const t=employeeTeamCopy(usePortalLang());
  const [baseline]=useState(()=>({employee,ownerScope}));
  const [confirming,setConfirming]=useState(false),[scope,setScope]=useState<ScopeSelection|null>(null);
  const needsScope=!employee.active&&employee.role==='MANAGER'&&actorRole==='OWNER';
@@ -154,18 +158,18 @@ function StatusEditor({employee,locations,actorRole,ownerScope,action,onResult}:
  </>;
  // Confirmations B (#15): the confirm is the shared question block. The command, its fields and the one submit are
  // unchanged; the confirmed result is handed to the form above (see EmployeeStatusForm).
- const done:EmployeeSavedState={className:'c-status-done',title:()=>next?`${first} is active again`:`${first} is deactivated`,line:next?'They sign in again to start. Their history is kept.':'They’re signed out. Their history is kept.',
-  next:()=>({href:'/app/employees',label:'Back to Team'})};
+ const done:EmployeeSavedState={className:'c-status-done',title:()=>next?t.activeAgain(first):t.deactivated(first),line:next?t.activeAgainLine:t.deactivatedLine,
+  next:()=>({href:'/app/employees',label:t.backToTeam})};
  return <EmployeeAccessForm action={action} employeeId={employee.id} build={(data,id)=>coreCommandFromForm(data,baseline.employee,baseline.ownerScope,actorRole,scope,id)} className="c-status-form"
   done={done} onSaved={receipt=>onResult({done,receipt})}>
   {fields}
-  {needsScope&&(baseline.ownerScope?<ManagerOperationalScopeFields current={baseline.ownerScope} locations={locations.filter(l=>l.active).map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:<p role="alert" className="c-error">Current management access is unavailable. Reload this employee before reactivating a Manager.</p>)}
+  {needsScope&&(baseline.ownerScope?<ManagerOperationalScopeFields current={baseline.ownerScope} locations={locations.filter(l=>l.active).map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:<p role="alert" className="c-error">{t.scopeUnavailableReactivate}</p>)}
   {next
-   ? <button type="submit" className="c-btn c-btn--secondary c-btn--full">{`Reactivate ${first}`}</button>
+   ? <button type="submit" className="c-btn c-btn--secondary c-btn--full">{t.reactivate(first)}</button>
    : confirming
-    ? <DecisionAsk className="c-status-ask" groupLabel={`Deactivate ${first}?`} question={`Deactivate ${first}?`} consequence="They’re signed out right away. Their history stays and you can bring them back."
-       keep="Keep active" onKeep={()=>setConfirming(false)} go="Deactivate" goLabel={`Deactivate ${first}`} goValue="deactivate"/>
-    : <button type="button" className="c-btn c-btn--danger c-btn--full" onClick={()=>setConfirming(true)}>{`Deactivate ${first}`}</button>}
-  {confirming?null:<p className="c-note c-note--center">{next?'They sign in again after this. Their history is kept.':'They’re signed out right away. Their history stays and you can bring them back.'}</p>}
+    ? <DecisionAsk className="c-status-ask" groupLabel={t.deactivateAsk(first)} question={t.deactivateAsk(first)} consequence={t.deactivateConsequence}
+       keep={t.keepActive} onKeep={()=>setConfirming(false)} go={t.deactivate} goLabel={t.deactivateName(first)} goValue="deactivate"/>
+    : <button type="button" className="c-btn c-btn--danger c-btn--full" onClick={()=>setConfirming(true)}>{t.deactivateName(first)}</button>}
+  {confirming?null:<p className="c-note c-note--center">{next?t.reactivateNote:t.deactivateConsequence}</p>}
  </EmployeeAccessForm>;
 }

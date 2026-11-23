@@ -1,25 +1,26 @@
 import Link from 'next/link';
 import type {ReactNode} from 'react';
-import {workCopy} from './work-copy';
+import {WORK_COPY, workCopy} from './work-copy';
 import {formatTime} from '@/lib/date-utils';
+import {esTime, LOCALE, type FormatLang} from './es-format';
 
 /* Small shared pieces for the Employee Direction B phone screens. */
 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 
-/** "08:00" → "8:00 AM"; "24:00" → "12:00 AM" (the one time format, date-utils formatTime). */
-export function wallTime(time: string) {
-  return formatTime(time);
+/** "08:00" → "8:00 AM"; "24:00" → "12:00 AM" (the one time format, date-utils formatTime); "8:00 a. m." in Spanish. */
+export function wallTime(time: string, lang: FormatLang = 'en') {
+  return esTime(formatTime(time), lang);
 }
 
 /** A day as a row's lead: "SAT" over "7". Today's number is teal. */
-export function BDay({date, today, past, pick, spoken}: {date: string; today?: boolean; past?: boolean;
+export function BDay({date, today, past, pick, spoken, lang = 'en'}: {date: string; today?: boolean; past?: boolean; lang?: FormatLang;
   /** Phase 4 (EM-013): the day the desktop Schedule's day card shows (the chosen day, else today). */ pick?: boolean;
   /** Gaps G66: the day is part of its row's name ("Tue 24 9:00 AM – 5:00 PM …"), for a row named by what it shows. A row
    * with its own label keeps the day hidden. */ spoken?: boolean}) {
   const at = utcDay(date);
   return <span className={`b-day eb-day${today ? ' eb-day--today' : ''}${past ? ' eb-day--past' : ''}${pick ? ' eb-day--pick' : ''}`} aria-hidden={spoken ? undefined : 'true'}>
-    <span>{new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short'}).format(at)}</span>{spoken ? <span className="b-sr"> </span> : null}<b>{at.getUTCDate()}</b>
+    <span>{new Intl.DateTimeFormat(LOCALE[lang], {timeZone: 'UTC', weekday: 'short'}).format(at)}</span>{spoken ? <span className="b-sr"> </span> : null}<b>{at.getUTCDate()}</b>
   </span>;
 }
 
@@ -32,14 +33,14 @@ export function BValue({children, sub}: {children: ReactNode; sub?: ReactNode}) 
  * segment carries its dot in front; the line is pulled left by one dot's width and clipped, so the dot that would start
  * a line (the first, or one after a wrap) falls outside and never shows. Screen readers hear a comma between segments.
  * Phase 4 (EM-015): a Lead's "Shift lead" marker reads "Lead" on phones, so the line stays one line. */
-export function Dotted({text}: {text: string}) {
+export function Dotted({text, lang = 'en'}: {text: string; lang?: FormatLang}) {
   // Phase 9: a line that arrives already kept whole ("Thu,\u00a0Dec\u00a03\u00a0· 9:00\u00a0AM…", keepWhole) is split at its dots
   // too, so the time is its own segment and moves to the next line whole; as one segment it broke after "·" and its
   // second line started under the clipped dot ("00 AM – 12:00 PM" on a phone's Requests rows).
   const parts = text.split(/[ \u00a0\u202f]·[ \u00a0\u202f]/);
   return <span className="eb-dots"><span className="eb-dots__in">{parts.map((part, index) =>
     <span key={index} className="eb-dots__p"><span className="eb-dots__sep" aria-hidden="true">·</span>{index ? <span className="b-sr">, </span> : null}
-      {part === 'Shift lead' ? <><span className="eb-lead-l">Shift lead</span><span className="eb-lead-s">{workCopy().leadShort}</span></> : part}</span>)}</span></span>;
+      {part === WORK_COPY.en.shiftLead || part === WORK_COPY.es.shiftLead ? <><span className="eb-lead-l">{part}</span><span className="eb-lead-s">{workCopy(part === WORK_COPY.es.shiftLead ? 'es' : lang).leadShort}</span></> : part}</span>)}</span></span>;
 }
 
 /** Phase 8 (review C, rows 14 and 24), Nov 23, 2026: one rule for a time range on every screen. Each half stays whole
