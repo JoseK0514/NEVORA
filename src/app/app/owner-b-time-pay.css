@@ -605,3 +605,11 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-pick[data-off]:not(#gq1):not(#gq2):not(#gq3) { cursor: default !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-pick[data-off] :is(.b-row__tt, .b-row__end):not(#gq1):not(#gq2):not(#gq3) { color: var(--b-grey) !important; }
 }
+
+/* Jose (Nov 23, 2026, "not B2 compliant"): the Timecards sheet's "Close open punch" card. With 200% text the field labels,
+ * the fields and the refresh link scale with the rest of the sheet (rem, the same 13/16/13px at default size). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-close .c-field__label:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.8125rem !important; line-height: 1.125rem !important; white-space: normal !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-close .c-in:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 1rem !important; line-height: 1.4 !important; padding-block: 0.5rem !important; height: auto !important; min-height: var(--b-target, 44px) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-close > .c-link:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.8125rem !important; line-height: 1.125rem !important; min-height: var(--b-target, 44px) !important; }
+}
