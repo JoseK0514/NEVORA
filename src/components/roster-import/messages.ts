@@ -72,7 +72,8 @@ export function describeRow(copy: RosterImportCopy, row: RosterRow, locations: I
     id: e?.id ?? (row.values.id || r.blank),
     role: roleKey in r.roles ? r.roles[roleKey as keyof typeof r.roles] : row.values.role ?? "",
     location: locationName(e?.primaryLocationId ?? (row.values.primaryLocationId || defaultLocationId)),
-    phone: e?.phone ?? (row.values.phone || r.blank),
+    // Package X: a row that still needs a fix shows a 10-digit phone as the checked rows do (787-555-0144), not raw digits.
+    phone: e?.phone ?? (shownPhone(row.values.phone) || r.blank),
     email: e ? e.email : row.values.email || null,
   };
 }
@@ -142,4 +143,10 @@ export function importStep(copy: RosterImportCopy, outcome: ImportOutcome, previ
       return rowErrors.size ? back(notice(f.rowsNotAccepted, null), false, rowErrors) : back(notice(f.notAccepted, "recheck"), false);
     }
   }
+}
+
+/** A phone as typed, shown like a checked one when it is exactly 10 digits (787-555-0144); anything else as typed. */
+export function shownPhone(raw: string | undefined): string {
+  const digits = (raw ?? "").replace(/\D/g, "");
+  return digits.length === 10 && !/[^\d\s().+-]/.test(raw ?? "") ? `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}` : raw ?? "";
 }

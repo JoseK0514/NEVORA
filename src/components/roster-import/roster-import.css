@@ -16,6 +16,7 @@
 /* ---------- step 1: what the list needs, the list, the file ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-needs { display: grid; gap: var(--b-space-8); padding: 14px var(--b-space-16); border-radius: var(--b-radius-field); background: var(--b-hover); box-shadow: inset 0 0 0 1px var(--b-line); }
 :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-scroll { overflow-x: auto; }
+:is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-scroll:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
 :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-example { border-collapse: collapse; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-ink2); white-space: nowrap; font-variant-numeric: tabular-nums; }
 :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-example caption { padding: 0 0 var(--b-space-4); text-align: left; font-weight: 600; color: var(--b-ink); }
 :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-example :is(th, td) { padding: 6px 10px; border: 1px solid var(--b-line); background: #FFFFFF; text-align: left; font-weight: 400; }
@@ -81,10 +82,11 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-editor__acts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-8); }
 :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-editor__acts > .b-btn { min-height: 44px; }
 
-/* Under 1024px (phones, and tablets where the card is narrow) each person is a stacked card: the row number and the
- * Fix button on the first line, then the person, the role and location, the contact and the status with its problems.
- * The header row stays for screen readers only; the cells keep their table roles. */
-@media (max-width: 1023px) {
+/* Each person is a stacked card: the row number and the Fix button on the first line, then the person, the role and
+ * location, the contact and the status with its problems. The header row stays for screen readers only; the cells keep
+ * their table roles. Package X (Nov 23, 2026): at every width, since the import sits in the narrow sheet card (about
+ * 500px at 1440), where six columns broke names, phones and emails mid-word ("Santiag/o", "787-555-/0141"). */
+@media all {
   :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-table, :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-table tr { display: block; }
   :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-table thead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-table tbody { display: grid; gap: 10px; }
