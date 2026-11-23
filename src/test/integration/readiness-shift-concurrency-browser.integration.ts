@@ -138,7 +138,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       const open = async (n: number, id: string) => {
         const p = page(n);
         await drainRouterReads(n);
-        await p.locator('main h1').first().waitFor();
+        await p.locator('main h1').filter({ visible: true }).first().waitFor();
         await expect.poll(() => pendingAuthorityReads[n].size, { timeout: 20000 }).toBe(0);
         await p.evaluate(() => window.dispatchEvent(new Event('pagehide')));
         await p.goto(app.url + '/app/schedule/edit?shiftId=' + id);
