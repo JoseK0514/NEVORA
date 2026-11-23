@@ -10,6 +10,11 @@ rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employ
 rs.mock('@/lib/data/schedule-copy',()=>({readScheduleCopyReceipt:async()=>fixtures.receipt,readScheduleCopyCommand:async()=>fixtures.command}));
 rs.mock('@/components/schedule-copy-form',()=>({ScheduleCopyForm:({label}:{label:string})=>createElement('button',{type:'button'},label)}));
 import Page from './page';
+import {compactRange} from '@/components/owner-b/b-kit';
+import {formatTimeRange} from '@/lib/date-utils';
+// Times are written by the shared helpers, so these tests follow any change to how a time reads.
+const hours=(start:string,end:string)=>compactRange(formatTimeRange(start,end)).replace(/\s+/g,' ');
+const NINE=hours('09:00','17:00'),TWO=hours('14:00','22:00');
 
 // Server composition tests; actual mounted finite-body behavior is checked separately.
 const operationalPageFixture=rs.hoisted(()=>({denied:false}));
@@ -96,7 +101,7 @@ it('lists each warning kind once with only the copied shifts it affects, each li
  const skipped=html.slice(end);
  expect(skipped).toContain('Overlaps another shift');
  expect(skipped).toContain('Skipped P.');
- expect(text(skipped)).toContain('Mon · 9 AM – 5 PM');
+ expect(text(skipped)).toContain(`Mon · ${NINE}`);
  expect(skipped).not.toContain('href="/app/schedule/edit');
  // Each count once: 3 shifts in the summary, 2 with warnings and 1 not copied at their lists' headings.
  const summary=text(html.slice(html.indexOf('id="copy-result"'),start));
@@ -126,7 +131,7 @@ it('shows a person once per reason with their days when shifts were not copied',
  const skipped=text(html.slice(html.indexOf('id="copy-skipped"')));
  expect(skipped.match(/Luis T\./g)).toHaveLength(1);
  // Two locations in the copy: Luis's one location is said once, at the end of his line.
- expect(skipped).toContain('Mon, Tue · 9 AM – 5 PM; Wed · 2–10 PM · Condado');
+ expect(skipped).toContain(`Mon, Tue · ${NINE}; Wed · ${TWO} · Condado`);
  expect(skipped.match(/Condado/g)).toHaveLength(1);
 });
 
@@ -139,13 +144,17 @@ it('shows a person once per warning kind; one shift opens it, several open the c
   // Two people who share a short name stay two rows.
   row('a1','COMMITTED',{employeeName:'Ana Rivera',warnings:[availability]}),
   row('a2','COMMITTED',{employeeName:'Ana Rosa',warnings:[availability]}),
+  // Two shifts on one day: the weekday is said once.
+  row('t1','COMMITTED',{employeeName:'Two Shifts',startTime:'06:00',endTime:'10:00',warnings:[availability]}),
+  row('t2','COMMITTED',{employeeName:'Two Shifts',startTime:'16:00',endTime:'20:00',warnings:[availability]}),
  ]);
  const html=await render();
  const section=html.slice(html.indexOf('id="copy-warnings"'));
  const words=text(section);
  expect(words.match(/Elena R\./g)).toHaveLength(1);
- expect(words).toContain('Elena R. Mon, Tue · 9 AM – 5 PM; Wed · 2–10 PM');
+ expect(words).toContain(`Elena R. Mon, Tue · ${NINE}; Wed · ${TWO}`);
  expect(words.match(/Ana R\./g)).toHaveLength(2);
+ expect(words).toContain(`Two S. Mon · ${hours('06:00','10:00')}, ${hours('16:00','20:00')}`);
  // Elena's three shifts open the copied week; Solo's one shift opens Edit shift.
  const elena=section.slice(section.indexOf('Elena R.')-400,section.indexOf('Elena R.'));
  expect(elena.slice(elena.lastIndexOf('<a')) ).toContain('href="/app/schedule?week=2026-10-19"');

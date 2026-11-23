@@ -84,12 +84,18 @@ function PersonRows({ rows, withPlace, href }: { rows: Row[]; withPlace: boolean
     const theirPlaces = new Set(own.map(row => row.locationName).filter(Boolean));
     const placeEach = withPlace && theirPlaces.size > 1;
     const placeOnce = withPlace && theirPlaces.size === 1 ? [...theirPlaces][0] : null;
-    const parts = new Map<string, string[]>();
-    for (const row of own) {
-      if (!described(row)) { parts.set(row.sourceId, []); continue; }
-      const slot = [timeOf(row), placeEach ? row.locationName : null].filter(Boolean).join(DOT);
-      parts.set(slot, [...(parts.get(slot) ?? []), formatDayLabel(row.date).weekday]);
+    // Each weekday once: a day's times are listed together ("Mon · 6 AM – 2 PM, 8 AM – 4 PM"), then days with the same
+    // times share one part ("Mon, Tue · 8 AM – 4 PM").
+    const days = new Map<string, string[]>();
+    const loose: string[] = [];
+    for (const row of [...own].sort(byWhen)) {
+      if (!described(row)) { loose.push(row.sourceId); continue; }
+      const day = formatDayLabel(row.date).weekday;
+      days.set(day, [...(days.get(day) ?? []), [timeOf(row), placeEach ? row.locationName : null].filter(Boolean).join(DOT)]);
     }
+    const parts = new Map<string, string[]>();
+    for (const [day, times] of days) { const slot = times.join(", "); parts.set(slot, [...(parts.get(slot) ?? []), day]); }
+    for (const id of loose) parts.set(id, []);
     const detail = [...parts].map(([slot, days]) => days.length ? `${days.join(", ")}${DOT}${slot}` : slot).join("; ") + (placeOnce ? `${DOT}${placeOnce}` : "");
     return <li key={key}><CorpRow title={name} detail={detail} href={href?.(own)} /></li>;
   })}</CorpRows>;
