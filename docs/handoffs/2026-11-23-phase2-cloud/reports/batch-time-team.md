@@ -16,6 +16,8 @@ restricted or no-grant screen a role gets instead. Fictional data, a throwaway l
 | `6a463845`, `f5f69931` | F2, D3 | A closed page names itself: "Add employee" (was "Employee creation"), "Request time correction" (was "Time corrections") |
 | `fe23473e` | D4 | Time rows are named by what they show (axe label-content-name-mismatch); the day, drawn aria-hidden, is screen-reader text first |
 | `42d6a7b5` | D4 | "No time recorded yet this week" sits on the card's text edge (was 4px left at 768 and 1440) |
+| `fac0de07`, `79679305` | D4 | Lead review: the This week footer note sat 28px under "Fix a missed punch"; now the row's 16px (rule in `@layer nv-b`, where the footer rule lives) |
+| `f9c22269` | D4 | 200% text at 390: the hours drew over the time range; they now move to the next line |
 
 Tests updated or added beside each change: `manager-time-corrections.test.tsx` (2 new), `clocker-pin-form.test.tsx`,
 `restrictions-screen.test.tsx`, `employee-b/time-b.test.tsx`, `employees/new/page.test.tsx`. Typecheck and oxlint
@@ -68,6 +70,10 @@ Manager Daniel `OWN-DANI` (Condado) without and then with the grant; Lead James 
 
 Edges: every page puts its cards at 14 / 108 / 296 px left and 14 / 28 / 332 px right (notices are a narrower centred
 card by design). D5 and F8 cards sit at 16 px on phones (their Settings frame), 2 px in from the other pages.
+
+D4 follow-up (lead review), production run on `f9c22269`: Employee and Lead at 390, 768, 1440 and 390 with 200% text.
+Note gap 16px at every width (was 28px); row heights unchanged at normal sizes (59 / 64px); no overlap at 200% text;
+axe 0; overflow 0. The D4 Lead and Employee captures are from this run.
 
 ## Before and after words
 - D2 card sub-line: "Calle Loíza · Clock in / Clock out" → "Calle Loíza" (a missing time or a break keeps its label).
