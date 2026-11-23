@@ -214,6 +214,13 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: flex !important; flex-wrap: wrap !important; gap: var(--b-space-8) var(--b-space-4) !important; width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; padding: var(--b-seg-pad) !important; overflow: visible !important; border-radius: var(--b-radius-field) !important; -webkit-mask-image: none !important; mask-image: none !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex: 1 1 auto !important; justify-content: center !important; min-width: 0 !important; max-width: 100% !important; height: auto !important; min-height: var(--b-seg-item-h) !important; line-height: 1.25 !important; padding-left: var(--b-space-12) !important; padding-right: var(--b-space-12) !important; white-space: normal !important; text-align: center !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { inset: -4px 0 !important; }
+    /* DEC2 / G68 (Jose, Nov 23, 2026): four filters are two rows of two equal pills while the card is at least 21rem wide, so
+     * "Off today" isn't alone on a row at 390px. The width is in rem, so at 320px or with 200% text the pills keep
+     * wrapping to their labels as today. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-card:has(> .b-filters) { container: g68 / inline-size; }
+    @container g68 (min-width: 21rem) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:has(> :nth-child(4)):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#g68) { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    }
   }
   /* B #19: a person's face in a list row is the one 36px lead (Team, Timecards and Availability drew 32px). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) :is(.c-page, .q-page) :is(.c-row, .c-tc-person) > .c-av:not(.c-av--l):not(.c-sched-av--open):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { width: 36px !important; height: 36px !important; border-radius: 18px !important; }

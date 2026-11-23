@@ -122,8 +122,29 @@
   /* The question before Decline or Close sits where the row's buttons were, on the decision's own inset (the kit's
    * margin is for the older list's 64px face column). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-shreq .c-shreq__form .b-ask:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) { margin: 0 !important; }
-  /* Not sent and Sent: the kit's chips draw 36px; on this page they keep the 44px target (Apple HIG floor). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters > button:not(#st1):not(#st2):not(#st3):not(#st4) { height: auto !important; min-height: 44px !important; }
+  /* C10 Not sent / Sent (Jose, Nov 23: "the not sent button, that is wrong"): the kit's segmented control in the card. One
+   * grey track wraps both segments with an even 4px inset (no scroll fade), each segment takes half and keeps the 44px
+   * target, the chosen one is the white pill inside the track, and each count reads as the kit's count (CorpCount: a grey
+   * numeral after a gap). The filter chips' rules had left the chosen pill hanging past the track's left edge at 390. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) {
+    display: grid !important; grid-auto-flow: column !important; grid-auto-columns: minmax(0, 1fr) !important; gap: 0 !important; box-sizing: border-box !important;
+    width: auto !important; max-width: 22rem !important; height: auto !important; margin: 16px var(--b-inset, 16px) 8px !important; padding: 4px !important;
+    border-radius: var(--b-radius-field, 14px) !important; background: var(--b-quiet, #F0F2F3) !important; box-shadow: none !important; overflow: visible !important;
+    -webkit-mask-image: none !important; mask-image: none !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters > button:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) {
+    display: flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; box-sizing: border-box !important;
+    width: auto !important; min-width: 0 !important; height: auto !important; min-height: 44px !important; margin: 0 !important; padding: 4px var(--b-space-12, 12px) !important;
+    border: 0 !important; border-radius: var(--b-radius-small, 10px) !important; background: transparent !important; box-shadow: none !important;
+    color: var(--b-ink2, #3D4347) !important; font-size: 0.875rem !important; line-height: 1.25rem !important; font-weight: 600 !important; white-space: normal !important; text-align: center !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters > button[aria-pressed="true"]:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) {
+    background: #FFFFFF !important; color: var(--b-ink, #16191B) !important; box-shadow: var(--b-shadow-thumb, 0 1px 3px rgb(16 24 32 / 0.12)) !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters > button > b:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) {
+    font-weight: 500 !important; opacity: 1 !important; color: var(--b-grey, #5E666B) !important; font-variant-numeric: tabular-nums !important;
+  }
+  @media (min-width: 768px) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8):not(#st9) { margin-inline: var(--b-inset-wide, 22px) !important; } }
   /* The kit's disclosure rules pad every summary in a card; a request row keeps the item's inset only. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-shreq .c-shreq__details > summary.c-shreq__sum:not(#st1) { padding: 14px 0 !important; margin: 0 !important; background: none !important; box-shadow: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-tpl, .c-rules, .c-avteam, .c-shreq) :is(.c-btn, a.c-btn, .nv-btn):not(#st1) { box-sizing: border-box !important; height: auto !important; min-height: 44px !important; white-space: nowrap; }
@@ -158,9 +179,7 @@
   :is(#c-root, html) .c-avteam .c-avteam__empty { padding-inline: var(--b-inset-wide, 22px); }
 }
 /* The kit's filter chips at the top of the people card, as on Team (employee-directory-corp.css). */
-:is(#c-root, html) .app-shell[data-nv-b] .c-avteam .c-card > .b-filters { padding: 16px var(--b-inset, 16px) 8px; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-avteam .c-card > .b-filters button { border: 0; font-family: inherit; cursor: pointer; }
-@media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] .c-avteam .c-card > .b-filters { padding-inline: var(--b-inset-wide, 22px); } }
 
 /* C9 Scheduling rules: one card of rules. A rule's row is the kit's row (its name over one line, its value on the right,
  * a CaretDown that turns); what opens under it is the kit's outlined fields, each label once. Every line starts on the
