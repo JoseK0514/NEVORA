@@ -11,10 +11,21 @@ it("sits in the kit's layer", () => {
 
 it("marks the chosen tab of every segmented control and keeps a focus outline", () => {
   expect(block).toMatch(/:is\(\.b-seg, \.c-seg, \.q-seg[^{]*\{ outline: 2px solid Highlight !important;/);
+  expect(block).toContain(".c-tc-tabs, .c-tabs, [data-c-tabs]");
   expect(block).toMatch(/:focus-visible[^{]*\{ outline: 2px solid Highlight !important;/);
 });
 
 it("keeps status dots in the text colour", () => {
+  expect(block).toContain(".b-week__legend > i)");
   expect(block).toMatch(/:is\(\.mb-dot, \.b-dot, \.eb-unread[^{]*\{ forced-color-adjust: none !important; background: CanvasText !important; \}/);
   expect(readFileSync("src/components/access-recovery/access-recovery.css", "utf8")).toMatch(/forced-colors: active\) \{\s*[^{]*\.ar-rule__dot \{ forced-color-adjust: none !important; background: CanvasText !important; \}/);
+});
+
+it("gives the top bar's and phone header's buttons a ButtonText edge (Search, bell, account menu, avatar, Add shift)", () => {
+  const rule = 'html body .app-shell .mobile-header :is(.command-finder-trigger, .nevora-action-menu-trigger, .portal-notification-bell, .c-top-avatar, .cm-add-shift) { outline: 1px solid ButtonText !important; outline-offset: -1px !important; }';
+  expect(css).toContain(rule);
+  const at = css.indexOf(rule), media = css.lastIndexOf("@media (forced-colors: active) {", at);
+  expect(media).toBeGreaterThan(-1);
+  // The rule sits inside that forced-colours block: no block closes between the @media and the rule at the top level.
+  expect(css.slice(media, at).split("\n").some(line => line === "}")).toBe(false);
 });

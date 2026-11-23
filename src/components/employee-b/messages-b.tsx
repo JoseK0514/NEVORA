@@ -247,11 +247,11 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
         </BCard> : null}
         {earlier.length || !confirm.length ? <BCard title={confirm.length ? A.otherUpdates : undefined} label={confirm.length ? undefined : 'Your updates'} id="b-updates-list">
           {earlier.length ? <ul className="b-list" aria-label="Your updates">{earlier.map(({item, unread, status: state, at}) => <li className="b-li" key={item.id}>
-            <Link id={'b-message-' + item.id} className={unread ? 'b-row b-row--link eb-updrow eb-updrow--unread' : 'b-row b-row--link eb-updrow'} href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)}
-              aria-label={`${item.title}, ${state}, ${messageTime(at, list.timeZone)}`}>
+            <Link id={'b-message-' + item.id} className={unread ? 'b-row b-row--link eb-updrow eb-updrow--unread' : 'b-row b-row--link eb-updrow'} href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)}>
               <BIcon tone="grey"><MegaphoneIcon weight="bold" /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)}${unread ? '' : ` · ${state}`}`} /></span></span>
-              {unread ? <span className="b-row__end eb-when"><i className="eb-unread" aria-hidden="true" /></span> : null}
+              {/* Sweep Z (B6): the row is named by its own text; an unread row's state, drawn as the dot, is b-sr text. */}
+              {unread ? <span className="b-row__end eb-when"><i className="eb-unread" aria-hidden="true" /><span className="b-sr">{state}</span></span> : null}
               <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
             </Link></li>)}</ul>
           : <>

@@ -163,15 +163,15 @@ which are the notice and not-found pages themselves.
 
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| B1 | Home | `/app` | ✓* | ✓* | ✓* | ✓* | ✓* | B (Owner, Manager, Lead, Employee); Older (Mℓ: scoped Home) | Five versions: Owner, Manager, location Manager (`ScopedManagementHome`), Lead, Employee; first-run onboarding guide | O B 169w 4b · M B 160w 3b · Mℓ **Older** 71w 3b · L B 221w 3b · E B 188w 3b | E L Mℓ ✓ (Jose, Nov 23) |
-| B2 | More (phone menu) | `/app/more` | ✓* | ✓* | ✓* | ✓* | ✓* | Corp + B | Manager/Owner list vs Employee list | O B 23w 1b · M B 24w 1b · Mℓ B 14w 1b · L B 64w 1b · E B 64w 1b | E L M O ✓ (Jose, Nov 23) |
+| B1 | Home | `/app` | ✓* | ✓* | ✓* | ✓* | ✓* | B (Owner, Manager, Lead, Employee); Older (Mℓ: scoped Home) | Five versions: Owner, Manager, location Manager (`ScopedManagementHome`), Lead, Employee; first-run onboarding guide | O B 169w 4b · M B 160w 3b · Mℓ **Older** 71w 3b · L B 221w 3b · E B 188w 3b | E L Mℓ M O ✓ (Jose, Nov 23) |
+| B2 | More (phone menu) | `/app/more` | ✓* | ✓* | ✓* | ✓* | ✓* | Corp + B | Manager/Owner list vs Employee list | O B 23w 1b · M B 24w 1b · Mℓ B 14w 1b · L B 64w 1b · E B 64w 1b | E L Mℓ M O ✓ (Jose, Nov 23) |
 | B3 | Notifications | `/app/notifications` | ✓ | ✓ | ✓ | ✓ | ✓ | Quiet + B | Owner also sees the billing notice | O B 9w 3b · M **Mixed** 40w 2b · Mℓ B 17w 0b · L B 93w 4b · E B 92w 3b | ✓ (Jose, Nov 23) |
-| B4 | Things to do (manager inbox) | `/app/inbox` | ✓ | ✓ | ✓* | → | → | Corp | Lead and Employee go to Requests hub | O B 365w 4b · M B 317w 4b · Mℓ n · L → · E → | Mℓ ✓ (Jose, Nov 23) |
+| B4 | Things to do (manager inbox) | `/app/inbox` | ✓ | ✓ | ✓* | → | → | Corp | Lead and Employee go to Requests hub | O B 365w 4b · M B 317w 4b · Mℓ n · L → · E → | Mℓ M O ✓ (Jose, Nov 23) |
 | B5 | Requests hub (employee) | `/app/requests/hub` | n | n | n | ✓ | ✓ | B | Managers see "This Requests page is for employees" | O n · M n · Mℓ n · L B 106w 2b · E B 106w 2b | ✓ (Jose, Nov 23) |
 | B6 | Updates (messages) | `/app/updates` | ✓* | ✓* | n† | ✓* | ✓* | Mixed | When the Updates module is on | O **Mixed** 47w 3b · M **Mixed** 47w 3b · Mℓ n · L B 52w 3b · E B 52w 3b | E L M O ✓ (Jose, Nov 23) |
 | B7 | Update detail | `/app/updates/[id]` | ✓ | ✓ | n† | ✓ | ✓ | Mixed |  | O **Mixed** 41w 2b · M **Mixed** 41w 2b · Mℓ n · L B 66w 1b · E B 66w 1b | ✓ (Jose, Nov 23) |
 | B8 | Compose an update | `/app/updates/compose` | ✓ | ✓ | n† | ✓† | ✓† | Mixed | Send update | O **Mixed** 20w 1b · M **Mixed** 20w 1b · Mℓ n · L B 63w 1b · E B 63w 1b | ✓ (Jose, Nov 23) |
-| B9 | Help | `/app/help` | ✓* | ✓* | ✓* | ✓* | ✓* | Corp + B | Employee help vs manager help | O B 101w 0b · M B 94w 0b · Mℓ B 82w 0b · L B 95w 0b · E B 95w 0b | E L Mℓ ✓ (Jose, Nov 23) |
+| B9 | Help | `/app/help` | ✓* | ✓* | ✓* | ✓* | ✓* | Corp + B | Employee help vs manager help | O B 101w 0b · M B 94w 0b · Mℓ B 82w 0b · L B 95w 0b · E B 95w 0b | E L Mℓ M O ✓ (Jose, Nov 23) |
 | B10 | Restricted ("That page is for Owners") | `/app/restricted` | — | ✓ | ✓ | ✓ | ✓ | Notice | Where a role is sent when it can't open a page | O n · M n · Mℓ n · L n · E n | ✓ (Jose, Nov 23) |
 | B11 | Page not found | `/app/[...missing]` | ✓ | ✓ | ✓ | ✓ | ✓ | Notice | Signed-in 404 | O ✗ · M ✗ · Mℓ n · L n · E n | ✓ (Jose, Nov 23) |
 
@@ -190,7 +190,7 @@ which are the notice and not-found pages themselves.
 | C9 | Scheduling rules | `/app/schedule/settings` | ✓ | ✓ | n† | – | – | Quiet + Wave | Coverage, staffing, positions, shift-change policy | O **Mixed** 70w 0b · M **Mixed** 70w 0b · Mℓ n | ✓ (Jose, Nov 23) |
 | C10 | Availability | `/app/availability` | ✓* | ✓* | n† | ✓* | ✓* | Mixed (B for Employee/Lead; Corp for managers) | Employee sets own; managers see the team's | O **Mixed** 31w 2b · M **Mixed** 31w 2b · Mℓ n · L B 54w 2b · E B 54w 2b | E L M ✓ (Jose, Nov 23) |
 | C11 | Availability agreement | `/app/availability/agreement` | →† | →† | n† | ✓ | ✓ | Own (restrictions screen) |  | O → · M → · Mℓ n · L ! · E B 32w 1b | ✓ (Jose, Nov 23) |
-| C12 | Shift changes (swaps and call-outs) | `/app/exchange` | ✓* | ✓* | n† | ✓* | ✓* | Mixed (Quiet for managers) | Employee requests vs manager review | O **Mixed** 85w 3b · M **Mixed** 85w 3b · Mℓ n · L B 82w 2b · E B 82w 2b | E L ✓ (Jose, Nov 23) |
+| C12 | Shift changes (swaps and call-outs) | `/app/exchange` | ✓* | ✓* | n† | ✓* | ✓* | Mixed (Quiet for managers) | Employee requests vs manager review | O **Mixed** 85w 3b · M **Mixed** 85w 3b · Mℓ n · L B 82w 2b · E B 82w 2b | E L M O ✓ (Jose, Nov 23) |
 | C13 | Open shifts | `/app/exchange/open-shifts` | ✓* | ✓ (grant) | n† | ✓* | ✓* | Corp (managers) / Quiet (employees) | When the marketplace module is on | O B 22w 1b · M n · Mℓ n · L B 15w 0b · E B 15w 0b | E L M O ✓ (Jose, Nov 23) |
 | C14 | Ask for a swap | `/app/exchange/swap` | – | – | n† | ✓ | ✓ | B (employee creation) | Also opens as a sheet over Schedule (`@sheet`) | Mℓ n · L B 62w 2b · E B 62w 2b | ✓ (Jose, Nov 23) |
 | C15 | Can't work (call out) | `/app/exchange/callout` | – | – | n† | ✓ | ✓ | B (employee creation) | Also opens as a sheet over Schedule (`@sheet`) | Mℓ n · L B 45w 1b · E B 45w 1b | ✓ (Jose, Nov 23) |
@@ -209,7 +209,7 @@ which are the notice and not-found pages themselves.
 
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| E1 | Time off | `/app/requests` | ✓* | ✓ (grant) | n† | ✓* | ✓* | Mixed (Corp for managers; B for Employee/Lead) | Request, withdraw, approve, decline | O **Mixed** 71w 3b · M n · Mℓ n; with Approve time off B 20w 0b · L B 36w 2b · E B 36w 2b | E L O ✓ (Jose, Nov 23) |
+| E1 | Time off | `/app/requests` | ✓* | ✓ (grant) | n† | ✓* | ✓* | Mixed (Corp for managers; B for Employee/Lead) | Request, withdraw, approve, decline | O **Mixed** 71w 3b · M n · Mℓ n; with Approve time off B 20w 0b · L B 36w 2b · E B 36w 2b | E L M O ✓ (Jose, Nov 23) |
 
 ## F. Team
 
@@ -223,7 +223,7 @@ which are the notice and not-found pages themselves.
 | F6 | When they can be scheduled (restrictions) | `/app/employees/[employeeId]/restrictions` | ✓ | ✓ | n† | – | – | Own (restrictions screen) |  | O B 65w 2b · M B 65w 2b · Mℓ n | ✓ (Jose, Nov 23) |
 | F7 | Time off balance | `/app/employees/[employeeId]/time-off` | ✓ | – | – | – | – | Own (account screen) |  | O B 40w 0b · M – · Mℓ – | ✓ (Jose, Nov 23) |
 | F8 | Clocker PIN | `/app/employees/[employeeId]/clocker-pin` | ✓ | – | – | – | – | Own |  | O B 42w 1b · M – · Mℓ – | ✓ (Jose, Nov 23) |
-| F9 | Help someone sign in | `/app/account-recovery` | ✓ | ✓ | n† | – | – | Own | Reset a password or Clocker PIN | O **Mixed** 125w 1b · M **Mixed** 112w 1b · Mℓ n | ☐ |
+| F9 | Help someone sign in | `/app/account-recovery` | ✓ | ✓ | n† | – | – | Own | Reset a password or Clocker PIN | O **Mixed** 125w 1b · M **Mixed** 112w 1b · Mℓ n | M O ✓ (Jose, Nov 23) |
 
 ## G. Payroll and exports
 
@@ -244,7 +244,7 @@ which are the notice and not-found pages themselves.
 
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| H1 | Rondo AI | `/app/ai-manager` | ✓* | ✓* | ✓* | nf† | nf† | Own (owner advisor / manager Rondo) | When the AI manager is on; day plans, coverage, attendance | O B 426w 5b · M B 113w 2b · Mℓ B 116w 2b · L nf · E nf (Rondo module on) | ☐ |
+| H1 | Rondo AI | `/app/ai-manager` | ✓* | ✓* | ✓* | nf† | nf† | Own (owner advisor / manager Rondo) | When the AI manager is on; day plans, coverage, attendance | O B 426w 5b · M B 113w 2b · Mℓ B 116w 2b · L nf · E nf (Rondo module on) | Mℓ M O ✓ (Jose, Nov 23) |
 | H2 | Weekly plan ("Where are we short this week?") | `/app/ai-manager/weekly` | ✓ | nf† | nf† | nf† | nf† | Corp + B |  | O B 38w 2b · M nf · Mℓ nf · L nf · E nf (Rondo module on) | ☐ |
 | H3 | Business records | `/app/ai-manager/business` | ✓ | nf† | nf† | nf† | nf† | Own |  | O B 20w 1b · M nf · Mℓ nf · L nf · E nf (Rondo module on) | ☐ |
 | H4 | Company knowledge | `/app/ai-manager/knowledge` | ✓ | nf† | nf† | nf† | nf† | Own |  | O B 22w 0b · M nf · Mℓ nf · L nf · E nf (Rondo module on) | ☐ |
@@ -255,7 +255,7 @@ which are the notice and not-found pages themselves.
 
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| I1 | Profile | `/app/profile` | ✓* | ✓* | ✓* | ✓* | ✓* | B (Employee/Lead); Own (manager profile) |  | O **Mixed** 25w 1b · M **Mixed** 108w 0b · Mℓ **Mixed** 105w 1b · L B 61w 2b · E B 60w 2b | E L M O ✓ (Jose, Nov 23) |
+| I1 | Profile | `/app/profile` | ✓* | ✓* | ✓* | ✓* | ✓* | B (Employee/Lead); Own (manager profile) |  | O **Mixed** 25w 1b · M **Mixed** 108w 0b · Mℓ **Mixed** 105w 1b · L B 61w 2b · E B 60w 2b | E L Mℓ M O ✓ (Jose, Nov 23) |
 | I2 | Policy document | `/app/profile/[document]` | →† | →† | →† | ✓ | ✓ | B | Privacy, terms inside the app | O → · M → · Mℓ → · L B 119w 0b · E B 119w 0b | ✓ (Jose, Nov 23) |
 | I3 | Calendar subscription | `/app/profile/calendar` | n | n | n | ✓ | ✓ | Own |  | O n · M n · Mℓ n · L B 76w 2b · E B 76w 2b | ✓ (Jose, Nov 23) |
 | I4 | Device alerts | `/app/profile/device-alerts` | ✓ | ✓ | ✓ | ✓ | ✓ | Own | Browser push | O → · M → · Mℓ ✗ · L B 76w 1b (dev build) (switch on) · E B 76w 1b (dev build) (switch on) | ✓ (Jose, Nov 23) |

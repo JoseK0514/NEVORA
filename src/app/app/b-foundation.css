@@ -823,6 +823,10 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
    * outline because many c-btn rules set border: 0 !important; GrayText when disabled. The layered focus ring still wins. */
   html body :is(.b-btn, .c-btn):not(:disabled, [aria-disabled="true"]) { outline: 1px solid ButtonText !important; outline-offset: -1px !important; }
   html body :is(.b-btn, .c-btn):is(:disabled, [aria-disabled="true"]) { outline: 1px solid GrayText !important; outline-offset: -1px !important; }
+  /* Z3 shell (Nov 23, 2026): the top bar's Search, bell and account menu (desktop) and the bell, avatar and Add shift
+   * (phone header) were drawn by their fills alone, so in forced colours they read as loose text and icons. Same inset
+   * outline as the kit buttons; the layered focus ring still wins. */
+  html body .app-shell .mobile-header :is(.command-finder-trigger, .nevora-action-menu-trigger, .portal-notification-bell, .c-top-avatar, .cm-add-shift) { outline: 1px solid ButtonText !important; outline-offset: -1px !important; }
 }
 
 /* ---------- Phase 8 (Nov 17, 2026): short windows (src/lib/b-viewport.ts B_WIDE_SHORT) ----------
@@ -1102,8 +1106,8 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
  * session.) */
 @layer nv-b {
   @media (forced-colors: active) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.b-seg, .c-seg, .q-seg, .b-filters, .eb-lseg, .c-pay-tabs, .c-tc-seg, [role="tablist"]) > :is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [aria-selected="true"]):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { outline: 2px solid Highlight !important; outline-offset: -2px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.b-seg, .c-seg, .q-seg, .b-filters, .eb-lseg, .c-pay-tabs, .c-tc-seg, .c-tc-tabs, .c-tabs, [data-c-tabs], [role="tablist"]) > :is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [aria-selected="true"]):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { outline: 2px solid Highlight !important; outline-offset: -2px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(input, select, textarea, button, a, summary, [tabindex]):focus-visible:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { outline: 2px solid Highlight !important; outline-offset: 2px !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.mb-dot, .b-dot, .eb-unread, .b-week__d > i.has, .b-week__d > i.gap):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { forced-color-adjust: none !important; background: CanvasText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.mb-dot, .b-dot, .eb-unread, .b-week__d > i.has, .b-week__d > i.gap, .b-week__legend > i):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { forced-color-adjust: none !important; background: CanvasText !important; }
   }
 }
