@@ -1,0 +1,21 @@
+/* The Owner's Clocker settings on the Direction B page frame (Phase 2, Settings part 2, Nov 23, 2026). Only what the
+ * Corp page and the kit don't already draw. Sizes in rem so 200% text scales; spacing on the 4/8 scale; insets from the
+ * Direction B tokens (--b-inset 18px, --b-inset-wide 22px from 768px). */
+:is(#c-root, html) .ck-frame .c-title h1, :is(#c-root, html) .ck-frame .c-nav__title { text-wrap: balance; }
+:is(#c-root, html) .ck-frame .ck-stack { display: grid; gap: 1rem; min-width: 0; }
+
+/* Clocker PINs: the search (an outlined field) and the filter chips open the people card, as on Team. */
+:is(#c-root, html) .ck-frame .ck-pins__tools { display: grid; gap: 0.75rem; padding: 1rem var(--b-inset, 18px) 0.25rem; }
+:is(#c-root, html) .ck-frame .ck-pins__tools .c-pins__search { display: flex; align-items: center; box-sizing: border-box; width: 100%; min-height: 2.75rem; padding: 0 0.75rem; }
+/* The kit's chips draw no edge of their own (the Team card resets the browser's button border inside its screen). */
+:is(#c-root, html) .ck-frame .b-filters button { border: 0; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .ck-frame .ck-stack { gap: 1.25rem; }
+  :is(#c-root, html) .ck-frame .ck-pins__tools { padding-inline: var(--b-inset-wide, 22px); }
+}
+
+/* The kit's layer places a chip row 16px under a card's head with its own side margins; here the row sits in the tools
+ * block, on the search field's left edge. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] .ck-frame .ck-pins__tools > .b-filters { margin: 0 !important; justify-self: start !important; max-width: 100% !important; -webkit-mask-image: none !important; mask-image: none !important; }
+}
