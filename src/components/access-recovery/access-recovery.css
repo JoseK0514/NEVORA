@@ -263,3 +263,8 @@
       display: flex !important; width: calc(100% - 2 * var(--b-inset)) !important; margin: var(--b-space-16) var(--b-inset) 0 !important; }
   }
 }
+
+/* Z3 (A4-05): in forced colours a password rule's dot keeps its shape in the text colour (a fill alone vanishes). */
+@media (forced-colors: active) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .ar-rule__dot { forced-color-adjust: none !important; background: CanvasText !important; }
+}
