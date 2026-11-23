@@ -73,6 +73,8 @@ export type DashboardRevisionItem = {
 type Props = {
   /** SCRUM-218: the language of the Owner's first-week setup card (the rest of Home is English today). */
   setupLang?: 'en' | 'es';
+  /** Signed-in Spanish (second release): the person's language, for the dates this component writes (app/page.tsx). */
+  lang?: 'en' | 'es';
   /** Final polish (Nov 20, 2026): which optional modules are on, so Home's shortcuts only name pages that open. */
   shortcutModules?: { updates: boolean; timeOff: boolean };
   /** MK1: the next payday from My pay's pay schedule, for Home's Coming up row. */
@@ -238,12 +240,12 @@ export function homeWeek(props: Props): PremiumHomeWeek {
     plannedShifts: props.days.reduce((total, day) => total + day.shiftCount, 0),
     availabilitySubmitted: props.availabilitySubmitted, availabilityEligible: props.availabilityEligible,
     locations: props.locations.map(location => ({ name: location.locationName, state: location.scheduleStatus === 'PUBLISHED' ? 'published' as const : location.scheduleStatus === 'DRAFT' ? 'draft' as const : 'not_started' as const })),
-    lastPublished: props.latestRevision ? formatBusinessTimestamp(props.latestRevision.createdAt, props.timeZone) : null,
+    lastPublished: props.latestRevision ? formatBusinessTimestamp(props.latestRevision.createdAt, props.timeZone, props.lang ?? props.setupLang ?? 'en') : null,
   };
 }
 
-function homeDateLabel(timeZone: string) {
-  try { return new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'long', month: 'long', day: 'numeric' }).format(new Date()); }
+function homeDateLabel(timeZone: string, lang: 'en' | 'es' = 'en') {
+  try { return new Intl.DateTimeFormat(lang === 'es' ? 'es-PR' : 'en-US', { timeZone, weekday: 'long', month: 'long', day: 'numeric' }).format(new Date()); }
   catch { return ''; }
 }
 
@@ -255,7 +257,7 @@ function PremiumOverview(props: Props) {
     scheduledHours: props.hours.reduce((total, row) => total + row.scheduledHours, 0), people: props.hours.filter(row => row.scheduledHours > 0).length,
     payrollHref: props.role === 'OWNER' && props.nextPay ? '/app/payroll' : undefined, coverage: props.coverage,
     shortcuts: props.shortcutModules ? (['shift', 'employee', ...(props.shortcutModules.updates ? ['update' as const] : []), ...(props.shortcutModules.timeOff ? ['timeOff' as const] : [])] as HomeShortcut[]) : undefined };
-  const common = { greeting: props.greeting ?? `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName, homeB };
+  const common = { greeting: props.greeting ?? `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone, props.lang ?? props.setupLang), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName, homeB };
   const slots = props.overviewSlots;
   if (slots?.snapshots) return <PremiumHomeSurface {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;

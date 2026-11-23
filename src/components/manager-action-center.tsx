@@ -42,11 +42,12 @@ const priorityLabel=(priority:ActionItem['priority'])=>priority==='URGENT'?'Urge
 function formatUpdated(at:string,timeZone:string){
  try{return new Intl.DateTimeFormat('en-US',{timeZone,hour:'numeric',minute:'2-digit'}).format(new Date(at));}catch{return formatBusinessTimestamp(at,timeZone);}
 }
-export function mobileActionDetail(detail:string){
+/** Signed-in Spanish (second release): `lang` writes the date the Spanish way ("22 nov 2026"); English is unchanged. */
+export function mobileActionDetail(detail:string,lang:'en'|'es'='en'){
  return detail.replace(/(^|\s)(\d{4}-\d{2}-\d{2})(?=\s|$)/g,(token,space:string,date:string)=>{
   const parsed=new Date(`${date}T12:00:00Z`);
   if(!Number.isFinite(parsed.getTime())||parsed.toISOString().slice(0,10)!==date)return token;
-  return space+new Intl.DateTimeFormat('en-US',{timeZone:'UTC',dateStyle:'medium'}).format(parsed);
+  return space+(lang==='es'?new Intl.DateTimeFormat('es-PR',{timeZone:'UTC',day:'numeric',month:'short',year:'numeric'}).format(parsed).replace(/\./g,'').replace(/ de /g,' '):new Intl.DateTimeFormat('en-US',{timeZone:'UTC',dateStyle:'medium'}).format(parsed));
  });
 }
 /** `setupListed`: setup items the Owner setup card took from this list. Counts come

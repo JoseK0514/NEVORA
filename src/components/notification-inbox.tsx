@@ -22,7 +22,7 @@ import {ReceiptIcon} from '@phosphor-icons/react/dist/ssr/Receipt';
 import {DeviceMobileIcon} from '@phosphor-icons/react/dist/ssr/DeviceMobile';
 import {CheckCircleIcon} from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import type {PrivatePanelState} from '../lib/private-snapshot-client';
-import type {EmployeeNotificationItem,EmployeeViewSnapshot,NotificationReviewState,NotificationActionState} from '../lib/employee-view';
+import type {EmployeeNotificationItem,EmployeeViewSnapshot,NotificationReviewState} from '../lib/employee-view';
 import {collapseNotifications,filterNotifications,groupNotifications,notificationPresentation,notificationTitle,type NotificationFilter} from '../lib/notification-inbox-view';
 import {notificationCountNote,notificationName,notificationOutcomeNote} from '../lib/notification-facts';
 import {relativeTimeText} from '../lib/duration-format';
@@ -31,21 +31,21 @@ import './notification-inbox-corp.css';
 import {CorpEmpty} from './corp/corp';
 import {BSegs,BState} from './owner-b/b-kit';
 import {KeepSelectedVisible} from './kit/keep-selected-visible';
-import {NOTIFICATION_COPY} from './notification-copy';
-import type {PortalLang} from '@/lib/i18n/portal-lang';
+import {NOTIFICATION_COPY,relativeTimeFor} from './notification-copy';
+import {usePortalLang,type PortalLang} from '@/lib/i18n/portal-lang';
+import {INBOX_COPY,clockFor,whenLongFor} from './notification-inbox-copy';
 
 
 /* Premium pass FA (final verification A #14): one glyph per meaning. "Things to do are waiting" is Things to do's tray (the
  * sidebar's glyph; ListChecks drew a checklist), and a can't-work notice is the person stepping out (UserMinus), as on
  * Things to do; the red WarningCircle is the stop glyph. */
 export const notificationIcons={schedule:CalendarBlankIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:UserMinusIcon,device:DeviceMobileIcon,operations:TrayIcon,payroll:WalletIcon,statement:ReceiptIcon};
-export const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:'Read',confirmed:'Confirmed',unavailable:'Review status unavailable'};
-const actionLabels:Record<NotificationActionState,string>={required:'Action required',available:'Action available',complete:'Action complete',none:'No action required',unavailable:'Action status unavailable'};
-const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All'},{value:'unread',label:'Unread'},{value:'required',label:'Needs action'}];
+export const reviewLabels:Record<NotificationReviewState,string>=INBOX_COPY.en.review;
+const filterOrder:NotificationFilter[]=['all','unread','required'];
 
 /* RA-16: a row's time and day are the workplace's. The snapshot carries the workplace zone (backend, Nov 15, 2026); an
  * older snapshot without one keeps the device's. */
-export const whenLong=(at:string,timeZone?:string)=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',...(timeZone?{timeZone}:{})}).format(new Date(at));
+export const whenLong=(at:string,timeZone?:string,lang:PortalLang='en')=>whenLongFor(lang,at,timeZone);
 
 /** Phase 8 (a.md #29, b.md #25): a manager summary carries the count of what it gathered when it was sent: open shifts
  * ahead, requests and availability not sent in. That is a wider scope, at an earlier time, than Things to do's count
@@ -65,12 +65,16 @@ export function rowFacts(item:EmployeeNotificationItem,lang:PortalLang='en'){
  return [notificationName(item),notificationOutcomeNote(item,lang),n===null?notificationCountNote(item,lang):summaryWords(n,lang)].filter((fact):fact is string=>!!fact);
 }
 
-export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>;
+export function NotificationInbox({state,onRetry,onMarkRead,quiet=false,lang:langProp}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>;
+ /** Signed-in Spanish: the language to draw in (defaults to the person's, from the app layout). */
+ lang?:PortalLang;
  /** v5 (mockup E14): an Employee's or Lead's Notifications in the Quiet list, without Mark read (management only). */
  quiet?:boolean}){
+ const portalLang=usePortalLang(),lang=langProp??portalLang,c=INBOX_COPY[lang];
+ const reviewWords=c.review,actionWords=c.action;
  const [pendingRead,setPendingRead]=useState<string|null>(null),[readNotice,setReadNotice]=useState('');
  const readGate=useRef(false);
- const markRead=async(id:string)=>{if(!onMarkRead||readGate.current)return;readGate.current=true;setPendingRead(id);setReadNotice('');try{await onMarkRead(id);setReadNotice('Marked read. Announcement acknowledgement and request actions are unchanged.');}catch{setReadNotice('We could not confirm the read status. Refresh to check it, or safely retry marking it read.');}finally{readGate.current=false;setPendingRead(null);}};
+ const markRead=async(id:string)=>{if(!onMarkRead||readGate.current)return;readGate.current=true;setPendingRead(id);setReadNotice('');try{await onMarkRead(id);setReadNotice(c.marked);}catch{setReadNotice(c.markFailed);}finally{readGate.current=false;setPendingRead(null);}};
  const [filter,setFilter]=useState<NotificationFilter>('all');
  // Jose (Nov 15, 2026, item 8): a folded row opens in place to list its notifications; each is marked read when it is opened.
  const [expanded,setExpanded]=useState<string[]>([]);
@@ -83,7 +87,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
  const offline=unavailable&&typeof navigator!=='undefined'&&!navigator.onLine;
  const items=ready?filterNotifications(ready.items,filter,search):[];
  const zone=ready?.timeZone;
- const groups=groupNotifications(items,zone);
+ const groups=groupNotifications(items,zone,lang);
  const counts=ready?{all:ready.items.length,unread:ready.items.filter(item=>item.reviewState==='unread').length,required:ready.items.filter(item=>item.actionState==='required').length}:null;
 
 
@@ -103,14 +107,14 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
   // hand-drawn path, paler than every other list's).
   const chev=(open?:boolean)=><CaretRightIcon className="q-chev q-chev--kit" data-open={open||undefined} size={16} weight="bold" aria-hidden="true"/>;
   // A relative time never breaks inside itself on a narrow phone ("5 h ago", not "5 / h ago").
-  const ago=(at:string)=>relativeTimeText(at,undefined,zone).replace(/(\d+) (h|min|d|days?|hours?|minutes?)\b/g,'$1\u00a0$2');
+  const ago=(at:string)=>(lang==='es'?relativeTimeFor(lang,at,zone):relativeTimeText(at,undefined,zone)).replace(/(\d+) (h|min|d|days?|hours?|minutes?)\b/g,'$1\u00a0$2');
   // A notification inside an opened group: the group's row already names the kind, so each row leads with its own facts
   // ("16 waiting", a name, a later status) and its time; with none, the time alone. An invisible spacer the width of
   // the icon keeps its text under the group's text at every width (the kit sets the row's padding and icon size).
   const heldRow=(item:EmployeeNotificationItem)=>{
-   const review=item.reviewState??'unavailable',text=notificationTitle(item);
-   const factList=rowFacts(item),facts=factList.join(' · ');
-   return <Link className="q-row q-row--av q-notif-heldrow" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,facts||null].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
+   const review=item.reviewState??'unavailable',text=notificationTitle(item,lang);
+   const factList=rowFacts(item,lang),facts=factList.join(' · ');
+   return <Link className="q-row q-row--av q-notif-heldrow" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,facts||null].filter(Boolean).join(', ')}, ${reviewWords[review]}, ${whenLong(item.at,zone,lang)}`}
     onClick={()=>{if(review==='unread')void markRead(item.id);}}>
     <span className="q-av q-notif-spacer" aria-hidden="true"/>
     <span className="q-rt">{facts?<><b><BSegs parts={factList}/></b><i><time dateTime={item.at}>{ago(item.at)}</time></i></>:<b><time dateTime={item.at}>{ago(item.at)}</time></b>}</span>
@@ -119,8 +123,8 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
    </Link>;
   };
   const oneRow=(item:EmployeeNotificationItem)=>{
-   const Icon=notificationIcons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=rowText(item);
-   return <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
+   const Icon=notificationIcons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=rowText(item,lang);
+   return <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,text.detail].filter(Boolean).join(', ')}, ${reviewWords[review]}, ${whenLong(item.at,zone,lang)}`}
     onClick={()=>{if(review==='unread')void markRead(item.id);}}>
     <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
     <span className="q-rt"><b>{text.title}</b><i><BSegs parts={[text.detail,<time key="at" dateTime={item.at}>{ago(item.at)}</time>]}/></i></span>
@@ -129,91 +133,91 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
     {chev()}
    </Link>;
   };
-  return <section ref={root} aria-label="Notifications" data-private-view="notifications">
+  return <section ref={root} aria-label={c.section} data-private-view="notifications">
    {/* Owner premium (N3): with nothing at all to filter, the All / Unread control steps aside for the empty card. */}
-   {onMarkRead&&ready&&!ready.items.length?null:<div className="q-seg" role="group" aria-label="Filter notifications">
-    <button type="button" aria-pressed={filter!=='unread'} disabled={!ready} onClick={()=>setFilter('all')}>All</button>
-    <button type="button" aria-pressed={filter==='unread'} disabled={!ready} onClick={()=>setFilter('unread')} aria-label={unread?`Unread, ${unread}`:undefined}>Unread{/* Review F5 (NV-103): the count is the segmented control's count pill. */unread?<span className="c-count c-num">{unread}</span>:null}</button>
+   {onMarkRead&&ready&&!ready.items.length?null:<div className="q-seg" role="group" aria-label={c.filterLabel}>
+    <button type="button" aria-pressed={filter!=='unread'} disabled={!ready} onClick={()=>setFilter('all')}>{c.all}</button>
+    <button type="button" aria-pressed={filter==='unread'} disabled={!ready} onClick={()=>setFilter('unread')} aria-label={unread?c.unreadCount(unread):undefined}>{c.unread}{/* Review F5 (NV-103): the count is the segmented control's count pill. */unread?<span className="c-count c-num">{unread}</span>:null}</button>
    </div>}
-   {ready?<p className="q-sr" role="status" aria-live="polite">{sorted.length} {sorted.length===1?'notification':'notifications'}{filter==='unread'?' unread':''}</p>:null}
+   {ready?<p className="q-sr" role="status" aria-live="polite">{c.count(sorted.length,filter==='unread')}</p>:null}
    <HoldHeight holding={!ready} memory="notifications-manager" className="q-notif-hold">
    {/* Phase 2 (package D): the kit's one state card (it was the Quiet empty block with a grey Try again). The words, the
      action and the status region are the same. Review B2 (NV-012): the connection is blamed only when the device is
      offline. OW-019: online, the title and the Try again button say it all; the line no longer repeats the button. */}
    {!ready?<div className="q-emptyblock"><BState kind={state.paused?'paused':denied?'locked':unavailable?'failed':'loading'}
-      title={state.paused?'Updates paused':denied?'Your session ended':unavailable?'Notifications didn’t load':'Loading…'}
-      line={state.paused?'Come back to this window while online.':denied?'Sign in again to see notifications.':offline?'Check your connection, then try again.':undefined}
-      action={denied?{label:'Sign in',href:'/login'}:unavailable?{label:'Try again',onClick:onRetry}:undefined}/>
+      title={state.paused?c.pausedTitle:denied?c.sessionTitle:unavailable?c.failedTitle:c.loading}
+      line={state.paused?c.pausedLine:denied?c.sessionLine:offline?c.offlineLine:undefined}
+      action={denied?{label:c.signIn,href:'/login'}:unavailable?{label:c.tryAgain,onClick:onRetry}:undefined}/>
     </div>:<>
-    {ready.coverage==='partial'?<div className="q-note" data-tone="info"><span className="q-note__body">Some notifications couldn’t be checked.</span></div>:null}
+    {ready.coverage==='partial'?<div className="q-note" data-tone="info"><span className="q-note__body">{c.partial}</span></div>:null}
     {sorted.length?<ul className="q-list q-notif-list">{rows.map(({item,count,unreadIds,items:held})=>{
       if(count===1)return <li key={item.id} data-inbox-row>{oneRow(item)}</li>;
       // Phase 3 (OW-002) fold: the row says how many and the latest; opening it lists each one under it, so every
       // notification is seen and read on its own. Nothing is marked read by opening the fold.
       const Icon=notificationIcons[notificationPresentation(item.label,item.eventType).icon];
       const open=expanded.includes(item.id),listId=`notif-fold-${item.id}`;
-      const text=notificationTitle(item);
+      const text=notificationTitle(item,lang);
       return <li key={item.id} data-inbox-row>
        <button type="button" className="q-row q-row--av q-notif-fold" data-unread={unreadIds.length?true:undefined} aria-expanded={open} aria-controls={listId}
-        aria-label={`${text.title}, ${count} notifications${unreadIds.length?`, ${unreadIds.length} unread`:''}, latest ${whenLong(item.at,zone)}`}
+        aria-label={c.foldLabel(text.title,count,unreadIds.length,whenLong(item.at,zone,lang))}
         onClick={()=>setExpanded(ids=>ids.includes(item.id)?ids.filter(id=>id!==item.id):[...ids,item.id])}>
         <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
-        <span className="q-rt"><b>{text.title}</b><i>{/* Final polish (Nov 20, 2026): the kit's facts line, so at 320 no line ends on the dot ("3 notifications ·"). */}<BSegs parts={[`${count}\u00a0notifications`,<span key="at" className="b-keep">latest <time dateTime={item.at}>{ago(item.at)}</time></span>]}/></i></span>
+        <span className="q-rt"><b>{text.title}</b><i>{/* Final polish (Nov 20, 2026): the kit's facts line, so at 320 no line ends on the dot ("3 notifications ·"). */}<BSegs parts={[c.foldCount(count),<span key="at" className="b-keep">{c.latest} <time dateTime={item.at}>{ago(item.at)}</time></span>]}/></i></span>
         {unreadIds.length?<span className="q-notif-dot" aria-hidden="true"/>:null}
         {chev(open)}
        </button>
-       {open?<ul className="q-list q-notif-held" id={listId} aria-label={`${text.title}, ${count} notifications`}>{held.map(one=><li key={one.id}>{heldRow(one)}</li>)}</ul>:null}
+       {open?<ul className="q-list q-notif-held" id={listId} aria-label={c.foldList(text.title,count)}>{held.map(one=><li key={one.id}>{heldRow(one)}</li>)}</ul>:null}
       </li>;
      })}</ul>
      // MG-008: an empty list doesn't mean nothing is waiting. Requests are decided in Things to do, so the card says so
      // and leads there instead of promising requests here.
-     :onMarkRead?<div className="c-page c-embed q-notif-empty" role="status"><CorpEmpty title={filter==='unread'?'You’re all caught up':'Nothing new'}
-       body={filter==='unread'?'Nothing unread. Earlier notifications stay under All.':'Requests from your team are in Things to do.'}
-       link={filter==='unread'?undefined:{href:'/app/inbox',label:'Open Things to do'}}/></div>
-     :<p className="q-empty q-first">{filter==='unread'?'You’re all caught up.':'No notifications yet.'}</p>}
-    {readNotice&&readNotice.startsWith('We could not')?<p className="q-help" role="status">We couldn’t mark that one read.</p>:null}
-    {!onMarkRead&&sorted.length?<p className="q-help">Opening one doesn’t complete it.</p>:null}
+     :onMarkRead?<div className="c-page c-embed q-notif-empty" role="status"><CorpEmpty title={filter==='unread'?c.caughtUpTitle:c.nothingNew}
+       body={filter==='unread'?c.nothingUnread:c.requestsThere}
+       link={filter==='unread'?undefined:{href:'/app/inbox',label:c.openThingsToDo}}/></div>
+     :<p className="q-empty q-first">{filter==='unread'?c.caughtUp:c.noneYet}</p>}
+    {readNotice===c.markFailed?<p className="q-help" role="status">{c.readFailed}</p>:null}
+    {!onMarkRead&&sorted.length?<p className="q-help">{c.notComplete}</p>:null}
    </>}
    </HoldHeight>
   </section>;
  }
 
- return <section ref={root} className={styles.inbox} aria-label="Notifications" data-private-view="notifications">
+ return <section ref={root} className={styles.inbox} aria-label={c.section} data-private-view="notifications">
   <header className={styles.toolbar}>
-   <div className={styles.inboxTitle}><BellIcon size={22} weight="bold" aria-hidden="true"/><div><h2>Your alerts</h2>{/* Clean Manager (v3): no helper line for Owners and Managers. */}{onMarkRead?null:<p>Review an update. Take the next step.</p>}</div></div>
-   {denied?<Link className={styles.refresh} href="/login">Sign in</Link>:<button className={styles.refresh} type="button" data-retry={unavailable?'true':undefined} disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true"/><span>{state.refreshing?'Checking…':unavailable||ready?.coverage==='partial'?'Try again':'Refresh'}</span></button>}
+   <div className={styles.inboxTitle}><BellIcon size={22} weight="bold" aria-hidden="true"/><div><h2>{c.alerts}</h2>{/* Clean Manager (v3): no helper line for Owners and Managers. */}{onMarkRead?null:<p>{c.helper}</p>}</div></div>
+   {denied?<Link className={styles.refresh} href="/login">{c.signIn}</Link>:<button className={styles.refresh} type="button" data-retry={unavailable?'true':undefined} disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true"/><span>{state.refreshing?c.checking:unavailable||ready?.coverage==='partial'?c.tryAgain:c.refresh}</span></button>}
   </header>
   {readNotice?<p className={styles.notice} role="status">{readNotice}</p>:null}
   {/* A pause, an offline spell or a failed read keeps the list's height and shows the state in its place (coordinator QA h4). */}
   <HoldHeight holding={!ready} memory="notifications">
   {ready?<>
-   {ready.coverage==='partial'?<div className={styles.notice} role="status"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><p><strong>Some updates could not be checked.</strong> Some notifications are unavailable or outside this bounded view. Retry to check current access.</p></div>:null}
+   {ready.coverage==='partial'?<div className={styles.notice} role="status"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><p><strong>{c.partialStrong}</strong> {c.partialLine}</p></div>:null}
    <div className={styles.controls}>
-    <div className={styles.filters} role="group" aria-label="Filter notifications">{filters.map(option=><button key={option.value} type="button" aria-pressed={filter===option.value} onClick={()=>setFilter(option.value)}>{option.label}<span className={styles.count}>{counts?.[option.value]}</span></button>)}<KeepSelectedVisible/></div>
-    <label className={styles.search}><MagnifyingGlassIcon size={18} weight="bold" aria-hidden="true"/><span className={styles.srOnly}>Search notifications</span><input type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Search this inbox"/></label>
+    <div className={styles.filters} role="group" aria-label={c.filterLabel}>{filterOrder.map(value=><button key={value} type="button" aria-pressed={filter===value} onClick={()=>setFilter(value)}>{c.filters[value]}<span className={styles.count}>{counts?.[value]}</span></button>)}<KeepSelectedVisible/></div>
+    <label className={styles.search}><MagnifyingGlassIcon size={18} weight="bold" aria-hidden="true"/><span className={styles.srOnly}>{c.search}</span><input type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder={c.searchPlaceholder}/></label>
    </div>
-   <p className={styles.viewCount} role="status" aria-live="polite">{items.length} {items.length===1?'notification':'notifications'} in this view{filter==='required'?' · Action required':filter==='unread'?' · Unread':''}</p>
+   <p className={styles.viewCount} role="status" aria-live="polite">{c.viewCount(items.length,filter)}</p>
    {groups.length?<div className={styles.groups}>{groups.map(group=><section className={styles.group} key={group.key} aria-label={group.label}>
     <h3 className={styles.groupHeading}>{keepWhole(group.label)}</h3>
     <ul className={styles.list}>{group.items.map(item=>{
-     const presentation=notificationPresentation(item.label,item.eventType),Icon=notificationIcons[presentation.icon];
+     const presentation=notificationPresentation(item.label,item.eventType,lang),Icon=notificationIcons[presentation.icon];
      const review=item.reviewState??'unavailable',action=item.actionState??'unavailable';
      return <li key={item.id} data-inbox-row><Link className={styles.row} data-unread={review==='unread'} href={item.href} prefetch={false}>
       <span className={styles.icon}><Icon size={22} weight="bold" aria-hidden="true"/></span>
-      <div className={styles.copy}><div className={styles.rowHeading}><strong>{notificationTitle(item).title}</strong><time dateTime={item.at}>{keepWhole(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',...(zone?{timeZone:zone}:{})}).format(new Date(item.at)))}</time></div>
-       <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} weight="bold" aria-hidden="true"/>:null}{reviewLabels[review]}</span>{/* One status per row for Owners and Managers (v3); employees keep both. */}{onMarkRead?null:<span className={styles.action} data-state={action}>{actionLabels[action]}</span>}</div>
+      <div className={styles.copy}><div className={styles.rowHeading}><strong>{notificationTitle(item,lang).title}</strong><time dateTime={item.at}>{keepWhole(clockFor(lang,item.at,zone))}</time></div>
+       <div className={styles.statuses}><span className={styles.review} data-state={review}>{review==='unread'?<span className={styles.dot} aria-hidden="true"/>:review==='confirmed'?<CheckCircleIcon size={15} weight="bold" aria-hidden="true"/>:null}{reviewWords[review]}</span>{/* One status per row for Owners and Managers (v3); employees keep both. */}{onMarkRead?null:<span className={styles.action} data-state={action}>{actionWords[action]}</span>}</div>
        <span className={styles.destination}>{presentation.destination}</span>
       </div>
       <span className={styles.open}>{presentation.action}<CaretRightIcon size={18} weight="bold" aria-hidden="true"/></span>
-     </Link>{onMarkRead&&review==='unread'?<button type="button" className={styles.markRead} disabled={pendingRead!==null} onClick={()=>void markRead(item.id)} aria-label={`Mark ${notificationTitle(item).title} read`}>{pendingRead===item.id?'Marking read…':'Mark read'}</button>:null}</li>;
+     </Link>{onMarkRead&&review==='unread'?<button type="button" className={styles.markRead} disabled={pendingRead!==null} onClick={()=>void markRead(item.id)} aria-label={c.markReadFor(notificationTitle(item,lang).title)}>{pendingRead===item.id?c.marking:c.markRead}</button>:null}</li>;
     })}</ul>
    </section>)}</div>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="bold" aria-hidden="true"/></span>
-    <h3>{search?'No matching notifications':filter==='unread'?'No unread notifications in this view':filter==='required'?'No notifications requiring action in this view':ready.coverage==='complete'?'No notifications here.':'No available notifications to show'}</h3>
-    <p>{search?'Try another search, or clear it to see your updates.':ready.coverage==='partial'?'This view is incomplete. Retry to check what is available.':'Check Requests and Schedule for their current status.'}</p>
-    {search?<button type="button" className={styles.secondary} onClick={()=>setSearch('')}>Clear search</button>:filter!=='all'?<button type="button" className={styles.secondary} onClick={()=>setFilter('all')}>View all notifications</button>:null}
+    <h3>{search?c.emptySearch:filter==='unread'?c.emptyUnread:filter==='required'?c.emptyRequired:ready.coverage==='complete'?c.emptyHere:c.emptyAvailable}</h3>
+    <p>{search?c.emptySearchLine:ready.coverage==='partial'?c.emptyPartialLine:c.emptyLine}</p>
+    {search?<button type="button" className={styles.secondary} onClick={()=>setSearch('')}>{c.clearSearch}</button>:filter!=='all'?<button type="button" className={styles.secondary} onClick={()=>setFilter('all')}>{c.viewAll}</button>:null}
    </div>}
-   <footer className={styles.footer}>{onMarkRead?null:<p>Updates about your requests and schedule. Opening one doesn’t complete its action.</p>}<div><Link href={onMarkRead?"/app/inbox?filter=requests":"/app/requests/hub"}>Requests<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link><Link href="/app/schedule">Schedule<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link></div></footer>
-  </>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="bold" aria-hidden="true"/></span><h3>{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Notifications didn’t load':'Loading notifications…'}</h3>{/* OW-019: online, the header's Try again is the one way forward; no line repeats it. */}{unavailable&&!denied&&!state.paused&&!offline?null:<p>{state.paused?'Return to this window while online to check current information.':denied?'Sign in again to see notifications.':unavailable?'Check your connection, then try again.':'Checking your current access.'}</p>}</div>}
+   <footer className={styles.footer}>{onMarkRead?null:<p>{c.footer}</p>}<div><Link href={onMarkRead?"/app/inbox?filter=requests":"/app/requests/hub"}>{c.requests}<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link><Link href="/app/schedule">{c.schedule}<CaretRightIcon size={16} weight="bold" aria-hidden="true"/></Link></div></footer>
+  </>:<div className={styles.empty} role="status"><span className={styles.emptyIcon}><BellIcon size={30} weight="bold" aria-hidden="true"/></span><h3>{state.paused?c.pausedTitle:denied?c.sessionTitle:unavailable?c.failedTitle:c.loadingNotifications}</h3>{/* OW-019: online, the header's Try again is the one way forward; no line repeats it. */}{unavailable&&!denied&&!state.paused&&!offline?null:<p>{state.paused?c.pausedFullLine:denied?c.sessionLine:unavailable?c.offlineLine:c.checkingAccess}</p>}</div>}
   </HoldHeight>
  </section>;
 }

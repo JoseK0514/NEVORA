@@ -3,6 +3,7 @@ import {withOperationalCompany} from '@/lib/company-access/operational-scope.ser
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import { formatBusinessDateTime } from "@/lib/business-time";
+import { readPortalLanguage } from "@/lib/activation/language.server";
 import { AvailabilityTeamList } from "@/components/availability-team-list";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
@@ -18,6 +19,16 @@ import { weekLabel } from "./quiet/quiet";
 import { CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from "./corp/corp";
 import "@/app/app/schedule/schedule-tools.css";
 
+/** Signed-in Spanish (second release): this page's own words; the list under it (availability-team-list) has its own. */
+export const MANAGER_AVAILABILITY_WORDS = {
+  en: { locale: "en-US", unavailable: "Team availability unavailable", noLocation: "No primary location", weekOf: (week: string) => `Week of ${week}`, back: "Things to do",
+    title: "Availability", invalidWeek: "That week isn’t valid, so this is the upcoming week.", deadline: "Deadline", passed: (when: string) => `Passed ${when}`,
+    reminded: "People are reminded the day before.", notSet: "Not set" },
+  es: { locale: "es-PR", unavailable: "La disponibilidad del equipo no está disponible", noLocation: "Sin localidad principal", weekOf: (week: string) => `Semana del ${week}`, back: "Pendientes",
+    title: "Disponibilidad", invalidWeek: "Esa semana no es válida, así que esta es la próxima semana.", deadline: "Fecha límite", passed: (when: string) => `Venció el ${when}`,
+    reminded: "Se le recuerda a cada persona el día antes.", notSet: "Sin fijar" },
+};
+
 /** Phase 3.5 Wave A: Team availability on the kit. The week in the band, the counts and the deadline in one card,
  * then everyone's submission, people who haven't submitted first. */
 export async function ManagerAvailability({ week, currentWeek, employeeId, timeZone }: {
@@ -27,6 +38,7 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   const validWeek = Boolean(week && /^\d{4}-\d{2}-\d{2}$/.test(week) && Number.isFinite(new Date(`${week}T12:00:00Z`).getTime()) && weekStartFor(week) === week);
   const invalidWeek = Boolean(week && !validWeek);
   const proof=await requireSessionMutationProof();
+  const lang = await readPortalLanguage(proof).then(read => read.language, () => "en" as const), w = MANAGER_AVAILABILITY_WORDS[lang];
   const source=await withOperationalCompany(proof,async()=>{
   const upcoming = validWeek ? null : await getUpcomingAvailabilityWeek(currentWeek);
   const selectedWeek = validWeek ? week! : upcoming?.weekStart ?? currentWeek;
@@ -36,7 +48,7 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   ]);
     return {selectedWeek,settings,statuses,windows,employees,locations};
   });
-  if(source.state==='unavailable')return <OperationalUnavailable title="Team availability unavailable" reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable title={w.unavailable} reason={source.reason}/>;
   const {selectedWeek,settings,statuses,windows,employees,locations}=source.data;
 
   const locationNames = new Map(locations.map(location => [location.id, location.shortName]));
@@ -45,38 +57,39 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   const locked = Boolean(settings?.availabilityDeadline && new Date(settings.availabilityDeadline).getTime() < new Date().getTime());
   const reviewEmployees = ordered.map(status => ({
     ...status,
-    locationName: employeeLocations.get(status.employeeId) ?? "No primary location",
+    locationName: employeeLocations.get(status.employeeId) ?? w.noLocation,
     windows: status.submitted ? windows.filter(window => window.employeeId === status.employeeId) : [],
-    updatedLabel: status.updatedAt ? keepWhole(formatBusinessDateTime(status.updatedAt, timeZone)) : undefined,
+    updatedLabel: status.updatedAt ? keepWhole(formatBusinessDateTime(status.updatedAt, timeZone, lang)) : undefined,
   }));
-  const deadline = settings?.availabilityDeadline ? keepWhole(formatBusinessDateTime(settings.availabilityDeadline, timeZone)) : null;
+  const deadline = settings?.availabilityDeadline ? keepWhole(formatBusinessDateTime(settings.availabilityDeadline, timeZone, lang)) : null;
 
   // Quiet (v4, approved Oct 23): the week and the count under the title, the deadline as one row, then the people.
   const remindersOn = readNotificationConfig(process.env).featureEnabled;
-  const deadlineDay = settings?.availabilityDeadline ? new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", month: "short", day: "numeric" }).format(new Date(settings.availabilityDeadline)) : null;
+  const deadlineDay = settings?.availabilityDeadline ? new Intl.DateTimeFormat(w.locale, { timeZone, weekday: "short", month: "short", day: "numeric" }).format(new Date(settings.availabilityDeadline)).replace(/\./g, "") : null;
   // Reminders (U10): the command needs the session's communication authority (the same value the Updates pages hand
   // their client), the week and its exact deadline. A week with no deadline, or a closed one, offers no reminder.
   let authority: string | undefined;
   try { authority = communicationAuthority(proof); } catch { authority = undefined; }
   const deadlineAt = settings?.availabilityDeadline ? new Date(settings.availabilityDeadline) : null;
   const remind = authority && deadlineAt && Number.isFinite(deadlineAt.getTime()) && !locked && (proof.employee.role === "OWNER" || proof.employee.role === "MANAGER")
-    ? { authority, timeZone, actor: proof.employee.role, weekStart: selectedWeek, expectedDeadline: deadlineAt.toISOString(), week: keepWhole(dateRange(selectedWeek, selectedWeek, { year: "never" })) } : null;
+    ? { authority, timeZone, actor: proof.employee.role, weekStart: selectedWeek, expectedDeadline: deadlineAt.toISOString(), week: keepWhole(dateRange(selectedWeek, selectedWeek, { year: "never", locale: w.locale })) } : null;
   // Phase 2 (Schedule tools, C10, Nov 23, 2026): Direction B for real. The Corp page the B layer draws as the band (the
   // title and the week); then the deadline row and one card of people with Not sent and Sent as its filter chips, as on
   // Team. Same reads, links, reminders and deep link as before.
-  const weekLine = keepWhole(`Week of ${weekLabel(selectedWeek)}`);
+  const end = new Date(Date.parse(`${selectedWeek}T12:00:00Z`) + 6 * 86_400_000).toISOString().slice(0, 10);
+  const weekLine = keepWhole(w.weekOf(lang === "es" ? dateRange(selectedWeek, end, { year: "never", locale: w.locale }) : weekLabel(selectedWeek)));
   return (<ScopedReadFrame observation={source}>
     <CorpPage className="c-avteam c-page--narrow" labelledBy="avteam-title">
-      <CorpNav back={{ href: "/app/inbox", label: "Things to do" }} title="Availability" titleId="avteam-title" phoneOnly />
+      <CorpNav back={{ href: "/app/inbox", label: w.back }} title={w.title} titleId="avteam-title" phoneOnly />
       <p className="c-phone-sub" aria-hidden="true">{weekLine}</p>
-      <CorpTitle title="Availability" sub={weekLine} wide />
+      <CorpTitle title={w.title} sub={weekLine} wide />
       <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} remind={remind} needsDeadline={!deadlineAt} before={<>
-        {invalidWeek ? <p className="c-st__msg c-st__msg--error form-error" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
-        <CorpCard ariaLabel="Deadline"><CorpRows>
+        {invalidWeek ? <p className="c-st__msg c-st__msg--error form-error" role="alert">{w.invalidWeek}</p> : null}
+        <CorpCard ariaLabel={w.deadline}><CorpRows>
           {/* Phase 3 (MG-016): the row says what a deadline does. The reminder goes out 24 hours before the deadline
               (notifications/policy.ts), so the line shows only where the workplace's alerts are on. */}
           {/* Phase 2 (C10): the row is read by what it shows; a passed deadline says so in words, not only to screen readers. */}
-          <li><CorpRow title="Deadline" detail={locked ? `Passed ${deadline}` : remindersOn && deadline ? "People are reminded the day before." : undefined} value={deadlineDay ?? "Not set"} href="/app/schedule/settings" /></li>
+          <li><CorpRow title={w.deadline} detail={locked ? w.passed(deadline ?? "") : remindersOn && deadline ? w.reminded : undefined} value={deadlineDay ?? w.notSet} href="/app/schedule/settings" /></li>
         </CorpRows></CorpCard>
       </>} />
     </CorpPage>

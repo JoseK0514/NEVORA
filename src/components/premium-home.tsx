@@ -19,6 +19,9 @@ import { needsYouTotal } from "@/lib/action-center/review-routing";
 import { reviewCopy } from "@/components/review-details/copy";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
 import { PREMIUM_HOME_COPY } from "./premium-home-copy";
+import { clockIn } from "./owner-b/owner-b-copy";
+import type { PortalLang } from "@/lib/i18n/portal-lang";
+type QuietWords = (typeof PREMIUM_HOME_COPY)["en"]["quiet"];
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor, ClockMonitorEmployee } from "@/lib/time-clock";
@@ -67,15 +70,14 @@ export type PremiumHomeProps = {
   homeB?: HomeBWeek;
 };
 
-const clock = (iso: string, timeZone: string) => {
-  try { return new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso)); }
+const clock = (iso: string, timeZone: string, lang: PortalLang = "en") => {
+  try { return clockIn(lang, new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso))); }
   catch { return ""; }
 };
 const workspaceDay = (iso: string, timeZone: string) => {
   try { return new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso)); }
   catch { return undefined; }
 };
-const plural = (n: number, one: string, many: string) => `${n}\u00a0${n === 1 ? one : many}`;
 
 
 /** Live Home: one Today read and the shared action center read. */
@@ -130,7 +132,7 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
   // Corporate Home names its card ("5 things to do today."); the older looks keep their line.
   // Phase 4 (U03): with clock-ins unread or review facts missing, the count is a lower bound and a zero is not all-clear.
   const total = value ? needsYouTotal(value, { clockInsUnavailable: todayFailed }) : null;
-  const summary = value && total ? corporate ? toDoSentence(value.count, total.exact, lang) : total.exact ? needsYouSentence(value.count) : value.count ? words.today(reviewCopy(lang).needYou(value.count, false)) : `${reviewCopy(lang).notAllChecked}.`
+  const summary = value && total ? corporate ? toDoSentence(value.count, total.exact, lang) : total.exact ? (lang === "es" ? words.needsYou(value.count) : needsYouSentence(value.count)) : value.count ? words.today(reviewCopy(lang).needYou(value.count, false)) : `${reviewCopy(lang).notAllChecked}.`
     : actionsConnection === "offline" ? words.offline
     : actionsConnection === "paused" ? words.paused
     : actionsConnection === "unavailable" || actionsConnection === "access_lost" || today?.state === "unavailable" ? words.failed
@@ -167,87 +169,88 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
     timecards={items.filter(item => item.type === "TIMECARD")} timecardsReady={!!readyActions} businessDay={readyToday?.today ?? day} nextPay={nextPay} payrollStatus={payrollStatus} setup={setup} setupCard={setupCard} billing={billing} liveReaders={liveReaders} week={homeB} />;
   // Quiet (v4, approved Oct 23): top bar, title, Right now, Needs you, Setup. Nothing else on Home.
   return <div className="q-page premium-home cm-home" data-nv-page="" data-live-readers={liveReaders}>
-    <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon weight="bold" className="q-ic" aria-hidden="true" /></QuietBarIcon></QuietBar>
-    <QuietHeader title="Today" sub={<>{dateLabel}<span role="status" className="q-sr">{summary}</span></>} />
-    <QuietRightNow today={today} monitor={monitor} monitorPending={monitorPending} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} />
+    <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label={words.quiet.notifications}><BellIcon weight="bold" className="q-ic" aria-hidden="true" /></QuietBarIcon></QuietBar>
+    <QuietHeader title={words.quiet.title} sub={<>{dateLabel}<span role="status" className="q-sr">{summary}</span></>} />
+    <QuietRightNow today={today} monitor={monitor} monitorPending={monitorPending} refreshing={todayRefreshing} onRetry={onRetryToday} timeZone={timeZone} offline={offline} paused={actionsConnection === "paused"} q={words.quiet} lang={lang} />
     <div className="cm-home__now" ref={nowColumn}>
-      {value ? <QuietNeedsYou value={value} timeZone={timeZone} observedAt={readyToday?.observedAt} exact={total?.exact ?? true} /> : <QuietPending connection={offline ? "offline" : actionsConnection} onRetry={retryAll} />}
+      {value ? <QuietNeedsYou value={value} timeZone={timeZone} observedAt={readyToday?.observedAt} exact={total?.exact ?? true} q={words.quiet} lang={lang} /> : <QuietPending connection={offline ? "offline" : actionsConnection} onRetry={retryAll} q={words.quiet} />}
     </div>
     {setup}
   </div>;
 }
 
 const peopleOf = (shifts: TodayShift[]) => new Set(shifts.map(shift => shift.employeeId)).size;
-const firstNames = (names: string[]) => {
-  const first = names.map(name => name.split(/\s+/)[0] ?? name);
-  return first.length <= 2 ? first.join(" and ") : `${first.slice(0, 2).join(", ")} and ${first.length - 2} more`;
+const firstNames = (names: string[], q?: QuietWords) => {
+  const first = names.map(name => name.split(/\s+/)[0] ?? name), and = q?.and ?? "and", more = q?.more ?? ((n: number) => `${n} more`);
+  return first.length <= 2 ? first.join(` ${and} `) : `${first.slice(0, 2).join(", ")} ${and} ${more(first.length - 2)}`;
 };
 
 /** Right now: one row, "6 of 8 on shift", and who starts next. A zero is said in words. */
-function QuietRightNow({ today, monitor, monitorPending = false, refreshing, onRetry, timeZone, offline = false, paused = false }: { today: Today | null; monitor: ClockMonitor | null; monitorPending?: boolean; refreshing: boolean; onRetry?: () => void; timeZone: string; offline?: boolean; paused?: boolean }) {
-  const section = (row: ReactNode) => <QuietSection id="home-working" title="Right now"><QuietList label="Right now">{row}</QuietList></QuietSection>;
+function QuietRightNow({ today, monitor, monitorPending = false, refreshing, onRetry, timeZone, offline = false, paused = false, q = PREMIUM_HOME_COPY.en.quiet, lang = "en" }: { today: Today | null; monitor: ClockMonitor | null; monitorPending?: boolean; refreshing: boolean; onRetry?: () => void; timeZone: string; offline?: boolean; paused?: boolean; q?: QuietWords; lang?: PortalLang }) {
+  const section = (row: ReactNode) => <QuietSection id="home-working" title={q.rightNow}><QuietList label={q.rightNow}>{row}</QuietList></QuietSection>;
   if (!today || today.state !== "ready") {
-    if (today?.state === "unavailable") return section(<QuietRow title="Who’s on shift isn’t available" detail="Try again in a moment"
+    if (today?.state === "unavailable") return section(<QuietRow title={q.unavailable} detail={q.tryMoment}
       control={<button type="button" className="q-bs premium-today-retry" aria-disabled={refreshing || undefined}
-        onClick={() => { if (refreshing || !onRetry) return; onRetry(); focusAfterRetry("#home-working-title", ".premium-today-retry"); }}>{refreshing ? "Trying…" : "Try again"}</button>} />);
-    return section(<QuietRow title={offline ? "You’re offline" : paused ? "Paused while you’re away" : "Checking who’s on shift…"} detail={offline ? "Updates when you reconnect" : paused ? "Updates when you’re back" : " "} />);
+        onClick={() => { if (refreshing || !onRetry) return; onRetry(); focusAfterRetry("#home-working-title", ".premium-today-retry"); }}>{refreshing ? q.trying : q.tryAgain}</button>} />);
+    return section(<QuietRow title={offline ? q.offline : paused ? q.paused : q.checking} detail={offline ? q.updatesReconnect : paused ? q.updatesBack : " "} />);
   }
   const open = monitor?.state === "ready" ? monitor.employees : null;
   const onShift = open ? new Set(open.map(person => person.employeeId)).size : peopleOf(today.shifts.filter(working)) || today.counts.clockedIn;
   const scheduled = peopleOf(today.shifts);
   const onIds = new Set(open ? open.map(person => person.employeeId) : today.shifts.filter(working).map(shift => shift.employeeId));
   const next = today.shifts.filter(later).filter(shift => !onIds.has(shift.employeeId)).sort((a, b) => a.startAt.localeCompare(b.startAt))[0];
-  const title = monitorPending && !open && today.counts.clockedIn ? "Checking who’s on shift…"
-    : onShift === 0 ? (scheduled ? "No one on shift yet" : "No shifts today")
-    : scheduled ? `${onShift} of ${scheduled} on shift` : `${onShift} on shift`;
-  const detail = next ? (onShift === 0 ? `First shift at ${clock(next.startAt, timeZone)}` : `${next.employeeName} starts at ${clock(next.startAt, timeZone)}`)
-    : onShift === 0 && scheduled ? "No more shifts start today" : undefined;
-  return section(<QuietRow href="/app/schedule" title={title} detail={detail} label={[title, detail].filter(Boolean).join(", ") + ", open Schedule"} />);
+  const title = monitorPending && !open && today.counts.clockedIn ? q.checking
+    : onShift === 0 ? (scheduled ? q.noneYet : q.noShifts)
+    : scheduled ? q.of(onShift, scheduled) : q.on(onShift);
+  const detail = next ? (onShift === 0 ? q.firstAt(clock(next.startAt, timeZone, lang)) : q.startsAt(next.employeeName, clock(next.startAt, timeZone, lang)))
+    : onShift === 0 && scheduled ? q.noMore : undefined;
+  return section(<QuietRow href="/app/schedule" title={title} detail={detail} label={[title, detail].filter(Boolean).join(", ") + q.openSchedule} />);
 }
 
 /** Needs you: one row per kind, said as one phrase ("2 open shifts"). The one red is how late someone is. */
-function QuietNeedsYou({ value, timeZone, observedAt, exact = true }: { value: NeedsYou; timeZone: string; observedAt?: string; exact?: boolean }) {
-  if (value.count === 0) return <QuietSection id="home-needs-you" title="Things to do"><p className="q-empty">{exact ? "Nothing needs you right now." : reviewCopy().notAllCheckedLine}</p></QuietSection>;
+function QuietNeedsYou({ value, timeZone, observedAt, exact = true, q = PREMIUM_HOME_COPY.en.quiet, lang = "en" }: { value: NeedsYou; timeZone: string; observedAt?: string; exact?: boolean; q?: QuietWords; lang?: PortalLang }) {
+  if (value.count === 0) return <QuietSection id="home-needs-you" title={q.thingsToDo}><p className="q-empty">{exact ? q.nothing : reviewCopy(lang).notAllCheckedLine}</p></QuietSection>;
   const gaps = value.now.filter(item => item.type === "COVERAGE_GAP");
   const urgentRequests = value.now.filter(item => item.category === "requests");
   const otherUrgent = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests");
   const requests = [...urgentRequests, ...value.requests];
-  const person = (item: ActionItem) => presentItem({ ...item, detail: mobileActionDetail(item.detail) }, "", timeZone).person;
+  const person = (item: ActionItem) => presentItem({ ...item, detail: mobileActionDetail(item.detail, lang) }, "", timeZone).person;
   const now = observedAt ? Date.parse(observedAt) : NaN;
   const late = value.noClockIn;
   const one = late.length === 1 ? late[0] : null;
   const minutes = one && Number.isFinite(now) ? Math.max(1, Math.round((now - Date.parse(one.startAt)) / 60_000)) : 0;
   const ended = one ? one.status === "no_punches" : false;
-  const kinds = [...new Set(requests.map(item => item.type === "TIME_OFF" ? "time off" : item.type === "EXCHANGE" ? "a shift swap" : "a can’t-work request"))];
-  const requestDetail = requests.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}${person(requests[0]) ? ` from ${person(requests[0])}` : ""}`
-    : kinds.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}` : `${kinds.slice(0, -1).join(", ").replace(/^./, c => c.toUpperCase())} and ${kinds.at(-1)}`;
-  return <QuietSection id="home-needs-you" title="Things to do">
-    <QuietList label="Things to do">
-      {one ? <QuietRow href="/app/inbox?filter=now" title={`${ended ? ATTENDANCE_WORDS.missed : ATTENDANCE_WORDS.notClockedIn}: ${one.employeeName}`}
-        detail={ended ? `Shift ended at ${clock(one.endAt, timeZone)}` : `Shift began at ${clock(one.startAt, timeZone)}`}
+  const kinds = [...new Set(requests.map(item => q.kind[item.type === "TIME_OFF" || item.type === "EXCHANGE" ? item.type : "CALLOUT"]))];
+  const requestDetail = requests.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}${person(requests[0]) ? q.from(person(requests[0]) as string) : ""}`
+    : kinds.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}` : `${kinds.slice(0, -1).join(", ").replace(/^./, c => c.toUpperCase())} ${q.and} ${kinds.at(-1)}`;
+  const missedWord = lang === "es" ? q.missed : ATTENDANCE_WORDS.missed, notInWord = lang === "es" ? q.notClockedIn : ATTENDANCE_WORDS.notClockedIn;
+  return <QuietSection id="home-needs-you" title={q.thingsToDo}>
+    <QuietList label={q.thingsToDo}>
+      {one ? <QuietRow href="/app/inbox?filter=now" title={`${ended ? missedWord : notInWord}: ${one.employeeName}`}
+        detail={ended ? q.ended(clock(one.endAt, timeZone, lang)) : q.began(clock(one.startAt, timeZone, lang))}
         value={ended || !minutes ? undefined : minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min` : ""}`.trim() : `${minutes} min`} tone="alert"
-        label={`${one.employeeName} hasn’t clocked in, open in Inbox`} />
-      : late.length ? <QuietRow href="/app/inbox?filter=now" title={`${late.length}\u00a0not clocked in`} detail={firstNames(late.map(shift => shift.employeeName))}
-        label={`${late.length} shifts with no ${CLOCK_IN}, open in Inbox`} /> : null}
-      {gaps.length ? <QuietRow href="/app/inbox?filter=now" title={plural(gaps.length, "open shift", "open shifts").replace("\u00a0", " ")}
-        detail={locationCounts(gaps.map(item => ({ locationName: gapLocation(item) }))) || "Today"} label={`${plural(gaps.length, "open shift", "open shifts").replace("\u00a0", " ")} today, open in Inbox`} /> : null}
-      {otherUrgent.length ? <QuietRow href="/app/inbox?filter=now" title={plural(otherUrgent.length, "urgent item", "urgent items").replace("\u00a0", " ")} detail={presentItem(otherUrgent[0], "", timeZone).title}
-        label={`${plural(otherUrgent.length, "urgent item", "urgent items").replace("\u00a0", " ")}, open in Inbox`} /> : null}
-      {requests.length ? <QuietRow href="/app/inbox?filter=requests" title={plural(requests.length, "request", "requests").replace("\u00a0", " ")} detail={requestDetail}
-        label={`${plural(requests.length, "request", "requests").replace("\u00a0", " ")} waiting, open in Inbox`} /> : null}
+        label={q.lateLabel(one.employeeName)} />
+      : late.length ? <QuietRow href="/app/inbox?filter=now" title={q.notClockedInCount(late.length)} detail={firstNames(late.map(shift => shift.employeeName), q)}
+        label={lang === "es" ? q.noClockInLabel(late.length) : `${late.length} shifts with no ${CLOCK_IN}, open in Inbox`} /> : null}
+      {gaps.length ? <QuietRow href="/app/inbox?filter=now" title={q.openShifts(gaps.length)}
+        detail={locationCounts(gaps.map(item => ({ locationName: gapLocation(item) }))) || q.todayWord} label={q.openShiftsLabel(gaps.length)} /> : null}
+      {otherUrgent.length ? <QuietRow href="/app/inbox?filter=now" title={q.urgent(otherUrgent.length)} detail={presentItem(otherUrgent[0], "", timeZone).title}
+        label={q.urgentLabel(otherUrgent.length)} /> : null}
+      {requests.length ? <QuietRow href="/app/inbox?filter=requests" title={q.requests(requests.length)} detail={requestDetail}
+        label={q.requestsLabel(requests.length)} /> : null}
     </QuietList>
   </QuietSection>;
 }
 
-function QuietPending({ connection, onRetry }: { connection: ActionCenterConnection; onRetry?: () => void }) {
+function QuietPending({ connection, onRetry, q = PREMIUM_HOME_COPY.en.quiet }: { connection: ActionCenterConnection; onRetry?: () => void; q?: QuietWords }) {
   const busy = connection === "loading" || connection === "reconnecting";
-  const message = busy ? "Checking what needs you…" : connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back."
-    : connection === "access_lost" ? "Sign in again to see what needs you." : connection === "not_allowed" ? "You don’t have access to Things to do. Ask the Owner if you need it." : "What needs you isn’t available right now.";
+  const message = busy ? q.pendingChecking : connection === "offline" ? q.pendingReconnect : connection === "paused" ? q.pendingBack
+    : connection === "access_lost" ? q.pendingSignIn : connection === "not_allowed" ? q.pendingDenied : q.pendingFailed;
   return <section id="home-needs-you" aria-labelledby="home-needs-you-title" aria-busy={busy || undefined} className={busy ? undefined : "premium-pending-failed"}>
-    <div className="q-sec"><h2 id="home-needs-you-title">Things to do</h2></div>
+    <div className="q-sec"><h2 id="home-needs-you-title">{q.thingsToDo}</h2></div>
     <p className="q-empty">{message}</p>
-    {connection === "access_lost" ? <a className="q-btn q-btn--sec" href="/login">Sign in</a>
-      : !busy && onRetry && connection !== "offline" && connection !== "paused" ? <button type="button" className="q-btn q-btn--sec" onClick={onRetry}>Try again</button> : null}
+    {connection === "access_lost" ? <a className="q-btn q-btn--sec" href="/login">{q.signIn}</a>
+      : !busy && onRetry && connection !== "offline" && connection !== "paused" ? <button type="button" className="q-btn q-btn--sec" onClick={onRetry}>{q.tryAgain}</button> : null}
   </section>;
 }
 

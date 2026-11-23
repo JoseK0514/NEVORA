@@ -162,6 +162,7 @@ export default async function DashboardPage({
   return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={scopedObservation(source.state==='ready'?source:null)}>
     <ManagerDashboard
       setupLang={setupLang}
+      lang={lang}
       shortcutModules={{updates:modules.updates,timeOff:modules.timeOff}}
       role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
       actorId={session.id}
