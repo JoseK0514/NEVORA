@@ -78,6 +78,6 @@ describe("notices on the canvas", () => {
     const view = src("components/employee-mobile/deletion.tsx");
     expect(view).toContain("em-delete-outcome");
     for (const words of ["Your request wasn’t sent", "Account deletion isn’t available right now", "Too many tries", "We don’t know yet if your request was saved",
-      "Nothing was saved and you’re still signed in.", "wait about 15 minutes, then try again. Nothing was sent."]) expect(view).toContain(words);
+      "Nothing was saved and you’re still signed in.", "wait about 15 minutes, then try again. Nothing was sent."]) expect(src("components/employee-mobile/copy/deletion.ts")).toContain(words);
   });
 });
