@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 import { DiscardGuard } from "@/components/kit/discard-dialog";
 import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
@@ -59,7 +60,8 @@ export function entryDetail(entry: PtoEntry, t: PtoCopy, actors: Record<string, 
 }
 
 export function AccountScreen(props: AccountScreenProps) {
-  const { employeeId, name, firstName, backHref, today, actors, actorId, lang = "en", initial } = props;
+  const { employeeId, name, firstName, backHref, today, actors, actorId, lang: langProp, initial } = props;
+  const lang = useViewLang(langProp);
   const t = ptoCopy(lang);
   const [load, setLoad] = useState<Load>(initial?.load ?? { state: "loading" });
   const [step, setStep] = useState<Step>(initial?.step ?? "view");

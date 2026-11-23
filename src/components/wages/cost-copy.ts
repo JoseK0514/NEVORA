@@ -44,7 +44,7 @@ const es: CostCopy = {
   openTeam: "Abrir Equipo",
   included: "Qué incluye",
   unavailable: "No disponible",
-  rowUnavailable: "No se cargó el estimado de esta ubicación",
+  rowUnavailable: "No se cargó el estimado de esta localidad",
   basis: "Tiempo programado a la tarifa por hora vigente de cada persona, con borradores, redondeado una vez al centavo. No incluye horas extra, primas, ajustes de descansos, impuestos patronales ni beneficios, deducciones ni turnos liberados. No es nómina ni aprueba el horario.",
   observed: time => `Horario leído a las ${time}`,
   refresh: "Actualizar",

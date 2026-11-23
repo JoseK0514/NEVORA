@@ -1,4 +1,5 @@
 'use client';
+import { useViewLang } from '@/components/owner-b/use-owner-lang';
 
 import Link from 'next/link';
 import {AppRouterContext} from 'next/dist/shared/lib/app-router-context.shared-runtime';
@@ -35,7 +36,7 @@ const Context = createContext<ReminderUi | null>(null);
 
 export type ReminderOpen = null | {mode: 'one'; employeeId: string} | {mode: 'many'; people: ReminderTarget[]; stage: 'review' | 'results'; sent: string[]};
 
-export function ReminderProvider({targets, authority, timeZone, actor, about, lang = 'en', onRefresh, transport, children}: {
+export function ReminderProvider({targets, authority, timeZone, actor, about, lang: langProp, onRefresh, transport, children}: {
   /** The people a reminder may be offered for, with the exact source the page is showing. Empty: nothing is offered. */
   targets: ReminderTarget[];
   /** The session's communication authority, from the server page. Without it no control is rendered. */
@@ -46,6 +47,7 @@ export function ReminderProvider({targets, authority, timeZone, actor, about, la
   /** Re-reads the page's own source after a conflict. Default: the route's server data. */
   onRefresh?: () => void; transport?: ReminderTransport; children: ReactNode;
 }) {
+  const lang = useViewLang(langProp);
   // The route's router when there is one. Read from its context (not useRouter, which throws without one) so the pages
   // that mount this still render on their own in unit tests; without a router "Refresh" re-reads the reminder only.
   const router = useContext(AppRouterContext);
@@ -211,9 +213,10 @@ function Seen({employeeId, want, children}: {employeeId: string; want: (employee
 }
 
 /** The row control without its data: every state renders from a `ReminderLine` (tests render it in both languages). */
-export function ReminderControlView({id, name, line, phase, lang = 'en', offline = false, onAction}: {
+export function ReminderControlView({id, name, line, phase, lang: langProp, offline = false, onAction}: {
   id?: string; name: string; line: ReminderLine; phase: ReminderState['phase']; lang?: ReminderLang; offline?: boolean; onAction: (action: NonNullable<ReminderLine['action']>) => void;
 }) {
+  const lang = useViewLang(langProp);
   const t = reminderCopy[lang];
   const why = useId();
   if (line.kind === 'placeholder') return <span className="b-rem" id={id} data-phase={phase}><i className="b-rem__ph" aria-hidden="true" /><span className="q-sr">{line.text}</span></span>;

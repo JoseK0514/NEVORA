@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 import { DiscardGuard } from "@/components/kit/discard-dialog";
 import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
@@ -51,7 +52,8 @@ export function policyProblems(draft: Draft, policies: PtoPolicy[]): Problem[] {
   return out;
 }
 
-export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
+export function PoliciesScreen({ lang: langProp, initial }: PoliciesScreenProps) {
+  const lang = useViewLang(langProp);
   const t = ptoCopy(lang);
   const [load, setLoad] = useState<Load>(initial?.load ?? { state: "loading" });
   const [draft, setDraft] = useState<Draft | null>(initial?.draft ?? null);

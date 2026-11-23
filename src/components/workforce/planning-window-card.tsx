@@ -20,7 +20,7 @@ const words = {
   es: { title: "Semana de planificación", locale: "es-PR", shifts: (n: number) => n === 1 ? "1 turno" : `${n} turnos`, none: "Sin turnos",
     part: (range: string) => `Semana de horario ${range}`, open: "Abrir", viewing: "En pantalla",
     spans: "Esta semana de planificación abarca dos semanas de horario. Cada parte se edita y se publica con su propia semana.",
-    publish: (names: string) => `Puedes publicar: ${names}`, publishNone: "La publicación la hace un dueño.", publishAll: "Publicas todas las ubicaciones." },
+    publish: (names: string) => `Puedes publicar: ${names}`, publishNone: "La publicación la hace un dueño.", publishAll: "Publicas todas las localidades." },
 };
 
 function day(date: string, locale: string, opts: Intl.DateTimeFormatOptions) {
@@ -51,3 +51,4 @@ export function PlanningWindowCard({ window: w, viewingWeek, owner, locationQuer
     {owner ? null : <p className="pw-note pw-note--foot">{publishable.length === 0 ? t.publishNone : publishable.length === w.locations.length ? t.publishAll : t.publish(publishable.join(", "))}</p>}
   </div></CorpCard>;
 }
+export { words as PLANNING_WINDOW_WORDS };
