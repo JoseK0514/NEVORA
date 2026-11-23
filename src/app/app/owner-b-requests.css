@@ -215,7 +215,10 @@
    * nothing to belong to. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-request .c-request__foot:has(.tod-unknown):not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) > .c-note { display:none !important; }
   /* #25: an empty tab is the kit's state card, in the list's own card. */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page > .q-emptycard:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) { display:block !important; margin-top:0 !important; padding:0 !important; list-style:none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page > .q-emptycard:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) { display:block !important; padding:0 !important; list-style:none !important; }
+  /* Release (Nov 23): after a segment row the empty card takes the kit's gap (34px on phones, 44px from 768px), as the
+   * full list does; it had margin-top 0 and rode 14px up over the segments on phones. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page > .q-emptycard:not(:is(nav.c-seg, .c-seg, .q-seg) + *):not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) { margin-top:0 !important; }
   /* #16: a request that is no longer waiting. The chip sits on the name's line; one tinted way back in the card. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page .q-decided__name:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) { display:inline-flex !important; flex-wrap:wrap !important; align-items:center !important; gap:var(--b-space-4) var(--b-space-8) !important; min-width:0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page .q-list > li.q-decided__back:not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) { display:flex !important; justify-content:flex-start !important; margin:0 !important; padding:var(--b-space-4) var(--b-inset) var(--b-space-16) var(--b-space-64) !important; list-style:none !important; border:0 !important; box-shadow:none !important; }
