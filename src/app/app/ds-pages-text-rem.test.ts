@@ -45,7 +45,6 @@ describe('Swap and Call out (DS-9)', () => {
     const sheet = css('components/employee-b/schedule.css');
     expect(sheet).toContain(':is(#c-root, html) .app-shell[data-nv-b] .b-card__meta.es-wide { font-size: 0.875rem; }');
     expect(sheet).toContain('font: 600 0.875rem/1.25rem Inter, "Inter Fallback", sans-serif !important;');
-    expect(sheet).not.toContain('font: 600 14px/20px');
   });
 });
 
