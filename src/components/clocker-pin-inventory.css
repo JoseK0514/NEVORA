@@ -1,12 +1,23 @@
-/* Employee PINs inside its settings page: the kit's search, segments and card, without a second page background. */
-:is(#c-root, html) .c-page.c-embed.c-pins { min-height: 0; padding: 16px; background: none; }
+/* Clocker PINs in Settings (Phase 2, Nov 23, 2026): the search, the tabs and the card are the Settings page's own children
+ * sit at the top of the one list card, which is the page's first block. */
+:is(#c-root, html) .c-pins .c-pins__tools { display: flex; flex-direction: column; gap: var(--b-space-12, 12px); padding: var(--b-inset, 16px) var(--b-inset, 16px) var(--b-space-8, 8px); }
+:is(#c-root, html) .c-pins .c-pins__tools > .c-seg { width: 100%; max-width: none; }
+:is(#c-root, html) .c-pins .c-pins__search { width: 100%; }
+:is(#c-root, html) .c-pins .c-pins__act { flex: none; white-space: nowrap; }
+:is(#c-root, html) .c-pins .c-row__trail { flex: none; }
 :is(#c-root, html) .c-pins .c-pins__search { gap: 8px; cursor: text; }
 :is(#c-root, html) .c-pins .c-pins__search .c-ic { width: 20px; height: 20px; color: var(--c-grey); }
-:is(#c-root, html) .c-pins .c-pins__search input { flex: 1; min-width: 0; height: 100%; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; font-size: 15px; line-height: 20px; color: var(--c-ink); outline: none; -webkit-appearance: none; appearance: none; }
-:is(#c-root, html) .c-pins .c-pins__empty { margin: 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
-:is(#c-root, html) .c-pins .c-pins__note { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-pins .c-pins__search input { flex: 1; min-width: 0; height: 100%; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; font-size: var(--b-fs-body, 0.9375rem); line-height: 1.34; color: var(--c-ink); outline: none; -webkit-appearance: none; appearance: none; }
+:is(#c-root, html) .c-pins .c-pins__empty { margin: 0; font-size: 0.9375rem; line-height: 1.34; color: var(--c-ink2); }
+:is(#c-root, html) .c-pins .c-pins__note { margin: 0; font-size: 0.8125rem; line-height: 1.38; color: var(--c-grey); }
 /* Owner premium: the search at 16px on phones (no iOS zoom). */
-@media (max-width: 767px) { :is(#c-root, html) .c-pins .c-pins__search input { font-size: 16px; } }
+@media (max-width: 767px) { :is(#c-root, html) .c-pins .c-pins__search input { font-size: 1rem; } }
 /* Owner premium R13: each tab is its label and a grey count ("No PIN 9"), one count voice, and no tab repeats another. */
-:is(#c-root, html) .c-pins .c-pins__seg button { gap: 6px; }
+:is(#c-root, html) .c-pins .c-seg > button { gap: 0; }
 :is(#c-root, html) .c-pins .c-pins__count { font-weight: 500; color: var(--c-grey); font-variant-numeric: tabular-nums; }
+/* Tablets and desktop: the search and the tabs on one line. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-pins .c-pins__tools { flex-direction: row; align-items: center; }
+  :is(#c-root, html) .c-pins .c-pins__search { flex: 1 1 auto; min-width: 0; }
+  :is(#c-root, html) .c-pins .c-pins__tools > .c-seg { flex: 0 0 auto; width: auto; min-width: 280px; }
+}
