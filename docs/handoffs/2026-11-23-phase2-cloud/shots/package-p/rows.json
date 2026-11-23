@@ -1,0 +1,244 @@
+[
+ {
+  "id": "A15",
+  "row": "A15",
+  "page": "Plans",
+  "section": "Signed out and public (billing)",
+  "note": "Shown on a fictional 30-day trial with the plan list and one teal “Review subscription in Stripe”; without a handoff it asks you to open Billing from your workplace. Footer links are now 44px targets and stack on phones like the other signed-out pages.",
+  "shots": [
+   {
+    "label": "Trial · Phone",
+    "after": "img/A15-trial-en-390.webp"
+   },
+   {
+    "label": "Trial · Phone, 200% text",
+    "after": "img/A15-trial-en-390-200pct.webp"
+   },
+   {
+    "label": "Trial · Tablet",
+    "after": "img/A15-trial-en-768.webp"
+   },
+   {
+    "label": "Trial · Desktop",
+    "after": "img/A15-trial-en-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "No handoff · Phone",
+    "after": "img/A15-entry-en-390.webp"
+   },
+   {
+    "label": "No handoff · Phone, 200% text",
+    "after": "img/A15-entry-en-390-200pct.webp"
+   },
+   {
+    "label": "No handoff · Tablet",
+    "after": "img/A15-entry-en-768.webp"
+   },
+   {
+    "label": "No handoff · Desktop",
+    "after": "img/A15-entry-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A16",
+  "row": "A16",
+  "page": "Billing",
+  "section": "Signed out and public (billing)",
+  "note": "Paid Small plan: teal “Manage billing in Stripe” with “Review Team plan” outlined; a failed payment shows the amber line above the details. Footer links are now 44px targets and stack on phones like the other signed-out pages.",
+  "shots": [
+   {
+    "label": "Active, Small · Phone",
+    "after": "img/A16-paid-en-390.webp"
+   },
+   {
+    "label": "Active, Small · Phone, 200% text",
+    "after": "img/A16-paid-en-390-200pct.webp"
+   },
+   {
+    "label": "Active, Small · Tablet",
+    "after": "img/A16-paid-en-768.webp"
+   },
+   {
+    "label": "Active, Small · Desktop",
+    "after": "img/A16-paid-en-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Payment needs attention · Phone",
+    "after": "img/A16-grace-en-390.webp"
+   },
+   {
+    "label": "Payment needs attention · Phone, 200% text",
+    "after": "img/A16-grace-en-390-200pct.webp"
+   },
+   {
+    "label": "Payment needs attention · Tablet",
+    "after": "img/A16-grace-en-768.webp"
+   },
+   {
+    "label": "Payment needs attention · Desktop",
+    "after": "img/A16-grace-en-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "No handoff · Phone",
+    "after": "img/A16-entry-en-390.webp"
+   },
+   {
+    "label": "No handoff · Phone, 200% text",
+    "after": "img/A16-entry-en-390-200pct.webp"
+   },
+   {
+    "label": "No handoff · Tablet",
+    "after": "img/A16-entry-en-768.webp"
+   },
+   {
+    "label": "No handoff · Desktop",
+    "after": "img/A16-entry-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A17",
+  "row": "A17",
+  "page": "Billing return",
+  "section": "Signed out and public (billing)",
+  "note": "After Stripe: “You’re subscribed.” in green with the way back as the teal button, or “Confirming your payment with Stripe…” while the subscription is not seen yet. Footer links are now 44px targets and stack on phones like the other signed-out pages.",
+  "shots": [
+   {
+    "label": "Subscribed · Phone",
+    "after": "img/A17-subscribed-en-390.webp"
+   },
+   {
+    "label": "Subscribed · Phone, 200% text",
+    "after": "img/A17-subscribed-en-390-200pct.webp"
+   },
+   {
+    "label": "Subscribed · Tablet",
+    "after": "img/A17-subscribed-en-768.webp"
+   },
+   {
+    "label": "Subscribed · Desktop",
+    "after": "img/A17-subscribed-en-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Confirming · Phone",
+    "after": "img/A17-confirming-en-390.webp"
+   },
+   {
+    "label": "Confirming · Phone, 200% text",
+    "after": "img/A17-confirming-en-390-200pct.webp"
+   },
+   {
+    "label": "Confirming · Tablet",
+    "after": "img/A17-confirming-en-768.webp"
+   },
+   {
+    "label": "Confirming · Desktop",
+    "after": "img/A17-confirming-en-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A18",
+  "row": "A18",
+  "page": "Facturación",
+  "section": "Signed out and public (billing)",
+  "note": "Spanish Plans on the same trial; every button and link fits on one line at 390. Footer links are now 44px targets and stack on phones like the other signed-out pages.",
+  "shots": [
+   {
+    "label": "Prueba · Phone",
+    "after": "img/A18-trial-es-390.webp"
+   },
+   {
+    "label": "Prueba · Phone, 200% text",
+    "after": "img/A18-trial-es-390-200pct.webp"
+   },
+   {
+    "label": "Prueba · Tablet",
+    "after": "img/A18-trial-es-768.webp"
+   },
+   {
+    "label": "Prueba · Desktop",
+    "after": "img/A18-trial-es-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Sin acceso · Phone",
+    "after": "img/A18-entry-es-390.webp"
+   },
+   {
+    "label": "Sin acceso · Phone, 200% text",
+    "after": "img/A18-entry-es-390-200pct.webp"
+   },
+   {
+    "label": "Sin acceso · Tablet",
+    "after": "img/A18-entry-es-768.webp"
+   },
+   {
+    "label": "Sin acceso · Desktop",
+    "after": "img/A18-entry-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "A19",
+  "row": "A19",
+  "page": "Pago",
+  "section": "Signed out and public (billing)",
+  "note": "Spanish return page: “Tu suscripción está activa.” or “Confirmando tu pago con Stripe…”; buttons on one line at 390. Footer links are now 44px targets and stack on phones like the other signed-out pages.",
+  "shots": [
+   {
+    "label": "Suscripción activa · Phone",
+    "after": "img/A19-subscribed-es-390.webp"
+   },
+   {
+    "label": "Suscripción activa · Phone, 200% text",
+    "after": "img/A19-subscribed-es-390-200pct.webp"
+   },
+   {
+    "label": "Suscripción activa · Tablet",
+    "after": "img/A19-subscribed-es-768.webp"
+   },
+   {
+    "label": "Suscripción activa · Desktop",
+    "after": "img/A19-subscribed-es-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Confirmando · Phone",
+    "after": "img/A19-confirming-es-390.webp"
+   },
+   {
+    "label": "Confirmando · Phone, 200% text",
+    "after": "img/A19-confirming-es-390-200pct.webp"
+   },
+   {
+    "label": "Confirmando · Tablet",
+    "after": "img/A19-confirming-es-768.webp"
+   },
+   {
+    "label": "Confirmando · Desktop",
+    "after": "img/A19-confirming-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
