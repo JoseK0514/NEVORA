@@ -53,18 +53,19 @@ export const generateMetadata = routeTitle("more");
  * read leaves the value out. */
 async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstName: string; lastName: string; workspaceName: string }) {
   const [proof, brand] = await Promise.all([requireSessionMutationProof(), currentBrand()]);
-  const has = new Set(navigationForRole("EMPLOYEE", undefined, { modules: brand.modules, words: wordPreset(brand.words).en }).map(entry => entry.href));
+  const lang = await langOf(proof);
+  const has = new Set(navigationForRole("EMPLOYEE", undefined, { modules: brand.modules, words: wordPreset(brand.words)[lang] }).map(entry => entry.href));
   const [profile, availability] = await Promise.all([
     readEmployeeProfile(proof).catch(() => null),
-    has.has("/app/availability") ? listAvailability(proof.employee.id).then(availabilitySummary).catch(() => null) : Promise.resolve(null),
+    has.has("/app/availability") ? listAvailability(proof.employee.id).then(windows => availabilitySummary(windows, lang)).catch(() => null) : Promise.resolve(null),
   ]);
   const locations = profile?.state === "ready" && profile.kind === "profile" ? profile.profile.locations : [];
   const name = `${firstName} ${lastName}`;
-  const lang = await langOf(proof), W = SHELL_WORDS[lang], L = (label: string) => navLabel(label, lang);
+  const W = SHELL_WORDS[lang], L = (label: string) => navLabel(label, lang);
   const count = <NotificationCount authority={employeeViewAuthority(proof, "notifications")} />;
   return <CorpPage className="c-more c-more--employee" labelledBy="more-title">
     {/* Direction B on a phone (mock e-more): the same rows, links, values and Sign out. */}
-    <EmployeeMoreB lang={(await readPortalLanguage(proof).catch(()=>null))?.language??'en'} name={name} place={[...locations, workspaceName].join(" · ")} availability={availability}
+    <EmployeeMoreB lang={lang} name={name} place={[...locations, workspaceName].join(" · ")} availability={availability}
       has={{ availability: has.has("/app/availability"), notifications: has.has("/app/notifications"), updates: has.has("/app/updates") }} count={count} />
     <CorpNav back={{ href: "/app", label: L("Home") }} title={L("More")} titleId="more-title" />
     <CorpCard as="div" ariaLabel={L("Profile")}>
