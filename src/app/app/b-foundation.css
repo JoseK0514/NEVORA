@@ -847,7 +847,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     --b-band-short: 150px; --b-band-sub: 190px; --b-band-strip: 258px; --b-band-figures: 276px;
     --bs-frame-top: var(--b-space-12); --bs-pay-head: 63px;
     --bs-big-fs: 2rem; --bs-big-lh: 2.375rem; --bs-live-gap: var(--b-space-16); --bs-tile-pad: 10px var(--b-space-16);
-    --bs-fig-fs: 22px; --bs-fig-lh: 28px; --bs-figtitle-h: 38px; --bs-live-h: 0px;
+    --bs-fig-fs: 1.375rem; --bs-fig-lh: 1.75rem; --bs-figtitle-h: 38px; --bs-live-h: 0px;
     --bs-rail-entry: 48px; --bs-rail-pill-py: 3px;
   }
 }

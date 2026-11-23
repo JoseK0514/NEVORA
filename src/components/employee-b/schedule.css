@@ -171,6 +171,3 @@
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-screen .b-week > .b-week__days:not(#g34a):not(#g34b) { grid-template-columns: repeat(auto-fit, minmax(2.25rem, 1fr)) !important; row-gap: var(--b-space-4) !important; }
 }
-/* Desktop at 200% text (DS-9, Nov 23): the card's wide meta line on Swap and Call out ("Mon, Nov 23") is the kit's 14px
- * .b-card__meta; the same 14px in rem here, so it grows with the reader's text size. */
-:is(#c-root, html) .app-shell[data-nv-b] .b-card__meta.es-wide { font-size: 0.875rem; }
