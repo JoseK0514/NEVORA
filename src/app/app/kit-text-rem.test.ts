@@ -49,3 +49,11 @@ describe('band title and its button at 320px', () => {
     expect(rule(' > \\.b-title__right')).toContain('order: 1 !important; flex: none !important;');
   });
 });
+
+describe('Insights period labels', () => {
+  it('grow with text without the 20px cap (14px, and 12.5px under 360px, at 100%)', () => {
+    const sheet = css('components/reports-corp.css');
+    expect(sheet).toMatch(/\.c-ins \.c-ins__seg(?::not\(#rz\d+\))+ \{ --b-seg-fs: 0\.875rem; \}/);
+    expect(sheet).toMatch(/@media \(max-width: 359px\) \{[^{]*\.c-ins \.c-ins__seg(?::not\(#rz\d+\))+ \{ --b-seg-fs: 0\.78125rem; \} \}/);
+  });
+});
