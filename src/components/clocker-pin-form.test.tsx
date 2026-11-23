@@ -153,7 +153,7 @@ describe('saving, driven through the form’s handlers', () => {
     lang = 'es'; draw(); hooks.refs[2] = {current: confirmField};
     await submit('2468', '2469'); expect(words()).toContain('Los dos PIN no coinciden');
     hooks.states = []; hooks.refs = []; (action as unknown as {result: PinActionResult}).result = {ok: true, version: 1};
-    await submit('2468', '2468'); expect(words()).toContain('PIN creado para Maria Rivera. Dígaselo en persona.'); expect(englishIn(`<p>${words()}</p>`)).toEqual([]);
+    await submit('2468', '2468'); expect(words()).toContain('PIN creado para Maria Rivera. Díselo en persona.'); expect(englishIn(`<p>${words()}</p>`)).toEqual([]);
     hooks.states = []; hooks.refs = []; (action as unknown as {result: PinActionResult}).result = {ok: false, error: 'x', refresh: true};
     await submit('2468', '2468'); expect(words()).toContain('PIN sin confirmar'); expect(words()).toContain('Verificar si se guardó');
   });
