@@ -109,8 +109,10 @@ export function ManagerTimeCorrectionsSurface({
   const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
   usePrivateFragmentFocus('correction-',!!ready);
   const count=ready?.requests.length??0;
-  const bandLine=band?`${count?`${count} waiting · `:''}Fixes your team asked for. Original times are always kept. Times in ${timeZoneLabel(ready?.timeZone??band.zone)}.`:null;
-  return <>{band?<><p className="c-phone-sub">{bandLine}</p><CorpTitle id="tcx-title" title="Time corrections" sub={bandLine} wide/></>:null}<section className="manager-corrections" data-band={band?'':undefined} aria-labelledby="manager-corrections-title">
+  // Phase 2 gate (Nov 23): without access nothing below is theirs to review, so the band says no more than the card.
+  const denied=mode==='not_allowed'||mode==='access_lost';
+  const bandLine=band&&!denied?`${count?`${count} waiting · `:''}Fixes your team asked for. Original times are always kept. Times in ${timeZoneLabel(ready?.timeZone??band.zone)}.`:null;
+  return <>{band?<>{bandLine?<p className="c-phone-sub">{bandLine}</p>:null}<CorpTitle id="tcx-title" title="Time corrections" sub={bandLine??undefined} wide/></>:null}<section className="manager-corrections" data-band={band?'':undefined} aria-labelledby="manager-corrections-title">
     {/* Copy table 49: when nothing is waiting, the header's "Correction requests 0" would repeat the empty state, so it is
       kept for screen readers only. */}
     <header className={band||(ready&&!ready.requests.length)?"manager-corrections-header sr-only":"manager-corrections-header"}>
