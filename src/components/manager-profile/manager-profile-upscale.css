@@ -39,3 +39,10 @@
 /* Passkeys keeps its own row and panel inside the Security card. */
 :is(#c-root, html) .c-page.pmp-b .pmp-passkeys:empty { display: none; }
 :is(#c-root, html) .c-page.pmp-b .pmp-passkeys__row > .pk-section > .nv-card__head { display: none; }
+/* A Manager's Role line wraps under its title (it was cut with an ellipsis at 768). */
+:is(#c-root, html) .c-page.pmp-b #profile-details li[data-row="access"] .c-row { align-items: center; height: auto !important; }
+:is(#c-root, html) .c-page.pmp-b #profile-details li[data-row="access"] :is(.c-row__detail, .c-row__detail > span) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+:is(#c-root, html) .c-page.pmp-b #profile-details li[data-row="access"] .c-row__value { max-width: 45%; }
+/* The alert row's text and switch share one centre line; the row is as tall as its text. */
+:is(#c-root, html) .c-page.pmp-b button.pmp-switch-row { height: auto !important; min-height: 64px !important; align-items: center !important; }
+:is(#c-root, html) .c-page.pmp-b .pmp-switch-row > :is(.pmp-topic, .c-switch) { align-self: center !important; }
