@@ -321,8 +321,9 @@
 /* The shared band rules size these tabs with layered !important (owner-b-desktop.css), which an unlayered rule can't
  * override, so this one sits in the same layer. The tab keeps its usual height and grows only when its label wraps. */
 @layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] .b-screen .b-hero .b-seg:not(#eb-seg-wrap) { height: auto !important; max-height: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] .b-screen .b-hero .b-seg > :is(a, button):not(#eb-seg-wrap) {
     height: auto !important; min-height: var(--b-seg-item-h, 36px) !important; padding-block: var(--b-space-4) !important;
-    white-space: normal !important; overflow-wrap: anywhere !important; text-align: center !important;
+    white-space: normal !important; overflow-wrap: break-word !important; text-align: center !important;
   }
 }
