@@ -156,7 +156,7 @@ export function CreationView({state,authority,mode,sourceId,draft,operation,onDr
  const live=!!read&&read.enabled&&!(resolved&&result&&'requestId'in result);
  const extras=live?<>
   {pending?<p className="c-xs-notice" role="status">{uncertain?t.checkingOriginal:t.submittingRequest}</p>:null}
-  {result&&!resolved?<p className="c-error" role="alert">{shiftChangeFeedback(result)}</p>:null}
+  {result&&!resolved?<p className="c-error" role="alert">{shiftChangeFeedback(result,lang)}</p>:null}
   {uncertain?<button className="c-btn c-btn--secondary c-btn--full" type="button" disabled={pending} onClick={onRetry}>{t.checkStatus}</button>:null}
   {mode==='swap'&&!(swapEmpty&&!read!.partial)&&read!.coverage.allowed&&!locked?<Link className="c-link c-link--l c-xs-alt" href={'/app/exchange/swap?sourceShiftId='+encodeURIComponent(sourceId)+'&mode=cover'}>{t.offerInstead}</Link>:null}
  </>:null;

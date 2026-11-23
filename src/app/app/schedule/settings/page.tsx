@@ -11,6 +11,7 @@ import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { ActionForm, InlineConfigForm, KeepFocusClear, RulesSaveForm } from "@/components/wave-b-forms";
 import { PositionQuotaFields } from "@/components/position-quota-fields";
+import { readPageLang } from "@/lib/i18n/page-lang.server";
 import { ShiftChangePolicyFields } from "@/components/shift-change-policy-fields";
 import { ManagerIssueFocus } from "@/components/manager-issue-focus";
 import { RulesHoursList } from "@/components/rules-hours-list";
@@ -67,6 +68,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
     return {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions,workspace,weekStart,weekSettings};
   });
   if(source.state==='unavailable')return <OperationalUnavailable title="Scheduling rules unavailable" reason={source.reason}/>;
+  const lang = await readPageLang();
   // SCRUM-215: the planning calendar, through the same read GET /api/workforce/settings uses. A failed read shows the row as unavailable.
   const calendar=await readWorkforceSettings(await requireSessionMutationProof()).then(settings=>settings.calendar).catch(()=>null);
   const {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions,workspace,weekStart,weekSettings}=source.data;
@@ -188,7 +190,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                   <label className="c-field"><span className="c-field__label">End</span><input className="c-in" type="time" name="endTime" required aria-describedby="rules-end-hint" /><span className="c-field__help" id="rules-end-hint">Use 12:00 AM for the end of the day.</span></label>
                   <label className="c-field c-rf-wide-phone"><span className="c-field__label">Minimum staff <span className="c-rf-optional">Optional</span></span><input className="c-in" type="number" name="minimumStaff" min={1} max={100} step={1} placeholder="Location default" aria-describedby="rules-staff-hint" /><span className="c-field__help" id="rules-staff-hint">Leave blank to use the location requirement.</span></label>
                 </div>
-                <PositionQuotaFields positions={positions.filter(position => position.active)} />
+                <PositionQuotaFields lang={lang} positions={positions.filter(position => position.active)} />
               </InlineConfigForm>
             </details> : <p className="c-rf-help">Add a location first. <Link className="c-link" href="/app/settings/locations">Locations</Link></p>}
             {coverageGroups.map(group => (
@@ -204,7 +206,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                       </div>
                       <details className="c-rf-disc c-rf-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>
                         <summary className="c-rf-disc__sum c-rf-disc__sum--small"><span className="c-rules__tx"><span className="c-rf-disc__label">Position quantities</span></span><span className="c-rules__v">{window.positionRequirements.length ? window.positionRequirements.length + " set" : "Optional"}</span><CaretDownIcon className="c-rules__chev" weight="bold" aria-hidden="true" /></summary>
-                        <InlineConfigForm action={replaceCoverageWindowPositionRequirementsAction} submit={{ label: "Save quantities", pendingLabel: "Saving…", kind: "secondary" }} successText="Position quantities saved."><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields positions={positions} requirements={window.positionRequirements} legendHidden /></InlineConfigForm>
+                        <InlineConfigForm action={replaceCoverageWindowPositionRequirementsAction} submit={{ label: "Save quantities", pendingLabel: "Saving…", kind: "secondary" }} successText="Position quantities saved."><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields lang={lang} positions={positions} requirements={window.positionRequirements} legendHidden /></InlineConfigForm>
                       </details>
                     </li>
                   ))}

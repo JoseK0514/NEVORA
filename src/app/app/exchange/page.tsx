@@ -44,6 +44,7 @@ import {
 import {readShiftChangeOperationView} from '@/lib/data/shift-change-views';
 import "../requests/owner-lists.css";
 import { workCopy } from "@/components/employee-b/work-copy";
+import { readPageLang } from "@/lib/i18n/page-lang.server";
 
 const ERROR_MESSAGES: Record<string, string> = {
   INVALID_SHIFT: "That shift is no longer available for exchange.",
@@ -184,11 +185,11 @@ export default async function ExchangePage({
   if (!manager) {
     // v5 "One look" (approved Oct 24, 2026; mockup E09). Same reads, forms and authority as before: Open shifts, the swaps
     // waiting for your answer, and your own requests and shifts. Each row opens its details and actions as a sheet.
-    const zone = workspace.timeZone;
+    const zone = workspace.timeZone, lang = await readPageLang();
     const view = params.tab === "foryou" || (!!params.requestId && incoming.some(row => row.id === params.requestId)) ? "foryou" : activeView;
     const otherName = (row: (typeof visibleActivity)[number]) => marketplaceDisplayName(row.requestedByEmployeeId === session.id ? (row.targetEmployeeName ?? row.targetShift?.employeeName ?? "") : row.requestedByName);
     const when = (shift: { date: string; startTime: string; endTime: string }) => keepWhole(`${marketplaceDate(shift.date)} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`);
-    const place = (shift: Parameters<typeof shiftPlace>[0]) => shiftPlace(shift, zone);
+    const place = (shift: Parameters<typeof shiftPlace>[0]) => shiftPlace(shift, zone, lang);
     const exchangeWord = (status: string) => status === "OPEN" ? "Offered" : status === "EMPLOYEE_PENDING" ? "Awaiting employee" : status === "MANAGER_PENDING" ? "Manual review" : status === "APPROVED" ? "Completed" : statusLabel(status);
     const calloutWord = (callout: (typeof visibleCallouts)[number]) => callout.status === "PENDING" ? "Waiting" : callout.status === "APPROVED" ? (callout.releaseApplies ? "Approved · shift released" : "Approved earlier · still your shift") : statusLabel(callout.status);
     const yours = visibleActivity.length + visibleCallouts.length;
@@ -202,7 +203,7 @@ export default async function ExchangePage({
           { href: "/app/exchange?tab=requests", label: "Yours", current: view === "requests" },
         ]} />
         {params.error ? <p className="q-help q-help--alert" role="alert">{ERROR_MESSAGES[params.error] ?? schedulingIssueMessage(params.error) ?? "We couldn’t send that request. Try again."}</p> : null}
-        {operation ? <p className="q-help" role="status">{shiftChangeFeedback(operation)}</p> : null}
+        {operation ? <p className="q-help" role="status">{shiftChangeFeedback(operation, lang)}</p> : null}
 
         {view === "available" ? <>
           <QuietList><QuietRow href="/app/exchange/open-shifts" title="Posted open shifts" /></QuietList>

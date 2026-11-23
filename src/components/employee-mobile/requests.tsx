@@ -73,7 +73,7 @@ export function Pickup({operation,onRefresh,canSubmit=false,isCurrent=()=>false,
   {/* Phase 7 (moments): a pickup the server confirmed is the shared done state in place of the row's button. "pending"
     * is requested, not yours yet; a closed request and every refusal keep their own line and never borrow the mark. */}
   {result&&won&&next?<BState kind="done" titleRef={doneTitle} title={result.status==='completed'?M.pickupDone:M.pickupSent} line={result.status==='completed'?M.pickupDoneLine:M.pickupSentLine} action={{label:next.text,href:next.href}}/>
-   :result?<p role={resolved?'status':'alert'}>{shiftChangeFeedback(result)}</p>:null}
+   :result?<p role={resolved?'status':'alert'}>{shiftChangeFeedback(result,lang)}</p>:null}
   {current.uncertain?b?<BButton kind="quiet" full disabled={current.pending} onClick={check}>{t.checkPickup}</BButton>:<CorpButton kind="secondary" size="sm" disabled={current.pending} onClick={check}>{t.checkPickup}</CorpButton>:null}
   {result&&!current.uncertain&&!resolved?b?<BButton kind="quiet" full onClick={onRefresh}>{t.refreshOptions}</BButton>:<CorpButton kind="secondary" size="sm" onClick={onRefresh}>{t.refreshOptions}</CorpButton>:null}
   {next&&!won?b?<BButtonLink href={next.href} kind="quiet" full>{next.text}</BButtonLink>:<CorpButtonLink href={next.href} kind="secondary" size="sm">{next.text}</CorpButtonLink>:null}

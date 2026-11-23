@@ -1,4 +1,5 @@
 "use client";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
 
 import Link from "next/link";
 import { CoverageFigures } from "./coverage-minutes/coverage-minutes";
@@ -80,11 +81,12 @@ const editHref = (shift: RosterShift) => `/app/schedule/edit?shiftId=${encodeURI
 /** Nov 21, 2026 (Jose's pick "A: a timeline"): `place` is the day view's capsule, set at its hours on the day's axis; a
  * shift that runs past midnight is cut flat at the axis end. The link, its name and its title are the same either way. */
 function Block({ shift, person, onLeave = false, place }: { shift: RosterShift; person: string; onLeave?: boolean; place?: AxisPlace }) {
+  const lang = usePortalLang();
   const hint = [`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`, shift.position, shift.location, shift.status === "PUBLISHED" ? null : statusWord(shift.status), onLeave ? "Needs cover (time off)" : null].filter(Boolean).join(" · ");
   return <Link className={`cm-block${shift.status === "DRAFT" ? " draft" : ""}${onLeave ? " conflict" : ""}`} href={editHref(shift)} title={hint}
     data-cut={place?.cut || undefined} style={place ? { [place.end ? "right" : "left"]: `${place.end ? place.right : place.left}%`, width: `${place.width}%` } : undefined}>
     {onLeave ? <WarningIcon className="cm-block__warn" size={13} weight="bold" aria-hidden="true" /> : null}
-    <span aria-hidden="true"><CorpTime>{range(shift.startTime, shift.endTime)}</CorpTime></span>
+    <span aria-hidden="true"><CorpTime lang={lang}>{range(shift.startTime, shift.endTime)}</CorpTime></span>
     {onLeave ? <span className="cm-block__need">Needs cover</span> : null}
     {/* Review B5 (NV-131): the position under the time (12px), as on the mock. */}
     {shift.position && !onLeave ? <span className="cm-block__pos" aria-hidden="true">{shift.position}</span> : null}
@@ -114,8 +116,9 @@ export type RosterCorp = { weekLabel: string; previousHref: string; nextHref: st
 /** The day card's time column: start over end, both in the one time style (12:00 AM at either end); a block that
  * covers the whole day reads "All day". */
 function DayTime({ start, end }: { start: string; end: string }) {
+  const lang = usePortalLang();
   // R2: the kit's shift-time signature (tabular figures, a quieter AM/PM).
-  return <span className="c-sched-row__time" aria-hidden="true">{range(start, end) === "All day" ? <b>All day</b> : <><b><CorpTime>{compactTime(start)}</CorpTime></b><span><CorpTime>{compactTime(end)}</CorpTime></span></>}</span>;
+  return <span className="c-sched-row__time" aria-hidden="true">{range(start, end) === "All day" ? <b>All day</b> : <><b><CorpTime lang={lang}>{compactTime(start)}</CorpTime></b><span><CorpTime lang={lang}>{compactTime(end)}</CorpTime></span></>}</span>;
 }
 
 /** Today's live state for one rostered shift, from the same Today read Home uses (matched by person and start time).
