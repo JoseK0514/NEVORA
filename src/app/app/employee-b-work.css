@@ -375,3 +375,6 @@
     }
   }
 }
+/* Gaps G86 (Nov 23, 2026): the Lead's Compose help lines wrap inside the card at every width (they inherited the
+ * page's nowrap and the expiry line ran off at 390, widening the page to about 424px). */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-keep.eb-compose .em-message-field > small:not(#e-none) { white-space: normal !important; overflow-wrap: anywhere !important; }
