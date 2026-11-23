@@ -49,10 +49,10 @@ it('G10: a replaced statement under its correction keeps its payday, muted, and 
   // The correction keeps its date and "Corrected".
   expect(rows[0]).toContain('<span class="b-row__tt">Fri, Nov 13</span>');expect(rows[0]).toContain('Corrected');expect(rows[0]).toContain('For work Nov 2–8');
   // The one it replaced: its own payday, muted, no chip; the correction shares the payday, so the line doesn't repeat it.
-  // The link's name starts with the visible date.
+  // The link's name is its visible text.
   expect(rows[1]).toContain('<span class="b-row__tt"><span class="ep-muted">Fri, Nov 13</span></span>');expect(rows[1]).toContain('<span class="b-row__s">Replaced by the correction</span>');
   expect(rows[1]).not.toContain('b-chip');expect(card).not.toContain('Earlier version');
-  expect(rows[1]).toContain('aria-label="Fri, Nov 13, replaced statement for Nov 2–8"');
+  expect(rows[1]).not.toContain('aria-label');
   // A correction on another payday is named in the line.
   const later = {...fixed, payday: '2026-11-20'}, moved = [list[0], later, old, ordered[1]];
   expect(draw({ordered: moved, byId: new Map(moved.map(item => [item.id, item]))})).toContain('<span class="b-row__s">Replaced by the Nov 20 correction</span>');
