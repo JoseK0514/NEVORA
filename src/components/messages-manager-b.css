@@ -142,3 +142,12 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row > .b-row__trail { margin-left: auto !important; padding-left: 0 !important; flex-basis: auto !important; }
   :is(#c-root, html) .app-shell[data-nv-b] #update-recipients .b-row__tt { overflow-wrap: normal; word-break: normal; }
 }
+
+/* A fold is a button row: it keeps the link rows' look (no button frame or fill; text from the left). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-notifs .mb-cards button.b-row { margin: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important;
+    color: inherit !important; font: inherit !important; text-align: left !important; justify-content: flex-start !important; min-height: 64px !important; height: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-notifs .mb-cards button.b-row:hover { background: var(--b-press-tint) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-notifs .mb-cards button.b-row .b-row__tx { align-items: flex-start !important; text-align: left !important; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-notifs .mb-cards button.b-row:focus-visible { outline: 2px solid var(--b-teal); outline-offset: -2px; }
+}
