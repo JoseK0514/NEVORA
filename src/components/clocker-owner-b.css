@@ -307,3 +307,12 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner .b-row.ck-trow:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { row-gap:var(--b-space-8) !important; }
   }
 }
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): a tablet row's focus was drawn without an outline, so under Windows contrast
+ * themes a focused row showed nothing; "Get setup code" lost its edge. Both keep a system-colour line. */
+@media (forced-colors: active) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .ck-trow__main:focus-visible:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { outline: 2px solid Highlight !important; outline-offset: -2px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .b-btn.ck-trow__go:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border: 1px solid ButtonText !important; }
+  }
+}

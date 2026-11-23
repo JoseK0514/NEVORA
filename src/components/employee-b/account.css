@@ -360,3 +360,11 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] :is(.em-message-compose, .em-message-preview) :is(p, h2, .em-message-information):not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#eb-wrap) { min-width: 0 !important; max-width: 100% !important; white-space: normal !important; overflow-wrap: break-word !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] .em-message-compose:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#eb-wrap) { min-width: 0 !important; max-width: min(100%, var(--b-frame-form, 100%)) !important; }
 }
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): the language switch shows its choice with a white thumb and a shadow, both
+ * dropped under Windows contrast themes, so "English" and "Español" looked the same. The track keeps an edge and the
+ * chosen language is the Highlight pair. */
+@media (forced-colors: active) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg { border: 1px solid ButtonText; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button[aria-pressed="true"] { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+}
