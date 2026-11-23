@@ -1,0 +1,114 @@
+// SCRATCH (not committed): accessibility end sweep for Payroll G1–G10, Rondo H1–H6, Profile I2–I5.
+// Fictional data, owned loopback Postgres and owned local app only. Every non-loopback browser request is aborted.
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
+import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture';
+import {geometry} from './mgr';
+
+const axeSrc=()=>readFileSync('node_modules/axe-core/axe.min.js','utf8');
+const settle=(p:any)=>p.waitForLoadState('networkidle',{timeout:8000}).catch(()=>{});
+const guard=async(ctx:any,allowed:string[],log:unknown[])=>{await ctx.route('**/*',async(r:any)=>{let o='';try{o=new URL(r.request().url()).origin;}catch{/* data: */}
+ if(o&&o!=='null'&&!allowed.includes(o)&&/^https?:/.test(o)){log.push({blocked:o});await r.abort('blockedbyclient');return;}await r.fallback();});};
+
+type Cfg={tag:string;w:number;h:number;text200:boolean};
+const ALL:Cfg[]=[{tag:'320',w:320,h:700,text200:false},{tag:'390',w:390,h:844,text200:false},{tag:'390-text200',w:390,h:844,text200:true},{tag:'768',w:768,h:1024,text200:false},{tag:'1440',w:1440,h:1000,text200:false}];
+
+/** Targets under 44px, names that differ from visible text, and visible text boxes. Runs in the page. */
+const probe=()=>{
+ const shell='.mobile-nav, .sidebar, .mobile-header, .section-tabs, .portal-skip-link, nextjs-portal, .app-shell > header, [data-nv-shell]';
+ const root=document.querySelector('main')||document.body;
+ const vis=(e:Element)=>{const r=e.getBoundingClientRect();const cs=getComputedStyle(e);return r.width>0&&r.height>0&&cs.visibility!=='hidden'&&cs.display!=='none'&&(e as any).checkVisibility?.({opacityProperty:true,visibilityProperty:true})!==false;};
+ const srOnly=(e:Element)=>{const r=e.getBoundingClientRect();const cs=getComputedStyle(e);return (r.width<=2&&r.height<=2)||cs.clipPath==='inset(50%)'||cs.clip==='rect(0px, 0px, 0px, 0px)';};
+ const desc=(e:Element)=>(e.tagName.toLowerCase()+(e.id?'#'+e.id:'')+'.'+[...e.classList].slice(0,3).join('.')).slice(0,70);
+ const norm=(s:string)=>s.replace(/[ \s]+/g,' ').replace(/[·•|:,.()–—-]/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
+ const ctl=[...root.querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, summary, [role=button], [role=link], [role=tab], [role=switch], [role=checkbox], [role=radio], [tabindex]:not([tabindex="-1"])')].filter(e=>!e.closest(shell)&&vis(e));
+ const small:any[]=[];const mismatch:any[]=[];
+ for(const e of ctl){
+  // A control's hit area: its own box, or a label that wraps it.
+  let r=e.getBoundingClientRect();const lab=(e as HTMLInputElement).labels?.[0];if(lab&&vis(lab)){const lr=lab.getBoundingClientRect();if(lr.height*lr.width>r.height*r.width)r=lr;}
+  const cs=getComputedStyle(e);
+  const inline=cs.display==='inline'&&!!e.parentElement&&/^(P|LI|SPAN|SMALL|DD|TD)$/.test(e.parentElement.tagName)&&(e.parentElement.textContent||'').trim().length>(e.textContent||'').trim().length+3;
+  if(!srOnly(e)&&(r.height<43.5||r.width<43.5))small.push({el:desc(e),txt:(e.getAttribute('aria-label')||(e as HTMLElement).innerText||(e as HTMLInputElement).value||'').trim().replace(/\s+/g,' ').slice(0,40),w:Math.round(r.width),h:Math.round(r.height),inline});
+  const al=e.getAttribute('aria-label');const lb=e.getAttribute('aria-labelledby');
+  const visible=((e as HTMLElement).innerText||'').trim();
+  if((al||lb)&&visible){const name=al??lb!.split(/\s+/).map(id=>document.getElementById(id)?.textContent||'').join(' ');
+   if(!norm(name).includes(norm(visible)))mismatch.push({el:desc(e),visible:visible.replace(/\s+/g,' ').slice(0,60),name:name.replace(/\s+/g,' ').slice(0,80)});}
+ }
+ // Rows and groups with aria-label that differ from their text (brief rule 7).
+ for(const e of [...root.querySelectorAll('[aria-label]:not(a):not(button):not(input):not(select):not(textarea):not(nav):not(section):not(form):not(aside):not([role=region]):not([role=navigation]):not([role=group]):not([role=dialog]):not(svg):not(img):not([role=img])')].filter(e=>!e.closest(shell)&&vis(e))){
+  const visible=((e as HTMLElement).innerText||'').trim();const al=e.getAttribute('aria-label')!;
+  if(visible&&!norm(al).includes(norm(visible).slice(0,40)))mismatch.push({el:desc(e),role:e.getAttribute('role'),visible:visible.replace(/\s+/g,' ').slice(0,60),name:al.slice(0,80)});}
+ return {url:location.pathname+location.search,h1:[...document.querySelectorAll('h1')].filter(vis).map(e=>(e.textContent||'').trim().slice(0,60)),
+  overflow:document.documentElement.scrollWidth-innerWidth,small:small.slice(0,40),smallCount:small.length,mismatch:mismatch.slice(0,30)};
+};
+/** Text whose size does not follow the root size (fixed px). Call before and after setting the root to 200%. */
+const markSizes=()=>{const root=document.querySelector('main')||document.body;let i=0;
+ for(const e of root.querySelectorAll('*')){if(![...e.childNodes].some(n=>n.nodeType===3&&(n.textContent||'').trim()))continue;const r=e.getBoundingClientRect();if(!r.width)continue;
+  (e as HTMLElement).dataset.swFs=getComputedStyle(e).fontSize;(e as HTMLElement).dataset.swI=String(i++);}};
+const fixedSizes=()=>{const out:Record<string,{n:number;size:string;txt:string}>={};
+ for(const e of document.querySelectorAll('[data-sw-fs]')){const before=(e as HTMLElement).dataset.swFs!;const now=getComputedStyle(e).fontSize;
+  if(parseFloat(now)<parseFloat(before)*1.5){const k=(e.tagName.toLowerCase()+'.'+[...e.classList].slice(0,2).join('.')).slice(0,60);out[k]??={n:0,size:before+'→'+now,txt:(e.textContent||'').trim().slice(0,30)};out[k].n++;}}
+ return out;};
+
+export async function runSweep(browser:any,appUrl:string,log:unknown[],o:{actors:string[];q:(t:string,v?:unknown[])=>Promise<unknown>;runList:string[]}){
+ const out=process.env.NEVORA_SWEEP_OUT!;mkdirSync(out,{recursive:true});
+ const rec:any[]=[];const save=()=>writeFileSync(out+'/sweep-log.json',JSON.stringify({rec,log:log.filter((x:any)=>x&&typeof x==='object'&&('sweep' in x||'blocked' in x||'sweepError' in x))},null,2));
+ // Lead: the first fictional actor. Employee: the rich actor (pay statements).
+ await o.q("UPDATE employees SET role='LEAD' WHERE id=$1",[o.actors[0]]).catch(e=>log.push({sweepError:'lead role',e:String(e)}));
+ const run=o.runList[0]??'none';
+ const P=(r:string)=>r.replace('{run}',run);
+ const roles:{role:string;login:string;routes:string[]}[]=[
+  {role:'owner',login:'QAOWNER',routes:['/app/payroll','/app/payroll/prepare','/app/payroll/review?run={run}','/app/payroll/people?run={run}','/app/payroll/fix?run={run}','/app/payroll/import','/app/payroll/history','/app/payroll-export','/app/payroll-export/paid-time','/app/ai-manager','/app/ai-manager/weekly','/app/ai-manager/business','/app/ai-manager/knowledge','/app/reports','/app/reports/christmas-bonus','/app/profile/device-alerts','/app/profile/passkeys']},
+  {role:'manager',login:'OWN-ELENA',routes:['/app/payroll-export','/app/payroll-export/paid-time','/app/ai-manager','/app/reports','/app/reports/christmas-bonus','/app/profile/device-alerts','/app/profile/passkeys']},
+  {role:'mloc',login:process.env.NEVORA_SCAN_LIMITED??'OWN-DANI',routes:['/app/my-pay','/app/ai-manager','/app/profile/device-alerts','/app/profile/passkeys']},
+  {role:'lead',login:o.actors[0],routes:['/app/my-pay','/app/profile/privacy','/app/profile/terms','/app/profile/calendar','/app/profile/device-alerts','/app/profile/passkeys']},
+  {role:'emp',login:o.actors[1],routes:['/app/my-pay','/app/profile/privacy','/app/profile/terms','/app/profile/calendar','/app/profile/device-alerts','/app/profile/passkeys']},
+ ].filter(r=>!process.env.NEVORA_SWEEP_ROLES||process.env.NEVORA_SWEEP_ROLES.split(',').includes(r.role));
+ const only=(process.env.NEVORA_SWEEP_ROUTES??'').split(',').filter(Boolean);
+ const cfgs=ALL.filter(c=>!process.env.NEVORA_SWEEP_TAGS||process.env.NEVORA_SWEEP_TAGS.split(',').includes(c.tag));
+ const focusWalk=async(p:any)=>{
+  await p.evaluate(()=>{(document.activeElement as HTMLElement|null)?.blur();window.scrollTo(0,0);});
+  const steps:any[]=[];
+  for(let i=1;i<=45;i++){await p.keyboard.press('Tab');await p.waitForTimeout(60);
+   const s=await p.evaluate(()=>{const e=document.activeElement as HTMLElement|null;if(!e||e===document.body)return null;
+    const snap=()=>{const cs=getComputedStyle(e);return [cs.outlineStyle,cs.outlineWidth,cs.outlineColor,cs.boxShadow,cs.borderColor,cs.backgroundColor,cs.textDecorationLine].join('|');};
+    const on=snap();const cs=getComputedStyle(e);const r=e.getBoundingClientRect();e.blur();const off=snap();e.focus({preventScroll:true});
+    return {el:(e.tagName.toLowerCase()+'.'+[...e.classList].slice(0,3).join('.')).slice(0,60),txt:(e.getAttribute('aria-label')||e.innerText||'').trim().replace(/\s+/g,' ').slice(0,50),inMain:!!e.closest('main'),
+     ring:on!==off,outline:cs.outlineStyle!=='none'&&parseFloat(cs.outlineWidth)>0?`${cs.outlineWidth} ${cs.outlineColor} off ${cs.outlineOffset}`:'none',r:[Math.round(r.left),Math.round(r.top+scrollY),Math.round(r.width),Math.round(r.height)]};});
+   if(steps.length>2&&s&&steps[0]&&s.el===steps[0].el&&s.txt===steps[0].txt)break;
+   steps.push(s);}
+  return steps;
+ };
+ const axe=async(p:any)=>{await p.evaluate(axeSrc());
+  return p.evaluate(async()=>{const r=await (window as any).axe.run(document,{resultTypes:['violations'],rules:{'label-content-name-mismatch':{enabled:true},'target-size':{enabled:true}}});
+   return r.violations.map((v:any)=>({id:v.id,impact:v.impact,help:v.help,nodes:v.nodes.length,targets:v.nodes.slice(0,6).map((n:any)=>({t:String(n.target).slice(0,110),inMain:!!document.querySelector(String(n.target[0]))?.closest('main'),summary:(n.failureSummary||'').slice(0,220)}))}));});};
+ for(const role of roles){
+  for(const c of cfgs){
+   const phone=c.w<1000;
+   const ctx=await browser.newContext({viewport:{width:c.w,height:c.h},deviceScaleFactor:1,isMobile:c.w<600,hasTouch:phone,reducedMotion:'reduce',serviceWorkers:'block'});
+   try{await guard(ctx,[appUrl],log);const p=await ctx.newPage();p.setDefaultTimeout(20000);
+    p.on('pageerror',(e:Error)=>log.push({sweep:'pageerror',role:role.role,tag:c.tag,msg:e.message.slice(0,300)}));
+    p.on('console',(m:any)=>{if(m.type()==='error')log.push({sweep:'console',role:role.role,tag:c.tag,msg:m.text().slice(0,300)});});
+    await p.goto(appUrl+'/login');await p.getByLabel('Employee ID',{exact:true}).fill(role.login);await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+    await p.getByRole('button',{name:'Sign in',exact:true}).click();await p.waitForURL((u:URL)=>u.pathname.startsWith('/app'),{timeout:30000});await settle(p);
+    for(const route0 of role.routes){if(only.length&&!only.some(x=>route0.startsWith(x)))continue;const route=P(route0);
+     const slug=route.replace(/^\/app\/?/,'').replace(/\?.*$/,'').replace(/[^a-z0-9]+/gi,'-').replace(/-$/,'')||'home';
+     try{const resp=await p.goto(appUrl+route);await settle(p);await p.waitForTimeout(1200);
+      let fixed=null;
+      if(c.text200){await p.evaluate(markSizes);await p.evaluate(()=>{document.documentElement.style.fontSize='200%';});await p.waitForTimeout(400);fixed=await p.evaluate(fixedSizes);}
+      const m=await p.evaluate(probe).catch((e:unknown)=>({error:String(e).slice(0,200)}));
+      const g=process.env.NEVORA_SWEEP_GEO==='1'?await p.evaluate(geometry).catch((e:unknown)=>({error:String(e).slice(0,200)})):null;
+      const hit=process.env.NEVORA_SWEEP_HIT?await p.evaluate((sel:string)=>[...document.querySelectorAll(sel)].map(e=>{const r=e.getBoundingClientRect();if(!r.width)return null;e.scrollIntoView({block:'center'});const q=e.getBoundingClientRect();const x=q.left+q.width/2;
+       const at=(y:number)=>{const h=document.elementFromPoint(x,y);return !!h&&(h===e||e.contains(h));};return {t:(e.textContent||'').trim().slice(0,20),h:Math.round(q.height),above5:at(q.top-5),below5:at(q.bottom+5),above7:at(q.top-7)};}).filter(Boolean),process.env.NEVORA_SWEEP_HIT).catch((e:unknown)=>String(e)):null;
+      const a=await axe(p).catch((e:unknown)=>[{error:String(e).slice(0,200)}]);
+      const shot=`${out}/${slug}-${role.role}-${c.tag}.png`;await p.screenshot({path:shot,fullPage:true});
+      const focus=(c.tag==='390'||c.tag==='1440')?await focusWalk(p).catch((e:unknown)=>String(e).slice(0,200)):null;
+      rec.push({role:role.role,route,slug,tag:c.tag,status:resp?.status(),url:p.url().replace(appUrl,''),m,fixed,axe:a,focus,g,hit});save();
+     }catch(e){log.push({sweepError:role.role+' '+route+' '+c.tag,e:String((e as Error).message).slice(0,400)});save();}
+    }
+   }catch(e){log.push({sweepError:role.role+' '+c.tag,e:String((e as Error).message).slice(0,400)});save();}
+   finally{await ctx.close().catch(()=>{});}
+  }
+ }
+ save();
+}

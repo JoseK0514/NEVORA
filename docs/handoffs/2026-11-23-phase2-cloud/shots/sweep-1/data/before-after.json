@@ -1,0 +1,8281 @@
+{
+ "emp|/app/my-pay|1440": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.b-row.b-row--link",
+     "Earlier version Replaced by the Nov 13 c",
+     "Friday, November 13, 2026, replaced statement for Nov 2\u20138"
+    ],
+    [
+     "a.b-row.b-row--link",
+     "Fri, Nov 6 For work Oct 26\u2013Nov 1",
+     "Friday, November 6, 2026, statement for Oct 26\u2013Nov 1"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/my-pay|320": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.b-row.b-row--link",
+     "Earlier version Replaced by the Nov 13 c",
+     "Friday, November 13, 2026, replaced statement for Nov 2\u20138"
+    ],
+    [
+     "a.b-row.b-row--link",
+     "Fri, Nov 6 For work Oct 26\u2013Nov 1",
+     "Friday, November 6, 2026, statement for Oct 26\u2013Nov 1"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/my-pay|390": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.b-row.b-row--link",
+     "Earlier version Replaced by the Nov 13 c",
+     "Friday, November 13, 2026, replaced statement for Nov 2\u20138"
+    ],
+    [
+     "a.b-row.b-row--link",
+     "Fri, Nov 6 For work Oct 26\u2013Nov 1",
+     "Friday, November 6, 2026, statement for Oct 26\u2013Nov 1"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/my-pay|390-text200": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.b-row.b-row--link",
+     "Earlier version Replaced by the Nov 13 c",
+     "Friday, November 13, 2026, replaced statement for Nov 2\u20138"
+    ],
+    [
+     "a.b-row.b-row--link",
+     "Fri, Nov 6 For work Oct 26\u2013Nov 1",
+     "Friday, November 6, 2026, statement for Oct 26\u2013Nov 1"
+    ]
+   ],
+   "fx": {
+    "p.ep-next__k": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Scheduled payday \u00b7 In 11 days"
+    },
+    "p.ep-next__v": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Fri, Dec 4"
+    },
+    "p.ep-next__p": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "For work Nov 23\u201329"
+    },
+    "span.b-chip.b-chip--teal": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Corrected"
+    },
+    "p.ep-big__s": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "For work Nov 2\u20138"
+    },
+    "a.b-btn.b-btn--teal": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "View statement"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "p.ep-next__k": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Scheduled payday \u00b7 In 11 days"
+    },
+    "p.ep-next__v": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Fri, Dec 4"
+    },
+    "p.ep-next__p": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "For work Nov 23\u201329"
+    },
+    "span.b-chip.b-chip--teal": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Corrected"
+    },
+    "p.ep-big__s": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "For work Nov 2\u20138"
+    },
+    "a.b-btn.b-btn--teal": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "View statement"
+    }
+   },
+   "noring": []
+  }
+ },
+ "emp|/app/my-pay|768": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.b-row.b-row--link",
+     "Earlier version Replaced by the Nov 13 c",
+     "Friday, November 13, 2026, replaced statement for Nov 2\u20138"
+    ],
+    [
+     "a.b-row.b-row--link",
+     "Fri, Nov 6 For work Oct 26\u2013Nov 1",
+     "Friday, November 6, 2026, statement for Oct 26\u2013Nov 1"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/calendar|1440": {
+  "before": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/calendar|320": {
+  "before": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/calendar|390": {
+  "before": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/calendar|390-text200": {
+  "before": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.b-chip.b-chip--grey": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Off"
+    },
+    "button.b-btn.b-btn--teal": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Create calendar link"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.b-chip.b-chip--grey": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Off"
+    },
+    "button.b-btn.b-btn--teal": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Create calendar link"
+    }
+   },
+   "noring": []
+  }
+ },
+ "emp|/app/profile/calendar|768": {
+  "before": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/device-alerts|1440": {
+  "before": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Notifications",
+     130,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Notifications",
+     130,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/device-alerts|320": {
+  "before": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/device-alerts|390": {
+  "before": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/device-alerts|390-text200": {
+  "before": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.b-chip.b-chip--amber": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Check"
+    },
+    "button.b-btn.b-btn--quiet": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Check again"
+    },
+    "button.b-btn.b-btn--full": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Turn off alerts"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.b-chip.b-chip--amber": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Check"
+    },
+    "button.b-btn.b-btn--quiet": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Check again"
+    },
+    "button.b-btn.b-btn--full": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Turn off alerts"
+    }
+   },
+   "noring": []
+  }
+ },
+ "emp|/app/profile/device-alerts|768": {
+  "before": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Notifications",
+     130,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Notifications",
+     130,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/passkeys|1440": {
+  "before": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/passkeys|320": {
+  "before": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/passkeys|390": {
+  "before": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/passkeys|390-text200": {
+  "before": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "p.b-statecard__t": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Passkeys aren\u2019t available here"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "p.b-statecard__t": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Passkeys aren\u2019t available here"
+    }
+   },
+   "noring": []
+  }
+ },
+ "emp|/app/profile/passkeys|768": {
+  "before": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/privacy|1440": {
+  "before": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ],
+    [
+     "a.",
+     "Who we are",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Your workplace",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Information NEVORA uses",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Why we use information",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Who receives information",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Advertising and tracking",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "How long we keep information",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Your choices and requests",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Deleting your account",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Security",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Changes",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Terms of Use",
+     87,
+     32
+    ],
+    [
+     "a.",
+     "Support",
+     52,
+     32
+    ],
+    [
+     "a.",
+     "Account deletion",
+     111,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/privacy|320": {
+  "before": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/privacy|390": {
+  "before": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/privacy|390-text200": {
+  "before": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h2.": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "Who we are"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h2.": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "Who we are"
+    }
+   },
+   "noring": []
+  }
+ },
+ "emp|/app/profile/privacy|768": {
+  "before": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/terms|1440": {
+  "before": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ],
+    [
+     "a.",
+     "Using NEVORA",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Your account",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Work records and employment",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Acceptable use",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Your content",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Reporting concerns",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Privacy and deletion",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Access to the service",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "App license",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Changes and contact",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Privacy Policy",
+     92,
+     32
+    ],
+    [
+     "a.",
+     "Support",
+     52,
+     32
+    ],
+    [
+     "a.",
+     "Account deletion",
+     111,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/terms|320": {
+  "before": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/terms|390": {
+  "before": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "emp|/app/profile/terms|390-text200": {
+  "before": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h2.": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "Using NEVORA"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h2.": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "Using NEVORA"
+    }
+   },
+   "noring": []
+  }
+ },
+ "emp|/app/profile/terms|768": {
+  "before": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/my-pay|1440": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/my-pay|320": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/my-pay|390": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/my-pay|390-text200": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "p.ep-next__k": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Scheduled payday \u00b7 In 11 days"
+    },
+    "p.ep-next__v": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Fri, Dec 4"
+    },
+    "p.ep-next__p": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "For work Nov 23\u201329"
+    },
+    "p.eb-empty__t": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "No published statements yet"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "p.ep-next__k": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Scheduled payday \u00b7 In 11 days"
+    },
+    "p.ep-next__v": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Fri, Dec 4"
+    },
+    "p.ep-next__p": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "For work Nov 23\u201329"
+    },
+    "p.eb-empty__t": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "No published statements yet"
+    }
+   },
+   "noring": []
+  }
+ },
+ "lead|/app/my-pay|768": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/calendar|1440": {
+  "before": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/calendar|320": {
+  "before": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/calendar|390": {
+  "before": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/calendar|390-text200": {
+  "before": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.b-chip.b-chip--grey": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Off"
+    },
+    "button.b-btn.b-btn--teal": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Create calendar link"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.b-chip.b-chip--grey": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Off"
+    },
+    "button.b-btn.b-btn--teal": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Create calendar link"
+    }
+   },
+   "noring": []
+  }
+ },
+ "lead|/app/profile/calendar|768": {
+  "before": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/calendar",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/device-alerts|1440": {
+  "before": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Notifications",
+     130,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Notifications",
+     130,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/device-alerts|320": {
+  "before": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/device-alerts|390": {
+  "before": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/device-alerts|390-text200": {
+  "before": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.b-chip.b-chip--amber": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Check"
+    },
+    "button.b-btn.b-btn--quiet": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Check again"
+    },
+    "button.b-btn.b-btn--full": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Turn off alerts"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.b-chip.b-chip--amber": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Check"
+    },
+    "button.b-btn.b-btn--quiet": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Check again"
+    },
+    "button.b-btn.b-btn--full": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Turn off alerts"
+    }
+   },
+   "noring": []
+  }
+ },
+ "lead|/app/profile/device-alerts|768": {
+  "before": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Notifications",
+     130,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Notifications",
+     130,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/passkeys|1440": {
+  "before": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/passkeys|320": {
+  "before": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/passkeys|390": {
+  "before": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/passkeys|390-text200": {
+  "before": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "p.b-statecard__t": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Passkeys aren\u2019t available here"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "p.b-statecard__t": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Passkeys aren\u2019t available here"
+    }
+   },
+   "noring": []
+  }
+ },
+ "lead|/app/profile/passkeys|768": {
+  "before": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/privacy|1440": {
+  "before": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ],
+    [
+     "a.",
+     "Who we are",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Your workplace",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Information NEVORA uses",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Why we use information",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Who receives information",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Advertising and tracking",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "How long we keep information",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Your choices and requests",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Deleting your account",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Security",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Changes",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Terms of Use",
+     87,
+     32
+    ],
+    [
+     "a.",
+     "Support",
+     52,
+     32
+    ],
+    [
+     "a.",
+     "Account deletion",
+     111,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/privacy|320": {
+  "before": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/privacy|390": {
+  "before": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/privacy|390-text200": {
+  "before": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h2.": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "Who we are"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h2.": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "Who we are"
+    }
+   },
+   "noring": []
+  }
+ },
+ "lead|/app/profile/privacy|768": {
+  "before": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/privacy",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/terms|1440": {
+  "before": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ],
+    [
+     "a.",
+     "Using NEVORA",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Your account",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Work records and employment",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Acceptable use",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Your content",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Reporting concerns",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Privacy and deletion",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Access to the service",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "App license",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Changes and contact",
+     258,
+     40
+    ],
+    [
+     "a.",
+     "Privacy Policy",
+     92,
+     32
+    ],
+    [
+     "a.",
+     "Support",
+     52,
+     32
+    ],
+    [
+     "a.",
+     "Account deletion",
+     111,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/terms|320": {
+  "before": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/terms|390": {
+  "before": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "lead|/app/profile/terms|390-text200": {
+  "before": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h2.": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "Using NEVORA"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h2.": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "Using NEVORA"
+    }
+   },
+   "noring": []
+  }
+ },
+ "lead|/app/profile/terms|768": {
+  "before": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile/terms",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-back",
+     "Profile",
+     85,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/ai-manager|1440": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/ai-manager|320": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/ai-manager|390": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/ai-manager|390-text200": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Rondo AI"
+    },
+    "h2.c-section__label": {
+     "n": 3,
+     "size": "13px\u219213px",
+     "txt": "Location and week"
+    },
+    "label.c-field__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Location"
+    },
+    "span.c-field__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Week"
+    },
+    "span.": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Rondo answers these four quest"
+    },
+    "span.c-row__value": {
+     "n": 7,
+     "size": "15px\u219215px",
+     "txt": "39 h"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Rondo AI"
+    },
+    "h2.c-section__label": {
+     "n": 3,
+     "size": "13px\u219213px",
+     "txt": "Location and week"
+    },
+    "label.c-field__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Location"
+    },
+    "span.c-field__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Week"
+    },
+    "span.": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Rondo answers these four quest"
+    },
+    "span.c-row__value": {
+     "n": 7,
+     "size": "15px\u219215px",
+     "txt": "39 h"
+    }
+   },
+   "noring": []
+  }
+ },
+ "manager|/app/ai-manager|768": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/payroll-export|1440": {
+  "before": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Timecards",
+     112,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Timecards",
+     112,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/payroll-export|320": {
+  "before": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/payroll-export|390": {
+  "before": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/payroll-export|390-text200": {
+  "before": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Time exports"
+    },
+    "label.c-field__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Week"
+    },
+    "h2.": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "File"
+    },
+    "p.c-payroll__state": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Exports unavailable"
+    },
+    "button.c-btn.c-btn--secondary": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Try again"
+    },
+    "p.": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Choose what to do with each pe"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Time exports"
+    },
+    "label.c-field__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Week"
+    },
+    "p.c-payroll__state": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Exports unavailable"
+    },
+    "button.c-btn.c-btn--secondary": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Try again"
+    }
+   },
+   "noring": []
+  }
+ },
+ "manager|/app/payroll-export|768": {
+  "before": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Timecards",
+     112,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Timecards",
+     112,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/payroll-export/paid-time|1440": {
+  "before": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Time exports",
+     129,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Time exports",
+     129,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/payroll-export/paid-time|320": {
+  "before": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/payroll-export/paid-time|390": {
+  "before": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/payroll-export/paid-time|390-text200": {
+  "before": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "a.c-formhead__link.c-formhead__back": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Time exports"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "a.c-formhead__link.c-formhead__back": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Time exports"
+    }
+   },
+   "noring": []
+  }
+ },
+ "manager|/app/payroll-export/paid-time|768": {
+  "before": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Time exports",
+     129,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Time exports",
+     129,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/profile/device-alerts|1440": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/profile/device-alerts|320": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/profile/device-alerts|390": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/profile/device-alerts|390-text200": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "ER"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Elena Ruiz"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Manager"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 5,
+     "size": "15px\u219215px",
+     "txt": "555-0120"
+    },
+    "span.pmp-muted": {
+     "n": 2,
+     "size": "15px\u219215px",
+     "txt": "Couldn\u2019t load"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 2,
+     "size": "15px\u219215px",
+     "txt": "Puerto Rico"
+    },
+    "span.": {
+     "n": 4,
+     "size": "15px\u219215px",
+     "txt": "Try again"
+    },
+    "span.ma-none": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not granted"
+    },
+    "p.q-help": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Your alert choices couldn\u2019t lo"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "ER"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Elena Ruiz"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Manager"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 5,
+     "size": "15px\u219215px",
+     "txt": "555-0120"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Puerto Rico"
+    },
+    "span.ma-none": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not granted"
+    }
+   },
+   "noring": []
+  }
+ },
+ "manager|/app/profile/device-alerts|768": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/profile/passkeys|1440": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/profile/passkeys|320": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/profile/passkeys|390": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/profile/passkeys|390-text200": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "ER"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Elena Ruiz"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Manager"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 5,
+     "size": "15px\u219215px",
+     "txt": "555-0120"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Puerto Rico"
+    },
+    "span.ma-none": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not granted"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "ER"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Elena Ruiz"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Manager"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 5,
+     "size": "15px\u219215px",
+     "txt": "555-0120"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Puerto Rico"
+    },
+    "span.ma-none": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not granted"
+    }
+   },
+   "noring": []
+  }
+ },
+ "manager|/app/profile/passkeys|768": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/reports|1440": {
+  "before": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 1
+   },
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 1
+   },
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/reports|320": {
+  "before": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     75,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     74,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     62,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     61,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     75,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     74,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     62,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     61,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/reports|390": {
+  "before": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     86,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     86,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/reports|390-text200": {
+  "before": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     86,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {
+    "b.": {
+     "n": 1,
+     "size": "15.5px\u219215.5px",
+     "txt": "This connection isn\u2019t secure"
+    },
+    "span.": {
+     "n": 1,
+     "size": "14.5px\u219214.5px",
+     "txt": "We cleared this page to protec"
+    },
+    "button.b-btn.b-btn--quiet": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Close"
+    },
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Insights"
+    },
+    "button.": {
+     "n": 4,
+     "size": "14px\u219214px",
+     "txt": "This week"
+    },
+    "p.c-ins__range.c-num": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Mon,\u00a0Nov\u00a023 so far \u00b7 All locat"
+    },
+    "h2.c-ins__title": {
+     "n": 1,
+     "size": "17px\u219217px",
+     "txt": "Couldn\u2019t load insights"
+    },
+    "p.c-ins__state": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Check your connection, then tr"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     86,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {
+    "b.": {
+     "n": 1,
+     "size": "15.5px\u219215.5px",
+     "txt": "This connection isn\u2019t secure"
+    },
+    "span.": {
+     "n": 1,
+     "size": "14.5px\u219214.5px",
+     "txt": "We cleared this page to protec"
+    },
+    "button.b-btn.b-btn--quiet": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Close"
+    },
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Insights"
+    },
+    "button.": {
+     "n": 4,
+     "size": "14px\u219214px",
+     "txt": "This week"
+    },
+    "p.c-ins__range.c-num": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Mon,\u00a0Nov\u00a023 so far \u00b7 All locat"
+    }
+   },
+   "noring": []
+  }
+ },
+ "manager|/app/reports|768": {
+  "before": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 1
+   },
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 1
+   },
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/reports/christmas-bonus|1440": {
+  "before": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Insights",
+     94,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Insights",
+     94,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/reports/christmas-bonus|320": {
+  "before": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.c-select-btn.c-bonus__yearbtn",
+     "Bonus year: Oct 2025 \u2013 Sep 202",
+     192,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.c-select-btn.c-bonus__yearbtn",
+     "Bonus year: Oct 2025 \u2013 Sep 202",
+     192,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/reports/christmas-bonus|390": {
+  "before": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.c-select-btn.c-bonus__yearbtn",
+     "Bonus year: Oct 2025 \u2013 Sep 202",
+     192,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.c-select-btn.c-bonus__yearbtn",
+     "Bonus year: Oct 2025 \u2013 Sep 202",
+     192,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/reports/christmas-bonus|390-text200": {
+  "before": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "manager|/app/reports/christmas-bonus|768": {
+  "before": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Insights",
+     94,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Insights",
+     94,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/ai-manager|1440": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/ai-manager|320": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/ai-manager|390": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/ai-manager|390-text200": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Rondo AI"
+    },
+    "h2.c-section__label": {
+     "n": 3,
+     "size": "13px\u219213px",
+     "txt": "Location and week"
+    },
+    "span.c-field__label": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Location"
+    },
+    "span.": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Rondo answers these four quest"
+    },
+    "span.c-row__value": {
+     "n": 7,
+     "size": "15px\u219215px",
+     "txt": "22 h"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Rondo AI"
+    },
+    "h2.c-section__label": {
+     "n": 3,
+     "size": "13px\u219213px",
+     "txt": "Location and week"
+    },
+    "span.c-field__label": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Location"
+    },
+    "span.": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Rondo answers these four quest"
+    },
+    "span.c-row__value": {
+     "n": 7,
+     "size": "15px\u219215px",
+     "txt": "22 h"
+    }
+   },
+   "noring": []
+  }
+ },
+ "mloc|/app/ai-manager|768": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/my-pay|1440": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/my-pay|320": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/my-pay|390": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/my-pay|390-text200": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "My pay"
+    },
+    "span.c-row__value.c-row__value--soft": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "In 11 days"
+    },
+    "p.b-statecard__t": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "No statements yet"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "My pay"
+    },
+    "span.c-row__value.c-row__value--soft": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "In 11 days"
+    },
+    "p.b-statecard__t": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "No statements yet"
+    }
+   },
+   "noring": []
+  }
+ },
+ "mloc|/app/my-pay|768": {
+  "before": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/my-pay",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/profile/device-alerts|1440": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/profile/device-alerts|320": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/profile/device-alerts|390": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/profile/device-alerts|390-text200": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "DC"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Daniel Cruz"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Manager"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "555-0126"
+    },
+    "span.": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "None"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Puerto Rico"
+    },
+    "span.ma-none": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not granted"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "DC"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Daniel Cruz"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Manager"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "555-0126"
+    },
+    "span.": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "None"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Puerto Rico"
+    },
+    "span.ma-none": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not granted"
+    }
+   },
+   "noring": []
+  }
+ },
+ "mloc|/app/profile/device-alerts|768": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/profile/passkeys|1440": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/profile/passkeys|320": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/profile/passkeys|390": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "mloc|/app/profile/passkeys|390-text200": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "DC"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Daniel Cruz"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Manager"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "555-0126"
+    },
+    "span.": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "None"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Puerto Rico"
+    },
+    "span.ma-none": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not granted"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "DC"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Daniel Cruz"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Manager"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "555-0126"
+    },
+    "span.": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "None"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Puerto Rico"
+    },
+    "span.ma-none": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not granted"
+    }
+   },
+   "noring": []
+  }
+ },
+ "mloc|/app/profile/passkeys|768": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager|1440": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager|320": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager|390": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager|390-text200": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Rondo AI"
+    },
+    "h2.c-section__label": {
+     "n": 5,
+     "size": "13px\u219213px",
+     "txt": "Needs your attention"
+    },
+    "dt.c-stat__label": {
+     "n": 4,
+     "size": "13px\u219213px",
+     "txt": "Scheduled"
+    },
+    "dd.c-stat__value": {
+     "n": 4,
+     "size": "20px\u219220px",
+     "txt": "8"
+    },
+    "a.c-btn.c-btn--secondary": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Where are we short this week?"
+    },
+    "label.c-field__label": {
+     "n": 7,
+     "size": "13px\u219213px",
+     "txt": "Coverage date"
+    },
+    "span.oa-date__v": {
+     "n": 3,
+     "size": "16px\u219216px",
+     "txt": "Mon, Nov 23"
+    },
+    "p.c-field__help.oa-help": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Choose 1 to 31 days. Recorded "
+    },
+    "h3.c-card__sub.oa-starters__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Starter questions"
+    },
+    "span.c-field__help.oa-help": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "0/2000 characters"
+    },
+    "button.c-btn.c-btn--md": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Ask"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Rondo AI"
+    },
+    "h2.c-section__label": {
+     "n": 5,
+     "size": "13px\u219213px",
+     "txt": "Needs your attention"
+    },
+    "dt.c-stat__label": {
+     "n": 4,
+     "size": "13px\u219213px",
+     "txt": "Scheduled"
+    },
+    "dd.c-stat__value": {
+     "n": 4,
+     "size": "20px\u219220px",
+     "txt": "8"
+    },
+    "a.c-btn.c-btn--secondary": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Where are we short this week?"
+    },
+    "label.c-field__label": {
+     "n": 7,
+     "size": "13px\u219213px",
+     "txt": "Coverage date"
+    },
+    "span.oa-date__v": {
+     "n": 3,
+     "size": "16px\u219216px",
+     "txt": "Mon, Nov 23"
+    },
+    "p.c-field__help.oa-help": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Choose 1 to 31 days. Recorded "
+    },
+    "h3.c-card__sub.oa-starters__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Starter questions"
+    },
+    "span.c-field__help.oa-help": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "0/2000 characters"
+    },
+    "button.c-btn.c-btn--md": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Ask"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager|768": {
+  "before": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "More",
+     75,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/business|1440": {
+  "before": {
+   "url": "/app/ai-manager/business",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/business",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/business|320": {
+  "before": {
+   "url": "/app/ai-manager/business",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/business",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/business|390": {
+  "before": {
+   "url": "/app/ai-manager/business",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/business",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/business|390-text200": {
+  "before": {
+   "url": "/app/ai-manager/business",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Business records"
+    },
+    "a.": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Add"
+    },
+    "p.b-statecard__t": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "No records yet"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/business",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Business records"
+    },
+    "a.": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Add"
+    },
+    "p.b-statecard__t": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "No records yet"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/business|768": {
+  "before": {
+   "url": "/app/ai-manager/business",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/business",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/knowledge|1440": {
+  "before": {
+   "url": "/app/ai-manager/knowledge",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/knowledge",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/knowledge|320": {
+  "before": {
+   "url": "/app/ai-manager/knowledge",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/knowledge",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/knowledge|390": {
+  "before": {
+   "url": "/app/ai-manager/knowledge",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/knowledge",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/knowledge|390-text200": {
+  "before": {
+   "url": "/app/ai-manager/knowledge",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Company knowledge"
+    },
+    "a.": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Add"
+    },
+    "h2.c-section__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Documents"
+    },
+    "li.c-empty.c-empty--row": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "No documents yet"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/knowledge",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.",
+     "Add",
+     56,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Company knowledge"
+    },
+    "a.": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Add"
+    },
+    "h2.c-section__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Documents"
+    },
+    "li.c-empty.c-empty--row": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "No documents yet"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/knowledge|768": {
+  "before": {
+   "url": "/app/ai-manager/knowledge",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/knowledge",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/weekly|1440": {
+  "before": {
+   "url": "/app/ai-manager/weekly",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/weekly",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/weekly|320": {
+  "before": {
+   "url": "/app/ai-manager/weekly",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/weekly",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/weekly|390": {
+  "before": {
+   "url": "/app/ai-manager/weekly",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/weekly",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/weekly|390-text200": {
+  "before": {
+   "url": "/app/ai-manager/weekly",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Weekly plan"
+    },
+    "h2.c-section__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Plan a week"
+    },
+    "span.c-field__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Week"
+    },
+    "legend.c-field__label": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "What Rondo may change"
+    },
+    "button.c-btn.c-btn--md": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Compare options"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/weekly",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Weekly plan"
+    },
+    "h2.c-section__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Plan a week"
+    },
+    "span.c-field__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Week"
+    },
+    "legend.c-field__label": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "What Rondo may change"
+    },
+    "button.c-btn.c-btn--md": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Compare options"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/ai-manager/weekly|768": {
+  "before": {
+   "url": "/app/ai-manager/weekly",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/ai-manager/weekly",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Rondo AI",
+     101,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll|1440": {
+  "before": {
+   "url": "/app/payroll",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 2,
+    "label-content-name-mismatch": 1
+   },
+   "small": [
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll",
+     78,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Time exports",
+     121,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll settings",
+     136,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 2
+   },
+   "small": [
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll",
+     78,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Time exports",
+     121,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll settings",
+     136,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll|320": {
+  "before": {
+   "url": "/app/payroll",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.b-btn.b-btn--glass",
+     "Payroll settings",
+     106,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.b-link.c-pay__steplink",
+     "Prepare Nov 23\u201329",
+     "Prepare payroll, Nov 23\u201329"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-btn.b-btn--glass",
+     "Payroll settings",
+     106,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll|390": {
+  "before": {
+   "url": "/app/payroll",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.b-btn.b-btn--glass",
+     "Payroll settings",
+     106,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.b-link.c-pay__steplink",
+     "Prepare Nov 23\u201329",
+     "Prepare payroll, Nov 23\u201329"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-btn.b-btn--glass",
+     "Payroll settings",
+     106,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll|390-text200": {
+  "before": {
+   "url": "/app/payroll",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.b-btn.b-btn--glass",
+     "Payroll settings",
+     156,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.b-link.c-pay__steplink",
+     "Prepare Nov 23\u201329",
+     "Prepare payroll, Nov 23\u201329"
+    ]
+   ],
+   "fx": {
+    "span.b-segs__i": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "Up next"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "p.b-hbig": {
+     "n": 1,
+     "size": "34px\u219234px",
+     "txt": "Nov 23\u201329"
+    },
+    "a.b-link.c-pay__steplink": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Prepare Nov 23\u201329"
+    },
+    "a.b-card__a": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Payroll history"
+    },
+    "span.b-chip.b-chip--grey": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Replaced"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.b-btn.b-btn--glass",
+     "Payroll settings",
+     156,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {
+    "span.b-segs__i": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "Up next"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "p.b-hbig": {
+     "n": 1,
+     "size": "34px\u219234px",
+     "txt": "Nov 23\u201329"
+    },
+    "a.b-card__a": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Payroll history"
+    },
+    "span.b-chip.b-chip--grey": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Replaced"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/payroll|768": {
+  "before": {
+   "url": "/app/payroll",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 2,
+    "label-content-name-mismatch": 1
+   },
+   "small": [
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll",
+     78,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Time exports",
+     121,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll settings",
+     136,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 2
+   },
+   "small": [
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll",
+     78,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Time exports",
+     121,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll settings",
+     136,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll-export|1440": {
+  "before": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 2
+   },
+   "small": [
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll",
+     78,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Time exports",
+     121,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll settings",
+     136,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 2
+   },
+   "small": [
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll",
+     78,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Time exports",
+     121,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll settings",
+     136,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll-export|320": {
+  "before": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll-export|390": {
+  "before": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll-export|390-text200": {
+  "before": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Time exports"
+    },
+    "label.c-field__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Week"
+    },
+    "h2.": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "File"
+    },
+    "p.c-payroll__state": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Exports unavailable"
+    },
+    "button.c-btn.c-btn--secondary": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Try again"
+    },
+    "p.": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Choose what to do with each pe"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Time exports"
+    },
+    "label.c-field__label": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Week"
+    },
+    "p.c-payroll__state": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Exports unavailable"
+    },
+    "button.c-btn.c-btn--secondary": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Try again"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/payroll-export|768": {
+  "before": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 2
+   },
+   "small": [
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll",
+     78,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Time exports",
+     121,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll settings",
+     136,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 2
+   },
+   "small": [
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll",
+     78,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Time exports",
+     121,
+     36
+    ],
+    [
+     "a.c-pay-tabs__tab",
+     "Payroll settings",
+     136,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll-export/paid-time|1440": {
+  "before": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Time exports",
+     129,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Time exports",
+     129,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll-export/paid-time|320": {
+  "before": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll-export/paid-time|390": {
+  "before": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll-export/paid-time|390-text200": {
+  "before": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "a.c-formhead__link.c-formhead__back": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Time exports"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "a.c-formhead__link.c-formhead__back": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Time exports"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/payroll-export/paid-time|768": {
+  "before": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Time exports",
+     129,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll-export/paid-time",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Time exports",
+     129,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/fix|1440": {
+  "before": {
+   "url": "/app/payroll/fix?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll details",
+     135,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/fix?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll details",
+     135,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/fix|320": {
+  "before": {
+   "url": "/app/payroll/fix?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/fix?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/fix|390": {
+  "before": {
+   "url": "/app/payroll/fix?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/fix?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/fix|390-text200": {
+  "before": {
+   "url": "/app/payroll/fix?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Fix before payroll"
+    },
+    "span.c-empty__title": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Nothing stops this payroll"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/fix?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Fix before payroll"
+    },
+    "span.c-empty__title": {
+     "n": 1,
+     "size": "16px\u219216px",
+     "txt": "Nothing stops this payroll"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/fix|768": {
+  "before": {
+   "url": "/app/payroll/fix?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll details",
+     135,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/fix?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll details",
+     135,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/history|1440": {
+  "before": {
+   "url": "/app/payroll/history",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/history",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/history|320": {
+  "before": {
+   "url": "/app/payroll/history",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/history",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/history|390": {
+  "before": {
+   "url": "/app/payroll/history",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/history",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/history|390-text200": {
+  "before": {
+   "url": "/app/payroll/history",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Payroll history"
+    },
+    "h2.": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Payrolls"
+    },
+    "span.c-meta": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Correction"
+    },
+    "span.c-num": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "$6,234.29"
+    },
+    "span.c-pill.c-pill--neutral": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Replaced"
+    },
+    "span.c-av.c-av--tint": {
+     "n": 3,
+     "size": "13px\u219213px",
+     "txt": "JO"
+    },
+    "a.c-link.c-link--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "View"
+    },
+    "a.c-btn.c-btn--secondary": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Download"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/history",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Payroll history"
+    },
+    "span.c-meta": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Correction"
+    },
+    "span.c-num": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "$6,234.29"
+    },
+    "span.c-pill.c-pill--neutral": {
+     "n": 1,
+     "size": "12px\u219212px",
+     "txt": "Replaced"
+    },
+    "span.c-av.c-av--tint": {
+     "n": 3,
+     "size": "13px\u219213px",
+     "txt": "JO"
+    },
+    "a.c-link.c-link--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "View"
+    },
+    "a.c-btn.c-btn--secondary": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Download"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/history|768": {
+  "before": {
+   "url": "/app/payroll/history",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/history",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/import|1440": {
+  "before": {
+   "url": "/app/payroll/import",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/import",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/import|320": {
+  "before": {
+   "url": "/app/payroll/import",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/import",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/import|390": {
+  "before": {
+   "url": "/app/payroll/import",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/import",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/import|390-text200": {
+  "before": {
+   "url": "/app/payroll/import",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "a.c-formhead__link.c-formhead__back": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Payroll"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/import",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "a.c-formhead__link.c-formhead__back": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Payroll"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/import|768": {
+  "before": {
+   "url": "/app/payroll/import",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/import",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-formhead__up",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/people|1440": {
+  "before": {
+   "url": "/app/payroll/people?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll details",
+     135,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/people?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll details",
+     135,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/people|320": {
+  "before": {
+   "url": "/app/payroll/people?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/people?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/people|390": {
+  "before": {
+   "url": "/app/payroll/people?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/people?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/people|390-text200": {
+  "before": {
+   "url": "/app/payroll/people?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "People"
+    },
+    "h2.": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Nov 2\u20138 \u00b7 Payday Fri, Nov 13"
+    },
+    "dt.": {
+     "n": 70,
+     "size": "15px\u219215px",
+     "txt": "Gross pay"
+    },
+    "dd.": {
+     "n": 48,
+     "size": "15px\u219215px",
+     "txt": "$7,051.56"
+    },
+    "span.c-row__value": {
+     "n": 11,
+     "size": "15px\u219215px",
+     "txt": "$395.32"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/people?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "People"
+    },
+    "span.c-row__value": {
+     "n": 11,
+     "size": "15px\u219215px",
+     "txt": "$395.32"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/people|768": {
+  "before": {
+   "url": "/app/payroll/people?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll details",
+     135,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/people?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll details",
+     135,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/prepare|1440": {
+  "before": {
+   "url": "/app/payroll/prepare",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [
+    [
+     "button.c-link.c-link--l.c-pay__gap",
+     "Prepare Nov 23\u201329",
+     "Prepare payroll for Nov 23\u201329"
+    ],
+    [
+     "button.c-btn.c-btn--md.c-btn--full",
+     "Prepare Nov 9\u201315",
+     "Prepare payroll for Nov 9\u201315"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/prepare",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/prepare|320": {
+  "before": {
+   "url": "/app/payroll/prepare",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "button.c-link.c-link--l.c-pay__gap",
+     "Prepare Nov 23\u201329",
+     "Prepare payroll for Nov 23\u201329"
+    ],
+    [
+     "button.c-btn.c-btn--md.c-btn--full",
+     "Prepare Nov 9\u201315",
+     "Prepare payroll for Nov 9\u201315"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/prepare",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/prepare|390": {
+  "before": {
+   "url": "/app/payroll/prepare",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "button.c-link.c-link--l.c-pay__gap",
+     "Prepare Nov 23\u201329",
+     "Prepare payroll for Nov 23\u201329"
+    ],
+    [
+     "button.c-btn.c-btn--md.c-btn--full",
+     "Prepare Nov 9\u201315",
+     "Prepare payroll for Nov 9\u201315"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/prepare",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/prepare|390-text200": {
+  "before": {
+   "url": "/app/payroll/prepare",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "button.c-link.c-link--l.c-pay__gap",
+     "Prepare Nov 23\u201329",
+     "Prepare payroll for Nov 23\u201329"
+    ],
+    [
+     "button.c-btn.c-btn--md.c-btn--full",
+     "Prepare Nov 9\u201315",
+     "Prepare payroll for Nov 9\u201315"
+    ]
+   ],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Prepare payroll"
+    },
+    "h2.": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Up next"
+    },
+    "b.": {
+     "n": 1,
+     "size": "17px\u219217px",
+     "txt": "Weekly payroll"
+    },
+    "span.": {
+     "n": 1,
+     "size": "13px\u219213px",
+     "txt": "Nov 23\u201329 \u00b7 Scheduled payday F"
+    },
+    "span.c-num": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Nov 23\u201329"
+    },
+    "p.c-pay__detail": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Adds up approved hours. Nothin"
+    },
+    "button.c-link.c-link--l": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Prepare Nov 23\u201329"
+    },
+    "span.c-pay__count.c-num": {
+     "n": 1,
+     "size": "13.5px\u219213.5px",
+     "txt": "2"
+    },
+    "button.c-btn.c-btn--md": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Prepare Nov 9\u201315"
+    },
+    "span.c-pay__rowpill": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "Prepare"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/prepare",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Prepare payroll"
+    },
+    "button.c-btn.c-btn--md": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Prepare Nov 9\u201315"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/prepare|768": {
+  "before": {
+   "url": "/app/payroll/prepare",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [
+    [
+     "button.c-link.c-link--l.c-pay__gap",
+     "Prepare Nov 23\u201329",
+     "Prepare payroll for Nov 23\u201329"
+    ],
+    [
+     "button.c-btn.c-btn--md.c-btn--full",
+     "Prepare Nov 9\u201315",
+     "Prepare payroll for Nov 9\u201315"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/prepare",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/review|1440": {
+  "before": {
+   "url": "/app/payroll/review?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/review?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/review|320": {
+  "before": {
+   "url": "/app/payroll/review?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/review?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/review|390": {
+  "before": {
+   "url": "/app/payroll/review?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/review?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/review|390-text200": {
+  "before": {
+   "url": "/app/payroll/review?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Payroll details"
+    },
+    "p.c-phone-sub": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Nov 2\u20138 \u00b7 Payday Fri, Nov 13 \u00b7"
+    },
+    "h2.": {
+     "n": 2,
+     "size": "13px\u219213px",
+     "txt": "Totals"
+    },
+    "dt.": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Gross pay"
+    },
+    "span.c-num": {
+     "n": 4,
+     "size": "15px\u219215px",
+     "txt": "$7,051.56"
+    },
+    "a.c-link.c-link--l": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "View"
+    },
+    "a.c-btn.c-btn--secondary": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Download"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/review?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Payroll details"
+    },
+    "p.c-phone-sub": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Nov 2\u20138 \u00b7 Payday Fri, Nov 13 \u00b7"
+    },
+    "span.c-num": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "11"
+    },
+    "a.c-link.c-link--l": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "View"
+    },
+    "a.c-btn.c-btn--secondary": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Download"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/payroll/review|768": {
+  "before": {
+   "url": "/app/payroll/review?run=39072aa9-6962-46cb-bd4b-284fcaeecc1a",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/payroll/review?run=83708ecc-3815-4dbb-966e-5d5a3b3dd3d5",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Payroll",
+     86,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/profile/device-alerts|1440": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/profile/device-alerts|320": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/profile/device-alerts|390": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/profile/device-alerts|390-text200": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {
+    "a.q-nav__r": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Edit"
+    },
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "JN"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Jose Natal"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Owner"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "555-0100"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not added"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {
+    "a.q-nav__r": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Edit"
+    },
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "JN"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Jose Natal"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Owner"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "555-0100"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not added"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/profile/device-alerts|768": {
+  "before": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-device-alerts",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/profile/passkeys|1440": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/profile/passkeys|320": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/profile/passkeys|390": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/profile/passkeys|390-text200": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {
+    "a.q-nav__r": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Edit"
+    },
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "JN"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Jose Natal"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Owner"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "555-0100"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not added"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [
+    [
+     "a.q-nav__r",
+     "Edit",
+     58,
+     40
+    ]
+   ],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {
+    "a.q-nav__r": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Edit"
+    },
+    "span.q-av.q-av--lg": {
+     "n": 1,
+     "size": "18px\u219218px",
+     "txt": "JN"
+    },
+    "h1.": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Jose Natal"
+    },
+    "span.eb-dots__p": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7Owner"
+    },
+    "span.eb-dots__sep": {
+     "n": 2,
+     "size": "14px\u219214px",
+     "txt": "\u00b7"
+    },
+    "span.b-sr": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": ","
+    },
+    "span.pmp-part": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "555-0100"
+    },
+    "span.q-rv.q-rv--l": {
+     "n": 3,
+     "size": "15px\u219215px",
+     "txt": "Not added"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/profile/passkeys|768": {
+  "before": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/profile#profile-passkeys",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "label-content-name-mismatch": 2
+   },
+   "small": [],
+   "mm": [
+    [
+     "a.q-row.q-row--one",
+     "Phone 555-0100",
+     "Phone, edit"
+    ]
+   ],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/reports|1440": {
+  "before": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 1
+   },
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 1
+   },
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/reports|320": {
+  "before": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     75,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     74,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     62,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     61,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     75,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     74,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     62,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     61,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/reports|390": {
+  "before": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     86,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     86,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/reports|390-text200": {
+  "before": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     86,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {
+    "b.": {
+     "n": 1,
+     "size": "15.5px\u219215.5px",
+     "txt": "This connection isn\u2019t secure"
+    },
+    "span.": {
+     "n": 1,
+     "size": "14.5px\u219214.5px",
+     "txt": "We cleared this page to protec"
+    },
+    "button.b-btn.b-btn--quiet": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Close"
+    },
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Insights"
+    },
+    "button.": {
+     "n": 4,
+     "size": "14px\u219214px",
+     "txt": "This week"
+    },
+    "p.c-ins__range.c-num": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Mon,\u00a0Nov\u00a023 so far \u00b7 All locat"
+    },
+    "h2.c-ins__title": {
+     "n": 1,
+     "size": "17px\u219217px",
+     "txt": "Couldn\u2019t load insights"
+    },
+    "p.c-ins__state": {
+     "n": 1,
+     "size": "15px\u219215px",
+     "txt": "Check your connection, then tr"
+    }
+   },
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.",
+     "This week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Last week",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "30 days",
+     86,
+     36
+    ],
+    [
+     "button.",
+     "Custom",
+     86,
+     36
+    ]
+   ],
+   "mm": [],
+   "fx": {
+    "b.": {
+     "n": 1,
+     "size": "15.5px\u219215.5px",
+     "txt": "This connection isn\u2019t secure"
+    },
+    "span.": {
+     "n": 1,
+     "size": "14.5px\u219214.5px",
+     "txt": "We cleared this page to protec"
+    },
+    "button.b-btn.b-btn--quiet": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Close"
+    },
+    "h1.c-nav__title": {
+     "n": 1,
+     "size": "28px\u219228px",
+     "txt": "Insights"
+    },
+    "button.": {
+     "n": 4,
+     "size": "14px\u219214px",
+     "txt": "This week"
+    },
+    "p.c-ins__range.c-num": {
+     "n": 1,
+     "size": "14px\u219214px",
+     "txt": "Mon,\u00a0Nov\u00a023 so far \u00b7 All locat"
+    }
+   },
+   "noring": []
+  }
+ },
+ "owner|/app/reports|768": {
+  "before": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 1
+   },
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports",
+   "status": 200,
+   "ovf": 0,
+   "axe": {
+    "color-contrast": 1
+   },
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/reports/christmas-bonus|1440": {
+  "before": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Insights",
+     94,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Insights",
+     94,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/reports/christmas-bonus|320": {
+  "before": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.c-select-btn.c-bonus__yearbtn",
+     "Bonus year: Oct 2025 \u2013 Sep 202",
+     192,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.c-select-btn.c-bonus__yearbtn",
+     "Bonus year: Oct 2025 \u2013 Sep 202",
+     192,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/reports/christmas-bonus|390": {
+  "before": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.c-select-btn.c-bonus__yearbtn",
+     "Bonus year: Oct 2025 \u2013 Sep 202",
+     192,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "button.c-select-btn.c-bonus__yearbtn",
+     "Bonus year: Oct 2025 \u2013 Sep 202",
+     192,
+     40
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/reports/christmas-bonus|390-text200": {
+  "before": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ },
+ "owner|/app/reports/christmas-bonus|768": {
+  "before": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Insights",
+     94,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  },
+  "after": {
+   "url": "/app/reports/christmas-bonus",
+   "status": 200,
+   "ovf": 0,
+   "axe": {},
+   "small": [
+    [
+     "a.c-nav__back",
+     "Insights",
+     94,
+     32
+    ]
+   ],
+   "mm": [],
+   "fx": {},
+   "noring": []
+  }
+ }
+}

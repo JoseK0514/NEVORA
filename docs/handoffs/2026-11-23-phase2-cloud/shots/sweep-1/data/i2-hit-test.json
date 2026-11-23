@@ -1,0 +1,1242 @@
+{
+  "rec": [
+    {
+      "role": "lead",
+      "route": "/app/profile/privacy",
+      "slug": "profile-privacy",
+      "tag": "390",
+      "status": 200,
+      "url": "/app/profile/privacy",
+      "m": {
+        "url": "/app/profile/privacy",
+        "h1": [
+          "Privacy Policy"
+        ],
+        "overflow": 0,
+        "small": [
+          {
+            "el": "a.",
+            "txt": "support@thevelani.com",
+            "w": 179,
+            "h": 19,
+            "inline": true
+          }
+        ],
+        "smallCount": 1,
+        "mismatch": []
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, 9 unread in your recent inbox",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            288,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.c-top-avatar",
+          "txt": "More, Maria Rivera, MR",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            334,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.b-back",
+          "txt": "Profile",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            14,
+            4,
+            96,
+            44
+          ]
+        },
+        {
+          "el": "summary.",
+          "txt": "Who we are",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            33,
+            225,
+            324,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "support@thevelani.com",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            51,
+            402,
+            179,
+            19
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Your workplace",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            555,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Information NEVORA uses",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            611,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Why we use information",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            667,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Who receives information",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            723,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Advertising and tracking",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            779,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Where information is processed",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            835,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "How long we keep information",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            891,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Your choices and requests",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            947,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Deleting your account",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            1003,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Security",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            1059,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Changes",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            1115,
+            360,
+            56
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Terms of Use",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            142,
+            1180,
+            87,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Support",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            246,
+            1180,
+            52,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Account deletion",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            32,
+            1224,
+            111,
+            44
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            1283,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            1283,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            1283,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            1283,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            1283,
+            76,
+            56
+          ]
+        },
+        null
+      ],
+      "g": null,
+      "hit": [
+        {
+          "t": "Terms of Use",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Support",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Account deletion",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        }
+      ]
+    },
+    {
+      "role": "lead",
+      "route": "/app/profile/privacy",
+      "slug": "profile-privacy",
+      "tag": "768",
+      "status": 200,
+      "url": "/app/profile/privacy",
+      "m": {
+        "url": "/app/profile/privacy",
+        "h1": [
+          "Privacy Policy"
+        ],
+        "overflow": 0,
+        "small": [
+          {
+            "el": "a.b-back",
+            "txt": "Profile",
+            "w": 85,
+            "h": 32,
+            "inline": false
+          },
+          {
+            "el": "a.",
+            "txt": "support@thevelani.com",
+            "w": 179,
+            "h": 19,
+            "inline": true
+          }
+        ],
+        "smallCount": 2,
+        "mismatch": []
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": null,
+      "g": null,
+      "hit": [
+        {
+          "t": "Who we are",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Your workplace",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Information NEVORA u",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Why we use informati",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Who receives informa",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Advertising and trac",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Where information is",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "How long we keep inf",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Your choices and req",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Deleting your accoun",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Security",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Changes",
+          "h": 48,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Terms of Use",
+          "h": 48,
+          "above5": true,
+          "below5": true,
+          "above7": false
+        },
+        {
+          "t": "Support",
+          "h": 48,
+          "above5": true,
+          "below5": true,
+          "above7": false
+        },
+        {
+          "t": "Account deletion",
+          "h": 48,
+          "above5": true,
+          "below5": true,
+          "above7": false
+        }
+      ]
+    },
+    {
+      "role": "lead",
+      "route": "/app/profile/privacy",
+      "slug": "profile-privacy",
+      "tag": "1440",
+      "status": 200,
+      "url": "/app/profile/privacy",
+      "m": {
+        "url": "/app/profile/privacy",
+        "h1": [
+          "Privacy Policy"
+        ],
+        "overflow": 0,
+        "small": [
+          {
+            "el": "a.b-back",
+            "txt": "Profile",
+            "w": 85,
+            "h": 32,
+            "inline": false
+          },
+          {
+            "el": "a.",
+            "txt": "support@thevelani.com",
+            "w": 179,
+            "h": 19,
+            "inline": true
+          },
+          {
+            "el": "a.",
+            "txt": "Terms of Use",
+            "w": 87,
+            "h": 32,
+            "inline": false
+          },
+          {
+            "el": "a.",
+            "txt": "Support",
+            "w": 52,
+            "h": 32,
+            "inline": false
+          },
+          {
+            "el": "a.",
+            "txt": "Account deletion",
+            "w": 111,
+            "h": 32,
+            "inline": false
+          }
+        ],
+        "smallCount": 5,
+        "mismatch": []
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            126,
+            44
+          ]
+        },
+        {
+          "el": "a.brand.sidebar-brand",
+          "txt": "NEVORA Workforce home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            16,
+            6,
+            148,
+            64
+          ]
+        },
+        {
+          "el": "button.sidebar-toggle",
+          "txt": "Collapse sidebar",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            172,
+            6,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            175,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            217,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            259,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            301,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            343,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Updates",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            433,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.sidebar-help-link",
+          "txt": "Help",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            16,
+            898,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "button.command-finder-trigger",
+          "txt": "Search Ctrl K",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            892,
+            10,
+            280,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, 9 unread in your recent inbox",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1182,
+            12,
+            40,
+            40
+          ]
+        },
+        {
+          "el": "button.button.ghost.nevora-action-menu-trigger",
+          "txt": "Maria Rivera, account menu",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1232,
+            12,
+            168,
+            40
+          ]
+        },
+        {
+          "el": "a.b-back",
+          "txt": "Profile",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            290,
+            88,
+            85,
+            32
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Who we are",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            305,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Your workplace",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            349,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Information NEVORA uses",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            393,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Why we use information",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            437,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Who receives information",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            481,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Advertising and tracking",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            525,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Where information is processed",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            569,
+            258,
+            61
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "How long we keep information",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            630,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Your choices and requests",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            674,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Deleting your account",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            718,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Security",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            762,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Changes",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            307,
+            806,
+            258,
+            44
+          ]
+        },
+        {
+          "el": "summary.",
+          "txt": "Who we are",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            619,
+            306,
+            734,
+            44
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "support@thevelani.com",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            817,
+            410,
+            179,
+            19
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Your workplace",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            499,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Information NEVORA uses",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            563,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Why we use information",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            627,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Who receives information",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            691,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Advertising and tracking",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            755,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Where information is processed",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            819,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "How long we keep information",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            883,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Your choices and requests",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            947,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Deleting your account",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            1011,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Security",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            1075,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "summary.b-row.b-row--link",
+          "txt": "Changes",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            597,
+            1139,
+            778,
+            64
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Terms of Use",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            728,
+            1219,
+            87,
+            32
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Support",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            832,
+            1219,
+            52,
+            32
+          ]
+        },
+        {
+          "el": "a.",
+          "txt": "Account deletion",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            903,
+            1219,
+            111,
+            32
+          ]
+        },
+        null
+      ],
+      "g": null,
+      "hit": [
+        {
+          "t": "Who we are",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Your workplace",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Information NEVORA u",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Why we use informati",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Who receives informa",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Advertising and trac",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Where information is",
+          "h": 61,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "How long we keep inf",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Your choices and req",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Deleting your accoun",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Security",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Changes",
+          "h": 44,
+          "above5": false,
+          "below5": false,
+          "above7": false
+        },
+        {
+          "t": "Terms of Use",
+          "h": 32,
+          "above5": true,
+          "below5": true,
+          "above7": false
+        },
+        {
+          "t": "Support",
+          "h": 32,
+          "above5": true,
+          "below5": true,
+          "above7": false
+        },
+        {
+          "t": "Account deletion",
+          "h": 32,
+          "above5": true,
+          "below5": true,
+          "above7": false
+        }
+      ]
+    }
+  ],
+  "log": []
+}
