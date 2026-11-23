@@ -1,0 +1,211 @@
+[
+ {
+  "id": "j17-owner",
+  "row": "J17",
+  "page": "Clocker PINs",
+  "section": "Settings",
+  "note": "Clocker PINs now sits in the Settings frame: one white card holds the search, the two tabs and the people, with Set PIN on the right of each row. The tab names the group, so the card no longer repeats “12 people need a PIN” or “No PIN yet”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/j17-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/j17-owner-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/j17-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/j17-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the c-seg tabs are 36px tall (no 44px hit area under the Direction B layer); the c-nav__back link reports text taller than its box at 768+ (scan 'spill').",
+   "Kit: avatars stay 36px at 200% text (fixed px in c-av)."
+  ]
+ },
+ {
+  "id": "j17-owner-pinset",
+  "row": "J17",
+  "page": "Clocker PINs · PIN set tab, empty",
+  "section": "Settings",
+  "note": "When no one has a PIN yet, the PIN set tab shows the kit's empty state with one way back to the people who need one.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/j17-owner-pinset-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/j17-owner-pinset-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/j17-owner-pinset-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/j17-owner-pinset-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "j17-owner-nomatch",
+  "row": "J17",
+  "page": "Clocker PINs · search with no match",
+  "section": "Settings",
+  "note": "A search with no match says so in the card and offers Clear search.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/j17-owner-nomatch-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/j17-owner-nomatch-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/j17-owner-nomatch-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/j17-owner-nomatch-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The browser's own clear (×) in the search field is blue (native control)."
+  ]
+ },
+ {
+  "id": "j16-owner",
+  "row": "J16",
+  "page": "Photo review",
+  "section": "Settings",
+  "note": "Photo review is in the Settings frame with the kit's cards. The list card is “Clock actions” with its count, and the lines that only explained the page are gone.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/j16-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/j16-owner-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/j16-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/j16-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "No fixture holds real punch photos, so the list rows, the record card and the remove confirmation were checked in unit tests only, not in a browser."
+  ]
+ },
+ {
+  "id": "j18-owner-paid",
+  "row": "J18",
+  "page": "Workplace billing · Paid and active",
+  "section": "Account",
+  "note": "Billing keeps its own frame (it opens even while access is paused, so it has no app shell). Wording is unchanged; the text links now stand one per line so none wraps beside another at 200% text.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/j18-owner-paid-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/j18-owner-paid-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/j18-owner-paid-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/j18-owner-paid-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Captured from a fictional-data fixture of the real components (RecoveryFrame + BillingRecovery, production React build, the app's tokens and CSS), not the running app: the app needs a live commerce service to show these states."
+  ]
+ },
+ {
+  "id": "j18-owner-grace",
+  "row": "J18",
+  "page": "Workplace billing · Payment needs attention",
+  "section": "Account",
+  "note": "Same page in the “Payment needs attention” state, on fictional status data.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/j18-owner-grace-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/j18-owner-grace-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/j18-owner-grace-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/j18-owner-grace-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Captured from a fictional-data fixture of the real components (RecoveryFrame + BillingRecovery, production React build, the app's tokens and CSS), not the running app: the app needs a live commerce service to show these states."
+  ]
+ },
+ {
+  "id": "j18-owner-restricted",
+  "row": "J18",
+  "page": "Workplace billing · Access paused (trial ended)",
+  "section": "Account",
+  "note": "Same page in the “Access paused (trial ended)” state, on fictional status data.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/j18-owner-restricted-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/j18-owner-restricted-390-text200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/j18-owner-restricted-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/j18-owner-restricted-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Captured from a fictional-data fixture of the real components (RecoveryFrame + BillingRecovery, production React build, the app's tokens and CSS), not the running app: the app needs a live commerce service to show these states."
+  ]
+ }
+]
