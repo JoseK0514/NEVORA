@@ -159,7 +159,7 @@
 /* Phase 9: every control in a band row shares one height: 40px on a phone (the round glass buttons' size; glass pills
  * drew 36px), 48px from 768px (the desktop sheets' band actions, 15.5/22). On a phone the pills keep their type and
  * sides: a wider pill pushed Payroll's "Settings" under its title. */
-:is(#c-root, html) .app-shell[data-nv-b] .b-hero :is(.b-btn--white, .b-btn--glass):not(.b-btn--full, .b-btn--big) { min-height: 40px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-hero :is(.b-btn--white, .b-btn--glass):not(.b-btn--full, .b-btn--big) { min-height: var(--b-btn-h); } /* Final fixes K: 44px on phones (was 40px) */
 :is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-btn--glass:not(.b-btn--full, .b-btn--big) { font-size: 0.875rem; }
 @media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] .b-hero :is(.b-btn--white, .b-btn--glass):not(.b-btn--full, .b-btn--big) { min-height: var(--b-btn-h-band); } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--full { display: flex; width: 100%; min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 16px; line-height: 22px; }
