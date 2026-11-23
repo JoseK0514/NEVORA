@@ -310,7 +310,8 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { margin: -7px 0; }
 /* Final polish, round 2 (M5): on phones each policy link is a 44px line box (they were 32px drawn 18px apart, so two
  * rows of links shared one finger). The words keep their size and colour; the rows sit 44px apart. */
-@media (max-width: 767px) {
+/* Batch 1 (Nov 23): tablets and desktop too (they were 32px there). */
+@media (min-width: 0) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 0; margin: -4px 0 -8px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { min-height: 44px; margin: 0; }
 }
@@ -341,3 +342,12 @@
  * is a row of one list; the last piece ends the card and an action on its own has no rule above it. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc > .eb-doc__intro:last-child { margin-bottom: 0; }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-screen .eb-doc > .eb-doc__foot:first-child { margin-top: 0; padding-top: 0; box-shadow: none; }
+
+/* Batch 1 (Nov 23, item 18): Passkeys' kept panel is a stack of cards, not a card itself. On tablets and desktop the
+ * shared "kept panel" frame (employee-b-desktop.css) drew it as a white card, so Saved passkeys sat in a second card
+ * 13-14px inside the column; the panel keeps that frame's width and place without its surface or padding. The card's
+ * body text starts on the header's inset. In the nv-b layer, where the frame's !important rule is. */
+@layer nv-b { @media (min-width: 768px) {
+  html body .app-shell[data-nv-b][data-employee-mobile] .c-page:has(> .b-screen--back) > .b-keep.eb-keep { padding: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+} }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__body { padding-inline: var(--b-inset); }

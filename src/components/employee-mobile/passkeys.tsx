@@ -32,7 +32,7 @@ export function EmployeePasskeyView({mobile,state,supported,confirm,onAdd,onRefr
     <button type="button" className="em-account-textbtn em-account-textbtn--danger" aria-label={'Remove '+key.name} disabled={busy||state.needsRefresh||!!reviewed} onClick={event=>onReview(key,event.currentTarget)}>Remove</button>
    </div></li>)}</ul>:null}
    <div className="c-card__body em-passkeys-body">
-    {ready&&!keys.length?<p className="em-passkeys-empty"><b>No saved passkeys</b>Your password still works. Add a passkey when you’re ready.</p>:null}
+    {ready&&!keys.length?<p className="em-passkeys-empty"><b>None yet</b>Your password still works.</p>:null}
     {ready&&keys.length?null:<p className="em-passkeys-intro">Sign in with your device’s screen lock instead of typing your password.</p>}
     {status?<p className="c-note" role="status">{status}</p>:null}
     {state.phase==='denied'?<p className="c-note" role="status">Your session changed. <a className="c-link" href="/login">Sign in again</a> to manage your passkeys.</p>:null}
