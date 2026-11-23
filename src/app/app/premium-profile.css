@@ -150,11 +150,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 /* The row after Face ID and passkeys (Privacy and terms) keeps the line between rows; the passkeys row has its own line above. */
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys:not(:empty) + li > .q-details > summary.q-row { box-shadow: inset 0 1px 0 #EDEEEF; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section > .nv-card__head { grid-column: 1; min-height: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
-:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .nv-card__title { margin: 0; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: 0; text-transform: none; color: #1A1C1E; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .nv-card__title { margin: 0; font: 600 0.9375rem/1.25rem Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: 0; text-transform: none; color: #1A1C1E; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section > .pk-body { display: contents; }
-:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .pk-muted { grid-column: 1; margin: 2px 0 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .pk-muted { grid-column: 1; margin: 2px 0 0; font: 400 0.8125rem/1.125rem Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .pk-add { grid-column: 2; grid-row: 1 / span 2; align-self: center; display: inline-flex; align-items: center;
-  height: 44px; min-height: 44px; margin: 0 -4px 0 0; padding: 0 4px; border: 0; border-radius: 8px; background: none !important; box-shadow: none !important; color: #0B6E69; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; white-space: nowrap; }
+  height: 44px; min-height: 44px; margin: 0 -4px 0 0; padding: 0 4px; border: 0; border-radius: 8px; background: none !important; box-shadow: none !important; color: #0B6E69; font: 600 0.9375rem/1.25rem Inter, "Inter Fallback", -apple-system, sans-serif; white-space: nowrap; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section :is(.pk-list, .pk-notice) { grid-column: 1 / -1; margin-top: 8px; }
 
 /* Tablets and desktop: the page title where every page title sits (22/600 at the column's left edge, no phone avatar), Edit
@@ -164,11 +164,11 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > * { pointer-events: auto; }
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > :not(.q-nav__r) { display: none; }
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > .q-nav__r { display: inline-flex; align-items: center; justify-content: center; height: 40px; min-height: 40px; margin: 2px 0; padding: 0 16px;
-    border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E !important; font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; text-decoration: none; }
+    border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E !important; font: 500 0.9375rem/1.25rem Inter, "Inter Fallback", -apple-system, sans-serif; text-decoration: none; }
   @media (hover: hover) { :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > .q-nav__r:hover { background: var(--b-hover); } }
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .pmp-content { max-width: 736px; }
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who { margin: 0 16px; min-height: 40px; }
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who > .q-av { display: none; }
-  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who h1 { margin: 3px 0 0; font: 600 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -.56px; color: #1A1C1E; }
-  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who p { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who h1 { margin: 3px 0 0; font: 600 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -.56px; color: #1A1C1E; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who p { font: 400 0.8125rem/1.125rem Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
 }

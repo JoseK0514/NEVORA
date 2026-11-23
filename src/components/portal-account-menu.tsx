@@ -2,6 +2,8 @@
 
 import type { ReactNode } from "react";
 import { ActionMenu } from "./action-menu";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { SHELL_WORDS } from "./shell-copy";
 
 /** The account menu's width on tablets and desktop (upscale S7): a desktop menu, not a phone sheet. */
 /** Review B5 (NV-110): 280px so the workspace name has room (it wraps to a second line rather than being cut). */
@@ -16,7 +18,7 @@ export const ACCOUNT_MENU_WIDTH = 280;
  * no sidebar or rail entry, so the pill is the "where am I" mark (aria-current and a white ring, owner-b-shell.css). */
 export function PortalAccountMenu({ initials, name, detail, current = false, children }: { initials: string; name: string; detail?: string; current?: boolean; children: ReactNode }) {
   return <div className="portal-account-menu">
-    <ActionMenu id="portal-account-menu" label={name} ariaLabel={`${name}, account menu`} width={ACCOUNT_MENU_WIDTH} triggerCurrent={current}
+    <ActionMenu id="portal-account-menu" label={name} ariaLabel={SHELL_WORDS[usePortalLang()].accountMenu(name)} width={ACCOUNT_MENU_WIDTH} triggerCurrent={current}
       triggerIcon={/* The initials are drawn by CSS (b-foundation.css) from data-initials, so the button's text is the name its label says
        * (label in name, WCAG 2.5.3): "Sam Cruz" is on screen and in "Sam Cruz, account menu". */
       <span className="portal-account-avatar" aria-hidden="true" data-initials={initials} />}>

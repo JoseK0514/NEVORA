@@ -5,7 +5,7 @@ import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {listEmployees} from '../../lib/data/employees';
 rs.mock('server-only',()=>({}));
-import {readOperationalDirectory,readOperationalSchedule,readOperationalShiftEditor,readOperationalClockMonitor,readOperationalEmployeeProfile} from '../../lib/company-access/operational-read.server';
+import {readOperationalDirectory,readOperationalSchedule,readOperationalShiftEditor,readOperationalClockMonitor,readOperationalEmployeeProfile,readScopedEmployeeSummary} from '../../lib/company-access/operational-read.server';
 const week='2026-10-12';
 
 async function fixture(){
@@ -196,5 +196,44 @@ it('the operational monitor adds canonical Today lateness for the matching open 
   await f.q(`INSERT INTO clocker_devices(id,location_id,name,active) VALUES('late-device','loc-1','Owned',true);
    INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES('late-entry','target','loc-1','late-device',clock_timestamp()-interval '1 hour','CLOCKED_IN')`);
   const monitor=await readOperationalClockMonitor(f.restricted,f.db.executor);expect(monitor).toMatchObject({state:'ready',data:{employees:[{employeeId:'target',late:true}]}});
+ }finally{await f.db.dispose();}
+});
+
+// G17 (Jose, Nov 23, 2026): a Manager limited to some locations opens a person who works at one of them, and sees only
+// what the scoped Team list already shows them.
+it('G17 scoped person summary: allowed at the Manager’s locations with the roster’s fields only; refused elsewhere, for a company view and for unknown people',async()=>{
+ const f=await fixture();try{
+  const allowed=await readScopedEmployeeSummary(f.restricted,'target',f.db.executor);if(allowed.state!=='ready')throw Error('Scoped person');
+  // Exactly the scoped Team row and the person's locations within the Manager's scope (target also works at loc-2).
+  expect(allowed.data.employee).toEqual({id:'target',firstName:'Target',lastName:'QA',role:'EMPLOYEE',locationIds:['loc-1']});
+  expect(allowed.data.locations.map(l=>l.id)).toEqual(['loc-1']);
+  expect(Object.keys(allowed.data.employee).sort()).toEqual(['firstName','id','lastName','locationIds','role']);
+  expect(allowed.data.locations.every(l=>Object.keys(l).sort().join(',')==='active,id,name,shortName')).toBe(true);
+  // Nothing the scoped roster doesn't show: no phone, email, positions or the other location.
+  const text=JSON.stringify(allowed.data);for(const hidden of ['555','@example.invalid','p-shared','Current label','loc-2'])expect(text.includes(hidden)).toBe(false);
+  expect(allowed.coverage).toEqual({kind:'LOCATIONS',locationIds:['loc-1']});
+  // Someone only at a location outside the Manager's scope is refused, as is an unknown person (another company's
+  // people are unknown here: one workspace per database) and an invalid id.
+  for(const id of ['private-b','someone-elsewhere','',' target'])expect(await readScopedEmployeeSummary(f.restricted,id,f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+  // A company-wide view never takes the scoped path (it reads the full profile), and the full profile stays closed to the
+  // location Manager.
+  expect(await readScopedEmployeeSummary(f.manager,'target',f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+  expect(await readScopedEmployeeSummary(f.owner,'target',f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+  expect(await readOperationalEmployeeProfile(f.restricted,'target',f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+  // An inactive person drops off the scoped roster, so the page closes too.
+  await f.q("UPDATE employees SET active=false WHERE id='target'");
+  expect(await readScopedEmployeeSummary(f.restricted,'target',f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+ }finally{await f.db.dispose();}
+});
+it('G17 scoped person summary: a Manager moved to another location sees only that location',async()=>{
+ const f=await fixture();try{
+  expect((await readScopedEmployeeSummary(f.restricted,'target',f.db.executor)).state).toBe('ready');
+  const context=await readOwnerOperationalScope(f.owner,'restricted',f.db.executor);if(context.state!=='ready')throw Error('Owned Manager context');const c=context.data.current;
+  const moved=await assignOperationalScope(f.owner,'restricted',{action:'ASSIGN',operationId:randomUUID(),expectedEmployeeVersion:c.employeeUpdatedAt,expectedRoleGeneration:c.roleGeneration,expectedScopeRevision:c.scopeRevision,scope:{mode:'LOCATIONS',locationIds:['loc-2']}},f.db.executor);
+  if(moved.state!=='saved')throw Error('Scope move');
+  // Now limited to loc-2: target still works there (eligible), private-b too; loc-1 facts are gone from the summary.
+  const after=await readScopedEmployeeSummary(f.restricted,'target',f.db.executor);if(after.state!=='ready')throw Error('Moved scope');
+  expect(after.data.employee.locationIds).toEqual(['loc-2']);expect(after.data.locations.map(l=>l.id)).toEqual(['loc-2']);
+  expect((await readScopedEmployeeSummary(f.restricted,'private-b',f.db.executor)).state).toBe('ready');
  }finally{await f.db.dispose();}
 });

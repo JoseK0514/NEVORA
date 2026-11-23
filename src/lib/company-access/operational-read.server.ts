@@ -283,6 +283,23 @@ export async function readOperationalEmployeeProfile(proof:SessionMutationProof,
  },ex,true);
 }
 
+/** G17 (Jose, Nov 23, 2026): the person page for a Manager limited to some locations. The same boundary as the scoped
+ * Team list (readOperationalDirectory's LOCATIONS branch): the person must be on that roster (active, in this workspace,
+ * with their home or an eligible location among the Manager's), and nothing beyond what the roster already shows is read:
+ * name, role and the person's locations within the Manager's scope. A company-wide view never uses this (it reads the
+ * full profile), and a person outside the Manager's locations or company is refused. */
+export type ScopedEmployeeSummaryData={employee:ScopedRosterEmployee;locations:ReturnType<typeof minimalLocation>[]};
+export async function readScopedEmployeeSummary(proof:SessionMutationProof,employeeId:string,ex:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<ScopedEmployeeSummaryData>>{
+ return read<ScopedEmployeeSummaryData>(proof,async ctx=>{
+  if(!id(employeeId))return deny();
+  if(ctx.ids===null)return deny();
+  const employee=(await roster(ctx,ctx.ids)).find(person=>person.id===employeeId);
+  if(!employee)return deny();
+  const catalog=await locations(ctx);
+  return {data:{employee,locations:catalog.filter(location=>employee.locationIds.includes(location.id)).map(minimalLocation)}};
+ },ex);
+}
+
 /** Person-level hours use the directory's current company/location authority.
  * Published revisions supply planned time; canonical effective timecard source supplies actual time. */
 export async function readOperationalEmployeeHours(proof:SessionMutationProof,employeeId:string,ex:SqlExecutor=neonNotificationExecutor()):Promise<OperationalRead<PersonHours>>{

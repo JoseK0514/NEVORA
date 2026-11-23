@@ -347,7 +347,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) body .app-shell .schedule-publication-change li { padding-top: var(--b-space-12); padding-bottom: var(--b-space-12); }
 :is(#c-root, html) body .app-shell .schedule-publication-change .spc-chip { margin-right: var(--b-space-8); vertical-align: 1px; }
 @media (min-width: 768px) {
-  :is(#c-root, html) body .app-shell[data-nv-b] .cm-block__pos { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 15px; font-weight: 500; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-block__pos { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; line-height: 0.9375rem; font-weight: 500; }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend { display: inline-flex; align-items: center; gap: var(--b-space-12); margin-left: auto; margin-right: var(--b-space-12); font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 3px; vertical-align: -1px; }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > [data-k="published"]::before { background: var(--b-teal-50); box-shadow: inset 0 0 0 1px var(--b-teal); }

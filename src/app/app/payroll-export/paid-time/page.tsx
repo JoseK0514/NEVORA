@@ -11,6 +11,7 @@ import {OwnerOnlyNotice} from '@/components/owner-only-notice';
 import {CorpPage} from '@/components/corp/corp';
 import {SheetMarker} from '@/components/team/team-forms';
 import {PaidTimeExportFlow} from '@/components/payroll-import/export-flow';
+import {readPortalLanguage} from '@/lib/activation/language.server';
 
 export const metadata = { title: "Paid time export" };
 
@@ -26,8 +27,11 @@ export default async function PaidTimeExportPage({searchParams}:{searchParams:Pr
   const monday=today.subtract({days:today.dayOfWeek-1});
   let period={startDate:monday.toString(),endDate:monday.add({days:6}).toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current week, as Time exports does. */}
+  // G98 (gap closure): the flow has Spanish copy, so it follows the person's language: their saved choice, else the nv-lang
+  // cookie or the browser's, the same read the person and time off pages use. English if that read fails.
+  let lang:'en'|'es'='en';try{lang=(await readPortalLanguage(proof)).language;}catch{/* English */}
   return <ScopedReadFrame observation={scopedObservation(access)}><CorpPage className="c-addemp c-sheetpage c-pim" labelledBy="paid-export-title">
     <SheetMarker/>
-    <PaidTimeExportFlow key={`${session.id}:${period.startDate}:${period.endDate}`} actorId={session.id} workspaceId={workspace.id} period={period} timeZone={workspace.timeZone}/>
+    <PaidTimeExportFlow lang={lang} key={`${session.id}:${period.startDate}:${period.endDate}`} actorId={session.id} workspaceId={workspace.id} period={period} timeZone={workspace.timeZone}/>
   </CorpPage></ScopedReadFrame>;
 }

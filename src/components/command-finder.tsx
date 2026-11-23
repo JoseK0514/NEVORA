@@ -7,7 +7,9 @@ import { MagnifyingGlassIcon, XCircleIcon } from "@phosphor-icons/react/ssr";
 import type { UserRole } from "@/lib/domain";
 import { B_WIDE } from "@/lib/b-viewport";
 import type { PayrollCapabilities } from "@/lib/payroll/contracts";
-import { finderItems, finderOverflow, rankFinder, type FinderData } from "@/lib/finder";
+import { finderItems, finderOverflow, rankFinder, type FinderData, type FinderItem } from "@/lib/finder";
+import { usePortalLang, type PortalLang } from "@/lib/i18n/portal-lang";
+import { FINDER_KEYWORDS_ES, FINDER_WORDS, navLabel } from "./shell-copy";
 import { navigationForRole, teamToolsForRole, type NavContext } from "@/lib/navigation";
 import type { NavIconName } from "@/components/nav-icon";
 import { finderGlyph } from "@/components/finder-glyph";
@@ -15,7 +17,6 @@ import { finderGlyph } from "@/components/finder-glyph";
 /** `offline` is client-only: the phone knew it had no connection, so no request was sent. */
 type Remote = { state: "idle" | "loading" | "ready" | "unavailable" | "offline"; data: FinderData | null; at: number };
 const FRESH_MS = 60_000;
-const DESKTOP_PLACEHOLDER = "Search pages, people and places";
 /** The phone chrome query (portal-gusto.css). A phone turned sideways has the tablet layout since review B8 (NV-274). */
 const PHONE_QUERY = "(max-width: 760px)";
 
@@ -28,14 +29,23 @@ export type OpenFinderDetail = { returnFocusTo?: HTMLElement | null };
 
 /** Status line, checked in this order: a query that couldn't be checked against
  * people never reads "No matches.". */
+/** Spanish names for pages and actions; their English names and keywords still match (the finder searches either). */
+export function localizeFinder(items: FinderItem[], lang: PortalLang): FinderItem[] {
+  if (lang === "en") return items;
+  return items.map(item => item.group === "People" || item.group === "Locations" ? item : {
+    ...item, label: navLabel(item.label, lang),
+    keywords: [item.keywords, item.label.toLocaleLowerCase(), FINDER_KEYWORDS_ES[item.href.split(/[?#]/)[0]]].filter(Boolean).join(" "),
+  });
+}
 const groupKey = (group: string) => group.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
-export function finderStatus(state: Remote["state"], query: string, resultCount: number): string {
-  if (state === "offline") return "People and places unavailable offline";
-  if (state === "unavailable") return "People and places are unavailable right now.";
-  if (state === "loading") return "Loading people and places…";
+export function finderStatus(state: Remote["state"], query: string, resultCount: number, lang: PortalLang = "en"): string {
+  const F = FINDER_WORDS[lang];
+  if (state === "offline") return F.offline;
+  if (state === "unavailable") return F.unavailable;
+  if (state === "loading") return F.loading;
   // Final polish (confirmations review A #26): the empty answer names what was typed.
-  if (state === "ready" && query.trim() && !resultCount) return `Nothing matches “${query.trim()}”`;
+  if (state === "ready" && query.trim() && !resultCount) return F.nothing(query.trim());
   return "";
 }
 
@@ -97,13 +107,16 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
   const [active, setActive] = useState(0);
   // On a phone the current result is tinted only once the arrow keys move it (upscale M10); a tap needs no highlight.
   const [keyboard, setKeyboard] = useState(false);
-  const [placeholder, setPlaceholder] = useState(DESKTOP_PLACEHOLDER);
+  const [placeholder, setPlaceholder] = useState<string | null>(null);
   const [remote, setRemote] = useState<Remote>({ state: "idle", data: null, at: 0 });
   const hint = useRef<HTMLElement>(null);
 
   // Review B2 (NV-216): an Employee's or Lead's empty finder lists every one of their pages (they fit), not the first six.
   const perGroup = role === "EMPLOYEE" || role === "LEAD" ? 16 : 6;
-  const all = useMemo(() => finderItems(role, payroll, remote.data, context), [role, payroll, remote.data, context]);
+  const lang = usePortalLang(), F = FINDER_WORDS[lang];
+  // Signed-in Spanish: pages and actions show their Spanish names and match Spanish and English words; people and places
+  // are the company's own names and stay as written.
+  const all = useMemo(() => localizeFinder(finderItems(role, payroll, remote.data, context), lang), [role, payroll, remote.data, context, lang]);
   const results = useMemo(() => rankFinder(all, query, perGroup), [all, query, perGroup]);
   // Each destination's own glyph, as the sidebar and More draw it.
   const navIcons = useMemo(() => Object.fromEntries([...teamToolsForRole(role, context), ...navigationForRole(role, payroll, context)].map(entry => [entry.href, entry.icon])) as Record<string, NavIconName>, [role, payroll, context]);
@@ -128,7 +141,7 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
     if (own && !window.matchMedia(B_WIDE).matches) return;
     returnTo.current = from ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     setQuery(""); setActive(0); setKeyboard(false);
-    setPlaceholder(window.matchMedia(PHONE_QUERY).matches ? "Search" : own ? "Search your pages" : DESKTOP_PLACEHOLDER);
+    setPlaceholder(window.matchMedia(PHONE_QUERY).matches ? F.placeholderPhone : own ? F.placeholderOwn : F.placeholderDesktop);
     if (navigator.onLine === false && !own) setRemote({ state: "offline", data: null, at: 0 });
     else load();
     element.showModal();
@@ -189,42 +202,42 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
 
   return <>
     <button type="button" className="command-finder-trigger" onClick={event => open(event.currentTarget)} aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K">
-      <MagnifyingGlassIcon size={18} weight="bold" aria-hidden="true" /><span>Search</span><kbd ref={hint} aria-hidden="true" suppressHydrationWarning />
+      <MagnifyingGlassIcon size={18} weight="bold" aria-hidden="true" /><span>{F.trigger}</span><kbd ref={hint} aria-hidden="true" suppressHydrationWarning />
     </button>
-    <dialog ref={dialog} className="command-finder" aria-label={own ? "Search your pages" : "Find a page, person or place"} onClose={closed}
+    <dialog ref={dialog} className="command-finder" aria-label={own ? F.dialogOwn : F.dialog} onClose={closed}
       onClick={event => { if (event.target === event.currentTarget) close(); }}>
       <div className="command-finder-panel">
         <div className="command-finder-search">
           <div className="command-finder-field">
             <MagnifyingGlassIcon size={20} weight="bold" aria-hidden="true" />
             <input ref={input} type="text" role="combobox" aria-expanded="true" aria-controls="command-finder-results" aria-autocomplete="list"
-              aria-activedescendant={results[current] ? `command-finder-${current}` : undefined} aria-label="Search pages, people and places"
-              placeholder={placeholder} value={query} autoComplete="off" spellCheck={false} enterKeyHint="go" autoCapitalize="none" autoCorrect="off"
+              aria-activedescendant={results[current] ? `command-finder-${current}` : undefined} aria-label={F.placeholderDesktop}
+              placeholder={placeholder ?? F.placeholderDesktop} value={query} autoComplete="off" spellCheck={false} enterKeyHint="go" autoCapitalize="none" autoCorrect="off"
               onChange={event => { setQuery(event.target.value); setActive(0); setKeyboard(false); }} onKeyDown={keys} />
-            {query ? <button type="button" className="command-finder-clear" aria-label="Clear search" onClick={clear}>
+            {query ? <button type="button" className="command-finder-clear" aria-label={F.clear} onClick={clear}>
               <XCircleIcon size={20} weight="fill" aria-hidden="true" />
             </button> : null}
           </div>
-          <button type="button" className="command-finder-close" aria-label="Close search" onClick={close}>Close</button>
+          <button type="button" className="command-finder-close" aria-label={F.closeSearch} onClick={close}>{F.close}</button>
         </div>
-        <p className="command-finder-status" role="status">{finderStatus(remote.state, query, results.length)}</p>
+        <p className="command-finder-status" role="status">{finderStatus(remote.state, query, results.length, lang)}</p>
         {/* Upscale S1: each group's heading is its own presentational row between the options, never inside the first
           option, so the selection tint covers one result only. The options keep their own names. */}
-        <ul id="command-finder-results" role="listbox" aria-label="Results" className="command-finder-results" data-keyboard={keyboard || undefined}>
+        <ul id="command-finder-results" role="listbox" aria-label={F.results} className="command-finder-results" data-keyboard={keyboard || undefined}>
           {results.map((item, index) => <Fragment key={item.id}>
-            {index === 0 || results[index - 1].group !== item.group ? <li role="presentation" aria-hidden="true" className="command-finder-group" id={`command-finder-group-${groupKey(item.group)}`}>{item.group}</li> : null}
+            {index === 0 || results[index - 1].group !== item.group ? <li role="presentation" aria-hidden="true" className="command-finder-group" id={`command-finder-group-${groupKey(item.group)}`}>{navLabel(item.group, lang)}</li> : null}
             {/* Review B1 (NV-217): each option is described by its group ("Schedule, Actions" vs "Schedule, Pages"). */}
             <li id={`command-finder-${index}`} role="option" aria-selected={index === current} className="command-finder-option" aria-describedby={`command-finder-group-${groupKey(item.group)}`}
               data-group={item.group} onMouseMove={() => { setActive(index); setKeyboard(false); }} onClick={() => go(index)}>
               {/* Review B5 (NV-218), final polish (A #20): each row leads with its destination's own glyph, a person's initials, a pin. */}
               <span className="command-finder-ico" data-group={item.group} aria-hidden="true">{item.group === "People" ? finderInitials(item.label) : finderGlyph(item, navIcons)}</span>
-              <span className="command-finder-label"><span className="command-finder-text">{emphasise(item.label, query)}</span></span>{item.detail ? <span className="command-finder-detail">{item.detail}</span> : null}
+              <span className="command-finder-label"><span className="command-finder-text">{emphasise(item.label, query)}</span></span>{item.detail ? <span className="command-finder-detail">{navLabel(item.detail, lang)}</span> : null}
             </li>
           </Fragment>)}
         </ul>
-        {overflow.length ? <p className="command-finder-more">{overflow.map(entry => `${entry.shown} of ${entry.total} ${entry.group.toLowerCase()}`).join(" · ")} · keep typing to narrow</p> : null}
+        {overflow.length ? <p className="command-finder-more">{overflow.map(entry => F.shownOf(entry.shown, entry.total, navLabel(entry.group, lang))).join(" · ")} · {F.keepTyping}</p> : null}
         {/* With nothing to move through or open, only the way out is offered. */}
-        <p className="command-finder-hint" aria-hidden="true">{results.length ? <><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>Enter</kbd> to open · </> : null}<kbd>Esc</kbd> to close</p>
+        <p className="command-finder-hint" aria-hidden="true">{results.length ? <><kbd>↑</kbd><kbd>↓</kbd> {F.move} · <kbd>Enter</kbd> {F.open} · </> : null}<kbd>Esc</kbd> {F.toClose}</p>
       </div>
     </dialog>
   </>;
