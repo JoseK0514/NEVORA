@@ -198,7 +198,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                   {group.windows.map(window => (
                     <li className="c-rf-period manager-issue-target" id={"coverage-" + window.id} tabIndex={-1} key={window.id}>
                       <div className="c-rf-period__head">
-                        <div className="c-rf-item__name"><h3 className="c-rf-item__t">{dayNames[window.dayOfWeek]}</h3>{[group.sharedTime ? null : keepWhole(formatTimeRange(window.startTime, window.endTime)), group.sharedStaff ? null : staffText(window.minimumStaff ?? null)].some(Boolean)
+                        <div className="c-rf-item__name"><p className="c-rf-item__t">{dayNames[window.dayOfWeek]}</p>{[group.sharedTime ? null : keepWhole(formatTimeRange(window.startTime, window.endTime)), group.sharedStaff ? null : staffText(window.minimumStaff ?? null)].some(Boolean)
                           ? <p className="c-rf-item__m">{[group.sharedTime ? null : keepWhole(formatTimeRange(window.startTime, window.endTime)), group.sharedStaff ? null : staffText(window.minimumStaff ?? null)].filter(Boolean).join(" · ")}</p> : null}</div>
                         <ActionForm action={deleteCoverageWindowAction} className="c-rf-remove-form" failure="Not removed. Check your connection and try again." confirm={{ prompt: `Remove ${dayNames[window.dayOfWeek]}, ${formatTimeRange(window.startTime, window.endTime)}?`, keepLabel: "Keep period" }} submit={{ label: "Remove", pendingLabel: "Removing…", ariaLabel: "Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTimeRange(window.startTime, window.endTime) + " coverage period", className: "c-btn c-btn--danger c-rf-remove", kind: "danger" }}><input type="hidden" name="windowId" value={window.id} /></ActionForm>
                       </div>
@@ -224,7 +224,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
         <details className="c-rules__rule" open={open.deadline || undefined}>
           <Summary title="Availability deadline" detail="Team updates availability by" value={deadlineValue} />
           <div className="c-rules__body" id="rules-deadline">
-            <ActionForm action={setAvailabilityDeadlineAction} className="c-rf-inline" failure="The availability deadline could not be saved. Try again." submit={{label: "Save", pendingLabel: "Saving…", ariaLabel: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", className: "c-btn c-btn--secondary"}}>
+            <ActionForm action={setAvailabilityDeadlineAction} className="c-rf-inline" failure="The availability deadline could not be saved. Try again." submit={{label: "Save", pendingLabel: "Saving…", ariaLabel: "Save deadline", className: "c-btn c-btn--secondary"}}>
               <input type="hidden" name="returnTo" value="/app/schedule/settings" />
               <input type="hidden" name="weekStart" value={weekStart} />
               <div className="c-field"><label className="c-field__label" htmlFor="rules-deadline-input">{`Week of ${formatWeekRange(weekStart)}`}</label>

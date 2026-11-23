@@ -111,6 +111,8 @@
   /* The question before Decline or Close sits where the row's buttons were, on the decision's own inset (the kit's
    * margin is for the older list's 64px face column). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-shreq .c-shreq__form .b-ask:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) { margin: 0 !important; }
+  /* Not sent and Sent: the kit's chips draw 36px; on this page they keep the 44px target (Apple HIG floor). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters > button:not(#st1):not(#st2):not(#st3):not(#st4) { height: auto !important; min-height: 44px !important; }
   /* The kit's disclosure rules pad every summary in a card; a request row keeps the item's inset only. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-shreq .c-shreq__details > summary.c-shreq__sum:not(#st1) { padding: 14px 0 !important; margin: 0 !important; background: none !important; box-shadow: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-tpl, .c-rules, .c-avteam, .c-shreq) :is(.c-btn, a.c-btn, .nv-btn):not(#st1) { box-sizing: border-box !important; height: auto !important; min-height: 44px !important; white-space: nowrap; }
@@ -222,7 +224,7 @@
 :is(#c-root, html) .c-rules .c-rf-chip { display: inline-flex; align-items: center; flex: none; min-height: 44px; margin: 0; padding: 0 16px; border: 0; border-radius: 999px; background: var(--b-quiet, #F0F2F3); color: var(--b-ink2, #3F464B); font: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
 :is(#c-root, html) .c-rules .c-rf-chip[aria-pressed="true"] { background: var(--b-teal-50, #E8F3F1); color: var(--b-teal, #0B6E69); box-shadow: inset 0 0 0 1.5px var(--b-teal, #0B6E69); }
 :is(#c-root, html) .c-rules .c-rf-chip:focus-visible { outline: 2px solid var(--b-teal, #0B6E69); outline-offset: 2px; }
-:is(#c-root, html) .c-rules .rules-hours-count { margin-left: 6px; font-weight: 700; opacity: .7; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-rules .rules-hours-count { margin-left: 6px; font-weight: 700; color: inherit; font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .c-rules .c-rf-none { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 
 /* Save staffing and hours: under the two rules it saves, shown while either is open. */

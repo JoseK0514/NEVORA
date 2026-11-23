@@ -66,7 +66,7 @@ export function AvailabilityTeamList({ employees, employeeId, before, remind = n
   // Closing F1 (NV-261): the segments come first, right under the page's title, so they join the band like every other
   // segmented page; the deadline row and the people follow.
   return <ReminderProvider targets={targets} authority={remind?.authority} timeZone={remind?.timeZone ?? "UTC"} actor={remind?.actor ?? "MANAGER"} about={{ kind: "availability", week: remind?.week ?? "" }}>
-    <section aria-label="People" className="c-avteam__people">
+    <div className="c-avteam__people">
     {before}
     <p className="b-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
     {/* Phase 2 (Schedule tools, C10, Nov 23, 2026): the people are one white card, as on Team: the kit's filter chips (Not
@@ -102,6 +102,6 @@ export function AvailabilityTeamList({ employees, employeeId, before, remind = n
     </ul>{needsDeadline && filter === "missing" ? /* Final polish (Nov 20, 2026): the note names a page, so the page's name is its one teal link. */<NeedsDeadline /> : null}</>
       : <p className="c-avteam__empty">{!employees.length ? "Employees and Leads show here once they’re added." : filter === "missing" ? "Everyone has sent theirs." : "No one has sent theirs yet."}</p>}
     </CorpCard>
-    </section>
+    </div>
   </ReminderProvider>;
 }
