@@ -47,6 +47,16 @@
   @media (min-width: 1024px) and (pointer: coarse) {
     html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar #desktop-primary-navigation .nav-link { width: 48px !important; min-width: 48px !important; min-height: 48px !important; }
   }
+  /* G5 (Nov 23, 2026): from 768px the band's back link ("‹ Schedule", CorpNav) is drawn 32px tall. Its hit area is 44px
+   * with any pointer: a press up to 6px above or below the drawn link lands on it. The link keeps its drawn size, colour,
+   * hover and focus ring (touch tablets already had this box, owner-b-shell.css, which wins there and matches it). */
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b] .c-page > .c-nav--phone > .c-nav__back { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b] .c-page > .c-nav--phone > .c-nav__back::after {
+      content: "" !important; display: block !important; position: absolute !important; inset: auto !important; top: 50% !important; left: 0 !important;
+      width: 100% !important; height: max(100%, 44px) !important; translate: 0 -50% !important; background: none !important; border: 0 !important;
+    }
+  }
 
   /* ---------- Press and disabled (NV-172, NV-232): one press, one disabled look ---------- */
 
@@ -651,8 +661,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     background: var(--b-quiet) !important; box-shadow: inset 0 0 0 1px #E3E6E7 !important;
   }
   html body .app-shell[data-nv-b] .b-filters > button { flex: none !important; padding: 0 var(--b-gutter) !important; background: transparent !important; box-shadow: none !important; color: var(--b-grey-on-fill) !important; }
-  html body .app-shell[data-nv-b] .b-filters > button[aria-pressed="true"] { background: #FFFFFF !important; color: var(--b-ink) !important; box-shadow: var(--b-shadow-thumb) !important; }
-  @media (min-width: 768px) {
+  html body .app-shell[data-nv-b] .b-filters > button[aria-pressed="true"] { background: #FFFFFF !important; color: var(--b-ink) !important; box-shadow: var(--b-shadow-thumb) !important; }  @media (min-width: 768px) {
     html body .app-shell[data-nv-b] .b-filters { max-width: calc(100% - 44px) !important; margin: var(--b-space-16) var(--b-inset-wide) var(--b-space-8) !important; -webkit-mask-image: none !important; mask-image: none !important; }
     html body .app-shell[data-nv-b] .b-filters > button { padding: 0 var(--b-seg-item-px) !important; }
   }
@@ -998,6 +1007,10 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"]) { background: none !important; color: inherit !important; opacity: 1 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"])::before { content: "" !important; flex: none !important; width: 6px !important; height: 6px !important; margin-inline-end: 5px !important; border-radius: 50% !important; background: #FFC46B !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.eb-segn--amber, .b-count[data-tone="amber"])::before { background: var(--b-amber-solid) !important; }
+  /* G15 (Nov 23, 2026): the kit's filters (BFilters: Team's Show filters) sit on white or the grey track, where the label's
+   * colour at 56–62% read 4.19:1 on the white thumb ("All 12") and lower on the track. Their count is the grey for fills
+   * at full strength: 5.9:1 on the white thumb, 5.2:1 on the grey track. Glass segments on the band keep the rule above. */
+  html body .app-shell[data-nv-b][data-nv-b] .b-filters > button[type="button"] b { color: var(--b-grey-on-fill) !important; opacity: 1 !important; }
 }
 
 /* Premium pass (Jose's board pick 1A): a row's positive action and the older secondary button are the white button with

@@ -63,4 +63,24 @@ describe('Direction B foundation (Nov 14 inspection)', () => {
   it('makes menu items concentric with the 16px menu (SY-010)', () => {
     expect(css('app/app/b-foundation.css')).toMatch(/:is\(\.nevora-action-menu-item, \.cm-insights__menu-item\) \{ min-height: 44px !important; border-radius: var\(--b-radius-small\) !important; \}/);
   });
+  // Gaps round 1, package C (Nov 23, 2026).
+  it('gives the band back link a 44px hit area from 768px with any pointer, inside nv-b (G5)', () => {
+    const sheet = css('app/app/b-foundation.css');
+    const rule = /\.c-page > \.c-nav--phone > \.c-nav__back::after \{([^}]*)\}/.exec(sheet);
+    expect(rule?.[1]).toMatch(/content: "" !important;[\s\S]*position: absolute !important;[\s\S]*height: max\(100%, 44px\) !important;/);
+    expect(sheet).toMatch(/\.c-page > \.c-nav--phone > \.c-nav__back \{ position: relative !important; \}/);
+    const where = contexts(sheet, '.c-page > .c-nav--phone > .c-nav__back::after');
+    expect(where).toEqual([['@layer nv-b', '@media (min-width: 768px)']]);
+  });
+  it("draws the kit filters' counts in the grey for fills at full strength (G15)", () => {
+    const sheet = css('app/app/b-foundation.css');
+    expect(sheet).toMatch(/\.b-filters > button\[type="button"\] b \{ color: var\(--b-grey-on-fill\) !important; opacity: 1 !important; \}/);
+    expect(contexts(sheet, '.b-filters > button[type="button"] b')).toEqual([['@layer nv-b']]);
+  });
+  it("draws Timecards' table counts in the grey for fills and paints the band under the week strip (G11)", () => {
+    const sheet = css('app/app/owner-b-time-pay.css');
+    expect(sheet).toMatch(/\.c-tc-desk \.c-tc-tabs button em \{[^}]*color: var\(--b-grey-on-fill\) !important; opacity: 1 !important;/);
+    expect(sheet).toMatch(/\.c-tc-desk \.c-tc-tabs button\[aria-pressed="true"\] em \{ background: none !important; color: var\(--b-grey-on-fill\) !important; opacity: 1 !important; \}/);
+    expect(sheet).toMatch(/\.c-page\.c-tc-desk > header\.c-title ~ \.c-tc-seg \{ background: color-mix\(in srgb, var\(--b-on-band\) 8%, color-mix\(in srgb, var\(--b-band-solid\) 86%, black\)\) !important; \}/);
+  });
 });

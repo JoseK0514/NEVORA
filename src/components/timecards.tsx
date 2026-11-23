@@ -860,9 +860,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         {bulkPanel}
         {ready&&cards.length?<section className="c-card c-tc-tablecard" aria-label="Timecards">
           <div className="c-card__head c-tc-tabs" role="group" aria-label="Show">
-            {/* Review includes approved cards still awaiting finalization. */}
+            {/* Review includes approved cards still awaiting finalization. The space keeps "All" and its count two words for
+              * tools that read the drawn text against the name ("All, 12"); the flex row draws no gap for it. */}
             {([['all','All',cards.length],['review',reviewLabel,reviewSummary.counts.review],['approved','Approved',approvedCount]] as const).map(([value,label,count])=>
-              <button key={value} type="button" aria-pressed={tab===value} aria-label={`${label}, ${count}`} onClick={()=>setTab(value)}>{label}<em aria-hidden="true">{count}</em></button>)}
+              <button key={value} type="button" aria-pressed={tab===value} aria-label={`${label}, ${count}`} onClick={()=>setTab(value)}>{label}{' '}<em aria-hidden="true">{count}</em></button>)}
           </div>
           {/* ↑/↓ move focus between people (the shell's row navigation); while the inspector is open it follows. */}
           <div className="c-tc-tablebox" onKeyDown={event=>{
