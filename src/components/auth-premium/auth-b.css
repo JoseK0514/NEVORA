@@ -100,6 +100,11 @@
     margin: 96px auto 72px !important; padding: var(--b-space-32) !important; border-radius: var(--b-radius-card) !important; background: #FFFFFF !important;
     box-shadow: 0 0 0 1px rgb(var(--b-shadow-rgb) / .05), 0 1px 2px rgb(var(--b-shadow-rgb) / .06), 0 24px 48px -24px rgb(var(--b-shadow-rgb) / .24) !important; }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__foot { grid-column: 2; grid-row: 2; padding: 0 var(--b-space-24) 28px !important; text-align: center !important; }
+  /* Final fixes K (Nov 23, 2026; Jose's decision): the legal footer is in the flow, in the page's last row under the
+   * card and its links, instead of absolute over that row. At the default size the row was empty and the footer hung in
+   * it, so it draws where it did; when 200% text makes the column taller, the footer moves down below the links instead
+   * of covering them. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):not(#mobile-access-page) > .q-auth__foot:not(#af1):not(#af2) { position: static !important; }
   /* Phase 9: a footer that carries Mobile Access's "Need help?" line is two rows tall, so it takes its own grid row
      under the card instead of sitting absolute over the page's foot, where tall cards (Set up, Reset and Forgot, most
      in Spanish) ran under "¿Necesitas ayuda?". The one-row legal footer keeps its place. */
