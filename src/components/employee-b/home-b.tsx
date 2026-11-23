@@ -248,12 +248,12 @@ function ComingUp({week, snapshot, lead, note}: {week: HomeWeek; snapshot: HomeS
   const allLed = !!lead && shownRows.length > 1 && shownRows.every(shift => shift.lead);
   return <BCard title={allLed ? <>Coming up<span className="eb-hmeta">{t.leadAll(shownRows.length)}</span></> : 'Coming up'} id="b-home-upcoming" link={{href: '/app/schedule', label: 'See all', aria: 'See all shifts'}}>
     <BList>{shownRows.map(shift => {
-      const at = utcDay(shift.date);
       const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${shift.id ? `&shift=${encodeURIComponent(shift.id)}` : ''}`;
-      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date}/>} title={<Range text={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)}/>}
+      // Proposed G67 (Nov 23, 2026): the row is named by what it shows ("Tue 24 9:00 AM – 5:00 PM Barista, Calle Loíza");
+      // its own label ("Tuesday, November 24, 9:00 AM to 5:00 PM, …") differed from it.
+      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date} spoken/>} title={<Range text={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)}/>}
         // Review B6 (NV-163): "Shift lead" leads the sub-line, as on Schedule, so it never competes with a chip.
-        sub={lead && shift.lead && !allLed || shift.where ? <Dotted text={[lead && shift.lead && !allLed ? 'Shift lead' : null, shift.where].filter(Boolean).join(' · ')}/> : undefined}
-        label={keepWhole(`${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(at)}, ${wallTime(shift.startTime)} to ${wallTime(shift.endTime)}${shift.where ? `, ${shift.where}` : ''}${lead && shift.lead ? ', shift lead' : ''}`)}/>;
+        sub={lead && shift.lead && !allLed || shift.where ? <Dotted text={[lead && shift.lead && !allLed ? 'Shift lead' : null, shift.where].filter(Boolean).join(' · ')}/> : undefined}/>;
     })}</BList>
     {/* Review B6 (NV-273): the note about what isn't published yet qualifies these shifts, so it is the card's footer. */}
     {note ? <BCardNote>{note}</BCardNote> : null}
@@ -330,8 +330,8 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
     // urgent (the first required one) keeps the teal Review pill, so the card has one primary action.
     return item.required
       ? key === firstRequired
-        ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} label={`${title}, action needed, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
-        : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron label={`${title}, action needed`}/>
+        ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
+        : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron/>
       // Round 2 (H2): a request that waits for your answer says so with Requests' own amber chip, and keeps its chevron.
       : needsAnswer(item) ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">{t.needsYourAnswer}</BChip>} sub={sub}/>
       : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} sub={sub}/>;
