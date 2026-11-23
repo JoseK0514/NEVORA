@@ -109,3 +109,25 @@ it('stops the PIN step with the language pill whole, or out of view, never cut b
  expect(pinStepScroll({viewport:568,cardTop:265,continueBottom:725,footTop:null,footBottom:null})).toBe(165);
  expect(pinStepScroll({viewport:844,cardTop:20,continueBottom:803,footTop:817,footBottom:873})).toBe(0);
 });
+
+/* K3 Enter Employee ID (Phase 2, Nov 23, 2026): the Employee ID field and the PIN field are the same size and sit in the same
+ * place at every kiosk size, so moving between the two steps doesn't shift the card. At 390x844 the phone rules made the ID
+ * field 54px and 6px lower than the 60px PIN field. The browser capture is the evidence (tools/ui-scan,
+ * NEVORA_SCAN_CLOCKER_FLOW=k3); this guard keeps the rule pairs. */
+it('keeps the Employee ID field the PIN field’s height and place in every media block that sizes either',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const css=readFileSync(new URL('./clocker.module.css',import.meta.url),'utf8').replace(/\/\*[\s\S]*?\*\//g,'');
+ const base=css.indexOf('.pin { position: relative;');expect(base).toBeGreaterThan(0);
+ // Media blocks after the base field rules (an earlier block is overridden by them).
+ const blocks:{query:string;body:string}[]=[];const re=/@media([^{]+)\{/g;let m:RegExpExecArray|null;
+ while((m=re.exec(css))){let depth=1,i=re.lastIndex;for(;i<css.length&&depth;i++){if(css[i]==='{')depth++;else if(css[i]==='}')depth--;}if(m.index>base)blocks.push({query:m[1].trim(),body:css.slice(re.lastIndex,i-1)});}
+ const value=(body:string,selector:RegExp,prop:string)=>{let found:string|null=null;for(const r of body.matchAll(/([^{}]+)\{([^}]*)\}/g)){if(r[1].split(',').some(s=>selector.test(s.trim()))){const d=new RegExp(`(?:^|;)\\s*${prop}:\\s*([^;]+)`).exec(r[2]);if(d)found=d[1].trim();}}return found;};
+ let checked=0;
+ for(const {query,body} of blocks){
+  const pinH=value(body,/^\.pin$/,'height'),idH=value(body,/^\.idEntry input$/,'height');
+  const pinM=value(body,/^\.pin$/,'margin-top'),idM=value(body,/^\.idEntry$/,'margin-top');
+  if(pinH||idH){expect([query,idH]).toEqual([query,pinH]);checked++;}
+  if(pinM||idM){expect([query,idM]).toEqual([query,pinM]);checked++;}
+ }
+ expect(checked).toBeGreaterThanOrEqual(4);
+});
