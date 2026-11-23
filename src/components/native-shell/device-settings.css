@@ -69,3 +69,7 @@
 /* The live line is in place from the start (empty until a failure has its own message). */
 :is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .portal-device-settings .native-device-card p.nd-msg { margin: 8px 0 0; max-width: 40ch; font-size: .875rem; line-height: 1.25rem; font-weight: 600; color: var(--b-ink2, #3F464B); }
 :is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .portal-device-settings .native-device-card p.nd-msg[data-tone=amber] { color: #8A4B00; }
+/* The corporate kit sets the secondary and danger words with !important (corp.css), which kept the turn-off secondary's
+   words ink and the popover's solid red confirmation button's words ink on red (axe color-contrast). */
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .native-device-card .c-btn.c-btn--secondary.nd-btn-off:not(:disabled) { color: #B42318 !important; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card [data-native-confirm] .c-btn.c-btn--danger.c-btn--danger { color: #FFFFFF !important; }
