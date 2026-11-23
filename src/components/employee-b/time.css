@@ -175,6 +175,10 @@
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__name { flex: 1 0 auto; width: auto; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours { flex: 0 1 auto; min-width: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); text-align: right; font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours--off { color: var(--b-grey); }
+/* C10 Availability (Phase 2 gate, Nov 23): with large text a day's hours wrap after the dash instead of ending in "…"
+ * ("7:00 AM – …" at 390 with 200% text); at normal sizes they still sit on one line at the right. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__name { flex: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours { flex: 1 1 0; white-space: normal; overflow: visible; text-overflow: clip; text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day > .c-chev { flex: none; width: 18px; height: 18px; color: var(--b-field-edge); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn {
   display: flex; align-items: center; justify-content: center; width: auto; height: auto; min-height: 48px; padding: 0 var(--b-space-16); border: 0; border-radius: 16px; background: var(--b-teal); color: #FFFFFF; box-shadow: none;

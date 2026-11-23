@@ -52,6 +52,6 @@ it("explains optional positions and guards forms before hydration", async () => 
   expect(html).toContain("JavaScript is required to add or edit positions.");
   expect(html).toContain("No positions yet");
   // Before hydration the Add button is off, so nothing opens an editor that cannot save.
-  expect(html).toMatch(/<button id="position-add" type="button" class="c-btn c-btn--secondary" disabled="">Add position<\/button>/);
+  expect(html).toMatch(/<button id="position-add" type="button" class="c-btn" disabled="">Add position<\/button>/);
   expect(html).not.toContain("Couldn’t load positions.");
 });

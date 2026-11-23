@@ -185,8 +185,8 @@ export default async function SchedulePage({
         ? <span className={b ? "b-date" : "c-sched-place"}><MapPinIcon size={15} weight="bold" aria-hidden="true" /><span className="sr-only">Location: </span>{placeName}</span>
         : <ActionMenu id={b ? "b-scoped-location-menu" : "scoped-location-menu"} label="Location" title="Location" ariaLabel={`Location: ${placeName}`} align="end"
             triggerClassName={b ? "b-btn b-btn--glass" : "c-select-btn c-sched-loc"} triggerContent={<>{b ? <MapPinIcon size={15} weight="bold" aria-hidden="true" /> : null}{placeName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>
-            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=all`}><strong>All your locations</strong></Link>
-            {data.locations.map(l => <Link key={l.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(l.id)}`}><strong>{l.shortName || l.name}</strong></Link>)}
+            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=all`} aria-current={selected ? undefined : "page"}><strong>All your locations</strong></Link>
+            {data.locations.map(l => <Link key={l.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(l.id)}`} aria-current={selected?.id === l.id ? "page" : undefined}><strong>{l.shortName || l.name}</strong></Link>)}
           </ActionMenu>;
       const scopedTodayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
       const marketplace = (await currentPresentation()).modules.marketplace;
@@ -326,7 +326,9 @@ export default async function SchedulePage({
       confirmationNeeded={employeeAcknowledgement.needsAcknowledgement}
       error={params.error ? params.error === 'conflict' ? 'The schedule changed. Review the current week before confirming.' : params.error === 'blocked' ? 'This review is no longer authorized. Sign in and review the schedule again.' : 'The result could not be confirmed. Retry the original confirmation to check its outcome.' : false}
       receipt={!!params.acknowledged && employeeAcknowledgement.acknowledged}
-      changes={<SchedulePublicationChange changes={publicationChanges} locationNames={Object.fromEntries(locations.map(location => [location.id, location.shortName]))} />}
+      // Gaps G80 (Nov 23, 2026): no changes means no "changes" row (an empty element drew a blank row under the open
+      // shifts and titled the card "Open shifts and changes").
+      changes={publicationChanges.length ? <SchedulePublicationChange changes={publicationChanges} locationNames={Object.fromEntries(locations.map(location => [location.id, location.shortName]))} /> : null}
     />;
   }
   // Status chips and hour targets are optional context: a failed read hides them, never shows zero.
@@ -489,7 +491,7 @@ export default async function SchedulePage({
                 <Link className="nevora-action-menu-item" href={publishHref}><strong>Build and publish</strong></Link>
                 {/* Review Nov 14 (AR-9): team Availability had no menu entry for an Owner or Manager; it opens here, on the
                   week being planned, before the week is built. */}
-                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`} aria-label="Availability: who can work and when"><strong>Availability</strong><span className="c-menu-value">Who can work and when</span></Link>
+                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`}><strong>Availability</strong><span className="b-sr">, </span><span className="c-menu-value">Who can work and when</span></Link>
                 <ScheduleCopyForm actorId={session.id} className="nevora-action-menu-item c-sched-menu-copy" label={<strong>Copy previous week</strong>} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
                 <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Week templates</strong></Link>
                 <PrintScheduleButton />
@@ -499,7 +501,7 @@ export default async function SchedulePage({
                 <p className="c-menu-label" id="schedule-options-settings">Settings</p>
                 <div className="c-menu-card">
                 <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong></Link>
-                <Link className="nevora-action-menu-item manager-issue-target" id="schedule-deadline" href={`/app/schedule/settings?week=${weekStart}&open=deadline#rules-deadline`} aria-label={`Availability deadline, ${deadlineText}`}><strong>Availability deadline</strong><span className="c-menu-value">{deadlineText}</span></Link>
+                <Link className="nevora-action-menu-item manager-issue-target" id="schedule-deadline" href={`/app/schedule/settings?week=${weekStart}&open=deadline#rules-deadline`} ><strong>Availability deadline</strong><span className="b-sr">, </span><span className="c-menu-value">{deadlineText}</span></Link>
                 <Link className="nevora-action-menu-item" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><strong>Activity</strong></Link>
                 </div>
               </div>

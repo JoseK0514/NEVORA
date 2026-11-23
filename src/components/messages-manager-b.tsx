@@ -5,7 +5,7 @@ import {type ReactNode} from 'react';
 import {MegaphoneIcon} from '@phosphor-icons/react/dist/ssr/Megaphone';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {BButtonLink, BCard, BHero, BIcon, BList, BRow, BScreen, BSegs, BState, type BStateKind} from './owner-b/b-kit';
-import {CorpButtonLink, CorpPage, CorpTitle} from './corp/corp';
+import {CorpButtonLink, CorpNav, CorpPage, CorpTitle} from './corp/corp';
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
 import './messages-manager-b.css';
 
@@ -40,10 +40,11 @@ export type ManagerListStatus = {kind: BStateKind; title: string; line?: string;
 /** The band, then the cards. The cards are drawn once (b-keep): on a phone they sit under the BScreen's hero and lift over
  * it as its stack would; on tablets and desktop they follow the page's CorpTitle, which the B layer paints as the band. So
  * every control, live region and focus target exists once. */
-export function ManagerMessagesPage({className, titleId, title, sub, back, action, phoneRight, cards, label, phoneBand, band, busy}: {
+export function ManagerMessagesPage({className, titleId, title, sub, back, deskBack, action, phoneRight, cards, label, phoneBand, band, busy}: {
   /** A control that belongs to the band (filters): in the hero on a phone, under the title (the band) from 768px. */ phoneBand?: ReactNode; band?: ReactNode;
   /** A read is in flight. */ busy?: boolean;
   className: string; titleId: string; title: ReactNode; sub?: ReactNode; back?: {href: string; label: string; close?: boolean};
+  /** Gaps item F9 (Nov 23, 2026): the back link also on the band from 768px ("‹ Home", "‹ Updates"), as Shift requests has. */ deskBack?: boolean;
   /** The band's one action on tablets and desktop. */ action?: ReactNode;
   /** The hero's one action on a phone. */ phoneRight?: ReactNode;
   cards: ReactNode; label?: string;
@@ -52,6 +53,7 @@ export function ManagerMessagesPage({className, titleId, title, sub, back, actio
     <BScreen back={!!back}>
       <BHero back={back} title={title} titleId={`b-${titleId}`} sub={sub} right={phoneRight}>{phoneBand}</BHero>
     </BScreen>
+    {deskBack && back ? <CorpNav back={back} phoneOnly /> : null}
     <CorpTitle id={titleId} title={title} sub={sub} actions={action} wide={!!back} />
     {band ?? null}
     <div className="b-keep mb-cards" role={label ? 'group' : undefined} aria-label={label} aria-busy={busy || undefined}>{cards}</div>

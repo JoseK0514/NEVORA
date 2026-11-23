@@ -92,6 +92,10 @@ describe('Direction B foundation (Nov 14 inspection)', () => {
     expect(sheet).toContain(`${low} {\n      background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }`);
     expect(contexts(sheet, high)).toEqual([['@layer nv-b', '@media (min-width: 768px)']]);
     expect(contexts(sheet, low)).toEqual([['@layer nv-b', '@media (min-width: 768px)']]);
+    // Final fixes K2 (G-ST7): the quiet pages' section tabs (Time off requests) take the same paint.
+    const quiet = '.q-page > .q-hd ~ nav.c-seg:not(#g48a):not(#g48b)';
+    expect(sheet).toContain(`${quiet} {\n      background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }`);
+    expect(contexts(sheet, quiet)).toEqual([['@layer nv-b', '@media (min-width: 768px)']]);
     // Four id steps: over the desktop layer's search field rule (three :is() ids and :not(#nvd-none)).
     expect(css('app/app/owner-b-desktop.css')).toContain('form.c-team-search .c-team-search__field:not(#nvd-none) {');
   });

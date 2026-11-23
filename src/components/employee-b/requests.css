@@ -106,7 +106,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px var(--b-inset) var(--b-space-20); text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { width: 48px; height: 48px; border-radius: var(--b-radius-pill); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico svg { width: 22px; height: 22px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__t { font-size: 16px; line-height: 22px; font-weight: 600; text-wrap: balance; } /* Review F3 (NV-230): 16/22, the one empty-state title. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__t { font-size: 1rem; line-height: 1.375rem; font-weight: 600; text-wrap: balance; } /* Review F3 (NV-230): 16/22, the one empty-state title. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { max-width: 30ch; font-size: var(--b-fs-meta); color: var(--b-grey); text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-12); min-height: 52px; padding: var(--b-space-8) var(--b-inset); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-ink2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline + .b-list > .b-li:first-child, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-list + .eb-inline { box-shadow: inset 0 1px 0 var(--b-line); }
@@ -222,7 +222,7 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-receipt h2 { font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700; letter-spacing: -0.01em; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-receipt p { font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xsk { border-radius: var(--b-radius-field); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 1.1875rem; } /* rem, so the lines keep apart at 200% text (Phase 2 gate) */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { margin-bottom: 5px; }
 /* Final polish, round 2 (R3): a card's foot. One teal text link (the kit's .b-link, 44px tall) under a hairline, at the
  * card's inset: "See every posted shift" under Open shifts' list, its empty state and its failed state. */

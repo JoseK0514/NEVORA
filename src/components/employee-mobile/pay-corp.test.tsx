@@ -108,3 +108,19 @@ describe('Pay history and Paycheck (E-PayHistory, E-Paycheck)',()=>{
   expect(text(render({},'paycheck=00000000-0000-4000-8000-00000000000f'))).toContain('That statement isn’t available');
  });
 });
+
+// Phase 2 (G10, brief rule 1): an Owner's or Manager's My pay is this same screen with their own statements.
+describe('My pay for Owners and Managers',()=>{
+ const home={title:'My pay',back:{href:'/app/more',label:'More'}};
+ it('is the Employee Pay screen named My pay, pushed from More, with the same statements and empty state',()=>{
+  const html=createElement(CorpPayView,{...base,home});route.search='';const out=renderToStaticMarkup(html);
+  expect(out).toContain('id="b-pay-title"');expect(text(out)).toContain('My pay');expect(out).toContain('href="/app/more"');
+  expect(out).toContain('id="pay-title"');expect(text(out)).not.toMatch(/Only you can see them/);
+  const empty=text(renderToStaticMarkup(createElement(CorpPayView,{...base,statements:[],home})));
+  expect(empty).toContain('No published statements yet');expect(empty).not.toContain('Only you can see them');
+ });
+ it('names the way back from a statement and from history after the page',()=>{
+  expect(render({home} as Partial<PayView>,`paycheck=${ids.correction}`)).toContain('My pay');
+  expect(text(renderToStaticMarkup(createElement(CorpPayView,{...base,home})))).not.toContain('‹ Pay ');
+ });
+});
