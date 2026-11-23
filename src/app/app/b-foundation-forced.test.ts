@@ -11,10 +11,12 @@ it("sits in the kit's layer", () => {
 
 it("marks the chosen tab of every segmented control and keeps a focus outline", () => {
   expect(block).toMatch(/:is\(\.b-seg, \.c-seg, \.q-seg[^{]*\{ outline: 2px solid Highlight !important;/);
+  expect(block).toContain(".c-tc-tabs, .c-tabs, [data-c-tabs]");
   expect(block).toMatch(/:focus-visible[^{]*\{ outline: 2px solid Highlight !important;/);
 });
 
 it("keeps status dots in the text colour", () => {
+  expect(block).toContain(".b-week__legend > i)");
   expect(block).toMatch(/:is\(\.mb-dot, \.b-dot, \.eb-unread[^{]*\{ forced-color-adjust: none !important; background: CanvasText !important; \}/);
   expect(readFileSync("src/components/access-recovery/access-recovery.css", "utf8")).toMatch(/forced-colors: active\) \{\s*[^{]*\.ar-rule__dot \{ forced-color-adjust: none !important; background: CanvasText !important; \}/);
 });
