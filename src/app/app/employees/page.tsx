@@ -4,6 +4,7 @@ import {ScopedTeam} from '@/components/company-access/scoped-team';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
+import {readPortalLanguage} from '@/lib/activation/language.server';
 import { EmployeeDirectory } from "@/components/employee-directory";
 import {readWorkspaceRoutingConfig} from '@/lib/workspace-routing/config.server';
 /** The import page answers "not available" unless company workspaces are routed (the roster routes read the same
@@ -22,15 +23,17 @@ export default async function EmployeesPage({ searchParams }: {
 } = {}) {
   const actor=await requireRoles(MANAGER_ROLES);
   const params=await(searchParams??Promise.resolve({}));
-  const source=await readOperationalDirectory(await requireSessionMutationProof());
+  const proof=await requireSessionMutationProof();
+  const source=await readOperationalDirectory(proof);
   if(source.state==='unavailable')return <OperationalUnavailable title="Employees unavailable" reason={source.reason}/>;
   // Phase 2 (Nov 22, 2026): a location Manager's Team is the company Manager's Team with the scoped read's people. The
   // search and the place filter only choose among those people; the place must be one of the Manager's own.
   if(source.data.mode==='LOCATIONS'){
     const search=params as DirectorySearchParams,one=(value:string|string[]|undefined)=>typeof value==='string'?value:'';
     const location=one(search.location),place=source.data.locations.length>1?source.data.locations.find(item=>item.id===location)?.id:undefined;
+    let lang:'en'|'es'='en';try{lang=(await readPortalLanguage(proof)).language;}catch{/* English */}
     return <ScopedReadFrame observation={scopedObservation(source)}><ScopedTeam data={source.data} query={one(search.q).trim().slice(0,128)} locationId={place}
-      showAll={one(search.all)==='1'} words={wordPreset((await currentPresentation()).words).en}/></ScopedReadFrame>;
+      showAll={one(search.all)==='1'} words={wordPreset((await currentPresentation()).words)[lang]} lang={lang}/></ScopedReadFrame>;
   }
   const {employees,locations}=source.data;
   const filters = readDirectoryFilters(params, locations);

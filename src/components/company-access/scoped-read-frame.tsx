@@ -11,6 +11,8 @@ import {BRouteLoading} from '../owner-b/b-loading';
 import {ScopedRefreshContext} from './scoped-refresh';
 import {OPERATIONAL_RETRY_EVENT} from './use-operational-navigation';
 import {announceOfflineHeld,steppedAway} from '@/lib/offline-hold';
+import {accessCopy,type AccessCopy,type AccessLang} from './access-copy';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
 
 export type ScopedObservation={authority:string;observedAt:string;validForMs:number};
 type CurrentAuthority=Extract<OperationalAuthorityView,{state:'ready'}>&{requestStartedAt:number};
@@ -56,10 +58,23 @@ function refreshPage(router:{replace:(href:string,options?:{scroll?:boolean})=>v
 /** QA S-01 (Nov 21, 2026): on a slow connection a check still running after STUCK_MS was drawn as a failure ("Couldn’t
  * check your access") although nothing had failed. Only a check that answered unavailable fails; a slow one says it is
  * still checking. Paused and offline keep their words. */
-export function frameStateWords(phase:'paused'|'expired'|'ready',offline:boolean,checkFailed:boolean):{kind:'offline'|'paused'|'failed'|'loading';title:string;line:string}{
- if(phase==='paused')return offline?{kind:'offline',title:'You’re offline',line:'Reconnect to see this page.'}:{kind:'paused',title:'View paused',line:'Come back to this window to see current information.'};
- if(checkFailed)return {kind:'failed',title:'Couldn’t check your access',line:'Try again to load this page.'};
- return {kind:'loading',title:'Still checking your access',line:'This connection is slow. The page appears when the check finishes.'};
+export function frameStateWords(phase:'paused'|'expired'|'ready',offline:boolean,checkFailed:boolean,lang?:AccessLang):{kind:'offline'|'paused'|'failed'|'loading';title:string;line:string}{
+ const t=accessCopy(lang).frame;
+ if(phase==='paused')return offline?{kind:'offline',title:t.offlineTitle,line:t.offlineLine}:{kind:'paused',title:t.pausedTitle,line:t.pausedLine};
+ if(checkFailed)return {kind:'failed',title:t.failedTitle,line:t.failedLine};
+ return {kind:'loading',title:t.loadingTitle,line:t.loadingLine};
+}
+/** One of the frame's own words in the person's language (usePortalLang, or the frame's `lang` when a caller gives it).
+ * A component of its own, so the frame's body reads the language where React renders it. */
+function FrameWord({word,lang}:{word:keyof AccessCopy['frame'];lang?:AccessLang}){
+ const portal=usePortalLang();
+ return accessCopy(lang??portal).frame[word];
+}
+/** The paused, offline, slow or failed screen, in the person's language. */
+function FrameStateScreen({phase,offline,checkFailed,lang,onRetry}:{phase:'paused'|'expired'|'ready';offline:boolean;checkFailed:boolean;lang?:AccessLang;onRetry:()=>void}){
+ const portal=usePortalLang(),language=lang??portal,words=accessCopy(language).frame;
+ const {kind,title,line}=frameStateWords(phase,offline,checkFailed,language);
+ return <BStateScreen title={title} back={{href:'/app',label:words.home}} offlineInTitle={kind==='offline'}><BState kind={kind} line={line} action={{label:words.tryAgain,onClick:onRetry}}/></BStateScreen>;
 }
 /** Test seam: a fresh tab. */
 export function resetScopedReadTab(){tab.retiredAt=-Infinity;tab.cutoff=null;tab.fence=null;}
@@ -70,7 +85,8 @@ export function resetScopedReadTab(){tab.retiredAt=-Infinity;tab.cutoff=null;tab
  * The existing endpoint and RSC observations both originate in the SQL authority
  * reader. Client wall time is never used as the post-retirement cutoff.
  */
-export function ScopedReadFrame({observation,children,unavailable}:{observation?:ScopedObservation|null;children?:ReactNode;unavailable?:ReactNode}){
+export function ScopedReadFrame({observation,children,unavailable,lang}:{observation?:ScopedObservation|null;children?:ReactNode;unavailable?:ReactNode;
+ /** Signed-in Spanish (Nov 23, 2026): the frame's own words follow usePortalLang(); a caller may name the language. */ lang?:AccessLang}){
  const router=useRouter();
  const navigation=useAppNavigation(),deferredRefresh=useRef(false);
  const viewDeadline=useRef(0),offlineExpiry=useRef<ReturnType<typeof setTimeout>|null>(null);
@@ -223,7 +239,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  // this frame's fresh check from the context), so the page has one card with all its actions.
  if(!observation&&unavailable)return <ScopedRefreshContext.Provider value={refreshCurrent}><div className="scoped-unavailable">{unavailable}</div></ScopedRefreshContext.Provider>;
  const checking=body.phase!=='paused'&&!stuck;
- const stateSection=<section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
+ const stateSection=<section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2><FrameWord lang={lang} word={body.phase==='paused'?'pausedTitle':recovery.required?'needsCheck':'checking'}/></h2><p><FrameWord lang={lang} word={body.phase==='paused'?'pausedBody':'checkingBody'}/></p><button className="button secondary" type="button" onClick={refreshCurrent}><FrameWord lang={lang} word="refresh"/></button></section>;
  // Review F2 (NV-074): under Direction B the brief check draws the page's band and 22px card placeholders (the same top
  // bar as the loaded page, which floats over the band), so nothing jumps when the page lands. Review F5: the band takes
  // each main tab's loaded height (b-foundation.css, keyed by the sidebar entry that is the current page), and tablets and
@@ -240,8 +256,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  // the older corporate card with a grey Try again; that copy is gone (the wrapper's class lets the desktop layer draw the
  // Direction B screen there, as it does for the placeholder).
  const offlineNow=typeof navigator!=='undefined'&&!navigator.onLine;
- const {kind,title,line}=frameStateWords(body.phase,offlineNow,checkFailed);
  return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
-  <BStateScreen title={title} back={{href:'/app',label:'Home'}} offlineInTitle={kind==='offline'}><BState kind={kind} line={line} action={{label:'Try again',onClick:refreshCurrent}}/></BStateScreen>
+  <FrameStateScreen phase={body.phase} offline={offlineNow} checkFailed={checkFailed} lang={lang} onRetry={refreshCurrent}/>
  </div>;
 }

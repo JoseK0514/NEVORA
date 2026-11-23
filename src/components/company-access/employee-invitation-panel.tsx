@@ -7,14 +7,18 @@ import type {InvitationCommand,InvitationResult,InvitationStatusResult} from '@/
 import {readInvitationResult,readInvitationStatus} from './commands';
 import styles from './company-access.module.css';
 
-const deliveryText={UNAVAILABLE:'Invitation email is not available.',PREPARED:'Prepared for email delivery. Receipt is not confirmed.',PROVIDER_ACCEPTED:'Accepted for email delivery. This does not confirm receipt or activation.',UNKNOWN:'Email delivery could not be confirmed.',FAILED:'Email delivery failed. Account activation is not confirmed.'};
-const invitationText={ISSUED:'Invitation issued',CONSUMED:'Invitation used',REVOKED:'Invitation revoked',EXPIRED:'Invitation expired',INVALIDATED:'Invitation no longer valid'};
+import {accessCopy,type AccessLang} from './access-copy';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
 
 /** A different actor/target gets fresh transient state, never a previous receipt. */
-export function EmployeeInvitationPanel(props:{employeeId:string;initialStatus:InvitationStatusResult;actorId:string}){
+export function EmployeeInvitationPanel(props:{employeeId:string;initialStatus:InvitationStatusResult;actorId:string;
+ /** The person's language (Signed-in Spanish, Nov 23, 2026). */ lang?:AccessLang}){
  return <InvitationPanel key={JSON.stringify([props.actorId,props.employeeId,props.initialStatus.state==='unavailable'&&props.initialStatus.reason==='access_denied'])} {...props}/>;
 }
-function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;initialStatus:InvitationStatusResult;actorId:string}){
+function InvitationPanel({employeeId,initialStatus,actorId,lang:langProp}:{employeeId:string;initialStatus:InvitationStatusResult;actorId:string;lang?:AccessLang}){
+ // Signed-in Spanish (Nov 23, 2026): the person's language, unless the caller names one.
+ const portalLang=usePortalLang(),lang=langProp??portalLang;
+ const t=accessCopy(lang).invite,deliveryText=t.delivery,invitationText=t.state;
  const [status,setStatus]=useState(initialStatus),[pending,setPending]=useState(false),[message,setMessage]=useState(''),[receipt,setReceipt]=useState<Extract<InvitationResult,{state:'saved'}>['receipt']|null>(null),[confirm,setConfirm]=useState<'ISSUE'|'REVOKE'|null>(null),[uncertain,setUncertain]=useState(false);
  // Nov 14, 2026 inspection (JR-5): the server refused to issue because email delivery isn't configured for this workplace.
  // Nothing was written and refreshing can't fix it, so the panel says so, names support and stops offering to send.
@@ -23,7 +27,7 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
  useEffect(()=>{mounted.current=true;function retire(){++generation.current;request.current?.abort();command.current=null;}return()=>{mounted.current=false;retire();};},[]);
  const headers={'x-nevora-company-access':'1','x-nevora-actor':actorId};
  const isCurrent=(version:number)=>mounted.current&&generation.current===version;
- function denied(){++generation.current;request.current?.abort();request.current=null;busy.current=false;setPending(false);setStatus({state:'unavailable',reason:'access_denied'});setReceipt(null);setConfirm(null);command.current=null;setUncertain(false);setDeliveryOff(false);setMessage('Your current access does not allow invitation management. Sign in again or contact your Owner.');}
+ function denied(){++generation.current;request.current?.abort();request.current=null;busy.current=false;setPending(false);setStatus({state:'unavailable',reason:'access_denied'});setReceipt(null);setConfirm(null);command.current=null;setUncertain(false);setDeliveryOff(false);setMessage(t.denied);}
  async function currentStatus(signal:AbortSignal,version:number){
   const response=await fetch('/api/company-access/invitations/'+encodeURIComponent(employeeId),{headers,cache:'no-store',credentials:'same-origin',redirect:'error',signal});
   if(!isCurrent(version))return;
@@ -35,7 +39,7 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
  }
  async function refresh(){
   if(busy.current||command.current)return;busy.current=true;setPending(true);setConfirm(null);setDeliveryOff(false);const version=generation.current,abort=new AbortController();request.current=abort;const timeout=setTimeout(()=>abort.abort(),15000);
-  try{await currentStatus(abort.signal,version);}catch{if(isCurrent(version)){setStatus({state:'unavailable',reason:'read_failed'});setMessage('The invitation didn’t load. Check it again before you do anything else.');}}
+  try{await currentStatus(abort.signal,version);}catch{if(isCurrent(version)){setStatus({state:'unavailable',reason:'read_failed'});setMessage(t.loadFailed);}}
   finally{clearTimeout(timeout);if(isCurrent(version)){busy.current=false;setPending(false);request.current=null;}}
  }
  async function run(reconcile=false){
@@ -53,50 +57,50 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
    if(!isCurrent(version))return;
    if(response.status===401||response.status===403){denied();return;}
    const result=readInvitationResult(await response.json(),submitted.operationId,employeeId);if(!isCurrent(version))return;
-   if(result.state==='outcome_unknown'){setStatus({state:'unavailable',reason:'source_changed'});setUncertain(true);setMessage('The action outcome is not confirmed. Check this action before sending another invitation.');return;}
+   if(result.state==='outcome_unknown'){setStatus({state:'unavailable',reason:'source_changed'});setUncertain(true);setMessage(t.unknown);return;}
    if(!response.ok&&result.state==='saved')throw new Error('Receipt transport unavailable.');
    if(result.state==='saved'){
-    setReceipt(result.receipt);command.current=null;setUncertain(false);setMessage(result.receipt.action==='ISSUE'?'Invitation issued. Check the separate delivery status below.':'Invitation revoked.');
+    setReceipt(result.receipt);command.current=null;setUncertain(false);setMessage(result.receipt.action==='ISSUE'?t.issuedMessage:t.revokedMessage);
     try{await currentStatus(abort.signal,version);}catch{if(isCurrent(version))setStatus({state:'unavailable',reason:'read_failed'});}
    }else if(reconcile){
     // An unavailable historical read cannot prove that the original write failed.
-    setUncertain(true);setMessage('The original action is still not confirmed. Check again before starting another invitation action.');
+    setUncertain(true);setMessage(t.stillUnknown);
    }else if(result.state==='unavailable'&&result.reason==='delivery_unavailable'){
     command.current=null;setUncertain(false);setDeliveryOff(true);
    }else{
     command.current=null;setUncertain(false);setStatus({state:'unavailable',reason:'source_changed'});
-    setMessage(result.state==='limited'?`Too many invitation actions. Wait at least ${Math.ceil(result.retryAfterMs/1000)} seconds, then check the invitation.`:result.state==='conflict'?'This person or their invitation changed. Check the invitation, then choose again.':result.state==='invalid'?result.fieldErrors.map(e=>e.message).join(' '):'The invitation couldn’t be sent. Check the invitation, then try again.');
+    setMessage(result.state==='limited'?t.limited(Math.ceil(result.retryAfterMs/1000)):result.state==='conflict'?t.conflict:result.state==='invalid'?result.fieldErrors.map(e=>e.message).join(' '):t.notSent);
    }
-  }catch{if(isCurrent(version)){setStatus({state:'unavailable',reason:'source_changed'});setUncertain(true);setMessage('The action outcome is not confirmed. Check this action before sending another invitation.');}}
+  }catch{if(isCurrent(version)){setStatus({state:'unavailable',reason:'source_changed'});setUncertain(true);setMessage(t.unknown);}}
   finally{clearTimeout(timeout);if(isCurrent(version)){busy.current=false;setPending(false);request.current=null;}}
  }
  const available=status.state==='ready',deniedAccess=status.state==='unavailable'&&status.reason==='access_denied';
  return <section className={'panel '+styles.stack} aria-labelledby={'invitation-'+employeeId} aria-busy={pending}>
-  <h2 id={'invitation-'+employeeId} className={styles.heading}><EnvelopeSimpleIcon size={22} weight="duotone" aria-hidden="true"/> Account invitation</h2>
+  <h2 id={'invitation-'+employeeId} className={styles.heading}><EnvelopeSimpleIcon size={22} weight="duotone" aria-hidden="true"/> {t.title}</h2>
   {available?<div className={styles.status}>
-   <p><strong>{status.eligibility==='ALREADY_ACTIVATED'?'Account activated':status.invitation?invitationText[status.invitation.state]:'No invitation yet'}</strong></p>
-   {status.registeredEmailMasked&&<p>Email: {status.registeredEmailMasked}</p>}
-   {status.eligibility==='NO_EMAIL'&&<p>Add their email in Details before you send an invitation. You can save someone without an email.</p>}
-   {status.eligibility==='INACTIVE'&&<p>This person is deactivated. Bring them back before you invite them.</p>}
-   {status.eligibility==='SELF_ISSUE_DENIED'&&<p>Ask another Owner to manage your invitation.</p>}
+   <p><strong>{status.eligibility==='ALREADY_ACTIVATED'?t.activated:status.invitation?invitationText[status.invitation.state]:t.none}</strong></p>
+   {status.registeredEmailMasked&&<p>{t.email}{status.registeredEmailMasked}</p>}
+   {status.eligibility==='NO_EMAIL'&&<p>{t.noEmail}</p>}
+   {status.eligibility==='INACTIVE'&&<p>{t.inactive}</p>}
+   {status.eligibility==='SELF_ISSUE_DENIED'&&<p>{t.selfDenied}</p>}
    {/* Backend (Nov 15, 2026): deliveryAvailable says whether invitation email is configured for this workplace (not that
      * any email arrived). When it isn't, the reason shows before anyone tries to send; a Manager's read is read-only
      * (allowedCommands is empty), so it says who sends invitations. */}
-   {status.eligibility==='INVITABLE'&&!status.deliveryAvailable&&!deliveryOff&&<p>Email invitations aren’t turned on for this workplace yet, so an invitation can’t be sent. Contact <a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
-   {status.eligibility==='INVITABLE'&&status.deliveryAvailable&&!status.allowedCommands.length&&<p>An Owner sends invitations.</p>}
+   {status.eligibility==='INVITABLE'&&!status.deliveryAvailable&&!deliveryOff&&<p>{t.deliveryOffBefore}<a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
+   {status.eligibility==='INVITABLE'&&status.deliveryAvailable&&!status.allowedCommands.length&&<p>{t.ownerSends}</p>}
    {status.invitation&&<p>{deliveryText[status.delivery]}</p>}
-  </div>:<p role="status">{deniedAccess?'Your access changed, so you can’t manage invitations.':'The invitation didn’t load. Check it again.'}</p>}
-  {receipt&&<div className={styles.receipt}><strong>{receipt.action==='ISSUE'?'Invitation issued':'Invitation canceled'}</strong><p>{deliveryText[receipt.delivery]}</p><small>Check invitation shows where it stands now.</small></div>}
+  </div>:<p role="status">{deniedAccess?t.accessChanged:t.didntLoad}</p>}
+  {receipt&&<div className={styles.receipt}><strong>{receipt.action==='ISSUE'?t.receiptIssued:t.receiptCanceled}</strong><p>{deliveryText[receipt.delivery]}</p><small>{t.checkShows}</small></div>}
   {message&&<p role={uncertain?'alert':'status'} aria-live="polite">{message}</p>}
-  {deliveryOff&&<p role="status" aria-live="polite">Email invitations aren’t turned on for this workplace yet. Contact <a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
-  {confirm&&<div className={styles.receipt} role="group" aria-label="Confirm invitation action"><p>{confirm==='REVOKE'?'Cancel this invitation? The link in their email stops working, and they’ll need a new invitation to activate.':status.state==='ready'&&status.invitation?'Send a new invitation to their email? The earlier one stops working.':'Send an invitation to their email?'}</p><div className={`${styles.actions} ${styles.confirmActs}`}><button type="button" className="button secondary" disabled={pending} onClick={()=>setConfirm(null)}>{confirm==='REVOKE'?'Keep invitation':'Don’t send'}</button><button type="button" className="button primary" disabled={pending} onClick={()=>void run()}>{confirm==='REVOKE'?'Cancel invitation':'Send invitation'}</button></div></div>}
+  {deliveryOff&&<p role="status" aria-live="polite">{t.deliveryOff}<a className="c-link" href="mailto:support@thevelani.com">support@thevelani.com</a>.</p>}
+  {confirm&&<div className={styles.receipt} role="group" aria-label={t.confirmGroup}><p>{confirm==='REVOKE'?t.confirmRevoke:status.state==='ready'&&status.invitation?t.confirmResend:t.confirmSend}</p><div className={`${styles.actions} ${styles.confirmActs}`}><button type="button" className="button secondary" disabled={pending} onClick={()=>setConfirm(null)}>{confirm==='REVOKE'?t.keep:t.dontSend}</button><button type="button" className="button primary" disabled={pending} onClick={()=>void run()}>{confirm==='REVOKE'?t.cancel:t.send}</button></div></div>}
   <div className={styles.actions}>
-   {uncertain?<button type="button" className="button secondary" disabled={pending} onClick={()=>void run(true)}>{pending?'Checking…':'Check what happened'}</button>:<>
-    {available&&!deliveryOff&&status.allowedCommands.includes('ISSUE')&&<button type="button" className="button primary" disabled={pending||!!confirm} onClick={()=>setConfirm('ISSUE')}>{status.invitation?'Send new invitation':'Send invitation'}</button>}
-    {available&&status.allowedCommands.includes('REVOKE')&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>setConfirm('REVOKE')}>Cancel invitation</button>}
-    {!deniedAccess&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>void refresh()}>{pending?'Checking invitation…':'Check invitation'}</button>}
+   {uncertain?<button type="button" className="button secondary" disabled={pending} onClick={()=>void run(true)}>{pending?t.checking:t.checkWhat}</button>:<>
+    {available&&!deliveryOff&&status.allowedCommands.includes('ISSUE')&&<button type="button" className="button primary" disabled={pending||!!confirm} onClick={()=>setConfirm('ISSUE')}>{status.invitation?t.sendNew:t.send}</button>}
+    {available&&status.allowedCommands.includes('REVOKE')&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>setConfirm('REVOKE')}>{t.cancel}</button>}
+    {!deniedAccess&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>void refresh()}>{pending?t.checkingInvitation:t.check}</button>}
    </>}
-   {deniedAccess&&<Link href="/login" className="button secondary">Sign in again</Link>}
+   {deniedAccess&&<Link href="/login" className="button secondary">{t.signIn}</Link>}
   </div>
  </section>;
 }
