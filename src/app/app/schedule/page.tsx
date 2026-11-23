@@ -326,7 +326,9 @@ export default async function SchedulePage({
       confirmationNeeded={employeeAcknowledgement.needsAcknowledgement}
       error={params.error ? params.error === 'conflict' ? 'The schedule changed. Review the current week before confirming.' : params.error === 'blocked' ? 'This review is no longer authorized. Sign in and review the schedule again.' : 'The result could not be confirmed. Retry the original confirmation to check its outcome.' : false}
       receipt={!!params.acknowledged && employeeAcknowledgement.acknowledged}
-      changes={<SchedulePublicationChange changes={publicationChanges} locationNames={Object.fromEntries(locations.map(location => [location.id, location.shortName]))} />}
+      // Gaps G80 (Nov 23, 2026): no changes means no "changes" row (an empty element drew a blank row under the open
+      // shifts and titled the card "Open shifts and changes").
+      changes={publicationChanges.length ? <SchedulePublicationChange changes={publicationChanges} locationNames={Object.fromEntries(locations.map(location => [location.id, location.shortName]))} /> : null}
     />;
   }
   // Status chips and hour targets are optional context: a failed read hides them, never shows zero.
