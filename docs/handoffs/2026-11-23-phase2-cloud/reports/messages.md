@@ -132,6 +132,16 @@ DOM: band, cards, rows, buttons); Lead/Employee unchanged and not recaptured.
 `operational-page-composition`, `employee-mobile`, `employee-b`: 283 passed, 0 failed. Updated tests that pinned the
 Quiet manager markup and the "Needs reply" / "Read by" wording.
 
+## Accessibility pass (2-hour target, no later end sweep)
+
+After the lead's 2-hour note, a development-build pass with axe and a keyboard walk (Manager, 390 and 1440) on B3, B6, B7
+and B8: fixed Notifications rows and the Unread tab whose screen-reader names differed from their visible text (now the
+visible text, with "unread" as hidden text in the row); Remind (36px) and the phone hero's New update (40px) and All /
+Unread segments (36px) are now 44px tall on these pages. After the fix: axe 0 violations on B3, B6 and B7 at 390 and 1440;
+every focused control has a visible ring and is at least 44px tall. Left: B8's switch input is 51×31 inside a 44px label
+row that toggles it (the label is the target); B8's loading state card line (`.b-statecard__s`, kit) failed axe contrast
+once at 1440 while the form loaded, a kit item for the lead.
+
 ## Blocking items left
 
 None.

@@ -8,7 +8,7 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {BCard, BIcon, BSeg, BSegs, BState} from './owner-b/b-kit';
 import {CorpSegments} from './corp/corp';
 import {useEmployeeAccountRead} from './employee-account-panel';
-import {notificationIcons, reviewLabels, rowFacts, rowText, whenLong} from './notification-inbox';
+import {notificationIcons, reviewLabels, rowFacts, rowText} from './notification-inbox';
 import {notificationGroup} from './employee-mobile/notifications-list';
 import {ManagerMessagesPage, ManagerStateCard, type ManagerListStatus} from './messages-manager-b';
 import {collapseNotifications, notificationPresentation, notificationTitle} from '../lib/notification-inbox-view';
@@ -56,7 +56,7 @@ export function ManagerNotifications({authority, notice}: {authority: string; /*
     const review = item.reviewState ?? 'unavailable', text = rowText(item), facts = held ? rowFacts(item) : [];
     return <li className={held ? 'b-li mb-held' : 'b-li'} key={item.id}>
       <Link className="b-row b-row--link" href={item.href} prefetch={false} onClick={() => { if (review === 'unread') void markRead(item.id); }}
-        aria-label={`${[held ? facts.join(', ') || null : text.title, held ? null : text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at, zone)}`}>
+>
         {held ? <span className="b-lead-space" aria-hidden="true" /> : lead(item)}
         <span className="b-row__tx">
           {held ? <span className="b-row__t"><span className="b-row__tt">{facts.length ? <BSegs parts={facts} /> : <time dateTime={item.at}>{ago(item.at)}</time>}</span></span>
@@ -64,7 +64,7 @@ export function ManagerNotifications({authority, notice}: {authority: string; /*
           {held ? facts.length ? <span className="b-row__s"><time dateTime={item.at}>{ago(item.at)}</time></span> : null
             : <span className="b-row__s"><BSegs parts={[text.detail, <time key="at" dateTime={item.at}>{ago(item.at)}</time>]} /></span>}
         </span>
-        {dot(review === 'unread')}
+        {dot(review === 'unread')}{review === 'unread' ? <span className="b-sr">{`, ${reviewLabels.unread}`}</span> : null}
         <CaretRightIcon className="b-chev" size={16} weight="bold" aria-hidden="true" />
       </Link>
     </li>;
@@ -85,12 +85,11 @@ export function ManagerNotifications({authority, notice}: {authority: string; /*
           const open = expanded.includes(item.id), listId = `notif-fold-${item.id}`, text = notificationTitle(item);
           return <Fragment key={item.id}>
             <li className="b-li"><button type="button" className="b-row b-row--link" aria-expanded={open} aria-controls={open ? listId : undefined}
-              aria-label={`${text.title}, ${count} notifications${unreadIds.length ? `, ${unreadIds.length} unread` : ''}, latest ${whenLong(item.at, zone)}`}
               onClick={() => setExpanded(ids => ids.includes(item.id) ? ids.filter(id => id !== item.id) : [...ids, item.id])}>
               {lead(item)}
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{text.title}</span></span>
                 <span className="b-row__s"><BSegs parts={[`${count} notifications`, <span key="at">latest <time dateTime={item.at}>{ago(item.at)}</time></span>]} /></span></span>
-              {dot(unreadIds.length > 0)}
+              {dot(unreadIds.length > 0)}{unreadIds.length ? <span className="b-sr">{`, ${unreadIds.length} unread`}</span> : null}
               <CaretDownIcon className="b-chev mb-caret" data-open={open || undefined} size={16} weight="bold" aria-hidden="true" />
             </button></li>
             {open ? <li className="b-li mb-fold"><ul className="b-list" id={listId} aria-label={`${text.title}, ${count} notifications`}>{items.map(one => row(one, true))}</ul></li> : null}
@@ -107,7 +106,7 @@ export function ManagerNotifications({authority, notice}: {authority: string; /*
   </>;
   const tabs = ready && ready.items.length ? [
     {key: 'all', label: 'All', current: filter === 'all', onSelect: () => setFilter('all')},
-    {key: 'unread', label: unread ? <>Unread<span className="mb-segn">{unread}</span></> : 'Unread', current: filter === 'unread', onSelect: () => setFilter('unread'), aria: unread ? `Unread, ${unread}` : undefined},
+    {key: 'unread', label: unread ? <>Unread<span className="b-sr"> </span><span className="mb-segn">{unread}</span></> : 'Unread', current: filter === 'unread', onSelect: () => setFilter('unread'), aria: undefined as string | undefined},
   ] : null;
   return <ManagerMessagesPage className="mb-notifs" titleId="notifications-title" title="Notifications" back={{href: '/app', label: 'Home'}}
     phoneBand={tabs ? <BSeg label="Show notifications" items={tabs} /> : null}

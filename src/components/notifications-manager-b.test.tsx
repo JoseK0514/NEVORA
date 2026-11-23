@@ -19,7 +19,8 @@ it('draws the band with All and Unread, then today’s notices as kit rows with 
   const html = render(ready([item('a', 'Schedule published', 'unread', {eventType: 'SCHEDULE_PUBLISHED'}), item('b', 'Time off requested', 'read')]));
   expect(html).toContain('class="b-screen');
   expect(html).toContain('id="notifications-title"');
-  expect(html).toContain('aria-label="Unread, 1"');
+  expect(html).toContain('Unread<span class="b-sr"> </span><span class="mb-segn">1</span>');
+  expect(html).not.toMatch(/<a [^>]*aria-label=/);
   expect(html).toContain('>Today<');
   expect(html).toContain('href="/app/notifications/open?notificationId=a"');
   expect((html.match(/class="mb-dot"/g) ?? []).length).toBe(1);
@@ -29,7 +30,8 @@ it('draws the band with All and Unread, then today’s notices as kit rows with 
 it('folds repeats of one summary into one row that opens in place', () => {
   const html = render(ready([item('a', 'Operations need review', 'unread'), item('b', 'Operations need review', 'read'), item('c', 'Operations need review', 'unread')]));
   expect(html).toMatch(/aria-expanded="false"/);
-  expect(html).toContain('3 notifications, 2 unread');
+  expect(html).toMatch(/3.notifications/u);
+  expect(html).toContain(', 2 unread');
 });
 
 it('says where requests are when nothing is new, and keeps the state card in the cards’ place', () => {
