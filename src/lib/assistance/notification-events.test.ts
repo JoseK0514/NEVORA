@@ -139,7 +139,7 @@ describe('NEVORA routine notifications', () => {
     const { buildAcknowledgementReminderNotification } = await import('./notification-events');
     expect(buildAcknowledgementReminderNotification('E-1', 'rev-1')).toEqual({
       employeeId: 'E-1', type: 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', title: 'Schedule review reminder',
-      body: 'Open NEVORA to review and acknowledge your schedule.', actionHref: '/app/schedule',
+      body: 'Open NEVORA to review and confirm your schedule.', actionHref: '/app/schedule',
       eventKey: 'schedule-reminder:rev-1:E-1',
     });
   });

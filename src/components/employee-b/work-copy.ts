@@ -27,7 +27,7 @@ const words = {
     // Phase 8 (review C, row 22): the phone's short reason is a whole sentence.
     managerAsked: 'Your manager asked for it',
     // Phase 8 (review C, row 15 and the copy table): a Lead's Today's team note.
-    teamNote: 'Your message goes to everyone on today’s published schedule. They don’t have to acknowledge it.',
+    teamNote: 'Your message goes to everyone on today’s published schedule. They don’t have to confirm it.',
     // Phase 8 (review C, Time correction row): what the row opens, without claiming a state.
     correctionsSub: 'Waiting and decided',
     // Phase 8 (review C, row 23 and the copy table): Pick up and swap.
