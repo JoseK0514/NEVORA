@@ -114,7 +114,7 @@ textarea.q-in, .q-in--area { height: 120px; padding-top: 14px; resize: none; ali
 :is(#q-root, html) .q-error { margin: 8px 20px 0; font-size: 15px; line-height: 20px; color: var(--q-red); letter-spacing: -.1px; }
 
 /* Buttons */
-:is(#q-root, html) .q-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 40px); height: 50px; margin: 24px 20px 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-teal-fill); color: #FFFFFF !important; font-family: inherit; font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -.2px; cursor: pointer; transition: transform 160ms ease-out; }
+:is(#q-root, html) .q-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 40px); height: 50px; margin: 24px 20px 0; padding: 0 16px; border: 0; border-radius: 12px; background: var(--q-teal-fill); color: #FFFFFF !important; font-family: inherit; font-size: 1.0625rem; line-height: 22px; font-weight: 600; letter-spacing: -.2px; cursor: pointer; transition: transform 160ms ease-out; }
 :is(#q-root, html) .q-btn:active:not(:disabled) { transform: scale(.97); }
 :is(#q-root, html) .q-btn--sec { background: var(--q-fill); color: var(--q-ink) !important; }
 :is(#q-root, html) .q-btn--off, :is(#q-root, html) .q-btn:disabled { background: var(--q-fill); color: var(--q-faint) !important; cursor: default; opacity: 1; }
