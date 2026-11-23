@@ -82,3 +82,11 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.premium-manager-profile > .q-nav .q-nav__r:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4):not(#nvd-none5) { min-height: var(--b-btn-h-band) !important; height: var(--b-btn-h-band) !important; padding: 0 var(--b-space-24) !important; top: -5px !important; }
   }
 }
+
+/* Phase 2 (Nov 23, 2026): on a phone "What you can approve" and its closing line start 4px inside the cards' edge, as
+ * they do from 768px (they sat on the screen's edge, 12px left of the cards). */
+@layer nv-b {
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .q-page.premium-manager-profile .ma :is(.ma-h, .ma-escalate) { padding-left: var(--b-space-20) !important; padding-right: var(--b-space-20) !important; }
+  }
+}

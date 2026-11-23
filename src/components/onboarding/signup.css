@@ -12,7 +12,7 @@ main.q-auth .su-card > .su-note { margin: 0; }
 main.q-auth .su-card .q-btn { margin: 0; }
 
 /* Consent: a 24px checkbox in a 48px row, the words beside it, links underlined. */
-main.q-auth .su-consent { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; margin: 20px 0 0; min-height: 48px; font-size: 15px; line-height: 22px; color: var(--q-ink); }
+main.q-auth .su-consent { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; margin: 20px 0 0; min-height: 48px; font-size: 0.9375rem; line-height: 1.375rem; color: var(--q-ink); }
 main.q-auth .su-consent input { width: 24px; height: 24px; margin: 0; accent-color: var(--q-teal); }
 main.q-auth .su-consent input:focus-visible { outline: 3px solid var(--q-teal); outline-offset: 2px; }
 main.q-auth .su-consent a { color: var(--q-teal); text-decoration: underline; text-underline-offset: 2px; }
@@ -20,7 +20,7 @@ main.q-auth .su-consent[data-invalid="true"] input { outline: 2px solid var(--q-
 
 /* The Owner's own details sit in a titled group under the business fields. */
 main.q-auth .su-group { margin: 28px 0 0; padding: 0; border: 0; min-width: 0; }
-main.q-auth .su-group > legend { margin: 0; padding: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--q-ink); }
+main.q-auth .su-group > legend { margin: 0; padding: 0; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--q-ink); }
 /* First and last name stack like every other field: the kit owns field spacing at each width. */
 main.q-auth .su-pair { display: block; }
 
@@ -31,11 +31,14 @@ main.q-auth .su-pair { display: block; }
 main.q-auth .su-error__icon { width: 1em; height: 1em; margin-top: .15em; }
 /* A title receives focus after a step change so the next read starts there; it is not a control, so no ring. */
 main.q-auth [data-signup-title]:focus { outline: none; }
+/* The shared auth shell rings every :focus-visible with !important, which drew a box round "Open the link from your
+ * email" on arrival; this keeps the title ring-free there too. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth [data-signup-title]:focus { outline: none !important; }
 
 /* Three steps. Done: teal dot with a check. Current: teal ring. Next: grey. */
 main.q-auth .su-steps { display: grid; gap: 12px; margin: 0 0 8px; padding: 0; list-style: none; }
-main.q-auth .su-steps li { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: center; font-size: 15px; line-height: 20px; color: var(--q-grey); }
-main.q-auth .su-steps__dot { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; font-weight: 600; box-shadow: inset 0 0 0 1.5px var(--q-line); color: var(--q-grey); }
+main.q-auth .su-steps li { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: center; font-size: 0.9375rem; line-height: 1.25rem; color: var(--q-grey); }
+main.q-auth .su-steps__dot { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 0.75rem; font-weight: 600; box-shadow: inset 0 0 0 1.5px var(--q-line); color: var(--q-grey); }
 main.q-auth .su-steps li[data-state="done"] { color: var(--q-ink); }
 main.q-auth .su-steps li[data-state="done"] .su-steps__dot { background: var(--q-teal); box-shadow: none; color: #FFFFFF; }
 main.q-auth .su-steps li[data-state="current"] { color: var(--q-ink); font-weight: 600; }

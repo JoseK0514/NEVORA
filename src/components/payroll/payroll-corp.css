@@ -373,3 +373,10 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .c-pset .c-pset__item > summary .c-chev, :is(#c-root, html) .c-exp .c-exp__item > summary .c-chev, :is(#c-root, html) .c-pay .c-row .c-pay__caret { transition: none; }
 }
+
+/* Payroll settings in Direction B (Nov 23, 2026): the effective date, reason and Save stand in their own white card (they
+ * stood on the grey canvas), with the card's inset. */
+:is(#c-root, html) .c-page.c-setb.c-pset .c-pset__savecard { display: none; padding: var(--b-space-16, 16px) var(--b-inset, 16px); }
+:is(#c-root, html) .c-page.c-setb.c-pset .c-pset__fields:has(details[open]) > .c-pset__savecard { display: block; }
+:is(#c-root, html) .c-page.c-setb.c-pset .c-pset__savecard > .c-pset__save.c-pset__save { display: flex; padding: 0; }
+@media (min-width: 768px) { :is(#c-root, html) .c-page.c-setb.c-pset .c-pset__savecard { padding-inline: 0; } }

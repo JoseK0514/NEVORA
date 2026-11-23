@@ -4,6 +4,14 @@ Jose approved six extra cloud sessions to finish NEVORA's Phase 2 screen work in
 lead session merges every session's work into `claude-codex-collab-nevora`. Each session owns one package and one work
 branch.
 
+## 2-hour target (Jose, Nov 23, 11:45 UTC): the whole app done by about 14:00 UTC
+- There is no later end sweep for your pages. Fix the end-sweep items from `faster-plan.md` (screen-reader names that
+  differ from visible text, focus rings, targets under 44px, axe findings, contrast, fixed px text) on your own pages
+  now, along with the blocking items. Kit or app-shell fixes still go in your report.
+- Capture AFTER only. Push code as you finish each page, so the lead can merge early; push the shots commit last.
+- Settings pages build on the shared parts on branch `claude-codex-collab-nevora-settings-base`
+  (`src/app/app/settings/settings-b*.tsx`, `settings-b.css`). Additive changes only; say so in the report.
+
 ## Read first
 1. `CLAUDE.md`, `DESIGN.MD`, `.claude/skills/nevora-design-os/SKILL.md` (with its references; the page done gate is at
    the end), `docs/design/voice.md`, `docs/design/component-picks.md`.

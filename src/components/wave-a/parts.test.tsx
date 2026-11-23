@@ -73,9 +73,11 @@ describe("notices on the canvas", () => {
   });
 
   it("draws the account deletion outcome as the kit notice card and keeps its words", () => {
-    const form = src("components/account-deletion-form.tsx");
-    expect(form).toContain('<div className="b-card q-deletion__note" data-kind={state.kind}><div className="b-notice"><BIcon tone={look.tone}><BGlyph meaning={look.meaning} /></BIcon>');
-    for (const words of ["We could not submit your request. Please try again.", "Account deletion isn’t available right now", "Too many tries", "We couldn’t confirm your request",
-      "Nothing was saved and you’re still signed in.", "Wait about 15 minutes, then try again. Nothing was sent."]) expect(form).toContain(words);
+    // Nov 23: Owners and Managers use the Employee's deletion screen, so every role sees the same outcome card and words.
+    expect(src("components/account-deletion-form.tsx")).toContain("<EmployeeDeletionView");
+    const view = src("components/employee-mobile/deletion.tsx");
+    expect(view).toContain("em-delete-outcome");
+    for (const words of ["Your request wasn’t sent", "Account deletion isn’t available right now", "Too many tries", "We don’t know yet if your request was saved",
+      "Nothing was saved and you’re still signed in.", "wait about 15 minutes, then try again. Nothing was sent."]) expect(view).toContain(words);
   });
 });

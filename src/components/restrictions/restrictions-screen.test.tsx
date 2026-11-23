@@ -100,7 +100,8 @@ describe("management side (Owner, Manager)", () => {
     // Nothing is shown as agreed, and exactly one filled teal button is on the screen.
     expect(words).not.toContain("In effect");
     expect(markup.split("b-btn--teal").length - 1).toBe(1);
-    expect(words).toContain("Weekly availability is separate.");
+    // Phase 2 gate (Nov 23): the note above already names Availability, so the separate note is left out here.
+    expect(words).not.toContain("Weekly availability is separate.");
   });
   it("the agreement in effect is a week, Monday first, with the Monday it started", () => {
     const markup = html({ ...management, initial: { load: ready(IN_EFFECT) } }), words = text(markup);

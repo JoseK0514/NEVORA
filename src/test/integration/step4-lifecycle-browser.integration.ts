@@ -218,7 +218,7 @@ it(production?'exercises authenticated billing, staff import and paused Clocker 
   const isolatedAccountAccess:{resetEngine:string;issuanceEngine:'chromium';wrappedAssistedUi:boolean;fullResetProof:boolean;normalNewPasswordLogin:boolean;replayDenied:boolean}[]=[];
   for(const engine of ['chromium','webkit']){
    await page.bringToFront();await page.goto(front+'/app/account-recovery?employee=EMP-1');
-   await page.getByLabel('How you checked who they are').selectOption('Verified in person; I know this employee.');
+   await page.getByLabel('How you checked',{exact:true}).selectOption('Verified in person; I know this employee.');
    await page.getByRole('switch',{name:'I confirmed who they are',exact:true}).check();await page.getByRole('button',{name:'Make reset link',exact:true}).click();
    await page.getByRole('button',{name:'Show code',exact:true}).click();const input=page.getByLabel('Reset code',{exact:true});await input.waitFor();const recoveryProof=await input.inputValue();expect(recoveryProof.startsWith('nw1_')).toBe(true);expect(recoveryProof.length).toBeGreaterThan(43);
    const resetBrowser=await runtime[engine].launch({headless:true});defer(()=>resetBrowser.close());

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import {useEffect,useRef,useState,type FormEvent} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {Notice,SettingsFrame} from '@/app/app/settings/wave-c-kit';
 import {ButtonLabel,Field,FieldErrors,useFieldErrors} from '@/app/app/settings/wave-c-form';
 import {ReturnToNext} from './team/return-to-next';
@@ -81,8 +82,8 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
       id="assisted-employee" required maxLength={200} name="employeeId" defaultValue={employeeId} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint={method==='other'?'next':'go'}/>
      <ul className="q-list" style={{ marginTop: 24 }}>
       <li><label className="q-row q-row--one q-select-row">
-       <span className="q-rt"><b>How you checked</b></span>
-       <select className="q-select-row__control" name={method === "other" ? undefined : "attestation"} value={method} onChange={event => setMethod(event.target.value)} aria-label="How you checked who they are">
+       <span className="q-rt"><b id="assisted-method-title">How you checked</b></span>
+       <select className="q-select-row__control" name={method === "other" ? undefined : "attestation"} value={method} onChange={event => setMethod(event.target.value)} aria-labelledby="assisted-method-title">
         {METHODS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
        </select>
        <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/>
@@ -95,7 +96,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
      <p className="q-sr" id="assisted-confirm-hint">I independently confirmed this employee’s identity and can hand over this link securely.</p>
      {/* Security guidance (kept from the approved recovery flow): check against records you already hold. */}
      <p className="q-help">Check against details you already have, not a new email or phone number they give you. You don’t need documents, codes or other personal details.</p>
-     {method === "other" ? <Field kind="textarea" label="How you checked" id="assisted-attestation" name="attestation" required minLength={10} maxLength={500} rows={3}
+     {method === "other" ? <Field kind="textarea" label="Describe how you checked" id="assisted-attestation" name="attestation" required minLength={10} maxLength={500} rows={3}
       placeholder="For example: in person, with their workplace badge"/> : null}
      {errors.confirm?<p className="q-error" id="assisted-confirm-error">{errors.confirm}</p>:null}
     </FieldErrors>
@@ -109,11 +110,12 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
      * Review F4 (NV-102): on tablets and desktop the form is one card and this is its footer action (phones unchanged). */}
    <div className="wc-savefoot"><button className="q-btn" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle={u.submit} busy={u.submitting}/></button></div>
   </form>}
-  {!issued?<section className="ar-how b-card" aria-labelledby="assisted-how-title">
-   <h2 className="ar-how__label" id="assisted-how-title">{u.howLabel}</h2>
+  {/* Phase 2 (Nov 23, 2026; density rule 5): the steps open from one row, so they aren't read on every visit. Same words. */}
+  {!issued?<details className="ar-how b-card" id="assisted-how">
+   <summary className="ar-how__label"><span id="assisted-how-title">{u.howLabel}</span><CaretDownIcon className="ar-how__chev" size={18} weight="bold" aria-hidden="true"/></summary>
    <ol className="ar-before">{u.how.map((line,index)=><li key={line}><span className="ar-before__n" aria-hidden="true">{index+1}</span><span>{line}</span></li>)}</ol>
    <p className="ar-how__note">{u.lasts} {u.limits}</p>
-  </section>:null}
+  </details>:null}
   {pins&&!issued?<section className="wc-recovery__pins" aria-labelledby="assisted-pins-title">
    <h2 className="q-sr" id="assisted-pins-title">Clocker PIN</h2>
    <ul className="q-list"><li><Link className="q-row" href="/app/settings/clocker/pins"><span className="q-rt"><b>Reset a Clocker PIN</b><i>Set a new PIN for someone who forgot theirs</i></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></Link></li></ul>

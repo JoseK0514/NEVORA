@@ -54,7 +54,9 @@ function CorrectionDecide({name,disabled,onDecision}:{name:string;disabled:boole
 function requestLabel(item:ManagerCorrectionItem){
   if(item.kind==='MISSING_ENTRY')return 'Missing time';
   if(item.kind==='BREAK_BOUNDARY')return item.breakName?item.breakName+' break':'Recorded break';
-  return 'Clock in / Clock out';
+  // Phase 2 gate (Nov 23): a clock in and out is what most requests are and the Recorded line already shows both
+  // times, so only the other kinds (a missing time, a break) get a label beside the location.
+  return null;
 }
 function noticeFor(result:CorrectionActionResponse){
   if(result.state==='approved')return approvedNotice;
@@ -107,8 +109,10 @@ export function ManagerTimeCorrectionsSurface({
   const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
   usePrivateFragmentFocus('correction-',!!ready);
   const count=ready?.requests.length??0;
-  const bandLine=band?`${count?`${count} waiting · `:''}Fixes your team asked for. Original times are always kept. Times in ${timeZoneLabel(ready?.timeZone??band.zone)}.`:null;
-  return <>{band?<><p className="c-phone-sub">{bandLine}</p><CorpTitle id="tcx-title" title="Time corrections" sub={bandLine} wide/></>:null}<section className="manager-corrections" data-band={band?'':undefined} aria-labelledby="manager-corrections-title">
+  // Phase 2 gate (Nov 23): without access nothing below is theirs to review, so the band says no more than the card.
+  const denied=mode==='not_allowed'||mode==='access_lost';
+  const bandLine=band&&!denied?`${count?`${count} waiting · `:''}Fixes your team asked for. Original times are always kept. Times in ${timeZoneLabel(ready?.timeZone??band.zone)}.`:null;
+  return <>{band?<>{bandLine?<p className="c-phone-sub">{bandLine}</p>:null}<CorpTitle id="tcx-title" title="Time corrections" sub={bandLine??undefined} wide/></>:null}<section className="manager-corrections" data-band={band?'':undefined} aria-labelledby="manager-corrections-title">
     {/* Copy table 49: when nothing is waiting, the header's "Correction requests 0" would repeat the empty state, so it is
       kept for screen readers only. */}
     <header className={band||(ready&&!ready.requests.length)?"manager-corrections-header sr-only":"manager-corrections-header"}>

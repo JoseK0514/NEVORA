@@ -29,13 +29,14 @@ it("keeps Owner authorization and both editable fields with clear scheduling con
   expect(html).not.toContain('<textarea');
   expect(html).toContain('value="America/Puerto_Rico"');
   expect(html).not.toMatch(/<input(?=[^>]*name="timeZone")(?=[^>]*disabled="")[^>]*>/);
-  // Quiet (v4): the week start is a row; Save sits at the top right and submits the form.
-  expect(html).toContain('<span class="q-rv q-rv--l">Monday</span>');
+  // Settings in Direction B (Nov 23, 2026): the week start is a value row; the band's Save submits the form.
+  expect(html).toContain('<span class="c-row__title">Week starts</span></span><span class="c-row__value">Monday</span>');
+  expect(html).toContain('class="c-page c-page--narrow c-setb"');
   expect(html).toContain('type="submit" form="company-profile-form"');
   expect(html).toContain(">Save</button>");
   expect(html).toContain('href="/app/settings"');
   // While nothing is locked there is no lock glyph and no note.
-  expect(html).not.toContain("c-coprof__lock");
+  expect(html).not.toContain("c-setb-lock");
   expect(html).not.toContain("Locked while");
 });
 
@@ -44,18 +45,18 @@ it("explains a protected timezone without locking the workspace name", async () 
   const html = renderToStaticMarkup(await WorkspacePage());
   // A protected timezone reads in full as text, not as a disabled field (TC-06); it isn't submitted.
   expect(html).not.toContain('name="timeZone"');
-  expect(html).toContain('<span class="q-rv q-rv--l">Puerto Rico</span>');
+  expect(html).toContain('<span class="c-row__value">Puerto Rico</span>');
   expect(html).not.toContain(">America/Puerto_Rico<");
   expect(html).not.toMatch(/<(?:input|textarea)(?=[^>]*name="name")(?=[^>]*disabled="")[^>]*>/);
   // Owner premium R7: the reason in plain words (the server's own error keeps its wording for a rejected save).
   expect(html).toContain("Time zone is locked because you have shifts and timecards. Contact support to change it.");
-  expect(html).toContain('aria-describedby="timezone-help"');
-  // Nov 1 upscale: one grouped card (name, time zone, week start); the locked values carry a Lock glyph.
-  // Review Nov 11 (OW-024): the reason sits in each locked row, under its value (it was one line under the card).
-  expect(html.match(/<ul class="q-list c-coprof"/g)).toHaveLength(1);
-  expect(html.match(/class="c-coprof__lock"/g)).toHaveLength(2);
-  expect(html.match(/<small class="c-coprof__why">Locked while you have shifts<\/small><\/div><\/li>/g)).toHaveLength(2);
-  expect(html).not.toContain("c-coprof__note");
+  expect(html).toContain('id="timezone-help"');
+  // One card (the form is the card: name, time zone, week start); the locked values carry a Lock glyph.
+  // Jose (Nov 23, 2026: no repeated wording): the reason is said once, as the card's footer note.
+  expect(html.match(/<form[^>]*class="c-card c-setb-form"/g)).toHaveLength(1);
+  expect(html.match(/class="c-setb-lock"/g)).toHaveLength(2);
+  expect(html.match(/Locked while you have shifts/g)).toHaveLength(1);
+  expect(html).toContain('<p class="c-note c-setb-cardnote"><span>Locked while you have shifts</span></p>');
   // Save shows only after a change: the form says so, and the name stays the one thing that can change.
   expect(html).toContain('data-save-on-change=""');
   expect(html).not.toContain('data-dirty');

@@ -1,27 +1,25 @@
 'use client';
 
 import {keepWhole} from '@/lib/keep-whole';
-import {Freshness} from './kit/kit';
 import Link from 'next/link';
 import {QuietHeader, QuietNav} from '@/components/quiet/quiet';
 import {useState} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 
-import {HoldHeight} from './kit/hold-height';
-import {useTopBarSlot} from './clean/top-bar-slot';
-import {UpdateEntrance, updateKinds} from './update-visual';
+import {updateKinds} from './update-visual';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
-import {CorpEmpty} from '@/components/corp/corp';
 import {useCommunicationResource, type CommunicationMode} from '../lib/communications/client';
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
-import {BChip} from './owner-b/b-kit';
+import {ManagerUpdatesView, type ManagerListStatus} from './messages-manager-b';
 import './updates-review.css';
 
 type ReadyUpdate = Extract<CommunicationRead, {state: 'ready'}>;
 type Filter = 'all' | 'to-review' | 'reviewed';
 const isReviewed = (item: ReadyUpdate) => Boolean(item.acknowledgement === 'REQUIRED' ? item.ownAcknowledgedAt : item.ownReadAt || item.ownAcknowledgedAt);
 
-export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailableReason, onRefresh}: {
+export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailableReason, onRefresh, places}: {
+ /** Owners and Managers: each location's name, when they manage more than one. */
+ places?: Record<string, string> | null;
  list: Extract<CommunicationListRead, {state: 'complete' | 'partial'}> | null;
  mode: CommunicationMode;
  paused: boolean;
@@ -33,7 +31,6 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
   const signedOut = unavailableReason === 'access_denied' || unavailableReason === 'session_ended';
  const [filter, setFilter] = useState<Filter>('all');
  const [refreshFrom, setRefreshFrom] = useState<string | null>(null);
- useTopBarSlot(mode === 'manager', 'cm-tc-bar-tools cm-updates-bar');
  const current = paused ? null : list;
  const items = current?.items.filter((item): item is ReadyUpdate => item.state === 'ready') ?? [];
  const inReviewGroup = (item: ReadyUpdate) => mode === 'manager' ? item.acknowledgement === 'REQUIRED' : !isReviewed(item);
@@ -55,55 +52,18 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
  const userRefreshing = refreshFrom !== null && current?.observedAt === refreshFrom;
  if (refreshFrom !== null && !userRefreshing) setRefreshFrom(null);
  if (mode === 'manager') {
-  // Clean Manager (v3, QA): the Inbox's list. The filters, the list area and the foot are there in every state, so the
-  // page never changes height when a read fails, pauses or signs out; the state shows in the list's place.
+  // Phase 2 (package Messages, Nov 23, 2026): Owners and Managers get the Direction B Updates (messages-manager-b.tsx).
+  // The read, its states and the links are the same; the list, its band and its cards are the kit's.
   const offline = paused && typeof navigator !== 'undefined' && navigator.onLine === false;
-  const loading = !current && !paused && !unavailableReason;
-  const busy = userRefreshing || (loading && refreshing);
-  const status = paused ? <Freshness state={offline ? 'offline' : 'stale'}>{offline ? 'Offline' : 'Paused'}</Freshness>
-   : !current && unavailableReason ? <Freshness state="stale">Not available</Freshness>
-   : loading || userRefreshing ? 'Checking…' : null;
-  const stateTitle = paused ? 'Updates paused' : signedOut ? 'Your session ended' : unavailableReason ? 'Couldn’t load updates' : 'Loading updates…';
-  const stateText = paused ? 'Return online and to this page to refresh.' : signedOut ? 'Sign in again to see updates.' : unavailableReason ? 'Check your connection, then try again.' : 'Checking for current workplace updates.';
-
-  // Quiet (v4, approved Oct 23): "+" to compose; All and Needs reply; one row per update with who has read it.
-  const day = (item: ReadyUpdate) => keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, month: 'short', day: 'numeric'}).format(new Date(item.publishedAt)));
-  const readLine = (item: ReadyUpdate) => {
-   const people = item.management?.recipients;
-   if (people?.length) return `${people.filter(person => person.acknowledgedAt).length} of ${people.length} have read it`;
-   return item.acknowledgement === 'REQUIRED' ? 'Must be read' : 'Optional';
-  };
-  const needsReply = filter === 'to-review';
-  return <UpdateEntrance className="employee-view communication-view updates-page">
-   <div className="q-page premium-updates cm-updates c-page--narrow" data-nv-page="">
-   {/* Owner premium (visual-craft Updates): a labelled "New update" instead of a bare "+". */}
-   <QuietNav back={{href: '/app/more', label: 'More'}} title="Updates" right={<Link className="q-nav__r updates-new" href="/app/updates/compose"><PlusIcon size={15} weight="bold" aria-hidden="true" />New update</Link>} />
-   <QuietHeader title="Updates" />
-   <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
-    {/* Review B5 (NV-258): segment counts read "Needs reply 1", like "Waiting 7" and "All 16". */}<div className="q-seg" role="group" aria-label="Filter updates">
-     <button type="button" aria-pressed={!needsReply} disabled={!current} onClick={() => setFilter('all')}>All</button>
-     <button type="button" aria-pressed={needsReply} disabled={!current} onClick={() => setFilter('to-review')} aria-label={current ? `Needs reply, ${toReview}` : 'Needs reply'}>{/* Review F5 (NV-103): the count is the segmented control's count pill. */}Needs reply{current && toReview ? <span className="c-count c-num">{toReview}</span> : null}</button>
-    </div>
-    <HoldHeight holding={!current} memory="updates-manager" className="cm-updates-hold">
-    {current?.state === 'partial' ? <p className="q-help" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
-    {!current ? <div role="status" style={{ marginTop: 24 }}><p className="q-empty">{status ? `${stateTitle}. ` : ''}{stateText}</p>
-      {signedOut ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : unavailableReason ? <button type="button" className="q-btn q-btn--sec" disabled={paused} aria-disabled={busy || undefined} onClick={() => { if (!busy) onRefresh(); }}>Try again</button> : null}</div>
-     : visible.length ? <ul className="q-list updates-list" style={{ marginTop: 16 }}>{visible.map(item => <li key={item.id}><Link className="q-row" href={'/app/updates/' + item.id} prefetch={false}>
-       <span className="q-rt"><b>{item.title}</b><i><time dateTime={item.publishedAt}>{day(item)}</time>{` · ${readLine(item)}`}</i></span>
-       {/* Review B1 (NV-097): the update that needs a reply says so in amber, as the segment's count does. */}
-       {/* Phase 3 (OW-034): the kit's amber chip; the older pill was repainted as bold plain text. */}
-       {inReviewGroup(item) ? <BChip tone="amber">Needs reply</BChip> : null}
-       <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
-      </Link></li>)}</ul>
-     : <div className="c-page c-embed updates-empty" role="status"><CorpEmpty title={filter === 'all' ? 'No updates yet' : 'Nothing needs a reply'}
-      body={filter === 'all' ? 'Tell your team about hours, menus or events.' : 'Updates that must be read show up here.'}
-      action={filter !== 'all' ? <button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={() => setFilter('all')}>View all updates</button>
-       : <Link className="c-btn c-btn--secondary c-btn--md" href="/app/updates/compose">New update</Link>} /></div>}
-    </HoldHeight>
-   </section>
-   <span className="q-sr" role="status">{userRefreshing ? 'Refreshing updates…' : ''}</span>
-   </div>
-  </UpdateEntrance>;
+  const status: ManagerListStatus | null = current ? null
+   : paused ? {kind: offline ? 'offline' : 'paused', title: 'Updates paused', line: 'Return online and to this page to refresh.'}
+   : signedOut ? {kind: 'locked', title: 'Your session ended', line: 'Sign in again to see updates.', action: {label: 'Sign in', href: '/login'}}
+   : unavailableReason ? {kind: 'failed', title: 'Couldn’t load updates', line: 'Check your connection, then try again.', action: {label: 'Try again', onClick: () => { setRefreshFrom(null); onRefresh(); }, busy: refreshing}}
+   : {kind: 'loading', title: 'Loading updates…'};
+  return <>
+   <ManagerUpdatesView list={current} status={status} partial={current?.state === 'partial'} places={places ?? null} />
+   <span className="c-sr" role="status">{userRefreshing ? 'Refreshing updates…' : ''}</span>
+  </>;
  }
  // v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; mockup E13): Back to More, Plus messages
  // today's team, the segments, one row per update, and the note that opening doesn't confirm. Same reads and states.
@@ -137,7 +97,20 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
 }
 
 export function EmployeeUpdates({authority, mode}: {authority: string; mode: CommunicationMode}) {
+ return mode === 'manager' ? <ManagerUpdates authority={authority} /> : <EmployeeUpdatesRead authority={authority} mode={mode} />;
+}
+function EmployeeUpdatesRead({authority, mode}: {authority: string; mode: CommunicationMode}) {
  const {state, value, refresh} = useCommunicationResource(mode, authority, '');
  const list = value && 'items' in value ? value : null;
  return <EmployeeUpdatesView list={list} mode={mode} paused={state.paused} refreshing={state.refreshing} unavailableReason={state.snapshot?.state === 'unavailable' ? state.snapshot.reason : undefined} onRefresh={refresh} />;
+}
+/** Owners and Managers: the list, and the places they can write to (the compose page's own read), so a row can say where
+ * it went when there is more than one place. */
+function ManagerUpdates({authority}: {authority: string}) {
+ const {state, value, refresh} = useCommunicationResource('manager', authority, '');
+ const context = useCommunicationResource('manager', authority, '/context').value;
+ const list = value && 'items' in value ? value : null;
+ const locations = context && 'locations' in context && context.state === 'ready' ? context.locations : [];
+ const places = locations.length > 1 ? Object.fromEntries(locations.map(location => [location.id, location.label])) : null;
+ return <EmployeeUpdatesView list={list} mode="manager" paused={state.paused} refreshing={state.refreshing} unavailableReason={state.snapshot?.state === 'unavailable' ? state.snapshot.reason : undefined} onRefresh={refresh} places={places} />;
 }

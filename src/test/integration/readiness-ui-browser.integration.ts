@@ -60,7 +60,19 @@ it('connects original shift reviews and explicit period history in owned Chromiu
       for (const actor of ['UI-COMPANY', 'UI-LOCAL']) {
         const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce' });
         const page = await context.newPage(); page.setDefaultTimeout(20000);
-        const pause = async () => { await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.waitForLoadState('networkidle'); };
+        // G69 (Nov 23, 2026): `networkidle` belongs to the last document load, so after a client-side move (sign-in lands on
+        // Home that way) it is already met while Home's shell is still reading (inbox count, notifications, access check).
+        // Leaving then cancels those reads, which WebKit reports as page errors. Wait until this page's own fetches have
+        // finished for a quiet half second before leaving; the error check below stays exactly as strict.
+        const reads = new Set<unknown>();
+        page.on('request', (request: { resourceType(): string }) => { if (['fetch', 'xhr'].includes(request.resourceType())) reads.add(request); });
+        for (const done of ['requestfinished', 'requestfailed']) page.on(done, (request: unknown) => { reads.delete(request); });
+        const settled = async () => {
+          const deadline = Date.now() + 20000; let quietSince = Date.now();
+          while (Date.now() < deadline) { if (reads.size) quietSince = Date.now(); else if (Date.now() - quietSince >= 500) return; await page.waitForTimeout(100); }
+          throw Error(`Page reads never settled: ${[...reads].map(request => (request as { url(): string }).url()).join(', ')}`);
+        };
+        const pause = async () => { await settled(); await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.waitForLoadState('networkidle'); await settled(); };
         const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(app.url + path); };
         failureShot = () => page.screenshot({ path: resolve(evidence, `${engine}-${actor}-failure.png`), fullPage: true });
         page.on('pageerror', (error: Error) => errors.push(`${engine} ${actor}: ${error.message}`));

@@ -59,10 +59,12 @@ it('orders the receipt date for each language and writes one Saved sentence',()=
  const es=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerReceipt action="CLOCK_IN" performedAt={at} commandId="c1" timeZone="America/Puerto_Rico" locale="es-PR" firstName="Ana"/></ClockerPresentation>);
  expect(es).toContain('Que tengas un buen turno, Ana.');expect(es).toMatch(/Guardado el <time[^>]*>[^<]*p\.\sm\.<\/time> <span[^>]*>Se borra en 8 segundos\.<\/span>/);
  const en=renderToStaticMarkup(<ClockerReceipt action="CLOCK_OUT" performedAt={new Date().toISOString()} timeZone="UTC" locale="en-US" firstName="James"/>);
- expect(en).toMatch(/Saved at <time[^>]*>\d{1,2}:\d{2}\s[AP]M<\/time>\. <span[^>]*>This screen clears in 8 seconds\.<\/span>/);
- // Phase 8 (#11, #26): "Saved at" today, and in Spanish "a las" or "a la 1:05" with the short clear line.
+ // K11 (Nov 23, 2026): today the large time already says when, so the line under it is only the countdown: the time
+ // appears once on the receipt (it read "1:40 AM" and "Saved at 1:40 AM.").
+ expect(en).toMatch(/<p role="status"[^>]*>This screen clears in 8 seconds\.<\/p>/);expect(en).not.toContain('Saved');
+ expect(en.match(/<time /g)).toHaveLength(1);
  const today=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerReceipt action="CLOCK_IN" performedAt={new Date().toISOString()} timeZone="UTC" locale="es-PR" firstName="Ana"/></ClockerPresentation>);
- expect(today).toMatch(/Guardado a las? <time[^>]*>\d{1,2}:\d{2}\sp?a?\.\sm\.<\/time> <span[^>]*>Se borra en 8 segundos\.<\/span>/);expect(en).toContain('See you next time, James.');expect(en).not.toContain('Reference');
+ expect(today).toMatch(/<p role="status"[^>]*>Esta pantalla se borra en 8 segundos\.<\/p>/);expect(today).not.toContain('Guardado');expect(today.match(/<time /g)).toHaveLength(1);expect(en).toContain('See you next time, James.');expect(en).not.toContain('Reference');
 });
 it.each([
  ['This punch reference belongs to a different punch. Ask your manager to check it.','Esta referencia pertenece a otra marcación. Pide a tu gerente que la revise.'],

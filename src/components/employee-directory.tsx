@@ -6,7 +6,7 @@ import { employeeInitials, employeeRoleLabel } from "@/lib/employee-display";
 import { hasDirectoryFilters, type DirectoryFilters } from "@/lib/employee-directory";
 import { CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "./corp/corp";
 import { EmployeeDirectoryFilters, EmployeeSearchInput } from "./employee-directory-filters";
-import { TeamLivePill, TeamLiveProvider, TeamWorkingNow } from "./team-live";
+import { TeamLivePill, TeamLiveProvider } from "./team-live";
 import { TeamDeskPeople } from "./team-desk-people";
 import "./employee-directory-corp.css";
 import { TeamB, type TeamBPerson } from "./owner-b/team-b";
@@ -59,6 +59,9 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
     return { id: employee.id, name, detail: `${role(employee)} · ${where(employee)}`, href: `/app/employees/${encodeURIComponent(employee.id)}`, active: employee.active };
   };
   const inactiveCount = employees.filter(employee => !employee.active).length;
+  // Gaps G49 (Nov 23, 2026): "See all", without the count, on phones and desktop, as a location Manager's Team says it:
+  // the title already says how many (each fact once).
+  const seeAll = !all && active.length > TEAM_SHOWN ? { href: "/app/employees?all=1", label: "See all" } : undefined;
   // Nov 14, 2026 inspection: Availability is one tap from Team (AR-9), and an Owner can import a staff list.
   const bTools = [
     { href: "/app?view=team", title: "Hours this week", detail: "Scheduled hours for each person", icon: "hours" as const },
@@ -72,9 +75,9 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
     <CorpPage className="c-team c-page--narrow" labelledBy="team-title">
       <TeamB people={active.map(bPerson)} limit={all ? undefined : TEAM_SHOWN} inactive={inactive.length && (all || !active.length) ? inactive.map(bPerson) : []} total={activeCount} query={filters.query} filtered={filtered}
         people_word={words.people} person_word={person} tools={bTools} status={filters.status}
-        seeAll={!all && active.length > TEAM_SHOWN ? { href: "/app/employees?all=1", label: `See all ${active.length} ${people}` } : undefined}
+        seeAll={seeAll}
         searchHidden={<>{filters.role ? <input type="hidden" name="role" value={filters.role} /> : null}{filters.location ? <input type="hidden" name="location" value={filters.location} /> : null}</>} />
-      <CorpTitle id="team-title" title="Team" sub={<>{`${activeCount} ${activeCount === 1 ? person : people}`}<TeamWorkingNow /></>}
+      <CorpTitle id="team-title" title="Team" sub={`${activeCount} ${activeCount === 1 ? person : people}`}
         actions={<CorpButtonLink href="/app/employees/new" size="md"><Plus className="c-ic c-ic--s" weight="bold" aria-hidden="true" />{`Add ${person}`}</CorpButtonLink>} />
       <EmployeeDirectoryFilters className="c-team-search">
         {/* Without scripts, Enter and this button apply the search; with scripts it applies as you type (IS-35). */}
@@ -91,7 +94,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       <p className="c-sr" role="status" aria-live="polite" aria-atomic="true">{filtered ? `${visibleEmployees.length} of ${employees.length} ${employees.length === 1 ? person : people}` : ""}</p>
       {/* Owner premium R5: list pages put the group's label above its card (CorpSection), "See all" on its line. */}
       {active.length ? <CorpSection id="team-people" label={filtered ? `${active.length} ${active.length === 1 ? "match" : "matches"}` : "People"}
-        aside={!all && active.length > TEAM_SHOWN ? <CorpLink href="/app/employees?all=1" label={`See all ${active.length} ${people}`}>{`See all ${active.length}`}</CorpLink> : undefined}>
+        aside={seeAll ? <CorpLink href={seeAll.href}>{seeAll.label}</CorpLink> : undefined}>
         {/* Closing F1 (NV-091): the phone's filters and live chips, with a chevron on each row (team-desk-people.tsx). */}
         <TeamDeskPeople peopleLabel={people} limit={all ? undefined : TEAM_SHOWN} rows={active.map(employee => {
           const name = `${employee.firstName} ${employee.lastName}`;

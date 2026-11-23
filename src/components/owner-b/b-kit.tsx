@@ -65,13 +65,18 @@ export type BLiveItem = { label: ReactNode; value: ReactNode; small?: ReactNode;
  * of tiles (a link may not sit between a <dl>'s group and its term), each label read before its value. */
 export function BLive({ items, label }: { items: BLiveItem[]; label: string }) {
   return <ul className="b-live b-glass" aria-label={label}>{items.map((item, index) => {
+    // Gaps G45 (Nov 23, 2026): a space between the label, the figure and its line, so a tile's name reads "Not clocked in 0",
+    // never "Not clocked in0". Final fixes K7: a bare space between flex items is dropped from the layout and from the name,
+    // so the space is screen-reader text (a no-break space, which nothing collapses); it draws nothing.
+    // The tile's name is its visible words (label in name): `aria` is no longer read; the words on the tile carry it.
+    const gap = <span className="b-sr">{"\u00a0"}</span>;
     const body = <>
-      <span className="b-live__l">{item.dot ? <span className={`b-dot b-dot--${item.dot}`} aria-hidden="true" /> : null}{item.label}</span>
+      <span className="b-live__l">{item.dot ? <span className={`b-dot b-dot--${item.dot}`} aria-hidden="true" /> : null}{item.label}</span>{gap}
       <span className="b-live__v">{item.value}{item.small ? <small>{item.small}</small> : null}</span>
-      {item.meta ? <span className="b-live__m">{item.meta}</span> : null}
+      {item.meta ? <>{gap}<span className="b-live__m">{item.meta}</span></> : null}
     </>;
-    return item.href ? <li key={index} className="b-live__i"><Link className="b-live__a" href={item.href} aria-label={item.aria}>{body}</Link></li>
-      : item.onSelect ? <li key={index} className="b-live__i"><button type="button" className="b-live__a b-live__btn" aria-pressed={item.pressed ? "true" : "false"} aria-label={item.aria} onClick={item.onSelect}>{body}</button></li>
+    return item.href ? <li key={index} className="b-live__i"><Link className="b-live__a" href={item.href}>{body}</Link></li>
+      : item.onSelect ? <li key={index} className="b-live__i"><button type="button" className="b-live__a b-live__btn" aria-pressed={item.pressed ? "true" : "false"} onClick={item.onSelect}>{body}</button></li>
       : <li key={index} className="b-live__i">{body}</li>;
   })}</ul>;
 }

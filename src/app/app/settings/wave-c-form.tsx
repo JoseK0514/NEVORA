@@ -55,6 +55,12 @@ export function useFieldErrors(messages: FieldMessages, onInvalid?: (control: Co
   return { errors, handlers, clear: () => setErrors({}) };
 }
 
+/** The error <FieldErrors> holds for one field (Settings in Direction B draws its own fields with it). */
+export function useFieldError(name?: string) {
+  const errors = useContext(ErrorsContext);
+  return name ? errors[name] : undefined;
+}
+
 export function FieldErrors({ errors, children }: { errors: Record<string, string>; children: ReactNode }) {
   return <ErrorsContext.Provider value={errors}>{children}</ErrorsContext.Provider>;
 }
@@ -184,7 +190,7 @@ export function FormActions({ children, sticky = false }: { children: ReactNode;
 }
 
 /** The form's entries as one string, to tell whether anything differs from what was loaded (the concurrency stamp aside). */
-function formEntries(data: FormData) {
+export function formEntries(data: FormData) {
   return JSON.stringify([...data.entries()].filter(([name]) => name !== "expectedUpdatedAt").map(([name, value]) => [name, typeof value === "string" ? value : ""]));
 }
 

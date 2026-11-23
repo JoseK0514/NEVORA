@@ -228,7 +228,7 @@ const es: AuthCopy = {
   accountHelp: "Ayuda con la cuenta",
   signingIn: "Iniciando sesión…",
   newEmployee: "¿Primera vez aquí?",
-  passkeyDesktop: "Iniciar sesión con una llave de acceso",
+  passkeyDesktop: "Usar llave de acceso",
   passkeyPhone: "Iniciar sesión con Face ID",
   passkeyBusyPhone: "Esperando Face ID…",
   passkeyBusyDesktop: "Esperando tu llave de acceso…",

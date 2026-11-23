@@ -16,7 +16,7 @@ function AssignLabel({reviewOnly}:{reviewOnly?:boolean}) {
 
 /** Find cover (board O-FindCover): "Who can cover" as a radio list in the suggested order, the first one chosen, then
  * Assign, which opens the existing review for the chosen person. Nothing is saved on this page. */
-export function ScheduleCoverPick({ people, repair, reviewOnly }: { people: CoverPickPerson[]; repair?: boolean; reviewOnly?: boolean }) {
+export function ScheduleCoverPick({ people, reviewOnly }: { people: CoverPickPerson[]; repair?: boolean; reviewOnly?: boolean }) {
   const [chosen, setChosen] = useState(people[0]?.employeeId ?? "");
   const [all, setAll] = useState(false);
   const person = people.find(item => item.employeeId === chosen) ?? people[0];
@@ -42,7 +42,7 @@ export function ScheduleCoverPick({ people, repair, reviewOnly }: { people: Cove
       {shown.length < people.length ? <button type="button" className="c-cover__more" onClick={() => { setAll(true); const next = people.find((item, index) => index >= SHOWN && item.employeeId !== chosen); requestAnimationFrame(() => document.querySelector<HTMLInputElement>(`#coverage-candidate-${CSS.escape(next?.employeeId ?? "")} input`)?.focus()); }}>{`Show ${people.length - shown.length} more`}</button> : null}
     </fieldset>
     {person?.href ? <div className="c-card__foot">
-      <Link className="c-btn c-btn--full" href={person.href} prefetch={false} aria-label={`${repair ? "Review replacement" : "Review shift"} for ${person.employeeName}`}><AssignLabel reviewOnly={reviewOnly} /></Link>
+      <Link className="c-btn c-btn--full" href={person.href} prefetch={false} aria-label={reviewOnly ? `Review replacement for ${person.employeeName}` : `Assign ${person.employeeName}`}><AssignLabel reviewOnly={reviewOnly} /></Link>
     </div> : null}
   </>;
 }

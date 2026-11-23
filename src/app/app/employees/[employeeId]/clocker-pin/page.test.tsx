@@ -25,7 +25,7 @@ const render = async (from?: string) => renderToStaticMarkup(await EmployeeClock
 it('renders separate masked four-digit setup inputs with employee context and authoritative version', async () => {
   const html = await render();
   // Phase 6: the Settings frame (back names the person, the title, the person's name under it), then one form card.
-  expect(html).toContain('<h1>Clocker PIN</h1><p>Avery Lane</p>'); expect(html).toContain('<span class="q-nav__t">Clocker PIN</span>');
+  expect(html).toContain('<div class="q-hd"><h1>Clocker PIN</h1></div>'); expect(html).toContain('Set a PIN for Avery Lane'); expect(html).not.toContain('<p>Avery Lane</p>'); expect(html).toContain('<span class="q-nav__t">Clocker PIN</span>');
   expect(html).toMatch(/<a href="\/app\/employees\/worker" class="q-nav__l">.*Avery Lane<\/a>/);
   expect(html).toContain('Set a PIN for Avery Lane'); expect(html).toContain('They type it on the tablet after their Employee ID.');
   expect(html).toContain('name="expectedVersion" value="0"');
