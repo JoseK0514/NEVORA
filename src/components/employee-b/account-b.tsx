@@ -91,7 +91,7 @@ export function EmployeeHelpB({email, response, signIn, work, report, legal}: {
     <BStack>
       <BCard title="Contact" id="b-help-contact">
         <BList>
-          <BRow href={`mailto:${email}`} lead={<BIcon tone="teal"><EnvelopeSimpleIcon weight="bold" /></BIcon>} title="Email support" sub={email} label={`Email support, ${email}`} />
+          <BRow href={`mailto:${email}`} lead={<BIcon tone="teal"><EnvelopeSimpleIcon weight="bold" /></BIcon>} title="Email support" sub={email} />
         </BList>
         {/* Review B6 (NV-286): one line on when we reply (the full hours are on Support), then the warning as its own note. */}
         {response ? <p className="eb-help-note">{firstSentence(response)}{response.trim() !== firstSentence(response) ? <> <Link className="eb-help-note__a" href="/app/profile/support">Support hours</Link></> : null}</p> : null}

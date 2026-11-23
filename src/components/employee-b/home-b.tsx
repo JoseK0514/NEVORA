@@ -182,9 +182,9 @@ function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; l
   return <BCard id="b-home-shift" title={echo ? 'Your shift' : now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
     meta={echo ? undefined : now ? `Until ${clock(now.endAt, zone)}` : startsIn(shift, snapshot)}>
     <div className="eb-shift">
-      {/* Phase 8 (review C, row 14): each time stays whole; where the line is too short the range breaks before its dash
-        * (the Employee screens' one rule, parts.tsx Range). */}
-      <p className="eb-shift__time"><time dateTime={shift.startAt} className="eb-nb">{keepWhole(clock(shift.startAt, zone))}</time> <span className="eb-nb"><span aria-hidden="true">{'–\u00a0'}</span><span className="b-sr"> to </span><time dateTime={shift.endAt}>{keepWhole(clock(shift.endAt, zone))}</time></span></p>
+      {/* Phase 8 (review C, row 14): each time stays whole. Gaps G53 (Nov 23, 2026): where the line is too short (768px at
+        * 200% text) the range breaks after its dash, as parts.tsx Range does ("5:30 AM –" over "1:30 PM"); it broke before. */}
+      <p className="eb-shift__time"><span className="eb-nb"><time dateTime={shift.startAt}>{keepWhole(clock(shift.startAt, zone))}</time><span aria-hidden="true">{'\u00a0–'}</span></span> <span className="eb-nb"><span className="b-sr">to </span><time dateTime={shift.endAt}>{keepWhole(clock(shift.endAt, zone))}</time></span></p>
       <p className="eb-shift__where"><Dotted text={[today ? null : shortDay(shift.date), where, !today && ends !== shift.date ? `ends ${shortDay(ends)}` : null].filter(Boolean).join(' · ')}/></p>
       {/* Phase 8 (review C, row 15): the Shift lead chip says it once; no sentence repeats it (as review B6 decided for
         * the On shift now card). */}
@@ -248,12 +248,12 @@ function ComingUp({week, snapshot, lead, note}: {week: HomeWeek; snapshot: HomeS
   const allLed = !!lead && shownRows.length > 1 && shownRows.every(shift => shift.lead);
   return <BCard title={allLed ? <>Coming up<span className="eb-hmeta">{t.leadAll(shownRows.length)}</span></> : 'Coming up'} id="b-home-upcoming" link={{href: '/app/schedule', label: 'See all', aria: 'See all shifts'}}>
     <BList>{shownRows.map(shift => {
-      const at = utcDay(shift.date);
       const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${shift.id ? `&shift=${encodeURIComponent(shift.id)}` : ''}`;
-      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date}/>} title={<Range text={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)}/>}
+      // Proposed G67 (Nov 23, 2026): the row is named by what it shows ("Tue 24 9:00 AM – 5:00 PM Barista, Calle Loíza");
+      // its own label ("Tuesday, November 24, 9:00 AM to 5:00 PM, …") differed from it.
+      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date} spoken/>} title={<Range text={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)}/>}
         // Review B6 (NV-163): "Shift lead" leads the sub-line, as on Schedule, so it never competes with a chip.
-        sub={lead && shift.lead && !allLed || shift.where ? <Dotted text={[lead && shift.lead && !allLed ? 'Shift lead' : null, shift.where].filter(Boolean).join(' · ')}/> : undefined}
-        label={keepWhole(`${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(at)}, ${wallTime(shift.startTime)} to ${wallTime(shift.endTime)}${shift.where ? `, ${shift.where}` : ''}${lead && shift.lead ? ', shift lead' : ''}`)}/>;
+        sub={lead && shift.lead && !allLed || shift.where ? <Dotted text={[lead && shift.lead && !allLed ? 'Shift lead' : null, shift.where].filter(Boolean).join(' · ')}/> : undefined}/>;
     })}</BList>
     {/* Review B6 (NV-273): the note about what isn't published yet qualifies these shifts, so it is the card's footer. */}
     {note ? <BCardNote>{note}</BCardNote> : null}
@@ -330,8 +330,8 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
     // urgent (the first required one) keeps the teal Review pill, so the card has one primary action.
     return item.required
       ? key === firstRequired
-        ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} label={`${title}, action needed, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
-        : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron label={`${title}, action needed`}/>
+        ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
+        : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron/>
       // Round 2 (H2): a request that waits for your answer says so with Requests' own amber chip, and keeps its chevron.
       : needsAnswer(item) ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">{t.needsYourAnswer}</BChip>} sub={sub}/>
       : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} sub={sub}/>;

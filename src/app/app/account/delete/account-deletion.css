@@ -7,6 +7,9 @@
   html body .app-shell[data-nv-b] .c-page.em-delete--team .eb-delete-keep .eb-delete-go { display: flex !important; flex-direction: column !important; gap: var(--b-space-16) !important; }
   html body .app-shell[data-nv-b] .c-page.em-delete--team .eb-delete-keep .em-delete-check > span { flex: 1 1 auto !important; min-width: 0 !important; text-wrap: pretty !important; }
   html body .app-shell[data-nv-b] .c-page.em-delete--team .em-account-stack { min-width: 0 !important; max-width: 100% !important; }
+  /* End sweep (Nov 23, 2026): at 200% text the field label wraps inside the card (it ran past the screen's edge at 390). */
+  html body .app-shell[data-nv-b] .c-page.em-delete--team .eb-delete-keep .c-field { min-width: 0 !important; max-width: 100% !important; }
+  html body .app-shell[data-nv-b] .c-page.em-delete--team .eb-delete-keep .c-field__label { display: block !important; max-width: 100% !important; white-space: normal !important; overflow-wrap: anywhere !important; }
   @media (min-width: 768px) {
     /* Tablets and desktop don't show the phone screen, so the form's own "What we delete" and "What … keeps" cards show. */
     html body .app-shell[data-nv-b] .c-page.em-delete--team .eb-delete-keep .eb-desk { display: block !important; }

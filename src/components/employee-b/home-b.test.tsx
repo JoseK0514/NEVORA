@@ -26,6 +26,22 @@ const props = (patch: Partial<HomeBProps> = {}): HomeBProps => ({snapshot: snaps
 const draw = (patch: Partial<HomeBProps> = {}) => renderToStaticMarkup(<EmployeeHomeB {...props(patch)}/>);
 const text = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/[  ]/g, ' ').replace(/\s+/g, ' ');
 
+it('gaps G53: the shift card’s range keeps its dash with the first time, so it can only break after the dash', () => {
+  const html = draw(), time = html.slice(html.indexOf('class="eb-shift__time"'), html.indexOf('</p>', html.indexOf('class="eb-shift__time"')));
+  expect(time).toMatch(/^class="eb-shift__time"><span class="eb-nb"><time [^>]*>[^<]*<\/time><span aria-hidden="true"> –<\/span><\/span> <span class="eb-nb"><span class="b-sr">to <\/span><time /);
+});
+
+it('proposed G67: Coming up and required to-do rows are named by what they show (no label that differs)', () => {
+  const html = draw({todos: [todo('req', true), todo('r2', true)]});
+  const upcoming = html.slice(html.indexOf('id="b-home-upcoming"'));
+  expect(upcoming).toMatch(/<a class="b-row b-row--link" href="\/app\/schedule\?week=2026-11-16&amp;day=2026-11-19[^"]*">/);
+  expect(upcoming).not.toMatch(/class="b-row b-row--link"[^>]*aria-label/);
+  // The day lead is part of the name: not hidden, with a space between "Thu" and "19".
+  expect(upcoming).toMatch(/<span class="b-day eb-day"><span>Thu<\/span><span class="b-sr"> <\/span><b>19<\/b><\/span>/);
+  const card = html.slice(html.indexOf('id="b-home-todo"'), html.indexOf('</section>', html.indexOf('id="b-home-todo"')));
+  expect(card).not.toContain('action needed, review"');expect(card).not.toMatch(/aria-label="[^"]*, action needed"/);
+});
+
 it('EM-002: Home keeps the server’s order and never drops the first required row out of sight', () => {
   const todos = [todo('a'), todo('b'), todo('c'), todo('d'), todo('req', true), todo('f')];
   // Nothing is re-ranked: the first three, then the required row from further down, in its own place.

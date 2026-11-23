@@ -8,7 +8,7 @@ import {ScheduleB, type ScheduleBProps} from './schedule-b';
 const base: ScheduleBProps = {sub: 'Main Office', range: 'Nov 9–15', confirmed: false, todayHref: null, prevHref: '/app/schedule?week=2026-11-02', nextHref: '/app/schedule?week=2026-11-16', days: [],
   confirm: {title: 'Confirm this week', detail: 'Your manager asked you to check it', control: <button type="submit" className="employee-action">Confirm</button>},
   celebration: null, changes: null, swap: null, error: null, receipt: null, unavailable: null, unpublished: null,
-  open: {count: 2, detail: 'Sat, Nov 14 and Sun, Nov 15', label: 'Open shifts, 2 to pick up', href: '/app/schedule?week=2026-11-09&view=open'},
+  open: {count: 2, detail: 'Sat, Nov 14 and Sun, Nov 15', href: '/app/schedule?week=2026-11-09&view=open'},
   list: {label: 'This week', wholeWeekHref: null, rows: null, empty: 'No shifts this week.'}};
 const draw = (patch: Partial<ScheduleBProps> = {}) => renderToStaticMarkup(<ScheduleB {...base} {...patch}/>);
 
@@ -16,7 +16,8 @@ it('Confirm is the one filled pill: open shifts are a row with a chevron in the 
   const html = draw();
   // Phase 4 (EM-022): the tinted "See open shifts" pill gave way to a plain 64px row that opens the list.
   expect(html).not.toContain('b-btn--ghost');
-  expect(html).toContain('<a class="b-row b-row--link" href="/app/schedule?week=2026-11-09&amp;view=open" aria-label="Open shifts, 2 to pick up">');
+  // Gaps G66: the row is named by what it shows, so it has no label of its own.
+  expect(html).toContain('<a class="b-row b-row--link" href="/app/schedule?week=2026-11-09&amp;view=open">');
   expect(html).toContain('<section class="b-card es-tw" aria-labelledby="b-this-week-h"><div class="b-card__h es-tw__h"><h2 id="b-this-week-h">Open shifts</h2></div>');
   // Below the band, nothing but the page's own Confirm control is a filled teal pill.
   expect(html.slice(html.indexOf('class="b-stack"'))).not.toContain('b-btn--teal');expect(html).not.toContain('>See</a>');
@@ -72,7 +73,7 @@ it('round 2 (S2, S4): Confirm this week carries Home’s amber chip when the man
 
 it('Phase 4, Nov 23: a day block prints the range in two whole halves that break only after the dash (EM-014)', () => {
   const day = {date: '2026-11-17', short: 'Tue', day: 17, today: true, selected: true, href: '/app/schedule?week=2026-11-16&day=2026-11-17', label: 'Tuesday, November 17, today',
-    shifts: [{key: 's1', time: '9\u00a0AM – 5\u00a0PM', position: 'Barista', place: 'Main Office · 8 h', kind: 'now' as const, chip: null, label: 'Tuesday'}]};
+    shifts: [{key: 's1', time: '9\u00a0AM – 5\u00a0PM', position: 'Barista', place: 'Main Office · 8 h', kind: 'now' as const, chip: null, rest: 'Tuesday, November 17'}]};
   const html = draw({weekCard: {summary: '', days: [day]}});
   expect(html).toContain('<b><span class="eb-nb">9\u00a0AM\u00a0–</span> <span class="eb-nb">5\u00a0PM</span></b>');
 });
@@ -97,4 +98,13 @@ it('gaps G12: each day of the week strip is named by what it shows, then its hid
   expect(strip).not.toMatch(/class="b-week__d(?: [^"]*)?"[^>]*aria-label/);
   expect(strip).toContain('<span>Tue</span><span class="b-sr"> </span><b>17</b><span class="b-sr">, today, assigned shift</span>');
   expect(strip).toContain('<span>Wed</span><span class="b-sr"> </span><b>18</b><i aria-hidden="true"></i>');
+});
+
+it('gaps G66: a week block is named by what it shows, then its date as hidden text (no aria-label that differs)', () => {
+  const day = {date: '2026-11-17', short: 'Tue', day: 17, today: true, selected: true, href: '/app/schedule?week=2026-11-16&day=2026-11-17', label: 'Tuesday, November 17, today',
+    shifts: [{key: 's1', time: '9\u00a0AM – 5\u00a0PM', position: 'Barista', place: 'Main Office · 8 h', kind: 'now' as const, chip: null, rest: 'Tuesday, November 17'}]};
+  const html = draw({weekCard: {summary: '', days: [day]}});
+  const block = html.slice(html.indexOf('<a class="eb-wsh eb-wsh--now"'), html.indexOf('</a>', html.indexOf('<a class="eb-wsh eb-wsh--now"')));
+  expect(block).not.toContain('aria-label');
+  expect(block.endsWith('<span class="b-sr">, Tuesday, November 17</span>')).toBe(true);
 });

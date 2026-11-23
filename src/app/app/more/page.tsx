@@ -140,7 +140,7 @@ export default async function MorePage() {
       812 column and Sign out is that card's last row (owner-b-settings.css); phones keep their separate cards. */}
     <CorpSection ariaLabel="You"><CorpCard as="div">
       <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={<Dotted text={`${owner ? "Owner" : "Manager"} · ${company}`} />}
-        label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} name={name} />} chevron /></li></CorpRows>
+        avatar={<CorpAvatar initials={initialsOf(name)} name={name} />} chevron /></li></CorpRows>
     </CorpCard></CorpSection>
     {/* Owner premium R5: each group is a section, 32px from the next (12px inside one); More's groups need no visible label. */}
     {has("/app/reports") || has("/app/updates") || has("/app/my-pay") || has("/app/ai-manager") ? <CorpSection ariaLabel="Work"><CorpCard as="div">

@@ -206,9 +206,11 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
   const withReview = items.map(entry => entry.type === 'TIME_OFF' ? {...entry, detail: 'Ana Colon', request: {startDate: '2026-11-12', endDate: '2026-11-14', lengthText: '3 days', locationName: 'Condado', reviewHref: '/app/requests?tab=pending&requestId=r1&from=inbox'}} as ActionItem : entry);
   const html = onlyB(page({snapshot: ready(withReview), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true})).replace(/\u00a0/g, ' ');
   expect(html).toContain('<h1 id="b-todo-title" tabindex="-1">Things to do</h1>');
-  // Review F5 (NV-103): each filter's count is the segmented control's count pill; its name still reads "Shifts, 1".
-  expect(html).toMatch(/aria-pressed="true" aria-label="All, \d+">All<span class="c-count c-num">\d+<\/span><\/button>/);
-  expect(html).toContain('aria-label="Shifts, 1">Shifts<span class="c-count c-num">1</span></button>');
+  // Review F5 (NV-103): each filter's count is the segmented control's count pill; its name still reads "Shifts, 1",
+  // through a hidden ", " (batch nav gate: no aria-label that differs from the visible text).
+  expect(html).toMatch(/aria-pressed="true">All<span class="b-sr">, <\/span><span class="c-count c-num">\d+<\/span><\/button>/);
+  expect(html).toContain('>Shifts<span class="b-sr">, </span><span class="c-count c-num">1</span></button>');
+  expect(html).not.toContain('aria-label="All, ');
   // Review B1 (NV-078): one teal primary per screen, so a row's Find cover is a ghost pill.
   expect(html).toMatch(/class="b-btn b-btn--ghost"[^>]*>Find cover<\/a>/);
   expect(html).toContain('<input type="hidden" name="requestId" value="r1"/><input type="hidden" name="returnTo" value="inbox"/><input type="hidden" name="returnFilter" value="all"/>');
@@ -248,7 +250,8 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   // Final polish (Nov 20, 2026): the two names sit round the bold swap glyph and read "Ana Colon and James Ortiz".
   expect(html).toMatch(/<span class="b-swapnames"><span class="b-swapnames__a">Ana Colon<svg[^>]*aria-hidden="true"[^>]*>.*?<\/svg><\/span><span class="b-sr"> and <\/span><span>James Ortiz<\/span><\/span>/);
   expect(html).not.toContain('⇄');
-  expect(html).toContain('with James Ortiz"');
+  // Batch nav gate (Nov 23, 2026): the row's name is its visible text (no aria-label that differs from it).
+  expect(html).not.toContain('with James Ortiz"');
   expect(html).toContain('>Luis Torres<');
   expect(html).not.toContain('can’t work Tue');
   expect(html.replace(/\u2060/g, '').replace(/<[^>]+>/g, '')).toContain('Tue, Oct 20 · 9:00 AM – 5:00 PM · Condado');
@@ -276,7 +279,7 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   // The band counts the two requests and the correction; the tabs add up to it; the timecards to approve are named after it.
   // Final regression review: the band's line is the kit's facts line (BSegs); the dot belongs to the second fact.
   expect(html).toContain('<p class="b-sub"><span class="b-segs"><span class="b-segs__i">3 things need you</span><span class="b-segs__i"><span class="b-sr"> · </span>1 timecard to approve</span></span><span');
-  expect(html).toContain('aria-label="All, 3"');
-  expect(html).toContain('aria-label="Time, 1"');
-  expect(html).toContain('aria-label="Requests, 2"');
+  expect(html).toContain('>All<span class="b-sr">, </span><span class="c-count c-num">3</span>');
+  expect(html).toContain('>Time<span class="b-sr">, </span><span class="c-count c-num">1</span>');
+  expect(html).toContain('>Requests<span class="b-sr">, </span><span class="c-count c-num">2</span>');
 });
