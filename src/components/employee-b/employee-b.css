@@ -308,3 +308,9 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-dl-s { display: inline; white-space: nowrap; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hw__key { flex-direction: column-reverse; align-items: flex-start; gap: var(--b-space-4); }
 }
+/* B5 Requests hub (Phase 2 gate, Nov 23): from 768px the band counts Waiting and Needs your answer, so the cards under it
+ * don't say the same figure again. The phone has no band figures and keeps the cards' counts. */
+@media (min-width: 768px) {
+  html body .app-shell[data-nv-b] .b-screen:has(.b-hero ul.b-live[aria-label="Your requests at a glance"] > li:nth-child(1)) #b-requests-waiting > .b-card__h .b-pill,
+  html body .app-shell[data-nv-b] .b-screen:has(.b-hero ul.b-live[aria-label="Your requests at a glance"] > li:nth-child(2)) #b-requests-answer > .b-card__h .b-pill { display: none; }
+}
