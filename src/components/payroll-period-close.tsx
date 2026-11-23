@@ -463,9 +463,12 @@ function PeriodCloseView({period,actorId,startOpen=false}:Props) {
               </ul>
             </article>
           ))}
-          {review.manifests.length > 0 && <PeriodCloseHistory period={period} actorId={actorId} />}
         </div>
       )}
+      {/* Gap closure (Nov 23, 2026, QA trace-1): saved runs sit outside the keyed view. Someone clocked in changes every
+        * READ (their open interval counts up to observedAt), so the key above changes on each early refresh; inside it,
+        * the history and its loaded pages were remounted every 10 s. */}
+      {review && review.manifests.length > 0 && <PeriodCloseHistory period={period} actorId={actorId} />}
       </ListDisclosure>
     </section>
   );
