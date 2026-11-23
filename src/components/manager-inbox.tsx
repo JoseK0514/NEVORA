@@ -143,11 +143,11 @@ function requestFacts(facts: RequestFacts): [string, ReactNode][] {
 /** Approved leave over a published shift (Nov 9, 2026): who fixes it, and that the leave itself is settled. */
 const repairNote = (item: ActionItem) => `The time off is approved and the published shift is kept. Assign a replacement or change the shift, then publish. ${repairOwnerLine(item)}`;
 
-export function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZone: string): InboxEntry {
+export function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZone: string, lang: "en" | "es" = "en"): InboxEntry {
   const repair = isStaffingRepair(item);
   const urgent = item.priority === "URGENT" && !calm;
   const request = item.category === "requests";
-  const action = actionCenterNavigation(item);
+  const action = actionCenterNavigation(item, lang);
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
   const facts = request ? (item as ActionItem & { request?: RequestFacts }).request : undefined;
   return { key: item.id, href: withFilter(action.href, filter, item.id), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,

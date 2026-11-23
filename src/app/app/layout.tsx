@@ -94,6 +94,7 @@ import {isCommerceRecoveryRoute, RECOVERY_ROUTE_HEADER} from '@/lib/commerce/rec
 import {CommerceRecoveryBoundary} from '@/lib/commerce/recovery-boundary';
 import {readPortalLanguage} from '@/lib/activation/language.server';
 import {PortalLangProvider,type PortalLang} from '@/lib/i18n/portal-lang';
+import {readPageLang} from '@/lib/i18n/page-lang.server';
 
 export const metadata: Metadata = {
   // Review fix (23/24 of 50): one title per page, so tab changes are announced and tabs are tellable apart.
@@ -123,7 +124,7 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
   // Presentation qualification only. Every protected reader/command retains its
   // existing server authorization; this marker never grants account privileges.
   if (nativeContext((await headers()).get('user-agent')) && !nativeRoleSupported(session.role)) {
-    return <UnsupportedNativeRole />;
+    return <UnsupportedNativeRole lang={await readPageLang()} />;
   }
   const recoveryEnabled = commerceEnabled();
   if (recoveryEnabled && isCommerceRecoveryRoute((await headers()).get(RECOVERY_ROUTE_HEADER))) {

@@ -160,7 +160,7 @@ export function HomeB(props: HomeBProps) {
   const total = value ? needsYouTotal(value, { clockInsUnavailable: today?.state === "unavailable" }) : null;
   const title = value && total ? value.count === 0 ? total.exact ? c.allSet : t.notAllChecked : t.needYou(value.count, total.exact)
     : offline ? c.offline : connection === "paused" ? c.paused : c.checkingToday;
-  const gapRows = ready && gaps ? gaps.map(item => gapRow(item, ready.timeZone, ready.today)).map(row => lang === "es" ? { ...row, title: clockIn(lang, row.title), detail: row.detail && clockIn(lang, row.detail) } : row) : [];
+  const gapRows = ready && gaps ? gaps.map(item => gapRow(item, ready.timeZone, ready.today, lang)).map(row => lang === "es" ? { ...row, title: clockIn(lang, row.title), detail: row.detail && clockIn(lang, row.detail) } : row) : [];
   const openHref = gaps?.length === 1 && gapRows[0] ? gapRows[0].href : "/app/schedule";
   // Gaps G73 (Nov 23, 2026): while Things to do (and the Timecards facts that come with it) is still being read, the
   // cards that would sit below it wait, so its growth from the loading line moves nothing (phones) and the Timecards
@@ -243,8 +243,8 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
     const shown = lang === "es" ? { ...presented, title: person ? c.fillPersonShift(person) : c.fillShift } : presented;
     rows.push(<BRow key="repairs" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>}
       title={repairs.length === 1 ? shown.title : c.fillMany(repairs.length)}
-      sub={repairs.length === 1 ? repairWhen(first) : `${c.next}${shown.title.replace(c.fillPrefix, "")}`} href={repairs.length === 1 ? actionCenterNavigation(first).href : "/app/inbox#todo-repair"}
-      label={repairs.length === 1 ? `${shown.title}, ${repairWhen(first)}` : c.fillManyLabel(repairs.length)} />);
+      sub={repairs.length === 1 ? repairWhen(first, lang) : `${c.next}${shown.title.replace(c.fillPrefix, "")}`} href={repairs.length === 1 ? actionCenterNavigation(first, lang).href : "/app/inbox#todo-repair"}
+      label={repairs.length === 1 ? `${shown.title}, ${repairWhen(first, lang)}` : c.fillManyLabel(repairs.length)} />);
   }
   // One row for shifts in progress with no punch ("Not clocked in") and one for shifts that ended with none ("Missed").
   // Gaps G39 (Nov 23, 2026): these rows, the corrections row and the request rows are named by what they show (no
