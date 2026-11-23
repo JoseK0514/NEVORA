@@ -683,6 +683,16 @@
 @media (forced-colors: active) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(.b-btn--ghost, .b-btn--quiet) { border: 1px solid ButtonText; }
 }
+/* Forced colours (Z3, A4-05, Nov 23, 2026): a filled button (teal, white, glass, danger, the corporate kit's primary and
+ * secondary) is drawn by its fill and shadow, both dropped under Windows contrast themes, so it read as plain text
+ * ("Add employee", "Delete my account", "Try again"). Every kit button keeps a 1px ButtonText edge, GrayText when
+ * disabled. Inside the layer so the pages' own border resets don't remove it; nothing changes outside forced colours. */
+@media (forced-colors: active) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-btn, .c-btn):not(#fcb1):not(#fcb2):not(#fcb3):not(#fcb4):not(#fcb5):not(#fcb6):not(#fcb7):not(#fcb8) { border: 1px solid ButtonText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-btn, .c-btn):is(:disabled, [aria-disabled="true"]):not(#fcb1):not(#fcb2):not(#fcb3):not(#fcb4):not(#fcb5):not(#fcb6):not(#fcb7):not(#fcb8) { border-color: GrayText !important; }
+  }
+}
 
 /* Premium pass (Nov 21, 2026): micro-interactions. Each answers a touch or a pointer within 150ms, moves 2px or scales a
  * few percent, and uses transform and colour only. Nothing here plays by itself, and all of it is off under reduced
