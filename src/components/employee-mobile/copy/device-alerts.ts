@@ -1,0 +1,86 @@
+/* Signed-in Spanish (Nov 23, 2026): the words on the Alerts page (device-alerts.tsx: this browser's alert status, its
+ * one action, the turn-off review and the notes), in English and Puerto Rico Spanish (docs/design/voice.md: tú, sentence
+ * case, "Notificaciones", "Iniciar sesión", "tu trabajo", "gerente", "Aviso"). What the page says about permissions and
+ * what stops is privacy text: the Spanish is a literal translation waiting for Jose's review. English is byte for byte
+ * what the page said before; the pending turn-off sentence is still the device client's constant in English. */
+import {DEVICE_TURN_OFF_PENDING_MESSAGE} from '../../../lib/notifications/device-client';
+
+const en = {
+  titles: {
+    disabled: 'Workplace alerts are unavailable', paused: 'Device settings paused', accessChanged: 'Your access changed',
+    checking: 'Checking this device…', cleanup: 'Alerts may still be on', enabled: 'Alerts are on', denied: 'Permission is blocked',
+    revoked: 'Device access changed', install: 'Open from your Home Screen', unavailable: 'Alerts are unavailable',
+    error: 'We couldn’t verify this device', off: 'Alerts are off',
+  },
+  pills: {check: 'Check', on: 'On', blocked: 'Blocked', off: 'Off'},
+  reviewSetup: 'Review setup', turnOn: 'Turn on alerts', addToHome: 'Add to Home Screen',
+  thisDevice: 'This device',
+  notMadeAvailable: 'Your workplace has not made device alerts available. Your notifications remain in NEVORA.',
+  pausedLine: 'Return to this window to check the current status. No new setup will start automatically.',
+  signInAgain: 'Sign in again', signInAgainTail: ' to check this account and device.',
+  finishing: 'Finishing your device request…', checkingEnrollment: 'Checking permission and this device’s enrollment…',
+  lines: {
+    cleanup: 'Check again asks NEVORA for the latest status. Retry turn off sends your earlier turn-off request again.',
+    enabled: 'This browser is set up for your account. Alerts also depend on your workplace and device settings.',
+    denied: 'Allow notifications in your browser or device settings, then check again here. NEVORA cannot change that permission for you.',
+    revoked: 'Permission or this browser’s setup changed. Turn off the previous setup before starting again.',
+    install: 'Add NEVORA to your Home Screen, then open it from that icon to set up alerts.',
+    unavailable: 'This browser or the current configuration cannot set up alerts. You can keep using your notifications in NEVORA.',
+    error: 'Check again before starting a new request. You can also turn off the previous setup.',
+    dismissed: 'Setup is postponed. You can return whenever you are ready.',
+    ready: 'Get schedule changes, request answers and updates on this device. If permission is needed, your browser will ask.',
+  },
+  stepsSafari: 'In Safari, open Share, then Add to Home Screen. Turn on Open as Web App if offered. Open NEVORA from the new icon.',
+  stepsBrowser: 'Open your browser menu and choose Install app or Add to Home Screen if offered. Open NEVORA from the new icon.',
+  checkAgain: 'Check again', test: 'Test notification', retryTurnOff: 'Retry turn off', turnOff: 'Turn off alerts', notNow: 'Not now',
+  turnOffTitle: 'Turn off alerts here?',
+  turnOffTry: 'NEVORA will try to stop alerts for this account in this browser. We’ll check the result before confirming they’re off.',
+  turnOffStays: 'Your browser permission, other devices, and notifications in NEVORA stay the same. An alert already queued by your device may still appear.',
+  keepSetup: 'Keep current setup',
+  turnOffPending: DEVICE_TURN_OFF_PENDING_MESSAGE,
+  setupFailed: 'Setup could not finish. You can ask your manager for help.',
+  browserOnly: 'These settings apply to this browser only. Your notifications always stay in NEVORA, and your phone’s settings can turn off every alert.',
+  alerts: 'Alerts', notifications: 'Notifications',
+  appNotAvailable: 'Your workplace has not made app alerts available. Your notifications remain in NEVORA.',
+  signingOut: 'Signing out…',
+};
+const es: typeof en = {
+  titles: {
+    disabled: 'Las alertas de tu trabajo no están disponibles', paused: 'Ajustes del dispositivo en pausa', accessChanged: 'Tu acceso cambió',
+    checking: 'Verificando este dispositivo…', cleanup: 'Puede que las alertas sigan activadas', enabled: 'Las alertas están activadas', denied: 'El permiso está bloqueado',
+    revoked: 'El acceso del dispositivo cambió', install: 'Ábrela desde tu pantalla de inicio', unavailable: 'Las alertas no están disponibles',
+    error: 'No pudimos verificar este dispositivo', off: 'Las alertas están desactivadas',
+  },
+  pills: {check: 'Revisar', on: 'Activadas', blocked: 'Bloqueadas', off: 'Desactivadas'},
+  reviewSetup: 'Revisar configuración', turnOn: 'Activar alertas', addToHome: 'Agregar a pantalla de inicio',
+  thisDevice: 'Este dispositivo',
+  notMadeAvailable: 'Tu trabajo no ha habilitado las alertas en dispositivos. Tus notificaciones siguen en NEVORA.',
+  pausedLine: 'Vuelve a esta ventana para verificar el estado actual. No se iniciará ninguna configuración nueva por sí sola.',
+  signInAgain: 'Inicia sesión de nuevo', signInAgainTail: ' para verificar esta cuenta y este dispositivo.',
+  finishing: 'Terminando la solicitud de tu dispositivo…', checkingEnrollment: 'Verificando el permiso y el registro de este dispositivo…',
+  lines: {
+    cleanup: 'Verificar de nuevo le pide a NEVORA el estado más reciente. Reintentar desactivación envía otra vez tu solicitud anterior para desactivarlas.',
+    enabled: 'Este navegador está configurado para tu cuenta. Las alertas también dependen de tu trabajo y de los ajustes de tu dispositivo.',
+    denied: 'Permite las notificaciones en los ajustes de tu navegador o dispositivo y luego verifica de nuevo aquí. NEVORA no puede cambiar ese permiso por ti.',
+    revoked: 'El permiso o la configuración de este navegador cambió. Desactiva la configuración anterior antes de empezar de nuevo.',
+    install: 'Agrega NEVORA a tu pantalla de inicio y luego ábrela desde ese ícono para configurar las alertas.',
+    unavailable: 'Este navegador o la configuración actual no puede configurar alertas. Puedes seguir usando tus notificaciones en NEVORA.',
+    error: 'Verifica de nuevo antes de empezar una solicitud nueva. También puedes desactivar la configuración anterior.',
+    dismissed: 'La configuración está pospuesta. Puedes volver cuando quieras.',
+    ready: 'Recibe cambios de horario, respuestas a tus solicitudes y avisos en este dispositivo. Si hace falta permiso, tu navegador te lo pedirá.',
+  },
+  stepsSafari: 'En Safari, abre Compartir y luego Agregar a pantalla de inicio. Activa Abrir como app web si aparece. Abre NEVORA desde el nuevo ícono.',
+  stepsBrowser: 'Abre el menú de tu navegador y elige Instalar aplicación o Agregar a pantalla de inicio si aparece. Abre NEVORA desde el nuevo ícono.',
+  checkAgain: 'Verificar de nuevo', test: 'Probar notificación', retryTurnOff: 'Reintentar desactivación', turnOff: 'Desactivar alertas', notNow: 'Ahora no',
+  turnOffTitle: '¿Desactivar alertas aquí?',
+  turnOffTry: 'NEVORA intentará detener las alertas de esta cuenta en este navegador. Verificaremos el resultado antes de confirmar que están desactivadas.',
+  turnOffStays: 'El permiso de tu navegador, tus otros dispositivos y las notificaciones en NEVORA no cambian. Puede que aún aparezca una alerta que tu dispositivo ya tenía en cola.',
+  keepSetup: 'Conservar configuración',
+  turnOffPending: 'La desactivación sigue pendiente. Para detener las alertas ahora, bloquea las notificaciones de NEVORA en los ajustes de tu dispositivo o navegador. Luego vuelve aquí e inténtalo de nuevo. Todavía puedes cerrar sesión.',
+  setupFailed: 'La configuración no pudo terminar. Puedes pedirle ayuda a tu gerente.',
+  browserOnly: 'Estos ajustes aplican solo a este navegador. Tus notificaciones siempre se quedan en NEVORA, y los ajustes de tu teléfono pueden desactivar todas las alertas.',
+  alerts: 'Alertas', notifications: 'Notificaciones',
+  appNotAvailable: 'Tu trabajo no ha habilitado las alertas de la aplicación. Tus notificaciones siguen en NEVORA.',
+  signingOut: 'Cerrando sesión…',
+};
+export const deviceAlertsCopy = {en, es};

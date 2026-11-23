@@ -8,52 +8,56 @@ import {useEmployeeMobile} from './use-mobile';
 import {BState} from '../owner-b/b-kit';
 import {PASSKEY_COPY} from '../../lib/passkeys/copy';
 import './account-corp.css';
+import {useMobileLang} from './mobile-lang';
+import {instantDateText,type MobileLang} from './mobile-format';
+import {passkeysCopy} from './copy/passkeys';
 
 const subscribe=()=>()=>{};
-const date=(value:string)=>new Date(value).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+const date=(value:string,lang:MobileLang)=>lang==='en'?new Date(value).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):instantDateText(value,lang,{month:'short',day:'numeric',year:'numeric'});
 type ViewProps={mobile?:boolean;state:PasskeyState;supported:boolean;confirm:Passkey|null;onAdd:()=>void;onRefresh:()=>void;onRemove:(id:string)=>void;onReview:(key:Passkey,button:HTMLButtonElement)=>void;onKeep:()=>void;onCancel:()=>void;addRef?:RefObject<HTMLButtonElement|null>;confirmationRef?:RefObject<HTMLDivElement|null>;feedbackRef?:RefObject<HTMLParagraphElement|null>};
 
 /** One presentation on every width (board style): a "Saved passkeys" card with one row per key, the review inline, and
  * one primary Add a passkey. The device ceremony, removal review and refresh are unchanged. */
 export function EmployeePasskeyView({state,supported,confirm,onAdd,onRefresh,onRemove,onReview,onKeep,onCancel,addRef,confirmationRef,feedbackRef}:ViewProps){
+ const lang=useMobileLang(),t=passkeysCopy[lang];
  const ready=state.phase==='ready',keys=ready?state.passkeys??[]:[],busy=state.busy!==null;
  const reviewed=ready?keys.find(key=>key.id===confirm?.id):null;
  if(state.phase==='ended')return null;
  // Batch 1 (item 18): a card at every width; the kept panel around it is no longer drawn as one on wide screens.
  if(state.phase==='disabled')return <div className="c-card" data-passkey-state="disabled">
-  <BState kind="locked" title={PASSKEY_COPY.en.unavailableHere} line={PASSKEY_COPY.en.passwordStillWorks}/>
+  <BState kind="locked" title={PASSKEY_COPY[lang].unavailableHere} line={PASSKEY_COPY[lang].passwordStillWorks}/>
  </div>;
- const status=state.phase==='loading'?'Checking your saved passkeys…':state.phase==='paused'&&!busy?'Passkeys are paused. Return to this page to check your account.':state.phase==='unavailable'?(state.needsRefresh?'Check your saved passkeys before starting another request.':'We couldn’t check your passkeys. Refresh to try again.'):null;
+ const status=state.phase==='loading'?t.checking:state.phase==='paused'&&!busy?t.paused:state.phase==='unavailable'?(state.needsRefresh?t.checkFirst:t.couldntCheck):null;
  return <>
   <section className="c-card em-passkeys" aria-labelledby="passkeys-title" data-passkey-state={state.phase}>
-   <div className="c-card__head"><h2 className="c-card__label" id="passkeys-title">Saved passkeys</h2></div>
-   {ready&&keys.length?<ul className="c-rows" aria-label="Your passkeys">{keys.map(key=><li key={key.id}><div className="c-row">
+   <div className="c-card__head"><h2 className="c-card__label" id="passkeys-title">{t.saved}</h2></div>
+   {ready&&keys.length?<ul className="c-rows" aria-label={t.yours}>{keys.map(key=><li key={key.id}><div className="c-row">
     <span className="c-row__icon" aria-hidden="true"><KeyIcon weight="bold" className="c-ic"/></span>
-    <span className="c-row__main"><span className="c-row__title c-row__title--b">{key.name}</span><span className="c-row__detail"><span>Added {date(key.createdAt)} · {key.lastUsedAt?'Last used '+date(key.lastUsedAt):'Not used yet'}</span></span></span>
-    <button type="button" className="em-account-textbtn em-account-textbtn--danger" aria-label={'Remove '+key.name} disabled={busy||state.needsRefresh||!!reviewed} onClick={event=>onReview(key,event.currentTarget)}>Remove</button>
+    <span className="c-row__main"><span className="c-row__title c-row__title--b">{key.name}</span><span className="c-row__detail"><span>{t.addedLead}{date(key.createdAt,lang)} · {key.lastUsedAt?t.lastUsed(date(key.lastUsedAt,lang)):t.notUsed}</span></span></span>
+    <button type="button" className="em-account-textbtn em-account-textbtn--danger" aria-label={t.removeLabel(key.name)} disabled={busy||state.needsRefresh||!!reviewed} onClick={event=>onReview(key,event.currentTarget)}>{t.remove}</button>
    </div></li>)}</ul>:null}
    <div className="c-card__body em-passkeys-body">
-    {ready&&!keys.length?<p className="em-passkeys-empty"><b>None yet</b>Your password still works.</p>:null}
-    {ready&&keys.length?null:<p className="em-passkeys-intro">Sign in with your device’s screen lock instead of typing your password.</p>}
+    {ready&&!keys.length?<p className="em-passkeys-empty"><b>{t.noneYet}</b>{t.passwordWorks}</p>:null}
+    {ready&&keys.length?null:<p className="em-passkeys-intro">{t.intro}</p>}
     {status?<p className="c-note" role="status">{status}</p>:null}
-    {state.phase==='denied'?<p className="c-note" role="status">Your session changed. <a className="c-link" href="/login">Sign in again</a> to manage your passkeys.</p>:null}
-    {ready&&!supported?<p className="c-note">This browser can’t create a passkey. You can still manage your saved passkeys here, or use a supported browser to add one.</p>:null}
-    {busy?<p className="c-note" role="status">{state.busy==='device'?'Finish setup in your device’s prompt.':state.busy==='removing'?'Removing your passkey…':state.busy==='verifying'?'Checking and saving your passkey…':'Preparing secure setup…'}</p>:null}
+    {state.phase==='denied'?<p className="c-note" role="status">{t.sessionChanged}<a className="c-link" href="/login">{t.signInAgain}</a>{t.signInAgainTail}</p>:null}
+    {ready&&!supported?<p className="c-note">{t.cantCreate}</p>:null}
+    {busy?<p className="c-note" role="status">{state.busy==='device'?t.busy.device:state.busy==='removing'?t.busy.removing:state.busy==='verifying'?t.busy.verifying:t.busy.options}</p>:null}
     <p className="em-passkeys-feedback c-note" role="status" aria-live="polite" tabIndex={-1} ref={feedbackRef}>{state.notice}</p>
-    {ready&&!reviewed&&supported?<button ref={addRef} type="button" className="c-btn c-btn--full" disabled={busy||state.needsRefresh} onClick={onAdd}>Add a passkey</button>:null}
-    {busy&&(state.busy==='device'||state.busy==='options')?<button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={onCancel}>Cancel setup</button>:null}
-    {!busy&&(state.phase==='unavailable'||state.phase==='paused')?<button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={onRefresh}>Refresh passkeys</button>:null}
+    {ready&&!reviewed&&supported?<button ref={addRef} type="button" className="c-btn c-btn--full" disabled={busy||state.needsRefresh} onClick={onAdd}>{t.add}</button>:null}
+    {busy&&(state.busy==='device'||state.busy==='options')?<button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={onCancel}>{t.cancelSetup}</button>:null}
+    {!busy&&(state.phase==='unavailable'||state.phase==='paused')?<button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={onRefresh}>{t.refresh}</button>:null}
    </div>
   </section>
   {reviewed?<div className="c-card em-passkeys-confirmation" role="group" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body" tabIndex={-1} ref={confirmationRef}>
-   <div className="c-card__head"><h2 className="c-card__label" id="passkey-remove-title">Remove “{reviewed.name}”?</h2></div>
+   <div className="c-card__head"><h2 className="c-card__label" id="passkey-remove-title">{t.removeTitleLead}{reviewed.name}{t.removeTitleTail}</h2></div>
    <div className="c-card__body">
-    <p id="passkey-remove-body">This stops this passkey from signing in to NEVORA. It does not delete it from your device or sign you out.</p>
-    {keys.length===1?<p className="em-passkeys-last">This is your last saved passkey. You can still sign in with your password.</p>:null}
-    <div className="c-btns"><button type="button" className="c-btn c-btn--secondary" disabled={busy} onClick={onKeep}>Keep passkey</button><button type="button" className="c-btn c-btn--danger" disabled={busy} onClick={()=>onRemove(reviewed.id)}>Remove passkey</button></div>
+    <p id="passkey-remove-body">{t.removeBody}</p>
+    {keys.length===1?<p className="em-passkeys-last">{t.last}</p>:null}
+    <div className="c-btns"><button type="button" className="c-btn c-btn--secondary" disabled={busy} onClick={onKeep}>{t.keep}</button><button type="button" className="c-btn c-btn--danger" disabled={busy} onClick={()=>onRemove(reviewed.id)}>{t.removePasskey}</button></div>
    </div>
   </div>:null}
-  <p className="c-note">Your device may use a fingerprint, face scan, screen-lock code or security key. NEVORA does not receive your biometric data.</p>
+  <p className="c-note">{t.biometric}</p>
  </>;
 }
 
