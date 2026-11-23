@@ -128,7 +128,9 @@
   /* G26: at 200% text the fields and their labels grow with the text. The kit's one field size (16px text, 48px tall;
    * b-foundation.css, owner-b-desktop.css) and the corp label (13px) are in px; on the sheet they are the same sizes in
    * rem, and a field's height is a minimum, so a field is never shorter than its text. */
-  html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form :is(select, input:not([type="checkbox"], [type="hidden"]), textarea) { font-size: 1rem !important; }
+  html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form :is(select, input:not([type="checkbox"], [type="hidden"]), textarea) { font-size: 1rem !important; line-height: 1.25rem !important; }
+  /* The kit's select rule (b-foundation.css, "One select") is two classes stronger than the line above. */
+  html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field select.c-in { font-size: 1rem !important; line-height: 1.25rem !important; }
   html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field :is(select, input:not([type="checkbox"], [type="hidden"])) { box-sizing: border-box !important; height: auto !important; min-height: 3rem !important; }
   html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form .c-shift__person > .c-av { top: 50% !important; transform: translateY(-50%) !important; }
   html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form .c-field__help { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
@@ -136,9 +138,12 @@
     html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form .c-field__label { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
   }
   /* G29: from 768px the card fits the field block (--b-frame-form, 560px, plus the card's 22px insets), so the fields fill
-   * the card and the footer's Cancel and Save end on the card's content edge. The card starts on the title's left edge.
-   * Build and publish (.c-pub) keeps its own width. */
+   * the card and the footer's Cancel and Save end on the card's content edge. The card and the Delete shift card under it
+   * start on the title's left edge. The sheet itself keeps the page's width (owner-b-desktop.css lets every page child
+   * span the column), so the cards inside it carry the limit: the field block, the card's two insets and its 1px edge.
+   * Both cards stretch to it and start on the column's left edge (no auto margins, which would shrink them). Build and
+   * publish (.c-pub) keeps its own width. */
   @media (min-width: 768px) {
-    html body .app-shell[data-nv-b] .c-shift-page:not(.c-pub) > .c-shift { max-width: calc(var(--b-frame-form, 560px) + 2 * var(--b-inset-wide, 22px)) !important; margin-left: 0 !important; margin-right: auto !important; }
+    html body .app-shell[data-nv-b] .c-shift-page:not(.c-pub) > .c-shift > :is(.c-shift__form, form.c-shift__delete) { box-sizing: border-box !important; max-width: calc(var(--b-frame-form, 560px) + 2 * var(--b-inset-wide, 22px) + 2px) !important; }
   }
 }
