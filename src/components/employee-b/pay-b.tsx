@@ -56,7 +56,7 @@ function Row({item, byId}: {item: Statement; byId?: Map<string, Statement>}) {
   // Final polish, round 2 (P2): a statement whose correction is in the list is not a second payday. It reads "Earlier
   // version" over "Replaced by the Nov 13 correction" (the correction's payday), muted, with no chip (the line says it);
   // the correction keeps its date and "Corrected". Without the correction at hand it keeps its date and "Replaced".
-  if (by) return <BRow href={paycheckHref(item.id)} title={<span className="ep-muted">{payday(item.payday)}</span>} sub="Earlier version · replaced by a correction"/>;
+  if (by) return <BRow href={paycheckHref(item.id)} title={<span className="ep-muted">{payday(item.payday)}</span>} sub="Replaced by a correction"/>;
   return <BRow href={paycheckHref(item.id)} title={item.correctedBy ? <span className="ep-muted">{payday(item.payday)}</span> : payday(item.payday)} chip={tag(item)} sub={`For work ${period(item.period.startDate, item.period.endDate)}`}/>;
 }
 
