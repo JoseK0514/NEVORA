@@ -59,7 +59,7 @@ export function ClockerRecoveryHelp({references,otherCount=0,commandId,request,o
   <p className={styles.smsg}>{t(many?'Your Owner can check them. You can leave this screen.':'Your Owner can check it. You can leave this screen.')}</p>
   {unreadable?<p className={styles.smsg}>{t('One saved punch can’t be read. Ask your manager to check it.')}</p>:null}
   {others?<p data-clocker-others-saved="" className={styles.quietLine}>{others} {t('Each person can check their own after their PIN.')}</p>:null}
-  <div className={styles.stack}>
+  <div className={`${styles.stack} ${styles.helpStack}`}>
    {sent?null:<button type="button" className={styles.btn} data-kind="secondary" disabled={request.state==='sending'} onClick={()=>void request.ask()}>{t(request.state==='sending'?'Asking…':request.state==='unknown'?'Ask again':'Ask Owner to check')}</button>}
    {/* One live line for the request's result, in place from the start so every change is announced. */}
    <p role="status" className={sent||request.state==='unknown'?styles.msg:styles.quietLine} data-tone={sent?'teal':request.state==='unknown'?'amber':undefined} data-clocker-request={request.state}>

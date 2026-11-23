@@ -97,9 +97,18 @@ describe('native device ownership', () => {
         await f.client.turnOff(generation);
         expect(f.request).toHaveBeenCalledWith('notifications.detach', generation);
         expect(f.client.snapshot.state).toBe('error');
+        // The failure line adds what the screen doesn't already say (no second "Check again").
+        expect(f.client.snapshot.message ?? '').not.toContain('Check again');
         f.api.mockResolvedValue({ state: 'off' });
         await f.client.start();
         expect(f.client.snapshot.state).toBe('ready');
+    });
+    it('a failed check leaves the explanation to the screen (no repeated line)', async () => {
+        const f = fixture();
+        f.api.mockRejectedValue(Error('fictional network failure'));
+        await f.client.start();
+        expect(f.client.snapshot.state).toBe('error');
+        expect(f.client.snapshot.message).toBeUndefined();
     });
     it('permission dialog retirement never authorizes the next page automatically', async () => {
         const f = fixture();
