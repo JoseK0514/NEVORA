@@ -22,7 +22,7 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
 }
 /* The Profile presentations, in the person's language (signed-in Spanish). */
 function EmployeeProfileAccountView({kind,state,onRetry,notificationsEnabled,quiet}:{kind:EmployeeViewKind;state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;notificationsEnabled:boolean;quiet:boolean}){
- const t=employeeTeamCopy(usePortalLang());
+ const lang=usePortalLang(),t=employeeTeamCopy(lang);
  const ready=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.kind==='profile'?state.snapshot:null;
  // v5 Profile (mockup E16): the work details as two rows and the note; the Name, role and company sit in the header.
  if(quiet&&kind==='profile'){const deniedQ=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied',failed=state.snapshot?.state==='unavailable';
@@ -30,7 +30,7 @@ function EmployeeProfileAccountView({kind,state,onRetry,notificationsEnabled,qui
    <div className="q-grp"><h2 id="profile-work-title">{t.workDetails}</h2></div>
    <ul className="q-list">
     <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.locations}</b></span><span className="q-rv q-rv--l">{ready?ready.profile.locations.join(' · '):'–'}</span></div></li>
-    <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.timeZone}</b></span><span className="q-rv q-rv--l">{ready?timeZoneLabel(ready.profile.timeZone).replace(/ time$/,''):'–'}</span></div></li>
+    <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.timeZone}</b></span><span className="q-rv q-rv--l">{ready?timeZoneLabel(ready.profile.timeZone,lang).replace(/ time$/,''):'–'}</span></div></li>
    </ul>
    {ready?<p className="q-help">{t.somethingWrong}</p>
     :<p className="q-help" role="status">{state.paused?t.pausedShort:deniedQ?<>{t.sessionEnded} <Link href="/login">{t.signIn}</Link></>:failed?<>{t.couldntLoad} <button type="button" className="q-linkbtn" disabled={state.refreshing} onClick={onRetry}>{t.tryAgain}</button></>:t.checkingDetails}</p>}

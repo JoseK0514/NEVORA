@@ -22,6 +22,7 @@ All data is fictional, and nothing was sent or published.
 | release candidate `claude-codex-collab-nevora` 91c08d19 (Insights `.c-ins__range` contrast 95bad13a, the English Close open punch card, the guide rebuild) | all; the guide PDFs and manifest are the candidate's; Close open punch keeps the Spanish wiring on the same card layout | 164bd39b |
 | es-employee second release 84e8109b (198cea83 time corrections queue and Time on the lang-aware helpers, bb17dd9e Home and Updates on the shared helpers, 04d3cae5 the queue's zone in Spanish, report) | all, no conflicts | 5eb14ec9 |
 | screens-final second pass bfdd3d80 (215fe886, 2479d906 with bcd72494, d96e6831; merges 746074e3, a2617040; report) | fast-forward (it had merged staff) | bfdd3d80 |
+| es-rest second release eced81af (95d99a10, 2a196e30, 2acc7c31, 66e8160d, 772f7ae8, report) | all, no conflicts; `reports.tsx` keeps es-rondo's version plus the `reportText()` wrapping | 71d394d3 |
 
 ### How the conflicts were settled
 
@@ -63,7 +64,8 @@ All data is fictional, and nothing was sent or published.
 
 ## Still English or open
 
-Closed since: the manager's time corrections queue and the Employee Time screen on the language-aware helpers
+Closed since: Insights' report definitions, server action messages for Settings and Team, shared lib sentences,
+`clocker-owner-copy` and reminders (tú, localidad) (es-rest's second release); the manager's time corrections queue and the Employee Time screen on the language-aware helpers
 (es-employee's second release); the week grid, the shift form, Find cover, Review replacement and ManagerShiftRequests
 (screens-final's second pass); `review-details/copy.ts` now uses tú (integration, this branch).
 
@@ -74,11 +76,13 @@ They are integrated here as each lands. Jose's word decisions below wait for his
 
 - **TeamB's band, QuietPage's `lang` prop, "What changed in your schedule", the Time, Profile and Availability page
   titles** (employee-mobile): from the session reports, not yet checked here.
-- **Server action messages** (Settings, breaks, clocker, photos, matching, employees, requests, scheduling, policies) and
-  shared library sentences (`lib/reports`, notification titles, `time-zone-label`, `sinceLabel`, `formatBusinessDateTime`,
-  `durationRow`): es-rest's list. The server's own sentences inside Things to do rows (dates, "N open") stay English too.
-- **`clocker-owner-copy.ts`** uses formal "usted" and "ubicación" (about 15 lines).
-- **momentsCopy and reminders "usted":** es-owner says eb750176 fixes moments; reminders are still to check.
+- **Lib callers wired on staff after es-rest R2** (R2-C.md's list): time zone names in Team profile details, the
+  account panel, B Profile, restrictions and Company profile; Timecards' "Times in" line (its Spanish said "Horas de
+  Puerto Rico time"; now "Hora de Puerto Rico."). Left English on purpose: `notification-inbox.tsx`'s own component (its
+  states and status lines are English, so only its titles would be Spanish), and the older Quiet Home's needs-you list.
+  The copy tables (communication, reports, coverage, messages compose, hours) already pass their own Spanish zone.
+  `formatBusinessDateTime` in `manager-availability`, `manager-dashboard` and `manager-action-center` is still English
+  (those are server parts or the preview-only surface).
 - **The old ManagerActionCenter surface** stays English; it renders only on `/ui-preview`.
 
 ## Words for Jose to settle (seen across sessions)
@@ -87,6 +91,11 @@ They are integrated here as each lands. Jose's word decisions below wait for his
 - "Informes" for Insights (es-rest, es-rondo); the shell nav should say the same.
 - "empresa" (122 uses) or "compañía" (14, mostly in access and Home lines) for "company". The glossary in
   `docs/design/voice.md` already says **Empresa**, so the 14 "compañía" lines are the ones off the glossary.
+- "Owner" in Spanish sentences: es-rest's second release writes "dueño"; other screens keep "Owner" or "Dueño" as the
+  role name (the glossary lists Owner → Dueño). One form for Jose to confirm.
+- "Novedades" became "Avisos" (es-rest), as the glossary's word for an update.
+- Insights' "D2" definition ("Actual time uses D2 canonical effective entries…") is internal wording; Jose to decide how
+  it reads in both languages.
 - Cover request: "Solicitud de cobertura" (review-details, Things to do) or "Solicitud de reemplazo" (screens-final
   sentences; the 390 chip says "Reemplazo").
 - Can't work, approved or declined: "Ausencia aprobada/rechazada" (review-details) or the glossary's "No puedo trabajar".
@@ -404,6 +413,53 @@ From `reports/es-employee.md`, section "Second release".
 - Fixes your team asked for. Original times are always kept. Times in {zone}. → Correcciones que pidió tu equipo. Las horas originales siempre se guardan. Hora de {lugar}.
 - We couldn’t confirm your decision. Try again; it won’t be applied twice. → No pudimos confirmar tu decisión. Inténtalo de nuevo; no se aplicará dos veces.
 - Another manager or an Owner reviews your own request. → Otro gerente o el dueño revisa tu propia solicitud.
+
+### es-rest second release, R2-A: For Jose to review (security and access messages)
+
+From `reports/es-rest-parts/R2-A.md`.
+
+| English | Spanish |
+|---|---|
+| Only an Owner may set a Clocker PIN. | Solo un dueño puede configurar un PIN del Clocker. |
+| Enter the same four-digit PIN twice. | Escribe el mismo PIN de cuatro dígitos dos veces. |
+| PIN changes could not be confirmed. Reload the current settings before trying again. | No pudimos confirmar los cambios del PIN. Recarga la configuración actual antes de intentarlo de nuevo. |
+| Your current account cannot manage this employee’s Clocker PIN. | Tu cuenta no puede administrar el PIN del Clocker de este empleado. |
+| This PIN is unavailable. Choose a different PIN. | Este PIN no está disponible. Elige otro PIN. |
+| Clocker PIN security is unavailable. No verification can be confirmed. | La seguridad del PIN del Clocker no está disponible. No se puede confirmar ninguna verificación. |
+| PIN security is not configured for this environment. | La seguridad del PIN no está configurada en este entorno. |
+| Only an active Owner may review punch photos. / … remove punch photos. | Solo un dueño activo puede revisar las fotos de marcación. / … eliminar fotos de marcación. |
+| The punch photo result could not be confirmed. Reload its protected review before continuing. | No pudimos confirmar el resultado de la foto de marcación. Recarga su revisión protegida antes de continuar. |
+| The photo result could not be confirmed. Check the original clock action; do not create a replacement punch. | No pudimos confirmar el resultado de la foto. Revisa la marcación original; no crees una marcación de reemplazo. |
+| You don’t have access to make this change here. Reload to see your current access, or ask the Owner. | No tienes acceso para hacer este cambio aquí. Recarga para ver tu acceso actual o pregúntale al dueño. |
+| Changing the business timezone requires a separately reviewed conversion because operational records already exist. | Cambiar la zona horaria del negocio requiere una conversión revisada aparte, porque ya hay registros de operación. |
+
+### es-rest second release, R2-B: For Jose to review (overtime, payroll, attendance and privacy wording)
+
+From `reports/es-rest-parts/R2-B.md`.
+
+| English | Spanish |
+|---|---|
+| Overtime needs your pay rules and employee classifications. Hours here aren’t payroll hours. | Las horas extra necesitan tus reglas de pago y la clasificación de cada empleado. Estas horas no son horas de nómina. |
+| Actual time uses D2 canonical effective entries and breaks; finalized cards use their immutable snapshots. | El tiempo real usa las entradas y los descansos efectivos de D2; las tarjetas de tiempo finalizadas usan su copia fija. |
+| Scheduled time is elapsed time in the latest published plan at observation, with released Unable to work requests excluded. It is not the immutable schedule originally captured on a punch. | El tiempo programado es el tiempo transcurrido en el horario publicado más reciente al momento de la consulta, sin las solicitudes de No puedo trabajar liberadas. No es el horario fijo que se registró con cada marcación. |
+| Attendance observations use preserved raw punches and their exact captured publication references. They do not recalculate approved time or decide lateness/discipline. | Las notas de asistencia usan las marcaciones originales conservadas y la publicación exacta que se registró con cada una. No recalculan el tiempo aprobado ni deciden tardanzas o medidas disciplinarias. |
+| Position labels come from captured punch context; absent labels remain unknown. Location and roster labels are current; finalized snapshot labels are retained. | Los puestos vienen del contexto registrado con cada marcación; si falta, se queda como desconocido. Las localidades y la lista del equipo son las actuales; las tarjetas finalizadas conservan sus nombres. |
+| Time off and Unable to work rows reflect current request state; shift-change outcomes use append-only history. Private absence reasons are excluded. | Las filas de días libres y de No puedo trabajar muestran el estado actual de cada solicitud; los resultados de cambios de turno usan un historial que solo añade registros. No se incluyen los motivos privados de ausencia. |
+| Unavailable policy and incomplete source evidence never become zero or healthy scores. | Una política no disponible o datos de origen incompletos nunca se muestran como cero ni como un resultado saludable. |
+| Coverage requests in this period and how many were filled. A count, not a reliability score. | Solicitudes de cobertura en este período y cuántas se cubrieron. Es un conteo, no una medida de confiabilidad. |
+| Schedule changes published for this period. No stability score is applied. | Cambios de horario publicados para este período. No se aplica ninguna medida de estabilidad. |
+| Position not captured / Historical employee | Puesto no registrado / Empleado anterior |
+
+### es-rest second release, R2-C: For Jose to review
+
+From `reports/es-rest-parts/R2-C.md`.
+
+- "Pay statement available" → "Comprobante de pago disponible"; "Statements need preparation" → "Hay comprobantes por preparar";
+  "Pay statement update" → "Cambio en el comprobante de pago"; "Payroll preparation update" → "Cambio en la preparación de nómina".
+- "Review the current payroll period" / "Review payroll" → "Revisa el período de nómina actual" / "Revisar nómina".
+- "Open your current pay statement" / "View statement" → "Abre tu comprobante de pago actual" / "Ver comprobante".
+- Photo states (privacy): "Photo exception recorded" → "Excepción de foto registrada"; "Photo removed" → "Foto eliminada";
+  "Photo expired" → "Foto vencida".
 
 ### screens-final (Spanish): For Jose to review
 

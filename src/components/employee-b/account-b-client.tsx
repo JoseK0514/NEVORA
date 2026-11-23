@@ -63,7 +63,7 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
             <Field label={t.name} value={value(ready?.profile.name ?? (state.paused ? undefined : name))} />
             <Field label={t.employeeId} value={value(state.paused ? undefined : employeeId)} help={t.idHelp} />
             <Field label={t.locations} value={value(ready?.profile.locations.join(' · '))} />
-            <Field label={t.timeZone} value={value(ready ? timeZoneLabel(ready.profile.timeZone).replace(/ time$/, '') : undefined)} />
+            <Field label={t.timeZone} value={value(ready ? timeZoneLabel(ready.profile.timeZone, lang).replace(/ time$/, '') : undefined)} />
           </ul>
           {/* Phase 4 (EM-029): the values can't be changed here, so the card says who changes them. */}
           {ready ? <BCardNote>{copy.personalNote}</BCardNote> : null}

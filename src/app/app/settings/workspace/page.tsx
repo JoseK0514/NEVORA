@@ -41,7 +41,7 @@ export default async function WorkspacePage() {
           {locked ? null : <FieldB label={t.timeZone} id="workspace-timezone" name="timeZone" defaultValue={workspace.timeZone} required autoComplete="off" spellCheck={false} autoCapitalize="none" enterKeyHint="done" help={t.timeZoneHelp} />}
         </div>
         <CorpRows label={t.companyProfile}>
-          {locked ? <li><CorpRow id="workspace-timezone" title={t.timeZone} value={timeZoneLabel(workspace.timeZone).replace(/ time$/, "")} trail={lock} chevron={false} /></li> : null}
+          {locked ? <li><CorpRow id="workspace-timezone" title={t.timeZone} value={timeZoneLabel(workspace.timeZone, lang).replace(/ time$/, "").replace(/^Hora de /, "")} trail={lock} chevron={false} /></li> : null}
           <li><CorpRow title={t.weekStarts} value={t.monday} trail={locked ? lock : undefined} chevron={false} /></li>
         </CorpRows>
         {locked ? <p className="c-note c-setb-cardnote"><span>{t.lockedWhileShifts}</span></p> : null}

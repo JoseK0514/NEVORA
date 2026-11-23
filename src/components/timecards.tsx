@@ -70,7 +70,7 @@ function Details({card,short=false,T=TIMECARDS_COPY.en}:{card:Timecard;T?:Timeca
   short?:boolean}){
   const stamp=(at:string,zone:string)=>(short?stampShort:stampFull)(at,zone,T);
   return <div className={styles.details}>
-    <p className={styles.definition}>{T.timesIn(timeZoneLabel(card.timeZone))}</p>
+    <p className={styles.definition}>{T.timesIn(timeZoneLabel(card.timeZone, T === TIMECARDS_COPY.es ? 'es' : 'en'))}</p>
     {card.entries.length?card.entries.map(entry=><details key={entry.id} className={styles.entry}>
       <summary><span><strong>{stamp(entry.startAt,card.timeZone)}</strong><small>{entry.locationName} · {entry.positionName??T.positionNotCaptured}</small></span>
         <span className={styles.entrySource}>{entry.sourceKind==='ADJUSTMENT'?T.missingTimeAdjustment:entry.adjustmentId?T.correctedEntry:T.recordedPunch}<NavIcon name="chevronRight" size={16}/></span></summary>

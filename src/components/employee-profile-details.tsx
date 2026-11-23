@@ -9,7 +9,7 @@ export function EmployeeProfileDetails({ profile }: {
   profile: EmployeeProfile['profile'];
   notificationsEnabled?: boolean;
 }) {
-  const t = employeeTeamCopy(usePortalLang());
+  const lang = usePortalLang(), t = employeeTeamCopy(lang);
   // Read-only work identity (Codex mobile review M1/M2). Notifications live under App settings on the page.
   return <>
     <dl className="employee-profile-details">
@@ -17,7 +17,7 @@ export function EmployeeProfileDetails({ profile }: {
       <div><dt>{t.company}</dt><dd>{profile.workspace}</dd></div>
       <div><dt>{t.workLocations}</dt><dd>{profile.locations.join(' · ')}</dd></div>
       <div><dt>{t.appAccess}</dt><dd>{profile.role}</dd></div>
-      <div><dt>{t.timeZone}</dt><dd>{timeZoneLabel(profile.timeZone)}</dd></div>
+      <div><dt>{t.timeZone}</dt><dd>{timeZoneLabel(profile.timeZone, lang)}</dd></div>
     </dl>
     <p className="profile-supporting-copy employee-profile-correction">{t.somethingWrong}</p>
   </>;

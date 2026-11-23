@@ -219,7 +219,7 @@ const es: typeof en = {
   times: (text: string) => text.replace(/\bAM\b/g, 'a. m.').replace(/\bPM\b/g, 'p. m.'),
   status: (text: string) => ES_STATUS[text] ?? text,
   open: 'ahora',
-  timesIn: (zone: string) => `Horas de ${zone}. Las horas incluyen los descansos, que se muestran aparte. No son horas de nómina.`,
+  timesIn: (zone: string) => `${zone}. Las horas incluyen los descansos, que se muestran aparte. No son horas de nómina.`,
   positionNotCaptured: 'Puesto no registrado',
   missingTimeAdjustment: 'Ajuste por tiempo faltante',
   correctedEntry: 'Marcación corregida',

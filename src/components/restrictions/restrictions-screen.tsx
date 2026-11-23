@@ -292,7 +292,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
       {attentionCard}
       <Card kit={kit} id="rs-edit" title={management ? t.editCardManagement(firstName) : t.editCardEmployee}>
         <WeekEditor plan={draft.plan} onChange={plan => { setDraft({ ...draft, plan }); if (problems.length) setProblems(planProblems(plan)); }} t={t} problems={problems} />
-        <p className="rs-zone">{t.zone(timeZoneLabel(timeZone))}</p>
+        <p className="rs-zone">{t.zone(timeZoneLabel(timeZone, lang))}</p>
       </Card>
       <Card kit={kit} id="rs-start" title={t.startCard}>
         <div className="rs-fields">
@@ -324,7 +324,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
         </div>
         <WeekView allowed={planAllowed(draft.plan)} changed={latest ? changed : undefined} t={t} label={weekLabel} />
         {cleanNote(draft.note) ? <p className="rs-note rs-note--in">{t.note(cleanNote(draft.note))}</p> : null}
-        <p className="rs-zone">{t.zone(timeZoneLabel(timeZone))}</p>
+        <p className="rs-zone">{t.zone(timeZoneLabel(timeZone, lang))}</p>
       </Card>
       <div className="rs-foot"><Act kind="text" disabled={busy} onClick={() => setStep("edit")}>{t.backToEdit}</Act>
         <Act kind="teal" busy={sending} disabled={busy} onClick={confirmDraft}>{management ? (sending ? t.saving : t.save) : (sending ? t.sending : t.send)}</Act></div>
@@ -398,7 +398,7 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
           {current.unavailable.length === 0 ? <p className="rs-open">{management ? t.unrestrictedManagement(firstName) : t.unrestrictedEmployee}</p>
             : <WeekView allowed={allowedByDay(current.unavailable)} t={t} label={weekLabel} />}
           {noteLine(current.reason)}
-          <p className="rs-zone">{t.zone(timeZoneLabel(timeZone))}</p>
+          <p className="rs-zone">{t.zone(timeZoneLabel(timeZone, lang))}</p>
           {main}{separateNote}
         </Card>
         : <Card kit={kit} id="rs-now" title={t.notYetTitle}>
