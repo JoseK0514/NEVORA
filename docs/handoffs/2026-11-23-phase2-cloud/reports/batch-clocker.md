@@ -1,87 +1,116 @@
 # Clocker and phone app (batch-clocker): capture and gate check
 
-Branch `claude-codex-collab-nevora-batch-clocker`, from `claude-codex-collab-nevora` at `8afc0f11`.
+Branch `claude-codex-collab-nevora-batch-clocker`, started at `8afc0f11` and later merged with
+`claude-codex-collab-nevora` (to `703b811f`).
 
 ## Commits
-- One commit: the captures (`shots/batch-clocker/img/*.webp`), `shots/batch-clocker/rows.json` and this report. **No app
-  code changed.** Every blocking problem below needs a fresh production capture to prove a fix, and this package had
-  one production build. So they're listed here for the next round, not fixed blind.
+- `d01a1269` **Clocker code** (merge this). Only Clocker files plus their tests:
+  - `clocker-shell.tsx`: the band's status pill no longer repeats the card heading.
+  - `clocker-setup.tsx`: the setup card doesn't repeat the location.
+  - `clocker-punch-panel.tsx`: the always-true off-clock line is removed.
+  - `clocker-copy.ts`: Spanish for the new lines.
+  - `clocker.module.css`: the language button is the white secondary.
+  - `clocker-setup.test.tsx` and `clocker-premium.test.tsx`: updated for the new wording.
+- `9b785337`: the first capture commit (before the fix). This last commit replaces it with captures after the fix.
+- The final commit: the webp captures, `rows.json` and this report.
+
+Checks on `d01a1269`: `tsc --noEmit` clean; oxlint clean on the changed files; `node scripts/run-rstest.mjs
+src/components/clocker src/app/clocker` gives 237 passed, 0 failed.
+
+## What changed (before → after)
+| Where | Before | After |
+|---|---|---|
+| Band pill, setup not confirmed (K1) | Setup not confirmed (same as heading) | Check needed / Revisión necesaria |
+| Band pill, NEVORA unreachable (K14) | Can’t reach NEVORA (same as heading) | Connection problem / Problema de conexión |
+| Band pill, storage (K14) | Can’t save punches (heading said it can’t *read* them) | Storage problem / Problema de almacenamiento |
+| Setup card (K1) | This tablet will be the time clock for **Northside Main Office**. (band already says it) | This tablet becomes this location’s time clock. / Esta tableta será el registro de tiempo de esta ubicación. |
+| Off clock (K5) | Off clock · Your time is recorded when you clock in. | Off clock |
+| Language button (all kiosk screens) | tinted teal-50 pill, teal words | white secondary with hairline and lift, ink words, 10px corners |
+
+The heading text is unchanged in every case. Server reads, actions and data contracts are untouched.
 
 ## How it was captured
-- One production build (`NEVORA_OWNED_APP_PRODUCTION=1`) under `flock /tmp/nevora-heavy.lock`, served at the owned https
-  origin through the owned loopback TLS proxy. Fictional workspace, fictional tablet keys (`scan-kiosk-main`,
-  `scan-kiosk-west`), fictional PINs. No devices, push, deploys or publishing.
-- Clocker at 390x844, 768x1024 and 1024x768; the receipts also at 390x844 with 200% text. L1 at 390 and 1440.
-- The harness was used from a scratch copy. The tracked `tools/ui-scan/zz-scan.tar.gz` is unchanged. Copy changes
-  that should go into the tracked archive:
-  1. The kiosk's current button names: `Keep my place` (was Continue securely), `Clock out recorded`, `Send it again`
-     (was Retry same clock action), `See current status` (was Review current status).
-  2. `NEVORA_SCAN_CLOCKER_FLOW=all`: the receipt captures, then the full flow, in one build.
-  3. Per-size gate probe: buttons (height, kind), visible strings and repeats, text overlap, off-screen text, and times
-     not in the one format.
-  4. A someone-else's-punch step, and a `/clocker/access/paused` step.
-  5. The native flow takes the https front origin (it was passed the http one, which has no session). On Profile it
-     opens the Device settings panel. It also runs a second pass signed in as `actors[1]`.
+- Production builds (`NEVORA_OWNED_APP_PRODUCTION=1`, under `flock /tmp/nevora-heavy.lock`), served at the owned https
+  origin through the loopback TLS proxy, with fictional data and fictional tablet keys (`scan-kiosk-main`,
+  `scan-kiosk-west`). No devices, push, deploys or publishing.
+- There were two builds, not one: the first was the gate check, the second the AFTER capture. The extra build was for
+  the lead's 2-hour-target update (fix now, capture AFTER).
+- Clocker at 390x844, 768x1024 and 1024x768, plus the receipts at 390x844 with 200% text. L1 at 390 and 1440.
+- The harness ran from a scratch copy; `tools/ui-scan/zz-scan.tar.gz` is unchanged. Changes worth folding into it:
+  1. Current button names: `Keep my place`, `Clock out recorded`, `Send it again`, `See current status`.
+  2. `NEVORA_SCAN_CLOCKER_FLOW=all`: the receipt captures and the full flow in one build.
+  3. A per-size gate probe: button heights and kinds, repeated visible strings, text overlap, off-screen text, time
+     format.
+  4. `Back` before `Check if it saved` (this unblocks K9 and the retry screen).
+  5. The native flow uses the https origin and opens the Owner’s Device settings panel.
+  6. A second L1 pass as an Employee (`actors[1]` set to EMPLOYEE; every fixture actor is a Lead).
+  7. Steps for someone else's punch and for the paused page.
 
-## Per page (gate check)
-Time format: every time on every captured Clocker screen reads `7:47 AM` (no leading zero, no 24-hour). The receipt
-log has `timesOk: true` at all four sizes, clock in and clock out. No horizontal overflow at any size, and no visible
-text cut off. Button heights per state: the main action and the secondary match (56px on phones and landscape, 64px on
-portrait tablets). Clock in, Clock out and break rows are 84px. Keypad keys are 56, 64 and 76px.
+## Gate check per page
+- **Time format:** every captured time reads like `8:02 AM`. The receipt log shows `timesOk: true` at all four sizes.
+- **Overflow and clipping:** no horizontal overflow and no visible text cut off at any size.
+- **Buttons:** the main action and the secondary match in height (56px on phones and landscape, 64px on portrait
+  tablets). Action rows are 84px; keypad keys are 56, 64 and 76px.
+- **Edges:** the card and band share the 14px phone gutter. At 1024 the side band and card each hold their own edge.
+- **Scan false positives:**
+  - Overlap with the collapsed Reference id and photo notice: hidden text.
+  - Clipped "Employee ID" and "n of 4 digits": screen-reader-only labels.
+  - The second "Checking…": a screen-reader status line.
 
-| Row | Captured | Buttons | Blocking (fix now) |
-|---|---|---|---|
-| K1 Setup | setup, wrong code, not confirmed, checking, broken link | Connect tablet solid teal; Español tinted | "Northside Main Office" in the band and the card; "Setup not confirmed" as pill and heading; tinted Español |
-| K2 Connected | not as its own screen (PINs-on flow goes to Employee ID) | – | – |
-| K3 Employee ID | EN, ES | Continue solid (disabled grey until typed) | tinted Español |
-| K4 PIN | keypad, 2 digits, not recognised, checking | keys grey (allowed), Continue solid | "Checking…" on the button and as a status line |
-| K5 Actions | off clock, clocked in, on break, other location | one solid action; Done white; Refresh link | "Your time is recorded when you clock in." is always true |
-| K6 Break | rest/meal rows | Back white | the "doesn't end on its own" sentence explains the screen (Jose's call) |
-| K7 Clock out? | normal, on break | Confirm solid, Stay white, equal height | – |
-| K8 Photo | **not captured** (harness timeout) | – | – |
-| K9 Review current | **not captured** (harness timeout) | – | – |
-| K10 Sending | phone | none | – |
-| K11 Receipt | in, out, break start/end, 200% text | Done white | the time shown twice (big time and "Saved at …"); receipt belongs to the 200% fix session, not edited |
-| K12 Not confirmed | check last punch, kept-punches help | Check if it saved solid; Done and help links | help screen: Back floats far below the button |
-| K13 Someone else's punch | **not captured** (state not reached) | – | – |
-| K14 Errors | couldn't load, PIN again, can't reach, set up again, PIN paused, storage | one solid action each | "Can't reach NEVORA" pill plus heading; storage pill "Can't save punches" vs heading "can't read its saved punches"; tinted Español |
-| K15 Paused | **not captured**: 404 with billing off in the owned app | – | – |
-| L1 Owner | on, blocked, setup changed, needs a check, checking, paused, both confirms | Turn on solid, Turn off red outline, others grey | repeated "Check again" lines (needs a check); repeated "Checking"; grey secondaries (older look, shared `native-shell/device-settings.tsx`); unclear order in setup changed |
-| L1 Lead | phone-app gate "Use NEVORA in your web browser" | Sign out solid | – |
+| Row | Captured (AFTER) | Result |
+|---|---|---|
+| K1 | setup, wrong code, not confirmed, broken link | fixed (repeats) |
+| K2/K3 | Employee ID, English and Spanish | fixed (language button); K2 PINs-off screen not captured |
+| K4 | keypad, 2 digits, not recognised, checking | passes |
+| K5 | off clock, clocked in, on break, after review, other location | fixed (always-true line) |
+| K6, K7 | break choice; Clock out? | passes |
+| K8 | photo for clock out, recorded without photo | passes |
+| K9 | your earlier punch wasn’t recorded | passes |
+| K10 | sending (phone) | passes |
+| K11 | receipts, 200% text | time said twice (receipt session’s file) |
+| K12 | check last punch, kept-punches help, retry | help screen spacing (open) |
+| K13 | not captured | harness can’t reach the state |
+| K14 | couldn’t load, PIN again, can’t reach, unavailable, set up again, PIN paused | fixed (pill repeats); storage not in AFTER run |
+| K15 | not captured | 404 with billing off in the owned app |
+| L1 Owner | 9 states | shared-component items below |
+| L1 Employee | 8 states (Lead gets the web-browser notice) | shared-component items below |
 
-Left and right edges: the band and the card share the 14px phone gutter. At 1024 the side band and the card are
-aligned on their own grid. One measured edge problem: on K1 the "Setup code" label is left-aligned under a centred
-heading. That's an end-sweep note.
-
-## Impeccable audit (Clocker, all captured states)
-- **Hierarchy:** one focal point per state (the greeting with the main action, or a state ring with its heading). One
-  solid teal action per card. Fails where the band pill repeats the heading (K1 not confirmed, K14 offline) and where
-  the receipt repeats its time.
-- **Spacing and alignment:** consistent card inset and 4/8 gaps. The exception is the kept-punches help screen, where
-  Back and Reference sit on extra air. The band clock fits at every size (late-hour check: 10:58 PM fits at all three).
-- **Accessibility:** targets ≥ 56px except the skip link (47px, visible only on focus). Reduced motion swaps the
-  check's draw for a fade (`ckFade`). Keyboard: the skip link and Employee ID come first, then Español. The scripted
-  keyboard step stopped early (harness timeout), so the PIN-step order wasn't re-verified.
-- **States:** loading, sending, success, error, offline, lockout and storage are designed. Photo, review-current,
-  someone-else's punch, retry and paused have no evidence in this build.
-- Copy: the three repeated pairs and the one always-true line above.
+## Impeccable audit (Clocker, AFTER)
+- **Hierarchy:** one focal point per state and one solid teal action per card. The band now states the tablet's
+  condition without echoing the heading. One open item: the receipt says its time twice.
+- **Spacing and alignment:** a consistent inset and 4/8 gaps. The exception is the kept-punches help screen, where
+  Back and Reference sit on extra air. The band clock fits at all three sizes (late-hour check, 10:58 PM).
+- **Accessibility:**
+  - Targets are 56px or more in the kiosk. The skip link is 47px and appears only on focus. The small targets the scan
+    found (36–42px) are on the shared not-found page, not the kiosk.
+  - The language button keeps its spoken name "Español, switch language to Spanish".
+  - Its white fill gives ink-on-white contrast above 12:1. Forced colours keep the 2px ButtonText border.
+  - Reduced motion uses a fade; this was checked in the first run.
+  - Keyboard: the skip link, then Employee ID, then Español. The scripted PIN-step keyboard check timed out in both
+    runs, so its order isn't re-verified.
+  - axe was not run on the kiosk; the harness has no axe step for it.
+- **States:** loading, sending, success, photo, review, retry, error, offline, lockout and storage are designed. K13
+  and K15 have no evidence.
+- **Copy:** checked against voice.md. The Spanish lines were added with the English ones.
 
 ## Blocking items left, and why
-None were fixed: each needs a second production capture to prove it, and the package budget was one build. In
-order of importance:
-1. K14 storage: the band says the tablet can't *save* punches while the heading says it can't *read* them.
-2. Repeated wording: K1 (location; "Setup not confirmed"), K4 ("Checking…"), K14 ("Can't reach NEVORA"), K11 (time
-   twice, for the receipt session) and L1 (needs a check, checking).
-3. Older look: the Clocker's tinted Español button (`clocker.module.css`, `.lang`) and L1's grey secondaries (shared
-   kit, read-only for this package).
-4. K5's always-true line "Your time is recorded when you clock in."
+1. **K11 receipt:** the time is said twice. It belongs to the session fixing the receipt at 200% text.
+2. **L1, Owner and Employee (shared component, read-only here):**
+   - Needs a check repeats "Check again": the body text, plus the line from `src/lib/native-shell/device-client.ts:84`.
+   - Checking says "Checking" twice.
+   - The Owner panel's secondaries are the grey fill.
+   - On the Employee page, Check again and Review app setup are frameless text beside a solid button.
+   - On and Setup changed have no clear main action.
+
+   All of these are in `src/components/native-shell/device-settings.tsx`.
+3. **K12 kept-punches help:** Back and Reference spacing. It's a small CSS change in `clocker.module.css`, held until
+   it can be captured.
 
 ## End sweep (proposed ledger rows)
 | Proposed | Item | Kind |
 |---|---|---|
-| G-ck-1 | Capture K8 photo, K9 review current, K12 retry, K13 someone else's punch (harness step fixes listed in rows.json) | evidence |
-| G-ck-2 | Capture K15 paused with commerce on | evidence |
-| G-ck-3 | Capture L1 for an Employee (all fixture actors are Leads) and L1 Owner Off state | evidence |
-| G-ck-4 | K1 "Setup code" label alignment under centred heading | end sweep |
-| G-ck-5 | Phone-app Lead gate says "web browser" three times | end sweep |
-| G-ck-6 | Profile behind the paused Alerts panel shows "–" for Phone and Email | check |
+| G-ck-1 | Capture K13 someone else’s punch (harness step that switches the PIN session under a pending punch) | evidence |
+| G-ck-2 | Capture K15 paused with commerce on; K2 Tablet connected with PINs off; K14 storage after the pill change | evidence |
+| G-ck-3 | Add axe and the PIN-step keyboard order to the kiosk harness | evidence |
+| G-ck-4 | K1 “Setup code” label left-aligned under a centred heading | check |
+| G-ck-5 | Profile behind the paused Alerts panel shows “–” for Phone and Email | check |

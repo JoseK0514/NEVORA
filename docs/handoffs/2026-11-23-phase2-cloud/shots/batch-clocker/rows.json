@@ -4,7 +4,7 @@
   "row": "K1",
   "page": "Tablet setup",
   "section": "Clocker",
-  "note": "Setup, a wrong code, setup not confirmed and the broken-link page all render on the band and card at every size. The workplace name is said twice and a not-confirmed setup says so twice.",
+  "note": "Setup, a wrong code, setup not confirmed and the broken-link page. The card no longer repeats the location the band shows, and a setup that isn't confirmed reads 'Check needed' in the band under the heading 'Setup not confirmed'.",
   "shots": [
    {
     "label": "Phone",
@@ -20,25 +20,21 @@
     "desk": true
    },
    {
-    "label": "Wrong code (phone)",
+    "label": "Wrong code",
     "after": "img/k1-setup-bad-code-clocker-390.webp"
    },
    {
-    "label": "Not confirmed (phone)",
+    "label": "Not confirmed",
     "after": "img/k1-setup-not-confirmed-clocker-390.webp"
    },
    {
-    "label": "Link doesn't work (phone)",
+    "label": "Link doesn’t work",
     "after": "img/k1-invalid-key-clocker-390.webp"
    }
   ],
-  "blocking": [
-   "Repeated wording: 'Northside Main Office' is in the band pill and again in the card sentence ('This tablet will be the time clock for Northside Main Office.').",
-   "Repeated wording: 'Setup not confirmed' is both the band status pill and the card heading.",
-   "Español button is the tinted teal-50 pill, which DESIGN.MD's premium pass (1A) retired for the Clocker's secondary buttons (white with a hairline)."
-  ],
+  "blocking": [],
   "endSweep": [
-   "The 'Setup code' label is the only field label left-aligned while the card's heading and sentence are centred (alignment check)."
+   "'Setup code' label is left-aligned under a centred heading and sentence (intended for the field; flag for Jose)."
   ]
  },
  {
@@ -46,7 +42,7 @@
   "row": "K2, K3",
   "page": "Tablet connected / Enter Employee ID",
   "section": "Clocker",
-  "note": "After setup the tablet goes straight to Enter your Employee ID with a 'Tablet connected' status in the band; English and Spanish both fit at every size. The separate 'Tablet connected' screen shows only with PINs off and wasn't captured.",
+  "note": "With PINs on, setup goes straight to Enter your Employee ID, with 'Tablet connected' in the band; English and Spanish. The Español button is now the white secondary.",
   "shots": [
    {
     "label": "Phone",
@@ -62,16 +58,13 @@
     "desk": true
    },
    {
-    "label": "Spanish (phone)",
+    "label": "Spanish",
     "after": "img/k3-espanol-clocker-390.webp"
    }
   ],
-  "blocking": [
-   "Español button is the tinted teal-50 pill, which DESIGN.MD's premium pass (1A) retired for the Clocker's secondary buttons (white with a hairline)."
-  ],
+  "blocking": [],
   "endSweep": [
-   "Scan flags the visually hidden 'Employee ID' label as clipped; it's the screen-reader label, not visible text. Confirm it's in the end sweep's name check.",
-   "K2 'Tablet connected' (PINs off) not captured: needs a run with NEVORA_SCAN_CLOCKER_FLOW=connected."
+   "The separate Tablet connected screen (PINs off) wasn't captured: it needs a run with NEVORA_SCAN_CLOCKER_FLOW=connected."
   ]
  },
  {
@@ -79,7 +72,7 @@
   "row": "K4",
   "page": "PIN keypad",
   "section": "Clocker",
-  "note": "The keypad, two digits in, a PIN that wasn't recognised and the checking state. Keys are 56px on phones, 64px on portrait tablets and 76px in landscape, and nothing is cut off.",
+  "note": "Keypad, two digits, not recognised and checking. Keys are 56, 64 and 76px; nothing is cut off. 'Checking…' appears once on screen (the second copy is screen-reader status only).",
   "shots": [
    {
     "label": "Phone",
@@ -95,28 +88,23 @@
     "desk": true
    },
    {
-    "label": "Not recognised (phone)",
+    "label": "Not recognised",
     "after": "img/k4-pin-not-recognized-clocker-390.webp"
    },
    {
-    "label": "Checking (phone)",
+    "label": "Checking",
     "after": "img/k4-checking-clocker-390.webp"
    }
   ],
-  "blocking": [
-   "Repeated wording while checking: 'Checking…' is both the Continue button's label and a status line.",
-   "Español button is the tinted teal-50 pill, which DESIGN.MD's premium pass (1A) retired for the Clocker's secondary buttons (white with a hairline)."
-  ],
-  "endSweep": [
-   "The visually hidden 'Employee PIN' and 'n of 4 digits entered' texts register as clipped (screen-reader only)."
-  ]
+  "blocking": [],
+  "endSweep": []
  },
  {
   "id": "k5",
   "row": "K5",
   "page": "Choose an action",
   "section": "Clocker",
-  "note": "Off clock, clocked in, on break and clocked in at another location. Clock in or out is the one solid teal action; Done is the white secondary; times read '7:47 AM'.",
+  "note": "Off clock, clocked in, on break, after reviewing an earlier punch, and at another location. One solid teal action, Done in white; the always-true line under 'Off clock' is gone.",
   "shots": [
    {
     "label": "Phone",
@@ -132,7 +120,7 @@
     "desk": true
    },
    {
-    "label": "Clocked in (phone)",
+    "label": "Clocked in",
     "after": "img/k5-clocked-in-clocker-390.webp"
    },
    {
@@ -141,17 +129,19 @@
     "desk": true
    },
    {
-    "label": "On break (phone)",
+    "label": "On break",
     "after": "img/k5-on-break-clocker-390.webp"
    },
    {
-    "label": "Other location (phone)",
+    "label": "After review",
+    "after": "img/k5-after-review-clocker-390.webp"
+   },
+   {
+    "label": "Other location",
     "after": "img/k5-other-location-clocker-390.webp"
    }
   ],
-  "blocking": [
-   "'Your time is recorded when you clock in.' on the off-clock screen is a line that is always true (page done gate point 3)."
-  ],
+  "blocking": [],
   "endSweep": []
  },
  {
@@ -159,7 +149,7 @@
   "row": "K6",
   "page": "Choose a break",
   "section": "Clocker",
-  "note": "Meal and rest break as two white rows with their suggested minutes, then Back. Fits at every size.",
+  "note": "Meal and rest break rows with suggested minutes, then Back.",
   "shots": [
    {
     "label": "Phone",
@@ -175,17 +165,17 @@
     "desk": true
    }
   ],
-  "blocking": [
-   "'Your break doesn't end on its own. Tap End break when you're back.' explains how the screen works (gate point 3); keep only if Jose wants the reminder."
-  ],
-  "endSweep": []
+  "blocking": [],
+  "endSweep": [
+   "'Your break doesn’t end on its own. Tap End break when you’re back.' explains the screen; keep only if Jose wants the reminder."
+  ]
  },
  {
   "id": "k7",
   "row": "K7",
   "page": "Confirm clock out",
   "section": "Clocker",
-  "note": "Clock out? with the two figures between hairlines, a solid Confirm clock out and a white Stay clocked in (Stay on break when on a break), the same height.",
+  "note": "Clock out? with two figures between hairlines; Confirm clock out solid and Stay clocked in (or Stay on break) white, the same height.",
   "shots": [
    {
     "label": "Phone",
@@ -201,13 +191,13 @@
     "desk": true
    },
    {
-    "label": "On break (phone)",
+    "label": "On break",
     "after": "img/k7-confirm-on-break-clocker-390.webp"
    }
   ],
   "blocking": [],
   "endSweep": [
-   "'Your shift ends at the time NEVORA records.' reads as an explanation; consider dropping it in copy review."
+   "'Your shift ends at the time NEVORA records.' reads as an explanation."
   ]
  },
  {
@@ -215,31 +205,59 @@
   "row": "K8",
   "page": "Photo",
   "section": "Clocker",
-  "note": "Not captured: the simulated photo step waited for the clock screen and timed out (harness), so there's no shot of the camera screen in this build.",
-  "shots": [],
+  "note": "Photo for clock out (simulated policy, no camera used): Open camera solid, Continue without photo white, Cancel as a link; then the time recorded without a photo.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k8-photo-clocker-390.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k8-photo-clocker-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k8-photo-clocker-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Recorded without photo",
+    "after": "img/k8-photo-recorded-clocker-390.webp"
+   }
+  ],
   "blocking": [],
-  "endSweep": [
-   "Capture K8 in the next production run (harness photo step: wait for the PIN entry, not the ready state, after the recovery step)."
-  ]
+  "endSweep": []
  },
  {
   "id": "k9",
   "row": "K9",
   "page": "Review the current punch",
   "section": "Clocker",
-  "note": "Not captured: the harness step that makes an earlier punch obsolete timed out after the previous step left the tablet on the help screen.",
-  "shots": [],
+  "note": "Your earlier punch wasn’t recorded: one action, See current status, then the clock screen says the earlier punch is kept for review.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k9-review-current-clocker-390.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k9-review-current-clocker-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k9-review-current-clocker-1024.webp",
+    "desk": true
+   }
+  ],
   "blocking": [],
-  "endSweep": [
-   "Capture K9 next run (harness: press Back on 'Your punches are kept on this tablet' before 'Check if it saved')."
-  ]
+  "endSweep": []
  },
  {
   "id": "k10",
   "row": "K10",
   "page": "Sending",
   "section": "Clocker",
-  "note": "'Clocking out James…' with the progress bar while the punch saves, phone size only.",
+  "note": "'Clocking out James…' with the progress bar, phone only.",
   "shots": [
    {
     "label": "Phone",
@@ -254,7 +272,7 @@
   "row": "K11",
   "page": "Recorded (receipt)",
   "section": "Clocker",
-  "note": "Clock in and clock out receipts at three sizes plus 390 with 200% text; every time is in the one format ('7:47 AM'). Another session is fixing the 200% layout; these are its current state.",
+  "note": "Clock in and clock out receipts at three sizes and 390 with 200% text; times all read like '8:02 AM'. The 200% layout belongs to another session; these show its current state.",
   "shots": [
    {
     "label": "Phone",
@@ -274,7 +292,7 @@
     "after": "img/k11-clock-in-clocker-390-text200.webp"
    },
    {
-    "label": "Clock out (phone)",
+    "label": "Clock out",
     "after": "img/k11-clock-out-clocker-390.webp"
    },
    {
@@ -282,23 +300,21 @@
     "after": "img/k11-clock-out-clocker-390-text200.webp"
    },
    {
-    "label": "Break start (phone)",
+    "label": "Break start",
     "after": "img/k11-break-start-clocker-390.webp"
    }
   ],
   "blocking": [
-   "Repeated wording: the big '7:47 AM' and 'Saved at 7:47 AM.' under it say the same time twice (not edited here: the receipt belongs to the 200% text fix)."
+   "The time is said twice (the big time and 'Saved at 8:02 AM.'). Not edited: the receipt is the 200% text session’s."
   ],
-  "endSweep": [
-   "The scan's overlap check pairs the collapsed Reference id with Done; the id is hidden until Reference opens, so check by eye in the receipt fix."
-  ]
+  "endSweep": []
  },
  {
   "id": "k12",
   "row": "K12",
   "page": "Not confirmed / check status",
   "section": "Clocker",
-  "note": "Check your last punch names the action and its time, says to tell a manager and offers Check if it saved; 'Something didn't save?' opens the kept-punches help. The retry screen (Send it again) wasn't reached.",
+  "note": "Check your last punch, the kept-punches help, and the retry with Send it again solid and Check if it saved as a link.",
   "shots": [
    {
     "label": "Phone",
@@ -314,27 +330,29 @@
     "desk": true
    },
    {
-    "label": "Kept punches help (phone)",
+    "label": "Kept punches help",
     "after": "img/k12-saved-help-clocker-390.webp"
+   },
+   {
+    "label": "Retry",
+    "after": "img/k12-retry-clocker-390.webp"
    }
   ],
   "blocking": [
-   "On 'Your punches are kept on this tablet' the Back link floats ~40px below the white Ask Owner to check button, with Reference further down; spacing doesn't follow the other states."
+   "Kept-punches help: Back sits on extra air below Ask Owner to check, with Reference lower still."
   ],
-  "endSweep": [
-   "Retry state ('Send it again') not captured: harness step timed out on the help screen."
-  ]
+  "endSweep": []
  },
  {
   "id": "k13",
   "row": "K13",
   "page": "Someone else's punch",
   "section": "Clocker",
-  "note": "Not captured: signing a second person in from another tab didn't put the first person's screen into this state within 20 seconds.",
+  "note": "Not captured: a second person signing in from another tab didn’t switch the first screen into this state in 20 seconds.",
   "shots": [],
   "blocking": [],
   "endSweep": [
-   "Capture K13 with a unit-level render or a harness that switches the tablet's PIN session under a pending punch."
+   "Capture K13 with a harness step that changes the PIN session under a pending punch."
   ]
  },
  {
@@ -342,7 +360,7 @@
   "row": "K14",
   "page": "Errors",
   "section": "Clocker",
-  "note": "Couldn't load your time, enter your PIN again, can't reach NEVORA, tablet needs set up again, PIN paused and the storage problem all render with their ring, one solid action and nothing cut off.",
+  "note": "Couldn't load your time, enter your PIN again, can’t reach NEVORA (band: 'Connection problem'), PIN service unavailable, set up again and PIN paused. One solid action each, nothing cut off.",
   "shots": [
    {
     "label": "Phone",
@@ -358,39 +376,37 @@
     "desk": true
    },
    {
-    "label": "PIN again (phone)",
+    "label": "PIN again",
     "after": "img/k14-pin-again-clocker-390.webp"
    },
    {
-    "label": "Can't reach NEVORA (phone)",
+    "label": "Can’t reach NEVORA",
     "after": "img/k14-pin-offline-clocker-390.webp"
    },
    {
-    "label": "Set up again (phone)",
+    "label": "PIN unavailable",
+    "after": "img/k14-pin-unavailable-clocker-390.webp"
+   },
+   {
+    "label": "Set up again",
     "after": "img/k14-reconnect-clocker-390.webp"
    },
    {
-    "label": "PIN paused (phone)",
+    "label": "PIN paused",
     "after": "img/k14-pin-paused-clocker-390.webp"
-   },
-   {
-    "label": "Storage (phone)",
-    "after": "img/k14-storage-clocker-390.webp"
    }
   ],
-  "blocking": [
-   "Repeated wording: 'Can't reach NEVORA' is the band pill and the card heading (PIN offline, PIN unavailable, clear failed).",
-   "Storage: the band says 'Can't save punches' while the heading says 'This tablet can't read its saved punches' — two different claims about one problem.",
-   "Español button is the tinted teal-50 pill, which DESIGN.MD's premium pass (1A) retired for the Clocker's secondary buttons (white with a hairline)."
-  ],
-  "endSweep": []
+  "blocking": [],
+  "endSweep": [
+   "Storage state not in this run (step timed out). Its band now reads 'Storage problem' (unit-tested); the earlier run showed the layout."
+  ]
  },
  {
   "id": "k15",
   "row": "K15",
   "page": "Clocker paused",
   "section": "Clocker",
-  "note": "Not captured: the paused page exists only with billing on, and the owned test app runs with billing off, so it shows Page not found.",
+  "note": "Not captured: the paused page needs billing on, and the test app runs with billing off, so it shows Page not found.",
   "shots": [
    {
     "label": "Phone",
@@ -408,7 +424,7 @@
   ],
   "blocking": [],
   "endSweep": [
-   "Capture /clocker/access/paused in a run with commerce on (commerce-recovery-browser fixture)."
+   "Capture /clocker/access/paused with commerce on."
   ]
  },
  {
@@ -416,16 +432,20 @@
   "row": "L1",
   "page": "Phone app Alerts (Owner)",
   "section": "Phone app",
-  "note": "An Owner opens Alerts from Profile ('Alerts on this phone'); the Device settings panel shows on, blocked, setup changed, needs a check, checking, paused and the two confirms. The Off state reload was aborted and isn't captured.",
+  "note": "An Owner opens Alerts from Profile; the Device settings panel shows off, on, blocked, setup changed, needs a check, checking, paused and the two confirms.",
   "shots": [
    {
     "label": "Phone",
-    "after": "img/l1-enabled-owner-390.webp"
+    "after": "img/l1-ready-owner-390.webp"
    },
    {
     "label": "Desktop",
-    "after": "img/l1-enabled-owner-1440.webp",
+    "after": "img/l1-ready-owner-1440.webp",
     "desk": true
+   },
+   {
+    "label": "On",
+    "after": "img/l1-enabled-owner-390.webp"
    },
    {
     "label": "Blocked",
@@ -457,37 +477,60 @@
    }
   ],
   "blocking": [
-   "Repeated wording (needs a check): 'Check again, or review the app's setup.' and the line under the note 'We could not verify this device. Check again.' (src/lib/native-shell/device-client.ts:84).",
-   "Repeated wording (checking): 'Checking this device…' then 'Checking permission and this app's enrollment…'.",
-   "Older look: Check again, Review app setup, Keep current setup and Done are the grey fill (c-btn--secondary), which DESIGN.MD reserves for disabled; the panel is shared shell (native-shell/device-settings.tsx), not edited here.",
-   "Setup changed: the red-outline Turn off alerts sits between two grey buttons; the main action order is unclear."
+   "Needs a check says 'Check again' twice (the body and the line 'We could not verify this device. Check again.'). Shared component, not edited: src/components/native-shell/device-settings.tsx and src/lib/native-shell/device-client.ts:84.",
+   "Checking says 'Checking' twice (title and line). Shared component, not edited: src/components/native-shell/device-settings.tsx and src/lib/native-shell/device-client.ts:84.",
+   "Grey filled secondaries (Check again, Review app setup, Keep current setup, Done): the grey fill is for disabled. Shared component, not edited: src/components/native-shell/device-settings.tsx and src/lib/native-shell/device-client.ts:84."
   ],
   "endSweep": [
-   "Off state not captured (page.reload aborted).",
-   "When the window loses focus the Profile behind the panel shows '–' for Phone and Email and 'Updates paused'; check this is intended."
+   "When the window loses focus the Profile behind the panel shows '–' for Phone and Email."
   ]
  },
  {
-  "id": "l1-lead",
+  "id": "l1-employee",
   "row": "L1",
-  "page": "Phone app Alerts (Lead)",
+  "page": "Phone app Alerts (Employee)",
   "section": "Phone app",
-  "note": "A Lead signed into the phone app sees 'Use NEVORA in your web browser' with Sign out, so Alerts never opens for them. The Employee Alerts page wasn't captured because every fictional actor in this fixture is a Lead.",
+  "note": "An Employee’s Alerts page under the band: off, on, blocked, setup changed, needs a check, checking, paused and the two confirms. A Lead in the phone app gets 'Use NEVORA in your web browser' instead.",
   "shots": [
    {
     "label": "Phone",
-    "after": "img/l1-gate-lead-390.webp"
+    "after": "img/l1-ready-employee-390.webp"
    },
    {
     "label": "Desktop",
-    "after": "img/l1-gate-lead-1440.webp",
+    "after": "img/l1-ready-employee-1440.webp",
     "desk": true
+   },
+   {
+    "label": "On",
+    "after": "img/l1-enabled-employee-390.webp"
+   },
+   {
+    "label": "Blocked",
+    "after": "img/l1-denied-employee-390.webp"
+   },
+   {
+    "label": "Setup changed",
+    "after": "img/l1-revoked-employee-390.webp"
+   },
+   {
+    "label": "Needs a check",
+    "after": "img/l1-error-employee-390.webp"
+   },
+   {
+    "label": "Checking",
+    "after": "img/l1-loading-employee-390.webp"
+   },
+   {
+    "label": "Confirm turn off",
+    "after": "img/l1-confirm-turn-off-employee-390.webp"
    }
   ],
-  "blocking": [],
-  "endSweep": [
-   "Capture L1 for an Employee (fixture role EMPLOYEE) next run.",
-   "Gate copy says 'web browser' three times across heading and two sentences."
-  ]
+  "blocking": [
+   "Needs a check repeats 'Check again' (body and amber line). Shared component, not edited: src/components/native-shell/device-settings.tsx and src/lib/native-shell/device-client.ts:84.",
+   "Off and Needs a check: 'Check again' / 'Review app setup' are plain text with no button frame next to a solid button. Shared component, not edited: src/components/native-shell/device-settings.tsx and src/lib/native-shell/device-client.ts:84.",
+   "On and Setup changed: 'Check again' is the solid main action and Turn off alerts the red outline, so the screen’s main task is unclear. Shared component, not edited: src/components/native-shell/device-settings.tsx and src/lib/native-shell/device-client.ts:84."
+  ],
+  "endSweep": []
  }
 ]
