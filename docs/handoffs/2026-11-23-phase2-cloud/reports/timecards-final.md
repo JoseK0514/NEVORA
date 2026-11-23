@@ -69,3 +69,19 @@ Fictional data and a throwaway local database only.
 | Kit `BHero` glass Select | 40px on phones (under 44). | Package K | end sweep |
 | Avatar initials | `c-av` 13px fixed in a fixed circle (same as G79). | Package K | end sweep |
 | Timecards wording | "Approve each timecard, then finalize the week to lock it for payroll." explains the steps; kept as possibly approved payroll wording, so Jose should decide. | Jose | wording |
+
+## Jose's review (Nov 23, 2026, ~15:40 UTC): the person's week and the review panel
+Commit dbf064b6 (merged f5f64a2c first, 92a51801). Production recapture: Owner and Elena; list, Luis Torres's sheet
+(correction waiting) and the review panel at 390, 390 with 200% text and 1440. All 18 have no overflow, no overlaps,
+no clipped text and axe 0. `src/components` 3231/3231 pass.
+
+| Jose's point | What changed |
+|---|---|
+| "Request time correction" cut off behind the sticky "Approve timecard" | When Approve (or Finalize) is the footer, "Request time correction" sits in the footer above it: both 44px, 8px apart, on the same edges, and the sticky footer no longer covers anything. |
+| Grey "Approve timecard" with no reason | When an open issue blocks approval the footer isn't shown; one line says why: "Approve after the waiting correction is reviewed." (or "…after the open time is closed", "…after the overlapping time is fixed"; "Finalize after…" for an approved card). |
+| "Request time correction" reads wrong for the Owner | It sends a correction request that another manager approves (its page is titled the same and its button is "Send correction request"), so the label stays. While a correction is already waiting it isn't offered; the note's "Review correction" is the next step. No server action changed. |
+| "Needs attention" outside the cards, icon on the edge | The note sits inside the person's card under the figures, on the card's 22px inset with its dividing line. |
+| Review panel stops at ~560px | From 768 the rows, the checkbox and Cancel/Approve use the card's width (Cancel's text and the rows on the 19px inset, Approve on the right edge). |
+
+Before → after words: the disabled "Approve timecard" → "Approve after the waiting correction is reviewed."; the steps
+line "Approve each timecard, then finalize the week to lock it for payroll." steps aside while the reason line shows.

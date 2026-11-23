@@ -44,7 +44,7 @@
   "row": "D1",
   "page": "Timecards",
   "section": "Owner: sheet",
-  "note": "A person's week (last week). An issue is said once, in the amber note. At large text the sheet wraps the name, stacks the figures and puts times under the date.",
+  "note": "A person's week (last week, Luis Torres with a correction waiting). The note sits in his card; instead of a grey Approve, one line says it can be approved after the correction is reviewed, and no second correction request is offered.",
   "shots": [
    {
     "label": "Phone 320",
@@ -84,7 +84,7 @@
   "row": "D1",
   "page": "Timecards",
   "section": "Owner: review",
-  "note": "Select and review on last week. From 768, Select is visible on the band as the glass action.",
+  "note": "Select and review on last week. From 768 the rows, the checkbox and Cancel/Approve use the card's full width, on its edges.",
   "shots": [
    {
     "label": "Phone 320",
@@ -164,7 +164,7 @@
   "row": "D1",
   "page": "Timecards",
   "section": "Manager (Elena): sheet",
-  "note": "A person's week (last week). An issue is said once, in the amber note. At large text the sheet wraps the name, stacks the figures and puts times under the date.",
+  "note": "A person's week (last week, Luis Torres with a correction waiting). The note sits in his card; instead of a grey Approve, one line says it can be approved after the correction is reviewed, and no second correction request is offered.",
   "shots": [
    {
     "label": "Phone 320",
@@ -204,7 +204,7 @@
   "row": "D1",
   "page": "Timecards",
   "section": "Manager (Elena): review",
-  "note": "Select and review on last week. From 768, Select is visible on the band as the glass action.",
+  "note": "Select and review on last week. From 768 the rows, the checkbox and Cancel/Approve use the card's full width, on its edges.",
   "shots": [
    {
     "label": "Phone 320",
