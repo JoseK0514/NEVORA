@@ -179,12 +179,13 @@ export function ExchangeHeroB({tab, tabs = true, back = '/app/schedule', counts}
   counts?: Partial<Record<ExchangeTab, number | null>>}) {
   const lang = usePortalLang(), copy = requestsCopy(lang);
   return <BHero back={{href: back, label: copy.schedule}} title={copy.pickUpAndSwap} titleId="b-exchange-title">
-    {tabs ? <BSeg label={copy.pickUpAndSwap} items={EXCHANGE_TABS.map(item => {
+    {/* Signed-in Spanish: the wrapper carries the language so requests.css can let the three places wrap at large text. */}
+    {tabs ? <div className="eb-xseg" lang={lang}><BSeg label={copy.pickUpAndSwap} items={EXCHANGE_TABS.map(item => {
       const count = counts?.[item.key], name = tabLabel(item.key, lang);
       // Review B6 (NV-165, NV-281): the count is a small pill beside the label at every width; For you's is amber, since
       // it holds swaps that need your answer.
       return {key: item.key, label: typeof count === 'number' && count > 0 ? <>{name}<span className={item.key === 'foryou' ? 'eb-segn eb-segn--amber' : 'eb-segn'}><span className="b-sr">, </span>{count}</span></> : name, href: item.href, current: item.key === tab};
-    })}/> : null}
+    })}/></div> : null}
   </BHero>;
 }
 

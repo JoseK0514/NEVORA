@@ -13,6 +13,7 @@ one Profile hint the lead removed (below).
 | `f7be67e1` | Employee Home, Schedule, Updates and the Requests card. Server pages pass the language. Profile drops the sign-in-only hint |
 | `87526152` | Fixes from the Spanish browser pass (see "Found in the browser") |
 | `e6e613fd` | More: one `readPortalLanguage` import after the merge |
+| `f198f7f2`, next | 200% text fixes (Updates buttons, Pick up and swap tabs, day chips and link), a declined correction is told by its status code |
 
 Shots: one separate final commit with `shots/es-employee/img/*.webp` and this report.
 
@@ -156,6 +157,17 @@ Pages: Home, Schedule, Time (`/app/my-time`), Pay (`/app/my-pay`), Requests, Upd
   - Two chips were shortened so they fit at 200% text.
 - **Accessibility:** axe is clean, and aria-labels are translated together with the visible text.
 - **States:** loading, failed, paused, denied, empty and success are all translated and covered by render tests.
+
+## Second pass (es-mobile's notes, relayed by the lead)
+- **Updates at 200% text:** "✓ Confirmar" spilled out of its half of the row. Open and Confirm now stack once a label doesn't fit; the rule is scoped to `lang="es"`, so English is unchanged.
+- **Pick up and swap at 200% text:**
+  - The three places wrap onto rows. This needed a rule inside the `nv-b` layer, because `b-foundation.css` sets the track with a layered `!important`.
+  - The Open shifts tab reads "Disponibles".
+  - Day chips follow the language.
+  - "Ver todos los turnos publicados" wraps instead of running off the card.
+- **Time:** a declined correction is now told by its status code (`REJECTED`) instead of the English word "Declined".
+- **Left for es-mobile:** `messageTime` and the hours-model helpers take `lang` only on es-mobile's branch. Until that lands, my screens run their English output through `esDate` and the word maps, and passing `lang` is a one-line change afterwards.
+- **For the shell (lead):** signed-in pages always set `<html lang="en">` (`documentLang` in `src/app/layout.tsx` returns English whenever a session cookie exists). Spanish pages are therefore announced as English. My Updates and Pick up and swap wrappers set `lang` themselves.
 
 ## Proposed end-sweep rows
 - **`employee-b-work.css` `.b-live__m`:** let the Home hours line wrap at 390 (Spanish "trabajadas esta semana").
