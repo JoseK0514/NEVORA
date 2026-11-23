@@ -93,6 +93,10 @@
  * box (Terms and Ayuda measured 42-43px wide); from 768px the line stays where it was. Below 768px the owner and the
  * links stack as two centred lines, the links on their own 44px row, and no line starts with a dot. */
 .foot a { display:inline-block; min-width:44px; margin-block:-14px; text-align:center; }
+/* In the signed-in app the kit's .q-legal (a fixed 13/18px) won over .foot, so the legal line on /app/billing (J18)
+ * stayed 13px at 200% text. The line takes .foot's size (13.5px in rem, line-height 1.4), as on the signed-out billing
+ * pages A15-A19, where it already did: they don't change. */
+:global(:is(#q-root, html)) .foot :global(.q-legal) { font-size:inherit; line-height:inherit; }
 @media (max-width: 767px) {
   .foot :global(.q-legal__owner) { display:block; }
   .foot :global(.q-legal__links) { display:block; }
