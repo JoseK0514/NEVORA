@@ -109,3 +109,10 @@ Every test that asserts BLive markup (`b-live__v`) passes: b-kit-labels, employe
   differs only in live minutes, "x min ago" and the bell's dot.
 - Still flagged at 200% text (page markup, not kit): Payroll's step titles (`.b-step__t`) and the Timecards team rows at
   390, and Shift requests' `dt` and facts lines (25 overlaps before and after).
+
+## Follow-up 4: desktop sidebar focus ring (13:55 UTC)
+`af6b43b0`: Tab through the sidebar at 1440 (Owner and Employee) showed the ring was there (2px inset teal on every
+entry, outline on the brand, collapse button and Help) but only 5.9:1 on the sidebar and 5.4:1 on the current entry's
+tint. In the sidebar the ring is now #08504C (the band's dark end): 9.0:1 and 8.2:1, same width and shape, for every
+focusable control in the sidebar. Checked by keyboard Tab for both roles (`img/sidebar-focus-*`); unfocused, the sidebar
+and pages are unchanged (the only differences were a loading frame, the "read at" time and the focus the Tab walk left).
