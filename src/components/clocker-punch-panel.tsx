@@ -266,7 +266,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    <div className={styles.strow}>
     <p data-clocker-status className={styles.chip} data-state={entry?.status==='ON_BREAK'?'break':entry?'on':'off'}>{t(shown[status])}</p>
     {entry&&since?<p className={styles.detail}>{t('Since')} <time dateTime={since}>{shortTime(since,timeZone,now,locale)}</time> · <span className={styles.ago}>{t('{elapsed} ago',{elapsed:elapsed(since,now)==='under a minute'?t('under a minute'):elapsed(since,now)})}</span></p>
-     :<p className={styles.detail}>{t("Your time is recorded when you clock in.")}</p>}
+     :null}
    </div>
    {pause?.type?<p className={styles.breakContext}><strong>{pause.type.name}</strong>{pause.type.targetMinutes!==null?' · '+t('Suggested: {minutes} min',{minutes:pause.type.targetMinutes}):''}</p>:null}
    {notice}

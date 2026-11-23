@@ -12,7 +12,7 @@ import styles from './clocker.module.css';
  * Phase 8: one verb for setting up a tablet ("connect"), "Can't reach NEVORA" when the tablet is online but NEVORA did not
  * answer (never "No connection" then), and no system word for blocked browser storage. */
 export type TabletHealth = 'reconnect' | 'offline' | 'unreached' | 'paused' | 'storage';
-const healthLabels: Record<TabletHealth, string> = { reconnect: 'Reconnect needed', offline: 'No connection', unreached: 'Can’t reach NEVORA', paused: 'Paused: too many attempts', storage: 'Can’t save punches' };
+const healthLabels: Record<TabletHealth, string> = { reconnect: 'Reconnect needed', offline: 'No connection', unreached: 'Connection problem', paused: 'Paused: too many attempts', storage: 'Storage problem' };
 /* Premium pass (Nov 18, 2026): one colour per state. An outage that stops every punch (no connection, NEVORA not reached,
  * a tablet to set up again, punches that can't be saved) is red on the card, so the band's dot is the stop tone too; a
  * pause is a wait (amber), as are the setup checks. */
@@ -50,7 +50,7 @@ export function ClockerShell({ locationLabel, timeZone, deviceName, status, chil
   const date = now ? new Intl.DateTimeFormat(intl, { timeZone, weekday: 'long', month: 'long', day: 'numeric' }).format(now) : t('Loading location time');
   // A blocked PIN or clock screen speaks for the tablet; otherwise the setup check does.
   const blocked = status === 'connected' ? health.gate ?? health.panel : null;
-  const statusLabel = blocked ? healthLabels[blocked] : status === 'connected' ? 'Tablet connected' : status === 'checking' ? 'Checking setup' : status === 'unconfirmed' ? 'Setup not confirmed' : status === 'offline' ? 'No connection' : 'Setup required';
+  const statusLabel = blocked ? healthLabels[blocked] : status === 'connected' ? 'Tablet connected' : status === 'checking' ? 'Checking setup' : status === 'unconfirmed' ? 'Check needed' : status === 'offline' ? 'No connection' : 'Setup required';
   const tone = blocked ? healthTones[blocked] : status === 'connected' ? 'ok' : status === 'offline' ? 'stop' : 'attn';
   const zone = timeZone.split('/').at(-1)?.replaceAll('_', ' ') ?? timeZone;
 

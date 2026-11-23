@@ -50,7 +50,7 @@ describe('first paint (no hooks driven)', () => {
     const html = renderToStaticMarkup(<ClockerSetup {...props} />);
     expect(html).toContain('Set up this tablet');
     // Phase 8 (#20): the location reads as one name, its words kept on one line.
-    expect(html).toContain('This tablet will be the time clock for <strong>Calle\u00a0Loíza</strong>.');
+    expect(html).toContain('This tablet becomes this location’s time clock.');
     expect(html.match(/<li>/g)).toHaveLength(3);
     expect(html).toContain('Point this tablet’s camera at the code, or type the code below.');
     expect(html).toMatch(/<textarea[^>]*name="enrollmentToken"/);
@@ -61,7 +61,7 @@ describe('first paint (no hooks driven)', () => {
   });
   it('Spanish: the same screen with no English sentence left in it', () => {
     const html = renderToStaticMarkup(<ClockerSetup {...props} initialLocale="es" />);
-    for (const line of ['Configura esta tableta', 'Esta tableta será el registro de tiempo de <strong>Calle\u00a0Loíza</strong>.', 'El dueño añade esta tableta y obtiene su código de configuración.', 'Código de configuración', 'Revisando configuración…'])
+    for (const line of ['Configura esta tableta', 'Esta tableta será el registro de tiempo de esta ubicación.', 'El dueño añade esta tableta y obtiene su código de configuración.', 'Código de configuración', 'Revisando configuración…'])
       expect(html).toContain(line);
     for (const english of ['Set up this tablet', 'Setup code', 'time clock for', 'Connect tablet', 'How to set it up', 'One-time setup']) expect(html).not.toContain(english);
     expect(html).toContain('lang="es"');
