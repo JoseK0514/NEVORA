@@ -55,7 +55,9 @@ describe('44px targets on tablets and desktop', () => {
     const at = css.indexOf('aside.sidebar .nav-link:not(#r44a)');
     expect(at).toBeGreaterThan(-1);
     const block = css.slice(at);
-    for (const target of ['aside.sidebar .nav-link', '.portal-notification-bell', '.b-week__arrow', '.c-sched-week__today', '.c-sched-actions :is(button, a)', '.eb-avail-req', '.c-shift__cancel', ':is(.c-card__aside, .q-sec__aside) .c-link', '.b-search__go', '.b-card__a', '.b-row__hit', '.q-nav > .q-nav__l']) {
+    expect(block).toContain('aside.sidebar .nav-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::before');
+    expect(block).not.toContain('aside.sidebar .nav-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after');
+    for (const target of ['.portal-notification-bell', '.b-week__arrow', '.c-sched-week__today', '.c-sched-actions :is(button, a)', '.eb-avail-req', '.c-shift__cancel', ':is(.c-card__aside, .q-sec__aside) .c-link', '.b-search__go', '.b-card__a', '.b-row__hit', '.q-nav > .q-nav__l']) {
       expect(block).toContain(`${target}:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after`);
     }
     expect(block).toContain('top: min(0px, calc(50% - 22px)) !important; bottom: min(0px, calc(50% - 22px)) !important; left: min(0px, calc(50% - 22px)) !important; right: min(0px, calc(50% - 22px)) !important;');
