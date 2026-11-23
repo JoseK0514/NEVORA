@@ -1,0 +1,102 @@
+[
+ {
+  "id": "B3-manager",
+  "row": "B3",
+  "page": "Notifications",
+  "section": "Manager",
+  "note": "The Manager now gets the Lead's Notifications screen: notices grouped under Today, Yesterday and Earlier in cards, with the time said once per row. Opening an unread notice still marks it read.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B3-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B3-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B3-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Rows' screen-reader names add facts to the visible title (shared EmployeeNotificationsB and EmployeeNotificationList rows)"
+  ]
+ },
+ {
+  "id": "B3-owner",
+  "row": "B3",
+  "page": "Notifications",
+  "section": "Owner",
+  "note": "Same screen as the Manager's. The Owner's list now loads (the inventory had it failing) and the billing notice still leads it while one applies.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B3-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B3-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B3-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Rows' screen-reader names add facts to the visible title (shared rows)"
+  ]
+ },
+ {
+  "id": "B8-manager",
+  "row": "B8",
+  "page": "Compose an update",
+  "section": "Manager",
+  "note": "On phones the older sheet bar is gone: the Lead's B hero has Cancel and the step line, and Next is the one full-width teal button under the cards. Tablet and desktop are unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B8-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B8-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B8-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B8-owner",
+  "row": "B8",
+  "page": "Compose an update",
+  "section": "Owner",
+  "note": "Same as the Manager's: B hero on phones, Next as the card's one teal button; tablet and desktop unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B8-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B8-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B8-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
