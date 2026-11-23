@@ -14,9 +14,8 @@ import {BButton,BButtonLink,BCallout,BCard,BChip,BHero,BIcon,BList,BLive,BNote,B
 import {momentsCopy} from '../owner-b/moments-copy';
 import {BAddRow,BCardNote,BDay,BValue,Range,shiftEndedWhileOpen,shiftUnderway,sinceSpan,wallMinutesSince,wallTime,type WallShift} from './parts';
 import {workCopy} from './work-copy';
-import {timeCopy,timeWord,type TimeCopy} from './time-copy';
-import {esDate,esTime} from './es-format';
-import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {timeCopy} from './time-copy';
+import {usePortalLang,type PortalLang} from '@/lib/i18n/portal-lang';
 import {useHours} from '../employee-mobile/use-hours';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 import {keepWhole} from '@/lib/keep-whole';
@@ -87,28 +86,28 @@ function Dur({value}:{value:number}){
 function DayRange({text}:{text:string}){
  return <Range text={text}/>;
 }
-/** Signed-in Spanish (Nov 23, 2026): this screen's words in the person's language, with the shared model's English words,
- * formatted dates and clock times rewritten for Spanish (English passes through). */
+/** Signed-in Spanish (Nov 23, 2026): this screen's words in the person's language. Dates, times, status words, request
+ * kinds and timecard notes come from the shared Time model in that language (its helpers take a trailing `lang`). */
 function useTimeWords(){
- const lang=usePortalLang(),T=timeCopy(lang);
- return {lang,T,W:workCopy(lang),M:momentsCopy(lang),date:(text:string)=>esDate(text,lang),clock:(text:string)=>lang==='es'?esTime(text,lang).replace(/ – now$/,' – ahora'):text,word:(text:string)=>timeWord(T,'statusWords',text)};
+ const lang=usePortalLang();
+ return {lang,T:timeCopy(lang),W:workCopy(lang),M:momentsCopy(lang)};
 }
-const chip=(status:{word:string;tone:StatusTone},T:TimeCopy)=><BChip tone={status.tone}>{timeWord(T,'statusWords',status.word)}</BChip>;
+const chip=(status:{word:string;tone:StatusTone})=><BChip tone={status.tone}>{status.word}</BChip>;
 /** Phase 9 (spec 1.1, 1.4): a state that stands alone in a card's header. A week still under way ("In progress") is the
  * expected state, so it is quiet grey text; a green or red chip there carries its glyph (Check, WarningCircle), so the two
  * colours colour-blind readers confuse differ by shape; Declined is grey (a decision isn't an error). */
-/* Declined is told by the record's status code where the caller has one (a correction), so the check holds whatever
- * language the model's word comes back in; elsewhere by the model's English word. */
-const headChip=(status:{word:string;tone:StatusTone},T:TimeCopy,declined=status.word==='Declined')=>{const word=timeWord(T,'statusWords',status.word);
- return status.tone==='teal'&&status.word==='In progress'?<BStatusText>{word}</BStatusText>
+/* The states are told by the model's flags and the record's status code, never by the word, so they hold in either language:
+ * a week under way is `open`; a correction says it was declined. */
+const headChip=(status:{word:string;tone:StatusTone;open?:boolean},declined=false)=>{const word=status.word;
+ return status.tone==='teal'&&status.open?<BStatusText>{word}</BStatusText>
  :declined?<BChip tone="grey">{word}</BChip>
  :<BChip tone={status.tone} icon={status.tone==='green'?'check':status.tone==='red'?'stop':undefined}>{word}</BChip>;};
 
 /* ---------- Time tab ---------- */
 
 export function TimeTabB({data}:{data:Ready}){
- const context=useContext(HoursBContext),m=timeWeek(data),zone=m.zone,current=m.current,{lang,T,W,date:dateText,clock}=useTimeWords();
- const clockAtText=(at:string)=>clock(clockAt(at,zone));
+ const context=useContext(HoursBContext),{lang,T,W}=useTimeWords(),m=timeWeek(data,lang),zone=m.zone,current=m.current;
+ const clockAtText=(at:string)=>clockAt(at,zone,lang);
  const figure=(value:number)=>m.partial?'—':<Dur value={value}/>;
  // Phase 8 (review C, row 10): today's shift has ended and the punch is still open: amber, with Home's words.
  const overrun=current&&context?.shifts?shiftEndedWhileOpen({shifts:context.shifts,today:data.date,zone,observedAt:data.observedAt,clockInAt:current.clockInAt}):null;
@@ -120,12 +119,12 @@ export function TimeTabB({data}:{data:Ready}){
  const since=(shift:WallShift,time:string)=>sinceSpan(wallMinutesSince({date:shift.date,time,zone,observedAt:data.observedAt}));
  const status=current?m.onBreak?<BStatusText dot="amber">{T.onBreak}</BStatusText>:<BStatusText dot={overrun?'amber':'green'}>{T.clockedIn}</BStatusText>
   :underway?<BStatusText dot="amber">{W.notClockedInFor(since(underway,underway.startTime))}</BStatusText>:<BStatusText>{T.notClockedIn}</BStatusText>;
- const headline=overrun&&current?W.stillClockedIn(clockAtText(current.clockInAt)):current?m.onBreak&&m.openBreak?T.onBreakSince(clockAtText(m.openBreak.startAt)):T.clockedInAt(clockAtText(current.clockInAt)):T.clockInOn(T.tablet(m.tablet));
+ const headline=overrun&&current?W.stillClockedIn(clockAtText(current.clockInAt)):current?m.onBreak&&m.openBreak?T.onBreakSince(clockAtText(m.openBreak.startAt)):T.clockedInAt(clockAtText(current.clockInAt)):T.clockInOn(m.tablet);
  // Final polish, round 2 (T2, T3): the running total is the rows' compact figure ("13 h 26 so far", read "13 h 26 min so
  // far"), and it stays whole: the line breaks after the place's dot, never inside the total or before "far".
  const line:ReactNode=current?m.onBreak?keepWhole(T.placeClockedInAt(current.locationName,clockAtText(current.clockInAt)))
   :<>{current.locationName}{'\u00a0· '}<span className="eb-nb eb-sofar"><Dur value={current.elapsedSeconds}/>{T.soFar}</span></>:T.takeBreaksThere;
- const hint=overrun&&current?W.shiftEnded(keepWhole(clock(compactRange(`${wallTime(overrun.startTime, lang)} – ${wallTime(overrun.endTime, lang)}`))),current.locationName):current?m.onBreak?T.endBreakHint:T.clockOutHint:null;
+ const hint=overrun&&current?W.shiftEnded(keepWhole(compactRange(`${wallTime(overrun.startTime, lang)} – ${wallTime(overrun.endTime, lang)}`)),current.locationName):current?m.onBreak?T.endBreakHint:T.clockOutHint:null;
  return <HoursBScreen hero={m.week.length?<BLive label={T.atAGlance} items={[{label:T.thisWeek,value:figure(m.worked)},{label:T.breaks,value:figure(m.breaks)}]}/>:null}>
   <BCard title={T.rightNow} id="b-hours-now" chip={status}>
    {/* Phase 9 (spec 2.2): a punch left open after the shift ended is the kit's amber callout (Warning glyph, a hairline,
@@ -135,11 +134,11 @@ export function TimeTabB({data}:{data:Ready}){
     <span className="b-notice__t">{keepWhole(headline)}</span><span className="b-notice__s">{line}</span>{hint?<span className="b-notice__s">{hint}</span>:null}
    </span></div>}
   </BCard>
-  <BCard title={<span><span className="eb-wide">{T.thisWeekDot}</span><span className="eb-nowrap">{dateText(rangeLabel(m.weekStart,m.weekEnd))}</span></span>} id="b-hours-week" chip={<BStatusText>{T.inProgress}</BStatusText>}>
+  <BCard title={<span><span className="eb-wide">{T.thisWeekDot}</span><span className="eb-nowrap">{rangeLabel(m.weekStart,m.weekEnd,lang)}</span></span>} id="b-hours-week" chip={<BStatusText>{T.inProgress}</BStatusText>}>
    {/* Phase 2 gate (Nov 23): rows are named by what they show (no aria-label that differs from the visible text). */}
   <BList label={T.weekTime}>
-    {m.week.map(entry=>{const date=dateKey(entry.clockInAt,zone),range=clock(clockRange(entry.clockInAt,entry.clockOutAt,zone));
-     return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date} lang={lang}/>} title={<span id={'b-hours-entry-'+entry.id}><span className="b-sr">{dateText(dayLong(date))}, </span><DayRange text={keepWhole(range)}/></span>}
+    {m.week.map(entry=>{const date=dateKey(entry.clockInAt,zone),range=clockRange(entry.clockInAt,entry.clockOutAt,zone,lang);
+     return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date} lang={lang}/>} title={<span id={'b-hours-entry-'+entry.id}><span className="b-sr">{dayLong(date,lang)}, </span><DayRange text={keepWhole(range)}/></span>}
       sub={entry.breakSeconds?T.breakSub(boardDuration(entry.breakSeconds)):undefined} end={<BValue><span className={entry.clockOutAt?undefined:'eb-teal'}><Dur value={entry.elapsedSeconds}/></span></BValue>}/>;})}
     {m.week.length?null:<li className="b-li"><p className="eb-quiet">{T.noTimeYet}</p></li>}
     <BAddRow href="/app/my-time?view=corrections&edit=new" icon={<PencilSimpleIcon weight="bold"/>}>{T.fixMissed}</BAddRow>
@@ -161,14 +160,14 @@ export function TimeTabB({data}:{data:Ready}){
 
 /** Last Monday to Sunday through the same private hours read as Past timecards' weeks; hidden while it loads or fails. */
 function LastWeekB({authority,date}:{authority:string;date:string}){
- const period=weekOf(addDays(weekStartFor(date),-7)),panel=useHours(authority,'cards',period.startDate+'_'+period.endDate,null),{T,date:dateText}=useTimeWords();
+ const period=weekOf(addDays(weekStartFor(date),-7)),panel=useHours(authority,'cards',period.startDate+'_'+period.endDate,null),{lang,T}=useTimeWords();
  const data=panel.read?.view==='cards'?panel.read.data:null;
  if(!data||data.state!=='ready')return null;
- const item=data.cards[0],card=item?.card,range=dateText(rangeLabel(period.startDate,period.endDate));
+ const item=data.cards[0],card=item?.card,range=rangeLabel(period.startDate,period.endDate,lang);
  if(!item||!card||!card.entries.length)return <BCard title={T.lastWeek} id="b-hours-last"><BList><BRow title={range} sub={T.noHoursRecorded}/></BList></BCard>;
  // Last week is over: an open period reads as not approved yet.
- const status=item.state==='DRAFT'?{word:'Not approved yet',tone:'grey' as const}:cardStatus(item.state,card.issues),total=seconds(card.recordedNanoseconds);
- return <BCard title={T.lastWeek} id="b-hours-last" chip={headChip(status,T)}><BList>
+ const status=item.state==='DRAFT'?{word:'Not approved yet',tone:'grey' as const}:cardStatus(item.state,card.issues,lang),total=seconds(card.recordedNanoseconds);
+ return <BCard title={T.lastWeek} id="b-hours-last" chip={headChip(status)}><BList>
   <BRow href={cardsHref(period)} title={range} sub={T.shifts(card.entries.length)} end={<BValue><Dur value={total}/></BValue>}/>
  </BList></BCard>;
 }
@@ -177,16 +176,16 @@ function LastWeekB({authority,date}:{authority:string;date:string}){
 
 export type DayPunch={key:string;title:string;detail?:string;value:string;soft?:boolean};
 export function DayB({total,running,status,line,punches,location,fix,notes}:{total:number|null;running:boolean;status:{word:string;tone:StatusTone};line:string;punches:DayPunch[];location:string;fix:string|null;notes:string[]}){
- const {T,word,clock}=useTimeWords();
+ const {T}=useTimeWords();
  return <HoursBScreen>
   {/* Phase 9 (spec 1.4): an entry still running is your own clock state, quiet words with the live dot (green Clocked in,
     * amber On break). */}
-  <BCard title={T.hours} id="b-hours-day" chip={running&&status.tone!=='grey'?<BStatusText dot={status.tone==='teal'?'green':status.tone}>{word(status.word)}</BStatusText>:headChip(status,T)}>
+  <BCard title={T.hours} id="b-hours-day" chip={running&&status.tone!=='grey'?<BStatusText dot={status.tone==='teal'?'green':status.tone}>{status.word}</BStatusText>:headChip(status)}>
    <div className="eb-sum"><p className="eb-sum__big">{total===null?T.inProgress:<><Dur value={total}/>{running?<span className="eb-sum__so">{T.soFarShort}</span>:null}</>}</p><p className="eb-sum__line">{line}</p></div>
   </BCard>
   <BCard title={T.punches} id="b-hours-punches">
    <BList label={T.punches}>
-    {punches.map(punch=><BRow key={punch.key} title={punch.title} sub={punch.detail} end={<span className={punch.soft?'eb-val eb-val--soft':'eb-val'}>{keepWhole(clock(punch.value))}</span>}/>)}
+    {punches.map(punch=><BRow key={punch.key} title={punch.title} sub={punch.detail} end={<span className={punch.soft?'eb-val eb-val--soft':'eb-val'}>{keepWhole(punch.value)}</span>}/>)}
     <BRow title={T.location} end={<span className="eb-val eb-val--soft eb-val--wrap">{location}</span>}/>
     {fix?<BAddRow href={fix} icon={<PencilSimpleIcon weight="bold"/>}>{T.requestCorrection}</BAddRow>:null}
    </BList>
@@ -200,30 +199,30 @@ export function DayB({total,running,status,line,punches,location,fix,notes}:{tot
 export type WeekState={data:TimecardsResult|null;paused:boolean};
 /** One week as a row: its range, then shifts and state, its total and a chevron to its days. */
 function WeekRowB({period,state}:{period:Period;state:WeekState|undefined}){
- const {T,date:dateText}=useTimeWords(),range=dateText(rangeLabel(period.startDate,period.endDate)),data=state?.data??null;
+ const {lang,T}=useTimeWords(),range=rangeLabel(period.startDate,period.endDate,lang),data=state?.data??null;
  if(!data)return <BRow title={range} sub={state?.paused?T.pausedShort:T.loading}/>;
  if(data.state!=='ready')return <BRow href={cardsHref(period)} title={range} sub={T.couldntCheck}/>;
  const item=data.cards[0],card=item?.card;
  // The week under way says so (as on Time), with nothing recorded yet; a past week with none says it recorded none.
- if(!item||!card||!card.entries.length){const open=!!item&&!!card&&cardStatus(item.state,card.issues).open;
+ if(!item||!card||!card.entries.length){const open=!!item&&!!card&&cardStatus(item.state,card.issues,lang).open;
   return <BRow title={range} sub={open?T.noHoursYet:T.noHoursRecorded}/>;}
- const status=cardStatus(item.state,card.issues),count=T.shifts(card.entries.length),total=seconds(card.recordedNanoseconds);
+ const status=cardStatus(item.state,card.issues,lang),count=T.shifts(card.entries.length),total=seconds(card.recordedNanoseconds);
  // A closed week says its state in grey; one that needs attention carries a chip. Phase 9 (spec 1.4): the week under way is
  // the expected state, so its sub-line ("3 shifts so far") says it and no teal chip does.
- return <BRow href={cardsHref(period)} title={range} chip={status.flag?chip(status,T):undefined} sub={status.open?T.countSoFar(count):status.flag?count:`${count} · ${timeWord(T,'statusWords',status.word)}`}
+ return <BRow href={cardsHref(period)} title={range} chip={status.flag?chip(status):undefined} sub={status.open?T.countSoFar(count):status.flag?count:`${count} · ${status.word}`}
   end={<BValue><Dur value={total}/></BValue>}/>;
 }
 /** The chosen week (?start&end): its total and its days. */
 function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}>;period:Period}){
- const {lang,T,date:dateText,clock}=useTimeWords(),item=data.cards[0],card=item?.card,range=dateText(rangeLabel(period.startDate,period.endDate));
+ const {lang,T}=useTimeWords(),item=data.cards[0],card=item?.card,range=rangeLabel(period.startDate,period.endDate,lang);
  if(!item||!card)return <BCard title={range} id="b-hours-timecard"><p className="eb-quiet">{T.noHoursThisWeek}</p></BCard>;
- const entries=[...card.entries].sort((a,b)=>a.startAt.localeCompare(b.startAt)),notes=card.issues.map(issue=>issueText[issue]).filter((text):text is string=>!!text).map(text=>timeWord(T,'issues',text));
- return <BCard title={dateText(rangeLabel(card.startDate,card.endDate))} id="b-hours-timecard" chip={entries.length?headChip(cardStatus(item.state as CardState,card.issues),T):undefined}>
+ const entries=[...card.entries].sort((a,b)=>a.startAt.localeCompare(b.startAt)),notes=card.issues.map(issue=>issueText(issue,lang)).filter((text):text is string=>!!text);
+ return <BCard title={rangeLabel(card.startDate,card.endDate,lang)} id="b-hours-timecard" chip={entries.length?headChip(cardStatus(item.state as CardState,card.issues,lang)):undefined}>
   {entries.length?<>
    <div className="eb-sum"><p className="eb-sum__big"><Dur value={seconds(card.recordedNanoseconds)}/></p><p className="eb-sum__line">{T.hoursIncludes(boardDuration(seconds(card.breakNanoseconds)))}</p>
     {notes.map(note=><p className="eb-sum__line eb-sum__line--warn" key={note}>{note}</p>)}</div>
-   <BList label={T.days}>{entries.map(entry=>{const length=span(entry.startAt,entry.endAt),date=dateKey(entry.startAt,card.timeZone),times=clock(clockRange(entry.startAt,entry.endAt,card.timeZone));
-    return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date} lang={lang}/>} title={<span id={'b-hours-card-entry-'+entry.id}><span className="b-sr">{dateText(dayLong(date))}, </span><DayRange text={keepWhole(times)}/></span>}
+   <BList label={T.days}>{entries.map(entry=>{const length=span(entry.startAt,entry.endAt),date=dateKey(entry.startAt,card.timeZone),times=clockRange(entry.startAt,entry.endAt,card.timeZone,lang);
+    return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date} lang={lang}/>} title={<span id={'b-hours-card-entry-'+entry.id}><span className="b-sr">{dayLong(date,lang)}, </span><DayRange text={keepWhole(times)}/></span>}
      end={length===null?<span className="eb-val eb-val--teal">{T.inProgress}</span>:<BValue><Dur value={length}/></BValue>}/>;})}</BList>
   </>:<p className="eb-quiet">{T.noHoursThisWeek}</p>}
  </BCard>;
@@ -251,16 +250,16 @@ export function PastTimecardsB({data,period,today,chosen,weeks,earlier,earlierCo
 
 /* ---------- Your correction requests ---------- */
 
-const correctionChip=(status:PublicCorrectionItem['status'],T:TimeCopy,head?:boolean)=>{const look=correctionStatus(status),declined=status==='REJECTED';return head?headChip(look,T,declined):chip(declined?{...look,tone:'grey'}:look,T);};
+const correctionChip=(status:PublicCorrectionItem['status'],lang:PortalLang,head?:boolean)=>{const look=correctionStatus(status,lang),declined=status==='REJECTED';return head?headChip(look,declined):chip(declined?{...look,tone:'grey'}:look);};
 export function CorrectionsB({snapshot,decided}:{snapshot:Extract<EmployeeTimeCorrections,{state:'ready'}>;decided:boolean}){
- const zone=snapshot.timeZone,rows=snapshot.requests.filter(r=>decided?r.status!=='PENDING':r.status==='PENDING'),{T,date:dateText}=useTimeWords();
+ const zone=snapshot.timeZone,rows=snapshot.requests.filter(r=>decided?r.status!=='PENDING':r.status==='PENDING'),{lang,T}=useTimeWords();
  // Desktop: Fix a missed punch is the band's white action (the card's own row is the phone's).
  return <HoursBScreen right={<span className="eb-desk"><BButtonLink href="/app/my-time?view=corrections&edit=new" kind="white"><PencilSimpleIcon size={16} weight="bold" aria-hidden="true"/>{T.fixMissed}</BButtonLink></span>} hero={<BSeg label={T.correctionRequests} items={[{key:'waiting',label:T.waiting,href:'/app/my-time?view=corrections',current:!decided},{key:'decided',label:T.decided,href:'/app/my-time?view=corrections&filter=decided',current:decided}]}/>}>
   <BCard label={decided?T.decisions:T.waitingForReview}>
    <BList label={decided?T.decisions:T.waitingForReview}>
-    {rows.map(r=>{const day=dateKey(r.proposedStartAt,zone),times=clockRange(r.proposedStartAt,r.proposedEndAt,zone);
-     return <BRow key={r.id} href={'/app/my-time?view=corrections&requestId='+r.id+(decided?'&filter=decided':'')} title={<span id={'b-hours-request-'+r.id}>{timeWord(T,'kinds',kindLabel[r.kind])}</span>}
-      sub={keepWhole(dateText(`${dayMedium(day)} · ${times}`))} end={correctionChip(r.status,T)}/>;})}
+    {rows.map(r=>{const day=dateKey(r.proposedStartAt,zone),times=clockRange(r.proposedStartAt,r.proposedEndAt,zone,lang);
+     return <BRow key={r.id} href={'/app/my-time?view=corrections&requestId='+r.id+(decided?'&filter=decided':'')} title={<span id={'b-hours-request-'+r.id}>{kindLabel(r.kind,lang)}</span>}
+      sub={keepWhole(`${dayMedium(day,lang)} · ${times}`)} end={correctionChip(r.status,lang)}/>;})}
     {rows.length?null:<li className="b-li"><div className="eb-none">
      <BIcon tone="grey"><ClockCounterClockwiseIcon weight="bold"/></BIcon>
      <p className="eb-none__t">{decided?T.noDecided:T.nothingWaiting}</p>
@@ -274,10 +273,10 @@ export function CorrectionsB({snapshot,decided}:{snapshot:Extract<EmployeeTimeCo
  </HoursBScreen>;
 }
 export function CorrectionDetailB({item,decision,zone}:{item:PublicCorrectionItem;decision:HoursDecision|undefined;zone:string}){
- const {T,date:dateText}=useTimeWords(),when=(start:string,end:string)=>dateText(interval(start,end,zone)),sent=(at:string)=>dateText(sentAt(at,zone));
+ const {lang,T}=useTimeWords(),when=(start:string,end:string)=>interval(start,end,zone,lang),sent=(at:string)=>sentAt(at,zone,lang);
  const context=item.context,now=context.state==='confirmed'&&context.sourceKind==='ADJUSTMENT'?when(context.startAt,context.endAt):null;
  return <HoursBScreen>
-  <BCard title={item.kind==='BREAK_BOUNDARY'&&item.breakName?T.breakNamed(item.breakName):timeWord(T,'kinds',kindLabel[item.kind])} id="b-hours-correction" chip={correctionChip(item.status,T,true)}>
+  <BCard title={item.kind==='BREAK_BOUNDARY'&&item.breakName?T.breakNamed(item.breakName):kindLabel(item.kind,lang)} id="b-hours-correction" chip={correctionChip(item.status,lang,true)}>
    <BList label={T.times}>
     <BRow title={T.recorded} sub={item.originalStartAt&&item.originalEndAt?keepWhole(when(item.originalStartAt,item.originalEndAt)):T.noPunches}/>
     <BRow title={T.youAskedFor} sub={keepWhole(when(item.proposedStartAt,item.proposedEndAt))}/>
@@ -287,7 +286,7 @@ export function CorrectionDetailB({item,decision,zone}:{item:PublicCorrectionIte
    </BList>
   </BCard>
   <BCard title={decision?T.decision:T.yourNote} id="b-hours-note">
-   {decision?<BList><BRow title={T.decidedBy(timeWord(T,'statusWords',statusWord[decision.status]),decision.by)} sub={keepWhole(sent(decision.at))}/></BList>:null}
+   {decision?<BList><BRow title={T.decidedBy(statusWord(decision.status,lang),decision.by)} sub={keepWhole(sent(decision.at))}/></BList>:null}
    <div className={decision?'eb-said eb-said--line':'eb-said'}>
     {decision?<p className="eb-said__k">{T.yourNote}</p>:null}<p className="eb-said__v">{item.reason}</p>
     {decision?.note?<><p className="eb-said__k eb-said__k--gap">{T.managersNote}</p><p className="eb-said__v">{decision.note}</p></>:null}
