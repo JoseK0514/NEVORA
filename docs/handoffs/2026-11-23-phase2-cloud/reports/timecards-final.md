@@ -1,6 +1,6 @@
 # Timecards final fixes (D1, Owner and Manager), Nov 23, 2026
 
-Branch `claude-codex-collab-nevora-timecards-final`, from `claude-codex-collab-nevora` at 12194c47. Only Timecards
+Branch `claude-codex-collab-nevora-timecards-final`, from `claude-codex-collab-nevora` at 12194c47, with origin's ab054840 (kit fixes) merged in 9054771a before the final captures. Only Timecards
 files were changed: `src/components/timecards.tsx`, `src/app/app/owner-b-time-pay.css`, `src/app/app/owner-b-desktop.css`
 (one Timecards-only rule at the end), and their tests. No kit, shell, server, permission or data-contract changes.
 Fictional data and a throwaway local database only.
@@ -27,8 +27,9 @@ Fictional data and a throwaway local database only.
 ## Checks
 - Production build (`NEVORA_OWNED_APP_PRODUCTION=1`), Owner (QAOWNER, rich data) and Manager Elena (OWN-ELENA): list (this
   week), a person's week (last week) and Select → Review (last week), at 320, 390, 768, 1440, and 320/390/768 with 200%
-  text. 42 captures, 42 clean: page overflow 0, no clipped or ellipsised text, axe (WCAG 2.2 A/AA) 0 violations in `main`
-  on every capture.
+  text, taken on the merged code (9054771a). 42 captures: page overflow 0, no overlapping row parts, no clipped or
+  ellipsised text, axe 0 violations in `main` on every capture (all default rules plus label-content-name-mismatch and
+  target-size, which the lead asked about; none found at 390, default or 200% text). `capture-log.jsonl` has each one.
 - Fixed-px audit: from 768 at 200% text, every visible Timecards text doubles except the avatar initials (fixed circle,
   aria-hidden) and visually hidden status text.
 - Keyboard: focus rings on every stop (white 2px on the band, teal 2px on white) at 390 and 1440.
@@ -58,7 +59,7 @@ Fictional data and a throwaway local database only.
 ## Left for others (proposed ledger rows)
 | Area | Item | Owner | Type |
 |---|---|---|---|
-| Kit `BChip` | Chip text is fixed px: at 200% text "Missing clock-out" / "Correction waiting" chips stay small beside rem text (seen in the 768 table). | Package K | end sweep |
+| Timecards phone select and review (Corp layout, `timecards-corp.css`) | At 390 with 200% text the small title "Timecards", the week buttons, "Approve N timecards", the "3" count and the row hours stay fixed px while the rest scales. Nothing overlaps or clips. Found at the final capture after the 14:15 target, so not fixed here. | Timecards follow-up | text size |
 | Kit `BSeg` / `--b-seg-fs` | Phone and desktop week control words are 14px fixed; item height 36px. | Package K | end sweep |
 | Kit band rule (`owner-b-desktop.css` shared h1) | Every other page's band title is 32px fixed; Timecards now uses 2rem. | Package K | end sweep |
 | Kit `BHero` glass Select | 40px on phones (under 44). | Package K | end sweep |
