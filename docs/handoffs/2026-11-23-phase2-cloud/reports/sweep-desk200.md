@@ -120,3 +120,25 @@ is sent). Copy last week wasn't found on Publish for Dec 7–13 in this run; C8 
 - `72c60fd1`. Default size before/after at 1024 and 1440: C3, C4 and Updates pixel-identical; B7 differs only by the
   update's sent time (a new fictional update each run). The whole `src/components` suite passes (3250 tests).
 - I2 Policy document: no document in the fictional workspace, so it's skipped.
+
+## Gap closure (Jose's approval, 17:05 UTC): DS-3, DS-10 (skip link), DS-12, DS-13, DS-1/DS-2
+Merged c32ae519 first (`46edf364`).
+- `4eaef1ea` Home and kit: `.b-btn--full` and `.b-btn--big` 16/22px → 1rem/1.375rem (Home's Prepare at 390 now
+  grows); live figures (`--bs-fig-fs/lh` and the desktop fallback, the phone 22px) in rem, so "7/8", "0" and "2" grow
+  on desktop; the ink card's header (`.b-ink__top`) wraps instead of running past the card, and its chip is rem.
+- `b93fbce8` and `89b5ac4c`: the skip link's phone font is rem; on desktop it uses the corp shell's type tokens,
+  which were px (`corp-shell.css`, `--nv-t-title-1` … `--nv-t-figure`, 13–24px). They are rem now at the same sizes,
+  so the skip link and every shell element on those tokens grow with text.
+- Default size, before vs after at 390, 1024 and 1440 (Owner Home, Payroll, Team, Timecards, Schedule, Settings,
+  Profile, Things to do; Employee Home and Requests hub; every public page): identical apart from live data (minutes,
+  "read at", the bell, the fixture's wall-clock shift times and counts). At 200% text, Home has no clipping and no
+  fixed figures at 390, 1024 or 1440.
+- Tests in `kit-text-rem.test.ts`. The whole `src/components` suite passes (3253).
+- **DS-1/DS-2, sign-in footer: not closed.** Measured at 1440 with 200% text: the links under the card
+  (`.q-auth__links`, "Forgot password?") are a separate item in the page grid's last row, and the legal footer
+  (`.q-auth__foot`) is absolute in that same row. At 200% they share it (Sign in: links 842–934, footer 830–922; Forgot:
+  links 1186–1278, footer 1210–1302). Room around the card can't separate them (tried and reverted, `56e76016` and
+  `252b7ff9`). Putting the footer in the flow changes the default layout, because the card is centred in the row above
+  it. It needs a layout decision: footer in flow with the centring offset compensated, or links inside the card. The
+  form's button labels (`sig-btn__idle`, 17px) and step labels stay fixed; they are in the auth package.
+- Still fixed on every desktop page: the header account name (15px, account menu trigger).
