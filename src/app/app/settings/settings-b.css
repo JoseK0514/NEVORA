@@ -218,3 +218,7 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:is(.pto, .cp) :is(.c-card > .c-setb-fields, .c-setb-fieldset > .c-setb-fields, .c-card .c-setb-cardnote, .c-card > .c-setb-sum, .c-setb-legend):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
   }
 }
+
+/* Final fixes S2 (G85, J5): a result's icon lines up with its first line (the title), not the middle of two lines. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-result .b-notice:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { align-items: flex-start !important; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-result .b-notice__tx:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-top: max(0px, calc((36px - 1.25rem) / 2)) !important; }
