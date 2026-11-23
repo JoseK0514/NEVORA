@@ -67,4 +67,9 @@ it('each Alerts state has one main action and never repeats its title or a butto
         // The live line is in place before any message, so a later failure is announced.
         expect(draw({ state: 'ready' })).toContain('role="status"');
     }
+    const confirmOff = renderToStaticMarkup(<NativeDeviceSettingsB {...actions} snapshot={{ state: 'enabled', generation: gen }} review={gen}/>);
+    expect(count(confirmOff, 'b-btn--teal')).toBe(0);
+    const confirmUse = renderToStaticMarkup(<NativeDeviceSettingsB {...actions} recover snapshot={{ state: 'revoked', generation: gen }}/>);
+    expect(count(confirmUse, 'b-btn--teal')).toBe(1);
+    expect(count(renderToStaticMarkup(<NativeDeviceSettingsView {...actions} recover snapshot={{ state: 'revoked', generation: gen }}/>), 'class="c-btn"')).toBe(1);
 });

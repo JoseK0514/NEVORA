@@ -34,7 +34,8 @@ function describe(p: Props) {
     const title = p.paused ? 'Alerts check paused' : s.state === 'enabled' ? 'Alerts are on' : s.state === 'denied' ? 'Permission is blocked' : s.state === 'revoked' ? 'Device setup changed' : s.state === 'error' ? 'Setup needs a check' : s.state === 'unavailable' ? 'Alerts are unavailable' : busy ? 'Checking this device…' : 'Alerts are off';
     const text = p.paused ? 'It continues when you come back to this screen.' : s.state === 'enabled' ? 'The NEVORA app is set up for this account. Alerts also depend on workplace and phone settings.' : s.state === 'denied' ? 'Allow NEVORA notifications in your phone settings, then come back to this screen.' : s.state === 'revoked' ? 'NEVORA and this app no longer match on this phone’s alert setup.' : s.state === 'error' ? 'NEVORA couldn’t confirm this phone’s alert setup.' : busy ? 'Confirming notification permission and this app’s enrollment.' : 'Get schedule changes, request answers and updates in the NEVORA app. Your phone may ask for notification permission.';
     const acts = !busy && !p.paused, enable = s.state === 'ready', off = !!s.generation && !review && !p.recover, setup = ['error', 'revoked'].includes(s.state) && !p.recover;
-    const main: 'enable' | 'setup' | 'refresh' = enable ? 'enable' : setup && s.state === 'revoked' ? 'setup' : 'refresh';
+    // While a confirmation is open, its own action is the main one; the state card's actions step down to secondaries.
+    const main: 'enable' | 'setup' | 'refresh' | 'none' = review || (p.recover && !busy && !p.paused) ? 'none' : enable ? 'enable' : setup && s.state === 'revoked' ? 'setup' : 'refresh';
     const message = s.message && !p.paused && s.message.trim() !== text.trim() ? s.message : null;
     return { s, busy, review, title, text, message, acts, enable, off, setup, main, recover: !!p.recover && !busy && !p.paused };
 }
