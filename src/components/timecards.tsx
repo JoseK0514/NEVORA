@@ -120,7 +120,9 @@ const isApproved=(item:TimecardItem)=>item.state==='APPROVED'||item.state==='FIN
 // OW-014: "Waiting" is the one word for something that needs a decision, so the chip reads "Correction waiting".
 /** On the narrowest phones (under 360px) a long status in a row with a wide hours figure would be cut off ("Missing
  * clock-…"), so it uses a shorter word there; every other width keeps the full one (the full one is what is read aloud). */
-const NARROW_STATUS:Readonly<Record<string,string>>={'Missing clock-out':'No clock-out'};
+// Gate check (Nov 23, 2026): at 320px "Correction waiting" still ran out of room beside a three-figure total ("113 h 19")
+// and read "Correction wai…"; it takes a short form there too (screen readers keep the full words).
+const NARROW_STATUS:Readonly<Record<string,string>>={'Missing clock-out':'No clock-out','Correction waiting':'Correction'};
 /** Phase 9 (spec 3.1): the live dot for a card whose person is on the clock right now; every other quiet state has none. */
 const LIVE_DOT:Readonly<Record<string,'green'>>={'Clocked in now':'green'};
 const reasonNames:Partial<Record<TimecardIssue,string>>={open_entry:'Missing clock-out',open_break:'Check breaks',pending_correction:'Correction waiting',overlapping_time:'Overlapping recorded time'};
