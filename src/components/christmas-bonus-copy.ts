@@ -39,7 +39,7 @@ const es: typeof en = {
   notFinalized: (days: string) => `${days} sin finalizar`, inactive: 'Inactivo',
   unfinalized: (people: number, days: string, dayCount: number) => `${people === 1 ? '1 persona tiene' : `${people} personas tienen`} tiempo registrado en ${days} que todavía no ${dayCount === 1 ? 'está' : 'están'} en una tarjeta de tiempo finalizada.`,
   insights: 'Informes', title: 'Horas para el bono de Navidad', allLocations: 'Todas las localidades', bonusYear: 'Año del bono', bonusYearIs: (label: string) => `Año del bono: ${label}`,
-  about: 'Sobre este informe', dates: 'Fechas de este año del bono', paymentWindow: 'Período de pago', exemptionDeadline: 'Plazo para radicar la exención',
+  about: 'Sobre este informe', dates: 'Fechas de este año del bono', paymentWindow: 'Período de pago', exemptionDeadline: 'Plazo de la exención',
   atAGlance: 'Resumen', people: 'Personas', finalizedOnly: 'Las horas cuentan solo tarjetas de tiempo finalizadas', openTimecards: 'Abrir Tarjetas de tiempo',
   peopleInYear: 'Personas en este año del bono', noHours: 'No hay horas registradas en NEVORA para este año del bono',
   note: 'Las horas son el tiempo registrado en tarjetas de tiempo finalizadas en este año del bono, con los descansos incluidos. Quienes ingresaron antes del 26 ene 2017 necesitan 700 horas; quienes ingresaron ese día o después necesitan 1,350. “Revisar descansos” quiere decir que llegan a la meta solo si sus descansos registrados cuentan como horas trabajadas. Los dueños no aparecen.',

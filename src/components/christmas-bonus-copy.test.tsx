@@ -25,7 +25,7 @@ const choices = [{endYear: 2026}, {endYear: 2025}] as never;
 
 it('renders the report in Spanish', () => {
   const spanish = es(<ChristmasBonusView report={report} choices={choices} />);
-  for (const words of ['Horas para el bono de Navidad', 'Todas las localidades', 'Solo informativo', 'Período de pago', '1–15 dic 2026', 'Plazo para radicar la exención', '15 nov 2026',
+  for (const words of ['Horas para el bono de Navidad', 'Todas las localidades', 'Solo informativo', 'Período de pago', '1–15 dic 2026', 'Plazo de la exención', '15 nov 2026',
     'Alcanzado', '800 h de 700 h', 'Ingresó el 6 may 2019', '1 día sin finalizar', '1 persona tiene tiempo registrado en 1 día que todavía no está en una tarjeta de tiempo finalizada.', 'Abrir Tarjetas de tiempo'])
     expect(spanish).toContain(words);
   for (const english of ['Christmas bonus hours', 'Reached', 'Hired', 'Payment window']) expect(spanish).not.toContain(english);
