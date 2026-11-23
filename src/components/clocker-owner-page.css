@@ -4,7 +4,3 @@
 :is(#c-root, html) .ck-frame .c-title h1, :is(#c-root, html) .ck-frame .c-nav__title { text-wrap: balance; }
 :is(#c-root, html) .ck-frame .ck-stack { display: grid; gap: 1rem; min-width: 0; }
 @media (min-width: 768px) { :is(#c-root, html) .ck-frame .ck-stack { gap: 1.25rem; } }
-/* A tablet's row opens its options: a 44px target at every width (it was 40px from 768px). */
-@layer nv-b {
-  html body .app-shell[data-nv-b] .ck-frame .ck-trow__open { min-height: 2.75rem !important; }
-}
