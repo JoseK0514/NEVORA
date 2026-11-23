@@ -697,10 +697,11 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   /* Narrow phones (320–359px): a track of three or more items without a sliding thumb (Insights' periods, Things to do's
    * filters, Pick up and swap) gives each item its label's width plus an equal share of what is left, so a long label isn't
    * clipped or pressed to its thumb's edge while a short one has room to spare (equal columns clipped "This week" by 4px at
-   * 320). A track whose thumb slides (data-slide) keeps its equal columns, which the thumb's position is computed from. */
+   * 320). A track whose thumb slides (data-slide) keeps its equal columns, which the thumb's position is computed from.
+   * Target size (Nov 23, 2026): no item narrower than 44px (Things to do's "All" was 41px at 320). */
   @media (max-width: 359px) {
     html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) { grid-template-columns: none !important; grid-auto-flow: column !important; grid-auto-columns: auto !important; }
-    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 0 !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
+    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 44px !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
   }
   /* Team's filters (on white, in the people card): the same track as the other controls on white, scrolling on a phone. */
   html body .app-shell[data-nv-b] .b-filters {
