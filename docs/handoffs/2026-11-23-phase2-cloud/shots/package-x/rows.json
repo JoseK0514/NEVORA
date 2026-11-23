@@ -43,10 +43,6 @@
     "after": "F3s-add-O-390t200.webp"
    },
    {
-    "label": "Tablet",
-    "after": "F3s-add-O-768.webp"
-   },
-   {
     "label": "Desktop",
     "after": "F3s-add-O-1440.webp",
     "desk": true
@@ -71,10 +67,6 @@
    {
     "label": "Phone, 200% text",
     "after": "F3s-review-O-390t200.webp"
-   },
-   {
-    "label": "Tablet",
-    "after": "F3s-review-O-768.webp"
    },
    {
     "label": "Desktop",

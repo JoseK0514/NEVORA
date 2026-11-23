@@ -10,6 +10,7 @@ Branch `claude-codex-collab-nevora-settings-final`, after merging `origin/claude
 | `5781ae07` | I1-Ml: the place is named by its short name ("Condado", was "Northside Bakery — Condado"), from the location list the page already reads (server read unchanged); an empty Phone or Email reads "Not added", the Owner's word (was "None"). |
 | `dbb1c39c` | F3: a row that still needs a fix shows a 10-digit phone formatted (787-555-0144), like checked rows (display only); the sideways-scrolling example is a named region the keyboard can reach (axe scrollable-region-focusable). |
 | `bed5d1ea` | F3: the review rows are stacked row cards at every width; in the ~500px sheet card at 1440 the six-column table broke names, phones and emails mid-word. |
+| `6c180d5e` | F3 second pass (lead): step 2 says each fact once ("2 ready · 2 need a fix", then "Fix or remove them, then import."); Manager access in one sentence ("This applies only to Manager rows and doesn't include payroll access, which is set separately."); the Manager access choice is marked required, not red, before a choice (the Manager row's line says what is missing; Import waits); step 1's intro paragraph removed (it repeated the list field's help and the step names). Spanish follows. Whole `src/components` suite: 278 files, 3,224 tests pass. |
 | `0cf6a6b7` | I1 (Manager): "What you can approve" values break only between words ("Not granted" broke as "grante/d" at 200% text). |
 
 Checks: `tsc --noEmit` clean; oxlint clean on the changed paths; tests pass in `src/app/app/employees/import`,
@@ -35,7 +36,7 @@ Words before/after: "Northside Bakery — Condado" → "Condado"; "None" → "No
 
 ## Captures
 `shots/package-x/`: `<screen>-<O|M|Ml>-<390|390t200|768|1440>.webp`, `index.html` (side by side) and `rows.json`.
-Production build, viewport-height shots stitched. F3 and I1-O at `bed5d1ea`; I1-M and I1-Ml again at `0cf6a6b7` (after the word-break fix).
+Production build, viewport-height shots stitched. F3 at `bed5d1ea`, then F3 Owner steps 1 and 2 again at `6c180d5e` (390, 390 with 200% text, 1440; their earlier 768 shots were dropped as out of date); I1-O at `bed5d1ea`; I1-M and I1-Ml again at `0cf6a6b7` (after the word-break fix).
 axe: 0 violations on every capture. No page overflow. The measurement flags left are by design: the review table's header
 row is for screen readers only, the example table scrolls sideways, the phone-only band link is hidden from 768, and the
 profile's hidden "·" separators.
@@ -54,7 +55,5 @@ Proposed ledger row:
 | G-X1 | F3 Import a staff list (Owner) | The live import (check, import, the server's row errors) can't be captured on the desk/scoped capture build: the page and `/api/onboarding/roster` need workspace routing (isolated mode with a control database). The Owner steps in `shots/package-x/` are rendered from the component, not the live import. | Extend the step 4 isolated-workspace lifecycle test (`step4-production-screens.ts`) for 390, 768, 1440 and 200% text. |
 
 - Live Owner import captures need the isolated-workspace fixture (see above).
-- End sweep (proposed rows): I1 detail values (555-0126, Not added, Puerto Rico, Condado) are fixed px and don't grow at
-  200% text, while the labels do. F3 step 1 opens with a paragraph on how the import works ("Paste rows from a
-  spreadsheet or choose a CSV file… Nothing is saved until you check the list and choose Import."); kept as onboarding
-  help, flag for Jose if it reads as explanation.
+- End sweep (proposed row): I1 detail values (555-0126, Not added, Puerto Rico, Condado) are fixed px and don't grow at
+  200% text, while the labels do.
