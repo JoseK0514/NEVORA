@@ -52,7 +52,7 @@ export function ManagerNotifications({authority, notice}: {authority: string; /*
   const groups = GROUPS.map(name => ({name, rows: collapseNotifications(sorted.filter(item => notificationGroup(item.at, zone ?? 'UTC', now) === name))})).filter(group => group.rows.length);
   // A relative time never breaks inside itself on a narrow phone ("5 h ago", not "5 / h ago").
   const ago = (at: string) => relativeTimeFor(lang, at, zone).replace(/(\d+) (h|min|d|days?|hours?|minutes?)\b/g, '$1 $2');
-  const lead = (item: EmployeeNotificationItem) => { const Icon = notificationIcons[notificationPresentation(item.label, item.eventType).icon]; return <BIcon tone={item.actionState === 'required' ? 'amber' : 'grey'}><Icon weight="bold" /></BIcon>; };
+  const lead = (item: EmployeeNotificationItem) => { const Icon = notificationIcons[notificationPresentation(item.label, item.eventType, lang).icon]; return <BIcon tone={item.actionState === 'required' ? 'amber' : 'grey'}><Icon weight="bold" /></BIcon>; };
   const dot = (on: boolean) => on ? <span className="b-row__end mb-when"><i className="mb-dot" aria-hidden="true" /></span> : null;
   const row = (item: EmployeeNotificationItem, held = false) => {
     const review = item.reviewState ?? 'unavailable', text = rowText(item, lang), facts = held ? rowFacts(item, lang) : [];
@@ -84,7 +84,7 @@ export function ManagerNotifications({authority, notice}: {authority: string; /*
         <ul className="b-list" aria-label={lang === 'es' ? t.groupList(t.groups[group.name] ?? group.name) : group.name + ' notifications'}>{group.rows.map(({item, count, unreadIds, items}) => {
           if (count === 1) return row(item);
           // A fold (repeats of one summary) says how many and the latest; opening it lists each one under it.
-          const open = expanded.includes(item.id), listId = `notif-fold-${item.id}`, text = notificationTitle(item);
+          const open = expanded.includes(item.id), listId = `notif-fold-${item.id}`, text = notificationTitle(item, lang);
           return <Fragment key={item.id}>
             <li className="b-li"><button type="button" className="b-row b-row--link" aria-expanded={open} aria-controls={open ? listId : undefined}
               onClick={() => setExpanded(ids => ids.includes(item.id) ? ids.filter(id => id !== item.id) : [...ids, item.id])}>

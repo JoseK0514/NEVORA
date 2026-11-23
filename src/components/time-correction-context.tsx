@@ -54,7 +54,7 @@ export function CorrectionComparison({recordedStartAt,recordedEndAt,context,zone
         <div className="correction-comparison__ask"><small>{t.askedFor}{change?<span className="correction-comparison__chg">{change}</span>:null}</small>
           <strong>{base&&moved(base.start,proposedStartAt)?<b>{startTime}</b>:startTime} – {base&&moved(base.end,proposedEndAt)?<b>{endTime}</b>:endTime}</strong></div>
       </div>
-      {note===null?null:<p className="correction-context-zone">{[t.timesIn(timeZoneLabel(zone)),note].filter(Boolean).join('. ')}{note?'.':''}</p>}
+      {note===null?null:<p className="correction-context-zone">{[t.timesIn(timeZoneLabel(zone,lang)),note].filter(Boolean).join('. ')}{note?'.':''}</p>}
     </>;
   }
   return <>
@@ -65,7 +65,7 @@ export function CorrectionComparison({recordedStartAt,recordedEndAt,context,zone
       </div>
       {proposedStartAt&&proposedEndAt?<div><small>{proposedLabel??t.proposed(context.state==='none')}</small><strong>{interval(proposedStartAt,proposedEndAt)}</strong></div>:null}
     </div>
-    <p className="correction-context-zone">{t.timesIn(timeZoneLabel(zone))}</p>
+    <p className="correction-context-zone">{t.timesIn(timeZoneLabel(zone,lang))}</p>
   </>;
 }
 

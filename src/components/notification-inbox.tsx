@@ -57,12 +57,12 @@ function summaryCount(item:EmployeeNotificationItem){return SUMMARY_EVENTS.inclu
 const summaryWords=(n:number,lang:PortalLang='en')=>NOTIFICATION_COPY[lang].summaryWords(n);
 export function rowText(item:EmployeeNotificationItem,lang:PortalLang='en'):{title:string;detail:string|null}{
  const n=summaryCount(item);
- return n===null?notificationTitle(item):{title:summaryWords(n,lang),detail:lang==='es'?NOTIFICATION_COPY.es.summaryScope:SUMMARY_SCOPE};
+ return n===null?notificationTitle(item,lang):{title:summaryWords(n,lang),detail:lang==='es'?NOTIFICATION_COPY.es.summaryScope:SUMMARY_SCOPE};
 }
 /** A held row's facts, each whole (premium pass: drawn with BSegs, so no line starts or ends on the middle dot). */
 export function rowFacts(item:EmployeeNotificationItem,lang:PortalLang='en'){
  const n=summaryCount(item);
- return [notificationName(item),notificationOutcomeNote(item),n===null?notificationCountNote(item):summaryWords(n,lang)].filter((fact):fact is string=>!!fact);
+ return [notificationName(item),notificationOutcomeNote(item,lang),n===null?notificationCountNote(item,lang):summaryWords(n,lang)].filter((fact):fact is string=>!!fact);
 }
 
 export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>;

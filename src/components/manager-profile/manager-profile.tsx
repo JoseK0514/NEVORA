@@ -68,7 +68,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         name: `${proof.employee.firstName} ${proof.employee.lastName}`.trim(),
         owner,
         company: workspace.name,
-        timeZone: timeZoneLabel(workspace.timeZone),
+        timeZone: timeZoneLabel(workspace.timeZone, lang),
         payHref: offersPay ? '/app/my-pay' : null,
         // Review B5 (NV-061): in the phone app the row opens the app's own alert settings, so it follows the app's
         // registration config (as the shell's device popover does), not the browser's web-push switch.

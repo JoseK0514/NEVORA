@@ -22,7 +22,7 @@ const range = (shift: ExchangeShift) => `${keepWhole(formatTime(shift.startTime)
 export function shiftPlace(shift: ExchangeShift, zone?: string, lang: PortalLang = "en") {
   const t = shiftCopy(lang).place;
   const position = shift.positionName ?? (shift.positionId ? t.position(shift.positionId) : null);
-  return [position, shift.locationName, shift.isDesignatedLead ? t.shiftLead : null, shift.timeZone && zone && shift.timeZone !== zone ? t.timesIn(timeZoneLabel(shift.timeZone)) : null].filter(Boolean).join(" · ");
+  return [position, shift.locationName, shift.isDesignatedLead ? t.shiftLead : null, shift.timeZone && zone && shift.timeZone !== zone ? t.timesIn(timeZoneLabel(shift.timeZone, lang)) : null].filter(Boolean).join(" · ");
 }
 
 export function ShiftDay({ shift }: { shift: ExchangeShift }) {

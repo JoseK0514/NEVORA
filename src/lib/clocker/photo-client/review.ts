@@ -34,6 +34,11 @@ export function verifyPhotoRemoval(value:unknown,expected:PhotoReference):PhotoR
   !(value.removedAt===null||stamp(value.removedAt))||value.state!=='unavailable'&&value.removedAt===null)throw Error('Photo removal could not be confirmed. Check the original photo record.');
  return {reference,state:value.state as PhotoRemovalResult['state'],removedAt:value.removedAt as string|null};
 }
-export function photoReviewStateLabel(state:PhotoReviewRecord['state']):string{
- return {stored:'Photo available',missing:'Photo exception recorded',pending:'Photo pending',unknown:'Photo result unconfirmed',expired:'Photo expired',removed:'Photo removed',not_required:'Photo not required'}[state];
+/** Signed-in Spanish (es-rest R2): the same states in Puerto Rico Spanish (Photo review's own table, photo-owner-copy.ts, says the same). */
+export const PHOTO_STATE_LABELS:Record<'en'|'es',Record<PhotoReviewRecord['state'],string>>={
+ en:{stored:'Photo available',missing:'Photo exception recorded',pending:'Photo pending',unknown:'Photo result unconfirmed',expired:'Photo expired',removed:'Photo removed',not_required:'Photo not required'},
+ es:{stored:'Foto disponible',missing:'Excepción de foto registrada',pending:'Foto pendiente',unknown:'Resultado de la foto sin confirmar',expired:'Foto vencida',removed:'Foto eliminada',not_required:'Foto no requerida'},
+};
+export function photoReviewStateLabel(state:PhotoReviewRecord['state'],lang:'en'|'es'='en'):string{
+ return PHOTO_STATE_LABELS[lang][state];
 }
