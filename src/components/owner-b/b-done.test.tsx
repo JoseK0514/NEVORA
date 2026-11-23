@@ -158,8 +158,8 @@ describe("words (English and Spanish)", () => {
       <BState key="e" kind="done" title={copy.batchAllApproved(3)} line={copy.batchLine} />,
       <BState key="f" kind="paused" title={copy.changeClosed} line={copy.changeClosedLine} action={{ label: copy.viewRequest, href: "/a" }} />,
     ].map(node => text(renderToStaticMarkup(node))).join(" ");
-    expect(html).toContain("Solicitud enviada Su gerente decide.");
-    expect(html).toContain("3 registros de horas aprobados");
+    expect(html).toContain("Solicitud enviada Tu gerente decide.");
+    expect(html).toContain("3 tarjetas de tiempo aprobadas");
     expect(html).not.toMatch(/\b(Request|View|Your|manager|Send|sent|Checking)\b/);
   });
 });

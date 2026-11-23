@@ -13,6 +13,7 @@ import {OwnerOnlyNotice} from '@/components/owner-only-notice';
 import {RosterImport} from '@/components/roster-import/roster-import';
 import {rosterImportCopy} from '@/components/roster-import/copy';
 import {headcountsOf} from '@/components/roster-import/contract';
+import {readPortalLanguage} from '@/lib/activation/language.server';
 
 export const metadata = { title: "Import a staff list" };
 
@@ -29,7 +30,7 @@ function rosterImportAvailable() {
  * the routes are. English for now, like every signed-in page; the Spanish copy is in the same module. */
 export default async function RosterImportPage() {
   const session = await requireSession();
-  const copy = rosterImportCopy.en;
+  const copy = rosterImportCopy[await requireSessionMutationProof().then(proof => readPortalLanguage(proof)).then(read => read.language, () => 'en' as const)];
   if (session.role !== 'OWNER') {
     const owners = await listEmployees().then(list => list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim())).catch(() => []);
     // A Manager can still add people one at a time; that page is theirs.
