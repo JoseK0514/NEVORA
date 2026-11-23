@@ -147,7 +147,7 @@
 
     /* ---------- chips, buttons, fields ---------- */
     /* Phase 9 (spec 1.1): a pill is the kit's one 22px chip (CorpPill draws .b-chip); this keeps it so over older sheets. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .c-pill:not(.b-status) { height: var(--b-chip-h) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-count) !important; line-height: 16px !important; font-weight: 600 !important; border: 0 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .c-pill:not(.b-status) { height: max(var(--b-chip-h), 1.375rem) !important; border-radius: var(--b-radius-pill) !important; font-size: 0.75rem !important; line-height: 1rem !important; font-weight: 600 !important; border: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-btn, .q-btn, .wc-btn, .button):not(header.c-title *) { min-height: 40px !important; border-radius: var(--b-radius-pill) !important; font-weight: 600 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-btn:not(.c-btn--secondary, .c-btn--neutral, .c-btn--danger, .c-btn--link), .q-btn:not(.q-btn--sec, .q-btn--quiet, .q-btn--danger), .wc-btn:not(.wc-btn--sec)):not(:disabled, [aria-disabled="true"]):not(header.c-title *) { box-shadow: var(--b-elev-glow) !important; }
     /* Round 5 (Nov 7) D6: Approve (.q-bs--go) keeps its teal; only plain .q-bs is the grey secondary. */

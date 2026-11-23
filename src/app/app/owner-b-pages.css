@@ -49,7 +49,7 @@
     html body .app-shell[data-nv-b] :is(.c-nav--phone .c-nav__right, .q-nav__r, .q-nav > :last-child:not(.q-nav__t):not(.q-nav__l)) { grid-column: 2 !important; grid-row: 1 !important; }
     html body .app-shell[data-nv-b] :is(.c-nav--phone .c-nav__title, .q-nav__t) {
       grid-area: title !important; justify-self: start !important; margin: 6px 0 0 !important; padding: 0 !important; max-width: none !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; text-align: left !important;
-      font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important;
+      font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important;
     }
     html body .app-shell[data-nv-b] :is(.c-nav__title, .q-nav__t):empty { display: none !important; }
     html body .app-shell[data-nv-b] :is(.c-nav--phone .c-nav__right, .q-nav > :last-child:not(.q-nav__t):not(.q-nav__l)) { grid-area: right !important; justify-self: end !important; }
@@ -69,7 +69,7 @@
       background: #08504C !important; box-shadow: 0 -14px 0 #08504C !important;
     }
     html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd { padding-top: 0 !important; }
-    html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd h1 { font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; margin: 0 !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd h1 { font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; margin: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd p { margin: var(--b-space-2) 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2) !important; }
     html body .app-shell[data-nv-b] .c-page > .c-nav--phone ~ .c-phone-sub { display: block !important; font-size: 14px !important; line-height: 19px !important; }
     /* Segmented controls on the hero are frosted glass with a white thumb. */
@@ -128,7 +128,7 @@
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-row__detail, .q-rt span, .q-rt small) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
 
     /* Pills become chips; buttons become the mock's pills. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-pill:not(.b-status) { height: var(--b-chip-h) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-count) !important; line-height: 16px !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-pill:not(.b-status) { height: max(var(--b-chip-h), 1.375rem) !important; border-radius: var(--b-radius-pill) !important; font-size: 0.75rem !important; line-height: 1rem !important; font-weight: 600 !important; }
     /* Round 5 (Nov 7): a primary button is a pill whether or not it can be pressed (disabled ones were 5–8px rectangles);
      * only the soft shadow waits for it to be enabled. */
     /* Nov 14 inspection (SY-015): the red secondary is a pill too (it kept the corporate 8px corners); b-foundation.css
