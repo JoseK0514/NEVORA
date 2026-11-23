@@ -109,7 +109,7 @@
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) :is(.q-nav, .q-hd) :is(h1, h2, p, a, span, b, svg) { color: inherit !important; }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-hd { padding-bottom: 0 !important; margin-bottom: 22px !important; }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-hd p { color: var(--b-grey) !important; }
-  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__hd > p { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: auto !important; min-height: 32px !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-weight: 600 !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__hd > p { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: max(32px, calc(1.5em + 10px)) !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-weight: 600 !important; }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-nav :is(a, span, svg) { color: var(--b-teal) !important; }
   /* The top bar: the wordmark is the panel's; Español is a pill at the top right of the page. */
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__top { position: static !important; padding: 0 !important; height: 0 !important; margin: 0 !important; }
@@ -212,7 +212,7 @@
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd h1 * { color: inherit !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd p { margin-top: 6px !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; }
   /* Sign in: the workspace is a grey chip under the title, as on the desktop card. */
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-auth__hd > p { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: auto !important; min-height: 32px !important; margin: var(--b-space-8) auto 0 !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important;
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-auth__hd > p { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: max(32px, calc(1.5em + 10px)) !important; margin: var(--b-space-8) auto 0 !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important;
     background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-size: 0.875rem !important; font-weight: 600 !important; }
   /* The passkey button joins the card's foot. */
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card > .q-passkey { margin: var(--b-space-12) 0 0 !important; padding: 0 !important; background: none !important; box-shadow: none !important; clip-path: none !important; }
@@ -755,7 +755,7 @@
  * text on glass and was invisible on white. */
 @media (min-width: 768px) and (max-width: 1023px) {
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd:not(.q-auth__hd):not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e) { padding-left: 0 !important; padding-right: 0 !important; }
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd > .ar-ws > p:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e) { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: auto !important; min-height: 32px !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-size: 0.875rem !important; font-weight: 600 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd > .ar-ws > p:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e) { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: max(32px, calc(1.5em + 10px)) !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-size: 0.875rem !important; font-weight: 600 !important; }
 }
 
 /* ---------- Premium pass FD (Nov 18, 2026): final verification of the signed-out pages ----------
@@ -962,7 +962,6 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) .q-hd p { font-size: 0.9375rem; line-height: 1.25rem; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) .q-rt b { font-size: 1.0625rem; line-height: 1.375rem; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) :is(.q-rt i, .q-rt p) { font-size: 0.9375rem; line-height: 1.25rem; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) .q-btn { font-size: 1.0625rem; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) .q-auth__lang { font-size: 0.9375rem; line-height: 1.25rem; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) .ma-text { font-size: 1.0625rem; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__lang:not(#ab-rem) { min-height: 36px; height: auto !important; }

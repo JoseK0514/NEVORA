@@ -9,8 +9,8 @@
 :is(#q-root, html) .so-foot__dot { padding: 0 6px; }
 :is(#q-root, html) .so-foot a { padding-block: 13px; color: var(--b-ink2, #3F464B); font-weight: 600; text-decoration: none; }
 /* Public batch (Nov 23, 2026): each link is its own 44 × 44 minimum box (Terms was 40px wide, every link 43px tall from
- * 768px), label centred; the drawn text is unchanged. */
-:is(#q-root, html) .so-foot a { display: inline-block; min-width: 44px; min-height: 44px; line-height: 1.125rem; text-align: center; vertical-align: middle; }
+ * 768px), label centred; the -13px block margin keeps the line where it was. */
+:is(#q-root, html) .so-foot a { display: inline-block; min-width: 44px; line-height: 1.125rem; margin-block: -13px; text-align: center; }
 :is(#q-root, html) .so-foot a:is(:hover, :focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
 :is(#q-root, html) .so-foot [aria-current="page"] { color: var(--b-ink, #111517); font-weight: 600; }
 @media (max-width: 767px) {
