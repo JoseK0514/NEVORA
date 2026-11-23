@@ -1,0 +1,5860 @@
+{
+ "week": "2026-11-23",
+ "setupLog": [
+  "people ok",
+  "eligibility ok",
+  "draft week ok",
+  "shifts ok"
+ ],
+ "results": [
+  {
+   "route": "/app",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app",
+   "networkidle": "timeout",
+   "shot": "shots/home-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"SPAN\" \u00d7 \"Shifts by day\" (135,1248 174x90)"
+    ],
+    "small": [
+     "summary \"What this measures\" 174x36"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 25,
+    "title": "Home \u00b7 NEVORA",
+    "h1": "2\u00a0things need you"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/inbox",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/inbox",
+   "shot": "shots/inbox-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"All\" 171x36",
+     "button \"Shifts 2\" 171x36"
+    ],
+    "smallCount": 2,
+    "inlineSmallCount": 0,
+    "controls": 16,
+    "title": "Things to do \u00b7 NEVORA",
+    "h1": "Things to do"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/notifications",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/notifications",
+   "networkidle": "timeout",
+   "shot": "shots/notifications-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Notifications \u00b7 NEVORA",
+    "h1": "Notifications"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/more",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/more",
+   "shot": "shots/more-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 14,
+    "title": "More \u00b7 NEVORA",
+    "h1": "More"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/help",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/help",
+   "shot": "shots/help-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Someone on my team can\u2019t sign in\" (33,841 324x133)",
+     "\"P\" \u00d7 \"P\" (33,841 324x133)",
+     "\"P\" \u00d7 \"A\" (33,841 324x133)",
+     "\"P\" \u00d7 \"Report a problem\" (33,841 324x133)",
+     "\"A\" \u00d7 \"Someone on my team can\u2019t sign in\" (65,830 132x45)",
+     "\"P\" \u00d7 \"Report a problem\" (33,893 324x89)",
+     "\"P\" \u00d7 \"P\" (33,893 324x89)",
+     "\"A\" \u00d7 \"Report a problem\" (76,882 158x45)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Help \u00b7 NEVORA",
+    "h1": "Help"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/schedule",
+   "shot": "shots/schedule-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"More schedule actions\" 40x40",
+     "summary \"What this measures\" 36x36"
+    ],
+    "smallCount": 2,
+    "inlineSmallCount": 0,
+    "controls": 30,
+    "title": "Schedule \u00b7 NEVORA",
+    "h1": "Schedule"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule?week=2026-11-23",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/schedule?week=2026-11-23",
+   "shot": "shots/schedule-week-2026-11-23-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"More schedule actions\" 40x40",
+     "summary \"What this measures\" 36x36"
+    ],
+    "smallCount": 2,
+    "inlineSmallCount": 0,
+    "controls": 30,
+    "title": "Schedule \u00b7 NEVORA",
+    "h1": "Schedule"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/new",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/schedule/new",
+   "shot": "shots/schedule-new-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"Save\" 68x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 10,
+    "title": "Add shift \u00b7 NEVORA",
+    "h1": "Add shift"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/publish",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/schedule/publish",
+   "shot": "shots/schedule-publish-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Main Office\" (31,227 328x36)",
+     "\"P\" \u00d7 \"2 shifts\" (31,227 328x36)",
+     "\"P\" \u00d7 \"Draft\" (31,227 328x36)",
+     "\"mode\" \u00d7 \"West Office\" (31,273 160x44)",
+     "\"mode\" \u00d7 \"Nothing scheduled\" (31,273 160x44)",
+     "\"mode\" \u00d7 \"West Office\" (199,273 160x44)",
+     "\"mode\" \u00d7 \"Not started\" (199,273 160x44)",
+     "\"SPAN\" \u00d7 \"Publish Main Office\" (171,369 36x522)"
+    ],
+    "small": [
+     "summary \"What this measures\" 36x36"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 10,
+    "title": "Build and publish \u00b7 NEVORA",
+    "h1": "Build and publish"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/settings",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/schedule/settings",
+   "shot": "shots/schedule-settings-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Staffing per location\" (33,185 324x40)",
+     "\"P\" \u00d7 \"1 per shift\" (33,185 324x40)",
+     "\"BUTTON\" \u00d7 \"SPAN\" (33,289 112x44)",
+     "\"BUTTON\" \u00d7 \"Shifts that repeat every week\" (33,289 112x44)",
+     "\"SPAN\" \u00d7 \"SPAN\" (33,389 324x22)",
+     "\"SPAN\" \u00d7 \"The days Schedule shows together\" (33,389 324x22)",
+     "\"SPAN\" \u00d7 \"SPAN\" (33,413 324x18)",
+     "\"SPAN\" \u00d7 \"SPAN\" (33,413 324x18)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 121,
+    "title": "Scheduling rules \u00b7 NEVORA",
+    "h1": "Scheduling rules"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/templates",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/schedule/templates",
+   "shot": "shots/schedule-templates-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 8,
+    "title": "Week templates \u00b7 NEVORA",
+    "h1": "Week templates"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/coverage",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/schedule/coverage",
+   "shot": "shots/schedule-coverage-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"More schedule actions\" 40x40",
+     "summary \"What this measures\" 36x36"
+    ],
+    "smallCount": 2,
+    "inlineSmallCount": 0,
+    "controls": 30,
+    "title": "Schedule \u00b7 NEVORA",
+    "h1": "Schedule"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/edit?shiftId=sweep-shift-1",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/schedule/edit?shiftId=sweep-shift-1",
+   "shot": "shots/schedule-edit-shiftId-sweep-shift-1-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"Save\" 68x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 11,
+    "title": "Edit shift \u00b7 NEVORA",
+    "h1": "Edit shift"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/availability",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/availability",
+   "shot": "shots/availability-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 1,
+    "controls": 13,
+    "title": "Availability \u00b7 NEVORA",
+    "h1": "Availability"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/availability/agreement",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/availability/agreement",
+   "shot": "shots/availability-agreement-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 1,
+    "controls": 13,
+    "title": "Availability \u00b7 NEVORA",
+    "h1": "Availability"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/exchange",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/exchange",
+   "shot": "shots/exchange-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Waiting\" 114x36",
+     "a \"Open cover\" 114x36",
+     "a \"Done\" 114x36"
+    ],
+    "smallCount": 3,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Shift requests \u00b7 NEVORA",
+    "h1": "Shift requests"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/exchange/open-shifts",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/exchange/open-shifts",
+   "shot": "shots/exchange-open-shifts-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 12,
+    "title": "Posted open shifts \u00b7 NEVORA",
+    "h1": "Posted open shifts"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/requests",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "shot": "shots/requests-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Waiting\" 113x36",
+     "a \"Approved\" 113x36",
+     "a \"Declined\" 113x36"
+    ],
+    "smallCount": 3,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Time off \u00b7 NEVORA",
+    "h1": "Time off requests"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/requests/hub",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/requests/hub",
+   "shot": "shots/requests-hub-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Requests \u00b7 NEVORA",
+    "h1": "Requests"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/timecards",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/timecards",
+   "shot": "shots/timecards-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [
+     "\"5 timecards this week.\" (0,-10 28x22)"
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "small": [
+     "button \"This week\" 114x36",
+     "button \"Last week\" 114x36",
+     "button \"Earlier weeks\" 114x36"
+    ],
+    "smallCount": 3,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Timecards \u00b7 NEVORA",
+    "h1": "Timecards"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/timecards/corrections",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/timecards/corrections",
+   "shot": "shots/timecards-corrections-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Time corrections \u00b7 NEVORA",
+    "h1": "Time corrections"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/timecards/corrections/new/SWEEP-A",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/timecards/corrections/new/SWEEP-A",
+   "shot": "shots/timecards-corrections-new-SWEEP-A-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 12,
+    "title": "Request time correction \u00b7 NEVORA",
+    "h1": "Request time correction"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/payroll",
+   "shot": "shots/payroll-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 13,
+    "title": "Payroll \u00b7 NEVORA",
+    "h1": "Payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/prepare",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/payroll/prepare",
+   "shot": "shots/payroll-prepare-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Prepare payroll \u00b7 NEVORA",
+    "h1": "Prepare payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/review",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/payroll/review",
+   "shot": "shots/payroll-review-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Review payroll \u00b7 NEVORA",
+    "h1": "Review payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/people",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/payroll/people",
+   "shot": "shots/payroll-people-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Payroll people \u00b7 NEVORA",
+    "h1": "People"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/history",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/payroll/history",
+   "shot": "shots/payroll-history-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 6,
+    "title": "Payroll history \u00b7 NEVORA",
+    "h1": "Payroll history"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/import",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/payroll/import",
+   "shot": "shots/payroll-import-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 2,
+    "title": "Import pay \u00b7 NEVORA",
+    "h1": "Import pay"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/fix",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/payroll/fix",
+   "shot": "shots/payroll-fix-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Fix payroll \u00b7 NEVORA",
+    "h1": "Fix before payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll-export",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/payroll-export",
+   "shot": "shots/payroll-export-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"Select all finalized timecards\" \u00d7 \"Other dates\" (33,675 147x44)",
+     "\"Select all finalized timecards\" \u00d7 \"Up to 31 days\" (33,675 147x44)",
+     "\"Clear employee selection\" \u00d7 \"Other dates\" (200,675 54x44)",
+     "\"SPAN\" \u00d7 \"LABEL\" (65,729 257x22)",
+     "\"SPAN\" \u00d7 \"LABEL\" (65,729 257x22)",
+     "\"SPAN\" \u00d7 \"LABEL\" (65,751 32x18)",
+     "\"SPAN\" \u00d7 \"File format\" (65,751 32x18)",
+     "\"SPAN\" \u00d7 \"LABEL\" (334,739 23x20)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 63,
+    "title": "Time exports \u00b7 NEVORA",
+    "h1": "Time exports"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll-export/paid-time",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/payroll-export/paid-time",
+   "shot": "shots/payroll-export-paid-time-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 2,
+    "title": "Paid time export \u00b7 NEVORA",
+    "h1": "Paid time export"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/employees",
+   "shot": "shots/employees-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"All\" 156x36",
+     "button \"On the clock 0\" 156x36",
+     "button \"Not clocked in 0\" 156x36",
+     "button \"Off today 5\" 156x36"
+    ],
+    "smallCount": 4,
+    "inlineSmallCount": 0,
+    "controls": 22,
+    "title": "Team \u00b7 NEVORA",
+    "h1": "Team"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/new",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/employees/new",
+   "shot": "shots/employees-new-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"Next\" 65x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 11,
+    "title": "Add employee \u00b7 NEVORA",
+    "h1": "Add employee"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/import",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/employees/import",
+   "shot": "shots/employees-import-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Import a staff list \u00b7 NEVORA",
+    "h1": "Import a staff list"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A",
+   "shot": "shots/employees-SWEEP-A-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Edit\" 55x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 16,
+    "title": "Team member \u00b7 NEVORA",
+    "h1": "Maria Fictional-Lopez"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/pay",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/pay",
+   "shot": "shots/employees-SWEEP-A-pay-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Pay rate \u00b7 NEVORA",
+    "h1": "Pay rate"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/restrictions",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/restrictions",
+   "shot": "shots/employees-SWEEP-A-restrictions-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "When they can be scheduled \u00b7 NEVORA",
+    "h1": "When they can be scheduled"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/time-off",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/time-off",
+   "shot": "shots/employees-SWEEP-A-time-off-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Open time off policies\" 168x32"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Time off balance \u00b7 NEVORA",
+    "h1": "Time off balance"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/clocker-pin",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/clocker-pin",
+   "shot": "shots/employees-SWEEP-A-clocker-pin-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Clocker PIN \u00b7 NEVORA",
+    "h1": "Clocker PIN"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/reports",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/reports",
+   "shot": "shots/reports-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"LI\" \u00d7 \"Yearly reports\" (47,669 312x72)",
+     "\"LI\" \u00d7 \"Christmas bonus hours\" (47,747 312x18)",
+     "\"LI\" \u00d7 \"Who reached the Puerto Rico hours threshold\" (47,771 312x36)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 12,
+    "title": "Insights \u00b7 NEVORA",
+    "h1": "Insights"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/reports/christmas-bonus",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/reports/christmas-bonus",
+   "shot": "shots/reports-christmas-bonus-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Christmas bonus hours \u00b7 NEVORA",
+    "h1": "Christmas bonus hours"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/ai-manager",
+   "shot": "shots/ai-manager-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 36,
+    "title": "Rondo AI \u00b7 NEVORA",
+    "h1": "Rondo AI"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager/weekly",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/ai-manager/weekly",
+   "shot": "shots/ai-manager-weekly-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 13,
+    "title": "Weekly plan \u00b7 NEVORA",
+    "h1": "Weekly plan"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager/knowledge",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/ai-manager/knowledge",
+   "shot": "shots/ai-manager-knowledge-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 8,
+    "title": "Company knowledge \u00b7 NEVORA",
+    "h1": "Company knowledge"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager/business",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/ai-manager/business",
+   "shot": "shots/ai-manager-business-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Business records \u00b7 NEVORA",
+    "h1": "Business records"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/updates",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/updates",
+   "shot": "shots/updates-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Updates \u00b7 NEVORA",
+    "h1": "Updates"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/updates/compose",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/updates/compose",
+   "shot": "shots/updates-compose-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 13,
+    "title": "Write an update \u00b7 NEVORA",
+    "h1": "New update"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings",
+   "shot": "shots/settings-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Settings \u00b7 NEVORA",
+    "h1": "Settings"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/workspace",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/workspace",
+   "shot": "shots/settings-workspace-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Company profile \u00b7 NEVORA",
+    "h1": "Company profile"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/branding",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/branding",
+   "shot": "shots/settings-branding-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "input \"INPUT\" 1x48",
+     "button \"Save\" 1x44"
+    ],
+    "smallCount": 2,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Branding \u00b7 NEVORA",
+    "h1": "Branding"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/features",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/features",
+   "shot": "shots/settings-features-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 11,
+    "title": "Features \u00b7 NEVORA",
+    "h1": "Features and team terms"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/locations",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/locations",
+   "shot": "shots/settings-locations-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Locations \u00b7 NEVORA",
+    "h1": "Locations"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/locations/new",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/locations/new",
+   "shot": "shots/settings-locations-new-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 10,
+    "title": "New location \u00b7 NEVORA",
+    "h1": "New location"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/locations/loc-1",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/locations/loc-1",
+   "shot": "shots/settings-locations-loc-1-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 13,
+    "title": "Location \u00b7 NEVORA",
+    "h1": "Main Office"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/positions",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/positions",
+   "shot": "shots/settings-positions-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Positions \u00b7 NEVORA",
+    "h1": "Positions"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/breaks",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/breaks",
+   "shot": "shots/settings-breaks-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Breaks \u00b7 NEVORA",
+    "h1": "Break types"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/time-off",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/time-off",
+   "shot": "shots/settings-time-off-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Time off policies \u00b7 NEVORA",
+    "h1": "Time off policies"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/company-policies",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/company-policies",
+   "shot": "shots/settings-company-policies-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"History\" (53,785 284x60)",
+     "\"P\" \u00d7 \"No changes yet\" (53,785 284x60)",
+     "\"P\" \u00d7 \"P\" (53,785 284x60)",
+     "\"DT\" \u00d7 \"P\" (53,869 284x20)",
+     "\"DD\" \u00d7 \"BUTTON\" (53,957 284x20)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 16,
+    "title": "Company policies \u00b7 NEVORA",
+    "h1": "Company policies"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/payroll",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/payroll",
+   "shot": "shots/settings-payroll-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"LABEL\" \u00d7 \"Payday\" (33,301 324x70)",
+     "\"LABEL\" \u00d7 \"Not set\" (33,301 324x70)",
+     "\"LABEL\" \u00d7 \"LABEL\" (33,301 324x70)",
+     "\"LABEL\" \u00d7 \"First period\" (33,301 324x70)",
+     "\"LABEL\" \u00d7 \"Not set\" (33,301 324x70)",
+     "\"LABEL\" \u00d7 \"First period\" (33,353 324x94)",
+     "\"LABEL\" \u00d7 \"Not set\" (33,353 324x94)",
+     "\"LABEL\" \u00d7 \"LABEL\" (33,353 324x94)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 34,
+    "title": "Payroll settings \u00b7 NEVORA",
+    "h1": "Payroll settings"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/clocker",
+   "shot": "shots/settings-clocker-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Clocker tablets \u00b7 NEVORA",
+    "h1": "Clocker tablets"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/matching",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/matching",
+   "shot": "shots/settings-clocker-matching-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Shift matching \u00b7 NEVORA",
+    "h1": "Shift matching"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/photos",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/photos",
+   "shot": "shots/settings-clocker-photos-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Help for your team\" (33,809 324x54)",
+     "\"P\" \u00d7 \"Not set yet\" (33,809 324x54)",
+     "\"P\" \u00d7 \"LABEL\" (33,871 324x54)",
+     "\"P\" \u00d7 \"Review punch photos\" (33,871 324x54)",
+     "\"P\" \u00d7 \"See saved photos and remove one.\" (33,871 324x54)",
+     "\"LABEL\" \u00d7 \"Review punch photos\" (33,869 324x18)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Punch photos \u00b7 NEVORA",
+    "h1": "Punch photos"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/photos/review",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/photos/review",
+   "shot": "shots/settings-clocker-photos-review-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Review punch photos \u00b7 NEVORA",
+    "h1": "Photo review"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/pins",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/pins",
+   "shot": "shots/settings-clocker-pins-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"No PIN 5\" 158x36",
+     "button \"PIN set 0\" 158x36"
+    ],
+    "smallCount": 2,
+    "inlineSmallCount": 0,
+    "controls": 14,
+    "title": "Clocker PINs \u00b7 NEVORA",
+    "h1": "Clocker PINs"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/billing",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/billing",
+   "shot": "shots/billing-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 8,
+    "title": "Page not found \u00b7 NEVORA",
+    "h1": "Page not found"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/profile",
+   "shot": "shots/profile-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"B\" \u00d7 \"Privacy and terms\" (36,397 251x22)",
+     "\"SPAN\" \u00d7 \"B\" (36,566 235x34)"
+    ],
+    "small": [
+     "a \"Edit\" 59x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Profile \u00b7 NEVORA",
+    "h1": "Fictional Owner"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile/calendar",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/profile/calendar",
+   "shot": "shots/profile-calendar-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Add to calendar \u00b7 NEVORA",
+    "h1": "Add to calendar"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile/device-alerts",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/profile/device-alerts",
+   "shot": "shots/profile-device-alerts-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"B\" \u00d7 \"Privacy and terms\" (36,397 251x22)",
+     "\"SPAN\" \u00d7 \"B\" (36,566 235x34)"
+    ],
+    "small": [
+     "a \"Edit\" 59x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Profile \u00b7 NEVORA",
+    "h1": "Fictional Owner"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile/passkeys",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/profile/passkeys",
+   "shot": "shots/profile-passkeys-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"B\" \u00d7 \"Privacy and terms\" (36,397 251x22)",
+     "\"SPAN\" \u00d7 \"B\" (36,566 235x34)"
+    ],
+    "small": [
+     "a \"Edit\" 59x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Profile \u00b7 NEVORA",
+    "h1": "Fictional Owner"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/account/delete",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/account/delete",
+   "shot": "shots/account-delete-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"Show password\" 40x44"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 1,
+    "controls": 7,
+    "title": "Delete account \u00b7 NEVORA",
+    "h1": "Delete account"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/clocker-recovery",
+   "view": "390",
+   "status": 200,
+   "finalPath": "/app/clocker-recovery",
+   "shot": "shots/clocker-recovery-390.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"Refresh\" 81x36"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 10,
+    "title": "Clocker recovery \u00b7 NEVORA",
+    "h1": "Clocker recovery"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app",
+   "networkidle": "timeout",
+   "shot": "shots/home-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"SPAN\" \u00d7 \"Shifts by day\" (33,2641 294x216)"
+    ],
+    "small": [
+     "summary \"What this measures\" 294x36"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 25,
+    "title": "Home \u00b7 NEVORA",
+    "h1": "2\u00a0things need you"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/inbox",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/inbox",
+   "shot": "shots/inbox-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 16,
+    "title": "Things to do \u00b7 NEVORA",
+    "h1": "Things to do"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/notifications",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/notifications",
+   "networkidle": "timeout",
+   "shot": "shots/notifications-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Notifications \u00b7 NEVORA",
+    "h1": "Notifications"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/more",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/more",
+   "shot": "shots/more-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 14,
+    "title": "More \u00b7 NEVORA",
+    "h1": "More"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/help",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/help",
+   "shot": "shots/help-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Someone on my team can\u2019t sign in\" (33,1507 324x531)",
+     "\"P\" \u00d7 \"P\" (33,1507 324x531)",
+     "\"P\" \u00d7 \"A\" (33,1507 324x531)",
+     "\"P\" \u00d7 \"Report a problem\" (33,1507 324x531)",
+     "\"P\" \u00d7 \"P\" (33,1507 324x531)",
+     "\"P\" \u00d7 \"Privacy and terms\" (33,1507 324x531)",
+     "\"P\" \u00d7 \"Privacy Policy\" (33,1507 324x531)",
+     "\"P\" \u00d7 \"Terms of Use\" (33,1507 324x531)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Help \u00b7 NEVORA",
+    "h1": "Help"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/schedule",
+   "shot": "shots/schedule-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"More schedule actions\" 40x40",
+     "summary \"What this measures\" 36x36"
+    ],
+    "smallCount": 2,
+    "inlineSmallCount": 0,
+    "controls": 30,
+    "title": "Schedule \u00b7 NEVORA",
+    "h1": "Schedule"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule?week=2026-11-23",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/schedule?week=2026-11-23",
+   "shot": "shots/schedule-week-2026-11-23-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"More schedule actions\" 40x40",
+     "summary \"What this measures\" 36x36"
+    ],
+    "smallCount": 2,
+    "inlineSmallCount": 0,
+    "controls": 30,
+    "title": "Schedule \u00b7 NEVORA",
+    "h1": "Schedule"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/new",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/schedule/new",
+   "shot": "shots/schedule-new-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"Save\" 97x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 10,
+    "title": "Add shift \u00b7 NEVORA",
+    "h1": "Add shift"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/publish",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/schedule/publish",
+   "shot": "shots/schedule-publish-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Main Office\" (31,325 328x108)",
+     "\"P\" \u00d7 \"2 shifts\" (31,325 328x108)",
+     "\"P\" \u00d7 \"Draft\" (31,325 328x108)",
+     "\"P\" \u00d7 \"West Office\" (31,325 328x108)",
+     "\"mode\" \u00d7 \"West Office\" (31,443 160x44)",
+     "\"mode\" \u00d7 \"Nothing scheduled\" (31,443 160x44)",
+     "\"mode\" \u00d7 \"Not started\" (199,443 160x44)",
+     "\"SPAN\" \u00d7 \"Nothing scheduled\" (31,497 248x36)"
+    ],
+    "small": [
+     "summary \"What this measures\" 36x36"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 10,
+    "title": "Build and publish \u00b7 NEVORA",
+    "h1": "Build and publish"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/settings",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/schedule/settings",
+   "shot": "shots/schedule-settings-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Staffing per location\" (33,537 324x160)",
+     "\"P\" \u00d7 \"1 per shift\" (33,537 324x160)",
+     "\"BUTTON\" \u00d7 \"Fewest people on each shift\" (33,761 177x44)",
+     "\"SPAN\" \u00d7 \"SPAN\" (33,915 324x44)",
+     "\"SPAN\" \u00d7 \"Shifts that repeat every week\" (33,915 324x44)",
+     "\"SPAN\" \u00d7 \"14 shifts\" (33,915 324x44)",
+     "\"SPAN\" \u00d7 \"Shifts that repeat every week\" (33,961 324x36)",
+     "\"SPAN\" \u00d7 \"P\" (33,1073 324x44)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 121,
+    "title": "Scheduling rules \u00b7 NEVORA",
+    "h1": "Scheduling rules"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/templates",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/schedule/templates",
+   "shot": "shots/schedule-templates-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 8,
+    "title": "Week templates \u00b7 NEVORA",
+    "h1": "Week templates"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/coverage",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/schedule/coverage",
+   "shot": "shots/schedule-coverage-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"More schedule actions\" 40x40",
+     "summary \"What this measures\" 36x36"
+    ],
+    "smallCount": 2,
+    "inlineSmallCount": 0,
+    "controls": 30,
+    "title": "Schedule \u00b7 NEVORA",
+    "h1": "Schedule"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/edit?shiftId=sweep-shift-1",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/schedule/edit?shiftId=sweep-shift-1",
+   "shot": "shots/schedule-edit-shiftId-sweep-shift-1-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"Save\" 97x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 11,
+    "title": "Edit shift \u00b7 NEVORA",
+    "h1": "Edit shift"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/availability",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/availability",
+   "shot": "shots/availability-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 1,
+    "controls": 13,
+    "title": "Availability \u00b7 NEVORA",
+    "h1": "Availability"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/availability/agreement",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/availability/agreement",
+   "shot": "shots/availability-agreement-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 1,
+    "controls": 13,
+    "title": "Availability \u00b7 NEVORA",
+    "h1": "Availability"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/exchange",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/exchange",
+   "shot": "shots/exchange-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Shift requests \u00b7 NEVORA",
+    "h1": "Shift requests"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/exchange/open-shifts",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/exchange/open-shifts",
+   "shot": "shots/exchange-open-shifts-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 12,
+    "title": "Posted open shifts \u00b7 NEVORA",
+    "h1": "Posted open shifts"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/requests",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "shot": "shots/requests-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Time off \u00b7 NEVORA",
+    "h1": "Time off requests"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/requests/hub",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/requests/hub",
+   "shot": "shots/requests-hub-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Requests \u00b7 NEVORA",
+    "h1": "Requests"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/timecards",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/timecards",
+   "shot": "shots/timecards-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [
+     "\"5 timecards this week.\" (0,-10 28x22)"
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Timecards \u00b7 NEVORA",
+    "h1": "Timecards"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/timecards/corrections",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/timecards/corrections",
+   "shot": "shots/timecards-corrections-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Time corrections \u00b7 NEVORA",
+    "h1": "Time corrections"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/timecards/corrections/new/SWEEP-A",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/timecards/corrections/new/SWEEP-A",
+   "shot": "shots/timecards-corrections-new-SWEEP-A-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 12,
+    "title": "Request time correction \u00b7 NEVORA",
+    "h1": "Request time correction"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/payroll",
+   "shot": "shots/payroll-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 13,
+    "title": "Payroll \u00b7 NEVORA",
+    "h1": "Payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/prepare",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/payroll/prepare",
+   "shot": "shots/payroll-prepare-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Prepare payroll \u00b7 NEVORA",
+    "h1": "Prepare payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/review",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/payroll/review",
+   "shot": "shots/payroll-review-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Review payroll \u00b7 NEVORA",
+    "h1": "Review payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/people",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/payroll/people",
+   "shot": "shots/payroll-people-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Payroll people \u00b7 NEVORA",
+    "h1": "People"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/history",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/payroll/history",
+   "shot": "shots/payroll-history-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 6,
+    "title": "Payroll history \u00b7 NEVORA",
+    "h1": "Payroll history"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/import",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/payroll/import",
+   "shot": "shots/payroll-import-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 2,
+    "title": "Import pay \u00b7 NEVORA",
+    "h1": "Import pay"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/fix",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/payroll/fix",
+   "shot": "shots/payroll-fix-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Fix payroll \u00b7 NEVORA",
+    "h1": "Fix before payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll-export",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/payroll-export",
+   "shot": "shots/payroll-export-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"Select all finalized timecards\" \u00d7 \"Other dates\" (33,1043 147x44)",
+     "\"Clear employee selection\" \u00d7 \"Other dates\" (200,1043 54x44)",
+     "\"SPAN\" \u00d7 \"Up to 31 days\" (85,1097 216x44)",
+     "\"SPAN\" \u00d7 \"LABEL\" (85,1141 59x36)",
+     "\"SPAN\" \u00d7 \"File format\" (85,1141 59x36)",
+     "\"SPAN\" \u00d7 \"BUTTON\" (85,1189 216x88)",
+     "\"SPAN\" \u00d7 \"Columns your payroll provider needs\" (85,1189 216x88)",
+     "\"SPAN\" \u00d7 \"BUTTON\" (313,1231 44x40)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 63,
+    "title": "Time exports \u00b7 NEVORA",
+    "h1": "Time exports"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll-export/paid-time",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/payroll-export/paid-time",
+   "shot": "shots/payroll-export-paid-time-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 2,
+    "title": "Paid time export \u00b7 NEVORA",
+    "h1": "Paid time export"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/employees",
+   "shot": "shots/employees-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"All\" 81x36",
+     "button \"On the clock 0\" 232x36",
+     "button \"Not clocked in 0\" 316x36",
+     "button \"Off today 5\" 316x36"
+    ],
+    "smallCount": 4,
+    "inlineSmallCount": 0,
+    "controls": 22,
+    "title": "Team \u00b7 NEVORA",
+    "h1": "Team"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/new",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/employees/new",
+   "shot": "shots/employees-new-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 11,
+    "title": "Add employee \u00b7 NEVORA",
+    "h1": "Add employee"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/import",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/employees/import",
+   "shot": "shots/employees-import-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Import a staff list \u00b7 NEVORA",
+    "h1": "Import a staff list"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A",
+   "shot": "shots/employees-SWEEP-A-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Edit\" 79x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 16,
+    "title": "Team member \u00b7 NEVORA",
+    "h1": "Maria Fictional-Lopez"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/pay",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/pay",
+   "shot": "shots/employees-SWEEP-A-pay-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Pay rate \u00b7 NEVORA",
+    "h1": "Pay rate"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/restrictions",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/restrictions",
+   "shot": "shots/employees-SWEEP-A-restrictions-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "When they can be scheduled \u00b7 NEVORA",
+    "h1": "When they can be scheduled"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/time-off",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/time-off",
+   "shot": "shots/employees-SWEEP-A-time-off-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Time off balance \u00b7 NEVORA",
+    "h1": "Time off balance"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/clocker-pin",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/clocker-pin",
+   "shot": "shots/employees-SWEEP-A-clocker-pin-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Clocker PIN \u00b7 NEVORA",
+    "h1": "Clocker PIN"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/reports",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/reports",
+   "shot": "shots/reports-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"LI\" \u00d7 \"Yearly reports\" (47,1199 312x216)",
+     "\"LI\" \u00d7 \"Christmas bonus hours\" (47,1199 312x216)",
+     "\"LI\" \u00d7 \"Who reached the Puerto Rico hours threshold\" (47,1199 312x216)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 12,
+    "title": "Insights \u00b7 NEVORA",
+    "h1": "Insights"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/reports/christmas-bonus",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/reports/christmas-bonus",
+   "shot": "shots/reports-christmas-bonus-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Christmas bonus hours \u00b7 NEVORA",
+    "h1": "Christmas bonus hours"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/ai-manager",
+   "shot": "shots/ai-manager-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 36,
+    "title": "Rondo AI \u00b7 NEVORA",
+    "h1": "Rondo AI"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager/weekly",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/ai-manager/weekly",
+   "shot": "shots/ai-manager-weekly-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 13,
+    "title": "Weekly plan \u00b7 NEVORA",
+    "h1": "Weekly plan"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager/knowledge",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/ai-manager/knowledge",
+   "shot": "shots/ai-manager-knowledge-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 8,
+    "title": "Company knowledge \u00b7 NEVORA",
+    "h1": "Company knowledge"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager/business",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/ai-manager/business",
+   "shot": "shots/ai-manager-business-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Business records \u00b7 NEVORA",
+    "h1": "Business records"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/updates",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/updates",
+   "shot": "shots/updates-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Updates \u00b7 NEVORA",
+    "h1": "Updates"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/updates/compose",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/updates/compose",
+   "shot": "shots/updates-compose-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 13,
+    "title": "Write an update \u00b7 NEVORA",
+    "h1": "New update"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings",
+   "shot": "shots/settings-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Settings \u00b7 NEVORA",
+    "h1": "Settings"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/workspace",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/workspace",
+   "shot": "shots/settings-workspace-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Company profile \u00b7 NEVORA",
+    "h1": "Company profile"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/branding",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/branding",
+   "shot": "shots/settings-branding-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "input \"INPUT\" 1x96",
+     "button \"Save\" 1x44"
+    ],
+    "smallCount": 2,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Branding \u00b7 NEVORA",
+    "h1": "Branding"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/features",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/features",
+   "shot": "shots/settings-features-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 11,
+    "title": "Features \u00b7 NEVORA",
+    "h1": "Features and team terms"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/locations",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/locations",
+   "shot": "shots/settings-locations-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Locations \u00b7 NEVORA",
+    "h1": "Locations"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/locations/new",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/locations/new",
+   "shot": "shots/settings-locations-new-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 10,
+    "title": "New location \u00b7 NEVORA",
+    "h1": "New location"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/locations/loc-1",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/locations/loc-1",
+   "shot": "shots/settings-locations-loc-1-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 13,
+    "title": "Location \u00b7 NEVORA",
+    "h1": "Main Office"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/positions",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/positions",
+   "shot": "shots/settings-positions-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Positions \u00b7 NEVORA",
+    "h1": "Positions"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/breaks",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/breaks",
+   "shot": "shots/settings-breaks-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Breaks \u00b7 NEVORA",
+    "h1": "Break types"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/time-off",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/time-off",
+   "shot": "shots/settings-time-off-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 9,
+    "title": "Time off policies \u00b7 NEVORA",
+    "h1": "Time off policies"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/company-policies",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/company-policies",
+   "shot": "shots/settings-company-policies-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"History\" (53,1115 284x240)",
+     "\"P\" \u00d7 \"No changes yet\" (53,1115 284x240)",
+     "\"P\" \u00d7 \"P\" (53,1115 284x240)",
+     "\"DT\" \u00d7 \"P\" (53,1379 284x80)",
+     "\"DT\" \u00d7 \"P\" (53,1379 284x80)",
+     "\"DD\" \u00d7 \"P\" (53,1461 284x40)",
+     "\"DT\" \u00d7 \"BUTTON\" (53,1525 284x40)",
+     "\"DD\" \u00d7 \"BUTTON\" (53,1567 284x40)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 16,
+    "title": "Company policies \u00b7 NEVORA",
+    "h1": "Company policies"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/payroll",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/payroll",
+   "shot": "shots/settings-payroll-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"LABEL\" \u00d7 \"Payday\" (33,465 324x70)",
+     "\"LABEL\" \u00d7 \"Not set\" (33,465 324x70)",
+     "\"LABEL\" \u00d7 \"First period\" (33,525 324x94)",
+     "\"LABEL\" \u00d7 \"Not set\" (33,525 324x94)",
+     "\"LABEL\" \u00d7 \"LABEL\" (33,525 324x94)",
+     "\"SMALL\" \u00d7 \"LABEL\" (33,601 324x18)",
+     "\"P\" \u00d7 \"Payroll reminders\" (33,691 324x90)",
+     "\"P\" \u00d7 \"Off\" (33,691 324x90)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 34,
+    "title": "Payroll settings \u00b7 NEVORA",
+    "h1": "Payroll settings"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/clocker",
+   "shot": "shots/settings-clocker-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Clocker tablets \u00b7 NEVORA",
+    "h1": "Clocker tablets"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/matching",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/matching",
+   "shot": "shots/settings-clocker-matching-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Shift matching \u00b7 NEVORA",
+    "h1": "Shift matching"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/photos",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/photos",
+   "shot": "shots/settings-clocker-photos-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Help for your team\" (33,1463 324x180)",
+     "\"P\" \u00d7 \"Not set yet\" (33,1463 324x180)",
+     "\"P\" \u00d7 \"LABEL\" (33,1463 324x180)",
+     "\"P\" \u00d7 \"Review punch photos\" (33,1463 324x180)",
+     "\"P\" \u00d7 \"See saved photos and remove one.\" (33,1463 324x180)",
+     "\"P\" \u00d7 \"SPAN\" (33,1651 324x180)",
+     "\"P\" \u00d7 \"See saved photos and remove one.\" (33,1651 324x180)",
+     "\"LABEL\" \u00d7 \"Review punch photos\" (33,1559 324x36)"
+    ],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Punch photos \u00b7 NEVORA",
+    "h1": "Punch photos"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/photos/review",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/photos/review",
+   "shot": "shots/settings-clocker-photos-review-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Review punch photos \u00b7 NEVORA",
+    "h1": "Photo review"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/pins",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/pins",
+   "shot": "shots/settings-clocker-pins-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 14,
+    "title": "Clocker PINs \u00b7 NEVORA",
+    "h1": "Clocker PINs"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/billing",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/billing",
+   "shot": "shots/billing-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 8,
+    "title": "Page not found \u00b7 NEVORA",
+    "h1": "Page not found"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/profile",
+   "shot": "shots/profile-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"B\" \u00d7 \"Privacy and terms\" (36,670 251x88)",
+     "\"B\" \u00d7 \"B\" (36,670 251x88)",
+     "\"SPAN\" \u00d7 \"B\" (36,759 250x69)",
+     "\"SPAN\" \u00d7 \"B\" (36,759 250x69)"
+    ],
+    "small": [
+     "a \"Edit\" 83x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Profile \u00b7 NEVORA",
+    "h1": "Fictional Owner"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile/calendar",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/profile/calendar",
+   "shot": "shots/profile-calendar-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [],
+    "smallCount": 0,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Add to calendar \u00b7 NEVORA",
+    "h1": "Add to calendar"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile/device-alerts",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/profile/device-alerts",
+   "shot": "shots/profile-device-alerts-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"B\" \u00d7 \"Privacy and terms\" (36,670 251x88)",
+     "\"B\" \u00d7 \"B\" (36,670 251x88)",
+     "\"SPAN\" \u00d7 \"B\" (36,759 250x69)",
+     "\"SPAN\" \u00d7 \"B\" (36,759 250x69)"
+    ],
+    "small": [
+     "a \"Edit\" 83x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Profile \u00b7 NEVORA",
+    "h1": "Fictional Owner"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile/passkeys",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/profile/passkeys",
+   "shot": "shots/profile-passkeys-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"B\" \u00d7 \"Privacy and terms\" (36,670 251x88)",
+     "\"B\" \u00d7 \"B\" (36,670 251x88)",
+     "\"SPAN\" \u00d7 \"B\" (36,759 250x69)",
+     "\"SPAN\" \u00d7 \"B\" (36,759 250x69)"
+    ],
+    "small": [
+     "a \"Edit\" 83x40"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Profile \u00b7 NEVORA",
+    "h1": "Fictional Owner"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/account/delete",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/account/delete",
+   "shot": "shots/account-delete-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"Show password\" 40x44"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 7,
+    "title": "Delete account \u00b7 NEVORA",
+    "h1": "Delete account"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/clocker-recovery",
+   "view": "390-200",
+   "status": 200,
+   "finalPath": "/app/clocker-recovery",
+   "shot": "shots/clocker-recovery-390-200.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "button \"Refresh\" 127x36"
+    ],
+    "smallCount": 1,
+    "inlineSmallCount": 0,
+    "controls": 10,
+    "title": "Clocker recovery \u00b7 NEVORA",
+    "h1": "Clocker recovery"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app",
+   "networkidle": "timeout",
+   "shot": "shots/home-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"SPAN\" \u00d7 \"Shifts by day\" (1148,517 174x90)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 33,
+    "title": "Home \u00b7 NEVORA",
+    "h1": "2\u00a0things need you"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/inbox",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/inbox",
+   "shot": "shots/inbox-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 16,
+    "inlineSmallCount": 0,
+    "controls": 26,
+    "title": "Things to do \u00b7 NEVORA",
+    "h1": "Things to do"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/notifications",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/notifications",
+   "networkidle": "timeout",
+   "shot": "shots/notifications-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Notifications \u00b7 NEVORA",
+    "h1": "Notifications"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/more",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/more",
+   "shot": "shots/more-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "More \u00b7 NEVORA",
+    "h1": "More"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/help",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/help",
+   "shot": "shots/help-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Someone on my team can\u2019t sign in\" (319,953 766x66)",
+     "\"P\" \u00d7 \"A\" (319,953 766x66)",
+     "\"A\" \u00d7 \"Someone on my team can\u2019t sign in\" (351,942 132x44)",
+     "\"P\" \u00d7 \"Report a problem\" (319,1013 766x44)",
+     "\"A\" \u00d7 \"Report a problem\" (362,1002 158x44)",
+     "\"P\" \u00d7 \"Privacy and terms\" (319,1073 766x66)",
+     "\"STRONG\" \u00d7 \"Privacy and terms\" (319,1118 613x19)",
+     "\"P\" \u00d7 \"Privacy Policy\" (319,1147 766x44)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 31,
+    "title": "Help \u00b7 NEVORA",
+    "h1": "Help"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/schedule",
+   "shot": "shots/schedule-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Covered this week\" (319,603 135x270)",
+     "\"P\" \u00d7 \"Staffing 5%\" (319,603 135x270)",
+     "\"P\" \u00d7 \"Open shifts\" (319,603 135x270)",
+     "\"P\" \u00d7 \"15\" (319,603 135x270)",
+     "\"P\" \u00d7 \"James Fictional-Ortiz\" (319,603 135x270)",
+     "\"P\" \u00d7 \"Maria Fictional-Lopez\" (319,603 135x270)",
+     "\"16 h of 336 h\" \u00d7 \"Wed\" (696,642 90x18)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 25,
+    "inlineSmallCount": 0,
+    "controls": 37,
+    "title": "Schedule \u00b7 NEVORA",
+    "h1": "Schedule"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule?week=2026-11-23",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/schedule?week=2026-11-23",
+   "shot": "shots/schedule-week-2026-11-23-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Covered this week\" (319,603 135x270)",
+     "\"P\" \u00d7 \"Staffing 5%\" (319,603 135x270)",
+     "\"P\" \u00d7 \"Open shifts\" (319,603 135x270)",
+     "\"P\" \u00d7 \"15\" (319,603 135x270)",
+     "\"P\" \u00d7 \"James Fictional-Ortiz\" (319,603 135x270)",
+     "\"P\" \u00d7 \"Maria Fictional-Lopez\" (319,603 135x270)",
+     "\"16 h of 336 h\" \u00d7 \"Wed\" (696,642 90x18)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 25,
+    "inlineSmallCount": 0,
+    "controls": 37,
+    "title": "Schedule \u00b7 NEVORA",
+    "h1": "Schedule"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/new",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/schedule/new",
+   "shot": "shots/schedule-new-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 26,
+    "title": "Add shift \u00b7 NEVORA",
+    "h1": "Add shift"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/publish",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/schedule/publish",
+   "shot": "shots/schedule-publish-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Main Office\" (313,391 778x18)",
+     "\"mode\" \u00d7 \"2 shifts\" (313,419 385x44)",
+     "\"mode\" \u00d7 \"Draft\" (706,419 385x44)",
+     "\"SPAN\" \u00d7 \"Nothing scheduled\" (313,480 132x18)",
+     "\"P\" \u00d7 \"Your team is notified when you publish.\" (313,537 778x18)",
+     "\"BUTTON\" \u00d7 \"Publish Main Office\" (931,563 160x44)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 16,
+    "inlineSmallCount": 0,
+    "controls": 26,
+    "title": "Build and publish \u00b7 NEVORA",
+    "h1": "Build and publish"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/settings",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/schedule/settings",
+   "shot": "shots/schedule-settings-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Staffing per location\" (319,289 766x20)",
+     "\"BUTTON\" \u00d7 \"1 per shift\" (973,323 112x44)",
+     "\"SPAN\" \u00d7 \"SPAN\" (319,428 502x22)",
+     "\"SPAN\" \u00d7 \"P\" (319,428 502x22)",
+     "\"SPAN\" \u00d7 \"Week starts on\" (319,428 502x22)",
+     "\"SPAN\" \u00d7 \"Week starts on\" (319,452 502x18)",
+     "\"SPAN\" \u00d7 \"The days Schedule shows together\" (319,452 502x18)",
+     "\"SPAN\" \u00d7 \"SPAN\" (319,496 502x22)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 132,
+    "title": "Scheduling rules \u00b7 NEVORA",
+    "h1": "Scheduling rules"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/templates",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/schedule/templates",
+   "shot": "shots/schedule-templates-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 19,
+    "title": "Week templates \u00b7 NEVORA",
+    "h1": "Week templates"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/coverage",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/schedule/coverage",
+   "shot": "shots/schedule-coverage-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Covered this week\" (319,603 135x270)",
+     "\"P\" \u00d7 \"Staffing 5%\" (319,603 135x270)",
+     "\"P\" \u00d7 \"Open shifts\" (319,603 135x270)",
+     "\"P\" \u00d7 \"15\" (319,603 135x270)",
+     "\"P\" \u00d7 \"James Fictional-Ortiz\" (319,603 135x270)",
+     "\"P\" \u00d7 \"Maria Fictional-Lopez\" (319,603 135x270)",
+     "\"16 h of 336 h\" \u00d7 \"Wed\" (696,642 90x18)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 25,
+    "inlineSmallCount": 0,
+    "controls": 37,
+    "title": "Schedule \u00b7 NEVORA",
+    "h1": "Schedule"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/schedule/edit?shiftId=sweep-shift-1",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/schedule/edit?shiftId=sweep-shift-1",
+   "shot": "shots/schedule-edit-shiftId-sweep-shift-1-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 27,
+    "title": "Edit shift \u00b7 NEVORA",
+    "h1": "Edit shift"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/availability",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/availability",
+   "shot": "shots/availability-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 1,
+    "controls": 24,
+    "title": "Availability \u00b7 NEVORA",
+    "h1": "Availability"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/availability/agreement",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/availability/agreement",
+   "shot": "shots/availability-agreement-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 1,
+    "controls": 24,
+    "title": "Availability \u00b7 NEVORA",
+    "h1": "Availability"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/exchange",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/exchange",
+   "shot": "shots/exchange-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 18,
+    "inlineSmallCount": 0,
+    "controls": 20,
+    "title": "Shift requests \u00b7 NEVORA",
+    "h1": "Shift requests"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/exchange/open-shifts",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/exchange/open-shifts",
+   "shot": "shots/exchange-open-shifts-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 23,
+    "title": "Posted open shifts \u00b7 NEVORA",
+    "h1": "Posted open shifts"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/requests",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/requests",
+   "shot": "shots/requests-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 18,
+    "inlineSmallCount": 0,
+    "controls": 20,
+    "title": "Time off \u00b7 NEVORA",
+    "h1": "Time off requests"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/requests/hub",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/requests/hub",
+   "shot": "shots/requests-hub-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 17,
+    "title": "Requests \u00b7 NEVORA",
+    "h1": "Requests"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/timecards",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/timecards",
+   "shot": "shots/timecards-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 20,
+    "inlineSmallCount": 0,
+    "controls": 29,
+    "title": "Timecards \u00b7 NEVORA",
+    "h1": "Timecards"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/timecards/corrections",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/timecards/corrections",
+   "shot": "shots/timecards-corrections-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Time corrections \u00b7 NEVORA",
+    "h1": "Time corrections"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/timecards/corrections/new/SWEEP-A",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/timecards/corrections/new/SWEEP-A",
+   "shot": "shots/timecards-corrections-new-SWEEP-A-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 23,
+    "title": "Request time correction \u00b7 NEVORA",
+    "h1": "Request time correction"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/payroll",
+   "shot": "shots/payroll-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 17,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Payroll \u00b7 NEVORA",
+    "h1": "Payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/prepare",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/payroll/prepare",
+   "shot": "shots/payroll-prepare-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Prepare payroll \u00b7 NEVORA",
+    "h1": "Prepare payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/review",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/payroll/review",
+   "shot": "shots/payroll-review-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Review payroll \u00b7 NEVORA",
+    "h1": "Review payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/people",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/payroll/people",
+   "shot": "shots/payroll-people-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Payroll people \u00b7 NEVORA",
+    "h1": "People"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/history",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/payroll/history",
+   "shot": "shots/payroll-history-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 17,
+    "title": "Payroll history \u00b7 NEVORA",
+    "h1": "Payroll history"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/import",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/payroll/import",
+   "shot": "shots/payroll-import-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Import pay \u00b7 NEVORA",
+    "h1": "Import pay"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll/fix",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/payroll/fix",
+   "shot": "shots/payroll-fix-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Fix payroll \u00b7 NEVORA",
+    "h1": "Fix before payroll"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll-export",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/payroll-export",
+   "shot": "shots/payroll-export-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"Select all finalized timecards\" \u00d7 \"Other dates\" (319,811 147x44)",
+     "\"Select all finalized timecards\" \u00d7 \"Up to 31 days\" (319,811 147x44)",
+     "\"Clear employee selection\" \u00d7 \"Other dates\" (486,811 54x44)",
+     "\"SPAN\" \u00d7 \"LABEL\" (351,865 701x22)",
+     "\"SPAN\" \u00d7 \"LABEL\" (351,865 701x22)",
+     "\"SPAN\" \u00d7 \"LABEL\" (351,887 32x18)",
+     "\"SPAN\" \u00d7 \"File format\" (351,887 32x18)",
+     "\"SPAN\" \u00d7 \"Columns your payroll provider needs\" (351,917 701x22)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 17,
+    "inlineSmallCount": 0,
+    "controls": 92,
+    "title": "Time exports \u00b7 NEVORA",
+    "h1": "Time exports"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/payroll-export/paid-time",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/payroll-export/paid-time",
+   "shot": "shots/payroll-export-paid-time-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Paid time export \u00b7 NEVORA",
+    "h1": "Paid time export"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/employees",
+   "shot": "shots/employees-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 18,
+    "inlineSmallCount": 0,
+    "controls": 30,
+    "title": "Team \u00b7 NEVORA",
+    "h1": "Team"
+   },
+   "axe": [
+    {
+     "id": "color-contrast",
+     "impact": "serious",
+     "count": 1,
+     "targets": [
+      ".c-in > input[placeholder=\"Search people\"][maxlength=\"128\"][type=\"search\"]"
+     ]
+    }
+   ],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/new",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/employees/new",
+   "shot": "shots/employees-new-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 28,
+    "title": "Add employee \u00b7 NEVORA",
+    "h1": "Add employee"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/import",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/employees/import",
+   "shot": "shots/employees-import-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Import a staff list \u00b7 NEVORA",
+    "h1": "Import a staff list"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A",
+   "shot": "shots/employees-SWEEP-A-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 27,
+    "title": "Team member \u00b7 NEVORA",
+    "h1": "Maria Fictional-Lopez"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/pay",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/pay",
+   "shot": "shots/employees-SWEEP-A-pay-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Pay rate \u00b7 NEVORA",
+    "h1": "Pay rate"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/restrictions",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/restrictions",
+   "shot": "shots/employees-SWEEP-A-restrictions-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 20,
+    "title": "When they can be scheduled \u00b7 NEVORA",
+    "h1": "When they can be scheduled"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/time-off",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/time-off",
+   "shot": "shots/employees-SWEEP-A-time-off-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 16,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Time off balance \u00b7 NEVORA",
+    "h1": "Time off balance"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/employees/SWEEP-A/clocker-pin",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/employees/SWEEP-A/clocker-pin",
+   "shot": "shots/employees-SWEEP-A-clocker-pin-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Clocker PIN \u00b7 NEVORA",
+    "h1": "Clocker PIN"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/reports",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/reports",
+   "shot": "shots/reports-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"LI\" \u00d7 \"Yearly reports\" (335,729 1018x18)",
+     "\"LI\" \u00d7 \"Christmas bonus hours\" (335,753 1018x18)",
+     "\"P\" \u00d7 \"Who reached the Puerto Rico hours threshold\" (313,781 1046x18)",
+     "\"TIME\" \u00d7 \"Who reached the Puerto Rico hours threshold\" (350,782 138x16)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 20,
+    "title": "Insights \u00b7 NEVORA",
+    "h1": "Insights"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/reports/christmas-bonus",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/reports/christmas-bonus",
+   "shot": "shots/reports-christmas-bonus-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Christmas bonus hours \u00b7 NEVORA",
+    "h1": "Christmas bonus hours"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/ai-manager",
+   "shot": "shots/ai-manager-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 47,
+    "title": "Rondo AI \u00b7 NEVORA",
+    "h1": "Rondo AI"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager/weekly",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/ai-manager/weekly",
+   "shot": "shots/ai-manager-weekly-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 24,
+    "title": "Weekly plan \u00b7 NEVORA",
+    "h1": "Weekly plan"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager/knowledge",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/ai-manager/knowledge",
+   "shot": "shots/ai-manager-knowledge-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 19,
+    "title": "Company knowledge \u00b7 NEVORA",
+    "h1": "Company knowledge"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/ai-manager/business",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/ai-manager/business",
+   "shot": "shots/ai-manager-business-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Business records \u00b7 NEVORA",
+    "h1": "Business records"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/updates",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/updates",
+   "shot": "shots/updates-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 17,
+    "title": "Updates \u00b7 NEVORA",
+    "h1": "Updates"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/updates/compose",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/updates/compose",
+   "shot": "shots/updates-compose-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 24,
+    "title": "Write an update \u00b7 NEVORA",
+    "h1": "New update"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings",
+   "shot": "shots/settings-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 31,
+    "title": "Settings \u00b7 NEVORA",
+    "h1": "Settings"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/workspace",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/workspace",
+   "shot": "shots/settings-workspace-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Company profile \u00b7 NEVORA",
+    "h1": "Company profile"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/branding",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/branding",
+   "shot": "shots/settings-branding-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 17,
+    "inlineSmallCount": 0,
+    "controls": 20,
+    "title": "Branding \u00b7 NEVORA",
+    "h1": "Branding"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/features",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/features",
+   "shot": "shots/settings-features-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [
+     "\"Saved\" (295,108 860x1)",
+     "\"Saved\" (295,108 860x1)"
+    ],
+    "clippedCount": 2,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 22,
+    "title": "Features \u00b7 NEVORA",
+    "h1": "Features and team terms"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/locations",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/locations",
+   "shot": "shots/settings-locations-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [
+     "\"2 active of 2 locations\" (295,108 860x1)"
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 20,
+    "title": "Locations \u00b7 NEVORA",
+    "h1": "Locations"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/locations/new",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/locations/new",
+   "shot": "shots/settings-locations-new-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 22,
+    "title": "New location \u00b7 NEVORA",
+    "h1": "New location"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/locations/loc-1",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/locations/loc-1",
+   "shot": "shots/settings-locations-loc-1-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 24,
+    "title": "Location \u00b7 NEVORA",
+    "h1": "Main Office"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/positions",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/positions",
+   "shot": "shots/settings-positions-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [
+     "\"2 active and 0 archived positions\" (295,108 860x1)"
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 20,
+    "title": "Positions \u00b7 NEVORA",
+    "h1": "Positions"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/breaks",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/breaks",
+   "shot": "shots/settings-breaks-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [
+     "\"Showing 0 of 0 break types\" (295,108 860x1)"
+    ],
+    "clippedCount": 1,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Breaks \u00b7 NEVORA",
+    "h1": "Break types"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/time-off",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/time-off",
+   "shot": "shots/settings-time-off-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 20,
+    "title": "Time off policies \u00b7 NEVORA",
+    "h1": "Time off policies"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/company-policies",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/company-policies",
+   "shot": "shots/settings-company-policies-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"History\" (335,943 630x40)",
+     "\"DT\" \u00d7 \"P\" (335,1007 220x20)",
+     "\"DD\" \u00d7 \"P\" (571,1007 498x20)",
+     "\"DT\" \u00d7 \"P\" (335,1063 220x20)",
+     "\"DD\" \u00d7 \"P\" (571,1063 498x20)",
+     "\"DT\" \u00d7 \"BUTTON\" (335,1119 220x20)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 27,
+    "title": "Company policies \u00b7 NEVORA",
+    "h1": "Company policies"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/payroll",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/payroll",
+   "shot": "shots/settings-payroll-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"LABEL\" \u00d7 \"Payday\" (319,413 560x70)",
+     "\"LABEL\" \u00d7 \"First period\" (319,473 560x94)",
+     "\"LABEL\" \u00d7 \"LABEL\" (319,473 560x94)",
+     "\"P\" \u00d7 \"Payroll reminders\" (319,621 560x54)",
+     "\"P\" \u00d7 \"P\" (319,621 560x54)",
+     "\"P\" \u00d7 \"Pay statement language\" (319,663 560x36)",
+     "\"SPAN\" \u00d7 \"LABEL\" (351,727 181x20)",
+     "\"SPAN\" \u00d7 \"Deductions and contributions\" (351,727 181x20)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 17,
+    "inlineSmallCount": 0,
+    "controls": 47,
+    "title": "Payroll settings \u00b7 NEVORA",
+    "h1": "Payroll settings"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/clocker",
+   "shot": "shots/settings-clocker-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Clocker tablets \u00b7 NEVORA",
+    "h1": "Clocker tablets"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/matching",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/matching",
+   "shot": "shots/settings-clocker-matching-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Shift matching \u00b7 NEVORA",
+    "h1": "Shift matching"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/photos",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/photos",
+   "shot": "shots/settings-clocker-photos-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"P\" \u00d7 \"Help for your team\" (319,921 766x18)",
+     "\"P\" \u00d7 \"Help for your team\" (319,947 766x36)",
+     "\"P\" \u00d7 \"Not set yet\" (319,947 766x36)",
+     "\"LABEL\" \u00d7 \"Review punch photos\" (319,981 766x18)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 29,
+    "title": "Punch photos \u00b7 NEVORA",
+    "h1": "Punch photos"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/photos/review",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/photos/review",
+   "shot": "shots/settings-clocker-photos-review-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 15,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Review punch photos \u00b7 NEVORA",
+    "h1": "Photo review"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/settings/clocker/pins",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/settings/clocker/pins",
+   "shot": "shots/settings-clocker-pins-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 17,
+    "inlineSmallCount": 0,
+    "controls": 25,
+    "title": "Clocker PINs \u00b7 NEVORA",
+    "h1": "Clocker PINs"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/billing",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/billing",
+   "shot": "shots/billing-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 18,
+    "title": "Page not found \u00b7 NEVORA",
+    "h1": "Page not found"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/profile",
+   "shot": "shots/profile-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"B\" \u00d7 \"Privacy and terms\" (320,492 697x22)",
+     "\"SPAN\" \u00d7 \"Privacy and terms\" (320,515 207x16)",
+     "\"B\" \u00d7 \"B\" (320,620 697x22)",
+     "\"B\" \u00d7 \"B\" (320,748 697x22)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 31,
+    "title": "Profile \u00b7 NEVORA",
+    "h1": "Fictional Owner"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile/calendar",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/profile/calendar",
+   "shot": "shots/profile-calendar-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 17,
+    "title": "Add to calendar \u00b7 NEVORA",
+    "h1": "Add to calendar"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile/device-alerts",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/profile/device-alerts",
+   "shot": "shots/profile-device-alerts-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"B\" \u00d7 \"Privacy and terms\" (320,492 697x22)",
+     "\"SPAN\" \u00d7 \"Privacy and terms\" (320,515 207x16)",
+     "\"B\" \u00d7 \"B\" (320,620 697x22)",
+     "\"B\" \u00d7 \"B\" (320,748 697x22)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 31,
+    "title": "Profile \u00b7 NEVORA",
+    "h1": "Fictional Owner"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/profile/passkeys",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/profile/passkeys",
+   "shot": "shots/profile-passkeys-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [
+     "\"B\" \u00d7 \"Privacy and terms\" (320,492 697x22)",
+     "\"SPAN\" \u00d7 \"Privacy and terms\" (320,515 207x16)",
+     "\"B\" \u00d7 \"B\" (320,620 697x22)",
+     "\"B\" \u00d7 \"B\" (320,748 697x22)"
+    ],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 14,
+    "inlineSmallCount": 0,
+    "controls": 31,
+    "title": "Profile \u00b7 NEVORA",
+    "h1": "Fictional Owner"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/account/delete",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/account/delete",
+   "shot": "shots/account-delete-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 16,
+    "inlineSmallCount": 1,
+    "controls": 23,
+    "title": "Delete account \u00b7 NEVORA",
+    "h1": "Delete account"
+   },
+   "axe": [],
+   "pageErrors": []
+  },
+  {
+   "route": "/app/clocker-recovery",
+   "view": "1440",
+   "status": 200,
+   "finalPath": "/app/clocker-recovery",
+   "shot": "shots/clocker-recovery-1440.jpg",
+   "layout": {
+    "overflowX": 0,
+    "wide": [],
+    "clipped": [],
+    "clippedCount": 0,
+    "overlaps": [],
+    "small": [
+     "a \"Home\" 200x40",
+     "a \"Schedule\" 200x40",
+     "a \"Time\" 200x40",
+     "a \"Payroll\" 200x40",
+     "a \"Team\" 200x40",
+     "a \"Things to do, 2\" 200x40",
+     "a \"Rondo AI\" 200x40",
+     "a \"Insights\" 200x40",
+     "a \"Updates\" 200x40",
+     "a \"Settings\" 200x40"
+    ],
+    "smallCount": 16,
+    "inlineSmallCount": 0,
+    "controls": 21,
+    "title": "Clocker recovery \u00b7 NEVORA",
+    "h1": "Clocker recovery"
+   },
+   "axe": [],
+   "pageErrors": []
+  }
+ ]
+}
