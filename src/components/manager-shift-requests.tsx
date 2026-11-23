@@ -16,15 +16,15 @@ import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeActivity, type ExchangeRecord } from "@/lib/data/exchanges";
 import { listPendingCallouts, listTeamCalloutHistory, type CalloutRecord } from "@/lib/data/callouts";
 import { ShiftRequestDecide, type ShiftAsk } from "./shift-request-decide";
-import { agoLabel, initialsOf, QuietHeader, QuietNav, QuietPage } from "./quiet/quiet";
-import { RequestFace } from "./request-face";
-import { CorpSegments } from "./corp/corp";
+import { agoLabel } from "./quiet/quiet";
+import { CorpCard, CorpNav, CorpPage, CorpSegments, CorpTitle } from "./corp/corp";
+import "@/app/app/schedule/schedule-tools.css";
 import { addDays, formatTimeRange } from "@/lib/date-utils";
 import type { ReactNode } from "react";
 import { WholeParts } from "./time-off-waiting-list";
 import { calloutCoverText, coverOutcomeText } from "@/lib/action-center/request-details";
 import { reviewCopy } from "./review-details/copy";
-import { BState } from "./owner-b/b-kit";
+import { BAvatar, BState } from "./owner-b/b-kit";
 
 const t = reviewCopy();
 
@@ -101,13 +101,13 @@ function ExchangeFacts({ exchange, year }: { exchange: ExchangeRecord; year: str
   const source = { label: owner(exchange.sourceShift.employeeName), value: shiftLine(exchange.sourceShift, year), parts: true };
   if (exchange.kind === "SWAP") return <>
     <Facts rows={[source, ...(other ? [{ label: owner(other.employeeName), value: shiftLine(other, year), parts: true }] : [])]} />
-    <p className="q-help">{other ? "Approving trades these two shifts." : "The other shift isn’t available right now. Reload to see the latest."}</p>
+    <p className="c-shreq__help">{other ? "Approving trades these two shifts." : "The other shift isn’t available right now. Reload to see the latest."}</p>
   </>;
   // Phase 4 (U09): the result of a cover request, one phrase per state from its status: picked up by whom, nobody yet,
   // waiting for an answer, withdrawn, expired. A status this page doesn't know reads "Result not known", never "nobody".
   return <>
     <Facts rows={[source, { label: t.outcome, value: coverResult(exchange) }]} />
-    <p className="q-help">{exchange.targetEmployeeName ? "Approving gives this shift to the person who picked it up." : `Closing stops anyone else from picking it up. The shift stays with ${exchange.requestedByName}.`}</p>
+    <p className="c-shreq__help">{exchange.targetEmployeeName ? "Approving gives this shift to the person who picked it up." : `Closing stops anyone else from picking it up. The shift stays with ${exchange.requestedByName}.`}</p>
   </>;
 }
 
@@ -117,21 +117,22 @@ function CalloutFacts({ callout, reason, year }: { callout: CalloutRecord; reaso
       // Phase 4 (U09): what the linked cover requests recorded. History only: it names nobody and is not today's staffing.
       { label: t.coverHistory, value: calloutCoverText(callout.coverage, t) }]} />
     {/* Jose (Nov 21, 2026): the explaining sentences are one grey paragraph under the facts. */}
-    <p className="q-help"><span>Approving takes the shift off their schedule. It will still need someone to cover it.</span><span>{t.coverHistoryHelp}</span></p>
+    <p className="c-shreq__help"><span>Approving takes the shift off their schedule. It will still need someone to cover it.</span><span>{t.coverHistoryHelp}</span></p>
   </>;
 }
 
-/** A request row that opens in place (the Quiet disclosure) to show its shifts in full; the decision stays under it. */
-function RequestDetails({ name, line, sent, aged, label, open, children }: { name: string; line: string; sent: string; aged: boolean; label: string; open: boolean; children: ReactNode }) {
-  return <details className="q-details q-request__details" open={open}>
-    {/* Phase 8 (a.md #12, #25): the person's own face tint; and, as on Time off and Things to do (OW-012), a request that
-      * carries its own Decline and Approve has no chevron. The name and line still open the shift details. */}
-    <summary className="q-row q-row--av" aria-label={label}>
-      <RequestFace name={name} initials={initialsOf(name)} />
-      <span className="q-rt"><b>{name}</b><i><WholeParts text={line} />{aged ? <span className="q-rt__line b-req-age">{sent}</span> : null}</i></span>
-      <span className="q-rv"><span className="b-req-ago">{sent}</span></span>
+/** A request row that opens in place to show its shift in full; the decision stays under it. Phase 2 (C12): the kit's
+ * row (face, name over one line of facts, when it was sent) inside the card; the name the row is read by starts with what
+ * it draws. Phase 8 (a.md #12, #25), OW-012: a request that carries its own Decline and Approve has no chevron. */
+function RequestDetails({ name, line, sent, aged, hint, open, end, children }: { name: string; line: string; sent: string; aged: boolean; hint: string; open: boolean; end?: ReactNode; children: ReactNode }) {
+  return <details className="c-shreq__details" open={open}>
+    <summary className="c-shreq__sum">
+      <BAvatar name={name} size={40} />
+      <span className="c-shreq__tx"><span className="c-shreq__name">{name}</span><span className="c-shreq__line"><WholeParts text={line} /></span>
+        {aged ? <span className="c-shreq__age">{sent}</span> : null}<span className="b-sr">{`. ${hint}`}</span></span>
+      <span className={end ? "c-shreq__end c-shreq__end--status" : "c-shreq__end"}>{end ?? sent}</span>
     </summary>
-    <div className="q-details__body q-done__body">{children}</div>
+    <div className="c-shreq__body">{children}</div>
   </details>;
 }
 
@@ -154,9 +155,9 @@ function exchangeAsk(exchange: ExchangeRecord, what: string): ShiftAsk {
 }
 
 function Decision({ id, revision, decline, approve, allowed, notice, noticeHref, what, outcome, ask }: { outcome?: ShiftChangeOutcome; id: string; revision?: number; decline: string; approve: string; allowed: boolean; notice?: string; noticeHref?: string | null; what: string; ask: ShiftAsk }) {
-  if (!revision) return <p className="q-help q-acts-note">This request changed. Reload to see the latest.</p>;
-  return <ShiftChangeForm fields={{ requestId: id, expectedRevision: revision }} className="q-acts-form" outcome={outcome}>
-    {notice ? <p className="q-help q-acts-note">{notice}{noticeHref ? <> <Link href={noticeHref}>Publish changes</Link></> : null}</p> : null}
+  if (!revision) return <p className="c-shreq__note">This request changed. Reload to see the latest.</p>;
+  return <ShiftChangeForm fields={{ requestId: id, expectedRevision: revision }} className="c-shreq__form" outcome={outcome}>
+    {notice ? <p className="c-shreq__note">{notice}{noticeHref ? <> <Link href={noticeHref}>Publish changes</Link></> : null}</p> : null}
     <ShiftRequestDecide decline={decline} declineLabel={`Decline ${what}`} approve={allowed ? approve : undefined} approveLabel={`Approve ${what}`} ask={ask} />
   </ShiftChangeForm>;
 }
@@ -203,61 +204,58 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   // OW-011: phones show a request's age only once it is over a day old.
   const aged = (createdAt: string) => Date.parse(now) - Date.parse(createdAt) >= 86_400_000;
 
-  return <ScopedReadFrame observation={source}><QuietPage className="q-shiftreq">
-    <QuietNav back={{ href: "/app/inbox", label: "Things to do" }} />
-    <QuietHeader title="Shift requests" />
-    {/* R12: the kit's segmented control; counts read "Waiting (1)" (copy table 14). */}
+  // Phase 2 (Schedule tools, C12, Nov 23, 2026): Direction B for real. The Corp page the B layer draws as the band (title
+  // and the three views) and one white card of requests; each row is the kit's row with the same disclosure, decision
+  // parts, forms and reads as before.
+  return <ScopedReadFrame observation={source}><CorpPage className="c-shreq c-page--narrow" labelledBy="shreq-title">
+    <CorpNav back={{ href: "/app/inbox", label: "Things to do" }} title="Shift requests" titleId="shreq-title" phoneOnly />
+    <CorpTitle title="Shift requests" wide />
+    {/* R12: the kit's segmented control; counts read "Waiting 2" (countLabel). */}
     <CorpSegments label="Shift request sections" items={tabs.map(item => ({ href: `/app/exchange?tab=${item.id}`, current: selected.id === item.id,
       label: item.id === "pending" && waiting ? `Waiting (${waiting})` : item.label }))} />
-    {error ? <p className="q-error q-first" role="alert">{errors[error] ?? "The request may have changed. Check it and decide again."}</p> : null}
+    {error ? <p className="c-st__msg c-st__msg--error" role="alert">{errors[error] ?? "The request may have changed. Check it and decide again."}</p> : null}
 
-    {selected.id === "pending" ? (waiting ? <ul className="q-list q-requests" aria-label="Waiting shift requests">
+    {selected.id === "pending" ? (waiting ? <CorpCard ariaLabel="Waiting shift requests"><ul className="c-shreq__list">
       {livePending.map(exchange => {
         const what = `${exchange.kind === "SWAP" ? "swap" : "coverage"} request from ${exchange.requestedByName}`;
-        return <li className="q-request" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id} data-selected={requestId === exchange.id ? "true" : undefined}>
+        return <li className="c-shreq__item" id={`request-${exchange.id}`} tabIndex={-1} key={exchange.id} data-selected={requestId === exchange.id ? "true" : undefined}>
           <RequestDetails name={exchange.requestedByName} line={exchangeLine(exchange, year)} sent={sent(exchange.createdAt)} aged={aged(exchange.createdAt)} open={requestId === exchange.id}
-            label={`${exchange.requestedByName}, ${exchangeLine(exchange, year)}. Show ${exchange.kind === "SWAP" ? "both shifts" : "the shift"}.`}><ExchangeFacts exchange={exchange} year={year} /></RequestDetails>
+            hint={`Show ${exchange.kind === "SWAP" ? "both shifts" : "the shift"}`}><ExchangeFacts exchange={exchange} year={year} /></RequestDetails>
           <Decision id={exchange.id} revision={exchange.requestRevision} decline="MANAGER_DECLINE" approve="MANAGER_APPROVE" allowed={!!approvals.get(exchange.id)?.allowed} notice={approvals.get(exchange.id)?.notice ?? undefined} what={what} outcome={exchangeOutcome(exchange)} ask={exchangeAsk(exchange, what)} />
         </li>;
       })}
       {callouts.map(callout => {
-        const reason = [reasons[callout.reasonCode] ?? callout.reasonCode, callout.reasonNote].filter(Boolean).join(" · ");
-        return <li className="q-request" id={`request-${callout.id}`} tabIndex={-1} key={callout.id} data-selected={requestId === callout.id ? "true" : undefined}>
+        return <li className="c-shreq__item" id={`request-${callout.id}`} tabIndex={-1} key={callout.id} data-selected={requestId === callout.id ? "true" : undefined}>
           <RequestDetails name={callout.employeeName} line={`Can’t work · ${when(callout, year)}`} sent={sent(callout.createdAt)} aged={aged(callout.createdAt)} open={requestId === callout.id}
-            label={`${callout.employeeName} can’t work ${when(callout, year)}, ${reason}. Show the shift.`}><CalloutFacts callout={callout} reason={reasons[callout.reasonCode] ?? callout.reasonCode} year={year} /></RequestDetails>
+            hint="Show the shift"><CalloutFacts callout={callout} reason={reasons[callout.reasonCode] ?? callout.reasonCode} year={year} /></RequestDetails>
           <Decision id={callout.id} revision={callout.requestRevision} decline="DECLINE_CALLOUT" approve="APPROVE_CALLOUT" allowed={!!approvals.get(callout.id)?.allowed} notice={approvals.get(callout.id)?.notice ?? undefined} noticeHref={publishFirstHref(approvals.get(callout.id)?.notice, callout.weekStart)} what={`the report from ${callout.employeeName}`}
             ask={{ question: t.askDeclineCallout, consequence: t.staysOnShift(first(callout.employeeName)), keep: t.keepRequest, go: t.decline,
               groupLabel: `Decline the call-out from ${callout.employeeName}?`, keepLabel: `Keep the call-out from ${callout.employeeName}`, goLabel: `Decline the call-out from ${callout.employeeName}` }}
             outcome={{ completed: { tone: "done", title: t.calloutApproved, line: t.calloutApprovedLine }, closed: { tone: "closed", icon: <UserMinusIcon weight="bold" />, title: t.calloutDeclined, line: t.keepsShift(callout.employeeName) } }} />
         </li>;
       })}
-    </ul> : <div className="q-list q-emptycard"><BState kind="empty" title="You’re all caught up" line="New shift requests show up here." /></div>) : null}
+    </ul></CorpCard> : <CorpCard ariaLabel="Waiting shift requests"><BState kind="empty" title="You’re all caught up" line="New shift requests show up here." /></CorpCard>) : null}
 
-    {selected.id === "coverage" ? (liveCoverage.length ? <ul className="q-list q-requests" aria-label="Open cover">
-      {liveCoverage.map(exchange => <li className="q-request" key={exchange.id}>
+    {selected.id === "coverage" ? (liveCoverage.length ? <CorpCard ariaLabel="Open cover"><ul className="c-shreq__list">
+      {liveCoverage.map(exchange => <li className="c-shreq__item" key={exchange.id}>
         <RequestDetails name={exchange.requestedByName} line={exchangeLine(exchange, year)} sent={sent(exchange.createdAt)} aged={aged(exchange.createdAt)} open={false}
-          label={`${exchange.requestedByName}, ${exchangeLine(exchange, year)}. Show the shift.`}><ExchangeFacts exchange={exchange} year={year} /></RequestDetails>
-        {exchange.requestRevision ? <ShiftChangeForm fields={{ kind: "MANAGER_CLOSE", requestId: exchange.id, expectedRevision: exchange.requestRevision }} className="q-acts-form"
+          hint="Show the shift"><ExchangeFacts exchange={exchange} year={year} /></RequestDetails>
+        {exchange.requestRevision ? <ShiftChangeForm fields={{ kind: "MANAGER_CLOSE", requestId: exchange.id, expectedRevision: exchange.requestRevision }} className="c-shreq__form"
           outcome={{ closed: { tone: "closed", icon: <ArrowsLeftRightIcon weight="bold" />, title: t.requestClosed, line: t.keepsShift(exchange.requestedByName) } }}>
           <ShiftRequestDecide declineWords={t.closeRequest} pending="Closing…" declineLabel={`Close the coverage request from ${exchange.requestedByName}. The shift stays with them.`}
             ask={{ question: t.askCloseCover, consequence: t.keepsShift(first(exchange.requestedByName)), keep: t.keepRequest, go: t.closeRequest,
               groupLabel: `Close the coverage request from ${exchange.requestedByName}?`, keepLabel: `Keep the coverage request from ${exchange.requestedByName}`, goLabel: `Close the coverage request from ${exchange.requestedByName}` }} />
         </ShiftChangeForm> : null}
       </li>)}
-    </ul> : <div className="q-list q-emptycard"><BState kind="empty" title="No open cover" line="Cover requests nobody has picked up show up here." /></div>) : null}
+    </ul></CorpCard> : <CorpCard ariaLabel="Open cover"><BState kind="empty" title="No open cover" line="Cover requests nobody has picked up show up here." /></CorpCard>) : null}
 
-    {selected.id === "activity" ? (activity.length ? <ul className="q-list q-requests q-done" aria-label="Done">
-      {activity.map(item => <li key={item.id}>
-        <details className="q-details">
-          <summary className="q-row q-row--av">
-            <span className="q-av" aria-hidden="true">{initialsOf(item.name)}</span>
-            <span className="q-rt"><b>{item.name}</b><i><WholeParts text={item.line} /></i></span>
-            <span className="q-rv">{statusWord(item.status)}</span>
-          </summary>
-          <div className="q-details__body q-done__body">{item.note ? <p className="q-help">{item.note}</p> : null}
-            {item.fact ? <><Facts rows={[{ label: item.fact.label, value: item.fact.value }]} />{item.fact.help ? <p className="q-help">{item.fact.help}</p> : null}</> : null}<ShiftChangeHistory events={historyViews.get(item.id)??null}/></div>
-        </details>
+    {selected.id === "activity" ? (activity.length ? <CorpCard ariaLabel="Done"><ul className="c-shreq__list c-shreq__list--done">
+      {activity.map(item => <li className="c-shreq__item" key={item.id}>
+        <RequestDetails name={item.name} line={item.line} sent={sent(item.createdAt)} aged={false} open={false} hint="Show the history" end={statusWord(item.status)}>
+          {item.note ? <p className="c-shreq__help">{item.note}</p> : null}
+          {item.fact ? <><Facts rows={[{ label: item.fact.label, value: item.fact.value }]} />{item.fact.help ? <p className="c-shreq__help">{item.fact.help}</p> : null}</> : null}<ShiftChangeHistory events={historyViews.get(item.id)??null}/>
+        </RequestDetails>
       </li>)}
-    </ul> : <div className="q-list q-emptycard"><BState kind="empty" title="Nothing decided yet" line="Requests you approve or decline show up here." /></div>) : null}
-  </QuietPage></ScopedReadFrame>;
+    </ul></CorpCard> : <CorpCard ariaLabel="Done"><BState kind="empty" title="Nothing decided yet" line="Requests you approve or decline show up here." /></CorpCard>) : null}
+  </CorpPage></ScopedReadFrame>;
 }
