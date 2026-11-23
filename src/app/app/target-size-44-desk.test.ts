@@ -37,4 +37,16 @@ describe('44px targets on tablets and desktop', () => {
     expect(tsx).toContain('<label className="c-row c-tc-pick" data-off={pickDisabled(item)||undefined}>\n                <input type="checkbox" className="c-tc-box"');
     expect(tsx).toContain('<label className="c-row c-row--one c-tc-pick"><input type="checkbox" className="c-tc-box" aria-label="Select all eligible timecards"');
   });
+
+  it('the week grid\'s open-shift chip and the empty cell\'s "+ Add" reach 44px inside their own cell from 768px', () => {
+    const css = read('./owner-b-schedule.css');
+    const at = css.indexOf(':is(.sb-openchip, td > .cm-add):not(#t44a):not(#t44b):not(#t44c)::after { content: "" !important; display: block !important; position: absolute !important; left: 0 !important; right: 0 !important; top: min(0px, calc(50% - 22px)) !important; bottom: min(0px, calc(50% - 22px)) !important;');
+    expect(at).toBeGreaterThan(-1);
+    expect(css.slice(0, at).match(/@media [^{]*\{/g)?.at(-1)).toBe('@media (min-width: 768px) {');
+    expect(css).toContain(':is(.sb-openchip, td > .cm-add):not(#t44a):not(#t44b):not(#t44c) { position: relative !important; }');
+  });
+
+  it('"Payroll history" sits above the row that overlapped its lowest 3px', () => {
+    expect(read('../../components/payroll/payroll-corp.css')).toContain(':is(#c-root, html) .c-pay .c-pay__sec-aside > .c-link { position: relative; z-index: 1; }');
+  });
 });
