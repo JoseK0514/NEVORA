@@ -134,7 +134,7 @@ Manager's grants comes to you. Nobody reviews their own time off or correction.
    pending changes and blockers. Draft assignments and unpublished edits are not
    the employee's current published schedule.
 4. Publish the reviewed scope. Check the resulting published state. Review
-   acknowledgement status separately; publication and a queued notification do
+   confirmation status separately; publication and a queued notification do
    not prove that each person read or accepted the schedule.
 
 Published replacements may require an additional explicit publication consent.

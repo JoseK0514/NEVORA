@@ -25,10 +25,11 @@ refused with a specific reason. Existing passwords keep working, with no schedul
 password changes. New or reset passwords follow these rules.
 
 Keep your invitation, password, recovery code and passkeys private. Use the
-**Forgot password?** to request a reset link. Open it on **Choose a new password**, enter and confirm a new phrase, then choose **Save new password**. Your manager can help through an authorized
+**Forgot password?** to request a link to set a new password. Open it on **Choose a new password**, enter and confirm a new phrase, then choose **Save new password**. Your manager can help through an authorized
 recovery process without learning your password.
 
-Opening another reset link in the same tab clears the earlier password draft.
+Opening another link to set a new password in the same tab clears the earlier
+password draft.
 An earlier request's delayed reply cannot finish the new link's screen. If an
 earlier reset was not confirmed, check sign-in with that password before asking
 for another code; leaving its screen does not undo an issued reset.
@@ -54,8 +55,8 @@ and select the intended week. Review the date, location, start/end time and any
 instructions. You see published work. A manager's draft or an old notification
 does not establish your latest assignment.
 
-If the week asks you to confirm review, acknowledge the current published
-revision after reading it. Acknowledgement records that review; it is not a
+If the week asks you to confirm review, confirm the current published
+revision after reading it. Confirming records that review; it is not a
 clock-in. If a schedule changes, check the new information and any new review
 request. Calendar subscriptions, when offered, are a convenience: return to the
 app for current authoritative details.

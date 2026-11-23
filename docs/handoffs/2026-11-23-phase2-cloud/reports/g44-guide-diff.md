@@ -27,11 +27,30 @@ Commits: `a3eb85f4` (Rondo), `2fcb5c6e` (Manager/Lead, Employee), this report's 
 | Manager and Lead | Location-scoped Manager workflow, step 1 | On **Your workspace**, confirm the listed managed locations. | On **Home**, confirm the location named in the band, or choose it from the **Location** menu (**All your locations**) when you manage several. | `app/page.tsx` (location Manager's Direction B Home); "Your workspace" isn't in `src` |
 | Manager and Lead | step 3 | Escalate publishing, company rules and protected changes to the Owner or a company-scoped Manager. | Use **Publish** only where it is offered; escalate other publishing, company rules and protected changes to the Owner or a company-scoped Manager. | `schedule/page.tsx` (`scopedPublish`) |
 | Manager and Lead | step 4 | Open **Team at your locations** to review eligible people. This view omits contact details and employee editing; … | Open **Team** to review the people at your locations. Rows don't open a person's page, and the view omits contact details and employee editing; … | `employees/page.tsx`, `company-access/scoped-team.tsx` (title "Team"; rows aren't links) |
-| Manager and Lead | Reminders | an Update's **Read by** list | an Update's **Acknowledged** list | `communication-detail.tsx` (`BCard title="Acknowledged"`) |
+| Manager and Lead | Reminders | an Update's **Read by** list | an Update's **Confirmed** list | `communication-detail.tsx` (`BCard title="Acknowledged"`), renamed "Confirmed" by Jose's DEC6 |
 | Employee | Shift changes | from Schedule or **Shift requests** | from Schedule or **Pick up and swap** | `exchange/page.tsx` (Employees and Leads see "Pick up and swap"; already the case at `198168ac`) |
 | Rondo | Manager view, step 3 | Read **Week by day** for each day's … | Read **Published shifts and planned hours** for each day's … | `owner-advisor/manager/manager-rondo.tsx` (`CorpSection label`); "Week by day" isn't in `src` |
 | Operations | none | | | Paths, flags, routes, scripts and limits it names are unchanged |
 | Developer | none | | | Scripts, paths, migrations, constants and headers it names are unchanged |
+
+## Aligned with Jose's wording decisions (DEC5–DEC10, Nov 23, 15:47–15:48; gaps ledger G96)
+The guides follow the decided words even where the app change is still being built (payroll-2 builds DEC5, core builds
+DEC6–DEC10), so the rebuild should wait until those land.
+
+| Guide | Section | Old text | New text | Decision |
+|---|---|---|---|---|
+| Manager and Lead | Reminders | an Update's **Acknowledged** list (this draft) | an Update's **Confirmed** list | DEC6 "Acknowledged" → "Confirmed" |
+| Owner | Build, review and publish a schedule, step 4 | Review acknowledgement status separately | Review confirmation status separately | DEC6 |
+| Employee | Schedule | acknowledge the current published revision after reading it. Acknowledgement records that review | confirm the current published revision after reading it. Confirming records that review | DEC6 |
+| Employee | Sign in | **Forgot password?** to request a reset link. | **Forgot password?** to request a link to set a new password. | "one-time link" → "a link to set a new password" |
+| Employee | Sign in | Opening another reset link in the same tab | Opening another link to set a new password in the same tab | same |
+
+Checked and not quoted by any guide, so nothing to change: the payroll export lines and hold-card buttons ("Timecards can
+be approved from …", "Review who’s included", "See the files"; the section **Who’s included and sent files** keeps its
+name), the Clocker offline card ("No connection", "Time can’t be recorded", "This tablet is offline.") and wrong-ID line,
+the Timecards steps line, Home's band (Hours, Payday; the Lead's "On shift now"), Team's "On the clock" filter and its
+two-by-two layout, and the Spanish "Week copied". Rondo's, Operations' and Developer's "acknowledge" are other things (a
+review checkbox, incident targets, stored records), so they stay.
 
 ## Screenshots to retake
 None: the six guides are text only (no image links or `<img>` in any of them). The PDFs are rendered from the text.

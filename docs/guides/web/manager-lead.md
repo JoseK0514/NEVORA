@@ -137,7 +137,7 @@ Within your granted coverage, a person's Team page offers **When they can be
 scheduled**. Review current and future agreements and decide each request against
 the current effective-week bound. Employee requests never approve themselves.
 
-Availability and an Update's **Acknowledged** list may offer reminders to Managers
+Availability and an Update's **Confirmed** list may offer reminders to Managers
 with Company access. Eligibility, cooldown and workplace holds still apply.
 **Queued** is not delivered. When the result or its receipt is not confirmed,
 keep the original operation and use its check or exact retry; no receipt yet does
