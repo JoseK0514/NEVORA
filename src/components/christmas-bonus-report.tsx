@@ -65,10 +65,9 @@ function detail(row: BonusRow): ReactNode {
 function PersonRow({ row, year }: { row: BonusRow; year: number }) {
   const title = <><span className="c-bonus__name">{row.name}</span>{status(row)}</>;
   // Without a hire date there is no threshold: the row opens Edit employee on the hire date, and comes back here after
-  // Save (Review 30, D21). Other rows are not links, so their visible words are what is read.
+  // Save (Review 30, D21). Its name is its visible words (Rondo fix, Nov 23: no separate label).
   return row.status === "NEEDS_HIRE_DATE"
-    ? <CorpRow bold title={title} detail={detail(row)} href={`/app/employees/${encodeURIComponent(row.employeeId)}?edit=1&from=bonus&year=${year}`}
-      label={`${row.name}, no hire date, ${hoursFigure(row.recordedNanoseconds)} recorded, employee ID ${row.employeeId}. Open their profile to add it.`} chevron />
+    ? <CorpRow bold title={title} detail={detail(row)} href={`/app/employees/${encodeURIComponent(row.employeeId)}?edit=1&from=bonus&year=${year}`} chevron />
     : <CorpRow bold title={title} detail={detail(row)} chevron={false} />;
 }
 
