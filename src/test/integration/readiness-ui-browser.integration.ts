@@ -64,7 +64,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         page.on('request', (request: { url(): string; headers(): Record<string, string> }) => {
           const headers = request.headers();
           const url = new URL(request.url());
-          if (url.origin === app.url && (url.pathname.startsWith('/api/') || headers.rsc === '1' || headers['next-action'])) {
+          if (url.origin === app.url && (headers.rsc === '1' || headers['next-action'])) {
             pendingRouterRequests.add(request);
           }
         });
@@ -83,7 +83,11 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         await visit('/login');
         await page.getByLabel('Employee ID', { exact: true }).fill(actor);
         await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
+        const homeReady = page.waitForResponse((response: { url(): string; status(): number }) =>
+          response.url() === app.url + '/api/manager/today' && response.status() === 200)
+          .then((response: { finished(): Promise<unknown> }) => response.finished());
         await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(app.url + '/app');
+        await homeReady;
         await page.getByRole('main').getByRole('heading', { level: 1 }).filter({ visible: true }).waitFor();
         await page.waitForLoadState('load');
         const id = `${engine}-${actor}`;
