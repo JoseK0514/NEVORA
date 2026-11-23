@@ -15,7 +15,7 @@ const es=(node:React.ReactNode)=>renderToStaticMarkup(<MobileLangProvider value=
 const own:EmployeeProfile={state:'ready',kind:'profile',observedAt:'2026-10-27T12:00:00Z',validForMs:45000,profile:{name:'Fictional name',role:'Lead',workspace:'Fictional workplace',timeZone:'America/Puerto_Rico',locations:['Main Office','West Office']}};
 it('Profile and settings: title, Display, Security and its rows in Spanish',()=>{
  const html=withoutB(es(<EmployeeProfilePage authority={'a'.repeat(64)} lang="es" policies/>));
- for(const text of ['Perfil y ajustes','>Más<','Información personal','Pantalla','Idioma','Solo las páginas de inicio de sesión.','Seguridad','Llaves de acceso','Eliminar mi cuenta','Verificando tus datos de trabajo actuales…'])expect(html).toContain(text);
+ for(const text of ['Perfil y ajustes','>Más<','Información personal','Pantalla','Idioma','Seguridad','Llaves de acceso','Eliminar mi cuenta','Verificando tus datos de trabajo actuales…'])expect(html).toContain(text);
  for(const text of ['Profile and settings','Personal info','>Display<','Security','Passkeys','Delete my account'])expect(html).not.toContain(text);
  expect(html).toMatch(/lang="es" aria-pressed="true"[^>]*>Español/);
 });

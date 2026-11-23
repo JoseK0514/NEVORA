@@ -4,7 +4,6 @@
  * choices keep their own names ("English", "Español") in both languages, so they are not here. */
 const en = {
   display: 'Display', language: 'Language',
-  languageHint: 'Sign-in pages only. The rest of NEVORA is in English for now.',
   more: 'More', title: 'Profile and settings',
   noscript: 'Enable JavaScript to view your profile and account settings.',
   signingOut: 'Signing out…',
@@ -13,7 +12,6 @@ const en = {
 };
 const es: typeof en = {
   display: 'Pantalla', language: 'Idioma',
-  languageHint: 'Solo las páginas de inicio de sesión. El resto de NEVORA está en inglés por ahora.',
   more: 'Más', title: 'Perfil y ajustes',
   noscript: 'Activa JavaScript para ver tu perfil y los ajustes de tu cuenta.',
   signingOut: 'Cerrando sesión…',

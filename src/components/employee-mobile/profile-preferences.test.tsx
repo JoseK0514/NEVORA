@@ -13,7 +13,7 @@ const full=(policies=true)=>renderToStaticMarkup(<EmployeeProfilePage authority=
 const page=(policies=true)=>withoutB(full(policies)),phone=(policies=true)=>onlyB(full(policies));
 it('Display offers the sign-in language as a segmented choice and no appearance choice (Release 1 is light only)',()=>{
  const html=renderToStaticMarkup(<EmployeeProfilePreferences lang="es"/>);
- expect(html).toContain('Display');expect(html).toContain('Language');/* B7 wording (NV-149): the hint says only the sign-in pages change */expect(html).toContain('Sign-in pages only. The rest of NEVORA is in English for now.');
+ expect(html).toContain('Display');expect(html).toContain('Language');/* Signed-in Spanish (integration): the whole app follows the language now, so the old sign-in-only hint is gone. */expect(html).not.toContain('Sign-in pages only');
  expect(html).toMatch(/lang="es" aria-pressed="true"[^>]*>Español/);expect(html).toMatch(/lang="en" aria-pressed="false"[^>]*>English/);
  expect(html).not.toContain('Appearance');expect(html).not.toContain('<select');
 });

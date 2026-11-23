@@ -91,7 +91,7 @@ it('integrates current own Profile, preferences, contextual help and native sign
    for(const width of [320,390,430]){
     const theme='light';await page.setViewportSize({width,height:844});await ready();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-    for(const [subject,locator] of [['delete-account',page.getByRole('link',{name:/Delete my account/})],['language-hint',page.locator('#em-profile-language-hint')],['preference-label',page.locator('#em-profile-language')],['personal-value',priv.locator('.c-row').first()]] as const){const measured=await locator.evaluate(measureRenderedContrast);contrasts.push({engine,theme,width,subject,ratio:measured.ratio});expect(measured.ratio).toBeGreaterThanOrEqual(4.5);}
+    for(const [subject,locator] of [['delete-account',page.getByRole('link',{name:/Delete my account/})],['preference-label',page.locator('#em-profile-language')],['personal-value',priv.locator('.c-row').first()]] as const){const measured=await locator.evaluate(measureRenderedContrast);contrasts.push({engine,theme,width,subject,ratio:measured.ratio});expect(measured.ratio).toBeGreaterThanOrEqual(4.5);}
     const small=await page.locator('.em-account :is(a,button,select,summary)').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.checkVisibility({visibilityProperty:true,opacityProperty:true})&&el.getBoundingClientRect().height<43.5).map(el=>el.textContent));expect(small).toEqual([]);
     expect(await page.locator('#profile-title').evaluate((el:HTMLElement)=>getComputedStyle(el).fontSize)).toBe('17px');
     await lang('English').focus();await shot('profile-'+theme+'-'+width);await viewport('profile-'+theme+'-'+width);

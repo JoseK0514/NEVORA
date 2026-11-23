@@ -27,8 +27,8 @@ export function EmployeeProfilePreferences({lang}:{lang:AuthLang}){
  return <CorpCard id="profile-display" label={t.display}>
   <CorpRows>
    <li><div className="c-row c-row--one em-account-pref">
-    <span className="c-row__main"><span className="c-row__title c-row__title--b" id="em-profile-language">{t.language}</span><span className="c-row__detail"><span id="em-profile-language-hint">{t.languageHint}</span></span></span>
-    <div className="c-seg em-account-seg" role="group" aria-labelledby="em-profile-language" aria-describedby="em-profile-language-hint">
+    <span className="c-row__main"><span className="c-row__title c-row__title--b" id="em-profile-language">{t.language}</span></span>
+    <div className="c-seg em-account-seg" role="group" aria-labelledby="em-profile-language">
      {([['en','English'],['es','Español']] as const).map(([value,name])=><button key={value} type="button" lang={value} aria-pressed={lang===value} onClick={()=>{if(value!==lang)switchTo(value);}}>{name}</button>)}
     </div>
    </div></li>
