@@ -25,7 +25,7 @@ it('writes the swap labels in either language', () => {
   expect(swapDateLabel('2026-12-09', 'es')).toBe('miércoles, 9 dic 2026');
   expect(swapTimeLabel(shift)).toBe('10:00 PM – 6:00 AM (Thu, Dec 10)');
   expect(swapTimeLabel(shift, 'es').replace(/ /g, ' ')).toBe('10:00 p. m. – 6:00 a. m. (jue, 10 dic)');
-  expect(swapPositionLabel({positionName: null, positionId: null}, 'es')).toBe('Sin puesto asignado');
+  expect(swapPositionLabel({positionName: undefined, positionId: undefined}, 'es')).toBe('Sin puesto asignado');
 });
 
 it('renders Offer for cover in Spanish', () => {
