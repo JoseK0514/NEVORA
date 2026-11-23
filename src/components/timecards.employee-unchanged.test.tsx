@@ -22,6 +22,7 @@ rs.mock('react',()=>({...rstestOriginal0,
  useState:(initial:unknown)=>{const i=host.cursor++;const slot=host.slots[i]??(host.slots[i]={value:typeof initial==='function'?(initial as ()=>unknown)():initial});return [slot.value,(next:unknown)=>{slot.value=typeof next==='function'?(next as (old:unknown)=>unknown)(slot.value):next;}];},
  useRef:(initial:unknown)=>{const i=host.cursor++;return (host.slots[i]??(host.slots[i]={value:{current:initial}})).value;},
  useCallback:(callback:unknown)=>callback,
+ useContext:(context:{_currentValue:unknown})=>context._currentValue,
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
 }));
 rs.mock('./clean/top-bar-slot',()=>({useTopBarSlot:()=>null}));

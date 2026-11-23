@@ -44,7 +44,7 @@
   "row": "D1",
   "page": "Timecards",
   "section": "Owner: sheet",
-  "note": "A person's week (last week). An issue is said once, in the amber note. At large text the sheet wraps the name, stacks the figures and puts times under the date.",
+  "note": "A person's week (last week, Luis Torres with a correction waiting). The note sits in his card; instead of a grey Approve, one line says it can be approved after the correction is reviewed, and no second correction request is offered.",
   "shots": [
    {
     "label": "Phone 320",
@@ -80,11 +80,35 @@
   "endSweep": []
  },
  {
+  "id": "d1-owner-select",
+  "row": "D1",
+  "page": "Timecards",
+  "section": "Owner: select",
+  "note": "Select on last week, on the Direction B kit: the band and week, the set's card with the action field and the main button, then the team as kit rows with the kit checkbox.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/d1-owner-select-390.webp"
+   },
+   {
+    "label": "Phone 200% text",
+    "after": "img/d1-owner-select-390-200.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/d1-owner-select-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
   "id": "d1-owner-review",
   "row": "D1",
   "page": "Timecards",
   "section": "Owner: review",
-  "note": "Select and review on last week. From 768, Select is visible on the band as the glass action.",
+  "note": "The review of the selected set on the Direction B kit: kit rows with each person's hours, \"I checked these hours\" with the kit checkbox, and Cancel and Approve on the card's edges, at the card's full width.",
   "shots": [
    {
     "label": "Phone 320",
@@ -164,7 +188,7 @@
   "row": "D1",
   "page": "Timecards",
   "section": "Manager (Elena): sheet",
-  "note": "A person's week (last week). An issue is said once, in the amber note. At large text the sheet wraps the name, stacks the figures and puts times under the date.",
+  "note": "A person's week (last week, Luis Torres with a correction waiting). The note sits in his card; instead of a grey Approve, one line says it can be approved after the correction is reviewed, and no second correction request is offered.",
   "shots": [
    {
     "label": "Phone 320",
@@ -200,11 +224,35 @@
   "endSweep": []
  },
  {
+  "id": "d1-elena-select",
+  "row": "D1",
+  "page": "Timecards",
+  "section": "Manager (Elena): select",
+  "note": "Select on last week, on the Direction B kit: the band and week, the set's card with the action field and the main button, then the team as kit rows with the kit checkbox.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/d1-elena-select-390.webp"
+   },
+   {
+    "label": "Phone 200% text",
+    "after": "img/d1-elena-select-390-200.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/d1-elena-select-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
   "id": "d1-elena-review",
   "row": "D1",
   "page": "Timecards",
   "section": "Manager (Elena): review",
-  "note": "Select and review on last week. From 768, Select is visible on the band as the glass action.",
+  "note": "The review of the selected set on the Direction B kit: kit rows with each person's hours, \"I checked these hours\" with the kit checkbox, and Cancel and Approve on the card's edges, at the card's full width.",
   "shots": [
    {
     "label": "Phone 320",
