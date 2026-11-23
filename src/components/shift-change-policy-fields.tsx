@@ -65,7 +65,7 @@ export function ShiftChangePolicyFields({
         );
         return (
           <section key={scope} className="c-rf-scope">
-            <h3 className="c-rf-scope__t">{scope === "swap" ? "Trades" : "Coverage"}</h3>
+            <h2 className="c-rf-scope__t">{scope === "swap" ? "Trades" : "Coverage"}</h2>
             {canEdit ? (
               <PolicyForm
                 revision={current?.revision ?? 0}
