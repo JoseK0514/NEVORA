@@ -4,6 +4,8 @@ import Link from "next/link";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { ActionMenu } from "./action-menu";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { christmasBonusCopy } from "./christmas-bonus-copy";
 
 export type BonusYearChoice = { endYear: number; label: string };
 
@@ -13,8 +15,9 @@ export type BonusYearChoice = { endYear: number; label: string };
 /* Rondo follow-up (Nov 23): `text` is what the trigger shows instead of the months: the exact dates on a phone (said once
  * there), or "Bonus year" on a wide band whose subtitle already gives them. Its accessible name keeps the visible words. */
 export function BonusYearMenu({ id, current, choices, text }: { id: string; current: number; choices: BonusYearChoice[]; text?: string }) {
+  const t = christmasBonusCopy(usePortalLang());
   const label = text ?? choices.find(choice => choice.endYear === current)?.label ?? String(current);
-  return <ActionMenu id={id} label="Bonus year" title="Bonus year" ariaLabel={label === "Bonus year" ? undefined : `Bonus year: ${label}`} align="end"
+  return <ActionMenu id={id} label={t.bonusYear} title={t.bonusYear} ariaLabel={label === t.bonusYear ? undefined : t.bonusYearIs(label)} align="end"
     triggerClassName="c-select-btn c-bonus__yearbtn" triggerContent={<>{label}<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></>}>
     {choices.map(choice => <Link key={choice.endYear} className="nevora-action-menu-item c-bonus__yearitem" href={`/app/reports/christmas-bonus?year=${choice.endYear}`}
       aria-current={choice.endYear === current ? "true" : undefined}>
