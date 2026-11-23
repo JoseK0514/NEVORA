@@ -110,3 +110,9 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:is(.pto, .cp) :is(.c-card > .c-setb-fields, .c-setb-fieldset > .c-setb-fields):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding: var(--b-space-16) var(--b-inset) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:is(.pto, .cp) .c-setb-fieldset > .c-setb-fields:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-top: var(--b-space-4) !important; }
 }
+@media (min-width: 768px) {
+  @layer nv-b {
+    /* Tablets and desktop: the field stacks and the card's note take the wide inset (22px), on the rows' text edge. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:is(.pto, .cp) :is(.c-card > .c-setb-fields, .c-setb-fieldset > .c-setb-fields, .c-card .c-setb-cardnote, .c-card > .c-setb-sum, .c-setb-legend):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+}
