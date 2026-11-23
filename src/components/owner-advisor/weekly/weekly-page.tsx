@@ -15,10 +15,12 @@ import { useAskStep } from "@/components/owner-b/ask-step";
 import { toast } from "@/components/toaster";
 import "@/components/team/team-forms.css";
 import {
-  LOCATION_STATE_TEXT, MODE_TEXT, PROGRESS_TEXT, PROVENANCE_TEXT, REASON_TEXT, STATUS_TEXT, addDays, applyCommand, clearPending, clockText, coverageText, createWeeklyClient,
-  hours, loadPending, newRequestId, savePending, weekText, type PendingApply, type WeeklyOutcome, type WeeklySend,
+  addDays, applyCommand, clearPending, clockText, createWeeklyClient, hours, loadPending, newRequestId, savePending, type PendingApply, type WeeklyOutcome, type WeeklySend,
 } from "@/lib/owner-advisor/weekly-client";
 import type { WeeklyAlternativeSummary, WeeklyCommand, WeeklyComparison, WeeklyMode, WeeklyPlanReview, WeeklyResult, WeeklyScope } from "@/lib/owner-advisor/weekly-contracts";
+import { spanishTimes, type Lang } from "../format";
+import { useAdvisorLang } from "../lang";
+import { WEEKLY_COPY, type WeeklyCopy } from "./weekly-copy";
 import "./weekly.css";
 
 /* Rondo's weekly plan (Nov 16, 2026). Compare up to two staffing options for one week, read one option in full, acknowledge
@@ -35,16 +37,16 @@ type Problem = { kind: "invalid" | "conflict" | "limit" | "disabled" | "failed";
 type Approval = { pending: PendingApply; status: "sending" | "checking" | "uncertain" | "not_saved" | "foreign" };
 
 const storage = () => { try { return typeof window === "undefined" ? null : window.sessionStorage; } catch { return null; } };
-const scopeText = (scope: WeeklyScope, locations: WeeklyLocation[]) => scope.kind === "ALL" ? "All locations"
-  : scope.locationIds.length === 1 ? locations.find(l => l.id === scope.locationIds[0])?.name ?? "1 location" : `${scope.locationIds.length} locations`;
-const settingsText = (week: string, mode: WeeklyMode, scope: WeeklyScope, locations: WeeklyLocation[]) => `${weekText(week)} · ${MODE_TEXT[mode].label} · ${scopeText(scope, locations)}`;
-/** "Mon 16": the row's day column, as the schedule draws it. */
-const shortDay = (date: string) => {
+const scopeText = (scope: WeeklyScope, locations: WeeklyLocation[], t: WeeklyCopy) => scope.kind === "ALL" ? t.allLocations
+  : scope.locationIds.length === 1 ? locations.find(l => l.id === scope.locationIds[0])?.name ?? t.oneLocation : t.nLocations(scope.locationIds.length);
+const settingsText = (week: string, mode: WeeklyMode, scope: WeeklyScope, locations: WeeklyLocation[], t: WeeklyCopy) => `${t.weekText(week)} · ${t.mode[mode].label} · ${scopeText(scope, locations, t)}`;
+/** "Mon 16" ("lun 16"): the row's day column, as the schedule draws it. */
+const shortDay = (date: string, lang: Lang) => {
   const at = new Date(`${date}T12:00:00Z`);
-  return `${new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short" }).format(at)} ${at.getUTCDate()}`;
+  return `${new Intl.DateTimeFormat(lang === "es" ? "es-PR" : "en-US", { timeZone: "UTC", weekday: "short" }).format(at)} ${at.getUTCDate()}`;
 };
-/** "8 AM – 12 PM", "8–11:30 AM": the schedule's short time range. */
-const range = (start: string, end: string) => compactRange(`${clockText(start)} – ${clockText(end)}`);
+/** "8 AM – 12 PM", "8–11:30 AM" ("8–11:30 a. m."): the schedule's short time range. */
+const range = (start: string, end: string, lang: Lang) => spanishTimes(compactRange(`${clockText(start)} – ${clockText(end)}`), lang);
 const stepAway = () => document.visibilityState === "hidden" || !document.hasFocus();
 
 export function WeeklyPage({ timeZone, currentWeek, locations, weeklyEnabled, reviewId, send: given }: {
@@ -52,6 +54,7 @@ export function WeeklyPage({ timeZone, currentWeek, locations, weeklyEnabled, re
 }) {
   const send = useMemo(() => given ?? createWeeklyClient(), [given]);
   const router = useRouter();
+  const t = WEEKLY_COPY[useAdvisorLang()];
   // The plan form.
   const [week, setWeek] = useState(currentWeek);
   const [mode, setMode] = useState<WeeklyMode>("FILL_GAPS_ONLY");
@@ -145,13 +148,13 @@ export function WeeklyPage({ timeZone, currentWeek, locations, weeklyEnabled, re
     const lease = accept(result), state = result.result.state;
     if (state === "saved" || state === "declined") {
       clearPending(storage()); setApproval(null); setReview(null); setOutcome(lease);
-      if (state === "saved") toast(result.result.receipt?.operationId === pending.requestId ? "Saved as a draft" : "Already saved");
+      if (state === "saved") toast(result.result.receipt?.operationId === pending.requestId ? t.toastSaved : t.toastAlreadySaved);
       if (shownKey.current !== pending.reviewId) router.push(`${WEEKLY_PATH}?review=${pending.reviewId}`);
     } else {
       setApproval({ pending, status: state === "not_saved" ? "not_saved" : "uncertain" });
       if (shownKey.current === pending.reviewId) void readReview(pending.reviewId);
     }
-  }, [accept, readReview, revoke, router, send]);
+  }, [accept, readReview, revoke, router, send, t]);
 
   // On load: a pending approval from before a reload comes back as "not confirmed" and is checked; an address with a
   // plan opens that plan (an observation). Nothing is compared, approved, declined or published by loading the page.
@@ -229,7 +232,7 @@ export function WeeklyPage({ timeZone, currentWeek, locations, weeklyEnabled, re
     if (result.kind === "result" && result.result.state === "saved") {
       const lease = accept(result);
       clearPending(storage()); setApproval(null); setReview(null); setOutcome(lease);
-      toast(result.result.receipt?.operationId === pending.requestId ? "Saved as a draft" : "Already saved");
+      toast(result.result.receipt?.operationId === pending.requestId ? t.toastSaved : t.toastAlreadySaved);
       return;
     }
     if (result.kind === "invalid" || result.kind === "limit") {
@@ -249,7 +252,7 @@ export function WeeklyPage({ timeZone, currentWeek, locations, weeklyEnabled, re
     }
     // Unknown or switched off: ask the server what happened to this exact review.
     await checkApproval(pending);
-  }, [accept, checkApproval, readReview, revoke, send]);
+  }, [accept, checkApproval, readReview, revoke, send, t]);
   const approve = (plan: WeeklyPlanReview, readReceiptId: string) => {
     if (!authority.current || approval) return;
     void runApproval({ reviewId: plan.id, requestId: newRequestId(), termsDigest: plan.termsDigest, readReceiptId, acknowledged: true, authority: authority.current });
@@ -260,24 +263,24 @@ export function WeeklyPage({ timeZone, currentWeek, locations, weeklyEnabled, re
     setDecline({ command, status: "sending" }); setProblem(null);
     const result = await send(command);
     if (result.kind === "forbidden") return revoke();
-    if (result.kind === "result" && result.result.state === "declined") { setDecline(null); setReview(null); setOutcome(accept(result)); toast("Plan declined"); return; }
+    if (result.kind === "result" && result.result.state === "declined") { setDecline(null); setReview(null); setOutcome(accept(result)); toast(t.toastDeclined); return; }
     if (result.kind === "uncertain") { setDecline({ command, status: "uncertain" }); return; }
     setDecline(null);
     setProblem({ kind: result.kind === "result" ? "failed" : result.kind, op: "decline_week_plan" });
-  }, [accept, revoke, send]);
+  }, [accept, revoke, send, t]);
   const declinePlan = (id: string) => { if (!decline) void runDecline({ op: "decline_week_plan", requestId: newRequestId(), reviewId: id }); };
 
   /* ---------- Render ---------- */
   const reviewing = !!reviewId;
   const head = reviewing
-    ? <><CorpNav phoneOnly back={{ href: WEEKLY_PATH, label: "Weekly plan" }} title={outcome?.result.state === "saved" ? "Saved" : outcome?.result.state === "declined" ? "Declined" : "Review plan"} titleId="wk-nav-title" />
-        <CorpTitle wide id="wk-title" title={outcome?.result.state === "saved" ? "Saved as a draft" : outcome?.result.state === "declined" ? "Plan declined" : "Review the plan"}
-          sub={review?.result.review ? settingsText(review.result.review.weekStart, review.result.review.mode, review.result.review.locationScope, locations) : undefined} /></>
-    : <><CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "Rondo AI" }} title="Weekly plan" titleId="wk-nav-title" />
-        <CorpTitle wide id="wk-title" title="Weekly plan" sub="Staffing for one week" /></>;
+    ? <><CorpNav phoneOnly back={{ href: WEEKLY_PATH, label: t.weeklyPlan }} title={outcome?.result.state === "saved" ? t.navSaved : outcome?.result.state === "declined" ? t.navDeclined : t.navReview} titleId="wk-nav-title" />
+        <CorpTitle wide id="wk-title" title={outcome?.result.state === "saved" ? t.titleSaved : outcome?.result.state === "declined" ? t.titleDeclined : t.titleReview}
+          sub={review?.result.review ? settingsText(review.result.review.weekStart, review.result.review.mode, review.result.review.locationScope, locations, t) : undefined} /></>
+    : <><CorpNav phoneOnly back={{ href: "/app/ai-manager", label: t.rondoAi }} title={t.weeklyPlan} titleId="wk-nav-title" />
+        <CorpTitle wide id="wk-title" title={t.weeklyPlan} sub={t.staffingForOneWeek} /></>;
 
   if (revoked) return <CorpPage className="c-page--narrow wk" labelledBy="wk-title">{head}
-    <CorpCard as="div"><BState kind="locked" alert title="Your session ended" line="Sign in again to plan a week." action={{ label: "Sign in", href: "/login" }} /></CorpCard>
+    <CorpCard as="div"><BState kind="locked" alert title={t.sessionEnded} line={t.signInAgain} action={{ label: t.signIn, href: "/login" }} /></CorpCard>
   </CorpPage>;
 
   const pendingCard = approval && approval.status !== "sending" ? <ApprovalCard approval={approval} onCheck={() => void checkApproval(approval.pending)}
@@ -288,8 +291,8 @@ export function WeeklyPage({ timeZone, currentWeek, locations, weeklyEnabled, re
     {head}
     {pendingCard}
     {problem ? <ProblemCard problem={problem} /> : null}
-    {decline?.status === "uncertain" ? <IssueCard tone="amber" title="Decline not confirmed" line="Try again. It can’t decline twice."
-      actions={<CorpButton kind="primary" size="md" onClick={() => void runDecline(decline.command)}>Try again</CorpButton>} /> : null}
+    {decline?.status === "uncertain" ? <IssueCard tone="amber" title={t.declineNotConfirmed} line={t.declineRetryLine}
+      actions={<CorpButton kind="primary" size="md" onClick={() => void runDecline(decline.command)}>{t.tryAgain}</CorpButton>} /> : null}
     {reviewing
       ? <ReviewView reviewId={reviewId!} review={review} outcome={outcome} reading={reading} hidden={hidden} weeklyEnabled={weeklyEnabled} locations={locations} timeZone={timeZone} now={now}
           acknowledged={acknowledged} setAcknowledged={setAcknowledged} busy={sending || decline?.status === "sending"} approvalLocked={!!approval}
@@ -297,14 +300,14 @@ export function WeeklyPage({ timeZone, currentWeek, locations, weeklyEnabled, re
       : <>
         {weeklyEnabled ? <PlanForm week={week} setWeek={setWeek} currentWeek={currentWeek} mode={mode} setMode={setMode} scopeKind={scopeKind} setScopeKind={setScopeKind}
           chosen={chosen} setChosen={setChosen} locations={locations} busy={compare?.status === "sending" && !comparison} onCompare={startCompare} />
-          : <CorpCard as="div"><BState kind="locked" title="Weekly planning is off" line="Approved plans still open from their links." /></CorpCard>}
-        {compare?.status === "uncertain" ? <IssueCard tone="amber" title="Comparison not confirmed" line="Try again. It won’t start a second one."
-          actions={<CorpButton kind="primary" size="md" onClick={() => void runCompare(compare.command as Extract<WeeklyCommand, { op: "compare_week" }>)}>Try again</CorpButton>} /> : null}
-        {comparison?.result.state === "stale" ? <section id="wk-results" className="wk-results" aria-label="Options"><CorpCard as="div"><BState kind="paused" icon={<WarningIcon weight="bold" />}
-          title="These options are out of date" line="Compare again for current options."
-          action={weeklyEnabled ? { label: "Compare again", onClick: startCompare } : undefined} /></CorpCard></section>
+          : <CorpCard as="div"><BState kind="locked" title={t.weeklyOff} line={t.approvedStillOpen} /></CorpCard>}
+        {compare?.status === "uncertain" ? <IssueCard tone="amber" title={t.compareNotConfirmed} line={t.compareRetryLine}
+          actions={<CorpButton kind="primary" size="md" onClick={() => void runCompare(compare.command as Extract<WeeklyCommand, { op: "compare_week" }>)}>{t.tryAgain}</CorpButton>} /> : null}
+        {comparison?.result.state === "stale" ? <section id="wk-results" className="wk-results" aria-label={t.options}><CorpCard as="div"><BState kind="paused" icon={<WarningIcon weight="bold" />}
+          title={t.optionsOutOfDate} line={t.compareAgainLine}
+          action={weeklyEnabled ? { label: t.compareAgain, onClick: startCompare } : undefined} /></CorpCard></section>
           : comparison?.result.comparison ? <Comparison data={comparison.result.comparison} locations={locations} />
-          : hidden && compare ? <section id="wk-results" className="wk-results" aria-label="Options"><HiddenCard onRefresh={refreshComparison} /></section> : null}
+          : hidden && compare ? <section id="wk-results" className="wk-results" aria-label={t.options}><HiddenCard onRefresh={refreshComparison} /></section> : null}
       </>}
   </CorpPage>;
 }
@@ -318,27 +321,30 @@ function IssueCard({ tone, title, line, actions }: { tone: "amber" | "red"; titl
   </section>;
 }
 function ProblemCard({ problem }: { problem: NonNullable<Problem> }) {
+  const t = WEEKLY_COPY[useAdvisorLang()];
   const what = problem.op === "compare_week" ? "compare" : problem.op === "apply_week_plan" ? "save" : problem.op === "decline_week_plan" ? "decline" : "open";
   const copy = {
-    invalid: ["Request not accepted", "Check the week and locations."],
-    conflict: ["Something changed first", "Look again before deciding."],
-    limit: ["Too many saved plans", "Nothing was saved."],
-    disabled: ["Weekly planning is off", "Approved plans still open from their links."],
-    failed: [`Couldn’t ${what} the plan`, "Check your connection, then try again."],
+    invalid: [t.invalidTitle, t.invalidLine],
+    conflict: [t.conflictTitle, t.conflictLine],
+    limit: [t.limitTitle, t.limitLine],
+    disabled: [t.weeklyOff, t.approvedStillOpen],
+    failed: [t.couldnt[what], t.failedLine],
   }[problem.kind];
   return <IssueCard tone={problem.kind === "conflict" || problem.kind === "disabled" ? "amber" : "red"} title={copy[0]} line={copy[1]} />;
 }
 function ApprovalCard({ approval, onCheck, onResend, onDiscard }: { approval: Approval; onCheck: () => void; onResend: () => void; onDiscard: () => void }) {
-  if (approval.status === "checking") return <section className="c-card wk-issue" tabIndex={-1} aria-busy="true"><BState kind="loading" title="Checking your approval" /></section>;
-  if (approval.status === "foreign") return <IssueCard tone="amber" title="Earlier approval cleared" line="It was made under another sign-in."
-    actions={<CorpButton kind="primary" size="md" onClick={onDiscard}>OK</CorpButton>} />;
-  if (approval.status === "not_saved") return <IssueCard tone="amber" title="Approval not saved" line="Nothing from it is on the schedule."
-    actions={<><CorpButton kind="primary" size="md" onClick={onResend}>Send again</CorpButton><CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={onDiscard}>Leave it</CorpButton></>} />;
-  return <IssueCard tone="amber" title="Approval not confirmed" line="It may have saved. Sending again can’t save it twice."
-    actions={<><CorpButton kind="primary" size="md" onClick={onCheck}>Check again</CorpButton><CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={onResend}>Send again</CorpButton></>} />;
+  const t = WEEKLY_COPY[useAdvisorLang()];
+  if (approval.status === "checking") return <section className="c-card wk-issue" tabIndex={-1} aria-busy="true"><BState kind="loading" title={t.checkingApproval} /></section>;
+  if (approval.status === "foreign") return <IssueCard tone="amber" title={t.earlierCleared} line={t.otherSignIn}
+    actions={<CorpButton kind="primary" size="md" onClick={onDiscard}>{t.ok}</CorpButton>} />;
+  if (approval.status === "not_saved") return <IssueCard tone="amber" title={t.approvalNotSaved} line={t.nothingOnSchedule}
+    actions={<><CorpButton kind="primary" size="md" onClick={onResend}>{t.sendAgain}</CorpButton><CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={onDiscard}>{t.leaveIt}</CorpButton></>} />;
+  return <IssueCard tone="amber" title={t.approvalNotConfirmed} line={t.mayHaveSaved}
+    actions={<><CorpButton kind="primary" size="md" onClick={onCheck}>{t.checkAgain}</CorpButton><CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={onResend}>{t.sendAgain}</CorpButton></>} />;
 }
 function HiddenCard({ onRefresh }: { onRefresh: () => void }) {
-  return <CorpCard as="div"><BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title="Details hidden" line="Plans hide after a short time." action={{ label: "Show again", onClick: onRefresh }} /></CorpCard>;
+  const t = WEEKLY_COPY[useAdvisorLang()];
+  return <CorpCard as="div"><BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title={t.detailsHidden} line={t.plansHide} action={{ label: t.showAgain, onClick: onRefresh }} /></CorpCard>;
 }
 
 /* ---------- The plan form ---------- */
@@ -347,46 +353,47 @@ function PlanForm({ week, setWeek, currentWeek, mode, setMode, scopeKind, setSco
   scopeKind: "ALL" | "SELECTED"; setScopeKind: (kind: "ALL" | "SELECTED") => void; chosen: string[]; setChosen: (ids: string[]) => void;
   locations: WeeklyLocation[]; busy: boolean; onCompare: () => void;
 }) {
+  const t = WEEKLY_COPY[useAdvisorLang()];
   const [tried, setTried] = useState(false);
   const missing = scopeKind === "SELECTED" && !chosen.length;
   const earliest = addDays(currentWeek, -7), latest = addDays(currentWeek, 56);
-  return <CorpSection id="wk-plan" label="Plan a week">
+  return <CorpSection id="wk-plan" label={t.planAWeek}>
     <CorpCard as="div"><CorpBody>
       <form className="wk-form" noValidate onSubmit={event => { event.preventDefault(); setTried(true); if (!missing && !busy) onCompare(); }}>
         <div className="c-field">
-          <span className="c-field__label" id="wk-week-label">Week</span>
+          <span className="c-field__label" id="wk-week-label">{t.week}</span>
           <div className="wk-week" role="group" aria-labelledby="wk-week-label">
-            <button type="button" className="wk-step" aria-label="Previous week" disabled={week <= earliest} onClick={() => setWeek(addDays(week, -7))}><CaretLeftIcon weight="bold" aria-hidden="true" /></button>
-            <span className="wk-week__text" aria-live="polite">{weekText(week)}{week === currentWeek ? <span className="wk-week__now">{" ·\u00a0This\u00a0week"}</span> : null}</span>
-            <button type="button" className="wk-step" aria-label="Next week" disabled={week >= latest} onClick={() => setWeek(addDays(week, 7))}><CaretRightIcon weight="bold" aria-hidden="true" /></button>
+            <button type="button" className="wk-step" aria-label={t.previousWeek} disabled={week <= earliest} onClick={() => setWeek(addDays(week, -7))}><CaretLeftIcon weight="bold" aria-hidden="true" /></button>
+            <span className="wk-week__text" aria-live="polite">{t.weekText(week)}{week === currentWeek ? <span className="wk-week__now">{t.thisWeek}</span> : null}</span>
+            <button type="button" className="wk-step" aria-label={t.nextWeek} disabled={week >= latest} onClick={() => setWeek(addDays(week, 7))}><CaretRightIcon weight="bold" aria-hidden="true" /></button>
           </div>
         </div>
         <fieldset className="wk-fieldset">
-          <legend className="c-field__label">What Rondo may change</legend>
+          <legend className="c-field__label">{t.whatRondoMayChange}</legend>
           <div className="c-checks">
             {(["FILL_GAPS_ONLY", "BUILD_WEEK"] as const).map(value => <label key={value} className="c-check">
               <input type="radio" className="wk-radio" name="wk-mode" checked={mode === value} onChange={() => setMode(value)} />
-              <span className="c-check__text">{MODE_TEXT[value].label}<small>{MODE_TEXT[value].line}</small></span>
+              <span className="c-check__text">{t.mode[value].label}<small>{t.mode[value].line}</small></span>
             </label>)}
           </div>
         </fieldset>
         <fieldset className="wk-fieldset">
-          <legend className="c-field__label">Locations</legend>
+          <legend className="c-field__label">{t.locations}</legend>
           <div className="c-checks">
-            <label className="c-check"><input type="radio" className="wk-radio" name="wk-scope" checked={scopeKind === "ALL"} onChange={() => setScopeKind("ALL")} /><span className="c-check__text">All locations</span></label>
-            <label className="c-check"><input type="radio" className="wk-radio" name="wk-scope" checked={scopeKind === "SELECTED"} onChange={() => setScopeKind("SELECTED")} /><span className="c-check__text">Choose locations</span></label>
+            <label className="c-check"><input type="radio" className="wk-radio" name="wk-scope" checked={scopeKind === "ALL"} onChange={() => setScopeKind("ALL")} /><span className="c-check__text">{t.allLocations}</span></label>
+            <label className="c-check"><input type="radio" className="wk-radio" name="wk-scope" checked={scopeKind === "SELECTED"} onChange={() => setScopeKind("SELECTED")} /><span className="c-check__text">{t.chooseLocations}</span></label>
           </div>
-          {scopeKind === "SELECTED" ? <div className="c-checks wk-places" role="group" aria-label="Locations to plan" aria-describedby={tried && missing ? "wk-places-error" : undefined}>
+          {scopeKind === "SELECTED" ? <div className="c-checks wk-places" role="group" aria-label={t.locationsToPlan} aria-describedby={tried && missing ? "wk-places-error" : undefined}>
             {locations.map(location => <label key={location.id} className="c-check">
               <input type="checkbox" className="c-check__box" value={location.id} checked={chosen.includes(location.id)} disabled={!chosen.includes(location.id) && chosen.length >= 20}
                 onChange={event => setChosen(event.target.checked ? [...chosen, location.id] : chosen.filter(id => id !== location.id))} />
               <span className="c-check__text">{location.name}</span>
             </label>)}
           </div> : null}
-          {tried && missing ? <p className="c-error" id="wk-places-error" role="alert"><WarningCircleIcon weight="bold" className="wk-error__ic" aria-hidden="true" />Choose at least one location</p> : null}
+          {tried && missing ? <p className="c-error" id="wk-places-error" role="alert"><WarningCircleIcon weight="bold" className="wk-error__ic" aria-hidden="true" />{t.chooseOneLocation}</p> : null}
         </fieldset>
         <div className="wk-submit">
-          <CorpButton type="submit" kind="primary" size="md" disabled={busy}>{busy ? "Comparing…" : "Compare options"}</CorpButton>
+          <CorpButton type="submit" kind="primary" size="md" disabled={busy}>{busy ? t.comparing : t.compareOptions}</CorpButton>
         </div>
       </form>
     </CorpBody></CorpCard>
@@ -395,7 +402,7 @@ function PlanForm({ week, setWeek, currentWeek, mode, setMode, scopeKind, setSco
 
 /* ---------- Comparing options ---------- */
 const letter = (index: number) => String.fromCharCode(65 + index);
-function delta(after: number, before: number) { const d = after - before; return d === 0 ? "no change" : `${d > 0 ? "+" : "−"}${hours(Math.abs(d))}`; }
+function delta(after: number, before: number, t: WeeklyCopy) { const d = after - before; return d === 0 ? t.noChange : `${d > 0 ? "+" : "−"}${hours(Math.abs(d))}`; }
 function statusTone(option: WeeklyAlternativeSummary): "green" | "amber" | "neutral" | "red" {
   if (!option.applyEligible) return "neutral";
   return option.status === "COMPLETE" ? "green" : option.status === "INVALID" ? "red" : "amber";
@@ -404,52 +411,54 @@ function statusTone(option: WeeklyAlternativeSummary): "green" | "amber" | "neut
  * fairness counts are placeholders, not observed people (Codex, Nov 16, 2026). An input limit is hit before any source is
  * admitted, so narrowing the scope may not help; it says so plainly instead of advising fewer locations. */
 export function Comparison({ data, locations }: { data: WeeklyComparison; locations: WeeklyLocation[] }) {
+  const t = WEEKLY_COPY[useAdvisorLang()];
   const included = data.locations.filter(l => l.state === "INCLUDED"), excluded = data.locations.filter(l => l.state !== "INCLUDED");
-  const settings = <span className="wk-meta">{settingsText(data.weekStart, data.mode, data.locationScope, locations)}</span>;
-  if (data.state === "unavailable") return <section id="wk-results" className="wk-results" aria-label={`Options for ${weekText(data.weekStart)}`}>
+  const settings = <span className="wk-meta">{settingsText(data.weekStart, data.mode, data.locationScope, locations, t)}</span>;
+  if (data.state === "unavailable") return <section id="wk-results" className="wk-results" aria-label={t.optionsFor(t.weekText(data.weekStart))}>
     <CorpCard as="div">{data.reason === "INPUT_LIMIT"
-      ? <BState kind="failed" title="Too large to compare" line="No options this time. Contact support if it keeps happening." />
-      : <BState kind="failed" title="Too many changes to compare" line="No options this time. Try fewer locations." />}</CorpCard>
+      ? <BState kind="failed" title={t.tooLarge} line={t.tooLargeLine} />
+      : <BState kind="failed" title={t.tooMany} line={t.tooManyLine} />}</CorpCard>
   </section>;
   // Separate cards (a labelled kit section would draw as one card on desktop); two options sit side by side from 1024px.
-  return <section id="wk-results" className="wk-results" aria-label={`Options for ${weekText(data.weekStart)}`}>
+  return <section id="wk-results" className="wk-results" aria-label={t.optionsFor(t.weekText(data.weekStart))}>
     <>
-        {data.baseline ? <CorpCard as="div" label="The schedule now" aside={settings}>
-          <CorpRows label="The schedule now">
-            <li><CorpRow one title="Coverage" value={coverageText(data.baseline)} valueTone="soft" /></li>
-            <li><CorpRow one title="Still open" value={`${data.baseline.remainingBlocks} ${data.baseline.remainingBlocks === 1 ? "block" : "blocks"}`} valueTone="soft" /></li>
-            <li><CorpRow one title="Weekend history" value={`${data.fairness.employeesWithKnownWeekends} of ${data.fairness.employeesWithKnownWeekends + data.fairness.employeesWithoutKnownWeekends} known`} valueTone="soft" /></li>
+        {data.baseline ? <CorpCard as="div" label={t.scheduleNow} aside={settings}>
+          <CorpRows label={t.scheduleNow}>
+            <li><CorpRow one title={t.coverage} value={t.coverageText(data.baseline)} valueTone="soft" /></li>
+            <li><CorpRow one title={t.stillOpen} value={t.blocks(data.baseline.remainingBlocks)} valueTone="soft" /></li>
+            <li><CorpRow one title={t.weekendHistory} value={t.known(data.fairness.employeesWithKnownWeekends, data.fairness.employeesWithKnownWeekends + data.fairness.employeesWithoutKnownWeekends)} valueTone="soft" /></li>
             {/* "partial" also covers unknown weekend history, left-out locations and omitted details (Codex, Nov 16, 2026):
               * only an option whose search ran out of budget says the search stopped early. */}
-            {data.alternatives.some(option => option.status === "BUDGET_EXHAUSTED") ? <li><CorpRow one title="Search" value={<CorpPill tone="amber">Stopped early</CorpPill>} /></li>
-              : data.partial ? <li><CorpRow one title="Information" value="Partial" valueTone="soft" /></li> : null}
+            {data.alternatives.some(option => option.status === "BUDGET_EXHAUSTED") ? <li><CorpRow one title={t.search} value={<CorpPill tone="amber">{t.stoppedEarly}</CorpPill>} /></li>
+              : data.partial ? <li><CorpRow one title={t.information} value={t.partial} valueTone="soft" /></li> : null}
           </CorpRows>
         </CorpCard> : null}
         {data.alternatives.length ? <div className={data.alternatives.length > 1 ? "wk-grid wk-grid--two" : "wk-grid"}>
           {data.alternatives.map((option, index) => <OptionCard key={option.id} option={option} index={index} baseline={data.baseline} />)}</div>
-          : <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="bold" />} title="No options to show" line="Nothing to change this week." /></CorpCard>}
+          : <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="bold" />} title={t.noOptions} line={t.nothingToChange} /></CorpCard>}
       </>
-    {data.locations.length ? <CorpCard as="div" label="Locations" count={included.length}>
-      <CorpRows label="Locations">
+    {data.locations.length ? <CorpCard as="div" label={t.locations} count={included.length}>
+      <CorpRows label={t.locations}>
         {[...included, ...excluded].map(location => <li key={location.id}><CorpRow title={location.name}
           detail={location.issues.length ? location.issues.join(" · ") : undefined}
-          value={LOCATION_STATE_TEXT[location.state]} valueTone="soft" /></li>)}
+          value={t.locationState[location.state]} valueTone="soft" /></li>)}
       </CorpRows>
     </CorpCard> : null}
   </section>;
 }
 function OptionCard({ option, index, baseline }: { option: WeeklyAlternativeSummary; index: number; baseline: WeeklyComparison["baseline"] }) {
-  const reasons = option.inspectionReasons.map(reason => REASON_TEXT[reason]);
-  return <CorpCard as="div" label={`Option ${letter(index)}`} aside={<CorpPill tone={statusTone(option)}>{option.applyEligible ? STATUS_TEXT[option.status] : "Look only"}</CorpPill>}>
-    <CorpRows label={`Option ${letter(index)}`}>
-      <li><CorpRow one title="Adds" value={`${option.added} ${option.added === 1 ? "shift" : "shifts"} · ${hours(option.addedMinutes)}`} valueTone="soft" /></li>
-      {option.removed ? <li><CorpRow one title="Replaces" value={`${option.removed} ${option.removed === 1 ? "draft" : "drafts"} · ${hours(option.removedMinutes)}`} valueTone="soft" /></li> : null}
-      <li><CorpRow one title="Keeps" value={`${option.preservedAssignments} ${option.preservedAssignments === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li>
-      <li><CorpRow one title="Coverage" value={`${coverageText(option.coverage)}${baseline ? ` · ${delta(option.coverage.coveredMinutes, baseline.coveredMinutes)}` : ""}`} valueTone="soft" /></li>
-      <li><CorpRow one title="Still open" value={`${option.remaining.total} ${option.remaining.total === 1 ? "block" : "blocks"}`} valueTone="soft" /></li>
-      {option.issues.total ? <li><CorpRow one title="Things to check" value={String(option.issues.total)} valueTone="soft" /></li> : null}
-      {reasons.length ? <li><CorpRow title={option.applyEligible ? "Worth a look" : "Can’t be saved"} detail={reasons.join(" · ")} /></li> : null}
-      <li><Link className="wk-linkrow" href={`${WEEKLY_PATH}?review=${option.id}`}>Review option {letter(index)}<CaretRightIcon weight="bold" aria-hidden="true" /></Link></li>
+  const t = WEEKLY_COPY[useAdvisorLang()];
+  const reasons = option.inspectionReasons.map(reason => t.reason[reason]);
+  return <CorpCard as="div" label={t.option(letter(index))} aside={<CorpPill tone={statusTone(option)}>{option.applyEligible ? t.status[option.status] : t.lookOnly}</CorpPill>}>
+    <CorpRows label={t.option(letter(index))}>
+      <li><CorpRow one title={t.adds} value={`${t.shifts(option.added)} · ${hours(option.addedMinutes)}`} valueTone="soft" /></li>
+      {option.removed ? <li><CorpRow one title={t.replaces} value={`${t.drafts(option.removed)} · ${hours(option.removedMinutes)}`} valueTone="soft" /></li> : null}
+      <li><CorpRow one title={t.keeps} value={t.shifts(option.preservedAssignments)} valueTone="soft" /></li>
+      <li><CorpRow one title={t.coverage} value={`${t.coverageText(option.coverage)}${baseline ? ` · ${delta(option.coverage.coveredMinutes, baseline.coveredMinutes, t)}` : ""}`} valueTone="soft" /></li>
+      <li><CorpRow one title={t.stillOpen} value={t.blocks(option.remaining.total)} valueTone="soft" /></li>
+      {option.issues.total ? <li><CorpRow one title={t.thingsToCheck} value={String(option.issues.total)} valueTone="soft" /></li> : null}
+      {reasons.length ? <li><CorpRow title={option.applyEligible ? t.worthALook : t.cantBeSaved} detail={reasons.join(" · ")} /></li> : null}
+      <li><Link className="wk-linkrow" href={`${WEEKLY_PATH}?review=${option.id}`}>{t.reviewOption(letter(index))}<CaretRightIcon weight="bold" aria-hidden="true" /></Link></li>
     </CorpRows>
   </CorpCard>;
 }
@@ -466,68 +475,76 @@ function ReviewView({ reviewId, review, outcome, reading, hidden, weeklyEnabled,
     onApprove={onApprove} onDecline={onDecline} weeklyEnabled={weeklyEnabled} />;
   if (hidden) return <HiddenCard onRefresh={onRefresh} />;
   if (reading) return <Skeleton />;
-  return <CorpCard as="div"><BState kind="empty" title="Nothing to show yet" line="Open the plan to see it." action={{ label: "Open the plan", onClick: onRefresh }} /></CorpCard>;
+  return <EmptyReview onRefresh={onRefresh} />;
+}
+function EmptyReview({ onRefresh }: { onRefresh: () => void }) {
+  const t = WEEKLY_COPY[useAdvisorLang()];
+  return <CorpCard as="div"><BState kind="empty" title={t.nothingYet} line={t.openToSee} action={{ label: t.openPlan, onClick: onRefresh }} /></CorpCard>;
 }
 function Skeleton() {
-  return <section className="c-card wk-skel" aria-busy="true" aria-label="Loading the plan">
+  const t = WEEKLY_COPY[useAdvisorLang()];
+  return <section className="c-card wk-skel" aria-busy="true" aria-label={t.loadingPlan}>
     <span className="wk-skel__bar wk-skel__bar--head" />
     {[58, 44, 66, 50].map(width => <span key={width} className="wk-skel__bar" style={{ width: `${width}%` }} />)}
   </section>;
 }
 /** Saved coverage counts only the locations the reviewed plan included (Codex, Nov 16, 2026), so it says which, and says
  * when the week's plannable locations changed since. An older answer without the scope keeps its plain coverage row. */
-function coverageRows(progress: NonNullable<WeeklyResult["progress"]>, locations: WeeklyLocation[]) {
+function coverageRows(progress: NonNullable<WeeklyResult["progress"]>, locations: WeeklyLocation[], t: WeeklyCopy) {
   const scope = progress.coverageScope;
-  if (!scope) return progress.coverage ? <li><CorpRow one title="Coverage" value={coverageText(progress.coverage)} valueTone="soft" /></li> : null;
+  if (!scope) return progress.coverage ? <li><CorpRow one title={t.coverage} value={t.coverageText(progress.coverage)} valueTone="soft" /></li> : null;
   void locations;
   const count = scope.includedLocationIds.length;
-  const reviewed = `${count} reviewed ${count === 1 ? "location" : "locations"}`;
-  return <li><CorpRow title="Coverage" detail={!progress.coverage ? "Can’t measure a reviewed location" : scope.changed ? `${count} reviewed · locations changed` : reviewed}
-    value={progress.coverage ? coverageText(progress.coverage) : "Not available"} valueTone="soft" /></li>;
+  const reviewed = t.reviewedLocations(count);
+  return <li><CorpRow title={t.coverage} detail={!progress.coverage ? t.cantMeasure : scope.changed ? t.reviewedChanged(count) : reviewed}
+    value={progress.coverage ? t.coverageText(progress.coverage) : t.notAvailable} valueTone="soft" /></li>;
 }
 
 /** Jose (Nov 21, 2026): every Decline asks first. Decline opens the question where the plan's buttons were and sends
  * nothing; "Keep plan" brings them back; the question's Decline is the same `onDecline` as before, once. The line says
  * only what the declined result already says. */
-export function DeclinePlanStep({ busy, onDecline, children }: { busy: boolean; onDecline: () => void; children: (ask: { onClick: () => void }) => ReactNode }) {
+export function DeclinePlanStep({ busy, onDecline, lang = "en", children }: { busy: boolean; onDecline: () => void; lang?: Lang; children: (ask: { onClick: () => void }) => ReactNode }) {
+  // The language comes from the caller (which reads it), so this step stays a plain hook user (decline-asks.test.tsx).
+  const t = WEEKLY_COPY[lang];
   const { open, ask, keep, done, titleRef, mark } = useAskStep();
-  if (open && !busy) return <DecisionAsk className="wk-ask" titleRef={titleRef} groupLabel="Decline this plan?" question="Decline this plan?" consequence="The schedule doesn’t change."
-    keep="Keep plan" onKeep={keep} go="Decline" onGo={() => { done(); onDecline(); }} />;
+  if (open && !busy) return <DecisionAsk className="wk-ask" titleRef={titleRef} groupLabel={t.declineQuestion} question={t.declineQuestion} consequence={t.scheduleDoesntChange}
+    keep={t.keepPlan} onKeep={keep} go={t.decline} onGo={() => { done(); onDecline(); }} />;
   return children({ onClick: ask, ...mark });
 }
 
 function Outcome({ result, reviewId, timeZone, locations, onRefresh, onDecline, busy, weeklyEnabled }: { result: WeeklyResult; reviewId: string; timeZone: string; locations: WeeklyLocation[]; onRefresh: () => void; onDecline: (id: string) => void; busy: boolean; weeklyEnabled: boolean }) {
-  const when = (iso: string) => new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(iso));
-  if (result.state === "stale") return <CorpCard as="div"><BState kind="paused" icon={<WarningIcon weight="bold" />} title="This plan is out of date"
-    line="Compare again for current options.">
-    <DeclinePlanStep busy={busy} onDecline={() => onDecline(reviewId)}>{ask => <span className="wk-acts"><CorpButtonLink href={WEEKLY_PATH} kind="primary" size="md">Compare again</CorpButtonLink>
-      {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} {...ask}>Decline it</CorpButton> : null}</span>}</DeclinePlanStep>
+  const lang = useAdvisorLang(), t = WEEKLY_COPY[lang];
+  const when = (iso: string) => new Intl.DateTimeFormat(lang === "es" ? "es-PR" : "en-US", { timeZone, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+  if (result.state === "stale") return <CorpCard as="div"><BState kind="paused" icon={<WarningIcon weight="bold" />} title={t.planOutOfDate}
+    line={t.compareAgainLine}>
+    <DeclinePlanStep busy={busy} lang={lang} onDecline={() => onDecline(reviewId)}>{ask => <span className="wk-acts"><CorpButtonLink href={WEEKLY_PATH} kind="primary" size="md">{t.compareAgain}</CorpButtonLink>
+      {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} {...ask}>{t.declineIt}</CorpButton> : null}</span>}</DeclinePlanStep>
   </BState></CorpCard>;
-  if (result.state === "declined") return <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="bold" />} title="Plan declined" line="The schedule didn’t change."
-    action={{ label: "Back to options", href: WEEKLY_PATH }} /></CorpCard>;
-  if (result.state === "not_saved") return <CorpCard as="div"><BState kind="empty" title="Not saved" line="Nothing from it is on the schedule." action={{ label: "Back to options", href: WEEKLY_PATH }} /></CorpCard>;
-  if (result.state === "unavailable" || !result.receipt) return <CorpCard as="div"><BState kind="failed" title="Can’t check this plan right now"
-    line={weeklyEnabled ? "Try again in a moment." : "Only saved plans show while weekly planning is off."} action={{ label: "Check again", onClick: onRefresh }} /></CorpCard>;
+  if (result.state === "declined") return <CorpCard as="div"><BState kind="empty" icon={<CalendarCheckIcon weight="bold" />} title={t.titleDeclined} line={t.scheduleDidntChange}
+    action={{ label: t.backToOptions, href: WEEKLY_PATH }} /></CorpCard>;
+  if (result.state === "not_saved") return <CorpCard as="div"><BState kind="empty" title={t.notSaved} line={t.nothingOnSchedule} action={{ label: t.backToOptions, href: WEEKLY_PATH }} /></CorpCard>;
+  if (result.state === "unavailable" || !result.receipt) return <CorpCard as="div"><BState kind="failed" title={t.cantCheck}
+    line={weeklyEnabled ? t.tryInAMoment : t.onlySavedShow} action={{ label: t.checkAgain, onClick: onRefresh }} /></CorpCard>;
   const receipt = result.receipt, progress = result.progress;
   return <>
-    <CorpCard as="div" label="What was saved">
-      <CorpRows label="What was saved">
-        <li><CorpRow one title="Saved at" value={when(receipt.savedAt)} valueTone="soft" /></li>
-        <li><CorpRow one title="Added" value={`${receipt.added} ${receipt.added === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li>
-        {receipt.removed ? <li><CorpRow one title="Replaced" value={`${receipt.removed} draft ${receipt.removed === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li> : null}
-        <li><CorpRow one title="Kept" value={`${receipt.preservedAssignments} ${receipt.preservedAssignments === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li>
+    <CorpCard as="div" label={t.whatWasSaved}>
+      <CorpRows label={t.whatWasSaved}>
+        <li><CorpRow one title={t.savedAt} value={when(receipt.savedAt)} valueTone="soft" /></li>
+        <li><CorpRow one title={t.added} value={t.shifts(receipt.added)} valueTone="soft" /></li>
+        {receipt.removed ? <li><CorpRow one title={t.replaced} value={t.draftShifts(receipt.removed)} valueTone="soft" /></li> : null}
+        <li><CorpRow one title={t.kept} value={t.shifts(receipt.preservedAssignments)} valueTone="soft" /></li>
       </CorpRows>
     </CorpCard>
-    <CorpCard as="div" label="The schedule now" aside={progress ? <CorpPill tone={progress.state === "published" ? "green" : progress.state === "changed" ? "amber" : "neutral"}>{PROGRESS_TEXT[progress.state]}</CorpPill> : undefined}>
-      {progress && progress.state !== "unavailable" ? <CorpRows label="The saved shifts now">
-        <li><CorpRow one title="Still as saved" value={`${progress.assignmentsPresent} of ${progress.assignmentsTotal}`} valueTone="soft" /></li>
-        <li><CorpRow one title="Published" value={`${progress.publishedAssignments} of ${progress.assignmentsPresent}`} valueTone="soft" /></li>
-        {coverageRows(progress, locations)}
-      </CorpRows> : <CorpBody><p className="wk-para">{weeklyEnabled ? "Can’t read the schedule right now" : "Not shown while weekly planning is off"}</p></CorpBody>}
+    <CorpCard as="div" label={t.scheduleNow} aside={progress ? <CorpPill tone={progress.state === "published" ? "green" : progress.state === "changed" ? "amber" : "neutral"}>{t.progress[progress.state]}</CorpPill> : undefined}>
+      {progress && progress.state !== "unavailable" ? <CorpRows label={t.savedShiftsNow}>
+        <li><CorpRow one title={t.stillAsSaved} value={t.of(progress.assignmentsPresent, progress.assignmentsTotal)} valueTone="soft" /></li>
+        <li><CorpRow one title={t.published} value={t.of(progress.publishedAssignments, progress.assignmentsPresent)} valueTone="soft" /></li>
+        {coverageRows(progress, locations, t)}
+      </CorpRows> : <CorpBody><p className="wk-para">{weeklyEnabled ? t.cantReadSchedule : t.notShownOff}</p></CorpBody>}
     </CorpCard>
     <div className="wk-acts wk-acts--end wk-acts--page">
-      <CorpButtonLink href={WEEKLY_PATH} kind="secondary" size="md" className="b-rowact b-rowact--quiet">Plan another week</CorpButtonLink>
-      <CorpButtonLink href="/app/schedule" kind="primary" size="md">Open Schedule</CorpButtonLink>
+      <CorpButtonLink href={WEEKLY_PATH} kind="secondary" size="md" className="b-rowact b-rowact--quiet">{t.planAnother}</CorpButtonLink>
+      <CorpButtonLink href="/app/schedule" kind="primary" size="md">{t.openSchedule}</CorpButtonLink>
     </div>
   </>;
 }
@@ -537,61 +554,62 @@ function FullPlan({ plan, readReceiptId, baseline, locations, timeZone, now, ack
   onApprove: (plan: WeeklyPlanReview, readReceiptId: string) => void; onDecline: (id: string) => void; weeklyEnabled: boolean;
 }) {
   void locations;
-  const until = new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(new Date(plan.expiresAt));
+  const lang = useAdvisorLang(), t = WEEKLY_COPY[lang];
+  const until = new Intl.DateTimeFormat(lang === "es" ? "es-PR" : "en-US", { timeZone, hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(new Date(plan.expiresAt));
   const expired = Date.parse(plan.expiresAt) <= now;
   const additions = [...plan.changes.additions].sort((a, b) => (a.date + a.startTime + a.employeeName).localeCompare(b.date + b.startTime + b.employeeName));
   const removals = [...plan.changes.removals].sort((a, b) => (a.date + a.startTime + a.employeeName).localeCompare(b.date + b.startTime + b.employeeName));
-  const reasons = plan.inspectionReasons.map(reason => REASON_TEXT[reason]);
+  const reasons = plan.inspectionReasons.map(reason => t.reason[reason]);
   const canSave = !!readReceiptId && plan.applyEligible && !expired && weeklyEnabled;
-  const shift = (a: (typeof additions)[number]) => `${range(a.startTime, a.endTime)} · ${a.locationName}${a.positionName ? ` · ${a.positionName}` : ""}`;
+  const shift = (a: (typeof additions)[number]) => `${range(a.startTime, a.endTime, lang)} · ${a.locationName}${a.positionName ? ` · ${a.positionName}` : ""}`;
   return <>
-    <CorpCard as="div" label="This plan" aside={<CorpPill tone={statusTone(plan)}>{plan.applyEligible ? STATUS_TEXT[plan.status] : "Look only"}</CorpPill>}>
-      <CorpRows label="This plan">
-        <li><CorpRow one title="Adds" value={`${plan.added} ${plan.added === 1 ? "shift" : "shifts"} · ${hours(plan.addedMinutes)}`} valueTone="soft" /></li>
-        {plan.removed ? <li><CorpRow one title="Replaces" value={`${plan.removed} draft ${plan.removed === 1 ? "shift" : "shifts"} · ${hours(plan.removedMinutes)}`} valueTone="soft" /></li> : null}
-        <li><CorpRow one title="Keeps" value={`${plan.preservedAssignments} ${plan.preservedAssignments === 1 ? "shift" : "shifts"}`} valueTone="soft" /></li>
-        <li><CorpRow one title="Coverage" value={`${baseline ? `${hours(baseline.coveredMinutes).replace(" h", "")} → ` : ""}${coverageText(plan.coverage)}`} valueTone="soft" /></li>
-        <li><CorpRow one title="Still open" value={`${plan.remaining.total} ${plan.remaining.total === 1 ? "block" : "blocks"}`} valueTone="soft" /></li>
-        <li><CorpRow one title="Weekend history" value={`${plan.fairness.employeesWithKnownWeekends} of ${plan.fairness.employeesWithKnownWeekends + plan.fairness.employeesWithoutKnownWeekends} known`} valueTone="soft" /></li>
-        <li><CorpRow one title="Available until" value={expired ? "Expired" : until} valueTone="soft" /></li>
+    <CorpCard as="div" label={t.thisPlan} aside={<CorpPill tone={statusTone(plan)}>{plan.applyEligible ? t.status[plan.status] : t.lookOnly}</CorpPill>}>
+      <CorpRows label={t.thisPlan}>
+        <li><CorpRow one title={t.adds} value={`${t.shifts(plan.added)} · ${hours(plan.addedMinutes)}`} valueTone="soft" /></li>
+        {plan.removed ? <li><CorpRow one title={t.replaces} value={`${t.draftShifts(plan.removed)} · ${hours(plan.removedMinutes)}`} valueTone="soft" /></li> : null}
+        <li><CorpRow one title={t.keeps} value={t.shifts(plan.preservedAssignments)} valueTone="soft" /></li>
+        <li><CorpRow one title={t.coverage} value={`${baseline ? `${hours(baseline.coveredMinutes).replace(" h", "")} → ` : ""}${t.coverageText(plan.coverage)}`} valueTone="soft" /></li>
+        <li><CorpRow one title={t.stillOpen} value={t.blocks(plan.remaining.total)} valueTone="soft" /></li>
+        <li><CorpRow one title={t.weekendHistory} value={t.known(plan.fairness.employeesWithKnownWeekends, plan.fairness.employeesWithKnownWeekends + plan.fairness.employeesWithoutKnownWeekends)} valueTone="soft" /></li>
+        <li><CorpRow one title={t.availableUntil} value={expired ? t.expired : until} valueTone="soft" /></li>
       </CorpRows>
     </CorpCard>
 
-    <CorpSection id="wk-added" label="Shifts added" count={additions.length}>
-      <CorpCard as="div"><CorpRows label="Shifts added">{additions.length ? additions.map((a, i) => <li key={i}><CorpRow lead={shortDay(a.date)} title={a.employeeName} detail={shift(a)}
-        value={a.isDesignatedLead ? <CorpPill tone="teal">Lead</CorpPill> : undefined} /></li>)
-        : <li className="c-empty c-empty--row">No shifts added</li>}</CorpRows></CorpCard>
+    <CorpSection id="wk-added" label={t.shiftsAdded} count={additions.length}>
+      <CorpCard as="div"><CorpRows label={t.shiftsAdded}>{additions.length ? additions.map((a, i) => <li key={i}><CorpRow lead={shortDay(a.date, lang)} title={a.employeeName} detail={shift(a)}
+        value={a.isDesignatedLead ? <CorpPill tone="teal">{t.lead}</CorpPill> : undefined} /></li>)
+        : <li className="c-empty c-empty--row">{t.noShiftsAdded}</li>}</CorpRows></CorpCard>
     </CorpSection>
-    {removals.length ? <CorpSection id="wk-removed" label="Draft shifts replaced" count={removals.length}>
-      <CorpCard as="div"><CorpRows label="Draft shifts replaced">{removals.map((r, i) => <li key={i}><CorpRow lead={shortDay(r.date)} title={r.employeeName} detail={shift(r)}
-        value={<CorpPill tone="neutral">Replaced</CorpPill>} /></li>)}</CorpRows></CorpCard>
+    {removals.length ? <CorpSection id="wk-removed" label={t.draftShiftsReplaced} count={removals.length}>
+      <CorpCard as="div"><CorpRows label={t.draftShiftsReplaced}>{removals.map((r, i) => <li key={i}><CorpRow lead={shortDay(r.date, lang)} title={r.employeeName} detail={shift(r)}
+        value={<CorpPill tone="neutral">{t.replacedPill}</CorpPill>} /></li>)}</CorpRows></CorpCard>
     </CorpSection> : null}
-    <CorpSection id="wk-open" label="Still open" count={plan.remaining.total}>
-      <CorpCard as="div"><CorpRows label="Still open">{plan.remaining.items.length ? plan.remaining.items.map((g, i) => <li key={i}><CorpRow
-        lead={shortDay(g.date)} title={range(g.startTime, g.endTime)}
-        detail={[g.locationName, g.missingStaff === null ? null : `${g.missingStaff} more`, g.requiresLead ? "Lead" : null,
-          ...g.positions.map(p => `${p.name} ×${p.missing}`), g.positionsOmitted ? `${g.positionsOmitted} more positions` : null].filter(Boolean).join(" · ")} /></li>)
-        : <li className="c-empty c-empty--row">Nothing left open</li>}
-        {plan.remaining.total > plan.remaining.items.length ? <li className="c-empty c-empty--row">{plan.remaining.total - plan.remaining.items.length} more not listed</li> : null}
+    <CorpSection id="wk-open" label={t.stillOpen} count={plan.remaining.total}>
+      <CorpCard as="div"><CorpRows label={t.stillOpen}>{plan.remaining.items.length ? plan.remaining.items.map((g, i) => <li key={i}><CorpRow
+        lead={shortDay(g.date, lang)} title={range(g.startTime, g.endTime, lang)}
+        detail={[g.locationName, g.missingStaff === null ? null : t.more(g.missingStaff), g.requiresLead ? t.lead : null,
+          ...g.positions.map(p => `${p.name} ×${p.missing}`), g.positionsOmitted ? t.morePositions(g.positionsOmitted) : null].filter(Boolean).join(" · ")} /></li>)
+        : <li className="c-empty c-empty--row">{t.nothingLeftOpen}</li>}
+        {plan.remaining.total > plan.remaining.items.length ? <li className="c-empty c-empty--row">{t.moreNotListed(plan.remaining.total - plan.remaining.items.length)}</li> : null}
       </CorpRows></CorpCard>
     </CorpSection>
-    {plan.issues.total ? <CorpSection id="wk-checks" label="Things to check" count={plan.issues.total}>
-      <CorpCard as="div"><CorpRows label="Things to check">{plan.issues.items.map((item, i) => <li key={i}><CorpRow title={item.message} detail={PROVENANCE_TEXT[item.provenance]} /></li>)}
-        {plan.issues.total > plan.issues.items.length ? <li className="c-empty c-empty--row">{plan.issues.total - plan.issues.items.length} more not listed</li> : null}</CorpRows></CorpCard>
+    {plan.issues.total ? <CorpSection id="wk-checks" label={t.thingsToCheck} count={plan.issues.total}>
+      <CorpCard as="div"><CorpRows label={t.thingsToCheck}>{plan.issues.items.map((item, i) => <li key={i}><CorpRow title={item.message} detail={t.provenance[item.provenance]} /></li>)}
+        {plan.issues.total > plan.issues.items.length ? <li className="c-empty c-empty--row">{t.moreNotListed(plan.issues.total - plan.issues.items.length)}</li> : null}</CorpRows></CorpCard>
     </CorpSection> : null}
 
-    <CorpSection id="wk-decide" label="Decide">
+    <CorpSection id="wk-decide" label={t.decide}>
       <CorpCard as="div"><CorpBody><div className="wk-decide">
         {canSave ? <>
-          <p className="wk-para">Saves {plan.added} {plan.added === 1 ? "shift" : "shifts"}{plan.removed ? ` and replaces ${plan.removed}` : ""} as a draft. Not published, no one notified.</p>
+          <p className="wk-para">{t.savesLine(plan.added, plan.removed)}</p>
           <label className="wk-ack"><input type="checkbox" checked={acknowledged} disabled={busy || approvalLocked} onChange={event => setAcknowledged(event.target.checked)} />
-            <span>I reviewed all proposed changes and remaining gaps</span></label>
-        </> : <BCallout tone="amber">{!weeklyEnabled ? "Weekly planning is off." : expired ? "Expired. Compare again."
-          : `Can’t be saved${reasons.length ? `: ${reasons.join(", ").toLowerCase()}` : ""}`}</BCallout>}
-        <DeclinePlanStep busy={busy} onDecline={() => onDecline(plan.id)}>{ask => <div className="wk-acts wk-acts--end">
-          {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} {...ask}>Decline</CorpButton> : null}
-          {canSave ? <CorpButton kind="primary" size="md" disabled={!acknowledged || busy || approvalLocked} onClick={() => onApprove(plan, readReceiptId!)}>{busy ? "Saving…" : "Save as draft"}</CorpButton>
-            : <CorpButtonLink href={WEEKLY_PATH} kind="secondary" size="md" className="b-rowact b-rowact--go">Back to options</CorpButtonLink>}
+            <span>{t.ackLabel}</span></label>
+        </> : <BCallout tone="amber">{!weeklyEnabled ? t.offCallout : expired ? t.expiredCallout
+          : t.cantBeSavedBecause(reasons.length ? reasons.join(", ").toLowerCase() : "")}</BCallout>}
+        <DeclinePlanStep busy={busy} lang={lang} onDecline={() => onDecline(plan.id)}>{ask => <div className="wk-acts wk-acts--end">
+          {weeklyEnabled ? <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={busy} {...ask}>{t.decline}</CorpButton> : null}
+          {canSave ? <CorpButton kind="primary" size="md" disabled={!acknowledged || busy || approvalLocked} onClick={() => onApprove(plan, readReceiptId!)}>{busy ? t.saving : t.saveAsDraft}</CorpButton>
+            : <CorpButtonLink href={WEEKLY_PATH} kind="secondary" size="md" className="b-rowact b-rowact--go">{t.backToOptions}</CorpButtonLink>}
         </div>}</DeclinePlanStep>
       </div></CorpBody></CorpCard>
     </CorpSection>
