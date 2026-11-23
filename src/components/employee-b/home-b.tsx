@@ -184,9 +184,10 @@ function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; l
   // shift", without the "Until" chip or the sentence (the Shift lead chip stays).
   const echo = !!(now && heroShows);
   // Phase 9 (spec 1.4): a time fact ("Until 5 PM", "Tomorrow", "Starts in 2 h") is not a state, so it is the header's
-  // quiet meta, not a teal chip.
+  // quiet meta, not a teal chip. Core screens check (Nov 23, 2026; each fact once): a shift under way has no "Until
+  // 4:00 PM" meta, since the range under the title already ends at that time.
   return <BCard id="b-home-shift" title={echo ? 'Your shift' : now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
-    meta={echo ? undefined : now ? `Until ${clock(now.endAt, zone)}` : startsIn(shift, snapshot)}>
+    meta={now ? undefined : startsIn(shift, snapshot)}>
     <div className="eb-shift">
       {/* Phase 8 (review C, row 14): each time stays whole. Gaps G53 (Nov 23, 2026): where the line is too short (768px at
         * 200% text) the range breaks after its dash, as parts.tsx Range does ("5:30 AM –" over "1:30 PM"); it broke before. */}
