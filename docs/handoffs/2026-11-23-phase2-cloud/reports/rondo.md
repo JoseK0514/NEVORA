@@ -135,3 +135,15 @@ None of items 9–14.
 - Captures (production build): Owner H1–H6 and Elena H1, H5 and H6 at 390, 390 viewport-height (`-390-fold`), 768,
   1440 and 390 with 200% text. Overflow 0 everywhere. Axe 0 except the known Insights band-line false positive at 768
   and 1440.
+
+## Third follow-up: band titles, Daniel, one consistent set (code `ceb19391`, after merge `481851c9`)
+- Phone band titles: the shell sets `.c-nav--phone .c-nav__title` to 28px/34px (`@layer nv-b`). On Rondo AI, Weekly
+  plan, Business records, Company knowledge and Insights the page sheets now set 1.75rem/2.125rem, the same at 100%, so
+  the title doubles with 200% text.
+- Daniel (`OWN-DANI`, Condado only), H1: captured with the location Manager harness (`run-scoped.sh`), with Rondo turned
+  on in a scratch copy of the harness. Overflow 0, no clipping or overlap, axe 0 at 390, 390 with 200% text, 768 and 1440.
+- One consistent set from `ceb19391` (production build): Owner H1–H6, Elena H1, H5 and H6, Daniel H1. Each at 390, 390
+  at screen height, 390 with 200% text, 768 and 1440. Files are in `shots/rondo/img/` (`<row>-<o|m|ml>-<390|390-fold|390t|768|1440>.webp`),
+  listed in `shots/rondo/rows.json`. Overflow 0 everywhere. Axe 0 except the known Insights band-line false positive
+  at 768 and 1440. At 200% the only fixed-size text left is the Insights segment label and the kit pill
+  "… under plan".

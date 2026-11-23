@@ -148,3 +148,7 @@ Device: G22 (and the screen-reader halves of G18, G42). Spanish: G42.
 | G89 | Timecards (phones) | "12 people" in the subtitle and "Team 12" in the card title say the same fact | Package Q | Wording | closed (timecards-final 61d48a28): head count once on phones |
 | G90 | Timecards from 768 | Names, table cells, segmented control and band title are fixed px while statuses are rem; the week control is 36px | Package Q | Text size, targets | closed (timecards-final 69e34055): Timecards text in rem from 768; person's week wraps |
 | G23 | Sign-up and billing portal pages | Not captured in the sweep; set aside by Jose ("focus just on nevora") | Sweep | Evidence | Jose (parked) |
+| G91 | Timecards phone select/review (older Corp layout) | Title, week buttons, "Approve N timecards", count and hours are fixed px at 200% text; nothing overlaps | Timecards final | Text size | open (timecards-final, assigned 14:20) |
+| G92 | Kit: phone band title, CorpPill | Shared phone band title about 26px at 200% text (Rondo fixed its own pages in ceb19391); CorpPill text 12px fixed | Rondo | Text size | open (kit-final, assigned 14:20) |
+| G93 | Rondo H1, location Manager | Daniel can't be captured: the scoped harness has no Rondo flags | Rondo | Evidence | open (rondo, assigned 14:20) |
+| G94 | Never-passed pages | F3 Import a staff list, I1-Ml Profile, K3 Enter Employee ID, C12 Owner/Manager review, C10 Owner had no Phase 2 pass | Lead | Coverage | open (late packages X, K3, M) |
