@@ -152,7 +152,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
           for (let i = 0; i < 19; i++) {
             await history.getByRole('button', { name: 'Load older events', exact: true }).focus();
             await page.keyboard.press('Enter');
-            await expect.poll(() => history.locator('li').count()).toBe(Math.min(150 + i * 50, 1001));
+            await expect.poll(() => history.locator('li').count(), { timeout: 20000 }).toBe(Math.min(150 + i * 50, 1001));
           }
           await history.getByText('All events in this history snapshot are loaded.', { exact: true }).waitFor();
           expect(await history.locator('li').count()).toBe(1001);

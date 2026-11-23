@@ -143,6 +143,12 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         await p.evaluate(() => window.dispatchEvent(new Event('pagehide')));
         await p.goto(app.url + '/app/schedule/edit?shiftId=' + id);
         await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' });
+        await expect.poll(() => form(n).evaluate((element: HTMLFormElement) =>
+          Object.getOwnPropertyNames(element).some(key => {
+            if (!key.startsWith('__reactProps')) return false;
+            const props: unknown = Reflect.get(element, key);
+            return props !== null && typeof props === 'object' && typeof Reflect.get(props, 'onSubmit') === 'function';
+          })), { timeout: 20000 }).toBe(true);
       };
       // Negative control: even a previously idle document must not let a held
       // real Next RSC read be cancelled by the next fixture navigation.
