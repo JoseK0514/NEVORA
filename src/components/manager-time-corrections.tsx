@@ -20,13 +20,17 @@ import {useAskStep} from './owner-b/ask-step';
 import {reviewCopy} from './review-details/copy';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import Link from 'next/link';
-import {timeZoneLabel} from '@/lib/time-zone-label';
+import {usePortalLang,type PortalLang} from '@/lib/i18n/portal-lang';
+import {MANAGER_TIME_CORRECTIONS_COPY,managerTimeCorrectionsCopy,noticeIn} from './manager-time-corrections-copy';
 /** access_lost: signed out or access ended (sign in again). not_allowed: signed in without the corrections permission (QA A3-06). */
 export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'not_allowed'|'paused';
 const changedEvent='nevora:time-correction-changed';
-const unknownNotice='We couldn’t confirm your decision. Try again; it won’t be applied twice.';
-const approvedNotice='Correction approved. The original recorded punch remains unchanged.';
-const rejectedNotice='Correction declined. The original recorded punch remains unchanged.';
+/* The queue keeps its notices as these fixed English sentences (state compares them) and says them in the person's
+ * language where they are drawn (noticeIn). */
+const EN=MANAGER_TIME_CORRECTIONS_COPY.en;
+const unknownNotice=EN.unknownNotice;
+const approvedNotice=EN.approvedNotice;
+const rejectedNotice=EN.rejectedNotice;
 /** Only fixed, non-identifying receipt feedback survives a private pause. */
 export function pausedCorrectionNotice(notice:string|null){return [unknownNotice,approvedNotice,rejectedNotice].includes(notice??'')?notice:null;}
 
@@ -34,26 +38,28 @@ export function pausedCorrectionNotice(notice:string|null){return [unknownNotice
  * declined request is closed: no done mark), a title naming what is now true and one next fact, in the list's card. Any
  * other notice (a conflict, a block, an answer that did not arrive) is the kit's amber note. `last`: nothing else waits,
  * so the line says so and no empty state is drawn under it. */
-function CorrectionNotice({notice,last}:{notice:string;last:boolean}){
-  if(notice===approvedNotice)return <div className="manager-corrections-notice" data-result=""><DecisionResult tone="done" title="Correction approved" line={last?'Nothing else is waiting.':'The timecard shows the new times. The original clock times stay in its history.'}/></div>;
-  if(notice===rejectedNotice)return <div className="manager-corrections-notice" data-result=""><DecisionResult tone="closed" icon={<PencilSimpleIcon weight="bold"/>} title="Correction declined" line={last?'Nothing else is waiting.':'The timecard keeps its recorded times.'}/></div>;
-  return <div className="manager-corrections-notice" data-note=""><BCallout tone="amber" icon={notice===unknownNotice?'unknown':'check'} role="status">{notice}</BCallout></div>;
+function CorrectionNotice({notice,last,lang}:{notice:string;last:boolean;lang:PortalLang}){
+  const t=managerTimeCorrectionsCopy(lang);
+  if(notice===approvedNotice)return <div className="manager-corrections-notice" data-result=""><DecisionResult tone="done" title={t.approvedTitle} line={last?t.nothingElse:t.approvedLine}/></div>;
+  if(notice===rejectedNotice)return <div className="manager-corrections-notice" data-result=""><DecisionResult tone="closed" icon={<PencilSimpleIcon weight="bold"/>} title={t.declinedTitle} line={last?t.nothingElse:t.declinedLine}/></div>;
+  return <div className="manager-corrections-notice" data-note=""><BCallout tone="amber" icon={notice===unknownNotice?'unknown':'check'} role="status">{noticeIn(notice,lang)}</BCallout></div>;
 }
 /** Jose (Nov 21, 2026): Decline asks first. The first tap opens the question in place of the two buttons and sends
  * nothing; "Keep request" brings them back; the question's Decline calls the same `onDecision('REJECT')` as before,
  * once. Approve stays one tap. */
-function CorrectionDecide({name,disabled,onDecision}:{name:string;disabled:boolean;onDecision:(decision:'APPROVE'|'REJECT')=>void}){
-  const {open,ask,keep,done,titleRef,openerRef}=useAskStep(),t=reviewCopy();
-  if(open&&!disabled)return <DecisionAsk className="manager-correction-ask" titleRef={titleRef} groupLabel={`Decline the correction for ${name}?`} question={t.askDeclineCorrection} consequence={t.recordedStays}
-    keep={t.keepRequest} keepLabel={`Keep the correction request for ${name}`} onKeep={keep} go={t.decline} goLabel={`Decline correction for ${name}`} onGo={()=>{done();onDecision('REJECT');}}/>;
+function CorrectionDecide({name,disabled,onDecision,lang}:{name:string;disabled:boolean;onDecision:(decision:'APPROVE'|'REJECT')=>void;lang:PortalLang}){
+  const {open,ask,keep,done,titleRef,openerRef}=useAskStep(),t=reviewCopy(lang),m=managerTimeCorrectionsCopy(lang);
+  if(open&&!disabled)return <DecisionAsk className="manager-correction-ask" titleRef={titleRef} groupLabel={m.askGroup(name)} question={t.askDeclineCorrection} consequence={t.recordedStays}
+    keep={t.keepRequest} keepLabel={m.keepLabel(name)} onKeep={keep} go={t.decline} goLabel={m.declineLabel(name)} onGo={()=>{done();onDecision('REJECT');}}/>;
   return <div className="manager-correction-actions">
-    <button ref={openerRef} className="b-rowact b-rowact--quiet" type="button" aria-label={`Decline correction for ${name}`} disabled={disabled} onClick={ask}>Decline</button>
-    <button className="primary b-rowact b-rowact--go" type="button" aria-label={`Approve correction for ${name}`} disabled={disabled} onClick={()=>onDecision('APPROVE')}>Approve</button>
+    <button ref={openerRef} className="b-rowact b-rowact--quiet" type="button" aria-label={m.declineLabel(name)} disabled={disabled} onClick={ask}>{m.decline}</button>
+    <button className="primary b-rowact b-rowact--go" type="button" aria-label={m.approveLabel(name)} disabled={disabled} onClick={()=>onDecision('APPROVE')}>{m.approve}</button>
   </div>;
 }
-function requestLabel(item:ManagerCorrectionItem){
-  if(item.kind==='MISSING_ENTRY')return 'Missing time';
-  if(item.kind==='BREAK_BOUNDARY')return item.breakName?item.breakName+' break':'Recorded break';
+function requestLabel(item:ManagerCorrectionItem,lang:PortalLang='en'){
+  const t=managerTimeCorrectionsCopy(lang);
+  if(item.kind==='MISSING_ENTRY')return t.missingTime;
+  if(item.kind==='BREAK_BOUNDARY')return item.breakName?t.namedBreak(item.breakName):t.recordedBreak;
   // Phase 2 gate (Nov 23): a clock in and out is what most requests are and the Recorded line already shows both
   // times, so only the other kinds (a missing time, a break) get a label beside the location.
   return null;
@@ -61,17 +67,17 @@ function requestLabel(item:ManagerCorrectionItem){
 function noticeFor(result:CorrectionActionResponse){
   if(result.state==='approved')return approvedNotice;
   if(result.state==='rejected')return rejectedNotice;
-  if(result.state==='conflict')return 'This request changed while you were reviewing it. Refresh to see the latest.';
+  if(result.state==='conflict')return EN.conflict;
   if(result.state==='outcome_unknown')return unknownNotice;
   if(result.state==='blocked'){
-    if(result.reason==='finalized_period')return 'This period is finalized. Reopen it in Timecards before reviewing this correction.';
-    if(result.reason==='self_review')return 'Another manager or an Owner reviews your own request.';
-    if(result.reason==='stale_source')return 'The recorded times changed. Refresh before deciding.';
-    if(result.reason==='overlap')return 'These times overlap another entry.';
-    if(result.reason==='live_state')return 'This person is still clocked in. Correct it after they clock out.';
-    return 'The end time must be after the start time.';
+    if(result.reason==='finalized_period')return EN.finalizedPeriod;
+    if(result.reason==='self_review')return EN.selfReview;
+    if(result.reason==='stale_source')return EN.staleSource;
+    if(result.reason==='overlap')return EN.overlap;
+    if(result.reason==='live_state')return EN.liveState;
+    return EN.endAfterStart;
   }
-  return 'That didn’t go through. Refresh and try again.';
+  return EN.failed;
 }
 
 const reviewAccessLost = (snapshot: ManagerTimeCorrections | null | undefined) =>
@@ -90,7 +96,10 @@ export function ManagerTimeCorrectionsSurface({
   onRetry,
   retry,
   band,
+  lang:langProp,
 }:{
+  /** The person's language; the live queue reads it from the portal, tests pass it. */
+  lang?:PortalLang;
   /** OW-015 / OW-004 (Time corrections page): the page's title and sub-line are drawn here, so the sub-line can carry how
    * many requests wait and say the note about times once. The cards then start right under the band, with no heading on
    * the canvas and no note repeated inside each card. `zone` is the workplace's zone until the read brings its own. */
@@ -104,6 +113,7 @@ export function ManagerTimeCorrectionsSurface({
   onRetry:()=>void;
   retry:CorrectionReviewCommand|null;
 }){
+  const portalLang=usePortalLang(),lang=langProp??portalLang,t=managerTimeCorrectionsCopy(lang);
   const requestedMode=connection??(loading?'loading':snapshot?.state==='ready'?'ready':snapshot?.state==='unavailable'?(reviewAccessLost(snapshot)?deniedMode(snapshot):'unavailable'):'paused');
   const mode=requestedMode==='ready'&&snapshot?.state!=='ready'?'unavailable':requestedMode;
   const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
@@ -111,21 +121,21 @@ export function ManagerTimeCorrectionsSurface({
   const count=ready?.requests.length??0;
   // Phase 2 gate (Nov 23): without access nothing below is theirs to review, so the band says no more than the card.
   const denied=mode==='not_allowed'||mode==='access_lost';
-  const bandLine=band&&!denied?`${count?`${count} waiting · `:''}Fixes your team asked for. Original times are always kept. Times in ${timeZoneLabel(ready?.timeZone??band.zone)}.`:null;
-  return <>{band?<>{bandLine?<p className="c-phone-sub">{bandLine}</p>:null}<CorpTitle id="tcx-title" title="Time corrections" sub={bandLine??undefined} wide/></>:null}<section className="manager-corrections" data-band={band?'':undefined} aria-labelledby="manager-corrections-title">
+  const bandLine=band&&!denied?`${count?t.waiting(count):''}${t.bandNote(ready?.timeZone??band.zone)}`:null;
+  return <>{band?<>{bandLine?<p className="c-phone-sub">{bandLine}</p>:null}<CorpTitle id="tcx-title" title={t.title} sub={bandLine??undefined} wide/></>:null}<section className="manager-corrections" data-band={band?'':undefined} aria-labelledby="manager-corrections-title">
     {/* Copy table 49: when nothing is waiting, the header's "Correction requests 0" would repeat the empty state, so it is
       kept for screen readers only. */}
     <header className={band||(ready&&!ready.requests.length)?"manager-corrections-header sr-only":"manager-corrections-header"}>
       <div>
-        <p>Time corrections</p>
-        <h2 id="manager-corrections-title">Correction requests</h2>
-        <span>Fixes to past clock times wait here for your decision. The original Clocker record is kept.</span>
+        <p>{t.title}</p>
+        <h2 id="manager-corrections-title">{t.heading}</h2>
+        <span>{t.headerNote}</span>
       </div>
       {ready?<strong className="manager-corrections-count">{ready.requests.length}</strong>:null}
     </header>
-    {notice?<CorrectionNotice notice={notice} last={!!ready&&!ready.requests.length}/>:null}
-    {retry?<button className="manager-corrections-retry" type="button" disabled={busyId!==null||mode!=='ready'} onClick={onRetry}>Retry same decision</button>:null}
-    {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',not_allowed:'You don’t have access to time corrections',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Your access changed. Sign in again to review corrections.':mode==='not_allowed'?'Ask the Owner if you need it.':'Corrections didn’t load. Refresh to try again.'}</small></div>:
+    {notice?<CorrectionNotice notice={notice} last={!!ready&&!ready.requests.length} lang={lang}/>:null}
+    {retry?<button className="manager-corrections-retry" type="button" disabled={busyId!==null||mode!=='ready'} onClick={onRetry}>{t.retry}</button>:null}
+    {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{t.modes[mode]}</strong><small>{mode==='access_lost'?t.accessLostLine:mode==='not_allowed'?t.notAllowedLine:t.didntLoad}</small></div>:
       ready?.requests.length?<div className="manager-corrections-list">
         {ready.requests.map(item=><article className="manager-correction-row" key={item.id} tabIndex={-1} id={`correction-${item.id}`}>
           <div className="manager-correction-topline">
@@ -134,23 +144,23 @@ export function ManagerTimeCorrectionsSurface({
               <BAvatar name={item.employeeName}/>
               <strong>{item.employeeName}</strong>
               {/* Premium pass FA (final verification A #10): the facts wrap whole, never leaving a "·" at a line's end. */}
-              <small><BSegs parts={[item.locationName,requestLabel(item)]}/></small>
+              <small><BSegs parts={[item.locationName,requestLabel(item,lang)]}/></small>
             </div>
             {/* Premium pass FA (final verification A #20): every request on this page waits for a decision and the band says
               * how many ("4 waiting"), so a "Waiting" chip on every card was the normal state drawn as an exception. */}
           </div>
           {/* Review B6 (NV-080): Recorded and Asked for, the change in bold with how much it moves; Current effective only
             * when it differs; one line for the zone and what approving does; the reason as a labelled quote. */}
-          <CorrectionComparison compact note={band?null:"Approving changes the timecard; the original clock times stay in the history"} recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={ready.timeZone} proposedStartAt={item.proposedStartAt} proposedEndAt={item.proposedEndAt}/>
-          {item.context.state==='confirmed'&&item.context.totalDecisions?<PriorCorrectionDecisions context={item.context} zone={ready.timeZone}/>:null}
-          {item.baseChanged?<p className="manager-correction-self" role="status">The timecard changed after this request. Check the current times before deciding.</p>:null}
-          <p className="manager-correction-reason"><span className="manager-correction-reason__k">Their reason</span><q>{item.reason}</q></p>
-          {item.requestedByName?<p className="manager-correction-provenance">Requested by {item.requestedByName} for this employee.</p>:null}
-          {item.isSelf?<p className="manager-correction-self" role="note">Another manager or an Owner reviews your own request.</p>:null}
-          <CorrectionDecide name={item.employeeName} disabled={item.isSelf||busyId!==null||retry!==null} onDecision={decision=>onDecision(item,decision)}/>
+          <CorrectionComparison compact note={band?null:t.approvingNote} recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?t.approvedMissingTime:t.recorded} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={ready.timeZone} proposedStartAt={item.proposedStartAt} proposedEndAt={item.proposedEndAt} lang={lang}/>
+          {item.context.state==='confirmed'&&item.context.totalDecisions?<PriorCorrectionDecisions context={item.context} zone={ready.timeZone} lang={lang}/>:null}
+          {item.baseChanged?<p className="manager-correction-self" role="status">{t.baseChanged}</p>:null}
+          <p className="manager-correction-reason"><span className="manager-correction-reason__k">{t.theirReason}</span><q>{item.reason}</q></p>
+          {item.requestedByName?<p className="manager-correction-provenance">{t.requestedBy(item.requestedByName)}</p>:null}
+          {item.isSelf?<p className="manager-correction-self" role="note">{t.selfReview}</p>:null}
+          <CorrectionDecide name={item.employeeName} disabled={item.isSelf||busyId!==null||retry!==null} onDecision={decision=>onDecision(item,decision)} lang={lang}/>
         </article>)}
       </div>:notice===approvedNotice||notice===rejectedNotice?null:<div className="manager-corrections-state">{/* Phase 8 (a.md #10): the kit's empty state (grey tray, one line, one way on), left-aligned at a state card's width. */}
-        <BState kind="empty" title="Nothing to fix" line="When someone asks to fix a time, it shows up here." quiet={<Link className="b-link" href="/app/timecards">Go to Timecards</Link>}/></div>}
+        <BState kind="empty" title={t.emptyTitle} line={t.emptyLine} quiet={<Link className="b-link" href="/app/timecards">{t.goToTimecards}</Link>}/></div>}
   </section></>;
 }
 

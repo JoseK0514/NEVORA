@@ -17,7 +17,7 @@ import {keepWhole} from '../../lib/keep-whole';
 import {addDays, weekStartFor} from '../../lib/date-utils';
 import type {EmployeeTime} from '../../lib/employee-time';
 import {workCopy, type WorkCopy} from './work-copy';
-import {esDate, esTime, LOCALE, type FormatLang} from './es-format';
+import {LOCALE, type FormatLang} from './es-format';
 import {usePortalLang} from '@/lib/i18n/portal-lang';
 import {useHours} from '../employee-mobile/use-hours';
 import {compactDuration} from '../employee-mobile/hours-model';
@@ -69,7 +69,7 @@ const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 /** The person's language for a date or time Home formats itself (fmt is English). */
 const fmtL = (lang: FormatLang, zone: string, options: Intl.DateTimeFormatOptions) => lang === 'en' ? fmt(zone, options) : new Intl.DateTimeFormat(LOCALE[lang], {timeZone: zone, ...options});
 const shortDay = (date: string, lang: FormatLang = 'en') => fmtL(lang, 'UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(date));
-const clockL = (at: string, zone: string, lang: FormatLang) => esTime(clock(at, zone), lang);
+const clockL = (at: string, zone: string, lang: FormatLang) => clock(at, zone, lang);
 /** "8 h" or "7.5 h": the shift's length from its own start and end. */
 const lengthOf = (shift: PublishedAssignment) => { const minutes = Math.round((Date.parse(shift.endAt) - Date.parse(shift.startAt)) / 60_000); return minutes > 0 ? `${hoursNumber(minutes)} h` : null; };
 const dateKey = (at: string, zone: string) => new Intl.DateTimeFormat('en-CA', {timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit'}).format(new Date(at));
@@ -140,7 +140,7 @@ function WeekCard({week, time, lang}: {week: HomeWeek; time: boolean; lang: Form
 /** "Starts in 2 h" or "Starts in 45 min" today; otherwise "Tomorrow" or the weekday. */
 function startsIn(shift: PublishedAssignment, snapshot: HomeSnapshot, lang: FormatLang = 'en') {
   const minutes = Math.round((Date.parse(shift.startAt) - Date.parse(snapshot.observedAt)) / 60_000);
-  if (dayWord(shift, snapshot) !== 'Today' || minutes <= 0) { const word = esDate(dayWord(shift, snapshot), lang); return lang === 'es' ? word.charAt(0).toUpperCase() + word.slice(1) : word; }
+  if (dayWord(shift, snapshot) !== 'Today' || minutes <= 0) { const word = dayWord(shift, snapshot, lang); return word.charAt(0).toUpperCase() + word.slice(1); }
   const t = workCopy(lang);
   return minutes < 60 ? t.startsInMin(minutes) : t.startsInHours(Math.round(minutes / 60));
 }
@@ -222,7 +222,7 @@ function NowCard({snapshot, week, lang}: {snapshot: HomeSnapshot; week: HomeWeek
   if (!clockIn || !overrun) return null;
   return <BCard id="b-home-now" title={t.rightNow}
     link={{href: '/app/my-time', label: t.timeTab, aria: t.openTime}}>
-    <div className="eb-status"><BCallout tone="amber" role="status" title={t.stillClockedIn(clockL(clockIn.clockInAt, snapshot.timeZone, lang))}>{t.shiftEnded(keepWhole(esTime(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`), lang)), clockIn.locationName)}</BCallout></div>
+    <div className="eb-status"><BCallout tone="amber" role="status" title={t.stillClockedIn(clockL(clockIn.clockInAt, snapshot.timeZone, lang))}>{t.shiftEnded(keepWhole(compactRange(`${wallTime(overrun.startTime, lang)} – ${wallTime(overrun.endTime, lang)}`)), clockIn.locationName)}</BCallout></div>
   </BCard>;
 }
 

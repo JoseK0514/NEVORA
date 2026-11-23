@@ -19,6 +19,8 @@ All data is fictional, and nothing was sent or published.
 | screens-final 23474a05 (b32b3193 356cf38c d16ecfb9 b21c6601, report) | all | dfbbe518 |
 | payroll-2 d9282e71 (`<html lang>` only; the rest of that branch is payroll work) | cherry-pick | a7fff9e8 |
 | timecards-final 093f5ca0 (8347506a plus its shared-tip merge) | all | e09b9b06 |
+| release candidate `claude-codex-collab-nevora` 91c08d19 (Insights `.c-ins__range` contrast 95bad13a, the English Close open punch card, the guide rebuild) | all; the guide PDFs and manifest are the candidate's; Close open punch keeps the Spanish wiring on the same card layout | 164bd39b |
+| es-employee second release 84e8109b (198cea83 time corrections queue and Time on the lang-aware helpers, bb17dd9e Home and Updates on the shared helpers, 04d3cae5 the queue's zone in Spanish, report) | all, no conflicts | 5eb14ec9 |
 
 ### How the conflicts were settled
 
@@ -57,16 +59,19 @@ All data is fictional, and nothing was sent or published.
 | 4d261595 | More: `availabilitySummary` never got the language (`.then(availabilitySummary)`), so the summary read "6 days a week" in Spanish |
 | 6a873b26 | Phone Profile: the hint "Sign-in pages only. The rest of NEVORA is in English for now." is no longer true and is removed, as es-employee removed it elsewhere |
 
-## Still English or open (to assign)
+## Still English or open
+
+Closed since: the manager's time corrections queue and the Employee Time screen on the language-aware helpers
+(es-employee's second release, merged above).
+
+The lead assigned these: Schedule tools to screens-final; `lib/reports`, server messages, `clocker-owner-copy` and
+reminders to es-rest; time corrections and the time-b helpers to es-employee; `components/manager` to timecards-final.
+They are integrated here as each lands. Jose's word decisions below wait for his answer.
+
 
 - **Week grid** (`manager-weekly-roster.tsx`, about 42 strings, and `components/schedule`): only the times follow the
   language, through CorpTime. The live words ("Clocked in", "On break") come from `ATTENDANCE_WORDS` there.
 - **Shift form, Find cover, Review replacement, ManagerShiftRequests** (screens-final's list).
-- **Time corrections queue** (`manager-time-corrections.tsx`, about 17 strings; `employee-time-corrections.tsx`, about
-  22 strings). The comparison inside follows the language; the lists around it don't.
-- **Employee Time screen** (`employee-b/time-b.tsx`): correct Spanish, but through the older English-to-Spanish
-  rewriting (`esDate`, `esTime`, `timeWord`). Switching to the language-aware hours-model helpers is a refactor that is
-  still to do.
 - **TeamB's band, QuietPage's `lang` prop, "What changed in your schedule", the Time, Profile and Availability page
   titles** (employee-mobile): from the session reports, not yet checked here.
 - **Server action messages** (Settings, breaks, clocker, photos, matching, employees, requests, scheduling, policies) and
@@ -102,9 +107,8 @@ finds no outline on the sidebar links in both languages; they likely show focus 
 doesn't read. That is unchanged by this work, not confirmed either way.
 
 Still open from the pass:
-- Insights at 1440: axe `color-contrast` on `.c-ins__range` (the date line on the band), the same in both
-  scans. The screenshot shows light text on the teal band, so the gradient is the likely cause; I did not check it in
-  English.
+- Insights at 1440: axe `color-contrast` on `.c-ins__range` (the date line on the band). Fixed on the release
+  candidate (95bad13a), merged in 164bd39b.
 - Insights' "Report definitions" (screen-reader and disclosure text) are server sentences from `lib/reports/project.ts`.
 - Shift requests (Owner): ManagerShiftRequests' "Approving gives this shift to the person who picked it up." and
   "Show the shift" (screens-final's open list).
@@ -116,7 +120,12 @@ machine. They are not committed, because they're working evidence and the sessio
 
 - `tsc --noEmit`: clean.
 - `oxlint src`: 0 errors; 1 warning that was already there (`<img>` in `premium/clocker.tsx`).
-- Whole `src` suite (`node scripts/run-rstest.mjs run src`): 16,411 passed. Four tests failed. Three were my
+- After merging the release candidate (164bd39b): tsc clean; whole `src` suite 16,427 passed, 2 failed. One was
+  `target-size-44-desk.test.ts`, a source-text check for the English "Select all eligible timecards" literal, which now
+  names the copy key (the English is unchanged in `timecards-copy.ts`); it is fixed. The other is
+  `manual-publication.test.ts`, which fails by design on staff until the Spanish release gets its own guide rebuild
+  (lead, Nov 23). `management-close-card.test.ts` reads the card's words from `management-close-copy.ts`.
+- Before that merge: whole `src` suite 16,411 passed. Four tests failed. Three were my
   expectations written before the merges (screens-final's Spanish wording "toda la empresa", and the role label mocked to
   the raw role); they are fixed and pass (35 of 35 in those files). The fourth, `src/test/manual-publication.test.ts`
   ("Stale or foreign application content hash"), was already failing before this work (G44, another session) and is
@@ -375,6 +384,21 @@ From `reports/es-employee.md`.
   - "Restablecer una contraseña o un PIN de Clocker"
   - "Ayudar a iniciar sesión"
 - Christmas bonus hours show the saved details. → Las horas del bono de Navidad muestran los datos guardados.
+
+### es-employee (second release): For Jose to review (approval and timecard wording)
+
+From `reports/es-employee.md`, section "Second release".
+
+- Correction approved. The original recorded punch remains unchanged. → Corrección aprobada. La marcación original registrada no cambia.
+- Correction declined. The original recorded punch remains unchanged. → Corrección rechazada. La marcación original registrada no cambia.
+- The timecard shows the new times. The original clock times stay in its history. → La tarjeta de tiempo muestra las horas nuevas. Las horas originales del reloj quedan en su historial.
+- The timecard keeps its recorded times. → La tarjeta de tiempo conserva sus horas registradas.
+- Approving changes the timecard; the original clock times stay in the history → Al aprobar, cambia la tarjeta de tiempo; las horas originales del reloj quedan en el historial
+- This period is finalized. Reopen it in Timecards before reviewing this correction. → Este período está finalizado. Reábrelo en Tarjetas de tiempo antes de revisar esta corrección.
+- Fixes to past clock times wait here for your decision. The original Clocker record is kept. → Las correcciones de horas pasadas esperan aquí tu decisión. El registro original del Clocker se guarda.
+- Fixes your team asked for. Original times are always kept. Times in {zone}. → Correcciones que pidió tu equipo. Las horas originales siempre se guardan. Hora de {lugar}.
+- We couldn’t confirm your decision. Try again; it won’t be applied twice. → No pudimos confirmar tu decisión. Inténtalo de nuevo; no se aplicará dos veces.
+- Another manager or an Owner reviews your own request. → Otro gerente o el dueño revisa tu propia solicitud.
 
 ### screens-final (Spanish): For Jose to review
 

@@ -1,8 +1,8 @@
 /* Signed-in Spanish (Nov 23, 2026): the words on the Employee and Lead Time screens (time-b.tsx): the Time tab, one day,
  * Past timecards, Your correction requests and Fix my time, in English and Puerto Rico Spanish (docs/design/voice.md: tú,
- * Marcación, En turno, Tarjeta de tiempo, Solicitud de corrección). English is the approved wording, unchanged. Words the
- * shared Time model writes in English (status words, request kinds, timecard notes, the tablet's name) are looked up
- * here by their English text, so the model stays shared with the corporate pages. */
+ * Marcación, En turno, Tarjeta de tiempo, Solicitud de corrección). English is the approved wording, unchanged. Status words,
+ * request kinds, timecard notes and the tablet's name come from the shared Time model (employee-mobile/hours-model), whose
+ * helpers take the language, so they are not repeated here. */
 export type TimeLang = 'en' | 'es';
 
 const en = {
@@ -58,12 +58,7 @@ const en = {
   sending: 'Sending your request…', checkStatus: 'Check request status',
   // /app/timecards
   time: 'Time', pastTimecards: 'Past timecards', openingLabel: 'Opening your timecards', opening: 'Opening your timecards…', openPast: 'Open past timecards',
-  // The shared model's English words
-  statusWords: {} as Record<string, string>,
-  kinds: {} as Record<string, string>,
-  issues: {} as Record<string, string>,
   shifts: (n: number) => `${n} ${n === 1 ? 'shift' : 'shifts'}`,
-  tablet: (text: string) => text,
 };
 
 const es: typeof en = {
@@ -111,28 +106,9 @@ const es: typeof en = {
   couldntConfirm: 'No pudimos confirmar que tu solicitud se envió. Verifícala antes de enviar otra.',
   sending: 'Enviando tu solicitud…', checkStatus: 'Verificar estado de la solicitud',
   time: 'Tiempo', pastTimecards: 'Tarjetas de tiempo anteriores', openingLabel: 'Abriendo tus tarjetas de tiempo', opening: 'Abriendo tus tarjetas de tiempo…', openPast: 'Abrir tarjetas anteriores',
-  statusWords: {
-    Approved: 'Aprobada', Finalized: 'Finalizada', Reopened: 'Reabierta', 'Needs review': 'Requiere revisión', 'In progress': 'En curso',
-    'Not approved yet': 'Sin aprobar todavía', Waiting: 'En espera', Declined: 'Rechazada', 'Waiting for review': 'En espera de revisión',
-    'Clocked in': 'En turno', 'On break': 'En descanso',
-  },
-  kinds: {'Clock in and out': 'Entrada y salida', Break: 'Descanso', 'Missed shift': 'Turno sin marcar'},
-  issues: {
-    'An entry is still missing its clock-out.': 'A una entrada todavía le falta la salida.',
-    'A break is still in progress.': 'Hay un descanso todavía en curso.',
-    'A correction is waiting for review.': 'Hay una corrección en espera de revisión.',
-    'Some time entries overlap.': 'Algunas entradas de tiempo se solapan.',
-  },
   shifts: (n: number) => `${n} ${n === 1 ? 'turno' : 'turnos'}`,
-  tablet: (text: string) => {
-    const place = /^the (.+) tablet$/.exec(text);
-    if (text === 'the tablet where you work') return 'la tableta donde trabajas';
-    return place ? `la tableta de ${place[1]}` : text;
-  },
 };
 
 export const TIME_COPY: Record<TimeLang, typeof en> = {en, es};
 export type TimeCopy = typeof en;
 export const timeCopy = (lang: TimeLang = 'en'): TimeCopy => TIME_COPY[lang];
-/** A word from the shared Time model in this language (English when there is no entry). */
-export const timeWord = (copy: TimeCopy, map: 'statusWords' | 'kinds' | 'issues', word: string) => copy[map][word] ?? word;
