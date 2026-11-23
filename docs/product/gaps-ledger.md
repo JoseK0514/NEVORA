@@ -28,17 +28,17 @@ scoped read). Device: G22. Parked: G23.
 | G2 | Copy receipt | No BEFORE alignment numbers (the probe was added after the BEFORE run) | C8 agent | Evidence | assigned (package D) |
 | G3 | Copy receipt | Loading and error states not captured | C8 agent | Evidence | assigned (package D) |
 | G4 | Copy receipt | No Spanish for this page | C8 agent | Product | open |
-| G5 | Shared kit (band back link) | "‹ Schedule" in the band is 32px tall at 768 and 1440 (44px on phones); Find cover has the same | C8 agent | Accessibility | assigned (package C) |
-| G6 | App shell | Sidebar link "Things to do, N" has label-content-name-mismatch at 768 and 1440 on every page | C8, F1, time agents | Accessibility | assigned (package C) |
+| G5 | Shared kit (band back link) | "‹ Schedule" in the band is 32px tall at 768 and 1440 (44px on phones); Find cover has the same | C8 agent | Accessibility | closed: `545c747c`, `5e39d2fb`; 44px hit area from 768 up (32px drawn box kept), hit tests land 6px above to 5.5px below; `b-foundation.test.ts` (G5) |
+| G6 | App shell | Sidebar link "Things to do, N" has label-content-name-mismatch at 768 and 1440 on every page | C8, F1, time agents | Accessibility | closed: `d06223a6`; name now starts with the drawn text; mismatch 0 on every page, all widths, three roles; `app-shell-todo-name.test.tsx` |
 | G7 | Clocker receipt | Not captured: the scan harness can't find the kiosk PIN entry, so the new time format there is unit-tested only | Time agent | Harness + evidence | assigned (package D) |
 | G8 | Schedule day view (timeline) | Not captured; its capsules stay on one line, so a short shift's full range may run wider than the capsule at 768 | Time agent | Layout risk | assigned (package D) |
 | G9 | Time format | Keyboard not walked; 200% text checked at 390 only | Time agent | Evidence | assigned (package D) |
-| G10 | Time format | `business-time.ts` `formatBusinessClock` still prints a leading zero; nothing displays it now; remove or route through the shared formatter | Time agent | Cleanup | assigned (package C) |
-| G11 | Timecards | 4 colour-contrast hits at 1440 (pre-existing) | Time agent | Accessibility | assigned (package C) |
+| G10 | Time format | `business-time.ts` `formatBusinessClock` still prints a leading zero; nothing displays it now; remove or route through the shared formatter | Time agent | Cleanup | closed: `e2d04088`; `formatBusinessClock` removed (only its own test used it) |
+| G11 | Timecards | 4 colour-contrast hits at 1440 (pre-existing) | Time agent | Accessibility | closed: `545c747c`, `5e39d2fb`; counts 5.85:1, week strip 6.18:1; colour-contrast 0 at every width for three roles |
 | G12 | Schedule, Home, Time (shared roster rows) | label-content-name-mismatch on phones: week-strip days fixed (`39215f3a`), 13→3 for Daniel and 14→7 for Elena; roster row labels ("Find cover for the open shift…", "Edit …'s shift") still differ from their visible text | Lead (C1-Ml), time agent, recheck agent | Accessibility | assigned (package A) |
 | G13 | Team (TeamB, all roles) | Phone empty search has no "Clear search" button (desktop has one) | F1 agent | States | assigned (package A) |
 | G14 | Team | "Clocked in" is both a filter label and a row status | F1 agent | Wording | Jose |
-| G15 | Shared kit (b-filters) | Filter-count contrast 4.19:1 (Elena's "All 12") | F1 agent | Accessibility | assigned (package C) |
+| G15 | Shared kit (b-filters) | Filter-count contrast 4.19:1 (Elena's "All 12") | F1 agent | Accessibility | closed: `545c747c`; count 5.85:1 (white thumb), 5.21:1 (grey track); Team axe contrast 1→0 |
 | G16 | Team · Location Manager | The scoped read has no positions, so rows show the role instead of "Front counter" like Elena's | F1 agent | Data contract | open |
 | G17 | Team · Location Manager | Rows can't open a person: the person page says "Company-wide access needed" to a location Manager | F1 agent | Product | Jose |
 | G18 | Team · Location Manager | Location menu open state and focus not captured; no screen reader or reduced-motion pass | F1 agent | Evidence | assigned (package D) |
@@ -67,4 +67,9 @@ scoped read). Device: G22. Parked: G23.
 | G42 | Home | Reduced motion not checked by eye; no screen reader; no Spanish check | Home agent | Evidence | assigned (package D) |
 | G43 | Tests (environment) | Tenancy tests need pinned commit `7c628e37…`, missing from a shallow clone. Fetched here; a fresh container loses it. Command added to `.claude/UI-SETUP.md`; adding it to the environment setup script needs Jose | Package E | Environment | Jose |
 | G44 | Guides | `src/test/manual-publication.test.ts` fails: the six published guide PDFs are tied to `198168ac` and every app commit since makes them stale. Fix: at the end of Phase 2, check guide text against the new screens and rebuild with `scripts/manuals/build-manuals.mjs`. Rebuilding is publishing | Package E | Release | Jose |
+| G45 | Home (Owner, Elena) | 4–7 label-content-name-mismatch nodes beyond G39: the kit's `BLive` draws label and value with nothing between ("in0"), and the Time corrections and Time-off rows' labels | Package C | Accessibility | open (next round, Home files) |
+| G46 | Find cover (Owner, Elena) | The `.c-btn` accessible name differs from its text (`coverage-assistant.tsx`) at every width | Package C | Accessibility | open (next round) |
+| G47 | Timecards, phones (Owner, Elena) | 12 rows named "Ana Colon, No time yet" while they draw initials, name and status | Package C | Accessibility | open (next round) |
+| G48 | Band glass strips (Payroll tabs, `c-seg`, `c-week`, Team search) | Probably the same contrast-tool misread (1.08:1) Timecards' strip had; not measured | Package C | Accessibility | open (next round) |
+| G49 | Team | "See all 12" and "All 12": the same count twice | Package C | Wording | open (next round, may close with G24) |
 | G23 | Sign-up and billing portal pages | Not captured in the sweep; set aside by Jose ("focus just on nevora") | Sweep | Evidence | Jose (parked) |
