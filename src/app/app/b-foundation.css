@@ -818,6 +818,11 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
 @media (forced-colors: active) {
   html body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]),
   html body .app-shell[data-nv-b] :is(.b-search, .c-team-search__field, .c-pins__search, .b-glass, .b-btn--glass, .b-seg > [aria-current="page"], .b-seg > [aria-pressed="true"], .b-filters > [aria-pressed="true"]) { outline: 1px solid ButtonText; outline-offset: -1px; }
+  /* Z3 (Nov 23, 2026): a filled button's only edge was its fill, which forced colours removes, so "Add employee", "Try
+   * again" or "Delete my account" read as plain text. Every kit button gets a system-colour edge, drawn as an inset
+   * outline because many c-btn rules set border: 0 !important; GrayText when disabled. The layered focus ring still wins. */
+  html body :is(.b-btn, .c-btn):not(:disabled, [aria-disabled="true"]) { outline: 1px solid ButtonText !important; outline-offset: -1px !important; }
+  html body :is(.b-btn, .c-btn):is(:disabled, [aria-disabled="true"]) { outline: 1px solid GrayText !important; outline-offset: -1px !important; }
 }
 
 /* ---------- Phase 8 (Nov 17, 2026): short windows (src/lib/b-viewport.ts B_WIDE_SHORT) ----------
