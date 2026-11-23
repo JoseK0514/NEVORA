@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { formatTime } from "@/lib/date-utils";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { availabilityCopy } from "./availability-copy";
 import { keepWhole } from "@/lib/keep-whole";
 import { CorpCard, CorpRow } from "@/components/corp/corp";
 import { BAvatar, BFilters } from "@/components/owner-b/b-kit";
@@ -21,7 +22,6 @@ export type AvailabilityReviewEmployee = AvailabilitySubmissionListItem & {
 };
 
 type Filter = "all" | "missing" | "submitted" | "unavailable";
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export function matchesAvailabilityFilter(employee: AvailabilityReviewEmployee, filter: Filter) {
   if (filter === "missing") return !employee.submitted;
@@ -33,7 +33,7 @@ export function matchesAvailabilityFilter(employee: AvailabilityReviewEmployee, 
 /** "Reminders need a deadline. Set one in Scheduling rules." with the page's name as the note's one teal link. The
  * sentence and the link's words come from the reminders copy; a sentence that does not hold them is drawn plain. */
 function NeedsDeadline() {
-  const t = reminderCopy.en, at = t.needsDeadline.indexOf(t.needsDeadlineLink);
+  const t = reminderCopy[usePortalLang()], at = t.needsDeadline.indexOf(t.needsDeadlineLink);
   if (at < 0) return <p className="b-rem-need">{t.needsDeadline}</p>;
   return <p className="b-rem-need">{t.needsDeadline.slice(0, at)}<Link href="/app/schedule/settings">{t.needsDeadlineLink}</Link>{t.needsDeadline.slice(at + t.needsDeadlineLink.length)}</p>;
 }
@@ -53,6 +53,7 @@ export function AvailabilityTeamList({ employees, employeeId, before, remind = n
   /** Closing F1 (NV-261): what the page shows between the segments and the people (the deadline row, a notice). */
   before?: ReactNode;
 }) {
+  const words = availabilityCopy(usePortalLang()), t = words.team;
   const missing = employees.filter(employee => !employee.submitted).length;
   const linked = employees.find(employee => employee.employeeId === employeeId);
   const [filter, setFilter] = useState<"missing" | "submitted">(linked ? (linked.submitted ? "submitted" : "missing") : missing ? "missing" : "submitted");
@@ -68,21 +69,21 @@ export function AvailabilityTeamList({ employees, employeeId, before, remind = n
   return <ReminderProvider targets={targets} authority={remind?.authority} timeZone={remind?.timeZone ?? "UTC"} actor={remind?.actor ?? "MANAGER"} about={{ kind: "availability", week: remind?.week ?? "" }}>
     <div className="c-avteam__people">
     {before}
-    <p className="b-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
+    <p className="b-sr" role="status" aria-live="polite">{t.shown(visible.length)}</p>
     {/* Phase 2 (Schedule tools, C10, Nov 23, 2026): the people are one white card, as on Team: the kit's filter chips (Not
       * sent and Sent, each count said once, there) over the kit's rows; Remind everyone sits at the card's foot. A person
       * who hasn't sent opens their page; a person who has opens their hours in place. */}
-    <CorpCard id="availability-people" ariaLabel="People" footer={filter === "missing" && targets.length > 1 ? <ReminderBulkButton /> : undefined}>
-    {employees.length ? <BFilters label="Show" items={[
-      { key: "missing", label: "Not sent", count: missing, current: filter === "missing", onSelect: () => setFilter("missing") },
-      { key: "submitted", label: "Sent", count: employees.length - missing, current: filter === "submitted", onSelect: () => setFilter("submitted") },
+    <CorpCard id="availability-people" ariaLabel={t.people} footer={filter === "missing" && targets.length > 1 ? <ReminderBulkButton /> : undefined}>
+    {employees.length ? <BFilters label={t.show} items={[
+      { key: "missing", label: t.notSent, count: missing, current: filter === "missing", onSelect: () => setFilter("missing") },
+      { key: "submitted", label: t.sent, count: employees.length - missing, current: filter === "submitted", onSelect: () => setFilter("submitted") },
     ]} /> : null}
     {visible.length ? <><ul className="c-rows c-avteam__list">
       {visible.map(employee => {
         const selected = employee.employeeId === employeeId;
         // Someone who started but hasn't sent shows when they last changed it (the server's own wording of the time).
-        const detail = employee.submitted && employee.windowCount === 0 ? `${employee.locationName} · Unavailable all week`
-          : !employee.submitted && employee.updatedLabel ? `${employee.locationName} · Updated ${employee.updatedLabel}` : employee.locationName;
+        const detail = employee.submitted && employee.windowCount === 0 ? t.unavailableAllWeek(employee.locationName)
+          : !employee.submitted && employee.updatedLabel ? t.updatedAt(employee.locationName, employee.updatedLabel) : employee.locationName;
         // Review B6 (NV-105): a person keeps one face tint on every screen (BAvatar).
         const face = <BAvatar name={employee.employeeName} size={40} />;
         return <li ref={selected ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} data-selected={selected ? "true" : undefined} data-remind={remind && !employee.submitted ? "" : undefined} key={employee.employeeId}>
@@ -91,16 +92,16 @@ export function AvailabilityTeamList({ employees, employeeId, before, remind = n
           : employee.windows.length ? <details className="c-avteam__details" open={selected || undefined}>
             <summary className="c-avteam__sum">{face}<span className="c-avteam__tx"><span className="c-avteam__name">{employee.employeeName}</span><span className="c-avteam__line">{detail}</span></span>
               <CaretDownIcon className="c-avteam__chev" weight="bold" aria-hidden="true" /></summary>
-            <dl className="c-avteam__hours" aria-label={`${employee.employeeName} available hours`}>
-              {employee.windows.map(window => <div key={window.id}><dt>{DAYS[window.dayOfWeek]}</dt><dd>{keepWhole(`${formatTime(window.startTime)} – ${formatTime(window.endTime)}`)}</dd></div>)}
+            <dl className="c-avteam__hours" aria-label={t.hoursOf(employee.employeeName)}>
+              {employee.windows.map(window => <div key={window.id}><dt>{words.shortDays[window.dayOfWeek]}</dt><dd>{keepWhole(`${words.time(window.startTime)} – ${words.time(window.endTime)}`)}</dd></div>)}
             </dl>
-            {employee.updatedLabel ? <p className="c-avteam__updated">{`Updated ${employee.updatedLabel}`}</p> : null}
+            {employee.updatedLabel ? <p className="c-avteam__updated">{t.updated(employee.updatedLabel)}</p> : null}
           </details>
           : <CorpRow avatar={face} title={employee.employeeName} detail={detail} />}
         </li>;
       })}
     </ul>{needsDeadline && filter === "missing" ? /* Final polish (Nov 20, 2026): the note names a page, so the page's name is its one teal link. */<NeedsDeadline /> : null}</>
-      : <p className="c-avteam__empty">{!employees.length ? "Employees and Leads show here once they’re added." : filter === "missing" ? "Everyone has sent theirs." : "No one has sent theirs yet."}</p>}
+      : <p className="c-avteam__empty">{!employees.length ? t.noEmployees : filter === "missing" ? t.everyoneSent : t.noneSent}</p>}
     </CorpCard>
     </div>
   </ReminderProvider>;

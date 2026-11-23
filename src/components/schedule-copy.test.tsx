@@ -9,6 +9,7 @@ rs.mock('@/app/app/schedule/actions', () => ({publishScheduleAction: async () =>
 rs.mock('@/app/app/schedule/generation-actions', () => ({generateWeekAction: async () => ({status: 'idle', message: ''}), clearGenerationExclusionAction: async () => ({status: 'idle', message: ''})}));
 import {PortalLangProvider} from '@/lib/i18n/portal-lang';
 import {SCHEDULE_COPY, esDay, esTime} from './schedule-copy';
+import {keyPaths} from './copy-key-paths.test-support';
 import {ScheduleShiftForm} from './schedule-shift-form';
 import {SchedulePublicationChange} from './schedule-publication-change';
 import {SchedulePublicationControls} from './schedule-publication-controls';
@@ -19,10 +20,6 @@ const text = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/&#x27;/g, 
 const es = (node: ReactNode) => text(renderToStaticMarkup(<PortalLangProvider lang="es">{node}</PortalLangProvider>));
 const en = (node: ReactNode) => text(renderToStaticMarkup(node));
 
-export function keyPaths(value: unknown, prefix = ''): string[] {
-  if (!value || typeof value !== 'object') return [prefix];
-  return Object.keys(value).sort().flatMap(key => keyPaths((value as Record<string, unknown>)[key], prefix ? `${prefix}.${key}` : key));
-}
 
 it('has a Spanish entry for every English word', () => {
   expect(keyPaths(SCHEDULE_COPY.es)).toEqual(keyPaths(SCHEDULE_COPY.en));
