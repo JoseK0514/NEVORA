@@ -130,7 +130,32 @@ Still open from the pass:
 Screens: `/tmp/es-owner`, `/tmp/es-emp`, `/tmp/es-owner2`, `/tmp/es-emp2`, `/tmp/es-emp3`, `/tmp/en-owner` on the session
 machine. They are not committed, because they're working evidence and the session reports already hold the shots.
 
+## Final Spanish pass, all roles (after every second-release merge)
+
+This pass ran on 6a19f874: every branch merged, including es-owner's second release (8319cb7d, 6de7c2dc). It used
+`next dev` (Turbopack), fictional data and a Spanish profile, at 390, 390 with 200% text, 1440 and 1440 with 200%.
+
+| Role | Pages | Checks | Result |
+|---|---|---|---|
+| Owner | 16 (Home, Things to do, Later and done, Schedule, Scheduling rules, Team, Timecards, Time corrections, Requests, Notifications, More, Insights, Settings, Availability, Shift requests, Updates) | 64 | `lang="es"`, axe 0, no overflow, no page errors; no interface English |
+| Manager (`OWN-ELENA`) | 12 | 48 | the same, except two screen-reader lines on Home's Payday card ("Another reviewer approves your timecard", "It needs an Owner or a Manager with company access"), fixed in 026a25af and rechecked |
+| Lead | 13 | 52 | `lang="es"`, axe 0, no overflow, no page errors; no interface English |
+| Employee | 13 | 52 | the same |
+
+The only English left is people's own fictional text: an update's body, a can't-work note and correction reasons.
+
+Follow-ups done for this pass: Notifications' band title wraps as "Notifica-ciones" at 390 with 200% text instead of
+running off the edge, and Things to do passes the language to `mobileActionDetail` (6a19f874).
+
+Seen, not changed: at 390 with 200% text the kit's segmented control draws the "Sin leer" count badge low and partly
+outside its tab (Notifications). This comes from the shared segment rule in `b-foundation.css`, not from the language;
+it belongs to the kit owner. The location Manager's scoped views weren't in this pass, since the scan harness has no
+Spanish mode for them.
+
 ## Checks
+
+- Final (026a25af): tsc clean; oxlint 0 errors; whole `src` suite 16,470 passed, 1 failed (`manual-publication.test.ts`,
+  expected until the Spanish release gets its own guide rebuild). Manager Home rechecked after 026a25af: no English.
 
 - `tsc --noEmit`: clean.
 - `oxlint src`: 0 errors; 1 warning that was already there (`<img>` in `premium/clocker.tsx`).
