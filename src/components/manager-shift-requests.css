@@ -72,3 +72,5 @@
 :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__when { color: var(--b-ink2, #3D4448); font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__when .b-segs__i { white-space: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__who { color: var(--b-grey, #5E666C); }
+/* At 200% text the kind label wraps inside its chip rather than being cut. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__name .b-chip { height: auto; min-height: 0; max-width: 100%; white-space: normal; overflow: visible; text-overflow: clip; }
