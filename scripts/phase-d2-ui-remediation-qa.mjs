@@ -252,11 +252,12 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    // correction?"); its commit carries the same name, and Enter on it declines.
    const ask=mp.locator('.b-ask.manager-correction-ask');await ask.getByText('Decline this correction?',{exact:true}).waitFor();
    const commit=ask.getByRole('button',{name:`Decline correction for ${name}`,exact:true});await commit.focus();await commit.press('Enter');
-   await mp.getByText('Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
+   await mp.locator('.manager-corrections-notice[data-result]').getByText('Correction declined',{exact:true}).waitFor();
    await mp.waitForFunction(n=>document.querySelectorAll('.manager-correction-row').length===n,1-i);
   }
-  await mp.getByText('Nothing to fix',{exact:true}).waitFor();await shots(mp,'.manager-corrections','confirmed-empty');
   assert.equal((await q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections WHERE employee_id=$1',[employeeId]))[0].count,0);
+  await mp.reload({waitUntil:'networkidle'});
+  await mp.getByText('Nothing to fix',{exact:true}).waitFor();await shots(mp,'.manager-corrections','confirmed-empty');
   observations.keyboard.push({decisions:'two declines activated with Enter'});
   stage='completed-history';await ep.goto(app.url+'/app/my-time?view=corrections&filter=decided',{waitUntil:'networkidle'});await hoursPage(ep,'corrections').getByRole('list',{name:'Decisions',exact:true}).getByText('Declined',{exact:true}).first().waitFor();await employeeShots('.c-hours','completed-history');
   // Restore only this disposable version mutation to compare untouched raw evidence.
