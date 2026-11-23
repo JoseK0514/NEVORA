@@ -99,3 +99,21 @@ Notifications rows (503 in harness).
 | Copy receipt (location Manager) | Closed notice offers only Return to Home; the scoped variant's "Open your schedule" may suit Daniel better (wording decision) | end sweep |
 
 No kit or shell change is needed for these ten items.
+
+## Added items from the lead (after 13:51 UTC)
+Merged `claude-codex-collab-nevora` (`dc0385d4`) first: `24b107ef` (one append-only conflict in `employee-b-work.css`,
+both sides kept). Checked in a fresh held development build of the test app at the merged tip.
+
+| Item | Commit | Result |
+|---|---|---|
+| Elena's Home Timecards tile repeats its count | `b244c59b` | "10 to approve" once; the detail says only "Pay period ended" (the header says Timecards; the other reviewer's card keeps its own line). |
+| Owner Home: two Prepare buttons | `b244c59b` | While an overdue payroll leads, the Scheduled payday tile has no button; "Prepare Nov 9–15" (44px teal, unchanged) is the one action. Checked at 1440. |
+| 11 B4 Things to do count twice | `cfacd9f5` | The band keeps the total; "All" has no count. |
+| 16 B7 Remind drops under each name | `77fd3454` | Remind stays on the row while the name fits: rows 64px at 390 and 768; at 320 names wrap between words beside Remind. At 390 with 200% text it moves under the name (one row in the seed). |
+| 14 B9 Help Contact paragraph short | `1c731363` | The note uses the card's width (right edge = card edge at 390, 768, 1440; Owner and Elena). The shared rule was in `@layer nv-b`, so the override is in that layer in `help/help.css`. |
+| 13 E1 Time off closed card | `d54d17ca` | Band "Team time off", title "Time off is decided by an Owner", line "Jose Natal decides requests at your locations." (Spanish matched); way back is "Return to Home" for Elena and Daniel. 390, 768, 1440. |
+| 15 F9 Help someone sign in at 390 | `7a5d584f` | On phones the form is one card with 16px gutters: Employee ID, How you checked, the guidance and Make reset link inside. 320, 390, 390 at 200% (width = viewport); 768 unchanged. |
+| 12 B2 More profile line | `7d9ce66c` | Daniel: "Manager · Condado · Northside Café & Bakery", from the authority read the page already makes; Elena and Owners unchanged. |
+
+Not captured as webp (time): these checks are measurements and the PNGs in the session scratchpad.
+Note for Package K: none of these needed kit or shell files.
