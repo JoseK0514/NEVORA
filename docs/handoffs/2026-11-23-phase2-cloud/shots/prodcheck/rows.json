@@ -1,0 +1,2090 @@
+[
+ {
+  "id": "B1-owner",
+  "row": "B1",
+  "page": "Home",
+  "section": "Item 1 · Owner",
+  "note": "Production build: on a phone the overdue payroll card (\"Nov 9–15 has no payroll\", Prepare Nov 9–15) is the first card under the band, before Things to do. Layout shift from a load with the cache off: 0 at 390 and 1440 (Owner); 0 and 0.0001 (Manager, a skeleton title).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B1-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B1-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B1-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B4-owner",
+  "row": "B4",
+  "page": "Things to do",
+  "section": "Item 2 · Owner",
+  "note": "Band says the total once (\"14 things need you · 11 timecards to approve\"); All has no count.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B4-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B4-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B4-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B9-owner",
+  "row": "B9",
+  "page": "Help",
+  "section": "Item 2 · Owner",
+  "note": "The Contact note runs the card's full width at 1440.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B9-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B9-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B9-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F9-owner",
+  "row": "F9",
+  "page": "Help someone sign in",
+  "section": "Item 2 · Owner",
+  "note": "On phones the guidance and Make reset link are inside the one form card.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F9-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F9-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F9-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F1-owner",
+  "row": "F1",
+  "page": "Team",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F1-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F1-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F2-owner",
+  "row": "F2",
+  "page": "Add person",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F2-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F2-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F3-owner",
+  "row": "F3",
+  "page": "Import a staff list",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F3-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F3-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F4-owner",
+  "row": "F4",
+  "page": "Person",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F4-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F4-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F5-owner",
+  "row": "F5",
+  "page": "Pay rate",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F5-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F5-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F6-owner",
+  "row": "F6",
+  "page": "Restrictions",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F6-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F6-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F7-owner",
+  "row": "F7",
+  "page": "Time off balance",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F7-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F7-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F8-owner",
+  "row": "F8",
+  "page": "Clocker PIN",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F8-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F8-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G1-owner",
+  "row": "G1",
+  "page": "Payroll",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G1-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G1-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G2-owner",
+  "row": "G2",
+  "page": "Prepare payroll",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G2-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G2-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G3-owner",
+  "row": "G3",
+  "page": "Review pay",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G3-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G3-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G4-owner",
+  "row": "G4",
+  "page": "People in this payroll",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G4-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G4-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G5-owner",
+  "row": "G5",
+  "page": "Fix payroll",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G5-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G5-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G6-owner",
+  "row": "G6",
+  "page": "Import payroll",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G6-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G6-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G7-owner",
+  "row": "G7",
+  "page": "Payroll history",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G7-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G7-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G8-owner",
+  "row": "G8",
+  "page": "Time exports",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G8-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G8-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G9-owner",
+  "row": "G9",
+  "page": "Paid time export",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G9-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G9-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H1-owner",
+  "row": "H1",
+  "page": "Rondo AI",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H1-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H1-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H2-owner",
+  "row": "H2",
+  "page": "Weekly plan",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H2-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H2-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H3-owner",
+  "row": "H3",
+  "page": "Business records",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H3-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H3-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H4-owner",
+  "row": "H4",
+  "page": "Company knowledge",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H4-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H4-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H5-owner",
+  "row": "H5",
+  "page": "Insights",
+  "section": "Item 3 · Owner",
+  "note": "axe color-contrast on the band's range line is the known false positive (white on the teal band, measured against the canvas; sweep-1 line 105).",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H5-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H5-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H6-owner",
+  "row": "H6",
+  "page": "Christmas bonus",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H6-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H6-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I1-owner",
+  "row": "I1",
+  "page": "Profile",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I1-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I1-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I4-owner",
+  "row": "I4",
+  "page": "Device alerts",
+  "section": "Item 3 · Owner",
+  "note": "Owner and Manager are sent to Profile (→), as the inventory marks.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I4-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I4-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I5-owner",
+  "row": "I5",
+  "page": "Passkeys",
+  "section": "Item 3 · Owner",
+  "note": "Owner and Manager are sent to Profile (→), as the inventory marks.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I5-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I5-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J1-owner",
+  "row": "J1",
+  "page": "Settings",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J1-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J1-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J2-owner",
+  "row": "J2",
+  "page": "Workspace",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J2-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J2-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J3-owner",
+  "row": "J3",
+  "page": "Branding",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J3-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J3-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J4-owner",
+  "row": "J4",
+  "page": "Features",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J4-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J4-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J5-owner",
+  "row": "J5",
+  "page": "Locations",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J5-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J5-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J6-owner",
+  "row": "J6",
+  "page": "Add location",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J6-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J6-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J7-owner",
+  "row": "J7",
+  "page": "Edit location",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J7-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J7-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J8-owner",
+  "row": "J8",
+  "page": "Positions",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J8-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J8-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J9-owner",
+  "row": "J9",
+  "page": "Breaks",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J9-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J9-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J10-owner",
+  "row": "J10",
+  "page": "Time off policies",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J10-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J10-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J11-owner",
+  "row": "J11",
+  "page": "Company policies",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J11-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J11-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J12-owner",
+  "row": "J12",
+  "page": "Payroll settings",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J12-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J12-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J13-owner",
+  "row": "J13",
+  "page": "Clocker devices",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J13-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J13-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J14-owner",
+  "row": "J14",
+  "page": "Shift matching",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J14-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J14-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J15-owner",
+  "row": "J15",
+  "page": "Clocker photos",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J15-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J15-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J16-owner",
+  "row": "J16",
+  "page": "Photo review",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J16-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J16-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J17-owner",
+  "row": "J17",
+  "page": "Clocker PINs",
+  "section": "Item 3 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J17-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J17-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J18-owner",
+  "row": "J18",
+  "page": "Billing",
+  "section": "Item 3 · Owner",
+  "note": "Default production state (billing not configured); the configured, mocked state belongs to package P / J18.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J18-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J18-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B1-manager",
+  "row": "B1",
+  "page": "Home",
+  "section": "Item 1 · Manager (Elena)",
+  "note": "Production build: on a phone the overdue payroll card (\"Nov 9–15 has no payroll\", Prepare Nov 9–15) is the first card under the band, before Things to do. Layout shift from a load with the cache off: 0 at 390 and 1440 (Owner); 0 and 0.0001 (Manager, a skeleton title).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B1-manager-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B1-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B1-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B4-manager",
+  "row": "B4",
+  "page": "Things to do",
+  "section": "Item 2 · Manager (Elena)",
+  "note": "Band says the total once (\"14 things need you · 11 timecards to approve\"); All has no count.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B4-manager-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B4-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B4-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B9-manager",
+  "row": "B9",
+  "page": "Help",
+  "section": "Item 2 · Manager (Elena)",
+  "note": "The Contact note runs the card's full width at 1440.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B9-manager-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B9-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B9-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F9-manager",
+  "row": "F9",
+  "page": "Help someone sign in",
+  "section": "Item 2 · Manager (Elena)",
+  "note": "On phones the guidance and Make reset link are inside the one form card.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F9-manager-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F9-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F9-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "E1-manager",
+  "row": "E1",
+  "page": "Team time off",
+  "section": "Item 2 · Manager (Elena)",
+  "note": "Closed card: \"Time off is decided by an Owner. Jose Natal decides requests at your locations.\" with Return to Home.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/E1-manager-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/E1-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/E1-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F1-manager",
+  "row": "F1",
+  "page": "Team",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F1-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F1-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F2-manager",
+  "row": "F2",
+  "page": "Add person",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F2-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F2-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F3-manager",
+  "row": "F3",
+  "page": "Import a staff list",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F3-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F3-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F4-manager",
+  "row": "F4",
+  "page": "Person",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F4-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F4-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F6-manager",
+  "row": "F6",
+  "page": "Restrictions",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F6-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F6-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G8-manager",
+  "row": "G8",
+  "page": "Time exports",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G8-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G8-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G9-manager",
+  "row": "G9",
+  "page": "Paid time export",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G9-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G9-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H1-manager",
+  "row": "H1",
+  "page": "Rondo AI",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H1-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H1-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H5-manager",
+  "row": "H5",
+  "page": "Insights",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "axe color-contrast on the band's range line is the known false positive (white on the teal band, measured against the canvas; sweep-1 line 105).",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H5-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H5-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H6-manager",
+  "row": "H6",
+  "page": "Christmas bonus",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H6-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H6-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I1-manager",
+  "row": "I1",
+  "page": "Profile",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I1-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I1-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I4-manager",
+  "row": "I4",
+  "page": "Device alerts",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Owner and Manager are sent to Profile (→), as the inventory marks.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I4-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I4-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I5-manager",
+  "row": "I5",
+  "page": "Passkeys",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Owner and Manager are sent to Profile (→), as the inventory marks.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I5-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I5-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B2-mloc",
+  "row": "B2",
+  "page": "More",
+  "section": "Item 2 · location Manager (Daniel)",
+  "note": "Profile line reads \"Manager · Condado\".",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B2-mloc-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B2-mloc-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B2-mloc-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F1-mloc",
+  "row": "F1",
+  "page": "Team",
+  "section": "Item 3 · location Manager (Daniel)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F1-mloc-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F1-mloc-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F3-mloc",
+  "row": "F3",
+  "page": "Import a staff list",
+  "section": "Item 3 · location Manager (Daniel)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F3-mloc-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F3-mloc-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G10-mloc",
+  "row": "G10",
+  "page": "My pay",
+  "section": "Item 3 · location Manager (Daniel)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-mloc-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-mloc-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H1-mloc",
+  "row": "H1",
+  "page": "Rondo AI",
+  "section": "Item 3 · location Manager (Daniel)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H1-mloc-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H1-mloc-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I1-mloc",
+  "row": "I1",
+  "page": "Profile",
+  "section": "Item 3 · location Manager (Daniel)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I1-mloc-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I1-mloc-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G10-lead",
+  "row": "G10",
+  "page": "My pay",
+  "section": "Item 3 · Lead",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-lead-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I1-lead",
+  "row": "I1",
+  "page": "Profile",
+  "section": "Item 3 · Lead",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I1-lead-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I1-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I2-privacy-lead",
+  "row": "I2",
+  "page": "Privacy policy",
+  "section": "Item 3 · Lead",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I2-privacy-lead-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I2-privacy-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I2-terms-lead",
+  "row": "I2",
+  "page": "Terms",
+  "section": "Item 3 · Lead",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I2-terms-lead-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I2-terms-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I3-lead",
+  "row": "I3",
+  "page": "Calendar subscription",
+  "section": "Item 3 · Lead",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I3-lead-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I3-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I4-lead",
+  "row": "I4",
+  "page": "Device alerts",
+  "section": "Item 3 · Lead",
+  "note": "Owner and Manager are sent to Profile (→), as the inventory marks.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I4-lead-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I4-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I5-lead",
+  "row": "I5",
+  "page": "Passkeys",
+  "section": "Item 3 · Lead",
+  "note": "Owner and Manager are sent to Profile (→), as the inventory marks.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I5-lead-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I5-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G10-emp",
+  "row": "G10",
+  "page": "My pay",
+  "section": "Item 3 · Employee",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-emp-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-emp-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I1-emp",
+  "row": "I1",
+  "page": "Profile",
+  "section": "Item 3 · Employee",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I1-emp-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I1-emp-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I2-privacy-emp",
+  "row": "I2",
+  "page": "Privacy policy",
+  "section": "Item 3 · Employee",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I2-privacy-emp-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I2-privacy-emp-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I2-terms-emp",
+  "row": "I2",
+  "page": "Terms",
+  "section": "Item 3 · Employee",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I2-terms-emp-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I2-terms-emp-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I3-emp",
+  "row": "I3",
+  "page": "Calendar subscription",
+  "section": "Item 3 · Employee",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I3-emp-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I3-emp-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I4-emp",
+  "row": "I4",
+  "page": "Device alerts",
+  "section": "Item 3 · Employee",
+  "note": "Owner and Manager are sent to Profile (→), as the inventory marks.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I4-emp-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I4-emp-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I5-emp",
+  "row": "I5",
+  "page": "Passkeys",
+  "section": "Item 3 · Employee",
+  "note": "Owner and Manager are sent to Profile (→), as the inventory marks.",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I5-emp-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I5-emp-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D1-list-owner",
+  "row": "D1",
+  "page": "Timecards, last week",
+  "section": "Item 4 · Owner",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D1-list-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/D1-list-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D1-list-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D1-sheet-ready-owner",
+  "row": "D1",
+  "page": "Timecards: a person's week (ready)",
+  "section": "Item 4 · Owner",
+  "note": "Footer: Request time correction above Approve timecard, same edges, both in view; no dead button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D1-sheet-ready-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/D1-sheet-ready-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D1-sheet-ready-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D1-sheet-waiting-owner",
+  "row": "D1",
+  "page": "Timecards: a person's week (correction waiting)",
+  "section": "Item 4 · Owner",
+  "note": "Needs attention sits in the card; the footer is one line, \"Approve after the waiting correction is reviewed.\"; Request time correction is not offered.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D1-sheet-waiting-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/D1-sheet-waiting-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D1-sheet-waiting-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D1-review-owner",
+  "row": "D1",
+  "page": "Timecards: review panel",
+  "section": "Item 4 · Owner",
+  "note": "From 768 the review panel's rows, checkbox and buttons use the card width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D1-review-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/D1-review-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D1-review-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I6-owner",
+  "row": "I6",
+  "page": "Delete my account",
+  "section": "Item 3 · Owner",
+  "note": "Fixed here: at 390 with 200% text the Employee and Lead label \"Enter your password to confirm\" ran past the card and screen; it now wraps (a5f1c8b9).",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I6-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I6-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D1-list-manager",
+  "row": "D1",
+  "page": "Timecards, last week",
+  "section": "Item 4 · Manager (Elena)",
+  "note": "Production build: axe clean, no sideways scroll, no clipped or overlapping text.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D1-list-manager-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/D1-list-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D1-list-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D1-sheet-ready-manager",
+  "row": "D1",
+  "page": "Timecards: a person's week (ready)",
+  "section": "Item 4 · Manager (Elena)",
+  "note": "Footer: Request time correction above Approve timecard, same edges, both in view; no dead button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D1-sheet-ready-manager-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/D1-sheet-ready-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D1-sheet-ready-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D1-sheet-waiting-manager",
+  "row": "D1",
+  "page": "Timecards: a person's week (correction waiting)",
+  "section": "Item 4 · Manager (Elena)",
+  "note": "Needs attention sits in the card; the footer is one line, \"Approve after the waiting correction is reviewed.\"; Request time correction is not offered.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D1-sheet-waiting-manager-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/D1-sheet-waiting-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D1-sheet-waiting-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "D1-review-manager",
+  "row": "D1",
+  "page": "Timecards: review panel",
+  "section": "Item 4 · Manager (Elena)",
+  "note": "From 768 the review panel's rows, checkbox and buttons use the card width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/D1-review-manager-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/D1-review-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/D1-review-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I6-manager",
+  "row": "I6",
+  "page": "Delete my account",
+  "section": "Item 3 · Manager (Elena)",
+  "note": "Fixed here: at 390 with 200% text the Employee and Lead label \"Enter your password to confirm\" ran past the card and screen; it now wraps (a5f1c8b9).",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I6-manager-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I6-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I6-mloc",
+  "row": "I6",
+  "page": "Delete my account",
+  "section": "Item 3 · location Manager (Daniel)",
+  "note": "Fixed here: at 390 with 200% text the Employee and Lead label \"Enter your password to confirm\" ran past the card and screen; it now wraps (a5f1c8b9).",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I6-mloc-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I6-mloc-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I6-lead",
+  "row": "I6",
+  "page": "Delete my account",
+  "section": "Item 3 · Lead",
+  "note": "Fixed here: at 390 with 200% text the Employee and Lead label \"Enter your password to confirm\" ran past the card and screen; it now wraps (a5f1c8b9).",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I6-lead-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I6-lead-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text (before fix)",
+    "after": "img/I6-lead-390t-before.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "I6-emp",
+  "row": "I6",
+  "page": "Delete my account",
+  "section": "Item 3 · Employee",
+  "note": "Fixed here: at 390 with 200% text the Employee and Lead label \"Enter your password to confirm\" ran past the card and screen; it now wraps (a5f1c8b9).",
+  "shots": [
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I6-emp-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I6-emp-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text (before fix)",
+    "after": "img/I6-emp-390t-before.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B7-owner",
+  "row": "B7",
+  "page": "Update detail",
+  "section": "Item 2 · Owner",
+  "note": "Remind sits on each person's row. Fixed here: at 200% text a row's \"This changed while you were looking.\" and Refresh were cut off by the card; they now wrap (a5f1c8b9).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B7-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B7-owner-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B7-owner-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text (before fix)",
+    "after": "img/B7-owner-390t-before.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
