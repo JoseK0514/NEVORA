@@ -5,7 +5,7 @@
 :is(#c-root, html) .c-photos .c-photos__fields { display: flex; flex-direction: column; min-width: 0; margin: 0; padding: 0; border: 0; }
 /* Owner premium R13 (round 2): one card. The state first (15/600 and a 13px line), then hairline-separated rows, a small
  * grey label over the punch switches, the days field, two closed rows (missing photo, help for your team), review, Save. */
-:is(#c-root, html) .c-photos .c-photos__state { display: flex; flex-direction: column; gap: 2px; padding: 16px; }
+:is(#c-root, html) .c-photos .c-photos__state { display: flex; flex-direction: column; gap: 2px; padding: 16px var(--b-inset, 16px); }
 :is(#c-root, html) .c-photos .c-photos__state-title { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-photos .c-photos__state-body { font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-photos .c-photos__fields > .c-photos__switch,

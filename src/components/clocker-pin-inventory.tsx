@@ -6,7 +6,7 @@ import {useState} from 'react';
 import {MagnifyingGlass} from '@phosphor-icons/react/dist/ssr';
 import {UsersThreeIcon} from '@phosphor-icons/react/dist/ssr/UsersThree';
 import type {OwnerPinStatus} from '../lib/clocker/pin-operations.server';
-import {BAvatar,BCard,BList,BNote,BRow,BState} from './owner-b/b-kit';
+import {BAvatar,BCard,BFilters,BList,BNote,BRow,BState} from './owner-b/b-kit';
 import {clockerOwnerCopy,type ClockerOwnerLang} from './clocker-owner-copy';
 
 /* Clocker PINs (Phase 6): who has a PIN and who does not. Search and two tabs on the band (No PIN first, then PIN set; an
@@ -27,26 +27,29 @@ export function ClockerPinInventory({statuses,details={},lang='en'}:{statuses:Ow
  // People in name order, as on Team.
  const visible=statuses.filter(p=>inFilter(p,filter)&&`${p.firstName} ${p.lastName} ${p.employeeId} ${details[p.employeeId]??''}`.toLocaleLowerCase().includes(wanted))
   .sort((a,b)=>`${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
- const heading=filter==='none'?t.pinsNeed(count('none')):filter==='set'?t.pinsHave:t.pinsInactive;
  const row=(p:OwnerPinStatus)=>{const name=`${p.firstName} ${p.lastName}`,base=`/app/employees/${encodeURIComponent(p.employeeId)}`;
   const action=!p.active?<Link className="b-btn b-btn--quiet ck-text" href={base} aria-label={t.openProfileFor(name)}>{t.viewProfile}</Link>
    :p.configured?<Link className="b-btn b-btn--quiet ck-text" href={`${base}/clocker-pin?from=pins`} aria-label={t.resetPinFor(name)}>{t.resetPin}</Link>
    :<Link className="b-btn b-btn--ghost" href={`${base}/clocker-pin?from=pins`} aria-label={t.setPinFor(name)}>{t.setPin}</Link>;
   return <BRow key={p.employeeId} lead={<BAvatar name={name}/>} title={name} sub={details[p.employeeId]||(p.active?p.configured?t.pinIsSet:t.pinNone:t.pinInactive)} trail={<span className="ck-acts">{action}</span>}/>;};
- return <div className="c-page c-embed c-pins c-page--narrow ck-pins">
-  <label className="c-in c-pins__search"><span className="c-sr">{t.pinsSearch}</span><MagnifyingGlass weight="bold" className="c-ic" aria-hidden="true"/>
-   <input type="search" enterKeyHint="search" autoComplete="off" autoCorrect="off" value={query} placeholder={t.pinsSearch} onChange={e=>setQuery(e.target.value)}/></label>
-  <div className="c-seg c-pins__seg" role="group" aria-label={t.pinsFilter}>{filters.map(key=><button key={key} type="button" aria-pressed={filter===key} aria-label={t.filterCount(labels[key],count(key))} onClick={()=>setFilter(key)}>
-   <span>{labels[key]}</span><span className="c-pins__count" aria-hidden="true">{count(key)}</span></button>)}</div>
-  <div className="ck-stack">
-   <p className="b-sr" role="status">{wanted?`${visible.length}`:''}</p>
-   {visible.length?<BCard id="clocker-pins" title={heading}><BList label={t.pinsList}>{visible.map(row)}</BList></BCard>
-    :<BCard label={heading}>{wanted
-      ?<BState kind="empty" icon={<MagnifyingGlass weight="bold"/>} title={t.pinsNoMatch} line={t.pinsNoMatchBody}><button type="button" className="b-btn b-btn--ghost" onClick={()=>setQuery('')}>{t.pinsClearSearch}</button></BState>
-      :<BState kind="empty" icon={<UsersThreeIcon weight="bold"/>} title={filter==='none'?t.pinsEmptyNone:filter==='set'?t.pinsEmptySet:t.pinsEmptyInactive} line={filter==='none'?t.pinsEmptyNoneBody:filter==='set'?t.pinsEmptySetBody:undefined}>
-        {filter==='set'&&count('none')?<button type="button" className="b-btn b-btn--ghost" onClick={()=>setFilter('none')}>{t.pinsNeed(count('none'))}</button>:null}</BState>}</BCard>}
+ // Phase 2 (Settings part 2, Nov 23, 2026): Direction B for real, as Team's people card. One card holds the search (an
+ // outlined field), the kit's filter chips with their counts, and the people. Each count once: the chips carry them, so the
+ // card has no "13 people need a PIN" heading over a "No PIN 13" chip.
+ return <div className="ck-stack ck-pins c-pins">
+  <p className="b-sr" role="status">{wanted?`${visible.length}`:''}</p>
+  <BCard id="clocker-pins" label={t.pinsList}>
+   <div className="ck-pins__tools">
+    <label className="c-in c-pins__search"><span className="c-sr">{t.pinsSearch}</span><MagnifyingGlass weight="bold" className="c-ic" aria-hidden="true"/>
+     <input type="search" enterKeyHint="search" autoComplete="off" autoCorrect="off" value={query} placeholder={t.pinsSearch} onChange={e=>setQuery(e.target.value)}/></label>
+    <BFilters label={t.pinsFilter} items={filters.map(key=>({key,label:labels[key],count:count(key),current:filter===key,onSelect:()=>setFilter(key)}))}/>
+   </div>
+   {visible.length?<BList label={t.pinsList}>{visible.map(row)}</BList>
+    :wanted
+     ?<BState kind="empty" icon={<MagnifyingGlass weight="bold"/>} title={t.pinsNoMatch} line={t.pinsNoMatchBody}><button type="button" className="b-btn b-btn--ghost" onClick={()=>setQuery('')}>{t.pinsClearSearch}</button></BState>
+     :<BState kind="empty" icon={<UsersThreeIcon weight="bold"/>} title={filter==='none'?t.pinsEmptyNone:filter==='set'?t.pinsEmptySet:t.pinsEmptyInactive} line={filter==='none'?t.pinsEmptyNoneBody:filter==='set'?t.pinsEmptySetBody:undefined}>
+       {filter==='set'&&count('none')?<button type="button" className="b-btn b-btn--ghost" onClick={()=>setFilter('none')}>{t.pinsNeed(count('none'))}</button>:null}</BState>}
    <BNote>{t.pinsNote}</BNote>
-  </div>
+  </BCard>
  </div>;
 }
 

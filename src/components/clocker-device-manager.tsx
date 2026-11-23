@@ -7,11 +7,11 @@ import { QuestionIcon } from '@phosphor-icons/react/dist/ssr/Question';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import type { ClockerDeviceView, ClockerLocationView, ClockerOwnerResult } from '../lib/clocker/views';
 import { toast } from './toaster';
-import { SettingsFrame } from '../app/app/settings/wave-c-kit';
+import { ClockerOwnerFrame } from './clocker-owner-frame';
 import { ButtonLabel, Field, FieldErrors, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 import { CorpButton } from './corp/corp';
 import { QuietSheet } from './quiet/quiet-sheet';
-import { BCard, BChip, BIcon, BList, BNote, BSegsText, BState } from './owner-b/b-kit';
+import { BCard, BChip, BIcon, BList, BSegsText, BState } from './owner-b/b-kit';
 import { encodeQr, qrPath } from './access-recovery/qr';
 import { setupLink } from './clocker-setup-link';
 import { clockerOwnerCopy, clockerOwnerWhen, type ClockerOwnerCopy, type ClockerOwnerLang } from './clocker-owner-copy';
@@ -245,7 +245,9 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const current = devices.filter(item => item.state !== 'REVOKED');
   const removed = devices.filter(item => item.state === 'REVOKED');
   const canAdd = hydrated && activeLocations.length > 0;
-  return <SettingsFrame className="ck-owner ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} summary={t.tabletsSub}>
+  // Phase 2 (Settings part 2): the Direction B page frame. The band is the title alone: what the tablets are for and that one
+  // per location works best were lines shown on every visit (density rule 5); the list and its states say the rest.
+  return <ClockerOwnerFrame className="ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} titleId="clocker-tablets-title">
     <div className="ck-stack">
       <p className="b-sr" role="status">{t.tabletsCount(connected, waiting, revoked)}</p>
       {notice ? <p className="ck-notice" role="status">{notice}</p> : null}
@@ -262,7 +264,6 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
         </BState>
       </BCard> : null}
       {removed.length ? <BCard id="clocker-removed" title={t.removedCard} count={removed.length}><BList label={t.removedList}>{removed.map(row)}</BList></BCard> : null}
-      {current.length ? <BNote>{t.tabletsNote}</BNote> : null}
     </div>
     <QuietSheet open={!!selection} onClose={close} labelledBy="clocker-dialog-title">
       {selection ? <form ref={sheetForm} noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} aria-describedby="clocker-dialog-text" className={`c-sheet c-tablet-sheet ck-sheet${selection.operation === 'REVOKE' ? ' ck-confirm' : ''}`} {...handlers}>
@@ -310,13 +311,13 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
         </div>
       </form> : null}
     </QuietSheet>
-  </SettingsFrame>;
+  </ClockerOwnerFrame>;
 }
 
 /** The page when the tablets could not be read: the band, one state card, one retry. */
 export function ClockerDevicesUnavailable({ lang = 'en' }: { lang?: ClockerOwnerLang }) {
   const t = clockerOwnerCopy[lang];
-  return <SettingsFrame className="ck-owner ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle}>
+  return <ClockerOwnerFrame className="ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} titleId="clocker-tablets-title">
     <div className="ck-stack"><BCard label={t.loadFailedTitle}>
       <BState kind="failed" alert title={t.loadFailedTitle} line={t.loadFailedBody}>
         {/* A retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript. */}
@@ -324,5 +325,5 @@ export function ClockerDevicesUnavailable({ lang = 'en' }: { lang?: ClockerOwner
         <a className="b-btn b-btn--teal" href="/app/settings/clocker">{t.tryAgain}</a>
       </BState>
     </BCard></div>
-  </SettingsFrame>;
+  </ClockerOwnerFrame>;
 }

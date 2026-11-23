@@ -83,15 +83,17 @@ export function ClockerPhotoReview({initialPage,listAction,detailAction,removeAc
   <section className="c-card">
    <div className="c-card__head"><h2 className="c-card__label" id="punch-photo-review-title">Company punch photos</h2>
     <div className="c-card__aside"><button type="button" className="c-link" disabled={pending} onClick={()=>void reload()} aria-label="Refresh photo records">Refresh</button></div></div>
-   <p className="c-photo-review__lede">{page.total} original clock {page.total===1?'action':'actions'} in the current company. Only an authorized Owner can review photos.</p>
+   {/* Phase 2 (Settings part 2): each fact once. The count shows when there are records (the empty state says there are
+     none), without the line about who may open this page: only the Owner reaches it. */}
+   {page.records.length?<p className="c-photo-review__lede">{page.total} original clock {page.total===1?'action':'actions'} in the current company.</p>:null}
    {feedback?<p className="c-photo-review__msg" data-tone={feedback.error?'error':'done'} role={feedback.error?'alert':'status'}>{feedback.text}</p>:null}
    {pending?<p className="c-photo-review__lede" role="status">Checking the original photo record…</p>:null}
-   {!page.records.length?<div className="c-photo-review__empty"><h3>No punch photo records yet</h3><p>Photo records appear after an authorized clock action. No camera or employee photo collection is started by this page.</p></div>
+   {!page.records.length?<div className="c-photo-review__empty"><h3>No punch photo records yet</h3><p>Photo records appear after an authorized clock action.</p></div>
     :<ul className="c-rows" aria-label="Punch photo records">{page.records.map(record=>{const key=referenceKey(record.reference);return <li key={key}><div className="c-row c-photo-review__row">
      <span className="c-row__main"><span className="c-row__title c-row__title--b">{record.employeeName}</span>
       <span className="c-row__detail"><span>{labels[record.action]} · {record.locationName} · <time dateTime={record.performedAt}>{recordedTime(record)}</time></span></span>
       <span className="c-row__detail"><span>{photoReviewStateLabel(record.state)}</span></span></span>
-     <button type="button" className="c-btn c-btn--secondary c-btn--sm" disabled={pending} ref={button=>keep(key,button)} onClick={()=>void inspect(record.reference)} aria-label={`Review ${record.employeeName}, ${labels[record.action]}, ${recordedTime(record)}`}>Review</button>
+     <button type="button" className="c-btn c-btn--secondary" disabled={pending} ref={button=>keep(key,button)} onClick={()=>void inspect(record.reference)} aria-label={`Review ${record.employeeName}, ${labels[record.action]}, ${recordedTime(record)}`}>Review</button>
     </div></li>;})}</ul>}
    {page.nextCursor?<div className="c-card__foot"><CorpButton kind="secondary" size="md" full disabled={pending} onClick={()=>void reload(true)}>Load more photo records</CorpButton></div>:null}
   </section>
