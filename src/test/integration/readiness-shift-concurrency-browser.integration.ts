@@ -3,7 +3,9 @@ import { createRequire } from 'node:module';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { createOwnedNextApp } from './owned-next-app';
+import { createOwnedNextApp, ownedProductionRequested } from './owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from './owned-collab-origin';
+import { startOwnedTlsProxy } from './owned-tls-proxy';
 import { seedOwnedApp, assignOwnedManagerCompanyAccess, TEST_PASSWORD } from './owned-app-fixture';
 import { fixtureProof } from './shift-change-api';
 import { hashPassword } from '../../lib/auth/password';
@@ -22,7 +24,14 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
   const { verifyNavigationFetchDiagnostic, observeWindowExceptions } = await import(new URL('../../../scripts/browser-navigation-diagnostic.mjs', import.meta.url).href);
   const { observeRscCaughtErrors, requestFailureCategory } = await import(new URL('../../../scripts/rsc-caught-error-observer.mjs', import.meta.url).href);
   const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? resolve('tools/ci-browser-runtime/package.json'))('playwright');
-  const app = await createOwnedNextApp(evidence);
+  // A production build sets the session cookie `secure`, which WebKit keeps only over https. Production runs therefore
+  // serve the app at the owned test origin through the owned loopback TLS proxy (a throwaway certificate made at run
+  // time), as the Clocker production run does; development keeps plain http on 127.0.0.1.
+  const production = ownedProductionRequested();
+  const app = await createOwnedNextApp(evidence, production ? { portalHttpsOrigin: OWNED_COLLAB_ORIGIN } : {});
+  const tls = production ? await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url }).catch(async error => { await app.close(); throw error; }) : null;
+  const base = production ? OWNED_COLLAB_ORIGIN : app.url;
+  const network = tls ? { proxy: { server: tls.server }, ignoreHTTPSErrors: true } : {};
   const q = <T = Record<string, unknown>>(text: string, values: unknown[] = []) => app.database.executor.query<T>({ text, values });
   const browsers: { close(): Promise<void> }[] = [], checks: string[] = [], errors: unknown[] = [], runtimeExecutions: unknown[] = [], runtimeControls: unknown[] = [];
   const runtimeTrace: Record<string, unknown>[] = [], runtimeFailureTraces: unknown[] = [], routerReadControls: unknown[] = [];
@@ -56,8 +65,8 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       // suppressing any of the application's blur/visibility privacy handlers.
       const b0 = await runtime[engine].launch({ headless: true }), b1 = await runtime[engine].launch({ headless: true }); browsers.push(b0, b1);
       const b2 = await runtime[engine].launch({ headless: true }); browsers.push(b2);
-      const c0 = await b0.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block' }), c1 = await b1.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
-      const c2 = await b2.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
+      const c0 = await b0.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', ...network }), c1 = await b1.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block', ...network });
+      const c2 = await b2.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block', ...network });
       // Reuse the release suite's witnessed native-navigation diagnostic. Its
       // negative controls prove real window exceptions/rejections remain fatal.
       const control = engine === 'webkit' ? await verifyNavigationFetchDiagnostic(b0) : { verified: false, windowObserverVerified: false, status: 'not-applicable' };
@@ -110,7 +119,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       for (const n of [0, 1, 2]) {
         const p = page(n); p.setDefaultTimeout(20000);
         const requestIds = new WeakMap<object, number>(); let requestSerial = 0;
-        const kind = (address: string) => { const url = new URL(address); if (url.origin !== app.url) return null; const paths: Record<string, string> = { '/login': 'login', '/app': 'manager-home', '/app/schedule': 'schedule', '/app/schedule/edit': 'schedule-edit', '/api/manager/today': 'manager-today', '/api/company-access/operational-authority': 'authority', '/api/notifications': 'notifications', '/__nextjs_original-stack-frames': 'framework-frames' }; return paths[url.pathname] ?? null; };
+        const kind = (address: string) => { const url = new URL(address); if (url.origin !== base) return null; const paths: Record<string, string> = { '/login': 'login', '/app': 'manager-home', '/app/schedule': 'schedule', '/app/schedule/edit': 'schedule-edit', '/api/manager/today': 'manager-today', '/api/company-access/operational-authority': 'authority', '/api/notifications': 'notifications', '/__nextjs_original-stack-frames': 'framework-frames' }; return paths[url.pathname] ?? null; };
         const requestMetadata = (request: TracedRequest) => { const resource = kind(request.url()); if (!resource) return null; if (!requestIds.has(request)) requestIds.set(request, ++requestSerial); return { resource, requestId: requestIds.get(request), method: request.method(), document: request.isNavigationRequest(), rsc: request.headers().rsc === '1', serverAction: typeof request.headers()['next-action'] === 'string' }; };
         p.on('request', (request: TracedRequest) => { const metadata = requestMetadata(request); if (metadata) { if (metadata.document) documentRequests[n]++; if (metadata.method === 'GET' && metadata.rsc && ['manager-home', 'schedule', 'schedule-edit'].includes(metadata.resource)) pendingRouterReads[n].add(request); trace({ engine, index: n, event: 'request', ...metadata }); } });
         p.on('response', (response: { request(): TracedRequest; status(): number }) => { const metadata = requestMetadata(response.request()); if (metadata) trace({ engine, index: n, event: 'response', status: response.status(), ...metadata }); });
@@ -119,8 +128,8 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         p.on('framenavigated', (frame: { url(): string }) => { if (frame === p.mainFrame()) trace({ engine, index: n, event: 'document', resource: kind(frame.url()) }); });
         p.on('pageerror', () => { trace({ engine, index: n, event: 'pageerror' }); if (runtimeFailureTraces.length < 8) runtimeFailureTraces.push({ engine, index: n, events: [...runtimeTrace] }); else failureTracesOmitted++; });
         stage = 'login';
-        await p.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => { const url = new URL(route.request().url()); if (['http:', 'https:'].includes(url.protocol) && url.origin !== app.url) await route.abort(); else await route.continue(); });
-        await p.goto(app.url + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill(n === 2 ? 'MATRIX-SECOND' : n ? 'MATRIX-LOCAL' : 'MATRIX-COMPANY'); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL(app.url + '/app');
+        await p.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => { const url = new URL(route.request().url()); if (['http:', 'https:'].includes(url.protocol) && url.origin !== base) await route.abort(); else await route.continue(); });
+        await p.goto(base + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill(n === 2 ? 'MATRIX-SECOND' : n ? 'MATRIX-LOCAL' : 'MATRIX-COMPANY'); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL(base + '/app');
       }
       const form = (n: number) => page(n).locator('form').filter({ has: page(n).locator('[name="employeeId"]') });
       const drainRouterReads = async (n: number) => {
@@ -131,7 +140,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         await expect.poll(() => pendingRouterReads[n].size, { timeout: 20000 }).toBe(0);
         trace({ engine, index: n, event: 'router-reads-drained', pendingAtStart: receipt.pending });
       };
-      const open = async (n: number, id: string) => { const p = page(n); await drainRouterReads(n); await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await p.goto(app.url + '/app/schedule/edit?shiftId=' + id); await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' }); };
+      const open = async (n: number, id: string) => { const p = page(n); await drainRouterReads(n); await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await p.goto(base + '/app/schedule/edit?shiftId=' + id); await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' }); };
       // Negative control: even a previously idle document must not let a held
       // real Next RSC read be cancelled by the next fixture navigation.
       const probeSource = await seed(), probeDestination = await seed();
@@ -208,7 +217,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         for (const generated of [true, false]) {
           const id = await seed(generated);
           if (generated && stale === 1) {
-            await page(1).evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page(1).waitForLoadState('networkidle'); await page(1).goto(app.url + '/app/schedule/edit?shiftId=' + id);
+            await page(1).evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page(1).waitForLoadState('networkidle'); await page(1).goto(base + '/app/schedule/edit?shiftId=' + id);
             await page(1).getByText('You can’t change a shift made by Build and publish.', { exact: false }).filter({ visible: true }).waitFor();
             expect(await form(1).count()).toBe(0); await q('DELETE FROM shifts WHERE id=$1', [id]); checks.push(`${engine}: location Manager cannot edit a current generated shift`); continue;
           }
@@ -274,5 +283,5 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
     expect(await q('SELECT id FROM notifications')).toEqual([]);
     expect(errors).toEqual([]); complete = true;
   } catch (error) { await failureShot?.().catch(() => {}); throw error; }
-  finally { await Promise.all(browsers.map(b => b.close())); await app.close(); await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, runtimeControls, runtimeExecutions, deletionLocatorControls, routerReadControls, runtimeTrace, runtimeFailureTraces, traceOmitted, failureTracesOmitted, fictionalOnly: true, source: app.sourceHashes }, null, 2)); }
+  finally { await Promise.all(browsers.map(b => b.close())); await tls?.close(); await app.close(); await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, runtimeControls, runtimeExecutions, deletionLocatorControls, routerReadControls, runtimeTrace, runtimeFailureTraces, traceOmitted, failureTracesOmitted, fictionalOnly: true, source: app.sourceHashes }, null, 2)); }
 }, 480000);

@@ -3,7 +3,9 @@ import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-import { createOwnedNextApp } from './owned-next-app';
+import { createOwnedNextApp, ownedProductionRequested } from './owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from './owned-collab-origin';
+import { startOwnedTlsProxy } from './owned-tls-proxy';
 import { seedOwnedApp, assignOwnedManagerCompanyAccess, TEST_PASSWORD } from './owned-app-fixture';
 import { fixtureProof } from './shift-change-api';
 import { hashPassword } from '../../lib/auth/password';
@@ -18,7 +20,14 @@ it('connects original shift reviews and explicit period history in owned Chromiu
   if (!evidence) throw Error('Choose an external readiness UI evidence directory');
   await mkdir(evidence, { recursive: true });
   const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? resolve('tools/ci-browser-runtime/package.json'))('playwright');
-  const app = await createOwnedNextApp(evidence, { payrollEnabled: true });
+  // A production build sets the session cookie `secure`, which WebKit keeps only over https. Production runs therefore
+  // serve the app at the owned test origin through the owned loopback TLS proxy (a throwaway certificate made at run
+  // time), as the Clocker production run does; development keeps plain http on 127.0.0.1.
+  const production = ownedProductionRequested();
+  const app = await createOwnedNextApp(evidence, { payrollEnabled: true, ...(production ? { portalHttpsOrigin: OWNED_COLLAB_ORIGIN } : {}) });
+  const tls = production ? await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url }).catch(async error => { await app.close(); throw error; }) : null;
+  const base = production ? OWNED_COLLAB_ORIGIN : app.url;
+  const network = tls ? { proxy: { server: tls.server }, ignoreHTTPSErrors: true } : {};
   const q = <T = Record<string, unknown>>(text: string, values: unknown[] = []) => app.database.executor.query<T>({ text, values });
   const checks: string[] = [], errors: string[] = [];
   const browsers: { close(): Promise<void> }[] = [];
@@ -58,7 +67,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
     for (const engine of ['chromium', 'webkit']) {
       const browser = await runtime[engine].launch({ headless: true }); browsers.push(browser);
       for (const actor of ['UI-COMPANY', 'UI-LOCAL']) {
-        const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce' });
+        const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce', ...network });
         const page = await context.newPage(); page.setDefaultTimeout(20000);
         // G69 (Nov 23, 2026): `networkidle` belongs to the last document load, so after a client-side move (sign-in lands on
         // Home that way) it is already met while Home's shell is still reading (inbox count, notifications, access check).
@@ -73,17 +82,17 @@ it('connects original shift reviews and explicit period history in owned Chromiu
           throw Error(`Page reads never settled: ${[...reads].map(request => (request as { url(): string }).url()).join(', ')}`);
         };
         const pause = async () => { await settled(); await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.waitForLoadState('networkidle'); await settled(); };
-        const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(app.url + path); };
+        const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(base + path); };
         failureShot = () => page.screenshot({ path: resolve(evidence, `${engine}-${actor}-failure.png`), fullPage: true });
         page.on('pageerror', (error: Error) => errors.push(`${engine} ${actor}: ${error.message}`));
         await context.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => {
           const url = new URL(route.request().url());
-          if (['http:', 'https:'].includes(url.protocol) && url.origin !== app.url) await route.abort(); else await route.continue();
+          if (['http:', 'https:'].includes(url.protocol) && url.origin !== base) await route.abort(); else await route.continue();
         });
         await visit('/login');
         await page.getByLabel('Employee ID', { exact: true }).fill(actor);
         await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
-        await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(app.url + '/app');
+        await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(base + '/app');
         const id = `${engine}-${actor}`;
         await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,'ui-review','UI-WORKER','2026-10-12','08:00','16:00')", [id]);
         await visit('/app/schedule/edit?shiftId=' + id);
@@ -161,6 +170,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
   } catch (error) { await failureShot?.().catch(() => {}); throw error; }
   finally {
     await Promise.all(browsers.map(browser => browser.close()));
+    await tls?.close();
     await app.close();
     await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, fictionalOnly: true, source: app.sourceHashes }, null, 2));
   }
