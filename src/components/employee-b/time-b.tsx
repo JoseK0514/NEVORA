@@ -105,7 +105,7 @@ const headChip=(status:{word:string;tone:StatusTone},T:TimeCopy)=>{const word=ti
 /* ---------- Time tab ---------- */
 
 export function TimeTabB({data}:{data:Ready}){
- const context=useContext(HoursBContext),m=timeWeek(data),zone=m.zone,current=m.current,{T,W,date:dateText,clock}=useTimeWords();
+ const context=useContext(HoursBContext),m=timeWeek(data),zone=m.zone,current=m.current,{lang,T,W,date:dateText,clock}=useTimeWords();
  const clockAtText=(at:string)=>clock(clockAt(at,zone));
  const figure=(value:number)=>m.partial?'—':<Dur value={value}/>;
  // Phase 8 (review C, row 10): today's shift has ended and the punch is still open: amber, with Home's words.
@@ -123,7 +123,7 @@ export function TimeTabB({data}:{data:Ready}){
  // far"), and it stays whole: the line breaks after the place's dot, never inside the total or before "far".
  const line:ReactNode=current?m.onBreak?keepWhole(T.placeClockedInAt(current.locationName,clockAtText(current.clockInAt)))
   :<>{current.locationName}{'\u00a0· '}<span className="eb-nb eb-sofar"><Dur value={current.elapsedSeconds}/>{T.soFar}</span></>:T.takeBreaksThere;
- const hint=overrun&&current?W.shiftEnded(keepWhole(clock(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`))),current.locationName):current?m.onBreak?T.endBreakHint:T.clockOutHint:null;
+ const hint=overrun&&current?W.shiftEnded(keepWhole(clock(compactRange(`${wallTime(overrun.startTime, lang)} – ${wallTime(overrun.endTime, lang)}`))),current.locationName):current?m.onBreak?T.endBreakHint:T.clockOutHint:null;
  return <HoursBScreen hero={m.week.length?<BLive label={T.atAGlance} items={[{label:T.thisWeek,value:figure(m.worked)},{label:T.breaks,value:figure(m.breaks)}]}/>:null}>
   <BCard title={T.rightNow} id="b-hours-now" chip={status}>
    {/* Phase 9 (spec 2.2): a punch left open after the shift ended is the kit's amber callout (Warning glyph, a hairline,
@@ -137,7 +137,7 @@ export function TimeTabB({data}:{data:Ready}){
    {/* Phase 2 gate (Nov 23): rows are named by what they show (no aria-label that differs from the visible text). */}
   <BList label={T.weekTime}>
     {m.week.map(entry=>{const date=dateKey(entry.clockInAt,zone),range=clock(clockRange(entry.clockInAt,entry.clockOutAt,zone));
-     return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date}/>} title={<span id={'b-hours-entry-'+entry.id}><span className="b-sr">{dateText(dayLong(date))}, </span><DayRange text={keepWhole(range)}/></span>}
+     return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date} lang={lang}/>} title={<span id={'b-hours-entry-'+entry.id}><span className="b-sr">{dateText(dayLong(date))}, </span><DayRange text={keepWhole(range)}/></span>}
       sub={entry.breakSeconds?T.breakSub(boardDuration(entry.breakSeconds)):undefined} end={<BValue><span className={entry.clockOutAt?undefined:'eb-teal'}><Dur value={entry.elapsedSeconds}/></span></BValue>}/>;})}
     {m.week.length?null:<li className="b-li"><p className="eb-quiet">{T.noTimeYet}</p></li>}
     <BAddRow href="/app/my-time?view=corrections&edit=new" icon={<PencilSimpleIcon weight="bold"/>}>{T.fixMissed}</BAddRow>
@@ -213,7 +213,7 @@ function WeekRowB({period,state}:{period:Period;state:WeekState|undefined}){
 }
 /** The chosen week (?start&end): its total and its days. */
 function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}>;period:Period}){
- const {T,date:dateText,clock}=useTimeWords(),item=data.cards[0],card=item?.card,range=dateText(rangeLabel(period.startDate,period.endDate));
+ const {lang,T,date:dateText,clock}=useTimeWords(),item=data.cards[0],card=item?.card,range=dateText(rangeLabel(period.startDate,period.endDate));
  if(!item||!card)return <BCard title={range} id="b-hours-timecard"><p className="eb-quiet">{T.noHoursThisWeek}</p></BCard>;
  const entries=[...card.entries].sort((a,b)=>a.startAt.localeCompare(b.startAt)),notes=card.issues.map(issue=>issueText[issue]).filter((text):text is string=>!!text).map(text=>timeWord(T,'issues',text));
  return <BCard title={dateText(rangeLabel(card.startDate,card.endDate))} id="b-hours-timecard" chip={entries.length?headChip(cardStatus(item.state as CardState,card.issues),T):undefined}>
@@ -221,7 +221,7 @@ function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}
    <div className="eb-sum"><p className="eb-sum__big"><Dur value={seconds(card.recordedNanoseconds)}/></p><p className="eb-sum__line">{T.hoursIncludes(boardDuration(seconds(card.breakNanoseconds)))}</p>
     {notes.map(note=><p className="eb-sum__line eb-sum__line--warn" key={note}>{note}</p>)}</div>
    <BList label={T.days}>{entries.map(entry=>{const length=span(entry.startAt,entry.endAt),date=dateKey(entry.startAt,card.timeZone),times=clock(clockRange(entry.startAt,entry.endAt,card.timeZone));
-    return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date}/>} title={<span id={'b-hours-card-entry-'+entry.id}><span className="b-sr">{dateText(dayLong(date))}, </span><DayRange text={keepWhole(times)}/></span>}
+    return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date} lang={lang}/>} title={<span id={'b-hours-card-entry-'+entry.id}><span className="b-sr">{dateText(dayLong(date))}, </span><DayRange text={keepWhole(times)}/></span>}
      end={length===null?<span className="eb-val eb-val--teal">{T.inProgress}</span>:<BValue><Dur value={length}/></BValue>}/>;})}</BList>
   </>:<p className="eb-quiet">{T.noHoursThisWeek}</p>}
  </BCard>;

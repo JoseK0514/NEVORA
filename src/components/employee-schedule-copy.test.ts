@@ -38,3 +38,9 @@ it('follows the copy rules in both languages: no exclamation marks, no em dashes
   expect(en.startsInMin(45)).toBe('Starts in 45 min');expect(es.startsInMin(45)).toBe('Empieza en 45 min');
   expect(es.startsInH(2).startsWith(es.startsPrefix)).toBe(true);expect(en.startsInH(2).startsWith(en.startsPrefix)).toBe(true);
 });
+
+it('stays safe for client components: no value import from a module that reads the database', async () => {
+  const {readFileSync} = await import('node:fs');
+  const source = readFileSync(new URL('./employee-schedule-copy.ts', import.meta.url), 'utf8');
+  expect(source).not.toMatch(/^import \{[^}]*\} from '\.\.\/lib\/data\//m);
+});

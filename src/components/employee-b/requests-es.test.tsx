@@ -17,7 +17,7 @@ it('draws Requests in Spanish', () => {
     waitingExtra={<IncomingB count={2} onRetry={() => {}}/>} extraCount={2}
     waiting={[{key: 'w', href: '/app/requests?requestId=w', kind: 'timeOff', title: 'Días libres', sub: 'Nov 12–14 · 3 days', chip: {tone: 'amber', text: 'Waiting'}}]}
     decided={[{key: 'd', href: '/app/exchange?tab=requests&requestId=d', kind: 'callout', title: 'No puedo trabajar', sub: 'Mon, Sep 28', chip: {tone: 'grey', text: 'Declined'}}]}/>);
-  for (const text of ['Solicitudes', 'Pedir días libres', 'En espera de tu gerente', 'Cambios para ti', '2 cambios necesitan tu respuesta', 'Necesita tu respuesta', 'Revisar',
+  for (const text of ['Solicitudes', 'Pedir días libres', 'En espera de tu gerente', 'Cambios para ti', '2 cambios necesitan tu respuesta', 'Por responder', 'Revisar',
     'Decididas', 'Ver todas', 'Rechazada', 'Cambios de turno', 'Tomar y cambiar turnos', 'Cambiar o ceder un turno', 'Elige uno de tus turnos']) expect(html, text).toContain(text);
   for (const text of ['Request time off', 'Waiting for your manager', 'Swaps for you', 'See all', 'Declined', 'Pick up and swap', 'Choose one of your shifts']) expect(html, text).not.toContain(text);
 });
@@ -44,10 +44,10 @@ it('draws Pick up and swap in Spanish: Open shifts, For you, and a request’s p
     expect(open, text).toContain(text);
   for (const text of ['You can pick up', 'See every posted shift', 'Next week', 'PM', 'For you']) expect(open, text).not.toContain(text);
   const list = es(<ExchangeListB mode="incoming" state={null} enabled recoveries={null} rows={[]}/>);
-  for (const text of ['Necesita tu respuesta', 'Ningún cambio necesita tu respuesta', 'Cambiar o ceder un turno']) expect(list, text).toContain(text);
+  for (const text of ['Por responder', 'Ningún cambio necesita tu respuesta', 'Cambiar o ceder un turno']) expect(list, text).toContain(text);
   const summary = {id: 'r', kind: 'swap' as const, viewer: 'recipient' as const, status: 'EMPLOYEE_PENDING', date: '2026-11-24', createdAt: '2026-11-20T15:00:00Z', counterparty: 'Luis M.', revision: 1, releaseApplies: null};
   const slot = {date: '2026-11-24', startTime: '09:00', endTime: '17:00', location: 'Main Office', position: null, lead: true};
-  const detail = es(<ExchangeDetailB mode="incoming" title="Cambio de turno" back="/app/exchange?tab=foryou" state={null} enabled recoveries={null} timeZone="UTC" status="Necesita tu respuesta" controls={null}
+  const detail = es(<ExchangeDetailB mode="incoming" title="Cambio de turno" back="/app/exchange?tab=foryou" state={null} enabled recoveries={null} timeZone="UTC" status="Por responder" controls={null}
     detail={{summary, offered: slot, requested: slot, history: [], checks: [], notice: null, reason: null}}/>);
   for (const text of ['Para ti', 'De Luis M.', 'Enviada 20 nov, 3:00 p. m.', 'Tu turno actual', 'Trabajarías', 'Líder de turno', '9:00 a. m. – 5:00 p. m.', 'Tu respuesta', 'No hay historial registrado para esta solicitud.'])
     expect(detail, text).toContain(text);

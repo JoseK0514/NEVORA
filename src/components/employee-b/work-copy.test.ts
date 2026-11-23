@@ -27,9 +27,9 @@ it('follows the copy rules: sentence case, no exclamation marks, no em dashes, n
   expect(WORK_COPY.en.leadAll(3)).toBe('You lead all 3');expect(WORK_COPY.es.leadAll(3)).toBe('Lideras los 3');
   // Phase 9: your own clock state once a shift has started with no punch, with how long.
   // Round 2: Home's chip is Requests' own words; Schedule's narrow title and its Confirm chip.
-  expect(WORK_COPY.en.needsYourAnswer).toBe('Needs your answer');expect(WORK_COPY.es.needsYourAnswer).toBe('Necesita tu respuesta');
+  expect(WORK_COPY.en.needsYourAnswer).toBe('Needs your answer');expect(WORK_COPY.es.needsYourAnswer).toBe('Por responder');
   expect(WORK_COPY.en.whatChanged).toBe('What changed');expect(WORK_COPY.es.whatChanged).toBe('Qué cambió');
-  expect(WORK_COPY.en.actionNeeded).toBe('Action needed');expect(WORK_COPY.es.actionNeeded).toBe('Requiere acción');
+  expect(WORK_COPY.en.actionNeeded).toBe('Action needed');expect(WORK_COPY.es.actionNeeded).toBe('Pendiente');
   expect(WORK_COPY.en.notClockedInFor('12 min')).toBe('Not clocked in · 12 min');expect(WORK_COPY.es.notClockedInFor('12 min')).toBe('Sin marcar entrada · 12 min');
 });
 

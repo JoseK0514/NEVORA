@@ -2,7 +2,7 @@
  * sheet, the weekly confirmation), their Requests card and the scheduling fields, in English and Puerto Rico Spanish
  * (docs/design/voice.md: tú, sentence case, the glossary: Horario, Turno disponible, Días libres, localidad, Líder de
  * turno, No puedo trabajar). English is word for word what these screens said before the table. */
-import {emptyScheduleLabel, type EmployeeScheduleState} from '../lib/data/employee-schedule';
+import type {EmployeeScheduleState} from '../lib/data/employee-schedule';
 import {unpublishedNote} from '../lib/publication-note';
 
 export type ScheduleLang = 'en' | 'es';
@@ -49,7 +49,9 @@ const en = {
   noShiftToday: 'No shift today.', noShiftThisDay: 'No shift this day.',
   emptyDayNote: 'An empty day isn’t a day off yet.',
   unpublished: (unpublished: readonly string[], published?: readonly string[]) => unpublishedNote(unpublished, published),
-  emptyLabel: (state: EmployeeScheduleState): string => emptyScheduleLabel(state),
+  // Same words as lib/data/employee-schedule's emptyScheduleLabel; that module reads the database, so client components
+  // can't import it.
+  emptyLabel: (state: EmployeeScheduleState): string => state === 'published' ? 'Off — no assignment' : state === 'unpublished' ? 'Schedule not published yet' : '–',
   availability: 'Availability', previousWeek: 'Previous week', nextWeekNav: 'Next week', daysInWeek: 'Days in this week', week: 'Week',
   srToday: ', today', srAssigned: ', assigned shift', srSelectedWhole: ', selected day, show the whole week', srSelected: ', selected day',
   zoneTime: (year: string, zone: string) => `, ${year}, ${zone} time`,

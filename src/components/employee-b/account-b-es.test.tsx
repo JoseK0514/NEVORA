@@ -76,7 +76,7 @@ describe('Account screens in Spanish', () => {
       acknowledgement: 'REQUIRED', ownAcknowledgedAt: null, ownReadAt: null, authority: 'fictional', observedAt: '2026-11-05T19:42:00Z', validForMs: 45000, timeZone: 'America/Puerto_Rico', expiresAt: null, authorContext: 'Gerencia', canWithdraw: true} as ReadyUpdate;
     const list: UpdatesBList = {items: [update], partial: false, search: '', filter: 'all', timeZone: 'America/Puerto_Rico', onSearch: noop, onFilter: noop, onOpen: noop, more: false, busy: false, onConfirm: noop, onCompose: noop};
     const updates = es(<EmployeeUpdatesB list={list} />);
-    for (const word of ['Avisos', 'Escribir un aviso', 'Por confirmar', 'Requiere acción', 'Abrir', 'Confirmar', 'Buscar en esta página']) expect(updates).toContain(word);
+    for (const word of ['Avisos', 'Escribir un aviso', 'Por confirmar', 'Pendiente', 'Abrir', 'Confirmar', 'Buscar en esta página']) expect(updates).toContain(word);
     absent(updates, ['To confirm', 'Write an update', 'Action needed']);
     const detail = es(<EmployeeUpdateB back={{href: '/app/updates', label: 'Avisos'}} item={update} busy={false} onAction={noop} withdraw={false} onWithdraw={noop} />);
     for (const word of ['Aviso del equipo', 'Tu estado de lectura', 'Confirma que lo leíste. Abrirlo no cuenta.', 'Confirmar que lo leí', 'Retirar aviso']) expect(detail).toContain(word);

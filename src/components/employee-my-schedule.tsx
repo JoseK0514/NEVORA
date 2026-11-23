@@ -16,7 +16,7 @@ import { EmployeeScheduleCorp } from './employee-schedule-corp';
 import { QuietBar, QuietBarIcon, QuietHeader, QuietList, QuietPage, QuietRow, QuietSection, QuietSegments } from './quiet/quiet';
 import { addDays, formatTime, weekDates, weekStartFor } from '../lib/date-utils';
 import { shiftBoundaryInstants } from '../lib/business-time';
-import { type EmployeeScheduleRead } from '../lib/data/employee-schedule';
+import type { EmployeeScheduleRead } from '../lib/data/employee-schedule';
 import type { ScheduleShiftRow } from '../lib/data/schedules';
 import { employeeScheduleCopy, SCHEDULE_LOCALE, type ScheduleCopy, type ScheduleLang } from './employee-schedule-copy';
 import { esTime } from './employee-b/es-format';

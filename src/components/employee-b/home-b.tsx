@@ -12,7 +12,7 @@ import Link from 'next/link';
 import {BButtonLink, BCallout, BCard, BChip, BHero, BIcon, BList, BLive, BNote, BRow, BScreen, BStack, BState, BStatusText, compactRange, type BLiveItem} from '../owner-b/b-kit';
 import {HOME_SOURCES} from '../../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../../lib/employee-home/types';
-import {homePublishedNames, unpublishedNote} from '../../lib/publication-note';
+import {homePublishedNames} from '../../lib/publication-note';
 import {keepWhole} from '../../lib/keep-whole';
 import {addDays, weekStartFor} from '../../lib/date-utils';
 import type {EmployeeTime} from '../../lib/employee-time';
@@ -21,7 +21,8 @@ import {esDate, esTime, LOCALE, type FormatLang} from './es-format';
 import {usePortalLang} from '@/lib/i18n/portal-lang';
 import {useHours} from '../employee-mobile/use-hours';
 import {compactDuration} from '../employee-mobile/hours-model';
-import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type HomeWeek} from '../employee-home-quiet';
+import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourceNamesFor, todoTitle, weekRange, type HomeWeek} from '../employee-home-quiet';
+import {employeeHomeCopy} from '../employee-home-copy';
 import {BCardNote, BDay, Dotted, Range, shiftEndedWhileOpen, sinceSpan, wallTime} from './parts';
 import './employee-b.css';
 import {reviewCopy} from '../review-details/copy';
@@ -309,9 +310,9 @@ export type HomeBProps = HomeBExtras & {
 export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date, place, intro, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday, team, lead, shortcuts}: HomeBProps) {
   const lang = usePortalLang(), t = workCopy(lang);
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
-  const note = snapshot?.publicationState === 'partial' ? unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations)) : null;
+  const note = snapshot?.publicationState === 'partial' ? employeeHomeCopy(lang).unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations)) : null;
   const todoRow = ({key, item, week: confirm}: HomeTodo) => {
-    const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
+    const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item, lang));
     const deadline = !confirm && item.deadlineAt && snapshot ? todoDeadline(item.deadlineAt, snapshot.timeZone, lang) : null;
     // Round 2 (H4): under 360px the short form shows; the full sentence stays in the page for screen readers.
     const sub = confirm ? weekTodo(item).detail : deadline ? <><span className="eb-dl">{deadline.full}</span><span className="eb-dl-s" aria-hidden="true">{deadline.short}</span></> : undefined;
@@ -337,7 +338,7 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
     const source = snapshot.sources[key];
     const state = source.state === 'unavailable' ? (source.reason === 'review_unavailable' ? t.sourceNeedsReview : t.sourceUnchecked)
       : source.reason === 'source_cap' ? t.sourcePartlyShown : t.sourcePartly;
-    return <BRow key={key} href={sourceDestinations[key]} title={sourceNames[key]} sub={state} label={t.openSource(sourceNames[key].toLowerCase(), state.toLowerCase())}/>;
+    return <BRow key={key} href={sourceDestinations[key]} title={sourceNamesFor(lang)[key]} sub={state} label={t.openSource(sourceNamesFor(lang)[key].toLowerCase(), state.toLowerCase())}/>;
   }) : null;
   const screen = <BScreen>
     {/* A Lead's desktop: Message today's team is the band's white action (eb-desk); phones use the Today's team card. */}
@@ -352,7 +353,7 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
         {intro ?? null}
         {/* Review B6 (NV-162, NV-288): Things to do (with its deadlines) comes before a Lead's optional Today's team, so on
           * a phone the to-dos are higher and on desktop the focus order follows the columns (left, then right). */}
-        {todos.length || partial ? <BCard title={t.thingsToDo} id="b-home-todo" count={!todos.length ? undefined : tasks?.exact ? todos.length : reviewCopy().atLeast(todos.length)}
+        {todos.length || partial ? <BCard title={t.thingsToDo} id="b-home-todo" count={!todos.length ? undefined : tasks?.exact ? todos.length : reviewCopy(lang).atLeast(todos.length)}
           // Review B2 (NV-037): the link opens Notifications, so it says so.
           link={todos.length > 3 ? {href: '/app/notifications', label: t.allNotifications, aria: t.seeAllNotifications} : undefined}>
           <BList>
@@ -374,7 +375,7 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
           {weekShown ? <WeekCard week={weekShown} time={!!hoursAuthority} lang={lang}/> : null}
           {weekShown ? <ComingUp week={weekShown} snapshot={snapshot} lead={lead} note={note} lang={lang}/> : note ? <BNote>{note}</BNote> : null}
         </div> : note ? <BNote>{note}</BNote> : null}
-        {!todos.length && !partial ? <BNote>{tasks?.allSet ? t.allSet : reviewCopy().nothingToDo}</BNote> : null}
+        {!todos.length && !partial ? <BNote>{tasks?.allSet ? t.allSet : reviewCopy(lang).nothingToDo}</BNote> : null}
       </> : <BCard title={t.nextShift} id="b-home-shift">
         {/* Review F2 (NV-075): the shared state card (icon circle, one line, one teal pill), not a full grey button. */}
         <BState kind={loading ? 'loading' : paused ? (typeof navigator !== 'undefined' && navigator.onLine === false ? 'offline' : 'paused') : denied ? 'locked' : 'failed'} line={waiting}

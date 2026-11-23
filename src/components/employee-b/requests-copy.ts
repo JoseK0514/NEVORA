@@ -74,7 +74,7 @@ const es: typeof en = {
   noOpenShiftsNow: 'No hay turnos disponibles ahora', noOpenShiftsSub: 'Cuando un compañero ofrezca un turno que puedes trabajar, aparecerá aquí.',
   getAlerts: 'Recibir alertas en este dispositivo',
   requests: 'Solicitudes', requestTimeOff: 'Pedir días libres', atAGlance: 'Tus solicitudes de un vistazo',
-  waiting: 'En espera', waitingMeta: 'de tu gerente o un compañero', needsYourAnswer: 'Necesita tu respuesta',
+  waiting: 'En espera', waitingMeta: 'de tu gerente o un compañero', needsYourAnswer: 'Por responder',
   answerMeta: (n: number) => n === 1 ? 'un cambio de un compañero' : 'cambios de compañeros',
   swapsForYou: 'Cambios para ti', waitingForManager: 'En espera de tu gerente',
   nothingWaiting: 'Nada en espera ahora', nothingWaitingSub: 'Las solicitudes que envíes aparecen aquí hasta que se decidan.',
@@ -119,7 +119,7 @@ const es: typeof en = {
   pills: {
     Waiting: 'En espera', Approved: 'Aprobada', Declined: 'Rechazada', Withdrawn: 'Retirada', 'Open to check': 'Por verificar',
     'Waiting on teammate': 'En espera de compañero', 'With teammate': 'Con compañero', 'Waiting for cover': 'Buscando cobertura',
-    Completed: 'Completada', Recorded: 'Registrada', Cancelled: 'Cancelada', Expired: 'Vencida', 'Needs your answer': 'Necesita tu respuesta', Decided: 'Decidida',
+    Completed: 'Completada', Recorded: 'Registrada', Cancelled: 'Cancelada', Expired: 'Vencida', 'Needs your answer': 'Por responder', Decided: 'Decidida',
   },
 };
 
