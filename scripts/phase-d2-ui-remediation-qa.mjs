@@ -47,7 +47,6 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
  const observations={engine,console:[],runtime:[],failedRequests:[],injectedFailures:[],keyboard:[],states:[],network:[]};
  observations.nativeDocumentNavigation={navigationProbe,reloadProbe,authorityReloadProbe,execution,runtimeErrors};
  const startedAt=performance.now(),requests=new WeakMap(),consoleDetails=[],managerRscRequests=new Set();
- const managerReloadReads=new Set();let managerReloadVersion=0;
  const clean=safeD2Text;
  const record=value=>{observations.network.push({atMs:Math.round(performance.now()-startedAt),stage,phase,...value});if(observations.network.length>300)observations.network.shift();};
  report.remediation??=[];report.remediation.push(observations);
@@ -60,12 +59,11 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   page.on('request',request=>{
    const url=new URL(request.url());if(url.origin!==app.url||!(['/app','/app/timecards/corrections'].includes(url.pathname)||url.pathname.startsWith('/api/')||url.pathname==='/__nextjs_original-stack-frames'))return;
    if(role==='manager'&&url.pathname==='/app/timecards/corrections'&&request.headers().rsc==='1'){managerRscRequests.add(request);managerRscVersion++;}
-   if(role==='manager'&&(url.pathname.startsWith('/api/')||request.headers().rsc==='1')){managerReloadReads.add(request);managerReloadVersion++;}
    const id=++requestSequence;requests.set(request,id);record({role,id,event:'request',path:clean(url.pathname),method:request.method(),rsc:request.headers().rsc==='1',serverAction:!!request.headers()['next-action'],document:request.isNavigationRequest()});
   });
   page.on('response',response=>{const id=requests.get(response.request());if(id)record({role,id,event:'response',status:response.status()});});
-  page.on('requestfinished',request=>{managerRscRequests.delete(request);managerReloadReads.delete(request);const id=requests.get(request);if(id)record({role,id,event:'finished'});});
-  page.on('requestfailed',request=>{managerRscRequests.delete(request);managerReloadReads.delete(request);const id=requests.get(request);if(id)record({role,id,event:'failed',reason:clean(request.failure()?.errorText)});});
+  page.on('requestfinished',request=>{managerRscRequests.delete(request);const id=requests.get(request);if(id)record({role,id,event:'finished'});});
+  page.on('requestfailed',request=>{managerRscRequests.delete(request);const id=requests.get(request);if(id)record({role,id,event:'failed',reason:clean(request.failure()?.errorText)});});
   page.on('requestfailed',request=>observations.failedRequests.push({role,phase,path:clean(new URL(request.url()).pathname),method:request.method(),failure:clean(request.failure()?.errorText)}));
  }
  const headers={'X-Nevora-Time-Correction':'1',Origin:app.url};
@@ -258,9 +256,11 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    await mp.waitForFunction(n=>document.querySelectorAll('.manager-correction-row').length===n,1-i);
   }
   assert.equal((await q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections WHERE employee_id=$1',[employeeId]))[0].count,0);
-  await waitForD2RscQuiescence(()=>({pending:managerReloadReads.size,version:managerReloadVersion}),performance.now()+15000);
-  await mp.reload({waitUntil:'networkidle'});
-  await mp.getByText('Nothing to fix',{exact:true}).waitFor();await shots(mp,'.manager-corrections','confirmed-empty');
+  const emptyPage=await owner.newPage();emptyPage.setDefaultTimeout(15000);
+  try{
+   await emptyPage.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
+   await emptyPage.getByText('Nothing to fix',{exact:true}).waitFor();await shots(emptyPage,'.manager-corrections','confirmed-empty');
+  }finally{await emptyPage.close();}
   observations.keyboard.push({decisions:'two declines activated with Enter'});
   stage='completed-history';await ep.goto(app.url+'/app/my-time?view=corrections&filter=decided',{waitUntil:'networkidle'});await hoursPage(ep,'corrections').getByRole('list',{name:'Decisions',exact:true}).getByText('Declined',{exact:true}).first().waitFor();await employeeShots('.c-hours','completed-history');
   // Restore only this disposable version mutation to compare untouched raw evidence.

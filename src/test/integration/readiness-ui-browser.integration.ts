@@ -127,11 +127,13 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         checks.push(`${engine} ${actor}: fresh original-review delete`);
 
         if (actor === 'UI-COMPANY') {
+          await page.setViewportSize({ width: 390, height: 1000 });
           await visit('/app/payroll-export?start=' + period.startDate + '&end=' + period.endDate);
           await page.getByText(/^(Who’s included and sent files|Export history)$/).filter({ visible: true }).click();
           const mobile = page.getByRole('button', { name: 'Choose who’s included', exact: true });
           if (await mobile.isVisible()) await mobile.click();
           const history = page.getByRole('region', { name: 'Period artifact and handoff history' });
+          await history.getByRole('heading', { name: 'Full period history', exact: true }).scrollIntoViewIfNeeded();
           await history.getByRole('button', { name: 'Load history', exact: true }).click();
           await history.getByText('More events are available.', { exact: true }).waitFor();
           expect(await history.locator('li').count()).toBe(50);
@@ -141,9 +143,6 @@ it('connects original shift reviews and explicit period history in owned Chromiu
           await history.getByText('All events in this history snapshot are loaded.', { exact: true }).waitFor();
           expect(await history.locator('li').count()).toBe(1001);
           expect(await history.getByRole('button', { name: 'Load older events', exact: true }).count()).toBe(0);
-          await page.setViewportSize({ width: 390, height: 1000 });
-          if (await mobile.isVisible()) await mobile.click();
-          await history.getByRole('heading', { name: 'Full period history', exact: true }).scrollIntoViewIfNeeded();
           expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
           await page.screenshot({ path: resolve(evidence, `${engine}-history.png`), fullPage: false });
           await page.evaluate(() => window.dispatchEvent(new Event('blur')));
