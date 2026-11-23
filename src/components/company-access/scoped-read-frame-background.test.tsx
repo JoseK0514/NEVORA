@@ -29,7 +29,7 @@ rs.mock('@/lib/private-snapshot-client',()=>({
  createPrivateSnapshotController:(changed:(state:unknown)=>void)=>{fixture.changed=changed;return {start:fixture.start,pause:fixture.pause,stop:fixture.stop};},
 }));
 
-import {Activity,Fragment,isValidElement,type ReactElement,type ReactNode} from 'react';
+import {Fragment,isValidElement,type ReactElement,type ReactNode} from 'react';
 import {ScopedReadFrame,resetScopedReadTab} from './scoped-read-frame';
 
 const authority='fictional-authority-A';
@@ -97,12 +97,14 @@ it('lapse then renew: the window running out keeps the page held, hidden, and th
  await Promise.resolve();
  expect(body()).toEqual({authority:null,phase:'expired',content:null,kept:'Fictional period history'});
  expect(fixture.states[1]).toEqual({required:true,view:null});
- // Rendered while lapsed: the held page sits first, inside a hidden Activity, beside the checking state.
+ // Rendered while lapsed: the held page sits first, as itself (mounted, effects running), with the checking state after
+ // it carrying the ref that hides the page's root.
  const lapsed=renderWith(body());
- // Rendered once a current observation arrives: the same Activity, in the same place, now visible.
+ // Rendered once a current observation arrives: the same page in the same place, and no status after it.
  const renewed=renderWith({authority,phase:'ready',content:'Fictional period history'},{required:false,view:null});
- expect(slot(lapsed)).toMatchObject({type:Activity,props:{mode:'hidden',children:'Fictional period history'}});
- expect(slot(renewed)).toMatchObject({type:Activity,props:{mode:'visible',children:'Fictional period history'}});
+ expect(slots(lapsed)[0]).toBe('Fictional period history');
+ expect(typeof (slots(lapsed)[1] as ReactElement<{ref?:unknown}>).props.ref).toBe('function');
+ expect(slots(renewed)).toEqual(['Fictional period history',null]);
 });
 
 it('lapse then deny: an access_denied answer drops the held page',async()=>{
@@ -112,7 +114,9 @@ it('lapse then deny: an access_denied answer drops the held page',async()=>{
  expect(body().kept).toBe('Fictional period history');
  fixture.changed!({snapshot:{state:'unavailable',reason:'access_denied'},refreshing:false,paused:false});
  expect(body()).toEqual({authority:null,phase:'expired',content:null,kept:null});
- expect(slot(renderWith(body()))).toMatchObject({type:Activity,props:{mode:'hidden',children:null}});
+ const denied=slots(renderWith(body()));
+ expect(denied[0]).toBeNull();
+ expect((denied[1] as ReactElement<{ref?:unknown}>).props.ref).toBeUndefined();
 });
 
 it('stepping away still clears the page, held or shown (privacy fence unchanged)',async()=>{
@@ -127,10 +131,32 @@ function renderWith(state:Body,recovery:unknown={required:true,view:null}){
  fixture.preset=[];
  return out;
 }
-/** The frame's first slot: the place the page lives in every state. */
-function slot(node:ReactNode):ReactElement|null{
- if(!isValidElement<{children?:ReactNode}>(node)||node.type!==Fragment)return null;
+/** The frame's two slots: the page (the same place in every state), then the status section or nothing. */
+function slots(node:ReactNode):ReactNode[]{
+ if(!isValidElement<{children?:ReactNode}>(node)||node.type!==Fragment)throw Error('The frame renders one fragment');
  const children=node.props.children;
- const first=Array.isArray(children)?children[0]:children;
- return isValidElement(first)?first:null;
+ return Array.isArray(children)?children:[children];
 }
+
+it('while lapsed the page root is hidden and inert before paint, and shown again as the status leaves',async()=>{
+ // A stand-in for the page's root element: the element just before the status section.
+ class FakeElement{inert=false;attrs=new Map<string,string>();styles=new Map<string,[string,string]>();
+  style={getPropertyValue:(k:string)=>this.styles.get(k)?.[0]??'',getPropertyPriority:(k:string)=>this.styles.get(k)?.[1]??'',
+   setProperty:(k:string,v:string,p='')=>{this.styles.set(k,[v,p]);},removeProperty:(k:string)=>{this.styles.delete(k);}};
+  setAttribute(k:string,v:string){this.attrs.set(k,v);} removeAttribute(k:string){this.attrs.delete(k);}}
+ rs.stubGlobal('HTMLElement',FakeElement);
+ await historyOnScreen();
+ rs.advanceTimersByTime(15000);
+ await Promise.resolve();
+ const status=slots(renderWith(body()))[1] as ReactElement<{ref:(node:unknown)=>(()=>void)|void}>;
+ const page=new FakeElement();page.style.setProperty('display','grid','');
+ const show=status.props.ref({previousElementSibling:page});
+ expect(page.style.getPropertyValue('display')).toBe('none');
+ expect(page.style.getPropertyPriority('display')).toBe('important');
+ expect(page.inert).toBe(true);
+ expect(page.attrs.get('aria-hidden')).toBe('true');
+ show!();
+ expect(page.style.getPropertyValue('display')).toBe('grid');
+ expect(page.inert).toBe(false);
+ expect(page.attrs.has('aria-hidden')).toBe(false);
+});

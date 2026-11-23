@@ -1,5 +1,5 @@
 'use client';
-import {Activity,startTransition,useEffect,useRef,useState,type ReactNode} from 'react';
+import {startTransition,useEffect,useRef,useState,type ReactNode} from 'react';
 import {useRouter} from 'next/navigation';
 import type {OperationalAuthorityView} from '@/lib/company-access/model';
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
@@ -22,12 +22,28 @@ export const STUCK_MS=2500;
 type Body={authority:string|null;phase:'ready'|'expired'|'paused';content:ReactNode;kept?:ReactNode};
 /** WebKit period history, second route (QA, Nov 23, 2026): when the page's 15 s window ran out before the renewal landed,
  * the frame dropped its children and the page re-mounted later with its client state gone (Payroll export's loaded
- * history pages and open sheet). A lapse in the foreground now keeps the last page mounted but hidden and inert (React
- * Activity: display none, no wrapper, state kept) behind the usual checking state, and shows it again when a current
- * observation arrives. Nothing stale is visible meanwhile, and the 15 s window, S-01's "checking" and the step-away
- * retirements (blur, hidden, pagehide: the page is cleared) are unchanged. A denial drops it. */
+ * history pages and open sheet). A lapse in the foreground now keeps the last page mounted, with its effects running,
+ * and hides its DOM root (display none, inert, aria-hidden; see `holdHidden`) behind the usual checking state, then shows
+ * it again in place when a current observation arrives. Nothing stale is visible or reachable meanwhile, and the 15 s
+ * window, S-01's "checking" and the step-away retirements (blur, hidden, pagehide: the page is cleared) are unchanged.
+ * A denial drops it. (React Activity was not enough: a hidden Activity tears its effects down and runs them again when
+ * shown, and Payroll export's mount effect then reset the page.) */
 const lapse=(previous:Body):Body=>({authority:null,phase:'expired',content:null,kept:previous.content??previous.kept??null});
 const dropKept=(previous:Body):Body=>previous.kept?{...previous,kept:null}:previous;
+/** Hides the held page while the frame's status section is drawn after it: the element just before that section is the
+ * page's root (pages render one root, a .c-page). Runs at commit, before paint; the returned cleanup (React 19 ref
+ * cleanup) shows the page again when the status section goes, as a current observation arrives. Inline !important beats
+ * the stylesheets' display rules; the page keeps no wrapper, so their child combinators still match. */
+function holdHidden(status:HTMLElement|null){
+ const page=status?.previousElementSibling;
+ if(!(page instanceof HTMLElement))return;
+ const display=page.style.getPropertyValue('display'),priority=page.style.getPropertyPriority('display');
+ page.style.setProperty('display','none','important');page.inert=true;page.setAttribute('aria-hidden','true');
+ return()=>{
+  if(display)page.style.setProperty('display',display,priority);else page.style.removeProperty('display');
+  page.inert=false;page.removeAttribute('aria-hidden');
+ };
+}
 const online=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
 /** A frame holding its page offline keeps it while the device is still offline and the person is still here. */
 const keepOffline=(held:{current:boolean})=>held.current&&!navigator.onLine&&!steppedAway();
@@ -234,7 +250,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  },[ready,navigation]);
 
  // The page sits in one place in the tree in every state, so a lapse and its renewal keep its client state.
- const page=<Activity mode={ready?'visible':'hidden'}>{ready?body.content:body.kept??null}</Activity>;
+ const page=ready?body.content:body.kept??null;
+ const hold=!ready&&!!body.kept?holdHidden:undefined;
  if(ready)return <>{page}{null}</>;
  // Phase 2 (package D): the state the page handed over draws its own "Refresh current view" inside its card (it reads
  // this frame's fresh check from the context), so the page has one card with all its actions.
@@ -246,7 +263,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  // each main tab's loaded height (b-foundation.css, keyed by the sidebar entry that is the current page), and tablets and
  // desktop draw it too (owner-b-desktop.css treats the placeholder like Home's B screen). Its hero says "Loading…" to
  // assistive technology; the quiet section below shows only where no B screen does.
- if(checking)return <>{page}<div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
+ if(checking)return <>{page}<div ref={hold} className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
   <BRouteLoading/>
   {stateSection}
  </div></>;
@@ -258,7 +275,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  // Direction B screen there, as it does for the placeholder).
  const offlineNow=typeof navigator!=='undefined'&&!navigator.onLine;
  const {kind,title,line}=frameStateWords(body.phase,offlineNow,checkFailed);
- return <>{page}<div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
+ return <>{page}<div ref={hold} className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
   <BStateScreen title={title} back={{href:'/app',label:'Home'}} offlineInTitle={kind==='offline'}><BState kind={kind} line={line} action={{label:'Try again',onClick:refreshCurrent}}/></BStateScreen>
  </div></>;
 }
