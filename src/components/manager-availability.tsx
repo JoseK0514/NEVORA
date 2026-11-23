@@ -14,7 +14,10 @@ import { keepWhole } from "@/lib/keep-whole";
 import { readNotificationConfig } from "@/lib/notifications/config";
 import { communicationAuthority } from "@/lib/communications/service.server";
 import { dateRange } from "@/lib/duration-format";
-import { QuietHeader, QuietList, QuietNav, QuietPage, QuietRow, weekLabel } from "./quiet/quiet";
+import { weekLabel } from "./quiet/quiet";
+import { CorpNav, CorpPage, CorpTitle } from "./corp/corp";
+import { BCallout, BCard, BIcon, BList, BRow } from "./owner-b/b-kit";
+import { HourglassMediumIcon } from "@phosphor-icons/react/dist/ssr/HourglassMedium";
 
 /** Phase 3.5 Wave A: Team availability on the kit. The week in the band, the counts and the deadline in one card,
  * then everyone's submission, people who haven't submitted first. */
@@ -36,7 +39,6 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   });
   if(source.state==='unavailable')return <OperationalUnavailable title="Team availability unavailable" reason={source.reason}/>;
   const {selectedWeek,settings,statuses,windows,employees,locations}=source.data;
-  const notSubmitted = statuses.filter(item => !item.submitted).length;
 
   const locationNames = new Map(locations.map(location => [location.id, location.shortName]));
   const employeeLocations = new Map(employees.map(employee => [employee.id, locationNames.get(employee.primaryLocationId)]));
@@ -60,20 +62,25 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   const deadlineAt = settings?.availabilityDeadline ? new Date(settings.availabilityDeadline) : null;
   const remind = authority && deadlineAt && Number.isFinite(deadlineAt.getTime()) && !locked && (proof.employee.role === "OWNER" || proof.employee.role === "MANAGER")
     ? { authority, timeZone, actor: proof.employee.role, weekStart: selectedWeek, expectedDeadline: deadlineAt.toISOString(), week: keepWhole(dateRange(selectedWeek, selectedWeek, { year: "never" })) } : null;
+  // Phase 2 (C10, Nov 23, 2026): the Corp frame (CorpNav on a phone, CorpTitle in the band from 768px), Not sent and Sent
+  // as the band's segments with their counts, then one card for the week (its title) and its deadline, then the people. Each fact
+  // once: the week is in the card (not under the title too), the counts are on the segments.
+  const deadlineLine = deadline ? locked ? `Passed ${deadline}` : remindersOn ? "People are reminded the day before" : undefined : undefined;
   return (<ScopedReadFrame observation={source}>
-    <QuietPage className="q-availability">
-      <QuietNav back={{ href: "/app/inbox", label: "Things to do" }} />
-      <QuietHeader title="Availability" sub={`${keepWhole(weekLabel(selectedWeek))} · ${statuses.length - notSubmitted} of ${statuses.length} sent`} />
-      {/* Closing F1 (NV-261): Not sent / Sent sit right under the title (in the band); the notice and the deadline follow. */}
+    <CorpPage className="c-availteam c-page--narrow" labelledBy="availteam-title">
+      <CorpNav back={{ href: "/app/inbox", label: "Things to do" }} title="Availability" titleId="availteam-title" phoneOnly />
+      <CorpTitle title="Availability" wide />
       <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} remind={remind} needsDeadline={!deadlineAt} before={<>
-        {invalidWeek ? <p className="q-error q-first" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
-        <QuietList style={{ marginTop: 16 }}>
-          {/* Phase 3 (MG-016): the row says what a deadline does. The reminder goes out 24 hours before the deadline
-              (notifications/policy.ts), so the line shows only where the workplace's alerts are on. */}
-          <QuietRow title="Deadline" detail={remindersOn ? "People are reminded the day before." : undefined} value={deadlineDay ?? "Not set"} tone="l" href="/app/schedule/settings"
-            label={locked ? `Deadline passed ${deadline}` : deadline ? `Deadline ${deadline}` : "No deadline set. Set one in Scheduling rules"} />
-        </QuietList>
+        {invalidWeek ? <BCallout tone="amber" icon="unknown" role="alert">That week isn’t valid, so this is the upcoming week.</BCallout> : null}
+        <BCard title={`Week of ${keepWhole(weekLabel(selectedWeek))}`} id="availability-week">
+          <BList>
+            {/* Phase 3 (MG-016): the row says what a deadline does. The reminder goes out 24 hours before the deadline
+                (notifications/policy.ts), so the line shows only where the workplace's alerts are on. */}
+            <BRow lead={<BIcon tone={locked ? "grey" : "teal"}><HourglassMediumIcon weight="bold" /></BIcon>} title="Deadline" sub={deadlineLine}
+              end={<span className="c-avt__value">{deadlineDay ?? "Not set"}</span>} href="/app/schedule/settings" />
+          </BList>
+        </BCard>
       </>} />
-    </QuietPage>
+    </CorpPage>
   </ScopedReadFrame>);
 }

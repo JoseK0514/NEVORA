@@ -36,7 +36,7 @@ describe("availability review filters", () => {
     expect(html.match(/<li>/g)).toHaveLength(2);
   });
   it("preserves the server-formatted update label across browser locales", () => {
-    const html = renderToStaticMarkup(<AvailabilityTeamList employees={[{ ...base, updatedAt: "2026-10-12T12:15:00Z", updatedLabel: "Oct 12, 8:15 AM" }]} />);
+    const html = renderToStaticMarkup(<AvailabilityTeamList employees={[{ ...base, updatedAt: "2026-10-12T12:15:00Z", updatedLabel: "Oct 12, 8:15 AM" }]} />).replace(/\u00a0/g, " ");
     expect(html).toContain("Updated Oct 12, 8:15 AM");
     expect(html).not.toContain("Oct 12 at 8:15 AM");
   });

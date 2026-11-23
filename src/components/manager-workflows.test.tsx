@@ -63,8 +63,10 @@ it("distinguishes missing, intentionally unavailable and submitted windows witho
   // R12 / copy table 14: the kit's segmented control. Nov 1 upscale: counts read "Not sent 1", the figure in the kit's count style.
   expect(html).toContain(">Not sent<span class=\"c-count c-num\">1</span></button>"); expect(html).toContain(">Sent<span class=\"c-count c-num\">2</span></button>");
   expect(html).not.toMatch(/\(\d+\)<\/button>/);
-  expect(html).toContain("2 of 3 sent");
-  expect(html).toContain('aria-label="Missing Person, No primary location, not sent"'); expect(html).not.toContain("7:00 AM");
+  // Phase 2 (C10): each count once, on the segments; the week is the first card's row, not a second line under the title.
+  expect(html).not.toContain("2 of 3 sent"); expect(html).toMatch(/<h2 id="availability-week-h">Week of Sep 28\W{1,4}Oct 4<\/h2>/);
+  // The row's name is its visible text: no aria-label that differs from it.
+  expect(html).toContain('href="/app/employees/missing"'); expect(html).not.toContain('aria-label="Missing Person'); expect(html).toContain(">Missing Person<"); expect(html).not.toContain("7:00 AM");
   // A link to someone who has sent opens the Sent list with their hours.
   const sent = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28",employeeId:"available"})).replace(/\u00a0/g, " ");
   expect(sent).toContain("6:00 AM – 2:00 PM"); expect(sent).toContain("Unavailable all week"); expect(sent).not.toContain("7:00 AM");
@@ -172,7 +174,7 @@ describe("management sees every shift in full before deciding (Codex review, Oct
     expect(namedFacts).toContain("Fictional Ana’s shift Mon, Oct 5 · 6:00 PM – 2:00 AM, ends Tue, Oct 6 · North Office");
     expect(namedFacts).toContain("Picked up by Fictional Ben");
     // OW-011: a request over a day old carries its age under the dates (phones and tablets show that line).
-    expect(named).toContain('<span class="q-rt__line b-req-age">11 d ago</span>');
+    expect(named).toContain('<span class="b-row__more c-sreq__age">11 d ago</span>');
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([cover]);
     expect(text(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" }))))).toContain("Result Nobody has picked it up yet");
   });
@@ -198,6 +200,6 @@ describe("management sees every shift in full before deciding (Codex review, Oct
   it("a deep-linked request opens with its shifts showing", async () => {
     rs.mocked(listPendingCallouts).mockResolvedValue([]);
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "linked", requestRevision: 1, kind: "COVERAGE", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", createdAt: "2026-10-03T00:00:00Z", sourceShift: shift({}) as never }]);
-    expect(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", requestId: "linked" }))).toMatch(/<details class="q-details q-request__details" open="">/);
+    expect(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", requestId: "linked" }))).toMatch(/<li class="b-li c-sreq" id="request-linked" tabindex="-1" data-selected="true"><details class="c-sreq__details" open="">/);
   });
 });
