@@ -37,6 +37,7 @@ import { viewHref, type BusinessView } from "./views";
 import { FiguresPanel, MapReview, MapView } from "./business-map";
 import "./business.css";
 import {useBusinessReview} from "./use-business-read";
+import { useAdvisorLang } from "../lang";
 
 /* Rondo business records (Nov 17, 2026). The Owner's sales and cash records that Rondo may cite: what exists, its period,
  * whether it is in use, and the same Draft → Review the exact rows → Publish rhythm as company knowledge, on the corporate
@@ -52,18 +53,20 @@ export type BusinessIssue = { code: Exclude<RefusedCode, "forbidden">; op: Op; d
 export type BusinessPending = { meta: PendingOperation; payload: BusinessWrite | null; status: "sending" | "uncertain" | "checking" | "unconfirmed" | "foreign" };
 export type BusinessLoad = { state: "loading" } | { state: "ready"; catalog: BusinessCatalog; authority: string } | { state: "failed" } | { state: "offline" } | { state: "revoked" } | { state: "off" };
 export type BusinessCtx = Ctx;
-type Ctx = { authority?: string; client: BusinessClient; t: BusinessCopy; locale: string; timeZone: string; catalog: BusinessCatalog; now: number; busy: boolean; locked: boolean;
+type Ctx = { authority?: string; client: BusinessClient; t: BusinessCopy; lang: BusinessLang; locale: string; timeZone: string; catalog: BusinessCatalog; now: number; busy: boolean; locked: boolean;
   send: (command: BusinessWrite) => Promise<boolean>; revoke: () => void };
 
 const catalogForeground=()=>document.visibilityState!=="hidden"&&navigator.onLine&&document.hasFocus();
 const sessionStore = () => { try { return typeof window === "undefined" ? null : window.sessionStorage; } catch { return null; } };
 
 
-export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled, client: given, lang = "en", initial, initialPending = null, initialIssue = null }: {
+export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled, client: given, lang: langProp, initial, initialPending = null, initialIssue = null }: {
   timeZone: string; view: BusinessView; importsEnabled: boolean; retrievalEnabled: boolean; client?: BusinessClient; lang?: BusinessLang;
   /** For tests and stories: a first state to render without a read. */
   initial?: BusinessLoad; initialPending?: BusinessPending | null; initialIssue?: BusinessIssue | null;
 }) {
+  // An explicit language wins; otherwise the person's Rondo language.
+  const advisorLang = useAdvisorLang(), lang: BusinessLang = langProp ?? advisorLang;
   const t = BUSINESS_COPY[lang], locale = BUSINESS_LOCALE[lang];
   const client = useMemo(() => given ?? createBusinessClient(), [given]);
   const router = useRouter();
@@ -220,7 +223,7 @@ export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled,
   </CorpPage>;
 
   const catalog = load.catalog;
-  const ctx: Ctx = { authority: load.authority, client, t, locale, timeZone: catalog.timeZone || timeZone, catalog, now, busy: pending?.status === "sending", locked: !!pending, send, revoke };
+  const ctx: Ctx = { authority: load.authority, client, t, lang, locale, timeZone: catalog.timeZone || timeZone, catalog, now, busy: pending?.status === "sending", locked: !!pending, send, revoke };
   const source = "sourceId" in view && view.sourceId ? catalog.sources.find(item => item.sourceId === view.sourceId) ?? null : null;
   const problem = <>{pendingCard}{issue ? <IssueCard t={t} issue={issue} /> : null}</>;
   return <CorpPage key={load.authority} className={frame} labelledBy="be-title">
@@ -697,7 +700,7 @@ export function RecordForm({ ctx, source, problem }: { ctx: Ctx; source: Busines
       <span className="c-field__label" id="be-file-label">{t.file}</span>
       <input ref={fileInput} className="be-file__input" id="be-file" type="file" accept=".csv,.json,text/csv,application/json" onChange={event => void load(event)} tabIndex={-1} aria-hidden="true" />
       <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" onClick={() => fileInput.current?.click()} aria-describedby="be-file-help" aria-invalid={invalid("file")}>{file ? t.loadAnother : t.loadFile}</CorpButton>
-      <span className="c-field__help" id="be-file-help">{file ? t.fileFrom(file.name, file.rows ? `${t.rows(file.rows.length)} · ${sizeText(file.bytes)}` : sizeText(file.bytes)) : t.fileHelp}</span>
+      <span className="c-field__help" id="be-file-help">{file ? t.fileFrom(file.name, file.rows ? `${t.rows(file.rows.length)} · ${sizeText(file.bytes, ctx.lang)}` : sizeText(file.bytes, ctx.lang)) : t.fileHelp}</span>
       {fileError || shown.file ? <span className="c-error" role="alert"><ErrorText>{fileError ?? shown.file}</ErrorText></span> : null}
     </div>
     {file?.kind === "csv" ? <fieldset className="be-map">
@@ -742,6 +745,6 @@ export function RecordForm({ ctx, source, problem }: { ctx: Ctx; source: Busines
 
 /** For tests: the context the screens share, from a catalog. */
 export function businessContext(catalog: BusinessCatalog, lang: BusinessLang, now: number, extra: Partial<Ctx> = {}): Ctx {
-  return { client: createBusinessClient(async () => new Response("{}", { status: 503 })), t: BUSINESS_COPY[lang], locale: BUSINESS_LOCALE[lang], timeZone: catalog.timeZone, catalog, now, busy: false, locked: false,
+  return { client: createBusinessClient(async () => new Response("{}", { status: 503 })), t: BUSINESS_COPY[lang], lang, locale: BUSINESS_LOCALE[lang], timeZone: catalog.timeZone, catalog, now, busy: false, locked: false,
     send: async () => false, revoke: () => {}, ...extra };
 }

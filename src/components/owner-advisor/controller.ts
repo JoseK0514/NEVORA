@@ -7,6 +7,8 @@ import {
 import { parseAnswer, parseSaved, parseSnapshot, parseBriefingReviewed, parseNotebookSaved } from "./public-response";
 import type { AttentionDisposition } from "@/lib/owner-advisor/briefing-contracts";
 import { parseNotebookCommand, type NotebookEdit } from "@/lib/owner-advisor/notebook";
+import { ADVISOR_COPY } from "./advisor-copy";
+import type { Lang } from "./format";
 export type AdvisorView = {
   snapshot: AdvisorSnapshot | null;
   answer: AdvisorAnswer | null;
@@ -33,28 +35,13 @@ export const initialView: AdvisorView = {
   uncertain: false,
   conflict: false,
 };
-const errors: Record<string, string> = {
-  busy: "Another investigation is running. Refresh history before trying again.",
-  daily_limit:
-    "Today’s investigation limit has been reached. Try again tomorrow.",
-  forbidden: "Your Owner access ended. Sign in again to continue.",
-  disabled: "Rondo AI is not available.",
-  unavailable: "Rondo AI isn’t connected yet.",
-  invalid: "Check your question or priorities and try again.",
-  prior_attempt_failed:
-    "The earlier investigation failed or has an uncertain result. Review history before starting a new request.",
-  cancelled:
-    "The investigation timed out or was cancelled. Refresh history before starting again.",
-  limit: "This investigation reached its limit. Try a narrower question.",
-  provider_failed:
-    "Rondo couldn’t answer. Review history, then try a narrower question.",
-  conflict:
-    "Priorities changed elsewhere. Your edit is preserved. Review the saved priorities before saving again.",
-};
 export function createAdvisorController(
   changed: (v: AdvisorView) => void,
   request: typeof fetch = fetch,
+  lang: Lang = "en",
 ) {
+  // The app's own status messages, in the person's language; server text and answers are shown as they come.
+  const m = ADVISOR_COPY[lang].messages, errors = m.errors;
   let v = { ...initialView },
     stopped = false,
     paused = true,
@@ -76,9 +63,7 @@ export function createAdvisorController(
     clearTimeout(poll);
     clearTimeout(expiry);
   }
-  function retire(
-    message = "View paused. Return while online to refresh your access.",
-  ) {
+  function retire(message = m.paused) {
     generation++;
     draftRevision = null;
     automaticQuestion = null;
@@ -97,7 +82,7 @@ export function createAdvisorController(
       remaining = result.validForMs - (performance.now() - started);
     if (remaining <= 0 || observed < latest) throw Error("Stale response");
     if (authority !== null && authority !== result.authority) {
-      retire("Your access changed. Refresh to continue.");
+      retire(m.accessChanged);
       authority = null;
       throw Error("Authority changed");
     }
@@ -105,7 +90,7 @@ export function createAdvisorController(
     latest = observed;
     clearTimers();
     expiry = setTimeout(() => {
-      retire("Current access expired. Refresh to continue.");
+      retire(m.expired);
       if (!paused) void refresh();
     }, remaining);
     poll = setTimeout(() => void refresh(), remaining * 0.6);
@@ -172,7 +157,7 @@ export function createAdvisorController(
           loading: false,
           message: v.uncertain
             ? v.message
-            : "Current information could not be refreshed. Try refreshing again.",
+            : m.refreshFailed,
         });
     } finally {
       clearTimeout(timeout);
@@ -217,12 +202,12 @@ export function createAdvisorController(
           record(body) && typeof body.code === "string" ? body.code : "";
         publish({
           message:
-            (command.op === "review_briefing" && code === "conflict" ? "The issue or your briefing choice changed. Review the refreshed briefing before choosing again."
-              : (command.op === "notebook" || command.op === "ask_task" || command.op === "ask") && code === "conflict" ? "Saved goals or tasks changed. Your draft is preserved. Review the current saved context before continuing."
-                : command.op === "notebook" && code === "unavailable" ? "Saved goals and tasks are unavailable. Refresh before trying again."
-                  : command.op === "notebook" && code === "limit" ? "Saved context reached its limit. Shorten the edit or remove an item you no longer need."
+            (command.op === "review_briefing" && code === "conflict" ? m.briefingConflict
+              : (command.op === "notebook" || command.op === "ask_task" || command.op === "ask") && code === "conflict" ? m.notebookConflict
+                : command.op === "notebook" && code === "unavailable" ? m.notebookUnavailable
+                  : command.op === "notebook" && code === "limit" ? m.notebookLimit
                     : errors[code]) ??
-            "The request failed. Refresh history before trying again.",
+            m.requestFailed,
           conflict: code === "conflict" && command.op === "save_priorities",
           uncertain: [
             "prior_attempt_failed",
@@ -238,7 +223,7 @@ export function createAdvisorController(
         command.op === "ask" || command.op === "ask_task" || command.op === "inspect" ? parseAnswer(body) : command.op === "review_briefing" ? parseBriefingReviewed(body) : command.op === "notebook" ? parseNotebookSaved(body) : parseSaved(body);
       controller.signal.throwIfAborted();
       if (result.authority !== authority) {
-        retire("Your access changed. Refresh to continue.");
+        retire(m.accessChanged);
         return;
       }
       // Fence reads begun before this operation completed. A fresh GET anchors
@@ -253,15 +238,15 @@ export function createAdvisorController(
       if (result.state === "notebook_saved") {
         const saved = v.snapshot?.notebook;
         if (saved?.state !== "ready" || saved.notebook.revision < result.revision) throw Error("Fresh notebook required");
-        publish({ message: saved.notebook.revision === result.revision ? "Saved goals and tasks updated." : "Your edit was saved, then the saved context changed again. Review the current goals and tasks." });
+        publish({ message: saved.notebook.revision === result.revision ? m.notebookSaved : m.notebookChangedAgain });
       }
-      else if (result.state === "briefing_reviewed") publish({ message: "Briefing choice saved. Current records were checked again." });
+      else if (result.state === "briefing_reviewed") publish({ message: m.briefingSaved });
       else if (result.state === "answered") {
         automaticQuestion = null;
         publish({
           answer: result.answer,
           question: "",
-          message: "Answer received. Review its sources before deciding.",
+          message: m.answerReceived,
         });
       }
       else if (
@@ -272,8 +257,7 @@ export function createAdvisorController(
           priorities: result.profile.priorities,
           dirty: true,
           conflict: true,
-          message:
-            "Your priorities were saved, then changed elsewhere. Review the current saved priorities before saving again.",
+          message: m.prioritiesChangedElsewhere,
         });
       else
         publish({
@@ -283,15 +267,14 @@ export function createAdvisorController(
           priorities: result.profile.priorities,
           dirty: false,
           conflict: false,
-          message: "Priorities saved.",
+          message: m.prioritiesSaved,
         });
       return true;
     } catch {
       if (epoch === generation && !paused && !stopped) {
         publish({
           uncertain: true,
-          message:
-            "The result is unknown after a connection interruption or cancellation. Refresh history before starting another request.",
+          message: m.unknownResult,
         });
         await refreshAfterOperation();
       }
@@ -333,27 +316,26 @@ export function createAdvisorController(
       draftRevision = v.snapshot.profile.revision;
       publish({
         conflict: false,
-        message:
-          "Review complete. Save your edit deliberately to replace the current priorities.",
+        message: m.reviewComplete,
       });
     },
     selectTask(taskId: string | null) {
       if (!v.snapshot || v.busy || paused || stopped) return;
       const saved = v.snapshot.notebook;
       const task = saved?.state === "ready" ? saved.notebook.tasks.find(t => t.id === taskId && t.state === "open") : undefined;
-      if (taskId && !task) { publish({ message: "This task is no longer open or available. Review the current tasks." }); return; }
+      if (taskId && !task) { publish({ message: m.taskUnavailable }); return; }
       // Only text supplied by task selection may be replaced automatically.
       // An explicitly typed/edited draft keeps the Owner's intent across switches.
       const replaceAutomatic = !v.question.trim() || automaticQuestion !== null && v.question === automaticQuestion;
       automaticQuestion = task && replaceAutomatic ? task.objective : null;
-      publish({ focusedTaskId: taskId, ...(replaceAutomatic ? { question: task?.objective ?? "" } : {}), message: task ? "Task selected. Your next question will use its saved objective and notes with current company evidence." : "General investigation selected." });
+      publish({ focusedTaskId: taskId, ...(replaceAutomatic ? { question: task?.objective ?? "" } : {}), message: task ? m.taskSelected : m.generalSelected });
     },
     async changeNotebook(edit: NotebookEdit) {
       try {
         const command = parseNotebookCommand({ op: "notebook", requestId: crypto.randomUUID(), ...edit });
         return (await submit(command)) === true;
       } catch {
-        publish({ message: "Check the goal or task fields and dates before saving." });
+        publish({ message: m.checkNotebook });
         return false;
       }
     },
@@ -367,7 +349,7 @@ export function createAdvisorController(
       if (v.focusedTaskId) {
         const saved = v.snapshot.notebook;
         if (saved?.state !== "ready" || !saved.notebook.tasks.some(t => t.id === v.focusedTaskId && t.state === "open")) {
-          publish({ message: "The selected task was closed, removed or is unavailable. Choose an open task or explicitly select a general investigation." });
+          publish({ message: m.selectedTaskClosed });
           return Promise.resolve();
         }
         return submit({ op: "ask_task", requestId: crypto.randomUUID(), message: v.question, taskId: v.focusedTaskId, expectedNotebookRevision: saved.notebook.revision });
