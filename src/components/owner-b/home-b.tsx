@@ -216,7 +216,8 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   // attendance words, with the shift's start or end when it is one person.
   const noClockIn = splitNoClockIn(value.noClockIn);
   const zone = today?.state === "ready" ? today.timeZone : undefined;
-  // The second part of the line stays whole ("shift ended 11:30 PM"), so a narrow phone breaks only after " · ".
+  // Each part of the line stays whole ("shift ended", "11:30 PM"), so a narrow phone or 200% text breaks only after " · "
+  // or before the time, never inside it (one time format, Nov 23, 2026).
   const at = (iso: string) => zone ? clockText(iso, zone).replace(" ", "\u00a0") : null;
   const whole = (text: string) => text.replace(/ /g, "\u00a0");
   if (noClockIn.running.length) {
@@ -224,13 +225,13 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
     // Premium pass FA (final verification A #19, B #25): a row that names several people leads with what they share, the
     // amber attendance circle (a person and a clock), not the first person's face alone; one person keeps their face.
     rows.push(<BRow key="not-clocked-in" lead={names.length > 1 ? <BIcon tone="amber"><ClockUserIcon weight="bold" /></BIcon> : <BAvatar name={names[0]} ring="late" />} title={firstNames(names)}
-      sub={noClockIn.running.length > 1 ? `${ATTENDANCE_WORDS.notClockedIn} \u00b7 ${noClockIn.running.length}\u00a0people` : began ? `${ATTENDANCE_WORDS.notClockedIn}\u00a0\u00b7 ${whole(`shift began ${began}`)}` : ATTENDANCE_WORDS.notClockedIn}
+      sub={noClockIn.running.length > 1 ? `${ATTENDANCE_WORDS.notClockedIn} \u00b7 ${noClockIn.running.length}\u00a0people` : began ? `${ATTENDANCE_WORDS.notClockedIn}\u00a0\u00b7 ${`${whole("shift began")} ${began}`}` : ATTENDANCE_WORDS.notClockedIn}
       href="/app/inbox#todo-not-clocked-in" label={`${ATTENDANCE_WORDS.notClockedIn}: ${names.join(", ")}`} />);
   }
   if (noClockIn.ended.length) {
     const names = noClockIn.ended.map(shift => shift.employeeName), ended = noClockIn.ended.length === 1 ? at(noClockIn.ended[0].endAt) : null;
     rows.push(<BRow key="missed" lead={names.length > 1 ? <BIcon tone="amber"><ClockUserIcon weight="bold" /></BIcon> : <BAvatar name={names[0]} ring="late" />} title={firstNames(names)}
-      sub={noClockIn.ended.length > 1 ? plural(noClockIn.ended.length, "missed clock-in", "missed clock-ins") : ended ? `Missed clock-in\u00a0\u00b7 ${whole(`shift ended ${ended}`)}` : "Missed clock-in"}
+      sub={noClockIn.ended.length > 1 ? plural(noClockIn.ended.length, "missed clock-in", "missed clock-ins") : ended ? `Missed clock-in\u00a0\u00b7 ${`${whole("shift ended")} ${ended}`}` : "Missed clock-in"}
       href="/app/inbox#todo-missed" label={`Missed clock-ins: ${names.join(", ")}`} />);
   }
   // Phase 3 (MG-005): corrections that wait on this person are part of the count, so they have their row here.
