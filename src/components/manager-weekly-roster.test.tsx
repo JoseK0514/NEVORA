@@ -149,7 +149,9 @@ it("corporate (board G-O-Schedule): a week card with the week and its state, the
   // Owner premium: one time format; midnight reads 12:00 AM.
   // R2: each end is the kit's time (CorpTime: a quieter AM/PM joined by a narrow no-break space).
   expect(output).toMatch(/c-sched-row__time" aria-hidden="true"><b><span class="c-time">8:00\s<span class="c-ampm">PM<\/span><\/span><\/b><span><span class="c-time">12:00\s<span class="c-ampm">AM<\/span>/);
-  expect(output).toMatch(/<a class="c-row c-sched-row c-sched-row--open" href="\/app\/schedule\/coverage\?repair=x" aria-label="Find cover for the open shift, 1:00\sPM to 3:00\sPM, Main Office">/);
+  // Gaps G12 (Nov 23, 2026): roster rows are named by what they show; no aria-label words them differently.
+  expect(output).toMatch(/<a class="c-row c-sched-row c-sched-row--open" href="\/app\/schedule\/coverage\?repair=x">/);
+  expect(output).not.toMatch(/aria-label="(Find cover for the open shift|Edit [^"]*’s shift)/);
   expect(output).not.toContain(">Find cover</a>");
   expect(output).not.toContain("c-sched-row__cover");
   // Nov 1 upscale: "Open shift" in ink when it isn't the day's one problem; the grid's day headers carry the day's hours.
@@ -248,7 +250,8 @@ it("says one location once and keeps the key for a mixed week", () => {
   // Avery's week has a published and a draft shift: the key explains the two looks.
   expect(render(employees)).toContain('<span class="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span>');
   const published = employees.map(person => ({ ...person, shifts: person.shifts.map(shift => ({ ...shift, status: "PUBLISHED" as const })) }));
-  expect(render(published)).toContain('<span class="cm-legend" aria-hidden="true"></span>');
+  // Gaps G35 (Nov 23, 2026): with no key there is no key element, so the grid card keeps no empty strip.
+  expect(render(published)).not.toContain('class="cm-legend"');
   // A row says Draft in a mixed week; in an all-draft week the week's state says it once.
   expect(day(render(employees))).toContain(" Draft ");
   const drafts = employees.map(person => ({ ...person, shifts: person.shifts.map(shift => ({ ...shift, status: "DRAFT" as const })) }));

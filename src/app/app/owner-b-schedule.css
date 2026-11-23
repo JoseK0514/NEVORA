@@ -513,3 +513,17 @@
     html body .app-shell[data-nv-b] .c-shift-page .c-shift > .c-shift__head :is(.c-shift__title, .c-shift__sub) { white-space: normal !important; text-align: center !important; }
   }
 }
+
+/* ---------- Gaps round (Nov 23, 2026): the Schedule's week strip and grid card ----------
+ * G32: on phones the glass week strip takes the white cards' edges (the 14px gutter); it sat 6px inside them on each side.
+ * G34: each day keeps at least 2.25rem, so with large text the days wrap into a second row instead of their numbers running
+ * together ("16171819…"); at the default size all seven fit in one row down to 320px.
+ * G35: with no key (a week that isn't part published, part draft) and no coverage line, the grid card's top bar has no
+ * height, so the card opens on its header instead of an empty strip. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched .b-hero > .b-week:not(#g32a):not(#g32b) { margin-left: var(--b-gutter) !important; margin-right: var(--b-gutter) !important; }
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched .b-week > .b-week__days:not(#g34a):not(#g34b) { grid-template-columns: repeat(auto-fit, minmax(2.25rem, 1fr)) !important; row-gap: var(--b-space-4) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched .cm-roster:has(.c-sched-gridbar > .c-sched-week__nav):not(:has(.cm-grid__coverage)):not(:has(.cm-legend)) .c-sched-gridbar:not(#g35a):not(#g35b) { min-height: 0 !important; height: 0 !important; padding: 0 !important; }
+}

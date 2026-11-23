@@ -513,7 +513,10 @@ export default async function SchedulePage({
     : counts.published ? { text: `${counts.published} of ${inView.length} published`, tone: "glass" as const }
     : { text: "Not started", tone: "glass" as const };
   const bSchedule = publicationReview || params.publishCheck || params.plan === "1" ? undefined : {
-    sub: todayLong,
+    // Gaps G33 (Nov 23, 2026), each fact once on phones, as on the location Manager's Schedule: the day card already names
+    // the day ("Today · Mon, Nov 23") and ends with Add shift for that day, so the band has no date line and adds a shift
+    // only when the roster is empty (the card then offers Go to Team instead). Publish stays while something waits.
+    sub: null,
     // Nov 9, 2026: the week's coverage from canonical schedule health, for the chosen location (or all of them).
     coverage: reviewDay ? undefined : weekRead?.coverageMinutes ? (selectedLocation === "all" ? weekRead.coverageMinutes.all : weekRead.coverageMinutes.byLocation[selectedLocation] ?? null) : null,
     actions: <>
@@ -522,7 +525,7 @@ export default async function SchedulePage({
       </ActionMenu>
       {/* Review B2 (NV-013): the band's white pill publishes while something waits, otherwise it adds a shift. */}
       {publishLabel ? <BButtonLink href={publishHref} kind="white" label={`${publishLabel}, ${formatWeekRange(weekStart)}`}>{publishLabel}</BButtonLink>
-        : <BButtonLink href={addShiftHref} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>}
+        : !roster.length ? <BButtonLink href={addShiftHref} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink> : null}
     </>,
     location: <ActionMenu id="b-schedule-location-menu" label="Location" title="Location" ariaLabel={`Location: ${locationName}`}
       triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="bold" aria-hidden="true" />{locationName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>

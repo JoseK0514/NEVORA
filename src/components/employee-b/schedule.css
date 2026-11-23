@@ -161,3 +161,13 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-chg summary .em-publication-caret { margin-left: auto; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-chg__short { position: absolute; top: 0; left: calc(var(--b-inset) + var(--eb-text-in, var(--b-space-48))); display: flex; align-items: center; height: 56px; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); pointer-events: none; }
 }
+
+/* Gaps round (Nov 23, 2026), the same as the Managers' Schedule (owner-b-schedule.css). G32: on phones the glass week strip
+ * takes the white cards' edges (the 14px gutter). G34: each day keeps at least 2.25rem, so with large text the days wrap
+ * into a second row instead of their numbers running together. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-screen .b-hero > .b-week:not(#g32a):not(#g32b) { margin-left: var(--b-gutter) !important; margin-right: var(--b-gutter) !important; }
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-screen .b-week > .b-week__days:not(#g34a):not(#g34b) { grid-template-columns: repeat(auto-fit, minmax(2.25rem, 1fr)) !important; row-gap: var(--b-space-4) !important; }
+}

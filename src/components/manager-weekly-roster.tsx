@@ -215,7 +215,9 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   const ended = (open: RosterOpenShift) => open.date < today
     || (open.date === today && nowClock !== null && !overnight(open) && !open.endTime.startsWith("00:00") && open.endTime.slice(0, 5) <= nowClock);
   // Quiet (v4, approved Oct 23): the week strip, then the chosen day: avatar, name, "8:00 AM – 4:00 PM · Front desk".
-  const shiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <QuietRow key={`shift-${shift.id}`} href={editHref(shift)} label={shiftLabel(shift, employee.name)} chevron={false}
+  // Gaps G12 (Nov 23, 2026): every roster row is named by what it shows (the person, the time, the place, the state), with no
+  // aria-label that says it in other words ("Edit …'s shift", "Find cover for the open shift…").
+  const shiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <QuietRow key={`shift-${shift.id}`} href={editHref(shift)} chevron={false}
     avatar={initials(employee.name).toUpperCase()} title={employee.name}
     detail={[`${clock(shift.startTime)} – ${clock(shift.endTime)}`, shift.position || shift.location || employee.role, shift.status === "PUBLISHED" ? null : statusWord(shift.status)].filter(Boolean).join(" · ")} />;
   const weekStrip = <div className="q-week" role="group" aria-label="Schedule day">
@@ -302,7 +304,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     if (live) return <span className="c-meta c-sched-state" data-tone={live.problem && redKey === shift.id ? "red" : undefined}>{live.text}</span>;
     return shift.status === "DRAFT" ? <span className="c-meta c-sched-state" data-tone="amber">Draft</span> : corp?.changedShiftIds?.includes(shift.id) ? <span className="c-meta c-sched-state" data-tone="amber">Changed</span> : null;
   };
-  const corpShiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <li key={`shift-${shift.id}`}><Link className="c-row c-sched-row" href={editHref(shift)} aria-label={shiftLabel(shift, employee.name)}>
+  const corpShiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <li key={`shift-${shift.id}`}><Link className="c-row c-sched-row" href={editHref(shift)}>
     <DayTime start={shift.startTime} end={shift.endTime} />
     <CorpAvatar name={employee.name} initials={initials(employee.name).toUpperCase()} />
     <span className="c-row__main">
@@ -328,7 +330,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       // desktop grid: it reads "Not filled", with no action.
       return { start: open.startTime, node: <li key={`open-${open.id}`}>{over
         ? <div className="c-row c-sched-row c-sched-row--open">{body}<span className="c-meta">Not filled</span></div>
-        : <Link className="c-row c-sched-row c-sched-row--open" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>
+        : <Link className="c-row c-sched-row c-sched-row--open" href={open.href}>
           {body}<CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" />
         </Link>}</li> };
     }),
@@ -403,8 +405,9 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     {corp ? <div className="c-sched-gridbar">{weekNav(<>{corp.status ?? null}</>)}
       {b?.coverage ? <ScheduleCoverageLine coverage={b.coverage} label="Covered this week" /> : null}
       {/* Recheck (Nov 23, 2026): the key shows only when the week mixes published and draft blocks; otherwise the week's
-        state beside the stepper already says it ("Published" twice). The empty key keeps the bar's place. */}
-      <span className="cm-legend" aria-hidden="true">{mixedWeek ? <><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></> : null}</span></div> : null}
+        state beside the stepper already says it ("Published" twice). Gaps G35 (Nov 23, 2026): with no key there is no key
+        element, so the bar keeps no empty strip (owner-b-schedule.css). */}
+      {mixedWeek ? <span className="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span> : null}</div> : null}
     {focus !== "all" ? <div className="cm-grid__focus">
       <span>{`${longWeekday(focus)}, ${formatDayLabel(focus).day}`}</span>
       <button type="button" className="cm-kbtn" onClick={() => setFocus("all")}>Full week</button>
@@ -455,7 +458,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
                   <span className="sb-openlist__t c-num">{range(open.startTime, open.endTime) === "All day" ? "All day" : `${compactTime(open.startTime)} – ${compactTime(open.endTime)}`}</span>
                   <span className="sb-openlist__p">{open.location || "No one assigned"}</span>
                   {ended(open) ? <BStatusText>Not filled</BStatusText>
-                    : <Link className="b-rowact b-rowact--go sb-openlist__go" href={open.href} aria-label={`Find cover for an open shift, ${day.weekday} ${day.day}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Fill</Link>}
+                    : <Link className="b-rowact b-rowact--go sb-openlist__go" href={open.href} aria-label={`Fill the open shift, ${day.weekday} ${day.day}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Fill</Link>}
                 </li>; })}</ul>
               </div>
             </td>
@@ -496,12 +499,12 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   // which the band already names (recheck, Nov 23, 2026: "Condado" was said on the band and on every open shift).
   const bPlaces = new Set(dayShifts.map(entry => entry.shift.location)).size;
   const bRows = [
-    ...dayShifts.map(({ shift, employee }) => { const live = repairEmployeeId === employee.id && repairDay === shift.date ? { state: <BChip tone="amber">Approved time off</BChip>, ring: "late" as const } : bLive(shift, employee.id); return { start: shift.startTime, node: <BRow key={`shift-${shift.id}`} href={editHref(shift)} label={`${shiftLabel(shift, employee.name)}${repairEmployeeId === employee.id && repairDay === shift.date ? ", approved leave, needs a replacement" : ""}`}
+    ...dayShifts.map(({ shift, employee }) => { const live = repairEmployeeId === employee.id && repairDay === shift.date ? { state: <BChip tone="amber">Approved time off</BChip>, ring: "late" as const } : bLive(shift, employee.id); return { start: shift.startTime, node: <BRow key={`shift-${shift.id}`} href={editHref(shift)}
       lead={<BAvatar name={employee.name} ring={live.ring} />} title={employee.name} chip={live.state}
       sub={<BSegs parts={[range(shift.startTime, shift.endTime) === "All day" ? "All day" : compactRange(`${clock(shift.startTime)} – ${clock(shift.endTime)}`), shift.position || employee.role, !locationId && bPlaces > 1 ? shift.location : null]} />} chevron={false} /> }; }),
     ...dayOpen.map(open => { const over = ended(open); return { start: open.startTime, node: <BRow key={`open-${open.id}`} lead={<BAvatar open />} title="Open shift"
       sub={<BSegs parts={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), locationId ? null : open.location]} />}
-      href={over ? undefined : open.href} label={`${over ? "Open shift, not filled" : "Find cover for the open shift"}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location && !locationId ? `, ${open.location}` : ""}`}
+      href={over ? undefined : open.href}
       /* Final polish (Nov 20, 2026): no "Not filled" chip on a row titled "Open shift" (it said the title again, as a chip
          on a normal fact); a shift that can still be filled carries Fill, one that ended carries nothing. */
       trail={over ? undefined : <BButtonLink href={open.href} kind="ghost" label={`Fill the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}`}>Fill</BButtonLink>} /> }; }),
