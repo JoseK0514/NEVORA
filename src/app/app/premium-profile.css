@@ -88,7 +88,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note > .nv-btn { min-width: 10rem; text-decoration: none; }
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-empty { margin: 0; padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); font: var(--nv-t-callout); color: var(--nv-muted); }
 @media (prefers-reduced-motion: reduce) {
-  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-switch, .pmp-switch::after) { transition: none; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch, html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch::after { transition: none; }
 }
 
 /* Loading: the placeholder band for Owner and Manager matches the real flat band: its padding is fixed (44px) and its two

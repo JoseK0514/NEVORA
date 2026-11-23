@@ -106,7 +106,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .mb-tog:checked { background: var(--b-teal); }
   :is(#c-root, html) .app-shell[data-nv-b] .mb-tog:checked::after { translate: 20px 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .mb-tog:focus-visible { outline: 2px solid var(--b-teal); outline-offset: 2px; }
-  @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .app-shell[data-nv-b] :is(.mb-tog, .mb-tog::after) { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .app-shell[data-nv-b] .mb-tog, :is(#c-root, html) .app-shell[data-nv-b] .mb-tog::after { transition: none; } }
   /* The card's footer: Cancel and Next (step 1), Back and Publish (step 2), one height, full width each on a phone. On a
    * phone the hero's Cancel is the way out, so the footer keeps Next alone (Cancel isn't said twice). */
   :is(#c-root, html) .app-shell[data-nv-b] .mb-foot { padding-top: var(--b-space-4); }

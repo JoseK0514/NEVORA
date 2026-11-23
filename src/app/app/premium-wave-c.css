@@ -238,7 +238,7 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .w
 html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-hub .nv-rows { padding-bottom: var(--nv-s-2); }
 
 @media (prefers-reduced-motion: reduce) {
-  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(.wc-switch, .wc-switch::before, .wc-caret, .wc-control) { transition: none; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page :is(.wc-switch, .wc-caret, .wc-control), html body .app-shell.nevora-portal.nevora-portal .page-frame .wc-page.wc-page .wc-switch::before { transition: none; }
 }
 
 /* A form card: 16px from the card title to the first label. */
