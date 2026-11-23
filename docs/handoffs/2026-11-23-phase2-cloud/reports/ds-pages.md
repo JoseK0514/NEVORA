@@ -1,0 +1,88 @@
+# Page text at 200%: DS-4 to DS-9 and DS-11 (Nov 23, 2026)
+
+Branch `claude-codex-collab-nevora-ds-pages`, from `claude-codex-collab-nevora` at `c32ae519`. This covers the page rows
+from the desktop 200% text sweep (`reports/sweep-desk200.md` on `claude-codex-collab-nevora-kit-final`).
+
+Setup: production build (`NEVORA_OWNED_APP_PRODUCTION=1`) through the ui-scan harness, fictional data, Chromium.
+- Owner (rich data) at 390, 1024 and 1440.
+- Employee (rich data) at 390 and 1440.
+- Each width was captured at the default size, then with the root text at 200%.
+
+For the 200% pass, a probe recorded four things: text that didn't grow (under 1.6× its default size), text cut by its
+box (with or without an ellipsis), text outside the viewport, and page overflow. It also recorded the CSS rule that set
+each fixed size. The probe was added to a scratch copy of the harness only; `tools/ui-scan` is unchanged.
+
+Before shots were taken from `c32ae519` in a separate worktree. After shots were taken from `8db67ea3`.
+
+## Commits
+| Commit | What |
+|---|---|
+| `845764c2` | Schedule, Build and publish, Time corrections, coverage card, Profile values: page text px → rem (same px at 16px) |
+| `957b0845` | Schedule grid at large text; Swap and Call out meta line and Confirm; Profile "Edit"; phone subtitle; Settings and Team rows wrap at large text; tests |
+| `8db67ea3` | Schedule: grid times wrap between start and end; the phone day card's count drops under its title; location menu in rem |
+| `7822b328` | Test fix |
+
+Checks before the push:
+- `tsc --noEmit`: passes.
+- `oxlint`: 0 errors. The warnings were there before this work.
+- Whole `src/components` suite: 3240 passed, 0 failed.
+- New tests in `src/app/app/ds-pages-text-rem.test.ts`, alongside `kit-text-rem.test.ts`: both pass.
+
+## Per row
+| Row | Page | Fixed px before | Now |
+|---|---|---|---|
+| DS-6 | Schedule | At desktop sizes: grid day head, date, hours, corner count, person names and hours, shift times and positions, "+ Add", location menu, week state ("Published"). At 390: the day card's "12 shifts · 61 h" | Everything listed is in rem. The page sheets `schedule-corp.css`, `owner-b-schedule.css` and `coverage-minutes.css` set no text in px. The week strip's day names are fixed by a Schedule-only override; the kit rule itself is unchanged (see Left) |
+| DS-7 | Add shift, Build and publish | Page title (32px), Save shift and the publish buttons (the kit `.c-btn` 15px), week label | rem. `.c-btn` is set to 15/20px in rem inside `.c-shift-page`, `.c-pub` and `.c-sched`; `corp.css` is unchanged |
+| DS-8 | Time corrections | Name, Recorded and Asked for times, the +35 min pill, "Their reason" and the quote. At 390, the band subtitle | `corrections.css` sets no text in px; the time-pay pill rule and the phone subtitle rule are rem |
+| DS-9 | Swap, Call out | The card's wide meta line ("Mon, Nov 23", kit `.b-card__meta` 14px); Confirm (14px) | rem, through page rules in `employee-b/schedule.css` |
+| DS-11 | Profile, device alerts, passkeys | "Edit" (15px on desktop, 14px from the shared phone band-action rule), row values at 390 (`.q-rv` 15px in the quiet bridge) | rem: `premium-profile.css` (avatar initials keep px), the quiet-bridge value rule, the phone band-action rule |
+| DS-4, DS-5 | Settings, Team | Rows cut to one line with an ellipsis | Lead's decision: one line with an ellipsis at the default size, wrapping once text is enlarged (below) |
+
+## How "wrap once text is enlarged" works (DS-4, DS-5, and the grid in DS-6)
+`owner-b-pages.css` registers `--nv-rem` as a `<length>` and sets it to `1rem` on `body`. On the root element itself,
+`1rem` would read the browser's initial size, so it goes on `body` instead. A registered length computes to pixels, so
+it reads 16px at the default size.
+
+`@container not style(--nv-rem: 16px)` then switches the Settings and Team row title and detail to wrap. Every element
+is a style container, so no wrapper is needed.
+
+At the default size the query doesn't match and nothing changes. It responds to both ways of enlarging text:
+- the browser's text-size setting;
+- a larger root size, which is how the harness sets 200%.
+
+A browser without container style queries keeps the one-line look. Chrome, Edge and Safari 18 support them.
+
+The Schedule grid uses the same switch: day columns get 6.5rem, the corner 10rem, and the grid scrolls sideways inside
+its existing `.cm-grid__scroll` box, as a data table does. The page itself doesn't scroll sideways. Seven columns of
+doubled shift times can't fit in 1080px any other way. Shift times wrap between start and end, positions wrap between
+words, and person names wrap.
+
+## 200% text after, at 390, 1024 and 1440
+- Page overflow is 0 on every page.
+- No text is clipped or overlaps: the probe found none, and every shot was checked by eye.
+- On the Schedule grid, the probe flags only the columns the grid scrolls to (outside the viewport by design).
+
+## Default size, before and after (pixel diff)
+| Pages | Result |
+|---|---|
+| Profile, device alerts, passkeys, Add shift, Build and publish, Settings, Team, Time corrections at 390 | Identical |
+| Settings and Team at 1024 and 1440; Time corrections, Profile pages, Add shift, Build and publish at 1440 (1024 before shots were taken for Schedule, Settings and Team only) | Only live data differs: the sidebar's Things to do count (14 → 15) and the bell's unread dot |
+| Schedule at 390, 1024 and 1440; Swap and Call out | Only clock-driven fixture data differs (each checked by eye): shift times, "12 shifts" → "13 shifts", "4 open" → "5 open", "Staffing 57%" → "58%", "Schedule read at …" |
+
+## Impeccable audit
+- **Hierarchy:** unchanged at the default size. At 200% text the type ratios hold, because every size moved in step.
+- **Spacing:** unchanged at the default size. At large text the grid's rows grow taller and its columns widen.
+- **Accessibility:** WCAG 1.4.4 (resize text) now passes on these pages. WCAG 1.4.10 (reflow): the week grid scrolls sideways inside its own box, as allowed for data tables; the page doesn't.
+- **States:** the Time corrections states (waiting, approved, rejected) and the Profile states (loaded, and on device alerts the "couldn't load your contact details" state that fixture data shows) were captured.
+- **Wording:** unchanged.
+
+## Left (kit or shared), proposed ledger rows
+| Row | Where | What |
+|---|---|---|
+| DS-14 | Kit `owner-b.css` `.b-week__d` | The week strip's day names are 12px. They're fixed for Schedule only; Swap, Call out and Employee Schedule still show 12px. Proposed: `0.75rem` in the kit |
+| DS-15 | Kit `owner-b.css` `.b-card__meta` | The card meta is 14px in the kit. It's fixed here only for Schedule and the Swap and Call out wide line. Proposed: `0.875rem` in the kit |
+| DS-16 | Kit chip (`.b-row__t > .b-chip`) | "Action needed" is cut with an ellipsis at 390 with 200% text on Swap and Call out |
+| DS-17 | Team filters (`.b-filters`, `--b-seg-fs` capped at 20px) | "Off today" runs under the right edge of the segmented control at 1024 with 200% text (it did before as well) |
+| DS-18 | Shared card-aside link (`owner-b-desktop.css`, `.c-card__aside a` 14px !important) | Team's "See all" stays 14px |
+| DS-19 | Build and publish at 390 | "Availability" (`.c-row__value`) stays 15px: the shared phone row-value rule is still px |
+| DS-20 | `employee-b/schedule.css` line 80 | Another 14/20px button on the Employee schedule (not Swap or Call out); not in scope here |

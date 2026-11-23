@@ -1,0 +1,334 @@
+[
+ {
+  "id": "ds6-schedule",
+  "row": "DS-6",
+  "page": "Schedule",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "The week grid's text, the location menu and the week state now grow with the reader's text. At large text the grid's columns widen and the grid scrolls sideways inside its own box; the page doesn't.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/schedule-owner-390-200pct-before.webp",
+    "after": "img/schedule-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/schedule-owner-390-default.webp"
+   },
+   {
+    "label": "Tablet landscape 200% text",
+    "before": "img/schedule-owner-1024-200pct-before.webp",
+    "after": "img/schedule-owner-1024-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Tablet landscape default size",
+    "after": "img/schedule-owner-1024-default.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/schedule-owner-1440-200pct-before.webp",
+    "after": "img/schedule-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/schedule-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Phone week strip day names: kit's 12px .b-week__d; fixed here for Schedule only"
+  ]
+ },
+ {
+  "id": "ds7-addshift",
+  "row": "DS-7",
+  "page": "Add shift",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "The \"Add shift\" title and the \"Save shift\" button now grow with text. Same look at the default size.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/schedule-new-owner-390-200pct-before.webp",
+    "after": "img/schedule-new-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/schedule-new-owner-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/schedule-new-owner-1440-200pct-before.webp",
+    "after": "img/schedule-new-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/schedule-new-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds7-publish",
+  "row": "DS-7",
+  "page": "Build and publish",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "The title, the week and the buttons now grow with text.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/schedule-publish-owner-390-200pct-before.webp",
+    "after": "img/schedule-publish-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/schedule-publish-owner-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/schedule-publish-owner-1440-200pct-before.webp",
+    "after": "img/schedule-publish-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/schedule-publish-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds8-corrections",
+  "row": "DS-8",
+  "page": "Time corrections",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "The Recorded and Asked for times, the change pill and the reason now grow with text, and the phone subtitle too.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/timecards-corrections-owner-390-200pct-before.webp",
+    "after": "img/timecards-corrections-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/timecards-corrections-owner-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/timecards-corrections-owner-1440-200pct-before.webp",
+    "after": "img/timecards-corrections-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/timecards-corrections-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds11-profile",
+  "row": "DS-11",
+  "page": "Profile",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "\"Edit\" and the row values (phone number, region, alerts) now grow with text. The same rules cover device alerts and passkeys.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/profile-owner-390-200pct-before.webp",
+    "after": "img/profile-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/profile-owner-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/profile-owner-1440-200pct-before.webp",
+    "after": "img/profile-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/profile-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds4-settings",
+  "row": "DS-4",
+  "page": "Settings",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "Row titles keep the one-line ellipsis at the default size and wrap onto a second line once text is enlarged (\"Clocker tablets\", \"Features and team terms\").",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/settings-owner-390-200pct-before.webp",
+    "after": "img/settings-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/settings-owner-390-default.webp"
+   },
+   {
+    "label": "Tablet landscape 200% text",
+    "before": "img/settings-owner-1024-200pct-before.webp",
+    "after": "img/settings-owner-1024-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Tablet landscape default size",
+    "after": "img/settings-owner-1024-default.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/settings-owner-1440-200pct-before.webp",
+    "after": "img/settings-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/settings-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds5-team",
+  "row": "DS-5",
+  "page": "Team",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "Row details (\"Front counter · Calle Loíza\") keep the one-line ellipsis at the default size and wrap once text is enlarged.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/employees-owner-390-200pct-before.webp",
+    "after": "img/employees-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/employees-owner-390-default.webp"
+   },
+   {
+    "label": "Tablet landscape 200% text",
+    "before": "img/employees-owner-1024-200pct-before.webp",
+    "after": "img/employees-owner-1024-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Tablet landscape default size",
+    "after": "img/employees-owner-1024-default.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/employees-owner-1440-200pct-before.webp",
+    "after": "img/employees-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/employees-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Filters: \"Off today\" runs under the edge of the segmented control at 1024 with 200% text (kit .b-filters, capped at 20px)",
+   "\"See all\" stays 14px (shared card-aside rule)"
+  ]
+ },
+ {
+  "id": "ds9-swap",
+  "row": "DS-9",
+  "page": "Swap",
+  "section": "Desktop and phone at 200% text",
+  "role": "Employee",
+  "note": "The card's date line (\"Mon, Nov 23\") and the Confirm button now grow with text.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/exchange-swap-employee-390-200pct-before.webp",
+    "after": "img/exchange-swap-employee-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/exchange-swap-employee-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/exchange-swap-employee-1440-200pct-before.webp",
+    "after": "img/exchange-swap-employee-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/exchange-swap-employee-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Week strip day names stay 12px (kit .b-week__d)",
+   "\"Action needed\" chip is cut with an ellipsis at 390 with 200% text (kit chip)"
+  ]
+ },
+ {
+  "id": "ds9-callout",
+  "row": "DS-9",
+  "page": "Call out",
+  "section": "Desktop and phone at 200% text",
+  "role": "Employee",
+  "note": "Same as Swap: the date line and the Confirm button grow with text.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/exchange-callout-employee-390-200pct-before.webp",
+    "after": "img/exchange-callout-employee-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/exchange-callout-employee-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/exchange-callout-employee-1440-200pct-before.webp",
+    "after": "img/exchange-callout-employee-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/exchange-callout-employee-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Week strip day names stay 12px (kit .b-week__d)",
+   "\"Action needed\" chip is cut with an ellipsis at 390 with 200% text (kit chip)"
+  ]
+ }
+]
