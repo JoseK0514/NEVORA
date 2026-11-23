@@ -20,6 +20,8 @@
 :is(#c-root, html) .c-shift-page .c-shift__control { position: relative; display: block; }
 :is(#c-root, html) .c-shift-page .c-shift__person > .c-av { position: absolute; left: 8px; top: 8px; pointer-events: none; }
 :is(#c-root, html) .c-shift-page .c-shift__person > select.c-in { padding-left: 52px; }
+/* The chosen name drawn over a narrow Person field (gaps G62, below); hidden where the select's own text fits. */
+:is(#c-root, html) .c-shift-page .c-shift__person-v { display: none; }
 :is(#c-root, html) .c-shift-page .c-shift select.c-in { text-overflow: ellipsis; cursor: pointer; }
 /* Nov 1 upscale: every select, date and times included, keeps the kit's caret (one select look). */
 :is(#c-root, html) .c-shift-page .c-shift .c-shift__empty { color: var(--c-grey); }
@@ -136,6 +138,20 @@
   html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form .c-field__help { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
   @media (max-width: 767px) {
     html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form .c-field__label { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  }
+  /* G62: a native select can't wrap, so at 200% text "Choose someone" (and a long name) was cut to "Choose someo…".
+   * Where the Person field is narrower than 19rem (304px at the default size: a 320px phone; at 200% text, phones and
+   * tablets) the chosen name is drawn by the span after the select, wrapping, and the field grows with it. The select
+   * covers the field (it is still the control: tap, keyboard and screen readers) with its text made transparent. Wider
+   * fields keep the select's own text. Forced colours keep the plain select. */
+  html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form .c-shift__person { container-type: inline-size !important; }
+  @media not (forced-colors: active) {
+    @container (max-width: 19rem) {
+      html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field .c-shift__person > select.c-in { position: absolute !important; inset: 0 !important; z-index: 0 !important; width: 100% !important; height: 100% !important; min-height: 0 !important; color: transparent !important; }
+      html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field .c-shift__person > .c-shift__person-v { position: relative !important; z-index: 1 !important; display: block !important; box-sizing: border-box !important; min-height: 3rem !important; padding: 0.875rem 2.75rem 0.875rem 52px !important; font-size: 1rem !important; line-height: 1.25rem !important; font-weight: 400 !important; color: var(--b-ink, #111517) !important; overflow-wrap: anywhere !important; pointer-events: none !important; }
+      html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field .c-shift__person > .c-shift__person-v--none { color: var(--b-grey, #6A7176) !important; }
+      html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field .c-shift__person > .c-av { z-index: 2 !important; }
+    }
   }
   /* G29: from 768px the card fits the field block (--b-frame-form, 560px, plus the card's 22px insets), so the fields fill
    * the card and the footer's Cancel and Save end on the card's content edge. The card and the Delete shift card under it
