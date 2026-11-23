@@ -1,4 +1,5 @@
 'use client';
+import {reasonNotice} from '@/lib/shift-changes/eligibility-reasons';
 import Link from 'next/link';
 import {useCallback,useEffect,useRef,useState,useSyncExternalStore,type ReactNode} from 'react';
 import {usePathname} from 'next/navigation';
@@ -203,8 +204,8 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
      <p className="c-ereq__lede" id="em-eligible-heading">{eligible.length?t.ledeEligible:unconfirmed.length?t.ledeUnconfirmed:t.ledeNone}</p>
      {eligible.map(shift=>operations.has(shift.id)?<ShiftCard key={shift.id} shift={shift} selected={selected===shift.id||hash==='request-'+shift.id} nextWeek={!!nextWeekStart&&shift.date>=nextWeekStart} operation={operations.get(shift.id)!} onRefresh={refresh} isCurrent={isCurrent} canRecover={canRecover}/>:null)}
      {!eligible.length&&unconfirmed.length?<CorpButton kind="secondary" size="md" full disabled={state.refreshing} onClick={refresh}>{t.refresh}</CorpButton>:null}
-     {unconfirmed.length?<CorpCard label={t.couldntCheck} id="em-unconfirmed"><CorpRows>{unconfirmed.map(row=><li key={row.id}><CorpRow title={`${day(row.date)} · ${formatTime(row.startTime)}`} detail={row.notice?`${row.location} · ${row.notice}`:row.location}/></li>)}</CorpRows></CorpCard>:null}
-     {refused.length?<details className="c-ereq__why"><summary>{t.whyNot}<CaretDownIcon weight="bold" aria-hidden="true"/></summary><ul>{refused.map(row=><li key={row.id}><strong>{day(row.date)} · {formatTime(row.startTime)}</strong><span>{row.location}</span>{row.notice?<p>{row.notice}</p>:null}</li>)}</ul></details>:null}
+     {unconfirmed.length?<CorpCard label={t.couldntCheck} id="em-unconfirmed"><CorpRows>{unconfirmed.map(row=><li key={row.id}><CorpRow title={`${day(row.date)} · ${formatTime(row.startTime)}`} detail={row.notice?`${row.location} · ${reasonNotice(row.notice,lang)}`:row.location}/></li>)}</CorpRows></CorpCard>:null}
+     {refused.length?<details className="c-ereq__why"><summary>{t.whyNot}<CaretDownIcon weight="bold" aria-hidden="true"/></summary><ul>{refused.map(row=><li key={row.id}><strong>{day(row.date)} · {formatTime(row.startTime)}</strong><span>{row.location}</span>{row.notice?<p>{reasonNotice(row.notice,lang)}</p>:null}</li>)}</ul></details>:null}
      {note?<CorpNote icon={<InfoIcon weight="bold" className="c-ic" aria-hidden="true"/>}>{note}</CorpNote>:null}
     </>}
    </>:<CorpCard ariaLabel={t.openShifts}><div className="c-card__body"><p className="c-ereq__state" role="status">{t.pickupOff}</p></div></CorpCard>)}

@@ -84,3 +84,11 @@ export function refusalLines(value: ClaimRefusal, lang: 'en' | 'es' = 'en'): str
   if (value.refusal === 'stale') return [lang === 'es' ? 'Este turno acaba de cambiar. Vuelve a revisar en un momento' : 'This shift just changed. Check again shortly'];
   return [lang === 'es' ? 'No cumple las reglas actuales de este turno' : 'It doesn’t fit the current rules for this shift'];
 }
+
+/** Signed-in Spanish: a claim check's `notice` is the English reasons joined ("You already work during this time. You
+ * already have a shift that day."). This says each known reason in the person's language; an unknown sentence stays. */
+export function reasonNotice(notice: string, lang: 'en' | 'es' = 'en'): string {
+  if (lang === 'en') return notice;
+  const byText = new Map((Object.keys(REASON_TEXT) as EligibilityReason[]).map(reason => [REASON_TEXT[reason], REASON_TEXT_ES[reason]]));
+  return notice.replace(/\.$/, '').split('. ').map(part => byText.get(part) ?? part).join('. ') + (notice.endsWith('.') ? '.' : '');
+}

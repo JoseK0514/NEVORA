@@ -1,5 +1,6 @@
 'use client';
 
+import {reasonNotice} from '@/lib/shift-changes/eligibility-reasons';
 import Link from 'next/link';
 import {useEffect, useRef, type ReactNode} from 'react';
 import {UserCheckIcon} from '@phosphor-icons/react/dist/ssr/UserCheck';
@@ -62,7 +63,7 @@ function WhyNot({refused}: {refused: OpenEmployeeShift[]}) {
       <summary className="b-row"><BIcon tone="grey"><InfoIcon weight="bold"/></BIcon>
         <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{work.cantTakeTitle}</span></span><span className="b-row__s">{/* Phase 8 (review C, row 23): what the list holds, not how it is drawn. */}{work.cantTake(refused.length)}</span></span>
         <CaretDownIcon className="b-chev eb-why__chev" size={18} weight="bold" aria-hidden="true"/></summary>
-      <ul className="eb-why__list">{refused.map(row => <li key={row.id}><strong>{keepWhole(spanIn(`${dayB(row.date)} · ${formatTime(row.startTime)}`, lang))}</strong><span>{row.location}</span>{row.notice ? <p>{row.notice}</p> : null}</li>)}</ul>
+      <ul className="eb-why__list">{refused.map(row => <li key={row.id}><strong>{keepWhole(spanIn(`${dayB(row.date)} · ${formatTime(row.startTime)}`, lang))}</strong><span>{row.location}</span>{row.notice ? <p>{reasonNotice(row.notice, lang)}</p> : null}</li>)}</ul>
     </details>
   </BCard>;
 }
@@ -99,7 +100,7 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
             <BButton kind="quiet" full disabled={refreshing} onClick={onRefresh}>{copy.refresh}</BButton></div><PostedLink/></BCard>
             : <BCard><OpenShiftsEmptyB/><PostedLink/></BCard>}
           {unconfirmed.length ? <BCard id="b-open-unconfirmed" title={copy.couldntCheckThese}><BList>{unconfirmed.map(row => <BRow key={row.id} title={keepWhole(spanIn(`${dayB(row.date)} · ${formatTime(row.startTime)}`, lang))}
-            sub={row.notice ? `${row.location} · ${row.notice}` : row.location}/>)}</BList></BCard> : null}
+            sub={row.notice ? `${row.location} · ${reasonNotice(row.notice, lang)}` : row.location}/>)}</BList></BCard> : null}
           {refused.length ? <WhyNot refused={refused}/> : null}
           {/* Desktop: the way to more shifts sits beside them (eb-desk). Final review C (row 4): Availability's glyph is the
             * navigation's UserCheck on every Employee screen. */}

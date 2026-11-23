@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
 import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
 import { formatDayLabel, formatTime } from '../lib/date-utils';
-import { REASON_TEXT } from '../lib/shift-changes/eligibility-reasons';
+import { REASON_TEXT, REASON_TEXT_ES } from '../lib/shift-changes/eligibility-reasons';
 import './blocked-open-shifts.css';
 import type { PortalLang } from '@/lib/i18n/portal-lang';
 import { SMALL_PARTS_COPY } from './small-parts-copy';
@@ -14,7 +14,7 @@ export type BlockedOpenShift = { id: string; date: string; startTime: string; en
 export function BlockedOpenShifts({ shifts, availabilityHref = '/app/availability', lang = 'en' }: { shifts: BlockedOpenShift[]; availabilityHref?: string | null; /** Signed-in Spanish: the person's language (English when left out). */ lang?: PortalLang }) {
   const t = SMALL_PARTS_COPY[lang].blocked;
   if (!shifts.length) return null;
-  const availability = availabilityHref && shifts.some(shift => shift.reasons?.includes(REASON_TEXT.availability));
+  const availability = availabilityHref && shifts.some(shift => (shift.reasons?.includes(REASON_TEXT.availability) || shift.reasons?.includes(REASON_TEXT_ES.availability)));
   return <details className="blocked-open-shifts">
     <summary>
       <span>{t.whyOthers} <span className="blocked-open-count">{shifts.length}</span></span>

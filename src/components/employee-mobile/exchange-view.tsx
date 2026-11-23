@@ -1,4 +1,5 @@
 'use client';
+import {reasonNotice} from '@/lib/shift-changes/eligibility-reasons';
 import Link from 'next/link';
 import {useEffect,useRef,useSyncExternalStore} from 'react';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
@@ -47,7 +48,7 @@ export function ResponseControls({detail,operation,onRespond,onRetry,onRefresh,l
  const body=<>
   {allowed.some(check=>check.kind==='WITHDRAW')?<p>{detail.summary.kind==='swap'?t.withdrawSwap:t.withdrawPickup}</p>:null}
   {accept?<p>{accept.outcome==='completed'?t.acceptCompletes:t.acceptReview}</p>:null}
-  {detail.checks.filter(check=>!check.allowed).map(check=><p key={check.kind} role="status">{t.actions[check.kind]}{t.unavailable}{check.notice??t.refreshToCheck}</p>)}
+  {detail.checks.filter(check=>!check.allowed).map(check=><p key={check.kind} role="status">{t.actions[check.kind]}{t.unavailable}{check.notice?reasonNotice(check.notice,lang):t.refreshToCheck}</p>)}
   {!uncertain&&!settled?allowed.map(check=><button key={check.kind} className={check.kind==='ACCEPT'?primary:secondary} type="button" disabled={pending||operation===null} onClick={()=>onRespond(check.kind)}>{pending&&operation?.kind===check.kind?t.submitting:t.actions[check.kind]}</button>):null}
   {pending?<p role="status">{uncertain?t.checkingOriginal:t.submittingResponse}</p>:null}
   {result?<p ref={settled?confirmation:undefined} tabIndex={settled?-1:undefined} role={settled?'status':'alert'}>{settled&&operation?.kind?confirmed(operation.kind,result,lang):t.feedback(result)}</p>:receipt?<p ref={confirmation} tabIndex={-1} role="status">{confirmed(receipt.kind,receipt.result,lang)}</p>:null}

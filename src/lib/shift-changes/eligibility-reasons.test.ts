@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@rstest/core';
-import { eligibilityReasons, REASON_TEXT, refusalLines } from './eligibility-reasons';
+import { eligibilityReasons, reasonNotice, REASON_TEXT, refusalLines } from './eligibility-reasons';
 import type { ShiftChangeIssue } from './types';
 
 const issues = (...codes: ShiftChangeIssue['code'][]) => codes.map(code => ({ code }));
@@ -36,4 +36,11 @@ describe('refusalLines', () => {
     expect(refusalLines({ refusal: 'stale' })[0]).toMatch(/changed/);
     expect(refusalLines({})).toEqual(['It doesn’t fit the current rules for this shift']);
   });
+});
+
+it('says the claim reasons in Spanish when asked (signed-in Spanish)', () => {
+  expect(refusalLines({reasons: ['overlap', 'availability']}, 'es')).toEqual(['Ya trabajas a esa hora', 'Está fuera de tu disponibilidad']);
+  expect(reasonNotice('You already work during this time. It’s outside your availability.', 'es')).toBe('Ya trabajas a esa hora. Está fuera de tu disponibilidad.');
+  expect(reasonNotice('Something else.', 'es')).toBe('Something else.');
+  expect(reasonNotice('You already work during this time.', 'en')).toBe('You already work during this time.');
 });
