@@ -109,6 +109,6 @@ export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
       : <CorpCard id="mypay-statements" label="Statements">{statements.length
         ? <CorpRows label="Statements">{statements.map(statement => <li key={statement.id}><CorpRow href={documentHref(statement)} native bold
           title={`Payday ${formatDisplayDate(statement.payday)}`} detail={`${periodLabel(statement.period.startDate, statement.period.endDate)} · PDF`} label={`Download ${statement.filename}`} chevron /></li>)}</CorpRows>
-        : <BState silent kind="empty" title="No statements yet" line="Only you can see them." />}</CorpCard>}
+        : <BState silent kind="empty" title="No statements yet" />}</CorpCard>}
   </CorpPage>;
 }
