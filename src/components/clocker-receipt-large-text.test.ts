@@ -33,6 +33,8 @@ it('stacks the facts at a large text size and never breaks a time inside itself'
 
 it('keeps the recorded time inside the card at any text size', () => {
   expect(rule('.hero')).toContain('container-type: inline-size');
+  // A size container that shrank to its content would measure 0 wide and draw the time at 0px.
+  expect(rule('.hero')).toContain('align-self: stretch; width: 100%');
   expect(rule('.hero > time')).toContain('font-size: min(var(--ck-hero, 3.5rem), 23cqi)');
   // The short landscape layout changes the cap, not the figure's own size.
   expect(css).toContain('.hero { --ck-hero: 2.75rem; }');

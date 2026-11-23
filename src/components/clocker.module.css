@@ -425,8 +425,9 @@
 @keyframes ckPop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes ckDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes ckRing { from { opacity: .5; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
-.hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; container-type: inline-size; }
-/* G50: the recorded time follows the text size up to the card's width: "12:40 PM" (and "12:40 p. m.") is about 4.2em, so
+.hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; container-type: inline-size; align-self: stretch; width: 100%; }
+/* G50: the hero spans the card (a size container that shrank to its content would measure 0 and draw nothing). The
+ * recorded time follows the text size up to the card's width: "12:40 PM" (and "12:40 p. m.") is about 4.2em, so
  * 23% of the card's content width per em keeps it inside (at 390px with 200% text it was 112px and cut at "AM"). At the
  * default size every kiosk and phone width keeps 3.5rem. */
 .hero > time { display: block; font-size: min(var(--ck-hero, 3.5rem), 23cqi); }
