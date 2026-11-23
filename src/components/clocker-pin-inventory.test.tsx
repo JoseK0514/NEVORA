@@ -20,20 +20,23 @@ describe('Clocker PINs', () => {
     expect(html).toContain('Barista · Calle Loíza'); expect(html).toContain('Front counter · Condado');
     // People with a PIN and inactive people are on their own tabs.
     expect(html).not.toContain('James Ortiz'); expect(html).not.toContain('Luis Torres');
-    expect(html).toMatch(/aria-pressed="true" aria-label="No PIN, 2"/); expect(html).toMatch(/aria-pressed="false" aria-label="PIN set, 1"/); expect(html).toMatch(/aria-label="Inactive, 1"/);
+    // Each tab's name is its visible words: the label and its count.
+    expect(html).toMatch(/aria-pressed="true"><span>No PIN<\/span>.<span class="c-pins__count">2<\/span>/); expect(html).toMatch(/aria-pressed="false"><span>PIN set<\/span>.<span class="c-pins__count">1<\/span>/); expect(html).toContain('<span>Inactive</span>');
+    // The tab already names the group, so the card repeats neither the count nor a status line under each name.
+    expect(html.match(/2 people need a PIN/g)).toHaveLength(1); expect(html).not.toContain('No PIN yet');
   });
-  it('each row has one action that names the person: Set PIN is the tinted pill and opens their form', () => {
+  it('each row has one action whose name starts with its words, then the person: Set PIN is the white button and opens their form', () => {
     const html = render(people);
-    expect(html).toMatch(/<a href="\/app\/employees\/QA-1\/clocker-pin\?from=pins" class="b-btn b-btn--ghost" aria-label="Set a Clocker PIN for Maria Rivera">Set PIN<\/a>/);
-    expect(html.match(/b-btn--ghost/g)).toHaveLength(2); expect(html).not.toContain('b-btn--teal');
+    expect(html).toMatch(/<a href="\/app\/employees\/QA-1\/clocker-pin\?from=pins" class="c-btn c-btn--secondary c-btn--md c-pins__act">Set PIN<span class="c-sr">, Maria Rivera<\/span><\/a>/);
+    expect(html.match(/c-btn--secondary c-btn--md c-pins__act/g)).toHaveLength(2); expect(html).not.toMatch(/class="c-btn c-btn--md/);
     // The row itself is not a second link to the same page.
     expect(html.match(/href="\/app\/employees\/QA-1\/clocker-pin/g)).toHaveLength(1);
   });
   it('when everyone has a PIN it opens on "PIN set", where the action is the quiet Reset PIN', () => {
     const html = render([people[0]]);
-    expect(html).toMatch(/aria-pressed="true" aria-label="PIN set, 1"/);
-    expect(html).toMatch(/<a href="\/app\/employees\/QA-2\/clocker-pin\?from=pins" class="b-btn b-btn--quiet ck-text" aria-label="Reset the Clocker PIN for James Ortiz">Reset PIN<\/a>/);
-    expect(html).not.toMatch(/aria-label="Inactive/);
+    expect(html).toMatch(/aria-pressed="true"><span>PIN set<\/span>.<span class="c-pins__count">1<\/span>/);
+    expect(html).toMatch(/<a href="\/app\/employees\/QA-2\/clocker-pin\?from=pins" class="c-link c-link--l c-pins__act">Reset PIN<span class="c-sr">, James Ortiz<\/span><\/a>/);
+    expect(html).not.toContain('<span>Inactive</span>');
   });
   it('never shows a PIN, a version or an employee ID as text', () => {
     const html = render(people);

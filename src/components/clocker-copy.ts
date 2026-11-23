@@ -147,6 +147,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "Check setup": "Revisar configuración",
  // Tablet setup (Phase 6, JR-26): the first-time screen, the code that arrives in the Owner's link, and each answer.
  "This tablet will be the time clock for {location}.": "Esta tableta será el registro de tiempo de {location}.",
+ "This tablet becomes this location’s time clock.": "Esta tableta será el registro de tiempo de esta ubicación.",
  "How to set it up": "Cómo configurarla",
  "On another device, the Owner opens Settings → Clocker tablets.": "En otro dispositivo, el dueño abre Settings → Clocker tablets.",
  "The Owner adds this tablet and gets its setup code.": "El dueño añade esta tableta y obtiene su código de configuración.",
@@ -263,6 +264,9 @@ export const CLOCKER_COPY:Record<string,string>={
  "No connection": "Sin conexión",
  "Paused: too many attempts": "En pausa: demasiados intentos",
  "Can’t save punches":"No puede guardar marcaciones",
+ "Connection problem":"Problema de conexión",
+ "Storage problem":"Problema de almacenamiento",
+ "Check needed":"Revisión necesaria",
  "Can’t reach NEVORA":"No se puede conectar con NEVORA",
  "This tablet is paused": "Esta tableta está en pausa",
  // Nov 14 inspection (RA-3; Jose's Nov 11 decisions): Employee ID then PIN, and a pause that names who is paused. The
@@ -280,7 +284,7 @@ export const CLOCKER_COPY:Record<string,string>={
  // The paused page (RA-13, JR-12): the tablet's language, and no sign-in on a shared tablet.
  "Access could not be checked": "No se puede comprobar el acceso",
  "This time clock is paused":"El registro de tiempo está en pausa",
- "Clocking is unavailable right now. Ask your workplace Owner to review access and billing.": "No se puede registrar tiempo en este momento. Pídele al propietario de tu negocio que revise el acceso y la facturación.",
+ "Clocking is unavailable right now. Ask your workplace Owner to review access and billing.": "No se puede registrar tiempo en este momento. Pídele al dueño del negocio que revise el acceso y la facturación.",
  "Open billing on your own device.": "Abre la facturación en tu propio dispositivo.",
  "This tablet starts working again when billing is settled.": "Esta tableta vuelve a funcionar cuando la facturación esté al día.",
  "This tablet needs to be set up again":"Hay que configurar esta tableta de nuevo",

@@ -57,7 +57,7 @@ it('says a link without a copy reference points nowhere',async()=>{
  expect(html).toContain('href="/app/schedule"');
 });
 
-it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const html=await render();expect(html).toContain('This page needs company-wide management access.');expect(html).not.toContain('Retry this copy');expect(html).not.toContain('Review schedule');});
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const html=await render();expect(html).toContain('Company-wide access needed');expect(html).toContain('An Owner can give it to you.');expect(html).not.toContain('Retry this copy');expect(html).not.toContain('Review schedule');});
 
 it('confirms a clean copy once, with the success mark, the week and the place',async()=>{
  fixtures.receipt=receipt([row('a','COMMITTED'),row('b','COMMITTED',{date:'2026-10-20'})]);

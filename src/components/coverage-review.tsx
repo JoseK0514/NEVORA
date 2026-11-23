@@ -7,7 +7,7 @@ import { HourglassMediumIcon } from "@phosphor-icons/react/dist/ssr/HourglassMed
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import type { ComponentType, ReactNode } from "react";
-import { ConfigurationForm } from "@/components/configuration-form";
+import { CoverageReviewForm } from "@/components/coverage-review-hold";
 import { CorpBody, CorpCard, CorpNav, CorpPage, CorpTitle } from "@/components/corp/corp";
 import { compactRange } from "@/components/owner-b/b-kit";
 import { PendingButton } from "@/components/wave-a/pending-button";
@@ -112,10 +112,10 @@ export function CoverageReview(props: CoverageReviewProps) {
     <CorpNav back={{ href: props.backHref, label: "Coverage" }} title="Review replacement" titleId="review-title" phoneOnly />
     <CorpTitle title="Review replacement" wide />
     {card}
-    {saves ? <ConfigurationForm action={props.action} className="c-review__form" holdAfterUnconfirmed unconfirmedCheck={unconfirmedCheck(props.mode === "publish", props.backHref)}>
+    {saves ? <CoverageReviewForm action={props.action} token={props.hidden.coverageRepairReview ?? ""} className="c-review__form" check={unconfirmedCheck(props.mode === "publish", props.backHref)}>
       {Object.entries(props.hidden).map(([name, value]) => <input type="hidden" name={name} value={value} key={name} />)}
       {actions}
-    </ConfigurationForm> : <div className="c-review__form">{actions}</div>}
+    </CoverageReviewForm> : <div className="c-review__form">{actions}</div>}
   </CorpPage>;
 }
 

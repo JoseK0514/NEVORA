@@ -152,6 +152,9 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
             <option value="" disabled>Choose someone</option>
             {active.map(item => <option key={item.id} value={item.id}>{`${item.firstName} ${item.lastName}`}</option>)}
           </select>
+          {/* Gaps G62: a native select can't wrap. Where the field is narrow for its text (a phone, 200% text) the chosen
+            * name is drawn here, wrapping, over the select (schedule-shift-form.css); the select stays the control. */}
+          <span className={name ? "c-shift__person-v" : "c-shift__person-v c-shift__person-v--none"} aria-hidden="true">{name || "Choose someone"}</span>
         </span>
         {/* A native select can cut a long name; the full name is read and shown here. */}
         {name.length > 24 ? <span className="c-field__help" aria-live="polite">{`Selected employee: ${name}`}</span> : null}

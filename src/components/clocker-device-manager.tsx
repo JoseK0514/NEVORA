@@ -5,13 +5,15 @@ import { DeviceTabletIcon } from '@phosphor-icons/react/dist/ssr/DeviceTablet';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { QuestionIcon } from '@phosphor-icons/react/dist/ssr/Question';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import type { ClockerDeviceView, ClockerLocationView, ClockerOwnerResult } from '../lib/clocker/views';
 import { toast } from './toaster';
-import { SettingsFrame } from '../app/app/settings/wave-c-kit';
+import { SettingsPageB } from '../app/app/settings/settings-b';
+import './clocker-owner-page.css';
 import { ButtonLabel, Field, FieldErrors, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 import { CorpButton } from './corp/corp';
 import { QuietSheet } from './quiet/quiet-sheet';
-import { BCard, BChip, BIcon, BList, BNote, BSegsText, BState } from './owner-b/b-kit';
+import { BCard, BChip, BIcon, BList, BSegsText, BState } from './owner-b/b-kit';
 import { encodeQr, qrPath } from './access-recovery/qr';
 import { setupLink } from './clocker-setup-link';
 import { clockerOwnerCopy, clockerOwnerWhen, type ClockerOwnerCopy, type ClockerOwnerLang } from './clocker-owner-copy';
@@ -218,6 +220,8 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     : rotateKind === 'replace' ? t.replaceSubmit : t.getCode;
   const rotate = () => { setError(null); setSelection({ operation: 'ROTATE', device: selection!.device }); };
 
+  // Phase 2 (Settings part 2): the row's name is what it shows (its name and line), no aria-label that differs from it;
+  // each action's name starts with its visible words ("Get setup code, Patio tablet").
   // One row per tablet (confirmations B; Jose: "organised"): a 36px lead, the name with its exception as the kit's status
   // label, the facts line, then ONE action in a fixed column (the white button) and the chevron. The row itself opens
   // the tablet's options (Manage): its button stretches over the row, and the action sits above it as its own target.
@@ -236,7 +240,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     const lead = <BIcon tone={line.tone === 'amber' ? 'amber' : item.state === 'ACTIVE' ? 'teal' : 'grey'}><DeviceTabletIcon weight="bold" /></BIcon>;
     return <li className="b-li" key={item.id}><div className="b-row ck-trow" data-open={removedRow ? undefined : ''} data-act={go ? '' : undefined}>
       {removedRow ? <div className="ck-trow__main">{lead}{text}</div>
-        : <button type="button" className="ck-trow__main ck-trow__open" data-clocker-device={item.id} aria-label={t.manageFor(item.name)} aria-haspopup="dialog" disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device: item }, event)}>{lead}{text}</button>}
+        : <button type="button" className="ck-trow__main ck-trow__open" data-clocker-device={item.id} aria-haspopup="dialog" disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device: item }, event)}>{lead}{text}</button>}
       <span className="ck-trow__act">{go}</span>
       {removedRow ? <span className="ck-trow__chev" aria-hidden="true" /> : <CaretRightIcon className="b-chev ck-trow__chev" size={16} weight="bold" aria-hidden="true" />}
     </div></li>;
@@ -245,7 +249,9 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const current = devices.filter(item => item.state !== 'REVOKED');
   const removed = devices.filter(item => item.state === 'REVOKED');
   const canAdd = hydrated && activeLocations.length > 0;
-  return <SettingsFrame className="ck-owner ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} summary={t.tabletsSub}>
+  // Phase 2 (Settings part 2): the Direction B page frame. The band is the title alone: what the tablets are for and that one
+  // per location works best were lines shown on every visit (density rule 5); the list and its states say the rest.
+  return <SettingsPageB className="ck-owner ck-frame ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} titleId="clocker-tablets-title">
     <div className="ck-stack">
       <p className="b-sr" role="status">{t.tabletsCount(connected, waiting, revoked)}</p>
       {notice ? <p className="ck-notice" role="status">{notice}</p> : null}
@@ -254,16 +260,25 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       </section> : null}
       {!activeLocations.length ? <BCard label={t.noLocationTitle}><BState kind="paused" title={t.noLocationTitle} line={t.noLocationBody} action={{ label: t.goToLocations, href: '/app/settings/locations' }} /></BCard> : null}
       {current.length ? <BCard id="clocker-tablets" title={t.tabletsCard} count={current.length}>
-        <BList label={t.tabletsList}>{current.map(row)}</BList>
-        <div className="ck-foot"><button type="button" className="b-btn b-btn--teal" data-clocker-add="" disabled={!canAdd} onClick={event => open({ operation: 'REGISTER' }, event)}>{t.addTablet}</button></div>
+        {/* Final fixes S2 (G85): adding is the "+ Add …" row every Settings list ends with (Locations, Positions, Breaks). */}
+        <BList label={t.tabletsList}>{current.map(row)}
+          <li className="b-li"><div className="b-row ck-trow ck-trow--add" data-open="">
+            <button type="button" className="ck-trow__main ck-trow__open" data-clocker-add="" disabled={!canAdd} onClick={event => open({ operation: 'REGISTER' }, event)}>
+              <BIcon tone="teal"><PlusIcon weight="bold" /></BIcon><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{t.addTablet}</span></span></span>
+            </button>
+            <span className="ck-trow__act" /><span className="ck-trow__chev" aria-hidden="true" />
+          </div></li>
+        </BList>
       </BCard> : activeLocations.length ? <BCard label={t.emptyTitle}>
         <BState kind="empty" icon={<DeviceTabletIcon weight="bold" />} title={t.emptyTitle} line={t.emptyBody}>
           <button type="button" className="b-btn b-btn--teal" data-clocker-add="" disabled={!canAdd} onClick={event => open({ operation: 'REGISTER' }, event)}>{t.addFirstTablet}</button>
         </BState>
       </BCard> : null}
       {removed.length ? <BCard id="clocker-removed" title={t.removedCard} count={removed.length}><BList label={t.removedList}>{removed.map(row)}</BList></BCard> : null}
-      {current.length ? <BNote>{t.tabletsNote}</BNote> : null}
     </div>
+    {/* The sheet keeps the Settings form styles it was built with (fields, the busy label swap), which are scoped to the
+      Settings frame's class; the host draws no box of its own. */}
+    <div className="wc-page ck-sheethost" style={{ display: 'contents' }}>
     <QuietSheet open={!!selection} onClose={close} labelledBy="clocker-dialog-title">
       {selection ? <form ref={sheetForm} noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} aria-describedby="clocker-dialog-text" className={`c-sheet c-tablet-sheet ck-sheet${selection.operation === 'REVOKE' ? ' ck-confirm' : ''}`} {...handlers}>
         {/* A tablet's options: its name centred, Done on the right (a changed name saves). A confirm (add, new code,
@@ -310,13 +325,14 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
         </div>
       </form> : null}
     </QuietSheet>
-  </SettingsFrame>;
+    </div>
+  </SettingsPageB>;
 }
 
 /** The page when the tablets could not be read: the band, one state card, one retry. */
 export function ClockerDevicesUnavailable({ lang = 'en' }: { lang?: ClockerOwnerLang }) {
   const t = clockerOwnerCopy[lang];
-  return <SettingsFrame className="ck-owner ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle}>
+  return <SettingsPageB className="ck-owner ck-frame ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} titleId="clocker-tablets-title">
     <div className="ck-stack"><BCard label={t.loadFailedTitle}>
       <BState kind="failed" alert title={t.loadFailedTitle} line={t.loadFailedBody}>
         {/* A retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript. */}
@@ -324,5 +340,5 @@ export function ClockerDevicesUnavailable({ lang = 'en' }: { lang?: ClockerOwner
         <a className="b-btn b-btn--teal" href="/app/settings/clocker">{t.tryAgain}</a>
       </BState>
     </BCard></div>
-  </SettingsFrame>;
+  </SettingsPageB>;
 }

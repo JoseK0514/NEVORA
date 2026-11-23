@@ -3,7 +3,7 @@ import { EditLocationForm } from "@/components/edit-location-form";
 import { requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/locations";
 import { updateLocationAction } from "../../actions";
-import { SettingsFrame } from "../../wave-c-kit";
+import { SettingsPageB } from "../../settings-b";
 import { currentPresentation } from "@/lib/workspace-presentation/current.server";
 import { wordPreset } from "@/lib/workspace-presentation/words";
 import { listLocationStaffingSettings } from "@/lib/data/schedule-health";
@@ -29,10 +29,12 @@ export default async function EditLocationPage({
   const minimum = staffing.find(setting => setting.locationId === location.id)?.minimumStaffPerShift ?? null;
   const eligible = employees ? employees.filter(employee => employee.active && employee.eligibleLocationIds.includes(location.id)).length : undefined;
   return (
-    // Review F4 (NV-102): on tablets and desktop Save is in the form card's footer; phones keep it in the top bar.
-    <SettingsFrame back={{ href: "/app/settings/locations", label: words.locations }} title={location.shortName} save={{ form: "edit-location-form", card: true }}>
-      <EditLocationForm key={`${location.id}:${location.updatedAt ?? ""}`} location={location} action={updateLocationAction} words={{ location: words.location, locations: words.locations }}
+    // Phase 2 (Nov 23, 2026): Settings' Direction B frame. Phones go back to Locations and save from the band (Save shows
+    // once something changed); tablets and desktop save from the form card's footer.
+    <SettingsPageB title={location.shortName} titleId="edit-location-title" back={{ href: "/app/settings/locations", label: words.locations }}
+      phoneRight={<button type="submit" form="edit-location-form" className="c-setb-save">Save</button>}>
+      <EditLocationForm key={location.id} location={location} action={updateLocationAction} words={{ location: words.location, locations: words.locations }}
         staffing={minimum === null ? undefined : `${minimum} per shift`} eligible={eligible} />
-    </SettingsFrame>
+    </SettingsPageB>
   );
 }

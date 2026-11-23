@@ -1,12 +1,46 @@
-/* Employee PINs inside its settings page: the kit's search, segments and card, without a second page background. */
-:is(#c-root, html) .c-page.c-embed.c-pins { min-height: 0; padding: 16px; background: none; }
+/* Clocker PINs in Settings (Phase 2, Nov 23, 2026): the search, the tabs and the card are the Settings page's own children
+ * sit at the top of the one list card, which is the page's first block. */
+:is(#c-root, html) .c-pins .c-pins__tools { display: flex; flex-direction: column; gap: var(--b-space-12, 12px); padding: var(--b-inset, 16px) var(--b-inset, 16px) var(--b-space-8, 8px); }
+:is(#c-root, html) .c-pins .c-pins__tools > .c-seg { width: 100%; max-width: none; }
+:is(#c-root, html) .c-pins .c-pins__search { width: 100%; }
+:is(#c-root, html) .c-pins .c-pins__act { flex: none; white-space: nowrap; }
+:is(#c-root, html) .c-pins .c-row__trail { flex: none; }
 :is(#c-root, html) .c-pins .c-pins__search { gap: 8px; cursor: text; }
 :is(#c-root, html) .c-pins .c-pins__search .c-ic { width: 20px; height: 20px; color: var(--c-grey); }
-:is(#c-root, html) .c-pins .c-pins__search input { flex: 1; min-width: 0; height: 100%; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; font-size: 15px; line-height: 20px; color: var(--c-ink); outline: none; -webkit-appearance: none; appearance: none; }
-:is(#c-root, html) .c-pins .c-pins__empty { margin: 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
-:is(#c-root, html) .c-pins .c-pins__note { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-pins .c-pins__search input { flex: 1; min-width: 0; height: 100%; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; font-size: var(--b-fs-body, 0.9375rem); line-height: 1.34; color: var(--c-ink); outline: none; -webkit-appearance: none; appearance: none; }
+:is(#c-root, html) .c-pins .c-pins__empty { margin: 0; font-size: 0.9375rem; line-height: 1.34; color: var(--c-ink2); }
+:is(#c-root, html) .c-pins .c-pins__note { margin: 0; font-size: 0.8125rem; line-height: 1.38; color: var(--c-grey); }
 /* Owner premium: the search at 16px on phones (no iOS zoom). */
-@media (max-width: 767px) { :is(#c-root, html) .c-pins .c-pins__search input { font-size: 16px; } }
+@media (max-width: 767px) { :is(#c-root, html) .c-pins .c-pins__search input { font-size: 1rem; } }
 /* Owner premium R13: each tab is its label and a grey count ("No PIN 9"), one count voice, and no tab repeats another. */
-:is(#c-root, html) .c-pins .c-pins__seg button { gap: 6px; }
+:is(#c-root, html) .c-pins .c-seg > button { gap: 0; }
 :is(#c-root, html) .c-pins .c-pins__count { font-weight: 500; color: var(--c-grey); font-variant-numeric: tabular-nums; }
+/* Tablets and desktop: the search and the tabs on one line. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-pins .c-pins__tools { flex-direction: row; align-items: center; }
+  :is(#c-root, html) .c-pins .c-pins__search { flex: 1 1 auto; min-width: 0; }
+  :is(#c-root, html) .c-pins .c-pins__tools > .c-seg { flex: 0 0 auto; width: auto; min-width: 280px; }
+}
+/* From 768px the kit's rows sit on the wide inset (22px); the tools and the card's note take the same edge, so the search,
+ * the avatars, the note and the Set PIN buttons share one left and one right edge. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-pins__tools:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card.c-pins .c-setb-cardnote:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+}
+/* 200% text (end sweep, Nov 23): the kit draws the search, the tabs and the row buttons in fixed px; on this page they take
+ * rem sizes and grow with their text (44px and 36px stay the minimums), so they scale with the rows they sit beside. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-pins__search:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { height: auto !important; min-height: 48px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-pins__search input:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: 1rem !important; line-height: 1.5 !important; padding-block: 0.625rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-seg:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { height: auto !important; min-height: 40px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-seg > button:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { height: auto !important; min-height: 36px !important; margin: 0 !important; padding-block: 0.25rem !important; font-size: 0.9375rem !important; line-height: 1.34 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-pins__count:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: 0.8125rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-pins__act:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: 0.9375rem !important; line-height: 1.34 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-btn.c-pins__act:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-statecard .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { height: auto !important; min-height: 44px !important; padding-block: 0.5rem !important; }
+}
+/* The field draws the one focus ring (its outline turns teal); the input inside it draws none of its own. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-pins__search input:is(:focus, :focus-visible):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { outline: none !important; box-shadow: none !important; }
+}

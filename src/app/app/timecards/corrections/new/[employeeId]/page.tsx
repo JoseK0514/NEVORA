@@ -9,11 +9,13 @@ import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {CorpPage,CorpNav,CorpTitle,CorpCard,CorpBody} from '@/components/corp/corp';
 import {DelegatedTimeCorrectionForm} from '@/components/delegated-time-correction-form';
+/* Phase 2 gate (Nov 23): the title is drawn once per width (the phone band, or the wide title on desktop), and
+ * "another manager" is said once, by the confirmation beside the Send button. */
 /** RA-25 (Nov 14, 2026): the tab and screen readers name the page as its heading does ("Request time correction · NEVORA"). */
 export const metadata={title:'Request time correction'};
 export default async function DelegatedCorrectionPage({params}:{params:Promise<{employeeId:string}>}){
  const session=await requireRoles(MANAGER_ROLES),proof=await requireSessionMutationProof(),workspace=await getWorkspace(),access=await withOperationalCompany(proof,async()=>null),{employeeId}=await params;
- if(access.state==='unavailable')return <OperationalUnavailable title="Time corrections unavailable" reason={access.reason}/>;
+ if(access.state==='unavailable')return <OperationalUnavailable title="Request time correction unavailable" reason={access.reason}/>;
  const authority=correctionAuthority(proof),recoveryScope=delegatedRecoveryScope(workspace.id);
- return <ScopedReadFrame observation={scopedObservation(access)}><CorpPage className="c-page--narrow" labelledBy="delegated-title"><CorpNav back={{href:'/app/timecards',label:'Time'}} title="Request time correction" phoneOnly/><CorpTitle id="delegated-title" title="Request time correction" sub="Another manager reviews it."/><CorpCard><CorpBody><DelegatedTimeCorrectionForm key={JSON.stringify([recoveryScope,session.id,authority,employeeId])} employeeId={employeeId} actorId={session.id} authority={authority} recoveryScope={recoveryScope}/></CorpBody></CorpCard></CorpPage></ScopedReadFrame>;
+ return <ScopedReadFrame observation={scopedObservation(access)}><CorpPage className="c-page--narrow" labelledBy="delegated-title"><CorpNav back={{href:'/app/timecards',label:'Time'}} title="Request time correction" phoneOnly/><CorpTitle id="delegated-title" title="Request time correction" wide/><CorpCard><CorpBody><DelegatedTimeCorrectionForm key={JSON.stringify([recoveryScope,session.id,authority,employeeId])} employeeId={employeeId} actorId={session.id} authority={authority} recoveryScope={recoveryScope}/></CorpBody></CorpCard></CorpPage></ScopedReadFrame>;
 }

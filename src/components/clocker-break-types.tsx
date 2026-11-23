@@ -2,32 +2,26 @@
 
 import { FormDiscardGuard } from './kit/discard-dialog';
 import { leaveWithDiscardGuard } from './kit/use-discard-guard';
-import ownerStyles from './clocker-owner.module.css';
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ArchiveIcon } from '@phosphor-icons/react/dist/ssr/Archive';
 import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
-
-
-
-
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
-
 import { XIcon } from '@phosphor-icons/react/dist/ssr/X';
-import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
-
 import { toast } from './toaster';
-import { BChip } from './owner-b/b-kit';
+import { CorpCard, CorpEmpty, CorpEmptyRow, CorpRow, CorpRows } from './corp/corp';
 import { breakCategories, type BreakType } from '../lib/clocker/break-types';
 import type { BreakTypeResult } from '../app/app/settings/breaks/actions';
-import { Notice,SettingsFrame } from '../app/app/settings/wave-c-kit';
-import { ButtonLabel, Field, FieldErrors, FormActions, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
+import { FieldB, ResultB } from '../app/app/settings/settings-b-form';
+import { FieldErrors, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 
 type Selection = { operation: 'CREATE' | 'EDIT' | 'ARCHIVE' | 'REACTIVATE'; type?: BreakType };
 
 const categoryLabel = (value: BreakType['category']) => breakCategories.find(category => category.value === value)?.label ?? 'Other';
 
-/** Wave C: Break types on the kit. Rows say what each break is; Edit and Archive open one dialog
- * (a bottom sheet on phones). The action takes exactly the fields the server expects. */
+/** J9 Break types in Direction B (Nov 23, 2026). The editor's root is a fragment, so its cards are direct children of the
+ * Settings page (SettingsPageB): an Active card (a row per break: name, reference time, kind; the "Add break type" row;
+ * the card's one note), then an Archived card when there are any. A row opens one dialog (a sheet on phones) for Edit,
+ * Archive and Reactivate. The action takes exactly the fields the server expects; every sentence is the approved one. */
 export function ClockerBreakTypes({ initialTypes, action }: {
   initialTypes: BreakType[];
   action(data: FormData): Promise<BreakTypeResult>;
@@ -38,8 +32,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   const [error, setError] = useState<{ message: string; refresh: boolean } | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const errorMessage = useRef<HTMLDivElement>(null);
-  const addButton = useRef<HTMLButtonElement>(null);
-  const trigger = useRef<HTMLElement | null>(null);
+  const trigger = useRef<string | null>(null);
   const busy = useRef(false);
   const { errors, handlers, clear } = useFieldErrors({
     name: { missing: 'Enter a break name' },
@@ -50,23 +43,20 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   useEffect(() => {
     if (!selection) return;
     const element = dialog.current;
-    const fallback = addButton.current;
-    element?.showModal();
+    if (element && !element.open) element.showModal();
     // A destructive confirm starts on Cancel; other dialogs start on their first field or action.
     (element?.querySelector<HTMLElement>('[data-autofocus]') ?? element?.querySelector<HTMLElement>('input[name="name"], button[type="submit"]'))?.focus({ preventScroll: true });
     const unlock = lockPageScroll();
     return () => {
       if (element?.open) element.close();
       unlock();
-      const target = trigger.current;
-      (target?.isConnected ? target : fallback)?.focus({ preventScroll: true });
     };
   }, [selection]);
 
   useEffect(() => { if (error) errorMessage.current?.focus(); }, [error]);
 
-  function open(next: Selection, event: MouseEvent<HTMLButtonElement>) {
-    trigger.current = event.currentTarget;
+  function open(next: Selection, triggerId: string) {
+    trigger.current = triggerId;
     setError(null);
     clear();
     setSelection(next);
@@ -77,6 +67,8 @@ export function ClockerBreakTypes({ initialTypes, action }: {
     dialog.current?.close();
     setSelection(null);
     setError(null);
+    const target = trigger.current ? document.getElementById(trigger.current) : null;
+    (target ?? document.getElementById('break-add'))?.focus({ preventScroll: true });
   }
 
   // Closing the editor with typed changes that are not saved asks first (Nov 21, 2026); a save closes it directly.
@@ -123,64 +115,63 @@ export function ClockerBreakTypes({ initialTypes, action }: {
     : selection?.operation === 'ARCHIVE' ? 'Archive break type' : 'Reactivate break type';
 
   const row = (type: BreakType) => <li key={type.id}>
-    <button type="button" className={type.targetMinutes === null ? 'q-row q-row--one' : 'q-row'} data-break-type={type.id} aria-label={`Edit ${type.name}`} onClick={event => open({ operation: 'EDIT', type }, event)}>
-      <span className="q-rt"><b>{type.name}</b>{type.targetMinutes === null ? null : <i>{`${type.targetMinutes}\u00a0min`}</i>}</span>
-      <BChip tone="grey">{categoryLabel(type.category)}</BChip>
-      <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
-    </button>
+    <CorpRow id={`break-type-${type.id}`} title={type.name} detail={type.targetMinutes === null ? undefined : `${type.targetMinutes}\u00a0min`}
+      value={categoryLabel(type.category)} onClick={() => open({ operation: 'EDIT', type }, `break-type-${type.id}`)} />
   </li>;
   const archived = types.filter(type => !type.active);
-  // Release 1 (board O-Breaks): one card with its count, a row per break (name, reference time, kind) and an inline
-  // "+ Add break type" row; archived breaks in their own card. A row opens its editor. No Clocker tab row (the board has none).
-  return <SettingsFrame className={ownerStyles.owner} title="Break types">
-    <p className="q-sr" role="status">Showing {activeCount} of {types.length} {types.length === 1 ? 'break type' : 'break types'}</p>
-    <ul className="q-list" aria-label="Configured break types">
-      {/* Closing F1 (NV-238): "Break types 3", the title inside the card with its count pill. */}
-      {activeCount ? <li className="wc-cardhead" aria-hidden="true"><span>Break types<span className="wc-count c-num">{activeCount}</span></span></li> : null}
-      {types.filter(type => type.active).map(row)}
-      {!activeCount ? <li className="wc-emptyrow"><b>{types.length ? 'No active break types' : 'No break types yet'}</b>{types.length ? null : <span>Add the breaks your team takes, like a 30-minute meal.</span>}</li> : null}
-      <li><button ref={addButton} type="button" className="wc-addrow" onClick={event => open({ operation: 'CREATE' }, event)}><PlusIcon aria-hidden="true" weight="bold" />Add break type</button></li>
-    </ul>
-    {archived.length ? <ul className="q-list" aria-label="Archived break types">
-      <li className="wc-cardhead" aria-hidden="true"><span>Archived<span className="wc-count c-num">{archived.length}</span></span></li>
-      {archived.map(row)}
-    </ul> : null}
-    <p className="wc-foot">Changes apply to new breaks only.</p>
-    <dialog ref={dialog} className="wc-dialog" aria-labelledby="break-editor-title" aria-describedby="break-editor-description" onCancel={event => { event.preventDefault(); askClose(); }}>
-      {selection ? <form noValidate key={selection.operation + '-' + (selection.type?.id ?? 'new')} onSubmit={submit} aria-busy={pending} className="wc-dialog__form" {...handlers}>
+  return <>
+    <p className="c-sr" role="status">Showing {activeCount} of {types.length} {types.length === 1 ? 'break type' : 'break types'}</p>
+    {types.length ? <CorpCard id="break-types-active" label="Active" count={activeCount}>
+      <CorpRows label="Configured break types">
+        {types.filter(type => type.active).map(row)}
+        {!activeCount ? <CorpEmptyRow as="li">No active break types</CorpEmptyRow> : null}
+        <li><CorpRow id="break-add" title="Add break type" icon={<PlusIcon weight="bold" />} one chevron={false} onClick={() => open({ operation: 'CREATE' }, 'break-add')} /></li>
+      </CorpRows>
+      <p className="c-setb-cardnote">Changes apply to new breaks only.</p>
+    </CorpCard> : <CorpEmpty title="No break types yet" body="Add the breaks your team takes, like a 30-minute meal."
+      action={<button id="break-add" type="button" className="c-btn" onClick={() => open({ operation: 'CREATE' }, 'break-add')}>Add break type</button>} />}
+    {archived.length ? <CorpCard id="break-types-archived" label="Archived" count={archived.length}>
+      <CorpRows label="Archived break types">{archived.map(row)}</CorpRows>
+    </CorpCard> : null}
+    {/* The dialog is not a child of the page itself, so the page's card rules (full width, the gap between cards) never
+      reach it; display: contents gives its holder no box. */}
+    <div style={{ display: 'contents' }}><dialog ref={dialog} className="c-setb-dlg wc-dialog" aria-labelledby="break-editor-title" aria-describedby="break-editor-description" onCancel={event => { event.preventDefault(); askClose(); }}>
+      {selection ? <form noValidate key={selection.operation + '-' + (selection.type?.id ?? 'new')} onSubmit={submit} aria-busy={pending} {...handlers}>
         <FormDiscardGuard />
-        <div className="wc-dialog__head">
-          <div><h2 className="wc-dialog__title" id="break-editor-title">{title}</h2>
-            <p className="wc-dialog__text" id="break-editor-description">{selection.operation === 'CREATE' ? 'It’s offered for new breaks as soon as you create it.' : editing ? 'Changes apply to future breaks only.' : selection.operation === 'ARCHIVE' ? 'It won’t be offered for new breaks.' : 'It will be offered for new breaks again.'}</p></div>
-          <button type="button" className="wc-dialog__close" aria-label="Close break editor" disabled={pending} onClick={askClose}><XIcon size={22} weight="bold" aria-hidden="true" /></button>
+        <div className="c-setb-dlg__head">
+          <div><h2 className="c-setb-dlg__title" id="break-editor-title">{title}</h2>
+            <p className="c-setb-dlg__text" id="break-editor-description">{selection.operation === 'CREATE' ? 'It’s offered for new breaks as soon as you create it.' : editing ? 'Changes apply to future breaks only.' : selection.operation === 'ARCHIVE' ? 'It won’t be offered for new breaks.' : 'It will be offered for new breaks again.'}</p></div>
+          <button type="button" className="c-setb-dlg__close" aria-label="Close break editor" disabled={pending} onClick={askClose}><XIcon weight="bold" aria-hidden="true" /></button>
         </div>
-        <fieldset className="wc-fieldset" disabled={pending || Boolean(error?.refresh)}>
-          {editing ? <FieldErrors errors={errors}><div className="wc-fields">
-            <Field label="Break name" id="break-name" name="name" defaultValue={selection.type?.name ?? ''} required maxLength={80} autoComplete="off" placeholder="e.g. Afternoon break" />
-            <Field kind="select" label="Classification" id="break-category" name="category" required defaultValue={selection.type?.category ?? ''}>
-              <option value="" disabled>Choose a classification</option>
-              {breakCategories.map(category => <option key={category.value} value={category.value}>{category.label}</option>)}
-            </Field>
-            <Field label="Reference time" optional unit="min" helpId="break-duration-help"
-              help="1 to 1,440 minutes. Leave blank for no reference time. It never stops a break on its own."
-              id="break-minutes" name="targetMinutes" type="text" inputMode="numeric" pattern="(?:[1-9][0-9]{0,2}|1[0-3][0-9]{2}|14[0-3][0-9]|1440)" maxLength={4}
-              defaultValue={selection.type?.targetMinutes ?? ''} placeholder="e.g. 15" />
-          </div></FieldErrors> : <div className="wc-fact">
-            <span className="wc-fact__icon" aria-hidden="true">{selection.operation === 'ARCHIVE' ? <ArchiveIcon size={20} weight="bold" /> : <ArrowClockwiseIcon size={20} weight="bold" />}</span>
-            <div><span className="wc-fact__value">{selection.type?.name}</span>
-              <span className="wc-fact__note">{selection.operation === 'ARCHIVE' ? 'Breaks already in progress can still end. Recorded settings stay unchanged.' : 'Earlier records stay unchanged.'}</span></div>
-          </div>}
-        </fieldset>
-        {error ? <div ref={errorMessage} role="alert" tabIndex={-1} className="wc-feedback"><Notice tone="urgent" title={error.message.startsWith('It may not have saved') ? 'Not saved yet' : 'Not saved'}>{error.message}</Notice></div> : null}
-        <p role="status" className="nv-sr">{pending ? 'Saving your changes…' : ''}</p>
-        <FormActions>
-          {error?.refresh ? <button type="button" className="q-btn" onClick={() => window.location.reload()}>Reload</button>
-            : <button className={selection.operation === 'ARCHIVE' ? 'q-btn q-btn--danger' : 'q-btn'} type="submit" disabled={pending}><ButtonLabel pending={pending} idle={saveLabel} busy="Saving…" /></button>}
-          {selection.operation === 'EDIT' && selection.type ? <button className="q-btn q-btn--danger" type="button" disabled={pending}
+        <div className="c-setb-dlg__body">
+          <fieldset className="c-setb-fieldset" disabled={pending || Boolean(error?.refresh)}>
+            {editing ? <FieldErrors errors={errors}>
+              <FieldB label="Break name" id="break-name" name="name" defaultValue={selection.type?.name ?? ''} required maxLength={80} autoComplete="off" placeholder="e.g. Afternoon break" />
+              <FieldB kind="select" label="Classification" id="break-category" name="category" required defaultValue={selection.type?.category ?? ''}>
+                <option value="" disabled>Choose a classification</option>
+                {breakCategories.map(category => <option key={category.value} value={category.value}>{category.label}</option>)}
+              </FieldB>
+              <FieldB label="Reference time" optional unit="min" helpId="break-duration-help"
+                help="1 to 1,440 minutes. Leave blank for no reference time. It never stops a break on its own."
+                id="break-minutes" name="targetMinutes" type="text" inputMode="numeric" pattern="(?:[1-9][0-9]{0,2}|1[0-3][0-9]{2}|14[0-3][0-9]|1440)" maxLength={4}
+                defaultValue={selection.type?.targetMinutes ?? ''} placeholder="e.g. 15" />
+            </FieldErrors> : <>
+              <ul className="c-rows"><li><CorpRow title={selection.type?.name} one
+                icon={selection.operation === 'ARCHIVE' ? <ArchiveIcon weight="bold" /> : <ArrowClockwiseIcon weight="bold" />} /></li></ul>
+              <p className="c-setb-dlg__text">{selection.operation === 'ARCHIVE' ? 'Breaks already in progress can still end. Recorded settings stay unchanged.' : 'Earlier records stay unchanged.'}</p>
+            </>}
+          </fieldset>
+        </div>
+        {error ? <ResultB innerRef={errorMessage} tone="urgent" title={error.message.startsWith('It may not have saved') ? 'Not saved yet' : 'Not saved'}>{error.message}</ResultB> : null}
+        <p role="status" className="c-sr">{pending ? 'Saving your changes…' : ''}</p>
+        <div className="c-setb-dlg__acts">
+          {selection.operation === 'EDIT' && selection.type ? <button className="c-btn c-btn--secondary c-setb-dlg__danger" type="button" disabled={pending}
             onClick={() => { clear(); setError(null); setSelection({ operation: selection.type!.active ? 'ARCHIVE' : 'REACTIVATE', type: selection.type }); }}>{selection.type.active ? 'Archive break type' : 'Reactivate break type'}</button> : null}
-          <button className="q-btn q-btn--sec b-rowact b-rowact--quiet" type="button" disabled={pending} onClick={askClose} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
-        </FormActions>
+          <button className="c-btn c-btn--secondary" type="button" disabled={pending} onClick={askClose} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
+          {error?.refresh ? <button type="button" className="c-btn" onClick={() => window.location.reload()}>Reload</button>
+            : <button className={selection.operation === 'ARCHIVE' ? 'c-btn c-btn--danger' : 'c-btn'} type="submit" disabled={pending}>{pending ? 'Saving…' : saveLabel}</button>}
+        </div>
       </form> : null}
-    </dialog>
-  </SettingsFrame>;
+    </dialog></div>
+  </>;
 }

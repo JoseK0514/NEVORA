@@ -15,11 +15,12 @@ type ViewProps={mobile?:boolean;state:PasskeyState;supported:boolean;confirm:Pas
 
 /** One presentation on every width (board style): a "Saved passkeys" card with one row per key, the review inline, and
  * one primary Add a passkey. The device ceremony, removal review and refresh are unchanged. */
-export function EmployeePasskeyView({mobile,state,supported,confirm,onAdd,onRefresh,onRemove,onReview,onKeep,onCancel,addRef,confirmationRef,feedbackRef}:ViewProps){
+export function EmployeePasskeyView({state,supported,confirm,onAdd,onRefresh,onRemove,onReview,onKeep,onCancel,addRef,confirmationRef,feedbackRef}:ViewProps){
  const ready=state.phase==='ready',keys=ready?state.passkeys??[]:[],busy=state.busy!==null;
  const reviewed=ready?keys.find(key=>key.id===confirm?.id):null;
  if(state.phase==='ended')return null;
- if(state.phase==='disabled')return <div className={mobile?"c-card":undefined} data-passkey-state="disabled">
+ // Batch 1 (item 18): a card at every width; the kept panel around it is no longer drawn as one on wide screens.
+ if(state.phase==='disabled')return <div className="c-card" data-passkey-state="disabled">
   <BState kind="locked" title={PASSKEY_COPY.en.unavailableHere} line={PASSKEY_COPY.en.passwordStillWorks}/>
  </div>;
  const status=state.phase==='loading'?'Checking your saved passkeys…':state.phase==='paused'&&!busy?'Passkeys are paused. Return to this page to check your account.':state.phase==='unavailable'?(state.needsRefresh?'Check your saved passkeys before starting another request.':'We couldn’t check your passkeys. Refresh to try again.'):null;
@@ -32,7 +33,7 @@ export function EmployeePasskeyView({mobile,state,supported,confirm,onAdd,onRefr
     <button type="button" className="em-account-textbtn em-account-textbtn--danger" aria-label={'Remove '+key.name} disabled={busy||state.needsRefresh||!!reviewed} onClick={event=>onReview(key,event.currentTarget)}>Remove</button>
    </div></li>)}</ul>:null}
    <div className="c-card__body em-passkeys-body">
-    {ready&&!keys.length?<p className="em-passkeys-empty"><b>No saved passkeys</b>Your password still works. Add a passkey when you’re ready.</p>:null}
+    {ready&&!keys.length?<p className="em-passkeys-empty"><b>None yet</b>Your password still works.</p>:null}
     {ready&&keys.length?null:<p className="em-passkeys-intro">Sign in with your device’s screen lock instead of typing your password.</p>}
     {status?<p className="c-note" role="status">{status}</p>:null}
     {state.phase==='denied'?<p className="c-note" role="status">Your session changed. <a className="c-link" href="/login">Sign in again</a> to manage your passkeys.</p>:null}

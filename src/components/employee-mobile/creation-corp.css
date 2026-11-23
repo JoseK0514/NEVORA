@@ -97,3 +97,20 @@
 @media (min-width: 768px) {
   :is(#c-root, html) body dialog.q-page.q-sheet[open]:has(.c-xsheet) { border-radius: 16px; }
 }
+
+/* Batch nav gate (Nov 23, 2026), Swap shift, Offer for cover and Can't work this shift by URL:
+ * 1. The shift block opens the card, so it keeps only its line underneath; the line above it drew a stray rule at the
+ *    card's top edge.
+ * 2. Refresh inside "Some teammates' shifts couldn't be checked." is inline text: the kit's button height opened a gap
+ *    of a whole line where the sentence wrapped.
+ * 3. From 768px the field block stops at 560px with Send on its right edge; Offer this shift for cover instead now ends
+ *    on the same right edge instead of centring on the whole card. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep > .c-xs-shift:first-child:not(#e-none) { padding-top: 0; box-shadow: inset 0 -1px 0 var(--b-line); }
+/* The touch-target floor (employee-b-work.css, layer nv-b, pointer: coarse) makes every button 44px; a layered !important
+ * outranks an unlayered one, so this sits in the same layer with a higher specificity. Its ::after keeps the 44px hit area. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#e-none7):not(#e-none8) .c-page.em-creation .c-xs-inline { display: inline !important; height: auto !important; min-width: 0 !important; min-height: 0 !important; padding: 0 !important; border: 0 !important; line-height: inherit !important; vertical-align: baseline !important; }
+}
+@media (min-width: 768px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation > .b-keep > a.c-xs-alt:not(#e-none):not(#e-none2) { box-sizing: border-box; align-self: flex-start; width: 100%; max-width: var(--b-frame-form); padding-inline: 0 !important; justify-content: flex-end; text-align: end; }
+}

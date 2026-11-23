@@ -54,7 +54,8 @@ function PayNav({back,title}:{back:{href:string;label:string};title:string}){
   <h1 className="c-nav__title" id="pay-page-title" tabIndex={-1}>{title}</h1><span className="c-nav__right"/></div>;
 }
 
-export function CorpPayView({statements,loading,error,errorCode,nextPay,statement:arrivedTarget,document:arrivedFailure,reload}:PayView){
+export function CorpPayView({statements,loading,error,errorCode,nextPay,statement:arrivedTarget,document:arrivedFailure,reload,home}:PayView&{home?:{title:string;back?:{href:string;label:string}}}){
+ const title=home?.title??'Pay';
  const search=useSearchParams(),requested=search?.get('paycheck')??null,paycheck=requested&&UUID.test(requested)?requested:null;
  const view=paycheck?'paycheck':search?.get('view')==='history'?'history':'pay';
  const daysUntil=useDaysUntil(nextPay);
@@ -113,13 +114,13 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
  const bNoticeText=failure||missing?{title:failure==='failed'||failure==='temporary'?'We couldn’t open that statement':'That statement isn’t available',
   body:failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':failure==='temporary'?'NEVORA couldn’t open it just now. Try again in a moment.':state==='empty'?'It may have been replaced, or your access changed.':'It may have been replaced, or your access changed. Your current statements are below.'}:null;
  const b=<PayB view={view} state={state} ordered={ordered} byId={byId} paycheck={paycheck} nextPay={nextPay} daysUntil={daysUntil} listed={listed} thisYear={thisYear}
-  notice={bNoticeText} noticeRef={bNotice} status={bStatus} onOpenPdf={id=>{returnTo.current=id;}}/>;
+  notice={bNoticeText} noticeRef={bNotice} status={bStatus} onOpenPdf={id=>{returnTo.current=id;}} home={home}/>;
  const frame=(children:ReactNode,sub:boolean)=><div className={sub?'c-page c-page--narrow c-pay c-pay--sub':'c-page c-page--narrow c-pay'} data-nv-page="" data-corp="" data-pay-state={state} data-pay-view={view} aria-busy={loading}>{b}{children}</div>;
 
  if(view==='paycheck'){
   const item=paycheck?byId.get(paycheck):undefined;
   return frame(<>
-   <PayNav back={{href:'/app/my-pay',label:'Pay'}} title="Pay statement"/>
+   <PayNav back={{href:'/app/my-pay',label:title}} title="Pay statement"/>
    {state!=='ready'?status:!item?<CorpCard ariaLabel="Pay statement"><CorpBody><div role="status"><h2 className="c-big">That statement isn’t available</h2><p className="c-line2">It may have been replaced, or your access changed.</p></div></CorpBody></CorpCard>:<>
     <CorpCard id="pay-paycheck" label={`Pay period ${period(item.period.startDate,item.period.endDate)}`} aside={pill(item)}>
      <CorpBody><span className="c-line3">Payday</span><b className="c-big">{fmt({weekday:'short',month:'short',day:'numeric',...(item.payday.slice(0,4)===thisYear?{}:{year:'numeric'})}).format(utc(item.payday))}</b>
@@ -143,7 +144,7 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
  if(view==='history'){
   const months=new Map<string,Statement[]>();for(const item of ordered){const key=item.payday.slice(0,7);months.set(key,[...(months.get(key)??[]),item]);}
   return frame(<>
-   <PayNav back={{href:'/app/my-pay',label:'Pay'}} title="Pay history"/>
+   <PayNav back={{href:'/app/my-pay',label:title}} title="Pay history"/>
    {state!=='ready'?status:<>
     <CorpNote>Your published pay statements, newest first.</CorpNote>
     {[...months].map(([month,items])=><CorpCard key={month} label={fmt({month:'long',...(month.slice(0,4)===thisYear?{}:{year:'numeric'})}).format(utc(`${month}-15`))}>
@@ -153,7 +154,7 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
   </>,true);
  }
  return frame(<>
-  <CorpTitle id="pay-title" title="Pay"
+  <CorpTitle id="pay-title" title={title}
    actions={state==='ready'?<CorpButtonLink href="/app/my-pay?view=history" kind="neutral" size="sm">Pay history</CorpButtonLink>:undefined}/>
   {(failure||missing)&&listed&&state!=='loading'?<div ref={notice} tabIndex={-1} className="c-callout c-pay-notice" role="alert" aria-labelledby="pay-notice-title">
    <b id="pay-notice-title">{failure==='failed'||failure==='temporary'?'We couldn’t open that statement':'That statement isn’t available'}</b>

@@ -32,7 +32,8 @@ it('S13/B12: open shifts are one row to the Open shifts page, with no View butto
   expect(output).toContain('href="/app/schedule?week=2026-10-26&amp;view=open"');expect(output).not.toContain('>View<');
   // QA D10: the detail is short enough for one line at 320px.
   const plain = output.replace(/<[^>]+>/g, ' ');expect(plain).toContain('None right now');expect(plain).not.toContain('New ones show here');
-  expect(output).toContain('aria-label="Open shifts, none right now"');
+  // Gaps G66: the row is named by what it shows ("Open shifts None right now"), with no label of its own.
+  expect(output).not.toContain('aria-label="Open shifts, none right now"');
 });
 
 it('M5: an empty Open shifts page is one left-aligned card with a title, a sentence and one next step', () => {
@@ -55,4 +56,14 @@ it('Phase 9 (spec 1.4): a shift row says its time fact as quiet text beside the 
   const agenda = output.slice(output.indexOf('id="b-my-agenda"'), output.indexOf('</section>', output.indexOf('id="b-my-agenda"')));
   expect(agenda).toMatch(/<span class="b-row__tt">[^<]*<\/span><span class="b-status">Tomorrow<\/span><\/span>/);
   expect(agenda).not.toContain('b-chip--teal');
+});
+
+it('gaps G66: no Schedule row or open-shifts row carries a label that differs from what it shows', () => {
+  const output = html({openShifts: {available: [{id: 'o1', date: '2026-10-31', startTime: '09:00', endTime: '13:00', position: 'Barista', location: 'Condado', href: '/app/exchange/o1'}], requested: []} as unknown as EmployeeMyScheduleProps['openShifts'],
+    weekStart: '2026-11-02', shifts: [shift('m', '2026-11-02'), shift('n', '2026-11-04')]});
+  // Rows that open a shift or the Open shifts page have no aria-label.
+  for (const match of output.matchAll(/<a [^>]*class="(?:b-row b-row--link|c-row)"[^>]*>/g)) expect(match[0]).not.toContain('aria-label');
+  expect(output).toContain('1 open shift you can pick up');
+  // The phone row's day is spoken: the day lead isn't hidden, and a space keeps "Mon" and "2" apart.
+  expect(output).toMatch(/<span class="b-day eb-day[^"]*"><span>Mon<\/span><span class="b-sr"> <\/span><b>2<\/b><\/span>/);
 });

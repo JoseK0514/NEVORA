@@ -230,7 +230,7 @@ it.each(['MANAGER','OWNER'] as const)('gives %s one More link (the header avatar
  expect(header).not.toContain('role-chip');
 });
 
-it.each([['MANAGER','/app/exchange','/app/inbox'],['OWNER','/app/availability','/app/inbox'],['MANAGER','/app/inbox','/app/inbox'],['OWNER','/app/requests','/app/inbox'],['MANAGER','/app/employees/AUDIT-E','/app/employees'],['EMPLOYEE','/app/exchange','/app/schedule'],['EMPLOYEE','/app/requests','/app/requests/hub'],['LEAD','/app/availability','/app/schedule']] as const)('lights the %s tab that owns %s',(role,pathname,tab)=>{
+it.each([['MANAGER','/app/exchange','/app/schedule'],['OWNER','/app/availability','/app/schedule'],['OWNER','/app/exchange/open-shifts','/app/schedule'],['MANAGER','/app/inbox','/app/inbox'],['OWNER','/app/requests','/app/inbox'],['MANAGER','/app/employees/AUDIT-E','/app/employees'],['EMPLOYEE','/app/exchange','/app/schedule'],['EMPLOYEE','/app/requests','/app/requests/hub'],['LEAD','/app/availability','/app/schedule']] as const)('lights the %s tab that owns %s',(role,pathname,tab)=>{
  const {mobile}=render(role,pathname);
  expect(mobile).toContain(`href="${tab}" class="mobile-nav-link active" aria-current="page"`);
 });
@@ -285,6 +285,13 @@ it('D-4: Time off, Shift requests and Availability light Inbox, and the trail st
 it('IS-P4-09 and IS-P4-14: Home\'s views end the trail with their own name, and a skip link comes first', () => {
  const {html} = render('MANAGER', '/app');
  expect(html.indexOf('class="portal-skip-link" href="#main-content"')).toBeLessThan(html.indexOf('<aside'));
+});
+// G64 (Nov 23, 2026): unfocused, the skip link is moved above the window and also transparent, so a full-page capture of a
+// scrolled page (which paints above the window) never draws it; with keyboard focus it shows as before.
+it('G64: the skip link draws only with keyboard focus', () => {
+ const css = readFileSync(new URL('../app/app/premium-desktop.css', import.meta.url), 'utf8');
+ expect(css).toContain('html body .app-shell.nevora-portal.nevora-portal .portal-skip-link:not(:focus-visible) { opacity: 0; pointer-events: none; }');
+ expect(css).toContain('html body .app-shell.nevora-portal.nevora-portal .portal-skip-link:focus-visible { transform: none;');
 });
 
 it.each(['EMPLOYEE','LEAD'] as const)('scopes the teal mobile foundation to %s with current navigation ownership',role=>{

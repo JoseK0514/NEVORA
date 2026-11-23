@@ -96,8 +96,8 @@ it("announces a server validation error without rendering untrusted error codes"
   expect(html).not.toContain("<script>invalid</script>");
 });
 
-// Review 30 (D09): the closed state names the page ("Employee creation") and keeps Return to Home as its one step.
-it('honors company-read denial before loading employee-creation catalogs (presentation boundary)',async()=>{access.denied=true;const html=renderToStaticMarkup(await NewEmployeePage({searchParams:Promise.resolve({})}));expect(html).toContain('<h1>Employee creation</h1>');expect(html).toContain('Company-wide access needed');expect(html).toContain('Return to Home');expect(html).not.toContain('new-employee-form');});
+// Review 30 (D09): the closed state names the page ("Add employee", Phase 2 gate) and keeps Return to Home as its one step.
+it('honors company-read denial before loading employee-creation catalogs (presentation boundary)',async()=>{access.denied=true;const html=renderToStaticMarkup(await NewEmployeePage({searchParams:Promise.resolve({})}));expect(html).toContain('<h1>Add employee</h1>');expect(html).toContain('Company-wide access needed');expect(html).toContain('Return to Home');expect(html).not.toContain('new-employee-form');});
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));

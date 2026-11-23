@@ -1,15 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { formatTime } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
-import { initialsOf } from "@/components/quiet/quiet";
-import { faceTint } from "@/lib/face-tint";
-import { CorpSegments } from "@/components/corp/corp";
-import { BCard } from "@/components/owner-b/b-kit";
+import { CorpCard, CorpRow } from "@/components/corp/corp";
+import { BAvatar, BFilters } from "@/components/owner-b/b-kit";
 import type { AvailabilitySubmissionListItem } from "@/lib/data/availability-submissions";
 import type { AvailabilityRecord } from "@/lib/data/availability";
 import { ReminderBulkButton, ReminderControl, ReminderProvider } from "@/components/reminders/reminders";
@@ -69,40 +66,42 @@ export function AvailabilityTeamList({ employees, employeeId, before, remind = n
   // Closing F1 (NV-261): the segments come first, right under the page's title, so they join the band like every other
   // segmented page; the deadline row and the people follow.
   return <ReminderProvider targets={targets} authority={remind?.authority} timeZone={remind?.timeZone ?? "UTC"} actor={remind?.actor ?? "MANAGER"} about={{ kind: "availability", week: remind?.week ?? "" }}>
-    {/* R12: the kit's segmented control (buttons); counts read "Not sent (6)", like "Waiting (1)" (copy table 14). */}
-    <CorpSegments label="Show" items={[
-      { key: "missing", label: `Not sent (${missing})`, current: filter === "missing", onSelect: () => setFilter("missing") },
-      { key: "submitted", label: `Sent (${employees.length - missing})`, current: filter === "submitted", onSelect: () => setFilter("submitted") },
-    ]} />
-    <section aria-label="People">
+    <div className="c-avteam__people">
     {before}
-    <p className="q-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
-    {/* Phase 3 (MG-016): the people are one kit card with its title and count ("Not sent 1"), as the cards on Things to do. */}
-    {visible.length ? <BCard title={filter === "missing" ? "Not sent" : "Sent"} count={visible.length} id="availability-people" chip={filter === "missing" ? <ReminderBulkButton /> : undefined}><ul className="q-list q-avail-list">
+    <p className="b-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
+    {/* Phase 2 (Schedule tools, C10, Nov 23, 2026): the people are one white card, as on Team: the kit's filter chips (Not
+      * sent and Sent, each count said once, there) over the kit's rows; Remind everyone sits at the card's foot. A person
+      * who hasn't sent opens their page; a person who has opens their hours in place. */}
+    <CorpCard id="availability-people" ariaLabel="People" footer={filter === "missing" && targets.length > 1 ? <ReminderBulkButton /> : undefined}>
+    {employees.length ? <BFilters label="Show" items={[
+      { key: "missing", label: "Not sent", count: missing, current: filter === "missing", onSelect: () => setFilter("missing") },
+      { key: "submitted", label: "Sent", count: employees.length - missing, current: filter === "submitted", onSelect: () => setFilter("submitted") },
+    ]} /> : null}
+    {visible.length ? <><ul className="c-rows c-avteam__list">
       {visible.map(employee => {
         const selected = employee.employeeId === employeeId;
         // Someone who started but hasn't sent shows when they last changed it (the server's own wording of the time).
         const detail = employee.submitted && employee.windowCount === 0 ? `${employee.locationName} · Unavailable all week`
           : !employee.submitted && employee.updatedLabel ? `${employee.locationName} · Updated ${employee.updatedLabel}` : employee.locationName;
-        const head = <>
-          {/* Review B6 (NV-105): a person keeps one face tint on every screen. */}
-          <span className="q-av" aria-hidden="true" style={{ "--fa": faceTint(employee.employeeName)[0], "--fc": faceTint(employee.employeeName)[1] } as CSSProperties}>{initialsOf(employee.employeeName)}</span>
-          <span className="q-rt"><b>{employee.employeeName}</b><i>{detail}</i></span>
-        </>;
+        // Review B6 (NV-105): a person keeps one face tint on every screen (BAvatar).
+        const face = <BAvatar name={employee.employeeName} size={40} />;
         return <li ref={selected ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} data-selected={selected ? "true" : undefined} data-remind={remind && !employee.submitted ? "" : undefined} key={employee.employeeId}>
           {/* Closing F1 (NV-104): a row that opens a page ends in a chevron; one that opens in place ends in a CaretDown that turns. */}
-          {!employee.submitted ? <><Link className="q-row q-row--av" href={`/app/employees/${encodeURIComponent(employee.employeeId)}`} aria-label={`${employee.employeeName}, ${employee.locationName}, not sent`}>{head}<CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>{remind ? <ReminderControl employeeId={employee.employeeId} name={employee.employeeName} /> : null}</>
-          : employee.windows.length ? <details className="q-details" open={selected || undefined}>
-            <summary className="q-row q-row--av" aria-label={`${employee.employeeName}, ${detail}, sent${employee.updatedLabel ? ` ${employee.updatedLabel}` : ""}`}>{head}<CaretDownIcon className="q-chev q-chev--disc" weight="bold" aria-hidden="true" /></summary>
-            <ul className="q-hours" aria-label={`${employee.employeeName} available hours`}>
-              {employee.windows.map(window => <li key={window.id}><span>{DAYS[window.dayOfWeek]}</span><span>{keepWhole(`${formatTime(window.startTime)} – ${formatTime(window.endTime)}`)}</span></li>)}
-            </ul>
-            {employee.updatedLabel ? <p className="q-help q-hours__updated">{`Updated ${employee.updatedLabel}`}</p> : null}
+          {!employee.submitted ? <><CorpRow avatar={face} title={employee.employeeName} detail={detail} href={`/app/employees/${encodeURIComponent(employee.employeeId)}`} />{remind ? <ReminderControl employeeId={employee.employeeId} name={employee.employeeName} /> : null}</>
+          : employee.windows.length ? <details className="c-avteam__details" open={selected || undefined}>
+            <summary className="c-avteam__sum">{face}<span className="c-avteam__tx"><span className="c-avteam__name">{employee.employeeName}</span><span className="c-avteam__line">{detail}</span></span>
+              <CaretDownIcon className="c-avteam__chev" weight="bold" aria-hidden="true" /></summary>
+            <dl className="c-avteam__hours" aria-label={`${employee.employeeName} available hours`}>
+              {employee.windows.map(window => <div key={window.id}><dt>{DAYS[window.dayOfWeek]}</dt><dd>{keepWhole(`${formatTime(window.startTime)} – ${formatTime(window.endTime)}`)}</dd></div>)}
+            </dl>
+            {employee.updatedLabel ? <p className="c-avteam__updated">{`Updated ${employee.updatedLabel}`}</p> : null}
           </details>
-          : <div className="q-row q-row--av">{head}</div>}
+          : <CorpRow avatar={face} title={employee.employeeName} detail={detail} />}
         </li>;
       })}
-    </ul>{needsDeadline && filter === "missing" ? /* Final polish (Nov 20, 2026): the note names a page, so the page's name is its one teal link. */<NeedsDeadline /> : null}</BCard> : <p className="q-empty q-first">{!employees.length ? "Employees and Leads show here once they’re added." : filter === "missing" ? "Everyone has sent theirs." : "No one has sent theirs yet."}</p>}
-    </section>
+    </ul>{needsDeadline && filter === "missing" ? /* Final polish (Nov 20, 2026): the note names a page, so the page's name is its one teal link. */<NeedsDeadline /> : null}</>
+      : <p className="c-avteam__empty">{!employees.length ? "Employees and Leads show here once they’re added." : filter === "missing" ? "Everyone has sent theirs." : "No one has sent theirs yet."}</p>}
+    </CorpCard>
+    </div>
   </ReminderProvider>;
 }

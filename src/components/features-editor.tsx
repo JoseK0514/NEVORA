@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "./toaster";
 import { MODULES, MODULE_IDS, blockerText, type ModuleBlockers, type ModuleId } from "@/lib/workspace-presentation/modules";
 import { WORD_PRESETS, type WordPresetId } from "@/lib/workspace-presentation/words";
-import { Notice } from "@/app/app/settings/wave-c-kit";
-import { SwitchRow } from "@/app/app/settings/wave-c-form";
+import { CorpSection } from "@/components/corp/corp";
+import { RadioRowB, ResultB, SwitchRowB } from "@/app/app/settings/settings-b-form";
 
-/** Owner editor for company words and modules (B2), Wave C kit layout. The server re-checks
+/** Owner editor for company words and modules (B2), Settings in Direction B. The server re-checks
  * every rule; a module with requests still waiting cannot be turned off. */
 /** IS: after a save the page reloads this editor; the fresh one puts focus on its "Saved" line. */
 let focusSavedOnMount = false;
@@ -76,23 +76,19 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
     const timer = window.setTimeout(() => { void save(); }, 400);
     return () => window.clearTimeout(timer);
   });
-  return <div className="wc-main" data-revision={revision}>
-    <section aria-labelledby="features-words-title">
-      <div className="q-grp"><h2 id="features-words-title">What to call people and places</h2></div>
+  // Settings in Direction B (Nov 23, 2026): two Settings sections, each one white card of rows (a radio row per word set, a
+  // switch row per feature), as on Settings itself.
+  return <>
+    <CorpSection id="features-words" label="What to call people and places">
       {/* Codex B-03: the group wraps the list, so the list keeps its items and the radios keep their group name. */}
-      <div role="radiogroup" aria-labelledby="features-words-title"><ul className="q-list">
-        {WORD_PRESETS.map(p => <li key={p.id}><label className="q-row" data-checked={words === p.id || undefined}>
-          <input className="q-sr" type="radio" name="word-preset" value={p.id} checked={words === p.id} disabled={busy} onChange={() => { pending.current = null; setNotice(null); setWords(p.id); }} />
-          <span className="q-rt"><b>{p.name}</b><i>{`${p.en.people}, ${p.en.locations.toLowerCase()}`}</i></span>
-          {/* Review B5 (NV-260): one choice of several shows a radio circle, filled teal when chosen. */}
-          <span className="q-radio" data-on={words === p.id || undefined} aria-hidden="true" />
-        </label></li>)}
+      <div className="c-card" role="radiogroup" aria-labelledby="features-words-label" data-revision={revision}><ul className="c-rows">
+        {WORD_PRESETS.map(p => <li key={p.id}><RadioRowB name="word-preset" value={p.id} checked={words === p.id} disabled={busy}
+          onChange={() => { pending.current = null; setNotice(null); setWords(p.id); }} title={p.name} detail={`${p.en.people}, ${p.en.locations.toLowerCase()}`} /></li>)}
       </ul></div>
-    </section>
+    </CorpSection>
 
-    <section aria-labelledby="features-modules-title" id="features">
-      <div className="q-grp"><h2 id="features-modules-title">Features</h2></div>
-      <ul className="q-list">
+    <CorpSection id="features" label="Features">
+      <div className="c-card"><ul className="c-rows" aria-labelledby="features-label">
         {MODULES.map(m => {
           const on = !off.includes(m.id), waiting = blockers[m.id] ?? 0;
           const held = m.id === "updates" && updatesHeld;
@@ -100,19 +96,18 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
           const locked = on && waiting > 0 && !disabled.includes(m.id);
           const note = held ? "Coming in a later release." : unavailable ? "Available when payroll is on." : locked ? blockerText(m.id, waiting) : null;
           // Review B5 (NV-248): a feature that can't be turned off right now (requests still waiting) reads as on and locked.
-          // Review Nov 11 (OW-025): the reason is the row's own sub-line, right under the label it explains (it was a
-          // separate paragraph 30px lower), and the switch is described by it.
+          // Review Nov 11 (OW-025): the reason is the row's own sub-line, right under the label it explains.
           return <li key={m.id} data-on={on && !unavailable} data-locked={locked || undefined}>
-            <SwitchRow id={`module-${m.id}`} label={m.name} description={note ?? undefined} checked={on && !unavailable}
+            <SwitchRowB id={`module-${m.id}`} label={m.name} description={note ?? undefined} checked={on && !unavailable} locked={locked}
               disabled={busy || unavailable || locked} onChange={() => toggle(m.id)} />
           </li>;
         })}
-      </ul>
-    </section>
+      </ul></div>
+    </CorpSection>
 
-    <p className="q-sr" role="status">{busy ? "Saving…" : changed ? "" : "Saved"}</p>
-    {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : notice.text.startsWith("It may not have saved") ? "Not saved yet" : "Not saved") : undefined}
-      action={notice.text.startsWith("Sign in again") ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : <button type="button" className="q-btn q-btn--sec" onClick={() => { setNotice(null); void save(); }}>Try again</button>}>{notice.text}</Notice></div> : null}
-    <span className="q-sr" ref={savedLine} tabIndex={-1}>{changed ? "" : "Saved"}</span>
-  </div>;
+    <p className="c-sr" role="status">{busy ? "Saving…" : changed ? "" : "Saved"}</p>
+    {notice ? <ResultB innerRef={feedback} tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : notice.text.startsWith("It may not have saved") ? "Not saved yet" : "Not saved") : undefined}
+      action={notice.text.startsWith("Sign in again") ? <Link className="c-btn c-btn--secondary" href="/login">Sign in</Link> : <button type="button" className="c-btn c-btn--secondary" onClick={() => { setNotice(null); void save(); }}>Try again</button>}>{notice.text}</ResultB> : null}
+    <span className="c-sr" ref={savedLine} tabIndex={-1}>{changed ? "" : "Saved"}</span>
+  </>;
 }

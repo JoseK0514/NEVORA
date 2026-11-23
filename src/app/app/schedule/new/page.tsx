@@ -11,6 +11,7 @@ import { ScheduleShiftForm } from "@/components/schedule-shift-form";
 import {shiftFormEmployees} from '@/lib/scheduling/shift-form-employee';
 import { CorpBody, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpTitle } from "@/components/corp/corp";
 import { CoverageReview, type CoverageReviewMode } from "@/components/coverage-review";
+import { HeldReviewNote } from "@/components/coverage-review-hold";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { keepWhole } from "@/lib/keep-whole";
@@ -77,12 +78,13 @@ export default async function NewShiftPage({
         <CorpTitle title="Coverage changed" wide />
         {/* G58 (Nov 23, 2026): this page can't know who changed the shift; after a slow Publish it was the person's own
           * save. So no "Nothing was saved" and no "Someone": only what is true either way. */}
-        <CorpCard>
+        {/* G71: after a reply that never came, this tab keeps the review's unconfirmed note and Check coverage here. */}
+        <HeldReviewNote token={reviewToken}><CorpCard>
           <CorpBody>
             <p className="c-cover__text">This shift was updated after you opened the review.</p>
             <CorpButtonLink href={source.data.href} full>Open current review</CorpButtonLink>
           </CorpBody>
-        </CorpCard>
+        </CorpCard></HeldReviewNote>
       </CorpPage></ScopedReadFrame>;
     const selected=source.data.selected;
     // QA S-06 (Nov 21, 2026): on a published week this replacement is a published change, which the writer allows only with

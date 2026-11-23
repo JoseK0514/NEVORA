@@ -157,6 +157,10 @@ export function HomeB(props: HomeBProps) {
     : offline ? "You’re offline" : connection === "paused" ? "Paused while you’re away" : "Checking today…";
   const gapRows = ready && gaps ? gaps.map(item => gapRow(item, ready.timeZone, ready.today)) : [];
   const openHref = gaps?.length === 1 && gapRows[0] ? gapRows[0].href : "/app/schedule";
+  // Gaps G73 (Nov 23, 2026): while Things to do (and the Timecards facts that come with it) is still being read, the
+  // cards that would sit below it wait, so its growth from the loading line moves nothing (phones) and the Timecards
+  // tile doesn't switch content mid-load (desktop). A failed or offline read releases them at once.
+  const holdBelow = (connection === "loading" || connection === "reconnecting") && (!value || !props.timecardsReady);
 
   return <BScreen>
     <BHero big eyebrow={eyebrow} title={title} offlineInTitle={!value && offline} sub={<><span role="status" className="b-sr">{props.summary}</span></>}>
@@ -186,14 +190,18 @@ export function HomeB(props: HomeBProps) {
         {props.setupCard ? props.setup
           : props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
         <NeedsYouCard {...props} gapRows={gapRows} openHref={openHref} />
-        {props.week?.shortcuts ? <Shortcuts items={props.week.shortcuts} place="stack" /> : null}
-        {/* Jose (Nov 22, 2026: no fact twice): once Things to do lists who hasn't clocked in, Today doesn't list them again. */}
-        {ready ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} waitingListed={!!value} attendanceHref={attendanceHref} /> : null}
+        {props.week?.shortcuts && !holdBelow ? <Shortcuts items={props.week.shortcuts} place="stack" /> : null}
+        {/* Jose (Nov 22, 2026: no fact twice): once Things to do lists who hasn't clocked in, Today doesn't list them again.
+          Gaps G56 (Nov 23, 2026): while Things to do's read is on its way, Today waits for it, so it doesn't list those
+          people, then drop them and move. A read that failed (or offline) keeps them on Today. */}
+        {ready && (value || (connection !== "loading" && connection !== "reconnecting")) ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} waitingListed={!!value} attendanceHref={attendanceHref} /> : null}
       </div>
       <div className="b-home-col b-home-col--b">
+        {holdBelow ? null : <>
         <PayrollNotice status={props.payrollStatus} />
         <PaydayTile {...props} />
         {props.week && props.week.thisWeek !== false ? <ThisWeek week={props.week} today={ready?.today ?? props.businessDay} /> : null}
+        </>}
       </div>
     </BStack>
   </BScreen>;

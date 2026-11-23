@@ -7,7 +7,10 @@ import type {PhotoReviewDetailActionResult,PhotoReviewListActionResult,PhotoRevi
 import {fetchPrivatePunchPhoto} from '@/lib/clocker/photo-client/private-photo';
 import {photoReviewStateLabel,readPhotoReviewPage,readPhotoReviewRecord,referenceKey,verifyPhotoRemoval} from '@/lib/clocker/photo-client/review';
 import styles from './photo.module.css';
+import {CameraIcon} from '@phosphor-icons/react/dist/ssr/Camera';
 import {CorpButton} from '../corp/corp';
+import {BState} from '../owner-b/b-kit';
+import {Notice} from '@/app/app/settings/wave-c-kit';
 import './photo-review.css';
 
 const labels={CLOCK_IN:'Clock in',START_BREAK:'Start break',END_BREAK:'End break',CLOCK_OUT:'Clock out'};
@@ -76,39 +79,42 @@ export function ClockerPhotoReview({initialPage,listAction,detailAction,removeAc
   }catch{if(alive.current&&current===epoch.current){setConfirmRemoval(false);setFeedback({text:'The removal result is unconfirmed. Check the original record before trying again.',error:true});}}
   finally{if(current===epoch.current){busy.current=false;if(alive.current)setPending(false);}}
  }
- // Codex A2: the corporate settings look (kit cards, rows and buttons, one inner edge on phone and desktop). The same
- // reads, actions, focus moves and messages as before; Refresh is the card's text action, not a second full-width button.
+ // Phase 2 (Nov 23, 2026): Settings in Direction B. The list is one white card of kit rows (the person, then the clock
+ // action, place and time, then the photo's state) with one white Review on the right; the record opens as a second card.
+ // The same reads, actions, focus moves and messages as before. The count sits beside the card's label once; the line
+ // that said only an Owner can review photos is gone (only an Owner can open this page).
  const keep=(key:string,button:HTMLButtonElement|null)=>{if(button)reviewButtons.current.set(key,button);else reviewButtons.current.delete(key);};
  return <section className="c-photo-review" aria-busy={pending} aria-labelledby="punch-photo-review-title">
   <section className="c-card">
-   <div className="c-card__head"><h2 className="c-card__label" id="punch-photo-review-title">Company punch photos</h2>
-    <div className="c-card__aside"><button type="button" className="c-link" disabled={pending} onClick={()=>void reload()} aria-label="Refresh photo records">Refresh</button></div></div>
-   <p className="c-photo-review__lede">{page.total} original clock {page.total===1?'action':'actions'} in the current company. Only an authorized Owner can review photos.</p>
-   {feedback?<p className="c-photo-review__msg" data-tone={feedback.error?'error':'done'} role={feedback.error?'alert':'status'}>{feedback.text}</p>:null}
+   <div className="c-card__head"><h2 className="c-card__label" id="punch-photo-review-title">Clock actions{page.total?<span className="c-count c-num">{page.total}</span>:null}</h2>
+    <div className="c-card__aside"><button type="button" className="c-link" disabled={pending} onClick={()=>void reload()}>Refresh<span className="c-sr"> photo records</span></button></div></div>
    {pending?<p className="c-photo-review__lede" role="status">Checking the original photo record…</p>:null}
-   {!page.records.length?<div className="c-photo-review__empty"><h3>No punch photo records yet</h3><p>Photo records appear after an authorized clock action. No camera or employee photo collection is started by this page.</p></div>
+   {!page.records.length?<BState kind="empty" icon={<CameraIcon weight="bold"/>} title="No punch photo records yet" line="Photo records appear after an authorized clock action. No camera or employee photo collection is started by this page."/>
     :<ul className="c-rows" aria-label="Punch photo records">{page.records.map(record=>{const key=referenceKey(record.reference);return <li key={key}><div className="c-row c-photo-review__row">
-     <span className="c-row__main"><span className="c-row__title c-row__title--b">{record.employeeName}</span>
+     <span className="c-row__main"><span className="c-row__title">{record.employeeName}</span>
       <span className="c-row__detail"><span>{labels[record.action]} · {record.locationName} · <time dateTime={record.performedAt}>{recordedTime(record)}</time></span></span>
       <span className="c-row__detail"><span>{photoReviewStateLabel(record.state)}</span></span></span>
-     <button type="button" className="c-btn c-btn--secondary c-btn--sm" disabled={pending} ref={button=>keep(key,button)} onClick={()=>void inspect(record.reference)} aria-label={`Review ${record.employeeName}, ${labels[record.action]}, ${recordedTime(record)}`}>Review</button>
+     <span className="c-row__trail"><button type="button" className="c-btn c-btn--secondary c-btn--md" disabled={pending} ref={button=>keep(key,button)} onClick={()=>void inspect(record.reference)}>Review<span className="c-sr">{`, ${record.employeeName}, ${labels[record.action]}, ${recordedTime(record)}`}</span></button></span>
     </div></li>;})}</ul>}
    {page.nextCursor?<div className="c-card__foot"><CorpButton kind="secondary" size="md" full disabled={pending} onClick={()=>void reload(true)}>Load more photo records</CorpButton></div>:null}
+   {/* Approved privacy wording (Jose, Nov 23, 2026): said once, as the list card's note (no longer also in the band). */}
+   <p className="c-setb-cardnote">Private company photos. Removing a photo preserves its time record.</p>
   </section>
+  {feedback?<div className="c-photo-review__result" role={feedback.error?'alert':'status'}><Notice tone={feedback.error?'urgent':'done'}>{feedback.text}</Notice></div>:null}
   {selected?<section className="c-card" aria-labelledby="original-photo-detail">
    <div className="c-card__head"><h3 className="c-card__label" id="original-photo-detail" ref={detailHeading} tabIndex={-1}>{selected.employeeName} · {labels[selected.action]}</h3>
     <div className="c-card__aside"><button className="c-link" type="button" onClick={closeDetail}>Close record</button></div></div>
    <div className="c-photo-review__body">
-    <p>{selected.locationName} · <time dateTime={selected.performedAt}>{recordedTime(selected)}</time></p><p>{photoReviewStateLabel(selected.state)}</p>
+    <p>{selected.locationName} · <time dateTime={selected.performedAt}>{recordedTime(selected)}</time></p><p className="c-photo-review__state">{photoReviewStateLabel(selected.state)}</p>
     {selected.expiresAt?<p className="c-photo-review__fine">Photo retention ends <time dateTime={selected.expiresAt}>{new Intl.DateTimeFormat('en-US',{timeZone:selected.timeZone,dateStyle:'medium',timeStyle:'short'}).format(new Date(selected.expiresAt))}</time> ({selected.timeZone}).</p>:null}
     {preview?<div className={styles.privatePreview}><Image src={preview} alt={`Private punch photo for ${selected.employeeName}'s ${labels[selected.action].toLowerCase()}`} width={640} height={640} unoptimized/></div>:null}
     {selected.hasImage?<div className="c-photo-review__acts"><CorpButton size="md" disabled={pending} onClick={()=>void openImage()}>View private photo</CorpButton>
      <CorpButton kind="secondary" size="md" disabled={pending||removalUnconfirmed} onClick={()=>setConfirmRemoval(true)}>Remove photo</CorpButton></div>:null}
     {removalUnconfirmed&&!pending?<div className="c-photo-review__acts"><CorpButton kind="secondary" size="md" onClick={()=>void inspect(selected.reference)}>Check original record</CorpButton></div>:null}
-    {confirmRemoval?<div className="c-photo-review__confirm" role="group" aria-label="Confirm photo removal"><strong>Remove this punch photo?</strong><p>The time record stays intact. This removes the private stored image; backup handling follows your company photo notice.</p>
+    {confirmRemoval?<div className="c-photo-review__confirm" role="group" aria-labelledby="photo-removal-q"><strong id="photo-removal-q">Remove this punch photo?</strong><p>The time record stays intact. This removes the private stored image; backup handling follows your company photo notice.</p>
      <div className="c-photo-review__acts"><CorpButton kind="secondary" size="md" disabled={pending} onClick={()=>setConfirmRemoval(false)}>Keep photo</CorpButton><CorpButton kind="danger" size="md" disabled={pending} onClick={()=>void remove()}>Confirm photo removal</CorpButton></div></div>:null}
-    <p className="c-photo-review__fine">Images open privately on request and clear when you close the record or leave this screen. No photo download or bulk export is provided.</p>
    </div>
+   <p className="c-setb-cardnote">Images open privately on request and clear when you close the record or leave this screen. No photo download or bulk export is provided.</p>
   </section>:null}
  </section>;
 }
