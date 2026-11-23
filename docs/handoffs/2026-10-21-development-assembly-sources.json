@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-23T01:49:06Z",
+  "observedAt": "2026-11-23T06:33:00Z",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "8d6939327c874810588cb451a11b9d04a5d19f0f",
+      "sha": "ece147e7f6160f1feeb8c640a09fe3b95eeef439",
       "disposition": "reference",
-      "reason": "Jose authorized the joined Development continuation on November 22. Reviewed delivery b15cf3d81b7ce2a6d72164db83dbb94c81fcf74f is identified by Jira comments 10594 and 10597 and imported with a squash to preserve required linear history. Subsequent commits through this recorded head contain the time-format pass, Location Manager Team/Home/shift UI, Schedule/replacement rechecks, Copy receipt redesign and gaps ledger. They remain a separate reference delivery pending review and qualification, as the coordinating Phase 2 handoff directs preserving the exact reviewed candidate during live source drift. This assembly includes the validated four-commit Phase 2 backend handoff, diagnosed repairs and regenerated guides. Exact candidate and branch-push qualification are required."
+      "reason": "Jose authorized the joined Development continuation on November 22. Reviewed delivery b15cf3d81b7ce2a6d72164db83dbb94c81fcf74f is identified by Jira comments 10594 and 10597 and imported with a squash to preserve required linear history. Subsequent commits through this recorded head contain the time-format pass, Location Manager Team/Home/shift UI, Schedule/replacement rechecks, Copy receipt redesign, gaps ledger and inbox operational-access unit fixture. The inbox fixture overlaps the independently verified integration repair. These commits remain a separate reference delivery pending review and qualification, as the coordinating Phase 2 handoff directs preserving the exact reviewed candidate during live source drift. This assembly includes the validated four-commit Phase 2 backend handoff, diagnosed repairs and regenerated guides. Exact candidate and branch-push qualification are required."
     },
     {
       "branch": "claude/eager-meitner-wioy6k",
