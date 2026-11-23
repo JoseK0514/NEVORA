@@ -127,3 +127,13 @@ and pages are unchanged (the only differences were a loading frame, the "read at
 - J17 Clocker PINs: its filter is a `.c-seg`, so the segment commits (`cd348986`, `735e06ee`, `b171c7fd`) already make
   it grow and fit: at 390 with 200% text "No PIN 12" and "PIN set 0" sit inside their pills
   (`img/j17-pins-owner-390-200pct.webp`). No further change; default size identical at 390, 768 and 1440.
+
+## Follow-up 6: band title in rem, phone band button 44px (14:25 UTC)
+- `e14b4904`: the band title is rem everywhere it was px: 2rem/2.375rem (32/38px) on desktop titles (`.c-title`,
+  `.q-hd`, the B band, sheet pages, `--bs-big-fs/lh`) and 2.125rem/2.5rem (34/40px) for the phone's big title and
+  `.b-hbig`. At 768 and 1440 every page matches before (only live data differs); at 390 with 200% text no title is
+  clipped, overlaps or overflows (Home, Timecards, Payroll, Schedule, Team, Updates; Employee Home and Schedule).
+- `05fedbf6`: the phone band's action button (`.b-hero` white or glass, not full or big) has a 44px minimum, up from
+  40px. This is the one intended change at the default size, at 390 only: Team's "Add", Payroll's "Settings",
+  Schedule's band action and Timecards' "Select" (the same glass button; none to select in this fictional week). Pages
+  with such a button are 4px taller. 768 and up already used 48px.
