@@ -313,9 +313,13 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(card).not.toContain('b-chip--green');
     expect(card).toContain('<span class="b-chip b-chip--amber" data-dot=""><span class="b-ldot" data-tone="amber" aria-hidden="true"></span>Clocked in late</span>');
     expect(card).not.toContain("Person e");
-    // While Things to do hasn't loaded, On now still lists them, with how long in Jose's words.
+    // When Things to do couldn't load, On now still lists them, with how long in Jose's words.
     const waiting = phone({ value: null, today: today([shift("a", "clocked_in"), shift("e", "not_clocked_in")]) });
     expect(waiting.slice(waiting.indexOf('id="b-home-on"'))).toMatch(/<span class="b-chip b-chip--amber" data-dot=""><span class="b-ldot" data-tone="amber" aria-hidden="true"><\/span>Not clocked in( · [^<]+)?<\/span>/);
+    expect(phone({ value: null, connection: "offline", offline: true, today: today([shift("e", "not_clocked_in")]) })).toContain('id="b-home-on"');
+    // Gaps G56 (Nov 23, 2026): while Things to do's read is on its way, Today waits for it (it would list them, then drop
+    // them and move).
+    for (const connection of ["loading", "reconnecting"] as const) expect(phone({ value: null, connection, today: today([shift("e", "not_clocked_in")]) })).not.toContain('id="b-home-on"');
     expect(card).toMatch(/9:00\sAM\s–\s5:00\sPM/);
     expect(card).not.toMatch(/Person b|Person c/);
     // Nobody on: the card says so and names the next start; it never lists a shift that hasn't begun.

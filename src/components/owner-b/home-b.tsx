@@ -187,8 +187,10 @@ export function HomeB(props: HomeBProps) {
           : props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
         <NeedsYouCard {...props} gapRows={gapRows} openHref={openHref} />
         {props.week?.shortcuts ? <Shortcuts items={props.week.shortcuts} place="stack" /> : null}
-        {/* Jose (Nov 22, 2026: no fact twice): once Things to do lists who hasn't clocked in, Today doesn't list them again. */}
-        {ready ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} waitingListed={!!value} attendanceHref={attendanceHref} /> : null}
+        {/* Jose (Nov 22, 2026: no fact twice): once Things to do lists who hasn't clocked in, Today doesn't list them again.
+          Gaps G56 (Nov 23, 2026): while Things to do's read is on its way, Today waits for it, so it doesn't list those
+          people, then drop them and move. A read that failed (or offline) keeps them on Today. */}
+        {ready && (value || (connection !== "loading" && connection !== "reconnecting")) ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} waitingListed={!!value} attendanceHref={attendanceHref} /> : null}
       </div>
       <div className="b-home-col b-home-col--b">
         <PayrollNotice status={props.payrollStatus} />
