@@ -122,3 +122,10 @@ it("renders the plan and billing notice in Spanish", () => {
   const es = text(renderToStaticMarkup(<BillingNoticeView snapshot={snapshot} lang="es" />));
   for (const words of ["Tu prueba gratis termina el mié, 25 nov", "Quedan 3 días. Elige un plan para seguir usando NEVORA.", "Plan y facturación"]) expect(es).toContain(words);
 });
+
+it("follows the person's language from the app layout when the page passes none", async () => {
+  const { PortalLangProvider } = await import("@/lib/i18n/portal-lang");
+  const html = text(renderToStaticMarkup(<PortalLangProvider lang="es"><InboxB ready={null} families={[]} total={null} connection="unavailable" statusLine="" todayFailed={false} onRefresh={() => {}} back={false} /></PortalLangProvider>));
+  expect(html).toContain("No pudimos cargar Pendientes");
+  expect(text(renderToStaticMarkup(<PortalLangProvider lang="es"><InboxB ready={null} families={[]} total={null} connection="unavailable" statusLine="" todayFailed={false} onRefresh={() => {}} back={false} lang="en" /></PortalLangProvider>))).toContain("Things to do didn’t load");
+});
