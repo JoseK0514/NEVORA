@@ -69,3 +69,11 @@ alignment changes. No page overflows horizontally at any width.
 Checks run: `tsc --noEmit` clean; oxlint clean on the changed TSX; unit tests beside every change pass. Full suite: the
 only other failures are in `src/lib/tenancy/**` (they need commit `7c628e37`) and `src/lib/operations/managed-runtime.test.ts`; none touch the files changed here.
 Captures: `shots/kit-final/` (webp, quality 80) and `rows.json`.
+
+## Follow-up from the lead (13:20 UTC)
+| Commit | What changed |
+|---|---|
+| `5eeac662` | Phone tab bar: for Owner and Manager, shift swaps, callouts, open shifts and Availability light Schedule, not Home or To do. They were listed under Home because Things to do links to them. Time off and Things to do stay with Home (To do for a Manager without Payroll). Every route under `/app` was checked for the four roles (`activeMobileTab`). Payroll's exports and Payroll settings light Payroll; without a Payroll tab, exports light Time. Settings pages light no tab, the same as Settings itself, which opens from the avatar. New test in `navigation.test.ts`. Seen at 390 for all four roles: `img/tabbar-mapping-390.webp`. |
+| `15521816` | Things to do: card headings and the band's filter counts use `CorpCount`, so they read "Open shifts 1" and "All 5". The filters' `aria` ("All, 5") is dropped: their name is their visible words. |
+| `57fe9ba7` | `BLiveItem` has no `aria` field any more; Employee Home's figures drop the unread names (and the unused `boardDuration` import). Nothing changes on screen or in what is read. |
+Every test that asserts BLive markup (`b-live__v`) passes: b-kit-labels, employee home-large-text, payroll-premium, scoped-home, owner-home-corp, and all of `src/components/employee-b`. Typecheck is clean.
