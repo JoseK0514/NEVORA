@@ -170,7 +170,9 @@ it('filters a location Manager with several places by place and keeps the place 
  const foreign=renderToStaticMarkup(await EmployeesPage({searchParams:Promise.resolve({location:'elsewhere'})}));
  expect(foreign).toContain('aria-label="Location: All your locations"');expect(foreign).not.toContain('value="elsewhere"');
  const searched=renderToStaticMarkup(await EmployeesPage({searchParams:Promise.resolve({q:'zz'})}));
- expect(searched).toContain('No one matches this search.');expect(searched).toContain('Clear search');
+ // Gaps G13 (Nov 23, 2026): the empty search names the search and offers Clear search at every width (phones too).
+ expect(searched).toContain('No employees match “zz”.');expect(searched).not.toContain('No one matches this search.');
+ expect(searched).toContain('<div class="b-state-actions b-team-clear"><a href="/app/employees" class="b-btn b-btn--ghost">Clear search</a></div>');expect(searched).toMatch(/c-btn[^"]*"[^>]*>Clear search</);
 });
 rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalDirectory:async()=>{
  if(operationalPageFixture.denied)return {state:'unavailable',reason:'access_denied'};

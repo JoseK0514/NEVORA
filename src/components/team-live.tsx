@@ -86,13 +86,10 @@ export function TeamLivePill({ employeeId }: { employeeId: string }) {
   return starts ? <BStatusText>{`Starts ${starts}`}</BStatusText> : null;
 }
 
-/** " · 7 clocked in" (" · No one clocked in") for the subtitle, once the reads are ready. Premium pass FA (final
- * verification A #7, B #2): the attendance word set's "Clocked in", the word the filter under it uses ("Working" is
- * retired); someone on a break is still on the clock and counted, as the filter counts them. */
-export const clockedInSummary = (count: number) => count ? ` · ${count} clocked in` : " · No one clocked in";
+/** The Team title's live part. Jose (Nov 23, 2026: each count once), for every role (gaps G24): the filters under the
+ * title say how many are clocked in ("Clocked in 2"), so the title says only how many people and this adds nothing. Kept
+ * so the company Team page's title needs no change; it can drop it. */
 export function TeamWorkingNow() {
-  const live = useContext(TeamLiveContext);
-  if (!live.ready) return null;
-  return <>{clockedInSummary(live.working.size + live.onBreak.size)}</>;
+  return null;
 }
 

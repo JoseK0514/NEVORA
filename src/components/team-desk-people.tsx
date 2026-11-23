@@ -16,8 +16,9 @@ const inFilter = (filter: Filter, state: TeamState | null) => filter === "all" |
  * same Team live read) at the top of the People card, each row's live chip and a trailing chevron (the row opens the person's
  * page). Under All the card keeps its first `limit` people ("See all N" stays on the section); a filter lists everyone it
  * matches. The filters wait for the live read, so nothing is ever counted as "Off" before it is known. */
-/** `countsOnce`: the band already says the total, so All carries no count (Jose, Nov 23, 2026: each count once). */
-export function TeamDeskPeople({ rows, limit, peopleLabel, countsOnce }: { rows: TeamDeskRow[]; limit?: number; peopleLabel: string; countsOnce?: boolean }) {
+/** Jose (Nov 23, 2026: each count once), for every role (gaps G24): the title already says the total, so All carries no
+ * count; the clocked-in count is the filter's alone. */
+export function TeamDeskPeople({ rows, limit, peopleLabel }: { rows: TeamDeskRow[]; limit?: number; peopleLabel: string }) {
   const live = useTeamLive();
   const [filter, setFilter] = useState<Filter>("all");
   const count = (key: Filter) => rows.filter(row => inFilter(key, teamStateOf(live, row.id))).length;
@@ -25,7 +26,7 @@ export function TeamDeskPeople({ rows, limit, peopleLabel, countsOnce }: { rows:
   const listed = filter === "all" && limit ? shown.slice(0, limit) : shown;
   return <CorpCard as="div">
     {live.ready && rows.length ? <BFilters label="Show" items={[
-      { key: "all", label: "All", count: countsOnce ? undefined : rows.length, current: filter === "all", onSelect: () => setFilter("all") },
+      { key: "all", label: "All", current: filter === "all", onSelect: () => setFilter("all") },
       { key: "working", label: "Clocked in", count: count("working"), current: filter === "working", onSelect: () => setFilter("working") },
       { key: "late", label: "Not clocked in", count: count("late"), current: filter === "late", onSelect: () => setFilter("late") },
       ...(live.partial ? [] : [{ key: "off" as const, label: "Off today", count: count("off"), current: filter === "off", onSelect: () => setFilter("off") }]),

@@ -8,7 +8,7 @@ import { UploadSimpleIcon } from "@phosphor-icons/react/dist/ssr/UploadSimple";
 import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
 import { UserMinusIcon } from "@phosphor-icons/react/dist/ssr/UserMinus";
 import { EmployeeDirectoryFilters, EmployeeSearchInput } from "@/components/employee-directory-filters";
-import { TeamLivePill, clockedInSummary, teamStateOf, useTeamLive } from "@/components/team-live";
+import { TeamLivePill, teamStateOf, useTeamLive } from "@/components/team-live";
 import { BAvatar, BButtonLink, BCard, BChip, BFilters, BHero, BIcon, BList, BRow, BScreen, BSegs, BStack } from "./b-kit";
 
 /* Direction B, Team on a phone (mock screen "Owner · Team"). The same people, links, search and tools as the corporate
@@ -22,7 +22,7 @@ type Filter = "all" | "working" | "late" | "off";
 export type TeamBToolIcon = "hours" | "availability" | "import" | "key" | "inactive";
 
 
-export function TeamB({ people, inactive, total, query, filtered, people_word, person_word, seeAll, tools, searchHidden, status, limit, right, countsOnce, searchPlaceholder = "Search people" }: {
+export function TeamB({ people, inactive, total, query, filtered, people_word, person_word, seeAll, tools, searchHidden, status, limit, right, clearHref = "/app/employees", searchPlaceholder = "Search people" }: {
   people: TeamBPerson[]; inactive: TeamBPerson[]; total: number; query: string; filtered: boolean; people_word: string; person_word: string;
   /** "See all N" when the list is cut short. */ seeAll?: { href: string; label: string };
   tools: { href: string; title: string; detail: string; icon: TeamBToolIcon }[];
@@ -30,8 +30,7 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
   /** The directory's status filter, kept by the search's Apply button. */ status: string;
   /** Rows shown under All before "See all" (the filters count everyone). */ limit?: number;
   /** The band's right-hand control: Add by default; a location Manager's place (its chip, or its filter). */ right?: ReactNode;
-  /** Jose (Nov 23, 2026): each count once. The band says the total and the filters say the live counts, so the band has no
-   * "clocked in" figure and All carries no count. Used by a location Manager's Team. */ countsOnce?: boolean;
+  /** Where Clear search goes (the page without ?q, keeping a chosen place). */ clearHref?: string;
   /** The search field's placeholder. */ searchPlaceholder?: string;
 }) {
   const live = useTeamLive();
@@ -42,9 +41,9 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
   const off = people.filter(person => state(person.id) === "off").length;
   const shown = people.filter(person => filter === "all" || (filter === "working" ? ["working", "break"].includes(state(person.id) ?? "") : filter === "late" ? state(person.id) === "late" : state(person.id) === "off"));
   const lowerPeople = people_word.toLowerCase();
-  // Phase 8 (a.md #30): the band says one fact at every width, the one desktop's subtitle says (TeamWorkingNow).
-  // Premium pass FA (final verification A #7, B #2): "5 clocked in", the filter's own word ("Working" is retired).
-  const sub = `${total} ${total === 1 ? person_word : lowerPeople}${live.ready && !countsOnce ? clockedInSummary(working) : ""}`;
+  // Jose (Nov 23, 2026: each count once), for every role (gaps G24): the band says how many people, the filters say how
+  // many are clocked in or not, so the band has no "clocked in" figure and All carries no count.
+  const sub = `${total} ${total === 1 ? person_word : lowerPeople}`;
   const row = (person: TeamBPerson) => {
     const now = person.active ? state(person.id) : null;
     // Phase 8 (a.md #11, #45; b.md #24): a late arrival is amber, as on Home; "Off today" is the normal state, so it is
@@ -79,14 +78,16 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
     <BStack>
       <BCard label={filtered ? `${people.length} ${people.length === 1 ? "match" : "matches"}` : people_word}>
         {live.ready && people.length ? <BFilters label="Show" items={[
-          { key: "all", label: "All", count: countsOnce ? undefined : people.length, current: filter === "all", onSelect: () => setFilter("all") },
+          { key: "all", label: "All", current: filter === "all", onSelect: () => setFilter("all") },
           { key: "working", label: "Clocked in", count: working, current: filter === "working", onSelect: () => setFilter("working") },
           { key: "late", label: "Not clocked in", count: late, current: filter === "late", onSelect: () => setFilter("late") },
           ...(live.partial ? [] : [{ key: "off", label: "Off today", count: off, current: filter === "off", onSelect: () => setFilter("off") }]),
         ]} /> : null}
         {shown.length ? <BList label={people_word}>{(filter === "all" && limit ? shown.slice(0, limit) : shown).map(row)}
           {seeAll && filter === "all" ? <BRow href={seeAll.href} lead={<span className="b-lead-space" aria-hidden="true" />} title={seeAll.label} label={seeAll.label} /> : null}</BList>
-          : <p className="b-state">{people.length ? (filter === "working" ? "No one is clocked in right now." : filter === "late" ? "Everyone on shift has clocked in." : "No one is off today.") : total ? (countsOnce ? "No one matches this search." : `No ${lowerPeople} match “${query}”.`) : `No ${lowerPeople} yet.`}</p>}
+          : <><p className="b-state">{people.length ? (filter === "working" ? "No one is clocked in right now." : filter === "late" ? "Everyone on shift has clocked in." : "No one is off today.") : total ? (query ? `No ${lowerPeople} match “${query}”.` : "No one matches this search.") : `No ${lowerPeople} yet.`}</p>
+            {/* Gaps G13 (Nov 23, 2026): an empty search offers Clear search on phones too, as the desktop card does. */}
+            {!people.length && total && query ? <div className="b-state-actions b-team-clear"><BButtonLink href={clearHref} kind="ghost">Clear search</BButtonLink></div> : null}</>}
       </BCard>
       {inactive.length ? <BCard title="Inactive" count={inactive.length}><BList label={`Inactive ${lowerPeople}`}>{inactive.map(row)}</BList></BCard> : null}
       {tools.length ? <BCard label="Team tools"><BList label="Team tools">{tools.map(tool =>

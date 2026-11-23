@@ -64,7 +64,7 @@ export function ScopedTeam({ data, query, locationId, showAll, words = DEFAULT_W
     <CorpPage className="c-team c-team--scoped c-page--narrow" labelledBy="team-title">
       <TeamB people={shown.map(bPerson)} limit={all ? undefined : TEAM_SHOWN} inactive={[]} total={here.length} query={query} filtered={!!query}
         people_word={words.people} person_word={person} tools={[]} status="all" seeAll={seeAll} right={placeControl(true)} searchHidden={placeHidden}
-        countsOnce searchPlaceholder="Search by name" />
+        clearHref={keep({})} searchPlaceholder="Search by name" />
       <CorpTitle id="team-title" title="Team" sub={`${here.length} ${here.length === 1 ? person : people}`} actions={placeControl(false)} />
       <EmployeeDirectoryFilters className="c-team-search">
         {/* Without scripts, Enter and this button apply the search; with scripts it applies as you type (IS-35). */}
@@ -79,10 +79,10 @@ export function ScopedTeam({ data, query, locationId, showAll, words = DEFAULT_W
       <p className="c-sr" role="status" aria-live="polite" aria-atomic="true">{query ? `${shown.length} of ${here.length} ${here.length === 1 ? person : people}` : ""}</p>
       {shown.length ? <CorpSection id="team-people" label={query ? `${shown.length} ${shown.length === 1 ? "match" : "matches"}` : "People"}
         aside={seeAll ? <CorpLink href={seeAll.href}>{seeAll.label}</CorpLink> : undefined}>
-        <TeamDeskPeople countsOnce peopleLabel={people} limit={all ? undefined : TEAM_SHOWN} rows={shown.map(employee => ({ id: employee.id, name: name(employee),
+        <TeamDeskPeople peopleLabel={people} limit={all ? undefined : TEAM_SHOWN} rows={shown.map(employee => ({ id: employee.id, name: name(employee),
           initials: employeeInitials(employee.firstName, employee.lastName), detail: detail(employee) }))} />
       </CorpSection> : <CorpCard as="div" ariaLabel={people}><CorpBody>
-        <p className="c-team__empty">{here.length ? "No one matches this search." : place ? `No ${people} at ${placeName} yet.` : `No ${people} yet.`}</p>
+        <p className="c-team__empty">{here.length ? `No ${people} match “${query}”.` : place ? `No ${people} at ${placeName} yet.` : `No ${people} yet.`}</p>
         {here.length ? <CorpButtonLink href={keep({})} kind="secondary" size="md">Clear search</CorpButtonLink> : null}
       </CorpBody></CorpCard>}
     </CorpPage>

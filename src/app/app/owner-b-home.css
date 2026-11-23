@@ -205,13 +205,14 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row__hit > :first-child:not(.b-row__tx):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row > :first-child:not(.b-row__tx, .b-row__hit):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { align-self: flex-start !important; }
   }
 
-  /* A #28, B #15: Team's four filters need about 400px in one row and a phone's card gives them 326 (256 at 320), so the
-   * row was cut mid-word under a fade. On phones they are two rows of two equal pills in the same quiet track, every label
-   * and count whole and nothing to scroll; from 768px they stay one row. Final regression review #5: 4px sides, so at 320
-   * "Not clocked in 3" keeps air inside its half (8px left the words 1px from the pill's edge). */
+  /* A #28, B #15: Team's filters need about 400px in one row and a phone's card gives them 326 (256 at 320), so the row
+   * was cut mid-word under a fade. Gaps G24 (Nov 23, 2026): on phones, for every role, they are one wrapping row of pills
+   * sized to their labels in the same quiet track (the 2×2 grid left an empty slot when there were three, and at 200% text
+   * "Not clocked in" ran past its half). Each pill grows with its text and its label wraps inside it only when a pill alone
+   * is wider than the card; the 44px hit area stays. From 768px they stay one row. */
   @media (max-width: 767px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: var(--b-space-8) var(--b-space-4) !important; width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; padding: var(--b-seg-pad) !important; overflow: visible !important; border-radius: var(--b-radius-field) !important; -webkit-mask-image: none !important; mask-image: none !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { justify-content: center !important; min-width: 0 !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; white-space: nowrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: flex !important; flex-wrap: wrap !important; gap: var(--b-space-8) var(--b-space-4) !important; width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; padding: var(--b-seg-pad) !important; overflow: visible !important; border-radius: var(--b-radius-field) !important; -webkit-mask-image: none !important; mask-image: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex: 1 1 auto !important; justify-content: center !important; min-width: 0 !important; max-width: 100% !important; height: auto !important; min-height: var(--b-seg-item-h) !important; line-height: 1.25 !important; padding-left: var(--b-space-12) !important; padding-right: var(--b-space-12) !important; white-space: normal !important; text-align: center !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { inset: -4px 0 !important; }
   }
   /* B #19: a person's face in a list row is the one 36px lead (Team, Timecards and Availability drew 32px). */
@@ -368,4 +369,11 @@
   @media (min-width: 1024px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { min-height: 44px !important; }
   }
+}
+
+
+@layer nv-b {
+  /* Gaps G13 (Nov 23, 2026): Team's empty search on phones and tablets: Clear search under the sentence, on the card's
+   * inset, as the desktop card offers it. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-card > .b-team-clear:not(#g13a):not(#g13b) { margin: 0 !important; padding: 0 var(--b-inset) var(--b-space-16) !important; }
 }
