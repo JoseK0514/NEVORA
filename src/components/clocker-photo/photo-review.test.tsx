@@ -29,7 +29,9 @@ describe('Photo review', () => {
   });
   it('shows the kit’s empty state inside the card, with no extra button', () => {
     const html = render({records: [], total: 0, nextCursor: null});
-    expect(html).toContain('data-kind="empty"'); expect(html).toContain('No punch photo records yet'); expect(html).toContain('Photo records appear after an authorized clock action.');
+    expect(html).toContain('data-kind="empty"'); expect(html).toContain('No punch photo records yet'); expect(html).toContain('Photo records appear after an authorized clock action. No camera or employee photo collection is started by this page.');
+    // Approved privacy wording, said once, in the card.
+    expect(html.split('Private company photos. Removing a photo preserves its time record.').length).toBe(2);
     expect(html).not.toContain('Load more');
     expect(html.match(/<button/g)).toHaveLength(1);
   });

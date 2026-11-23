@@ -89,7 +89,7 @@ export function ClockerPhotoReview({initialPage,listAction,detailAction,removeAc
    <div className="c-card__head"><h2 className="c-card__label" id="punch-photo-review-title">Clock actions{page.total?<span className="c-count c-num">{page.total}</span>:null}</h2>
     <div className="c-card__aside"><button type="button" className="c-link" disabled={pending} onClick={()=>void reload()}>Refresh<span className="c-sr"> photo records</span></button></div></div>
    {pending?<p className="c-photo-review__lede" role="status">Checking the original photo record…</p>:null}
-   {!page.records.length?<BState kind="empty" icon={<CameraIcon weight="bold"/>} title="No punch photo records yet" line="Photo records appear after an authorized clock action."/>
+   {!page.records.length?<BState kind="empty" icon={<CameraIcon weight="bold"/>} title="No punch photo records yet" line="Photo records appear after an authorized clock action. No camera or employee photo collection is started by this page."/>
     :<ul className="c-rows" aria-label="Punch photo records">{page.records.map(record=>{const key=referenceKey(record.reference);return <li key={key}><div className="c-row c-photo-review__row">
      <span className="c-row__main"><span className="c-row__title">{record.employeeName}</span>
       <span className="c-row__detail"><span>{labels[record.action]} · {record.locationName} · <time dateTime={record.performedAt}>{recordedTime(record)}</time></span></span>
@@ -97,6 +97,8 @@ export function ClockerPhotoReview({initialPage,listAction,detailAction,removeAc
      <span className="c-row__trail"><button type="button" className="c-btn c-btn--secondary c-btn--md" disabled={pending} ref={button=>keep(key,button)} onClick={()=>void inspect(record.reference)}>Review<span className="c-sr">{`, ${record.employeeName}, ${labels[record.action]}, ${recordedTime(record)}`}</span></button></span>
     </div></li>;})}</ul>}
    {page.nextCursor?<div className="c-card__foot"><CorpButton kind="secondary" size="md" full disabled={pending} onClick={()=>void reload(true)}>Load more photo records</CorpButton></div>:null}
+   {/* Approved privacy wording (Jose, Nov 23, 2026): said once, as the list card's note (no longer also in the band). */}
+   <p className="c-setb-cardnote">Private company photos. Removing a photo preserves its time record.</p>
   </section>
   {feedback?<div className="c-photo-review__result" role={feedback.error?'alert':'status'}><Notice tone={feedback.error?'urgent':'done'}>{feedback.text}</Notice></div>:null}
   {selected?<section className="c-card" aria-labelledby="original-photo-detail">
