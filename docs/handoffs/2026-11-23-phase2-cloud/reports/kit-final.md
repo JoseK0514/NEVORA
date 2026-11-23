@@ -188,3 +188,18 @@ Merged 3c12d8c2 first (`60824da0`).
 - The whole `src/components` suite passes (3211 tests, 0 failures).
 - Seen on H1 at 390 with 200% text (page markup, for the Rondo owner): the attention card's date (`.oa-date__v`,
   "Mon, Nov 23") is cut with an ellipsis and overlaps its twin.
+
+## Follow-up 10: Rondo H1 date fields at 200% text (15:40 UTC)
+Merged 43feebee first (`150cb0f2`). For `zz-scan.tar.gz` I took the shared version, which has both NEVORA_SCAN_ADVISOR
+and the Clocker change.
+- Cause: "Period start" and "Period end" (`.oa-fields`, advisor.css) were a fixed two-column grid on phones, and three
+  columns from 560px. At 200% text each column was narrower than "Mon, Nov 23", so `.oa-date__v` cut it with an
+  ellipsis and ran into its neighbour.
+- `609ec9d2`, `8e6f42a8`, `6db61dd1`: `repeat(auto-fill, minmax(max(8.5rem, half | third of the row), 1fr))` for
+  360–559px and from 560px. That is at most two (or three) columns, as before, while each field is at least 8.5rem
+  wide; at large text they step down to two, then one. `auto-fill` keeps a lone Coverage date at its column's width (an
+  `auto-fit` draft stretched it, which the before/after diff caught). The task panel's date pair (`.oa-pair`) minimum is
+  9.25rem (148px).
+- Default size, before and after at 390, 600, 768 and 1440: only the live "Observed" timestamp lines differ; the Weekly
+  plan is pixel-identical. At 200% text (390, 600, 768) there is no clipping or overlap (before: 2, 3 and 3 cut dates).
+- Tests: `src/components/owner-advisor/advisor-large-text.test.ts`. The whole `src/components` suite passes.
