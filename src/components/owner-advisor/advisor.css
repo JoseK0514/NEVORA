@@ -163,14 +163,20 @@
 :is(#c-root, html) .oa .oa-check .oa-acts { margin-top: var(--b-space-4); }
 /* Phone: the two dates side by side, the language under them; three across from 560px (a lone field keeps a third). */
 :is(#c-root, html) .oa .oa-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-space-16) var(--b-space-12); }
+/* Final fixes K (Nov 23, 2026): two fields to a row only while a field is at least 8.5rem wide, so at 200% text "Period
+ * start" and "Period end" stack and show "Mon, Nov 23" whole instead of cutting it (at most two columns; at the default
+ * size each half is wider than 8.5rem, so nothing moves). */
+@media (min-width: 360px) and (max-width: 559px) { :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(auto-fill, minmax(max(8.5rem, calc((100% - var(--b-space-12)) / 2)), 1fr)); } }
 :is(#c-root, html) .oa .oa-fields > :is(:only-child, :nth-child(3)) { grid-column: 1 / -1; }
 @media (min-width: 560px) {
   :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* Final fixes K: three to a row only while each is at least 8.5rem wide (two, then one, at large text). */
+  :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(auto-fill, minmax(max(8.5rem, calc((100% - 2 * var(--b-space-12)) / 3)), 1fr)); }
   :is(#c-root, html) .oa .oa-fields > :is(:only-child, :nth-child(3)) { grid-column: auto; }
 }
 @media (max-width: 359px) { :is(#c-root, html) .oa .oa-fields { grid-template-columns: minmax(0, 1fr); } }
 /* Two dates side by side while each still reads whole ("Wed, Nov 18"), one under the other when it wouldn't. */
-:is(#c-root, html) .oa .oa-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: var(--b-space-16) var(--b-space-12); }
+:is(#c-root, html) .oa .oa-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.25rem), 1fr)); gap: var(--b-space-16) var(--b-space-12); }
 :is(#c-root, html) .oa :is(.oa-check, .oa-form, .oa-editor) .c-field { margin: 0; min-width: 0; }
 :is(#c-root, html) .oa .oa-help { margin: calc(var(--b-space-4) * -1) 0 0; font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .oa .c-field > .oa-help { margin: var(--b-space-4) 0 0; }
