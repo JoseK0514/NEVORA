@@ -1,6 +1,6 @@
 # Timecards final fixes (D1, Owner and Manager), Nov 23, 2026
 
-Branch `claude-codex-collab-nevora-timecards-final`, from `claude-codex-collab-nevora` at 12194c47. Only Timecards
+Branch `claude-codex-collab-nevora-timecards-final`, from `claude-codex-collab-nevora` at 12194c47, with origin's ab054840 (kit fixes) merged in 9054771a before the final captures. Only Timecards
 files were changed: `src/components/timecards.tsx`, `src/app/app/owner-b-time-pay.css`, `src/app/app/owner-b-desktop.css`
 (one Timecards-only rule at the end), and their tests. No kit, shell, server, permission or data-contract changes.
 Fictional data and a throwaway local database only.
@@ -15,6 +15,7 @@ Fictional data and a throwaway local database only.
 | f0badef6 | Blocking: from 768 the band's Select was teal on the teal band (1.05:1, invisible). It's now the band's glass action. Show tabs get a 44px hit area; "Review correction" is now 44px. |
 | 6f44f6b1, f8c12233 | G90 follow-up: at 768 with 200% text the Person column had shrunk to one letter. Under 36rem of table card, names and statuses wrap and Breaks steps aside, as on phones. |
 | 9487f191 | 320: "Correction wai…" becomes the short form "Correction" (screen readers keep "Correction waiting"). |
+| 08a33d62 | Phone select and review (Corp layout): title, week words, review button, count and hours in rem at the same default sizes; fixed heights became minimums (44/36/48px). Default pixel-identical (full-page diff at 390). At 320 with 200% text the footer wraps so Cancel stays whole. |
 | 2e24fa18 | 320: Manager's own row "Jose approves thi…" becomes "Jose approves"; the Ready card's line breaks after the week, never inside "Nov 16–22". |
 
 ## Before and after words
@@ -27,8 +28,9 @@ Fictional data and a throwaway local database only.
 ## Checks
 - Production build (`NEVORA_OWNED_APP_PRODUCTION=1`), Owner (QAOWNER, rich data) and Manager Elena (OWN-ELENA): list (this
   week), a person's week (last week) and Select → Review (last week), at 320, 390, 768, 1440, and 320/390/768 with 200%
-  text. 42 captures, 42 clean: page overflow 0, no clipped or ellipsised text, axe (WCAG 2.2 A/AA) 0 violations in `main`
-  on every capture.
+  text, taken on the merged code (9054771a). 42 captures: page overflow 0, no overlapping row parts, no clipped or
+  ellipsised text, axe 0 violations in `main` on every capture (all default rules plus label-content-name-mismatch and
+  target-size, which the lead asked about; none found at 390, default or 200% text). `capture-log.jsonl` has each one.
 - Fixed-px audit: from 768 at 200% text, every visible Timecards text doubles except the avatar initials (fixed circle,
   aria-hidden) and visually hidden status text.
 - Keyboard: focus rings on every stop (white 2px on the band, teal 2px on white) at 390 and 1440.
@@ -39,6 +41,10 @@ Fictional data and a throwaway local database only.
   `tsc --noEmit` clean, oxlint clean on changed files.
 - Time format: day rows read "5:55 AM – 2:00 PM" (CorpTime); no other time ranges on the page.
 - Not run: WebKit; reduced motion beyond the captures' `reducedMotion: reduce`; Clocker.
+
+- Follow-up recapture (08a33d62, production, on ef0905bf merged): review view for Owner and Elena at 390, 390 with 200%
+  text, 1440 and 320 with 200% text. Overflow 0, no overlaps, no clipped text, axe 0. Before, the phone select/review view
+  left the title, week words, review button, count and hours fixed px at 200%; now they scale.
 
 ## Button styles and alignment
 - Band: Select is the glass action (48px), the week control is the kit's segmented track (36px items, Package K).
@@ -58,7 +64,6 @@ Fictional data and a throwaway local database only.
 ## Left for others (proposed ledger rows)
 | Area | Item | Owner | Type |
 |---|---|---|---|
-| Kit `BChip` | Chip text is fixed px: at 200% text "Missing clock-out" / "Correction waiting" chips stay small beside rem text (seen in the 768 table). | Package K | end sweep |
 | Kit `BSeg` / `--b-seg-fs` | Phone and desktop week control words are 14px fixed; item height 36px. | Package K | end sweep |
 | Kit band rule (`owner-b-desktop.css` shared h1) | Every other page's band title is 32px fixed; Timecards now uses 2rem. | Package K | end sweep |
 | Kit `BHero` glass Select | 40px on phones (under 44). | Package K | end sweep |
