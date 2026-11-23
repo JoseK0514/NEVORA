@@ -261,6 +261,9 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 :is(#c-root, html) .c-pay .c-pay__sec { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 18px; margin: 0 16px 8px; }
 :is(#c-root, html) .c-pay .c-pay__sec h2 { min-width: 0; font-size: 0.8125rem; line-height: 1.125rem; font-weight: 500; color: var(--c-grey); }
 :is(#c-root, html) .c-pay .c-pay__sec-aside { flex: none; display: flex; align-items: center; }
+/* Target size (Nov 23): on tablets and desktop the first row of the card below overlaps the header link's lowest 3px
+ * ("Payroll history" reached 41px). The link sits above it, so all 44px of it is its own; the row stays over 44px tall. */
+:is(#c-root, html) .c-pay .c-pay__sec-aside > .c-link { position: relative; z-index: 1; }
 :is(#c-root, html) .c-pay .c-pay__sec-aside button.c-link { border: 0; background: none; cursor: pointer; }
 :is(#c-root, html) .c-pay .c-pay__sec-aside .c-link:disabled { color: var(--c-faint); cursor: default; }
 :is(#c-root, html) .c-pay .c-pay__count { margin-left: 6px; color: var(--c-grey); }
