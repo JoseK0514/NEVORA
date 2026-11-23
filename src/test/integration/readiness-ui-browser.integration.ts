@@ -78,10 +78,8 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(app.url + path); };
         failureShot = () => page.screenshot({ path: resolve(evidence, `${engine}-${actor}-failure.png`), fullPage: true });
         page.on('pageerror', (error: Error) => errors.push(`${engine} ${actor}: ${error.message}`));
-        await context.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => {
-          const url = new URL(route.request().url());
-          if (['http:', 'https:'].includes(url.protocol) && url.origin !== app.url) await route.abort(); else await route.continue();
-        });
+        await context.route((url: URL) => ['http:', 'https:'].includes(url.protocol) && url.origin !== app.url,
+          (route: { abort(): Promise<void> }) => route.abort());
         await visit('/login');
         await page.getByLabel('Employee ID', { exact: true }).fill(actor);
         await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
