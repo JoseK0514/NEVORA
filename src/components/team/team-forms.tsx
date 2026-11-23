@@ -37,7 +37,7 @@ export function PhoneField({ id, name, defaultValue = "", required, autoComplete
   const [value, setValue] = useState(() => legacy ?? phoneTyping(defaultValue));
   const unchangedLegacy = legacy !== null && value === legacy;
   return <input id={id} className="c-in" name={name} type="tel" inputMode="tel" autoComplete={autoComplete} enterKeyHint={enterKeyHint} value={value} required={required && !unchangedLegacy}
-    placeholder="(787) 555-0123" maxLength={14} pattern={unchangedLegacy ? undefined : String.raw\`\(\d{3}\) \d{3}-\d{4}\`} title="Enter all 10 digits of the phone number" data-missing={missing}
+    placeholder="(787) 555-0123" maxLength={14} pattern={unchangedLegacy ? undefined : String.raw`\(\d{3}\) \d{3}-\d{4}`} title="Enter all 10 digits of the phone number" data-missing={missing}
     onChange={event => {
       const next = event.target.value;
       const digits = (text: string) => text.replace(/\D/g, "");
@@ -45,7 +45,8 @@ export function PhoneField({ id, name, defaultValue = "", required, autoComplete
       const deleted = next.length < value.length && digits(next) === digits(value);
       const typed = deleted ? digits(next).slice(0, -1) : next;
       const formatted = phoneTyping(typed);
-      setValue(legacy !== null && formatted === phoneTyping(legacy) && /^\d[\d() .-]*$/.test(legacy) ? legacy : formatted);
+      const restoredLegacy = legacy !== null && formatted !== "" && formatted === phoneTyping(legacy);
+      setValue(restoredLegacy ? legacy : formatted);
     }} />;
 }
 
