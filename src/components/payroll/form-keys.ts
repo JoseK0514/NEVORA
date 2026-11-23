@@ -1,4 +1,6 @@
 import type { FocusEvent, FormEvent, KeyboardEvent } from 'react';
+import type { PayrollLang } from './payroll-lang';
+import { statusCopy } from './copy/status';
 
 /* Payroll forms on a phone keyboard (Owner premium P9, P10). Client-only behaviour: no field, name, rule or request
  * changes. Return moves to the next field and never sends a form; the last field's Return closes the keyboard. A send
@@ -50,7 +52,7 @@ type Validatable = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 const isValidatable = (element: Element): element is Validatable => element instanceof HTMLInputElement || element instanceof HTMLSelectElement || element instanceof HTMLTextAreaElement;
 
 /** The words a person sees for a field: its aria-label, the label it points at, or its label's own text. */
-export function fieldName(field: Validatable) {
+export function fieldName(field: Validatable, lang: PayrollLang = 'en') {
   const aria = field.getAttribute('aria-label');
   if (aria) return aria.trim();
   const by = field.getAttribute('aria-labelledby');
@@ -62,24 +64,25 @@ export function fieldName(field: Validatable) {
     const own = [...label.childNodes].filter(node => node.nodeType === 3 || (node instanceof HTMLElement && !node.matches('input, select, textarea, small, .wb-help, .c-field__help') && !node.querySelector('input, select, textarea'))).map(node => node.textContent ?? '').join(' ').replace(/\s+/g, ' ').trim();
     if (own) return own;
   }
-  return field.name || 'This field';
+  return field.name || statusCopy[lang].form.thisField;
 }
 
-function listWords(names: string[]) {
-  return names.length <= 1 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+function listWords(names: string[], and: string) {
+  return names.length <= 1 ? names.join('') : `${names.slice(0, -1).join(', ')} ${and} ${names[names.length - 1]}`;
 }
 
 /** One message for every field that needs attention. */
-export function problemsMessage(fields: Validatable[]) {
-  const names = [...new Set(fields.map(fieldName))];
+export function problemsMessage(fields: Validatable[], lang: PayrollLang = 'en') {
+  const t = statusCopy[lang].form;
+  const names = [...new Set(fields.map(field => fieldName(field, lang)))];
   const missing = fields.every(field => field.validity.valueMissing);
-  if (names.length === 1) return missing ? `Fill in ${names[0]}.` : `Check ${names[0]}. ${fields[0].validationMessage}`.trim();
-  return `${missing ? 'Fill in' : 'Check'} ${names.length} fields: ${listWords(names)}.`;
+  if (names.length === 1) return missing ? t.fillInOne(names[0]) : t.checkOne(names[0], fields[0].validationMessage);
+  return t.many(missing, names.length, listWords(names, t.and));
 }
 
 /** Marks every invalid field at once, opens the rows that hold them, focuses the first and returns the message (or
  * null when the form is ready to send). The native bubble never shows. */
-export function flagProblems(form: HTMLFormElement): string | null {
+export function flagProblems(form: HTMLFormElement, lang: PayrollLang = 'en'): string | null {
   for (const element of form.querySelectorAll('[aria-invalid="true"][data-pay-flagged]')) { element.removeAttribute('aria-invalid'); element.removeAttribute('data-pay-flagged'); }
   const invalid = [...form.elements].filter(isValidatable).filter(field => field.willValidate && !field.checkValidity());
   if (!invalid.length) return null;
@@ -89,5 +92,5 @@ export function flagProblems(form: HTMLFormElement): string | null {
     for (let node: HTMLElement | null = field; node && node !== form; node = node.parentElement) if (node instanceof HTMLDetailsElement) node.open = true;
   }
   invalid[0].focus();
-  return problemsMessage(invalid);
+  return problemsMessage(invalid, lang);
 }

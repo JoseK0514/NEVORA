@@ -22,6 +22,8 @@ import { PayrollTabs, type PayrollTab } from './payroll-tabs';
 import { formatDateRange } from '@/lib/date-utils';
 import { keepWhole } from '@/lib/keep-whole';
 import { revealFeedback } from '@/lib/reveal-feedback';
+import { usePayrollCopy, payrollCopyFor, type PayrollLang } from './payroll-copy';
+import { periodRange } from './payroll-format';
 
 /** IS-B27: which form sent the running save, so only its button says "Saving…". */
 const SavingForm = createContext<[string | null, (id: string) => void]>([null, () => {}]);
@@ -38,8 +40,16 @@ function SettingsCard({ title, description, children }: { title: string; descrip
   return <section className="c-pset__group" aria-label={title}>{description && <p className="wb-note">{description}</p>}{children}</section>;
 }
 /* TC-B-03: dates read whole and with their year; the wording around them is unchanged. */
-function effectiveDate(date: string) { return keepWhole(new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`))).replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), /, '$1,\u00a0'); }
-function recordedAt(at: string) { return keepWhole(new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(at))); }
+/** Spanish months carry no period and September is "sep" (voice.md). */
+const esDate = (text: string) => text.replace(/\./g, '').replace(/\bsept\b/g, 'sep');
+function effectiveDate(date: string, lang: PayrollLang = 'en') {
+  if (lang === 'es') return keepWhole(esDate(new Intl.DateTimeFormat('es-PR', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`)))).replace(/^(\p{L}+), /u, '$1,\u00a0');
+  return keepWhole(new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`))).replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun), /, '$1,\u00a0');
+}
+function recordedAt(at: string, lang: PayrollLang = 'en') {
+  if (lang === 'es') return keepWhole(esDate(new Intl.DateTimeFormat('es-PR', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(at))));
+  return keepWhole(new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(at)));
+}
 /** Today in the company's time zone (not the device's), as YYYY-MM-DD, for effective-date defaults. */
 export function today(timeZone: string, now = new Date()) {
   const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(now).map(p => [p.type, p.value]));
@@ -51,23 +61,23 @@ const defaults: PayrollPreferences = {
   schedule: { frequency: 'BIWEEKLY', anchorDate: '', paydayOffsetDays: 0 }, rules: [],
   automation: { prepare: false, publish: false, reminders: false, reminderLeadDays: [] }, bankProfile: null,
 };
-function integer(value: FormDataEntryValue | null, label: string, min: number, max: number) {
+function integer(value: FormDataEntryValue | null, label: string, min: number, max: number, lang: PayrollLang = 'en') {
   const text = String(value ?? '');
-  if (!/^\d+$/.test(text) || Number(text) < min || Number(text) > max) throw new Error(`${label} must be a whole number from ${min} to ${max}.`);
+  if (!/^\d+$/.test(text) || Number(text) < min || Number(text) > max) throw new Error(payrollCopyFor(lang).settings.wholeNumber(label, min, max));
   return Number(text);
 }
-function rulesFromForm(values: FormData, rules: PayrollRule[]): PayrollRule[] {
+function rulesFromForm(values: FormData, rules: PayrollRule[], lang: PayrollLang = 'en'): PayrollRule[] {
   return rules.map(rule => {
     const get = (key: string) => String(values.get(`rule-${rule.id}-${key}`) ?? '');
     const method = get('method') === 'PERCENTAGE' ? 'PERCENTAGE' : 'FIXED';
     const percent = get('percent');
-    const basis = method === 'PERCENTAGE' ? dollarsToMinor(percent) : null;
-    if (basis !== null && BigInt(basis) > BigInt(10000)) throw new Error('Rule percentages must be between 0 and 100.');
+    const basis = method === 'PERCENTAGE' ? dollarsToMinor(percent, lang) : null;
+    if (basis !== null && BigInt(basis) > BigInt(10000)) throw new Error(payrollCopyFor(lang).settings.percentRange);
     return {
       id: rule.id, name: get('name').trim(), kind: get('kind') === 'EMPLOYER_CONTRIBUTION' ? 'EMPLOYER_CONTRIBUTION' : 'EMPLOYEE_DEDUCTION',
-      method, amountMinor: method === 'FIXED' ? dollarsToMinor(get('amount')) : null, basisPoints: basis === null ? null : Number(basis),
+      method, amountMinor: method === 'FIXED' ? dollarsToMinor(get('amount'), lang) : null, basisPoints: basis === null ? null : Number(basis),
       base: 'GROSS', applicability: get('applicability') === 'EMPLOYEE_ELECTION' ? 'EMPLOYEE_ELECTION' : 'ALL',
-      effectiveFrom: get('from'), effectiveTo: get('to') || null, capMinor: get('cap') ? dollarsToMinor(get('cap')) : null,
+      effectiveFrom: get('from'), effectiveTo: get('to') || null, capMinor: get('cap') ? dollarsToMinor(get('cap'), lang) : null,
       remittance: get('remittance') === 'PROVIDER' ? 'PROVIDER' : 'EMPLOYER',
     };
   });
@@ -78,6 +88,7 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
   const operation = usePayrollOperation('/api/payroll/settings', resource.reload, recoveryScope);
   const savingForm = useState<string | null>(null);
   const savingId = savingForm[0];
+  const t = usePayrollCopy(), c = t.settings, lang = t.lang;
   // IS-B12: when a save ends, focus returns to that form's button instead of the page.
   useEffect(() => { if (!operation.busy && savingId && (!document.activeElement || document.activeElement === document.body)) document.querySelector<HTMLElement>(`form[data-form="${savingId}"] button[type="submit"]`)?.focus(); }, [operation.busy, savingId]);
   const data = !resource.loading && resource.data?.capabilities.canConfigure ? resource.data : null;
@@ -93,21 +104,21 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
      sentence, unchanged); "US dollars" read as a stray fact, and the currency is fixed. */
   // Phase 2 (J12, item 4): from 768, where Payroll's tabs show, the band names the section ("Payroll") and the selected
   // "Settings" tab names the page; the phone band (no tabs) keeps "Payroll settings".
-  return <SettingsPageB className="c-pay c-pset" titleId="payroll-settings-title" title="Payroll settings" wideTitle={tabs?.length ? 'Payroll' : undefined} back={{ href: '/app/payroll', label: 'Payroll' }} sub="Calculate pay and share statements. You pay your team outside NEVORA.">
+  return <SettingsPageB className="c-pay c-pset" titleId="payroll-settings-title" title={c.title} wideTitle={tabs?.length ? c.payroll : undefined} back={{ href: '/app/payroll', label: c.payroll }} sub={c.scope}>
     <PayrollTabs items={tabs} current="/app/settings/payroll" />
     <BusinessZone.Provider value={timeZone}><SavingForm.Provider value={savingForm}>
     <KeepFocusClear />
     <Feedback operation={operation} />
-    {resource.loading ? <p className="c-note" role="status">Loading payroll settings…</p> : resource.error ? <CorpCard as="div" ariaLabel="Payroll settings"><div className="c-card__body"><p className="c-pset__state" role="alert">{resource.error}</p><button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={() => void resource.reload()}>Try again</button></div></CorpCard> : data && <>
-      {!revision && <p className="c-note">These are unsaved starting preferences. Choose your company settings and an effective date. {data.capabilities.internalCalculatorAvailable ? 'Native payroll uses verified recorded time and employee payroll facts.' : 'imported provider amounts remain the authority.'}</p>}
+    {resource.loading ? <p className="c-note" role="status">{c.loading}</p> : resource.error ? <CorpCard as="div" ariaLabel={c.title}><div className="c-card__body"><p className="c-pset__state" role="alert">{resource.error}</p><button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={() => void resource.reload()}>{c.tryAgain}</button></div></CorpCard> : data && <>
+      {!revision && <p className="c-note">{c.unsavedStart} {data.capabilities.internalCalculatorAvailable ? c.unsavedNative : c.unsavedImported}</p>}
       <CompanyPreferences key={revision?.revision ?? 0} preferences={revision?.preferences ?? defaults} revision={revision?.revision ?? 0} data={data} operation={operation} />
-      <SetGroup id="payroll-people-settings" label="People">
-        <details className="c-pset__item"><SettingRow title="People with different settings" value={exceptionCount ? String(exceptionCount) : 'None'} /><div className="c-pset__body"><EmployeeException data={data} preferences={revision?.preferences ?? defaults} operation={operation} /></div></details>
-        {!data.capabilities.internalCalculatorAvailable && <details className="c-pset__item"><SettingRow title="Payroll access" value={data.grants.length ? String(data.grants.length) : 'Owner only'} /><div className="c-pset__body"><PayrollAccess data={data} operation={operation} /></div></details>}
-        {(nativeSources !== null || data.capabilities.internalCalculatorAvailable) && <details className="c-pset__item" id="payroll-setup" open={openSetup || undefined}><SettingRow title="Payroll setup" detail="Wages, withholding and opening balances" /><div className="c-pset__body payroll-workflow"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div></details>}
+      <SetGroup id="payroll-people-settings" label={c.people}>
+        <details className="c-pset__item"><SettingRow title={c.peopleDifferent} value={exceptionCount ? String(exceptionCount) : c.none} /><div className="c-pset__body"><EmployeeException data={data} preferences={revision?.preferences ?? defaults} operation={operation} /></div></details>
+        {!data.capabilities.internalCalculatorAvailable && <details className="c-pset__item"><SettingRow title={c.payrollAccess} value={data.grants.length ? String(data.grants.length) : c.ownerOnly} /><div className="c-pset__body"><PayrollAccess data={data} operation={operation} /></div></details>}
+        {(nativeSources !== null || data.capabilities.internalCalculatorAvailable) && <details className="c-pset__item" id="payroll-setup" open={openSetup || undefined}><SettingRow title={c.payrollSetup} detail={c.payrollSetupDetail} /><div className="c-pset__body payroll-workflow"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div></details>}
       </SetGroup>
-      <CorpCard as="div" ariaLabel="Change history">
-        <details className="c-pset__item"><SettingRow title="Change history" detail={latest ? (actorName ? `${actorName.split(/\s+/)[0]} changed this ${shortDate(latest.createdAt, timeZone)}` : `Changed ${shortDate(latest.createdAt, timeZone)}`) : 'No changes saved yet'} /><div className="c-pset__body">{data.revisions.length ? <div className="c-pset__history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}{data.employees.find(employee => employee.id === item.actorId) ? ` · ${data.employees.find(employee => employee.id === item.actorId)!.name}` : ''}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</div></details>
+      <CorpCard as="div" ariaLabel={c.changeHistory}>
+        <details className="c-pset__item"><SettingRow title={c.changeHistory} detail={latest ? (actorName ? c.changedBy(actorName.split(/\s+/)[0], shortDate(latest.createdAt, timeZone, lang)) : c.changed(shortDate(latest.createdAt, timeZone, lang))) : c.noChanges} /><div className="c-pset__body">{data.revisions.length ? <div className="c-pset__history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>{c.revisionLine(item.revision, effectiveDate(item.effectiveFrom.slice(0, 10), lang))}</strong><p>{item.reason}</p><small>{c.recorded(recordedAt(item.createdAt, lang))}{data.employees.find(employee => employee.id === item.actorId) ? ` · ${data.employees.find(employee => employee.id === item.actorId)!.name}` : ''}</small></div>)}</div> : <p className="wb-note">{c.noRevisions}</p>}</div></details>
       </CorpCard>
     </>}
     {!data && !resource.loading && nativeSources !== null ? <div className="payroll-workflow"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div> : null}
@@ -116,7 +127,9 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
 }
 
 /** Review B5 (NV-024): change dates are the company's day, not the device's. */
-const shortDate = (at: string, timeZone?: string) => new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', ...(timeZone ? { timeZone } : {}) }).format(new Date(at));
+const shortDate = (at: string, timeZone?: string, lang: PayrollLang = 'en') => lang === 'es'
+  ? esDate(new Intl.DateTimeFormat('es-PR', { month: 'short', day: 'numeric', ...(timeZone ? { timeZone } : {}) }).format(new Date(at)))
+  : new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', ...(timeZone ? { timeZone } : {}) }).format(new Date(at));
 /** A setting's row (kit row in a summary): title, optional 13px detail, the value and a chevron that turns when open. */
 function SettingRow({ title, value, detail }: { title: string; value?: string; detail?: string }) {
   return <summary className={detail ? 'c-row' : 'c-row c-row--one'}><span className="c-row__main"><span className="c-row__title">{title}</span>{detail ? <span className="c-row__detail"><span>{detail}</span></span> : null}</span>{value ? <span className="c-row__value c-row__value--soft">{value}</span> : null}<CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" /></summary>;
@@ -124,6 +137,7 @@ function SettingRow({ title, value, detail }: { title: string; value?: string; d
 
 function CompanyPreferences({ preferences, revision, data, operation }: { preferences: PayrollPreferences; revision: number; data: PayrollSettingsResponse; operation: ReturnType<typeof usePayrollOperation> }) {
   const zone = useContext(BusinessZone);
+  const t = usePayrollCopy(), c = t.settings, lang = t.lang;
   const [rules, setRules] = useState(preferences.rules);
   const [error, setError] = useState('');
   const [noticesEnabled, setNoticesEnabled] = useState(preferences.automation.reminders);
@@ -143,11 +157,11 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
     const problem = flagProblems(event.currentTarget); if (problem) { setError(problem); return; }
     setSaving('company'); const values = new FormData(event.currentTarget);
     try {
-      const reminderLeadDays = values.has('reminders') ? [integer(values.get('reminderDays'), 'Preparation reminder window', 0, 31)] : [];
+      const reminderLeadDays = values.has('reminders') ? [integer(values.get('reminderDays'), c.reminderWindow, 0, 31, lang)] : [];
       const next: PayrollPreferences = {
         companyName: String(values.get('companyName')).trim(), currency: 'USD', language: values.get('language') === 'es' ? 'es' : 'en',
-        schedule: { frequency: preferences.schedule.frequency, anchorDate: String(values.get('anchorDate')), paydayOffsetDays: integer(values.get('paydayOffset'), 'Payday offset', 0, 31) },
-        rules: native ? preferences.rules : rulesFromForm(values, rules), automation: { prepare: values.has('prepare'), publish: native ? preferences.automation.publish : values.has('publish'), reminders: values.has('reminders'), reminderLeadDays: [...new Set(reminderLeadDays)] },
+        schedule: { frequency: preferences.schedule.frequency, anchorDate: String(values.get('anchorDate')), paydayOffsetDays: integer(values.get('paydayOffset'), c.paydayOffset, 0, 31, lang) },
+        rules: native ? preferences.rules : rulesFromForm(values, rules, lang), automation: { prepare: values.has('prepare'), publish: native ? preferences.automation.publish : values.has('publish'), reminders: values.has('reminders'), reminderLeadDays: [...new Set(reminderLeadDays)] },
         bankProfile: native ? preferences.bankProfile : values.get('bankProfile') === 'NEUTRAL_UNVERIFIED' ? 'NEUTRAL_UNVERIFIED' : null,
       };
       const frequency = values.get('frequency');
@@ -157,87 +171,92 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       if (channel === 'POPULAR_WCM_TEXT' || channel === 'POPULAR_WCM_NACHA' || channel === 'POPULAR_COMMERCIAL_MANUAL' || channel === 'OTHER') next.bankChannel = channel;
       sent.current=true;
       void operation.submit({ action: 'SAVE_SETTINGS', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), preferences: next });
-    } catch (failure) { setError(failure instanceof Error ? failure.message : 'Check payroll preferences.'); }
+    } catch (failure) { setError(failure instanceof Error ? failure.message : c.checkPreferences); }
   };
   // Quiet (v4, approved Oct 23): the company form is the mockup's rows; each opens its own fields under it. The
   // effective date, reason and save show while any of them is open. Field labels and notes are unchanged.
-  const frequencyLabel = { WEEKLY: 'Weekly', BIWEEKLY: 'Every two weeks', SEMIMONTHLY: 'Twice a month', MONTHLY: 'Monthly' }[preferences.schedule.frequency];
+  const frequencyLabel = c.frequencies[preferences.schedule.frequency];
   const offset = preferences.schedule.paydayOffsetDays;
   const anchor = preferences.schedule.anchorDate;
   const length = preferences.schedule.frequency === 'WEEKLY' ? 7 : preferences.schedule.frequency === 'BIWEEKLY' ? 14 : 0;
-  const paydayValue = !anchor ? 'Not set' : length ? new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'UTC' }).format(new Date(Date.parse(`${anchor}T12:00:00Z`) + (length - 1 + offset) * 86_400_000))
-    : offset ? `${offset} ${offset === 1 ? 'day' : 'days'} after` : 'Period end';
-  const anchorValue = anchor ? new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${anchor}T12:00:00Z`)) : '';
+  const paydayValue = !anchor ? c.notSet : length ? new Intl.DateTimeFormat(lang === 'es' ? 'es-PR' : 'en-US', { weekday: 'long', timeZone: 'UTC' }).format(new Date(Date.parse(`${anchor}T12:00:00Z`) + (length - 1 + offset) * 86_400_000))
+    : offset ? c.daysAfter(offset) : c.periodEnd;
+  const anchorValue = anchor ? esDate(new Intl.DateTimeFormat(lang === 'es' ? 'es-PR' : 'en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${anchor}T12:00:00Z`))) : '';
   const lead = reminderWindow(preferences.automation.reminderLeadDays);
-  const reminderValue = !preferences.automation.reminders ? 'Off' : lead === 0 ? 'On payday' : `${lead} ${lead === 1 ? 'day' : 'days'} before`;
-  return <form ref={form} className="c-pset__form" data-form="company" {...formKeys} onSubmit={save} aria-label={`Company defaults, revision ${revision}`}>{/* Leaving with payroll settings that are not saved asks first (Nov 21, 2026); a saved revision starts clean. */}<FormDiscardGuard resetKey={revision} /><fieldset disabled={locked} className="c-pset__fields">
-    <SetGroup id="payroll-schedule" label="Pay schedule">
-    <details className="c-pset__item"><SettingRow title="How often" value={frequencyLabel} /><div className="c-pset__body wb-form">
-      <label>Frequency<select aria-label="Frequency" name="frequency" defaultValue={preferences.schedule.frequency}><option value="WEEKLY">Weekly</option><option value="BIWEEKLY">Every two weeks</option><option value="SEMIMONTHLY">Twice a month</option><option value="MONTHLY">Monthly</option></select></label>
+  const reminderValue = !preferences.automation.reminders ? c.off : lead === 0 ? c.onPayday : c.daysBefore(lead);
+  return <form ref={form} className="c-pset__form" data-form="company" {...formKeys} onSubmit={save} aria-label={c.companyDefaults(revision)}>{/* Leaving with payroll settings that are not saved asks first (Nov 21, 2026); a saved revision starts clean. */}<FormDiscardGuard resetKey={revision} /><fieldset disabled={locked} className="c-pset__fields">
+    <SetGroup id="payroll-schedule" label={c.paySchedule}>
+    <details className="c-pset__item"><SettingRow title={c.howOften} value={frequencyLabel} /><div className="c-pset__body wb-form">
+      <label>{c.frequency}<select aria-label={c.frequency} name="frequency" defaultValue={preferences.schedule.frequency}><option value="WEEKLY">{c.frequencies.WEEKLY}</option><option value="BIWEEKLY">{c.frequencies.BIWEEKLY}</option><option value="SEMIMONTHLY">{c.frequencies.SEMIMONTHLY}</option><option value="MONTHLY">{c.frequencies.MONTHLY}</option></select></label>
     </div></details>
-    <details className="c-pset__item"><SettingRow title="Payday" value={paydayValue} /><div className="c-pset__body wb-form">
-      <label>Payday after period end<input type="number" inputMode="numeric" autoComplete="off" name="paydayOffset" min={0} max={31} required defaultValue={preferences.schedule.paydayOffsetDays} /><small className="wb-help">Days after the period ends.</small></label>
+    <details className="c-pset__item"><SettingRow title={c.payday} value={paydayValue} /><div className="c-pset__body wb-form">
+      <label>{c.paydayAfter}<input type="number" inputMode="numeric" autoComplete="off" name="paydayOffset" min={0} max={31} required defaultValue={preferences.schedule.paydayOffsetDays} /><small className="wb-help">{c.paydayAfterHelp}</small></label>
     </div></details>
-    <details className="c-pset__item"><SettingRow title="First period" value={anchor ? `${anchor <= today(zone) ? 'Started' : 'Starts'} ${anchorValue}` : 'Not set'} /><div className="c-pset__body wb-form">
-      <PayDateField name="anchorDate" label="Schedule anchor date" required defaultValue={preferences.schedule.anchorDate} />
-      <p className="wb-note">Weekly and every-two-week periods begin on the anchor date. Twice-a-month periods are days <span className="nv-nowrap">1–15</span> and <span className="nv-nowrap">16–month end</span>; monthly periods use calendar months. For those schedules, the anchor is the date automation begins.</p>
+    <details className="c-pset__item"><SettingRow title={c.firstPeriod} value={anchor ? (anchor <= today(zone) ? c.started(anchorValue) : c.starts(anchorValue)) : c.notSet} /><div className="c-pset__body wb-form">
+      <PayDateField name="anchorDate" label={c.anchorDate} required defaultValue={preferences.schedule.anchorDate} />
+      <p className="wb-note">{c.anchorNoteA}<span className="nv-nowrap">{c.anchorNoteRange1}</span>{c.anchorNoteAnd}<span className="nv-nowrap">{c.anchorNoteRange2}</span>{c.anchorNoteB}</p>
     </div></details>
     </SetGroup>
-    <SetGroup id="payroll-notices" label="Reminders and pay statements">
-    <details className="c-pset__item"><SettingRow title="Payroll reminders" value={reminderValue} /><div className="c-pset__body wb-form">
-      <p className="wb-note">NEVORA prepares drafts and waits for the amounts and exceptions they need. Someone who can approve payroll still approves each one.</p><label className="wb-check"><input name="prepare" type="checkbox" defaultChecked={preferences.automation.prepare} /><span>Prepare scheduled drafts</span></label>{!native && <label className="wb-check"><input name="publish" type="checkbox" defaultChecked={preferences.automation.publish} /><span>Share pay statements after payroll is approved</span></label>}{native && <p className="wb-note">After you approve payroll, NEVORA makes and checks each pay statement, then shares it with the employee. Approving doesn’t send any payment.</p>}<label className="wb-check"><input name="reminders" type="checkbox" checked={noticesEnabled} onChange={event => setNoticesEnabled(event.target.checked)} /><span>Queue private payroll notices</span></label><label>Preparation reminder window<input aria-label="Preparation reminder window" aria-describedby="payroll-notice-window-help" name="reminderDays" type="number" inputMode="numeric" autoComplete="off" min={0} max={31} required={noticesEnabled} disabled={!noticesEnabled} defaultValue={reminderWindow(preferences.automation.reminderLeadDays)} /><small className="wb-help" id="payroll-notice-window-help">Remind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.</small></label><p className="wb-note">The notice preference also enables statement-availability notices after pay statements are shared. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.</p>{data.capabilities.noticeDelivery !== 'ENABLED' ? <p className="wb-note">Notice sending is turned off, so queued notices aren’t sent.</p> : null}
+    <SetGroup id="payroll-notices" label={c.remindersGroup}>
+    <details className="c-pset__item"><SettingRow title={c.payrollReminders} value={reminderValue} /><div className="c-pset__body wb-form">
+      <p className="wb-note">{c.draftsNote}</p><label className="wb-check"><input name="prepare" type="checkbox" defaultChecked={preferences.automation.prepare} /><span>{c.prepareDrafts}</span></label>{!native && <label className="wb-check"><input name="publish" type="checkbox" defaultChecked={preferences.automation.publish} /><span>{c.shareAfterApproval}</span></label>}{native && <p className="wb-note">{c.nativeShareNote}</p>}<label className="wb-check"><input name="reminders" type="checkbox" checked={noticesEnabled} onChange={event => setNoticesEnabled(event.target.checked)} /><span>{c.queueNotices}</span></label><label>{c.reminderWindow}<input aria-label={c.reminderWindow} aria-describedby="payroll-notice-window-help" name="reminderDays" type="number" inputMode="numeric" autoComplete="off" min={0} max={31} required={noticesEnabled} disabled={!noticesEnabled} defaultValue={reminderWindow(preferences.automation.reminderLeadDays)} /><small className="wb-help" id="payroll-notice-window-help">{c.reminderWindowHelp}</small></label><p className="wb-note">{c.noticeNote}</p>{data.capabilities.noticeDelivery !== 'ENABLED' ? <p className="wb-note">{c.noticeOff}</p> : null}
     </div></details>
-    <details className="c-pset__item"><SettingRow title="Pay statement language" value={preferences.language === 'es' ? 'Español' : 'English'} /><div className="c-pset__body wb-form">
-      <label>Company name on documents<input name="companyName" autoComplete="organization" defaultValue={preferences.companyName} maxLength={160} required /></label>
-      <label>Default statement language<select aria-label="Default statement language" name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
-      {!native && <label>Payroll provider preference<select aria-label="Payroll provider preference" name="sourceProvider" defaultValue={preferences.sourceProvider ?? ''}><option value="">No provider preference saved</option><option value="ADP_RUN">ADP RUN</option><option value="QUICKBOOKS_PAYROLL">QuickBooks Payroll</option><option value="PAYCHEX">Paychex</option><option value="GUSTO">Gusto</option><option value="OTHER">Other provider or accountant</option></select></label>}
-      <p className="wb-note">{native ? 'NEVORA payroll uses finalized timecards and each employee’s payroll details. Past payrolls imported from a provider keep their imported amounts.' : 'This saves your preference only. It doesn’t connect an account or check the provider’s file format. Every provider uses the standard payroll import for now.'}</p>
+    <details className="c-pset__item"><SettingRow title={c.statementLanguage} value={preferences.language === 'es' ? 'Español' : 'English'} /><div className="c-pset__body wb-form">
+      <label>{c.companyName}<input name="companyName" autoComplete="organization" defaultValue={preferences.companyName} maxLength={160} required /></label>
+      <label>{c.defaultLanguage}<select aria-label={c.defaultLanguage} name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
+      {!native && <label>{c.providerPreference}<select aria-label={c.providerPreference} name="sourceProvider" defaultValue={preferences.sourceProvider ?? ''}><option value="">{c.noProvider}</option><option value="ADP_RUN">ADP RUN</option><option value="QUICKBOOKS_PAYROLL">QuickBooks Payroll</option><option value="PAYCHEX">Paychex</option><option value="GUSTO">Gusto</option><option value="OTHER">{c.otherProvider}</option></select></label>}
+      <p className="wb-note">{native ? c.nativeProviderNote : c.importedProviderNote}</p>
     </div></details>
-    {!native && <details className="c-pset__item"><SettingRow title="Deductions and contributions" value={rules.length ? String(rules.length) : 'None'} /><div className="c-pset__body wb-form"><p className="wb-note">These rules record company policy and what each employee chose. The actual amounts come from the provider import. A missing setting doesn’t mean zero tax or an exemption.</p><RuleEditor rules={rules} onChange={setRules} /><button className="c-btn c-btn--secondary c-btn--md" type="button" data-add-rule="" onClick={() => setRules(items => [...items, newRule(zone)])}><PlusIcon weight="bold" className="c-ic c-ic--s" aria-hidden />Add rule</button></div></details>}
-    {!native && <details className="c-pset__item"><SettingRow title="Payment instructions" value={preferences.bankProfile ? 'Standard file' : 'None'} /><div className="c-pset__body wb-form">
-      <label>Payment file format<select aria-label="Payment file format" name="bankProfile" defaultValue={preferences.bankProfile ?? ''}><option value="">No payment file set up</option><option value="NEUTRAL_UNVERIFIED">Standard file · not yet tested with your bank</option></select></label>
-      <label>Bank you plan to use (for your records)<select aria-label="Bank you plan to use (for your records)" name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">No bank preference saved</option><option value="POPULAR_WCM_TEXT">Popular Web Cash Manager · text</option><option value="POPULAR_WCM_NACHA">Popular Web Cash Manager · NACHA</option><option value="POPULAR_COMMERCIAL_MANUAL">Popular commercial · manual</option><option value="OTHER">Other bank or file type</option></select></label>
-      <p className="wb-note">This saves how you plan to pay. NEVORA hasn’t tested the file with your bank. It makes a standard payment file; it doesn’t send payments or confirm that your bank processed them.</p>
+    {!native && <details className="c-pset__item"><SettingRow title={c.deductionsGroup} value={rules.length ? String(rules.length) : c.none} /><div className="c-pset__body wb-form"><p className="wb-note">{c.rulesNote}</p><RuleEditor rules={rules} onChange={setRules} /><button className="c-btn c-btn--secondary c-btn--md" type="button" data-add-rule="" onClick={() => setRules(items => [...items, newRule(zone)])}><PlusIcon weight="bold" className="c-ic c-ic--s" aria-hidden />{c.addRule}</button></div></details>}
+    {!native && <details className="c-pset__item"><SettingRow title={c.paymentInstructions} value={preferences.bankProfile ? c.standardFile : c.none} /><div className="c-pset__body wb-form">
+      <label>{c.paymentFormat}<select aria-label={c.paymentFormat} name="bankProfile" defaultValue={preferences.bankProfile ?? ''}><option value="">{c.noPaymentFile}</option><option value="NEUTRAL_UNVERIFIED">{c.standardFileUntested}</option></select></label>
+      <label>{c.bankPlan}<select aria-label={c.bankPlan} name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">{c.noBank}</option><option value="POPULAR_WCM_TEXT">{c.popularText}</option><option value="POPULAR_WCM_NACHA">{c.popularNacha}</option><option value="POPULAR_COMMERCIAL_MANUAL">{c.popularManual}</option><option value="OTHER">{c.otherBank}</option></select></label>
+      <p className="wb-note">{c.paymentNote}</p>
     </div></details>}
     </SetGroup>
-    <div className="c-card c-pset__savecard"><div className="c-pset__save wb-form"><PayDateField name="effectiveFrom" label="Effective date" required defaultValue={today(zone)} /><label>Reason for change<input name="reason" autoComplete="off" required maxLength={300} /></label><ImpactPreview data={data} /><p className="wb-note">Approved payroll doesn’t change. Drafts that aren’t approved yet need a new review after settings or exceptions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden /><span>{error}</span></p>}
-      <button type="submit" className="c-btn c-btn--full" aria-disabled={locked}><PendingLabel pending={operation.busy && savingId === 'company'} pendingText="Saving…">Save company preferences</PendingLabel></button></div></div>
+    <div className="c-card c-pset__savecard"><div className="c-pset__save wb-form"><PayDateField name="effectiveFrom" label={c.effectiveDate} required defaultValue={today(zone)} /><label>{c.reasonForChange}<input name="reason" autoComplete="off" required maxLength={300} /></label><ImpactPreview data={data} /><p className="wb-note">{c.approvedNote}</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden /><span>{error}</span></p>}
+      <button type="submit" className="c-btn c-btn--full" aria-disabled={locked}><PendingLabel pending={operation.busy && savingId === 'company'} pendingText={c.saving}>{c.saveCompany}</PendingLabel></button></div></div>
   </fieldset></form>;
 }
 
 function newRule(timeZone: string): PayrollRule { return { id: crypto.randomUUID(), name: '', kind: 'EMPLOYEE_DEDUCTION', method: 'FIXED', amountMinor: null, basisPoints: null, base: 'GROSS', applicability: 'ALL', effectiveFrom: today(timeZone), effectiveTo: null, capMinor: null, remittance: 'EMPLOYER' }; }
 function RuleEditor({ rules, onChange }: { rules: PayrollRule[]; onChange: (rules: PayrollRule[]) => void }) {
-  return <div className="wb-rule-list">{rules.length === 0 && <p className="wb-note">No rules configured. Imported payroll amounts are still required.</p>}{rules.map((rule, index) => {
+  const c = usePayrollCopy().settings;
+  return <div className="wb-rule-list">{rules.length === 0 && <p className="wb-note">{c.noRules}</p>}{rules.map((rule, index) => {
     const name = (key: string) => `rule-${rule.id}-${key}`;
     return <fieldset className="wb-rule" key={rule.id}>
-      <legend>Rule {index + 1}</legend>
+      <legend>{c.rule(index + 1)}</legend>
       <div className="wb-grid">
-        <label>Rule name<input name={name('name')} autoComplete="off" defaultValue={rule.name} required maxLength={100} /></label>
-        <label>Type<select name={name('kind')} defaultValue={rule.kind}><option value="EMPLOYEE_DEDUCTION">Employee deduction</option><option value="EMPLOYER_CONTRIBUTION">Employer contribution</option></select></label>
-        <label>Method<select name={name('method')} value={rule.method} onChange={event => onChange(rules.map(item => item.id === rule.id ? { ...item, method: event.target.value === 'PERCENTAGE' ? 'PERCENTAGE' : 'FIXED' } : item))}><option value="FIXED">Fixed USD amount</option><option value="PERCENTAGE">Percentage of gross</option></select></label>
-        {rule.method === 'FIXED' ? <label>Amount in USD<input name={name('amount')} inputMode="decimal" required defaultValue={rule.amountMinor === null ? '' : minorToDollars(rule.amountMinor)} placeholder="0.00" /></label> : <label>Percent of gross<input name={name('percent')} inputMode="decimal" required defaultValue={rule.basisPoints === null ? '' : minorToDollars(String(rule.basisPoints))} placeholder="0.00" /></label>}
-        <label>Applies to<select name={name('applicability')} defaultValue={rule.applicability}><option value="ALL">All employees</option><option value="EMPLOYEE_ELECTION">Employee election</option></select></label>
-        <label>Who sends it<select name={name('remittance')} defaultValue={rule.remittance}><option value="EMPLOYER">Employer</option><option value="PROVIDER">Payroll provider</option></select><small className="wb-help">For your records. NEVORA doesn’t send payments.</small></label>
-        <label>Effective from<input name={name('from')} type="date" defaultValue={rule.effectiveFrom} required /></label>
-        <label>Effective through · optional<input name={name('to')} type="date" defaultValue={rule.effectiveTo ?? ''} /></label>
-        <label>USD cap · optional<input name={name('cap')} inputMode="decimal" defaultValue={rule.capMinor === null ? '' : minorToDollars(rule.capMinor)} placeholder="No cap configured" /></label>
+        <label>{c.ruleName}<input name={name('name')} autoComplete="off" defaultValue={rule.name} required maxLength={100} /></label>
+        <label>{c.type}<select name={name('kind')} defaultValue={rule.kind}><option value="EMPLOYEE_DEDUCTION">{c.employeeDeduction}</option><option value="EMPLOYER_CONTRIBUTION">{c.employerContribution}</option></select></label>
+        <label>{c.method}<select name={name('method')} value={rule.method} onChange={event => onChange(rules.map(item => item.id === rule.id ? { ...item, method: event.target.value === 'PERCENTAGE' ? 'PERCENTAGE' : 'FIXED' } : item))}><option value="FIXED">{c.fixedAmount}</option><option value="PERCENTAGE">{c.percentOfGrossOption}</option></select></label>
+        {rule.method === 'FIXED' ? <label>{c.amountUsd}<input name={name('amount')} inputMode="decimal" required defaultValue={rule.amountMinor === null ? '' : minorToDollars(rule.amountMinor)} placeholder="0.00" /></label> : <label>{c.percentOfGross}<input name={name('percent')} inputMode="decimal" required defaultValue={rule.basisPoints === null ? '' : minorToDollars(String(rule.basisPoints))} placeholder="0.00" /></label>}
+        <label>{c.appliesTo}<select name={name('applicability')} defaultValue={rule.applicability}><option value="ALL">{c.allEmployees}</option><option value="EMPLOYEE_ELECTION">{c.employeeElection}</option></select></label>
+        <label>{c.whoSends}<select name={name('remittance')} defaultValue={rule.remittance}><option value="EMPLOYER">{c.employer}</option><option value="PROVIDER">{c.provider}</option></select><small className="wb-help">{c.whoSendsHelp}</small></label>
+        <label>{c.effectiveFrom}<input name={name('from')} type="date" defaultValue={rule.effectiveFrom} required /></label>
+        <label>{c.effectiveThrough}<input name={name('to')} type="date" defaultValue={rule.effectiveTo ?? ''} /></label>
+        <label>{c.usdCap}<input name={name('cap')} inputMode="decimal" defaultValue={rule.capMinor === null ? '' : minorToDollars(rule.capMinor)} placeholder={c.noCap} /></label>
       </div>
-      <button type="button" className="c-btn c-btn--danger c-btn--md" onClick={event => { const form = event.currentTarget.form; onChange(rules.filter(item => item.id !== rule.id)); requestAnimationFrame(() => form?.querySelector<HTMLElement>("[data-add-rule]")?.focus()); }}><TrashIcon weight="bold" className="c-ic c-ic--s" aria-hidden />Remove rule {index + 1}</button>
+      <button type="button" className="c-btn c-btn--danger c-btn--md" onClick={event => { const form = event.currentTarget.form; onChange(rules.filter(item => item.id !== rule.id)); requestAnimationFrame(() => form?.querySelector<HTMLElement>("[data-add-rule]")?.focus()); }}><TrashIcon weight="bold" className="c-ic c-ic--s" aria-hidden />{c.removeRule(index + 1)}</button>
     </fieldset>;
   })}</div>;
 }
 function ImpactPreview({ data }: { data: PayrollSettingsResponse }) {
-  return <div className="wb-box wb-impact"><strong>Future draft impact</strong>{data.futureDraftImpact.length ? <ul>{data.futureDraftImpact.map(item => <li key={item.runId}>{keepWhole(formatDateRange(item.period.startDate, item.period.endDate))}: {item.reason}</li>)}</ul> : <p>No affected future drafts were returned by the server.</p>}</div>;
+  const t = usePayrollCopy(), c = t.settings;
+  const range = (start: string, end: string) => t.lang === 'es' ? periodRange(start, end, 'es') : formatDateRange(start, end);
+  return <div className="wb-box wb-impact"><strong>{c.futureImpact}</strong>{data.futureDraftImpact.length ? <ul>{data.futureDraftImpact.map(item => <li key={item.runId}>{keepWhole(range(item.period.startDate, item.period.endDate))}: {item.reason}</li>)}</ul> : <p>{c.noImpact}</p>}</div>;
 }
 
 function EmployeeException({ data, preferences, operation }: { data: PayrollSettingsResponse; preferences: PayrollPreferences; operation: ReturnType<typeof usePayrollOperation> }) {
   const [employeeId, setEmployeeId] = useState(data.employees.find(employee => employee.active)?.id ?? '');
   const exception = data.exceptions.filter(item => item.exception.employeeId === employeeId).sort((a, b) => b.revision - a.revision)[0];
-  return <SettingsCard title="Employee exceptions" description="Employees inherit company defaults unless an authorized exception takes effect."><label>Employee<select aria-label="Employee" value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.locked}><option value="">Choose an employee</option>{data.employees.filter(employee => employee.active).map(employee => <option value={employee.id} key={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <ExceptionForm key={`${employeeId}:${exception?.revision ?? 0}`} employeeId={employeeId} revision={exception?.revision ?? 0} language={exception?.exception.language ?? null} initialRules={exception?.exception.rules ?? null} preferences={preferences} data={data} operation={operation} />}</SettingsCard>;
+  const c = usePayrollCopy().settings;
+  return <SettingsCard title={c.employeeExceptions} description={c.exceptionsDescription}><label>{c.employee}<select aria-label={c.employee} value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.locked}><option value="">{c.chooseEmployee}</option>{data.employees.filter(employee => employee.active).map(employee => <option value={employee.id} key={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <ExceptionForm key={`${employeeId}:${exception?.revision ?? 0}`} employeeId={employeeId} revision={exception?.revision ?? 0} language={exception?.exception.language ?? null} initialRules={exception?.exception.rules ?? null} preferences={preferences} data={data} operation={operation} />}</SettingsCard>;
 }
 function ExceptionForm({ employeeId, revision, language, initialRules, preferences, data, operation }: { employeeId: string; revision: number; language: 'en' | 'es' | null; initialRules: PayrollRule[] | null; preferences: PayrollPreferences; data: PayrollSettingsResponse; operation: ReturnType<typeof usePayrollOperation> }) {
   const zone = useContext(BusinessZone);
   const native = data.capabilities.internalCalculatorAvailable;
+  const t = usePayrollCopy(), c = t.settings, lang = t.lang;
   const [inherit, setInherit] = useState(initialRules === null);
   const [rules, setRules] = useState(initialRules ?? preferences.rules);
   const [error, setError] = useState('');
@@ -246,41 +265,43 @@ function ExceptionForm({ employeeId, revision, language, initialRules, preferenc
     event.preventDefault(); setError('');
     const problem = flagProblems(event.currentTarget); if (problem) { setError(problem); return; }
     setSaving('exception'); const values = new FormData(event.currentTarget);
-    try { const chosen = values.get('exceptionLanguage'); void operation.submit({ action: 'SAVE_EXCEPTION', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), exception: { employeeId, language: chosen === 'en' || chosen === 'es' ? chosen : null, rules: native ? initialRules : inherit ? null : rulesFromForm(values, rules) } }); }
-    catch (failure) { setError(failure instanceof Error ? failure.message : 'Check this employee exception.'); }
+    try { const chosen = values.get('exceptionLanguage'); void operation.submit({ action: 'SAVE_EXCEPTION', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), exception: { employeeId, language: chosen === 'en' || chosen === 'es' ? chosen : null, rules: native ? initialRules : inherit ? null : rulesFromForm(values, rules, lang) } }); }
+    catch (failure) { setError(failure instanceof Error ? failure.message : c.checkException); }
   }}>{/* Leaving with payroll settings that are not saved asks first (Nov 21, 2026); a saved revision starts clean. */}<FormDiscardGuard resetKey={revision} /><fieldset disabled={operation.locked} className="wb-form">
-    <p className="wb-note">Exception revision {revision} · {native ? 'Wage, withholding and deduction details are checked separately from the statement language.' : 'Provider imports still set the actual gross and net pay.'}</p>
-    <label>Statement language<select aria-label="Statement language" name="exceptionLanguage" defaultValue={language ?? ''}><option value="">Inherit company language</option><option value="en">English</option><option value="es">Español</option></select></label>
-    {!native && <label className="wb-check"><input type="checkbox" checked={inherit} onChange={event => setInherit(event.target.checked)} /><span>Inherit company deduction and contribution rules</span></label>}
-    {!native && !inherit && <><RuleEditor rules={rules} onChange={setRules} /><button className="c-btn c-btn--secondary c-btn--md" type="button" data-add-rule="" onClick={() => setRules(items => [...items, newRule(zone)])}><PlusIcon weight="bold" className="c-ic c-ic--s" aria-hidden />Add employee rule</button></>}
-    <PayDateField name="effectiveFrom" label="Exception effective date" required defaultValue={today(zone)} /><label>Exception reason<input name="reason" autoComplete="off" required maxLength={300} /></label>
+    <p className="wb-note">{c.exceptionRevision(revision)}{native ? c.exceptionNative : c.exceptionImported}</p>
+    <label>{c.exceptionLanguage}<select aria-label={c.exceptionLanguage} name="exceptionLanguage" defaultValue={language ?? ''}><option value="">{c.inheritLanguage}</option><option value="en">English</option><option value="es">Español</option></select></label>
+    {!native && <label className="wb-check"><input type="checkbox" checked={inherit} onChange={event => setInherit(event.target.checked)} /><span>{c.inheritRules}</span></label>}
+    {!native && !inherit && <><RuleEditor rules={rules} onChange={setRules} /><button className="c-btn c-btn--secondary c-btn--md" type="button" data-add-rule="" onClick={() => setRules(items => [...items, newRule(zone)])}><PlusIcon weight="bold" className="c-ic c-ic--s" aria-hidden />{c.addEmployeeRule}</button></>}
+    <PayDateField name="effectiveFrom" label={c.exceptionEffective} required defaultValue={today(zone)} /><label>{c.exceptionReason}<input name="reason" autoComplete="off" required maxLength={300} /></label>
     <ImpactPreview data={data} />{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden /><span>{error}</span></p>}
-    <button className="c-btn c-btn--full" type="submit">{operation.busy && savingId === 'exception' ? 'Saving…' : 'Save employee exception'}</button>
+    <button className="c-btn c-btn--full" type="submit">{operation.busy && savingId === 'exception' ? c.saving : c.saveException}</button>
   </fieldset></form>;
 }
 
 function PayrollAccess({ data, operation }: { data: PayrollSettingsResponse; operation: ReturnType<typeof usePayrollOperation> }) {
   const [employeeId, setEmployeeId] = useState('');
   const grant = data.grants.find(item => item.employeeId === employeeId);
-  if (data.capabilities.internalCalculatorAvailable) return <SettingsCard title="Payroll access" description="Manager access must be assigned for specific payroll locations."><p className="pw-small">Scheduling access alone does not grant payroll access. Review and approval use the Owner’s current payroll location permissions.</p></SettingsCard>;
-  return <SettingsCard title="Payroll access" description="Manager time-review permission does not grant access to financial records."><label>Grant recipient<select aria-label="Grant recipient" value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.locked}><option value="">Choose an employee</option>{data.employees.filter(employee => employee.active).map(employee => <option key={employee.id} value={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <GrantForm key={`${employeeId}:${grant?.revision ?? 0}`} employeeId={employeeId} revision={grant?.revision ?? 0} review={grant?.review ?? false} approve={grant?.approve ?? false} operation={operation} />}</SettingsCard>;
+  const c = usePayrollCopy().settings;
+  if (data.capabilities.internalCalculatorAvailable) return <SettingsCard title={c.payrollAccess} description={c.accessNativeDescription}><p className="pw-small">{c.accessNativeNote}</p></SettingsCard>;
+  return <SettingsCard title={c.payrollAccess} description={c.accessDescription}><label>{c.grantRecipient}<select aria-label={c.grantRecipient} value={employeeId} onChange={event => setEmployeeId(event.target.value)} disabled={operation.locked}><option value="">{c.chooseEmployee}</option>{data.employees.filter(employee => employee.active).map(employee => <option key={employee.id} value={employee.id}>{employee.name}</option>)}</select></label>{employeeId && <GrantForm key={`${employeeId}:${grant?.revision ?? 0}`} employeeId={employeeId} revision={grant?.revision ?? 0} review={grant?.review ?? false} approve={grant?.approve ?? false} operation={operation} />}</SettingsCard>;
 }
 function GrantForm({ employeeId, revision, review, approve, operation }: { employeeId: string; revision: number; review: boolean; approve: boolean; operation: ReturnType<typeof usePayrollOperation> }) {
   const [canReview, setReview] = useState(review);
   const [canApprove, setApprove] = useState(approve);
   const [savingId, setSaving] = useContext(SavingForm);
   const [error, setError] = useState('');
+  const c = usePayrollCopy().settings;
   return <form className="wb-form" data-form="access" {...formKeys} onSubmit={event => {
     event.preventDefault(); setError('');
     const problem = flagProblems(event.currentTarget); if (problem) { setError(problem); return; }
     setSaving('access'); const values = new FormData(event.currentTarget);
     void operation.submit({ action: 'SET_GRANT', expectedRevision: revision, reason: String(values.get('reason')).trim(), grant: { employeeId, review: canReview, approve: canApprove } });
   }}>{/* Leaving with payroll settings that are not saved asks first (Nov 21, 2026); a saved revision starts clean. */}<FormDiscardGuard resetKey={revision} /><fieldset disabled={operation.locked} className="wb-form">
-    <label className="wb-check"><input type="checkbox" checked={canReview} onChange={event => { setReview(event.target.checked); if (!event.target.checked) setApprove(false); }} /><span>Review payroll amounts and documents</span></label>
-    <label className="wb-check"><input type="checkbox" checked={canApprove} onChange={event => { setApprove(event.target.checked); if (event.target.checked) setReview(true); }} /><span>Approve an exact reviewed payroll revision</span></label>
-    <label>Access change reason<textarea name="reason" required maxLength={300} rows={3} /></label>
-    <p className="wb-note">Approval requires review access. Clear both permissions to revoke this grant. The server checks the current grant on every action.</p>
+    <label className="wb-check"><input type="checkbox" checked={canReview} onChange={event => { setReview(event.target.checked); if (!event.target.checked) setApprove(false); }} /><span>{c.reviewAccess}</span></label>
+    <label className="wb-check"><input type="checkbox" checked={canApprove} onChange={event => { setApprove(event.target.checked); if (event.target.checked) setReview(true); }} /><span>{c.approveAccess}</span></label>
+    <label>{c.accessReason}<textarea name="reason" required maxLength={300} rows={3} /></label>
+    <p className="wb-note">{c.accessNote}</p>
     {error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden /><span>{error}</span></p>}
-    <button type="submit" className="c-btn c-btn--full">{operation.busy && savingId === 'access' ? 'Saving…' : 'Save payroll access'}</button>
+    <button type="submit" className="c-btn c-btn--full">{operation.busy && savingId === 'access' ? c.saving : c.saveAccess}</button>
   </fieldset></form>;
 }

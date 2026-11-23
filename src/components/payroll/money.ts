@@ -1,3 +1,4 @@
+import { statusCopy } from './copy/status';
 export function formatPayrollMoney(minor: string, language: 'en' | 'es' = 'en') {
   if (!/^(0|[1-9]\d*)$/.test(minor)) throw new Error('Invalid payroll amount');
   const amount = BigInt(minor);
@@ -7,9 +8,9 @@ export function formatPayrollMoney(minor: string, language: 'en' | 'es' = 'en') 
   }).formatToParts(amount / BigInt(100)).map(part => part.type === 'fraction' ? fraction : part.value).join('');
 }
 
-export function dollarsToMinor(value: string) {
+export function dollarsToMinor(value: string, lang: 'en' | 'es' = 'en') {
   const match = /^(0|[1-9]\d*)(?:\.(\d{1,2}))?$/.exec(value.trim());
-  if (!match) throw new Error('Enter a nonnegative USD amount with up to two decimal places.');
+  if (!match) throw new Error(statusCopy[lang].ui.amountInvalid);
   return (BigInt(match[1]) * BigInt(100) + BigInt((match[2] ?? '').padEnd(2, '0'))).toString();
 }
 

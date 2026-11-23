@@ -1,5 +1,7 @@
 import type { NativeProfilesResponse } from '@/lib/payroll/native/contracts';
 import { record } from './api';
+import { nativeCopy } from './copy/native';
+import type { PayrollLang } from './payroll-lang';
 const text=(v:unknown):v is string=>typeof v==='string'&&v.length>0;
 const revision=(v:unknown)=>Number.isSafeInteger(v)&&Number(v)>0;
 const money=(v:unknown)=>typeof v==='string'&&/^(0|[1-9]\d{0,14})$/.test(v);
@@ -22,15 +24,16 @@ function deduction(v:unknown) {
  if(!record(v)||!text(v.id)||!revision(v.revision)||!text(v.code)||!text(v.label)||!text(v.effectiveFrom)||(v.effectiveTo!==null&&!text(v.effectiveTo))||!money(v.deductedBeforeMinor)||!optionalMoney(v.capMinor)||v.authorization!=='WRITTEN_POST_TAX'||!text(v.authorizationReference)||typeof v.revoked!=='boolean'||!['PR_LAW_17_5_C','PR_LAW_17_5_G'].includes(String(v.legalBasis))||!text(v.complianceReference)||(v.employerContributionCode!==null&&!text(v.employerContributionCode)))return false;
  return v.method==='FIXED'?money(v.amountMinor)&&v.basisPoints===null:v.method==='PERCENTAGE'&&v.amountMinor===null&&basisPoints(v.basisPoints);
 }
-export function readNativeProfiles(value:unknown):NativeProfilesResponse {
+export function readNativeProfiles(value:unknown,lang:PayrollLang='en'):NativeProfilesResponse {
+  const m=nativeCopy[lang].api;
   const valid=record(value)&&value.version==='PAYROLL_NATIVE_PROFILES_V1'&&Array.isArray(value.configurations)&&Array.isArray(value.openingYtd)&&Array.isArray(value.managerScopes);
-  if(!valid) throw Error('Employee payroll facts could not be read. Reload current Owner access.');
+  if(!valid) throw Error(m.unreadable);
   for(const c of value.configurations as unknown[]) {
-    if(!record(c)||c.schema!=='NEVORA_NATIVE_CONFIGURATION_V1'||!text(c.employeeId)||!revision(c.revision)||!text(c.actorId)||!text(c.reason)||!text(c.createdAt)||!Array.isArray(c.wages)||!c.wages.length||!Array.isArray(c.deductions)||!c.wages.every(w=>record(w)&&text(w.id)&&revision(w.revision)&&text(w.effectiveFrom)&&(w.effectiveTo===null||text(w.effectiveTo))&&ids(w.locationIds)&&text(w.hourlyRateMinor)&&/^(0|[1-9]\d{0,8})(\.[0-9]{1,4})?$/.test(w.hourlyRateMinor)&&Array.isArray(w.breakRules)&&typeof w.standardContextAttested==='boolean'&&text(w.evidenceReference)&&policy(w.workweekPolicy)&&w.breakRules.every(b=>record(b)&&text(b.typeId)&&['PAID_REST','UNPAID_RELIEVED_MEAL'].includes(String(b.treatment))))) throw Error('The saved wage facts are incomplete. Reload before editing.');
-    if(c.tax!==null&&(!record(c.tax)||!text(c.tax.id)||!revision(c.tax.revision)||!certificate(c.tax.certificate)||!Array.isArray(c.tax.employerContributions)||!text(c.tax.certificateReference)||!count(c.tax.sinotEmployeeBasisPoints,30)||typeof c.tax.employerCoverageAttested!=='boolean'||!c.tax.employerContributions.every(employer))) throw Error('The saved withholding facts are incomplete.');
-    if(!c.deductions.every(deduction)) throw Error('The saved deduction facts are incomplete.');
+    if(!record(c)||c.schema!=='NEVORA_NATIVE_CONFIGURATION_V1'||!text(c.employeeId)||!revision(c.revision)||!text(c.actorId)||!text(c.reason)||!text(c.createdAt)||!Array.isArray(c.wages)||!c.wages.length||!Array.isArray(c.deductions)||!c.wages.every(w=>record(w)&&text(w.id)&&revision(w.revision)&&text(w.effectiveFrom)&&(w.effectiveTo===null||text(w.effectiveTo))&&ids(w.locationIds)&&text(w.hourlyRateMinor)&&/^(0|[1-9]\d{0,8})(\.[0-9]{1,4})?$/.test(w.hourlyRateMinor)&&Array.isArray(w.breakRules)&&typeof w.standardContextAttested==='boolean'&&text(w.evidenceReference)&&policy(w.workweekPolicy)&&w.breakRules.every(b=>record(b)&&text(b.typeId)&&['PAID_REST','UNPAID_RELIEVED_MEAL'].includes(String(b.treatment))))) throw Error(m.wages);
+    if(c.tax!==null&&(!record(c.tax)||!text(c.tax.id)||!revision(c.tax.revision)||!certificate(c.tax.certificate)||!Array.isArray(c.tax.employerContributions)||!text(c.tax.certificateReference)||!count(c.tax.sinotEmployeeBasisPoints,30)||typeof c.tax.employerCoverageAttested!=='boolean'||!c.tax.employerContributions.every(employer))) throw Error(m.withholding);
+    if(!c.deductions.every(deduction)) throw Error(m.deductions);
   }
-  if(!(value.openingYtd as unknown[]).every(o=>{if(!record(o)||!text(o.employeeId)||!record(o.ytd))return false;const y=o.ytd;return revision(y.revision)&&Number.isInteger(y.year)&&['grossMinor','netMinor','socialSecurityWagesMinor','medicareWagesMinor','sinotWagesMinor'].every(k=>money(y[k]))&&['deductions','employerContributions','employerWagesMinor'].every(k=>moneyMap(y[k]))&&ids(y.locationIds)&&text(y.evidenceReference)&&text(y.ledgerFingerprint)&&typeof y.attested==='boolean';})) throw Error('The opening payroll balances could not be read.');
-  if(!(value.managerScopes as unknown[]).every(s=>record(s)&&text(s.employeeId)&&revision(s.revision)&&typeof s.review==='boolean'&&typeof s.approve==='boolean'&&(!s.approve||s.review)&&ids(s.locationIds)&&(!s.review||s.locationIds.length>0)&&text(s.subjectEmployeeVersion))) throw Error('The current Manager payroll scope could not be read.');
+  if(!(value.openingYtd as unknown[]).every(o=>{if(!record(o)||!text(o.employeeId)||!record(o.ytd))return false;const y=o.ytd;return revision(y.revision)&&Number.isInteger(y.year)&&['grossMinor','netMinor','socialSecurityWagesMinor','medicareWagesMinor','sinotWagesMinor'].every(k=>money(y[k]))&&['deductions','employerContributions','employerWagesMinor'].every(k=>moneyMap(y[k]))&&ids(y.locationIds)&&text(y.evidenceReference)&&text(y.ledgerFingerprint)&&typeof y.attested==='boolean';})) throw Error(m.opening);
+  if(!(value.managerScopes as unknown[]).every(s=>record(s)&&text(s.employeeId)&&revision(s.revision)&&typeof s.review==='boolean'&&typeof s.approve==='boolean'&&(!s.approve||s.review)&&ids(s.locationIds)&&(!s.review||s.locationIds.length>0)&&text(s.subjectEmployeeVersion))) throw Error(m.scope);
   return value as NativeProfilesResponse;
 }
