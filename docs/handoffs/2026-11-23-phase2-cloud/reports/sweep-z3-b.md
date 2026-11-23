@@ -8,6 +8,7 @@ outside forced colours. Fictional data and a throwaway local database (developme
 |---|---|
 | f9491514 | Settings switches (J4 Features, J7 Edit location, J11 Company policies, J15 Clocker photos) and Profile notification switches (I1): keep a ButtonText edge and thumb; on is the Highlight track, locked is GrayText with the lock. J3 Branding swatch keeps its colour with an edge. F2 Add person step dots keep a border. J13 Clocker devices: tablet rows get a Highlight focus outline; "Get setup code" keeps its edge. "Add a passkey" (I1/I5) keeps a button edge. |
 | 4c1a6fe0 | I1 Profile (Employee): the language switch shows the chosen language (Highlight pair; the track keeps an edge). |
+| (kit) | Kit buttons: the lead's baca629a rule (outline, b-foundation.css) replaces this branch's owner-b.css border rule (9a64daaf, b5a63c20), which the merge 19d1e134 removes so the edge isn't drawn twice. |
 | 481912f3 | J18 Billing (and the K15 Clocker paused frame): "Open billing in Velani", "Refresh status" and the language switch keep a button edge. |
 
 Files: `src/app/app/settings/settings-b.css` (additive, as the README asks for the Settings base),
@@ -15,6 +16,8 @@ Files: `src/app/app/settings/settings-b.css` (additive, as the README asks for t
 `src/components/team/team-forms.css`, `src/components/passkeys/passkeys.css`, `src/components/employee-b/account.css`,
 `src/components/commerce-recovery/recovery.module.css`. Every rule sits inside `@media (forced-colors: active)`.
 Test: `src/components/forced-colors-z3.test.ts` (6 tests). Whole `src/components` suite: 3215 of 3215 pass.
+
+| eb2ed31d | Shell and kit (cleared by the lead): the page-loading bar keeps a Highlight fill (corp-shell.css) and the skeleton blocks a GrayText edge (b-shimmer.css). Normal view pixel-identical. |
 
 ## How it was checked
 Chromium with `emulateMedia({forcedColors: 'active'})` at 390 (1024 for the Clocker), one role per row. On each page:
@@ -48,12 +51,8 @@ must differ from its siblings; 10 Tab stops must each show an outline. Language:
 | K13 Someone else's punch in progress | Kiosk | OK in English and Spanish | No UI leaks. The Spanish kiosk shows the Owner's own names in English ("Front counter tablet", "Rest break", "Meal break"); that is fictional data as typed, not app wording. |
 | K15 Clocker paused | Public | OK in English and Spanish | No leaks |
 
-## Left for the kit session (proposed ledger rows)
-| Area | Item | Type |
-|---|---|---|
-| Kit buttons (`owner-b.css` `.b-btn`, `corp.css` `.c-btn`) | Under forced colours filled buttons (b-btn--teal/--white, c-btn primary/secondary/danger) lose their edge and read as text: "Add employee", "Go to Home", "Try again", "Reload", "Create calendar link", "Delete my account", "Copy Clocker link", "Refresh policy history", "Save help details". The kit's forced-colors block covers only ghost and quiet buttons. Suggested: `@media (forced-colors: active) { .b-btn, .c-btn { border: 1px solid ButtonText } :disabled { border-color: GrayText } }`. Sent to the lead. | Forced colours |
-| Shell route progress bar (`.c-progress > i`) | Invisible under forced colours (decorative while a page loads). | Forced colours |
-| Kit loading shimmer (`.b-skel`) | Skeleton blocks vanish under forced colours while a page loads. | Forced colours |
+## Left for the kit session
+None: the kit buttons (baca629a), the loading bar and the skeleton blocks are done.
 
 ## Not covered
 - Payroll (G) and Rondo/Insights (H) have no ✓ (Jose, Nov 23) rows yet, so they were not swept.

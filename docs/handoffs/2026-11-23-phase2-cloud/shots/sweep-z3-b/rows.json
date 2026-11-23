@@ -199,5 +199,47 @@
   ],
   "blocking": [],
   "endSweep": []
+ },
+ {
+  "id": "kit-skeleton",
+  "row": "Kit",
+  "page": "Loading skeleton (Pay rate while loading)",
+  "section": "Owner \u00b7 forced colours, 390",
+  "note": "A loading page showed empty cards in forced colours. Each skeleton block now keeps a grey edge.",
+  "shots": [
+   {
+    "label": "Before (forced colours)",
+    "after": "img/kit-skeleton-before-fc.webp"
+   },
+   {
+    "label": "After (forced colours)",
+    "after": "img/kit-skeleton-after-fc.webp"
+   },
+   {
+    "label": "Normal colours (unchanged)",
+    "after": "img/kit-skeleton-normal.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "shell-progress",
+  "row": "Shell",
+  "page": "Page-loading bar (tab tap, waiting for the page)",
+  "section": "Owner \u00b7 forced colours, 390",
+  "note": "The loading bar at the top vanished in forced colours. It now has a Highlight fill (top 60px shown, enlarged).",
+  "shots": [
+   {
+    "label": "Before (forced colours)",
+    "after": "img/shell-progress-before-fc.webp"
+   },
+   {
+    "label": "After (forced colours)",
+    "after": "img/shell-progress-after-fc.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
  }
 ]
