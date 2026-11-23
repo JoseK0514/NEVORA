@@ -74,7 +74,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       runtimeControls.push({ engine, ...control });
       for (const [index, context] of [c0, c1, c2].entries()) {
         const execution = { engine, width: index === 0 ? 390 : 1440, kind: 'readiness-schedule' };
-        const observer = observeBrowserCell(execution, errors, { navigationDiagnosticVerified: control.verified, navigationReadKinds: ['manager-today-read'], routerReadsDuringNavigation: true });
+        const observer = observeBrowserCell(execution, errors, { navigationDiagnosticVerified: control.verified, navigationReadKinds: ['manager-today-read'], navigationCancelledReads: true });
         observer.setStageReader(() => stage);
         await observer.observeContext(context, index === 1 ? 'manager' : 'primary');
         await observeRscCaughtErrors(context, (_page: unknown, metadata: Record<string, unknown>) => trace({ engine, index, event: 'caught-rsc-error', metadata }));
