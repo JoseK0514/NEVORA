@@ -27,7 +27,7 @@ export function TeamDeskPeople({ rows, limit, peopleLabel }: { rows: TeamDeskRow
   return <CorpCard as="div">
     {live.ready && rows.length ? <BFilters label="Show" items={[
       { key: "all", label: "All", current: filter === "all", onSelect: () => setFilter("all") },
-      { key: "working", label: "Clocked in", count: count("working"), current: filter === "working", onSelect: () => setFilter("working") },
+      { key: "working", label: "On the clock", count: count("working"), current: filter === "working", onSelect: () => setFilter("working") },
       { key: "late", label: "Not clocked in", count: count("late"), current: filter === "late", onSelect: () => setFilter("late") },
       ...(live.partial ? [] : [{ key: "off" as const, label: "Off today", count: count("off"), current: filter === "off", onSelect: () => setFilter("off") }]),
     ]} /> : null}
