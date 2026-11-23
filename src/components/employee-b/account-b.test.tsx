@@ -133,7 +133,7 @@ describe('Updates', () => {
     // Phase 4 (EM-021): one glass pill at every width; (EM-033) a preview has no line breaks; an unread row's word is for its label only.
     expect(html.match(/href="\/app\/updates\/compose"/g)).toHaveLength(1);expect(html).toContain('class="b-btn b-btn--glass eb-write"');expect(html).not.toContain('b-btn--white');
     const breaks = renderToStaticMarkup(<EmployeeUpdatesB list={list({items: [update({body: 'First line.\nSecond line.\n\nThird.'}), update({id: 'u3', title: 'Unread one', acknowledgement: 'NONE'})]})} />);
-    expect(breaks).toContain('<p class="eb-upd__body">First line. Second line. Third.</p>');expect(breaks).toContain('aria-label="Unread one, Unread, ');expect(text(breaks)).not.toMatch(/Nov 4 Unread|· Unread/);expect(breaks).toContain('eb-updrow--unread');
+    expect(breaks).toContain('<p class="eb-upd__body">First line. Second line. Third.</p>');/* Sweep Z (B6): named by its text; the unread state is b-sr text. */expect(breaks).not.toMatch(/<a [^>]*class="b-row b-row--link eb-updrow[^"]*"[^>]*aria-label=/);expect(breaks).toContain('<span class="b-sr">Unread</span>');expect(text(breaks.replace(/<span class="b-sr">[^<]*<\/span>/g, ''))).not.toMatch(/Nov 4 Unread|· Unread/);expect(breaks).toContain('eb-updrow--unread');
   });
   it('a search with no match, an empty page and a confirm in flight', () => {
     expect(text(renderToStaticMarkup(<EmployeeUpdatesB list={list({search: 'nothing like this'})} />))).toContain('No matches on this page');
