@@ -118,3 +118,11 @@
   .action,.secondary { transition:none; }
   .action:active,.secondary:active { transform:none; }
 }
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): the main and second actions and the language switch are drawn by their fill
+ * and an inset shadow, both dropped under Windows contrast themes, so "Open billing in Velani" and "Refresh status" read
+ * as plain text. Each keeps a button edge. */
+@media (forced-colors: active) {
+  .action, .secondary, .lang { border: 1px solid ButtonText; }
+  .action:disabled, .secondary:disabled, .lang:disabled { border-color: GrayText; }
+}

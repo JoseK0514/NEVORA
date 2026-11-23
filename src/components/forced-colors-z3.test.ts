@@ -50,4 +50,7 @@ describe('forced colours keep controls visible (Z3)', () => {
     expect(css).toMatch(/\.eb-lseg \{ border: 1px solid ButtonText; \}/);
     expect(css).toMatch(/\.eb-lseg button\[aria-pressed="true"\] \{ forced-color-adjust: none; background: Highlight; color: HighlightText; \}/);
   });
+  it('keeps the billing and Clocker paused actions as buttons', () => {
+    expect(forced(read('src/components/commerce-recovery/recovery.module.css'))).toMatch(/\.action, \.secondary, \.lang \{ border: 1px solid ButtonText; \}/);
+  });
 });
