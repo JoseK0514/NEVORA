@@ -14,7 +14,6 @@ export const CHRISTMAS_BONUS_DISCLAIMER = "Informational only. Christmas bonus e
 const [DISCLAIMER_TITLE, ...DISCLAIMER_REST] = CHRISTMAS_BONUS_DISCLAIMER.split(/(?<=\.) /);
 
 const fullDate = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-const yearRange = (year: BonusYear) => formatDateRange(year.startDate, year.endDate);
 const grouped = (value: number) => value.toLocaleString("en-US");
 /** A figure as Insights writes hours ("812 h 5 min", "45 min"; final verification F, F19: it read "812 h 05"), with
  * thousands grouped so it reads beside "1,350 h". */
@@ -84,7 +83,7 @@ export function ChristmasBonusView({ report, choices }: { report: ChristmasBonus
   return <CorpPage className="c-bonus c-page--narrow" labelledBy="bonus-title">
     <CorpNav back={{ href: "/app/reports", label: "Insights" }} title="Christmas bonus hours" titleId="bonus-nav-title" phoneOnly />
     {/* D11: the year is the band's pill (a menu), as Insights keeps its period; on a phone it sits under the title. */}
-    <CorpTitle id="bonus-title" title="Christmas bonus hours" sub={<>{keepWhole(`Bonus year ${yearRange(year)}`)} · All locations</>} wide
+    <CorpTitle id="bonus-title" title="Christmas bonus hours" sub="All locations" wide
       actions={<BonusYearMenu id="bonus-year-menu" current={year.endYear} choices={years} />} />
     <div className="c-phone-sub c-bonus__phoneyear"><BonusYearMenu id="bonus-year-menu-phone" current={year.endYear} choices={years} /></div>
     <CorpCard id="bonus-about" ariaLabel="About this report">
