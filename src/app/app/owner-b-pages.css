@@ -750,6 +750,9 @@ body { --nv-rem: 1rem; }
  * 44px or more doesn't grow, and the ring stays inside the gaps around it (4px between sidebar links, 10px around the
  * bell). Nothing drawn moves. The back link isn't made relative here: on desktop it is already positioned. */
 @layer nv-b {
+    /* The tablet rail's nav scrolls vertically and clips sideways at its edge; 2px of padding that its negative margin gives
+     * back moves that edge out by the ring's 2px, so the 40px icons reach 44px wide. Nothing drawn moves. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] aside.sidebar nav.sidebar-nav:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { padding-inline: 2px !important; margin-inline: -2px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] aside.sidebar .nav-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .portal-notification-bell:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-week__arrow:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
