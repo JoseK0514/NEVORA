@@ -9,7 +9,9 @@
 :is(#c-root, html) .c-grace .c-grace__field { padding: 16px; }
 :is(#c-root, html) .c-grace :is(.c-grace__field, .c-grace__note, .c-grace__result) { padding-left: var(--b-inset, 16px) !important; padding-right: var(--b-inset, 16px) !important; }
 :is(#c-root, html) .c-grace .c-grace__minutes { display: flex; align-items: center; gap: 8px; font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink2); }
-:is(#c-root, html) .c-grace input[type="number"].c-in { max-width: 10rem; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-grace input[type="number"].c-in { font-variant-numeric: tabular-nums; }
+/* Final fixes S2: the FieldB unit ("minutes") sits inside the field at its right, so the field keeps its 10rem width as a whole. */
+:is(#c-root, html) .c-grace .c-setb-unit { max-width: 10rem; }
 :is(#c-root, html) .c-grace .c-field__help { display: block; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-grace .c-grace__note { margin: 0; padding: 14px 16px 16px; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-grace .c-grace__result { padding-bottom: var(--b-space-16, 16px); }

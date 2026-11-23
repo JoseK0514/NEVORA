@@ -30,7 +30,8 @@
 :is(#c-root, html) .c-photos .c-photos__switch .c-row__detail > span:first-child { white-space: normal; }
 :is(#c-root, html) .c-photos .c-field__help { display: block; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-photos .c-field__help strong { font-weight: 600; color: var(--c-ink2); }
-:is(#c-root, html) .c-photos input[type="number"].c-in { max-width: 10rem; }
+/* Final fixes S2: the FieldB unit ("days") sits inside the field at its right, so the field keeps its 10rem width as a whole. */
+:is(#c-root, html) .c-photos .c-setb-unit { max-width: 10rem; }
 :is(#c-root, html) .c-photos .c-photos__more > summary { list-style: none; cursor: pointer; }
 :is(#c-root, html) .c-photos .c-photos__more > summary::-webkit-details-marker { display: none; }
 :is(#c-root, html) .c-photos .c-photos__more[open] .c-photos__caret { transform: rotate(180deg); }
