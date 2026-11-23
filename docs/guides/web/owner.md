@@ -36,7 +36,8 @@ If an operator supplied your initial password, sign in with it and choose a
 different password on the replacement screen. The initial password grants no
 workplace session. After replacement, sign in with your new password.
 
-**Home** leads with what needs you, then **Today**: the people scheduled today,
+**Home** leads with what needs you (on a phone, a pay period with no payroll comes
+first, with **Prepare <period>**), then **Today**: the people scheduled today,
 their scheduled hours, the busiest hour, and one bar for each hour of today's
 published schedule, with the current hour marked. People who are clocked in
 are listed under it; on a phone they are one row that opens the list of
@@ -88,8 +89,8 @@ leaves Home once every step is complete.
    their Employee ID. They then sign in normally. Never ask them to share the
    password or invitation proof.
 
-Use **Refresh invitation** for current state. If an action is unconfirmed, use
-**Check action outcome** before sending another invitation. For management
+Use **Check invitation** for current state. If an action is unconfirmed, use
+**Check what happened** before sending another invitation. For management
 access conflicts, reload the current employee and review the current assignment.
 An earlier receipt records an action; it does not prove access is unchanged now.
 
@@ -106,7 +107,7 @@ and approval grants are separate from management scope. A Lead has personal
 self-service access; neither the Lead role nor a shift's designated-lead marker
 grants Manager powers.
 
-**What a Manager can approve** sits under Management access on a Manager's
+**What they can approve** sits under Management access on a Manager's
 **Access and sign-in** page. For each location they manage, switch on **Publish
 schedules**, **Approve time off** and **Review time exceptions** separately. A
 switch moves only after the save is confirmed. If it says **Not confirmed**, use
@@ -247,7 +248,7 @@ privacy fulfillment, use the [operations guide](operations.md).
 
 ## Business records, when enabled
 
-Open **AI manager → Business records**. Add a JSON file or explicitly map a CSV,
+Open **Rondo AI → Business records**. Add a JSON file or explicitly map a CSV,
 review every bounded row and the server's findings, and acknowledge the exact
 version before **Publish for Rondo**. **Main records** reviews the account and
 location perimeter; **Check figures** reads the eligible published records for the
@@ -266,7 +267,7 @@ Re-matched or corrected CSV data is saved as the reviewed structured amounts;
 keep the original file separately when the confirmation says it is not retained.
 Choices for people omitted from a file do not replace the server's reviewed
 period population or create persisted employment facts. Resolve a population
-refusal on **Who's included** and review again.
+refusal on **Who’s included and sent files** and review again.
 
 **Paid time export** requires a current reviewed population and finalized cards.
 Decide each recorded break explicitly; a recorded label does not establish paid
@@ -332,6 +333,6 @@ is set up separately and isn't posted from these screens.
 
 ## Tablet setup and uncertain punches
 
-Open **Clocker tablets** to register a tablet. The setup card offers a QR code, **Copy link** and **Show code**; use the link only on the intended tablet. The person holding it must tap to connect it. The code works once for 15 minutes. Browser and Home Screen app cookies can differ, so check registration in the actual kiosk you will use.
+Open **Clocker tablets** and choose **Add tablet** (the last row of the list) to register a tablet. The setup card offers a QR code, **Copy link** and **Show code**; use the link only on the intended tablet. The person holding it must tap to connect it. The code works once for 15 minutes. Browser and Home Screen app cookies can differ, so check registration in the actual kiosk you will use.
 
 A retained punch may say **not confirmed yet**. **Check if it saved** checks its original reference; **Send it again** retains that reference. **See current status** is a separate current observation. **Ask Owner to check** and **Check your last punch** are recovery routes. A failed check or a disabled service is not proof that a previous punch was never recorded. Offline punches are not queued automatically.
