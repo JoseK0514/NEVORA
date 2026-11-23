@@ -20,6 +20,6 @@ it('says the days to the scheduled payday as plain text, not a chip', () => {
 it('draws no statements yet as the empty state card, with no live region on load', () => {
   const html = renderToStaticMarkup(<QuietMyPay nextPay={nextPay} />);
   expect(html).toMatch(/<div class="b-statecard" data-kind="empty">/);
-  expect(html).toContain('<p class="b-statecard__t">No statements yet</p><p class="b-statecard__s">Only you can see them.</p>');
+  expect(html).toContain('<p class="b-statecard__t">No statements yet</p>');expect(html).not.toContain('Only you can see them.');
   expect(html).not.toContain('c-empty');
 });
