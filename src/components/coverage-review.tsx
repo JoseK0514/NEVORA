@@ -74,7 +74,7 @@ export function CoverageReview(props: CoverageReviewProps) {
   else if (props.mode === "draft") outcome = <p className="c-review__outcome">{`${firstName(props.employeeName)} sees it once you publish the week.`}</p>;
   else if (props.mode === "needs-publish-permission") outcome = <Blocked title="Publishing permission needed">This week is published. Ask the Owner to make this change, or to let you publish.</Blocked>;
   else if (props.mode === "scoped-ask") outcome = <Blocked title="Company-wide access needed">Ask the Owner to make this change.</Blocked>;
-  else if (props.mode === "scoped-draft") outcome = <p className="c-review__outcome">Opens Add shift with these details.</p>;
+  // scoped-draft: no line; "Add draft shift" already says what happens (gaps G37).
 
   const card = <CorpCard id="replacement-shift" ariaLabel="Replacement">
     <CorpBody>
