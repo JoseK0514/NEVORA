@@ -3,12 +3,12 @@ import {createServer} from 'node:http';
 
 const reads=new Set(['notification-read','home-read','recorded-time-read','requests-read','calendar-read','manager-today-read','action-center-read','clock-monitor-read']);
 export function observeDocumentNavigation(page,origin=()=>new URL(page.url()).origin,{allowSameUrlReload=false}={}){
- let pending=null,phase='idle',startedAt=null,source=null,destination=null,sequence=0,sourceHistoryEvents=0,reload=false;
+ let pending=null,phase='idle',startedAt=null,source=null,destination=null,sequence=0,sourceHistoryEvents=0,reload=false,responded=false;
  const read=fn=>{try{return fn();}catch{return undefined;}};
  const documentUrl=value=>{const url=new URL(value);url.hash='';return url.href;};
  page.on('request',request=>{
   if(!read(()=>request.isNavigationRequest()&&request.frame()===page.mainFrame()))return;
-  pending=null;phase='unproven';startedAt=Date.now();sequence++;sourceHistoryEvents=0;reload=false;
+  pending=null;phase='unproven';startedAt=Date.now();sequence++;sourceHistoryEvents=0;reload=false;responded=false;
   source=read(()=>documentUrl(page.url()));destination=read(()=>documentUrl(request.url()));
   if(!source||!destination||!read(()=>new URL(destination).origin===origin()))return;
   if(source===destination){
@@ -23,10 +23,13 @@ export function observeDocumentNavigation(page,origin=()=>new URL(page.url()).or
   // A same-URL frame event could be source history or the successor document.
   // End attribution conservatively; never wait for a streaming HTML body to finish.
   if(reload){pending=null;phase='reload-boundary';return;}
-  // A history update in the source document is not the pending destination's commit.
-  if(url===source){sourceHistoryEvents++;return;}
+  // A history update in the source document is not the pending destination's commit. A new document cannot commit
+  // before its navigation response, so any main-frame URL change before that response is the source document's own
+  // history update (Nov 23, 2026: the schedule replaced its URL while a hard navigation was pending).
+  if(url===source||!responded){sourceHistoryEvents++;return;}
   pending=null;phase=url===destination?'committed':'unproven';
  });
+ page.on('response',response=>{if(pending&&read(()=>response.request())===pending)responded=true;});
  page.on('domcontentloaded',()=>{if(phase==='committed')phase='dom-ready';});
  const notificationRead=request=>read(()=>{const url=new URL(request.url());return request.method()==='GET'&&url.origin===origin()&&url.pathname==='/api/notifications'&&!url.username&&!url.password&&!url.search&&!url.hash;});
  page.on('response',response=>{

@@ -20,6 +20,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
   await mkdir(evidence, { recursive: true });
   const { observeBrowserCell } = await import(new URL('../../../scripts/phase-e-browser-qa.mjs', import.meta.url).href);
   const { verifyNavigationFetchDiagnostic, observeWindowExceptions } = await import(new URL('../../../scripts/browser-navigation-diagnostic.mjs', import.meta.url).href);
+  const { verifyReloadFetchDiagnostic } = await import(new URL('../../../scripts/browser-reload-diagnostic.mjs', import.meta.url).href);
   const { observeRscCaughtErrors, requestFailureCategory } = await import(new URL('../../../scripts/rsc-caught-error-observer.mjs', import.meta.url).href);
   const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? resolve('tools/ci-browser-runtime/package.json'))('playwright');
   const app = await createOwnedNextApp(evidence);
@@ -63,9 +64,14 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       const control = engine === 'webkit' ? await verifyNavigationFetchDiagnostic(b0) : { verified: false, windowObserverVerified: false, status: 'not-applicable' };
       if (engine === 'webkit') expect(control.verified).toBe(true);
       runtimeControls.push({ engine, ...control });
+      // Flaky-test gap (Nov 23, 2026): WebKit also refuses the shell's authority read when a hard navigation cancels it.
+      // It is admitted only with the same proof Rondo's weekly test uses: a verified authority control and a GET witness.
+      const authorityControl = engine === 'webkit' ? await verifyReloadFetchDiagnostic(b0, { resource: 'authority', bothWitnesses: true }) : { verified: false };
+      if (engine === 'webkit') expect(authorityControl.verified).toBe(true);
+      runtimeControls.push({ engine, resource: 'authority', verified: authorityControl.verified });
       for (const [index, context] of [c0, c1, c2].entries()) {
         const execution = { engine, width: index === 0 ? 390 : 1440, kind: 'readiness-schedule' };
-        const observer = observeBrowserCell(execution, errors, { navigationDiagnosticVerified: control.verified, navigationReadKinds: ['manager-today-read'], routerReadsDuringNavigation: true });
+        const observer = observeBrowserCell(execution, errors, { navigationDiagnosticVerified: control.verified, authorityDiagnosticVerified: authorityControl.verified, navigationReadKinds: ['manager-today-read', 'authority-read'], requireAuthorityGetWitness: authorityControl.verified, routerReadsDuringNavigation: true });
         observer.setStageReader(() => stage);
         await observer.observeContext(context, index === 1 ? 'manager' : 'primary');
         await observeRscCaughtErrors(context, (_page: unknown, metadata: Record<string, unknown>) => trace({ engine, index, event: 'caught-rsc-error', metadata }));

@@ -14,8 +14,10 @@ async function fixture({verified=true,reloadVerified=false,sameUrl=false,engine=
  const request={isNavigationRequest:()=>true,resourceType:()=> 'document',method:()=> 'GET',frame:()=>frame,url:()=>destination};
  if(pending)page.emit('request',request);
  const error={name:'Fetch API cannot load http',message:'/'+host+path+' due to access control checks.'};
- const commit=(url=request.url())=>{currentUrl=url;page.emit('framenavigated',frame);};
- return {cell,context,page,errors,execution,error,frame,request,binding,commit};
+ // A real commit follows its navigation response (the tracker needs it to tell a commit from a source history update).
+ const commit=(url=request.url(),navigation:unknown=request)=>{page.emit('response',{request:()=>navigation,status:()=>200});currentUrl=url;page.emit('framenavigated',frame);};
+ const historyChange=(url:string)=>{currentUrl=url;page.emit('framenavigated',frame);};
+ return {cell,context,page,errors,execution,error,frame,request,binding,commit,historyChange};
 }
 it('records the reproduced native refusal only during a pending owned document navigation',async()=>{
  const f=await fixture();f.page.emit('pageerror',f.error);f.cell.assertClean();
@@ -107,7 +109,7 @@ it('an uncorrelated main-frame destination stays fatal',async()=>{
 it('a superseded or redirected request cannot close the latest request boundary',async()=>{
  const f=await fixture(),next={...f.request,url:()=> 'http://127.0.0.1:43210/app/calendar'};f.page.emit('request',next);
  f.page.emit('requestfailed',f.request);f.page.emit('requestfinished',f.request);f.page.emit('pageerror',f.error);f.cell.assertClean();
- f.commit(next.url());f.page.emit('pageerror',{...f.error});expect(()=>f.cell.assertClean()).toThrow();
+ f.commit(next.url(),next);f.page.emit('pageerror',{...f.error});expect(()=>f.cell.assertClean()).toThrow();
 });
 it('never creates a boundary for a subframe or foreign document',async()=>{
  for(const other of [true,false]){const f=await fixture({pending:false});f.page.emit('request',{isNavigationRequest:()=>true,frame:()=>other?{}:f.frame,url:()=>other?'http://127.0.0.1:43210/app':'https://fictional.invalid/app'});f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();}
@@ -170,4 +172,16 @@ it.each(['unhandledrejection'])('never pairs an actual %s with a router read',as
 it('never pairs a window error once the navigation committed',async()=>{
  const f=await fixture({path:'/app/schedule?_rsc=1k3x9',routerReads:true});f.page.emit('pageerror',f.error);f.commit();await f.binding({page:f.page},'error');
  expect(()=>f.cell.assertClean()).toThrow();
+});
+
+// Navigation tracker (Nov 23, 2026): a main-frame URL change before the pending navigation's response is the source
+// document's own history update, so the navigation stays pending; after the response it is a commit as before.
+it('keeps a navigation pending through a source-document URL change before its response',async()=>{
+ const f=await fixture({path:'/api/manager/today'});f.historyChange('http://127.0.0.1:43210/app?week=2026-11-30');
+ f.page.emit('pageerror',f.error);f.cell.assertClean();expect(f.execution.navigationDiagnostics).toMatchObject([{pendingMainFrameNavigation:true,documentNavigation:{phase:'requested',sourceHistoryEvents:1}}]);
+ // The destination's own commit (after its response) still ends the boundary.
+ f.commit();f.page.emit('pageerror',{...f.error});expect(()=>f.cell.assertClean()).toThrow();
+});
+it('a different main-frame URL after the response is still unproven and fatal',async()=>{
+ const f=await fixture({path:'/api/manager/today'});f.commit('http://127.0.0.1:43210/app/calendar');f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
 });
