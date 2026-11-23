@@ -119,7 +119,7 @@ it('EM-016: Today’s team is a plain row that opens the compose page, with its 
   const html = draw({lead: true, team: true}), card = html.slice(html.indexOf('id="b-home-team"'), html.indexOf('</section>', html.indexOf('id="b-home-team"')));
   expect(card).toContain('<a class="b-row b-row--link" href="/app/updates/compose">');
   expect(card).not.toContain('b-btn');expect(card).toContain('class="b-chev"');
-  expect(card).toContain('<p class="eb-cardnote">Your message goes to everyone on today’s published schedule. They don’t have to acknowledge it.</p>');
+  expect(card).toContain('<p class="eb-cardnote">Your message goes to everyone on today’s published schedule. They don’t have to confirm it.</p>');
 });
 
 it('a punch left open after today’s shift ended is found from the two reads Home already has', () => {
