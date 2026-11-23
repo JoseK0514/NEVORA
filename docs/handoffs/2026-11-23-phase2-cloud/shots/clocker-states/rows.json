@@ -1,0 +1,150 @@
+[
+ {
+  "id": "k13-en",
+  "row": "K13",
+  "page": "Someone else's punch in progress",
+  "section": "Clocker",
+  "note": "James's Clock in was cut off before it saved, then Ana entered her PIN on the same tablet in a second tab; Check if it saved shows this screen. The 'Clears in' pill no longer covers Done on a portrait tablet.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k13-someone-elses-punch-en-390.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k13-someone-elses-punch-en-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k13-someone-elses-punch-en-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Keyboard focus on Done",
+    "after": "img/k13-someone-elses-punch-focus-en-1024.webp"
+   },
+   {
+    "label": "Ana's second tab",
+    "after": "img/k13-second-tab-en-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "A second tab on the same tablet (Ana) opens a normal Clock in screen while James's punch is still waiting in the first tab; only the tab that holds the waiting punch shows this state. A kiosk runs one tab, so it is low risk; behaviour, not layout (no change made).",
+   "Spanish band clock reads '9:18 a. m.' while the one time format is '7:00 AM' (kiosk-wide band, not this state's file; for Jose to decide)."
+  ]
+ },
+ {
+  "id": "k13-es",
+  "row": "K13",
+  "page": "Someone else's punch in progress (Spanish)",
+  "section": "Clocker",
+  "note": "Same state with the tablet set to Spanish: 'La marcación de otra persona está pendiente' and one Listo button. The text fits at every width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k13-someone-elses-punch-es-390.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k13-someone-elses-punch-es-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k13-someone-elses-punch-es-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Keyboard focus on Listo",
+    "after": "img/k13-someone-elses-punch-focus-es-1024.webp"
+   },
+   {
+    "label": "Ana's second tab",
+    "after": "img/k13-second-tab-es-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "A second tab on the same tablet (Ana) opens a normal Clock in screen while James's punch is still waiting in the first tab; only the tab that holds the waiting punch shows this state. A kiosk runs one tab, so it is low risk; behaviour, not layout (no change made).",
+   "Spanish band clock reads '9:18 a. m.' while the one time format is '7:00 AM' (kiosk-wide band, not this state's file; for Jose to decide)."
+  ]
+ },
+ {
+  "id": "k15-en",
+  "row": "K15",
+  "page": "Clocker paused",
+  "section": "Clocker",
+  "note": "Reached with commerce turned on and no billing connection (the commerce recovery test setup), so no billing provider was contacted. Paused and 'Access could not be checked' both show one 56px Try again button and no overflow.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k15-clocker-paused-en-390.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k15-clocker-paused-en-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k15-clocker-paused-en-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Access could not be checked",
+    "after": "img/k15-clocker-access-unchecked-en-390.webp"
+   },
+   {
+    "label": "Access could not be checked, tablet",
+    "after": "img/k15-clocker-access-unchecked-en-1024.webp"
+   },
+   {
+    "label": "Keyboard focus on Try again",
+    "after": "img/k15-clocker-paused-focus-en-1024.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Eyebrow 'Time clock' sits over 'This time clock is paused' (Spanish: 'Registro de tiempo' over 'El registro de tiempo está en pausa', then 'registrar tiempo'), so the words repeat. Left as is: the eyebrow-and-heading pattern is shared with the billing recovery pages; proposed: drop the eyebrow on this page.",
+   "At 1024x768 the shared recovery frame shows the sign-in panel 'Your week, in one place.' on a shared tablet. The frame is src/components/commerce-recovery/frame.tsx (shared, not changed); proposed: a plain band on the Clocker paused page."
+  ]
+ },
+ {
+  "id": "k15-es",
+  "row": "K15",
+  "page": "Clocker paused (Spanish)",
+  "section": "Clocker",
+  "note": "The Spanish now says 'dueño' like the rest of the Clocker, not 'propietario de tu negocio'. Nothing overflows at any width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k15-clocker-paused-es-390.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k15-clocker-paused-es-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k15-clocker-paused-es-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "No se puede comprobar el acceso",
+    "after": "img/k15-clocker-access-unchecked-es-390.webp"
+   },
+   {
+    "label": "No se puede comprobar el acceso, tablet",
+    "after": "img/k15-clocker-access-unchecked-es-1024.webp"
+   },
+   {
+    "label": "Keyboard focus on Intentar de nuevo",
+    "after": "img/k15-clocker-paused-focus-es-1024.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Eyebrow 'Time clock' sits over 'This time clock is paused' (Spanish: 'Registro de tiempo' over 'El registro de tiempo está en pausa', then 'registrar tiempo'), so the words repeat. Left as is: the eyebrow-and-heading pattern is shared with the billing recovery pages; proposed: drop the eyebrow on this page.",
+   "At 1024x768 the shared recovery frame shows the sign-in panel 'Your week, in one place.' on a shared tablet. The frame is src/components/commerce-recovery/frame.tsx (shared, not changed); proposed: a plain band on the Clocker paused page."
+  ]
+ }
+]
