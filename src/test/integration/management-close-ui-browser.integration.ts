@@ -50,17 +50,20 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     failureShot=async isActive=>{if(!isActive())return;await page.screenshot({path:resolve(evidence,engine+'-'+actor+'-failure.png'),fullPage:true,timeout:1500});if(!isActive())return;const focus=await page.evaluate(()=>(window as Window&{__r10Focus?:unknown[]}).__r10Focus);if(isActive())await writeFile(resolve(evidence,engine+'-'+actor+'-focus-events.json'),JSON.stringify(focus,null,2));};
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
     // Release the fixture's initial Home document only after its actual startup reads finish.
-    const homePaths=['/api/notifications','/api/manager/inbox-count','/api/manager/today','/api/manager/action-center','/api/manager/clock-monitor'];
+    const signedInReads=Promise.all(['/api/notifications','/api/manager/inbox-count'].map(path=>page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname===path&&response.status()===200).then((response:{finished():Promise<unknown>})=>response.finished())));
+    const homePaths=['/api/manager/today','/api/manager/action-center','/api/manager/clock-monitor'];
     if(actor==='QAOWNER')homePaths.push('/api/commerce/status','/api/setup/first-week');
-    const signedInReads=Promise.all(homePaths.map(async path=>{
+    const homeReads=Promise.all(homePaths.map(async path=>{
      // Dev navigation can cancel an early request after headers arrive. Wait
      // for a completed request for each fixture read within the normal timeout.
-     const request=await page.waitForEvent('requestfinished',(request:{url():string})=>new URL(request.url()).pathname===path);
+     const request=await page.waitForEvent('requestfinished',(request:{url():string})=>new URL(request.url()).pathname===path)
+      .catch((cause:unknown)=>{throw new Error('Home request did not finish: '+path,{cause});});
      const response=await request.response();
      // Commerce is disabled in this owned fixture.
      expect(response?.status(),path).toBe(path==='/api/commerce/status'?404:200);
     }));
-    await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await signedInReads;
+    const initialReads=Promise.all([signedInReads,homeReads]);
+    await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await initialReads;
     surfacePhase='timecards';await mark('timecards:start');
     // Use the supported person deep link from the Inbox so recovery after a blur
     // opens the current authorized timecard without restoring its retired draft.
