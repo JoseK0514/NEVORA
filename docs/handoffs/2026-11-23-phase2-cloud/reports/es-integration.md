@@ -1,4 +1,4 @@
-# (Draft: browser pass and checks pending) Signed-in Spanish: integration on `claude-codex-collab-nevora-staff`, Nov 23, 2026
+# Signed-in Spanish: integration on `claude-codex-collab-nevora-staff`, Nov 23, 2026
 
 All the Spanish branches are combined here, for the second release. The lead merges this branch after the first
 release. Nothing went to `claude-codex-collab-nevora`.
@@ -80,13 +80,48 @@ All data is fictional, and nothing was sent or published.
 
 - "Fecha de terminación" (3, es-rest part B) or "fecha de baja" (1, screens-final) for the termination date.
 - "Informes" for Insights (es-rest, es-rondo); the shell nav should say the same.
+- "empresa" (122 uses) or "compañía" (14, mostly in access and Home lines) for "company".
 - "Dueño/Gerente" (capitalised as roles) or "dueños/gerentes" in running text: both are used in role sentences.
 
-BROWSER_PASS_PLACEHOLDER
+## Browser pass (Spanish profile, fictional data)
+
+The scan harness runs the merged tree in `next dev` (Turbopack) with a signed-in Spanish session (the `nv-lang=es` cookie
+after sign-in). Each page is checked at 390, 390 with 200% text, 1440 and 1440 with 200% text. Each check records axe
+(WCAG 2 A/AA), horizontal overflow, `<html lang>`, and an English-leak probe that lists English sentences in a Spanish
+page, including screen-reader-only text.
+
+| Run | Pages | Result |
+|---|---|---|
+| Owner, Spanish (first pass) | Home, Things to do, Later and done, Schedule, Team, Timecards, Requests, More, Insights, Settings, Availability, Shift requests, Scheduling rules, Updates (14) | `lang="es"` on every page; no overflow; axe 0 except Insights at 1440 (below). English found in the roster's live words and caption, the quota hint, the missing-deadline item, Insights' definitions and the manager shift requests. Home's band labels ran into each other at 390. |
+| Employee, Spanish (first pass) | Home, Schedule, Time, Requests hub, Requests, Updates, an update, Availability, Shift requests, Profile, Pay, More (12) | `lang="es"`, axe 0, no overflow, no page errors on any route (es-employee's Turbopack fixes hold after the merges). English found in the claim refusal reasons and Pay's scope line. Home's hours line was cut to "trabajadas esta sem…" at 390. The update text is the manager's own fictional message. |
+| Recheck after the fixes (4bee7a8d, 5162a36f, 745e7d75) | Owner Home, Schedule, Scheduling rules, Later and done; Employee Home, Shift requests, Requests, Pay | `lang="es"`, axe 0, no overflow, no English found. Band labels and the hours line wrap. |
+| Owner, English profile | Home, Things to do, Schedule, Team | `lang="en"`, axe 0, no overflow; the English is unchanged. |
+
+Keyboard at 1440: the first stop is the skip link ("Ir al contenido" / "Skip to content"), then the sidebar. The probe
+finds no outline on the sidebar links in both languages; they likely show focus with a background, which this probe
+doesn't read. That is unchanged by this work, not confirmed either way.
+
+Still open from the pass:
+- Insights at 1440: axe `color-contrast` on `.c-ins__range` (the date line on the band), the same in both
+  scans. The screenshot shows light text on the teal band, so the gradient is the likely cause; I did not check it in
+  English.
+- Insights' "Report definitions" (screen-reader and disclosure text) are server sentences from `lib/reports/project.ts`.
+- Shift requests (Owner): ManagerShiftRequests' "Approving gives this shift to the person who picked it up." and
+  "Show the shift" (screens-final's open list).
+
+Screens: `/tmp/es-owner`, `/tmp/es-emp`, `/tmp/es-owner2`, `/tmp/es-emp2`, `/tmp/es-emp3`, `/tmp/en-owner` on the session
+machine. They are not committed, because they're working evidence and the session reports already hold the shots.
 
 ## Checks
 
-CHECKS_PLACEHOLDER
+- `tsc --noEmit`: clean.
+- `oxlint src`: 0 errors; 1 warning that was already there (`<img>` in `premium/clocker.tsx`).
+- Whole `src` suite (`node scripts/run-rstest.mjs run src`): 16,411 passed. Four tests failed. Three were my
+  expectations written before the merges (screens-final's Spanish wording "toda la empresa", and the role label mocked to
+  the raw role); they are fixed and pass (35 of 35 in those files). The fourth, `src/test/manual-publication.test.ts`
+  ("Stale or foreign application content hash"), was already failing before this work (G44, another session) and is
+  not touched here.
+- Duplicate imports: none in `src` (checked after every merge).
 
 ## For Jose to review (every session's list, collected)
 
@@ -98,7 +133,7 @@ CHECKS_PLACEHOLDER
   diarias", "Tu gerente tiene que confirmar algunas reglas", "No cumple las reglas actuales de este turno".
 - Owner advisor (`format.ts`): "Mayor falta de personal: {n}.", "Incluye compromisos en borrador; verifica aparte el
   personal publicado."
-- Access notice (`operational-unavailable`, screens-final's wording kept): "Necesitas acceso a toda la compañía".
+- Access notice (`access-copy`, screens-final's wording kept): "Necesitas acceso a toda la empresa".
 
 ### es-rest: Decisions for Jose and the lead
 

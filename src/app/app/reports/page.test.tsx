@@ -63,7 +63,7 @@ it('writes the closed notice and the access card in Spanish, and is English when
  expect(closed).not.toContain('Insights is for Owners and Managers');
  fixture.role='MANAGER';fixture.denied=true;
  const denied=renderToStaticMarkup(await ReportsPage({searchParams:Promise.resolve({})}));
- expect(denied).toContain('Informes');expect(denied).toContain('Necesitas acceso a toda la compañía');expect(denied).not.toContain('Company-wide access needed');expect(fixture.reports).not.toHaveBeenCalled();
+ expect(denied).toContain('Informes');expect(denied).toContain('Necesitas acceso a toda la empresa');expect(denied).not.toContain('Company-wide access needed');expect(fixture.reports).not.toHaveBeenCalled();
  language.fail=true;fixture.denied=false;fixture.role='LEAD';
  expect(renderToStaticMarkup(await ReportsPage({searchParams:Promise.resolve({})}))).toContain('Insights is for Owners and Managers');
 });

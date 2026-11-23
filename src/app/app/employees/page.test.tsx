@@ -160,7 +160,7 @@ it('gives a location Manager the Direction B Team with their place in the band a
 it('filters a location Manager with several places by place and keeps the place in the search',async()=>{
  operationalPageFixture.scoped=true;operationalPageFixture.multi=true;
  const all=renderToStaticMarkup(await EmployeesPage());
- expect(all).toContain('aria-label="Location: All your locations"');expect(all).toContain('>Lead<');expect(all).toContain('Local Person');expect(all).toContain('Other Person');
+ expect(all).toContain('aria-label="Location: All your locations"');expect(all).toContain('>LEAD<');expect(all).toContain('Local Person');expect(all).toContain('Other Person');
  // Under all places, each row names its places.
  expect(all).toContain('Main');expect(all).toContain('East');
  const east=renderToStaticMarkup(await EmployeesPage({searchParams:Promise.resolve({location:'east'})}));
