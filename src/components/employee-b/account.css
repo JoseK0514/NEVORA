@@ -350,4 +350,4 @@
 @layer nv-b { @media (min-width: 768px) {
   html body .app-shell[data-nv-b][data-employee-mobile] .c-page:has(> .b-screen--back) > .b-keep.eb-keep { padding: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
 } }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__body { padding-inline: var(--b-inset); }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__body { padding-inline: var(--b-inset); font-size: 0.875rem; line-height: 1.25rem; }
