@@ -57,7 +57,7 @@ const es: typeof en = {
   requestCorrection: 'Solicitar una corrección',
   finishFirst: 'Termina esta entrada en el Clocker de tu localidad antes de solicitar una corrección.',
   viewTimecard: 'Ver mi tarjeta de tiempo',
-  timesIn: (zone: string) => `Horas según la ${zoneEs(zone)}.`,
+  timesIn: (zone: string) => `Las horas están en ${zoneEs(zone)}.`,
   entryMissing: 'Esta entrada no está en tu vista actual de tiempo registrado. Revisa tu tarjeta de tiempo para fechas anteriores.',
   todayStatus: 'Estado de marcación de hoy',
   since: (place: string, at: string) => `${place} · Desde el ${at}`,

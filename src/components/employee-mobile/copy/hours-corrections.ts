@@ -123,7 +123,7 @@ const es: typeof en = {
   conflict: 'El registro cambió o ya tiene una corrección pendiente. Actualiza y revisa el estado actual.',
   denied: 'Tu acceso cambió. Inicia sesión de nuevo para continuar.',
   checkFields: 'Revisa las fechas, horas y el motivo propuestos.',
-  formHelp: (zone: string) => `Tu gerente revisa esta solicitud. Las marcaciones originales no cambian y los ajustes aprobados aparecen en tu tarjeta de tiempo. Horas según la ${zoneEs(zone)}.`,
+  formHelp: (zone: string) => `Tu gerente revisa esta solicitud. Las marcaciones originales no cambian y los ajustes aprobados aparecen en tu tarjeta de tiempo. Las horas están en ${zoneEs(zone)}.`,
   sendingShort: 'Enviando…', send: 'Enviar solicitud de corrección',
   draftError: (message: string) => draftErrorsEs[message] ?? message,
 };

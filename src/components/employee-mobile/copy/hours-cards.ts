@@ -65,6 +65,6 @@ const es: typeof en = {
   history: 'Historial de la tarjeta de tiempo', historySub: 'Aprobación, finalización y reapertura',
   historyBy: (action: 'APPROVE' | 'FINALIZE' | 'REOPEN', by: string) => `${{APPROVE: 'Aprobada', FINALIZE: 'Finalizada', REOPEN: 'Reabierta'}[action]} por ${by}`,
   noHistory: 'Todavía no hay historial de aprobación para este período.',
-  timesIn: (zone: string) => `Horas según la ${zoneEs(zone)}. Tu gerente controla la aprobación y la finalización.`,
+  timesIn: (zone: string) => `Las horas están en ${zoneEs(zone)}. Tu gerente controla la aprobación y la finalización.`,
 };
 export const hoursCardsCopy = {en, es};
