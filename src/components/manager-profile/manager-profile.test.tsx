@@ -86,6 +86,9 @@ describe('Owner and Manager Profile', () => {
     // Phase 2 (Nov 23, 2026): the band says "Manager", so the value is the reach only; who can change a locked value is
     // said to screen readers beside its lock, not as a visible line under every row.
     expect(assigned).toContain('<span class="q-rv q-rv--l">Main Office, West Office</span>');
+    // Package X: a location reads by its short name, as on every other page; a name without one stays whole.
+    const short = render({ ...manager, changedBy: 'Jose Natal', placeNames: { 'Main Office': 'Main' } }, parseManagerProfile(fixture('manager')));
+    expect(short).toContain('<span class="q-rv q-rv--l">Main, West Office</span>');
     expect(assigned.match(/<span class="sr-only">, Jose Natal can change this<\/span>/g)).toHaveLength(2);
     expect(assigned).not.toContain('pmp-fixed__why');
     expect(assigned).not.toContain('Read-only');
@@ -107,7 +110,9 @@ describe('Owner and Manager Profile', () => {
 
   it('says what is not there yet without blame words, and lets an Owner add an email', () => {
     const html = render(manager, parseManagerProfile(fixture('manager-empty')));
-    expect(html.match(/<span>None<\/span>/g)).toHaveLength(2);
+    // Package X: a Manager's empty value uses the Owner's words ("Not added"), not "None".
+    expect(html.match(/<span>Not added<\/span>/g)).toHaveLength(2);
+    expect(html).not.toContain('<span>None</span>');
     expect(html).not.toMatch(/missing|missed/i);
     const ownerEmpty = render(owner, parseManagerProfile({ ...fixture('owner'), contact: { email: null, phone: null } }));
     expect(ownerEmpty).toContain('href="/app/employees/qa-owner?edit=1"');
@@ -187,3 +192,26 @@ describe('Owner and Manager Profile', () => {
     expect(css).not.toMatch(/--nv-t-(tab|badge)/);
   });
 });
+
+describe('Profile passkeys row on a phone (Z2)', () => {
+  it('puts Add a passkey under its explanation below 768px only', () => {
+    const css = readFileSync(new URL('./manager-profile-upscale.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const rule = '.pmp-passkeys__row > .pk-section .pk-add { grid-column: 1; grid-row: auto; justify-self: start; }';
+    const at = css.indexOf(rule);
+    expect(at).toBeGreaterThan(-1);
+    expect(css.indexOf(rule, at + 1)).toBe(-1);
+    const media = css.slice(0, at).match(/@media [^{]*\{/g)?.at(-1);
+    expect(media).toBe('@media (max-width: 767px) {');
+  });
+});
+
+describe('Profile approval rows on a 320px phone (Z2)', () => {
+  it('puts the value under its label below 360px only', () => {
+    const css = readFileSync(new URL('../../app/app/owner-b-settings.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const at = css.indexOf('.q-row.pmp-access:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#z2) > .q-rv { grid-column: 1 !important; grid-row: 2 !important; justify-self: start !important; text-align: left !important; }');
+    expect(at).toBeGreaterThan(-1);
+    expect(css.slice(0, at).match(/@media [^{]*\{/g)?.at(-1)).toBe('@media (max-width: 359px) {');
+    expect(css.slice(0, at).lastIndexOf('@layer nv-b {')).toBeGreaterThan(-1);
+  });
+});
+
