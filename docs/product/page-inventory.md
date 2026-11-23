@@ -163,7 +163,7 @@ which are the notice and not-found pages themselves.
 
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| B1 | Home | `/app` | ✓* | ✓* | ✓* | ✓* | ✓* | B (Owner, Manager, Lead, Employee); Older (Mℓ: scoped Home) | Five versions: Owner, Manager, location Manager (`ScopedManagementHome`), Lead, Employee; first-run onboarding guide | O B 169w 4b · M B 160w 3b · Mℓ **Older** 71w 3b · L B 221w 3b · E B 188w 3b | ☐ |
+| B1 | Home | `/app` | ✓* | ✓* | ✓* | ✓* | ✓* | B (Owner, Manager, Lead, Employee); Older (Mℓ: scoped Home) | Five versions: Owner, Manager, location Manager (`ScopedManagementHome`), Lead, Employee; first-run onboarding guide | O B 169w 4b · M B 160w 3b · Mℓ **Older** 71w 3b · L B 221w 3b · E B 188w 3b | Mℓ ✓ (Jose, Nov 23) |
 | B2 | More (phone menu) | `/app/more` | ✓* | ✓* | ✓* | ✓* | ✓* | Corp + B | Manager/Owner list vs Employee list | O B 23w 1b · M B 24w 1b · Mℓ B 14w 1b · L B 64w 1b · E B 64w 1b | ☐ |
 | B3 | Notifications | `/app/notifications` | ✓ | ✓ | ✓ | ✓ | ✓ | Quiet + B | Owner also sees the billing notice | O B 9w 3b · M **Mixed** 40w 2b · Mℓ B 17w 0b · L B 93w 4b · E B 92w 3b | ☐ |
 | B4 | Things to do (manager inbox) | `/app/inbox` | ✓ | ✓ | ✓* | → | → | Corp | Lead and Employee go to Requests hub | O B 365w 4b · M B 317w 4b · Mℓ n · L → · E → | ☐ |
@@ -180,9 +180,9 @@ which are the notice and not-found pages themselves.
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | C1 | Schedule | `/app/schedule` | ✓* | ✓* | ✓* | ✓* | ✓* | B (O, M, L, E); Older (Mℓ: scoped schedule) | Week, day and open-shift views; Employee/Lead confirm the week; planning panel with Publish | O **B/Mixed** 140w 6b · M **B/Mixed** 140w 6b · Mℓ **Older** 392w 2b · L B 79w 3b · E B 78w 3b | ☐ |
-| C2 | Add shift | `/app/schedule/new` | ✓ | ✓ | ✓* | – | – | Mixed; Older (Mℓ form) | Company form vs location Manager form | O B 20w 1b · M B 20w 1b · Mℓ **Older** 13w 1b · L – · E – | ☐ |
+| C2 | Add shift | `/app/schedule/new` | ✓ | ✓ | ✓* | – | – | Mixed; Older (Mℓ form) | Company form vs location Manager form | O B 20w 1b · M B 20w 1b · Mℓ **Older** 13w 1b · L – · E – | Mℓ ✓ (Jose, Nov 23) |
 | C3 | **Find cover: Review replacement** | `/app/schedule/new?review=` | ✓ | ✓ | ✓ | – | – | Older (`kit`, `wave-a`) | Jose, Nov 22: "one of the worst UI"; shows "Publishing permission needed" without the grant | O **Older** 105w 2b · M **Older** 101w 1b · Mℓ n | ☐ |
-| C4 | Edit shift / shift details | `/app/schedule/edit` | ✓ | ✓ | ✓* | – | – | Mixed; Older (Mℓ read-only) | Delete shift confirm | O B 42w 2b · M B 42w 2b · Mℓ **Older** 28w 1b | ☐ |
+| C4 | Edit shift / shift details | `/app/schedule/edit` | ✓ | ✓ | ✓* | – | – | Mixed; Older (Mℓ read-only) | Delete shift confirm | O B 42w 2b · M B 42w 2b · Mℓ **Older** 28w 1b | Mℓ ✓ (Jose, Nov 23) |
 | C5 | Find cover (who can cover) | `/app/schedule/coverage` | ✓ | ✓ | n† | – | – | Own (coverage assistant) |  | O B 67w 2b · M B 67w 2b · Mℓ n (company-wide only, by design) | ☐ |
 | C6 | Build and publish | `/app/schedule/publish` | ✓ | ✓ (grant) | ✓ (grant) | – | – | Corp + B | Manager needs Publish schedules; one Publish form per draft location | O B 27w 0b · M n · Mℓ n | ☐ |
 | C7 | Templates (copy a week) | `/app/schedule/templates` | ✓ | ✓ | n† | – | – | Quiet + Wave |  | O **Mixed** 27w 1b · M **Mixed** 27w 1b · Mℓ n | ☐ |
@@ -215,7 +215,7 @@ which are the notice and not-found pages themselves.
 
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| F1 | Team | `/app/employees` | ✓ | ✓ | ✓* | – | – | B (company); Older (Mℓ: scoped directory) | Filters, live status | O B 123w 4b · M B 124w 4b · Mℓ **Older** 131w 0b · L – · E – | ☐ |
+| F1 | Team | `/app/employees` | ✓ | ✓ | ✓* | – | – | B (company); Older (Mℓ: scoped directory) | Filters, live status | O B 123w 4b · M B 124w 4b · Mℓ **Older** 131w 0b · L – · E – | Mℓ ✓ (Jose, Nov 23) |
 | F2 | Add person | `/app/employees/new` | ✓ | ✓ | n† | – | – | Corp | Invite | O B 73w 1b · M B 73w 1b · Mℓ n | ☐ |
 | F3 | Import a staff list | `/app/employees/import` | n† | n | n | – | – | Corp |  | O n · M n · Mℓ n | ☐ |
 | F4 | Person (profile, role, access) | `/app/employees/[employeeId]` | ✓ | ✓ | n† | – | – | Mixed | Invitation, operational scope, action grants | O B 54w 2b · M B 46w 2b · Mℓ n | ☐ |
