@@ -130,6 +130,9 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-live__a { transition-property: scale, background-color; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-live__a:active { background-color: rgb(255 255 255 / 0.08); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-live__l { display: flex; align-items: center; gap: 6px; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-on-band); white-space: nowrap; }
+/* Signed-in Spanish (integration, Nov 23): a longer label ("Sin marcar entrada", "Turnos disponibles") wraps in its own cell
+ * instead of running into the next one at 390. English keeps its one line. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-live__l:lang(es) { white-space: normal; align-items: flex-start; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-live__v { font-size: var(--b-fs-figure); line-height: var(--b-lh-figure); font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-live__v small { font-size: 0.875rem; font-weight: 500; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-dot { flex: none; width: 7px; height: 7px; border-radius: 4px; }
