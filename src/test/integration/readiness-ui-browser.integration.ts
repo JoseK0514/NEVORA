@@ -89,7 +89,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         const homeReady = waitForRead(actor === 'UI-COMPANY' ? '/api/manager/today' : '/api/manager/clock-monitor');
         await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(app.url + '/app');
         await homeReady;
-        await page.getByRole('main').getByRole('heading', { level: 1 }).filter({ visible: true }).waitFor();
+        await page.getByRole('main').getByRole('heading', { level: 1 }).filter({ visible: true }).first().waitFor();
         await page.waitForLoadState('load');
         const id = `${engine}-${actor}`;
         await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,'ui-review','UI-WORKER','2026-10-12','08:00','16:00')", [id]);
