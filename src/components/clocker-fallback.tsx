@@ -74,8 +74,8 @@ function ErrorBody({ retry }: { retry: () => void }) {
   useEffect(() => { heading.current?.focus({ preventScroll: true }); }, [online]);
   if (!online) return <Frame>
     <span className={styles.ring} data-tone="red"><ClockerIcon name="offline" size={28} mark/></span>
-    <h1 ref={heading} tabIndex={-1} className={styles.title}>{t('No connection')}</h1>
-    <p role="alert" className={styles.smsg}>{t('This tablet is offline, so nothing can be recorded right now.')}</p>
+    <h1 ref={heading} tabIndex={-1} className={styles.title}>{t('Time can’t be recorded')}</h1>
+    <p role="alert" className={styles.smsg}>{t('This tablet is offline.')}</p>
     <p className={styles.blockedHint}>{t('Tell a manager so your time gets recorded.')}</p>
     <div className={styles.stack}><button type="button" className={styles.btn} data-kind="primary" onClick={retry}>{t('Check connection')}</button></div>
     <p className={styles.clears}>{t('This tablet checks again by itself when the connection returns.')}</p>

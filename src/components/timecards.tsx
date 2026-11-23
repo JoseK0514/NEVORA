@@ -27,7 +27,7 @@ import type {TimecardIssue} from '@/lib/timecards/project';
 import {CorpAvatar,CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpDuration,CorpEmpty,CorpErrorCard,CorpPage,CorpRow,CorpRows,CorpStats,CorpTime,CorpTitle} from './corp/corp';
 import {QuietSheet,SheetCancel} from './quiet/quiet-sheet';
 import './timecards-corp.css';
-import {BAvatar,BBusyLabel,BButton,BCallout,BCard,BChip,BDoneMark,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BSegs,BStack,BState,BStatusText} from './owner-b/b-kit';
+import {BAvatar,BBusyLabel,BButton,BCallout,BCard,BChip,BDoneMark,BHero,BIcon,BList,BLive,BRow,BScreen,BSeg,BSegs,BStack,BState,BStatusText} from './owner-b/b-kit';
 import {momentsCopy} from './owner-b/moments-copy';
 import {DecisionAsk} from './owner-b/decision-parts';
 import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
@@ -741,7 +741,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         {/* BR-2: the counts name the two steps as the chips do ("Ready to approve", "Ready to finalize"). */}
         {/* MG-004: the viewer's own card is someone else's to approve, so it is not counted here. */}
         <p className="c-tc-note">{`${othersSummary.counts.awaitingApproval} to approve · ${othersSummary.counts.awaitingFinalization} to finalize`}</p>
-        {allFinalized?null:<p className="c-tc-note">{stepsLine}</p>}
+        {/* DEC8 (Jose, Nov 23, 2026): the steps are said where they are taken (the timecard sheet, the Select bar), not on the page: its summary already reads "6 to approve · 5 to finalize". */}
       </div>
     </CorpCard>:null;
     // AR-11 (Nov 14, 2026): once every timecard in a period that has ended is finalized, one row says what comes next.
@@ -810,7 +810,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               * line breaks after the week, never inside it ("Nov 16– / 22"). */}<BSegs parts={[rangeText(period),attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`]}/></span></span>
             <BButton onClick={()=>{setSelecting(true);selectAll(true);}}>Review</BButton></div></BCard>
           :ready&&cards.length&&open&&approvedCount?<BCard label="Approval"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{summaryTitle}</span><span className="b-notice__s">{`You can approve the rest from ${approveFrom(period)}`}</span></span></div></BCard>:null}
-          {ready&&cards.length&&!open&&!allFinalized?<BNote>{stepsLine}</BNote>:null}
+          
           {ready&&cards.length?<BCard id="b-tc-team" title={attentionShown?'Needs attention':'Team'} count={attentionShown?phoneRows.length:cards.length}
             chip={attentionShown?<button type="button" className="b-card__a" onClick={()=>setAttentionOnly(false)}>Show all</button>:undefined}>
             <BList label={attentionShown?'Timecards that need attention':'Timecards in this period'}>{phoneRows.map(item=>{

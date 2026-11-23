@@ -111,7 +111,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
      </div>
      {!acknowledged&&!ready.management&&required?<>
       <label className="wb-check"><input type="checkbox" checked={reviewed} disabled={locked} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label>
-      <div className="wb-actions"><button type="button" className="nv-btn" data-kind="primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><CheckCircleIcon size={20} weight="bold" aria-hidden="true"/><PendingLabel pending={pending} pendingText="Confirming…">Acknowledge update</PendingLabel></button></div>
+      <div className="wb-actions"><button type="button" className="nv-btn" data-kind="primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><CheckCircleIcon size={20} weight="bold" aria-hidden="true"/><PendingLabel pending={pending} pendingText="Confirming…">Confirm I read it</PendingLabel></button></div>
      </>:null}
      {!acknowledged&&!ready.management&&!required&&!markedRead?<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('MARK_READ');}}><CheckCircleIcon size={20} weight="bold" aria-hidden="true"/><PendingLabel pending={pending} pendingText="Saving…">Mark read</PendingLabel></button></div>:null}
     </div>
@@ -148,14 +148,14 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   :notice==='unavailable'?<section ref={noticeRef} className="b-card" aria-label="Unable to confirm"><BState kind="failed" alert title="Unable to confirm" line="Try again." action={{label:'Try again',onClick:()=>{if(!pending)onRefresh();}}}/></section>:null;
  const own=people?null:<section ref={receiptRef} tabIndex={-1} className="b-card mb-own" aria-label="Your review status">
   <p role="status" aria-live="polite" className="b-sr">{pending?'Confirming your review…':''}</p>
-  {acknowledged?<BState kind="done" title="Acknowledged" line={stamp(ready.ownAcknowledgedAt!)}/>:markedRead?<BState kind="done" title="Marked read" line={stamp(ready.ownReadAt!)}/>
+  {acknowledged?<BState kind="done" title="Confirmed" line={stamp(ready.ownAcknowledgedAt!)}/>:markedRead?<BState kind="done" title="Marked read" line={stamp(ready.ownReadAt!)}/>
    :required?<div className="mb-own__ask"><label className="mb-check"><input type="checkbox" checked={reviewed} disabled={locked} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label>
      <p className="b-sr" id="communication-acknowledgement-help">{ACK_WORD} confirms receipt of this version. It does not indicate agreement or attendance.</p>
-     <button type="button" className="b-btn b-btn--teal b-btn--full" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><BBusyLabel busy={pending} busyLabel="Confirming…">Acknowledge update</BBusyLabel></button></div>
+     <button type="button" className="b-btn b-btn--teal b-btn--full" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><BBusyLabel busy={pending} busyLabel="Confirming…">Confirm I read it</BBusyLabel></button></div>
    :<div className="mb-own__ask"><button type="button" className="b-btn b-btn--quiet b-btn--full" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('MARK_READ');}}><BBusyLabel busy={pending} busyLabel="Saving…">Mark read</BBusyLabel></button></div>}
  </section>;
  const remind=required&&people?people.filter(recipient=>!recipient.acknowledgedAt).map(recipient=>({employeeId:recipient.employeeId,name:recipient.name,source:{kind:'COMMUNICATION' as const,communicationId:ready.id,expectedRevisionId:ready.revisionId}})):[];
- const recipients=people?<BCard title="Acknowledged" meta={`${count} of ${people.length}`} id="update-recipients">
+ const recipients=people?<BCard title="Confirmed" meta={`${count} of ${people.length}`} id="update-recipients">
   {people.length?<BList label="Recipients">{people.map(recipient=><BRow key={recipient.employeeId} lead={<BAvatar name={recipient.name} size={36}/>} title={recipient.name}
     sub={recipient.acknowledgedAt?<time dateTime={recipient.acknowledgedAt}>{short(recipient.acknowledgedAt)}</time>:'Not yet'}
     trail={required&&!recipient.acknowledgedAt?<ReminderControl employeeId={recipient.employeeId} name={recipient.name}/>:undefined}/>)}</BList>
@@ -164,7 +164,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  const page=<ManagerMessagesPage className="mb-update" titleId="update-title" title={ready.title} back={{href:'/app/updates',label:'Updates'}} deskBack
   sub={<BSegs parts={[place,short(ready.publishedAt)]}/>}
   cards={<>
-   {justPublished?<div className="b-card b-upd-done"><BState kind="done" titleRef={publishedRef} title={audience?`Published to ${audience} ${audience===1?'person':'people'}`:'Update published'} line={people?`Acknowledged by ${count} of ${people.length} so far`:undefined}/></div>:null}
+   {justPublished?<div className="b-card b-upd-done"><BState kind="done" titleRef={publishedRef} title={audience?`Published to ${audience} ${audience===1?'person':'people'}`:'Update published'} line={people?`Confirmed by ${count} of ${people.length} so far`:undefined}/></div>:null}
    <article ref={surface} className="b-card mb-msg wb-focus-target" tabIndex={-1} data-update-revision={ready.revisionId} aria-label="Update content">
     <p className="mb-msg__meta"><BSegs parts={facts}/><span className="b-sr">{` · ${category} · ${ready.authorContext}`}</span></p>
     <p className="mb-msg__body">{ready.body}</p>

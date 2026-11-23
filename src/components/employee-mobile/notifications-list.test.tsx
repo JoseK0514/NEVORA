@@ -72,7 +72,7 @@ it('Phase 4 (EM-005): a headline is the outcome and its object, in English and S
  expect(head('Cover',{eventType:'COVERAGE_INVITATION',actionState:'available',subject:day})).toEqual({title:'Cover request waiting for you',object:'Thu, Nov 26',decided:null,forYou:true});
  expect(head('Shift swap',{eventType:'SWAP_APPROVED',subject:day}).title).toBe('Shift swap approved');expect(head('Cover',{eventType:'COVERAGE_DENIED',subject:day}).decided).toBe('declined');
  expect(head('Shift request update',{actionState:'complete'}).title).toBe('Shift request closed');expect(head('Can’t-work update',{eventType:'CALLOUT_APPROVED'}).title).toBe('Can’t-work request approved');
- expect(head('Team update',{actionState:'required'})).toEqual({title:'Acknowledge the team update',object:null,decided:null,forYou:false});expect(head('Team update').title).toBe('New team update');
+ expect(head('Team update',{actionState:'required'})).toEqual({title:'Confirm the team update',object:null,decided:null,forYou:false});expect(head('Team update').title).toBe('New team update');
  expect(head('Pay statement update').title).toBe('Pay statement shared');expect(head('Availability update',{actionState:'required'}).title).toBe('Send your availability');
  expect(head('Holiday hours')).toEqual({title:'Holiday hours',object:null,decided:null,forYou:false});
  // Spanish: every part comes from the copy module and the dates from the es-PR formatter.
