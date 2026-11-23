@@ -136,7 +136,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  // and when; the message card holds the text and its two quiet actions (Edit, Withdraw); the second card lists who has
  // acknowledged it, with a reminder for each person who hasn't when it must be read. Same commands and refs as before.
  const people=ready.management?.recipients;
- const facts=[required?'Must be read':'Optional',ready.editedAt?`Edited ${stamp(ready.editedAt)}`:null,ready.expiresAt?`Available until ${stamp(ready.expiresAt)}`:null];
+ const facts=[required?'Must be confirmed':'Confirming is optional',ready.editedAt?`Edited ${stamp(ready.editedAt)}`:null,ready.expiresAt?`Available until ${stamp(ready.expiresAt)}`:null];
  const actions=ready.management||ready.canWithdraw?(confirmWithdraw?<div className="mb-confirm" role="group" aria-labelledby="withdraw-confirm-text">
    <p className="mb-confirm__t" id="withdraw-confirm-text">{audience?`Withdraw this update for ${audience} ${audience===1?'person':'people'}? They won’t see it anymore.`:'Withdraw this update? People won’t see it anymore.'}</p>
    <div className="mb-acts"><button type="button" className="b-btn b-btn--quiet" disabled={pending} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(false);}}>Keep update</button>

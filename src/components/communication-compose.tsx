@@ -177,7 +177,7 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
      <div className="b-cmp-review__head"><h2 id="compose-review-title" className="b-cmp-review__t" ref={previewHeadingRef} tabIndex={-1}><span className="q-sr">Review: </span>{title.trim()}</h2>
       <button type="button" className="b-btn b-btn--quiet b-rowact b-rowact--quiet b-cmp-review__edit" aria-label="Edit update" disabled={disabled} onClick={backToWrite}>Edit</button></div>
      <p className="b-cmp-review__body">{body.trim()}</p>
-     <p className="b-cmp-review__facts"><BSegs parts={[typeLabel,context.management&&type!=='TODAYS_TEAM'?(ack==='REQUIRED'?'Must be read':'Optional'):null,useExpiry&&expiration?`Expires ${formatDisplayDate(expiration.slice(0,10))}`:'Never expires']}/></p>
+     <p className="b-cmp-review__facts"><BSegs parts={[typeLabel,context.management&&type!=='TODAYS_TEAM'?(ack==='REQUIRED'?'Must be confirmed':'Confirming is optional'):null,useExpiry&&expiration?`Expires ${formatDisplayDate(expiration.slice(0,10))}`:'Never expires']}/></p>
     </div>
     <ul className="b-list b-cmp-review__who" aria-label="Who gets it">
      <BRow lead={<BIcon tone={preview.count===0?'amber':'teal'}><UsersThreeIcon weight="bold"/></BIcon>} title={`Goes to ${preview.count} ${preview.count===1?'person':'people'}`} sub={`At ${location}`}
