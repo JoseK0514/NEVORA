@@ -24,7 +24,7 @@ describe('44px targets on tablets and desktop', () => {
 
   it('"What this measures" (drawn 36px) has a 44px ring centred on it, not shifted above it', () => {
     const css = read('./b-review-details.css');
-    expect(css).toContain('.b-explain > summary:not(#fa-x1):not(#fa-x2)::after { content: "" !important; position: absolute !important; top: 50% !important; bottom: auto !important; left: -4px !important; right: -4px !important; width: auto !important; height: calc(100% + 8px) !important; translate: 0 -50% !important;');
+    expect(css).toContain('.b-explain > summary:not(#fa-x1):not(#fa-x2)::after { content: "" !important; position: absolute !important; top: 50% !important; bottom: auto !important; left: -4px !important; right: -4px !important; width: auto !important; height: calc(100% + 8px) !important; translate: 0 -50% !important; transform: none !important; border-radius: 0 !important; }');
     expect(css).toMatch(/\.b-explain--compact > summary:not\(#fa-x1\):not\(#fa-x2\) \{ width: var\(--b-btn-h-compact\) !important; height: var\(--b-btn-h-compact\) !important; \}/);
   });
 
@@ -82,6 +82,12 @@ describe('placeholder contrast (release batch)', () => {
 
   it("Team's first row of filters sits above the second, so both rows' 4px rings reach 44px", () => {
     expect(read('./owner-b-home.css')).toContain('.c-page.c-team .b-filters:has(> :nth-child(4)) > button:nth-child(-n+2):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 1 !important; }');
+  });
+
+  it('the Time off empty card keeps the kit gap below the segments, and the Publish explain sits above its neighbours', () => {
+    const css = read('./owner-b-pages.css');
+    expect(read('./owner-b-requests.css')).toContain('.q-page > .q-emptycard:not(:is(nav.c-seg, .c-seg, .q-seg) + *):not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) { margin-top:0 !important; }');
+    expect(css).toContain('.c-pub .b-explain > summary:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { z-index: 2 !important; }');
   });
 });
 

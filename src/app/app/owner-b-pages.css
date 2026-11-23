@@ -784,3 +784,9 @@ body { --nv-rem: 1rem; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] .b-week__arrow:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h):not(#r44i)::after { top: 50% !important; left: 50% !important; right: auto !important; bottom: auto !important; width: max(100%, 44px) !important; height: max(100%, 44px) !important; translate: -50% -50% !important; }
 }
 
+
+/* Target size, release (Nov 23): on Build and publish, "What this measures" sits between its row's text and the Publish form, which covered its centred 44px ring;
+ * the summary (already positioned for that ring) sits above them. z-index only: nothing drawn moves. */
+@layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-pub .b-explain > summary:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { z-index: 2 !important; }
+}
