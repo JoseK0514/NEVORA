@@ -18,7 +18,7 @@ function number(f: FormData,key:string,max:number) { const v=text(f,key); if(!/^
 function date(f:FormData,key:string) { const v=text(f,key); try { return Temporal.PlainDate.from(v).toString(); } catch { throw Error(M.validDate(key)); } }
 function instant(f:FormData,key:string) { const v=text(f,key); try { return Temporal.PlainDateTime.from(v).toZonedDateTime('America/Puerto_Rico').toInstant().toString(); } catch { throw Error(M.validInstant(key)); } }
 const end = (f:FormData,key:string,asInstant=false) => raw(f,key) ? (asInstant ? instant(f,key) : date(f,key)) : null;
-const money=(f:FormData,key:string)=>dollarsToMinor(text(f,key));
+const money=(f:FormData,key:string)=>dollarsToMinor(text(f,key), M === nativeCopy.es.form ? 'es' : 'en');
 const optionalMoney=(f:FormData,key:string)=>raw(f,key) ? money(f,key) : null;
 function percent(f:FormData,key:string,max=10000) { const v=money(f,key); if(BigInt(v)>BigInt(max)) throw Error(M.percentage(key)); return Number(v); }
 function locations(f:FormData,key:string,required=true) { const v=list(f,key); if((required&&!v.length) || v.some(id=>!id||id==='*') || new Set(v).size!==v.length) throw Error(M.locations); return v; }

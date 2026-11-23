@@ -1,7 +1,7 @@
 /* Shared payroll status and errors (workflow-status.ts, api.ts, use-payroll.ts, payroll-feedback.tsx, form-keys.ts).
  * English is the approved wording, word for word; Spanish is Puerto Rico Spanish with tú (docs/design/voice.md).
  * Glossary: Nómina, comprobante de pago, bruto/neto, deducciones, aportaciones patronales, período de pago, día de
- * pago, contribuciones (taxes), dueño, Hojas de tiempo (the Timecards page), Ajustes de nómina, Exportar horas. */
+ * pago, contribuciones (taxes), dueño, Tarjetas de tiempo (the Timecards page), Ajustes de nómina, Exportar horas. */
 
 /* Blocker sentences that several codes share (PY-10). */
 const RULES_UNCONFIRMED = 'NEVORA can’t calculate this payroll until its payroll rules are confirmed. Contact support.';
@@ -22,18 +22,18 @@ const BAD_PERIOD = 'NEVORA can’t calculate a pay period with these dates. Cont
 
 const ES_RULES_UNCONFIRMED = 'NEVORA no puede calcular esta nómina hasta que se confirmen sus reglas de nómina. Comunícate con soporte.';
 const ES_SAME_AS_OPEN_TIME = 'Completa y revisa el tiempo o el descanso registrado que sigue abierto antes de recalcular.';
-const ES_SAME_AS_STALE = 'Actualiza y revisa las hojas de tiempo registradas y luego recalcula.';
-const ES_SAME_AS_FINALIZE = 'Revisa y finaliza las hojas de tiempo registradas que están incluidas.';
+const ES_SAME_AS_STALE = 'Actualiza y revisa las tarjetas de tiempo registradas y luego recalcula.';
+const ES_SAME_AS_FINALIZE = 'Revisa y finaliza las tarjetas de tiempo registradas que están incluidas.';
 const ES_WAGE_UNUSABLE = 'NEVORA no puede usar los datos de salario guardados. Revisa el salario en la configuración de nómina.';
 const ES_DEDUCTION_UNUSABLE = 'NEVORA no puede aplicar una de las deducciones guardadas. Revisa las deducciones en la configuración de nómina.';
 const ES_EMPLOYER_UNUSABLE = 'Faltan los datos de las aportaciones patronales o no son compatibles. Revísalos en la configuración de nómina.';
 const ES_WORKWEEK_UNUSABLE = 'NEVORA no puede usar la semana laboral guardada. Revisa la semana laboral en la configuración de nómina.';
-const ES_BREAK_UNUSABLE = 'NEVORA no puede calcular uno de los descansos registrados. Revisa el descanso en la hoja de tiempo y las reglas de descanso en la configuración de nómina.';
-const ES_TIME_UNCONFIRMED = 'NEVORA no pudo confirmar el tiempo registrado para esta nómina. Revisa las hojas de tiempo y luego recalcula. Si sigue igual, comunícate con soporte.';
+const ES_BREAK_UNUSABLE = 'NEVORA no puede calcular uno de los descansos registrados. Revisa el descanso en la tarjeta de tiempo y las reglas de descanso en la configuración de nómina.';
+const ES_TIME_UNCONFIRMED = 'NEVORA no pudo confirmar el tiempo registrado para esta nómina. Revisa las tarjetas de tiempo y luego recalcula. Si sigue igual, comunícate con soporte.';
 const ES_TOO_LARGE = 'Esta nómina es más grande de lo que NEVORA puede calcular de una vez. Comunícate con soporte.';
 const ES_DETAILS_UNREADABLE = 'No se pueden leer algunos datos de nómina guardados. Revísalos en la configuración de nómina. Si sigue igual, comunícate con soporte.';
 const ES_YTD_MISMATCH = 'Los totales de nómina de este año no cuadran para este empleado. Comunícate con soporte.';
-const ES_OVERLAP = 'Dos tiempos registrados se solapan. Corrige el solapamiento en Hojas de tiempo y luego recalcula.';
+const ES_OVERLAP = 'Dos tiempos registrados se solapan. Corrige el solapamiento en Tarjetas de tiempo y luego recalcula.';
 const ES_BAD_PERIOD = 'NEVORA no puede calcular un período de pago con estas fechas. Comunícate con soporte.';
 
 const en = {
@@ -187,6 +187,14 @@ const en = {
     reenter: 'Re-enter original action',
     pause: 'Pause re-entry',
   },
+  /** payroll-ui.tsx: the older payroll frame's states and document rows. */
+  ui: {
+    signIn: 'Sign in', tryAgain: 'Try again',
+    publishedToEmployee: 'Published to employee', privateNotPublished: 'Private · not published', privateCompanyFile: 'Private company file',
+    neutralJson: 'Neutral JSON · compatibility unverified · not submitted', pdfDocument: 'PDF document',
+    amountInvalid: 'Enter a nonnegative USD amount with up to two decimal places.',
+    view: 'View', download: 'Download', viewFile: (name: string) => `View ${name}`, downloadFile: (name: string) => `Download ${name}`,
+  },
   /** form-keys.ts: one message for every field that needs attention. */
   form: {
     thisField: 'This field',
@@ -199,13 +207,13 @@ const en = {
 
 const es: typeof en = {
   notice: {
-    enabled: 'El envío de avisos está activado. En cada entrega se verifican el acceso actual, el consentimiento y las preferencias de aviso guardadas. Un aviso en cola no confirma la entrega.',
-    disabled: 'El envío de avisos está desactivado. Las solicitudes de avisos privados pueden quedar en cola, pero este entorno no las enviará.',
+    enabled: 'El envío de notificaciones está activado. En cada entrega se verifican el acceso actual, el consentimiento y las preferencias de notificación guardadas. Una notificación en cola no confirma la entrega.',
+    disabled: 'El envío de notificaciones está desactivado. Las solicitudes de notificaciones privadas pueden quedar en cola, pero este entorno no las enviará.',
     outcome: {
-      QUEUED: 'Aviso en cola. No se ha confirmado el envío ni el recibo.',
-      QUEUED_DELIVERY_DISABLED: 'Aviso en cola mientras el envío estaba desactivado. No se ha confirmado el envío ni el recibo.',
-      NO_CURRENT_RECIPIENTS: 'No hay destinatarios elegibles ahora. No se puso ningún aviso en cola.',
-      NOT_SENT_STUB: 'Solo preparación anterior. No se envió ningún aviso.',
+      QUEUED: 'Notificación en cola. No se ha confirmado el envío ni el recibo.',
+      QUEUED_DELIVERY_DISABLED: 'Notificación en cola mientras el envío estaba desactivado. No se ha confirmado el envío ni el recibo.',
+      NO_CURRENT_RECIPIENTS: 'No hay destinatarios elegibles ahora. No se puso ninguna notificación en cola.',
+      NOT_SENT_STUB: 'Solo preparación anterior. No se envió ninguna notificación.',
       none: 'Todavía no hay un resultado de la cola. No se ha confirmado el envío ni el recibo.',
     },
   },
@@ -214,22 +222,22 @@ const es: typeof en = {
     missing: (count: number) => count === 1 ? '1 período de pago anterior todavía no tiene nómina. Empieza por el más antiguo.' : `${count} períodos de pago anteriores todavía no tienen nómina. Empieza por el más antiguo.`,
   },
   blockers: {
-    RECORDED_SOURCE_COVERAGE_MISSING: 'Revisa y finaliza las hojas de tiempo de los empleados, incluidos los períodos confirmados sin horas, antes de recalcular.',
+    RECORDED_SOURCE_COVERAGE_MISSING: 'Revisa y finaliza las tarjetas de tiempo de los empleados, incluidos los períodos confirmados sin horas, antes de recalcular.',
     RECORDED_SOURCE_STALE: ES_SAME_AS_STALE, RECORDED_SOURCE_STALE_SOURCE: ES_SAME_AS_STALE, STALE_TIMECARD_SOURCE: ES_SAME_AS_STALE,
-    RECORDED_SOURCE_UNAVAILABLE: 'Las hojas de tiempo registradas no están disponibles. Vuelve a cargar su estado actual antes de recalcular.',
+    RECORDED_SOURCE_UNAVAILABLE: 'Las tarjetas de tiempo registradas no están disponibles. Vuelve a cargar su estado actual antes de recalcular.',
     OPEN_RECORDED_TIME: ES_SAME_AS_OPEN_TIME, OPEN_RECORDED_BREAK: ES_SAME_AS_OPEN_TIME, RECORDED_SOURCE_UNRESOLVED_TIME: ES_SAME_AS_OPEN_TIME,
     TIME_FINALIZATION_REQUIRED: ES_SAME_AS_FINALIZE, FINALIZED_TIME_REQUIRED: ES_SAME_AS_FINALIZE, RECORDED_SOURCE_NOT_FINALIZED: ES_SAME_AS_FINALIZE,
-    PENDING_CORRECTIONS: 'Una corrección de tiempo todavía espera revisión. Revísala en Hojas de tiempo y luego recalcula.',
+    PENDING_CORRECTIONS: 'Una corrección de tiempo todavía espera revisión. Revísala en Tarjetas de tiempo y luego recalcula.',
     OVERLAPPING_RECORDED_TIME: ES_OVERLAP,
     CONFLICTING_RECORDED_SOURCE: ES_OVERLAP,
-    COMPLETE_CONTEXT_REQUIRED: 'NEVORA necesita las hojas de tiempo finalizadas de los días justo antes y después de este período para calcular las horas extra. Finalízalas y luego recalcula.',
+    COMPLETE_CONTEXT_REQUIRED: 'NEVORA necesita las tarjetas de tiempo finalizadas de los días justo antes y después de este período para calcular las horas extra. Finalízalas y luego recalcula.',
     RECORDED_SOURCE_INVALID_SOURCE: ES_TIME_UNCONFIRMED, RECORDED_SOURCE_IDENTITY_MISMATCH: ES_TIME_UNCONFIRMED, RECORDED_SOURCE_INCONSISTENT_LINEAGE: ES_TIME_UNCONFIRMED,
     RECORDED_PROVENANCE_REQUIRED: ES_TIME_UNCONFIRMED, CLOSING_CONTEXT_EVIDENCE_INVALID: ES_TIME_UNCONFIRMED,
     BREAK_PAY_BASIS_REQUIRED: ES_BREAK_UNUSABLE, UNSUPPORTED_UNPAID_BREAK_DURATION: ES_BREAK_UNUSABLE, UNSUPPORTED_PAID_BREAK_BASIS: ES_BREAK_UNUSABLE, INVALID_RECORDED_BREAK: ES_BREAK_UNUSABLE,
     LOCATION_COVERAGE_REQUIRED: 'Completa la cobertura de localidades registrada antes de recalcular.',
     DAILY_BOUNDARY_SENSITIVE: 'Una regla anterior detuvo este borrador porque el tiempo registrado llegó a la medianoche. Ahora los turnos cuentan el día en que empiezan. Recalcula este borrador.',
     POPULATION_REVIEW_REQUIRED: 'Elige quién está en esta nómina para el período y luego recalcula.',
-    POPULATION_SOURCE_CONFLICT: 'Las personas o las hojas de tiempo cambiaron después de que elegiste quién está en esta nómina. Revisa la lista otra vez y luego recalcula.',
+    POPULATION_SOURCE_CONFLICT: 'Las personas o las tarjetas de tiempo cambiaron después de que elegiste quién está en esta nómina. Revisa la lista otra vez y luego recalcula.',
     CORRECTION_POPULATION_CONFLICT: 'Una corrección tiene que incluir a las mismas personas que la nómina original. Revisa la nómina original antes de continuar.',
     WORKWEEK_EVIDENCE_REQUIRED: 'Pídele al dueño que documente la semana laboral del empleado. Sin el historial de avisos no se puede elegir una semana predeterminada.',
     INVALID_WORKWEEK_POLICY: 'Pídele al dueño que revise la evidencia de la semana laboral, su entrega y las fechas de vigencia.',
@@ -280,13 +288,13 @@ const es: typeof en = {
   },
   unknownBlocker: 'Algo detiene esta nómina que NEVORA no puede explicar aquí. Recalcula el borrador. Si sigue igual, comunícate con soporte.',
   waitingForAmounts: 'Importa las cantidades del proveedor o del contador para revisar este borrador.',
-  timeNotFinalized: (reference: string) => `Finaliza las hojas de tiempo del empleado con referencia ${reference} antes de aprobar.`,
+  timeNotFinalized: (reference: string) => `Finaliza las tarjetas de tiempo del empleado con referencia ${reference} antes de aprobar.`,
   populationDisposition: (reference: string) => `Elige qué hacer con el empleado con referencia ${reference} en este período antes de aprobar.`,
   employeeReference: (reference: string) => ` Referencia del empleado: ${reference}.`,
   api: {
     unreadable: 'No se pudo leer la respuesta de nómina. Actualiza para intentar de nuevo.',
     accessUnreadable: 'No se pudo leer la respuesta de acceso a nómina.',
-    noticeUnreadable: 'No se pudo leer la respuesta sobre los avisos de nómina.',
+    noticeUnreadable: 'No se pudo leer la respuesta sobre las notificaciones de nómina.',
     settingsIncomplete: 'La respuesta de los ajustes de nómina está incompleta.',
     reviewIncomplete: 'La respuesta de la revisión de nómina está incompleta.',
     revisionUnreadable: 'No se pudo leer la revisión de nómina. Actualiza antes de revisar cualquier cantidad.',
@@ -302,7 +310,7 @@ const es: typeof en = {
     NATIVE_REVIEW_STALE: 'El tiempo registrado o los datos de nómina cambiaron. Actualiza, recalcula este borrador y revisa la revisión nueva antes de aprobar.',
     REVISION_CONFLICT: 'Esta revisión cambió. Actualiza y revisa la nómina actual antes de continuar.',
     REVIEW_CONFLICT: 'La revisión de esta nómina cambió. Actualiza y revisa la revisión actual antes de aprobar.',
-    FINALIZED_TIME_REQUIRED: 'Finaliza las hojas de tiempo de los empleados incluidos antes de aprobar la nómina.',
+    FINALIZED_TIME_REQUIRED: 'Finaliza las tarjetas de tiempo de los empleados incluidos antes de aprobar la nómina.',
     SETTINGS_REQUIRED: 'Guarda los ajustes de nómina de la empresa antes de preparar esta nómina.',
     importJson: 'Elige una importación de nómina JSON válida.',
     importShape: 'Usa NEVORA_PAYROLL_IMPORT_V1 con USD, una referencia de origen, fechas y las cantidades completas de cada empleado. Las cantidades tienen que ser centavos enteros no negativos, escritos como texto.',
@@ -342,6 +350,13 @@ const es: typeof en = {
     retrySame: 'Reintentar la misma acción',
     reenter: 'Volver a escribir la acción',
     pause: 'Pausar',
+  },
+  ui: {
+    signIn: 'Iniciar sesión', tryAgain: 'Intentar de nuevo',
+    publishedToEmployee: 'Publicado para el empleado', privateNotPublished: 'Privado · sin publicar', privateCompanyFile: 'Archivo privado de la empresa',
+    neutralJson: 'JSON neutral · compatibilidad sin verificar · no enviado', pdfDocument: 'Documento PDF',
+    amountInvalid: 'Escribe una cantidad en USD que no sea negativa, con hasta dos decimales.',
+    view: 'Ver', download: 'Descargar', viewFile: (name: string) => `Ver ${name}`, downloadFile: (name: string) => `Descargar ${name}`,
   },
   form: {
     thisField: 'Este campo',

@@ -1,5 +1,5 @@
 /* My pay and statements (my-pay.tsx, portal-statements.tsx, document-row.tsx). English is the approved wording, word
- * for word; Spanish is Puerto Rico Spanish with tú (docs/design/voice.md: Pago, comprobante de pago, Hojas de tiempo,
+ * for word; Spanish is Puerto Rico Spanish with tú (docs/design/voice.md: Pago, comprobante de pago, Tarjetas de tiempo,
  * dates as "16 de octubre", "mar, 20 oct", "5–11 oct"). */
 const en = {
   /** my-pay.tsx: an Employee's Pay. */
@@ -80,7 +80,7 @@ const es: typeof en = {
   forPeriod: (period: string) => `por ${period}`,
   thisWeek: 'Esta semana',
   myTime: 'Mi tiempo',
-  timecards: 'Hojas de tiempo',
+  timecards: 'Tarjetas de tiempo',
   statements: 'Comprobantes',
   loading: 'Cargando tus comprobantes…',
   signInAgain: 'Inicia sesión otra vez para ver tus comprobantes.',

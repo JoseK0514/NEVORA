@@ -71,13 +71,13 @@ function rulesFromForm(values: FormData, rules: PayrollRule[], lang: PayrollLang
     const get = (key: string) => String(values.get(`rule-${rule.id}-${key}`) ?? '');
     const method = get('method') === 'PERCENTAGE' ? 'PERCENTAGE' : 'FIXED';
     const percent = get('percent');
-    const basis = method === 'PERCENTAGE' ? dollarsToMinor(percent) : null;
+    const basis = method === 'PERCENTAGE' ? dollarsToMinor(percent, lang) : null;
     if (basis !== null && BigInt(basis) > BigInt(10000)) throw new Error(payrollCopyFor(lang).settings.percentRange);
     return {
       id: rule.id, name: get('name').trim(), kind: get('kind') === 'EMPLOYER_CONTRIBUTION' ? 'EMPLOYER_CONTRIBUTION' : 'EMPLOYEE_DEDUCTION',
-      method, amountMinor: method === 'FIXED' ? dollarsToMinor(get('amount')) : null, basisPoints: basis === null ? null : Number(basis),
+      method, amountMinor: method === 'FIXED' ? dollarsToMinor(get('amount'), lang) : null, basisPoints: basis === null ? null : Number(basis),
       base: 'GROSS', applicability: get('applicability') === 'EMPLOYEE_ELECTION' ? 'EMPLOYEE_ELECTION' : 'ALL',
-      effectiveFrom: get('from'), effectiveTo: get('to') || null, capMinor: get('cap') ? dollarsToMinor(get('cap')) : null,
+      effectiveFrom: get('from'), effectiveTo: get('to') || null, capMinor: get('cap') ? dollarsToMinor(get('cap'), lang) : null,
       remittance: get('remittance') === 'PROVIDER' ? 'PROVIDER' : 'EMPLOYER',
     };
   });

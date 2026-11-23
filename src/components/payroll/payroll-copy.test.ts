@@ -24,8 +24,8 @@ describe('payroll copy table', () => {
     }
   });
 
-  it('has no empty strings in either language', () => {
-    for (const [path, value] of [...en, ...es]) if (typeof value === 'string') expect(value.trim(), path).not.toBe('');
+  it('leaves no Spanish blank where the English has words (placeholders such as an unused weekday slot are blank in both)', () => {
+    for (const [path, value] of en) if (typeof value === 'string') expect((es.get(path) as string).trim() === '', path).toBe(value.trim() === '');
   });
 
   it('writes the Spanish with no exclamation marks and no English role words', () => {
