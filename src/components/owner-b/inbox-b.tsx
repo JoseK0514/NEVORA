@@ -124,6 +124,7 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
   const needs = total === null ? null : total === 0 ? exact ? "Nothing needs you right now" : t.notAllChecked : t.needYou(total, exact);
   // Home's rows open a kind here ("/app/inbox#todo-corrections"): the card with that kind comes into view.
   const hasCards = !!ready;
+  const holdMore = !ready && (connection === "loading" || connection === "reconnecting");
   useEffect(() => {
     if (!hasCards) return;
     const id = window.location.hash.slice(1);
@@ -162,6 +163,9 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
       {ready && uncheckedReviews ? <p className="b-note">{t.correctionsUnchecked(uncheckedReviews)}</p> : null}
       {/* Review B5 (NV-250): on desktop the shortcuts stay in reach while the list scrolls (sticky), with one-line sub-lines.
         Phase 9 (spec 3.2): these rows open pages, so their circles are teal, as every row that opens is. */}
+      {/* Recapture R (Nov 23, 2026), as Home does for G73: while the list is still being read, the More card waits, so
+        * on phones the cards arriving above it don't push it down (layout shift 0.38 at 390). A failed read releases it. */}
+      {holdMore ? null : <>
       <BCard label="More" id="b-todo-more">
         <BList label="More">
           <BRow lead={<BIcon tone="teal"><CalendarMinusIcon weight="bold" /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
@@ -171,6 +175,7 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
           <BRow lead={<BIcon tone="teal"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub={laterLine(later)} href="/app/inbox?view=more" />
         </BList>
       </BCard>
+      </>}
     </BStack>
   </BScreen>;
 }

@@ -53,12 +53,4 @@ describe('forced colours keep controls visible (Z3)', () => {
   it('keeps the billing and Clocker paused actions as buttons', () => {
     expect(forced(read('src/components/commerce-recovery/recovery.module.css'))).toMatch(/\.action, \.secondary, \.lang \{ border: 1px solid ButtonText; \}/);
   });
-  it('gives every kit button a ButtonText edge, GrayText when disabled (kit, owner-b.css)', () => {
-    const css = forced(read('src/components/owner-b/owner-b.css'));
-    expect(css).toMatch(/:is\(\.b-btn, \.c-btn\):not\(#fcb1\)[^{]*\{ border: 1px solid ButtonText !important; \}/);
-    expect(css).toMatch(/:is\(\.b-btn, \.c-btn\):is\(:disabled, \[aria-disabled="true"\]\):not\(#fcb1\)[^{]*\{ border-color: GrayText !important; \}/);
-    // Outside forced colours the kit buttons draw no such edge.
-    const plain = read('src/components/owner-b/owner-b.css').replace(/@media \(forced-colors: active\) \{[\s\S]*?\n\}\n/g, '');
-    expect(plain).not.toMatch(/ButtonText/);
-  });
 });

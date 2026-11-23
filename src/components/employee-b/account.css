@@ -268,6 +268,8 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-in:focus { box-shadow: inset 0 0 0 2px var(--b-teal); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-in[aria-invalid="true"] { box-shadow: inset 0 0 0 2px var(--b-red); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye { width: 40px; height: 40px; border-radius: var(--b-radius-pill); color: var(--b-grey); }
+/* Target size (Nov 23, 2026): the eye is drawn 40px; an invisible ring 2px out makes it answer on 44px. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check { gap: var(--b-space-12); font-size: var(--b-fs-body); line-height: 1.45; color: var(--b-ink); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check input { margin-top: 1px; accent-color: var(--b-teal); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-error { margin-top: -10px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-red); }

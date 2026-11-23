@@ -131,3 +131,19 @@ it('keeps the Employee ID field the PIN field’s height and place in every medi
  }
  expect(checked).toBeGreaterThanOrEqual(4);
 });
+
+/* K3/K4 end sweep (Phase 2, Nov 23, 2026): the Continue arrow is sized in rem so it grows at 200% text, and while a refusal
+ * shows the PIN field's red border no longer hides its focus: focus is a teal outline outside the border. */
+it('sizes the Continue arrow in rem and keeps the PIN field’s focus visible over the error border',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const css=readFileSync(new URL('./clocker.module.css',import.meta.url),'utf8').replace(/\/\*[\s\S]*?\*\//g,'');
+ const rule=(selector:string)=>css.match(new RegExp(`(?:^|\\n)${selector.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')} \\{([^}]*)\\}`))?.[1]??'';
+ expect(rule('.continue svg')).toContain('width: 1.25rem');expect(rule('.continue svg')).toContain('height: 1.25rem');
+ const html=renderToStaticMarkup(<ClockerPinGate locationKey="main"/>);
+ expect(html).toMatch(/class="[^"]*continue[^"]*"[^>]*>(?:(?!<\/button>).)*<svg/);
+ const focus=rule('.pin[data-error=true]:focus-within');
+ expect(focus).toContain('outline: 3px solid var(--ck-focus)');expect(focus).toContain('outline-offset: 3px');
+ // It comes after the error rule, so the error's box-shadow can't override it, and it doesn't use box-shadow itself.
+ expect(css.indexOf('.pin[data-error=true]:focus-within')).toBeGreaterThan(css.indexOf('.pin[data-error=true] {'));
+ expect(focus).not.toContain('box-shadow');
+});

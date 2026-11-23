@@ -69,10 +69,10 @@ export function OwnerOnlyNotice({ title, reason, help = "Ask an Owner if you nee
   </CorpPage>;
   return <CorpPage className="c-page--narrow cm-owner-only" labelledBy="owner-only-title">
     <BScreen back>
-      <BHero title={title} back={{ href: "/app", label: "Home" }} />
+      <BHero title={title} back={back ?? { href: "/app", label: "Home" }} />
       <BStack><BCard><BState kind="locked" title={reason} line={line} action={next ? { label: next.label, href: next.href } : undefined} /></BCard></BStack>
     </BScreen>
-    <CorpNav back={{ href: "/app", label: "Home" }} title={title} titleId="owner-only-nav-title" phoneOnly />
+    <CorpNav back={back ?? { href: "/app", label: "Home" }} title={title} titleId="owner-only-nav-title" phoneOnly />
     <CorpTitle id="owner-only-title" title={title} />
     <CorpEmpty label={title} title={reason ?? line} body={reason ? line : undefined} action={<CorpButtonLink href={next?.href ?? "/app"} kind={next ? "primary" : "secondary"}>{next?.label ?? "Back to Home"}</CorpButtonLink>} />
   </CorpPage>;
