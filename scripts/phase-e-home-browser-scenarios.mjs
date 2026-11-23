@@ -233,7 +233,13 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,'loc-1',$2,'DRAFT','QAOWNER') ON CONFLICT(location_id,week_start) DO NOTHING",['home-current-'+clock.week,clock.week]);
  const [schedule]=await q("SELECT id FROM schedules WHERE location_id='loc-1' AND week_start=$1",[clock.week]);
  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,$2,$3,$4,$5,$6)",[label+'-ongoing',schedule.id,actor,clock.day,clock.start,clock.finish]);
- await publishScheduleWithRevision({locationId:'loc-1',weekStart:clock.week,managerId:'QAOWNER'},app.database.executor);
+ const [homeClock]=await q('SELECT clock_timestamp()::text AS "observedAt"');
+ details.initialPublicationWeeks=[...new Set([clock.week,ownedBusinessWeek(homeClock.observedAt)])];
+ for(const weekStart of details.initialPublicationWeeks){
+  await ensureSchedule({locationId:'loc-1',weekStart,createdBy:'QAOWNER'},app.database.executor);
+  const publication=await publishScheduleWithRevision({locationId:'loc-1',weekStart,managerId:'QAOWNER'},app.database.executor);
+  assert.equal(publication.published,true,'Initial Home fixture requires actual current-week publication');
+ }
  await q("INSERT INTO clocker_devices(id,location_id,name) VALUES($1,'loc-1','Fictional Home device')",[label+'-device']);
  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES($1,$2,'loc-1',$3,clock_timestamp()-interval '20 minutes','CLOCKED_IN')",[label+'-time',actor,label+'-device']);
  stage='loading';const loading=gate('**/api/employee/home');await page.route(loading.path,loading.handler);await login(page,actor,{waitForIdle:false});await loading.seen;
