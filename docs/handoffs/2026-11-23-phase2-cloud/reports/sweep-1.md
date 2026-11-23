@@ -4,6 +4,31 @@ Branch `claude-codex-collab-nevora-sweep-1`, from `claude-codex-collab-nevora` a
 throwaway loopback Postgres and the owned local app only; every non-loopback browser request was aborted. No
 notifications, payments, AI provider calls (Rondo ran with its switches on and no provider), deploys or publishing.
 
+## Scope change (lead session, 12:30 UTC; read at 13:35)
+This package became **Payroll only (G1–G10)**, plus batch 1 gate items 1–8. Rondo, Insights (H) and Profile (I2–I5)
+went to two new sessions. `4fe769b3` restores every H and I file I had changed (`reports-corp.css`, the owner-advisor
+and knowledge stylesheets, `employee-b-desktop.css`, `account.css`) to the base, and `5891e53f` merges
+`claude-codex-collab-nevora` at `00e19806`. The branch's code diff now touches Payroll files only. The H and I rows,
+numbers and captures below are evidence for those sessions: those fixes are **not** on this branch any more.
+
+### Batch 1 items (Payroll)
+| Item | Commit | Change |
+|---|---|---|
+| 1 G3 Review, replaced run | `d78fd8f6` | Shows "Replaced by a correction", linking to the correction's review; no "Fix this payroll" or "Prepare payment instructions" for the replaced run (UI only) |
+| 2 G4 People | `041840cc`, `332d6b63` | No "Net pay" under every name (list titled "Net pay by person"); the period line adds "· Replaced by a correction" for a replaced run |
+| 3 G1, G7 replaced row | `041840cc` | The grey "Replaced" chip is gone; "Replaced by a correction" says it once |
+| 4 G1, G8 tab repeats title | not done | Needs a design call: rename the first tab or hide the band title at 768 and up |
+| 5 G8 Time exports | `1a76c19b` | "Its timecards can be approved from Mon, Nov 30." (the Week field names the period); the Manager doesn't get "Go to Timecards" (the back link is Timecards) |
+| 6 G9 Paid time export | `bc188429` | The not-reviewed line drops "on Time exports"; "Open Time exports" says where (Spanish to match) |
+| 7 G10 My pay (Manager) | `3e7f4300` | Empty state is "No statements yet". Rendering the Employee Pay component for the Manager is still Jose's question |
+| 8 G10 Pay (Employee, Lead) | `09aee793`, `d5a8767d` | The earlier statement's row is titled with its payday (muted), line "Replaced by a correction" |
+
+A production build of `332d6b63` (13:40–13:51 UTC) recaptured every Payroll page for Owner, Manager, Manager at one
+location and Employee at all five widths (65 screens): axe 0 (band false positives aside), names 0, overflow 0, overlaps 0.
+The G1–G10 AFTER images in `shots/sweep-1/img` are from that run (data: `data/payroll-final-332d6b63.json`); Lead My pay
+is unchanged from the earlier run. tsc and oxlint are clean, and the payroll, payroll-export, payroll-import and pay-b unit tests pass, including new tests
+for items 1 and 2. The before/after table below was taken before the batch 1 items.
+
 ## Commits (code)
 | Commit | What |
 |---|---|
