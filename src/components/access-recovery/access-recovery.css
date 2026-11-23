@@ -31,6 +31,12 @@
   html body .app-shell[data-nv-b] .q-page details.ar-how[open] { padding-bottom: var(--b-inset-wide) !important; }
   html body .app-shell[data-nv-b] .q-page details.ar-how > summary.ar-how__label:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; border-radius: var(--b-radius-small, 10px) !important; }
   @media (prefers-reduced-motion: reduce) { html body .app-shell[data-nv-b] .q-page details.ar-how > summary .ar-how__chev { transition: none !important; } }
+  /* On a phone Settings' card rule pads this card by the 18px inset (owner-b-settings.css); the row takes that space back,
+   * so the closed card is the row's 56px, as on desktop. */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .q-page details.ar-how > summary.ar-how__label { margin-top: calc(-1 * var(--b-inset)) !important; }
+    html body .app-shell[data-nv-b] .q-page details.ar-how:not([open]) > summary.ar-how__label { margin-bottom: calc(-1 * var(--b-inset)) !important; }
+  }
   html body .app-shell[data-nv-b] .q-page .ar-how .ar-before > li { font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
   /* The code and its handover are one card, as the form before it was. */
   html body .app-shell[data-nv-b] .q-page .ar-issued { box-sizing: border-box !important; margin-top: 0 !important; padding: var(--b-inset-wide) !important; }
