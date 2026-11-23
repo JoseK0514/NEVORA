@@ -53,3 +53,9 @@
   :is(#c-root, html) .c-photos .c-photos__helpactions { flex-direction: row; justify-content: flex-end; }
 }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-photos .c-photos__caret { transition: none; } }
+/* Regression sweep Z (Nov 23, 2026): the unit inside the field ("days") grows with the text like the value beside it
+ * (the kit draws it at a fixed 15–16px), and stays centred in the field. */
+:is(#c-root, html) .c-photos .c-setb-unit .c-in__suffix { top: 50%; transform: translateY(-50%); font-size: 0.9375rem; line-height: 1.25rem; }
+@media (max-width: 767px) {
+  :is(#c-root, html) .c-photos .c-setb-unit .c-in__suffix { font-size: 1rem; line-height: 1.25rem; }
+}
