@@ -76,3 +76,34 @@ The lead's scope went through several changes:
 - Test: `payroll-premium.test.tsx` "batch 1 item 3: on the phone…". It fails without the fix and passes with it.
 - Full `src/components` suite passes (3,225 tests). Typecheck and oxlint are clean.
 - Recapture of G1 Owner from `5d20485a` at 390, 390 with 200% text and 1440: axe found 0 violations, with no clipping, overlap or overflow. The G1-o shots in `img/` are replaced.
+
+## Signed-in Spanish: contract and shell
+- `b87f1465` **Contract:** `src/lib/i18n/portal-lang.tsx`. `PortalLangProvider` is rendered once in `src/app/app/layout.tsx` from `readPortalLanguage`, with English if the read fails. Client components call `usePortalLang()`.
+- `c9a9ec9b` **Shell:** one table, `src/components/shell-copy.ts`, with `{en, es}` for each part.
+  - Nav labels are keyed by their unchanged English text through `navLabel`, so `navigation.ts`, `finder.ts` and their tests don't change. A company's own word preset shows as written.
+  - Translated: sidebar, tab bar, top-bar trail and "Añadir turno", account menu, More, section tabs, bell, toasts, the action-menu "Listo", the finder, form validation, device settings, error and not-found pages, and the loading frame's status line.
+  - The finder shows Spanish names and matches Spanish and English words.
+  - The loading line comes from `route-skeleton`, which about 55 `loading.tsx` files share.
+  - `data-group` stays English, so the CSS keyed on it still applies.
+- `1fa2c1d5` **Finder contrast:** the selected row's grey detail is darker (4.33:1 → 5.9:1). Axe found it in the Spanish capture.
+- **Tests:**
+  - `shell-copy.test.tsx` checks key sets and checks that every navigation, tab, group and finder label for every role has Spanish.
+  - English unchanged; Spanish renders for section tabs, the 404 and the loading line.
+  - Four harness tests now mock `usePortalLang` to English.
+  - `src/components` and `src/app/app`: 4,311 pass. Navigation, finder and i18n: 104. tsc and oxlint are clean.
+- **Captures:** `img/es-shell-*`, production build with the `nv-lang=es` cookie.
+  - Owner: Home, More, the account menu, the finder ("hor") and Payroll.
+  - Employee: Home, More and the account menu.
+  - Widths: 390, 390 with 200% text, and 1440.
+  - Results: 0 axe violations, no overflow, nothing clipped. The kit's "·" separators are the only overlap hits, and they're the same in English.
+  - Page bodies are still English where their area session hasn't landed yet (Home, Payroll).
+- **Left to other sessions (their files):**
+  - `owner-b/b-loading.tsx` loading titles and `BRouteError`'s "Try again" (es-owner).
+  - `employee-account-panel.tsx` and `EmployeeMoreB` (es-employee).
+  - The DeviceController's own status messages (`src/lib`).
+  - `app-error-screen.tsx` (public error screen).
+
+### For Jose to review (shell)
+- Plan and billing → **Plan y facturación**; Privacy and terms → **Privacidad y términos**; Help and legal → **Ayuda y aviso legal**.
+- Payroll → **Nómina**; Pay runs → **Nóminas**; Payroll settings → **Configuración de nómina**; My pay → **Mi pago**; Time exports → **Exportar horas** (the payroll-import copy's existing name for the page).
+- Roles: Owner → **Dueño**, Manager → **Gerente**, Lead → **Líder de turno**, Employee → **Empleado**.
