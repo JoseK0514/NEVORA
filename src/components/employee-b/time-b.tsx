@@ -110,7 +110,7 @@ export function TimeTabB({data}:{data:Ready}){
  // far"), and it stays whole: the line breaks after the place's dot, never inside the total or before "far".
  const line:ReactNode=current?m.onBreak?keepWhole(`${current.locationName} · clocked in at ${clockAt(current.clockInAt,zone)}`)
   :<>{current.locationName}{'\u00a0· '}<span className="eb-nb eb-sofar"><Dur value={current.elapsedSeconds}/>{'\u00a0so\u00a0far'}</span></>:'Take breaks and clock out there too';
- const hint=overrun&&current?W.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`),current.locationName):current?m.onBreak?'End your break on your location’s tablet.':'Take breaks and clock out on your location’s tablet.':null;
+ const hint=overrun&&current?W.shiftEnded(keepWhole(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`)),current.locationName):current?m.onBreak?'End your break on your location’s tablet.':'Take breaks and clock out on your location’s tablet.':null;
  return <HoursBScreen hero={m.week.length?<BLive label="This week at a glance" items={[{label:'This week',value:figure(m.worked)},{label:'Breaks',value:figure(m.breaks)}]}/>:null}>
   <BCard title="Right now" id="b-hours-now" chip={status}>
    {/* Phase 9 (spec 2.2): a punch left open after the shift ended is the kit's amber callout (Warning glyph, a hairline,

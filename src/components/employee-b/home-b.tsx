@@ -221,7 +221,7 @@ function NowCard({snapshot, week}: {snapshot: HomeSnapshot; week: HomeWeek | nul
   if (!clockIn || !overrun) return null;
   return <BCard id="b-home-now" title="Right now"
     link={{href: '/app/my-time', label: 'Time', aria: 'Open Time'}}>
-    <div className="eb-status"><BCallout tone="amber" role="status" title={t.stillClockedIn(clock(clockIn.clockInAt, snapshot.timeZone))}>{t.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`), clockIn.locationName)}</BCallout></div>
+    <div className="eb-status"><BCallout tone="amber" role="status" title={t.stillClockedIn(clock(clockIn.clockInAt, snapshot.timeZone))}>{t.shiftEnded(keepWhole(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`)), clockIn.locationName)}</BCallout></div>
   </BCard>;
 }
 

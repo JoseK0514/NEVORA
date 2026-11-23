@@ -341,9 +341,10 @@ function DayChart({ shifts, timeZone, observedAt }: { shifts: TodayShift[]; time
   // The one time format (Nov 23, 2026): "7:00 AM", kept whole (it was "7 AM").
   const hourText = (at: number) => keepWhole(formatClockTime(at, timeZone));
   const max = Math.max(1, day.peak.people);
-  // A label under the first hour, then every third (every fourth on a long day), so the labels never touch.
-  const every = day.hours.length > 15 ? 4 : 3;
-  // A label is about three bars wide on a narrow phone: the hours beside "Now" and the last bar carry none.
+  // A label under the first hour, then every fourth (every fifth on a long day), so the labels never touch. Nov 23, 2026:
+  // the one time format ("11:00 AM") is about three bars wide on a 320px phone, so the three hours either side of "Now"
+  // and the last three bars carry none.
+  const every = day.hours.length > 15 ? 5 : 4;
   const nowAt = day.hours.findIndex(hour => hour.state === "now");
   return <div className="b-tdy">
     <div className="b-kv">
@@ -358,7 +359,7 @@ function DayChart({ shifts, timeZone, observedAt }: { shifts: TodayShift[]; time
     </div>
     <div className="b-tdy-l" aria-hidden="true" style={{ "--n": day.hours.length } as CSSProperties}>
       {day.hours.map((hour, index) => <span key={hour.at} data-state={hour.state}>{hour.state === "now" ? "Now"
-        : index % every === 0 && index < day.hours.length - 1 && (nowAt < 0 || Math.abs(index - nowAt) > 2) ? hourText(hour.at) : ""}</span>)}
+        : index % every === 0 && index < day.hours.length - 3 && (nowAt < 0 || Math.abs(index - nowAt) > 3) ? hourText(hour.at) : ""}</span>)}
     </div>
   </div>;
 }
