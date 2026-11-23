@@ -140,3 +140,22 @@ its breaks, against each shift's own hours on the card. On the first worked day 
 
 Items 3 (A8 and A9 sign-up 404 without commerce) and 4 (the shell's "connection isn't secure" notice on the plain-http
 harness origin) are harness-only, as noted above.
+
+## Pass 4: Home band lines at 200% text (merged 2e98cf2d, merge 82f95b7e; fix 22b8f04b)
+The lead asked for the band greeting in rem. Measured on the production build, the greeting ("Good morning, Daniel",
+`.b-eyebrow`) already follows `--b-fs-body` (0.96875rem) and doubles at 200%. The band text that stayed put was the
+date and place line under the title (`.b-hero .b-date`, 14px: "Monday, November 23 · Condado") and a figure's small
+part ("/3", `.b-live__v small`, 14px). `22b8f04b` sets both to 0.875rem (the same 14px at 100%) in the four places the
+kit draws them: `b-foundation.css`, `owner-b.css`, `owner-b-desktop.css` and `employee-b-work.css`. Employee and Lead Home
+put the date and place in the greeting line itself, so they already scaled as a whole.
+
+Production build of `22b8f04b`, location Manager and Employee Home at 390, 390 with 200% text and 1440:
+- at 200% text nothing in the band stays fixed now (the 200% probe lists no band text); the location Manager's date and
+  place wrap to two lines, with nothing clipped;
+- axe clean, no overflow;
+- at 100% the band is unchanged.
+
+Tests: `src/app/app/kit-text-rem.test.ts` (new "Home band lines in rem" case); `src/components` plus `src/app/app`: 361
+files, 4,252 tests, 0 failures.
+Shots: `img/B1-mgr-loc-390-t200-{before,after}-band-rem.webp`, `img/B1-mgr-loc-390-after-band-rem.webp`,
+`img/B1-employee-390{,-t200}-after-band-rem.webp`.

@@ -1,0 +1,1841 @@
+{
+  "rec": [
+    {
+      "role": "mloc",
+      "route": "/app",
+      "slug": "home",
+      "tag": "390",
+      "status": 200,
+      "url": "/app",
+      "m": {
+        "url": "/app",
+        "h1": [
+          "Checking today…"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "div.c-page.c-home",
+            "role": null,
+            "visible": "Good morning, Daniel Checking today… Couldn’t load everythin",
+            "name": "Home"
+          },
+          {
+            "el": "ul.b-live.b-glass",
+            "role": null,
+            "visible": "Clocked in 2/3 Not clocked in — Open shifts —",
+            "name": "Right now"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "SM DC 2 clocked in Sofía, Daniel",
+            "name": "Clocked in now"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "button.b-btn.b-btn--quiet",
+          "txt": "Close this message",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 3px",
+          "r": [
+            76,
+            694,
+            74,
+            48
+          ]
+        },
+        {
+          "el": "a.b-live__a",
+          "txt": "Clocked in 2/3",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            14,
+            186,
+            121,
+            72
+          ]
+        },
+        {
+          "el": "a.b-qa__a",
+          "txt": "Add shift",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            14,
+            377,
+            175,
+            56
+          ]
+        },
+        {
+          "el": "a.b-qa__a",
+          "txt": "Time off",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            201,
+            377,
+            175,
+            56
+          ]
+        },
+        {
+          "el": "a.b-card__a",
+          "txt": "See everyone working today",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            258,
+            451,
+            105,
+            44
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "SM DC 2 clocked in Sofía, Daniel",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            695,
+            360,
+            64
+          ]
+        },
+        {
+          "el": "a.b-card__a",
+          "txt": "Schedule",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            288,
+            778,
+            75,
+            44
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link.active",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 117, 113) off -2px",
+          "r": [
+            0,
+            1054,
+            98,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "To do, 1",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 117, 113) off -2px",
+          "r": [
+            98,
+            1054,
+            98,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 117, 113) off -2px",
+          "r": [
+            195,
+            1054,
+            98,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Team",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 117, 113) off -2px",
+          "r": [
+            293,
+            1054,
+            98,
+            56
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.brand.compact",
+          "txt": "NEVORA Workforce home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            20,
+            4,
+            104,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, 0 unread in your recent inbox",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            286,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.c-top-avatar",
+          "txt": "More, Daniel Cruz, DC",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            334,
+            4,
+            44,
+            44
+          ]
+        }
+      ],
+      "g": {
+        "docOverflow": 0,
+        "clipped": [],
+        "overlaps": [
+          "\"We cleared this page to protect your inf\" × \"5:00 AM\" (6x14)",
+          "\"We cleared this page to protect your inf\" × \"Now\" (27x14)",
+          "\"Close\" × \"2 clocked in\" (27x17)"
+        ],
+        "offscreen": [],
+        "spill": [],
+        "layout": {
+          "vw": 390,
+          "main": [
+            0,
+            390
+          ],
+          "page": [
+            0,
+            390
+          ],
+          "widestCard": 362,
+          "cardWidths": [
+            362,
+            360,
+            105,
+            75
+          ]
+        },
+        "fontSizes": {
+          "15.5px": 3,
+          "14.5px": 6,
+          "14px": 7,
+          "34px": 1,
+          "12.5px": 5,
+          "24px": 9,
+          "17px": 3,
+          "13.5px": 7,
+          "12px": 16,
+          "11.52px": 2
+        },
+        "mainText": "This connection isn’t secure\nWe cleared this page to protect your information. Signing in again won’t fix this. Ask your Owner to check the NEVORA web address you’re using.\nClose\nGood morning, Daniel\nChecking today…\nCouldn’t load everything.\nMonday, November 23\nCondado\nClocked in\n \n2/3\nNot clocked in\n \n—\nOpen shifts\n \n—\nThings to do\nSign in again to see what needs you.\nAdd shift\nTime off\nToday\nSee everyone\n3\nPeople\n22 h\nScheduled\n2\nPeak, 12:00 PM\nPeople scheduled by hour\n5:00 AM\nNow\nSM\nDC\n2 clocked in\nSofía, Daniel\nThis week\nSchedule\n166 h\nPlanned\n22\nShifts\n4\nStaff\nShifts by day\n3\n3\n3\n3\n3\n4\n3\nMon\nTue\nWed\nThu\nFri\nSat\nSun"
+      },
+      "hit": null,
+      "rep": []
+    },
+    {
+      "role": "mloc",
+      "route": "/app",
+      "slug": "home",
+      "tag": "390-text200",
+      "status": 200,
+      "url": "/app",
+      "m": {
+        "url": "/app",
+        "h1": [
+          "Checking today…"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "div.c-page.c-home",
+            "role": null,
+            "visible": "Good morning, Daniel Checking today… Couldn’t load everythin",
+            "name": "Home"
+          },
+          {
+            "el": "ul.b-live.b-glass",
+            "role": null,
+            "visible": "Clocked in 2/3 Not clocked in — Open shifts —",
+            "name": "Right now"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "SM DC 2 clocked in Sofía, Daniel",
+            "name": "Clocked in now"
+          }
+        ]
+      },
+      "fixed": {
+        "b.": {
+          "n": 1,
+          "size": "15.5px→15.5px",
+          "txt": "This connection isn’t secure"
+        },
+        "span.": {
+          "n": 10,
+          "size": "14.5px→14.5px",
+          "txt": "We cleared this page to protec"
+        },
+        "button.b-btn.b-btn--quiet": {
+          "n": 1,
+          "size": "14px→14px",
+          "txt": "Close"
+        },
+        "span.b-av": {
+          "n": 2,
+          "size": "11.52px→11.52px",
+          "txt": "SM"
+        },
+        "span.c-num": {
+          "n": 7,
+          "size": "12px→12px",
+          "txt": "3"
+        }
+      },
+      "axe": [],
+      "focus": null,
+      "g": {
+        "docOverflow": 0,
+        "clipped": [],
+        "overlaps": [
+          "\"We cleared this page to protect your inf\" × \"Things to do\" (147x12)",
+          "\"We cleared this page to protect your inf\" × \"Things to do\" (147x17)",
+          "\"We cleared this page to protect your inf\" × \"Things to do\" (147x6)",
+          "\"We cleared this page to protect your inf\" × \"Sign in again to see what needs you.\" (243x17)",
+          "\"Close\" × \"Sign in again to see what needs you.\" (38x17)"
+        ],
+        "offscreen": [],
+        "spill": [],
+        "layout": {
+          "vw": 390,
+          "main": [
+            0,
+            390
+          ],
+          "page": [
+            0,
+            390
+          ],
+          "widestCard": 362,
+          "cardWidths": [
+            362,
+            360,
+            187,
+            133
+          ]
+        },
+        "fontSizes": {
+          "15.5px": 1,
+          "14.5px": 4,
+          "14px": 1,
+          "31px": 2,
+          "68px": 2,
+          "28px": 7,
+          "25px": 9,
+          "48px": 9,
+          "34px": 3,
+          "29px": 2,
+          "27px": 7,
+          "12px": 16,
+          "11.52px": 2
+        },
+        "mainText": "This connection isn’t secure\nWe cleared this page to protect your information. Signing in again won’t fix this. Ask your Owner to check the NEVORA web address you’re using.\nClose\nGood morning, Daniel\nChecking today…\nCouldn’t load everything.\nMonday, November 23\nCondado\nClocked in\n \n2/3\nNot clocked in\n \n—\nOpen shifts\n \n—\nThings to do\nSign in again to see what needs you.\nAdd shift\nTime off\nToday\nSee everyone\n3\nPeople\n22 h\nScheduled\n2\nPeak, 12:00 PM\nPeople scheduled by hour\n5:00 AM\nNow\nSM\nDC\n2 clocked in\nSofía, Daniel\nThis week\nSchedule\n166 h\nPlanned\n22\nShifts\n4\nStaff\nShifts by day\n3\n3\n3\n3\n3\n4\n3\nMon\nTue\nWed\nThu\nFri\nSat\nSun"
+      },
+      "hit": null,
+      "rep": []
+    },
+    {
+      "role": "mloc",
+      "route": "/app",
+      "slug": "home",
+      "tag": "1440",
+      "status": 200,
+      "url": "/app",
+      "m": {
+        "url": "/app",
+        "h1": [
+          "Checking today…"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "div.c-page.c-home",
+            "role": null,
+            "visible": "Good morning, Daniel Checking today… Couldn’t load everythin",
+            "name": "Home"
+          },
+          {
+            "el": "ul.b-live.b-glass",
+            "role": null,
+            "visible": "Clocked in 2/3 Not clocked in — Open shifts —",
+            "name": "Right now"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "SM Sofía Méndez 5:00 AM – 1:00 PM Clocked in DC Daniel Cruz ",
+            "name": "On now"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "button.b-btn.b-btn--quiet",
+          "txt": "Close this message",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 3px",
+          "r": [
+            1060,
+            914,
+            74,
+            48
+          ]
+        },
+        {
+          "el": "a.b-live__a",
+          "txt": "Clocked in 2/3",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            296,
+            221,
+            236,
+            82
+          ]
+        },
+        {
+          "el": "a.b-qa__a",
+          "txt": "Add shift",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1023,
+            259,
+            173,
+            44
+          ]
+        },
+        {
+          "el": "a.b-qa__a",
+          "txt": "Time off",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1203,
+            259,
+            173,
+            44
+          ]
+        },
+        {
+          "el": "a.b-card__a",
+          "txt": "See everyone working today",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            881,
+            444,
+            105,
+            44
+          ]
+        },
+        {
+          "el": "a.b-card__a",
+          "txt": "Schedule",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            1284,
+            337,
+            75,
+            44
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 117, 113) off 2px",
+          "r": [
+            12,
+            12,
+            126,
+            44
+          ]
+        },
+        {
+          "el": "a.brand.sidebar-brand",
+          "txt": "NEVORA Workforce home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            6,
+            148,
+            72
+          ]
+        },
+        {
+          "el": "button.sidebar-toggle",
+          "txt": "Collapse sidebar",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            172,
+            10,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.nav-link.active",
+          "txt": "Home",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            174,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Things to do, 1",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            216,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            258,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Time corrections",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            300,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Team",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            342,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Rondo AI",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            416,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "My pay",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            458,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.sidebar-help-link",
+          "txt": "Help",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            898,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, 0 unread in your recent inbox",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1188,
+            12,
+            40,
+            40
+          ]
+        },
+        {
+          "el": "button.button.ghost.nevora-action-menu-trigger",
+          "txt": "Daniel Cruz, account menu",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1238,
+            12,
+            162,
+            40
+          ]
+        }
+      ],
+      "g": {
+        "docOverflow": 0,
+        "clipped": [],
+        "overlaps": [],
+        "offscreen": [],
+        "spill": [
+          "a.b-qa__a Add shift",
+          "a.b-qa__a Time off"
+        ],
+        "layout": {
+          "vw": 1440,
+          "main": [
+            232,
+            1208
+          ],
+          "page": [
+            272,
+            1128
+          ],
+          "widestCard": 707,
+          "cardWidths": [
+            707,
+            705,
+            105,
+            353,
+            351,
+            75
+          ]
+        },
+        "fontSizes": {
+          "15.5px": 4,
+          "14.5px": 3,
+          "14px": 7,
+          "40px": 1,
+          "13.5px": 15,
+          "28px": 3,
+          "17px": 3,
+          "24px": 6,
+          "12.5px": 2,
+          "12px": 16,
+          "12.96px": 2
+        },
+        "mainText": "This connection isn’t secure\nWe cleared this page to protect your information. Signing in again won’t fix this. Ask your Owner to check the NEVORA web address you’re using.\nClose\nGood morning, Daniel\nChecking today…\nCouldn’t load everything.\nMonday, November 23\nCondado\nClocked in\n \n2/3\nNot clocked in\n \n—\nOpen shifts\n \n—\nAdd shift\nTime off\nThings to do\nSign in again to see what needs you.\nToday\nSee everyone\n3\nPeople\n22 h\nScheduled\n2\nPeak, 12:00 PM\nPeople scheduled by hour\n5:00 AM\nNow\nSM\nSofía Méndez\n5:00 AM – 1:00 PM\nClocked in\nDC\nDaniel Cruz\n12:00 PM – 8:00 PM\nClocked in\nThis week\nSchedule\n166 h\nPlanned\n22\nShifts\n4\nStaff\nShifts by day\n3\n3\n3\n3\n3\n4\n3\nMon\nTue\nWed\nThu\nFri\nSat\nSun"
+      },
+      "hit": null,
+      "rep": [
+        "Clocked in ×3"
+      ]
+    },
+    {
+      "role": "emp",
+      "route": "/app",
+      "slug": "home",
+      "tag": "390",
+      "status": 200,
+      "url": "/app",
+      "m": {
+        "url": "/app",
+        "h1": [
+          "Welcome back, James"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "ul.b-live.b-glass",
+            "role": null,
+            "visible": "Hours 59 min of 56 h worked this week Scheduled payday Fri, ",
+            "name": "This week at a glance"
+          },
+          {
+            "el": "ul.eb-hw__days",
+            "role": null,
+            "visible": "Today, Monday, November 23: 1 hour worked of 8 scheduled 1 M",
+            "name": "Hours by day"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.brand.compact",
+          "txt": "NEVORA Workforce home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            20,
+            4,
+            96,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, 9 unread in your recent inbox",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            288,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.c-top-avatar",
+          "txt": "More, James Ortiz, JO",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            334,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.b-live__a",
+          "txt": "Hours 59 min of 56 h worked this week",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgba(0, 0, 0, 0) off -2px",
+          "r": [
+            20,
+            142,
+            175,
+            95
+          ]
+        },
+        {
+          "el": "a.b-live__a",
+          "txt": "Scheduled payday Fri, Dec 4 in 11 days",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgba(0, 0, 0, 0) off -2px",
+          "r": [
+            195,
+            142,
+            175,
+            95
+          ]
+        },
+        {
+          "el": "a.b-btn.b-btn--quiet.b-btn--full",
+          "txt": "Shift details, Mon, Nov 23",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            33,
+            467,
+            324,
+            48
+          ]
+        },
+        {
+          "el": "a.b-card__a",
+          "txt": "See all notifications",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            245,
+            550,
+            118,
+            48
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "Review coverage offer Needs your answer Respond by",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            593,
+            360,
+            92
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "Review coverage offer Needs your answer Respond by",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            685,
+            360,
+            92
+          ]
+        },
+        {
+          "el": "a.b-row__hit",
+          "txt": "Confirm this week’s schedule Action needed Nov 23–",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            33,
+            787,
+            324,
+            68
+          ]
+        },
+        {
+          "el": "a.b-btn.b-btn--teal",
+          "txt": "Review: Confirm this week’s schedule",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            81,
+            863,
+            77,
+            48
+          ]
+        },
+        {
+          "el": "a.eb-qa__a",
+          "txt": "Request time off",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            14,
+            942,
+            175,
+            48
+          ]
+        },
+        {
+          "el": "a.eb-qa__a",
+          "txt": "Can’t work a shift",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            201,
+            942,
+            175,
+            48
+          ]
+        },
+        {
+          "el": "a.eb-qa__a",
+          "txt": "Swap shift",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            14,
+            1002,
+            175,
+            48
+          ]
+        },
+        {
+          "el": "a.eb-qa__a",
+          "txt": "Fix my time",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            201,
+            1002,
+            175,
+            48
+          ]
+        },
+        {
+          "el": "a.b-card__a",
+          "txt": "Open your timecard",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            287,
+            1066,
+            76,
+            48
+          ]
+        },
+        {
+          "el": "a.b-card__a",
+          "txt": "See all shifts",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            306,
+            1313,
+            57,
+            48
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "TUE 24 9:00 AM – 5:00 PM · Barista · , Calle Loíza",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            1356,
+            360,
+            64
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "WED 25 9:00 AM – 5:00 PM · Barista · , Calle Loíza",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            1420,
+            360,
+            64
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "THU 26 9:00 AM – 5:00 PM · Barista · , Calle Loíza",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            1484,
+            360,
+            64
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link.active",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            1572,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            1572,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            1572,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            1572,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            1572,
+            76,
+            56
+          ]
+        },
+        null
+      ],
+      "g": {
+        "docOverflow": 0,
+        "clipped": [],
+        "overlaps": [
+          "\"·\" × \"Barista\" (4x17)",
+          "\"·\" × \"Calle Loíza\" (4x17)",
+          "\"·\" × \"Barista\" (4x16)",
+          "\"·\" × \"Calle Loíza\" (4x16)",
+          "\"·\" × \"Barista\" (4x16)",
+          "\"·\" × \"Calle Loíza\" (4x16)",
+          "\"·\" × \"Barista\" (4x16)",
+          "\"·\" × \"Calle Loíza\" (4x16)"
+        ],
+        "offscreen": [],
+        "spill": [],
+        "layout": {
+          "vw": 390,
+          "main": [
+            0,
+            390
+          ],
+          "page": [
+            0,
+            390
+          ],
+          "widestCard": 362,
+          "cardWidths": [
+            362,
+            360,
+            118,
+            76,
+            57
+          ]
+        },
+        "fontSizes": {
+          "15.5px": 16,
+          "34px": 1,
+          "12.5px": 16,
+          "24px": 2,
+          "14px": 9,
+          "13.5px": 25,
+          "17px": 4,
+          "26px": 3,
+          "14.5px": 3,
+          "12px": 6,
+          "20px": 3
+        },
+        "mainText": "Monday, Nov 23 · Calle Loíza\nWelcome back, James\nHours\n \n59 min of 56 h\n \nworked this week\nScheduled payday\n \nFri, Dec 4\n \nin 11 days\nOn shift now\n10:00 AM – \nto\n6:00 PM\n·\nBarista\n·\n,\nCalle Loíza\nClocked in at 10:02 AM\nBreaks and clock out on the Calle Loíza tablet\nShift details\nThings to do\n6\nAll notifications\nReview coverage offer\nNeeds your answer\nRespond by Dec 1, 1:00 PM\nReview coverage offer\nNeeds your answer\nRespond by Dec 5, 7:00 AM\nConfirm this week’s schedule\nAction needed\nNov 23–29 · 7 shifts\nReview\nTime off\nCan’t work\nSwap shift\nFix my time\nYour week\nTimecard\nToday, Monday, November 23: 1 hour worked of 8 scheduled\n1\nMon\nTuesday, November 24: 8 hours scheduled\n8\nTue\nWednesday, November 25: 8 hours scheduled\n8\nWed\nThursday, November 26: 8 hours scheduled\n8\nThu\nFriday, November 27: 8 hours scheduled\n8\nFri\nSaturday, November 28: 8 hours scheduled\n8\nSat\nSunday, November 29: 8 hours scheduled\n8\nSun\nHours worked\nScheduled\nNov 23–29\nComing up\nSee all\nTUE\n24\n9:00 AM – 5:00 PM\n·\nBarista\n·\n,\nCalle Loíza\nWED\n25\n9:00 AM – 5:00 PM\n·\nBarista\n·\n,\nCalle Loíza\nTHU\n26\n9:00 AM – 5:00 PM\n·\nBarista\n·\n,\nCalle Loíza"
+      },
+      "hit": null,
+      "rep": [
+        "Barista ×4",
+        "Calle Loíza ×4",
+        "Review coverage offer ×2",
+        "Needs your answer ×2",
+        "9:00 AM – 5:00 PM ×3"
+      ]
+    },
+    {
+      "role": "emp",
+      "route": "/app",
+      "slug": "home",
+      "tag": "390-text200",
+      "status": 200,
+      "url": "/app",
+      "m": {
+        "url": "/app",
+        "h1": [
+          "Welcome back, James"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "ul.b-live.b-glass",
+            "role": null,
+            "visible": "Hours 59 min of 56 h worked this week Scheduled payday Fri, ",
+            "name": "This week at a glance"
+          },
+          {
+            "el": "ul.eb-hw__days",
+            "role": null,
+            "visible": "Today, Monday, November 23: 1 hour worked of 8 scheduled 1 M",
+            "name": "Hours by day"
+          }
+        ]
+      },
+      "fixed": {
+        "a.b-btn.b-btn--teal": {
+          "n": 1,
+          "size": "14px→14px",
+          "txt": "Review"
+        }
+      },
+      "axe": [],
+      "focus": null,
+      "g": {
+        "docOverflow": 0,
+        "clipped": [],
+        "overlaps": [
+          "\"·\" × \"Barista\" (7x34)",
+          "\"·\" × \"Calle Loíza\" (7x34)",
+          "\"·\" × \"Barista\" (6x33)",
+          "\"·\" × \"Calle Loíza\" (6x33)",
+          "\"·\" × \"Barista\" (6x33)",
+          "\"·\" × \"Calle Loíza\" (6x33)",
+          "\"·\" × \"Barista\" (6x33)",
+          "\"·\" × \"Calle Loíza\" (6x33)"
+        ],
+        "offscreen": [],
+        "spill": [],
+        "layout": {
+          "vw": 390,
+          "main": [
+            0,
+            390
+          ],
+          "page": [
+            0,
+            390
+          ],
+          "widestCard": 362,
+          "cardWidths": [
+            362,
+            360,
+            212,
+            134,
+            97
+          ]
+        },
+        "fontSizes": {
+          "31px": 20,
+          "68px": 3,
+          "25px": 16,
+          "48px": 2,
+          "28px": 8,
+          "27px": 28,
+          "34px": 4,
+          "52px": 3,
+          "29px": 3,
+          "24px": 6,
+          "14px": 1,
+          "40px": 3
+        },
+        "mainText": "Monday, Nov 23 · Calle Loíza\nWelcome back, James\nHours\n \n59 min of 56 h\n \nworked this week\nScheduled payday\n \nFri, Dec 4\n \nin 11 days\nOn shift now\n10:00 AM – \nto\n6:00 PM\n·\nBarista\n·\n,\nCalle Loíza\nClocked in at 10:02 AM\nBreaks and clock out on the Calle Loíza tablet\nShift details\nThings to do\n6\nAll notifications\nReview coverage offer\nNeeds your answer\nRespond by Dec 1, 1:00 PM\nReview coverage offer\nNeeds your answer\nRespond by Dec 5, 7:00 AM\nConfirm this week’s schedule\nAction needed\nNov 23–29 · 7 shifts\nReview\nTime off\nCan’t work\nSwap shift\nFix my time\nYour week\nTimecard\nToday, Monday, November 23: 1 hour worked of 8 scheduled\n1\nMon\nTuesday, November 24: 8 hours scheduled\n8\nTue\nWednesday, November 25: 8 hours scheduled\n8\nWed\nThursday, November 26: 8 hours scheduled\n8\nThu\nFriday, November 27: 8 hours scheduled\n8\nFri\nSaturday, November 28: 8 hours scheduled\n8\nSat\nSunday, November 29: 8 hours scheduled\n8\nSun\nHours worked\nScheduled\nNov 23–29\nComing up\nSee all\nTUE\n24\n9:00 AM – 5:00 PM\n·\nBarista\n·\n,\nCalle Loíza\nWED\n25\n9:00 AM – 5:00 PM\n·\nBarista\n·\n,\nCalle Loíza\nTHU\n26\n9:00 AM – 5:00 PM\n·\nBarista\n·\n,\nCalle Loíza"
+      },
+      "hit": null,
+      "rep": [
+        "Barista ×4",
+        "Calle Loíza ×4",
+        "Review coverage offer ×2",
+        "Needs your answer ×2",
+        "9:00 AM – 5:00 PM ×3"
+      ]
+    },
+    {
+      "role": "emp",
+      "route": "/app",
+      "slug": "home",
+      "tag": "1440",
+      "status": 200,
+      "url": "/app",
+      "m": {
+        "url": "/app",
+        "h1": [
+          "Welcome back, James"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "ul.b-live.b-glass",
+            "role": null,
+            "visible": "On shift until 6:00 PM Barista · Calle Loíza Hours 59 min of",
+            "name": "This week at a glance"
+          },
+          {
+            "el": "ul.eb-hw__days",
+            "role": null,
+            "visible": "Today, Monday, November 23: 1 hour worked of 8 scheduled 1 M",
+            "name": "Hours by day"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            126,
+            44
+          ]
+        },
+        {
+          "el": "a.brand.sidebar-brand",
+          "txt": "NEVORA Workforce home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            6,
+            148,
+            64
+          ]
+        },
+        {
+          "el": "button.sidebar-toggle",
+          "txt": "Collapse sidebar",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            172,
+            6,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.nav-link.active",
+          "txt": "Home",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            175,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            217,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            259,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            301,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            343,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Updates",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            433,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.sidebar-help-link",
+          "txt": "Help",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            898,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "button.command-finder-trigger",
+          "txt": "Search Ctrl K",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            895,
+            10,
+            280,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, 9 unread in your recent inbox",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1185,
+            12,
+            40,
+            40
+          ]
+        },
+        {
+          "el": "button.button.ghost.nevora-action-menu-trigger",
+          "txt": "James Ortiz, account menu",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1235,
+            12,
+            165,
+            40
+          ]
+        },
+        {
+          "el": "a.b-live__a",
+          "txt": "On shift until 6:00 PM Barista · Calle Loíza",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            296,
+            179,
+            360,
+            104
+          ]
+        },
+        {
+          "el": "a.b-live__a",
+          "txt": "Hours 59 min of 56 h worked this week",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            656,
+            179,
+            360,
+            104
+          ]
+        },
+        {
+          "el": "a.b-live__a",
+          "txt": "Scheduled payday Fri, Dec 4 in 11 days",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1016,
+            179,
+            360,
+            104
+          ]
+        },
+        {
+          "el": "a.b-btn.b-btn--quiet.b-btn--full",
+          "txt": "Shift details, Mon, Nov 23",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            754,
+            519,
+            119,
+            44
+          ]
+        },
+        {
+          "el": "a.b-card__a",
+          "txt": "See all notifications",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            757,
+            609,
+            121,
+            44
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "Review coverage offer Needs your answer Respond by",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            651,
+            597,
+            72
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "Review coverage offer Needs your answer Respond by",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            723,
+            597,
+            72
+          ]
+        },
+        {
+          "el": "a.b-row__hit",
+          "txt": "Confirm this week’s schedule Action needed Nov 23–",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            319,
+            805,
+            445,
+            52
+          ]
+        },
+        {
+          "el": "a.b-btn.b-btn--teal",
+          "txt": "Review: Confirm this week’s schedule",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            776,
+            809,
+            96,
+            44
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "Confirm next week’s schedule Action needed Nov 30–",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            867,
+            597,
+            72
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "Confirm your schedule Action needed Dec 7–13",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            939,
+            597,
+            72
+          ]
+        },
+        {
+          "el": "a.eb-qa__a",
+          "txt": "Request time off",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            915,
+            311,
+            224,
+            56
+          ]
+        },
+        {
+          "el": "a.eb-qa__a",
+          "txt": "Can’t work a shift",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            1152,
+            311,
+            224,
+            56
+          ]
+        },
+        {
+          "el": "a.eb-qa__a",
+          "txt": "Swap shift",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            915,
+            379,
+            224,
+            56
+          ]
+        },
+        {
+          "el": "a.eb-qa__a",
+          "txt": "Fix my time",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            1152,
+            379,
+            224,
+            56
+          ]
+        },
+        {
+          "el": "a.b-card__a",
+          "txt": "Open your timecard",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            1281,
+            466,
+            78,
+            44
+          ]
+        },
+        {
+          "el": "a.b-card__a",
+          "txt": "See all shifts",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            1301,
+            727,
+            58,
+            44
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "TUE 24 9:00 AM – 5:00 PM · Barista · , Calle Loíza",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            916,
+            769,
+            459,
+            65
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "WED 25 9:00 AM – 5:00 PM · Barista · , Calle Loíza",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            916,
+            834,
+            459,
+            65
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link",
+          "txt": "THU 26 9:00 AM – 5:00 PM · Barista · , Calle Loíza",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            916,
+            899,
+            459,
+            65
+          ]
+        },
+        null
+      ],
+      "g": {
+        "docOverflow": 0,
+        "clipped": [],
+        "overlaps": [
+          "\"·\" × \"Barista\" (4x19)",
+          "\"·\" × \"Calle Loíza\" (4x19)",
+          "\"·\" × \"Barista\" (4x16)",
+          "\"·\" × \"Calle Loíza\" (4x16)",
+          "\"·\" × \"Barista\" (4x16)",
+          "\"·\" × \"Calle Loíza\" (4x16)",
+          "\"·\" × \"Barista\" (4x16)",
+          "\"·\" × \"Calle Loíza\" (4x16)"
+        ],
+        "offscreen": [],
+        "spill": [],
+        "layout": {
+          "vw": 1440,
+          "main": [
+            232,
+            1208
+          ],
+          "page": [
+            272,
+            1128
+          ],
+          "widestCard": 599,
+          "cardWidths": [
+            599,
+            597,
+            121,
+            461,
+            459,
+            78,
+            58
+          ]
+        },
+        "fontSizes": {
+          "15.5px": 22,
+          "40px": 1,
+          "13.5px": 33,
+          "28px": 3,
+          "14px": 1,
+          "17px": 4,
+          "30px": 3,
+          "14.5px": 7,
+          "12px": 8,
+          "12.5px": 14,
+          "20px": 3
+        },
+        "mainText": "Monday, Nov 23 · Calle Loíza\nWelcome back, James\nOn shift until\n \n6:00 PM\n \nBarista · Calle Loíza\nHours\n \n59 min of 56 h\n \nworked this week\nScheduled payday\n \nFri, Dec 4\n \nin 11 days\nOn shift now\n10:00 AM – \nto\n6:00 PM\n·\nBarista\n·\n,\nCalle Loíza\nClocked in at 10:02 AM\nBreaks and clock out on the Calle Loíza tablet\n8 h\nShift details\nThings to do\n6\nAll notifications\nReview coverage offer\nNeeds your answer\nRespond by Dec 1, 1:00 PM\nReview coverage offer\nNeeds your answer\nRespond by Dec 5, 7:00 AM\nConfirm this week’s schedule\nAction needed\nNov 23–29 · 7 shifts\nReview\nConfirm next week’s schedule\nAction needed\nNov 30–Dec 6 · 4 shifts\nConfirm your schedule\nAction needed\nDec 7–13\nTime off\nCan’t work\nSwap shift\nFix my time\nYour week\nTimecard\nToday, Monday, November 23: 1 hour worked of 8 scheduled\n1\nMon\nTuesday, November 24: 8 hours scheduled\n8\nTue\nWednesday, November 25: 8 hours scheduled\n8\nWed\nThursday, November 26: 8 hours scheduled\n8\nThu\nFriday, November 27: 8 hours scheduled\n8\nFri\nSaturday, November 28: 8 hours scheduled\n8\nSat\nSunday, November 29: 8 hours scheduled\n8\nSun\nHours worked\nScheduled\nNov 23–29\nComing up\nSee all\nTUE\n24\n9:00 AM – 5:00 PM\n·\nBarista\n·\n,\nCalle Loíza\nWED\n25\n9:00 AM – 5:00 PM\n·\nBarista\n·\n,\nCalle Loíza\nTHU\n26\n9:00 AM – 5:00 PM\n·\nBarista\n·\n,\nCalle Loíza"
+      },
+      "hit": null,
+      "rep": [
+        "Barista ×4",
+        "Calle Loíza ×4",
+        "Review coverage offer ×2",
+        "Needs your answer ×2",
+        "Action needed ×3",
+        "9:00 AM – 5:00 PM ×3"
+      ]
+    }
+  ],
+  "log": [
+    {
+      "sweep": "console",
+      "role": "mloc",
+      "tag": "390",
+      "msg": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "sweep": "console",
+      "role": "mloc",
+      "tag": "390",
+      "msg": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "sweep": "console",
+      "role": "mloc",
+      "tag": "390",
+      "msg": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "sweep": "console",
+      "role": "mloc",
+      "tag": "390-text200",
+      "msg": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "sweep": "console",
+      "role": "mloc",
+      "tag": "390-text200",
+      "msg": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "sweep": "console",
+      "role": "mloc",
+      "tag": "1440",
+      "msg": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "sweep": "console",
+      "role": "mloc",
+      "tag": "1440",
+      "msg": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "sweep": "console",
+      "role": "mloc",
+      "tag": "1440",
+      "msg": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    }
+  ]
+}
