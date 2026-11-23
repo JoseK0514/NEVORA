@@ -320,8 +320,10 @@
     html body .app-shell[data-nv-b] .c-person__act { border-color: transparent !important; background: var(--b-btn-surface) !important; color: var(--b-btn-surface-ink) !important; box-shadow: var(--b-btn-surface-edge) !important; } /* premium pass: the white button */
   }
   @media (max-width: 359px) {
-    /* Four tabs on the hero (Insights): every label keeps padding and never touches its neighbour. */
-    html body .app-shell[data-nv-b].app-shell :is(.c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg)) > :is(a, button) { padding: 0 6px !important; font-size: 12px !important; letter-spacing: -0.02em !important; min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+    /* Four tabs on the hero (Insights): every label keeps padding and never touches its neighbour. Target size (Nov 23,
+     * 2026): the label clips at the item's edge, but the kit's ::after hit area reaches the track's 4px pad, so each tab
+     * answers on 44px (overflow: hidden clipped it to the 36px pill). */
+    html body .app-shell[data-nv-b].app-shell :is(.c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg)) > :is(a, button) { padding: 0 6px !important; font-size: 12px !important; letter-spacing: -0.02em !important; min-width: 0 !important; overflow: clip !important; overflow-clip-margin: var(--b-seg-pad) !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
   }
   @media (max-width: 767px) {
     /* Glass tabs on a corporate page: 16px of canvas under their teal frame (the page's own 12px gap counts). */

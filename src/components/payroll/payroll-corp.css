@@ -390,3 +390,24 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 /* The overdue period's button ("Prepare Nov 9–15") wraps inside its card instead of running past it at 320 with 200%
  * text; at the default size it stays on one line. */
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-notice > .b-btn { flex: 0 1 auto; min-width: 0; height: auto; white-space: normal; text-align: center; }
+
+/* Phase 2 (G1, 200% text): Recent payrolls on a phone. The card measures itself in em, so its own text size decides:
+ * once fewer than 16em fit across (390 or 320 with 200% text; never at the default size, where the card is ~22em), a
+ * row's amount moves under its text on the text's edge, as the 320px rule above does, instead of squeezing the period,
+ * "Replaced" and the payday to a few letters a line; and "Payroll history" goes under the card's title instead of past
+ * its right edge. Words unchanged. */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-screen #b-payroll-recent { container: payroll-recent / inline-size; }
+@container payroll-recent (max-width: 16em) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent > .b-card__h:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent > .b-card__h > .b-card__a:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { flex: 0 1 auto !important; min-width: 0 !important; margin-left: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent .b-row:has(> .b-row__end):not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent .b-row:has(> .b-row__end) > .b-row__tx:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { flex: 1 1 0 !important; min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent .b-row > .b-row__end:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { order: 3 !important; flex: 1 0 100% !important; flex-direction: row !important; align-items: baseline !important; justify-content: flex-start !important; gap: var(--b-space-8) !important; padding-left: var(--b-space-48) !important; text-align: left !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent .b-row__t > .b-chip:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { max-width: 100% !important; }
+  /* The amount and "Net" wrap as words when even the full line is short (a replaced row is indented under its correction). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent .b-row > .b-row__end:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { flex-wrap: wrap !important; min-width: 0 !important; }
+}
+/* Payroll on a phone: a row's grey line shows whole (the kit clamps it at two lines, which cut "Download hours for payroll"
+ * and the paid time line at 200% text); every line here is one short sentence, so nothing changes at the default size. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b] .c-pay .b-screen .b-row__s:not(#p9a):not(#p9b) { display: block; -webkit-line-clamp: none; line-clamp: none; overflow: visible; }
+

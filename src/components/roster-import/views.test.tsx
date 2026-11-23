@@ -83,10 +83,14 @@ describe("step 2, check it", () => {
     expect(html).toMatch(/<button type="button" class="rimp-change" id="rimp-r4-change" aria-expanded="false" aria-label="Fix row 4, Otra" aria-describedby="rimp-r4-problems"/);
     expect(html).toMatch(/id="rimp-r2-change" aria-expanded="false" aria-label="Edit row 2, Ana Pérez"/);
   });
-  it("asks for Manager access only when the list has a Manager, and marks it while it is missing", () => {
+  it("asks for Manager access only when the list has a Manager, required but not red before a choice", () => {
     const withManager = renderToStaticMarkup(<ReviewStep {...reviewProps(review(MIXED))} />);
     expect(withManager).toContain(copy.review.manager.line);
-    expect(withManager).toMatch(/<select id="rimp-scope"[^>]*aria-invalid="true"/);
+    expect(withManager).toMatch(/<select id="rimp-scope"[^>]*aria-required="true"/);
+    expect(withManager).not.toMatch(/<select id="rimp-scope"[^>]*aria-invalid/);
+    // Package X: the count is said once; the line under it says only what to do.
+    expect(withManager).toContain(">Fix or remove them, then import.<");
+    expect(copy.review.manager.line.match(/Manager/g)).toHaveLength(1);
     expect(withManager).toContain('<option value="LOCATION:bakery">Bakery only</option>');
     expect(renderToStaticMarkup(<ReviewStep {...reviewProps(review(MIXED.slice(0, 2)))} />)).not.toContain('id="rimp-scope"');
   });
@@ -222,5 +226,17 @@ describe("the whole screen as it opens", () => {
     expect(html).toContain("Paso 1 de 3");
     expect(html).toContain(rosterImportCopy.es.add.noEmail);
     expect(html).toContain(">Revisar lista</button>");
+  });
+});
+
+describe("Package X: phone fixes", () => {
+  it("the example scrolls as a named region the keyboard can reach", () => {
+    const html = renderToStaticMarkup(<AddListStep copy={copy} text="" fileNote={null} listError={null} locations={locations} locationId="" locationError={null} busy={false} onText={nothing} onFile={nothing} onLocation={nothing} />);
+    expect(html).toContain('<div class="rimp-scroll" tabindex="0" role="region" aria-label="Example">');
+  });
+  it("a row that needs a fix shows a 10-digit phone as checked rows do", () => {
+    const html = renderToStaticMarkup(<ReviewStep {...reviewProps(review(["E-4,Mara,Gerente,7875550104,m@example.invalid,MANAGER"]))} />);
+    expect(html).toContain('<span class="rimp-row__main">787-555-0104</span>');
+    expect(html).not.toContain(">7875550104<");
   });
 });

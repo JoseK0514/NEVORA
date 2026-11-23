@@ -86,6 +86,9 @@ describe('Owner and Manager Profile', () => {
     // Phase 2 (Nov 23, 2026): the band says "Manager", so the value is the reach only; who can change a locked value is
     // said to screen readers beside its lock, not as a visible line under every row.
     expect(assigned).toContain('<span class="q-rv q-rv--l">Main Office, West Office</span>');
+    // Package X: a location reads by its short name, as on every other page; a name without one stays whole.
+    const short = render({ ...manager, changedBy: 'Jose Natal', placeNames: { 'Main Office': 'Main' } }, parseManagerProfile(fixture('manager')));
+    expect(short).toContain('<span class="q-rv q-rv--l">Main, West Office</span>');
     expect(assigned.match(/<span class="sr-only">, Jose Natal can change this<\/span>/g)).toHaveLength(2);
     expect(assigned).not.toContain('pmp-fixed__why');
     expect(assigned).not.toContain('Read-only');
@@ -107,7 +110,9 @@ describe('Owner and Manager Profile', () => {
 
   it('says what is not there yet without blame words, and lets an Owner add an email', () => {
     const html = render(manager, parseManagerProfile(fixture('manager-empty')));
-    expect(html.match(/<span>None<\/span>/g)).toHaveLength(2);
+    // Package X: a Manager's empty value uses the Owner's words ("Not added"), not "None".
+    expect(html.match(/<span>Not added<\/span>/g)).toHaveLength(2);
+    expect(html).not.toContain('<span>None</span>');
     expect(html).not.toMatch(/missing|missed/i);
     const ownerEmpty = render(owner, parseManagerProfile({ ...fixture('owner'), contact: { email: null, phone: null } }));
     expect(ownerEmpty).toContain('href="/app/employees/qa-owner?edit=1"');

@@ -59,6 +59,8 @@ W=390,1440 tools/ui-scan/desk.sh /tmp/scan-emp /app,/app/schedule \
 #   Things to do and Home, the schedule from the task, draft vs published (NEVORA_SCAN_LEAVE_W=390,900,1440).
 #   NEVORA_SCAN_LEAVE_NEG=1: wrong actor, stale view, no intent, foreign origin, other role, colleague (employees);
 #   NEVORA_SCAN_LEAVE_REVOKE=1 then ends every session and captures the page's notice.
+# Rondo (Owner and Manager advisor pages, H1–H6): NEVORA_SCAN_ADVISOR=1 turns on the owner and manager advisor, weekly,
+#   knowledge and business-imports flags in the owned app. No provider or pilot is set, so nothing calls an AI provider.
 # Coverage rules not set up: NEVORA_SCAN_NO_COVERAGE=1.  Correction approval with punches compared: NEVORA_SCAN_CORRECTION_FLOW=1
 ```
 

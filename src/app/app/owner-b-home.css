@@ -379,3 +379,24 @@
    * own rules drop the shadow. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live__a:focus-visible:not(#g40a):not(#g40b) { outline: var(--b-focus-width) solid var(--b-focus-on-band) !important; outline-offset: calc(-1 * var(--b-focus-width)) !important; box-shadow: none !important; }
 }
+
+/* QA A5-01 (Nov 23, 2026): an overdue payroll's card is drawn twice on Home; phones show the copy first under the band,
+ * 768 and up the one that leads the right column (its place before). The wrappers have no box of their own. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen :is(.b-home-payfirst, .b-home-paylate):not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5):not(#p3a6) { display: contents !important; }
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-paylate:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5):not(#p3a6):not(#p3a7) { display: none !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-payfirst:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5):not(#p3a6):not(#p3a7) { display: none !important; }
+  }
+  /* The wrapped card keeps what every other Home card gets from its column: the phone entrance and, from 768 to 1023px,
+   * the full width. */
+  @media (max-width: 1023px) {
+    @media (prefers-reduced-motion: no-preference) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > :is(.b-home-payfirst, .b-home-paylate) > *:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { animation: b-enter var(--b-dur-enter) var(--b-ease-out) 200ms both !important; } }
+    @media (prefers-reduced-motion: reduce) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > :is(.b-home-payfirst, .b-home-paylate) > *:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { animation: b-fade 200ms linear both !important; } }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > :is(.b-home-payfirst, .b-home-paylate) > *:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-column: 1 / -1 !important; grid-row: auto !important; }
+  }
+}
