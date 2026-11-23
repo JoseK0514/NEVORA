@@ -27,3 +27,9 @@
 @media (min-width: 768px) {
   :is(#c-root, html) :is(.c-photo-review__lede, .c-photo-review__body) { padding-left: var(--b-inset-wide, 22px); padding-right: var(--b-inset-wide, 22px); }
 }
+/* 200% text (end sweep, Nov 23): the kit's buttons and the card's text link are fixed px; here they take rem sizes and grow
+ * with their text (44px stays the minimum). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-photo-review :is(.c-btn, .c-link):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: 0.9375rem !important; line-height: 1.34 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-photo-review .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { height: auto !important; min-height: 44px !important; padding-block: 0.5rem !important; }
+}
