@@ -83,7 +83,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
   </>;
 }
 
-function PositionDialog({ editing, createAction, updateAction, onClose }: {
+export function PositionDialog({ editing, createAction, updateAction, onClose }: {
   editing: Editing; createAction: PositionAction; updateAction: PositionAction; onClose: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
