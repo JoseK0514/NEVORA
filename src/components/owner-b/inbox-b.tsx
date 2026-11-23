@@ -30,7 +30,7 @@ import { BDoneMark, BAvatar, BButton, BButtonLink, BCard, BChip, BCount, BGlyph,
  * page as its row; a time off request carries Decline and Approve, which post the same review action as the request's own
  * page and come back here. */
 
-type Row = { key: string; href: string; label: string; title: string; /** A swap's other person: the title draws both names round the swap glyph. */ swapWith?: string; detail?: string; value?: string; person?: string; lines?: string[]; quiet?: boolean };
+type Row = { key: string; href: string; label: string; title: string; /** A swap's other person: the title draws both names round the swap glyph. */ swapWith?: string; detail?: string; value?: string; person?: string; lines?: string[]; reviewerDetail?: string; quiet?: boolean };
 type Group = { id: string; title: string; rows: Row[]; count?: number; note?: string };
 type Family = { id: string; title: string; groups: Group[] };
 type Filter = "all" | "card-open" | "review" | "card-requests";
@@ -245,6 +245,7 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
       // Final polish (Nov 20, 2026): a swap's two names sit round the bold swap glyph (BSwapNames), read "A and B".
       return <BRow key={row.key} lead={<BIcon tone={row.quiet ? "grey" : kind.tone}>{kind.icon}</BIcon>} title={row.swapWith ? <BSwapNames a={row.title} b={row.swapWith} /> : row.title}
         chip={row.value ? /^\d+$/.test(row.value) ? <BCount>{row.value}</BCount> : <BStatusText>{row.value}</BStatusText> : undefined} sub={group.id.endsWith("corrections") ? correctionSub(row) : subOf(row)} href={row.href}
+        extra={row.reviewerDetail ? <span className="b-sr"> {row.reviewerDetail}</span> : undefined}
         trail={review ? <BButtonLink href={row.href} kind="ghost" label={`Review ${row.title}${row.swapWith ? ` and ${row.swapWith}` : ""}`}>Review</BButtonLink> : undefined} />;
     })}</BList>
   </BCard>;

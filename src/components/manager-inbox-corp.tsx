@@ -32,6 +32,7 @@ type Row = { key: string; href: string; label: string; title: string; swapWith?:
   person?: string;
   /** Phase 4 (U09): further lines under the detail: the other shift of a swap, a cover request's result. */
   lines?: string[];
+  reviewerDetail?: string;
   /** Phase 4 (U03): listed for the record, not this person's to decide (another reviewer approves it). */
   quiet?: boolean };
 type Group = { id: string; title: string; rows: Row[]; count?: number; aside?: { href: string; label: string; text: string };
@@ -145,10 +146,12 @@ function timecardRows(items: ActionItem[], day: string, open = true, dateInNote 
     const title = plain(period || "This pay period");
     const rest: Row[] = all.filter(item => !mine(item)).map(item => {
       const name = concernsActor(item) ? t.yourTimecard : itemPerson(item) ?? item.detail.split(" · ")[0] ?? title;
-      const why = reviewRoute(item) === "other_reviewer" ? t.otherReviewer : t.reviewUnchecked;
+      const otherReviewer = reviewRoute(item) === "other_reviewer";
+      const why = otherReviewer ? t.otherReviewer : t.reviewUnchecked;
+      const reviewerDetail = otherReviewer ? t.reviewerNeeded : undefined;
       const review = new URL(item.href, "https://nevora.invalid");
       return { key: `timecard-other:${item.id}`, href: review.pathname === "/app/timecards" ? review.pathname + review.search + review.hash : "/app/timecards",
-        label: `${name}, ${title}. ${why}.${reviewRoute(item) === "other_reviewer" ? ` ${t.reviewerNeeded}` : ""}`, title: plain(name), detail: title, lines: [why], quiet: true };
+        label: `${name}, ${title}. ${why}.${reviewerDetail ? ` ${reviewerDetail}` : ""}`, title: plain(name), detail: title, lines: [why], reviewerDetail, quiet: true };
     });
     if (!list.length) return rest;
     const names = list.map(item => itemPerson(item) ?? item.detail.split(" · ")[0]).map(name => name.split(" ")[0]);

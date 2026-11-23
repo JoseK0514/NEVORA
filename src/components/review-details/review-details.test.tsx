@@ -176,7 +176,10 @@ describe("U03: the item another reviewer approves stays visible in Things to do"
     expect(out).toContain("Your time correction");
     expect(out).toContain("James Ortiz");
     // Label in name (Nov 23, 2026): a Direction B row is named by its visible text; the older card keeps its label.
-    if (name === "Direction B") expect(html).not.toMatch(/aria-label="Your timecard, /);
+    if (name === "Direction B") {
+      expect(html).not.toMatch(/aria-label="Your timecard, /);
+      expect(html).toContain('<span class="b-sr"> It needs an Owner or a Manager with company access.</span>');
+    }
     else expect(html).toMatch(/aria-label="Your timecard, Oct 19–25\. Another reviewer approves this one\. It needs an Owner or a Manager with company access\."/);
     expect(out).not.toMatch(/approves it by|due /i);
   });
