@@ -25,7 +25,7 @@ import type { ReactNode } from "react";
 import { WholeParts } from "./time-off-waiting-list";
 import { calloutCoverText, coverOutcomeText } from "@/lib/action-center/request-details";
 import { reviewCopy } from "./review-details/copy";
-import { BAvatar, BCallout, BCard, BList, BState } from "./owner-b/b-kit";
+import { BAvatar, BCallout, BCard, BChip, BList, BSegs, BState } from "./owner-b/b-kit";
 
 const t = reviewCopy();
 
@@ -61,18 +61,6 @@ function shiftHours(shift: { startTime: string; endTime: string }) {
   return formatTimeRange(shift.startTime.slice(0, 5), shift.endTime.slice(0, 5));
 }
 
-/** Phase 3 (OW-029): "Tue, Nov 17 · 8:00 AM – 4:00 PM", the when of a request's collapsed line. */
-function when(shift: { date: string; startTime: string; endTime: string }, year: string) {
-  return `${shiftDay(shift.date, year)} · ${shiftHours(shift)}`;
-}
-
-/** One line for what the request asks: "Swap with Marco Silva · Sat, Nov 21 · 12:00 PM – 8:00 PM". */
-function exchangeLine(exchange: ExchangeRecord, year: string) {
-  // Phase 8 (a.md #14): a cover request says what Things to do says ("Cover request · Tue, Nov 24 · 12:00 PM – 8:00 PM ·
-  // Picked up by Valeria Díaz"), not a second wording ("Give to Valeria Díaz").
-  if (exchange.kind !== "SWAP") return `${t.coverRequest} · ${when(exchange.sourceShift, year)} · ${coverResult(exchange)}`;
-  return `${exchange.targetEmployeeName ? `Swap with ${exchange.targetEmployeeName}` : "Swap"} · ${when(exchange.sourceShift, year)}`;
-}
 
 /** Phase 3 (OW-029): one shift on one line: the day, start to end (an overnight end names its day), then where. */
 function shiftLine(shift: FactShift, year: string) {
@@ -122,18 +110,35 @@ function CalloutFacts({ callout, reason, year }: { callout: CalloutRecord; reaso
   </>;
 }
 
+/** Jose (Nov 23, 2026): a request's summary reads in three fixed lines, not one run-on string: the name with the kind of
+ * request as a small label beside it, then the day and the hours together, then who else is involved or how it ended. */
+type Head = { kind: string; tone: "teal" | "amber" | "grey"; when: string[]; who?: string };
+function exchangeHead(exchange: ExchangeRecord, year: string): Head {
+  const when = [shiftDay(exchange.sourceShift.date, year), shiftHours(exchange.sourceShift)];
+  if (exchange.kind === "SWAP") return { kind: "Swap", tone: "teal", when, who: exchange.targetEmployeeName ? `With ${exchange.targetEmployeeName}` : undefined };
+  return { kind: t.coverRequest, tone: "teal", when, who: coverResult(exchange) };
+}
+function calloutHead(callout: { date: string; startTime: string; endTime: string }, year: string): Head {
+  return { kind: "Can’t work", tone: "amber", when: [shiftDay(callout.date, year), shiftHours(callout)] };
+}
+function HeadText({ name, head, after }: { name: string; head: Head; after?: ReactNode }) {
+  return <span className="b-row__tx c-sreq__tx">
+    <span className="b-row__t c-sreq__name"><span className="b-row__tt">{name}</span><BChip tone={head.tone}>{head.kind}</BChip></span>
+    <span className="b-row__s c-sreq__when"><BSegs parts={head.when} /></span>
+    {head.who ? <span className="b-row__s c-sreq__who">{head.who}</span> : null}
+    {after ?? null}
+  </span>;
+}
+
 /** Phase 2 (C12, Nov 23, 2026): a request is one Direction B row in a white card (the avatar in the person's tint, the
  * name over the request's line, its age at the right from 768px) that opens in place to show its shifts in full. The
  * decision sits under it, inside the same list item. The row's name is its visible text (no aria-label that differs). */
-function RequestRow({ id, name, line, sent, aged, open, selected, facts, children }: { id: string; name: string; line: string; sent: string; aged: boolean; open: boolean; selected?: boolean; facts: ReactNode; children?: ReactNode }) {
+function RequestRow({ id, name, head, sent, aged, open, selected, facts, children }: { id: string; name: string; head: Head; sent: string; aged: boolean; open: boolean; selected?: boolean; facts: ReactNode; children?: ReactNode }) {
   return <li className="b-li c-sreq" id={`request-${id}`} tabIndex={-1} data-selected={selected ? "true" : undefined}>
     <details className="c-sreq__details" open={open}>
       <summary className="b-row b-row--link c-sreq__row">
         <BAvatar name={name} />
-        <span className="b-row__tx">
-          <span className="b-row__t"><span className="b-row__tt">{name}</span></span>
-          <span className="b-row__s"><WholeParts text={line} />{aged ? <span className="b-row__more c-sreq__age">{sent}</span> : null}</span>
-        </span>
+        <HeadText name={name} head={head} after={aged ? <span className="b-row__more c-sreq__age">{sent}</span> : null} />
         <span className="b-row__end c-sreq__ago">{sent}</span>
         <CaretDownIcon className="b-chev c-sreq__caret" size={16} weight="bold" aria-hidden="true" />
       </summary>
@@ -199,10 +204,10 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
   // OW-003: a date carries its year only when it is not this one (the company's own calendar year).
   const year = businessDate(new Date(now), timeZone).slice(0, 4);
   const activity = [
-    ...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, name: exchange.requestedByName, line: exchangeLine(exchange, year), note: null as string | null,
+    ...exchanges.map(exchange => ({ id: exchange.id, createdAt: exchange.createdAt, status: exchange.status, name: exchange.requestedByName, head: exchangeHead(exchange, year), note: null as string | null,
       // Phase 4 (U09): a finished cover request says its result; a swap has none to add.
       fact: exchange.kind === "SWAP" ? null : { label: t.outcome, value: coverResult(exchange), help: null as string | null } })),
-    ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, name: callout.employeeName, line: `Can’t work · ${when(callout, year)}`,
+    ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, name: callout.employeeName, head: calloutHead(callout, year),
       note: callout.status === "APPROVED" && !callout.releaseApplies ? "This approval was for an earlier version of the shift. Check who is assigned now." : null,
       fact: { label: t.coverHistory, value: calloutCoverText(callout.coverage, t), help: t.coverHistoryHelp as string | null } })),
   ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 30);
@@ -226,12 +231,12 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
     {selected.id === "pending" ? (waiting ? <BCard label="Waiting shift requests"><BList>
       {livePending.map(exchange => {
         const what = `${exchange.kind === "SWAP" ? "swap" : "coverage"} request from ${exchange.requestedByName}`;
-        return <RequestRow key={exchange.id} id={exchange.id} name={exchange.requestedByName} line={exchangeLine(exchange, year)} sent={sent(exchange.createdAt)} aged={aged(exchange.createdAt)}
+        return <RequestRow key={exchange.id} id={exchange.id} name={exchange.requestedByName} head={exchangeHead(exchange, year)} sent={sent(exchange.createdAt)} aged={aged(exchange.createdAt)}
           open={requestId === exchange.id} selected={requestId === exchange.id} facts={<ExchangeFacts exchange={exchange} year={year} />}>
           <Decision id={exchange.id} revision={exchange.requestRevision} decline="MANAGER_DECLINE" approve="MANAGER_APPROVE" allowed={!!approvals.get(exchange.id)?.allowed} notice={approvals.get(exchange.id)?.notice ?? undefined} what={what} outcome={exchangeOutcome(exchange)} ask={exchangeAsk(exchange, what)} />
         </RequestRow>;
       })}
-      {callouts.map(callout => <RequestRow key={callout.id} id={callout.id} name={callout.employeeName} line={`Can’t work · ${when(callout, year)}`} sent={sent(callout.createdAt)} aged={aged(callout.createdAt)}
+      {callouts.map(callout => <RequestRow key={callout.id} id={callout.id} name={callout.employeeName} head={calloutHead(callout, year)} sent={sent(callout.createdAt)} aged={aged(callout.createdAt)}
           open={requestId === callout.id} selected={requestId === callout.id} facts={<CalloutFacts callout={callout} reason={reasons[callout.reasonCode] ?? callout.reasonCode} year={year} />}>
           <Decision id={callout.id} revision={callout.requestRevision} decline="DECLINE_CALLOUT" approve="APPROVE_CALLOUT" allowed={!!approvals.get(callout.id)?.allowed} notice={approvals.get(callout.id)?.notice ?? undefined} noticeHref={publishFirstHref(approvals.get(callout.id)?.notice, callout.weekStart)} what={`the report from ${callout.employeeName}`}
             ask={{ question: t.askDeclineCallout, consequence: t.staysOnShift(first(callout.employeeName)), keep: t.keepRequest, go: t.decline,
@@ -241,7 +246,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
     </BList></BCard> : empty("You’re all caught up", "New shift requests show up here.")) : null}
 
     {selected.id === "coverage" ? (liveCoverage.length ? <BCard label="Open cover"><BList>
-      {liveCoverage.map(exchange => <RequestRow key={exchange.id} id={exchange.id} name={exchange.requestedByName} line={exchangeLine(exchange, year)} sent={sent(exchange.createdAt)} aged={aged(exchange.createdAt)}
+      {liveCoverage.map(exchange => <RequestRow key={exchange.id} id={exchange.id} name={exchange.requestedByName} head={exchangeHead(exchange, year)} sent={sent(exchange.createdAt)} aged={aged(exchange.createdAt)}
         open={false} facts={<ExchangeFacts exchange={exchange} year={year} />}>
         {exchange.requestRevision ? <ShiftChangeForm fields={{ kind: "MANAGER_CLOSE", requestId: exchange.id, expectedRevision: exchange.requestRevision }} className="c-sreq__form"
           outcome={{ closed: { tone: "closed", icon: <ArrowsLeftRightIcon weight="bold" />, title: t.requestClosed, line: t.keepsShift(exchange.requestedByName) } }}>
@@ -257,7 +262,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
         <details className="c-sreq__details">
           <summary className="b-row b-row--link c-sreq__row">
             <BAvatar name={item.name} />
-            <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.name}</span></span><span className="b-row__s"><WholeParts text={item.line} /></span></span>
+            <HeadText name={item.name} head={item.head} />
             <span className="b-row__end c-sreq__state">{statusWord(item.status)}</span>
             <CaretDownIcon className="b-chev c-sreq__caret" size={16} weight="bold" aria-hidden="true" />
           </summary>

@@ -60,3 +60,13 @@
   :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq:has(> .c-sreq__acts):not(:has(.c-sreq__note)) { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq:not(:has(.c-sreq__note)) > .c-sreq__acts { max-width: 22rem; padding: 10px var(--sr-x) 10px 0; }
 }
+
+/* Jose (Nov 23, 2026): the summary in three fixed lines. The name and its kind label share the first line (the label
+ * wraps under the name only when the line is too short); the day and hours stay together on the second, each part
+ * whole; who else is involved, or how it ended, is the third. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__tx { gap: 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__name { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--b-space-8, 8px); row-gap: 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__name .b-chip { font-size: 0.75rem; line-height: 1rem; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__when { color: var(--b-ink2, #3D4448); font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__when .b-segs__i { white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__who { color: var(--b-grey, #5E666C); }
