@@ -255,3 +255,7 @@ html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-a
 :is(#c-root, html) body .app-shell[data-nv-b] .c-page > header.c-title .c-sched-place { color: var(--b-on-band); }
 /* Desktop at 200% text (DS-6, Nov 23): the kit's .c-btn is 15/20px; the same size in rem on the Schedule. */
 :is(#c-root, html) .c-sched .c-btn { font-size: 0.9375rem; line-height: 1.25rem; }
+/* Phone Schedule at 200% text: the week strip's day names and the day card's "12 shifts · 61 h" are the kit's 12px and
+ * 14px; the same px in rem here. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-sched .b-week__d { font-size: 0.75rem; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-sched .b-card__meta { font-size: 0.875rem; }

@@ -552,3 +552,24 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched .b-week > .b-week__days:not(#g34a):not(#g34b) { grid-template-columns: repeat(auto-fit, minmax(2.25rem, 1fr)) !important; row-gap: var(--b-space-4) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched .cm-roster:has(.c-sched-gridbar > .c-sched-week__nav):not(:has(.cm-grid__coverage)):not(:has(.cm-legend)) .c-sched-gridbar:not(#g35a):not(#g35b) { min-height: 0 !important; height: 0 !important; padding: 0 !important; }
 }
+
+/* Desktop week grid at large text (DS-6, Nov 23). Its text is in rem now, so at 200% it doubles; seven day columns of
+ * doubled shift times can't fit the page's width. Once the reader enlarges text (--nv-rem is 1rem as pixels, set in
+ * owner-b-pages.css), the columns take a width in rem and the grid scrolls sideways inside its own scroller
+ * (.cm-grid__scroll, the one narrow windows already use), as a data table does; the page itself never scrolls sideways.
+ * A shift's times break between start and end, never inside a time, and the position wraps between words instead of
+ * being cut. At the default size none of this applies. */
+@layer nv-b {
+  @container not style(--nv-rem: 16px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid__scroll:not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { overflow-x: auto !important; overflow-y: hidden !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid:not([data-days="1"]):not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { width: max(100%, calc(10rem + var(--ds-days, 7) * 6.5rem)) !important; min-width: 0 !important; table-layout: fixed !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid[data-days="5"]:not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { --ds-days: 5; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner:not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { width: 10rem !important; min-width: 10rem !important; height: auto !important; white-space: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid thead th:not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { height: auto !important; white-space: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid :is(.cm-block, .cm-open-past):not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { height: auto !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block .c-time:not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { white-space: nowrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-block > .cm-block__pos:not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: normal !important; word-break: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid .cm-person__name:not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid .sb-openchip:not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { height: auto !important; white-space: nowrap !important; }
+  }
+}
