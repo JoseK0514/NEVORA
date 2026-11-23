@@ -10,7 +10,7 @@ import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { toast } from "@/components/toaster";
 import type { Position } from "@/lib/domain";
 import { FieldB, ResultB, SwitchRowB } from "../settings-b-form";
-import { ButtonLabel, FieldErrors, lockPageScroll, useFieldErrors } from "../wave-c-form";
+import { FieldErrors, lockPageScroll, useFieldErrors } from "../wave-c-form";
 
 type PositionAction = (data: FormData) => Promise<ConfigurationResult>;
 type Editing = { kind: "add" } | { kind: "edit"; position: Position };
@@ -35,6 +35,15 @@ export function PositionCatalog({ positions, available, createAction, updateActi
   const [opened, setOpened] = useState(0);
   const trigger = useRef<string | null>(null);
 
+  // Focus goes back to the row that opened the dialog once the dialog is gone (a modal dialog makes the page inert until then).
+  const returnFocus = useRef(false);
+  useEffect(() => {
+    if (editing || !returnFocus.current) return;
+    returnFocus.current = false;
+    const target = trigger.current ? document.getElementById(trigger.current) : null;
+    (target ?? document.getElementById("position-add"))?.focus({ preventScroll: true });
+  }, [editing, positions]);
+
   function open(next: Editing, triggerId: string) {
     trigger.current = triggerId;
     setOpened(count => count + 1);
@@ -54,7 +63,6 @@ export function PositionCatalog({ positions, available, createAction, updateActi
   </li>;
 
   return <>
-    <noscript><p className="c-note">JavaScript is required to add or edit positions.</p></noscript>
     <p className="c-sr" role="status" aria-live="polite">{positions.length ? `${active.length} active and ${archived.length} archived positions` : ""}</p>
     {positions.length ? <CorpCard id="positions-active" label="Active" count={active.length}>
       <CorpRows label="Active positions">
@@ -67,12 +75,11 @@ export function PositionCatalog({ positions, available, createAction, updateActi
     {archived.length ? <CorpCard id="positions-archived" label="Archived" count={archived.length}>
       <CorpRows label="Archived positions">{archived.map(row)}</CorpRows>
     </CorpCard> : null}
-    {editing ? <PositionDialog key={opened} editing={editing} createAction={createAction} updateAction={updateAction}
-      onClose={() => {
-        setEditing(null);
-        const target = trigger.current ? document.getElementById(trigger.current) : null;
-        (target ?? document.getElementById("position-add"))?.focus({ preventScroll: true });
-      }} /> : null}
+    <noscript><p className="c-note">JavaScript is required to add or edit positions.</p></noscript>
+    {/* The dialog is not a child of the page itself, so the page's card rules (full width, the gap between cards) never
+      reach it; display: contents gives its holder no box. */}
+    <div style={{ display: "contents" }}>{editing ? <PositionDialog key={opened} editing={editing} createAction={createAction} updateAction={updateAction}
+      onClose={() => { returnFocus.current = true; setEditing(null); }} /> : null}</div>
   </>;
 }
 
@@ -122,7 +129,7 @@ function PositionDialog({ editing, createAction, updateAction, onClose }: {
 
   const titleId = `${id}-title`;
   return <dialog ref={dialog} className="c-setb-dlg wc-dialog" aria-labelledby={titleId} onCancel={event => { event.preventDefault(); askClose(); }}>
-    <form noValidate onSubmit={submit} aria-busy={pending} aria-label={position ? `Edit ${position.name}` : "Add a position"} {...handlers}
+    <form noValidate onSubmit={submit} aria-busy={pending} {...handlers}
       onInput={() => { if (error) setError(null); }}>
       <FormDiscardGuard />
       <div className="c-setb-dlg__head">
@@ -150,7 +157,7 @@ function PositionDialog({ editing, createAction, updateAction, onClose }: {
       <div className="c-setb-dlg__acts">
         <button type="button" className="c-btn c-btn--secondary" disabled={pending} onClick={askClose}>Cancel</button>
         <button type="submit" className="c-btn" disabled={pending}>
-          <ButtonLabel pending={pending} idle={position ? "Save position" : "Add position"} busy={position ? "Saving…" : "Adding…"} />
+          {pending ? (position ? "Saving…" : "Adding…") : position ? "Save position" : "Add position"}
         </button>
       </div>
     </form>
