@@ -43,3 +43,11 @@ describe('Timecards at a large text size (G52)', () => {
       .toContain('.c-title__sub:not(#gq1):not(#gq2):not(#gq3) { line-height: 1.3125rem !important; }');
   });
 });
+
+describe('Clocked in now on two lines (Nov 23, 2026)', () => {
+  const large = block('@container tc-b (max-width: 20em)');
+  it('puts the live dot beside the first line', () => {
+    expect(large).toMatch(/\.c-tc-sub > \.b-status:not\(#gq1\):not\(#gq2\):not\(#gq3\) \{ align-items: flex-start !important; \}/);
+    expect(large).toMatch(/\.c-tc-sub > \.b-status > \.b-ldot[^{]*\{ margin-top: calc\(\(1\.35em - var\(--b-chip-dot\)\) \/ 2\) !important; \}/);
+  });
+});
