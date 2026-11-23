@@ -19,6 +19,8 @@ import {
 } from "@/lib/date-utils";
 import { rankCoverageCandidates } from "@/lib/scheduling/coverage-ranking";
 import { businessDateStart, shiftPeriod } from "@/lib/scheduling/periods";
+import { readPortalLanguage } from "@/lib/activation/language.server";
+import { scheduleWords, type ScheduleLang } from "../schedule-copy";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
 export const generateMetadata = routeTitle("coverage");
@@ -27,15 +29,15 @@ export const generateMetadata = routeTitle("coverage");
  * until that read reaches this branch, the server's sentence ("2 employees missing", "Cashier: 1 missing") is reworded,
  * and any other label is shown as it is. */
 type NeedTarget = { target: string; label: string; count?: number; positionName?: string };
-function needLabel({ target, label, count, positionName }: NeedTarget) {
-  const people = (n: number) => `${n} more ${n === 1 ? "person" : "people"} needed`;
-  if (target === "LEAD") return "Shift lead needed";
+function needLabel({ target, label, count, positionName }: NeedTarget, lang: ScheduleLang = "en") {
+  const t = scheduleWords(lang).cover, people = t.morePeople;
+  if (target === "LEAD") return t.leadNeeded;
   if (typeof count === "number" && target === "STAFFING") return people(count);
-  if (typeof count === "number" && target === "POSITION" && positionName) return `${positionName}: ${count} more needed`;
+  if (typeof count === "number" && target === "POSITION" && positionName) return t.positionMore(positionName, count);
   const staff = /^(\d+) employees (?:missing|needed)$/.exec(label);
   if (staff) return people(Number(staff[1]));
   const position = /^(.+): (\d+) (?:missing|needed)$/.exec(label);
-  if (position) return `${position[1]}: ${position[2]} more needed`;
+  if (position) return t.positionMore(position[1], position[2]);
   return label;
 }
 
@@ -60,6 +62,8 @@ export default async function CoverageSuggestionsPage({
   const params = await searchParams;
   const access = await readOperationalAuthority(proof);
   const scoped = access.state === 'ready' && access.scope?.mode === 'LOCATIONS';
+  let lang:ScheduleLang='en';try{lang=(await readPortalLanguage(proof)).language;}catch{/* English */}
+  const t=scheduleWords(lang).cover;
   if (params.repair !== undefined) {
     let locator;
     try { locator = parseCoverageRepairLocator(params.repair); }
@@ -68,7 +72,7 @@ export default async function CoverageSuggestionsPage({
       try{return await readCoverageRepair(locator,proof,params.refresh==='1');}
       catch(error){if(!(error instanceof CoverageRepairConflictError))throw error;return null;}
     });
-    if(source.state==='unavailable')return <OperationalUnavailable title="Coverage review unavailable" reason={source.reason} scoped={scoped}/>;
+    if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.reviewUnavailable} reason={source.reason} scoped={scoped}/>;
     const review=source.data;
     const back = `/app/schedule?week=${encodeURIComponent(locator.weekStart)}&location=${encodeURIComponent(locator.locationId)}`;
     const status = review?.status ?? 'STALE';
@@ -90,7 +94,7 @@ export default async function CoverageSuggestionsPage({
       rulesHref={scoped ? undefined : `/app/schedule/settings?week=${encodeURIComponent(locator.weekStart)}`}
       refreshHref={coverageRepairUrl(locator, true)}
       requirements={review?.targets.map(target => ({
-        label: needLabel(target as NeedTarget),
+        label: needLabel(target as NeedTarget, lang),
         selected: target.target === review.locator.target && (target.target !== 'POSITION' || target.positionId === review.locator.positionId),
         href: coverageRepairUrl({
           ...review.locator,
@@ -131,7 +135,7 @@ export default async function CoverageSuggestionsPage({
     const period = {weekStart,date,locationId,startTime,endTime,positionId:params.positionId};
     const designatedLead = params.lead === '1';
     const source = await readScopedCoverageSuggestions(period,proof,designatedLead);
-    if (source.state === 'unavailable') return <OperationalUnavailable title="Coverage suggestions unavailable" reason={source.reason} scoped/>;
+    if (source.state === 'unavailable') return <OperationalUnavailable lang={lang} title={t.suggestionsUnavailable} reason={source.reason} scoped/>;
     const {locationName,positionName,candidates,draft} = source.data;
     return <ScopedReadFrame observation={scopedObservation(source)}><CoverageAssistant
       date={date} startTime={startTime} endTime={endTime} locationName={locationName} positionName={positionName}
@@ -188,7 +192,7 @@ export default async function CoverageSuggestionsPage({
   );
     return {locations,positions,candidates};
   });
-  if(source.state==='unavailable')return <OperationalUnavailable title="Coverage suggestions unavailable" reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.suggestionsUnavailable} reason={source.reason}/>;
   const {locations,positions,candidates}=source.data;
   const location = locations.find((item) => item.id === locationId);
   const position = positions.find(item => item.id === params.positionId);

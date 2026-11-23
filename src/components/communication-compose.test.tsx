@@ -45,7 +45,8 @@ it('preserves the blocked state without showing private form content or publicat
 });
 it('names the confirmation rule the DEC6 way in review and in the Manager list',async()=>{
  const {readFileSync}=await import('node:fs');
- for(const f of ['communication-compose.tsx','messages-manager-b.tsx','communication-detail.tsx']){const src=readFileSync(new URL('./'+f,import.meta.url),'utf8');expect(src).not.toContain('Must be read');}
- const compose=readFileSync(new URL('./communication-compose.tsx',import.meta.url),'utf8');
- expect(compose).toContain("'Must be confirmed':'Confirming is optional'");
+ for(const f of ['communication-compose.tsx','messages-manager-b.tsx','communication-detail.tsx','communication-copy.ts']){const src=readFileSync(new URL('./'+f,import.meta.url),'utf8');expect(src).not.toContain('Must be read');}
+ // G98: the words moved unchanged into the en/es table (communication-copy.ts); compose reads them from there.
+ const compose=readFileSync(new URL('./communication-copy.ts',import.meta.url),'utf8');
+ expect(compose).toContain("mustBeConfirmed: 'Must be confirmed', confirmingOptional: 'Confirming is optional'");
 });

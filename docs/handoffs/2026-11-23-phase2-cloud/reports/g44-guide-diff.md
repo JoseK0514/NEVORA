@@ -71,3 +71,23 @@ None: the six guides are text only (no image links or `<img>` in any of them). T
 ## For Jose
 Approve the text, then rebuild with `scripts/manuals/build-manuals.mjs` (it regenerates the six PDFs and the manifest
 against the new application hash and clears G44's failing test).
+
+## Rebuild (Jose approved, Nov 23 16:08 UTC, README "Gap closure")
+- Merged the shared tip (`552ceed3`) first. `build-manuals.mjs` and `check-manuals.mjs` were read before running: the
+  build renders each guide's Markdown in an offline browser with every request aborted and writes only to
+  `docs/guides/web/publication/`; nothing is uploaded (the GitHub address in the PDFs is a printed source link).
+- `sources.json` named `src/components/company-access/scoped-manual-shift-form.tsx` as evidence for the Owner and
+  Manager/Lead guides; that file was replaced by `scoped-shift-sheet.tsx` (the location Manager's Add shift and Shift
+  details sheet). The evidence path was updated; the guides' recovery labels (**Unsaved changes to copy**, **Reload current
+  shift**) still come from `shift-review-recovery.tsx` through the shared shift form.
+- Built with the pinned runtime (`tools/ci-browser-runtime`, Playwright 1.62.1, installed from its lockfile without a
+  browser download) pointed at the container's installed Chromium: `node scripts/manuals/build-manuals.mjs --date
+  2026-11-23`. Source `2b3ede8c`; `check-manuals.mjs` verifies all six; `manual-publication` and `manual-bundle` tests pass.
+- The PDFs' text was extracted and checked: today's words are in them (Confirmed, Rondo AI, Check invitation, Check what
+  happened, What they can approve, Who’s included and sent files, Add tablet, Pick up and swap, Published shifts and
+  planned hours, a link to set a new password, Prepare <period>, All your locations) and none of the replaced ones are
+  (Read by, Acknowledged, AI manager, Refresh invitation, Week by day, Your workspace, Team at your locations, reset link).
+- As before by design: any later change to application source makes the guides stale again until the next rebuild.
+- Whole `src` suite at the rebuild: 15,897 passed, 1 failed: `src/lib/operations/managed-runtime.test.ts` ("runs the actual
+  canonical CLI with a closed payroll gate…"), the known load flake (README "Gap closure", Flaky tests, sweep-1); it passes
+  on its own (12/12, twice).

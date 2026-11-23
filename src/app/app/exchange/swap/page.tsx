@@ -12,6 +12,8 @@ import { SwapPageContent } from '@/components/swap-page-content';
 import {exchangeShiftDisplay} from '@/lib/shift-changes/shift-display';
 import {requireSessionMutationProof} from "@/lib/auth/session";
 import {readShiftChangeTerms} from "@/lib/data/shift-change-snapshot";
+import {readPortalLanguage} from "@/lib/activation/language.server";
+import {exchangeCopy} from "../exchange-copy";
 
 import { requireSelfService } from "@/lib/auth/permissions";
 import {
@@ -65,6 +67,7 @@ export default async function SwapPage({
   const sourceFields={sourceShiftId:reviewed.source.shiftId,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint};
   // With no shift to swap into, the fallback is the real coverage offer, checked the same way as on Shift requests.
   // Candidates that changed mid-read withhold every form; candidates the rules refuse still allow the coverage check.
-  const coverage=reviewedTargets.length||changedMidRead?null:await readShiftChangeAvailability(proof,{kind:'OFFER_COVERAGE',operationId:randomUUID(),...sourceFields}).catch(()=>({allowed:false,notice:'Current policy is unavailable.'}));
+  // G98 (Phase 2): this page's one sentence of its own follows the person's language (read only when it is shown).
+  const coverage=reviewedTargets.length||changedMidRead?null:await readShiftChangeAvailability(proof,{kind:'OFFER_COVERAGE',operationId:randomUUID(),...sourceFields}).catch(async()=>{let lang:'en'|'es'='en';try{lang=(await readPortalLanguage(proof)).language;}catch{/* English */}return {allowed:false,notice:exchangeCopy(lang).policyUnavailable};});
   return <ResponsiveEmployeeCreation authority={employeeViewAuthority(proof,'creation')} mode={cover?'cover':'swap'} sourceId={source.id}><SwapPageContent source={reviewedSource} sourceFields={sourceFields} targets={reviewedTargets} coverage={coverage} mode={cover ? 'cover' : 'swap'} /></ResponsiveEmployeeCreation>;
 }

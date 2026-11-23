@@ -31,11 +31,12 @@ export default async function CopyReceiptPage({
     receipt?.command ?? (await readScheduleCopyCommand(proof, operation));
   return {receipt,command};
   });
-  if(source.state==='unavailable')return <OperationalUnavailable title="Copy result unavailable" reason={source.reason}/>;
-  const {receipt,command}=source.data;
   // G98 (gap closure): the receipt has Spanish copy, so it follows the person's language: their saved choice, else the
   // nv-lang cookie or the browser's, the same read the person and time off pages use. English if that read fails.
   let lang:'en'|'es'='en';try{lang=(await readPortalLanguage(proof)).language;}catch{/* English */}
+  // Signed-in Spanish: the closed and failed card follow the same language.
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={lang==='es'?'Resultado de la copia no disponible':'Copy result unavailable'} reason={source.reason}/>;
+  const {receipt,command}=source.data;
   // The scoped frame wraps the Corp page, so the phone band rules find the page's own title (one title, not two).
   return <ScopedReadFrame observation={scopedObservation(source)}>
     {receipt ? <CopyReceiptView receipt={receipt} lang={lang} /> : <CopyUnconfirmed command={command} actorId={proof.employee.id} lang={lang} />}
