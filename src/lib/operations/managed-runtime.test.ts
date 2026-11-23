@@ -147,9 +147,13 @@ it('drains the actual failed CLI receipt before removing shutdown handlers after
   // console.log while its durable failed receipt has already been committed.
   const preload=join(root,'pending-stdout.mjs');await writeFile(preload,`const write=process.stdout.write.bind(process.stdout);process.stdout.write=(chunk,encoding,callback)=>{if(typeof chunk==='string'&&chunk.includes('"cleanupConfirmed":true')){setTimeout(()=>process.kill(process.pid,'SIGTERM'),10);setTimeout(()=>write(chunk,...(typeof encoding==='function'?[encoding]:encoding===undefined?[]:[encoding,callback])),100);return true;}return write(chunk,encoding,callback);};`);
   lease=await acquireManagedState(c);
+  // The SIGTERM and the held write are timed from the receipt, not from startup, so the outcome doesn't depend on
+  // load. The parent's deadline is the production run deadline (135 s): a 3 s budget raced the cold tsx start under a
+  // loaded full suite and stopped the child mid-drain. With the drain removed this test still fails at
+  // cleanupConfirmed.
   const cycle=await runManagedCycle(c,new AbortController().signal,async(_profile,mode,command,signal)=>{
    expect(mode).toBe('run');
-   return runManagedProcess({file:process.execPath,args:['--conditions=react-server','--import','./scripts/node-server-context.mjs','--import','tsx','--import',preload,'scripts/workforce-operations.mts',mode,command],env:{PATH:process.env.PATH,NODE_ENV:'test',...env}},signal,3000);
+   return runManagedProcess({file:process.execPath,args:['--conditions=react-server','--import','./scripts/node-server-context.mjs','--import','tsx','--import',preload,'scripts/workforce-operations.mts',mode,command],env:{PATH:process.env.PATH,NODE_ENV:'test',...env}},signal,135000);
   });
   const receipt=JSON.parse(await readFile(join(p.stateDirectory,'payroll.json'),'utf8'));
   expect(receipt).toMatchObject({command:'payroll',scopeId:scope,sourceSha:source,status:'failed',exitCode:1,cleanupConfirmed:true});
