@@ -1,6 +1,6 @@
 /* The Owner and Manager Schedule week grid's words (src/components/manager-weekly-roster.tsx) in English and Puerto Rico
  * Spanish (docs/design/voice.md: tú, sentence case, no "¡…!", lower-case weekdays and months, "6:00 a. m. – 2:00 p. m.",
- * the glossary: "Horario", "Turno disponible", "Buscar reemplazo", "Cubrir", "Borrador", "Publicado", "Cambiado",
+ * the glossary: "Horario", "Turno disponible", "Buscar cobertura", "Cubrir", "Borrador", "Publicado", "Cambiado",
  * "Días libres", "Hoy", "Sin cubrir", "Sin asignar"). The English is the text the grid already showed and read out, word
  * for word. Dates and times reuse the Schedule's Spanish helpers (src/app/app/schedule/schedule-copy.ts). */
 import type { PortalLang } from "@/lib/i18n/portal-lang";
@@ -109,8 +109,8 @@ const es: typeof en = {
   scheduleDay: "Día del horario", week: "Semana",
   openShift: "Turno disponible", openShifts: "Turnos disponibles",
   openDetail: (range: string) => `Disponible · ${range}`,
-  findCover: "Buscar reemplazo",
-  findCoverAria: (start: string, end: string, location: string) => `Buscar reemplazo para el turno disponible, ${start} a ${end}${location ? `, ${location}` : ""}`,
+  findCover: "Buscar cobertura",
+  findCoverAria: (start: string, end: string, location: string) => `Buscar cobertura para el turno disponible, ${start} a ${end}${location ? `, ${location}` : ""}`,
   showMore: (n: number) => `Ver ${n} más`,
   shiftsOn: (weekday: string) => `Turnos del ${weekday}`,
   nothingScheduled: "Nada programado.",

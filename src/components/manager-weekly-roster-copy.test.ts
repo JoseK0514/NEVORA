@@ -29,7 +29,7 @@ describe("Schedule week grid copy (Puerto Rico Spanish)", () => {
   it("uses the glossary", () => {
     const es = ROSTER_COPY.es;
     expect([es.schedule, es.openShift, es.findCover, es.fill, es.draft, es.published, es.changed, es.timeOff, es.today, es.notFilled, es.noOneAssigned])
-      .toEqual(["Horario", "Turno disponible", "Buscar reemplazo", "Cubrir", "Borrador", "Publicado", "Cambiado", "Días libres", "Hoy", "Sin cubrir", "Sin asignar"]);
+      .toEqual(["Horario", "Turno disponible", "Buscar cobertura", "Cubrir", "Borrador", "Publicado", "Cambiado", "Días libres", "Hoy", "Sin cubrir", "Sin asignar"]);
   });
   it("counts in the singular and the plural", () => {
     const { en, es } = ROSTER_COPY;

@@ -54,7 +54,7 @@ it("reads time off, the day view and the empty states in Spanish", () => {
   const unknown = render({ absences: { state: "unavailable", reason: "read_failed" } });
   expect(unknown).toContain("Días libres no disponibles. Recarga antes de añadir turnos.");
   expect(unknown).toContain(">Días libres no disponibles<");
-  expect(unknown).toContain("Buscar reemplazo");
+  expect(unknown).toContain("Buscar cobertura");
   expect(unknown).toMatch(/Disponible · 4:00\sp\.\sm\.\s– 8:00\sp\.\sm\./);
   expect(unknown).not.toContain("Time off unavailable");
   expect(unknown).not.toContain("Find cover");
