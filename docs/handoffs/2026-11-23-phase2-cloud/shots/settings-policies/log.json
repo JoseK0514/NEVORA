@@ -1,0 +1,730 @@
+[
+ {
+  "name": "j10-owner-empty-1440",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-title c-title--wide:296,1108",
+    "c-card:296,1108"
+   ],
+   "text": [
+    319,
+    367,
+    297
+   ],
+   "buttons": [],
+   "clipped": [],
+   "words": [
+    "Settings",
+    "Time off policies",
+    "Policies",
+    "No time off policies yet",
+    "Add Vacation and Sick to track balances and let people use paid time off.",
+    "Add Vacation",
+    "Add Sick",
+    "Add another policy",
+    "Each policy keeps one balance per person. Approving time off takes it from that balance; cancelling an approval gives it back."
+   ]
+  }
+ },
+ {
+  "name": "j10-owner-390",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-card:14,376"
+   ],
+   "text": [
+    33,
+    81,
+    15
+   ],
+   "buttons": [],
+   "clipped": [],
+   "words": [
+    "Settings",
+    "Time off policies",
+    "Policies",
+    "Vacation",
+    "8 h a day · not earned from hours worked · no carryover",
+    "On",
+    "Add Sick",
+    "Add another policy",
+    "Each policy keeps one balance per person. Approving time off takes it from that balance; cancelling an approval gives it back."
+   ]
+  }
+ },
+ {
+  "name": "j10-owner-768",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-title c-title--wide:108,740",
+    "c-card:108,740"
+   ],
+   "text": [
+    131,
+    179,
+    109
+   ],
+   "buttons": [],
+   "clipped": [],
+   "words": [
+    "Settings",
+    "Time off policies",
+    "Policies",
+    "Vacation",
+    "8 h a day · not earned from hours worked · no carryover",
+    "On",
+    "Add Sick",
+    "Add another policy",
+    "Each policy keeps one balance per person. Approving time off takes it from that balance; cancelling an approval gives it back."
+   ]
+  }
+ },
+ {
+  "name": "j10-owner-1440",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-title c-title--wide:296,1108",
+    "c-card:296,1108"
+   ],
+   "text": [
+    319,
+    367,
+    297
+   ],
+   "buttons": [],
+   "clipped": [],
+   "words": [
+    "Settings",
+    "Time off policies",
+    "Policies",
+    "Vacation",
+    "8 h a day · not earned from hours worked · no carryover",
+    "On",
+    "Add Sick",
+    "Add another policy",
+    "Each policy keeps one balance per person. Approving time off takes it from that balance; cancelling an approval gives it back."
+   ]
+  }
+ },
+ {
+  "name": "j10-owner-390-200",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-card:14,376"
+   ],
+   "text": [
+    33,
+    81,
+    15
+   ],
+   "buttons": [],
+   "clipped": [],
+   "words": [
+    "Settings",
+    "Time off policies",
+    "Policies",
+    "Vacation",
+    "8 h a day · not earned from hours worked · no carryover",
+    "On",
+    "Add Sick",
+    "Add another policy",
+    "Each policy keeps one balance per person. Approving time off takes it from that balance; cancelling an approval gives it back."
+   ]
+  }
+ },
+ {
+  "name": "j10-owner-error-390",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-card c-setb-form:14,376"
+   ],
+   "text": [
+    15,
+    33
+   ],
+   "buttons": [
+    "Save policy:44:c-btn",
+    "Cancel:44:c-btn c-btn--secondary"
+   ],
+   "clipped": [],
+   "words": [
+    "New policy",
+    "Policy",
+    "Vacation",
+    "Sick",
+    "Other",
+    "Name",
+    "Add a name.",
+    "What people see when they ask for time off.",
+    "Code",
+    "Use capital letters, numbers and _, starting with a letter.",
+    "Capital letters, numbers and _, like BEREAVEMENT. It can't change later, so its balances stay together.",
+    "Hours in a full day",
+    "Enter hours between 0:01 and 24.",
+    "A full-day request uses this much time.",
+    "Hours earned per 100 hours worked",
+    "0 if it isn't earned from hours worked. This rate is for time you post by hand; Puerto Rico accrual from finalized timecards is set up separately.",
+    "Most hours carried into a new year",
+    "0 if nothing carries over.",
+    "People can use it",
+    "Turned off, it leaves the request form. Balances and history stay.",
+    "3 things to fix above",
+    "Save policy",
+    "Cancel"
+   ]
+  }
+ },
+ {
+  "name": "j11-owner-390",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-card:14,376",
+    "c-card c-setb-form polic:14,376",
+    "c-card:14,376"
+   ],
+   "text": [
+    33,
+    15
+   ],
+   "buttons": [
+    "Refresh policy history:44:c-btn c-btn--secondary"
+   ],
+   "clipped": [
+    "Lateness",
+    "Early departure",
+    "Missing clock-in",
+    "Missing clock-out",
+    "Actual-time overtime risk",
+    "Unusually long entry"
+   ],
+   "words": [
+    "Settings",
+    "Company policies",
+    "Applies to",
+    "All locations",
+    "Northside Main Office",
+    "Northside West Office",
+    "Tell me about",
+    "Lateness",
+    "Late arrivals",
+    "Early departure",
+    "Early departures",
+    "Missing clock-in",
+    "Missed clock-ins",
+    "Missing clock-out",
+    "Missed clock-outs",
+    "Actual-time overtime risk",
+    "Close to overtime",
+    "Unusually long entry",
+    "Very long shifts",
+    "Alerts only flag times for you to check, from each rule’s start date. They never change pay.",
+    "Records",
+    "Labor settings",
+    "Owner only",
+    "History",
+    "No changes yet"
+   ]
+  }
+ },
+ {
+  "name": "j11-owner-768",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-title c-title--wide:108,740",
+    "c-card:108,740",
+    "c-card c-setb-form polic:108,740",
+    "c-card:108,740"
+   ],
+   "text": [
+    131,
+    109
+   ],
+   "buttons": [
+    "Refresh policy history:44:c-btn c-btn--secondary"
+   ],
+   "clipped": [
+    "Lateness",
+    "Early departure",
+    "Missing clock-in",
+    "Missing clock-out",
+    "Actual-time overtime risk",
+    "Unusually long entry"
+   ],
+   "words": [
+    "Settings",
+    "Company policies",
+    "Applies to",
+    "All locations",
+    "Northside Main Office",
+    "Northside West Office",
+    "Tell me about",
+    "Lateness",
+    "Late arrivals",
+    "Early departure",
+    "Early departures",
+    "Missing clock-in",
+    "Missed clock-ins",
+    "Missing clock-out",
+    "Missed clock-outs",
+    "Actual-time overtime risk",
+    "Close to overtime",
+    "Unusually long entry",
+    "Very long shifts",
+    "Alerts only flag times for you to check, from each rule’s start date. They never change pay.",
+    "Records",
+    "Labor settings",
+    "Owner only",
+    "History",
+    "No changes yet"
+   ]
+  }
+ },
+ {
+  "name": "j11-owner-1440",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-title c-title--wide:296,1108",
+    "c-card:296,1108",
+    "c-card c-setb-form polic:296,1108",
+    "c-card:296,1108"
+   ],
+   "text": [
+    319,
+    297
+   ],
+   "buttons": [
+    "Refresh policy history:44:c-btn c-btn--secondary"
+   ],
+   "clipped": [
+    "Lateness",
+    "Early departure",
+    "Missing clock-in",
+    "Missing clock-out",
+    "Actual-time overtime risk",
+    "Unusually long entry"
+   ],
+   "words": [
+    "Settings",
+    "Company policies",
+    "Applies to",
+    "All locations",
+    "Northside Main Office",
+    "Northside West Office",
+    "Tell me about",
+    "Lateness",
+    "Late arrivals",
+    "Early departure",
+    "Early departures",
+    "Missing clock-in",
+    "Missed clock-ins",
+    "Missing clock-out",
+    "Missed clock-outs",
+    "Actual-time overtime risk",
+    "Close to overtime",
+    "Unusually long entry",
+    "Very long shifts",
+    "Alerts only flag times for you to check, from each rule’s start date. They never change pay.",
+    "Records",
+    "Labor settings",
+    "Owner only",
+    "History",
+    "No changes yet"
+   ]
+  }
+ },
+ {
+  "name": "j11-owner-390-200",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-card:14,376",
+    "c-card c-setb-form polic:14,376",
+    "c-card:14,376"
+   ],
+   "text": [
+    33,
+    15
+   ],
+   "buttons": [
+    "Refresh policy history:44:c-btn c-btn--secondary"
+   ],
+   "clipped": [
+    "Lateness",
+    "Early departure",
+    "Missing clock-in",
+    "Missing clock-out",
+    "Actual-time overtime risk",
+    "Unusually long entry"
+   ],
+   "words": [
+    "Settings",
+    "Company policies",
+    "Applies to",
+    "All locations",
+    "Northside Main Office",
+    "Northside West Office",
+    "Tell me about",
+    "Lateness",
+    "Late arrivals",
+    "Early departure",
+    "Early departures",
+    "Missing clock-in",
+    "Missed clock-ins",
+    "Missing clock-out",
+    "Missed clock-outs",
+    "Actual-time overtime risk",
+    "Close to overtime",
+    "Unusually long entry",
+    "Very long shifts",
+    "Alerts only flag times for you to check, from each rule’s start date. They never change pay.",
+    "Records",
+    "Labor settings",
+    "Owner only",
+    "History",
+    "No changes yet"
+   ]
+  }
+ },
+ {
+  "name": "j11-owner-rule-on-1440",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-title c-title--wide:296,1108",
+    "c-card:296,1108",
+    "c-card c-setb-form polic:296,1108",
+    "c-card:296,1108"
+   ],
+   "text": [
+    319,
+    297
+   ],
+   "buttons": [
+    "Save:44:c-btn",
+    "Refresh policy history:44:c-btn c-btn--secondary"
+   ],
+   "clipped": [
+    "Lateness",
+    "Early departure",
+    "Missing clock-in",
+    "Missing clock-out",
+    "Actual-time overtime risk",
+    "Unusually long entry"
+   ],
+   "words": [
+    "Settings",
+    "Company policies",
+    "Applies to",
+    "All locations",
+    "Northside Main Office",
+    "Northside West Office",
+    "Tell me about",
+    "Lateness",
+    "Late arrivals",
+    "After how many minutes",
+    "When time is",
+    "More than",
+    "At least",
+    "Starts on",
+    "Early departure",
+    "Early departures",
+    "Missing clock-in",
+    "Missed clock-ins",
+    "Missing clock-out",
+    "Missed clock-outs",
+    "Actual-time overtime risk",
+    "Close to overtime",
+    "Unusually long entry",
+    "Very long shifts",
+    "Alerts only flag times for you to check, from each rule’s start date. They never change pay.",
+    "Save",
+    "Records",
+    "Labor settings",
+    "Owner only",
+    "History",
+    "No changes yet"
+   ]
+  }
+ },
+ {
+  "name": "j12-owner-390",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-pset__form:14,376",
+    "c-pay__group:14,376",
+    "c-card:14,376"
+   ],
+   "text": [
+    33
+   ],
+   "buttons": [
+    "Add rule:44:c-btn c-btn--secondary c-btn--md",
+    "Save employee exception:52:c-btn c-btn--full"
+   ],
+   "clipped": [
+    "",
+    ""
+   ],
+   "words": [
+    "Payroll",
+    "Payroll settings",
+    "Pay schedule",
+    "How often",
+    "Weekly",
+    "Payday",
+    "Tuesday",
+    "First period",
+    "Started Mon, Sep 21",
+    "Reminders and pay statements",
+    "Payroll reminders",
+    "1 day before",
+    "Pay statement language",
+    "Español",
+    "Deductions and contributions",
+    "None",
+    "Payment instructions",
+    "Standard file",
+    "People",
+    "People with different settings",
+    "None",
+    "Payroll access",
+    "1",
+    "Change history",
+    "owner changed this Nov 23"
+   ]
+  }
+ },
+ {
+  "name": "j12-owner-768",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-title c-title--wide:108,740",
+    "c-pay-tabs:108,451",
+    "c-pset__form:108,740",
+    "c-pay__group:108,740",
+    "c-card:108,740"
+   ],
+   "text": [
+    131
+   ],
+   "buttons": [
+    "Add rule:44:c-btn c-btn--secondary c-btn--md",
+    "Save employee exception:44:c-btn c-btn--full"
+   ],
+   "clipped": [
+    "",
+    ""
+   ],
+   "words": [
+    "Payroll settings",
+    "Calculate pay and share statements. You pay your team outside NEVORA.",
+    "Payroll",
+    "Time exports",
+    "Payroll settings",
+    "Pay schedule",
+    "How often",
+    "Weekly",
+    "Payday",
+    "Tuesday",
+    "First period",
+    "Started Mon, Sep 21",
+    "Reminders and pay statements",
+    "Payroll reminders",
+    "1 day before",
+    "Pay statement language",
+    "Español",
+    "Deductions and contributions",
+    "None",
+    "Payment instructions",
+    "Standard file",
+    "People",
+    "People with different settings",
+    "None",
+    "Payroll access",
+    "1",
+    "Change history",
+    "owner changed this Nov 23"
+   ]
+  }
+ },
+ {
+  "name": "j12-owner-1440",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-title c-title--wide:296,1108",
+    "c-pay-tabs:296,639",
+    "c-pset__form:296,1108",
+    "c-pay__group:296,1108",
+    "c-card:296,1108"
+   ],
+   "text": [
+    319
+   ],
+   "buttons": [
+    "Add rule:44:c-btn c-btn--secondary c-btn--md",
+    "Save employee exception:44:c-btn c-btn--full"
+   ],
+   "clipped": [
+    "",
+    ""
+   ],
+   "words": [
+    "Payroll settings",
+    "Calculate pay and share statements. You pay your team outside NEVORA.",
+    "Payroll",
+    "Time exports",
+    "Payroll settings",
+    "Pay schedule",
+    "How often",
+    "Weekly",
+    "Payday",
+    "Tuesday",
+    "First period",
+    "Started Mon, Sep 21",
+    "Reminders and pay statements",
+    "Payroll reminders",
+    "1 day before",
+    "Pay statement language",
+    "Español",
+    "Deductions and contributions",
+    "None",
+    "Payment instructions",
+    "Standard file",
+    "People",
+    "People with different settings",
+    "None",
+    "Payroll access",
+    "1",
+    "Change history",
+    "owner changed this Nov 23"
+   ]
+  }
+ },
+ {
+  "name": "j12-owner-390-200",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-pset__form:14,376",
+    "c-pay__group:14,376",
+    "c-card:14,376"
+   ],
+   "text": [
+    33
+   ],
+   "buttons": [
+    "Add rule:44:c-btn c-btn--secondary c-btn--md",
+    "Save employee exception:52:c-btn c-btn--full"
+   ],
+   "clipped": [
+    "",
+    ""
+   ],
+   "words": [
+    "Payroll",
+    "Payroll settings",
+    "Pay schedule",
+    "How often",
+    "Weekly",
+    "Payday",
+    "Tuesday",
+    "First period",
+    "Started Mon, Sep 21",
+    "Reminders and pay statements",
+    "Payroll reminders",
+    "1 day before",
+    "Pay statement language",
+    "Español",
+    "Deductions and contributions",
+    "None",
+    "Payment instructions",
+    "Standard file",
+    "People",
+    "People with different settings",
+    "None",
+    "Payroll access",
+    "1",
+    "Change history",
+    "owner changed this Nov 23"
+   ]
+  }
+ },
+ {
+  "name": "j12-owner-error-1440",
+  "m": {
+   "ov": 0,
+   "cards": [
+    "c-title c-title--wide:296,1108",
+    "c-pay-tabs:296,639",
+    "c-pset__form:296,1108",
+    "c-pay__group:296,1108",
+    "c-card:296,1108"
+   ],
+   "text": [
+    319
+   ],
+   "buttons": [
+    "Add rule:44:c-btn c-btn--secondary c-btn--md",
+    "Save company preferencesSaving…:44:c-btn c-btn--full",
+    "Save employee exception:44:c-btn c-btn--full"
+   ],
+   "clipped": [
+    "",
+    "",
+    ""
+   ],
+   "words": [
+    "Payroll settings",
+    "Calculate pay and share statements. You pay your team outside NEVORA.",
+    "Payroll",
+    "Time exports",
+    "Payroll settings",
+    "Pay schedule",
+    "How often",
+    "Weekly",
+    "Payday",
+    "Tuesday",
+    "Payday after period end",
+    "Days after the period ends.",
+    "First period",
+    "Started Mon, Sep 21",
+    "Reminders and pay statements",
+    "Payroll reminders",
+    "1 day before",
+    "Pay statement language",
+    "Español",
+    "Deductions and contributions",
+    "None",
+    "Payment instructions",
+    "Standard file",
+    "Effective date",
+    "Mon, Nov 23, 2026",
+    "Reason for change",
+    "Future draft impact",
+    "Sep 21–27, 2026: Refresh review after changing applicable defaults or exceptions.",
+    "Approved payroll doesn’t change. Drafts that aren’t approved yet need a new review after settings or exceptions change.",
+    "Fill in Reason for change.",
+    "Save company preferences",
+    "People",
+    "People with different settings",
+    "None",
+    "Payroll access",
+    "1",
+    "Change history",
+    "owner changed this Nov 23"
+   ]
+  }
+ }
+]
