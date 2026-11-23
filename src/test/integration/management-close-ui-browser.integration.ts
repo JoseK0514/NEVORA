@@ -56,9 +56,10 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     // Use the actual shell link so a forced document navigation does not cancel Home initialization.
     const navigation=page.getByRole('navigation',{name:index?'Mobile navigation':'Primary navigation',exact:true});
     await navigation.locator('a[href="/app/timecards"]').click();await page.waitForURL(app.url+'/app/timecards');
-    await targetRow().click();
-    // Preserve the ordinary supported person deep link across protected-tree remounts.
-    await page.evaluate((id:string)=>{history.replaceState(history.state,'',location.pathname+location.search+'#timecard-'+id);},target.id);
+    await targetRow().waitFor();
+    // Exercise the supported person deep link as an initial location, as from the Inbox.
+    const personUrl=page.url()+'#timecard-'+encodeURIComponent(target.id);
+    await page.goto(personUrl);await page.reload();
     await page.locator('dialog[open]').waitFor();
     const start=page.getByRole('button',{name:'Close open punch',exact:true});await start.focus();await page.keyboard.press('Enter');
     const end=page.getByLabel('Confirmed end time (America/Puerto_Rico)',{exact:true}),reason=page.getByLabel('Reason for closing',{exact:true});await end.waitFor();
