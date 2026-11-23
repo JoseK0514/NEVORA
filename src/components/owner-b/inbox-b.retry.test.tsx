@@ -22,3 +22,8 @@ it("keeps the clock-ins retry while the list is only loading, and has none offli
   expect(retries(renderToStaticMarkup(<InboxB {...base} ready={null} connection="loading" todayFailed />))).toBe(1);
   expect(retries(renderToStaticMarkup(<InboxB {...base} ready={null} connection="unavailable" todayFailed={false} />))).toBe(1);
 });
+it("holds the More card while the list is loading, so arriving cards don't push it down; a failed read shows it", () => {
+  expect(renderToStaticMarkup(<InboxB {...base} ready={null} connection="loading" todayFailed={false} />)).not.toContain('id="b-todo-more"');
+  expect(renderToStaticMarkup(<InboxB {...base} ready={null} connection="reconnecting" todayFailed={false} />)).not.toContain('id="b-todo-more"');
+  expect(renderToStaticMarkup(<InboxB {...base} ready={null} connection="unavailable" todayFailed={false} />)).toContain('id="b-todo-more"');
+});
