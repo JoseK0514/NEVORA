@@ -1,5 +1,6 @@
 import { describe, expect, it } from '@rstest/core';
-import { formatBusinessClock, formatBusinessTimestamp, businessDate, businessTime, localDateTimeToInstant, shiftBoundaryInstants, formatBusinessDateTimeInput, formatBusinessDateTime, InvalidBusinessLocalTimeError } from './business-time';
+import * as businessTimeModule from './business-time';
+import { formatBusinessTimestamp, businessDate, businessTime, localDateTimeToInstant, shiftBoundaryInstants, formatBusinessDateTimeInput, formatBusinessDateTime, InvalidBusinessLocalTimeError } from './business-time';
 import { durationMinutes, weekStartFor } from './date-utils';
 
 describe('workspace business time', () => {
@@ -33,9 +34,10 @@ describe('workspace business time', () => {
  it.each([{date:'2026-11-01',startTime:'01:30',endTime:'04:00'},{date:'2026-03-08',startTime:'00:00',endTime:'02:30'},{date:'2026-02-30',startTime:'09:00',endTime:'10:00'},{date:'2026-10-03',startTime:'09:00',endTime:'09:00'}])('rejects unresolvable assignment boundaries', shift => expect(() => shiftBoundaryInstants(shift,'America/New_York')).toThrow(InvalidBusinessLocalTimeError));
 });
 
-it('formats the live clock with seconds in the configured zone', () => {
- expect(formatBusinessClock(new Date('2026-10-01T16:14:05Z'), 'America/Puerto_Rico')).toBe('12:14:05 PM');
- expect(formatBusinessClock(new Date('2026-10-01T16:14:05Z'), 'Asia/Tokyo')).toBe('01:14:05 AM');
+// G10 (Nov 23, 2026): one time format everywhere ("7:00 AM", no leading zero). The live clock formatter that wrote
+// "01:14:05 AM" displayed nothing any more, so it is gone rather than kept as a second format.
+it('has no second clock format beside the shared one', () => {
+ expect(Object.keys(businessTimeModule)).not.toContain('formatBusinessClock');
 });
 it('formats publication timestamps in the configured zone', () => {
  expect(formatBusinessTimestamp('2026-10-01T16:14:05Z', 'America/Puerto_Rico')).toBe('Oct 1, 12:14 PM');
