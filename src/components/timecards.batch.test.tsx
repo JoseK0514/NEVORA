@@ -264,6 +264,17 @@ function closeSheet(kind:'escape'|'done'|'automatic'='escape'){
 function openFirstSheet(){
  (control(n=>n.type==='button'&&n.props.className==='c-tc-person').onClick as ()=>void)();
 }
+// Gate check (Nov 23, 2026): a person's week says a waiting correction once (in the amber note), without the header's
+// "Correction waiting" and without a line on how to clear issues before approval.
+it('says a timecard issue once in the person\'s week',async()=>{
+ const own=card('E1');
+ rs.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-27T12:00:00Z',cards:[{...own,source:{...own.source,pendingCorrections:1}}]}));
+ await mount();openFirstSheet();
+ const sheet=html().slice(html().indexOf('c-tc-sheet__who'));
+ expect(sheet).toContain('Correction awaiting review');
+ expect(sheet).not.toContain('Correction waiting');
+ expect(sheet).not.toContain('Review the entries');
+});
 it.each(['escape','done'] as const)('returns focus to the replacement current row on %s after a refresh replaces the original trigger',async kind=>{
  transport();await mount();openFirstSheet();
  const focus=sheetFocusFixture();
