@@ -3,7 +3,7 @@
  * times "7:00 a. m. – 3:00 p. m.", dates "jue, 12 nov"). The English shift and duration lines are the ones in
  * src/lib/time-off-staffing/present.ts; the Spanish ones are written here from the same facts. */
 import type {StaffingConflict} from '@/lib/time-off-staffing/model';
-import {conflictConsequence, conflictShift, conflictTotal, minutesText, rangeText} from '@/lib/time-off-staffing/present';
+import {conflictConsequence, conflictShift, conflictTotal, dayText, minutesText, rangeText} from '@/lib/time-off-staffing/present';
 import {FAILURE_MESSAGES, NOT_ALLOWED_MESSAGE} from '@/lib/http/nevora-failure';
 import {esTimes} from '@/components/copy-receipt-copy';
 
@@ -61,6 +61,19 @@ const en = {
   yoursToFill: 'You approved this time off, so this shift is yours to fill.',
   assignedToManager: 'Assigned to the manager who approved the time off.',
   openShift: 'Open the shift',
+  // An Employee's own request.
+  day: (date: string) => dayText(date),
+  range: (start: string, end: string) => rangeText(start, end),
+  yourShifts: 'Your shifts during this time off',
+  ownExpired: 'This check of your shifts expired.',
+  ownCouldntCheck: 'We couldn’t check your scheduled shifts for these dates.',
+  approvedTitle: 'Your time off is approved',
+  approvedSub: 'You don’t need to come in for these hours.',
+  publishedDuring: 'Published shifts during this time off',
+  stillOnSchedule: 'Still on the published schedule',
+  onPublished: 'On the published schedule',
+  managerTakesCare: 'Your manager will take care of these shifts. You don’t need to find cover or swap them.',
+  managerWillSee: 'Your manager will see these shifts when they decide. You don’t need to do anything now.',
   // The page's failure notice.
   failures: FAILURE_MESSAGES,
   notAllowed: NOT_ALLOWED_MESSAGE,
@@ -115,6 +128,18 @@ const es: typeof en = {
   yoursToFill: 'Tú aprobaste estos días libres, así que te toca cubrir este turno.',
   assignedToManager: 'Asignado al gerente que aprobó los días libres.',
   openShift: 'Abrir el turno',
+  day: esDay,
+  range: esRange,
+  yourShifts: 'Tus turnos durante estos días libres',
+  ownExpired: 'Esta revisión de tus turnos venció.',
+  ownCouldntCheck: 'No pudimos revisar tus turnos programados para estas fechas.',
+  approvedTitle: 'Tus días libres están aprobados',
+  approvedSub: 'No tienes que venir en estas horas.',
+  publishedDuring: 'Turnos publicados durante estos días libres',
+  stillOnSchedule: 'Todavía en el horario publicado',
+  onPublished: 'En el horario publicado',
+  managerTakesCare: 'Tu gerente se encargará de estos turnos. No tienes que buscar quién te cubra ni cambiarlos.',
+  managerWillSee: 'Tu gerente verá estos turnos cuando decida. No tienes que hacer nada ahora.',
   failures: {
     sign_in: {title: 'Tu sesión terminó', body: 'Inicia sesión otra vez para seguir trabajando.'},
     access_ended: {title: 'Tu acceso cambió', body: 'Borramos esta información de la pantalla. Pregúntale a tu gerente si todavía la necesitas.'},

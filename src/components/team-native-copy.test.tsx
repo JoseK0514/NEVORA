@@ -33,6 +33,16 @@ it('draws the Team filters and the empty line in Spanish', () => {
   expect(text(renderToStaticMarkup(<UnsupportedNativeRole lang="es" />))).toContain('Usa NEVORA en tu navegador');
 });
 
+it('draws Hours this week in Spanish when the dashboard passes the language', async () => {
+  const {TeamOverviewCorp} = await import('./team/team-overview');
+  const props = {weekStart: '2026-12-07', weekLabel: '7–13 dic', previousWeek: '2026-11-30', nextWeek: '2026-12-14', activeEmployees: 4, availabilitySubmitted: 3, availabilityEligible: 4,
+    hours: [{employeeId: 'e1', employeeName: 'Fictional Worker', scheduledHours: 40, targetHours: 32, status: 'OVER' as const}]};
+  const es = text(renderToStaticMarkup(<TeamOverviewCorp {...props} lang="es" />));
+  for (const words of ['Horas esta semana', 'Esta semana', '3 de 4', 'Fuera de la meta', '40 h de 32 h', '8 h de más']) expect(es).toContain(words);
+  for (const english of ['Hours this week', 'Off target', ' of ', 'over']) expect(es).not.toContain(english);
+  expect(text(renderToStaticMarkup(<TeamOverviewCorp {...props} />))).toContain('8 h over');
+});
+
 it('draws the Alerts settings in Spanish', () => {
   const noop = () => {};
   const es = text(renderToStaticMarkup(<PortalLangProvider lang="es">
