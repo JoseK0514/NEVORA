@@ -34,6 +34,7 @@ it('shows useful unavailable states without exposing the message or review actio
  for(const state of ['withdrawn','unauthorized','unavailable']){
   const html=await render({read:{state,reason:'read_failed'}});expect(html).not.toContain('Last line');expect(html).not.toContain('Confirm I read it');expect(html).toMatch(/<h1[\s>]/);
  }
+ expect(await render({read:{state:'withdrawn'}})).toMatch(/<h2[^>]*>Update withdrawn<\/h2>/);
  const denied=await render({read:{state:'unauthorized',reason:'access_denied'}});expect(denied).toContain('href="/login"');
 });
 it('unknown results leave acknowledgement and withdrawal disabled while lookup remains available',async()=>{

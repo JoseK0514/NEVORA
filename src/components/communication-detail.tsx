@@ -78,7 +78,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   return <ManagerMessagesPage className="mb-update" titleId="update-title" title="Update" back={{href:'/app/updates',label:'Updates'}} deskBack
    cards={<section ref={surface} className="mb-surface" tabIndex={-1} aria-busy={loading} aria-label={loading?'Loading update':title}>
     {loading?<><p className="b-sr" role="status">{title}. {description}</p><div className="b-upd-skel mb-skel" aria-hidden="true"><section className="b-card"><i/><i/><i/></section><section className="b-card"><i/><i/></section></div></>
-    :<BCard><BState kind={kind} title={title} line={description} action={paused?undefined:signedOut||read?.state==='unauthorized'||notice==='blocked'?{label:'Sign in',href:'/login'}:read?.state==='withdrawn'?{label:'All updates',href:'/app/updates'}:{label:notice==='conflict'?'Review latest':'Try again',onClick:onRefresh,busy:pending}}/></BCard>}
+    :<BCard><BState kind={kind} title={title} heading={read?.state==='withdrawn'} line={description} action={paused?undefined:signedOut||read?.state==='unauthorized'||notice==='blocked'?{label:'Sign in',href:'/login'}:read?.state==='withdrawn'?{label:'All updates',href:'/app/updates'}:{label:notice==='conflict'?'Review latest':'Try again',onClick:onRefresh,busy:pending}}/></BCard>}
    </section>}/>;
  }
  const required=ready.acknowledgement==='REQUIRED';
