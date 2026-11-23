@@ -109,7 +109,7 @@
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) :is(.q-nav, .q-hd) :is(h1, h2, p, a, span, b, svg) { color: inherit !important; }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-hd { padding-bottom: 0 !important; margin-bottom: 22px !important; }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-hd p { color: var(--b-grey) !important; }
-  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__hd > p { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: max(32px, calc(1.5em + 10px)) !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-weight: 600 !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__hd > p { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: 32px !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-weight: 600 !important; }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-nav :is(a, span, svg) { color: var(--b-teal) !important; }
   /* The top bar: the wordmark is the panel's; Español is a pill at the top right of the page. */
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__top { position: static !important; padding: 0 !important; height: 0 !important; margin: 0 !important; }
@@ -212,7 +212,7 @@
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd h1 * { color: inherit !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd p { margin-top: 6px !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; }
   /* Sign in: the workspace is a grey chip under the title, as on the desktop card. */
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-auth__hd > p { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: max(32px, calc(1.5em + 10px)) !important; margin: var(--b-space-8) auto 0 !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important;
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-auth__hd > p { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: 32px !important; margin: var(--b-space-8) auto 0 !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important;
     background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-size: 0.875rem !important; font-weight: 600 !important; }
   /* The passkey button joins the card's foot. */
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card > .q-passkey { margin: var(--b-space-12) 0 0 !important; padding: 0 !important; background: none !important; box-shadow: none !important; clip-path: none !important; }
@@ -755,7 +755,7 @@
  * text on glass and was invisible on white. */
 @media (min-width: 768px) and (max-width: 1023px) {
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd:not(.q-auth__hd):not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e) { padding-left: 0 !important; padding-right: 0 !important; }
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd > .ar-ws > p:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e) { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: max(32px, calc(1.5em + 10px)) !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-size: 0.875rem !important; font-weight: 600 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd > .ar-ws > p:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e) { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: 32px !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-size: 0.875rem !important; font-weight: 600 !important; }
 }
 
 /* ---------- Premium pass FD (Nov 18, 2026): final verification of the signed-out pages ----------
@@ -969,3 +969,9 @@
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__lang:not(#ab-rem) { min-height: 40px; }
 }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__col form .q-btn:not(.q-btn--sec, .q-btn--quiet, .q-btn--link):not(#ab-rem) { min-height: 52px; height: auto !important; }
+/* The workspace chip: the same 34px (32px from 1024px) built from a 20px line plus padding, so it grows and wraps with
+ * larger text instead of holding the old fixed height. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem):not(#ab-rem2):not(#ab-rem3):not(#ab-rem4):not(#ab-rem5):not(#ab-rem6):not(#ab-rem7):not(#ab-rem8) :is(.q-auth__hd > p, .q-hd > .ar-ws > p) { height: auto !important; min-height: 0 !important; padding-top: 7px !important; padding-bottom: 7px !important; line-height: 1.25rem !important; }
+@media (min-width: 1024px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):not(#ab-rem):not(#ab-rem2):not(#ab-rem3):not(#ab-rem4):not(#ab-rem5):not(#ab-rem6):not(#ab-rem7):not(#ab-rem8) .q-auth__hd > p { padding-top: 6px !important; padding-bottom: 6px !important; }
+}
