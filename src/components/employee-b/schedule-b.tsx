@@ -93,10 +93,13 @@ function Week({range, confirmed, todayHref, prevHref, nextHref, days}: Pick<Sche
       </span>
     </div>
     <nav className="b-week__days" aria-label="Days in this week">
-      {days.map(day => <Link key={day.date} href={day.href} scroll={false} aria-label={day.label} aria-current={day.today ? 'date' : undefined}
-        className={['b-week__d', day.selected ? 'is-on' : '', day.past ? 'is-past' : ''].filter(Boolean).join(' ')}>
-        <span aria-hidden="true">{day.short}</span><b aria-hidden="true">{day.day}</b><i className={day.assigned ? 'has' : undefined} aria-hidden="true"/>
-      </Link>)}
+      {/* Gaps G12 (Nov 23, 2026), as on the Managers' strip: the name starts with what the day shows ("Tue 17") and the
+        * rest of its label ("today, assigned shift") is hidden text, so the spoken name never differs from the visible one. */}
+      {days.map(day => { const rest = day.label.split(', ').slice(2).join(', ');
+        return <Link key={day.date} href={day.href} scroll={false} aria-current={day.today ? 'date' : undefined}
+          className={['b-week__d', day.selected ? 'is-on' : '', day.past ? 'is-past' : ''].filter(Boolean).join(' ')}>
+          <span>{day.short}</span><span className="b-sr"> </span><b>{day.day}</b>{rest ? <span className="b-sr">{`, ${rest}`}</span> : null}<i className={day.assigned ? 'has' : undefined} aria-hidden="true"/>
+        </Link>; })}
     </nav>
   </div>;
 }

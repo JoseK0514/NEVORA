@@ -89,3 +89,12 @@ it('Final review C (rows 4, 5): Confirm this week waits on you (amber) with the 
   expect(band).toContain(renderToStaticMarkup(<UserCheckIcon size={16} weight="bold" aria-hidden="true"/>));
   expect(band).not.toContain(renderToStaticMarkup(<CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>));
 });
+
+it('gaps G12: each day of the week strip is named by what it shows, then its hidden facts (no aria-label)', () => {
+  const html = draw({days: [{date: '2026-11-17', short: 'Tue', day: 17, today: true, past: false, selected: true, assigned: true, href: '/app/schedule?week=2026-11-16&day=2026-11-17', label: 'Tuesday, November 17, today, assigned shift'},
+    {date: '2026-11-18', short: 'Wed', day: 18, today: false, past: false, selected: false, assigned: false, href: '/app/schedule?week=2026-11-16&day=2026-11-18', label: 'Wednesday, November 18'}]});
+  const strip = html.slice(html.indexOf('class="b-week__days"'), html.indexOf('</nav>'));
+  expect(strip).not.toMatch(/class="b-week__d(?: [^"]*)?"[^>]*aria-label/);
+  expect(strip).toContain('<span>Tue</span><span class="b-sr"> </span><b>17</b><span class="b-sr">, today, assigned shift</span>');
+  expect(strip).toContain('<span>Wed</span><span class="b-sr"> </span><b>18</b><i aria-hidden="true"></i>');
+});
