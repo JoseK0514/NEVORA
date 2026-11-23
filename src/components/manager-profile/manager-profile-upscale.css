@@ -46,3 +46,7 @@
 /* The alert row's text and switch share one centre line; the row is as tall as its text. */
 :is(#c-root, html) .c-page.pmp-b button.pmp-switch-row { height: auto !important; min-height: 64px !important; align-items: center !important; }
 :is(#c-root, html) .c-page.pmp-b .pmp-switch-row > :is(.pmp-topic, .c-switch) { align-self: center !important; }
+/* The detail, Saving… and a failed save share one grid cell (a kit rule stacked them as lines). */
+:is(#c-root, html) .c-page.pmp-b .pmp-switch-row .pmp-topic { justify-content: center; }
+:is(#c-root, html) .c-page.pmp-b .pmp-switch-row .pmp-meta-stack { display: grid !important; grid-template: auto / minmax(0, 1fr) !important; }
+:is(#c-root, html) .c-page.pmp-b .pmp-switch-row .pmp-meta-stack > span { display: block !important; grid-area: 1 / 1 / 2 / 2 !important; margin: 0 !important; }
