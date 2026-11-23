@@ -286,15 +286,18 @@ it.sequential.each(["chromium", "webkit"] as const)("checks Owner Rondo AI again
               await page.getByText('Answers to typed questions are off', { exact: true }).waitFor();
               const attention = page.getByRole("region", { name: "Needs your attention", exact: true });
               await attention.getByRole("heading", { name: "Needs your attention", exact: true }).waitFor();
-              const firstIssue = attention.locator("ol > li").filter({ hasText: "Main Office" });
+              const planningGroup = attention.locator("ol > li").filter({ has: attention.getByRole("heading", { name: "Review today's planning gaps", exact: true }) });
+              expect(await planningGroup.count()).toBe(1);
+              // Each location still owns its own actions when its issue shares a heading with another location.
+              const firstIssue = planningGroup.locator(".oa-subitem, .oa-item__main:not(:has(.oa-subitem))").filter({ hasText: "Main Office" });
               expect(await firstIssue.count()).toBe(1);
-              expect(await firstIssue.getByRole("heading", { name: "Review today's planning gaps", exact: true }).count()).toBe(1);
+              const reviewedPlanningIssue = attention.locator("ul.oa-items--quiet > li").filter({ hasText: "Main Office" }).filter({ has: attention.getByRole("heading", { name: "Review today's planning gaps", exact: true }) });
               await firstIssue.getByRole("button", { name: "Track this issue", exact: true }).click();
               await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
               await firstIssue.getByRole("button", { name: "Later · 1 hour", exact: true }).click();
               await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
               await page.reload();
-              await attention.getByRole("button", { name: "Restore to briefing", exact: true }).first().click();
+              await reviewedPlanningIssue.getByRole("button", { name: "Restore to briefing", exact: true }).click();
               await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
               expect(await firstIssue.getByRole("button", { name: "Tracking", exact: true }).count()).toBe(1);
               await firstIssue.getByRole("button", { name: "Not relevant today", exact: true }).click();
@@ -302,8 +305,8 @@ it.sequential.each(["chromium", "webkit"] as const)("checks Owner Rondo AI again
               await app.database.executor.query({ text: "UPDATE location_staffing_settings SET minimum_staff_per_shift=2 WHERE location_id='loc-1'", values: [] });
               await attention.getByRole("button", { name: "Check again", exact: true }).click();
               await attention.getByText("Evidence changed. This issue is shown for review again.", { exact: true }).waitFor();
-              expect(await attention.locator("ol > li").count()).toBe(2);
-              await attention.getByRole("button", { name: "Restore to briefing", exact: true }).first().click();
+              expect(await attention.locator("ol .oa-subitem, ol > li:not(:has(.oa-subitem))").count()).toBe(2);
+              await reviewedPlanningIssue.getByRole("button", { name: "Restore to briefing", exact: true }).click();
               await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
               await app.database.executor.query({ text: "UPDATE location_staffing_settings SET minimum_staff_per_shift=1 WHERE location_id='loc-1'; DELETE FROM location_coverage_windows WHERE location_id='loc-1'", values: [] });
               await attention.getByRole("button", { name: "Check again", exact: true }).click();
