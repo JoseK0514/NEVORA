@@ -160,11 +160,17 @@ describe('Help and the policy pages', () => {
     expect(html).toContain('<p class="b-callout__t">Keep private details out of email</p><div class="b-callout__b">Never email passwords, codes, bank details or pay documents.</div>');
     expect(html).not.toContain('eb-help-warn');
   });
-  it('a policy page: the first section open, the rest in one list that opens in place, the links without separators', () => {
+  it('a policy page: every section once in one list, the first open, no restated intro, the other pages as links', () => {
     const html = renderToStaticMarkup(<EmployeeDocumentB doc={PRIVACY} sub="Effective October 20, 2026 · VELANI LLC" back="/app/profile#profile-privacy" documents={POLICY_DOCUMENTS} />), plain = text(html);
-    expect(plain).toContain('Privacy Policy');expect(plain).toContain('Effective October 20, 2026 · VELANI LLC');expect(plain).toContain(PRIVACY.summary);expect(plain).toContain('In this policy');
-    expect(html.match(/<details class="eb-doc__first" open="">/g)).toHaveLength(1);expect(html.match(/<details class="eb-doc__sec">/g)).toHaveLength(PRIVACY.sections.length - 1);
-    expect(html).toContain('href="/app/profile#profile-privacy"');expect(html).toContain('<span aria-current="page">');expect(html).toContain('href="/app/profile/terms"');expect(html).not.toMatch(/eb-doc__links[^]*·[^]*<\/nav>/);
+    expect(plain).toContain('Privacy Policy');expect(plain).toContain('Effective October 20, 2026 · VELANI LLC');expect(plain).toContain('In this policy');
+    // Batch 1 (item 15): the summary is restated by Who we are, so it isn't drawn; no contents list repeats the titles.
+    expect(plain).not.toContain(PRIVACY.summary);expect(html).not.toContain('eb-toc');
+    for (const section of PRIVACY.sections) expect(plain.split(section.heading).length - 1).toBeGreaterThanOrEqual(1);
+    expect(html.match(/<details class="eb-doc__sec" open="">/g)).toHaveLength(1);expect(html.match(/<details class="eb-doc__sec"/g)).toHaveLength(PRIVACY.sections.length);
+    expect(plain.indexOf('In this policy')).toBeLessThan(plain.indexOf(PRIVACY.sections[0]!.heading));
+    expect(html).toContain('href="/app/profile#profile-privacy"');expect(html).not.toContain('aria-current="page"');expect(html).not.toContain('href="/app/profile/privacy"');expect(html).toContain('href="/app/profile/terms"');expect(html).not.toMatch(/eb-doc__links[^]*·[^]*<\/nav>/);
+    const terms = renderToStaticMarkup(<EmployeeDocumentB doc={TERMS} sub="x" back="/app/profile#profile-terms" documents={POLICY_DOCUMENTS} />);
+    expect(text(terms)).toContain(TERMS.summary);
     expect(text(renderToStaticMarkup(<EmployeeDocumentB doc={TERMS} sub="x" back="/app/profile#profile-terms" documents={POLICY_DOCUMENTS} />))).toContain('In these terms');
     expect(renderToStaticMarkup(<EmployeeDocumentB doc={SUPPORT} sub="x" back="/app/profile#profile-support" documents={POLICY_DOCUMENTS} />)).not.toContain('In this policy');
   });

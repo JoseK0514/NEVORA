@@ -336,3 +336,8 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__foot { display: flex; margin-top: 18px; padding-top: 18px; box-shadow: inset 0 1px 0 var(--b-line); }
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .b-screen .eb-doc__foot .b-btn--white { min-height: 44px; padding: 0 var(--b-space-20); box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397), 0 1px 2px rgb(16 40 38 / .08); }
 }
+
+/* Batch 1 (Nov 23, item 15): the reading card holds only the summary and/or the deletion action now that every section
+ * is a row of one list; the last piece ends the card and an action on its own has no rule above it. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc > .eb-doc__intro:last-child { margin-bottom: 0; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-screen .eb-doc > .eb-doc__foot:first-child { margin-top: 0; padding-top: 0; box-shadow: none; }
