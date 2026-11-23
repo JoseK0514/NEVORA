@@ -1,0 +1,558 @@
+[
+ {
+  "id": "B5-l",
+  "row": "B5",
+  "page": "Requests hub (Lead)",
+  "section": "Requests",
+  "note": "Requests hub with a swap waiting for you, four waiting requests and three decided ones. From 768px the band holds the Waiting and Needs your answer figures, so the cards no longer repeat them.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B5-l-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B5-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B5-l-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B5-l-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Desktop sidebar links (Home … Updates) show no focus ring on Tab (app shell). End sweep."
+  ]
+ },
+ {
+  "id": "B6-l",
+  "row": "B6",
+  "page": "Updates (Lead)",
+  "section": "Messages",
+  "note": "Updates with one update to acknowledge and one earlier update. Open and Acknowledge are now the same outlined 44px button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B6-l-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B6-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B6-l-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B6-l-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The earlier update's row is named \"…, Unread, Nov 23\" while it shows \"Management · Mon, Nov 23\" and a dot; the extra state is kept because the dot is hidden from screen readers. End sweep: show Unread as text or keep."
+  ]
+ },
+ {
+  "id": "B7-l",
+  "row": "B7",
+  "page": "Update detail (Lead)",
+  "section": "Messages",
+  "note": "The update to acknowledge, opened. The band says the title, author and time once; the card keeps only the Action needed chip and the text, then Acknowledge update.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B7-l-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B7-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B7-l-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B7-l-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The band's back link (\"Updates\") is 32px tall at 768 and 1440 (kit BHero). End sweep."
+  ]
+ },
+ {
+  "id": "B8-l",
+  "row": "B8",
+  "page": "Write an update (Lead)",
+  "section": "Messages",
+  "note": "Write an update: location, title, message, expiry and Review audience; Cancel on the band goes back to Updates at every width. At 1440 with 200% text the intro line now wraps (the page scrolled 578px sideways).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B8-l-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B8-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B8-l-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B8-l-390t200.webp"
+   },
+   {
+    "label": "Desktop, 200% text",
+    "after": "img/B8-l-1440t200.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Cancel in the band is 32px tall at 768 and 1440 (kit BHero).",
+   "At 200% text the sidebar's workplace name (\"Northside QA…\") overlaps itself (app shell)."
+  ]
+ },
+ {
+  "id": "E1-l",
+  "row": "E1",
+  "page": "Time off (Lead)",
+  "section": "Requests",
+  "note": "Time off with two waiting requests, one part-day. The line that explained how the list works is gone, and each row's screen-reader name is now its visible text.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/E1-l-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/E1-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/E1-l-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/E1-l-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Waiting and Decided tabs are 36px tall and Request time off is 40px at 390 (kit BSeg, BButtonLink). End sweep."
+  ]
+ },
+ {
+  "id": "C10-l",
+  "row": "C10",
+  "page": "Availability (Lead)",
+  "section": "Schedule tools",
+  "note": "Availability, the usual week. At 200% text a day's hours now wrap instead of ending in \"…\".",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C10-l-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C10-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C10-l-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C10-l-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 200% text \"7:00 AM\" can split across two lines in a day's hours: the string comes with plain spaces from the shared availability-corp.tsx. Proposed: keepWhole on the hours there.",
+   "Day rows' names add a comma (\"Monday, 7:00 AM – 9:00 PM\") to the visible text; harmless. The \"Requests\" link in the foot note is inline text (exempt from the target size)."
+  ]
+ },
+ {
+  "id": "C12-l",
+  "row": "C12",
+  "page": "Shift changes (Pick up and swap) (Lead)",
+  "section": "Schedule tools",
+  "note": "Pick up and swap: two shifts to pick up, two you can't take, and the availability link on desktop. At 200% text the tabs wrap inside themselves and detail lines keep their first letters.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C12-l-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C12-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C12-l-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C12-l-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Band tabs are 36px tall (kit BSeg); the kit should take the same wrap rule employee-b.css now applies to Employee screens.",
+   "At 390 with 200% text the day badge's \"TUE\" sits right on the \"1\" under it (touching, no overlap you can see; parts.tsx BDay, shared with Schedule)."
+  ]
+ },
+ {
+  "id": "I1-l",
+  "row": "I1",
+  "page": "Profile (Lead)",
+  "section": "Account",
+  "note": "Profile and settings for a Lead and an Employee: personal info, language, calendar and alerts, account. No changes needed.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/I1-l-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/I1-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I1-l-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I1-l-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G10-l",
+  "row": "G10",
+  "page": "My pay (check only) (Lead)",
+  "section": "Pay",
+  "note": "My pay, checked only (another session is fixing it): payday band, last statement, earlier statements including a correction.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-l-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-l-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-l-390t200.webp"
+   }
+  ],
+  "blocking": [
+   "For the Pay session: at 390 with 200% text the \"Statement ready\" chip runs past the right edge of the Last pay statement card (it ends at x=408)."
+  ],
+  "endSweep": [
+   "For the Pay session: statement rows' names (\"Friday, November 20, 2026, corrected statement…\") differ from their visible text (\"Fri, Nov 20 · Corrected · For work Nov 9–15\")."
+  ]
+ },
+ {
+  "id": "B5-e",
+  "row": "B5",
+  "page": "Requests hub (Employee)",
+  "section": "Requests",
+  "note": "Requests hub with a swap waiting for you, four waiting requests and three decided ones. From 768px the band holds the Waiting and Needs your answer figures, so the cards no longer repeat them.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B5-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B5-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B5-e-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B5-e-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Desktop sidebar links (Home … Updates) show no focus ring on Tab (app shell). End sweep."
+  ]
+ },
+ {
+  "id": "B6-e",
+  "row": "B6",
+  "page": "Updates (Employee)",
+  "section": "Messages",
+  "note": "Updates with one update to acknowledge and one earlier update. Open and Acknowledge are now the same outlined 44px button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B6-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B6-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B6-e-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B6-e-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The earlier update's row is named \"…, Unread, Nov 23\" while it shows \"Management · Mon, Nov 23\" and a dot; the extra state is kept because the dot is hidden from screen readers. End sweep: show Unread as text or keep."
+  ]
+ },
+ {
+  "id": "B7-e",
+  "row": "B7",
+  "page": "Update detail (Employee)",
+  "section": "Messages",
+  "note": "The update to acknowledge, opened. The band says the title, author and time once; the card keeps only the Action needed chip and the text, then Acknowledge update.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B7-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B7-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B7-e-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B7-e-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The band's back link (\"Updates\") is 32px tall at 768 and 1440 (kit BHero). End sweep."
+  ]
+ },
+ {
+  "id": "B8-e",
+  "row": "B8",
+  "page": "Write an update (Employee)",
+  "section": "Messages",
+  "note": "Write an update: location, title, message, expiry and Review audience; Cancel on the band goes back to Updates at every width. At 1440 with 200% text the intro line now wraps (the page scrolled 578px sideways).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B8-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B8-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B8-e-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B8-e-390t200.webp"
+   },
+   {
+    "label": "Desktop, 200% text",
+    "after": "img/B8-e-1440t200.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Cancel in the band is 32px tall at 768 and 1440 (kit BHero).",
+   "At 200% text the sidebar's workplace name (\"Northside QA…\") overlaps itself (app shell)."
+  ]
+ },
+ {
+  "id": "E1-e",
+  "row": "E1",
+  "page": "Time off (Employee)",
+  "section": "Requests",
+  "note": "Time off with two waiting requests, one part-day. The line that explained how the list works is gone, and each row's screen-reader name is now its visible text.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/E1-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/E1-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/E1-e-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/E1-e-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Waiting and Decided tabs are 36px tall and Request time off is 40px at 390 (kit BSeg, BButtonLink). End sweep."
+  ]
+ },
+ {
+  "id": "C10-e",
+  "row": "C10",
+  "page": "Availability (Employee)",
+  "section": "Schedule tools",
+  "note": "Availability, the usual week. At 200% text a day's hours now wrap instead of ending in \"…\".",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C10-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C10-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C10-e-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C10-e-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 200% text \"7:00 AM\" can split across two lines in a day's hours: the string comes with plain spaces from the shared availability-corp.tsx. Proposed: keepWhole on the hours there.",
+   "Day rows' names add a comma (\"Monday, 7:00 AM – 9:00 PM\") to the visible text; harmless. The \"Requests\" link in the foot note is inline text (exempt from the target size)."
+  ]
+ },
+ {
+  "id": "C12-e",
+  "row": "C12",
+  "page": "Shift changes (Pick up and swap) (Employee)",
+  "section": "Schedule tools",
+  "note": "Pick up and swap: two shifts to pick up, two you can't take, and the availability link on desktop. At 200% text the tabs wrap inside themselves and detail lines keep their first letters.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C12-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C12-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C12-e-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C12-e-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Band tabs are 36px tall (kit BSeg); the kit should take the same wrap rule employee-b.css now applies to Employee screens.",
+   "At 390 with 200% text the day badge's \"TUE\" sits right on the \"1\" under it (touching, no overlap you can see; parts.tsx BDay, shared with Schedule)."
+  ]
+ },
+ {
+  "id": "I1-e",
+  "row": "I1",
+  "page": "Profile (Employee)",
+  "section": "Account",
+  "note": "Profile and settings for a Lead and an Employee: personal info, language, calendar and alerts, account. No changes needed.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/I1-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/I1-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I1-e-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/I1-e-390t200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G10-e",
+  "row": "G10",
+  "page": "My pay (check only) (Employee)",
+  "section": "Pay",
+  "note": "My pay, checked only (another session is fixing it): payday band, last statement, earlier statements including a correction.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-e-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-e-390t200.webp"
+   }
+  ],
+  "blocking": [
+   "For the Pay session: at 390 with 200% text the \"Statement ready\" chip runs past the right edge of the Last pay statement card (it ends at x=408)."
+  ],
+  "endSweep": [
+   "For the Pay session: statement rows' names (\"Friday, November 20, 2026, corrected statement…\") differ from their visible text (\"Fri, Nov 20 · Corrected · For work Nov 9–15\")."
+  ]
+ }
+]

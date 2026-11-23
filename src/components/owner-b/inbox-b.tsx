@@ -142,7 +142,8 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
       {families.length ? <BSeg label="Show" items={[
         // Review F5 (NV-103): each count is the segmented control's count pill. Batch nav gate and final fixes K: the name is
         // the visible words with CorpCount's spoken space ("All 13"), never an aria-label.
-        { key: "all", label: total === null ? "All" : <>All<CorpCount>{total}</CorpCount></>, current: filter === "all", onSelect: () => setFilter("all") },
+        // Navigation check (Nov 23, 2026), each fact once: the band already says the total, so "All" carries no count.
+        { key: "all", label: "All", current: filter === "all", onSelect: () => setFilter("all") },
         ...families.map(family => { const name = FILTER_LABEL[family.id as Exclude<Filter, "all">] ?? family.title, count = familyCount(family);
           return { key: family.id, label: <>{name}<CorpCount>{count}</CorpCount></>, current: filter === family.id, onSelect: () => setFilter(family.id as Filter) }; }),
       ]} /> : null}
