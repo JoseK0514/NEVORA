@@ -20,7 +20,7 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
   const session=await requireSession();
   const lang=await readPageLang(),w=reportsCopy(lang);
   // Review F2 (NV-136): a closed page says why, never a silent redirect to Home.
-  if(!isManagerRole(session.role))return <OwnerOnlyNotice state title={w.insights} reason={w.closedReason} help={w.ownHours} next={{href:'/app/my-time',label:w.openTime}}/>;
+  if(!isManagerRole(session.role))return <OwnerOnlyNotice state lang={lang} title={w.insights} reason={w.closedReason} help={w.ownHours} next={{href:'/app/my-time',label:w.openTime}}/>;
   const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title={w.unavailableTitle} reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();

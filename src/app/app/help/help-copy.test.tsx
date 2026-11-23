@@ -23,7 +23,7 @@ it("has a Spanish entry for every English one", () => {
 it("draws Help's frame in Puerto Rico Spanish", async () => {
   const html = renderToStaticMarkup(await HelpPage());
   const out = text(html);
-  for (const words of ["Ayuda", "Contacto", "Escribir a soporte", "No envíes datos privados por email", "Preguntas comunes", "No puedo iniciar sesión", "Cómo hacerlo", "Aprobar tarjetas de tiempo"])
+  for (const words of ["Ayuda", "Contacto", "Escribir a soporte", "No envíes datos privados por correo electrónico", "Preguntas comunes", "No puedo iniciar sesión", "Cómo hacerlo", "Aprobar tarjetas de tiempo"])
     expect(out).toContain(words);
   // The support answers (src/lib/legal) stay as published, so only the frame is checked for English.
   for (const english of ["Keep private details", "Common questions", "I can’t sign in", "How to", "Approve timecards"]) expect(out).not.toContain(english);

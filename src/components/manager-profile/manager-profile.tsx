@@ -48,7 +48,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
   const owner = proof.employee.role === 'OWNER';
   // Review Nov 11 (MG-013): a Manager's read-only details name who can change them: the workspace's Owners, from the team
   // list a Manager already sees (as the closed Settings notice does). A failed read leaves "An Owner".
-  const changedBy = owner ? null : await listEmployees().then(list => ownerNames(list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim()))).catch(() => null);
+  const changedBy = owner ? null : await listEmployees().then(list => ownerNames(list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim()), lang)).catch(() => null);
   // SCRUM-215: a Manager's action grants by location, and who to ask for the rest.
   let authority: ManagerAuthority | null = null, locationNames: Record<string, string> = {}, placeNames: Record<string, string> = {}, profileLang: 'en' | 'es' = 'en';
   if (!owner) {

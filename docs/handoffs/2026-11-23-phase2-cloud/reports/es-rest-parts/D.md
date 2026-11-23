@@ -45,8 +45,8 @@ moved over unchanged. Every table has a key-set test and a Spanish render test.
 | See your pay statement | Ver tu comprobante de pago |
 | Prepare payroll (Help, How to) | Preparar la nómina |
 | Shift, time off or pay | Turnos, días libres o pago |
-| Keep private details out of email | No envíes datos privados por email |
-| Never email passwords, codes, bank details or pay documents. | Nunca envíes por email contraseñas, códigos, datos bancarios ni documentos de pago. |
+| Keep private details out of email | No envíes datos privados por correo electrónico |
+| Never email passwords, codes, bank details or pay documents. | Nunca envíes por correo electrónico contraseñas, códigos, datos bancarios ni documentos de pago. |
 | Privacy and terms / Privacy Policy / Terms of Use / Account deletion | Privacidad y términos / Política de privacidad / Términos de uso / Eliminar la cuenta |
 | This connection isn’t secure. We cleared this page to protect your information. … | Esta conexión no es segura. Borramos esta página para proteger tu información. … |
 | Your access changed. This information was cleared from the screen. … | Tu acceso cambió. Borramos esta información de la pantalla. … |

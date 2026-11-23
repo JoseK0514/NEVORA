@@ -37,10 +37,10 @@ export default async function RosterImportPage() {
     const owners = await listEmployees().then(list => list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim())).catch(() => []);
     // A Manager can still add people one at a time; that page is theirs.
     // Package X (Nov 23, 2026): the page sits under Team, so its band goes back to Team (it said "‹ Home"), as the form does.
-    return <OwnerOnlyNotice title={copy.title} back={TEAM_BACK(lang)} reason={copy.closed.reason} help={copy.closed.help} ownersCan={copy.closed.ownersCan} owners={owners}
+    return <OwnerOnlyNotice lang={lang} title={copy.title} back={TEAM_BACK(lang)} reason={copy.closed.reason} help={copy.closed.help} ownersCan={copy.closed.ownersCan} owners={owners}
       next={isManagerRole(session.role) ? {href: '/app/employees/new', label: copy.closed.addOne} : undefined}/>;
   }
-  if (!rosterImportAvailable()) return <OwnerOnlyNotice title={copy.title} back={TEAM_BACK(lang)} reason={copy.off.title} help={copy.off.line} next={{href: '/app/employees/new', label: copy.off.action}}/>;
+  if (!rosterImportAvailable()) return <OwnerOnlyNotice lang={lang} title={copy.title} back={TEAM_BACK(lang)} reason={copy.off.title} help={copy.off.line} next={{href: '/app/employees/new', label: copy.off.action}}/>;
   // The same company-wide read Add employee makes, plus the people the three headcounts are counted from.
   const source = await withOperationalCompany(await requireSessionMutationProof(), () => Promise.all([listLocations(), listEmployees()]));
   if (source.state === 'unavailable') return <OperationalUnavailable title={copy.sourceUnavailable} reason={source.reason}/>;

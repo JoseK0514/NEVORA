@@ -34,7 +34,7 @@ export default async function MyTimePage({searchParams}:{searchParams:Promise<{v
 
   // Review B2 (NV-136): no silent redirect; the page says whose it is and where a manager's version is.
   if (isManagerRole(session.role)) {
-    return <OwnerOnlyNotice title={t.myTime} reason={t.myTimeForEmployees} help={t.teamHoursInTimecards} next={{ href: "/app/timecards", label: t.openTimecards }} />;
+    return <OwnerOnlyNotice lang={lang} title={t.myTime} reason={t.myTimeForEmployees} help={t.teamHoursInTimecards} next={{ href: "/app/timecards", label: t.openTimecards }} />;
   }
 
   const proof=await requireSessionMutationProof(),authority=correctionAuthority(proof),params=await searchParams;

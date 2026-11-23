@@ -21,7 +21,7 @@ export async function generateMetadata(){ return { title: reportsCopy(await read
 export default async function ChristmasBonusPage({searchParams}:{searchParams:Promise<{year?:string}>}){
   const session=await requireSession();
   const w=reportsCopy(await readPageLang());
-  if(!isManagerRole(session.role))return <OwnerOnlyNotice state title={w.christmasBonus} reason={w.bonusClosedReason} help={w.ownHours} next={{href:'/app/my-time',label:w.openTime}}/>;
+  if(!isManagerRole(session.role))return <OwnerOnlyNotice state lang={await readPageLang()} title={w.christmasBonus} reason={w.bonusClosedReason} help={w.ownHours} next={{href:'/app/my-time',label:w.openTime}}/>;
   const proof=await requireSessionMutationProof(),params=await searchParams;
   const source=await withOperationalCompany(proof,async()=>{
     const workspace=await getWorkspace();
@@ -34,7 +34,7 @@ export default async function ChristmasBonusPage({searchParams}:{searchParams:Pr
   const insights={href:'/app/reports',label:w.insights};
   if(source.state==='unavailable')return <OperationalUnavailable title={w.bonusUnavailable} reason={source.reason} back={insights}/>;
   // Review 30 (D19): closed by Puerto Rico's rule, not by this person's access, so the card shows the information glyph.
-  if(source.data===null)return <OwnerOnlyNotice state info back={insights} title={w.christmasBonus} reason={w.bonusPrOnly} help={w.bonusPrOnlyHelp} next={{href:'/app/reports',label:w.openInsights}}/>;
+  if(source.data===null)return <OwnerOnlyNotice state info lang={await readPageLang()} back={insights} title={w.christmasBonus} reason={w.bonusPrOnly} help={w.bonusPrOnlyHelp} next={{href:'/app/reports',label:w.openInsights}}/>;
   const {choices,result}=source.data;
   // Review 30 (D08): a failed read is the kit's failed state under the Insights back link: what happened, that nothing
   // changed, and one Try again that reads the same year again. It no longer blames the connection.

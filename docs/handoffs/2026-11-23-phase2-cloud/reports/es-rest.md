@@ -2,7 +2,81 @@
 
 Branch `claude-codex-collab-nevora-es-rest`, from `7c1464eb`. Area: /app/settings, components/company, components/reports, components/premium, and every English-only signed-in area in reports/language-inventory.md that the README's owners table doesn't name. Work order: settings, company, reports, premium, then the remaining areas by size.
 
+## Summary
+
+Signed-in Spanish for /app/settings, components/company, components/reports, components/premium and the English-only
+areas no other row owns. The session split the work into its own slice (Settings, Company policies, the closed notice,
+Owner Home's cards) and five parallel parts (A: reports and premium; B: notifications, Team pages, profile, account;
+C: schedule parts, availability, shift, coverage, Christmas bonus, swap and callout; D: requests, time, leave and staffing,
+brand, native shell, team, help, small routes; E: the long tail). Notes for each part, with its own "For Jose to review"
+list, are in `es-rest-parts/A.md` to `E.md` beside this report.
+
+How it works:
+- Server pages call `readPageLang()` (`src/lib/i18n/page-lang.server.ts`): the same `readPortalLanguage` read the app
+  layout gives `PortalLangProvider`, cached per request, English when there is no session or the read fails.
+- Client parts call `usePortalLang()` (payroll-2's contract, cherry-picked as 61d22816; identical content).
+- Every area has a `<area>-copy.ts` table `{en, es}` with the same keys, a key-set test and a Spanish render test.
+  English was moved over word for word; the existing English tests pass unchanged.
+
+COMMITS_PLACEHOLDER
+
+## Decisions for Jose and the lead
+
+1. **"Insights" in Spanish.** Reports says **Informes**; fork C's Christmas bonus used "Análisis" and was changed to
+   Informes. The shell nav and es-rondo (owner-advisor) should use the same word.
+2. **"Location" in Spanish.** The default word preset (`src/lib/workspace-presentation/words.ts`, unowned) says
+   "Ubicación/Ubicaciones"; the glossary says "localidad". Settings follows the company's preset, so Locations reads
+   "Ubicaciones" today. Changing the preset's default Spanish to Localidad/Localidades fixes every page at once.
+3. **Server action messages stay English** (Settings actions, breaks, clocker, photos, matching, employees, requests,
+   scheduling, policies). They need the language read inside each action; that is a small server change per action file.
+4. **Loading labels** (`RouteSkeleton`) stay English: the shell owns b-loading, and a loading screen shouldn't wait on a read.
+5. **Callers in other rows' areas** must pass `lang` to parts that now take it: `UnsupportedNativeRole` (app layout),
+   `CorrectionComparison`/`PriorCorrectionDecisions`, `TeamOverviewCorp` (manager-dashboard), `actionCenterNavigation`
+   (home-b, manager-inbox), `BlockedOpenShifts`, `PositionQuotaFields` (/app/schedule/settings), `shiftPlace` and
+   `shiftChangeFeedback` (/app/exchange, employee-mobile), `shiftDraftText`, the swap label helpers.
+6. **Kit:** `CorpTime`/`timeParts` only know "AM"/"PM" and shrink the "p" in "10:00 p. m."; the kit owner should
+   teach it "a. m."/"p. m." (fork C draws Find cover's Spanish range as plain text meanwhile).
+7. **Shared libraries** still produce English inside Spanish pages: `lib/reports` sentences, notification titles and facts,
+   `time-zone-label`, `sinceLabel`, `ATTENDANCE_WORDS`, `formatBusinessDateTime`, `durationRow`, photo state labels in
+   `lib/clocker/photo-client/review.ts` (Photo review now uses its own table).
+
+## For Jose to review
+
+Every Spanish line about pay, payroll, billing, tax, privacy or account security is listed English → Spanish in:
+- `es-rest-parts/A.md` (Insights, Christmas bonus hours, Home summary)
+- `es-rest-parts/B.md` (notifications, Team person page, profile, account, passkeys)
+- `es-rest-parts/C.md` (Christmas bonus report, including the disclaimer)
+- `es-rest-parts/D.md` (payday, payroll titles, Help's privacy lines, security notices)
+- `es-rest-parts/E.md` (payroll corrections, operational rules disclaimer, attendance comparison, help-someone-sign-in)
+
+From this session's own slice:
+
+| English | Spanish |
+|---|---|
+| Payroll settings | Configuración de nómina |
+| Payroll settings need payroll setup access | La configuración de nómina requiere acceso de configuración de nómina |
+| Ask an Owner with payroll access if something here needs to change. | Pide ayuda a un dueño con acceso a nómina si algo aquí necesita cambiar. |
+| Plan and billing | Plan y facturación |
+| Weekly / Every two weeks / Twice a month / Monthly | Semanal / Cada dos semanas / Dos veces al mes / Mensual |
+| Your part is timecards. {who} runs payroll after you approve them. | Lo tuyo son las tarjetas de tiempo. {who} corre la nómina cuando las apruebas. |
+| {who} can give you payroll access. / Owners can give you payroll access. | {who} puede darte acceso a nómina. / Los dueños pueden darte acceso a nómina. |
+| Labor settings · Owner only | Configuración laboral · Solo el dueño |
+| Pay rates, budgets and pay rules saved with these policies. Changing an alert keeps them as they are. | Tarifas de pago, presupuestos y reglas de pago guardados con estas políticas. Cambiar una alerta no los cambia. |
+| Compensation reference / Employee rates / Labor budgets / Calculation method reference | Referencia de compensación / Tarifas de empleados / Presupuestos de personal / Referencia del método de cálculo |
+| per hour / per shift / per salary period | por hora / por turno / por período de salario |
+| Alerts only flag times for you to check, from each rule’s start date. They never change pay. | Las alertas solo marcan horas para que las revises, desde la fecha de inicio de cada regla. Nunca cambian el pago. |
+| Actual-time overtime risk / Close to overtime | Riesgo de horas extra según el tiempo real / Cerca de horas extra |
+| Private company photos. Removing a photo preserves its time record. | Fotos privadas de la empresa. Eliminar una foto conserva su registro de tiempo. |
+| Images open privately on request and clear when you close the record or leave this screen. No photo download or bulk export is provided. | Las imágenes se abren en privado cuando las pides y se borran al cerrar el registro o salir de esta pantalla. No se pueden descargar fotos ni exportarlas en grupo. |
+| The time record stays intact. This removes the private stored image; backup handling follows your company photo notice. | El registro de tiempo no cambia. Esto elimina la imagen privada guardada; las copias de respaldo siguen el aviso de fotos de tu empresa. |
+| Punch photo removal confirmed. The time record is preserved. Backup handling follows your company photo notice. | Se confirmó que se eliminó la foto de marcación. El registro de tiempo se conserva. Las copias de respaldo siguen el aviso de fotos de tu empresa. |
+| Photo records appear after an authorized clock action. No camera or employee photo collection is started by this page. | Los registros de fotos aparecen después de una marcación autorizada. Esta página no enciende ninguna cámara ni recoge fotos de empleados. |
+| Time zone is locked because you have shifts and timecards. Contact support to change it. | La zona horaria está bloqueada porque tienes turnos y tarjetas de tiempo. Comunícate con soporte para cambiarla. |
+| Payday · Pay period {range} · Payroll to prepare · Payroll schedule needs review | Día de pago · Período de pago {range} · Nómina por preparar · El calendario de nómina necesita revisión |
+| Review {n} timecards · Before payroll · {period} | Revisar {n} tarjetas de tiempo · Antes de la nómina · {period} |
+
 ## Claim
+
 ### Areas and files taken (scan of 7c1464eb; EN count per file)
 
 **components/premium (307)**
@@ -586,11 +660,3 @@ Branch `claude-codex-collab-nevora-es-rest`, from `7c1464eb`. Area: /app/setting
   - `src/components/profile-calendar-disclosure.tsx`
   - `src/components/status-pill.tsx`
   - `src/components/illustrations/index.tsx`
-
-## Commits
-
-(filled in as slices land)
-
-## For Jose to review
-
-(billing, tax, payroll and privacy Spanish lines, filled in as slices land)

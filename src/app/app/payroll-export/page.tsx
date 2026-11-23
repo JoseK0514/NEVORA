@@ -21,7 +21,7 @@ export async function generateMetadata() { return { title: ROUTE_COPY[await read
 export default async function PayrollExportPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){const t = ROUTE_COPY[await readPageLang()];
   const session=await requireSession();
   // Review F2 (NV-136): a closed page says why, never a silent redirect to Home.
-  if(!isManagerRole(session.role))return <OwnerOnlyNotice state title={t.timeExports} reason={t.timeExportsFor} help={t.ownHoursOnTime} next={{href:'/app/my-time',label:t.openTime}}/>;
+  if(!isManagerRole(session.role))return <OwnerOnlyNotice state lang={await readPageLang()} title={t.timeExports} reason={t.timeExportsFor} help={t.ownHoursOnTime} next={{href:'/app/my-time',label:t.openTime}}/>;
   const proof=await requireSessionMutationProof();
   const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title={t.timeExportsUnavailable} reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;

@@ -41,16 +41,16 @@ export async function PayrollRoute({ view, runId = null }: { view: PayrollView; 
       const navigation = await Promise.all([readOperationalAuthority(proof), currentBrand()])
         .then(([operational, brand]) => navigationForRole('MANAGER', capabilities, { operational, modules: brand.modules })).catch(() => []);
       // Phase 8 (B #22, #23): a name never breaks across two lines; "or" between two names still may.
-      const closed = closedPayrollForManager(href => navigation.some(item => item.href === href), ownerNames(owners.map(name => name.replace(/ /g, '\u00A0'))));
-      return <OwnerOnlyNotice state title={t.payroll} reason={t.payrollForOwners} line={closed.line} next={closed.next} also={closed.also} />;
+      const closed = closedPayrollForManager(href => navigation.some(item => item.href === href), ownerNames(owners.map(name => name.replace(/ /g, '\u00A0')), lang), lang);
+      return <OwnerOnlyNotice state lang={lang} title={t.payroll} reason={t.payrollForOwners} line={closed.line} next={closed.next} also={closed.also} />;
     }
     // Phase 8 (review C, row 12): an Employee or Lead gets the same state screen, and their own pay is the way on when
     // their navigation has Pay (the rule More and the shell use); otherwise the notice names who can help, as before.
     const navigation = await currentBrand().then(brand => navigationForRole(proof.employee.role, capabilities, { modules: brand.modules })).catch(() => []);
     if (navigation.some(item => item.href === '/app/my-pay')) {
-      return <OwnerOnlyNotice state title={t.payroll} reason={t.payrollForOwners} line={workCopy(lang).payIsInPay} next={{ href: '/app/my-pay', label: workCopy(lang).openPay }} />;
+      return <OwnerOnlyNotice state lang={lang} title={t.payroll} reason={t.payrollForOwners} line={workCopy(lang).payIsInPay} next={{ href: '/app/my-pay', label: workCopy(lang).openPay }} />;
     }
-    return <OwnerOnlyNotice state title={t.payroll} reason={t.payrollForOwners} help={t.ownersCanGive} ownersCan={t.giveAccess} owners={owners} />;
+    return <OwnerOnlyNotice state lang={lang} title={t.payroll} reason={t.payrollForOwners} help={t.ownersCanGive} ownersCan={t.giveAccess} owners={owners} />;
   }
   const workspace = await getWorkspace();
   const recoveryScope = payrollRecoveryScope(workspace.id, proof.employee.id);

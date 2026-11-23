@@ -25,5 +25,5 @@ export default async function RestrictedPage() {
   const lang = await readPageLang(), t = ROUTE_PAGES_COPY[lang].restricted;
   // Phase 3 (MG-015): a Manager sees the one state screen at every width. Phase 4 (EM-019): an Employee or Lead does too,
   // so the way on is the tinted pill on every closed page.
-  return <OwnerOnlyNotice state title={restrictedTitle(session.role, lang)} help={t.help} next={{ href: "/app", label: t.home }} />;
+  return <OwnerOnlyNotice state lang={lang} title={restrictedTitle(session.role, lang)} help={t.help} next={{ href: "/app", label: t.home }} />;
 }
