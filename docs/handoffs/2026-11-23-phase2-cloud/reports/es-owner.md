@@ -166,3 +166,32 @@ The scan used a scratch copy of the harness with three additions: the `nv-lang` 
 - **Shots:** refreshed, and F3-import added for Owner and Manager.
 
 Correction to "For the lead" above: the import page item is done.
+
+## Second release (lead, Nov 23, 19:23 UTC)
+I merged staff's tip (414f0da0, which includes es-rest's lang-aware lib helpers, 66e8160d), then translated what staff left in English.
+
+- **Code commit:** 8319cb7d. Shots and this section: the commit after it.
+- **(1) `notification-inbox.tsx`:** the new `notification-inbox-copy.ts` table holds every word the component draws, for both the Quiet list and the older full inbox, so English and Spanish never mix on one screen. That covers the states, status lines, filters, read and action states, empty cards, footer, the aria names, and the long date and row times ("martes, 24 de noviembre, 9:02 a. m.").
+  - Row titles, groups, facts and the "5 h ago" text now get the language from the lib helpers (`notificationTitle`, `groupNotifications`, `notificationPresentation`, `rowFacts`, `relativeTimeFor`).
+  - Fixed: the read-failure check compared the English sentence with `startsWith`; it now compares against the table.
+  - The fold test's hand-made hook host now returns a context's default for `usePortalLang()`; that one test-harness line is the only change in that test.
+- **(2) Quiet Home (`premium-home.tsx`):** Right now, Things to do and the pending card are added to `premium-home-copy.ts`, along with the band sentence and the bar and title. Times and attendance words are in Spanish, and row dates use `mobileActionDetail(detail, lang)`.
+- **(3) Business times:**
+  - `manager-availability.tsx` (server) reads `readPortalLanguage(proof)`. It passes the language to `formatBusinessDateTime` and the week range, and to the deadline day. Its own words are in a new exported `MANAGER_AVAILABILITY_WORDS` table (Disponibilidad, Fecha límite, Sin fijar, "Semana del 23–29 nov"), so the page doesn't mix languages.
+  - `manager-dashboard.tsx` takes a `lang` prop. It uses it for `homeWeek`'s last-published time (`formatBusinessTimestamp`) and the fallback date label. `app/app/page.tsx` passes it with one line, `lang={lang}`, using the page's existing read.
+  - `manager-action-center.tsx`: `mobileActionDetail(detail, lang = 'en')` writes "22 nov 2026" in Spanish. The Quiet Home passes it. Two callers outside my area could pass `w.lang` / `lang` in one line each: `manager-inbox.tsx` and `manager-inbox-corp.tsx`.
+  - In that file, `formatUpdated`'s "Updated 3:02 PM" is drawn only by `ActionCenterSurface`, which is used only by `ui-preview/home-preview.tsx`. I left it unchanged.
+- **Tests:** `es-owner-r2.test.tsx` has 8 tests:
+  - key and shape matches for the three tables
+  - Spanish renders: the Quiet list with its states, the full inbox, the Quiet Home with its pending state, and the action row date
+  - the voice-guide date and time forms
+  - English unchanged
+
+  tsc clean, oxlint no errors, src/components plus the availability and Home routes: 3720/3720.
+- **Browser:** Spanish profile, Owner and Manager, at 390, 390 with 200% text and 1440, with axe, on Home, Team availability and Notifications. 0 axe violations, no sideways scroll, no two-line buttons. Team availability is fully Spanish and fits at 200%.
+- **Not live:** neither `NotificationInbox` nor the Quiet Home is reachable from a live route now.
+  - `/app/notifications` gives Employees and Leads the corporate list (`EmployeeNotificationsSnapshotView`) and Owners and Managers `ManagerNotifications`.
+  - Every Home passes `corporate`.
+
+  Their Spanish is covered by the render tests, not by captures.
+- **For the lead (not my file):** on `/app/notifications` (`notifications-manager-b.tsx`), "Notificaciones" in the band title runs past the right edge at 390 with 200% text, for Owner and Manager. That's shot `B3-notifications-O-es-390-200.webp`. A soft hyphen ("Notifica­ciones") or the band's title wrap would fix it.
