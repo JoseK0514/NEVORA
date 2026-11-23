@@ -69,38 +69,29 @@ const byWhen = (a: Row, b: Row) => sortKey(a).localeCompare(sortKey(b));
 const whole = (text: string) => text.replace(/ /g, "\u00a0");
 const DOT = "\u00a0· ";
 const timeOf = (row: Row & { startTime: string; endTime: string }) => whole(compactRange(formatTimeRange(row.startTime, row.endTime)));
-/** The summary names the week once, so a row names only its weekday: "Mon · 9 AM – 5 PM", and the location when the copy
- * spans more than one. */
-function when(row: Row, withPlace: boolean) {
-  if (!described(row)) return row.sourceId;
-  return [formatDayLabel(row.date).weekday, timeOf(row), withPlace ? row.locationName : null].filter(Boolean).join(DOT);
-}
 const personOf = (row: Row) => described(row) ? row.employeeName ? shortName(row.employeeName) : "Open shift" : "Shift";
 
-/** A copied shift with a warning: the person, then the day and time. It opens in Edit shift. */
-function ShiftRow({ row, withPlace }: { row: Row; withPlace: boolean }) {
-  const href = row.status === "COMMITTED" && row.shiftId ? `/app/schedule/edit?shiftId=${encodeURIComponent(row.shiftId)}` : undefined;
-  return <li><CorpRow title={personOf(row)} detail={when(row, withPlace)} href={href} /></li>;
-}
-
-/** Shifts that weren't copied have no shift to open, so each person shows once per reason with their days:
- * "Mon, Tue · 6 AM – 2 PM; Thu · 2–10 PM". */
-function PersonRows({ rows, withPlace }: { rows: Row[]; withPlace: boolean }) {
+/** One row per person in a group, with their days: "Mon, Tue · 6 AM – 2 PM; Thu · 2–10 PM". The summary names the week
+ * once, so a row names only weekdays; the location shows when the copy spans more than one (once at the end of the line
+ * when this person worked in one place). Both lists use it, so they read alike. `href` gets the person's shifts. */
+function PersonRows({ rows, withPlace, href }: { rows: Row[]; withPlace: boolean; href?: (own: Row[]) => string | undefined }) {
+  // Grouped by the full name, so two people who share "Ana R." stay two rows; the row shows the short name.
+  const fullName = (row: Row) => described(row) ? row.employeeName ?? "" : `~${row.sourceId}`;
   const people = new Map<string, Row[]>();
-  for (const row of rows) people.set(personOf(row), [...(people.get(personOf(row)) ?? []), row]);
-  return <CorpRows>{[...people].map(([name, own]) => {
-    // A person's one location is said once, at the end of their line; several are said with each time.
+  for (const row of rows) people.set(fullName(row), [...(people.get(fullName(row)) ?? []), row]);
+  return <CorpRows>{[...people].map(([key, own]) => {
+    const name = personOf(own[0]);
     const theirPlaces = new Set(own.map(row => row.locationName).filter(Boolean));
     const placeEach = withPlace && theirPlaces.size > 1;
     const placeOnce = withPlace && theirPlaces.size === 1 ? [...theirPlaces][0] : null;
     const parts = new Map<string, string[]>();
     for (const row of own) {
       if (!described(row)) { parts.set(row.sourceId, []); continue; }
-      const key = [timeOf(row), placeEach ? row.locationName : null].filter(Boolean).join(DOT);
-      parts.set(key, [...(parts.get(key) ?? []), formatDayLabel(row.date).weekday]);
+      const slot = [timeOf(row), placeEach ? row.locationName : null].filter(Boolean).join(DOT);
+      parts.set(slot, [...(parts.get(slot) ?? []), formatDayLabel(row.date).weekday]);
     }
-    const detail = [...parts].map(([key, days]) => days.length ? `${days.join(", ")}${DOT}${key}` : key).join("; ") + (placeOnce ? `${DOT}${placeOnce}` : "");
-    return <li key={name}><CorpRow title={name} detail={detail} /></li>;
+    const detail = [...parts].map(([slot, days]) => days.length ? `${days.join(", ")}${DOT}${slot}` : slot).join("; ") + (placeOnce ? `${DOT}${placeOnce}` : "");
+    return <li key={key}><CorpRow title={name} detail={detail} href={href?.(own)} /></li>;
   })}</CorpRows>;
 }
 
@@ -166,6 +157,8 @@ export function CopyReceiptView({ receipt }: { receipt: CopyReceipt }) {
     </CorpBody>
   </CorpCard>;
   const count = (n: number) => <span className="c-copy__count">{n}</span>;
+  // One copied shift opens in Edit shift; several open the copied week (the Schedule has no person filter to pass).
+  const openShifts = (own: Row[]) => own.length === 1 && own[0].shiftId ? `/app/schedule/edit?shiftId=${encodeURIComponent(own[0].shiftId)}` : back;
 
   return <Frame title={title} back={back}>
     {summary}
@@ -173,7 +166,7 @@ export function CopyReceiptView({ receipt }: { receipt: CopyReceipt }) {
     {warnings.length ? <CorpCard id="copy-warnings" label="With warnings" aside={count(warned.length)}>
       {warnings.map((kind, index) => <section className="c-copy__group" key={kind.id} aria-labelledby={`copy-warning-${index}`}>
         <h3 className="c-copy__kind" id={`copy-warning-${index}`}><WarningIcon className="c-copy__warn" weight="bold" aria-hidden="true" /><span>{kind.label}</span></h3>
-        <CorpRows>{kind.rows.map(row => <ShiftRow key={row.sourceId} row={row} withPlace={withPlace} />)}</CorpRows>
+        <PersonRows rows={kind.rows} withPlace={withPlace} href={openShifts} />
       </section>)}
     </CorpCard> : null}
     {/* When nothing was copied the band already says so: the list keeps its reasons, without a second "Not copied". */}

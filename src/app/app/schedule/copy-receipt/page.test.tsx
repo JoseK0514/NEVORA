@@ -130,6 +130,29 @@ it('shows a person once per reason with their days when shifts were not copied',
  expect(skipped.match(/Condado/g)).toHaveLength(1);
 });
 
+it('shows a person once per warning kind; one shift opens it, several open the copied week',async()=>{
+ fixtures.receipt=receipt([
+  row('e1','COMMITTED',{employeeName:'Elena Ruiz',warnings:[availability]}),
+  row('e2','COMMITTED',{employeeName:'Elena Ruiz',date:'2026-10-20',warnings:[availability]}),
+  row('e3','COMMITTED',{employeeName:'Elena Ruiz',date:'2026-10-21',startTime:'14:00',endTime:'22:00',warnings:[availability]}),
+  row('s1','COMMITTED',{employeeName:'Solo Person',warnings:[availability]}),
+  // Two people who share a short name stay two rows.
+  row('a1','COMMITTED',{employeeName:'Ana Rivera',warnings:[availability]}),
+  row('a2','COMMITTED',{employeeName:'Ana Rosa',warnings:[availability]}),
+ ]);
+ const html=await render();
+ const section=html.slice(html.indexOf('id="copy-warnings"'));
+ const words=text(section);
+ expect(words.match(/Elena R\./g)).toHaveLength(1);
+ expect(words).toContain('Elena R. Mon, Tue · 9 AM – 5 PM; Wed · 2–10 PM');
+ expect(words.match(/Ana R\./g)).toHaveLength(2);
+ // Elena's three shifts open the copied week; Solo's one shift opens Edit shift.
+ const elena=section.slice(section.indexOf('Elena R.')-400,section.indexOf('Elena R.'));
+ expect(elena.slice(elena.lastIndexOf('<a')) ).toContain('href="/app/schedule?week=2026-10-19"');
+ expect(section).toContain('href="/app/schedule/edit?shiftId=copied-s1"');
+ expect(section).not.toContain('copied-e1');
+});
+
 it('keeps older receipts that carry only a source reference readable',async()=>{
  fixtures.receipt=receipt([{sourceId:'older-source',status:'SKIPPED',reason:'SOURCE_CHANGED',shiftId:null,warnings:[]},row('a','COMMITTED')]);
  const html=await render();
