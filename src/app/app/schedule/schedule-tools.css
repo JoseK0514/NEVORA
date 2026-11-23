@@ -87,10 +87,12 @@
 :is(#c-root, html) .c-shreq .c-shreq__form .form-error { color: var(--c-red); }
 :is(#c-root, html) .c-shreq .c-shreq__form .b-dres, :is(#c-root, html) .c-shreq .c-shreq__form .b-ask { margin: 0; }
 /* Done: the history of a decided request, as a quiet disclosure in the same block. */
-:is(#c-root, html) .c-shreq .shift-change-history > summary { min-height: 44px; display: flex; align-items: center; font-size: 0.9375rem; line-height: 1.375rem; font-weight: 600; color: var(--b-teal, #0B6E69); cursor: pointer; }
-:is(#c-root, html) .c-shreq .shift-change-history ol { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-:is(#c-root, html) .c-shreq .shift-change-history li { display: flex; flex-direction: column; gap: 2px; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-ink2); }
-:is(#c-root, html) .c-shreq .shift-change-history li strong { font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-shreq .c-shreq__history > summary { list-style: none; }
+:is(#c-root, html) .c-shreq .c-shreq__history > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-shreq .c-shreq__history > summary { min-height: 44px; display: flex; align-items: center; font-size: 0.9375rem; line-height: 1.375rem; font-weight: 600; color: var(--b-teal, #0B6E69); cursor: pointer; }
+:is(#c-root, html) .c-shreq .c-shreq__history ol { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .c-shreq .c-shreq__history li { display: flex; flex-direction: column; gap: 2px; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-ink2); }
+:is(#c-root, html) .c-shreq .c-shreq__history li strong { font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-shreq .shift-change-unavailable { margin: 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-grey); }
 
 @media (min-width: 768px) {

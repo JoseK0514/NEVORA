@@ -9,8 +9,7 @@ import {publishFirstHref} from '@/lib/shift-changes/publish-first';
 import {ShiftChangeForm,type ShiftChangeOutcome} from './shift-change-form';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {UserMinusIcon} from '@phosphor-icons/react/dist/ssr/UserMinus';
-import {ShiftChangeHistory} from './shift-change-history';
-import {readShiftChangeHistoryView} from '@/lib/data/shift-change-views';
+import {readShiftChangeHistoryView,type ShiftHistoryView} from '@/lib/data/shift-change-views';
 import { businessDate } from "@/lib/business-time";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listManagerPendingExchanges, listManagementCoverage, listTeamExchangeActivity, type ExchangeRecord } from "@/lib/data/exchanges";
@@ -136,6 +135,31 @@ function RequestDetails({ name, line, sent, aged, hint, open, end, children }: {
   </details>;
 }
 
+/** Phase 2 (C12, Nov 23, 2026): a decided request's history in plain words. The server's view (shared with the
+ * Employee side) writes ISO times, 24-hour shift times and internal ids; here each step reads "Completed · Nov 23,
+ * 8:28 AM" and the shift it held "Wed, Dec 9 · 8:00 AM – 4:00 PM". A line this can't read is shown as it came. */
+const MODES: Record<string, string> = { MANAGER: "by a manager", MANAGER_REVIEW: "by a manager", AUTOMATIC: "automatically", AUTOMATIC_WHEN_VALID: "automatically" };
+function historyShift(text: string | null, year: string) {
+  if (!text) return null;
+  const match = /^(\d{4}-\d{2}-\d{2}) · (\d{2}:\d{2}) – (\d{2}:\d{2})(?: · .*?)?( · Shift lead)?$/.exec(text);
+  return match ? `${shiftDay(match[1], year)} · ${formatTimeRange(match[2], match[3])}${match[4] ? " · Shift lead" : ""}` : text;
+}
+function ManagerHistory({ events, timeZone, year, line }: { events: ShiftHistoryView[] | null; timeZone: string; year: string; /** The row's own line: a step's shift that it already says isn't repeated. */ line: string }) {
+  if (events === null) return <p className="c-shreq__help" role="status">Request history is unavailable. Reconnect and reload.</p>;
+  if (!events.length) return null;
+  const at = (iso: string) => { const date = new Date(iso); return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat("en-US", { timeZone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(date) : iso; };
+  return <details className="c-shreq__history"><summary>Request history</summary><ol>{events.map((event, index) => {
+    const step = event.event ? event.event[0].toUpperCase() + event.event.slice(1) : "Changed";
+    const mode = event.mode ? MODES[event.mode] : undefined;
+    const shift = historyShift(event.source, year), other = historyShift(event.target, year);
+    const before = index ? historyShift(events[index - 1].source, year) : null;
+    const said = shift && (index ? shift === before : line.includes(shift));
+    const shown = said && !other ? null : shift;
+    return <li key={`${event.revision}-${index}`}><strong>{[mode ? `${step} ${mode}` : step, at(event.at)].join(" · ")}</strong>
+      {shown ? <span>{other ? `Shift: ${shown}` : shown}</span> : null}{other ? <span>{`Other shift: ${other}`}</span> : null}</li>;
+  })}</ol></details>;
+}
+
 /** Final polish (confirmations A #1, #2): what approving or declining a swap or a cover request leaves, in words. */
 function exchangeOutcome(exchange: ExchangeRecord): ShiftChangeOutcome {
   const icon = <ArrowsLeftRightIcon weight="bold" />, other = exchange.targetEmployeeName;
@@ -253,7 +277,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
       {activity.map(item => <li className="c-shreq__item" key={item.id}>
         <RequestDetails name={item.name} line={item.line} sent={sent(item.createdAt)} aged={false} open={false} hint="Show the history" end={statusWord(item.status)}>
           {item.note ? <p className="c-shreq__help">{item.note}</p> : null}
-          {item.fact ? <><Facts rows={[{ label: item.fact.label, value: item.fact.value }]} />{item.fact.help ? <p className="c-shreq__help">{item.fact.help}</p> : null}</> : null}<ShiftChangeHistory events={historyViews.get(item.id)??null}/>
+          {item.fact ? <><Facts rows={[{ label: item.fact.label, value: item.fact.value }]} />{item.fact.help ? <p className="c-shreq__help">{item.fact.help}</p> : null}</> : null}<ManagerHistory events={historyViews.get(item.id)??null} timeZone={timeZone} year={year} line={item.line} />
         </RequestDetails>
       </li>)}
     </ul></CorpCard> : <CorpCard ariaLabel="Done"><BState kind="empty" title="Nothing decided yet" line="Requests you approve or decline show up here." /></CorpCard>) : null}
