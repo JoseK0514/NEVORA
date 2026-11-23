@@ -1,0 +1,202 @@
+[
+ {
+  "id": "k3-en",
+  "row": "K3",
+  "page": "Enter Employee ID",
+  "section": "Clocker",
+  "note": "One field, one Continue, help under the field. The field is now the PIN field's size and place, so the card no longer shifts between the two steps (it was 54px and 6px lower on a phone). Field, help, Continue and the keypad share one left and right edge at every size.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k3-id-empty-en-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/k3-id-empty-en-390-text200.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k3-id-empty-en-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k3-id-empty-en-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "ID typed",
+    "after": "img/k3-id-typed-en-390.webp"
+   },
+   {
+    "label": "ID typed, tablet",
+    "after": "img/k3-id-typed-en-1024.webp"
+   },
+   {
+    "label": "Keyboard focus on Continue",
+    "after": "img/k3-id-typed-focus-continue-en-1024.webp"
+   },
+   {
+    "label": "Next step (PIN), same grid",
+    "after": "img/k3-pin-step-for-grid-en-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The Continue arrow keeps 20px at 200% text while the word grows (icon size is fixed in the kit's ClockerIcon); a size in em would scale it."
+  ]
+ },
+ {
+  "id": "k3-es",
+  "row": "K3",
+  "page": "Enter Employee ID (Spanish)",
+  "section": "Clocker",
+  "note": "'Ingresa tu ID de empleado' fits on one line at 390 and wraps cleanly at 200% text; the help takes two lines on a phone and Continue stays on the same edges.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k3-id-empty-es-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/k3-id-empty-es-390-text200.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k3-id-empty-es-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k3-id-empty-es-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "ID typed",
+    "after": "img/k3-id-typed-es-390.webp"
+   },
+   {
+    "label": "Keyboard focus on Continuar",
+    "after": "img/k3-id-typed-focus-continue-es-1024.webp"
+   },
+   {
+    "label": "Next step (PIN), same grid",
+    "after": "img/k3-pin-step-for-grid-es-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The Continue arrow keeps 20px at 200% text while the word grows (icon size is fixed in the kit's ClockerIcon); a size in em would scale it."
+  ]
+ },
+ {
+  "id": "k3-errors-en",
+  "row": "K3",
+  "page": "Enter Employee ID: errors",
+  "section": "Clocker",
+  "note": "Unknown ID, offline and locked. Each blocked card has one action; focus goes to the heading on offline and locked, and back to the Employee ID field after Check connection or Done.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k3-unknown-id-en-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/k3-unknown-id-en-390-text200.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k3-unknown-id-en-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k3-unknown-id-en-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Offline",
+    "after": "img/k3-offline-en-390.webp"
+   },
+   {
+    "label": "Offline, tablet",
+    "after": "img/k3-offline-en-1024.webp"
+   },
+   {
+    "label": "Offline, 200% text",
+    "after": "img/k3-offline-en-390-text200.webp"
+   },
+   {
+    "label": "Locked",
+    "after": "img/k3-locked-en-390.webp"
+   },
+   {
+    "label": "Locked, tablet",
+    "after": "img/k3-locked-en-1024.webp"
+   },
+   {
+    "label": "Locked, 200% text",
+    "after": "img/k3-locked-en-390-text200.webp"
+   },
+   {
+    "label": "After Done",
+    "after": "img/k3-after-locked-en-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Offline: the band and the card both say 'No connection' (ES 'Sin conexión'). Kept: the band follows the card by the approved rule NV-049, and K1's setup and the fallback screen use the same pair. Proposed for Jose: band 'Offline' or a card heading 'This tablet is offline' across K1, K3 and the fallback together.",
+   "Unknown ID: the message says 'Check both' on the PIN step, where the Employee ID isn't shown; the way back is the icon-only back arrow (named 'Change Employee ID'). Proposed: show the entered ID under the heading with a 'Change' link (K4 layout).",
+   "Unknown ID: focus stays in the PIN field, whose red error border replaces the teal focus ring, so focus isn't visible while the error shows (K4 pattern; keypad taps are unaffected)."
+  ]
+ },
+ {
+  "id": "k3-errors-es",
+  "row": "K3",
+  "page": "Enter Employee ID: errors (Spanish)",
+  "section": "Clocker",
+  "note": "Same states in Spanish; the lockout says 'Inténtalo de nuevo a las 10:31 a. m.' and nothing overflows at any size.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k3-unknown-id-es-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/k3-unknown-id-es-390-text200.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k3-unknown-id-es-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k3-unknown-id-es-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Sin conexión",
+    "after": "img/k3-offline-es-390.webp"
+   },
+   {
+    "label": "Sin conexión, tablet",
+    "after": "img/k3-offline-es-1024.webp"
+   },
+   {
+    "label": "En pausa",
+    "after": "img/k3-locked-es-390.webp"
+   },
+   {
+    "label": "En pausa, tablet",
+    "after": "img/k3-locked-es-1024.webp"
+   },
+   {
+    "label": "En pausa, 200% text",
+    "after": "img/k3-locked-es-390-text200.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Offline: the band and the card both say 'No connection' (ES 'Sin conexión'). Kept: the band follows the card by the approved rule NV-049, and K1's setup and the fallback screen use the same pair. Proposed for Jose: band 'Offline' or a card heading 'This tablet is offline' across K1, K3 and the fallback together.",
+   "Unknown ID: the message says 'Check both' on the PIN step, where the Employee ID isn't shown; the way back is the icon-only back arrow (named 'Change Employee ID'). Proposed: show the entered ID under the heading with a 'Change' link (K4 layout).",
+   "Unknown ID: focus stays in the PIN field, whose red error border replaces the teal focus ring, so focus isn't visible while the error shows (K4 pattern; keypad taps are unaffected)."
+  ]
+ }
+]
