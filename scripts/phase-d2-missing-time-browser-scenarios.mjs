@@ -99,7 +99,7 @@ export async function missingTimeBrowserScenarios({app,browser,engine,employee,p
     const approvalRequest=managerPage.waitForRequest(request=>request.url().endsWith(managerPath)&&request.method()==='POST');
     await managerPage.getByRole('button',{name:'Approve correction for Avery Correction QA'}).click();
     const bDecision=(await approvalRequest).postDataJSON();
-    await managerPage.getByText('Correction approved. The original recorded punch remains unchanged.',{exact:true}).waitFor();
+    await managerPage.locator('.manager-corrections-notice[data-result]').getByText('Correction approved',{exact:true}).waitFor();
     const approvedReplay=await post(manager,managerPath,bDecision);
     assert.equal(approvedReplay.status(),200);
     const accepted=await approvedReplay.json();

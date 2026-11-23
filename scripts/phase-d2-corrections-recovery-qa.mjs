@@ -155,7 +155,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
     try{
      await pressFocusedD2Retry(retry,page,nativeReceipt,commands.length,performance.now()+15000);
      await captureD2NativeRetry(nativeReceipt,page,'key-sent',commands.length);
-     await page.getByText(decision==='APPROVE'?'Correction approved. The original recorded punch remains unchanged.':'Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
+     await page.locator('.manager-corrections-notice[data-result]').getByText(decision==='APPROVE'?'Correction approved':'Correction declined',{exact:true}).waitFor();
      await captureD2NativeRetry(nativeReceipt,page,'confirmed',commands.length);
     }catch(error){await captureD2NativeRetry(nativeReceipt,page,'failed',commands.length);throw error;}
     assert.equal(nativeReceipt.phases.length,4);assert(nativeReceipt.phases.every(phase=>phase.tainted===false&&phase.diagnosticFailed!==true),'Native retry diagnostics must be complete and untainted');
