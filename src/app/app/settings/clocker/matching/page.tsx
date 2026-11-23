@@ -3,7 +3,8 @@ import {ClockerGraceSettings} from '@/components/clocker-schedule-grace';
 import {clockerOwnerCopy} from '@/components/clocker-owner-copy';
 import {CorpErrorCard} from '@/components/corp/corp';
 import {CorpRetryButton} from '@/components/corp/corp-client';
-import {ClockerOwnerFrame} from '@/components/clocker-owner-frame';
+import {SettingsPageB} from '../../settings-b';
+import '@/components/clocker-owner-page.css';
 import '@/components/clocker-owner-b.css';
 import '@/components/clocker-schedule-grace.css';
 import {readClockerGraceAction,saveClockerGraceAction} from './actions';
@@ -16,11 +17,11 @@ export const dynamic='force-dynamic';
 export default async function ClockerMatchingPage(){
  await requireRoles(['OWNER']);
  const result=await readClockerGraceAction(),t=clockerOwnerCopy.en;
- return <ClockerOwnerFrame back={{href:"/app/settings",label:t.settings}} className="ck-matching" title={t.matchingTitle} titleId="clocker-matching-title">
+ return <SettingsPageB back={{href:"/app/settings",label:t.settings}} className="ck-owner ck-frame ck-matching" title={t.matchingTitle} titleId="clocker-matching-title">
   <div className="c-grace">
    {result.state==='available'
     ?<ClockerGraceSettings initial={result.setting} saveAction={saveClockerGraceAction} readAction={readClockerGraceAction}/>
     :<CorpErrorCard title={t.graceLoadFailedTitle} body={t.graceLoadFailedBody} action={<CorpRetryButton>{t.tryAgain}</CorpRetryButton>}/>}
   </div>
- </ClockerOwnerFrame>;
+ </SettingsPageB>;
 }
