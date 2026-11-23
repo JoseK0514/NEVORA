@@ -33,6 +33,27 @@ scoped read). Device: G22. Parked: G23.
 Held until F lands (same Find cover files): G46, G63. Needs Jose: G4, G14, G17, G43, G44, G68. Codex or server: G16.
 Device: G22 (and the screen-reader halves of G18, G42). Spanish: G42.
 
+## Faster plan (Nov 23, Jose approved)
+
+- **Fix now:** wrong messages, lost or false-saved data, overlap or cut-off text, broken or unequal buttons, visible
+  misalignment, repeated wording, pages still on the older look. **End sweep** (one pass at the end of Phase 2):
+  screen-reader names, focus rings, targets under 44px, axe-only findings, small contrast and px-size items.
+- **Proof:** iterate on the dev server; one production capture per package, AFTER only, 390 and 1440 per changed role.
+- **Redesign packages** (the pages still on the older or mixed look), started as build slots free up:
+  1. Settings part 1: J1–J12 (running)
+  2. Settings part 2: J13–J17 Clocker settings, J18 Billing
+  3. Messages: B3 Notifications (Manager), B6 Updates, B7 Update detail, B8 Compose (Owner and Manager)
+  4. Schedule tools: C7 Templates, C9 Scheduling rules, C10 Availability and C12 Shift changes (manager side), C1 Owner
+     and Manager remainder
+  5. Requests, Team and account: E1 Time off (managers), F4 Person, F9 Help someone sign in, I1 manager Profile,
+     I6 Delete my account
+- **Queue batches** (already Direction B; one build, gate check, then into Jose's queue):
+  1. Payroll G1–G10, Rondo H1–H6, Profile I2–I5 (capturing)
+  2. Signed out and public A1–A14
+  3. Home and navigation B2, B4, B5, B9–B11; Schedule C5, C6, C11, C13–C15
+  4. Time D2–D5; Team F2, F3, F5–F8; Clocker K1–K15; phone app L1
+  5. The redesign packages above, as each lands
+
 ## Rows
 
 | # | Screen | Gap | Source | Kind | Status |
