@@ -449,6 +449,8 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
   const fixes = fixItems(run);
   const approved = run.status === 'APPROVED';
   const original = run.correctionOf ? data.runs.find(item => item.id === run.correctionOf) : undefined;
+  // Batch 1 item 1: a payroll a correction replaced says so and opens the correction; it isn't fixed or paid again here.
+  const replacement = data.runs.find(item => item.correctionOf === run.id);
   const reasons = [...(run.nativeCorrection ? [run.nativeCorrection.reason] : []), ...notes.corrections];
   const jobs = data.jobs.filter(job => job.runId === run.id);
   const canApproveNow = !locked && !operation.revisionConflict && reviewed && !!run.reviewToken && !!run.rows && !!run.totals && notes.blocking.length === 0;
@@ -463,6 +465,9 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
       </dl> : <CorpBody><p className="c-payroll__state">{run.status === 'WAITING_FOR_AMOUNTS' ? 'Amounts appear after your provider’s amounts are imported.' : run.status === 'BLOCKED' ? 'Amounts appear after the items below are fixed and the draft is recalculated.' : 'No pay amounts were entered for this payroll.'}</p></CorpBody>}
       {run.rows ? <CorpRows label="People"><li><CorpRow href={`/app/payroll/people?run=${encodeURIComponent(run.id)}`} title="People" value={<Num>{String(run.totals?.employeeCount ?? run.rows.length)}</Num>} valueTone="soft" chevron /></li></CorpRows> : null}
     </PayGroup>
+    {replacement ? <CorpCard as="div" ariaLabel="Replaced"><CorpRows label="Replaced"><li>
+      <CorpRow href={reviewHref(replacement.id)} bold title="Replaced by a correction" chevron />
+    </li></CorpRows></CorpCard> : null}
     {run.correctionOf ? <CorpCard as="div" ariaLabel="Correction"><CorpBody>
       <b className="c-pay__strong">{original ? `Correction of ${quietRange(original.period.startDate, original.period.endDate)}` : 'Correction of an earlier payroll'}</b>
       <p className="c-pay__detail">{reasons.length ? reasons.join(' · ') : 'The original approval and statements remain in history.'}</p>
@@ -486,13 +491,13 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
     </CorpBody></PayGroup> : null}
     {approved ? <Documents run={run} native={native} names={names} /> : null}
     {jobs.length ? <Jobs jobs={jobs} canApprove={capabilities.canApprove} locked={locked} operation={operation} /> : null}
-    {(native && !approved && !fixes.length) || approved ? <CorpCard as="div" ariaLabel="More actions"><CorpRows label="More actions">
+    {(native && !approved && !fixes.length) || (approved && !replacement) ? <CorpCard as="div" ariaLabel="More actions"><CorpRows label="More actions">
       {native && !approved && !fixes.length ? <li><CorpRow onClick={locked || !capabilities.canReview ? undefined : () => void operation.submit({ action: 'RECALCULATE', runId: run.id, expectedRevision: run.revision })} disabled={locked || !capabilities.canReview}
         title="Recalculate draft" detail="A fresh revision from current recorded time" chevron /></li> : null}
-      {approved ? <li><CorpRow onClick={locked || !capabilities.canReview ? undefined : () => setCorrectionOpen(value => !value)} disabled={locked || !capabilities.canReview}
+      {approved && !replacement ? <li><CorpRow onClick={locked || !capabilities.canReview ? undefined : () => setCorrectionOpen(value => !value)} disabled={locked || !capabilities.canReview}
         title={correctionOpen ? 'Close correction' : 'Fix this payroll'} detail="Starts a correction you approve separately" chevron /></li> : null}
       {/* PY-17: the server never makes payment instructions for a correction (payment-policy.ts), so the row isn't offered there. */}
-      {approved && !native && !run.correctionOf && capabilities.canApprove ? <li><CorpRow onClick={locked ? undefined : () => void operation.submit({ action: 'PAYMENT_EXPORT', runId: run.id, expectedRevision: run.revision })} disabled={locked}
+      {approved && !native && !run.correctionOf && !replacement && capabilities.canApprove ? <li><CorpRow onClick={locked ? undefined : () => void operation.submit({ action: 'PAYMENT_EXPORT', runId: run.id, expectedRevision: run.revision })} disabled={locked}
         title="Prepare payment instructions" detail="A file only. NEVORA doesn’t send money." chevron /></li> : null}
     </CorpRows>
       {approved && !native && run.correctionOf && capabilities.canApprove ? <CorpBody tight><p className="c-pay__detail">NEVORA doesn’t make payment instructions for a correction. {SETTLE_NOTE}</p></CorpBody> : null}

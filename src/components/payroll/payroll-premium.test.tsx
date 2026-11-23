@@ -347,3 +347,16 @@ it('the phone steps card lists Timecards as a step line before its action, and a
   expect(html).toContain('Net pay on statements: +$5.00</b></p>');
   expect(html).not.toContain('no one’s net pay changes');
 });
+
+it('batch 1 item 1: a payroll a correction replaced says so, opens the correction, and isn’t fixed or paid again', () => {
+  const original = nativeRun({ id: 'run-original', status: 'APPROVED' });
+  const correction = nativeRun({ id: 'run-fix', status: 'APPROVED', correctionOf: 'run-original' });
+  boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [correction, original], jobs: [] };
+  const html = withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-original" />));
+  expect(html).toContain('Replaced by a correction');
+  expect(html).toContain('href="/app/payroll/review?run=run-fix"');
+  expect(html).not.toContain('Fix this payroll');
+  expect(html).not.toContain('Prepare payment instructions');
+  const fix = withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-fix" />));
+  expect(fix).not.toContain('Replaced by a correction');
+});
