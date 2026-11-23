@@ -123,7 +123,7 @@ function calloutHead(callout: { date: string; startTime: string; endTime: string
 }
 function HeadText({ name, head, after }: { name: string; head: Head; after?: ReactNode }) {
   return <span className="b-row__tx c-sreq__tx">
-    <span className="b-row__t c-sreq__name"><span className="b-row__tt">{name}</span><BChip tone={head.tone}>{head.kind}</BChip></span>
+    <span className="b-row__t c-sreq__name"><span className="b-row__tt">{name}</span>{head.kind ? <BChip tone={head.tone}>{head.kind}</BChip> : null}</span>
     <span className="b-row__s c-sreq__when"><BSegs parts={head.when} /></span>
     {head.who ? <span className="b-row__s c-sreq__who">{head.who}</span> : null}
     {after ?? null}
@@ -246,7 +246,9 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
     </BList></BCard> : empty("You’re all caught up", "New shift requests show up here.")) : null}
 
     {selected.id === "coverage" ? (liveCoverage.length ? <BCard label="Open cover"><BList>
-      {liveCoverage.map(exchange => <RequestRow key={exchange.id} id={exchange.id} name={exchange.requestedByName} head={exchangeHead(exchange, year)} sent={sent(exchange.createdAt)} aged={aged(exchange.createdAt)}
+      {/* Each fact once: every row on Open cover is a cover request nobody has picked up, so the tab says it and the rows
+          carry only who asked and when (and a name, should someone have picked it up). */}
+      {liveCoverage.map(exchange => <RequestRow key={exchange.id} id={exchange.id} name={exchange.requestedByName} head={{ ...exchangeHead(exchange, year), kind: "", who: exchange.targetEmployeeName ? coverResult(exchange) : undefined }} sent={sent(exchange.createdAt)} aged={aged(exchange.createdAt)}
         open={false} facts={<ExchangeFacts exchange={exchange} year={year} />}>
         {exchange.requestRevision ? <ShiftChangeForm fields={{ kind: "MANAGER_CLOSE", requestId: exchange.id, expectedRevision: exchange.requestRevision }} className="c-sreq__form"
           outcome={{ closed: { tone: "closed", icon: <ArrowsLeftRightIcon weight="bold" />, title: t.requestClosed, line: t.keepsShift(exchange.requestedByName) } }}>
