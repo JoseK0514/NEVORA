@@ -656,5 +656,7 @@
 /* K12 kept-punches help (Nov 23): Back follows "Ask Owner to check" on the 8px step (the empty live line takes no
  * gap), and Reference sits directly under Back. Both keep their 56px targets; only the extra air between them goes. */
 .helpStack { gap: var(--b-space-8); }
-.helpStack > .quietLine:empty { height: 0; min-height: 0; padding: 0; margin-top: calc(-1 * var(--b-space-8)); overflow: hidden; }
+/* Empty, the live line is out of the flow (a grid track can't shrink below 0) but stays in the accessibility tree, so the
+ * request's result is still announced the moment it fills. */
+.helpStack > .quietLine:empty { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); }
 .helpStack + .reference { margin-top: 0; }
