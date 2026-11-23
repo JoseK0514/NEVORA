@@ -4,6 +4,7 @@ import {readEmployeeClockerPin,type EmployeePinView} from '@/lib/clocker/pins.se
 
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedPerson} from '@/components/company-access/scoped-person';
 import {readOperationalEmployeeHours,readOperationalEmployeeProfile} from '@/lib/company-access/operational-read.server';
 import type {PersonHours} from '@/lib/person-hours';
 import {durationSentence} from '@/lib/duration-format';
@@ -72,6 +73,9 @@ export default async function EmployeeProfilePage({
     let bonusApplies=true;if(editing==='core'&&profile.data.employmentDates){try{bonusApplies=christmasBonusApplies((await getWorkspace()).timeZone);}catch{}}
     return {profile,positions,operational,profileUnavailable,invitation,pin,hours,bonusApplies};
   });
+  // G17 (Jose, Nov 23, 2026): the company-wide read refuses a Manager limited to some locations; the scoped read decides
+  // whether this person works at one of them (server-side, the scoped Team list's boundary) and shows only that view.
+  if(source.state==='unavailable'&&source.reason==='access_denied'&&actor.role==='MANAGER')return ScopedPerson({proof,employeeId,view:editing||accessView?'company':'overview'});
   if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
   const {profile,positions,operational,profileUnavailable,invitation,pin,hours,bonusApplies}=source.data;
   if(profile.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={profile.reason}/>;
