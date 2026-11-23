@@ -488,7 +488,9 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       : live.tone === "late" ? { state: <BChip tone="amber" dot>{live.text}</BChip>, text: live.text, ring: "late" }
       : live.tone === "blue" ? { state: <BStatusText>{live.text}</BStatusText>, text: live.text, ring: "on" }
       : { state: <BChip tone="amber" dot={live.text !== ATTENDANCE_WORDS.missed}>{live.text}</BChip>, text: live.text, ring: "late" };
-    return shift.status === "DRAFT" ? { state: <BChip tone="amber">Draft</BChip>, text: "Draft" } : corp?.changedShiftIds?.includes(shift.id) ? { state: <BChip tone="amber">Changed</BChip>, text: "Changed" } : {};
+    // Recheck (Nov 23, 2026): a row says Draft only in a week that mixes drafts with published shifts; in an all-draft
+    // week the week's state on the band already says it.
+    return shift.status === "DRAFT" && mixedWeek ? { state: <BChip tone="amber">Draft</BChip>, text: "Draft" } : corp?.changedShiftIds?.includes(shift.id) ? { state: <BChip tone="amber">Changed</BChip>, text: "Changed" } : {};
   };
   // A day's shifts at one place don't repeat it on every row. Open shifts keep theirs unless the page is for one location,
   // which the band already names (recheck, Nov 23, 2026: "Condado" was said on the band and on every open shift).

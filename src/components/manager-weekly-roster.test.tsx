@@ -248,4 +248,8 @@ it("says one location once and keeps the key for a mixed week", () => {
   expect(render(employees)).toContain('<span class="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span>');
   const published = employees.map(person => ({ ...person, shifts: person.shifts.map(shift => ({ ...shift, status: "PUBLISHED" as const })) }));
   expect(render(published)).toContain('<span class="cm-legend" aria-hidden="true"></span>');
+  // A row says Draft in a mixed week; in an all-draft week the week's state says it once.
+  expect(day(render(employees))).toContain(" Draft ");
+  const drafts = employees.map(person => ({ ...person, shifts: person.shifts.map(shift => ({ ...shift, status: "DRAFT" as const })) }));
+  expect(day(render(drafts))).not.toContain(" Draft ");
 });
