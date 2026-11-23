@@ -1,0 +1,496 @@
+[
+ {
+  "id": "B1-o",
+  "row": "B1",
+  "page": "Home",
+  "section": "Home",
+  "note": "Owner Home: Things to do, Today with the hourly chart, the unpaid period, Scheduled payday and This week. Axe clean, no overflow at any width or at 200% text.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B1-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B1-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B1-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B1-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 1440 the two payroll actions read alike and differ in height: 'Prepare Nov 9–15' (solid teal, 44px) and 'Prepare payroll' (dark, 48px) in adjacent cards. home-b.tsx is Package F's file (G73), so not changed here.",
+   "Phone band icon buttons are 40px (kit G88, Package K)."
+  ]
+ },
+ {
+  "id": "B1-m",
+  "row": "B1",
+  "page": "Home",
+  "section": "Home",
+  "note": "Elena's Home, same screen as the Owner's with her Timecards card. The Timecards card says its count twice.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B1-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B1-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B1-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B1-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "The Timecards card says '10 to approve' and then '10 of 11 timecards' (home-b.tsx:437, the same card as G73, so left to Package F). Suggested: '11 timecards · Pay period ended' under '10 to approve'; the next line already says another reviewer approves the 11th."
+  ],
+  "endSweep": [
+   "Phone band icon buttons are 40px (kit G88, Package K)."
+  ]
+ },
+ {
+  "id": "B1-l",
+  "row": "B1",
+  "page": "Home",
+  "section": "Home",
+  "note": "James as a Lead. Fixed: at 768 the band's '8:00 AM – 4:00 PM' ran into Hours, and at 200% text it ran off the band. The range now breaks after its dash and the other figures stay on the top line. Band links are named by their visible text (axe 4 → 0).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B1-l-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B1-l-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B1-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B1-l-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "From 768 the band repeats the shift card under it: '8:00 AM – 4:00 PM' and 'Shift lead · Customer Support' (NV-161, Jose approved). Jose to decide whether the band or the card drops it."
+  ],
+  "endSweep": [
+   "The band's line 'Shift lead · Customer Su…' ends in an ellipsis at 768 (kit BLive).",
+   " 'Your week' writes Monday's hours as '1.2' while the band says '1 h 13'."
+  ]
+ },
+ {
+  "id": "B1-e",
+  "row": "B1",
+  "page": "Home",
+  "section": "Home",
+  "note": "James as an Employee. Fixed: the On shift now card no longer adds 'Until 4:00 PM' under a range that ends at 4:00 PM. Band links are named by their visible text (axe 2–3 → 0). At 768 a to-do's deadline stays on one line ('By Nov 30, 9:00 AM').",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B1-e-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B1-e-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B1-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B1-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "From 768 the band's 'On shift until 4:00 PM · Customer Support · Main Office' repeats the card under it (EM-025, approved). Jose to decide."
+  ],
+  "endSweep": [
+   "The band's line 'Customer Support · Main Office' ends in an ellipsis at 768 (kit BLive)."
+  ]
+ },
+ {
+  "id": "C1-o",
+  "row": "C1",
+  "page": "Schedule",
+  "section": "Schedule",
+  "note": "Owner's company Schedule: the week grid from 768, the day list on phones, Base scheduled pay. Axe clean, keyboard focus visible, no overflow.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C1-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C1-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C1-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C1-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Open-shift buttons in the week grid ('4 open') are 36px tall at 768 and 1440 (manager-weekly-roster).",
+   "Phone band 'All locations' and More are 40px (kit G88)."
+  ]
+ },
+ {
+  "id": "C1-m",
+  "row": "C1",
+  "page": "Schedule",
+  "section": "Schedule",
+  "note": "Elena's Schedule, the same screen without the pay card. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C1-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C1-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C1-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C1-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Open-shift buttons in the week grid ('4 open') are 36px tall at 768 and 1440 (manager-weekly-roster)."
+  ]
+ },
+ {
+  "id": "C1-l",
+  "row": "C1",
+  "page": "Schedule",
+  "section": "Schedule",
+  "note": "James's Schedule as a Lead: week strip, Confirm this week, open shifts and Coming up. After the merge, G80 (Package F) is gone: nothing overlaps at 390, 768 or 200% text. Axe clean.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C1-l-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C1-l-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C1-l-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C1-l-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Phone band 'Availability' is 40px (kit G88)."
+  ]
+ },
+ {
+  "id": "C1-e",
+  "row": "C1",
+  "page": "Schedule",
+  "section": "Schedule",
+  "note": "James's Schedule as an Employee, same screen. G80 is fixed by Package F and nothing overlaps. Axe clean.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C1-e-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C1-e-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C1-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C1-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Phone band 'Availability' is 40px (kit G88)."
+  ]
+ },
+ {
+  "id": "C2-o",
+  "row": "C2",
+  "page": "Add shift",
+  "section": "Schedule",
+  "note": "Owner's Add shift: Person, Location and Position, Date, Start and End, Shift lead, Note. Solid Save shift with a white Cancel, both 44px. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C2-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C2-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C2-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C2-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Phone band Save is 40px (kit G88).",
+   "On phones the form card sits at 12–378px while the other screens' cards sit at 14.5–375.5px (the shared form-sheet gutter in owner-b-pages.css)."
+  ]
+ },
+ {
+  "id": "C2-m",
+  "row": "C2",
+  "page": "Add shift",
+  "section": "Schedule",
+  "note": "Elena's Add shift, the same form. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C2-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C2-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C2-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C2-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Phone band Save is 40px (kit G88).",
+   "On phones the form card sits at 12–378px while the other screens' cards sit at 14.5–375.5px (the shared form-sheet gutter in owner-b-pages.css)."
+  ]
+ },
+ {
+  "id": "C4-o",
+  "row": "C4",
+  "page": "Edit shift",
+  "section": "Schedule",
+  "note": "Owner's Edit shift on a published shift: 'Published' under the title, the locked location with its reason, and Delete shift under the form. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C4-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C4-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C4-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C4-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Phone band Save is 40px (kit G88).",
+   "On phones the form card sits at 12–378px while the other screens' cards sit at 14.5–375.5px (the shared form-sheet gutter in owner-b-pages.css)."
+  ]
+ },
+ {
+  "id": "C4-m",
+  "row": "C4",
+  "page": "Edit shift",
+  "section": "Schedule",
+  "note": "Elena's Edit shift, the same sheet. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C4-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C4-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C4-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C4-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Phone band Save is 40px (kit G88).",
+   "On phones the form card sits at 12–378px while the other screens' cards sit at 14.5–375.5px (the shared form-sheet gutter in owner-b-pages.css)."
+  ]
+ },
+ {
+  "id": "F1-o",
+  "row": "F1",
+  "page": "Team",
+  "section": "Team",
+  "note": "Owner's Team: search in the band, the filters, the people list and Team tools. On phones the four filters wrap onto two rows by design (G24).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F1-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F1-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F1-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F1-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Filter pills are 36px tall (kit --b-seg-item-h, G88); phone band Add is 40px."
+  ]
+ },
+ {
+  "id": "F1-m",
+  "row": "F1",
+  "page": "Team",
+  "section": "Team",
+  "note": "Elena's Team, the same screen. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F1-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F1-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F1-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F1-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Filter pills are 36px tall (kit --b-seg-item-h, G88); phone band Add is 40px."
+  ]
+ },
+ {
+  "id": "B1W-o",
+  "row": "B1",
+  "page": "Who's working",
+  "section": "Home",
+  "note": "Owner's Who's working (Home › See everyone): Clocked in with Show 2 more, and Clock-ins to check. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B1-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B1-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B1-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B1-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "From 1440 the cards stop at 1108px while the band's controls reach 1376px (a reading width, unlike Team).",
+   "Daniel's 'No clock-out after 12 hours' shows on his row and again in the Clock-ins to check summary."
+  ]
+ },
+ {
+  "id": "B1W-m",
+  "row": "B1",
+  "page": "Who's working",
+  "section": "Home",
+  "note": "Elena's Who's working, the same screen. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B1-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B1-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B1-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B1-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "From 1440 the cards stop at 1108px while the band's controls reach 1376px."
+  ]
+ }
+]

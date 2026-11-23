@@ -136,10 +136,11 @@
 }
 
 /* Recipients: a name never breaks inside a word to make room for Remind; when both don't fit on one line (a narrow phone,
- * 200% text), Remind moves under the name. */
+ * 200% text), Remind moves under the name. Queue review (Nov 23): it stays on the row while the name's longest word fits
+ * beside it (the name took a 12rem basis, so Remind dropped at 390 even at 100% text). */
 @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row:has(> .b-row__trail) { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row > .b-row__hit { flex: 1 1 12rem !important; min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row > .b-row__hit { flex: 1 1 0 !important; min-width: auto !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row > .b-row__trail { margin-left: auto !important; padding-left: 0 !important; flex-basis: auto !important; }
   :is(#c-root, html) .app-shell[data-nv-b] #update-recipients .b-row__tt { overflow-wrap: normal; word-break: normal; }
 }

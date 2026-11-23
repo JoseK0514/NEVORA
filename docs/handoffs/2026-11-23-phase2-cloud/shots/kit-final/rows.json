@@ -1,0 +1,265 @@
+[
+ {
+  "id": "k-home-owner",
+  "row": "Kit",
+  "page": "Home",
+  "section": "Owner",
+  "note": "Pixel-identical to before at 390, 768 and 1440. At 200% text the avatar initials stay in the circle and 'See all' grows with the text.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/home-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/home-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/home-owner-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone 200%",
+    "after": "img/home-owner-390-200pct.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k-team-owner",
+  "row": "Kit",
+  "page": "Team",
+  "section": "Owner",
+  "note": "No layout change; the only difference from before is the bell's unread dot (data timing).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/team-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/team-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/team-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k-schedule-owner",
+  "row": "Kit",
+  "page": "Schedule",
+  "section": "Owner",
+  "note": "No layout change; only the 'Schedule read at' time differs.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/schedule-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/schedule-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/schedule-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k-timecards-owner",
+  "row": "Kit",
+  "page": "Timecards",
+  "section": "Owner",
+  "note": "No layout change; only live clocked minutes differ.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/timecards-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/timecards-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/timecards-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "axe label-content-name-mismatch on 12 team rows at 390 (page markup, not kit)"
+  ]
+ },
+ {
+  "id": "k-payroll-owner",
+  "row": "Kit",
+  "page": "Payroll",
+  "section": "Owner",
+  "note": "No layout change. axe passes the tab strip (G48 confirmed).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/payroll-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/payroll-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/payroll-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "axe label-content-name-mismatch: .b-step--link and .b-link at 390, Prepare row at 768/1440 (page markup)"
+  ]
+ },
+ {
+  "id": "k-settings-owner",
+  "row": "Kit",
+  "page": "Settings",
+  "section": "Owner",
+  "note": "No layout change.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/settings-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/settings-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/settings-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k-home-employee",
+  "row": "Kit",
+  "page": "Home",
+  "section": "Employee",
+  "note": "No layout change; the hours figure is live. The figures' names are now their visible words; axe 0.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/home-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/home-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/home-employee-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone 200%",
+    "after": "img/home-employee-390-200pct.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k-e1-owner",
+  "row": "E1",
+  "page": "Time off requests",
+  "section": "Owner",
+  "note": "The section tabs now have the band painted under them: axe went from 1.08:1 to passing at 768 and 1440; on screen nothing visible moves.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/e1-timeoff-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/e1-timeoff-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/e1-timeoff-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k-whos-manager",
+  "row": "B",
+  "page": "Who's working",
+  "section": "Manager",
+  "note": "Card headings read 'Clocked in 2' to screen readers; drawn the same. Nothing clipped at 200% text.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/whos-working-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/whos-working-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/whos-working-manager-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone 200%",
+    "after": "img/whos-working-manager-390-200pct.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k-l1",
+  "row": "L1",
+  "page": "Device settings and Alerts",
+  "section": "Owner, Employee",
+  "note": "Re-check only: the popover opens at both widths and the red confirmation has white words; every Alerts state fits with no overflow.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-popover-owner-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-popover-owner-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone confirm",
+    "after": "img/l1-confirm-turn-off-employee-390.webp"
+   },
+   {
+    "label": "Desktop confirm",
+    "after": "img/l1-confirm-turn-off-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Popover (fictional 'unavailable' setup state) shows 'Device setup needs attention.' and 'Device setup is unavailable…' one above the other: near-repeat wording"
+  ]
+ }
+]

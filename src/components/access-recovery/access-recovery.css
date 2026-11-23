@@ -247,3 +247,19 @@
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.ar-steps, .ar-ws):has(.ar-under__more:not([hidden])) { margin-bottom: 248px !important; }
   }
 }
+
+/* Queue review (Nov 23, 2026): on a phone Help someone sign in is one card, as from 768: the Employee ID, how you
+ * checked, the security guidance and Make reset link sit inside it (the guidance and the button floated on the canvas). */
+@layer nv-b {
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#ar-1):not(#ar-2):not(#ar-3) .q-page.wc-recovery:not(.ck-recovery) > .wc-content > form.wc-savecard {
+      display: block !important; margin: 0 var(--b-space-16) var(--b-space-20) !important; padding: var(--b-space-4) 0 var(--b-space-16) !important; border-radius: var(--b-radius-card) !important;
+      background: #FFFFFF !important; box-shadow: var(--nvd-card, var(--b-elev-1)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#ar-1):not(#ar-2):not(#ar-3) .q-page.wc-recovery:not(.ck-recovery) > .wc-content > form.wc-savecard :is(.q-fl, .q-list, fieldset) {
+      margin-left: 0 !important; margin-right: 0 !important; border: 0 !important; border-radius: 0 !important; background-color: transparent !important; box-shadow: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#ar-1):not(#ar-2):not(#ar-3) .q-page.wc-recovery:not(.ck-recovery) > .wc-content > form.wc-savecard .q-help {
+      margin: var(--b-space-8) 0 0 !important; padding: 0 var(--b-inset) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#ar-1):not(#ar-2):not(#ar-3) .q-page.wc-recovery:not(.ck-recovery) > .wc-content > form.wc-savecard .wc-savefoot > .q-btn {
+      display: flex !important; width: calc(100% - 2 * var(--b-inset)) !important; margin: var(--b-space-16) var(--b-inset) 0 !important; }
+  }
+}
