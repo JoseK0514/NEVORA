@@ -548,7 +548,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <CorpAvatar name={openItem.card.employeeName} initials={initialsOf(openItem.card.employeeName)}/>
               <span className="c-row__main"><h3 id="cm-tc-sheet-title" className="c-row__title c-row__title--b" tabIndex={-1}>{openItem.card.employeeName}</h3>
                 <span className="c-row__detail"><span>{keepWhole(`${roleOf(openItem.card)?`${roleOf(openItem.card)} · `:''}${rangeText(period)}`)}</span></span></span>
-              {status?<span className="c-tc-sheet__state">{toneOf(openItem)?<BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip>:<BStatusText dot={LIVE_DOT[status.text]}>{status.text}</BStatusText>}</span>:null}
+              {/* Gate check (Nov 23, 2026): with the amber note open, its lines say the status ("Correction awaiting review",
+                * "No clock-out yet"), so the header doesn't repeat it as "Correction waiting" or "Clocked in now". */}
+              {status&&!(openItem.card.issues.length&&tone!=='neutral')?<span className="c-tc-sheet__state">{toneOf(openItem)?<BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip>:<BStatusText dot={LIVE_DOT[status.text]}>{status.text}</BStatusText>}</span>:null}
             </div>
             <CorpStats items={[{label:'Recorded',value:compactHours(openItem.card.recordedNanoseconds)},{label:'Breaks',value:compactHours(openItem.card.breakNanoseconds)},{label:'Clock-ins',value:openItem.card.entries.length}]}/>
           </section>
@@ -560,8 +562,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             // line of the body; a waiting correction keeps its way in as the note's one action (Review B2, NV-133).
             <div className="c-tc-sheet__attn"><BCallout tone="amber" title="Needs attention"
               action={openItem.card.issues.includes('pending_correction')?{label:'Review correction',href:'/app/timecards/corrections'}:undefined}>
-              {openItem.card.issues.map(issue=><p key={issue}>{issueNames[issue]}</p>)}
-              <p>Review the entries and resolve open time or corrections before approval.</p></BCallout></div>:null}
+              {/* Gate check (Nov 23, 2026): the issues are the note; the line on how to clear them before approval is gone. */}
+              {openItem.card.issues.map(issue=><p key={issue}>{issueNames[issue]}</p>)}</BCallout></div>:null}
           <CorpCard id="tc-days" label="Days">
             {days.length?<ul className="c-rows" aria-label="Days with recorded time">{days.map(day=><li key={day.date}><div className="c-row c-tc-day">
               <span className="c-tc-day__date">{day.label}</span>
