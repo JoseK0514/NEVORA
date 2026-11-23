@@ -1,0 +1,82 @@
+[
+ {
+  "id": "F1-ml",
+  "row": "F1",
+  "page": "Team (Daniel, Condado)",
+  "section": "G17 location Manager person page",
+  "note": "Daniel’s scoped Team: Condado people only; each row now opens the person.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F1-ml-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F1-ml-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F4-ml",
+  "row": "F4",
+  "page": "Person at Condado (Daniel)",
+  "section": "G17 location Manager person page",
+  "note": "Sofía Méndez opens for Daniel: role, her Condado location with live state, hours and Shifts. No contact details, pay, time off, restrictions, sign-in or edit.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F4-ml-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F4-ml-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F4-ml-out",
+  "row": "F4",
+  "page": "Person outside Condado (Daniel)",
+  "section": "G17 location Manager person page",
+  "note": "Rosa Marrero (fictional, only at the other location) is refused by the server read: Outside the locations you manage.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F4-ml-out-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F4-ml-out-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F4-ml-edit",
+  "row": "F4",
+  "page": "Edit person (Daniel)",
+  "section": "G17 location Manager person page",
+  "note": "The edit sheet keeps the company-wide closed state.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F4-ml-edit-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F4-ml-edit-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
