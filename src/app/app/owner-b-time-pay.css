@@ -517,7 +517,7 @@
  * column (sized to what is left, for its ellipsis) shrank to one letter. Once the table card is narrow for its text
  * (under 36rem: 576px at the default size, so the default layout is unchanged) names and statuses wrap whole words,
  * the Person column keeps room for a name, the live dot sits beside the status's first line, and the Breaks column
- * steps aside as it does on phones (each person's breaks are in their week; the total stays in the sheet). */
+ * steps aside as it does on phones (each person's breaks are in their week). */
 @layer nv-b {
   @media (min-width: 768px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard:not(#gq1) { container: tc-table / inline-size !important; }
