@@ -70,7 +70,7 @@ Each at 320, 390, 768, 1024 and 1440: 100 views per side, 200 in all.
   - Timecards' running minutes;
   - Employee Home's clock-driven shift card;
   - Owner Home at 768, the same faded card caught at a different point of its entrance animation.
-- **Identical:** every other page and width, including Team, Schedule, Publish, Add shift, Add person, Profile, Time off policies, Clocker recovery, Things to do, Requests and Delete account at 1024. Same for Employee Availability, Schedule, Time and Pick up and swap.
+- **Identical:** every other page and width. At 1024 the Owner pages (Team, Schedule, Publish, Add shift, Add person, Profile, Time off policies, Clocker recovery, Things to do, Requests and Delete account) differ only in the rail badge's 2px above. Employee Availability, Schedule, Time and Pick up and swap are pixel-identical at every width.
 
 **44px probe (reach from the centre, inline text links excepted):**
 
