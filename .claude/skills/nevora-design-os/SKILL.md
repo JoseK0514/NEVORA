@@ -57,7 +57,7 @@ severity, then offer fixes. Don't rewrite the draft unless Jose asks for changes
 
 ## Page done gate (Jose, Nov 22, 2026)
 
-No page goes to Jose until all four hold. The page queue (https://claude.ai/artifact/5eoN27Lf33fN2zckaE8Y1y, mirrored in
+No page goes to Jose until all five hold. The page queue (https://claude.ai/artifact/5eoN27Lf33fN2zckaE8Y1y, mirrored in
 the Reviewed column of `docs/product/page-inventory.md`) marks a page Finished only when Jose says so.
 
 1. **Direction B for real.** Built from the existing Direction B screens and kit (`owner-b`, `employee-b`, `b-kit`, the
@@ -66,5 +66,12 @@ the Reviewed column of `docs/product/page-inventory.md`) marks a page Finished o
 2. **Jose's component picks** (`docs/design/component-picks.md`).
 3. **Every line earns its place.** Each fact once; no line that is always true; no explanation of how the screen works;
    the place a person is working in is always visible, with a filter when they have more than one.
-4. **Checked, with evidence.** 320, 390, 768, 1440 and 200% text, keyboard, axe, before and after, and the Impeccable
+4. **Aligned and no repeated wording (Jose, Nov 23).** List every visible string at 390 and 1440. No fact, count, name,
+   place or label appears twice (band and card, card title and row, heading and button). Text in a card shares one
+   left edge; figures share one right edge with tabular numbers; icons are centred on their first text line; card
+   padding is equal; the band lines up with the cards. Measure edges with `getBoundingClientRect` at every width; 1px
+   off is a bug. Buttons: at most one Solid teal main action per card; buttons in a row are the same height (44px
+   minimum) with their labels centred, equal width or stacked full width on phones, and never wrapped at 320 or 200%
+   text. Nothing is clipped; titles use `text-wrap: balance`.
+5. **Checked, with evidence.** 320, 390, 768, 1440 and 200% text, keyboard, axe, before and after, and the Impeccable
    audit in `references/audit.md`, reported in its format.
