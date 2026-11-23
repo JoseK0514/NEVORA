@@ -98,3 +98,22 @@ approved shot in the package branches.
    B1, B4 phone captures). The approved shots came from the https origin. Not an app regression.
 5. Small targets the sweep saw are the known kit/shell rows from sweep 1 (band back links 32px, 36px segments, 40px
    band buttons); unchanged since approval.
+
+## Pass 2: sections A–E on 2651a312 (kit band titles in rem, 44px phone band button)
+Scope after the lead's split: approved rows in A–E only (F onward went to screens-final). Branch merged `2651a312`
+(merge `5055b394`, clean). One production build (14:38–14:49 UTC), the same 45 page and role pairs from A–E at 390 with
+200% text and 1440, the same harness and data as pass 1, so a pixel diff between the passes isolates what `2651a312`
+changed.
+
+| Check | Result |
+|---|---|
+| axe (A–E, both widths) | Unchanged from pass 1: clean except the pre-existing B3 Employee name finding |
+| Targets, names, overflow | Unchanged (Find cover's differences are because it loaded this time and showed an error last time) |
+| Pixel diff | Only time-driven ("Now", clocks) and load-timing differences, plus **B1 Home (location Manager) at 200% text** |
+
+**B1 Home, location Manager, 390 with 200% text: changed since approval.** The band headline ("Checking today…")
+now scales with the text size: about twice its approved size, two lines, pushing the figures down. "Good morning,
+Daniel" above it doesn't scale, so the two no longer match. Nothing overflows or clips. The change comes from the kit
+commit in `2651a312`, not the page. Whether big band titles should scale fully at 200% is a kit and design call, so I
+left it. Captures: `img/B1-mgr-approved-390-t200.webp` (approved), `img/B1-mgr-loc-390-t200-before-2651a312.webp`,
+`img/B1-mgr-loc-390-t200-after-2651a312.webp`. At 1440 nothing changed.
