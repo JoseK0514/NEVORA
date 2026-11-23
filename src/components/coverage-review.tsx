@@ -112,11 +112,20 @@ export function CoverageReview(props: CoverageReviewProps) {
     <CorpNav back={{ href: props.backHref, label: "Coverage" }} title="Review replacement" titleId="review-title" phoneOnly />
     <CorpTitle title="Review replacement" wide />
     {card}
-    {saves ? <ConfigurationForm action={props.action} className="c-review__form">
+    {saves ? <ConfigurationForm action={props.action} className="c-review__form" holdAfterUnconfirmed unconfirmedCheck={unconfirmedCheck(props.mode === "publish", props.backHref)}>
       {Object.entries(props.hidden).map(([name, value]) => <input type="hidden" name={name} value={value} key={name} />)}
       {actions}
     </ConfigurationForm> : <div className="c-review__form">{actions}</div>}
   </CorpPage>;
+}
+
+/** G58 (Nov 23, 2026): a lost or failed reply doesn't say whether the replacement was saved. Say so, lock the button
+ * (a second press can't tell either), and check Find cover, which shows the shift as it is now. */
+export function unconfirmedCheck(publishes: boolean, href: string) {
+  return { title: publishes
+    ? "This change could not be confirmed. It may already be published; check coverage before you publish again."
+    : "This change could not be confirmed. It may already be saved; check coverage before you save again.",
+  label: "Check coverage", href };
 }
 
 /** One fact of the change: a bold icon on the first text line, the value, and a hidden name for screen readers. */

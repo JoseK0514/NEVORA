@@ -16,6 +16,7 @@ rs.mock('react',  () => ({ ...rstestOriginal0, useState: (initial: unknown) => {
 } }));
 import { ConfigurationForm, type ConfigurationResult } from './configuration-form';
 import { ShiftReviewRecovery } from './shift-review-recovery';
+import { resetServerActionFlight, serverActionRunning, serverActionsStarted } from '@/lib/server-action-flight';
 
 const NativeFormData = FormData;
 beforeEach(() => {
@@ -112,4 +113,34 @@ it('a redirect thrown by the action is navigation: no note, and nothing rethrown
   await expect(submitShift(mount(redirect, 'v1'), shift)).resolves.toBeUndefined();
   const form = mount(redirect, 'v1');
   expect(form.props.children.some((child: unknown) => child && typeof child === 'object' && 'props' in child && (child as { props: { className?: string } }).props.className === 'form-result')).toBe(false);
+});
+
+// G58 (Nov 23, 2026): the scoped read frame must not discard a Server Action's redirect while its reply is slow, so the
+// form marks its action in flight from submit until it settles, a redirect included.
+it('marks its Server Action in flight until it settles, a redirect included', async () => {
+  resetServerActionFlight();
+  const seen: boolean[] = [];
+  const redirected = async () => { seen.push(serverActionRunning()); const error = new Error('NEXT_REDIRECT') as Error & { digest: string }; error.digest = 'NEXT_REDIRECT;push;/app/schedule/coverage?saved=1;303;'; throw error; };
+  await submitShift(mount(redirected, 'v1'), shift);
+  expect(seen).toEqual([true]);
+  expect(serverActionRunning()).toBe(false);
+  hooks.slots = [];
+  await submitShift(mount(lostReply, 'v1'), shift);
+  expect(serverActionRunning()).toBe(false);
+  expect(serverActionsStarted()).toBe(2);
+});
+
+it('a form that names its own check (Review replacement) shows that note and link after a lost reply, and holds', async () => {
+  hooks.slots = [];
+  const check = { title: 'This change could not be confirmed. It may already be published; check coverage before you publish again.', label: 'Check coverage', href: '/app/schedule/coverage?x=1&refresh=1' };
+  let calls = 0;
+  const action = async (): Promise<ConfigurationResult> => { calls++; throw new TypeError('Failed to fetch'); };
+  const held = () => { hooks.index = 0; return (ConfigurationForm as (props: Record<string, unknown>) => ReturnType<typeof ConfigurationForm>)({ action, children: null, holdAfterUnconfirmed: true, unconfirmedCheck: check }); };
+  await submitShift(held(), shift);
+  const note = callout(held());
+  expect(note.props.tone).toBe('amber');
+  expect(note.props.title).toBe(check.title);
+  expect(note.props.action).toEqual({ label: 'Check coverage', href: check.href });
+  await submitShift(held(), shift);
+  expect(calls).toBe(1);
 });

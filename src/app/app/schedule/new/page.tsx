@@ -75,9 +75,11 @@ export default async function NewShiftPage({
       <CorpPage className="c-cover c-page--narrow" labelledBy="review-title">
         <CorpNav back={{ href: source.data.href, label: "Coverage" }} title="Coverage changed" titleId="review-title" phoneOnly />
         <CorpTitle title="Coverage changed" wide />
-        <CorpCard label="Nothing was saved">
+        {/* G58 (Nov 23, 2026): this page can't know who changed the shift; after a slow Publish it was the person's own
+          * save. So no "Nothing was saved" and no "Someone": only what is true either way. */}
+        <CorpCard>
           <CorpBody>
-            <p className="c-cover__text">Someone changed this shift after you opened the review.</p>
+            <p className="c-cover__text">This shift was updated after you opened the review.</p>
             <CorpButtonLink href={source.data.href} full>Open current review</CorpButtonLink>
           </CorpBody>
         </CorpCard>

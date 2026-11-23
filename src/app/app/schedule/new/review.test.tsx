@@ -79,6 +79,10 @@ it("a stale selection removes the save action and keeps a trusted refresh path",
   state.read.mockRejectedValue(new CoverageRepairConflictError());
   const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "stale-review" }) }));
   expect(html).toContain("Coverage changed");
+  // G58: after a slow Publish this page renders after the person's own save, so it claims neither side.
+  expect(html).toContain("This shift was updated after you opened the review.");
+  expect(html).not.toContain("Nothing was saved");
+  expect(html).not.toContain("Someone");
   expect(html).toContain("Open current review");
   expect(html).toContain("refresh=1");
   expect(html).not.toContain("Publish change");

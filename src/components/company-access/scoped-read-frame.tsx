@@ -11,6 +11,7 @@ import {BRouteLoading} from '../owner-b/b-loading';
 import {ScopedRefreshContext} from './scoped-refresh';
 import {OPERATIONAL_RETRY_EVENT} from './use-operational-navigation';
 import {announceOfflineHeld,steppedAway} from '@/lib/offline-hold';
+import {serverActionRunning,serverActionsStarted} from '@/lib/server-action-flight';
 
 export type ScopedObservation={authority:string;observedAt:string;validForMs:number};
 type CurrentAuthority=Extract<OperationalAuthorityView,{state:'ready'}>&{requestStartedAt:number};
@@ -37,8 +38,13 @@ function noteFence(current:CurrentAuthority){
 }
 function retireTab(){tab.retiredAt=performance.now();tab.cutoff=null;tab.fence=null;}
 /** The proactive refresh re-renders only this page (a same-address replace), so the router cache of other pages, and
- * the tabs' prefetches, survive; router.refresh() emptied it every ~10 s and every tab re-rendered in the background. */
-function refreshPage(router:{replace:(href:string,options?:{scroll?:boolean})=>void;refresh:()=>void},version?:{current:string},href=window.location.pathname+window.location.search+window.location.hash){
+ * the tabs' prefetches, survive; router.refresh() emptied it every ~10 s and every tab re-rendered in the background.
+ * G58 (Nov 23, 2026): a replace is a navigation, and Next discards a Server Action still at the head of its queue when a
+ * navigation starts (its redirect never happens). With 8.5 s replies a Publish landed back on its review, re-rendered
+ * after the write as "Coverage changed". After an action started on this page (`afterAction`), refresh instead: Next
+ * queues a refresh behind the action, so the action's redirect, or its re-render, lands first. */
+function refreshPage(router:{replace:(href:string,options?:{scroll?:boolean})=>void;refresh:()=>void},version?:{current:string},href=window.location.pathname+window.location.search+window.location.hash,afterAction=false){
+ if(afterAction){router.refresh();return;}
  const before=version?.current;
  router.replace(href,{scroll:false});
  // A page that came from a prefetch can be answered from the router cache (kept for minutes) with no new render. If no
@@ -75,6 +81,9 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const required=useRef(true),latest=useRef(-Infinity),retiredThrough=useRef(-Infinity),proactiveVersion=useRef('');
  const anchor=useRef<CurrentAuthority|null>(null);
  const observationRef=useRef(observation),versionRef=useRef('');
+ // G58: Server Actions started before this page rendered; a later one (or one still running) makes refreshes queue.
+ const actionBaseline=useRef(serverActionsStarted());
+ const afterAction=()=>serverActionRunning()||serverActionsStarted()!==actionBaseline.current;
  // Explicit recovery uses a fresh authority read; a stalled navigation also needs a source navigation to preempt it.
  const explicitRefresh=useRef(false),explicitSource=useRef<string|null>(null);
  // Offline with the person still here (review B2, NV-001): the page they loaded stays, read-only, until they reconnect
@@ -103,7 +112,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
     const key=JSON.stringify([current.authority,current.observedAt,current.requestStartedAt]);
     // A refresh waits behind an unfinished Server Action. A same-page replace
     // fetches fresh dynamic data while discarding that action's stale router result.
-    if(lastRefresh!==key){lastRefresh=key;if(explicitRefresh.current){explicitRefresh.current=false;const source=explicitSource.current;explicitSource.current=null;if(source!==null)refreshPage(router,versionRef,source);else router.refresh();}else if(anchor.current)refreshPage(router,versionRef);else router.refresh();}
+    if(lastRefresh!==key){lastRefresh=key;if(explicitRefresh.current){explicitRefresh.current=false;const source=explicitSource.current;explicitSource.current=null;if(source!==null)refreshPage(router,versionRef,source);else router.refresh();}else if(anchor.current)refreshPage(router,versionRef,undefined,afterAction());else router.refresh();}
    }
   },async signal=>{
    requestStartedAt=performance.now();
@@ -136,7 +145,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    anchor.current=current;required.current=false;controller.pause();setRecovery({required:false,view:null});
   }
   controls.current={recover,pause,complete};
-  const resume=navigation?.subscribe(()=>{if(!active||!online())return;if(required.current)recover(false);else if(deferredRefresh.current){deferredRefresh.current=false;refreshPage(router,versionRef);}});
+  const resume=navigation?.subscribe(()=>{if(!active||!online())return;if(required.current)recover(false);else if(deferredRefresh.current){deferredRefresh.current=false;refreshPage(router,versionRef,undefined,afterAction());}});
   const visibility=()=>{if(document.visibilityState==='hidden')pause();else recover();};
   document.addEventListener('visibilitychange',visibility);
   for(const event of ['blur','pagehide'])window.addEventListener(event,pause);
@@ -183,14 +192,16 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    if(required.current&&recovery.view)controls.current?.complete(recovery.view);
    setBody({authority:observation!.authority,phase:'ready',content:children});
    viewDeadline.current=performance.now()+remaining;
-   early=setTimeout(()=>{if(!online())return;if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router,versionRef);}},remaining*.65);
+   early=setTimeout(()=>{if(!online())return;if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router,versionRef,undefined,afterAction());}},remaining*.65);
    expiry=setTimeout(()=>controls.current?.recover(false),remaining);
   });
   return()=>{active=false;if(early)clearTimeout(early);if(expiry)clearTimeout(expiry);};
  },[version,observed,duration,observation,children,recovery,router,navigation]);
 
  // Effects run before any microtask, so the mount check (queued in the controller effect) reads this page's observation.
- useEffect(()=>{observationRef.current=observation;versionRef.current=version;},[observation,version]);
+ // A page rendered after every started action has settled is the new baseline (the action's re-render, or a refresh
+ // queued behind it); while one still runs, the older baseline keeps refreshes queued.
+ useEffect(()=>{observationRef.current=observation;versionRef.current=version;if(!serverActionRunning())actionBaseline.current=serverActionsStarted();},[observation,version]);
  const refreshCurrent=()=>{
   // NAVIGATE preempts Next's pending queue; REFRESH waits behind it. Capture the accepted source before discarding.
   explicitSource.current=navigation?.current()?.source??null;
