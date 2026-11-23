@@ -185,8 +185,8 @@ export default async function SchedulePage({
         ? <span className={b ? "b-date" : "c-sched-place"}><MapPinIcon size={15} weight="bold" aria-hidden="true" /><span className="sr-only">Location: </span>{placeName}</span>
         : <ActionMenu id={b ? "b-scoped-location-menu" : "scoped-location-menu"} label="Location" title="Location" ariaLabel={`Location: ${placeName}`} align="end"
             triggerClassName={b ? "b-btn b-btn--glass" : "c-select-btn c-sched-loc"} triggerContent={<>{b ? <MapPinIcon size={15} weight="bold" aria-hidden="true" /> : null}{placeName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>
-            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=all`}><strong>All your locations</strong></Link>
-            {data.locations.map(l => <Link key={l.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(l.id)}`}><strong>{l.shortName || l.name}</strong></Link>)}
+            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=all`} aria-current={selected ? undefined : "page"}><strong>All your locations</strong></Link>
+            {data.locations.map(l => <Link key={l.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(l.id)}`} aria-current={selected?.id === l.id ? "page" : undefined}><strong>{l.shortName || l.name}</strong></Link>)}
           </ActionMenu>;
       const scopedTodayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
       const marketplace = (await currentPresentation()).modules.marketplace;
