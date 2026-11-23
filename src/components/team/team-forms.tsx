@@ -5,6 +5,7 @@ import { useId, useState, type ReactNode } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { phoneTyping } from "./phone";
+import { normalizePhoneNumber } from "@/lib/phone";
 
 /* Team forms on the corporate kit (boards O-AddEmployee, O-AddEmployeePay, O-EditEmployee). Presentation only: every
  * control keeps the field name and constraints its form's command reads. */
@@ -29,18 +30,22 @@ export function FormHeadBack({ onClick, children }: { onClick: () => void; child
 }
 
 /** The mobile phone field: "(787) 555-0142" while typed; the form's command saves it as 787-555-0142. */
-export function PhoneField({ id, name, defaultValue = "", required, autoComplete, enterKeyHint, missing }: { id: string; name: string; defaultValue?: string; required?: boolean; autoComplete?: string; enterKeyHint?: "next" | "done";
+export function PhoneField({ id, name, defaultValue = "", required, autoComplete, enterKeyHint, missing, preserveLegacy = false }: { id: string; name: string; defaultValue?: string; required?: boolean; autoComplete?: string; enterKeyHint?: "next" | "done";
   /** The sentence shown when it is left empty (form-validation.tsx reads data-missing). */
-  missing?: string }) {
-  const [value, setValue] = useState(() => phoneTyping(defaultValue));
-  return <input id={id} className="c-in" name={name} type="tel" inputMode="tel" autoComplete={autoComplete} enterKeyHint={enterKeyHint} value={value} required={required}
-    placeholder="(787) 555-0123" maxLength={14} pattern="\(\d{3}\) \d{3}-\d{4}" title="Enter all 10 digits of the phone number" data-missing={missing}
+  missing?: string; preserveLegacy?: boolean }) {
+  const [legacy] = useState(() => preserveLegacy && normalizePhoneNumber(defaultValue) === null ? defaultValue : null);
+  const [value, setValue] = useState(() => legacy ?? phoneTyping(defaultValue));
+  const unchangedLegacy = legacy !== null && value === legacy;
+  return <input id={id} className="c-in" name={name} type="tel" inputMode="tel" autoComplete={autoComplete} enterKeyHint={enterKeyHint} value={value} required={required && !unchangedLegacy}
+    placeholder="(787) 555-0123" maxLength={14} pattern={unchangedLegacy ? undefined : String.raw\`\(\d{3}\) \d{3}-\d{4}\`} title="Enter all 10 digits of the phone number" data-missing={missing}
     onChange={event => {
       const next = event.target.value;
       const digits = (text: string) => text.replace(/\D/g, "");
       // Deleting a bracket, space or dash removes the digit before it, so Backspace never sticks.
       const deleted = next.length < value.length && digits(next) === digits(value);
-      setValue(phoneTyping(deleted ? digits(next).slice(0, -1) : next));
+      const typed = deleted ? digits(next).slice(0, -1) : next;
+      const formatted = phoneTyping(typed);
+      setValue(legacy !== null && formatted === phoneTyping(legacy) && /^\d[\d() .-]*$/.test(legacy) ? legacy : formatted);
     }} />;
 }
 

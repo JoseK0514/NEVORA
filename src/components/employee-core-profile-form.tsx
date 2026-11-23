@@ -95,7 +95,7 @@ function EmployeeCoreProfileEditor({employee,locations,actorRole,ownerScope=null
         <CorpField label="First name" htmlFor="edit-first"><input id="edit-first" className="c-in" name="firstName" defaultValue={employee.firstName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing="Enter a first name" /></CorpField>
         <CorpField label="Last name" htmlFor="edit-last"><input id="edit-last" className="c-in" name="lastName" defaultValue={employee.lastName} autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing="Enter a last name" /></CorpField>
       </div>
-      <CorpField label="Mobile phone" htmlFor="edit-phone"><PhoneField id="edit-phone" name="phone" defaultValue={employee.phone} autoComplete="off" enterKeyHint="next" required missing="Enter a mobile phone number" /></CorpField>
+      <CorpField label="Mobile phone" htmlFor="edit-phone"><PhoneField id="edit-phone" name="phone" defaultValue={baseline.employee.phone} preserveLegacy autoComplete="off" enterKeyHint="next" required missing="Enter a mobile phone number" /></CorpField>
       <CorpField label="Email (optional)" htmlFor="edit-email"><input id="edit-email" className="c-in" name="email" type="email" inputMode="email" defaultValue={employee.email ?? ""} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" maxLength={254} placeholder="name@example.com" /></CorpField>
       <div className="c-field__row">
         <CorpField label="Role" htmlFor="edit-role"><select id="edit-role" className="c-in" name="role" value={role} required onChange={event=>setRole(event.target.value as UserRole)}>
