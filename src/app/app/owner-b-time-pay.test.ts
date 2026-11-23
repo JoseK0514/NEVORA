@@ -128,3 +128,12 @@ describe("Jose's review of the person's week and the review panel (Nov 23, 2026)
     expect(css).toMatch(/\.c-tc-flow :is\(\.c-tc-flow__step, \.c-tc-flow__rows, \.c-tc-flow__all\)[^{]*\{ width: 100% !important; max-width: none !important; \}/);
   });
 });
+
+describe('Select and review on the Direction B kit (Nov 23, 2026)', () => {
+  it('lays the set out as kit rows and puts the two buttons on the card edges', () => {
+    expect(css).toMatch(/\.b-tc-flow \.b-tc-flow__row:not\(#gq1\)[^{]*\{ display: flex !important; align-items: center !important; justify-content: space-between !important;/);
+    expect(css).toMatch(/\.b-tc-flow \.b-tc-flow__foot:not\(#gq1\)[^{]*\{ display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important;[^}]*padding: var\(--b-space-12\) var\(--b-inset\) var\(--b-space-16\) !important;/);
+    expect(css).toMatch(/\.b-tc-flow \.b-tc-flow__foot > \.b-btn:not\(#gq1\)[^{]*\{ min-height: var\(--b-target\) !important;/);
+    expect(css).toMatch(/\.b-tc-pick:not\(#gq1\)[^{]*\{ display: flex !important; align-items: center !important; gap: var\(--b-space-12\) !important;/);
+  });
+});

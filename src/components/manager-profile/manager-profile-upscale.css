@@ -32,9 +32,9 @@
   } }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who h1:not(#nvd-none) { overflow-wrap: anywhere; }
   @layer nv-b {
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who h1:not(#nvd-none) { font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: #FFFFFF !important; } }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who h1:not(#nvd-none) { font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: #FFFFFF !important; } }
   @layer nv-b {
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who p:not(#nvd-none) { margin: 2px 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2, rgb(255 255 255 / .86)) !important; } }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who p:not(#nvd-none) { margin: 2px 0 0 !important; font-size: 0.875rem !important; line-height: 1.1875rem !important; color: var(--b-on-band-2, rgb(255 255 255 / .86)) !important; } }
   @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who .q-av:not(#nvd-none) { width: 52px !important; height: 52px !important; border-radius: 26px !important; background: #FFFFFF !important; color: #0B6E69 !important; font-size: 18px !important; font-weight: 700 !important; box-shadow: none !important; } }
   @layer nv-b {
