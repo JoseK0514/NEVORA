@@ -143,7 +143,7 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
     <BHero back={back ? { href: "/app", label: c.home } : undefined} title={c.title} titleId="b-todo-title"
       // Phase 8 (a.md #27): each fact on the band stays whole, so the line breaks only between facts (never "to approve"
       // alone). Final regression review: the kit's facts line (BSegs), so at 320 no line ends on the dot either.
-      sub={needs === null ? undefined : <><BSegs parts={[needs, timecards ? c.timecardsToApprove(timecards).replace(/ /g, "\u00a0") : null]} /><span role="status" className="b-sr">{statusLine}</span></>}>
+      sub={needs === null ? undefined : <><BSegs parts={[needs, timecards ? (lang === "es" ? c.timecardsToApprove(timecards) : c.timecardsToApprove(timecards).replace(/ /g, "\u00a0")) : null]} /><span role="status" className="b-sr">{statusLine}</span></>}>
       {families.length ? <BSeg label={c.show} items={[
         // Review F5 (NV-103): each count is the segmented control's count pill. Batch nav gate and final fixes K: the name is
         // the visible words with CorpCount's spoken space ("All 13"), never an aria-label.
@@ -210,7 +210,7 @@ function GroupCard({ group, items, staffing, checked, quiet, w }: { group: Group
         // place and the need are the facts under it ("Today · Calle Loíza · Needs 1"). The day sat in the title and broke
         // after "Today," on a phone, alone on the first line. Every width writes the full range (BWhen, Nov 23).
         const parts = (row.detail ?? "").split(" · ").map(part => part.replace(/Needs[\s\u00a0](\d+)[\s\u00a0](person|people)/, (_, n: string) => c.needs(n)));
-        return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={<span className="b-keep"><BWhen text={clockIn(lang, row.title)} /></span>} sub={<BSegs parts={parts} />} href={row.href}
+        return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={<span className={lang === "es" ? undefined : "b-keep"}><BWhen text={clockIn(lang, row.title)} /></span>} sub={<BSegs parts={parts} />} href={row.href}
         trail={<BButtonLink href={row.href} kind="ghost" label={c.findCoverFor(clockIn(lang, row.title))}>{c.findCover}</BButtonLink>} />;
       }
       // Approved leave over a published shift: the schedule's job ("Fill Maria Rivera’s shift"), no Approve or Decline.

@@ -119,7 +119,7 @@ const es: OwnerBCopy = {
     thingsToDo: "Pendientes", didntLoad: "No pudimos cargar Pendientes", checkConnection: "Revisa tu conexión e inténtalo de nuevo.", tryAgain: "Intentar de nuevo",
     updatesReconnect: "Se actualiza cuando vuelvas a conectarte.", updatesBack: "Se actualiza cuando regreses.", signInAgain: "Inicia sesión otra vez para ver lo que te espera.",
     noAccess: "No tienes acceso a Pendientes. Pídeselo al dueño si lo necesitas.", checkingNeeds: "Revisando lo que te espera…",
-    coverOne: "Cubrir un turno disponible", coverMany: "Cubrir turnos disponibles", next: "Próximo: ", nextToday: "hoy, ",
+    coverOne: "Cubrir un turno dispo\u00adnible", coverMany: "Cubrir turnos dispo\u00adnibles", next: "Próximo: ", nextToday: "hoy, ",
     findCover: "Cubrir", findCoverFor: what => `Cubrir: ${what}`,
     fillShift: "Asignar turno", fillPersonShift: name => `Asignar el turno de ${name}`, fillMany: n => `Asignar ${plural(n, "turno", "turnos")} por días libres aprobados`,
     fillManyLabel: n => `Turnos por asignar por días libres aprobados, ${n}`,

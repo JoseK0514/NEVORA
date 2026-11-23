@@ -65,7 +65,7 @@ it("renders Home in English as before, and in Puerto Rico Spanish when the perso
   for (const words of ["Clocked in", "Not clocked in", "Open shifts", "Things to do", "Cover an open shift", "Find cover", "Add shift", "Send update", "Today", "This week", "Shifts by day", "Scheduled payday"])
     expect(en).toContain(words);
   const es = home("es");
-  for (const words of ["En turno", "Sin marcar entrada", "Turnos dispo\u00adnibles", "Pendientes", "Cubrir un turno disponible", "Cubrir", "Añadir turno",
+  for (const words of ["En turno", "Sin marcar entrada", "Turnos dispo\u00adnibles", "Pendientes", "Cubrir un turno dispo\u00adnible", "Cubrir", "Añadir turno",
     "Enviar aviso", "Días libres", "Hoy", "Esta semana", "Turnos por día", "Día de pago programado", "Buenas tardes, Daniel", "a. m."])
     expect(es).toContain(words);
   const pay = home("es", { week: { ...week, payrollHref: "/app/payroll" } });
