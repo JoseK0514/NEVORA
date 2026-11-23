@@ -394,5 +394,89 @@
   ],
   "blocking": [],
   "endSweep": []
+ },
+ {
+  "id": "t44-tabs",
+  "row": "Target size",
+  "page": "Timecards week control, Payroll tabs",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "The band's tabs keep their 36px look; a tap anywhere in the 44px track (4px above and below) now reaches the tab.",
+  "shots": [
+   {
+    "label": "Desktop",
+    "before": "img/t44-timecards-owner-1440-before.webp",
+    "after": "img/t44-timecards-owner-1440-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone",
+    "before": "img/t44-timecards-owner-390-before.webp",
+    "after": "img/t44-timecards-owner-390-after.webp"
+   },
+   {
+    "label": "Desktop",
+    "before": "img/t44-payroll-owner-1440-before.webp",
+    "after": "img/t44-payroll-owner-1440-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "t44-formhead",
+  "row": "Target size",
+  "page": "Add person (form head back link)",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "\"‹ Team\" looks the same; its tap area is now 44px tall.",
+  "shots": [
+   {
+    "label": "Desktop",
+    "before": "img/t44-employees-new-owner-1440-before.webp",
+    "after": "img/t44-employees-new-owner-1440-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "t44-explain",
+  "row": "Target size",
+  "page": "Schedule (What this measures)",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "The 44px ring around \"What this measures\" was sitting half above the button; it is centred now. Nothing drawn changes.",
+  "shots": [
+   {
+    "label": "Phone",
+    "before": "img/t44-schedule-owner-390-before.webp",
+    "after": "img/t44-schedule-owner-390-after.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "t44-checkbox",
+  "row": "Target size",
+  "page": "Timecards, Select",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "Each review checkbox's tap area is 44px wide on desktop (it was 32); the box stays where it was.",
+  "shots": [
+   {
+    "label": "Desktop",
+    "after": "img/t44-timecards-lastweek-select-owner-1440-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Payroll history link (Payroll, tablet and desktop) measures 41px tall",
+   "Schedule grid: open-shift chips are 36px tall and the empty cell's \"+ Add\" 24px tall from 768px (not in this round's list)"
+  ]
  }
 ]

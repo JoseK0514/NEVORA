@@ -113,3 +113,29 @@ The lead asked me to fix these rows too. I merged the shared tip first (`49487fc
 **Checks before the push:** tsc passes; oxlint has 0 errors; the whole `src/components` suite has 3245 passed and 0 failed; and `ds-pages-text-rem.test.ts` plus `kit-text-rem.test.ts` pass.
 
 New shots are in `shots/ds-pages/img/k-*`, with rows DS-14, DS-16, DS-17/18 and DS-19 in `rows.json`.
+
+## Follow-up: 44px targets for the first release (lead, Nov 23)
+I merged the shared tip first (`4a629582`). Code: `dd3c6d56`.
+
+Each control's tap area was measured in a production build at 390, 768, 1024 and 1440: from the control's centre, how
+far a tap still lands on it (`elementFromPoint`, a tap on its label counts). Before was measured on `4a629582`, after on
+`dd3c6d56`.
+
+| Target | Before | Change | After |
+|---|---|---|---|
+| Timecards week control ("This week", "Last week", "Earlier") | 36px tall from 768px | On desktop, the band's tab rules hid the tabs' `::after`. It's now a transparent ring reaching the track's 4px padding above and below (36 + 8 = 44). Covers `nav.c-pay-tabs`, `nav.c-seg` and `.c-tc-seg` in the band (`owner-b-desktop.css`) | 44px tall |
+| Payroll tabs | 36px tall from 768px | Same rule | 44px tall |
+| Form-head back link ("‹ Team") | 32px tall from 768px | Transparent `::after`, 44px tall and centred, for every pointer type. Touch screens already had one (`owner-b-shell.css`) | 44px tall |
+| "What this measures", the icon-only button at 390 | 36×36 | The ring was already meant to be 44px (`inset: -4px`), but the kit's `.b-btn::after` translate (-50%) moved it half above the button. It's now centred, and that works whether or not the build keeps a `translate: none` override | 44×44 |
+| "What this measures", the labelled button | 36px tall, 44px ring | Same fix | 44px tall |
+| Timecards review checkboxes (Select, desktop table) | 32×44: the label was the cell's 48px minus its 16px padding | `.c-tc-desk .c-tc-hit` is 44px wide, extending 12px into the cell's left padding, so the box doesn't move (`timecards-corp.css`) | ≥44×44 at 768, 1024 and 1440 |
+
+- **Phones:** the review checkbox sits inside its row's `<label>`, so the whole row is the tap area. This was already true and is covered by a test.
+- **Default look:** nothing drawn changed; the rings are transparent pseudo-elements.
+- **Default-size pixel diff:** 390 is identical for Add person, Payroll and Timecards last week. Every other difference is clock-driven fixture data: hours, counts, the bell, Insights figures, and the before run's "Last week", whose rows hadn't loaded yet. Each one was checked by eye.
+- **Checks:** tsc passes; oxlint has 0 errors; the whole `src/components` suite has 3257 passed and 0 failed; `target-size-44-desk.test.ts` (new), `target-size-44.test.ts` and `ds-pages-text-rem.test.ts` pass.
+- **Shots:** `shots/ds-pages/img/t44-*` (before and after).
+
+Found but not in this round's list (proposed rows):
+- The Payroll history link is 41px tall at 768px and wider.
+- The Schedule grid's open-shift chips are 36px tall, and the empty cell's "+ Add" is 24px tall, from 768px.
