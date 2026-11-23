@@ -18,6 +18,10 @@
   /* A card's one grey note, as its footer: the card's text edge, 12px above, 16px below. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card .c-setb-cardnote:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { margin: 0 !important; padding: var(--b-space-12) var(--b-inset) var(--b-space-16) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; font: 400 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", -apple-system, sans-serif !important; color: var(--b-grey) !important; }
 
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card .c-setb-cardnote:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+
   /* A switch row and a radio row: the whole row is the target; the control sits where the chevron would. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb :is(.c-setb-switch, .c-setb-radio):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { cursor: pointer !important; gap: var(--b-space-12) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb :is(.c-setb-switch, .c-setb-radio)[data-disabled]:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { cursor: default !important; }
