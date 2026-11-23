@@ -3,7 +3,6 @@ import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-import { waitForD2RscQuiescence } from '../../../scripts/d2-foreground-recovery.mjs';
 import { createOwnedNextApp } from './owned-next-app';
 import { seedOwnedApp, assignOwnedManagerCompanyAccess, TEST_PASSWORD } from './owned-app-fixture';
 import { fixtureProof } from './shift-change-api';
@@ -62,19 +61,18 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce' });
         const page = await context.newPage(); page.setDefaultTimeout(20000);
         const pendingRouterRequests = new Set<object>();
-        let requestVersion = 0;
         page.on('request', (request: { url(): string; headers(): Record<string, string> }) => {
           const headers = request.headers();
           const url = new URL(request.url());
           if (url.origin === app.url && (url.pathname.startsWith('/api/') || headers.rsc === '1' || headers['next-action'])) {
-            pendingRouterRequests.add(request); requestVersion++;
+            pendingRouterRequests.add(request);
           }
         });
         for (const event of ['requestfinished', 'requestfailed']) {
           page.on(event, (request: object) => pendingRouterRequests.delete(request));
         }
         const pause = async () => {
-          await waitForD2RscQuiescence(() => ({ pending: pendingRouterRequests.size, version: requestVersion }), performance.now() + 20000);
+          await expect.poll(() => pendingRouterRequests.size, { timeout: 20000 }).toBe(0);
           await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
         };
         const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(app.url + path); };
@@ -155,7 +153,8 @@ it('connects original shift reviews and explicit period history in owned Chromiu
           expect(await q('SELECT manifest_hash FROM payroll_period_manifests WHERE id=$1', [manifest.id])).toEqual(originalArtifact);
           checks.push(`${engine}: 1001 real events, explicit 50-row pages, complete traversal, unchanged artifact hash, blur retirement`);
         }
-        await pause(); await context.unrouteAll({behavior:'wait'}); await context.close();
+        await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+        await context.unrouteAll({behavior:'wait'}); await context.close();
       }
     }
     expect(errors).toEqual([]); complete = true;
