@@ -214,7 +214,9 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
  const anotherExport=()=>{setResult(null);setNotice('');setTimeout(()=>document.getElementById('time-export-send')?.focus(),0);};
  return <div className={`c-page c-payroll c-pay c-exp c-page--narrow${payroll?'':' c-exp--time'}`} data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
   <CorpNav back={payroll?{href:'/app/payroll',label:'Payroll'}:{href:'/app/timecards',label:'Timecards'}} title="Time exports" phoneOnly/>
-  <CorpTitle id="time-exports-title" title="Time exports" wide/>
+  {/* Phase 2 (G8): with Payroll's tabs (from 768) the band names the section and the selected tab names this page, so
+    * "Time exports" isn't said twice; a Manager without the tabs keeps "Time exports". The phone band is unchanged. */}
+  <CorpTitle id="time-exports-title" title={payroll?'Payroll':'Time exports'} wide/>
   <PayrollTabs items={tabs} current="/app/payroll-export"/>
   <div className="c-field">
    <label className="c-field__label" htmlFor="time-export-period">Week</label>

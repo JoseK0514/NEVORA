@@ -173,9 +173,9 @@ describe('Payroll details documents (R9)', () => {
 });
 
 describe('Payroll tabs and forms', () => {
-  it('leaves Timecards out and calls the Payroll page Payroll', () => {
+  it('leaves Timecards out and calls the runs page Pay runs, under the band title Payroll', () => {
     const tabs = payrollTabs('OWNER', nativeCapabilities);
-    expect(tabs?.map(item => item.label)).toEqual(['Payroll', 'Time exports', 'Payroll settings']);
+    expect(tabs?.map(item => item.label)).toEqual(['Pay runs', 'Time exports', 'Payroll settings']);
   });
   it('names every missing field in one message', () => {
     const field = (name: string) => ({ getAttribute: (key: string) => key === 'aria-label' ? name : null, validity: { valueMissing: true }, validationMessage: '' }) as unknown as HTMLInputElement;
