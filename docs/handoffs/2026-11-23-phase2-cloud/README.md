@@ -4,6 +4,14 @@ Jose approved six extra cloud sessions to finish NEVORA's Phase 2 screen work in
 lead session merges every session's work into `claude-codex-collab-nevora`. Each session owns one package and one work
 branch.
 
+## 2-hour target (Jose, Nov 23, 11:45 UTC): the whole app done by about 14:00 UTC
+- There is no later end sweep for your pages. Fix the end-sweep items from `faster-plan.md` (screen-reader names that
+  differ from visible text, focus rings, targets under 44px, axe findings, contrast, fixed px text) on your own pages
+  now, along with the blocking items. Kit or app-shell fixes still go in your report.
+- Capture AFTER only. Push code as you finish each page, so the lead can merge early; push the shots commit last.
+- Settings pages build on the shared parts on branch `claude-codex-collab-nevora-settings-base`
+  (`src/app/app/settings/settings-b*.tsx`, `settings-b.css`). Additive changes only; say so in the report.
+
 ## Read first
 1. `CLAUDE.md`, `DESIGN.MD`, `.claude/skills/nevora-design-os/SKILL.md` (with its references; the page done gate is at
    the end), `docs/design/voice.md`, `docs/design/component-picks.md`.
@@ -47,6 +55,10 @@ Impeccable audit; blocking items left and why; end-sweep items as proposed ledge
 | Requests and account | `requests-account` | E1 Time off (manager side), F4 Person, F9 Help someone sign in, I1 manager Profile, I6 Delete my account | Redesign (mixed) |
 | Public pages | `batch-public` | A1–A14 signed out and public, English and Spanish | Capture and gate check |
 | Navigation and schedule | `batch-nav` | B2, B4, B5, B9, B10, B11; C5, C6, C11, C13, C14, C15 | Capture and gate check |
+| Time and Team details | `batch-time-team` | D2 Time corrections, D3 Fix someone's time, D4 My time, D5 Clocker recovery; F2 Add person, F3 Import, F5 Pay rate, F6 Restrictions, F7 Time off balance, F8 Clocker PIN | Capture and gate check |
+| Clocker and phone app | `batch-clocker` | K1–K15 Clocker tablet flow and states (production build over the owned https origin, see `tools/ui-scan/README.md`), L1 phone app Alerts | Capture and gate check |
+| Accessibility sweep 1 | `sweep-1` | Payroll G1–G10, Rondo H1–H6, Profile I2–I5 | End sweep |
+| Integration QA | `qa` | The shared branch as packages merge | Regression check |
 
 **Redesign** packages move the page onto real Direction B (match Team `team-b.tsx`, Home `home-b.tsx` and the company
 Schedule: band, cards, rows, fields, buttons) for every role that opens it.
@@ -57,6 +69,16 @@ or cut-off text, older-look parts, time format). Fix blocking problems that sit 
 rest. Also write `shots/<package>/rows.json`: an array of
 `{"id","row","page","section","note","shots":[{"label":"Phone","after":"img/x-390.webp"},{"label":"Tablet","after":"img/x-768.webp"},{"label":"Desktop","after":"img/x-1440.webp","desk":true}],"blocking":[],"endSweep":[]}`
 with one entry per page per role group, `note` in one or two plain sentences for Jose.
+
+**End sweep** packages fix the items `faster-plan.md` defers: screen-reader names that differ from visible text, focus
+rings, targets under 44px, axe findings, contrast and fixed px text sizes. Every width (320, 390, 390 with 200% text,
+768, 1440), axe before and after, no visible change except rings and target sizes.
+
+**Integration QA** doesn't change app code: every 30 minutes, fetch `claude-codex-collab-nevora`; when it moved, run
+typecheck, oxlint, the full unit suite (`node scripts/run-rstest.mjs`), and the readiness browser tests
+(`readiness-ui-browser`, `readiness-shift-concurrency-browser`) on a production build in Chromium and WebKit. Write
+each run to `docs/handoffs/2026-11-23-phase2-cloud/qa/<time>.md` on your branch: new failures, the commit that
+introduced each, and the likely cause. Run until about 17:30 UTC.
 
 Already being handled elsewhere (don't touch): Settings J1–J12; Home, Team directory and Who's working; Timecards and
 the Clocker; the kit and app shell; Employee Home and Schedule, the day view and the shift sheet; Find cover and Review
