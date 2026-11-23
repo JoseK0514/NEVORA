@@ -61,7 +61,8 @@ export function CoverageReview(props: CoverageReviewProps) {
   const shortDate = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
   // An overnight or full-day shift keeps both halves ("12:00 AM – 12:00 AM", then "Ends Tue, Dec 8"); "12–12 AM" was ambiguous.
   const full = `${formatTime(startTime)} – ${formatTime(endTime)}`;
-  const time = overnight ? full : compactRange(full);
+  // Each time stays whole when the row wraps (200% text broke "7:00 | AM"); the line may break only at the dash.
+  const time = (overnight ? full : compactRange(full)).replace(/(\d)[  ]+(AM|PM)\b/g, "$1 $2");
   // Jose (Nov 23, 2026): one fact per row (date, time, place, position), each with its icon, for scanning.
   const position = [props.positionName, props.isDesignatedLead ? "Shift lead" : null].filter(Boolean).join(" · ");
   const warnings = props.warnings;
@@ -87,7 +88,7 @@ export function CoverageReview(props: CoverageReviewProps) {
         <Fact icon={ClockIcon} label="Time" strong>{time}{nextDay ? <span className="c-review__sub">{`Ends ${nextDay.weekday},\u00a0${nextDay.day}`}</span> : null}</Fact>
         <Fact icon={MapPinIcon} label="Place">{props.locationName}</Fact>
         {position ? <Fact icon={BriefcaseIcon} label="Position">{position}</Fact> : null}
-        <Fact icon={HourglassMediumIcon} label="Week hours">{`${durationText(hours.afterMinutes)} this week`}{hours.targetMinutes !== null ? <span className="c-review__muted">{` (target ${durationText(hours.targetMinutes)})`}</span> : null}</Fact>
+        <Fact icon={HourglassMediumIcon} label="Week hours">{`${durationText(hours.afterMinutes)} this week`}{hours.targetMinutes !== null ? <span className="c-review__muted">{` (target ${durationText(hours.targetMinutes).replace(/ /g, " ")})`}</span> : null}</Fact>
       </ul>
     </CorpBody>
     {warnings.length ? <ul className="c-review__checks" aria-label="Before you publish">

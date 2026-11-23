@@ -147,6 +147,10 @@ it("stacks the change as one fact per row: date, time, place, position, week hou
   expect(html).not.toContain("c-review__when");
   // The time is the row a person reads first.
   expect(rows[1]).toContain('class="c-review__value c-review__value--strong"');
+  // Each time and the target stay whole when the row wraps at 200% text: the line breaks only at the dash.
+  const raw = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
+  expect(raw).toMatch(/8:00 PM – 12:00 AM/);
+  expect(raw).toContain("(target 5 h)");
 });
 it("leaves the Position row out when the repair names no position and no lead", async () => {
   state.read.mockResolvedValue({ ...selected, positionName: undefined, isDesignatedLead: false });
