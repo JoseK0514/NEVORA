@@ -113,6 +113,11 @@ const ROLES = ["EMPLOYEE", "LEAD", "MANAGER"] as const;
 
 /** Fix one row where it is. Saving writes the cells back to the list and asks for the check again; nothing is saved to
  * the company from here. */
+/** Package X: whether the Owner has changed a field in the row editor since it opened; its error is then hidden. */
+export function fieldEdited<F extends string>(values: Record<F, string>, start: Record<F, string>, field: NoInfer<F>): boolean {
+  return values[field] !== start[field];
+}
+
 export function RowEditor({ copy, row, locations, errors, busy, onSave, onCancel, onRemove }: {
   copy: RosterImportCopy; row: RosterRow; locations: ImportLocation[]; errors: FieldError[]; busy: boolean;
   onSave: (changes: Partial<Record<RosterField, string>>) => void; onCancel: () => void; onRemove: () => void;
@@ -129,7 +134,9 @@ export function RowEditor({ copy, row, locations, errors, busy, onSave, onCancel
   const first = useRef<HTMLInputElement>(null);
   useEffect(() => { first.current?.focus(); }, []);
   const set = (field: EditorField) => (event: { target: { value: string } }) => setValues(current => ({ ...current, [field]: event.target.value }));
-  const problem = (field: EditorField) => { const found = errors.find(error => editorField(error) === field); return found ? rowProblemText(copy, found, v) : null; };
+  // Package X (live import, Nov 23): a field's error stays until its value changes; once the Owner types a fix, the red line
+  // goes (it stayed until "Save and check again"). The check after Save says whether the new value is right.
+  const problem = (field: EditorField) => { if (fieldEdited(values, start, field)) return null; const found = errors.find(error => editorField(error) === field); return found ? rowProblemText(copy, found, v) : null; };
   function save() {
     const changes: Partial<Record<RosterField, string>> = {};
     for (const field of ["id", "firstName", "lastName", "phone", "email"] as const) if (values[field].trim() !== start[field]) changes[field] = values[field];

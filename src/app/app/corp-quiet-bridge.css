@@ -51,7 +51,7 @@
 :is(#q-root, html) .app-shell[data-nv-corp] .q-row::after, :is(#q-root, html) .app-shell[data-nv-corp] .q-row--av::after { left: 0; background: #EDEEEF; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-rt b { font-size: 15px; line-height: 20px; font-weight: 500; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-rt i { margin-top: 0; font-size: 13px; line-height: 18px; color: #6B7075; letter-spacing: 0; }
-:is(#q-root, html) .app-shell[data-nv-corp] :is(.q-rv, .q-rv--l, .q-rv--ph, .q-rv--ink, .q-rv--go) { font-size: 15px; line-height: 20px; font-weight: 400; letter-spacing: 0; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] :is(.q-rv, .q-rv--l, .q-rv--ph, .q-rv--ink, .q-rv--go) { font-size: 0.9375rem; line-height: 1.25rem; font-weight: 400; letter-spacing: 0; color: #6B7075; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-rv--ink { color: #1A1C1E; font-weight: 500; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-rv--go { color: #0B6E69; font-weight: 600; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-rv--alert { color: #B42318; }

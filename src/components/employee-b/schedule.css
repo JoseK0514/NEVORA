@@ -21,7 +21,7 @@
    * row buttons (Pick up, Review). The three ids outrank the desktop layer's 40px Approve pill (owner-b-desktop.css D6)
    * and stay under the Employee coarse-pointer rule, so a touch screen keeps the 48px floor, as Pick up and Review do. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen:not(#fc1):not(#fc2):not(#fc3) .es-confirm__act :is(.q-bs, .employee-action) { min-height: var(--b-btn-h) !important; height: var(--b-btn-h) !important; padding: 0 var(--b-gutter) !important; border-radius: var(--b-radius-pill) !important; border: 0 !important;
-    background: var(--b-teal) !important; color: #FFFFFF !important; font: 600 14px/20px Inter, "Inter Fallback", sans-serif !important; box-shadow: var(--b-elev-glow) !important; width: auto !important; }
+    background: var(--b-teal) !important; color: #FFFFFF !important; font: 600 0.875rem/1.25rem Inter, "Inter Fallback", sans-serif !important; box-shadow: var(--b-elev-glow) !important; width: auto !important; }
   @media (min-width: 768px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen:not(#fc1):not(#fc2):not(#fc3) .es-confirm__act :is(.q-bs, .employee-action) { padding: 0 18px !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
   }

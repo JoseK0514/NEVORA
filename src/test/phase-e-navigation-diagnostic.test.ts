@@ -3,13 +3,13 @@ import {resolve} from 'node:path';
 import {expect,it,rs} from '@rstest/core';
 const {observeBrowserCell}=await import(resolve('scripts/phase-e-browser-qa.mjs'));
 
-async function fixture({verified=true,reloadVerified=false,sameUrl=false,engine='webkit',phase='scenario',pending=true,host='127.0.0.1:43210',path='/api/notifications',notificationOnly=false,requireWitness=false}={}){
+async function fixture({verified=true,reloadVerified=false,sameUrl=false,engine='webkit',phase='scenario',pending=true,host='127.0.0.1:43210',path='/api/notifications',notificationOnly=false,requireWitness=false,routerReads=false}={}){
  let currentUrl='http://127.0.0.1:43210/app';
  const errors:unknown[]=[],execution={suite:'home',engine,width:390,status:'failed',navigationDiagnostics:[]},frame={url:()=>currentUrl};
  const binding=rs.fn();
  const context=Object.assign(new EventEmitter(),{exposeBinding:rs.fn(async(_name:string,fn:unknown)=>{binding.mockImplementation(fn as (...args:unknown[])=>unknown);}),addInitScript:rs.fn(async()=>{})});
  const page=Object.assign(new EventEmitter(),{url:()=>currentUrl,mainFrame:()=>frame});
- const cell=observeBrowserCell(execution,errors,{navigationDiagnosticVerified:verified,reloadDiagnosticVerified:reloadVerified,...(notificationOnly?{navigationReadKinds:['notification-read']}:{ }),requireNotificationGetWitness:requireWitness});await cell.observeContext(context,'primary');context.emit('page',page);cell.setPhase(phase);
+ const cell=observeBrowserCell(execution,errors,{navigationDiagnosticVerified:verified,reloadDiagnosticVerified:reloadVerified,...(notificationOnly?{navigationReadKinds:['notification-read']}:{ }),requireNotificationGetWitness:requireWitness,routerReadsDuringNavigation:routerReads});await cell.observeContext(context,'primary');context.emit('page',page);cell.setPhase(phase);
  const destination=sameUrl?currentUrl:'http://127.0.0.1:43210/app/schedule';
  const request={isNavigationRequest:()=>true,resourceType:()=> 'document',method:()=> 'GET',frame:()=>frame,url:()=>destination};
  if(pending)page.emit('request',request);
@@ -130,4 +130,44 @@ it.each([false,true])('a newly scoped observer keeps unproved notification metho
 it.each(['/api/employee/home','/api/manager/today','/api/manager/action-center'])('notification-only consumers never expand the distinct-URL exception to %s',async path=>{
  const f=await fixture({path,notificationOnly:true});f.page.emit('pageerror',f.error);
  expect(()=>f.cell.assertClean()).toThrow();expect(f.execution.navigationDiagnostics).toHaveLength(0);
+});
+
+// Flaky-test gap (Nov 23, 2026): a Next router read that a hard navigation cancels, opt-in only.
+const wait=(ms:number)=>new Promise(resolve=>setTimeout(resolve,ms));
+it.each(['/app/schedule?_rsc=1k3x9','/app?_rsc=ab_CD-12','/login?_rsc=z'])('with the opt-in, records a cancelled router read during a pending navigation: %s',async path=>{
+ const f=await fixture({path,routerReads:true});f.page.emit('pageerror',f.error);f.cell.assertClean();
+ expect(f.execution.navigationDiagnostics).toMatchObject([{type:'navigation-router-read-diagnostic',diagnostic:{resourceKind:'route-read',routerRead:true},pendingMainFrameNavigation:true}]);
+ expect(JSON.stringify(f.execution.navigationDiagnostics)).not.toMatch(/_rsc|127\.0\.0\.1|43210/);
+});
+it.each([
+ {routerReads:false,path:'/app/schedule?_rsc=1k3x9'},{routerReads:true,path:'/app/schedule?_rsc=1k3x9',engine:'chromium'},{routerReads:true,path:'/app/schedule?_rsc=1k3x9',verified:false},
+ {routerReads:true,path:'/app/schedule?_rsc=1k3x9',pending:false},{routerReads:true,path:'/app/schedule?_rsc=1k3x9',phase:'context-close'},
+ {routerReads:true,path:'/app/schedule?_rsc=1k3x9&token=PRIVATE_ACTOR_TOKEN'},{routerReads:true,path:'/app/schedule?token=PRIVATE_ACTOR_TOKEN'},{routerReads:true,path:'/app/schedule?_rsc=bad%20token'},
+ {routerReads:true,path:'/app/schedule?_rsc=1k3x9#PRIVATE_ACTOR_TOKEN'},{routerReads:true,path:'/app/unknown?_rsc=1k3x9'},{routerReads:true,path:'/app/schedule?_rsc=1k3x9',host:'127.0.0.1:43211'},
+ {routerReads:true,path:'/app/schedule?_rsc=1k3x9',host:'PRIVATE_ACTOR_TOKEN@127.0.0.1:43210'},
+])('keeps a router read fatal without every proof: %j',async options=>{
+ const f=await fixture(options);f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.execution.navigationDiagnostics).toHaveLength(0);
+ expect(JSON.stringify(f.errors)).not.toContain('PRIVATE_ACTOR_TOKEN');
+});
+it('pairs one window error with an accepted router read, whichever arrives first',async()=>{
+ const before=await fixture({path:'/app/schedule?_rsc=1k3x9',routerReads:true});before.page.emit('pageerror',before.error);await before.binding({page:before.page},'error');
+ await wait(1700);before.cell.assertClean();expect(before.execution.navigationDiagnostics.map((d:{type:string})=>d.type)).toEqual(['navigation-router-read-diagnostic','navigation-router-read-window-error']);
+ const after=await fixture({path:'/app/schedule?_rsc=1k3x9',routerReads:true});await after.binding({page:after.page},'error');after.page.emit('pageerror',after.error);
+ await wait(1700);after.cell.assertClean();expect(after.execution.navigationDiagnostics.map((d:{type:string})=>d.type)).toEqual(['navigation-router-read-diagnostic','navigation-router-read-window-error']);
+});
+it('keeps a second, unpaired or late window error fatal with the opt-in',async()=>{
+ const twice=await fixture({path:'/app/schedule?_rsc=1k3x9',routerReads:true});twice.page.emit('pageerror',twice.error);await twice.binding({page:twice.page},'error');await twice.binding({page:twice.page},'error');
+ await wait(1700);expect(()=>twice.cell.assertClean()).toThrow();expect(twice.errors).toEqual([expect.objectContaining({type:'window-javascript-error',kind:'error'})]);
+ const alone=await fixture({path:'/app/schedule?_rsc=1k3x9',routerReads:true});await alone.binding({page:alone.page},'error');
+ await wait(1700);expect(()=>alone.cell.assertClean()).toThrow();
+ const late=await fixture({path:'/app/schedule?_rsc=1k3x9',routerReads:true});late.page.emit('pageerror',late.error);await wait(1700);await late.binding({page:late.page},'error');
+ await wait(1700);expect(()=>late.cell.assertClean()).toThrow();
+},15000);
+it.each(['unhandledrejection'])('never pairs an actual %s with a router read',async kind=>{
+ const f=await fixture({path:'/app/schedule?_rsc=1k3x9',routerReads:true});f.page.emit('pageerror',f.error);await f.binding({page:f.page},kind);
+ expect(()=>f.cell.assertClean()).toThrow();expect(f.errors).toContainEqual(expect.objectContaining({type:'window-javascript-error',kind}));
+});
+it('never pairs a window error once the navigation committed',async()=>{
+ const f=await fixture({path:'/app/schedule?_rsc=1k3x9',routerReads:true});f.page.emit('pageerror',f.error);f.commit();await f.binding({page:f.page},'error');
+ expect(()=>f.cell.assertClean()).toThrow();
 });

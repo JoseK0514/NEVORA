@@ -5,7 +5,7 @@ import { beforeEach, expect, it, rs } from '@rstest/core';
 const m = rs.hoisted(() => ({
   actorRole: "MANAGER",
   employeeRole: "EMPLOYEE",
-  profileUnavailable:false, invitation:rs.fn(), hours:rs.fn(), profileOptions:[] as unknown[],
+  profileUnavailable:false, invitation:rs.fn(), hours:rs.fn(), scoped:rs.fn(), profileOptions:[] as unknown[],
 }));
 
 rs.mock("next/link", () => ({
@@ -186,11 +186,39 @@ const operationalPageFixture=rs.hoisted(()=>({denied:false}));
 rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
-beforeEach(()=>{operationalPageFixture.denied=false;});
+beforeEach(()=>{operationalPageFixture.denied=false;m.scoped.mockReset();});
 
-it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('Company-wide access needed');expect(html).not.toContain('Sam');expect(html).not.toContain('employee-core-profile-form');});
+it('withholds protected body and commands after current company-scope denial',async()=>{
+ // G17: a location Manager's denial asks the scoped read; refused, the page says the person is outside their locations.
+ operationalPageFixture.denied=true;m.scoped.mockResolvedValue({state:'unavailable',reason:'access_denied'});const {default:GuardedPage}=await import('./page');
+ const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));
+ expect(html).toContain('Outside the locations you manage');expect(html).not.toContain('Sam');expect(html).not.toContain('employee-core-profile-form');
+ expect(m.scoped).toHaveBeenCalledWith(expect.anything(),'worker');expect(m.hours).not.toHaveBeenCalled();
+ // An Owner is never location-scoped: a denial stays the company-wide closed state and the scoped read isn't asked.
+ m.scoped.mockClear();m.actorRole='OWNER';
+ expect(renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}))).toContain('Company-wide access needed');expect(m.scoped).not.toHaveBeenCalled();
+});
+const scopedReady={state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc-c']},
+ data:{employee:{id:'worker',firstName:'Sam',lastName:'Rivera',role:'EMPLOYEE',locationIds:['loc-c']},locations:[{id:'loc-c',name:'Condado',shortName:'C',active:true}]}};
+it('G17: a location Manager opens a person at one of their locations and sees only the scoped facts, hours and Shifts',async()=>{
+ operationalPageFixture.denied=true;m.scoped.mockResolvedValue(scopedReady);const {default:GuardedPage}=await import('./page');
+ const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));
+ expect(html).toContain('Sam Rivera');expect(html).toContain('EMPLOYEE');expect(html).toContain('Condado'); // the role label is mocked to the raw role in this file
+ expect(html).toMatch(/Scheduled this week<\/span><\/span><span class="c-row__value c-row__value--soft">32 h</);
+ expect(html).toContain('href="/app/schedule?location=loc-c"');expect(html).toContain('href="/app/employees"');
+ // Nothing the scoped Team list doesn't show, and no action that needs company-wide access.
+ for(const hidden of ['787','sam@example.invalid','tel:','sms:','?edit=1','view=access','Access and sign-in','Edit','/pay','/time-off','/restrictions','/app/timecards','/app/availability','employee-core-profile-form','employee-status-form'])expect(html).not.toContain(hidden);
+});
+it('G17: the edit sheet and Access and sign-in stay closed to a location Manager, with the company-wide closed state',async()=>{
+ operationalPageFixture.denied=true;m.scoped.mockResolvedValue(scopedReady);const {default:GuardedPage}=await import('./page');
+ for(const searchParams of [{edit:'1'},{edit:'positions'},{edit:'rules'},{view:'access'}]){
+  const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'}),searchParams:Promise.resolve(searchParams)}));
+  expect(html).toContain('Company-wide access needed');expect(html).not.toContain('Sam');expect(html).not.toContain('employee-core-profile-form');
+ }
+ expect(m.hours).not.toHaveBeenCalled();
+});
 
-rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmployeeHours:m.hours,readOperationalEmployeeProfile:async(_proof:unknown,_id:unknown,_ex:unknown,options?:{employmentDates?:boolean})=>{
+rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmployeeHours:m.hours,readScopedEmployeeSummary:m.scoped,readOperationalEmployeeProfile:async(_proof:unknown,_id:unknown,_ex:unknown,options?:{employmentDates?:boolean})=>{
  m.profileOptions.push(options);
  if(m.profileUnavailable)return {state:'unavailable',reason:'source_changed'};
  const source=await import('@/lib/data/employees'),profile=await source.getEmployeeManagementProfile('worker'),locations=await source.listLocations();
