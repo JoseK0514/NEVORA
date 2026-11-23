@@ -44,8 +44,8 @@ const requestKind: Partial<Record<ActionItem['type'], string>> = {TIME_OFF: 'Tim
  * the dates readableDates writes stay as they are. */
 export type PresentLang = 'en' | 'es';
 const ES = {
-  kinds: {TIME_OFF: 'Días libres', EXCHANGE: 'Cambio de turno', CALLOUT: 'No puede trabajar'} as Partial<Record<ActionItem['type'], string>>,
-  swap: 'Intercambio de turno', cover: 'Solicitud de cubrir', approvedTimeOff: 'Días libres aprobados',
+  kinds: {TIME_OFF: 'Días libres', EXCHANGE: 'Cambio de turno', CALLOUT: 'No puedo trabajar'} as Partial<Record<ActionItem['type'], string>>,
+  swap: 'Intercambio de turno', cover: 'Solicitud de cobertura', approvedTimeOff: 'Días libres aprobados',
   noTarget: 'Sin meta de horas semanal', noTargetFor: (p: string) => `${p} todavía no tiene meta de horas semanal.`, setTarget: 'Fija una meta de horas semanal.',
   notConfirmed: 'Horario no confirmado', notConfirmedBy: (p: string) => `${p} no ha confirmado su horario publicado.`,
   notSent: 'Disponibilidad no enviada', notSentBy: (p: string) => `${p} todavía no ha enviado su disponibilidad.`, notSentYet: 'Todavía no se ha enviado.',

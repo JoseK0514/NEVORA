@@ -38,7 +38,7 @@ it('offers a waiting request’s Approve only after its schedule check comes bac
 it('draws Things to do in Spanish when the portal language is Spanish (signed-in Spanish)',async()=>{
  const {PortalLangProvider}=await import('../../lib/i18n/portal-lang');
  const grouped=groupThingsToDo(snapshot([repair,pending]),null,'America/Puerto_Rico',true,false,'es');
- expect(grouped.families.map(f=>f.title)).toEqual(['Turnos abiertos','Solicitudes']);
+ expect(grouped.families.map(f=>f.title)).toEqual(['Turnos disponibles','Solicitudes']);
  expect(grouped.families[0].groups[0]).toMatchObject({title:'Turnos por cubrir'});
  expect(grouped.families[0].groups[0].rows[0]).toMatchObject({title:'Asignar el turno de Maria Rivera',value:'Sin asignar'});
  expect(grouped.families[0].groups[0].rows[0].detail).toMatch(/a\. m\./);

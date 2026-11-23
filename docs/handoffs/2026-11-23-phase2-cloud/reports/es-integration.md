@@ -21,6 +21,7 @@ All data is fictional, and nothing was sent or published.
 | timecards-final 093f5ca0 (8347506a plus its shared-tip merge) | all | e09b9b06 |
 | release candidate `claude-codex-collab-nevora` 91c08d19 (Insights `.c-ins__range` contrast 95bad13a, the English Close open punch card, the guide rebuild) | all; the guide PDFs and manifest are the candidate's; Close open punch keeps the Spanish wiring on the same card layout | 164bd39b |
 | es-employee second release 84e8109b (198cea83 time corrections queue and Time on the lang-aware helpers, bb17dd9e Home and Updates on the shared helpers, 04d3cae5 the queue's zone in Spanish, report) | all, no conflicts | 5eb14ec9 |
+| screens-final second pass bfdd3d80 (215fe886, 2479d906 with bcd72494, d96e6831; merges 746074e3, a2617040; report) | fast-forward (it had merged staff) | bfdd3d80 |
 
 ### How the conflicts were settled
 
@@ -57,21 +58,20 @@ All data is fictional, and nothing was sent or published.
 | 88531f9a | `Dotted` gets `lang` in own-leave-note and manager-profile-live; Messages uses `messageTime(…, lang)` instead of rewriting English |
 | 54b3e394 | One spelling: "período" (224 uses) replaces the 30 "periodo" |
 | 4d261595 | More: `availabilitySummary` never got the language (`.then(availabilitySummary)`), so the summary read "6 days a week" in Spanish |
+| (this commit) | `review-details/copy.ts` uses tú ("Tu tarjeta de tiempo", "Inténtalo", "Abre la solicitud"); Things to do follows the glossary ("Turnos disponibles", "No puedo trabajar", "Solicitud de cobertura") |
 | 6a873b26 | Phone Profile: the hint "Sign-in pages only. The rest of NEVORA is in English for now." is no longer true and is removed, as es-employee removed it elsewhere |
 
 ## Still English or open
 
 Closed since: the manager's time corrections queue and the Employee Time screen on the language-aware helpers
-(es-employee's second release, merged above).
+(es-employee's second release); the week grid, the shift form, Find cover, Review replacement and ManagerShiftRequests
+(screens-final's second pass); `review-details/copy.ts` now uses tú (integration, this branch).
 
 The lead assigned these: Schedule tools to screens-final; `lib/reports`, server messages, `clocker-owner-copy` and
 reminders to es-rest; time corrections and the time-b helpers to es-employee; `components/manager` to timecards-final.
 They are integrated here as each lands. Jose's word decisions below wait for his answer.
 
 
-- **Week grid** (`manager-weekly-roster.tsx`, about 42 strings, and `components/schedule`): only the times follow the
-  language, through CorpTime. The live words ("Clocked in", "On break") come from `ATTENDANCE_WORDS` there.
-- **Shift form, Find cover, Review replacement, ManagerShiftRequests** (screens-final's list).
 - **TeamB's band, QuietPage's `lang` prop, "What changed in your schedule", the Time, Profile and Availability page
   titles** (employee-mobile): from the session reports, not yet checked here.
 - **Server action messages** (Settings, breaks, clocker, photos, matching, employees, requests, scheduling, policies) and
@@ -85,7 +85,12 @@ They are integrated here as each lands. Jose's word decisions below wait for his
 
 - "Fecha de terminación" (3, es-rest part B) or "fecha de baja" (1, screens-final) for the termination date.
 - "Informes" for Insights (es-rest, es-rondo); the shell nav should say the same.
-- "empresa" (122 uses) or "compañía" (14, mostly in access and Home lines) for "company".
+- "empresa" (122 uses) or "compañía" (14, mostly in access and Home lines) for "company". The glossary in
+  `docs/design/voice.md` already says **Empresa**, so the 14 "compañía" lines are the ones off the glossary.
+- Cover request: "Solicitud de cobertura" (review-details, Things to do) or "Solicitud de reemplazo" (screens-final
+  sentences; the 390 chip says "Reemplazo").
+- Can't work, approved or declined: "Ausencia aprobada/rechazada" (review-details) or the glossary's "No puedo trabajar".
+  Things to do's group title and the request kind now say "No puedo trabajar", as the glossary does.
 - "Dueño/Gerente" (capitalised as roles) or "dueños/gerentes" in running text: both are used in role sentences.
 
 ## Browser pass (Spanish profile, fictional data)
@@ -422,6 +427,20 @@ From `reports/es-screens-final.md`.
 - "Posting and withdrawal require schedule publishing permission at a managed location." → "Para publicar y retirar turnos
   necesitas permiso para publicar horarios en una localidad que manejas."
 - "Your current permission does not allow publication." → "Tu permiso actual no te deja publicar."
+
+### screens-final (second pass): For Jose to review
+
+From `reports/es-screens-final.md`, "Second pass".
+
+- Hour limits on the week grid: "4 h por encima del límite de 40 h", "12 de 30 h de meta", "12 de 40 h de límite", the
+  short " · 4 h sobre 40 h", and "16 h asignadas esta semana".
+- "Al aprobar, el turno sale de su horario. Todavía necesitará a alguien que lo cubra." (can't-work approval)
+- "Ausencia aprobada" / "Ausencia rechazada" / "¿Rechazar esta ausencia?" (kept from review-details; "ausencia" isn't in
+  the glossary).
+- History steps: Creada, Aceptada, Completada, Rechazada, Retirada, Vencida, "Enviada a un gerente", Desactualizada.
+- Glossary deviations to fit 390: the Open cover tab is "Por cubrir"; the cover request chip is "Reemplazo" (the full
+  "Solicitud de reemplazo" is used in sentences and labels); grid chip "4 disponibles" (was "4 open").
+- No payroll, tax or legal lines on these screens.
 
 ### timecards-final: For Jose to review (payroll wording in Spanish)
 
