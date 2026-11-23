@@ -169,6 +169,8 @@ export default async function DashboardPage({
       workspaceName={workspace.name}
       timeZone={workspace.timeZone}
       firstName={session.firstName}
+      greeting={t.welcome(session.firstName)}
+      dateLabel={new Intl.DateTimeFormat(t.locale,{timeZone:'UTC',weekday:'long',month:'long',day:'numeric'}).format(new Date(`${currentDate}T12:00:00Z`))}
       weekStart={weekStart}
       weekLabel={formatWeekRange(weekStart)}
       previousWeek={previousWeek}

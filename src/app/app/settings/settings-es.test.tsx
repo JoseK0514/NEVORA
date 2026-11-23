@@ -58,7 +58,7 @@ it('renders Company profile and Locations in Spanish', async () => {
   for (const word of ['Perfil de la empresa', 'Nombre del negocio', 'Zona horaria', 'La semana empieza', 'lunes', 'Bloqueada mientras tengas turnos']) expect(profile).toContain(word);
   expect(profile).not.toContain('Business name');
   const locations = es(await LocationsPage());
-  for (const word of ['Ubicaciones', '1 activas de 1 ubicación', 'Añadir ubicación']) expect(locations).toContain(word);
+  for (const word of ['Localidades', '1 activas de 1 localidad', 'Añadir localidad']) expect(locations).toContain(word);
   expect(locations).not.toContain('Add location');
 });
 

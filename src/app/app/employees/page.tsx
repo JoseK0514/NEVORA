@@ -25,7 +25,7 @@ export default async function EmployeesPage({ searchParams }: {
   const actor=await requireRoles(MANAGER_ROLES);
   const params=await(searchParams??Promise.resolve({}));
   const source=await readOperationalDirectory(await requireSessionMutationProof());
-  const t=EMPLOYEES_COPY[await readPageLang()];
+  const lang=await readPageLang(),t=EMPLOYEES_COPY[lang];
   if(source.state==='unavailable')return <OperationalUnavailable title={t.employeesUnavailable} reason={source.reason}/>;
   // Phase 2 (Nov 22, 2026): a location Manager's Team is the company Manager's Team with the scoped read's people. The
   // search and the place filter only choose among those people; the place must be one of the Manager's own.
@@ -33,7 +33,7 @@ export default async function EmployeesPage({ searchParams }: {
     const search=params as DirectorySearchParams,one=(value:string|string[]|undefined)=>typeof value==='string'?value:'';
     const location=one(search.location),place=source.data.locations.length>1?source.data.locations.find(item=>item.id===location)?.id:undefined;
     return <ScopedReadFrame observation={scopedObservation(source)}><ScopedTeam data={source.data} query={one(search.q).trim().slice(0,128)} locationId={place}
-      showAll={one(search.all)==='1'} words={wordPreset((await currentPresentation()).words).en}/></ScopedReadFrame>;
+      showAll={one(search.all)==='1'} lang={lang} words={wordPreset((await currentPresentation()).words)[lang]}/></ScopedReadFrame>;
   }
   const {employees,locations}=source.data;
   const filters = readDirectoryFilters(params, locations);
@@ -42,6 +42,6 @@ export default async function EmployeesPage({ searchParams }: {
   let positions: Awaited<ReturnType<typeof listPositions>>;
   try { positions = await listPositions({ includeInactive: true }); }
   catch { return <OperationalUnavailable title={t.employeesUnavailable} reason="read_failed"/>; }
-  return <ScopedReadFrame observation={scopedObservation(source)}><EmployeeDirectory clockerRecovery={actor.role==='OWNER'} canImport={actor.role==='OWNER'&&rosterImportAvailable()} positions={positions} words={wordPreset((await currentPresentation()).words).en} employees={employees} locations={locations} filters={filters}
+  return <ScopedReadFrame observation={scopedObservation(source)}><EmployeeDirectory clockerRecovery={actor.role==='OWNER'} canImport={actor.role==='OWNER'&&rosterImportAvailable()} positions={positions} lang={lang} words={wordPreset((await currentPresentation()).words)[lang]} employees={employees} locations={locations} filters={filters}
     visibleEmployees={filterDirectoryEmployees(employees, filters, new Map(positions.map(position => [position.id, position.name])))} showAll={(params as DirectorySearchParams).all === '1'} /></ScopedReadFrame>;
 }

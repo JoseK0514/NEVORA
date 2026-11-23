@@ -130,7 +130,7 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
   // Corporate Home names its card ("5 things to do today."); the older looks keep their line.
   // Phase 4 (U03): with clock-ins unread or review facts missing, the count is a lower bound and a zero is not all-clear.
   const total = value ? needsYouTotal(value, { clockInsUnavailable: todayFailed }) : null;
-  const summary = value && total ? corporate ? toDoSentence(value.count, total.exact) : total.exact ? needsYouSentence(value.count) : value.count ? words.today(reviewCopy(lang).needYou(value.count, false)) : `${reviewCopy(lang).notAllChecked}.`
+  const summary = value && total ? corporate ? toDoSentence(value.count, total.exact, lang) : total.exact ? needsYouSentence(value.count) : value.count ? words.today(reviewCopy(lang).needYou(value.count, false)) : `${reviewCopy(lang).notAllChecked}.`
     : actionsConnection === "offline" ? words.offline
     : actionsConnection === "paused" ? words.paused
     : actionsConnection === "unavailable" || actionsConnection === "access_lost" || today?.state === "unavailable" ? words.failed

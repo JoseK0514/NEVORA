@@ -2,6 +2,8 @@
 import { useEffect, useRef, useTransition, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./employee-directory.module.css";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { TEAM_LIST_COPY } from "./team-list-copy";
 
 const TYPE_DELAY = 300;
 
@@ -13,6 +15,7 @@ export function EmployeeDirectoryFilters({ children, className }: { children: Re
   const form = useRef<HTMLFormElement>(null);
   const timer = useRef<number | null>(null);
   const [pending, startTransition] = useTransition();
+  const t = TEAM_LIST_COPY[usePortalLang()];
 
   function navigate(data: FormData, replace: boolean) {
     const params = new URLSearchParams();
@@ -47,7 +50,7 @@ export function EmployeeDirectoryFilters({ children, className }: { children: Re
 
   return <form ref={form} action="/app/employees" method="get" className={className ?? styles.toolbar} onSubmit={submit} onChange={typed} aria-busy={pending}>
     {children}
-    {pending ? <p className={className ? "premium-note" : styles.pending} role="status">Updating employees…</p> : null}
+    {pending ? <p className={className ? "premium-note" : styles.pending} role="status">{t.updating}</p> : null}
   </form>;
 }
 
