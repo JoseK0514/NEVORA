@@ -270,6 +270,10 @@ html body .app-shell.nevora-portal.nevora-portal .portal-skip-link:focus-visible
   /* IS-P4-12: whatever takes focus scrolls clear of the 65px sticky header. */
   html:has(> body .app-shell.nevora-portal) { scroll-padding-top: calc(65px + var(--nv-s-4)); }
 }
+/* G64 (Nov 23, 2026): unfocused, the link only sat above the window (fixed, moved up by its height). A full-page capture of a
+ * scrolled page paints what is above the window too, so the pill showed there over the form (a capture artifact: on
+ * screen it never showed). It is also transparent and untouchable until it has keyboard focus, so nothing ever draws it. */
+html body .app-shell.nevora-portal.nevora-portal .portal-skip-link:not(:focus-visible) { opacity: 0; pointer-events: none; }
 @media (min-width: 1024px) {
   /* IS-P4-10: a waiting avatar keeps its disc on the selected row's wash. */
   .premium-inbox .inbox-row[data-selected] > .nv-row .nv-avatar[data-waiting="true"] { background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--nv-hairline); }
