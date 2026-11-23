@@ -187,3 +187,15 @@ describe('Owner and Manager Profile', () => {
     expect(css).not.toMatch(/--nv-t-(tab|badge)/);
   });
 });
+
+describe('Profile passkeys row on a phone (Z2)', () => {
+  it('puts Add a passkey under its explanation below 768px only', () => {
+    const css = readFileSync(new URL('./manager-profile-upscale.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const rule = '.pmp-passkeys__row > .pk-section .pk-add { grid-column: 1; grid-row: auto; justify-self: start; }';
+    const at = css.indexOf(rule);
+    expect(at).toBeGreaterThan(-1);
+    expect(css.indexOf(rule, at + 1)).toBe(-1);
+    const media = css.slice(0, at).match(/@media [^{]*\{/g)?.at(-1);
+    expect(media).toBe('@media (max-width: 767px) {');
+  });
+});
