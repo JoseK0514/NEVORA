@@ -77,7 +77,7 @@
 :is(#c-root, html) .c-row__title--b { font-weight: 500; }
 :is(#c-root, html) .c-row__detail { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-row__detail > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-:is(#c-root, html) .c-row__value { flex: none; font-size: 15px; line-height: 20px; font-weight: 400; color: var(--c-grey); text-align: right; white-space: nowrap; font-feature-settings: var(--c-num-features); }
+:is(#c-root, html) .c-row__value { flex: none; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 400; color: var(--c-grey); text-align: right; white-space: nowrap; font-feature-settings: var(--c-num-features); }
 :is(#c-root, html) .c-row__value--soft { font-weight: 400; color: var(--c-grey); }
 :is(#c-root, html) .c-row__value--ink { font-weight: 500; color: var(--c-ink); }
 :is(#c-root, html) .c-row__value--teal { color: var(--c-teal); }
