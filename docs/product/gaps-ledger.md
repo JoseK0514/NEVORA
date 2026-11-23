@@ -43,7 +43,7 @@ scoped read). Device: G22. Parked: G23.
 | G17 | Team · Location Manager | Rows can't open a person: the person page says "Company-wide access needed" to a location Manager | F1 agent | Product | Jose |
 | G18 | Team · Location Manager | Location menu open state and focus not captured; no screen reader or reduced-motion pass | F1 agent | Evidence | assigned (package D) |
 | G19 | Tests | Stale "denied" wording assertion in 6 files (the 3 the F1 agent found, plus `operational-page-composition`, `reports/page`, `reports/christmas-bonus/page`) | F1 agent, lead | Tests | closed: all 22 tests in those files pass |
-| G20 | Tests | About 64 pre-existing unit failures across the suite (Phase 1 end count) | Lead | Tests | assigned (package E) |
+| G20 | Tests | About 64 pre-existing unit failures across the suite (Phase 1 end count) | Lead | Tests | open: 64→1. 62 tenancy tests were the shallow clone missing a pinned commit (fetched; see G43); the inbox count test was stale (`4232d383`, package E, plus a new denied-access case). The 1 left is the manuals gate (G44), which needs Jose |
 | G21 | Schedule (shared roster) | Position cut off at 768 ("Front co…") | Lead | Layout | closed: `56b4c792`, ellipses 6→0 (Daniel) and 16→0 (Elena) |
 | G22 | All screens | No WebKit or screen reader in this container: Safari, iPhone and VoiceOver checks | Lead | Device | device |
 | G24 | Team · Manager (Elena) and Owner | Band says "2 clocked in" and the filter says "Clocked in 2" (repeat); phone filters are a 2×2 grid with an empty slot and "Not clocked in" spills its pill at 200% text. Fixed for Daniel with `countsOnce`; not yet for Elena or the Owner | Lead review of F1-Ml | Wording + layout | assigned (package A) |
@@ -65,4 +65,6 @@ scoped read). Device: G22. Parked: G23.
 | G40 | Home | Band "Open shifts" figure reports a transparent focus outline at 390; ring not confirmed by eye | Home agent | Accessibility | assigned (package A) |
 | G41 | Home · Location Manager | Who's working doesn't name the place; Home's "See everyone" drops `?location=` | Home agent | Flow | assigned (package A) |
 | G42 | Home | Reduced motion not checked by eye; no screen reader; no Spanish check | Home agent | Evidence | assigned (package D) |
+| G43 | Tests (environment) | Tenancy tests need pinned commit `7c628e37…`, missing from a shallow clone. Fetched here; a fresh container loses it. Command added to `.claude/UI-SETUP.md`; adding it to the environment setup script needs Jose | Package E | Environment | Jose |
+| G44 | Guides | `src/test/manual-publication.test.ts` fails: the six published guide PDFs are tied to `198168ac` and every app commit since makes them stale. Fix: at the end of Phase 2, check guide text against the new screens and rebuild with `scripts/manuals/build-manuals.mjs`. Rebuilding is publishing | Package E | Release | Jose |
 | G23 | Sign-up and billing portal pages | Not captured in the sweep; set aside by Jose ("focus just on nevora") | Sweep | Evidence | Jose (parked) |

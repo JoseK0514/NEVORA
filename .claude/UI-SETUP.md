@@ -64,3 +64,14 @@ No original Codex skill or existing Claude skill was modified by the transfer.
 - Only the new `CLAUDE.md` and `.claude/` setup files are untracked in this
   checkout. Branch `NEVORA-UI-READINESS` was retained. No commit, push, app-code
   change, deployment, or production-data test was performed.
+
+## Tenancy tests in a shallow clone (2026-11-23)
+
+The tenancy migration tests (`src/lib/tenancy/migrations/*.test.ts`,
+`src/lib/tenancy/inventory/{ddl,schema-reducer}.test.ts`) read migrations from the
+pinned commit `7c628e374f03c9025b2c0cfd3568be033f07238d`, with network fetches off.
+A shallow clone doesn't have it, and 62 tests fail. Fetch it once per clone:
+
+```sh
+git fetch --depth=1 --no-tags origin 7c628e374f03c9025b2c0cfd3568be033f07238d
+```
