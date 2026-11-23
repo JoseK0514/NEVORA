@@ -60,6 +60,9 @@ it('connects original shift reviews and explicit period history in owned Chromiu
       for (const actor of ['UI-COMPANY', 'UI-LOCAL']) {
         const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce' });
         const page = await context.newPage(); page.setDefaultTimeout(20000);
+        const waitForRead = (path: string) => page.waitForResponse((response: { url(): string; status(): number }) =>
+          response.url() === app.url + path && response.status() === 200)
+          .then((response: { finished(): Promise<unknown> }) => response.finished());
         const pendingRouterRequests = new Set<object>();
         page.on('request', (request: { url(): string; headers(): Record<string, string> }) => {
           const headers = request.headers();
@@ -83,9 +86,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         await visit('/login');
         await page.getByLabel('Employee ID', { exact: true }).fill(actor);
         await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
-        const homeReady = page.waitForResponse((response: { url(): string; status(): number }) =>
-          response.url() === app.url + '/api/manager/today' && response.status() === 200)
-          .then((response: { finished(): Promise<unknown> }) => response.finished());
+        const homeReady = waitForRead(actor === 'UI-COMPANY' ? '/api/manager/today' : '/api/manager/clock-monitor');
         await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(app.url + '/app');
         await homeReady;
         await page.getByRole('main').getByRole('heading', { level: 1 }).filter({ visible: true }).waitFor();
@@ -120,14 +121,18 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         await form.locator('[name="notes"]').waitFor();
         expect(await form.locator('[name="notes"]').inputValue()).toBe('Concurrent edit');
         await form.locator('[name="notes"]').fill('Fresh reviewed edit');
+        const savedScheduleReady = waitForRead('/api/manager/today');
         await form.evaluate((element: HTMLFormElement) => element.requestSubmit());
         await page.waitForURL(/\/app\/schedule\?/);
+        await savedScheduleReady;
         expect(await q('SELECT notes FROM shifts WHERE id=$1', [id])).toEqual([{ notes: 'Fresh reviewed edit' }]);
         checks.push(`${engine} ${actor}: explicit reload and valid review save`);
         await visit('/app/schedule/edit?shiftId=' + id);
         await page.getByRole('button', { name: actor === 'UI-LOCAL' ? 'Review deletion' : 'Delete shift', exact: true }).click();
+        const deletedScheduleReady = waitForRead('/api/manager/today');
         await page.getByRole('button', { name: actor === 'UI-LOCAL' ? 'Delete this draft shift' : 'Delete this shift', exact: true }).click();
         await page.waitForURL(/\/app\/schedule\?/);
+        await deletedScheduleReady;
         expect(await q('SELECT count(*)::int n FROM shifts WHERE id=$1', [id])).toEqual([{ n: 0 }]);
         checks.push(`${engine} ${actor}: fresh original-review delete`);
 
