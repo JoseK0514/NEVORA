@@ -21,6 +21,13 @@ const whenText=(value:string)=>{const date=new Date(value.replace(' ','T').repla
 function ListDisclosure({open,children,...rest}:ComponentProps<typeof MobileHomeDisclosure>&{open:boolean}){
   return open?<>{children}</>:<MobileHomeDisclosure {...rest}>{children}</MobileHomeDisclosure>;
 }
+/** What makes a population review a different one: the source and export identity, the population and its revision,
+ * the members with their facts, and saved runs. A member's recordedNanoseconds and breakNanoseconds are left out: with
+ * someone clocked in they count up to each read's own observedAt, so they move on every refresh while nothing changed.
+ * Keying on them remounted the form every 10 s and cleared typed dispositions, reasons and selections (Jose, Nov 23). */
+export function populationIdentity(result:{members:readonly object[]}&Record<string,unknown>){
+  return stableExportJson({...result,members:result.members.map(member=>{const {recordedNanoseconds:_recorded,breakNanoseconds:_break,...rest}=member as Record<string,unknown>;return rest;})});
+}
 export function PayrollPeriodClose(props:Props){
   return <PeriodCloseView key={JSON.stringify([props.actorId,props.period.startDate,props.period.endDate])} {...props}/>;
 }
@@ -70,7 +77,7 @@ function PeriodCloseView({period,actorId,startOpen=false}:Props) {
       const response=await post('READ',period,abort.signal),body=await response.json();
       if(!current())return false;
       if(!response.ok||body.state!=='ready'||!body.result||body.result.period?.startDate!==period.startDate||body.result.period?.endDate!==period.endDate||typeof body.result.sourceHash!=='string'||!Array.isArray(body.result.members)||!Array.isArray(body.result.manifests)||!Array.isArray(body.result.exports))throw Error('Population unavailable');
-      const key=stableExportJson(body.result),remaining=started+15000-performance.now();
+      const key=populationIdentity(body.result),remaining=started+15000-performance.now();
       if(remaining<1||(preserve&&performance.now()>=deadline.current))throw Error('Population expired');
       if(!preserve||key!==sourceKey.current){setSelected([]);setViewKey(key);}
       if(expiry.current)clearTimeout(expiry.current);if(early.current)clearTimeout(early.current);

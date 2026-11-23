@@ -79,3 +79,18 @@ it('keeps saved runs mounted across a background refresh whose open punch has gr
  await rs.advanceTimersByTimeAsync(10000);expect(reads).toBe(2);
  expect(keyPath()).toEqual(before);
 });
+// Jose, Nov 23, 2026 (before the release): typed dispositions, reasons, employment text and selected receipts survive an
+// early refresh where only a running total moved; the inputs are uncontrolled, so they survive exactly when the form keeps
+// its place (same key path).
+it('keeps the population form and selected receipts across a refresh where only an open interval grew',async()=>{
+ transport(async()=>{const body=ready();body.result.members[0].recordedNanoseconds=String(reads*1_000_000_000);body.result.members[0].breakNanoseconds=String(reads*1_000);return Response.json(body);});
+ await mount();
+ const formPath=()=>{const path=(v:ReactNode,trail:string[]):string[]|null=>{if(Array.isArray(v)){for(const c of v){const p=path(c,trail);if(p)return p;}return null;}if(!v||typeof v!=='object'||!('props'in v))return null;const n=v as ReactElement<Record<string,unknown>>;const here=[...trail,String(n.key)];if(n.type==='form'&&n.props.className==='employee-form')return here;return path(n.props.children as ReactNode,here);};return path(render(),[]);};
+ const reason=()=>control(n=>n.type==='textarea'&&n.props.name==='PRIVATE-E1.reason'||n.type==='input'&&n.props.name==='PRIVATE-E1.reason');
+ expect(reason()).toBeTruthy();
+ (control(n=>n.type==='input'&&n.props.type==='checkbox').onChange as (e:unknown)=>void)({target:{checked:true}});
+ const before=formPath();expect(before).not.toBeNull();
+ await rs.advanceTimersByTimeAsync(10000);expect(reads).toBe(2);
+ expect(formPath()).toEqual(before);
+ expect(control(n=>n.type==='input'&&n.props.type==='checkbox').checked).toBe(true);
+});
