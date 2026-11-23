@@ -33,11 +33,12 @@ export function FormHeadBack({ onClick, children }: { onClick: () => void; child
 export function PhoneField({ id, name, defaultValue = "", required, autoComplete, enterKeyHint, missing, preserveLegacy = false }: { id: string; name: string; defaultValue?: string; required?: boolean; autoComplete?: string; enterKeyHint?: "next" | "done";
   /** The sentence shown when it is left empty (form-validation.tsx reads data-missing). */
   missing?: string; preserveLegacy?: boolean }) {
-  const [legacy] = useState(() => preserveLegacy && normalizePhoneNumber(defaultValue) === null ? defaultValue : null);
+  // An empty field is never a legacy value: it stays required (dev integration B3, Nov 23).
+  const [legacy] = useState(() => preserveLegacy && defaultValue.trim() !== "" && normalizePhoneNumber(defaultValue) === null ? defaultValue : null);
   const [value, setValue] = useState(() => legacy ?? phoneTyping(defaultValue));
   const unchangedLegacy = legacy !== null && value === legacy;
   return <input id={id} className="c-in" name={name} type="tel" inputMode="tel" autoComplete={autoComplete} enterKeyHint={enterKeyHint} value={value} required={required && !unchangedLegacy}
-    placeholder="(787) 555-0123" maxLength={14} pattern={unchangedLegacy ? undefined : String.raw\`\(\d{3}\) \d{3}-\d{4}\`} title="Enter all 10 digits of the phone number" data-missing={missing}
+    placeholder="(787) 555-0123" maxLength={14} pattern={unchangedLegacy ? undefined : String.raw`\(\d{3}\) \d{3}-\d{4}`} title="Enter all 10 digits of the phone number" data-missing={missing}
     onChange={event => {
       const next = event.target.value;
       const digits = (text: string) => text.replace(/\D/g, "");
@@ -45,7 +46,8 @@ export function PhoneField({ id, name, defaultValue = "", required, autoComplete
       const deleted = next.length < value.length && digits(next) === digits(value);
       const typed = deleted ? digits(next).slice(0, -1) : next;
       const formatted = phoneTyping(typed);
-      setValue(legacy !== null && formatted === phoneTyping(legacy) && /^\d[\d() .-]*$/.test(legacy) ? legacy : formatted);
+      const restoredLegacy = legacy !== null && formatted !== "" && formatted === phoneTyping(legacy);
+      setValue(restoredLegacy ? legacy : formatted);
     }} />;
 }
 
