@@ -22,7 +22,7 @@ it('draws the correction history and a decided request in Spanish',()=>{
 });
 it('draws the request form and its recovery in Spanish',()=>{
  const form=es(<HoursCorrectionForm snapshot={snapshot} basis={'b'.repeat(32)} edit="new" draft={undefined} onDraft={noop} operation={new HoursCorrectionOperation()} isActive otherPending={false} onSubmit={noop} onRetry={noop} onReset={noop} onRefresh={noop} onEdit={noop}/>);
- expect(form).toContain('Localidad de trabajo');expect(form).toContain('Inicio propuesto');expect(form).toContain('Hora de fin');expect(form).toContain('0/500 caracteres · Tu gerente lo verá');expect(form).toContain('Enviar solicitud de corrección');expect(form).toContain('Horas según la hora de Puerto Rico.');
+ expect(form).toContain('Localidad de trabajo');expect(form).toContain('Inicio propuesto');expect(form).toContain('Hora de fin');expect(form).toContain('0/500 caracteres · Tu gerente lo verá');expect(form).toContain('Enviar solicitud de corrección');expect(form).toContain('Las horas están en hora de Puerto Rico.');
  expect(form).not.toContain('Send correction request');expect(form).not.toContain('Work location');
 });
 it('draws an unconfirmed send in Spanish',async()=>{

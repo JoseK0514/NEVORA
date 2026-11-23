@@ -138,7 +138,8 @@ const en = {
     checkFields: 'Check the day, times and note.',
     reviewsIt: 'Your manager reviews it. Your timecard changes once it’s approved.',
     /** The draft checks' messages (src/lib/employee-hours-draft.ts) by their English text; English shows them as they are. */
-    draftErrors: {} as Record<string, string>,
+    /** A draft error from lib/employee-hours-draft, by its English text. */
+    draftError: (message: string): string | undefined => message,
   },
 };
 const es: typeof en = {
@@ -268,17 +269,18 @@ const es: typeof en = {
     denied: 'Tu acceso cambió. Inicia sesión de nuevo para continuar.',
     checkFields: 'Revisa el día, las horas y la nota.',
     reviewsIt: 'Tu gerente la revisa. Tu tarjeta de tiempo cambia cuando se aprueba.',
-    draftErrors: {
-      'Choose the location where you worked.': 'Elige la localidad donde trabajaste.',
-      'Choose a date.': 'Elige una fecha.',
-      'Choose a time.': 'Elige una hora.',
-      'Choose a valid date.': 'Elige una fecha válida.',
-      'Choose a valid, unambiguous start date and time.': 'Elige una fecha y hora de inicio válidas y sin ambigüedad.',
-      'Choose a valid, unambiguous end date and time.': 'Elige una fecha y hora de fin válidas y sin ambigüedad.',
-      'The end must be after the start. Check the end date for overnight work.': 'La hora de fin debe ser después de la de inicio. Revisa la fecha de fin si trabajaste de noche.',
-      'Enter a brief reason on one line, up to 500 characters.': 'Escribe una razón breve en una línea, de hasta 500 caracteres.',
-      'Review your proposed times and reason before sending.': 'Revisa las horas que propones y la razón antes de enviar.',
-    },
+    draftError: (message: string): string | undefined => draftErrorsEs[message],
   },
+};
+const draftErrorsEs: Record<string, string> = {
+  'Choose the location where you worked.': 'Elige la localidad donde trabajaste.',
+  'Choose a date.': 'Elige una fecha.',
+  'Choose a time.': 'Elige una hora.',
+  'Choose a valid date.': 'Elige una fecha válida.',
+  'Choose a valid, unambiguous start date and time.': 'Elige una fecha y hora de inicio válidas y sin ambigüedad.',
+  'Choose a valid, unambiguous end date and time.': 'Elige una fecha y hora de fin válidas y sin ambigüedad.',
+  'The end must be after the start. Check the end date for overnight work.': 'La hora de fin debe ser después de la de inicio. Revisa la fecha de fin si trabajaste de noche.',
+  'Enter a brief reason on one line, up to 500 characters.': 'Escribe una razón breve en una línea, de hasta 500 caracteres.',
+  'Review your proposed times and reason before sending.': 'Revisa las horas que propones y la razón antes de enviar.',
 };
 export const hoursCorpCopy = {en, es};

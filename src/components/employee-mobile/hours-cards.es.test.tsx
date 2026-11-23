@@ -24,7 +24,7 @@ describe('timecard view',()=>{
  });
  it('draws in Spanish',()=>{
   const plain=text(draw(view,'es')).replace(/\s/g,' ');
-  for(const line of ['Fecha de inicio','Ver período','Aprobada','Horas en este período','Tiempo efectivo','8 h 2 min','Sobre estas horas','Este período todavía está en curso. Los totales pueden cambiar.','Una corrección está en espera de revisión.','Entradas de tiempo','mar, 20 oct','Tiempo registrado','20 oct, 7:59 a. m. – 20 oct, 4:01 p. m.','Marcaciones originales','Descansos','Solicitar una corrección','Historial de la tarjeta de tiempo','Aprobada por Fictional Manager','no son un comprobante de pago','Horas según la hora de Puerto Rico.'])expect(plain).toContain(line);
+  for(const line of ['Fecha de inicio','Ver período','Aprobada','Horas en este período','Tiempo efectivo','8 h 2 min','Sobre estas horas','Este período todavía está en curso. Los totales pueden cambiar.','Una corrección está en espera de revisión.','Entradas de tiempo','mar, 20 oct','Tiempo registrado','20 oct, 7:59 a. m. – 20 oct, 4:01 p. m.','Marcaciones originales','Descansos','Solicitar una corrección','Historial de la tarjeta de tiempo','Aprobada por Fictional Manager','no son un comprobante de pago','Las horas están en hora de Puerto Rico.'])expect(plain).toContain(line);
   expect(plain).not.toMatch(/Start date|View period|Effective time|Time entries|Recorded time|Timecard history|\bAM\b|\bPM\b| by /);
  });
  it('says a missing timecard and a failed read in Spanish',()=>{

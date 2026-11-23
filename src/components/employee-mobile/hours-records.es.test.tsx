@@ -17,7 +17,7 @@ it('draws the Hours overview in Spanish',()=>{
 });
 it('draws an entry and the unavailable notice in Spanish',()=>{
  const text=es(data,'own-1');
- expect(text).toContain('Entrada completada');expect(text).toContain('Marcaciones registradas');expect(text).toContain('Descanso registrado');expect(text).toContain('Solicitar una corrección');expect(text).toContain('Horas según la hora de Puerto Rico.');
+ expect(text).toContain('Entrada completada');expect(text).toContain('Marcaciones registradas');expect(text).toContain('Descanso registrado');expect(text).toContain('Solicitar una corrección');expect(text).toContain('Las horas están en hora de Puerto Rico.');
  expect(text).not.toContain('Request a correction');expect(text).not.toContain('Recorded punches');
  const failed=es({state:'unavailable',reason:'read_failed'},null);
  expect(failed).toContain('No pudimos verificar tu tiempo registrado.');expect(failed).toContain('Intentar de nuevo');expect(failed).not.toContain('Try again');

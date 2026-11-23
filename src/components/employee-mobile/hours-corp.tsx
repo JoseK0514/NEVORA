@@ -353,7 +353,7 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
  const recordedHelp=!missing&&info.recordedStartAt&&info.recordedEndAt?t.recorded(clockRange(info.recordedStartAt,info.recordedEndAt,zone,lang))+(info.context.state==='confirmed'&&info.context.sourceKind==='ADJUSTMENT'?t.now(clockRange(info.context.startAt,info.context.endAt,zone,lang)):'')
   :missing&&info.adjustmentId&&info.context.state==='confirmed'?t.approved(clockRange(info.context.startAt,info.context.endAt,zone,lang)):undefined;
  const feedback=isActive?operation.result:null;
- const message=error?.message.startsWith('The end must be after the start')?t.endAfterStart:error?(t.draftErrors[error.message]??error.message):undefined;
+ const message=error?.message.startsWith('The end must be after the start')?t.endAfterStart:error?(t.draftError(error.message)??error.message):undefined;
  const placed=!!error&&(['startDate','startTime','endTime','endDate','reason'].includes(error.field)||error.field==='locationId'&&missing);
  const disabled=locked||stale||unconfirmed||missing&&!snapshot.locations.length;
  // Upscale S14: Send stays grey (aria-disabled) until the proposal is complete; pressing it then says what is missing.
