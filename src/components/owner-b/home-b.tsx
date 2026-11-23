@@ -160,6 +160,7 @@ export function HomeB(props: HomeBProps) {
   // Gaps G73 (Nov 23, 2026): while Things to do (and the Timecards facts that come with it) is still being read, the
   // cards that would sit below it wait, so its growth from the loading line moves nothing (phones) and the Timecards
   // tile doesn't switch content mid-load (desktop). A failed or offline read releases them at once.
+  const overduePay = props.payrollStatus?.state === "ready" && !!props.payrollStatus.overdue;
   const holdBelow = (connection === "loading" || connection === "reconnecting") && (!value || !props.timecardsReady);
 
   return <BScreen>
@@ -181,6 +182,11 @@ export function HomeB(props: HomeBProps) {
         other: what to do and who is on now at the left, Payday and This week at the right. On phones and tablets the
         two wrappers have no box (owner-b-home.css) and the cards stack in this order. */}
       <div className="b-home-col b-home-col--a">
+        {/* QA A5-01 (Nov 23, 2026): on phones a payroll that is overdue is the first card under the band, before Things to
+          * do (the Owner's one main action, "Prepare <period>"). Payroll status comes with the page, so it is never held
+          * for Things to do's read and nothing moves when that arrives (G73). From 768 the same card leads the right
+          * column as before (owner-b-home.css shows one copy per width). */}
+        {overduePay ? <div className="b-home-payfirst"><PayrollNotice status={props.payrollStatus} /></div> : null}
         {/* Nov 14, 2026 inspection (BR-16): until setup is done its card leads the page (the card hides itself once the
           steps are complete), so a new workplace sees what to finish before the day's figures. */}
         {/* Backend (Nov 15, 2026): the Owner's plan and billing notice leads while it applies. */}
@@ -198,7 +204,7 @@ export function HomeB(props: HomeBProps) {
       </div>
       <div className="b-home-col b-home-col--b">
         {holdBelow ? null : <>
-        <PayrollNotice status={props.payrollStatus} />
+        {overduePay ? <div className="b-home-paylate"><PayrollNotice status={props.payrollStatus} /></div> : <PayrollNotice status={props.payrollStatus} />}
         <PaydayTile {...props} />
         {props.week && props.week.thisWeek !== false ? <ThisWeek week={props.week} today={ready?.today ?? props.businessDay} /> : null}
         </>}

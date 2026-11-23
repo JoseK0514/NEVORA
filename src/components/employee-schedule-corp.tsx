@@ -137,8 +137,9 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
   }
 
   const listLabel = chosen ? keepWhole(dayFmt(chosen, { weekday: 'long', month: 'short', day: 'numeric' })) : weekStart === currentWeek ? 'Coming up' : weekStart < currentWeek ? 'This week' : 'Shifts';
+  // DEC1 (Jose, Nov 23, 2026; each fact once): the band says the week's hours; the Confirm row under it keeps the shift count.
   const subText = state === 'unavailable' ? 'Your schedule couldn’t be checked'
-    : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}</>;
+    : <>{shifts.length ? hoursLabel(total) : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}</>;
   // Review B6 (NV-163, NV-289): "Shift lead" leads the row's sub-line, so the one chip slot (Now, Starts in, Tomorrow) never
   // hides it; when every shift this week is led, the list's header says so once and the rows don't repeat it.
   const allLed = allLedNote(props.lead === true, shifts) !== null;
@@ -238,7 +239,7 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
               rest: `${dayFmt(shift.date, { weekday: 'long', month: 'long', day: 'numeric' })}${props.lead === true && shift.isDesignatedLead === true && !leads ? ', shift lead' : ''}`, lead: leads };
           }) })) }} />
     <CorpTitle title="Schedule" sub={state === 'unavailable' ? 'Your schedule couldn’t be checked'
-      : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}</>}
+      : <>{shifts.length ? hoursLabel(total) : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}</>}
       actions={<CorpButtonLink href="/app/availability" kind="neutral" size="sm">Availability</CorpButtonLink>} />
 
     <CorpCard as="div" ariaLabel="Week">

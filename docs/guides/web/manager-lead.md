@@ -9,7 +9,7 @@ you can use. See the [guide index](README.md) for release boundaries.
 | Access | Current operational boundary |
 | --- | --- |
 | Manager with company scope | Company operational pages, subject to each workflow's current guards |
-| Manager with location scope | Managed-location Home, schedule and limited team view; bounded draft-shift changes where offered |
+| Manager with location scope | Home, Things to do, Schedule, Team and Time corrections for your locations; bounded draft-shift changes and **Publish** where offered |
 | Manager without a current assignment | Operational access remains unavailable; ask an Owner to assign scope |
 | Lead | Own schedule, availability, requests, time and published pay statements; no Manager review authority |
 
@@ -78,7 +78,8 @@ not grant company access to a Manager assigned only to locations.
 
 ## Location-scoped Manager workflow
 
-1. On **Your workspace**, confirm the listed managed locations.
+1. On **Home**, confirm the location named in the band, or choose it from the
+   **Location** menu (**All your locations**) when you manage several.
 2. Open **Schedule**, choose a managed location and week, and review its shifts.
    **Add shift** and editable draft forms appear only when the current source
    and permissions allow them. Use only the offered employee/position choices.
@@ -90,10 +91,12 @@ not grant company access to a Manager assigned only to locations.
    needed values and use the offered current-schedule review before starting
    another change; do not replace the original review with a new retry.
 3. Follow a read-only message when a protected or published shift requires
-   company-wide access. Escalate publishing, company rules and protected changes
-   to the Owner or a company-scoped Manager.
-4. Open **Team at your locations** to review eligible people. This view omits
-   contact details and employee editing; request those changes through the Owner.
+   company-wide access. Use **Publish** only where it is offered; escalate other
+   publishing, company rules and protected changes to the Owner or a
+   company-scoped Manager.
+4. Open **Team** to review the people at your locations. Rows don't open a
+   person's page, and the view omits contact details and employee editing;
+   request those changes through the Owner.
 
 Company-wide totals, request review, reporting, exports and employee management
 are not granted merely by managing one location. Separate payroll grants may
@@ -134,7 +137,7 @@ Within your granted coverage, a person's Team page offers **When they can be
 scheduled**. Review current and future agreements and decide each request against
 the current effective-week bound. Employee requests never approve themselves.
 
-Availability and an Update's **Read by** list may offer reminders to Managers
+Availability and an Update's **Confirmed** list may offer reminders to Managers
 with Company access. Eligibility, cooldown and workplace holds still apply.
 **Queued** is not delivered. When the result or its receipt is not confirmed,
 keep the original operation and use its check or exact retry; no receipt yet does

@@ -14,7 +14,7 @@ const words = {
     swapForYou: 'Swap request waiting for you', coverForYou: 'Cover request waiting for you', requestForYou: 'Shift request waiting for you',
     requestClosed: 'Shift request closed', requestUpdated: 'Shift request updated',
     availabilityDue: 'Send your availability', availabilitySent: 'Availability sent', availabilityReminder: 'Availability reminder',
-    updateToAcknowledge: 'Acknowledge the team update', updateShared: 'New team update',
+    updateToAcknowledge: 'Confirm the team update', updateShared: 'New team update',
     // Payroll scope: a statement is shared, never "paid".
     payStatementShared: 'Pay statement shared',
     weekOf: (day: string) => `Week of ${day}`, from: (name: string) => `From ${name}`,
@@ -35,7 +35,7 @@ const words = {
     updatesSub: 'Messages for your team',
     alertsSub: 'Turn alerts on or off',
     // Phase 8 (review C, row 19): one verb for an update that needs you.
-    toAcknowledge: 'To acknowledge', otherUpdates: 'Other updates',
+    toAcknowledge: 'To confirm', otherUpdates: 'Other updates',
     // Phase 8 (review C, row 18): the same notice sent more than once, folded into one row.
     folded: (n: number) => `${n} notifications`,
     // Phase 9 (spec 2.3): Help's safety note carries the title Support's note has.

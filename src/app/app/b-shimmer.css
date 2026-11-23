@@ -106,3 +106,9 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > :is(html[data-c-arrived] .b-screen, .b-screen[data-b-arrived]) .b-home-col > :not(#b-home-on):not(#p7c):not(#p7c2):not(#p7c3):not(#p7c4):not(#p7c5) { animation: none !important; }
   }
 }
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): a skeleton block is drawn by its fill alone, which Windows contrast themes drop,
+ * so a loading page showed empty cards. Each block keeps a GrayText edge (grey, as it is a placeholder, not content). */
+@media (forced-colors: active) {
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-screen[data-b-load] .b-skel, .b-skel-card .b-skel, .be-skel__bar, .be-skel__dot, .kn-skel__bar, .kn-skel__dot, .wk-skel__bar, .fw-skel__bar, .fw-skel__track, .lc-skel__bar, .mg-skel__bar) { border: 1px solid GrayText; }
+}
