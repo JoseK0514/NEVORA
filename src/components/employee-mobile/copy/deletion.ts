@@ -83,7 +83,7 @@ const es: typeof en = {
   busySending: 'Por tu seguridad, espera unos 15 minutos e inténtalo de nuevo. No se envió nada.',
   uncertain: 'La conexión terminó antes de que NEVORA respondiera. Escribe tu contraseña otra vez y elige Verificar mi solicitud para saberlo. Si no se guardó, esto envía tu solicitud de eliminación ahora, así que verifica solo si todavía quieres eliminar tu cuenta.',
   alsoLead: 'También puedes escribir a ', alsoTail: '. Nunca te pediremos tu contraseña.',
-  confirmYou: 'Confirma que eres tú', passwordLabel: 'Escribe tu contraseña para confirmar', showPassword: 'Mostrar contraseña',
+  confirmYou: 'Confirma que eres tú', passwordLabel: 'Escribe tu contraseña', showPassword: 'Mostrar contraseña',
   passwordHelp: 'La contraseña que usas para iniciar sesión.',
   understand: 'Entiendo que mi cuenta de NEVORA se eliminará y que no podré volver a iniciar sesión.',
   checkBox: 'Marca esta casilla para confirmar que entiendes.',

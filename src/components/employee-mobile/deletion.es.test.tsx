@@ -16,7 +16,7 @@ const render=(view:Partial<DeletionView>&{state?:DeletionFormState}={})=>without
 describe('Employee mobile account deletion in Spanish',()=>{
  it('draws the form in Spanish',()=>{
   const plain=render();
-  for(const value of ['Eliminar cuenta','Qué eliminamos','Tu acceso termina de inmediato','En un plazo de 30 días, intentamos eliminar','Qué conserva tu patrono','Qué se puede conservar','Confirma que eres tú','Escribe tu contraseña para confirmar','Entiendo que mi cuenta de NEVORA se eliminará','Eliminar mi cuenta','No se puede deshacer.'])expect(plain).toContain(value);
+  for(const value of ['Eliminar cuenta','Qué eliminamos','Tu acceso termina de inmediato','En un plazo de 30 días, intentamos eliminar','Qué conserva tu patrono','Qué se puede conservar','Confirma que eres tú','Escribe tu contraseña','Entiendo que mi cuenta de NEVORA se eliminará','Eliminar mi cuenta','No se puede deshacer.'])expect(plain).toContain(value);
   for(const value of ['What we delete','What your employer keeps','Confirm it’s you','Delete my account','This can’t be undone.'])expect(plain).not.toContain(value);
   expect(render({state:{kind:'wrong_password'} as DeletionFormState})).toContain('Esa contraseña no es correcta. Inténtalo de nuevo.');
  });
