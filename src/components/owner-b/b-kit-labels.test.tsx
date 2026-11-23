@@ -96,7 +96,7 @@ describe("Icons and rows", () => {
 describe("BLive", () => {
   // Gaps G45 (Nov 23, 2026): a tile's text, as a screen reader (and axe) joins it, has a space between the label, the
   // figure and its line, and no aria-label rewrites it.
-  const text = (markup: string) => markup.replace(/<[^>]+>/g, "");
+  const text = (markup: string) => markup.replace(/<[^>]+>/g, "").replace(/\u00a0/g, " ");
   it("names a tile by what it shows, with a space between the label and the figure", () => {
     const markup = html(<BLive label="Right now" items={[
       { label: "Not clocked in", value: 0, href: "/app/inbox#todo-not-clocked-in", dot: "warn" },
@@ -104,15 +104,18 @@ describe("BLive", () => {
       { label: "This week", value: "32 h", meta: "Mon to Sun" },
     ]} />);
     expect(markup).not.toContain('aria-label="Not clocked in');
+    // Final fixes K7: the space is screen-reader text, so a flex tile's name keeps it; a tile takes no aria-label.
+    expect(markup).toContain('Not clocked in</span><span class="b-sr">\u00a0</span><span class="b-live__v">');
+    expect(markup).not.toContain("aria-label=\"Clocked in");
     const tiles = [...markup.matchAll(/<li class="b-live__i">([\s\S]*?)<\/li>/g)].map(match => text(match[1]));
     expect(tiles).toEqual(["Not clocked in 0", "Clocked in 3/12", "This week 32 h Mon to Sun"]);
   });
 });
 
 describe("The stylesheet behind them", () => {
-  it("a chip is 22px, 12/16 600, one line, with its tone's 16% edge and a transparent outline for High Contrast", () => {
+  it("a chip is 22px, 12/16 600 (in rem, so it grows with 200% text), one line, with its tone's 16% edge and a transparent outline for High Contrast", () => {
     const chip = sheet.match(/\.app-shell\[data-nv-b\] \.b-chip \{([^}]*)\}/)?.[1] ?? "";
-    for (const part of ["height: var(--b-chip-h)", "font-weight: 600", "white-space: nowrap", "inset 0 0 0 1px var(--b-chip-edge, transparent)", "outline: 1px solid transparent"]) expect(chip).toContain(part);
+    for (const part of ["height: max(var(--b-chip-h), 1.375rem)", "font-size: 0.75rem; line-height: 1rem; font-weight: 600", "white-space: nowrap", "inset 0 0 0 1px var(--b-chip-edge, transparent)", "outline: 1px solid transparent"]) expect(chip).toContain(part);
     // tabular figures where a figure ticks (a live chip, the quiet text, counts), not on every chip: in Inter they widen the hyphen
     expect(chip).not.toContain("tabular-nums");
     expect(sheet).toMatch(/\.b-chip\[data-dot\] \{[^}]*font-variant-numeric: tabular-nums;/);

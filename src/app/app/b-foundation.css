@@ -49,6 +49,10 @@
       background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 84%, black)) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page > header.c-title ~ :is(nav.c-seg, nav.c-week):not(#g48a):not(#g48b) {
       background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }
+    /* Final fixes K2 (G-ST7, G87): a quiet page (Time off requests) puts the same section tabs under its .q-hd title, below a
+     * back link; axe read their white words on the canvas (1.08:1) at 768 and 1440. Same paint as the section tabs above. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page > .q-hd ~ nav.c-seg:not(#g48a):not(#g48b) {
+      background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }
   }
 
   /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
@@ -314,7 +318,13 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard > .b-ico { width: 48px; height: 48px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard > .b-ico svg { width: 22px; height: 22px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main { display: grid; gap: var(--b-space-4); justify-items: start; min-width: 0; }
-:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__t { margin: var(--b-space-2) 0 0; font: 600 16px/22px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--b-ink); }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__t { margin: var(--b-space-2) 0 0; font: 600 1rem/1.375rem Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--b-ink); }
+/* Final fixes K4 (G88): at 200% text a state card's title, line and buttons wrap inside the card instead of running off
+ * its edge (the closed-page card: "Time-off decisions aren't part of your a…", "Open your schedule"). The title is in rem
+ * (16/22px at the default size); at the default size every line and button already fits, so nothing moves. */
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main > :is(.b-statecard__t, .b-statecard__s) { max-width: 100%; overflow-wrap: break-word; }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard :is(.b-state-actions, .b-closed-actions) { max-width: 100%; }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard :is(.b-btn, .b-closed-also) { max-width: 100%; white-space: normal; text-align: center; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__s { margin: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main > .b-btn { margin-top: 10px; min-height: var(--b-btn-h); padding: 0 18px; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { display: block; width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; }

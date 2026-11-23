@@ -92,11 +92,11 @@ function daysAway(payday: string, today: string) {
 }
 
 /** A Lead's current shift as the first figure ("On shift now", the range, "Shift lead · Barista"). */
-export type OnShiftFigure = {range: string; line: string | null; aria: string};
+export type OnShiftFigure = {range: string; line: string | null};
 /** Phase 4 (EM-025): the shift ahead as the strip's first figure where the hero has room ("Next shift", "Tomorrow 9:00 AM").
  * Phones leave it out: the shift card is the next thing on the screen (the stylesheet finds it by its link to the card's
  * heading, #b-home-shift-h). */
-export type NextShiftFigure = {label: string; value: string; line: string | null; aria: string};
+export type NextShiftFigure = {label: string; value: string; line: string | null};
 /** A range split after its dash, each time kept whole, so a narrow tile breaks it as "8:00 AM –" over "4:00 PM". */
 function RangeValue({range}: {range: string}) {
   const [start, end] = range.split(/[\s\u00a0]*–[\s\u00a0]*/);
@@ -317,16 +317,13 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
   // A Lead's hero adds the shift they're on now (Direction B, Nov 8, 2026); Employees' figures are unchanged.
   const now = lead && snapshot ? snapshot.currentShift : null;
   const onShift: OnShiftFigure | null = now && snapshot ? {range: compactRange(`${clock(now.startAt, snapshot.timeZone)} – ${clock(now.endAt, snapshot.timeZone)}`),
-    line: now.designatedLead ? ['Shift lead', now.positionLabel].filter(Boolean).join(' · ') : now.positionLabel || null,
-    aria: `On shift now, ${clock(now.startAt, snapshot.timeZone)} to ${clock(now.endAt, snapshot.timeZone)}${now.designatedLead ? ', shift lead' : ''}`} : null;
+    line: now.designatedLead ? ['Shift lead', now.positionLabel].filter(Boolean).join(' · ') : now.positionLabel || null} : null;
   // Phase 4 (EM-025): with nobody "on shift now" in the hero, the shift ahead is its first figure (tablets and desktop).
   const ahead = snapshot && snapshot.publicationState !== 'unavailable' && !onShift ? snapshot.currentShift ?? snapshot.nextShift : null;
   const nextShift: NextShiftFigure | null = ahead && snapshot ? snapshot.currentShift
-    ? {label: t.onShiftUntil, value: clock(ahead.endAt, snapshot.timeZone), line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null,
-      aria: `On shift until ${clock(ahead.endAt, snapshot.timeZone)}`}
+    ? {label: t.onShiftUntil, value: clock(ahead.endAt, snapshot.timeZone), line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null}
     : {label: t.nextShift, value: `${dayWord(ahead, snapshot)} ${clock(ahead.startAt, snapshot.timeZone)}`,
-      line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null,
-      aria: `Next shift, ${dayWord(ahead, snapshot)}, ${clock(ahead.startAt, snapshot.timeZone)} to ${clock(ahead.endAt, snapshot.timeZone)}`} : null;
+      line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null} : null;
   const note = snapshot?.publicationState === 'partial' ? unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations)) : null;
   const todoRow = ({key, item, week: confirm}: HomeTodo) => {
     const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));

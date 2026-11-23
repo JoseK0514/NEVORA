@@ -92,7 +92,8 @@ it('EM-007, EM-025: the hours read as one sentence, the payday is one format, an
   const html = draw(), strip = html.slice(html.indexOf('class="b-live b-glass"'), html.indexOf('</ul>', html.indexOf('class="b-live b-glass"')));
   const plain = text(strip);
   expect(plain).toContain('Next shift Tomorrow 9:00 AM Customer Support · Main Office');
-  // Core screens check (Nov 23, 2026): each figure's link is named by its visible text (no aria-label that differs).
+  // Final fixes K7 and core screens check (Nov 23, 2026): each figure's link is named by its visible text (no aria-label).
+  expect(strip).not.toContain('aria-label="Next shift');
   expect(strip).not.toMatch(/<a [^>]*aria-label=/);
   // No hours read in this render: scheduled hours stand alone with their caption.
   expect(plain).toContain('Hours 32 h scheduled this week');
