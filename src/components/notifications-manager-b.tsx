@@ -110,7 +110,7 @@ export function ManagerNotifications({authority, notice}: {authority: string; /*
     {key: 'all', label: t.all, current: filter === 'all', onSelect: () => setFilter('all')},
     {key: 'unread', label: unread ? <>{t.unread}<span className="b-sr"> </span><span className="mb-segn">{unread}</span></> : t.unread, current: filter === 'unread', onSelect: () => setFilter('unread'), aria: undefined as string | undefined},
   ] : null;
-  return <ManagerMessagesPage className="mb-notifs" titleId="notifications-title" title={t.title} back={{href: '/app', label: t.home}} deskBack
+  return <ManagerMessagesPage className="mb-notifs" titleId="notifications-title" title={t.bandTitle} back={{href: '/app', label: t.home}} deskBack
     phoneBand={tabs ? <BSeg label={t.show} items={tabs} /> : null}
     band={tabs ? <CorpSegments label={t.show} items={tabs.map(tab => ({key: tab.key, label: tab.label, current: tab.current, onSelect: tab.onSelect, ariaLabel: tab.aria}))} /> : null}
     cards={cards} busy={state.refreshing} />;

@@ -33,7 +33,7 @@ it('has a Spanish entry for every English one', () => {
 
 it('draws the Notifications in Spanish when the person reads Spanish, and in English otherwise', () => {
   const items = [item('a', 'Schedule published', 'unread'), item('b', 'Operations need review', 'read'), item('c', 'Operations need review', 'read')];
-  const es = text(render(ready(items), 'es'));
+  const es = text(render(ready(items), 'es')).replace(/\u00ad/g, '');
   for (const words of ['Notificaciones', 'Todas', 'Sin leer', 'Hoy', 'Ahora mismo', 'última', 'notificaciones']) expect(es).toContain(words);
   for (const english of ['Notifications', 'Today', 'Just now', 'latest', 'Unread']) expect(es).not.toContain(english);
   expect(text(render(ready([]), 'es'))).toContain('Las solicitudes de tu equipo están en Pendientes.');

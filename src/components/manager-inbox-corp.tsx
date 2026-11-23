@@ -75,7 +75,7 @@ function requestDetail(item: ActionItem, fallback: string, w: W) {
 function itemRow(item: ActionItem, timeZone: string, calm = false, w: W = EN): Row {
   const { c, t } = w;
   const entry = itemEntry(item, calm, "all", timeZone, w.lang);
-  const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, actionCenterNavigation(item, w.lang).label, timeZone, w.lang);
+  const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail, w.lang) }, actionCenterNavigation(item, w.lang).label, timeZone, w.lang);
   const request = item.category === "requests";
   // Nov 14, 2026 inspection (BR-7): a shift request names both people when the read carries the other one. Phase 3
   // (MG-012): the two names are joined by the swap sign.
@@ -119,7 +119,7 @@ function itemRow(item: ActionItem, timeZone: string, calm = false, w: W = EN): R
 export function gapRow(item: ActionItem, timeZone: string, day: string, lang: PortalLang = "en"): Row {
   const w = wordsFor(lang);
   const row = itemRow(item, timeZone, false, w);
-  const [date, when, ...parts] = mobileActionDetail(item.detail).split(" · ");
+  const [date, when, ...parts] = mobileActionDetail(item.detail, w.lang).split(" · ");
   // The read may keep the count with its noun using a no-break space, so any space matches.
   const rest = parts.map(part => needs(part, w));
   if (!when) return { ...row, title: plain(gapPlace(item)) };

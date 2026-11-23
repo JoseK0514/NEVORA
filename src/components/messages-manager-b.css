@@ -171,3 +171,10 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2) .c-page.mb-page > .b-screen .b-hero .b-seg > * { height: auto !important; min-height: 44px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.mb-page > .b-screen .b-title__right .b-btn { min-height: 44px !important; }
 }
+
+/* Signed-in Spanish (integration, Nov 23): Notifications' band title is one long word ("Notificaciones"); at 390 with 200%
+ * text it ran past the right edge. In Spanish it may break at its soft hyphen ("Notifica-ciones"); the kit's phone rule
+ * turns hyphens off for band titles, so this page turns manual hyphens back on. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-notifs .b-title h1:lang(es) { hyphens: manual !important; -webkit-hyphens: manual !important; }
+}

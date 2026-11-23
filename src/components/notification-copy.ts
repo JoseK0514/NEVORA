@@ -5,7 +5,9 @@ import type {PortalLang} from '@/lib/i18n/portal-lang';
 import {relativeTimeText} from '@/lib/duration-format';
 
 const en = {
-  title: 'Notifications', home: 'Home', settings: 'Settings', show: 'Show notifications', all: 'All', unread: 'Unread',
+  title: 'Notifications',
+  /** The band's title: one long Spanish word, so it may break at its soft hyphen at 390 with 200% text. */
+  bandTitle: 'Notifications', home: 'Home', settings: 'Settings', show: 'Show notifications', all: 'All', unread: 'Unread',
   groups: {Today: 'Today', Yesterday: 'Yesterday', Earlier: 'Earlier'} as Record<string, string>,
   groupList: (group: string) => `${group} notifications`,
   reviewUnread: 'Unread',
@@ -26,7 +28,7 @@ const en = {
   summaryScope: 'Open shifts, requests or missing availability',
 };
 const es: typeof en = {
-  title: 'Notificaciones', home: 'Inicio', settings: 'Configuración', show: 'Mostrar notificaciones', all: 'Todas', unread: 'Sin leer',
+  title: 'Notificaciones', bandTitle: 'Notifica\u00adciones', home: 'Inicio', settings: 'Configuración', show: 'Mostrar notificaciones', all: 'Todas', unread: 'Sin leer',
   groups: {Today: 'Hoy', Yesterday: 'Ayer', Earlier: 'Antes'},
   groupList: (group: string) => `Notificaciones de ${group.toLowerCase()}`,
   reviewUnread: 'Sin leer',
