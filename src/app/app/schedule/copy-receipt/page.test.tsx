@@ -42,13 +42,14 @@ it('offers the same operation as a retry when only the command was stored',async
  const html=await render();
  expect(html).toContain('href="/app/schedule?week=2026-10-19"');
  expect(html).toContain('Retry this copy');
- expect(html).toContain('It won’t copy anything twice.');
+ expect(html).toContain('Retrying never adds a shift twice.');
+ expect(text(html)).toContain('Some shifts may already be copied into Oct 19–25');
 });
 
 it('says a link without a copy reference points nowhere',async()=>{
  const html=await render('not-an-operation');
  expect(html).toContain('Copy not found');
- expect(html).toContain('This link doesn’t point to a schedule copy.');
+ expect(html).toContain('This link is incomplete.');
  expect(html).toContain('href="/app/schedule"');
 });
 
@@ -60,8 +61,10 @@ it('confirms a clean copy once, with the success mark, the week and the place',a
  const words=text(html);
  expect(html).toContain('Week copied');
  expect(html).toContain('b-donemark');
- expect(words).toContain('2 shifts copied');
- expect(words).toContain('Condado');
+ expect(words).toContain('2 shifts');
+ expect(words).toContain('Oct 19–25 · Condado');
+ // The band says the week was copied; the summary doesn't say it again.
+ expect(text(html.slice(html.indexOf('id="copy-result"')))).not.toMatch(/copied/i);
  expect(html).toContain('href="/app/schedule?week=2026-10-19"');
  expect(words).toContain('Review schedule');
  expect(html).not.toContain('copy-warnings');
@@ -94,12 +97,13 @@ it('lists each warning kind once with only the copied shifts it affects, each li
  const skipped=html.slice(end);
  expect(skipped).toContain('Overlaps another shift');
  expect(skipped).toContain('Skipped P.');
+ expect(text(skipped)).toContain('Mon · 9 AM – 5 PM');
  expect(skipped).not.toContain('href="/app/schedule/edit');
- // The summary counts each group once: 3 copied, 1 not copied, 2 with warnings.
+ // Each count once: 3 shifts in the summary, 2 with warnings and 1 not copied at their lists' headings.
  const summary=text(html.slice(html.indexOf('id="copy-result"'),start));
- expect(summary).toContain('Copied 3');
- expect(summary).toContain('Not copied 1');
- expect(summary).toContain('With warnings 2');
+ expect(summary).toContain('3 shifts');
+ expect(text(warnings)).toMatch(/^.*With warnings 2 /);
+ expect(text(skipped)).toMatch(/^.*Not copied 1 /);
 });
 
 it('names one reason once when nothing was copied because the source changed',async()=>{
@@ -115,6 +119,14 @@ it('says the previous week was empty when there was nothing to copy',async()=>{
  const html=await render();
  expect(html).toContain('Nothing copied');
  expect(html).toContain('The previous week has no shifts');
+});
+
+it('shows a person once per reason with their days when shifts were not copied',async()=>{
+ fixtures.receipt=receipt([row('a','COMMITTED'),row('m','SKIPPED',{employeeName:'Luis Torres'}),row('t','SKIPPED',{employeeName:'Luis Torres',date:'2026-10-20'}),row('w','SKIPPED',{employeeName:'Luis Torres',date:'2026-10-21',startTime:'14:00',endTime:'22:00'})]);
+ const html=await render();
+ const skipped=text(html.slice(html.indexOf('id="copy-skipped"')));
+ expect(skipped.match(/Luis T\./g)).toHaveLength(1);
+ expect(skipped).toContain('Mon, Tue · 9 AM – 5 PM; Wed · 2–10 PM');
 });
 
 it('keeps older receipts that carry only a source reference readable',async()=>{

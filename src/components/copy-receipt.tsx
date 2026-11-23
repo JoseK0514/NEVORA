@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { BDoneMark, BState, compactRange } from "@/components/owner-b/b-kit";
-import { CorpBody, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpStats, CorpTitle } from "@/components/corp/corp";
+import { CorpBody, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { ScheduleCopyForm } from "@/components/schedule-copy-form";
 import type { CopyCommand, CopyReceipt } from "@/lib/data/schedule-copy";
 import { formatDayLabel, formatTimeRange, formatWeekRange } from "@/lib/date-utils";
@@ -65,20 +65,39 @@ const described = (row: Row): row is Row & { date: string; startTime: string; en
 const sortKey = (row: Row) => described(row) ? `${row.date} ${row.startTime}` : `~${row.sourceId}`;
 const byWhen = (a: Row, b: Row) => sortKey(a).localeCompare(sortKey(b));
 
-/** "Mon, Nov 30 · 9 AM – 5 PM", and the location when the copy spans more than one. */
+// Each part stays whole at 200% text ("9 AM – 5 PM" never splits inside), and a " · " never starts a line.
+const whole = (text: string) => text.replace(/ /g, "\u00a0");
+const DOT = "\u00a0· ";
+const timeOf = (row: Row & { startTime: string; endTime: string }) => whole(compactRange(formatTimeRange(row.startTime, row.endTime)));
+/** The summary names the week once, so a row names only its weekday: "Mon · 9 AM – 5 PM", and the location when the copy
+ * spans more than one. */
 function when(row: Row, withPlace: boolean) {
   if (!described(row)) return row.sourceId;
-  const day = formatDayLabel(row.date);
-  // Each part stays whole at 200% text ("Mon, Nov 30" and "9 AM – 5 PM" never split inside), and a " · " never starts a line.
-  const whole = (text: string) => text.replace(/ /g, " ");
-  return [whole(`${day.weekday}, ${day.day}`), whole(compactRange(formatTimeRange(row.startTime, row.endTime))), withPlace ? row.locationName : null].filter(Boolean).join(" · ");
+  return [formatDayLabel(row.date).weekday, timeOf(row), withPlace ? row.locationName : null].filter(Boolean).join(DOT);
+}
+const personOf = (row: Row) => described(row) ? row.employeeName ? shortName(row.employeeName) : "Open shift" : "Shift";
+
+/** A copied shift with a warning: the person, then the day and time. It opens in Edit shift. */
+function ShiftRow({ row, withPlace }: { row: Row; withPlace: boolean }) {
+  const href = row.status === "COMMITTED" && row.shiftId ? `/app/schedule/edit?shiftId=${encodeURIComponent(row.shiftId)}` : undefined;
+  return <li><CorpRow title={personOf(row)} detail={when(row, withPlace)} href={href} /></li>;
 }
 
-/** One shift in a group: the person, then the day and time. A copied shift opens in Edit shift. */
-function ShiftRow({ row, withPlace }: { row: Row; withPlace: boolean }) {
-  const title = described(row) ? row.employeeName ? shortName(row.employeeName) : "Open shift" : "Shift";
-  const href = row.status === "COMMITTED" && row.shiftId ? `/app/schedule/edit?shiftId=${encodeURIComponent(row.shiftId)}` : undefined;
-  return <li><CorpRow title={title} detail={when(row, withPlace)} href={href} /></li>;
+/** Shifts that weren't copied have no shift to open, so each person shows once per reason with their days:
+ * "Mon, Tue · 6 AM – 2 PM; Thu · 2–10 PM". */
+function PersonRows({ rows, withPlace }: { rows: Row[]; withPlace: boolean }) {
+  const people = new Map<string, Row[]>();
+  for (const row of rows) people.set(personOf(row), [...(people.get(personOf(row)) ?? []), row]);
+  return <CorpRows>{[...people].map(([name, own]) => {
+    const parts = new Map<string, string[]>();
+    for (const row of own) {
+      if (!described(row)) { parts.set(row.sourceId, []); continue; }
+      const key = [timeOf(row), withPlace ? row.locationName : null].filter(Boolean).join(DOT);
+      parts.set(key, [...(parts.get(key) ?? []), formatDayLabel(row.date).weekday]);
+    }
+    const detail = [...parts].map(([key, days]) => days.length ? `${days.join(", ")}${DOT}${key}` : key).join("; ");
+    return <li key={name}><CorpRow title={name} detail={detail} /></li>;
+  })}</CorpRows>;
 }
 
 /** Rows grouped under one heading per kind (a warning or a reason), each kind once, in the order first seen. */
@@ -122,39 +141,36 @@ export function CopyReceiptView({ receipt }: { receipt: CopyReceipt }) {
   const title = copied.length ? command.kind === "TEMPLATE" ? "Template applied" : "Week copied" : "Nothing copied";
   const clean = copied.length > 0 && !skipped.length && !warned.length;
 
-  let summary: ReactNode;
-  if (clean) summary = <CorpCard id="copy-result" ariaLabel="Result">
+  const where = [week, place].filter(Boolean).join(" · ");
+  // Each fact once: the band says what happened, the summary how many and where, and each list carries its own count.
+  const summary = <CorpCard id="copy-result" ariaLabel="Result">
     <CorpBody>
       <div className="c-copy__done">
-        <BDoneMark still />
-        <p className="c-copy__line"><span className="c-copy__big">{`${plural(copied.length, "shift", "shifts")} copied`}</span>
-          <span className="c-copy__sub">{[week, place].filter(Boolean).join(" · ")}</span></p>
+        {clean ? <BDoneMark still /> : null}
+        <p className="c-copy__line">
+          <span className="c-copy__big">{copied.length ? plural(copied.length, "shift", "shifts")
+            : receipt.rows.length ? week : receipt.reason ? skipWords(receipt.reason, command.kind) : command.kind === "TEMPLATE" ? "The template has no shifts" : "The previous week has no shifts"}</span>
+          {copied.length ? <span className="c-copy__sub">{where}</span> : receipt.rows.length ? place ? <span className="c-copy__sub">{place}</span> : null : <span className="c-copy__sub">{week}</span>}
+        </p>
       </div>
     </CorpBody>
   </CorpCard>;
-  else if (!receipt.rows.length) summary = <CorpCard id="copy-result" ariaLabel="Result">
-    <CorpBody>
-      <p className="c-copy__line"><span className="c-copy__big">{receipt.reason ? skipWords(receipt.reason, command.kind) : command.kind === "TEMPLATE" ? "The template has no shifts" : "The previous week has no shifts"}</span>
-        <span className="c-copy__sub">{week}</span></p>
-    </CorpBody>
-  </CorpCard>;
-  else summary = <CorpCard id="copy-result" label={week} aside={place ?? undefined}>
-    <CorpStats items={[{ label: "Copied", value: copied.length }, { label: "Not copied", value: skipped.length }, { label: "With warnings", value: warned.length }]} />
-  </CorpCard>;
+  const count = (n: number) => <span className="c-copy__count">{n}</span>;
 
   return <Frame title={title} back={back}>
     {summary}
     <Action href={back}>Review schedule</Action>
-    {warnings.length ? <CorpCard id="copy-warnings" label="Copied with warnings">
+    {warnings.length ? <CorpCard id="copy-warnings" label="With warnings" aside={count(warned.length)}>
       {warnings.map((kind, index) => <section className="c-copy__group" key={kind.id} aria-labelledby={`copy-warning-${index}`}>
-        <h3 className="c-copy__kind" id={`copy-warning-${index}`}><WarningIcon className="c-copy__warn" weight="bold" aria-hidden="true" />{kind.label}</h3>
+        <h3 className="c-copy__kind" id={`copy-warning-${index}`}><WarningIcon className="c-copy__warn" weight="bold" aria-hidden="true" /><span>{kind.label}</span></h3>
         <CorpRows>{kind.rows.map(row => <ShiftRow key={row.sourceId} row={row} withPlace={withPlace} />)}</CorpRows>
       </section>)}
     </CorpCard> : null}
-    {reasons.length ? <CorpCard id="copy-skipped" label="Not copied">
+    {/* When nothing was copied the band already says so: the list keeps its reasons, without a second "Not copied". */}
+    {reasons.length ? <CorpCard id="copy-skipped" label={copied.length ? "Not copied" : undefined} ariaLabel={copied.length ? undefined : "Not copied"} aside={copied.length ? count(skipped.length) : undefined}>
       {reasons.map((reason, index) => <section className="c-copy__group" key={reason.id} aria-labelledby={`copy-reason-${index}`}>
-        <h3 className="c-copy__kind" id={`copy-reason-${index}`}>{reason.label}</h3>
-        <CorpRows>{reason.rows.map(row => <ShiftRow key={row.sourceId} row={row} withPlace={withPlace} />)}</CorpRows>
+        <h3 className="c-copy__kind" id={`copy-reason-${index}`}><span>{reason.label}</span></h3>
+        <PersonRows rows={reason.rows} withPlace={withPlace} />
       </section>)}
     </CorpCard> : null}
   </Frame>;
@@ -167,17 +183,17 @@ export function CopyUnconfirmed({ operationId, command, actorId }: { operationId
   const into = command ? ` into ${formatWeekRange(command.weekStart)}` : "";
   return <Frame title="Copy not confirmed" back={back}>
     <CorpCard id="copy-result" ariaLabel="Result">
-      <BState kind="paused" silent title="Check the schedule first"
-        line={`Some shifts may already be copied${into}. Don’t start a new copy.${command ? " If they aren’t there, retry this copy. It won’t copy anything twice." : ""}`}>
+      <BState kind="paused" silent title={`Some shifts may already be copied${into}`}
+        line={`Don’t start a new copy.${command ? " Retrying never adds a shift twice." : ""}`}>
         <div className="c-copy__buttons">
           <CorpButtonLink href={back}>Review schedule</CorpButtonLink>
           {command ? <ScheduleCopyForm actorId={actorId} command={command} label="Retry this copy" className="c-btn c-btn--secondary c-copy__retry" /> : null}
         </div>
+        <details className="c-copy__ref">
+          <summary>Reference</summary>
+          <p><code>{operationId}</code></p>
+        </details>
       </BState>
-      <details className="c-copy__ref">
-        <summary>Reference</summary>
-        <p><code>{operationId}</code></p>
-      </details>
     </CorpCard>
   </Frame>;
 }
@@ -186,7 +202,7 @@ export function CopyUnconfirmed({ operationId, command, actorId }: { operationId
 export function CopyNotFound() {
   return <Frame title="Copy not found" back="/app/schedule">
     <CorpCard id="copy-result" ariaLabel="Result">
-      <BState kind="empty" silent line="This link doesn’t point to a schedule copy." action={{ label: "Review schedule", href: "/app/schedule" }} />
+      <BState kind="empty" silent line="This link is incomplete." action={{ label: "Review schedule", href: "/app/schedule" }} />
     </CorpCard>
   </Frame>;
 }
