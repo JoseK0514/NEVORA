@@ -24,15 +24,15 @@ scoped read). Device: G22. Parked: G23.
 
 | # | Screen | Gap | Source | Kind | Status |
 |---|---|---|---|---|---|
-| G1 | Copy receipt | BEFORE capture of the real copy at 768 showed a load error ("Try again"); re-capture to confirm it was timing | C8 agent | Evidence | assigned (package D) |
-| G2 | Copy receipt | No BEFORE alignment numbers (the probe was added after the BEFORE run) | C8 agent | Evidence | assigned (package D) |
-| G3 | Copy receipt | Loading and error states not captured | C8 agent | Evidence | assigned (package D) |
+| G1 | Copy receipt | BEFORE capture of the real copy at 768 showed a load error ("Try again"); re-capture to confirm it was timing | C8 agent | Evidence | closed: the error was the access frame's slow check (cleared in 1.1–6.7 s); BEFORE `ab0bb151` shows the real copy at 768 in full; 0 on AFTER |
+| G2 | Copy receipt | No BEFORE alignment numbers (the probe was added after the BEFORE run) | C8 agent | Evidence | closed: measured both tips with a markup-free probe: text edges 2→1, figures share one right edge, buttons 44px, repeated strings 30→6 |
+| G3 | Copy receipt | Loading and error states not captured | C8 agent | Evidence | closed: loading (skeleton) and error (route error screen) captured at 390, 768, 1440; error screen issues → G54 |
 | G4 | Copy receipt | No Spanish for this page | C8 agent | Product | open |
 | G5 | Shared kit (band back link) | "‹ Schedule" in the band is 32px tall at 768 and 1440 (44px on phones); Find cover has the same | C8 agent | Accessibility | closed: `545c747c`, `5e39d2fb`; 44px hit area from 768 up (32px drawn box kept), hit tests land 6px above to 5.5px below; `b-foundation.test.ts` (G5) |
 | G6 | App shell | Sidebar link "Things to do, N" has label-content-name-mismatch at 768 and 1440 on every page | C8, F1, time agents | Accessibility | closed: `d06223a6`; name now starts with the drawn text; mismatch 0 on every page, all widths, three roles; `app-shell-todo-name.test.tsx` |
-| G7 | Clocker receipt | Not captured: the scan harness can't find the kiosk PIN entry, so the new time format there is unit-tested only | Time agent | Harness + evidence | assigned (package D) |
-| G8 | Schedule day view (timeline) | Not captured; its capsules stay on one line, so a short shift's full range may run wider than the capsule at 768 | Time agent | Layout risk | assigned (package D) |
-| G9 | Time format | Keyboard not walked; 200% text checked at 390 only | Time agent | Evidence | assigned (package D) |
+| G7 | Clocker receipt | Not captured: the scan harness can't find the kiosk PIN entry, so the new time format there is unit-tested only | Time agent | Harness + evidence | closed: `d2ced7b8`; harness serves a production Clocker over the owned TLS origin; receipts captured at 4 sizes, times read "1:40 AM"; 200% text bugs → G50 |
+| G8 | Schedule day view (timeline) | Not captured; its capsules stay on one line, so a short shift's full range may run wider than the capsule at 768 | Time agent | Layout risk | closed: `077ca550`; at 768 short capsules 132→85px, nothing past a cell or the card, ranges wrap only after the dash; 1440 unchanged |
+| G9 | Time format | Keyboard not walked; 200% text checked at 390 only | Time agent | Evidence | closed: Tab walked on Owner Schedule, Timecards and Employee Home at 390 and 1440, every stop has a ring; 200% text at 320 and 768 breaks no time; layout bugs → G52, G53 |
 | G10 | Time format | `business-time.ts` `formatBusinessClock` still prints a leading zero; nothing displays it now; remove or route through the shared formatter | Time agent | Cleanup | closed: `e2d04088`; `formatBusinessClock` removed (only its own test used it) |
 | G11 | Timecards | 4 colour-contrast hits at 1440 (pre-existing) | Time agent | Accessibility | closed: `545c747c`, `5e39d2fb`; counts 5.85:1, week strip 6.18:1; colour-contrast 0 at every width for three roles |
 | G12 | Schedule, Home, Time (shared roster rows) | label-content-name-mismatch on phones: week-strip days fixed (`39215f3a`), 13→3 for Daniel and 14→7 for Elena; roster row labels ("Find cover for the open shift…", "Edit …'s shift") still differ from their visible text | Lead (C1-Ml), time agent, recheck agent | Accessibility | assigned (package A) |
@@ -41,7 +41,7 @@ scoped read). Device: G22. Parked: G23.
 | G15 | Shared kit (b-filters) | Filter-count contrast 4.19:1 (Elena's "All 12") | F1 agent | Accessibility | closed: `545c747c`; count 5.85:1 (white thumb), 5.21:1 (grey track); Team axe contrast 1→0 |
 | G16 | Team · Location Manager | The scoped read has no positions, so rows show the role instead of "Front counter" like Elena's | F1 agent | Data contract | open |
 | G17 | Team · Location Manager | Rows can't open a person: the person page says "Company-wide access needed" to a location Manager | F1 agent | Product | Jose |
-| G18 | Team · Location Manager | Location menu open state and focus not captured; no screen reader or reduced-motion pass | F1 agent | Evidence | assigned (package D) |
+| G18 | Team · Location Manager | Location menu open state and focus not captured; no screen reader or reduced-motion pass | F1 agent | Evidence | closed except the screen reader (→ G22): Enter focuses the current item, Tab moves through places, Escape returns to the trigger; no animation with reduced motion; issues → G51 |
 | G19 | Tests | Stale "denied" wording assertion in 6 files (the 3 the F1 agent found, plus `operational-page-composition`, `reports/page`, `reports/christmas-bonus/page`) | F1 agent, lead | Tests | closed: all 22 tests in those files pass |
 | G20 | Tests | About 64 pre-existing unit failures across the suite (Phase 1 end count) | Lead | Tests | open: 64→1. 62 tenancy tests were the shallow clone missing a pinned commit (fetched; see G43); the inbox count test was stale (`4232d383`, package E, plus a new denied-access case). The 1 left is the manuals gate (G44), which needs Jose |
 | G21 | Schedule (shared roster) | Position cut off at 768 ("Front co…") | Lead | Layout | closed: `56b4c792`, ellipses 6→0 (Daniel) and 16→0 (Elena) |
@@ -49,7 +49,7 @@ scoped read). Device: G22. Parked: G23.
 | G24 | Team · Manager (Elena) and Owner | Band says "2 clocked in" and the filter says "Clocked in 2" (repeat); phone filters are a 2×2 grid with an empty slot and "Not clocked in" spills its pill at 200% text. Fixed for Daniel with `countsOnce`; not yet for Elena or the Owner | Lead review of F1-Ml | Wording + layout | assigned (package A) |
 | G25 | Time format | Merged: `0236ba4c`, `3271f4d0`, `493802cd`. Old forms gone from display code and rendered screens | Time agent | — | closed |
 | G26 | Shift sheet (Owner and Manager) | Selects and labels sized in px, so they don't grow at 200% text (the read-only value does) | C2/C4 agent | Accessibility | assigned (package B) |
-| G27 | Schedule · Location Manager | After a save, the phone Schedule opens on Monday, not the saved day: the scoped Schedule ignores `day=` | C2/C4 agent | Flow | assigned (package D) |
+| G27 | Schedule · Location Manager | After a save, the phone Schedule opens on Monday, not the saved day: the scoped Schedule ignores `day=` | C2/C4 agent | Flow | closed: `6a6d4b16`; after a save the phone strip opens on the saved day (Thu 17), desktop opens its day view; `schedule/page.test.tsx` |
 | G28 | Shift sheet (Owner) | Owner's sheet still repeats: "Choose a time" twice, "position"/"No position", the day in both the subtitle and Date, the name in the Note placeholder (fixed for the Manager only) | C2/C4 agent | Wording | assigned (package B) |
 | G29 | Shift sheet, desktop | Fields stop at 420px inside a 610px card; the footer buttons sit at the fields' edge, not the card's | Lead review | Alignment | assigned (package B) |
 | G30 | Delete shift confirm | Title "Delete this shift?" and its button "Delete this shift" repeat | C2/C4 agent | Wording | assigned (package B) |
@@ -64,7 +64,7 @@ scoped read). Device: G22. Parked: G23.
 | G39 | Home (Elena and multi-place) | Clocked in / Missed tiles and Not clocked in / Missed rows have aria-labels that differ from their visible text (4 nodes on multi, 8–10 on Elena) | Home agent | Accessibility | assigned (package A) |
 | G40 | Home | Band "Open shifts" figure reports a transparent focus outline at 390; ring not confirmed by eye | Home agent | Accessibility | assigned (package A) |
 | G41 | Home · Location Manager | Who's working doesn't name the place; Home's "See everyone" drops `?location=` | Home agent | Flow | assigned (package A) |
-| G42 | Home | Reduced motion not checked by eye; no screen reader; no Spanish check | Home agent | Evidence | assigned (package D) |
+| G42 | Home | Reduced motion not checked by eye; no screen reader; no Spanish check | Home agent | Evidence | open: Spanish only. Reduced motion closed (nothing moves but the intended 200 ms fade); screen reader → G22 |
 | G43 | Tests (environment) | Tenancy tests need pinned commit `7c628e37…`, missing from a shallow clone. Fetched here; a fresh container loses it. Command added to `.claude/UI-SETUP.md`; adding it to the environment setup script needs Jose | Package E | Environment | Jose |
 | G44 | Guides | `src/test/manual-publication.test.ts` fails: the six published guide PDFs are tied to `198168ac` and every app commit since makes them stale. Fix: at the end of Phase 2, check guide text against the new screens and rebuild with `scripts/manuals/build-manuals.mjs`. Rebuilding is publishing | Package E | Release | Jose |
 | G45 | Home (Owner, Elena) | 4–7 label-content-name-mismatch nodes beyond G39: the kit's `BLive` draws label and value with nothing between ("in0"), and the Time corrections and Time-off rows' labels | Package C | Accessibility | open (next round, Home files) |
@@ -72,4 +72,12 @@ scoped read). Device: G22. Parked: G23.
 | G47 | Timecards, phones (Owner, Elena) | 12 rows named "Ana Colon, No time yet" while they draw initials, name and status | Package C | Accessibility | open (next round) |
 | G48 | Band glass strips (Payroll tabs, `c-seg`, `c-week`, Team search) | Probably the same contrast-tool misread (1.08:1) Timecards' strip had; not measured | Package C | Accessibility | open (next round) |
 | G49 | Team | "See all 12" and "All 12": the same count twice | Package C | Wording | open (next round, may close with G24) |
+| G50 | Clocker receipt, 390 at 200% text | "Clocked in at" breaks inside the time ("1:40 A / M"); the large time is clipped; the band date is cut off | Package D | Layout | open (next round) |
+| G51 | Action menu (location menu, likely every menu) | Item focus ring is white on white (only a faint fill shows); trigger name doesn't start with its text; no `aria-expanded` | Package D | Accessibility | open (next round) |
+| G52 | Timecards (Owner), 200% text | At 320 band labels collide, names truncate, "Clocked in now" clipped, subtitle off screen; at 768 subtitle overlaps and filters spill | Package D | Layout | open (next round) |
+| G53 | Employee Home, 768 at 200% text | Row lines overlap (px line heights), quick actions truncate ("Ti…"), weekday labels collide, legend overlaps the dates, band tiles truncate | Package D | Layout | open (next round) |
+| G54 | Route error screen (`WaveARouteError`) | Says "didn't load" twice; two ways back to Schedule; "Check your connection" for a server error; back link name mismatch | Package D | Wording | open (next round) |
+| G55 | All production pages | Console logs "Minified React error #441" on every run, every role and width | Package D | Bug | open (next round) |
+| G56 | Home (Owner) | "First-week setup" shows while Home checks, then disappears, moving Things to do and Today (QA A2-03/S-02) | Package D | Layout shift | open (next round) |
+| G57 | Schedule day view, 768 | A two-line capsule's position line sits flush on its 3px bottom bar | Package D audit | Spacing | open (sent to package A) |
 | G23 | Sign-up and billing portal pages | Not captured in the sweep; set aside by Jose ("focus just on nevora") | Sweep | Evidence | Jose (parked) |
