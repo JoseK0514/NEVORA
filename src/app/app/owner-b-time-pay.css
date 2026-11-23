@@ -501,3 +501,14 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-tc-day .c-row__detail > span:not(#gq1):not(#gq2):not(#gq3) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
   }
 }
+
+/* Gate check (Nov 23, 2026), 44px targets: the Show tabs keep their 36px look from 768px and reach 44px with a taller hit
+ * area above and below (they sit side by side, so no two areas overlap); the person's week's "Review correction" link is
+ * a 44px row. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tabs > button:not(#gq1):not(#gq2):not(#gq3) { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tabs > button:not(#gq1):not(#gq2):not(#gq3)::before { content: "" !important; position: absolute !important; inset: -4px 0 !important; }
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .b-callout a:not(#gq1):not(#gq2):not(#gq3) { display: inline-flex !important; align-items: center !important; min-height: var(--b-target) !important; }
+}
