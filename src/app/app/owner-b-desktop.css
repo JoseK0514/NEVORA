@@ -59,7 +59,7 @@
       background-color: var(--b-band-solid) !important; border-image: var(--nvd-band) fill 0 / 0 / 240px 100vw var(--b-band-below, 28px) 100vw !important; color: var(--b-on-band) !important;
     }
     html body .app-shell[data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd) h1 { font-size: 32px !important; line-height: 38px !important; font-weight: 700 !important; letter-spacing: -.03em !important; color: var(--b-on-band) !important; margin: 0 !important; }
-    html body .app-shell[data-nv-b] :is(.c-page > header.c-title .c-title__sub, .q-page > .q-hd > p) { display: block !important; margin-top: var(--b-space-4) !important; font-size: var(--b-fs-body) !important; line-height: 21px !important; color: var(--b-on-band-2) !important; }
+    html body .app-shell[data-nv-b] :is(.c-page > header.c-title .c-title__sub, .q-page > .q-hd > p) { display: block !important; margin-top: var(--b-space-4) !important; font-size: var(--b-fs-body) !important; line-height: 1.3125rem !important; color: var(--b-on-band-2) !important; } /* Final fixes K: 21px at the default size, in rem so two lines never overlap at 200% text */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title .c-title__row { align-items: flex-end !important; min-height: 0 !important; gap: var(--b-space-24) !important; }
     /* The back link sits above the title on the band. */
     html body .app-shell[data-nv-b] .q-page:has(> .q-hd) > .q-nav { position: static !important; display: flex !important; height: 32px !important; min-height: 32px !important; margin: 0 0 10px !important; padding: 0 !important; z-index: 2 !important; border-image: none !important; }
