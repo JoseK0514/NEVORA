@@ -7,7 +7,7 @@ import type {ReactNode} from 'react';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {CalendarMinusIcon} from '@phosphor-icons/react/dist/ssr/CalendarMinus';
 import {BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack, BState} from '../owner-b/b-kit';
-import {BCardNote, Dotted} from './parts';
+import {Dotted} from './parts';
 import {BEmpty, BStateCard, BText, FormMark, bTone} from './requests-b';
 import {timeOffPill} from '../employee-requests-corp';
 import {sentDay, timeOffDates, timeOffDecision, timeOffLength, type TimeOffView} from '../employee-mobile/timeoff-parts';
@@ -103,7 +103,6 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
         {/* Review B2 (NV-140): waiting soonest first; decided most recently decided first. */}
         {[...requests].sort(filter === 'decided' ? (a, b) => (b.reviewedAt ?? '').localeCompare(a.reviewedAt ?? '') : (a, b) => a.startDate.localeCompare(b.startDate)).map(item => <TimeOffRowB key={item.id} request={item} filter={filter}/>)}
       </BList>
-      {requests.length && filter !== 'decided' ? <BCardNote>Open a request to see its details or withdraw it.</BCardNote> : null}
     </BCard>
       : request ? <><RequestCardB request={request} zone={zone}/><OwnLeaveNote request={request}/></>
       // Review B2 (NV-139): the shared state card, with the way back as a pill.
