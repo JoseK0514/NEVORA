@@ -215,13 +215,13 @@ const en = {
       line: (hold: Hold): string => {
         switch (hold.kind) {
           case "peopleNotReviewed": return "Go through everyone on the team for this period, then come back.";
-          case "peopleChanged": return "Review who’s included again on Time exports. The export uses exactly that list.";
+          case "peopleChanged": return "The export uses exactly the list of who’s included.";
           case "tooManyPeople": return "A paid time export covers up to 300 people.";
           case "notFinalized": return `Still open: ${list(hold.names, "and", n => `${n} more`)}. Paid time is exported only from finalized timecards.`;
-          case "alreadyComplete": return "The server already has a complete record of this period. Its files are on Time exports.";
+          case "alreadyComplete": return "The server already has a complete record of this period.";
         }
       },
-      action: (hold: Hold): string => hold.kind === "notFinalized" ? "Open Timecards" : hold.kind === "tooManyPeople" ? "Go to Payroll" : "Open Time exports",
+      action: (hold: Hold): string => hold.kind === "notFinalized" ? "Open Timecards" : hold.kind === "tooManyPeople" ? "Go to Payroll" : hold.kind === "alreadyComplete" ? "See the files" : "Review who’s included",
     },
     breaks: {
       heading: "Decide every recorded break",
@@ -492,13 +492,13 @@ const es: PayrollImportCopy = {
       line: (hold): string => {
         switch (hold.kind) {
           case "peopleNotReviewed": return "Repasa a todas las personas del equipo para este período y vuelve aquí.";
-          case "peopleChanged": return "Revisa otra vez quién está incluido en Exportar horas. La exportación usa exactamente esa lista.";
+          case "peopleChanged": return "La exportación usa exactamente la lista de quién está incluido.";
           case "tooManyPeople": return "Una exportación de tiempo pagado cubre hasta 300 personas.";
           case "notFinalized": return `Siguen abiertas: ${list(hold.names, "y", n => `${n} más`)}. El tiempo pagado se exporta solo de hojas de tiempo finalizadas.`;
-          case "alreadyComplete": return "El servidor ya tiene un registro completo de este período. Sus archivos están en Exportar horas.";
+          case "alreadyComplete": return "El servidor ya tiene un registro completo de este período.";
         }
       },
-      action: (hold): string => hold.kind === "notFinalized" ? "Abrir Hojas de tiempo" : hold.kind === "tooManyPeople" ? "Ir a Nómina" : "Abrir Exportar horas",
+      action: (hold): string => hold.kind === "notFinalized" ? "Abrir Hojas de tiempo" : hold.kind === "tooManyPeople" ? "Ir a Nómina" : hold.kind === "alreadyComplete" ? "Ver los archivos" : "Revisar quién está incluido",
     },
     breaks: {
       heading: "Decide cada descanso registrado",

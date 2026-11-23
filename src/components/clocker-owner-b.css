@@ -229,6 +229,9 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner .b-row.ck-trow:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { position:relative !important; display:grid !important; grid-template-columns:minmax(0, 1fr) auto 16px !important; align-items:center !important; column-gap:var(--b-space-12) !important; row-gap:var(--b-space-4) !important; min-height:68px !important; box-sizing:border-box !important; padding-top:var(--b-space-12) !important; padding-bottom:var(--b-space-12) !important; flex-wrap:nowrap !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner .ck-trow__main:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { display:flex !important; align-items:center !important; gap:var(--b-space-12) !important; min-width:0 !important; width:100% !important; margin:0 !important; padding:0 !important; border:0 !important; border-radius:0 !important; background:none !important; box-shadow:none !important; color:inherit !important; font:inherit !important; text-align:left !important; min-height:0 !important; height:auto !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner .ck-trow__main > .b-row__tx:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { flex:1 1 auto !important; min-width:0 !important; }
+  /* Regression sweep Z (Nov 23, 2026): each tablet row's button, and the "+ Add tablet" row's (36px since the add row
+   * came in), is a 44px target; the rows stay one height. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner .b-row.ck-trow .ck-trow__main:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { min-height:44px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner button.ck-trow__open:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { cursor:pointer !important; outline:none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner button.ck-trow__open:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6)::after { content:"" !important; position:absolute !important; inset:0 !important; border-radius:var(--b-radius-field) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner button.ck-trow__open:focus-visible:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6)::after { outline:var(--b-focus-width) solid var(--b-focus) !important; outline-offset:-2px !important; }
@@ -305,5 +308,14 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner .ck-result__acts > .ck-text:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { padding-left:0 !important; padding-right:0 !important; }
   @media (max-width: 767px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner .b-row.ck-trow:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { row-gap:var(--b-space-8) !important; }
+  }
+}
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): a tablet row's focus was drawn without an outline, so under Windows contrast
+ * themes a focused row showed nothing; "Get setup code" lost its edge. Both keep a system-colour line. */
+@media (forced-colors: active) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .ck-trow__main:focus-visible:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { outline: 2px solid Highlight !important; outline-offset: -2px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .b-btn.ck-trow__go:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border: 1px solid ButtonText !important; }
   }
 }

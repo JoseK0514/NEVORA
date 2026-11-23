@@ -31,7 +31,6 @@ const en = {
   },
 
   add: {
-    intro: "Paste rows from a spreadsheet or choose a CSV file. Each row is one person. Nothing is saved until you check the list and choose Import.",
     needsTitle: "What your list needs",
     needsLead: "The first row names the columns. These four are required:",
     required: ["ID (the employee ID your business uses)", "First name", "Last name", "Phone (10 digits)"],
@@ -80,7 +79,7 @@ const en = {
     checking: "Checking your list…",
     summary: (ready: number, fix: number) => fix ? `${ready} ready · ${fix} ${fix === 1 ? "needs" : "need"} a fix` : `${ready} ready`,
     allReady: (n: number) => n === 1 ? "This person is ready to import." : `All ${n} people are ready to import.`,
-    blocked: (n: number) => n === 1 ? "Fix or remove the row that needs a fix. Then you can import." : `Fix or remove the ${n} rows that need a fix. Then you can import.`,
+    blocked: (n: number): string => n === 1 ? "Fix or remove it, then import." : "Fix or remove them, then import.",
     ignored: (columns: string[]) => `${columns.length === 1 ? "This column wasn’t" : "These columns weren’t"} used: ${columns.join(", ")}. Only the columns listed in step 1 are imported.`,
     tableLabel: "People on your list",
     columns: { row: "Row", person: "Person", role: "Role and location", contact: "Phone and email", status: "Status", change: "Change" },
@@ -107,7 +106,7 @@ const en = {
     importAction: (n: number) => `Import ${people(n)}`,
     manager: {
       title: "Manager access",
-      line: "Your list has a Manager. Choose what the Managers on this list can manage. It applies only to Manager rows, and payroll access is set separately.",
+      line: "This applies only to Manager rows and doesn’t include payroll access, which is set separately.",
       label: "Managers on this list can manage",
       choose: "Choose",
       company: "All locations",
@@ -230,7 +229,6 @@ const es: RosterImportCopy = {
   },
 
   add: {
-    intro: "Pega filas de una hoja de cálculo o elige un archivo CSV. Cada fila es una persona. No se guarda nada hasta que revises la lista y elijas Importar.",
     needsTitle: "Lo que necesita tu lista",
     needsLead: "La primera fila nombra las columnas. Estas cuatro son obligatorias:",
     required: ["ID (el ID de empleado que usa tu negocio)", "Nombre", "Apellido", "Teléfono (10 dígitos)"],
@@ -278,7 +276,7 @@ const es: RosterImportCopy = {
     checking: "Revisando tu lista…",
     summary: (ready, fix) => fix ? `${ready} ${ready === 1 ? "lista" : "listas"} · ${fix} ${fix === 1 ? "necesita" : "necesitan"} corrección` : `${ready} ${ready === 1 ? "lista" : "listas"}`,
     allReady: n => n === 1 ? "Esta persona está lista para importar." : `Las ${n} personas están listas para importar.`,
-    blocked: n => n === 1 ? "Corrige o quita la fila que necesita corrección. Después podrás importar." : `Corrige o quita las ${n} filas que necesitan corrección. Después podrás importar.`,
+    blocked: n => n === 1 ? "Corrígela o quítala, y luego importa." : "Corrígelas o quítalas, y luego importa.",
     ignored: columns => `${columns.length === 1 ? "Esta columna no se usó" : "Estas columnas no se usaron"}: ${columns.join(", ")}. Solo se importan las columnas que aparecen en el paso 1.`,
     tableLabel: "Personas en tu lista",
     columns: { row: "Fila", person: "Persona", role: "Rol y localidad", contact: "Teléfono y correo", status: "Estado", change: "Cambiar" },
@@ -305,7 +303,7 @@ const es: RosterImportCopy = {
     importAction: n => `Importar ${personas(n)}`,
     manager: {
       title: "Acceso de gerente",
-      line: "Tu lista tiene un gerente. Elige qué pueden administrar los gerentes de esta lista. Aplica solo a las filas de gerente, y el acceso a nómina se configura aparte.",
+      line: "Esto aplica solo a las filas de gerente y no incluye el acceso a nómina, que se configura aparte.",
       label: "Los gerentes de esta lista pueden administrar",
       choose: "Elige",
       company: "Todas las localidades",

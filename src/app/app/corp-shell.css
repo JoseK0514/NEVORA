@@ -743,3 +743,9 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
   :is(#c-root, html) .app-shell[data-nv-corp] .c-page > .c-nav, :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page:not(.q-sheet) > .q-nav,
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header .portal-account-menu .nevora-action-menu-trigger { transition: none; }
 }
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): the page-loading bar is drawn by its fill alone, which Windows contrast themes
+ * drop, so it vanished. It keeps a Highlight fill. */
+@media (forced-colors: active) {
+  :is(#c-root, html) .app-shell[data-nv-corp] .c-progress > i { forced-color-adjust: none; background: Highlight; }
+}
