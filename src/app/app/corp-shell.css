@@ -123,9 +123,9 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] {
   --nv-r-card: 12px; --nv-r-control: 8px; --nv-r-inner: 8px;
   --nv-e1: 0 0 0 1px #E3E5E6; --nv-e2: 0 0 0 1px #E3E5E6, 0 8px 24px rgba(26, 28, 30, .10);
   --nv-font: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
-  --nv-t-title-1: 600 24px/30px var(--nv-font); --nv-t-title-2: 600 17px/22px var(--nv-font); --nv-t-title-3: 600 15px/20px var(--nv-font);
-  --nv-t-headline: 600 15px/20px var(--nv-font); --nv-t-body: 400 15px/20px var(--nv-font); --nv-t-row: 600 15px/20px var(--nv-font);
-  --nv-t-callout: 400 13px/18px var(--nv-font); --nv-t-label: 600 13px/16px var(--nv-font); --nv-t-figure: 600 20px/26px var(--nv-font);
+  --nv-t-title-1: 600 1.5rem/1.875rem var(--nv-font); --nv-t-title-2: 600 1.0625rem/1.375rem var(--nv-font); --nv-t-title-3: 600 0.9375rem/1.25rem var(--nv-font);
+  --nv-t-headline: 600 0.9375rem/1.25rem var(--nv-font); --nv-t-body: 400 0.9375rem/1.25rem var(--nv-font); --nv-t-row: 600 0.9375rem/1.25rem var(--nv-font);
+  --nv-t-callout: 400 0.8125rem/1.125rem var(--nv-font); --nv-t-label: 600 0.8125rem/1rem var(--nv-font); --nv-t-figure: 600 1.25rem/1.625rem var(--nv-font);
 }
 /* Fields and buttons on the older forms, at the board's sizes. */
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page :is(.wa-field__control > :is(input, select), .wa-select select, .nevora-select-shell select) {

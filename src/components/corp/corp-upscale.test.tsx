@@ -40,7 +40,7 @@ describe("Nov 1 upscale: section labels, rows and hover", () => {
     expect(kit).toMatch(/\.c-row \{[^}]*min-height: 60px;/);
     expect(kit).toContain(":is(#c-root, html) .c-row--one { min-height: 52px; }");
     expect(kit).toMatch(/\.c-row__title \{[^}]*font-size: 15px; line-height: 20px; font-weight: 500;/);
-    expect(kit).toMatch(/\.c-row__value \{[^}]*font-size: 15px; line-height: 20px; font-weight: 400; color: var\(--c-grey\);/);
+    expect(kit).toMatch(/\.c-row__value \{[^}]*font-size: 0\.9375rem; line-height: 1\.25rem; font-weight: 400; color: var\(--c-grey\);/);
     expect(quietBridge).toContain(".q-rt b { font-size: 15px; line-height: 20px; font-weight: 500; }");
     expect(quietBridge).toContain(".q-row { min-height: 60px;");
     // Employee rows: no 15/600 titles left (20/600 figures stay).

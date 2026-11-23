@@ -47,7 +47,7 @@ it('does not claim an empty inbox is complete when the read is partial', async (
 it('gives managers the Direction B list: must-read updates first, New update in the band, no personal review', async () => {
  const html = await render({mode: 'manager'});
  // Phase 2 (package Messages): the required update leads its own card; nobody "replies" to an update.
- expect(html).toContain('Must be read');
+ expect(html).toContain('Must be confirmed');expect(html).not.toContain('Must be read');
  expect(html).not.toContain('Needs reply');
  expect(html).not.toContain('To review');
  expect(html).toMatch(/href="\/app\/updates\/compose"[^>]*><svg[^>]*aria-hidden="true"[^>]*>.*?<\/svg>New update<\/a>/);
