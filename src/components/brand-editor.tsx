@@ -111,7 +111,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample
   const swatch = <span className="c-setb-swatch" style={{ background: brand.tokens.accent }} aria-hidden="true" />;
   return <><form id="brand-form" className="c-card c-setb-form" aria-label="Branding" data-guard={hydrated ? undefined : ""} data-save-on-change="" data-dirty={dirty || busy === "save" ? "" : undefined} onSubmit={event => { event.preventDefault(); if (dirty) void save(); }}>
       <CorpRows label="Branding">
-        <li><CorpRow onClick={hydrated ? () => setPicking(true) : undefined} disabled={!hydrated} title="Color" value={colourName} trail={swatch} chevron label={`Color, ${colourName}, change`} /></li>
+        <li><CorpRow onClick={hydrated ? () => setPicking(true) : undefined} disabled={!hydrated} title="Color" value={colourName} trail={swatch} chevron /></li>
         <li><CorpRow title="Logo" value={logo ? <span className="c-setb-logo">
           {/* eslint-disable-next-line next-preserved/no-img-element -- immutable same-origin asset */}
           <img src={logoUrl(logo)} alt={`${workspaceName} logo`} /></span> : "None"}

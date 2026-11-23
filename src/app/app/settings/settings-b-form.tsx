@@ -6,7 +6,8 @@ import type { ConfigurationResult } from "@/components/configuration-form";
 import { DiscardGuard, FormDiscardGuard } from "@/components/kit/discard-dialog";
 import { CorpFormFooter } from "@/components/corp/corp";
 import { Notice } from "./wave-c-kit";
-import { ButtonLabel, FieldErrors, defaultEntries, formEntries, useFieldError, useFieldErrors, type FieldMessages } from "./wave-c-form";
+import { BBusyLabel } from "@/components/owner-b/b-kit";
+import { FieldErrors, defaultEntries, formEntries, useFieldError, useFieldErrors, type FieldMessages } from "./wave-c-form";
 
 /* Settings in Direction B (Nov 23, 2026): the form pieces, drawn with the corporate kit's classes so the Direction B
  * layers dress them as every other Owner form (outlined 48px fields, labels above, the one error style, the solid teal
@@ -153,7 +154,7 @@ export function SettingsFormB({ id, action, children, messages = {}, submitLabel
         {stamp !== undefined ? <input type="hidden" name="expectedUpdatedAt" value={stamp} /> : null}
         <FieldErrors errors={errors}>{children}</FieldErrors>
       </fieldset>
-      {showSave || cancel ? <CorpFormFooter>{cancel ?? null}{showSave ? <button type="submit" className="c-btn" disabled={pending || disabled}><ButtonLabel pending={pending} idle={submitLabel} busy={pendingLabel} /></button> : null}</CorpFormFooter> : null}
+      {showSave || cancel ? <CorpFormFooter>{cancel ?? null}{showSave ? <button type="submit" className="c-btn" disabled={pending || disabled} aria-busy={pending || undefined}><BBusyLabel busy={pending} busyLabel={pendingLabel}>{submitLabel}</BBusyLabel></button> : null}</CorpFormFooter> : null}
       {saveOnChange ? <DiscardGuard dirty={dirty} /> : <FormDiscardGuard resetKey={savedCount} />}
       <p className="c-sr" role="status" aria-live="polite">{pending ? pendingLabel : ""}</p>
     </form>
