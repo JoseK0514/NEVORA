@@ -152,3 +152,18 @@ unchanged.
 - C3 Review replacement: needs a live coverage gap opened by hand.
 - J18 Billing, K13 and K15: separate commerce and Clocker fixtures.
 - F3: not in the approved list.
+
+## Follow-up: kit targets at 44px (`6d5499ae`)
+The lead asked for the three kit items above. Each now answers on 44px or more at 320 and 390. Hit areas were measured
+on the production build of `6d5499ae` by hit-testing out from each control's centre.
+
+| Row | Control | Before (320) | After (320) | Cause and fix |
+|---|---|---|---|---|
+| C12, E1 | Segmented tabs (Waiting, Open cover, Done; Waiting, Approved, Declined) | 37px tall | 45px | Below 360px the hero-tab rule set `overflow: hidden`, which clipped the kit's 44px `::after` hit area to the 36px pill. Now `overflow: clip` with a 4px clip margin: the label still clips at its edge (`owner-b-pages.css`). |
+| B4 | “All” filter chip | 41px wide | 56px | Kit: below 360px a segment of a three-or-more track is at least 44px wide (`b-foundation.css`). Shifts, Time and Requests give up 5px each; no label clips. |
+| I6 | Show password eye | 41px wide | 45 × 49px | An invisible ring 2px out (`::after`); the eye is still drawn 40px (`employee-b/account.css`). |
+
+The look is pixel-identical before and after at 390 for all four, and at 320 for C12, E1 and I6. The one visible change
+is B4 at 320, where “All” is wider. Browsers without `overflow-clip-margin` keep today's behaviour. Tests:
+`src/app/app/target-size-44.test.ts`; `src/components` and `src/app/app`: 4254 passed, 0 failed. Shots:
+`shots/target-44/<row>-<390|320>-<before|after>.webp`.
