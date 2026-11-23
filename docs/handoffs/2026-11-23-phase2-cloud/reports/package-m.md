@@ -48,3 +48,12 @@ None found.
 ## Proposed end-sweep rows
 - C12 Done at 390: with the status on the right, the day and the hours of a can't-work row wrap onto two lines
   ("Thu, Dec 3" / "2:00 PM – 10:00 PM"); readable, not cut.
+
+## C10 follow-up (Jose, Nov 23: "the not sent button, that is wrong")
+- 9d53bcb3 (`schedule-tools.css`, test `availability-segments.test.ts`): Not sent / Sent is the kit's segmented control in
+  the people card for Owner and Manager. At 390 the chosen pill hung past the left of its grey track and the track ended
+  faded after Sent (the filter chips' scroll fade). Now one grey track wraps both segments with an even 4px inset, each
+  segment is half and 44px tall, the chosen one is the white pill inside the track, the counts are the kit's grey
+  numerals, and labels wrap at 200% text.
+- Checked for Owner and Manager at 320, 390, 390 with 200% text, 1440 and 1440 with 200% text (no overflow, clipping or
+  overlap, axe 0) and in forced colours (the chosen segment has the Highlight outline). C10-o and C10-m shots replaced.

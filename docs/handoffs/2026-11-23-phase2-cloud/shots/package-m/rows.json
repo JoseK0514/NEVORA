@@ -63,8 +63,12 @@
   "row": "C10",
   "page": "Availability (Owner)",
   "section": "Schedule tools",
-  "note": "Availability for the Owner: the week in the band, the deadline row, then Not sent and Sent with one person not sent (location under the name). Same component and layout as the Manager's.",
+  "note": "Availability for the Owner: Not sent / Sent is now the kit's segmented control in the people card (Jose, Nov 23: the chosen pill had hung past the grey track and the track ended faded). One track wraps both halves, the chosen one is the white pill inside it, the counts are the kit's grey numerals; 320, 390, 390 at 200% text, 1440 and forced colours.",
   "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/C10-o-320.webp"
+   },
    {
     "label": "Phone",
     "after": "img/C10-o-390.webp"
@@ -74,10 +78,6 @@
     "after": "img/C10-o-390t200.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/C10-o-768.webp"
-   },
-   {
     "label": "Desktop",
     "after": "img/C10-o-1440.webp",
     "desk": true
@@ -85,6 +85,15 @@
    {
     "label": "Desktop, 200% text",
     "after": "img/C10-o-1440t200.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C10-o-fc390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C10-o-fc1440.webp",
     "desk": true
    }
   ],
@@ -155,8 +164,12 @@
   "row": "C10",
   "page": "Availability (Manager)",
   "section": "Schedule tools",
-  "note": "Availability for a Manager, for side-by-side comparison with the Owner's: no difference found.",
+  "note": "Availability for the Manager: Not sent / Sent is now the kit's segmented control in the people card (Jose, Nov 23: the chosen pill had hung past the grey track and the track ended faded). One track wraps both halves, the chosen one is the white pill inside it, the counts are the kit's grey numerals; 320, 390, 390 at 200% text, 1440 and forced colours.",
   "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/C10-m-320.webp"
+   },
    {
     "label": "Phone",
     "after": "img/C10-m-390.webp"
@@ -166,10 +179,6 @@
     "after": "img/C10-m-390t200.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/C10-m-768.webp"
-   },
-   {
     "label": "Desktop",
     "after": "img/C10-m-1440.webp",
     "desk": true
@@ -177,6 +186,15 @@
    {
     "label": "Desktop, 200% text",
     "after": "img/C10-m-1440t200.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, forced colours",
+    "after": "img/C10-m-fc390.webp"
+   },
+   {
+    "label": "Desktop, forced colours",
+    "after": "img/C10-m-fc1440.webp",
     "desk": true
    }
   ],

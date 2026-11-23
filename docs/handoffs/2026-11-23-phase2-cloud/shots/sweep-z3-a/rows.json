@@ -1142,5 +1142,38 @@
   ],
   "blocking": [],
   "endSweep": []
+ },
+ {
+  "id": "SHELL-fc",
+  "row": "Shell",
+  "page": "Top bar and phone header",
+  "section": "Z3 forced colours and language",
+  "note": "Forced colours: Search, the bell and the account menu (desktop) and the bell, avatar and Add shift (phone header) had no edge, and the bell’s glyph stayed white on the forced background (it vanished). Each now has a ButtonText edge and the glyph is ButtonText (5511429e, b35fb837).",
+  "shots": [
+   {
+    "label": "Owner, Phone, forced colours",
+    "before": "img/SHELL-o-before-390.webp",
+    "after": "img/SHELL-o-after-390.webp"
+   },
+   {
+    "label": "Owner, Desktop, forced colours",
+    "before": "img/SHELL-o-before-1440.webp",
+    "after": "img/SHELL-o-after-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Employee, Phone, forced colours",
+    "before": "img/SHELL-e-before-390.webp",
+    "after": "img/SHELL-e-after-390.webp"
+   },
+   {
+    "label": "Employee, Desktop, forced colours",
+    "before": "img/SHELL-e-before-1440.webp",
+    "after": "img/SHELL-e-after-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
  }
 ]

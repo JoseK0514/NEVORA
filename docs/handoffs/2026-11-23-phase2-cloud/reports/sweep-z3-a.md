@@ -48,3 +48,10 @@ passes (3209 tests); typecheck clean.
 `shots/sweep-z3-a/img/<row>[-en|-es]-<before|after>-<390|1440>.webp` (quality 80), viewport-height, forced colours on;
 `rows.json` has one entry per row (`<row>-fc`). Before shots are from fe25235e (origin at da3283a0 merged, before any
 Z3 change).
+
+## Shell follow-up (lead, Nov 23, 15:37)
+- 5511429e: in forced colours the top bar's Search, bell and account menu (desktop) and the phone header's bell, avatar
+  and Add shift get a 1px ButtonText inset outline, as the kit buttons (baca629a).
+- b35fb837: the bell's glyph was set to the band's white with layered !important and stayed white on the forced
+  Canvas (the bell circle was empty, before and after the edge); it is now drawn in ButtonText.
+- Checked on the Owner (Schedule) and Employee (Home), 390 and 1440; row `SHELL-fc` in rows.json (before and after).
