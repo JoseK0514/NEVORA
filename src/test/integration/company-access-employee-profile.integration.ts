@@ -14,6 +14,22 @@ async function command(f:Fixture,id='target',change:Partial<CoreProfileInput>={}
  return {operationId:randomUUID(),employeeId:id,expectedEmployeeUpdatedAt:read.data.current.employeeUpdatedAt,
   profile:{...p,phone:'7875550103',...change},...(scope?{managerTransitionScope:{expectedRoleGeneration:read.data.current.roleGeneration,expectedScopeRevision:read.data.current.scopeRevision,scope}}:{})};
 }
+it('keeps the exact legacy phone on an unrelated edit and rejects a different invalid phone',async()=>{
+ const f=await companyAccessFixture();try{
+  await f.q("UPDATE employees SET phone='555-0126' WHERE id='target'");
+  const save=await command(f,'target',{firstName:'Updated',phone:'555-0126'});
+  const saved=await saveEmployeeCoreAccessProfile(f.owner,save,f.db.executor);
+  expect(saved.state).toBe('saved');
+  expect(await saveEmployeeCoreAccessProfile(f.owner,save,f.db.executor)).toEqual(saved);
+  expect(await f.q("SELECT first_name,phone FROM employees WHERE id='target'")).toEqual([{first_name:'Updated',phone:'555-0126'}]);
+  const rejected=await command(f,'target',{firstName:'Rejected',phone:'555-0127'});
+  expect(await saveEmployeeCoreAccessProfile(f.owner,rejected,f.db.executor)).toMatchObject({state:'invalid',fieldErrors:[{field:'phone'}]});
+  expect(await f.q("SELECT first_name,phone FROM employees WHERE id='target'")).toEqual([{first_name:'Updated',phone:'555-0126'}]);
+  const repair=await command(f,'target',{phone:'(787) 555-0126'});
+  expect(await saveEmployeeCoreAccessProfile(f.owner,repair,f.db.executor)).toMatchObject({state:'saved'});
+  expect(await f.q("SELECT phone FROM employees WHERE id='target'")).toEqual([{phone:'787-555-0126'}]);
+ }finally{await f.db.dispose();}
+});
 it('Owner promotion and scope commit once with the new generation, exact versions and one canonical replay receipt',async()=>{
  const f=await companyAccessFixture();try{
   const c=await command(f,'target',{role:'MANAGER'},{mode:'LOCATIONS',locationIds:['loc-1']});

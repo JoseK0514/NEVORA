@@ -18,9 +18,11 @@ export function readScope(v:unknown):ScopeSelection|null {
  throw new Error('Choose at least one management location.');
 }
 function selectedScope(v:ScopeSelection|null):ScopeSelection{if(!v)throw new Error('Choose management access explicitly.');return readScope(v)!;}
-function profile(f:FormData):CoreProfileInput {
+function profile(f:FormData,currentPhone?:string):CoreProfileInput {
  const active=choice(f.get('active'),['true','false']);
- const phone=normalizePhoneNumber(text(f.get('phone')));if(!phone)throw new Error('Enter a valid contact phone number.');
+ const raw=f.get('phone');
+ const phone=typeof raw==='string'?(normalizePhoneNumber(raw)??(raw===currentPhone?raw:null)):null;
+ if(phone===null)throw new Error('Enter a valid contact phone number.');
  return {firstName:text(f.get('firstName')).trim(),lastName:text(f.get('lastName')).trim(),phone,email:String(f.get('email')??'').trim()||null,role:choice(f.get('role'),roles),primaryLocationId:text(f.get('primaryLocationId')),active:active==='true'};
 }
 /** The three optional date inputs, or undefined when the form has none (the
@@ -35,7 +37,7 @@ export function employmentDatesFromForm(f:FormData):EmploymentDates|undefined {
  return dates;
 }
 export function coreCommandFromForm(f:FormData,employee:EmployeeManagementProfile,current:OwnerScopeContext|null,actorRole:UserRole,scope:ScopeSelection|null,operationId:string):EmployeeCoreAccessCommand {
- const next=profile(f),dates=employmentDatesFromForm(f);const command:EmployeeCoreAccessCommand={operationId,employeeId:employee.id,expectedEmployeeUpdatedAt:employee.updatedAt,profile:next,...(dates?{employmentDates:dates}:{})};
+ const next=profile(f,employee.phone),dates=employmentDatesFromForm(f);const command:EmployeeCoreAccessCommand={operationId,employeeId:employee.id,expectedEmployeeUpdatedAt:employee.updatedAt,profile:next,...(dates?{employmentDates:dates}:{})};
  if(actorRole==='OWNER'&&next.role==='MANAGER'&&next.active&&(employee.role!=='MANAGER'||!employee.active)){
   if(!current||current.employeeId!==employee.id||current.employeeUpdatedAt!==employee.updatedAt)throw new Error('Reload current management access before this role change.');
   command.managerTransitionScope={expectedScopeRevision:current.scopeRevision,expectedRoleGeneration:current.roleGeneration,scope:selectedScope(scope)};

@@ -306,7 +306,8 @@ export type EmployeeCoreMutationInput = {
     expectedUpdatedAt: string;
     firstName: string;
     lastName: string;
-    phone: string;
+    /** Null preserves the stored phone on an authorized, versioned edit. */
+    phone: string | null;
     email?: string;
     role: UserRole;
     primaryLocationId: string;
@@ -333,14 +334,14 @@ export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutation
 
   const firstName = input.firstName.trim();
   const lastName = input.lastName.trim();
-  const phone = input.phone.trim();
+  const phone = input.phone?.trim() ?? null;
   const email = input.email?.trim() || null;
   if (
     !input.employeeId ||
     !input.expectedUpdatedAt ||
     !firstName ||
     !lastName ||
-    !phone ||
+    phone === "" ||
     !input.primaryLocationId
   ) {
     throw new Error("employee_profile_invalid");
@@ -471,7 +472,7 @@ export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutation
       text: `UPDATE employees
         SET first_name=$1,
             last_name=$2,
-            phone=$3,
+            phone=COALESCE($3,phone),
             email=$4,
             role=$5,
             primary_location_id=$6,
