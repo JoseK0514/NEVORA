@@ -367,4 +367,8 @@ it('batch 1 item 2: People for a replaced payroll says so in its period line', (
   boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [correction, original], jobs: [] };
   expect(withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-original" />))).toContain('· Replaced by a correction');
   expect(withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-fix" />))).not.toContain('Replaced by a correction');
+  // Batch 1 item 3: the approved group title stays, and "Net pay" is said once as its column label, not on each row.
+  const people = withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-fix" />));
+  expect(people).toContain('>Employee amounts</h2><div class="c-pay__sec-aside"><span class="c-pay__aside">Net pay</span></div>');
+  expect(people).not.toContain('<span class="c-row__detail"><span>Net pay</span></span>');
 });

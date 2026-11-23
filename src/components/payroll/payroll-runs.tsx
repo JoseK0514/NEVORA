@@ -210,7 +210,7 @@ function nextStep(open: PayrollRun | undefined): { label: string; href: string; 
  * in grey (R3). The amount shows only when the payroll holds one (a missing amount is never a zero). */
 function RunRow({ item, replaced = false }: { item: PayrollRun; replaced?: boolean }) {
   const approved = item.status === 'APPROVED';
-  // Closing F1 (NV-082), batch 1 item 3: a payroll a correction replaced says so once ("Replaced by a correction"; the grey chip that repeated it is gone; "Replaced by a correction"; Phase 8, a.md #47: the words the statements use) and is
+  // Closing F1 (NV-082), batch 1 item 3: a payroll a correction replaced says so once ("Replaced by a correction", Phase 8, a.md #47: the words the statements use; the grey chip that repeated it is gone) and is
   // listed right under its correction (byCorrection), indented.
   if (replaced) return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
     title={quietRange(item.period.startDate, item.period.endDate)}
@@ -620,9 +620,10 @@ function PeopleAmounts({ run, replaced = false }: { run: PayrollRun; replaced?: 
         <div className="c-pay__net"><dt>{`Net pay · ${plural(run.totals.employeeCount, 'employee', 'employees')}`}</dt><dd>{formatPayrollMoney(run.totals.netMinor)}</dd></div>
       </dl>
     </PayGroup> : null}
-    {run.rows ? <PayGroup id="payroll-people" label="Net pay by person">
+    {/* Batch 1 item 3: the approved title stays; "Net pay" is said once, as the column label beside it, not on each row. */}
+    {run.rows ? <PayGroup id="payroll-people" label="Employee amounts" aside={<span className="c-pay__aside">Net pay</span>}>
       <div className="c-pay__search"><label className="c-sr" htmlFor={searchId}>Find employee amounts</label><input id={searchId} className="c-in" type="search" enterKeyHint="search" autoComplete="off" placeholder="Find an employee" value={filter} onChange={event => setFilter(event.target.value)} /></div>
-      <ul className="c-rows" aria-label="Net pay by person">{rows.map(row => {
+      <ul className="c-rows" aria-label="Employee amounts">{rows.map(row => {
         const result = native ? run.nativeCalculation?.employees.find(item => item.employeeId === row.employeeId) : undefined;
         const exception = run.exceptionRevisions.find(item => item.employeeId === row.employeeId)?.revision;
         return <li key={row.employeeId}><details className="c-pay__person">
