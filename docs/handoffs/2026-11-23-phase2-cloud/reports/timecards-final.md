@@ -100,4 +100,5 @@ width; the selection rules, labels, steps and the approve and finalize actions a
   width alone on a phone).
 - Production recapture: Owner and Elena; list, Luis Torres's sheet, select and review at 390, 390 with 200% text and
   1440: 24 captures, no overflow, overlaps or clipped text, axe 0. `src/components` 3233/3233 pass.
+- Captures retaken after merging the shared tip c32ae519 (kit buttons in rem at 200%): 24 again clean.
 - Kit item left: the kit checkbox stays 20px at 200% text (a fixed size in b-foundation.css).
