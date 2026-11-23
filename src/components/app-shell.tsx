@@ -112,6 +112,11 @@ type AppShellProps = {
 };
 
 
+/** The Things to do count as the sidebar entry and the tab draw it (and as their names read it): "99+" past 99. */
+function countText(count: number) {
+  return count > 99 ? "99+" : String(count);
+}
+
 /** Phase 1: the tapped tab lights up at once, before its page arrives (the Quiet shell styles the mark). */
 function TabPending() {
   const { pending } = useLinkStatus();
@@ -543,6 +548,8 @@ function AppShellView({
           {group.label ? <h2 className="sidebar-group-label">{group.label}</h2> : null}
           {group.items.map((item) => {
             const active = item.href === sidebarActive;
+            // G6 (Nov 23, 2026): the name starts with what the entry shows, the label and then the count as drawn ("99+").
+            const count = item.href === "/app/inbox" && inboxCount ? countText(inboxCount) : null;
 
             return (
               <Link
@@ -551,7 +558,7 @@ function AppShellView({
                 className={active ? "nav-link active" : "nav-link"}
                 // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
                 aria-current={active ? (activeTool?.href === item.href || (item.href === activeHref && !pageItem && !deeper) ? "page" : "true") : undefined}
-                aria-label={item.href === "/app/inbox" && inboxCount ? `Things to do, ${inboxCount}` : item.label}
+                aria-label={count ? `${item.label}, ${count}` : item.label}
               >
                 <span className="nav-icon">
                   {/* Phase 3 (TB-001, TB-009): the current entry's glyph is filled, in the sidebar and the rail, as the phone's current tab is.
@@ -560,7 +567,9 @@ function AppShellView({
                 </span>
                 <span className="nav-label">{item.label}</span>
                 <NavPending />
-                {item.href === "/app/inbox" && inboxCount ? <span className="nav-count" aria-hidden="true">{inboxCount > 99 ? "99+" : inboxCount}</span> : null}
+                {/* The space keeps the label and the count two words for tools that read the drawn text (the flex row
+                  * draws no gap for it). */}
+                {count ? <>{" "}<span className="nav-count" aria-hidden="true">{count}</span></> : null}
               </Link>
             );
           })}</div>)}
@@ -651,7 +660,8 @@ function AppShellView({
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
                     // Review Nov 14 (BR-4): More and the pages it opens light no tab, so a lit tab is always the page's own place.
                     aria-current={active ? "page" : undefined}
-                    aria-label={needsYou !== null ? `Things to do, ${needsYou}` : undefined}
+                    // G6 (Nov 23, 2026): the name starts with the tab's own label, then the count as drawn ("To do, 3").
+                    aria-label={needsYou !== null ? `${item.label}, ${countText(needsYou)}` : undefined}
                     // Owner premium P8: tapping the tab you are on scrolls its page back to the top, as on iOS.
                     onClick={event => {
                       if (location !== item.href || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -665,7 +675,7 @@ function AppShellView({
                     <NavIcon name={item.icon} size={24} weight={active ? "fill" : "bold"} />
                     <span>{item.label}</span>
                     {/* Direction B: the count is visible on the tab too (phones, Owner and Manager); the label above reads it. */}
-                    {needsYou !== null && !employee ? <span className="b-tab-badge" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}
+                    {needsYou !== null && !employee ? <>{" "}<span className="b-tab-badge" aria-hidden="true">{countText(needsYou)}</span></> : null}
                     <TabPending />
                   </Link>
                 );
