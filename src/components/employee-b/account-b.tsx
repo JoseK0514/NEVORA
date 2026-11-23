@@ -91,7 +91,7 @@ export function EmployeeHelpB({email, response, signIn, work, report, legal}: {
     <BStack>
       <BCard title="Contact" id="b-help-contact">
         <BList>
-          <BRow href={`mailto:${email}`} lead={<BIcon tone="teal"><EnvelopeSimpleIcon weight="bold" /></BIcon>} title="Email support" sub={email} label={`Email support, ${email}`} />
+          <BRow href={`mailto:${email}`} lead={<BIcon tone="teal"><EnvelopeSimpleIcon weight="bold" /></BIcon>} title="Email support" sub={email} />
         </BList>
         {/* Review B6 (NV-286): one line on when we reply (the full hours are on Support), then the warning as its own note. */}
         {response ? <p className="eb-help-note">{firstSentence(response)}{response.trim() !== firstSentence(response) ? <> <Link className="eb-help-note__a" href="/app/profile/support">Support hours</Link></> : null}</p> : null}
@@ -117,36 +117,33 @@ export function EmployeeHelpB({email, response, signIn, work, report, legal}: {
 }
 
 const SECTIONS_TITLE: Partial<Record<PolicyDocument['slug'], string>> = {privacy: 'In this policy', terms: 'In these terms'};
+/** Documents whose first section opens by restating the summary (Privacy: "This policy explains how information is
+ * handled when you use NEVORA…"), so the summary isn't shown above it. Layout only: the text is the document's. */
+const SUMMARY_RESTATED: ReadonlySet<PolicyDocument['slug']> = new Set(['privacy']);
 
-/** A policy page inside the app (board E-Privacy, E-Terms): the summary and the first section open in one reading card,
- * the other sections as one list that opens in place, then the links to the other pages. The text is the document's. */
+/** A policy page inside the app (board E-Privacy, E-Terms). Batch 1 (Nov 23, item 15): every section is one row of a
+ * single list that opens in place, the first one open, so each title shows once at every width (no separate contents
+ * list) and the first section sits inside the group it heads. The summary reads above the list unless the first section
+ * says it again; then the links to the other pages (the current one isn't repeated). The text is the document's. */
 export function EmployeeDocumentB({doc, sub, back, documents}: {doc: PolicyDocument; sub: string; back: string; documents: readonly PolicyDocument[]}) {
-  const [first, ...rest] = doc.sections;
+  const intro = !SUMMARY_RESTATED.has(doc.slug), action = doc.slug === 'account-deletion';
   return <BScreen back>
     <BHero back={{href: back, label: 'Profile'}} title={doc.title} titleId="b-doc-title" sub={sub} />
     <BStack>
-      {/* Desktop: the sections as a contents list on the left (eb-desk); a link opens its section where it reads. */}
-      {doc.sections.length > 1 ? <nav className="b-card eb-desk eb-toc" aria-labelledby="b-doc-toc-h"><div className="b-card__h"><h2 id="b-doc-toc-h">{SECTIONS_TITLE[doc.slug] ?? 'On this page'}</h2></div>
-        <ul>{doc.sections.map((section, index) => <li key={section.heading}><a href={`#b-doc-s${index}`}>{section.heading}</a></li>)}</ul></nav> : null}
-      <article className="b-card eb-doc" aria-labelledby="b-doc-title">
-        <p className="eb-doc__intro">{doc.summary}</p>
-        {first ? <details className="eb-doc__first" open>
-          <summary><h2>{first.heading}</h2><CaretDownIcon className="eb-doc__caret" size={18} weight="bold" aria-hidden="true" /></summary>
-          <div className="eb-read" id="b-doc-s0">{first.blocks.map((block, index) => <BlockView key={index} block={block} context="employee" />)}</div>
-        </details> : null}
+      {intro || action ? <article className="b-card eb-doc" aria-labelledby="b-doc-title">
+        {intro ? <p className="eb-doc__intro">{doc.summary}</p> : null}
         {/* Review F2 (NV-144): the page's one action is a white pill in the reading card's footer, not a grey slab on the canvas. */}
-        {doc.slug === 'account-deletion' ? <div className="eb-doc__foot"><BButtonLink href="/app/account/delete" kind="white">Review deletion request</BButtonLink></div> : null}
-      </article>
-      {rest.length ? <BCard title={SECTIONS_TITLE[doc.slug] ?? 'On this page'} id="b-doc-sections">
-        <ul className="b-list">{rest.map((section, index) => <li className="b-li" key={section.heading}><details className="eb-doc__sec">
+        {action ? <div className="eb-doc__foot"><BButtonLink href="/app/account/delete" kind="white">Review deletion request</BButtonLink></div> : null}
+      </article> : null}
+      {doc.sections.length ? <BCard title={SECTIONS_TITLE[doc.slug] ?? 'On this page'} id="b-doc-sections">
+        <ul className="b-list">{doc.sections.map((section, index) => <li className="b-li" key={section.heading}><details className="eb-doc__sec" open={index === 0}>
           <summary className="b-row b-row--link"><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{section.heading}</span></span></span>
             <CaretDownIcon className="b-chev eb-doc__caret" size={18} weight="bold" aria-hidden="true" /></summary>
-          <div className="eb-read eb-doc__body" id={`b-doc-s${index + 1}`}>{section.blocks.map((block, index) => <BlockView key={index} block={block} context="employee" />)}</div>
+          <div className="eb-read eb-doc__body" id={`b-doc-s${index}`}>{section.blocks.map((block, index) => <BlockView key={index} block={block} context="employee" />)}</div>
         </details></li>)}</ul>
       </BCard> : null}
-      <nav className="eb-doc__links" aria-label="NEVORA policies and help">{documents.map(other => other.slug === doc.slug
-        ? <span key={other.slug} aria-current="page">{shortTitle(other)}</span>
-        : <Link key={other.slug} href={'/app/profile/' + other.slug}>{shortTitle(other)}</Link>)}</nav>
+      <nav className="eb-doc__links" aria-label="NEVORA policies and help">{documents.filter(other => other.slug !== doc.slug).map(other =>
+        <Link key={other.slug} href={'/app/profile/' + other.slug}>{shortTitle(other)}</Link>)}</nav>
     </BStack>
   </BScreen>;
 }

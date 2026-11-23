@@ -13,11 +13,13 @@ export function wallTime(time: string) {
 }
 
 /** A day as a row's lead: "SAT" over "7". Today's number is teal. */
-export function BDay({date, today, past, pick}: {date: string; today?: boolean; past?: boolean;
-  /** Phase 4 (EM-013): the day the desktop Schedule's day card shows (the chosen day, else today). */ pick?: boolean}) {
+export function BDay({date, today, past, pick, spoken}: {date: string; today?: boolean; past?: boolean;
+  /** Phase 4 (EM-013): the day the desktop Schedule's day card shows (the chosen day, else today). */ pick?: boolean;
+  /** Gaps G66: the day is part of its row's name ("Tue 24 9:00 AM – 5:00 PM …"), for a row named by what it shows. A row
+   * with its own label keeps the day hidden. */ spoken?: boolean}) {
   const at = utcDay(date);
-  return <span className={`b-day eb-day${today ? ' eb-day--today' : ''}${past ? ' eb-day--past' : ''}${pick ? ' eb-day--pick' : ''}`} aria-hidden="true">
-    <span>{new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short'}).format(at)}</span><b>{at.getUTCDate()}</b>
+  return <span className={`b-day eb-day${today ? ' eb-day--today' : ''}${past ? ' eb-day--past' : ''}${pick ? ' eb-day--pick' : ''}`} aria-hidden={spoken ? undefined : 'true'}>
+    <span>{new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short'}).format(at)}</span>{spoken ? <span className="b-sr"> </span> : null}<b>{at.getUTCDate()}</b>
   </span>;
 }
 

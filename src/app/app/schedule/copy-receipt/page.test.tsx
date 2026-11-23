@@ -9,6 +9,10 @@ rs.mock('@/lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],require
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'manager',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 rs.mock('@/lib/data/schedule-copy',()=>({readScheduleCopyReceipt:async()=>fixtures.receipt,readScheduleCopyCommand:async()=>fixtures.command}));
 rs.mock('@/components/schedule-copy-form',()=>({ScheduleCopyForm:({label}:{label:string})=>createElement('button',{type:'button'},label)}));
+// G98: the person's language (saved choice, else the nv-lang cookie or the browser's); a failed read is English.
+const language=rs.hoisted(()=>({value:'en' as 'en'|'es',fail:false,cookie:'en' as 'en'|'es'}));
+rs.mock('@/lib/activation/language.server',()=>({readPortalLanguage:async()=>{if(language.fail)throw Error('language_source_unavailable');return {state:'ready',savedLanguage:null,language:language.value};}}));
+rs.mock('@/lib/auth-lang.server',()=>({readAuthLang:async()=>language.cookie}));
 import Page from './page';
 import {compactRange} from '@/components/owner-b/b-kit';
 import {formatTimeRange} from '@/lib/date-utils';
@@ -21,7 +25,7 @@ const operationalPageFixture=rs.hoisted(()=>({denied:false}));
 rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
-beforeEach(()=>{operationalPageFixture.denied=false;fixtures.receipt=null;fixtures.command=null;});
+beforeEach(()=>{operationalPageFixture.denied=false;fixtures.receipt=null;fixtures.command=null;language.value='en';language.fail=false;language.cookie='en';});
 
 const operationId='11111111-1111-4111-8111-111111111111';
 const render=async(operation=operationId)=>renderToStaticMarkup(await Page({searchParams:Promise.resolve({operation})}));
@@ -57,7 +61,7 @@ it('says a link without a copy reference points nowhere',async()=>{
  expect(html).toContain('href="/app/schedule"');
 });
 
-it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const html=await render();expect(html).toContain('This page needs company-wide management access.');expect(html).not.toContain('Retry this copy');expect(html).not.toContain('Review schedule');});
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const html=await render();expect(html).toContain('Company-wide access needed');expect(html).toContain('An Owner can give it to you.');expect(html).not.toContain('Retry this copy');expect(html).not.toContain('Review schedule');});
 
 it('confirms a clean copy once, with the success mark, the week and the place',async()=>{
  fixtures.receipt=receipt([row('a','COMMITTED'),row('b','COMMITTED',{date:'2026-10-20'})]);
@@ -167,4 +171,30 @@ it('keeps older receipts that carry only a source reference readable',async()=>{
  const html=await render();
  expect(html).toContain('older-source');
  expect(html).toContain('Not copied');
+});
+
+it('says the count once when every copied shift has a warning: "All with warnings", no second equal number',async()=>{
+ fixtures.receipt=receipt([row('a','COMMITTED',{warnings:[availability]}),row('b','COMMITTED',{warnings:[availability],employeeName:'Second Person'})]);
+ const html=await render();
+ const start=html.indexOf('id="copy-warnings"');
+ expect(text(html.slice(html.indexOf('id="copy-result"'),start))).toContain('2 shifts');
+ const warnings=text(html.slice(start));
+ expect(warnings).toMatch(/^.*All with warnings /);
+ expect(warnings).not.toMatch(/With warnings 2/);
+ expect(html).not.toContain('c-copy__count');
+});
+
+it('G98: follows the person’s language, and is English when that read fails', async () => {
+ fixtures.receipt = receipt([row('s1', 'COMMITTED')]);
+ language.value = 'es';
+ const es = text(await render());
+ expect(es).toContain('Semana copiada');
+ expect(es).not.toContain('Week copied');
+ language.fail = true;
+ expect(text(await render())).toContain('Week copied');
+ fixtures.receipt = null;
+ language.fail = false; language.value = 'es';
+ expect(text(await render())).toContain('Copia sin confirmar');
+ language.cookie = 'es';
+ expect(text(await render('not-an-operation'))).toContain('No encontramos la copia');
 });

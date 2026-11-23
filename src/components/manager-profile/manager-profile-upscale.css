@@ -7,6 +7,12 @@
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > summary.q-row::after { display: none; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section > .nv-card__head { display: none; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section { grid-template-columns: minmax(0, 1fr); row-gap: 12px; padding-top: 4px; box-shadow: none; }
+/* Phase 2 Z2 (Nov 23, 2026): on a phone "Add a passkey" goes under its explanation. The shared passkey row puts the
+ * button in grid column 2, which added a column beside the one-column row above and squeezed the explanation to about
+ * 130px at 320. From 768px the button stays beside the text as before. */
+@media (max-width: 767px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section .pk-add { grid-column: 1; grid-row: auto; justify-self: start; }
+}
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-device-other { display: none; }
 @media (min-width: 768px) {
   :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-device-phone { display: none; }
@@ -26,9 +32,9 @@
   } }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who h1:not(#nvd-none) { overflow-wrap: anywhere; }
   @layer nv-b {
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who h1:not(#nvd-none) { font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: #FFFFFF !important; } }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who h1:not(#nvd-none) { font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: #FFFFFF !important; } }
   @layer nv-b {
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who p:not(#nvd-none) { margin: 2px 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2, rgb(255 255 255 / .86)) !important; } }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who p:not(#nvd-none) { margin: 2px 0 0 !important; font-size: 0.875rem !important; line-height: 1.1875rem !important; color: var(--b-on-band-2, rgb(255 255 255 / .86)) !important; } }
   @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who .q-av:not(#nvd-none) { width: 52px !important; height: 52px !important; border-radius: 26px !important; background: #FFFFFF !important; color: #0B6E69 !important; font-size: 18px !important; font-weight: 700 !important; box-shadow: none !important; } }
   @layer nv-b {
@@ -82,3 +88,28 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .q-page.premium-manager-profile > .q-nav .q-nav__r:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4):not(#nvd-none5) { min-height: var(--b-btn-h-band) !important; height: var(--b-btn-h-band) !important; padding: 0 var(--b-space-24) !important; top: -5px !important; }
   }
 }
+
+/* Phase 2 (Nov 23, 2026): on a phone "What you can approve" and its closing line start 4px inside the cards' edge, as
+ * they do from 768px (they sat on the screen's edge, 12px left of the cards). */
+@layer nv-b {
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .q-page.premium-manager-profile .ma :is(.ma-h, .ma-escalate) { padding-left: var(--b-space-20) !important; padding-right: var(--b-space-20) !important; }
+  }
+}
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): a notification switch is painted by its background alone, so under Windows
+ * contrast themes it vanished and on and off looked the same. It keeps an edge and a thumb in system colours; on is the
+ * Highlight track. Nothing changes outside forced colours. */
+@media (forced-colors: active) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row > .q-tog:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border: 1px solid ButtonText !important; forced-color-adjust: none !important; background-color: Canvas !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row > .q-tog:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { forced-color-adjust: none !important; background-color: ButtonText !important; box-shadow: none !important; top: 1px !important; left: 1px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row > .q-tog[aria-checked="true"]:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { background-color: Highlight !important; border-color: Highlight !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row > .q-tog[aria-checked="true"]:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { background-color: HighlightText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row[aria-disabled="true"] > .q-tog:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border-color: GrayText !important; }
+  }
+}
+
+/* Package X (Nov 23, 2026): "What you can approve" values ("Not granted", a place's name) break only between words; at
+ * 200% text on a phone "Not granted" broke inside "granted". */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile .ma .q-row > .q-rv:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4) { overflow-wrap: normal !important; word-break: normal !important; hyphens: none !important; }

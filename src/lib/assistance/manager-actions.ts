@@ -236,8 +236,8 @@ function acknowledgementAction(
     id: `ACKNOWLEDGEMENT:${employee.employeeId}`,
     type: "ACKNOWLEDGEMENT_MISSING",
     priority: "REVIEW",
-    title: "Schedule acknowledgement pending",
-    detail: `${employee.employeeName} has not acknowledged their current published schedule.`,
+    title: "Schedule not confirmed",
+    detail: `${employee.employeeName} has not confirmed their current published schedule.`,
     href: `/app/schedule?week=${encode(weekStart)}&employeeId=${encode(employee.employeeId)}`,
     employeeId: employee.employeeId,
   };

@@ -1,0 +1,54 @@
+# Payroll 2 report (G1, G8, G10; lead's revised scope)
+
+Branch: `claude-codex-collab-nevora-payroll-2`. It merges `claude-codex-collab-nevora` at `afff76a7`, and the source
+matches origin except for the commits below.
+
+The lead's scope went through several changes:
+- The lead merged my item 7 (`6dc36d08`, origin `8f05f419`) and my back-link fix (`2cb844fa`, origin `ecb01708`).
+- For items 5, 6 and 8 the lead kept the other session's versions, with the approved strings. My earlier commits for those items (`8bba304b`, `e48a6f2a`, `be309429`, `b3b8c5f4`) are not for merging; merge commit `625fbb90` takes origin's versions.
+- I then took on item 4, the Pay chip at 200% text, and Payroll's steps at 200% text.
+
+## Commits to merge
+| Commit | What |
+|---|---|
+| `9104de3c` | Item 4 (G1, G8): Payroll's runs tab reads "Pay runs" under the band title "Payroll". On the Owner's Time exports, from 768, the band reads "Payroll" and the selected tab reads "Time exports". |
+| `2c4e556b` | G10 Pay: "Statement ready" / "Corrected" wraps under "Last pay statement" when they don't fit together. This covers the Employee, the Lead and Owner/Manager My pay. |
+| `066b0b5d` | Payroll at 200% text: step titles use a 1.25rem line height (20px by default), the step number's circle uses 1.75rem, and the Prepare button wraps. |
+| `aaaccf21` | Payroll at 200% text: the Prepare button shrinks to fit beside the phone’s 48px text offset (checked at 320 with 200% text: no longer clipped). |
+
+## Per page
+**G1 Payroll (Owner).** `payroll-tabs.tsx`, `payroll-corp.css`.
+- Tab: before, "Payroll" (selected) sat under the band title "Payroll"; after, the tab reads "Pay runs".
+- The relabel happens in `payrollTabs()`. The shell's own "Payroll" entry and `navigation.ts` are unchanged.
+- Spanish: the Payroll tabs are English-only today, so there is no Spanish string to change.
+- At 200% text the step titles wrap with even spacing, and the numbers 1, 2 and 3 sit inside their circles (checked at 320 and 390). The default size is unchanged.
+
+**G8 Time exports (Owner).** `payroll-export.tsx`.
+- From 768 the band says "Payroll" and the selected tab "Time exports" names the page, so the name no longer appears twice.
+- The Manager's page has no tabs and keeps "Time exports". Phones keep "‹ Payroll" and the title "Time exports".
+
+**G10 My pay (Owner, Elena, Daniel) and Pay (Employee).**
+- My pay is the Employee Pay component with each person's own statements. The fictional data has none for the Owner, Elena or Daniel, so they see the Employee's empty state.
+- The chip fix is in `employee-b/pay.css`. It's scoped to `.c-pay > .b-screen #b-pay-last`, so it works in every shell.
+
+## Checks
+- One production build per pass, fictional data, using the scoped harness with my plan added in a scratch copy only.
+- Accounts: Owner `QAOWNER`, Manager `OWN-ELENA`, location Manager `OWN-DANI`, Employee James.
+- Widths: 320 with 200% text, 390, 390 with 200% text, 768, 768 with 200% text, 1440, and 1440 with 200% text.
+- Results:
+  - axe: 0 violations on every screen and width.
+  - No horizontal overflow anywhere.
+  - Employee Pay at 390 with 200% text: the chip no longer runs off.
+  - Payroll's prepare page (`/app/payroll/prepare`): clean at every width.
+- Unit tests: payroll, payroll-export, the payroll routes, navigation and employee-b pass (428 and 418 tests across the two runs, 0 failures). `payroll-premium.test.tsx` now expects "Pay runs". Typecheck is clean.
+- The shots in `shots/payroll-2/` come from the pass on `7f440bc2`, which is origin plus item 4 and the chip fix. They predate the Payroll 200% step fixes, which were checked in the later passes.
+
+## Blocking items left (kit)
+- At 320 with 200% text, the band title overlaps its right button: "Payroll" × "Settings", "Pay" or "My pay" × "See your hours". The kit already has `.b-title { flex-wrap: wrap }` and `.b-title__text { min-width: min-content }` under 767px, but something overrides them. This needs a kit or shell fix, since it affects every band that has a right button.
+- Payroll at 390 with 200% text: the "Replaced" chip on a Recent payrolls row is cut off with an ellipsis. At 320 with 200% text, the "Payroll history" link and the "Net" column run past the card. These are in `payroll-runs.tsx` (Recent payrolls), which the other session owned.
+
+## End sweep (proposed ledger rows)
+- Kit, G88: Payroll tabs are 36px tall; the band back links are under 44px.
+- Shell, Package K: from 768 the Owner/Manager shell hides `.b-screen`, so their My pay shows the corporate desktop half of the same component. Same cause as F10.
+- Time exports at 768 with 200% text: the Paid time export detail line is cut off with an ellipsis in its row.
+- Payroll settings (J12) still repeats "Payroll settings" in its band and its tab. I left it to the Settings session.

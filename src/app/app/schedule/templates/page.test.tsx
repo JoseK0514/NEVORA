@@ -76,8 +76,12 @@ describe("schedule template workflow presentation", () => {
     expect(output).not.toContain("<script>alert");
     expect(output).toContain("&lt;script&gt;");
     expect(output).toContain(">1 shift</b>");
-    expect(output).toContain("Use for Oct 12–18");
+    // Phase 2 (C7): the band names the week once; each saved week's button says Apply and is named for its week.
+    expect(output).toMatch(/Week[\s\u00a0]of[\s\u00a0]Oct[\s\u00a0]12–18/);
+    expect(output).toContain('aria-label="Apply &lt;script&gt;alert(&#x27;name&#x27;)&lt;/script&gt; &amp; Operations to Oct 12–18');
     expect(output).toContain("Archive");
+    // Phase 2 (C7): Direction B for real, so the page carries no older-kit parts (Quiet, Wave).
+    expect(output).not.toMatch(/class="[^"]*\b(?:q-(?!sheet|page q-sheet|sr")|wb-|wc-|wa-|sig-|nv-)/);
   });
   it("keeps partial application and warning counts visible with a review destination", async () => {
     const output = await html(Promise.resolve({ week: "2026-10-12", applied: "3", skipped: "2", warnings: "1" }));

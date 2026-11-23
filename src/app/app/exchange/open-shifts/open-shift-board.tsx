@@ -3,7 +3,6 @@
 import { useActionState, type FormEvent } from 'react';
 import { CorpCard, CorpRow, CorpRows } from '@/components/corp/corp';
 import { BCallout, BSegs, BState } from '@/components/owner-b/b-kit';
-import { QuietList, QuietRow } from '@/components/quiet/quiet';
 import { formatDayLabel, formatTime } from '@/lib/date-utils';
 import type { OpenShiftResult, OpenShiftView } from '@/lib/scheduling/open-shifts';
 import { schedulingIssueMessage } from '@/lib/scheduling/validate-shift';
@@ -97,34 +96,36 @@ export function OpenShiftBoard({ actorId, management, postId, shifts, locations,
                 aria-label={`Withdraw ${shift.positionName} shift on ${title}`}>Withdraw</button>
             </form> : undefined} /></li>;
         })}</CorpRows>
-      </CorpCard> : <CorpCard ariaLabel="Shift postings"><div className={styles.note}><BCallout tone="grey" icon="empty">No shift postings at your authorized locations.</BCallout></div></CorpCard>}
+      </CorpCard> : <CorpCard ariaLabel="Shift postings"><div className={styles.note}><BCallout tone="grey" icon="empty">No posted shifts at your locations yet.</BCallout></div></CorpCard>}
     </>;
   }
 
+  // Batch nav gate (Nov 23, 2026): an Employee's or Lead's list in the same kit parts as the managers' (the result as a note
+  // in a card, the postings as rows with a quiet Claim), instead of the older quiet list. Same form fields, same action.
   return <>
-    {state.result ? <p className="q-help" role="status">{feedback(state.result)}</p> : null}
-    {state.retry ? <form action={action}>
-      <input type="hidden" name="actorId" value={actorId} />
-      {Object.entries(state.retry).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}
-      <button type="submit" className="q-btn q-btn--sec" disabled={pending}>Retry last action</button>
-    </form> : null}
+    {state.result ? <CorpCard ariaLabel="Result"><div className={styles.note}>
+      <BCallout tone={state.result.state === 'claimed' ? 'green' : 'amber'} icon={state.result.state === 'claimed' ? undefined : state.result.state === 'outcome_unknown' ? 'unknown' : 'check'} role="status"
+        action={state.retry ? <form action={action}>
+          <input type="hidden" name="actorId" value={actorId} />
+          {Object.entries(state.retry).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}
+          <button type="submit" className="b-btn b-btn--ghost rs-act" disabled={pending}>Retry last action</button>
+        </form> : undefined}>{feedback(state.result)}</BCallout>
+    </div></CorpCard> : null}
 
-    {shifts.length ? <QuietList label="Shifts you can claim">
-      {shifts.map(shift => {
+    {shifts.length ? <CorpCard id="open-shift-claimable" label="Shifts you can claim" count={shifts.length}>
+      <CorpRows label="Shifts you can claim">{shifts.map(shift => {
         const day = formatDayLabel(shift.date);
         const title = `${day.weekday}, ${day.day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`;
-        return <QuietRow key={shift.id} title={title} detail={`${shift.locationName} · ${shift.positionName}`}
-          control={shift.state === 'open' ? <form action={action}>
+        return <li key={shift.id}><CorpRow title={title} detail={<BSegs parts={[shift.locationName, shift.positionName]} />}
+          trail={shift.state === 'open' ? <form action={action}>
             <input type="hidden" name="kind" value="claim" />
             <input type="hidden" name="id" value={shift.id} />
             <input type="hidden" name="actorId" value={actorId} />
-            <button type="submit" className="q-btn q-btn--sec" disabled={pending}
-              aria-label={`Claim ${shift.positionName} shift on ${title}`}>
-              Claim
-            </button>
-          </form> : undefined} />;
-      })}
-    </QuietList> : <CorpCard as="div">
+            <button type="submit" className="b-btn b-btn--quiet b-rowact b-rowact--quiet" disabled={pending}
+              aria-label={`Claim ${shift.positionName} shift on ${title}`}>Claim</button>
+          </form> : undefined} /></li>;
+      })}</CorpRows>
+    </CorpCard> : <CorpCard as="div">
       <BState kind="empty" title="There are no posted shifts you can claim right now." />
     </CorpCard>}
   </>;

@@ -51,7 +51,7 @@ export function notificationTitle(item:EmployeeNotificationItem):string{
   case 'CALLOUT':return `Your can’t-work request${dates} was answered`;
   case 'EXCHANGE':return item.actionState==='available'?`You can respond to a shift request${dates}`:item.actionState==='complete'?`A shift request${dates} is closed`:`A shift request${dates} was updated`;
   case 'AVAILABILITY':return needed?'Reminder to submit your availability':item.actionState==='complete'?'Your availability was submitted':'Reminder about your availability';
-  case 'COMMUNICATION':return needed?'A team update needs your acknowledgement':'A team update was shared with you';
+  case 'COMMUNICATION':return needed?'Confirm the team update':'A team update was shared with you';
   case 'PAYROLL_STATEMENT':return 'A pay statement was shared with you';
   default:return item.label;
  }

@@ -1,0 +1,215 @@
+[
+ {
+  "id": "G1-o",
+  "row": "G1",
+  "page": "Payroll (Pay runs)",
+  "section": "Payroll and exports",
+  "note": "The Owner's Payroll. From 768 the selected tab reads 'Pay runs' under the band title 'Payroll', so the title no longer repeats.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G1-o-390-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G1-o-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G1-o-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G1-o-390-text200-v1.webp"
+   },
+   {
+    "label": "320, 200% text",
+    "after": "img/G1-o-320-text200-v1.webp"
+   }
+  ],
+  "blocking": [
+   "At 320 with 200% text the band title 'Payroll' overlaps the Settings button. The kit's .b-title wrap doesn't apply (the same happens on Pay and My pay); this is a kit fix.",
+   "These shots predate 066b0b5d (step titles, step number, Prepare button at 200%); see the report for its check."
+  ],
+  "endSweep": [
+   "Payroll tabs are 36px tall (kit G88)."
+  ]
+ },
+ {
+  "id": "G8-o",
+  "row": "G8",
+  "page": "Time exports (Owner)",
+  "section": "Payroll and exports",
+  "note": "The Owner's Time exports. From 768 the band reads 'Payroll' and the selected tab reads 'Time exports', so the page name appears once. Phones are unchanged ('‹ Payroll', Time exports).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G8-o-390-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G8-o-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G8-o-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G8-o-390-text200-v1.webp"
+   },
+   {
+    "label": "320, 200% text",
+    "after": "img/G8-o-320-text200-v1.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 768 with 200% text the Paid time export detail line is clipped with an ellipsis in its row."
+  ]
+ },
+ {
+  "id": "G10-o",
+  "row": "G10",
+  "page": "My pay (Owner)",
+  "section": "Payroll and exports",
+  "note": "The Owner's My pay is the Employee Pay screen with the Owner's own statements (none in the fictional data), titled My pay.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-o-390-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-o-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-o-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-o-390-text200-v1.webp"
+   },
+   {
+    "label": "320, 200% text",
+    "after": "img/G10-o-320-text200-v1.webp"
+   }
+  ],
+  "blocking": [
+   "At 320 with 200% text 'My pay' overlaps 'See your hours' in the band (the same kit .b-title wrap issue)."
+  ],
+  "endSweep": [
+   "From 768 the Owner/Manager shell hides .b-screen, so the desktop shows the corporate half of the same component (Package K, as F10)."
+  ]
+ },
+ {
+  "id": "G10-m",
+  "row": "G10",
+  "page": "My pay (Manager, Elena)",
+  "section": "Payroll and exports",
+  "note": "The company-wide Manager's My pay: the same Employee Pay screen, titled My pay.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-m-390-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-m-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-m-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-m-390-text200-v1.webp"
+   },
+   {
+    "label": "320, 200% text",
+    "after": "img/G10-m-320-text200-v1.webp"
+   }
+  ],
+  "blocking": [
+   "320 with 200% text: same band overlap as G10-o (kit)."
+  ],
+  "endSweep": [
+   "Same desktop shell note as G10-o."
+  ]
+ },
+ {
+  "id": "G10-ml",
+  "row": "G10",
+  "page": "My pay (location Manager, Daniel)",
+  "section": "Payroll and exports",
+  "note": "Daniel's My pay: the same Employee Pay screen with his own statements (none yet), titled My pay, with no back link over the logo.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-ml-390-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-ml-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-ml-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-ml-390-text200-v1.webp"
+   },
+   {
+    "label": "320, 200% text",
+    "after": "img/G10-ml-320-text200-v1.webp"
+   }
+  ],
+  "blocking": [
+   "320 with 200% text: same band overlap as G10-o (kit)."
+  ],
+  "endSweep": [
+   "Same desktop shell note as G10-o."
+  ]
+ },
+ {
+  "id": "G10-e-l",
+  "row": "G10",
+  "page": "Pay (Employee, Lead)",
+  "section": "Payroll and exports",
+  "note": "Employee Pay (James). At 390 with 200% text, 'Corrected' / 'Statement ready' now wraps under 'Last pay statement' instead of running past the card. The Lead's screen is the same component.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-e-390-v1.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-e-768-v1.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-e-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/G10-e-390-text200-v1.webp"
+   },
+   {
+    "label": "320, 200% text",
+    "after": "img/G10-e-320-text200-v1.webp"
+   }
+  ],
+  "blocking": [
+   "320 with 200% text: 'Pay' overlaps 'See your hours' in the band (kit .b-title wrap)."
+  ],
+  "endSweep": []
+ }
+]

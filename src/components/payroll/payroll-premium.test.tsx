@@ -27,7 +27,9 @@ describe('Payroll next step (A2)', () => {
   it('prepares when no draft exists, and the label matches the Prepare payroll page', () => {
     const html = home();
     // Nov 1 upscale: Up next is one row that opens the step (no button); the step is in its name.
-    expect(html).toMatch(/<li class="c-payroll__upnext"><a class="c-row" aria-label="Weekly payroll, [^"]*\. Prepare payroll" href="\/app\/payroll\/prepare">/);
+    // Sweep 1: named by its own text (no aria-label); the step it opens is read, not drawn.
+    expect(html).toMatch(/<li class="c-payroll__upnext"><a class="c-row" href="\/app\/payroll\/prepare">/);
+    expect(html).toMatch(/<li class="c-payroll__upnext">.*?<span class="c-sr">\. Prepare payroll<\/span>/);
     expect(html).not.toContain('c-btn');
     expect(html).not.toContain('>Review<');
   });
@@ -88,8 +90,8 @@ describe('Unpaid periods first (A6, round 2 R3)', () => {
     // Phase 8 (a.md #15): a period's payday comes from the pay schedule, and a passed one says so.
     expect(html).toContain('Scheduled payday was <span class="c-num">');
     expect(buttons.filter(button => /class="c-btn[ "]/.test(button))).toHaveLength(1);
-    expect(buttons.find(button => /class="c-btn[ "]/.test(button))).toContain('aria-label="Prepare payroll for Sep 21–27"');
-    expect(buttons.find(button => button.includes('c-pay__quiet-go'))).toContain('aria-label="Prepare payroll for Oct 5–11"');
+    expect(buttons.find(button => /class="c-btn[ "]/.test(button))).toContain('aria-label="Prepare Sep 21–27 payroll"');
+    expect(buttons.find(button => button.includes('c-pay__quiet-go'))).toContain('aria-label="Prepare Oct 5–11 payroll"');
     expect(html).not.toContain('c-btn--secondary');
     expect(html).not.toContain('Prepare draft');
   });
@@ -171,9 +173,9 @@ describe('Payroll details documents (R9)', () => {
 });
 
 describe('Payroll tabs and forms', () => {
-  it('leaves Timecards out and calls the Payroll page Payroll', () => {
+  it('leaves Timecards out and calls the runs page Pay runs, under the band title Payroll', () => {
     const tabs = payrollTabs('OWNER', nativeCapabilities);
-    expect(tabs?.map(item => item.label)).toEqual(['Payroll', 'Time exports', 'Payroll settings']);
+    expect(tabs?.map(item => item.label)).toEqual(['Pay runs', 'Time exports', 'Settings']);
   });
   it('names every missing field in one message', () => {
     const field = (name: string) => ({ getAttribute: (key: string) => key === 'aria-label' ? name : null, validity: { valueMissing: true }, validationMessage: '' }) as unknown as HTMLInputElement;
@@ -334,7 +336,9 @@ it('the phone steps card lists Timecards as a step line before its action, and a
   const phone = onlyB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings />));
   const card = phone.slice(phone.indexOf('id="b-payroll-steps"'));
   expect(card).toMatch(/<a class="b-step b-step--link"[^>]*href="\/app\/timecards\?start=2026-11-09&amp;end=2026-11-15"/);
-  expect(card.replace(/[\u00a0\u2009\u202f]/g, ' ')).toContain('aria-label="Timecards, Can be approved from Mon, Nov 16"');
+  // Sweep 1: its name is its visible text (Timecards, then the line), with no aria-label that differs from it.
+  expect(card.replace(/[\u00a0\u2009\u202f]/g, ' ')).toContain('Can be approved from Mon, Nov 16');
+  expect(card).not.toMatch(/<a class="b-step b-step--link"[^>]*aria-label=/);
   expect(card.indexOf('b-step--link')).toBeLessThan(card.search(/>Prepare [A-Z][a-z]{2} \d+–\d+<\/a>/));
   expect(card.search(/>Prepare [A-Z][a-z]{2} \d+–\d+<\/a>/)).toBeGreaterThan(0);
   const original = nativeRun({ id: 'run-original', status: 'APPROVED' });
@@ -342,4 +346,40 @@ it('the phone steps card lists Timecards as a step line before its action, and a
   const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-c" />).replace(/\u00a0/g, ' ');
   expect(html).toContain('Net pay on statements: +$5.00</b></p>');
   expect(html).not.toContain('no one’s net pay changes');
+});
+
+it('batch 1 item 1: a payroll a correction replaced says so, opens the correction, and isn’t fixed or paid again', () => {
+  const original = nativeRun({ id: 'run-original', status: 'APPROVED' });
+  const correction = nativeRun({ id: 'run-fix', status: 'APPROVED', correctionOf: 'run-original' });
+  boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [correction, original], jobs: [] };
+  const html = withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-original" />));
+  expect(html).toContain('Replaced by a correction');
+  expect(html).toContain('href="/app/payroll/review?run=run-fix"');
+  expect(html).not.toContain('Fix this payroll');
+  expect(html).not.toContain('Prepare payment instructions');
+  const fix = withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-fix" />));
+  expect(fix).not.toContain('Replaced by a correction');
+});
+
+it('batch 1 item 3: on the phone, a replaced payroll in Recent payrolls says so once, in its line', () => {
+  const week = { period: { startDate: '2026-09-28', endDate: '2026-10-04' }, payday: '2026-10-09' };
+  const original = nativeRun({ id: 'run-original', status: 'APPROVED', ...week });
+  const correction = nativeRun({ id: 'run-fix', status: 'APPROVED', correctionOf: 'run-original', ...week });
+  boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [correction, original], jobs: [] };
+  const phone = onlyB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings />));
+  const recent = phone.slice(phone.indexOf('id="b-payroll-recent"'));
+  expect(recent).toContain('Replaced by a correction');
+  expect(recent).not.toMatch(/b-chip[^>]*>(?:<[^>]+>)*Replaced</);
+});
+
+it('batch 1 item 2: People for a replaced payroll says so in its period line', () => {
+  const original = nativeRun({ id: 'run-original', status: 'APPROVED' });
+  const correction = nativeRun({ id: 'run-fix', status: 'APPROVED', correctionOf: 'run-original' });
+  boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [correction, original], jobs: [] };
+  expect(withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-original" />))).toContain('· Replaced by a correction');
+  expect(withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-fix" />))).not.toContain('Replaced by a correction');
+  // Batch 1 item 3: the approved group title stays, and "Net pay" is said once as its column label, not on each row.
+  const people = withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-fix" />));
+  expect(people).toContain('>Employee amounts</h2><div class="c-pay__sec-aside"><span class="c-pay__aside">Net pay</span></div>');
+  expect(people).not.toContain('<span class="c-row__detail"><span>Net pay</span></span>');
 });

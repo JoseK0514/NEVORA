@@ -239,11 +239,11 @@ export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled,
 /* ---------- Page heads ---------- */
 function heading(view: BusinessView, catalog: BusinessCatalog | null, t: BusinessCopy): { node: ReactNode; sheet?: boolean } {
   const source = catalog && "sourceId" in view && view.sourceId ? catalog.sources.find(item => item.sourceId === view.sourceId) ?? null : null;
-  const addHref = viewHref({ name: "new", sourceId: null });
   switch (view.name) {
     case "library": return { node: <>
-      <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: t.backToAdvisor }} title={t.title} titleId="be-nav-title" right={catalog ? <Link href={addHref}>{t.addShort}</Link> : undefined} />
-      <CorpTitle wide id="be-title" title={t.title} sub={t.sub} actions={catalog ? <CorpButtonLink href={addHref} kind="primary" size="md">{t.add}</CorpButtonLink> : undefined} />
+      {/* Rondo fix (Nov 23): adding a record is the card's one action (the empty card's button, or the list's last row). */}
+      <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: t.backToAdvisor }} title={t.title} titleId="be-nav-title" />
+      <CorpTitle wide id="be-title" title={t.title} sub={t.sub} />
     </> };
     case "record": return { node: <>
       <CorpNav phoneOnly back={{ href: LIBRARY, label: t.titleShort }} title={source?.name ?? t.record} titleId="be-nav-title" />
@@ -342,14 +342,14 @@ export function Library({ ctx, problem }: { ctx: Ctx; problem?: ReactNode }) {
   const cells = (map?.cells ?? []).filter(cell => catalog.sources.some(item => item.sourceId === cell.sourceId));
   if (!sources.length) return <>
     {problem}
-    <CorpCard as="div"><BState kind="empty" title={t.empty} line={t.emptyLine} action={{ label: t.addRow, href: viewHref({ name: "new", sourceId: null }) }} /></CorpCard>
+    <CorpCard as="div"><BState kind="empty" title={t.empty} line={t.emptyLine} action={{ label: t.add, href: viewHref({ name: "new", sourceId: null }) }} /></CorpCard>
   </>;
   return <>
     {problem}
     <CorpSection id="be-records" label={t.records} aside={<span className="be-meta">{t.countOf(active.length)}</span>}>
       <CorpCard as="div"><CorpRows label={t.records}>
         {active.length ? active.map(row) : <CorpEmptyRow as="li">{t.empty}</CorpEmptyRow>}
-        <li><Link className="be-addrow" href={viewHref({ name: "new", sourceId: null })}><PlusIcon weight="bold" aria-hidden="true" />{t.addRow}</Link></li>
+        <li><Link className="be-addrow" href={viewHref({ name: "new", sourceId: null })}><PlusIcon weight="bold" aria-hidden="true" />{t.add}</Link></li>
       </CorpRows></CorpCard>
     </CorpSection>
     {withdrawn.length ? <CorpSection id="be-withdrawn" label={t.withdrawnSection} count={withdrawn.length}>

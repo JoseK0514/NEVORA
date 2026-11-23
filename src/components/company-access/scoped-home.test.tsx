@@ -60,10 +60,10 @@ it("keeps only the chosen location's shifts, clock-ins and open shifts", () => {
   const html = render({ locationId: "loc-2" });
   expect(html).toContain("Person A");
   expect(html).not.toContain("Person C");
-  expect(html).toMatch(/Open shifts<\/span><span class="b-live__v">1</);
+  expect(html).toMatch(/Open shifts<\/span>(?: |<span class="b-sr">[ \u00a0]<\/span>)<span class="b-live__v">1</);
   const all = render();
   expect(all).toContain("Person C");
-  expect(all).toMatch(/Open shifts<\/span><span class="b-live__v">2</);
+  expect(all).toMatch(/Open shifts<\/span>(?: |<span class="b-sr">[ \u00a0]<\/span>)<span class="b-live__v">2</);
   // With two places on the card, each row says where.
   expect(all).toContain("Santurce");
 });

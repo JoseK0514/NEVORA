@@ -8,7 +8,7 @@ import {listOwnerClockerPinStatuses} from '@/lib/clocker/pin-operations.server';
 import {ClockerOwnerNav} from '@/components/clocker-owner-nav';
 import {ClockerPinInventory,ClockerPinsUnavailable} from '@/components/clocker-pin-inventory';
 import {clockerOwnerCopy} from '@/components/clocker-owner-copy';
-import {SettingsFrame} from '../../wave-c-kit';
+import {SettingsPageB} from '../../settings-b';
 import {readOperationalDirectory} from '@/lib/company-access/operational-read.server';
 import {listPositions} from '@/lib/data/positions';
 import {employeeRoleLabel} from '@/lib/employee-display';
@@ -23,7 +23,7 @@ export default async function ClockerPinsPage(){
  // Owner premium R13: each row names the person's position and location (Team's own reads), never their employee ID. A failed
  // read leaves the line out.
  const details=statuses?await personDetails(proof).catch(()=>({})):{};
- return <ScopedReadFrame observation={scopedObservation(source)}><SettingsFrame className="ck-owner" back={{href:"/app/settings",label:"Settings"}} title={clockerOwnerCopy.en.pinsTitle}><ClockerOwnerNav current="pins"/>{statuses?<ClockerPinInventory statuses={statuses} details={details}/>:<ClockerPinsUnavailable/>}</SettingsFrame></ScopedReadFrame>;
+ return <ScopedReadFrame observation={scopedObservation(source)}><SettingsPageB className="c-pins-page" title={clockerOwnerCopy.en.pinsTitle}><ClockerOwnerNav current="pins"/>{statuses?<ClockerPinInventory statuses={statuses} details={details}/>:<ClockerPinsUnavailable/>}</SettingsPageB></ScopedReadFrame>;
 }
 
 /** "Barista · Condado" for each person, from the directory and position reads the Team page uses. */

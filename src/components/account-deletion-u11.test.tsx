@@ -29,14 +29,14 @@ describe("deleting the last Owner", () => {
     expect(html).not.toContain('role="alert"');
     // Nothing to submit again from here: the retry is deliberate, from the form, after another Owner can sign in.
     expect(html).not.toContain('name="password"');
-    expect(html).not.toContain("q-deletion__confirm");
+    expect(html).not.toContain("em-delete-confirm");
     expect(html).not.toContain("Account deletion isn’t available right now");
     // No request exists, so no deletion reference is shown; the enum never reaches the screen.
     expect(html).not.toMatch(/DEL-|LAST_OWNER/);
     expect(html).toMatch(/<a class="b-btn b-btn--teal" href="\/app\/employees">Go to Team<\/a>/);
     expect(html).toContain("mailto:support@thevelani.com?subject=");
-    // The page still says the workspace stays open and how closing differs.
-    expect(html).toContain("Your company’s workspace stays open for the rest of your team.");
+    // Phase 2 (Nov 23, 2026): the card's second path is how the workspace closes, so the page doesn't say it twice.
+    expect(html.match(/Your company’s workspace stays open/g)).toBeNull();
   });
 
   it("renders the card in Spanish with no English sentence of its own", () => {
@@ -54,18 +54,19 @@ describe("deleting the last Owner", () => {
 
   it("keeps the receipt and its DEL-… reference for a real request, separate from any Support reference", () => {
     const received = form({ kind: "received", reference: "DEL-7KQ2M9XA", confirmedAt: "2026-11-17T12:00:00Z" });
-    expect(received).toContain("Your deletion request has been received.");
-    expect(received).toContain('<strong class="ad-reference">DEL-7KQ2M9XA</strong>');
+    // Phase 2 (Nov 23, 2026): every role's receipt is the Employee's Direction B one.
+    expect(received).toContain("Your deletion request was received");
+    expect(received).toMatch(/<strong class="[^"]*ad-reference">DEL-7KQ2M9XA<\/strong>/);
     expect(received).not.toContain("ar-ref");
     const duplicate = form({ kind: "duplicate", reference: "DEL-7KQ2M9XA", confirmedAt: "2026-11-17T12:00:00Z" });
-    expect(duplicate).toContain("A deletion request is already in progress.");
+    expect(duplicate).toContain("A deletion request is already in progress");
     expect(duplicate).toContain("DEL-7KQ2M9XA");
   });
 
   it("keeps the unknown result as unknown: it asks to check, never says failed or done, and offers no second request", () => {
     const html = form({ kind: "uncertain" });
-    expect(html).toContain("We couldn’t confirm your request");
-    expect(html).toContain("Your request may have been saved.");
+    expect(html).toContain("We don’t know yet if your request was saved");
+    expect(html).toContain("choose Check my request to find out");
     expect(html).not.toContain("received");
     expect(html).not.toContain(ACCESS_COPY.en.lastOwner.title);
   });

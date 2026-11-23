@@ -26,6 +26,22 @@ const props = (patch: Partial<HomeBProps> = {}): HomeBProps => ({snapshot: snaps
 const draw = (patch: Partial<HomeBProps> = {}) => renderToStaticMarkup(<EmployeeHomeB {...props(patch)}/>);
 const text = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/[  ]/g, ' ').replace(/\s+/g, ' ');
 
+it('gaps G53: the shift card’s range keeps its dash with the first time, so it can only break after the dash', () => {
+  const html = draw(), time = html.slice(html.indexOf('class="eb-shift__time"'), html.indexOf('</p>', html.indexOf('class="eb-shift__time"')));
+  expect(time).toMatch(/^class="eb-shift__time"><span class="eb-nb"><time [^>]*>[^<]*<\/time><span aria-hidden="true"> –<\/span><\/span> <span class="eb-nb"><span class="b-sr">to <\/span><time /);
+});
+
+it('proposed G67: Coming up and required to-do rows are named by what they show (no label that differs)', () => {
+  const html = draw({todos: [todo('req', true), todo('r2', true)]});
+  const upcoming = html.slice(html.indexOf('id="b-home-upcoming"'));
+  expect(upcoming).toMatch(/<a class="b-row b-row--link" href="\/app\/schedule\?week=2026-11-16&amp;day=2026-11-19[^"]*">/);
+  expect(upcoming).not.toMatch(/class="b-row b-row--link"[^>]*aria-label/);
+  // The day lead is part of the name: not hidden, with a space between "Thu" and "19".
+  expect(upcoming).toMatch(/<span class="b-day eb-day"><span>Thu<\/span><span class="b-sr"> <\/span><b>19<\/b><\/span>/);
+  const card = html.slice(html.indexOf('id="b-home-todo"'), html.indexOf('</section>', html.indexOf('id="b-home-todo"')));
+  expect(card).not.toContain('action needed, review"');expect(card).not.toMatch(/aria-label="[^"]*, action needed"/);
+});
+
 it('EM-002: Home keeps the server’s order and never drops the first required row out of sight', () => {
   const todos = [todo('a'), todo('b'), todo('c'), todo('d'), todo('req', true), todo('f')];
   // Nothing is re-ranked: the first three, then the required row from further down, in its own place.
@@ -72,11 +88,14 @@ it('round 2 (H2, H4): a request that waits for your answer is amber with Request
   expect(todoDeadline('2026-11-24T16:00:00Z', zone).full.replace(/[\u00a0\u202f]/g, ' ')).toBe('Respond by Nov 24, 12:00 PM');
 });
 
-it('EM-007, EM-025: the hours read as one sentence, the payday is one format, and the shift ahead is the first figure', () => {
+it('EM-007; DEC1: the hours read as one sentence, the payday is one format, and the band leaves the shift to its card', () => {
   const html = draw(), strip = html.slice(html.indexOf('class="b-live b-glass"'), html.indexOf('</ul>', html.indexOf('class="b-live b-glass"')));
   const plain = text(strip);
-  expect(plain).toContain('Next shift Tomorrow 9:00 AM Customer Support · Main Office');
-  expect(strip).toContain('aria-label="Next shift, Tomorrow, 9:00 AM to 5:00 PM"'.replace(/ /g, strip.includes('9:00 AM') ? ' ' : ' '));
+  // DEC1 (Jose, Nov 23, 2026; each fact once): the shift card under the band says the shift, so the band doesn't.
+  expect(plain).not.toContain('Next shift');expect(plain).not.toContain('Tomorrow 9:00 AM');
+  // Final fixes K7 and core screens check (Nov 23, 2026): each figure's link is named by its visible text (no aria-label).
+  expect(strip).not.toContain('aria-label="Next shift');
+  expect(strip).not.toMatch(/<a [^>]*aria-label=/);
   // No hours read in this render: scheduled hours stand alone with their caption.
   expect(plain).toContain('Hours 32 h scheduled this week');
   expect(plain).toContain('Scheduled payday Fri, Nov 27 in 10 days');
@@ -98,9 +117,9 @@ it('EM-015: a Lead who leads every listed shift reads it once beside the title; 
 
 it('EM-016: Today’s team is a plain row that opens the compose page, with its note as the card’s footer', () => {
   const html = draw({lead: true, team: true}), card = html.slice(html.indexOf('id="b-home-team"'), html.indexOf('</section>', html.indexOf('id="b-home-team"')));
-  expect(card).toContain('<a class="b-row b-row--link" href="/app/updates/compose" aria-label="Message today’s team, everyone on shift today">');
+  expect(card).toContain('<a class="b-row b-row--link" href="/app/updates/compose">');
   expect(card).not.toContain('b-btn');expect(card).toContain('class="b-chev"');
-  expect(card).toContain('<p class="eb-cardnote">Your message goes to everyone on today’s published schedule. They don’t have to acknowledge it.</p>');
+  expect(card).toContain('<p class="eb-cardnote">Your message goes to everyone on today’s published schedule. They don’t have to confirm it.</p>');
 });
 
 it('a punch left open after today’s shift ended is found from the two reads Home already has', () => {
@@ -143,7 +162,8 @@ it('Phase 9: the shift card says its time fact as header meta, your clock state 
   const onCard = on.slice(on.indexOf('id="b-home-shift"'), on.indexOf('</section>', on.indexOf('id="b-home-shift"')));
   expect(onCard).not.toContain('b-callout');expect(onCard).not.toContain('data-tone="green"><svg');
   expect(onCard).toMatch(/<span class="b-notice__t eb-state"><span class="b-status" data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"><\/span>Clocked in at 9:02\sAM<\/span><\/span><span class="b-notice__s">Breaks and clock out on the Main\u00a0Office tablet<\/span>/);
-  expect(on).toContain('<span class="b-card__meta">Until 9:00 PM</span>');
+  // Each fact once: the range ends at 9:00 PM, so the card has no "Until 9:00 PM" meta.
+  expect(onCard).not.toContain('b-card__meta');expect(onCard).toContain('On shift now');
   // On break: amber live dot. A shift under way with no punch: Time's words from work-copy, "Not clocked in · 9 h" (the
   // shift started at 9 AM, Home was read at 6 PM), with the amber dot.
   const pause = renderToStaticMarkup(<HoursRead.Provider value={{current: {...(read as {current: object}).current, state: 'ON_BREAK'}} as typeof read}><EmployeeHomeB {...props({snapshot: current})}/></HoursRead.Provider>);
@@ -185,4 +205,10 @@ it('final polish: Home’s shortcuts open the page that starts each request, and
   expect(text(nav(html)).trim()).toBe('Fix my time');
   expect(nav(draw())).toBe('');
   expect(nav(draw({shortcuts: []}))).toBe('');
+});
+
+it('DEC1: a Lead on shift now sees the shift once, in the "On shift now" card; the band has hours and payday only', () => {
+  const html = draw({lead: true}), strip = html.includes('class="b-live b-glass"') ? html.slice(html.indexOf('class="b-live b-glass"'), html.indexOf('</ul>', html.indexOf('class="b-live b-glass"'))) : '';
+  expect(strip).not.toContain('On shift now');expect(strip).not.toContain('b-dot--live');
+  expect(html).not.toContain('>Your shift<');
 });

@@ -3,11 +3,14 @@
  * narrower, the owner is one line and the links wrap under it on centred 44px rows, 20px apart, with no dots, so no
  * line starts or ends with a separator. Tokens from b-tokens.css (with their values as fallbacks: the error screen can
  * render without the root layout). */
-:is(#q-root, html) .so-foot { margin: 0; font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; font-size: 13px; line-height: 18px; font-weight: 400; letter-spacing: 0; color: var(--b-grey, #6A7176); text-align: center; text-wrap: wrap; }
+:is(#q-root, html) .so-foot { margin: 0; font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; font-size: 0.8125rem; line-height: 1.125rem; font-weight: 400; letter-spacing: 0; color: var(--b-grey, #6A7176); text-align: center; text-wrap: wrap; }
 :is(#q-root, html) .so-foot__owner, :is(#q-root, html) .so-foot__item { white-space: nowrap; }
 :is(#q-root, html) .so-foot__links { display: inline; }
 :is(#q-root, html) .so-foot__dot { padding: 0 6px; }
 :is(#q-root, html) .so-foot a { padding-block: 13px; color: var(--b-ink2, #3F464B); font-weight: 600; text-decoration: none; }
+/* Public batch (Nov 23, 2026): each link is its own 44 × 44 minimum box (Terms was 40px wide, every link 43px tall from
+ * 768px), label centred; the -13px block margin keeps the line where it was. */
+:is(#q-root, html) .so-foot a { display: inline-block; min-width: 44px; line-height: 1.125rem; margin-block: -13px; text-align: center; }
 :is(#q-root, html) .so-foot a:is(:hover, :focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
 :is(#q-root, html) .so-foot [aria-current="page"] { color: var(--b-ink, #111517); font-weight: 600; }
 @media (max-width: 767px) {

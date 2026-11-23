@@ -43,11 +43,8 @@ it.each(['en','es'] as const)('Employee ID has its helper at every width and the
  expect(password).not.toContain('placeholder');
 });
 
-it('only the Spanish page says the app is in English for now (PB-009)',async()=>{
- const note=AUTH_COPY.es.appLanguageNote;
- expect(note).toBe('Por ahora, la aplicación se muestra en inglés después de iniciar sesión.');
- expect(await page('es')).toContain(`<p class="q-auth__langnote">${note}</p>`);
- expect(await page('en')).not.toContain('q-auth__langnote');
+it.each(['en','es'] as const)('no page says the app is in English after sign-in (Jose, Nov 23: removed), in %s',async lang=>{
+ expect(await page(lang)).not.toContain('q-auth__langnote');
 });
 
 it.each(['en','es'] as const)('the brand panel has no eyebrow and ends with the proof rows, which are desktop only (phones keep field, field, button), in %s (PB-011)',async lang=>{

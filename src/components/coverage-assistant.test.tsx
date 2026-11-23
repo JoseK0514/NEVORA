@@ -23,7 +23,7 @@ it("keeps the suggested order, picks the best fit first and Assign opens that pe
   expect(html).toContain(">Who can cover<"); expect(html).toContain("2\u00a0people free");
   expect(html).toContain('name="coverPerson" checked="" value="E1"'); expect(html).toContain('name="coverPerson" value="E2"/>');
   expect(html.indexOf(">Best fit<")).toBeLessThan(html.indexOf("Blair Rivera"));
-  expect(html).toContain('href="/app/schedule/new?employeeId=E1&amp;start=08:00" class="c-btn c-btn--full" aria-label="Review shift for Avery Cruz"');
+  expect(html).toContain('href="/app/schedule/new?employeeId=E1&amp;start=08:00" class="c-btn c-btn--full" aria-label="Assign Avery Cruz"');
   expect(html).toContain(">Assign<");
   expect(html).not.toContain("<form");
 });
@@ -58,7 +58,7 @@ it("keeps signed replacement review links and selected requirements intact", () 
   expect(html).toContain('href="/app/schedule/new?review=signed-review-token"');
   expect(html).toContain('href="/app/schedule/coverage?repair=current-position" class="c-row c-row--one" aria-current="true"');
   expect(html).toContain(">Open shift<"); expect(html).not.toContain("Not filled"); expect(html).toContain("Operations · Mon, Oct 12 · Main Office · Shift lead needed");
-  expect(html).toContain("Review replacement for Avery Cruz");
+  expect(html).toContain("Assign Avery Cruz"); expect(html).not.toContain("Review replacement for");
   // One need only: no chooser.
   expect(render({ repair: true, requirements: [{ label: "1 more person needed", href: "/app/schedule/coverage?repair=one", selected: true }] })).not.toContain("repair=one");
 });
@@ -82,4 +82,31 @@ it("names the pending review without changing its destination", () => {
     expect(html).toContain("Opening review…");
     expect(html).toContain('href="/app/schedule/new?employeeId=E1&amp;start=08:00"');
   } finally { linkState.pending = false; }
+});
+
+// G63 (Nov 23, 2026): each fact once. Visible words only (tags stripped).
+const words = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+it("G63: after a save, the shift being covered is said once", () => {
+  const text = words(render({ status: "RESOLVED", repair: true, saved: true }));
+  expect(text).toContain("Replacement saved.");
+  expect(text).not.toContain("What’s below");
+  // "Find cover" (the title) is the only "cover": no Covered state, no "This shift is covered".
+  expect(text.match(/cover/gi)?.length).toBe(2); expect(text.match(/Find cover/g)?.length).toBe(2); // phone band + wide title
+  expect(text).not.toContain("Open shift"); expect(text).not.toContain("No replacement is needed"); expect(text).not.toContain("Back to schedule");
+});
+it("G63: opened without a save, a covered shift says Covered once", () => {
+  const text = words(render({ status: "RESOLVED", repair: true }));
+  expect(text.match(/\bCovered\b/g)?.length).toBe(1);
+  expect(text).not.toContain("This shift is covered"); expect(text).not.toContain("Replacement saved");
+});
+it("G63: a stale gap says it changed once, and a choice of needs is asked once", () => {
+  const stale = words(render({ status: "STALE", repair: true, refreshHref: "/app/schedule/coverage?repair=r&refresh=1" }));
+  expect(stale.match(/changed/gi)?.length).toBe(1); expect(stale).toContain("Coverage changed"); expect(stale).toContain("Refresh");
+  const choose = words(render({ status: "CHOOSE", repair: true, requirements: [{ label: "Shift lead needed", href: "/app/schedule/coverage?repair=lead", selected: false }] }));
+  expect(choose.match(/Choose what to fill/g)?.length).toBe(1); expect(choose).not.toContain("Pick a need above");
+});
+it("G63: no one free names neither the place nor the button again", () => {
+  const text = words(render({ candidates: [], addShiftHref: "/app/schedule/new?x=1" }));
+  expect(text.match(/Main Office/g)?.length).toBe(1);
+  expect(text.match(/give/gi)?.length).toBe(1);
 });

@@ -57,6 +57,11 @@
  * billing) are text links in one centred row under the buttons, each a 44px target. */
 .links { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0 var(--b-space-8); margin-top:calc(var(--b-space-4) * -1); }
 .links:first-child { margin-top:0; }
+/* Phase 2 (Nov 23, 2026), the Owner's billing card: its text links one per line, centred, 4px apart, so a long one wraps
+ * centred under its neighbours at 200% text instead of beside them; the callout's glyph scales with its text. */
+.linksStack { flex-direction:column; flex-wrap:nowrap; gap:var(--b-space-4); }
+.linksStack .quiet { max-width:100%; text-align:center; }
+.card .callout > .calloutIcon { width:1.125em; height:1.125em; margin-top:.1em; }
 :is(.action,.secondary,.quiet):disabled { background:var(--b-disabled-bg); color:var(--b-disabled-ink); box-shadow:none; cursor:default; transform:none; }
 .quiet:disabled { background:none; text-decoration:none; }
 .lang:disabled { cursor:default; }
@@ -112,4 +117,12 @@
 @media (prefers-reduced-motion: reduce) {
   .action,.secondary { transition:none; }
   .action:active,.secondary:active { transform:none; }
+}
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): the main and second actions and the language switch are drawn by their fill
+ * and an inset shadow, both dropped under Windows contrast themes, so "Open billing in Velani" and "Refresh status" read
+ * as plain text. Each keeps a button edge. */
+@media (forced-colors: active) {
+  .action, .secondary, .lang { border: 1px solid ButtonText; }
+  .action:disabled, .secondary:disabled, .lang:disabled { border-color: GrayText; }
 }

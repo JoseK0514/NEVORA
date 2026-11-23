@@ -3,8 +3,8 @@
 import { FormDiscardGuard } from '@/components/kit/discard-dialog';
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent } from 'react';
 import { CaretRightIcon, PlusIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
-import { CorpCard, CorpNav, CorpPage, CorpTitle } from '../corp/corp';
-import { PayGroup } from './pay-group';
+import { CorpCard } from '../corp/corp';
+import { SettingsPageB } from '@/app/app/settings/settings-b';
 import { Feedback } from './payroll-feedback';
 import { PayDateField } from './pay-date-field';
 import './payroll-corp.css';
@@ -26,6 +26,13 @@ import { revealFeedback } from '@/lib/reveal-feedback';
 /** IS-B27: which form sent the running save, so only its button says "Saving…". */
 const SavingForm = createContext<[string | null, (id: string) => void]>([null, () => {}]);
 
+/** Final fixes S2 (G85): a group of payroll settings with its label inside the card, as every other Settings page labels
+ * its cards (Payroll itself keeps labels above its cards). The same section, id and heading as before. */
+function SetGroup({ id, label, children }: { id: string; label: ReactNode; children: ReactNode }) {
+  return <section id={id} className="c-pay__group" aria-labelledby={`${id}-label`}>
+    <div className="c-card"><div className="c-card__head"><h2 className="c-card__label" id={`${id}-label`}>{label}</h2></div>{children}</div>
+  </section>;
+}
 /** A kit card for one group of payroll settings (Phase 3.5 Wave B). Wording stays as approved. */
 function SettingsCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return <section className="c-pset__group" aria-label={title}>{description && <p className="wb-note">{description}</p>}{children}</section>;
@@ -80,11 +87,13 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
   const actorName = latest ? data?.employees.find(employee => employee.id === latest.actorId)?.name : undefined;
   // Corporate (Release 1, board O-PayrollSettings): grouped rows; each opens its own fields in place. Saving asks for the
   // effective date and a reason, as before. On desktop the Time and pay tabs lead here, so there is no Back.
-  return <CorpPage className="c-pay c-pset c-page--narrow" labelledBy="payroll-settings-title">
-    <CorpNav back={{ href: '/app/payroll', label: 'Payroll' }} title="Payroll settings" phoneOnly />
-    {/* Phase 8 (review B #35): the band says what payroll does, as Payroll above the same tabs does (the approved scope
-      sentence, unchanged); "US dollars" read as a stray fact, and the currency is fixed. */}
-    <CorpTitle id="payroll-settings-title" title="Payroll settings" sub="Calculate pay and share statements. You pay your team outside NEVORA." wide />
+  // Settings in Direction B (Nov 23, 2026): the shared Settings frame (‹ Payroll and the title on a phone's band, the
+  // large title and the approved scope sentence on tablets and desktop), then the Time and pay tabs.
+  /* Phase 8 (review B #35): the band says what payroll does, as Payroll above the same tabs does (the approved scope
+     sentence, unchanged); "US dollars" read as a stray fact, and the currency is fixed. */
+  // Phase 2 (J12, item 4): from 768, where Payroll's tabs show, the band names the section ("Payroll") and the selected
+  // "Settings" tab names the page; the phone band (no tabs) keeps "Payroll settings".
+  return <SettingsPageB className="c-pay c-pset" titleId="payroll-settings-title" title="Payroll settings" wideTitle={tabs?.length ? 'Payroll' : undefined} back={{ href: '/app/payroll', label: 'Payroll' }} sub="Calculate pay and share statements. You pay your team outside NEVORA.">
     <PayrollTabs items={tabs} current="/app/settings/payroll" />
     <BusinessZone.Provider value={timeZone}><SavingForm.Provider value={savingForm}>
     <KeepFocusClear />
@@ -92,18 +101,18 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
     {resource.loading ? <p className="c-note" role="status">Loading payroll settings…</p> : resource.error ? <CorpCard as="div" ariaLabel="Payroll settings"><div className="c-card__body"><p className="c-pset__state" role="alert">{resource.error}</p><button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={() => void resource.reload()}>Try again</button></div></CorpCard> : data && <>
       {!revision && <p className="c-note">These are unsaved starting preferences. Choose your company settings and an effective date. {data.capabilities.internalCalculatorAvailable ? 'Native payroll uses verified recorded time and employee payroll facts.' : 'imported provider amounts remain the authority.'}</p>}
       <CompanyPreferences key={revision?.revision ?? 0} preferences={revision?.preferences ?? defaults} revision={revision?.revision ?? 0} data={data} operation={operation} />
-      <PayGroup id="payroll-people-settings" label="People">
+      <SetGroup id="payroll-people-settings" label="People">
         <details className="c-pset__item"><SettingRow title="People with different settings" value={exceptionCount ? String(exceptionCount) : 'None'} /><div className="c-pset__body"><EmployeeException data={data} preferences={revision?.preferences ?? defaults} operation={operation} /></div></details>
         {!data.capabilities.internalCalculatorAvailable && <details className="c-pset__item"><SettingRow title="Payroll access" value={data.grants.length ? String(data.grants.length) : 'Owner only'} /><div className="c-pset__body"><PayrollAccess data={data} operation={operation} /></div></details>}
         {(nativeSources !== null || data.capabilities.internalCalculatorAvailable) && <details className="c-pset__item" id="payroll-setup" open={openSetup || undefined}><SettingRow title="Payroll setup" detail="Wages, withholding and opening balances" /><div className="c-pset__body payroll-workflow"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div></details>}
-      </PayGroup>
+      </SetGroup>
       <CorpCard as="div" ariaLabel="Change history">
         <details className="c-pset__item"><SettingRow title="Change history" detail={latest ? (actorName ? `${actorName.split(/\s+/)[0]} changed this ${shortDate(latest.createdAt, timeZone)}` : `Changed ${shortDate(latest.createdAt, timeZone)}`) : 'No changes saved yet'} /><div className="c-pset__body">{data.revisions.length ? <div className="c-pset__history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}{data.employees.find(employee => employee.id === item.actorId) ? ` · ${data.employees.find(employee => employee.id === item.actorId)!.name}` : ''}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</div></details>
       </CorpCard>
     </>}
     {!data && !resource.loading && nativeSources !== null ? <div className="payroll-workflow"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div> : null}
     </SavingForm.Provider></BusinessZone.Provider>
-  </CorpPage>;
+  </SettingsPageB>;
 }
 
 /** Review B5 (NV-024): change dates are the company's day, not the device's. */
@@ -162,7 +171,7 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
   const lead = reminderWindow(preferences.automation.reminderLeadDays);
   const reminderValue = !preferences.automation.reminders ? 'Off' : lead === 0 ? 'On payday' : `${lead} ${lead === 1 ? 'day' : 'days'} before`;
   return <form ref={form} className="c-pset__form" data-form="company" {...formKeys} onSubmit={save} aria-label={`Company defaults, revision ${revision}`}>{/* Leaving with payroll settings that are not saved asks first (Nov 21, 2026); a saved revision starts clean. */}<FormDiscardGuard resetKey={revision} /><fieldset disabled={locked} className="c-pset__fields">
-    <PayGroup id="payroll-schedule" label="Pay schedule">
+    <SetGroup id="payroll-schedule" label="Pay schedule">
     <details className="c-pset__item"><SettingRow title="How often" value={frequencyLabel} /><div className="c-pset__body wb-form">
       <label>Frequency<select aria-label="Frequency" name="frequency" defaultValue={preferences.schedule.frequency}><option value="WEEKLY">Weekly</option><option value="BIWEEKLY">Every two weeks</option><option value="SEMIMONTHLY">Twice a month</option><option value="MONTHLY">Monthly</option></select></label>
     </div></details>
@@ -173,8 +182,8 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       <PayDateField name="anchorDate" label="Schedule anchor date" required defaultValue={preferences.schedule.anchorDate} />
       <p className="wb-note">Weekly and every-two-week periods begin on the anchor date. Twice-a-month periods are days <span className="nv-nowrap">1–15</span> and <span className="nv-nowrap">16–month end</span>; monthly periods use calendar months. For those schedules, the anchor is the date automation begins.</p>
     </div></details>
-    </PayGroup>
-    <PayGroup id="payroll-notices" label="Reminders and pay statements">
+    </SetGroup>
+    <SetGroup id="payroll-notices" label="Reminders and pay statements">
     <details className="c-pset__item"><SettingRow title="Payroll reminders" value={reminderValue} /><div className="c-pset__body wb-form">
       <p className="wb-note">NEVORA prepares drafts and waits for the amounts and exceptions they need. Someone who can approve payroll still approves each one.</p><label className="wb-check"><input name="prepare" type="checkbox" defaultChecked={preferences.automation.prepare} /><span>Prepare scheduled drafts</span></label>{!native && <label className="wb-check"><input name="publish" type="checkbox" defaultChecked={preferences.automation.publish} /><span>Share pay statements after payroll is approved</span></label>}{native && <p className="wb-note">After you approve payroll, NEVORA makes and checks each pay statement, then shares it with the employee. Approving doesn’t send any payment.</p>}<label className="wb-check"><input name="reminders" type="checkbox" checked={noticesEnabled} onChange={event => setNoticesEnabled(event.target.checked)} /><span>Queue private payroll notices</span></label><label>Preparation reminder window<input aria-label="Preparation reminder window" aria-describedby="payroll-notice-window-help" name="reminderDays" type="number" inputMode="numeric" autoComplete="off" min={0} max={31} required={noticesEnabled} disabled={!noticesEnabled} defaultValue={reminderWindow(preferences.automation.reminderLeadDays)} /><small className="wb-help" id="payroll-notice-window-help">Remind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.</small></label><p className="wb-note">The notice preference also enables statement-availability notices after pay statements are shared. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.</p>{data.capabilities.noticeDelivery !== 'ENABLED' ? <p className="wb-note">Notice sending is turned off, so queued notices aren’t sent.</p> : null}
     </div></details>
@@ -190,9 +199,9 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       <label>Bank you plan to use (for your records)<select aria-label="Bank you plan to use (for your records)" name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">No bank preference saved</option><option value="POPULAR_WCM_TEXT">Popular Web Cash Manager · text</option><option value="POPULAR_WCM_NACHA">Popular Web Cash Manager · NACHA</option><option value="POPULAR_COMMERCIAL_MANUAL">Popular commercial · manual</option><option value="OTHER">Other bank or file type</option></select></label>
       <p className="wb-note">This saves how you plan to pay. NEVORA hasn’t tested the file with your bank. It makes a standard payment file; it doesn’t send payments or confirm that your bank processed them.</p>
     </div></details>}
-    </PayGroup>
-    <div className="c-pset__save wb-form"><PayDateField name="effectiveFrom" label="Effective date" required defaultValue={today(zone)} /><label>Reason for change<input name="reason" autoComplete="off" required maxLength={300} /></label><ImpactPreview data={data} /><p className="wb-note">Approved payroll doesn’t change. Drafts that aren’t approved yet need a new review after settings or exceptions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden /><span>{error}</span></p>}
-      <button type="submit" className="c-btn c-btn--full" aria-disabled={locked}><PendingLabel pending={operation.busy && savingId === 'company'} pendingText="Saving…">Save company preferences</PendingLabel></button></div>
+    </SetGroup>
+    <div className="c-card c-pset__savecard"><div className="c-pset__save wb-form"><PayDateField name="effectiveFrom" label="Effective date" required defaultValue={today(zone)} /><label>Reason for change<input name="reason" autoComplete="off" required maxLength={300} /></label><ImpactPreview data={data} /><p className="wb-note">Approved payroll doesn’t change. Drafts that aren’t approved yet need a new review after settings or exceptions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden /><span>{error}</span></p>}
+      <button type="submit" className="c-btn c-btn--full" aria-disabled={locked}><PendingLabel pending={operation.busy && savingId === 'company'} pendingText="Saving…">Save company preferences</PendingLabel></button></div></div>
   </fieldset></form>;
 }
 

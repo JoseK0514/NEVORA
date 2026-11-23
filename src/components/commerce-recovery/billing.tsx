@@ -66,18 +66,19 @@ export function BillingRecovery({lang,billingOrigin,payrollEnabled,timeZone}: {l
  const date=(value:string)=>new Intl.DateTimeFormat(lang,{dateStyle:'medium',timeZone:zone??'UTC'}).format(new Date(value));
  return <><h1>{t.title}</h1><p>{t.intro}</p>
   <div aria-live="polite" aria-busy={state.phase==='loading'}>
-   {state.phase==='loading'?<p className={styles.callout} role="status">{t.loading}</p>:state.phase==='denied'?<p className={styles.callout} data-tone="red" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/>{t.denied}</p>:state.phase==='unavailable'?<p className={styles.callout} data-tone="amber" role="status"><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/>{unreachableNotice(lang)}</p>:null}
-   {notice?<p className={styles.callout} data-tone={notice.tone} role="status"><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/>{notice.text}</p>:null}
+   {state.phase==='loading'?<p className={styles.callout} role="status">{t.loading}</p>:state.phase==='denied'?<p className={styles.callout} data-tone="red" role="alert"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{t.denied}</p>:state.phase==='unavailable'?<p className={styles.callout} data-tone="amber" role="status"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{unreachableNotice(lang)}</p>:null}
+   {notice?<p className={styles.callout} data-tone={notice.tone} role="status"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{notice.text}</p>:null}
    {status?<dl className={styles.details}><div><dt>{t.status}</dt><dd>{t.states[status.state]}</dd></div><div><dt>{t.plan}</dt><dd>{status.plan===null?t.none:status.plan==='small'?'Small':'Team'}</dd></div><div><dt>{t.people}</dt><dd>{status.activeEmployees} / {status.employeeLimit}</dd></div>{([[t.trial,status.trialEndsAt],[t.paid,status.paidThrough],[t.grace,status.graceEndsAt]] as const).map(([label,value])=>value?<div key={label}><dt>{label}{suffix}</dt><dd>{date(value)}</dd></div>:null)}</dl>:null}
   </div>
-  {failed?<p className={styles.callout} data-tone="red" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/>{t.failed}</p>:null}
+  {failed?<p className={styles.callout} data-tone="red" role="alert"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{t.failed}</p>:null}
   <div className={styles.actions}>
    {notice?.contact?<a className={styles.action} href={`mailto:${supportEmail}`}>{contactLabel(lang)}</a>:null}
    {state.phase!=='denied'?<button className={notice?.contact||state.phase==='unavailable'?styles.secondary:styles.action} type="button" disabled={opening||state.phase==='loading'} onClick={()=>void openBilling()}>{opening?t.opening:t.billing}</button>:null}
+   {/* Phase 2 (Nov 23, 2026): the text links stand one per line, centred, so none wraps beside another at 200% text. */}
    {/* Phase 5 (Nov 17, 2026): one filled button per state. Refresh is that button only when the status could not be
      * read; otherwise it and the ways out of this page are text links, as the links under the sign-in card. */}
    {state.phase==='unavailable'?<button className={styles.action} type="button" disabled={opening} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>:null}
-   {state.phase!=='unavailable'||status?.operational||payrollEnabled?<div className={styles.links}>
+   {state.phase!=='unavailable'||status?.operational||payrollEnabled?<div className={`${styles.links} ${styles.linksStack}`}>
     {state.phase!=='unavailable'?<button className={styles.quiet} type="button" disabled={opening||state.phase==='loading'} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>:null}
     {status?.operational?<Link className={styles.quiet} href="/app" prefetch={false}>{t.back}</Link>:null}
     {payrollEnabled?<Link className={styles.quiet} href="/app/my-pay" prefetch={false}>{t.pay}</Link>:null}

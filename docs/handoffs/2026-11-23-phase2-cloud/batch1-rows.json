@@ -1,0 +1,645 @@
+[
+ {
+  "id": "G1-o",
+  "row": "G1",
+  "page": "Payroll",
+  "section": "Payroll and exports",
+  "note": "Owner's Payroll home with two unpaid periods, the next weekly payroll and recent payrolls including a correction. Blocking: the title repeated by the selected tab, and the replaced payroll saying 'Replaced' twice.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G1-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G1-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G1-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "At 768 and 1440 the band title is repeated by the selected tab right under it ('Payroll' twice). Suspect src/components/payroll/payroll-tabs.tsx.",
+   "The replaced Nov 2–8 row says 'Replaced' twice (grey chip and 'Replaced by a correction'); on the phone the chip drops to its own line and the row runs to five lines. Suspect RunRow in src/components/payroll/payroll-runs.tsx (~line 211)."
+  ],
+  "endSweep": [
+   "Phone Settings button is 40px and the tab pills 36px tall (targets under 44px)."
+  ]
+ },
+ {
+  "id": "G2-o",
+  "row": "G2",
+  "page": "Prepare payroll",
+  "section": "Payroll and exports",
+  "note": "Prepare payroll: the next period, two periods with no payroll (one opened) and other dates. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G2-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G2-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G2-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Copy that explains the flow rather than the period: 'Uses your saved payroll settings. You review its timecards and amounts, then approve it separately.'"
+  ]
+ },
+ {
+  "id": "G3-o",
+  "row": "G3",
+  "page": "Review pay (Payroll details)",
+  "section": "Payroll and exports",
+  "note": "Payroll details for Nov 2–8, opened from the list's first run, which is the payroll a correction replaced. Blocking: the page never says it was replaced and still offers to fix it and to prepare payment instructions for it.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G3-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G3-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G3-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "Misleading: this Nov 2–8 payroll ($6,194.76 net) was replaced by a correction (the Payroll list marks it 'Replaced'), but the band and body never say so, and the page still offers 'Fix this payroll' and 'Prepare payment instructions' for it. Suspect RunReview in src/components/payroll/payroll-runs.tsx (~lines 440–500: the More actions rows check only approved / correctionOf, not whether a correction replaced the run; standsApproved() exists for this)."
+  ],
+  "endSweep": [
+   "View is a text link beside an outlined Download button, so the pair has two styles and two heights."
+  ]
+ },
+ {
+  "id": "G4-o",
+  "row": "G4",
+  "page": "People in this payroll",
+  "section": "Payroll and exports",
+  "note": "Employee amounts for the same replaced Nov 2–8 payroll: totals and 11 people. Blocking: 'Net pay' under every name.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G4-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G4-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G4-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "'Net pay' repeats under all 11 names although the total already reads 'Net pay · 11 employees'. Suspect src/components/payroll/payroll-runs.tsx (~line 624, the row detail).",
+   "Like G3, the period line 'Nov 2–8 · Payday Fri, Nov 13' doesn't say this payroll was replaced by a correction. Suspect src/components/payroll/payroll-runs.tsx."
+  ],
+  "endSweep": []
+ },
+ {
+  "id": "G5-o",
+  "row": "G5",
+  "page": "Fix payroll",
+  "section": "Payroll and exports",
+  "note": "Fix before payroll for an approved payroll: only the empty state ('Nothing stops this payroll'); the fictional data has no payroll with things to fix, so the list itself wasn't captured. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G5-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G5-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G5-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "G6-o",
+  "row": "G6",
+  "page": "Import payroll",
+  "section": "Payroll and exports",
+  "note": "Import pay opened without a payroll, so it shows the 'Choose a payroll to import into' card with Go to Payroll; the import steps for a chosen payroll weren't captured. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G6-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G6-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G6-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "On the phone this sheet page has a smaller header than the other Payroll pages (plain back link, smaller title, no tab bar); G9 is the same. Confirm the sheet header is intended.",
+   "At 1440 the card is narrower than the cards on the other Payroll sub-pages."
+  ]
+ },
+ {
+  "id": "G7-o",
+  "row": "G7",
+  "page": "Payroll history",
+  "section": "Payroll and exports",
+  "note": "Payroll history: three payrolls (a correction and the payroll it replaced) and three pay statements. Blocking: the replaced row says 'Replaced' twice and wraps badly on the phone.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G7-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G7-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G7-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "The replaced Nov 2–8 row says 'Replaced' twice (grey chip and 'Replaced by a correction'); on the phone the chip drops to its own line and the row runs to five lines. Suspect RunRow in src/components/payroll/payroll-runs.tsx (~line 211)."
+  ],
+  "endSweep": [
+   "View is a text link beside an outlined Download button, so the pair has two styles and two heights. Seen on every statement row."
+  ]
+ },
+ {
+  "id": "G8-o",
+  "row": "G8",
+  "page": "Time exports",
+  "section": "Payroll and exports",
+  "note": "Owner's Time exports for this week, nothing ready to export yet (timecards approve from Mon, Nov 30). Blocking: the title repeated by the selected tab, and the week named twice.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G8-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G8-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G8-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "At 768 and 1440 the band title is repeated by the selected tab right under it ('Time exports' twice). Suspect src/components/payroll/payroll-tabs.tsx.",
+   "'Nov 23–29' is in the Week field and again in 'Timecards for Nov 23–29 can be approved from Mon, Nov 30.' Suspect src/components/payroll-export.tsx."
+  ],
+  "endSweep": [
+   "At 768 and 1440 the Week field stops short of the card's right edge while Create export sits on it.",
+   "Tab pills are 36px tall."
+  ]
+ },
+ {
+  "id": "G8-m",
+  "row": "G8",
+  "page": "Time exports (Manager)",
+  "section": "Payroll and exports",
+  "note": "The company-wide Manager's Time exports (back to Timecards, no Payroll tabs, Export history instead of the Owner's sent-files row). Blocking: the week named twice and 'Timecards' twice.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G8-m-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G8-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G8-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "'Nov 23–29' is in the Week field and again in the 'Timecards for Nov 23–29…' line. Suspect src/components/payroll-export.tsx.",
+   "The back link already reads 'Timecards' and the notice repeats it as 'Go to Timecards'. Suspect src/components/payroll-export.tsx."
+  ],
+  "endSweep": [
+   "At 768 and 1440 the Week field stops short of the card's right edge while Create export sits on it."
+  ]
+ },
+ {
+  "id": "G9-o-m",
+  "row": "G9",
+  "page": "Paid time export",
+  "section": "Payroll and exports",
+  "note": "Paid time export before anyone is included for the pay period: one card pointing back to Time exports. The Owner and the company-wide Manager see the same screen; shots are the Owner's. Only this not-ready state was captured. Blocking: 'Time exports' three times.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G9-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G9-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G9-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "'Time exports' appears three times on a one-card page: the back link, the body ('…on Time exports, then come back') and the button 'Open Time exports'. Suspect src/components/payroll-export.tsx (paid-time view) and src/app/app/payroll-export/page.tsx."
+  ],
+  "endSweep": [
+   "On the phone this sheet page has the smaller header (plain back link, no tab bar), as G6."
+  ]
+ },
+ {
+  "id": "G10-ml",
+  "row": "G10",
+  "page": "My pay (location Manager)",
+  "section": "Payroll and exports",
+  "note": "Daniel, a Manager limited to one location, opening My pay: scheduled payday and no statements (the fictional data has none for him). Blocking: the empty line 'Only you can see them' with nothing to see. Question for Jose: this is a separate Manager version, not the Employee Pay screen with his data.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-ml-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-ml-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-ml-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "Empty state reads 'No statements yet. Only you can see them.': 'them' points at statements that don't exist. Suspect src/components/payroll/my-pay.tsx."
+  ],
+  "endSweep": []
+ },
+ {
+  "id": "G10-e-l",
+  "row": "G10",
+  "page": "My pay (statements)",
+  "section": "Payroll and exports",
+  "note": "Employee and Lead Pay (identical screens; shots are the Employee's): next payday, the last statement (corrected) and earlier statements. Blocking: the 'Earlier' card's first row repeats the heading and drops its date.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/G10-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/G10-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/G10-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "The 'Earlier' card's first row is titled 'Earlier version' (repeats the heading) and, unlike 'Fri, Nov 6' below it, doesn't give its payday. Suspect src/components/employee-b/pay-b.tsx."
+  ],
+  "endSweep": [
+   "Two footnotes explain how pay works ('Your employer pays you…', 'Open a statement to download its PDF…').",
+   "On the phone 'Pay history' isn't in the band (only 'See your hours'); check it's reachable."
+  ]
+ },
+ {
+  "id": "H1-o",
+  "row": "H1",
+  "page": "Rondo AI (Owner)",
+  "section": "Rondo AI and insights",
+  "note": "The Owner's Rondo AI with Rondo on and no AI service: two attention items, the live briefing, the guided checks, the conversation (typed questions off) and priorities. About 3,900px tall on the phone. Blocking: repeated item wording, uneven action rows and a button flush against its paragraph.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H1-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H1-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H1-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "Repeated wording: both attention items have the same title 'Review today's planning gaps', the same 'Mon, Nov 23 · Observed 8:14 AM' (the time appears four times on the page), the same 'From the current schedule, including drafts' and the same four actions. Suspect src/components/owner-advisor/attention.tsx.",
+   "Action rows mix one outlined button with three text buttons; at 768 'Not relevant today' wraps onto a line of its own and on the phone the four actions break into two uneven rows. Suspect src/components/owner-advisor/attention.tsx and advisor.css.",
+   "'Where are we short this week?' sits flush against the paragraph above it at every width (no gap). Suspect src/components/owner-advisor/workflows.tsx.",
+   "On the phone 'Prepare coverage options' and 'Compare day plans' stack at two different widths instead of full width. Suspect src/components/owner-advisor/workflows.tsx."
+  ],
+  "endSweep": [
+   "Many lines explain how the page works (briefing choices don't change records; checks work without an AI connection; closing a task doesn't verify anything; goals stay saved).",
+   "'0 open' and '0 of 12 saved tasks, including closed tasks' state the same count twice."
+  ]
+ },
+ {
+  "id": "H1-m-ml",
+  "row": "H1",
+  "page": "Rondo AI (Manager)",
+  "section": "Rondo AI and insights",
+  "note": "The Manager's Rondo AI: location and week, four set questions and the week by day. Elena (company-wide) chooses a location; Daniel (one location) sees his location as fixed text, otherwise the same screen (his shots are in img/ as H1-ml-*). Blocking: 'shifts published' on every day.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H1-m-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H1-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H1-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "'shifts published' repeats on all seven day rows (and '39 h' three times). Suspect src/components/owner-advisor/manager/manager-rondo.tsx."
+  ],
+  "endSweep": [
+   "Two footnotes explain the page ('Rondo answers these four questions. Typed questions are off.', 'Hours are planned time from the schedule…').",
+   "For Daniel the band still says 'at your locations' although he has one."
+  ]
+ },
+ {
+  "id": "H2-o",
+  "row": "H2",
+  "page": "Weekly plan",
+  "section": "Rondo AI and insights",
+  "note": "Weekly plan setup: week, what Rondo may change, locations, Compare options. Blocking: the band subtitle repeats the button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H2-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H2-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H2-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "The band subtitle 'Compare options for a week' repeats the only button, 'Compare options'. Suspect src/components/owner-advisor/weekly/weekly-page.tsx."
+  ],
+  "endSweep": []
+ },
+ {
+  "id": "H3-o",
+  "row": "H3",
+  "page": "Business records",
+  "section": "Rondo AI and insights",
+  "note": "Business records with none yet. Blocking: two buttons for the same job with three wordings.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H3-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H3-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H3-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "Two actions for one job: the band's 'Add' (phone) / 'Add record' (768, 1440) and the card's solid 'Add a record'. Suspect src/components/owner-advisor/business/business-page.tsx."
+  ],
+  "endSweep": [
+   "Phone band 'Add' button is 40px tall."
+  ]
+ },
+ {
+  "id": "H4-o",
+  "row": "H4",
+  "page": "Company knowledge",
+  "section": "Rondo AI and insights",
+  "note": "Company knowledge with no documents: the business profile row and an empty Documents card. Blocking: Add document twice.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H4-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H4-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H4-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "'Add document' twice: the band button ('Add' on the phone) and the row at the foot of the Documents card. Suspect src/components/owner-advisor/knowledge/knowledge-page.tsx.",
+   "'0 of 20' beside the Documents heading and 'No documents yet' under it say the same thing. Suspect src/components/owner-advisor/knowledge/knowledge-page.tsx."
+  ],
+  "endSweep": [
+   "Phone band 'Add' button is 40px tall."
+  ]
+ },
+ {
+  "id": "H5-o-m",
+  "row": "H5",
+  "page": "Insights",
+  "section": "Rondo AI and insights",
+  "note": "Insights for this week so far, all locations: hours worked against plan, attendance, hours by day (not enough data yet) and the yearly report link. Owner and company-wide Manager see the same screen; shots are the Owner's. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H5-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H5-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H5-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Worked and under-plan are rounded separately, so '24 h 57 min of 61 h planned' sits beside '36 h 2 min under plan' (one minute short).",
+   "Period chips on the phone are 36px tall.",
+   "Two older-kit elements are still in the page body (visible count 2)."
+  ]
+ },
+ {
+  "id": "H6-o-m",
+  "row": "H6",
+  "page": "Christmas bonus",
+  "section": "Rondo AI and insights",
+  "note": "Christmas bonus hours for the Oct 2025–Sep 2026 bonus year. The fictional data has no hours in that year, so it shows the empty People card. Owner and company-wide Manager see the same screen. Blocking: the bonus year twice in the band.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H6-o-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H6-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H6-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "At 768 and 1440 the bonus year is in the menu ('Oct 2025 – Sep 2026') and again in the subtitle ('Bonus year Oct 1, 2025–Sep 30, 2026'). Suspect src/components/christmas-bonus-report.tsx and src/components/christmas-bonus-year-menu.tsx."
+  ],
+  "endSweep": [
+   "Phone year menu is 40px tall."
+  ]
+ },
+ {
+  "id": "I2-e-l",
+  "row": "I2",
+  "page": "Policy document (Privacy Policy)",
+  "section": "Profile and account",
+  "note": "Privacy Policy inside the app for the Employee and Lead (same screen; shots are the Employee's). Blocking: every section title twice at 768 and 1440, and the intro said twice.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/I2-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/I2-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I2-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "At 768 and 1440 'In this policy' lists all 13 section titles and the accordions repeat each one; at 768 the list stacks above the policy, so the page opens with 13 links before any content. Suspect src/components/employee-b/account-b.tsx.",
+   "The intro line 'How NEVORA handles information when you use it on the web or in its apps.' is repeated by the first section ('This policy explains how information is handled when you use NEVORA…'). Suspect src/components/employee-b/account-b.tsx.",
+   "On the phone 'In this policy' comes after 'Who we are', so the first section sits outside the group it heads. Suspect src/components/employee-b/account-b.tsx."
+  ],
+  "endSweep": [
+   "The footer repeats 'Privacy Policy' (the current page) as plain text."
+  ]
+ },
+ {
+  "id": "I3-e-l",
+  "row": "I3",
+  "page": "Calendar subscription",
+  "section": "Profile and account",
+  "note": "Add to calendar for the Employee and Lead (same screen): the private calendar link (off) and Apple, Google and Outlook steps. Blocking: the card title repeated by its button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/I3-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/I3-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I3-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "'Your calendar link' (card title) and 'Create calendar link' (its only button) repeat each other. Suspect src/components/employee-mobile/calendar.tsx."
+  ],
+  "endSweep": [
+   "'Your calendar app picks up schedule changes the next time it refreshes, which can take a while.' explains how calendars work."
+  ]
+ },
+ {
+  "id": "I4-e-l",
+  "row": "I4",
+  "page": "Device alerts",
+  "section": "Profile and account",
+  "note": "Alerts on this device for the Employee and Lead, with browser alerts switched on. It opened in the 'Setup needs a check' state, most likely because the capture blocks service workers, so the normal on/off states weren't captured. Blocking: the same instruction twice.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/I4-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/I4-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I4-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "'Check again before starting a new request' is in the card and again in the warning under it ('Setup could not finish. Check again before…'); 'check' also appears in the status chip, the title and the button. Suspect src/components/employee-mobile/device-alerts.tsx."
+  ],
+  "endSweep": []
+ },
+ {
+  "id": "I5-e-l",
+  "row": "I5",
+  "page": "Passkeys",
+  "section": "Profile and account",
+  "note": "Passkeys for the Employee and Lead with passkeys on (served over the test HTTPS origin, so the list loads): no saved passkeys and Add a passkey. Blocking: a card inside a card that misses the band's edge, and the heading repeated.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/I5-e-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/I5-e-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/I5-e-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "At 768 and 1440 the 'Saved passkeys' card sits inside a second card, so its edges sit 13–14px inside the column every other card uses (310–1094 vs 297–1107 at 1440, 122–726 vs 109–739 at 768); on the phone the card is 17–373 where other cards are 14–376. Suspect src/app/app/profile/passkeys/page.tsx (the b-keep wrapper) and src/components/employee-mobile/passkeys.tsx.",
+   "On the phone 'No saved passkeys' starts 2px left of the 'Saved passkeys' heading above it. Suspect src/components/employee-mobile/passkeys.tsx.",
+   "'Saved passkeys' (heading) and 'No saved passkeys' (empty state) repeat each other. Suspect src/components/employee-mobile/passkeys.tsx."
+  ],
+  "endSweep": []
+ }
+]

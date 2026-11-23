@@ -26,31 +26,34 @@ export function RulesHoursList({ rows }: { rows: RulesHoursRow[] }) {
   const showEveryone = () => { setQuery(""); setMissingOnly(false); };
   const search = useRef<HTMLInputElement>(null);
 
+  // Phase 2 (C9, Nov 23, 2026): the kit's search field and filter chip, then one row per person with Target and Maximum
+  // named once, as column heads, not on every row (each field keeps its own name for screen readers).
   return <>
-    {rows.length > 1 ? <div className="wb-filterbar">
-      <label className="wb-search">
-        <MagnifyingGlassIcon size={20} weight="bold" aria-hidden="true" />
+    {rows.length > 1 ? <div className="c-rf-filterbar">
+      <label className="c-rf-search">
+        <MagnifyingGlassIcon weight="bold" aria-hidden="true" />
         <span className="sr-only">Find a person</span>
         <input ref={search} type="search" placeholder="Find a person" value={query} onChange={event => setQuery(event.target.value)}
           onKeyDown={event => { if (event.key === "Enter") event.preventDefault(); }} />
       </label>
-      {missing ? <button type="button" className="wb-toggle" aria-pressed={missingOnly} onClick={() => setMissingOnly(value => !value)}>
+      {missing ? <button type="button" className="c-rf-chip" aria-pressed={missingOnly} onClick={() => setMissingOnly(value => !value)}>
         No target<span className="rules-hours-count">{missing}</span>
       </button> : null}
     </div> : null}
     <p className="sr-only" role="status">{count === rows.length ? "" : `${count} of ${rows.length} people shown`}</p>
+    {count ? <div className="c-rf-cols" aria-hidden="true"><span /><span>Target hours</span><span>Maximum hours</span></div> : null}
     {/* A browser can't focus an invalid field it can't see, so a failed save shows everyone. */}
-    <ul className="wb-setting-list" onInvalidCapture={showEveryone}>
+    <ul className="c-rf-list" onInvalidCapture={showEveryone}>
       {rows.map(row => (
-        <li className="wb-setting manager-issue-target" id={"target-" + row.employeeId} tabIndex={-1} key={row.employeeId} hidden={!shown(row)}>
-          <div className="wb-setting__name"><span className="wb-record__title">{row.employeeName}</span><span className="wb-record__meta">{row.detail}</span></div>
-          <div className="wb-setting__fields wb-setting__fields--pair">
-            <label className="wb-field"><span>Target</span><span className="wb-suffix wb-suffix--short"><input type="number" name={"target-" + row.employeeId} aria-label={row.employeeName + " target weekly hours"} defaultValue={row.targetWeeklyHours ?? ""} min={0} max={168} step={0.25} placeholder="Not set" /><span aria-hidden="true">hrs</span></span></label>
-            <label className="wb-field"><span>Maximum</span><span className="wb-suffix wb-suffix--short"><input type="number" name={"maximum-" + row.employeeId} aria-label={row.employeeName + " maximum weekly hours"} defaultValue={row.maximumWeeklyHours ?? 40} min={0} max={168} step={0.25} required /><span aria-hidden="true">hrs</span></span></label>
+        <li className="c-rf-item manager-issue-target" id={"target-" + row.employeeId} tabIndex={-1} key={row.employeeId} hidden={!shown(row)}>
+          <div className="c-rf-item__name"><span className="c-rf-item__t">{row.employeeName}</span><span className="c-rf-item__m">{row.detail}</span></div>
+          <div className="c-rf-item__fields">
+            <input className="c-in c-rf-num" type="number" name={"target-" + row.employeeId} aria-label={row.employeeName + " target weekly hours"} defaultValue={row.targetWeeklyHours ?? ""} min={0} max={168} step={0.25} placeholder="Not set" />
+            <input className="c-in c-rf-num" type="number" name={"maximum-" + row.employeeId} aria-label={row.employeeName + " maximum weekly hours"} defaultValue={row.maximumWeeklyHours ?? 40} min={0} max={168} step={0.25} required />
           </div>
         </li>
       ))}
     </ul>
-    {rows.length && !count ? <div className="wb-body wb-body--ruled wb-none"><p className="wb-note">No one matches.</p><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" onClick={() => { showEveryone(); requestAnimationFrame(() => search.current?.focus()); }}>Show everyone</button></div></div> : null}
+    {rows.length && !count ? <div className="c-rf-none"><p className="c-rf-help">No one matches.</p><button type="button" className="c-btn c-btn--secondary" onClick={() => { showEveryone(); requestAnimationFrame(() => search.current?.focus()); }}>Show everyone</button></div> : null}
   </>;
 }

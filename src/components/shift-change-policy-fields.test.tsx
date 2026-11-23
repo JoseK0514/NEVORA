@@ -7,7 +7,7 @@ import {ShiftChangePolicyFields} from './shift-change-policy-fields';
 import {OperationalRuleFields} from './operational-rule-fields';
 import {unknownOperationalRuleProfile} from '../lib/shift-changes/policy';
 it('Owner sees independent scope revisions and blank unknown deadlines',()=>{
- const h=renderToStaticMarkup(createElement(ShiftChangePolicyFields,{policy:null,canEdit:true}));expect(h).toContain('<details');expect(h.match(/name="expectedRevision" value="0"/g)).toHaveLength(2);expect(h).toContain('name="submissionAdvanceMinutes"');expect(h).not.toMatch(/name="(?:submission|completion)AdvanceMinutes"[^>]*value="[0-9]/);
+ const h=renderToStaticMarkup(createElement(ShiftChangePolicyFields,{policy:null,canEdit:true}));expect(h).toContain('Until a rule is set, trades and cover wait for a manager.');expect(h).not.toContain('<details');expect(h.match(/name="expectedRevision" value="0"/g)).toHaveLength(2);expect(h).toContain('name="submissionAdvanceMinutes"');expect(h).not.toMatch(/name="(?:submission|completion)AdvanceMinutes"[^>]*value="[0-9]/);
 });
 it('Manager reads unknown policy and profiles without Owner write controls',()=>{
  const p=unknownOperationalRuleProfile();const h=renderToStaticMarkup(createElement(OperationalRuleFields,{employeeId:'e',profile:p,canEdit:false}));expect(h).toContain('Unknown');expect(h).not.toContain('<form');expect(h).not.toContain('<input');

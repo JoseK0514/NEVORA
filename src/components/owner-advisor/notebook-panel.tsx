@@ -68,7 +68,6 @@ export function NotebookPanel({ notebook, date, disabled, change, selectTask, in
   };
   const quiet = "b-rowact b-rowact--quiet";
   return <div className="oa-notebook" ref={panelRef}>
-    <p className="oa-lede oa-pad">Goals and tasks stay saved for your Owner account. Investigations use them when you ask, with current company records.</p>
     <details className="oa-fold" open>
       <summary><span>Saved goals</span><span className="oa-fold__count">{notebook.goals.length} of 8</span></summary>
       {notebook.goals.length === 0 && <p className="oa-empty">Save a goal you want Rondo to consider over time.</p>}
@@ -86,7 +85,7 @@ export function NotebookPanel({ notebook, date, disabled, change, selectTask, in
     </details>
     <details className="oa-fold" open>
       <summary><span>Your tasks</span><span className="oa-fold__count">{notebook.tasks.filter(t => t.state === "open").length} open</span></summary>
-      <p className="oa-lede oa-pad oa-lede--quiet">Closing a task records your choice. It does not verify that a staffing or payroll issue was resolved.</p>
+      {notebook.tasks.length > 0 && <p className="oa-lede oa-pad oa-lede--quiet">Closing a task records your choice. It does not verify that a staffing or payroll issue was resolved.</p>}
       {notebook.tasks.length === 0 && <p className="oa-empty">Save an objective and notes to pick up an investigation later.</p>}
       {notebook.tasks.length > 0 && <ul className="oa-items oa-items--quiet">
         {notebook.tasks.map(task => <li className="oa-item oa-item--flat" key={task.id}><div className="oa-item__main">
@@ -106,7 +105,7 @@ export function NotebookPanel({ notebook, date, disabled, change, selectTask, in
           </div>
         </div></li>)}
       </ul>}
-      <p className="oa-foot">{notebook.tasks.length} of 12 saved tasks, including closed tasks.</p>
+      {notebook.tasks.length > 0 && <p className="oa-foot">{notebook.tasks.length} of 12 saved tasks, including closed tasks.</p>}
       <button type="button" className="oa-addrow" disabled={blocked || notebook.tasks.length >= 12} onClick={e => openEditor({ base: notebook.revision, change: { kind: "save_task", taskId: crypto.randomUUID(), objective: "", notes: "", state: "open", focus: { kind: "general" } } }, e.currentTarget)}><PlusIcon weight="bold" aria-hidden="true" />Add task</button>
     </details>
     {draft && <form ref={editorRef} className="oa-editor" aria-label={goalDraft ? "Edit saved goal" : "Edit saved task"} onSubmit={e => { e.preventDefault(); void save(); }}>

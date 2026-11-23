@@ -40,3 +40,9 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .c-page.c-help:has(> .b-screen) > .b-keep.b-keep.b-keep.c-help__how { max-width: none !important; margin: -4px 0 32px !important; padding: 0 !important; }
   }
 }
+
+/* Queue review (Nov 23, 2026): at 1440 the Contact note stopped well short of the card's right edge (a 68ch measure);
+ * it uses the card's width like the other text in the card. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-help #help-contact .c-card > .c-help__note:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#h-none) { max-width: none !important; }
+}

@@ -27,7 +27,7 @@ import type {TimecardIssue} from '@/lib/timecards/project';
 import {CorpAvatar,CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpDuration,CorpEmpty,CorpErrorCard,CorpPage,CorpRow,CorpRows,CorpStats,CorpTime,CorpTitle} from './corp/corp';
 import {QuietSheet,SheetCancel} from './quiet/quiet-sheet';
 import './timecards-corp.css';
-import {BAvatar,BBusyLabel,BButton,BCallout,BCard,BChip,BDoneMark,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BSegs,BStack,BState,BStatusText} from './owner-b/b-kit';
+import {BAvatar,BBusyLabel,BButton,BCallout,BCard,BChip,BDoneMark,BHero,BIcon,BList,BLive,BRow,BScreen,BSeg,BSegs,BStack,BState,BStatusText} from './owner-b/b-kit';
 import {momentsCopy} from './owner-b/moments-copy';
 import {DecisionAsk} from './owner-b/decision-parts';
 import {DownloadSimpleIcon} from '@phosphor-icons/react/dist/ssr/DownloadSimple';
@@ -120,7 +120,9 @@ const isApproved=(item:TimecardItem)=>item.state==='APPROVED'||item.state==='FIN
 // OW-014: "Waiting" is the one word for something that needs a decision, so the chip reads "Correction waiting".
 /** On the narrowest phones (under 360px) a long status in a row with a wide hours figure would be cut off ("Missing
  * clock-…"), so it uses a shorter word there; every other width keeps the full one (the full one is what is read aloud). */
-const NARROW_STATUS:Readonly<Record<string,string>>={'Missing clock-out':'No clock-out'};
+// Gate check (Nov 23, 2026): at 320px "Correction waiting" still ran out of room beside a three-figure total ("113 h 19")
+// and read "Correction wai…"; it takes a short form there too (screen readers keep the full words).
+const NARROW_STATUS:Readonly<Record<string,string>>={'Missing clock-out':'No clock-out','Correction waiting':'Correction'};
 /** Phase 9 (spec 3.1): the live dot for a card whose person is on the clock right now; every other quiet state has none. */
 const LIVE_DOT:Readonly<Record<string,'green'>>={'Clocked in now':'green'};
 const reasonNames:Partial<Record<TimecardIssue,string>>={open_entry:'Missing clock-out',open_break:'Check breaks',pending_correction:'Correction waiting',overlapping_time:'Overlapping recorded time'};
@@ -538,6 +540,17 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const finalizeAsk=openItem&&askFinalize===openItem.card.employeeId&&openItem.state==='APPROVED'&&!locked&&!own&&!openItem.card.issues.length
       ?<DecisionAsk className="c-tc-ask" tone="commit" titleRef={finalizeTitle} groupLabel={M.finalizeAsk(finalizeFirst)} question={M.finalizeAsk(finalizeFirst)} consequence={M.finalizeAskLine}
         keep={M.notYet} onKeep={keepFinalize} go={M.finalizeTimecard} onGo={()=>{setAskFinalize(null);void act(openItem,'FINALIZE');}}/>:null;
+    // Jose's review (Nov 23, 2026): why an open timecard can't be approved (or finalized) yet, in one line, in place of a dead
+    // button. Only real issues block; a period still running keeps its own sentence above.
+    const blockedWhy=openItem&&!own&&!locked&&!justSaved(openItem)&&!lost&&openItem.state!=='FINALIZED'&&openItem.card.issues.length&&tone!=='neutral'
+      ?`${openItem.state==='APPROVED'?'Finalize':'Approve'} after ${openItem.card.issues.includes('pending_correction')?'the waiting correction is reviewed'
+        :openItem.card.issues.some(issue=>issue==='open_entry'||issue==='open_break')?'the open time is closed'
+        :openItem.card.issues.includes('overlapping_time')?'the overlapping time is fixed':'the issues above are resolved'}.`:null;
+    // Jose's review (Nov 23, 2026): when the footer holds Approve (or Finalize), "Request time correction" sits in the footer
+    // above it, so the sticky footer never covers it and the two actions share one edge.
+    const requestLink=openItem&&!own&&!locked&&!openItem.card.issues.includes('pending_correction')?<Link className={btn('secondary')} href={'/app/timecards/corrections/new/'+encodeURIComponent(openItem.card.employeeId)}>Request time correction</Link>:null;
+    const approveFoot=!!openItem&&!(justSaved(openItem)||(doneHere&&nextUp))&&!(lost&&pending)&&!(openItem.state==='FINALIZED'||own||(waiting&&!pending&&!outcomes)||blockedWhy)
+      &&(openItem.state!=='APPROVED'||allApproved);
     const sheetNode=<QuietSheet open={sheetOpen} modal={!nonModal} labelledBy="cm-tc-sheet-heading cm-tc-sheet-title" onClose={()=>{userClosedSheet.current=true;closeSheet();}}>
       <div className="c-sheet c-tc-sheet" onKeyDown={nonModal?panelKeys:undefined}>
         <div className="c-sheet__nav c-tc-sheet__bar"><span aria-hidden="true"/><h2 className="c-sheet__title" id="cm-tc-sheet-heading">Timecard</h2>
@@ -548,11 +561,13 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <CorpAvatar name={openItem.card.employeeName} initials={initialsOf(openItem.card.employeeName)}/>
               <span className="c-row__main"><h3 id="cm-tc-sheet-title" className="c-row__title c-row__title--b" tabIndex={-1}>{openItem.card.employeeName}</h3>
                 <span className="c-row__detail"><span>{keepWhole(`${roleOf(openItem.card)?`${roleOf(openItem.card)} · `:''}${rangeText(period)}`)}</span></span></span>
-              {status?<span className="c-tc-sheet__state">{toneOf(openItem)?<BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip>:<BStatusText dot={LIVE_DOT[status.text]}>{status.text}</BStatusText>}</span>:null}
+              {/* Gate check (Nov 23, 2026): with the amber note open, its lines say the status ("Correction awaiting review",
+                * "No clock-out yet"), so the header doesn't repeat it as "Correction waiting" or "Clocked in now". */}
+              {status&&!(openItem.card.issues.length&&tone!=='neutral')?<span className="c-tc-sheet__state">{toneOf(openItem)?<BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip>:<BStatusText dot={LIVE_DOT[status.text]}>{status.text}</BStatusText>}</span>:null}
             </div>
             <CorpStats items={[{label:'Recorded',value:compactHours(openItem.card.recordedNanoseconds)},{label:'Breaks',value:compactHours(openItem.card.breakNanoseconds)},{label:'Clock-ins',value:openItem.card.entries.length}]}/>
-          </section>
-          {/* Copy table 42/46: a period that hasn't ended is plain sentences (no heading, no bullet); the approve date is said once,
+            {/* Jose's review (Nov 23, 2026): the note sits in the person's card, on its left edge, not between the cards.
+              * Copy table 42/46: a period that hasn't ended is plain sentences (no heading, no bullet); the approve date is said once,
             beside the decision. Real issues keep their list. */}
           {openItem.card.issues.length?tone==='neutral'?<p className="c-tc-sheet__issue" data-tone="neutral">{`This ${periodNoun(period)} isn’t over. Hours can still change.${waiting&&!pending&&!outcomes?'':` You can approve from ${approveFrom(period)}.`}`}</p>
             :
@@ -560,8 +575,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             // line of the body; a waiting correction keeps its way in as the note's one action (Review B2, NV-133).
             <div className="c-tc-sheet__attn"><BCallout tone="amber" title="Needs attention"
               action={openItem.card.issues.includes('pending_correction')?{label:'Review correction',href:'/app/timecards/corrections'}:undefined}>
-              {openItem.card.issues.map(issue=><p key={issue}>{issueNames[issue]}</p>)}
-              <p>Review the entries and resolve open time or corrections before approval.</p></BCallout></div>:null}
+              {/* Gate check (Nov 23, 2026): the issues are the note; the line on how to clear them before approval is gone. */}
+              {openItem.card.issues.map(issue=><p key={issue}>{issueNames[issue]}</p>)}</BCallout></div>:null}
+          </section>
           <CorpCard id="tc-days" label="Days">
             {days.length?<ul className="c-rows" aria-label="Days with recorded time">{days.map(day=><li key={day.date}><div className="c-row c-tc-day">
               <span className="c-tc-day__date">{day.label}</span>
@@ -578,7 +594,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <span className="c-num">{(done.action==='finalized'?M.batchPartFinalized:M.batchPartApproved)(doneCount(done.action),cards.length)}</span></span></div>:null}
           <div className="c-tc-sheet__actions">
             {/* Nov 14 inspection: the viewer is fixing someone else's time here, so the button says so (same delegated correction). */}
-            {!own&&!locked?<Link className={btn('secondary')} href={'/app/timecards/corrections/new/'+encodeURIComponent(openItem.card.employeeId)}>Request time correction</Link>:null}
+            {/* Jose's review (Nov 23, 2026): with a correction already waiting, the note's "Review correction" is the next step,
+              * so a second request isn't offered here. */}
+            {approveFoot?null:requestLink}
             {!own&&managementRecoveryScope?<ManagementCloseForm key={managementRecoveryScope+':'+actorId+':'+openItem.card.employeeId} recoveryScope={managementRecoveryScope} actorId={actorId} timeZone={openItem.card.timeZone}
               timeEntryId={openItem.card.entries.find(entry=>entry.sourceKind==='RECORDED'&&!entry.endAt&&!entry.rawEndAt)?.id} onClosed={()=>void refresh(period,true)}/>:null}
             {/* Review B #8: undoing a finalized card is one quiet "Reopen"; choosing it shows the reason field and its button. */}
@@ -587,8 +605,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} aria-busy={flies('REOPEN')||undefined} onClick={()=>void act(openItem,'REOPEN')}>{busyLabel(flies('REOPEN'),M.reopenTimecard)}</button></>
                 :<button type="button" className="c-link c-tc-sheet__quiet" disabled={locked} onClick={()=>setReopenFor(openItem.card.employeeId)}>{M.reopen}</button>:
               own?<p className="c-tc-sheet__note">{approver.card}</p>:null}
-            {!justSaved(openItem)&&!lost&&!own&&openItem.state==='APPROVED'&&!allApproved&&!(waiting&&!pending&&!outcomes)?finalizeAsk??<button ref={finalizeOpener} type="button" className="c-link c-tc-sheet__quiet" disabled={locked||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>setAskFinalize(openItem.card.employeeId)}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>:null}
-            {!own&&openItem.state!=='FINALIZED'&&!(waiting&&!pending&&!outcomes)&&done?.employeeId!==openItem.card.employeeId?<p className="c-tc-sheet__note">{stepsLine}</p>:null}
+            {!justSaved(openItem)&&!lost&&!own&&!blockedWhy&&openItem.state==='APPROVED'&&!allApproved&&!(waiting&&!pending&&!outcomes)?finalizeAsk??<button ref={finalizeOpener} type="button" className="c-link c-tc-sheet__quiet" disabled={locked||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>setAskFinalize(openItem.card.employeeId)}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>:null}
+            {/* Jose's review (Nov 23, 2026): an open issue blocks approval, so the sheet says why in one line instead of a grey
+              * button with no reason; the steps line steps aside for it. */}
+            {blockedWhy?<p className="c-tc-sheet__note c-tc-sheet__why">{blockedWhy}</p>
+              :!own&&openItem.state!=='FINALIZED'&&!(waiting&&!pending&&!outcomes)&&done?.employeeId!==openItem.card.employeeId?<p className="c-tc-sheet__note">{stepsLine}</p>:null}
           </div>
           {/* OW-039: the one decision is the sheet's footer. On a phone it stays at the bottom of the sheet, above the safe
             * area, while the days scroll under it. Review B #2, #16: while the save is in flight the button keeps its own
@@ -597,11 +618,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {justSaved(openItem)||(doneHere&&nextUp)?nextUp?<div className="c-tc-sheet__foot"><button type="button" className={`${btn('primary')} c-tc-sheet__next`} aria-label={`${M.nextTimecard}: ${nextUp.card.employeeName}`} onClick={()=>openNext(nextUp)}>{M.nextTimecard}</button></div>:null:
             lost&&pending?<div className="c-tc-sheet__foot" data-note=""><BCallout tone="amber" icon="unknown" role="status" title={M.unknownTitle[pending.action]}
               action={<button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={()=>void act(openItem,pending.action)}>{M.checkAgain}</button>}>{M.unknownLine}</BCallout></div>:
-            openItem.state==='FINALIZED'||own||(waiting&&!pending&&!outcomes)?null:
+            openItem.state==='FINALIZED'||own||(waiting&&!pending&&!outcomes)||blockedWhy?null:
             // Round 4: an approved card offers its next step only (Finalize), not Approve again. It is the footer's filled
             // button only once every card is approved; until then it is a quiet line among the actions above.
-            openItem.state==='APPROVED'?allApproved?<div className="c-tc-sheet__foot" data-ask={finalizeAsk?'':undefined}>{finalizeAsk??<button ref={finalizeOpener} type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>setAskFinalize(openItem.card.employeeId)}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>}</div>:null:
-            <div className="c-tc-sheet__foot"><button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('APPROVE')||undefined} onClick={()=>void act(openItem,'APPROVE')}>{busyLabel(flies('APPROVE'),openEmpty?'Approve with no hours':'Approve timecard')}</button></div>}
+            openItem.state==='APPROVED'?allApproved?<div className="c-tc-sheet__foot" data-ask={finalizeAsk?'':undefined}>{finalizeAsk?null:requestLink}{finalizeAsk??<button ref={finalizeOpener} type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('FINALIZE')||undefined} onClick={()=>setAskFinalize(openItem.card.employeeId)}>{busyLabel(flies('FINALIZE'),M.finalizeTimecard)}</button>}</div>:null:
+            <div className="c-tc-sheet__foot">{requestLink}<button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} aria-busy={flies('APPROVE')||undefined} onClick={()=>void act(openItem,'APPROVE')}>{busyLabel(flies('APPROVE'),openEmpty?'Approve with no hours':'Approve timecard')}</button></div>}
           {openItem.history.length?<details className="c-tc-sheet__more c-tc-sheet__history"><summary>{M.earlierVersions(openItem.history.length)}</summary>
             {openItem.history.map(h=><div key={h.operationId}><h3>{h.action==='APPROVE'?'Approved':h.action==='FINALIZE'?'Finalized':'Reopened'}</h3>
               <p>{stampShort(h.occurredAt,openItem.card.timeZone)} · {h.actorName}{h.note?` · ${h.note}`:''}</p>
@@ -640,33 +661,39 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const check=()=>{setChecking(true);void act().finally(()=>setChecking(false));};
     const checkButton=(label:string)=><button type="button" className="c-btn c-btn--secondary c-btn--md" disabled={busy} aria-busy={busy||undefined} onClick={check}>{busyLabel(busy,label)}</button>;
     const summaryOf=(list:BatchOutcome[])=>list.some(outcome=>outcome.command.action==='FINALIZE')?M.batchPartFinalized(list.filter(outcome=>outcome.status==='finalized').length,list.length):M.batchPartApproved(list.filter(outcome=>outcome.status==='approved').length,list.length);
-    const resultRows=result?<ul className="c-tc-flow__rows" aria-label="Each timecard">{result.map(outcome=><li key={outcome.command.operationId}><span className="c-tc-flow__n">{nameOf(outcome.command.employeeId)}</span><span className="c-tc-flow__v" data-tone={outcome.status}>{M.batchWord[outcome.status]}</span></li>)}</ul>:null;
-    const bulkPanel=ready&&showBulk?<section className="c-card c-tc-flow" data-stage={result?'result':review?'confirm':'select'} aria-label="Selected timecard review">
+    // Jose's review (Nov 23, 2026, "not B2 compliant"): the selected set's card is the Direction B kit on every width: a white
+    // raised card, kit rows (each name and its hours or result), the kit checkbox, and the kit buttons on the card's edges.
+    // The steps, labels and actions are unchanged.
+    const resultRows=result?<ul className="b-list b-tc-flow__rows" aria-label="Each timecard">{result.map(outcome=><li className="b-li" key={outcome.command.operationId}><div className="b-row b-tc-flow__row"><span className="c-tc-flow__n">{nameOf(outcome.command.employeeId)}</span><span className="c-tc-flow__v" data-tone={outcome.status}>{M.batchWord[outcome.status]}</span></div></li>)}</ul>:null;
+    const bulkPanel=ready&&showBulk?<section className="b-card b-tc-flow" data-stage={result?'result':review?'confirm':'select'} aria-label="Selected timecard review">
       {result?<>
         {allDone?batchDone(result)
-          :pending&&count('outcome-unknown')?<BCallout tone="amber" icon="unknown" role="status" title={M.batchUnknown(count('outcome-unknown'),count('not-submitted'))} action={mine?undefined:checkButton(M.checkContinue)}>{M.unknownLine}</BCallout>
-          :<p className="c-tc-flow__title" role="status">{summaryOf(result)}</p>}
-        {allDone?<details className="c-tc-flow__all"><summary>{M.seeAll(result.length)}<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>{resultRows}</details>:resultRows}
+          :pending&&count('outcome-unknown')?<div className="b-tc-flow__pad"><BCallout tone="amber" icon="unknown" role="status" title={M.batchUnknown(count('outcome-unknown'),count('not-submitted'))} action={mine?undefined:checkButton(M.checkContinue)}>{M.unknownLine}</BCallout></div>
+          :<div className="b-card__h"><h2 role="status">{summaryOf(result)}</h2></div>}
+        {allDone?<details className="b-tc-flow__all"><summary>{M.seeAll(result.length)}<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>{resultRows}</details>:resultRows}
         {/* One step: while a reply is still unconfirmed it is the note's "Check and continue"; after that, Done (a fresh read). */}
-        {pending&&count('outcome-unknown')&&!mine?null:<div className="c-tc-flow__foot" data-end=""><button type="button" className="c-btn c-btn--md" disabled={paused||busy} onClick={()=>{setSelecting(false);void refresh(period);}}>{M.done}</button></div>}
-      </>:review?<div className="c-tc-flow__step">
-        <h2 className="c-tc-flow__title">{(batchAction==='FINALIZE'?M.batchAskFinalize:M.batchAskApprove)(review.commands.length)}</h2>
-        <p className="c-tc-flow__sub">{rangeText(review.period)}</p>
-        <ul className="c-tc-flow__rows" aria-label="Timecards in this set">{review.commands.map(command=><li key={command.employeeId}><span className="c-tc-flow__n">{nameOf(command.employeeId)}</span><span className="c-tc-flow__v c-num">{timeOf(command.employeeId)}</span></li>)}</ul>
-        <label className="c-tc-flow__check"><input type="checkbox" className="c-tc-box" aria-label={M.batchChecked} checked={confirmed||flyingBatch} disabled={busy} onChange={e=>setConfirmed(e.target.checked)}/><span aria-hidden="true">{M.batchChecked}</span></label>
-        <p className="c-tc-flow__note">{M.batchConsequence}</p>
-        <div className="c-tc-flow__foot">
-          <button type="button" className="c-link c-tc-flow__cancel" disabled={busy} onClick={()=>{setReview(null);setConfirmed(false);}}>{M.cancel}</button>
-          <button type="button" className="c-btn c-btn--md" disabled={!confirmed||busy||!!pending} aria-busy={flyingBatch||undefined} onClick={()=>void submitBatch()}>{busyLabel(flyingBatch,(batchAction==='FINALIZE'?M.batchCommitFinalize:M.batchCommitApprove)(review.commands.length))}</button>
+        {pending&&count('outcome-unknown')&&!mine?null:<div className="b-tc-flow__foot" data-end=""><button type="button" className="b-btn b-btn--teal" disabled={paused||busy} onClick={()=>{setSelecting(false);void refresh(period);}}>{M.done}</button></div>}
+      </>:review?<>
+        <div className="b-card__h b-tc-flow__head"><h2>{(batchAction==='FINALIZE'?M.batchAskFinalize:M.batchAskApprove)(review.commands.length)}</h2><span className="b-tc-flow__sub">{rangeText(review.period)}</span></div>
+        <ul className="b-list b-tc-flow__rows" aria-label="Timecards in this set">{review.commands.map(command=><li className="b-li" key={command.employeeId}><div className="b-row b-tc-flow__row"><span className="c-tc-flow__n">{nameOf(command.employeeId)}</span><span className="c-tc-flow__v c-num">{timeOf(command.employeeId)}</span></div></li>)}</ul>
+        <label className="b-row b-tc-flow__check"><input type="checkbox" aria-label={M.batchChecked} checked={confirmed||flyingBatch} disabled={busy} onChange={e=>setConfirmed(e.target.checked)}/><span className="b-row__tx"><span className="b-row__tt" aria-hidden="true">{M.batchChecked}</span><span className="b-row__s">{M.batchConsequence}</span></span></label>
+        <div className="b-tc-flow__foot">
+          <button type="button" className="b-btn b-btn--ghost" disabled={busy} onClick={()=>{setReview(null);setConfirmed(false);}}>{M.cancel}</button>
+          <button type="button" className="b-btn b-btn--teal" disabled={!confirmed||busy||!!pending} aria-busy={flyingBatch||undefined} onClick={()=>void submitBatch()}>{busyLabel(flyingBatch,(batchAction==='FINALIZE'?M.batchCommitFinalize:M.batchCommitApprove)(review.commands.length))}</button>
         </div>
-      </div>:<>
-        {pending&&(!busy||checking)&&!mine?<BCallout tone="amber" icon="unknown" role="status" title={M.unknownTitle[pending.action]} action={checkButton(M.checkAgain)}>{M.unknownLine}</BCallout>:null}
-        {selecting||selected.length?<div className="c-tc-flow__bar">
-          <p className="c-tc-flow__count"><strong>{selected.length} selected</strong><span>{(batchAction==='FINALIZE'?M.selectReadyFinalize:M.selectReadyApprove)(eligible.length,cards.length-eligible.length)}</span><span>{stepsLine}</span></p>
-          <label className="c-tc-flow__action"><span>Selected action</span><select className="c-in" value={batchAction} disabled={locked} onChange={e=>{setBatchAction(e.target.value as BatchAction);clearBatch();}}><option value="APPROVE">Approve selected</option><option value="FINALIZE">Finalize selected</option></select></label>
-          <div className="c-tc-flow__go"><button type="button" className="c-btn c-btn--md" disabled={locked||!selected.length} onClick={prepareBatch}>Review selected timecards</button>
-            {phone?null:<button type="button" className="c-link c-tc-refresh" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button>}</div>
-        </div>:null}
+      </>:<>
+        {pending&&(!busy||checking)&&!mine?<div className="b-tc-flow__pad"><BCallout tone="amber" icon="unknown" role="status" title={M.unknownTitle[pending.action]} action={checkButton(M.checkAgain)}>{M.unknownLine}</BCallout></div>:null}
+        {selecting||selected.length?<>
+          <div className="b-card__h b-tc-flow__head"><h2>{selected.length} selected</h2><span className="b-tc-flow__sub">{(batchAction==='FINALIZE'?M.selectReadyFinalize:M.selectReadyApprove)(eligible.length,cards.length-eligible.length)}</span></div>
+          <p className="b-note b-tc-flow__steps">{stepsLine}</p>
+          <div className="b-tc-flow__bar">
+            <div className="c-field b-tc-flow__action"><label className="c-field__label" htmlFor="b-tc-action">Selected action</label><select id="b-tc-action" className="c-in" value={batchAction} disabled={locked} onChange={e=>{setBatchAction(e.target.value as BatchAction);clearBatch();}}><option value="APPROVE">Approve selected</option><option value="FINALIZE">Finalize selected</option></select></div>
+            <div className="b-tc-flow__foot">
+              {phone?null:<button type="button" className="b-btn b-btn--ghost" aria-label="Refresh timecards" disabled={paused||busy} onClick={()=>void refresh(period)}>Refresh</button>}
+              <button type="button" className={phone?'b-btn b-btn--teal b-btn--full':'b-btn b-btn--teal'} disabled={locked||!selected.length} onClick={prepareBatch}>Review selected timecards</button>
+            </div>
+          </div>
+        </>:null}
       </>}
     </section>:null;
     // R12: the kit's sliding segment reads --n (segments) and --i (the chosen one).
@@ -702,7 +729,13 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // Phase 8 (b.md #27): each part stays whole ("Approval opens Mon, Nov 23" never splits); the line breaks only after " · ".
     // Premium pass FA (final verification B #8): one line of facts (BSegs): each part whole, and no line starts or ends on
     // a "·" ("12 people · / Approval opens Mon, Nov 23" left the dot at the end of the first line).
-    const subtitle=<BSegs parts={ready?[rangeText(period),`${cards.length} ${cards.length===1?'person':'people'}`,folded&&cards.length?`Approval opens ${approveFrom(period)}`:null].map(part=>part?part.replace(/ /g,'\u00a0'):part):[rangeText(period)]}/>;
+    // G52 (Nov 23, 2026): a part keeps its date whole (BSegs' keepWhole) but is no longer one unbreakable run, so at 200%
+    // text on a 320px phone "Approval opens Mon, Nov 30" wraps after "opens" instead of running off the screen. A part
+    // still moves to the next line whole whenever it fits there.
+    const subtitle=<BSegs parts={ready?[rangeText(period),`${cards.length} ${cards.length===1?'person':'people'}`,folded&&cards.length?`Approval opens ${approveFrom(period)}`:null]:[rangeText(period)]}/>;
+    // G89 (Nov 23, 2026): on phones the Team card's title carries the count ("Team 12"), so the band says the week (and
+    // when approval opens) without "12 people"; with no Team card the count stays in the band.
+    const phoneSubtitle=ready&&cards.length?<BSegs parts={[rangeText(period),folded?`Approval opens ${approveFrom(period)}`:null]}/>:subtitle;
     const summary=ready&&cards.length&&!showBulk&&!folded?<CorpCard as="div" ariaLabel="Period overview">
       <div className="c-card__body">
         <div className="c-tc-sum"><b>{summaryTitle}</b>
@@ -714,7 +747,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         {/* BR-2: the counts name the two steps as the chips do ("Ready to approve", "Ready to finalize"). */}
         {/* MG-004: the viewer's own card is someone else's to approve, so it is not counted here. */}
         <p className="c-tc-note">{`${othersSummary.counts.awaitingApproval} to approve · ${othersSummary.counts.awaitingFinalization} to finalize`}</p>
-        {allFinalized?null:<p className="c-tc-note">{stepsLine}</p>}
+        {/* DEC8 (Jose, Nov 23, 2026): the steps are said where they are taken (the timecard sheet, the Select bar), not on the page: its summary already reads "6 to approve · 5 to finalize". */}
       </div>
     </CorpCard>:null;
     // AR-11 (Nov 14, 2026): once every timecard in a period that has ended is finalized, one row says what comes next.
@@ -756,7 +789,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       // Direction B (Jose approved Nov 5, 2026; mock "Owner · Time"): the hero with the week control and this period's figures,
       // then each person's recorded time. Selecting and the reviewed batch keep the layout below, unchanged.
       const bScreen=showBulk||selecting?null:<BScreen>
-        <BHero title="Timecards" titleId="b-tc-title" sub={subtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
+        <BHero title="Timecards" titleId="b-tc-title" sub={phoneSubtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
           <BSeg label="Week" items={[
             {key:'this',label:'This week',current:periodName==='This week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(thisWeek);}},
             {key:'last',label:'Last week',current:periodName==='Last week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(lastWeek);}},
@@ -779,10 +812,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {/* Phase 9 (spec 3.4): timecards waiting for this person's approval lead with the timecards' Clock in amber (it was a
             * teal Check, the "done" glyph). */}
           {ready&&cards.length&&!open&&eligible.length?<BCard label="Ready to approve"><div className="b-notice"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon>
-            <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{/* Review B2 (NV-006): every count names its week. */}{`${rangeText(period)} · ${attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`}`}</span></span>
+            <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{/* Review B2 (NV-006): every count names its week. Gate check (Nov 23, 2026): whole parts (BSegs), so at 320px the
+              * line breaks after the week, never inside it ("Nov 16– / 22"). */}<BSegs parts={[rangeText(period),attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`]}/></span></span>
             <BButton onClick={()=>{setSelecting(true);selectAll(true);}}>Review</BButton></div></BCard>
           :ready&&cards.length&&open&&approvedCount?<BCard label="Approval"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{summaryTitle}</span><span className="b-notice__s">{`You can approve the rest from ${approveFrom(period)}`}</span></span></div></BCard>:null}
-          {ready&&cards.length&&!open&&!allFinalized?<BNote>{stepsLine}</BNote>:null}
+          
           {ready&&cards.length?<BCard id="b-tc-team" title={attentionShown?'Needs attention':'Team'} count={attentionShown?phoneRows.length:cards.length}
             chip={attentionShown?<button type="button" className="b-card__a" onClick={()=>setAttentionOnly(false)}>Show all</button>:undefined}>
             <BList label={attentionShown?'Timecards that need attention':'Timecards in this period'}>{phoneRows.map(item=>{
@@ -797,9 +831,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               // Premium pass FA (final verification A #25, B #31): the breaks fitted on some rows and were left out of others by
               // an invisible rule, so a phone row says its status only; the breaks are in the row's sheet and the wide table.
               const parts=[tone||liveDot?null:row.text].filter(Boolean) as string[];
-              return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,isOwn(item)?'You':null,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
+              // G47 (Nov 23, 2026): the row is named by what it shows (name, "You", status, hours), never a label that
+              // rewrites it; the face's initials are aria-hidden.
+              return <BRow key={id} onClick={()=>setOpenId(id)} lead={<BAvatar name={name}/>}
                 title={name} chip={isOwn(item)?youChip:undefined}
-                sub={tone||liveDot||parts.length?<span className="c-tc-sub">{tone?<BChip tone={tone}>{NARROW_STATUS[row.text]?<><span className="c-tc-chip-full">{row.text}</span><span className="c-tc-chip-short" aria-hidden="true">{NARROW_STATUS[row.text]}</span></>:row.text}</BChip>:liveDot?<BStatusText dot={liveDot}>{row.text}</BStatusText>:null}{parts.map((part,index)=><span key={part}>{index||tone||liveDot?' · ':''}{part}</span>)}</span>:undefined}
+                sub={tone||liveDot||parts.length?<span className="c-tc-sub">{tone?<BChip tone={tone}>{NARROW_STATUS[row.text]?<><span className="c-tc-chip-full">{row.text}</span><span className="c-tc-chip-short" aria-hidden="true">{NARROW_STATUS[row.text]}</span></>:row.text}</BChip>:liveDot?<BStatusText dot={liveDot}>{row.text}</BStatusText>:null}{parts.map((part,index)=><span key={part}>{index||tone||liveDot?' · ':''}{/* Gate check (Nov 23, 2026): at 320px "Jose approves this one" read "Jose approves thi…"; there it says "Jose approves" (screen readers keep the full line). */}{/ approves this one$/.test(part)?<><span className="c-tc-chip-full">{part}</span><span className="c-tc-chip-short" aria-hidden="true">{part.replace(/ this one$/,'')}</span></>:part}</span>)}</span>:undefined}
                 end={hours?<b className="c-num c-tc-hours">{hours}</b>:undefined} chevron/>;
             })}</BList>
           </BCard>:null}
@@ -810,9 +846,52 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           </BList></BCard>
         </BStack>
       </BScreen>;
+      // Jose's review (Nov 23, 2026, "not B2 compliant"): on a phone, Select and the selected set's review are a Direction B
+      // screen too: the band with the week, the set's card, then the team as kit rows with the kit checkbox. The selection,
+      // review and confirmation steps are unchanged.
+      if(showBulk||selecting){
+        const weekSeg=<BSeg label="Week" items={[
+          {key:'this',label:'This week',current:periodName==='This week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(thisWeek);}},
+          {key:'last',label:'Last week',current:periodName==='Last week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(lastWeek);}},
+          {key:'earlier',label:'Earlier',current:periodName===null,aria:periodName===null?`Earlier: ${rangeText(period)}. Show the week before`:'Earlier weeks',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(shiftPeriod(periodName===null?period:lastWeek,-1));}},
+        ]}/>;
+        return <CorpPage className="c-tc" labelledBy="b-tc-title">
+          <BScreen>
+            <BHero title="Timecards" titleId="b-tc-title" sub={phoneSubtitle} right={selectButton?<button type="button" className="b-btn b-btn--glass" aria-pressed={selecting} onClick={toggleSelecting}>{selecting?'Done':'Select'}</button>:undefined}>{weekSeg}</BHero>
+            <BStack>
+              {stateCard}
+              {emptyCard}
+              {bulkPanel}
+              {ready&&cards.length?<BCard id="b-tc-pick" title="Team" count={cards.length}>
+                <ul className="b-list" aria-label="Timecards in this period">
+                  {picking?<li className="b-li"><label className="b-row b-tc-pick"><input type="checkbox" aria-label="Select all eligible timecards" checked={allEligible} disabled={locked||!eligible.length} onChange={e=>selectAll(e.target.checked)}/>
+                    <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Select all eligible</span></span></span><span className="b-row__end"><b className="c-num">{Math.min(eligible.length,100)}</b></span></label></li>:null}
+                  {[...cards].sort(exceptionFirst).map(item=>{
+                    const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),hours=noTime(item)?'':compactHours(item.card.recordedNanoseconds);
+                    const excluded=picking?exclusionShort(item):null;
+                    return <li className="b-li" key={id} id={`timecard-${id}`} tabIndex={-1}>{picking?<label className="b-row b-tc-pick" data-off={pickDisabled(item)||undefined}>
+                      <input type="checkbox" aria-label={`Select ${name}`} title={exclusionShort(item)??undefined} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/>
+                      <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{name}</span>{isOwn(item)?youChip:null}</span><span className="b-row__s">{excluded??row.text}</span></span>
+                      {hours?<span className="b-row__end"><b className="c-num c-tc-hours">{hours}</b></span>:null}</label>
+                      :<button type="button" className="b-row b-row--link" onClick={()=>setOpenId(id)}><BAvatar name={name}/>
+                        <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{name}</span>{isOwn(item)?youChip:null}</span><span className="b-row__s">{row.text}</span></span>
+                        {hours?<span className="b-row__end"><b className="c-num c-tc-hours">{hours}</b></span>:null}</button>}</li>;
+                  })}
+                </ul>
+              </BCard>:null}
+              <BCard label="Time tools"><BList label="Time tools">
+                <BRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} lead={<BIcon tone="teal"><DownloadSimpleIcon weight="bold"/></BIcon>} title="Time exports" sub={exportsLine}/>
+                <BRow href="/app/timecards/corrections" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Time corrections" sub="Fixes people asked for"/>
+              </BList></BCard>
+            </BStack>
+          </BScreen>
+          <p className="c-sr b-keep" role="status" aria-live="polite">{!data&&!busy?'':message}</p>
+          <div className="b-keep">{sheetNode}</div>
+        </CorpPage>;
+      }
       return <CorpPage className="c-tc" labelledBy="tc-title">
         {bScreen}
-        <CorpTitle id="tc-title" title="Timecards" sub={subtitle} actions={selectButton}/>
+        <CorpTitle id="tc-title" title="Timecards" sub={phoneSubtitle} actions={selectButton}/>
         {seg}
         <HoldHeight holding={!ready} memory="timecards-manager" className="c-tc-hold">
           {stateCard}
@@ -833,7 +912,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               return <li key={id} id={`timecard-${id}`} tabIndex={-1}>{picking?<label className="c-row c-tc-pick" data-off={pickDisabled(item)||undefined}>
                 <input type="checkbox" className="c-tc-box" aria-label={`Select ${name}`} title={exclusionShort(item)??undefined} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/>
                 <span className="c-row__main"><span className="c-row__title c-row__title--b">{name}</span><span className="c-row__detail"><span>{excluded??row.text}</span></span></span>{hours?<span className="c-row__value"><CorpDuration>{hours}</CorpDuration></span>:null}
-              </label>:<button type="button" className="c-row" onClick={()=>setOpenId(id)} aria-label={[name,row.text,hours].filter(Boolean).join(', ')}>
+              </label>:<button type="button" className="c-row" onClick={()=>setOpenId(id)}>
                 <CorpAvatar name={name} initials={initialsOf(name)}/>
                 <span className="c-row__main"><span className="c-row__title c-row__title--b">{name}</span><span className="c-row__detail"><span><span className="c-tc-cue" data-act={row.act||undefined}>{row.text}</span></span></span></span>
                 {hours?<span className="c-row__value"><CorpDuration>{hours}</CorpDuration></span>:null}

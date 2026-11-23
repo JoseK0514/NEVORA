@@ -49,14 +49,14 @@
     html body .app-shell[data-nv-b] :is(.c-nav--phone .c-nav__right, .q-nav__r, .q-nav > :last-child:not(.q-nav__t):not(.q-nav__l)) { grid-column: 2 !important; grid-row: 1 !important; }
     html body .app-shell[data-nv-b] :is(.c-nav--phone .c-nav__title, .q-nav__t) {
       grid-area: title !important; justify-self: start !important; margin: 6px 0 0 !important; padding: 0 !important; max-width: none !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; text-align: left !important;
-      font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important;
+      font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important;
     }
     html body .app-shell[data-nv-b] :is(.c-nav__title, .q-nav__t):empty { display: none !important; }
     html body .app-shell[data-nv-b] :is(.c-nav--phone .c-nav__right, .q-nav > :last-child:not(.q-nav__t):not(.q-nav__l)) { grid-area: right !important; justify-self: end !important; }
     html body .app-shell[data-nv-b] :is(.c-nav__right, .q-nav) :is(a, button):not(.q-nav__l) { font-weight: 600 !important; }
     html body .app-shell[data-nv-b] :is(.c-nav--phone .c-nav__right > :is(a, button), .q-nav > :is(a, button).q-nav__r, .q-nav > :last-child:is(a, button):not(.q-nav__l)) {
       display: inline-flex !important; align-items: center !important; min-height: 36px !important; margin: 0 !important; padding: 0 var(--b-gutter) !important; border: 0 !important; border-radius: var(--b-radius-pill) !important;
-      background: #FFFFFF !important; color: #0B3B38 !important; font: 700 14px/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.45) !important; white-space: nowrap !important;
+      background: #FFFFFF !important; color: #0B3B38 !important; font: 700 0.875rem/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.45) !important; white-space: nowrap !important;
     }
     html body .app-shell[data-nv-b] .q-nav > :first-child:is(a, button):not(.q-nav__l) { grid-column: 1 !important; grid-row: 1 !important; justify-self: start !important; margin: 0 !important; font-weight: 600 !important; }
     /* A Quiet page's own large title follows its bar, so the bar's small title steps aside. */
@@ -69,9 +69,9 @@
       background: #08504C !important; box-shadow: 0 -14px 0 #08504C !important;
     }
     html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd { padding-top: 0 !important; }
-    html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd h1 { font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; margin: 0 !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd h1 { font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; margin: 0 !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + .q-hd p { margin: var(--b-space-2) 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2) !important; }
-    html body .app-shell[data-nv-b] .c-page > .c-nav--phone ~ .c-phone-sub { display: block !important; font-size: 14px !important; line-height: 19px !important; }
+    html body .app-shell[data-nv-b] .c-page > .c-nav--phone ~ .c-phone-sub { display: block !important; font-size: 0.875rem !important; line-height: 1.1875rem !important; }
     /* Segmented controls on the hero are frosted glass with a white thumb. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg) {
       margin: 0 !important; padding: var(--b-seg-pad) !important; border-radius: var(--b-seg-r) !important; background: linear-gradient(rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.12)), #08504C !important;
@@ -100,6 +100,10 @@
     html body .app-shell[data-nv-b] :is(.c-shift__head, .c-formhead) {
       display: grid !important; align-items: center !important; gap: var(--b-space-8) !important; padding-bottom: 18px !important; margin-left: -16px !important; margin-right: -16px !important;
     }
+    /* Final fixes K (Nov 23, 2026): a sheet page (Add shift, Edit shift, Paid time export) is inset by the gutter (14px), so
+     * its band reaches the screen's edges with the gutter, not 16px (it ran 2px past each edge, 394px on a 390px phone).
+     * The padding matches, so the band's words keep their place. */
+    html body .app-shell[data-nv-b] :is(.c-sheetpage, .c-shift-page) :is(.c-shift__head, .c-formhead):not(#sg1):not(#sg2) { margin-left: calc(-1 * var(--b-gutter)) !important; margin-right: calc(-1 * var(--b-gutter)) !important; padding-left: var(--b-gutter) !important; padding-right: var(--b-gutter) !important; }
     html body .app-shell[data-nv-b] :is(.c-shift__head, .c-formhead) :is(h1, .c-shift__title, .c-formhead__t) { color: var(--b-on-band) !important; font: 700 var(--b-fs-title-sm)/var(--b-lh-title-sm) Inter, "Inter Fallback", -apple-system, sans-serif !important; text-align: center !important; }
     html body .app-shell[data-nv-b] :is(.c-shift__head, .c-formhead) :is(.c-shift__sub, .c-formhead__step) { color: var(--b-on-band-2) !important; }
     html body .app-shell[data-nv-b] :is(.c-shift__cancel, .c-formhead__l, .c-formhead__link):not(.c-formhead__r) { color: var(--b-on-band) !important; font-weight: 600 !important; min-height: 44px !important; display: inline-flex !important; align-items: center !important; }
@@ -128,7 +132,7 @@
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-row__detail, .q-rt span, .q-rt small) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
 
     /* Pills become chips; buttons become the mock's pills. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-pill:not(.b-status) { height: var(--b-chip-h) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-count) !important; line-height: 16px !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-pill:not(.b-status) { height: max(var(--b-chip-h), 1.375rem) !important; border-radius: var(--b-radius-pill) !important; font-size: 0.75rem !important; line-height: 1rem !important; font-weight: 600 !important; }
     /* Round 5 (Nov 7): a primary button is a pill whether or not it can be pressed (disabled ones were 5–8px rectangles);
      * only the soft shadow waits for it to be enabled. */
     /* Nov 14 inspection (SY-015): the red secondary is a pill too (it kept the corporate 8px corners); b-foundation.css
@@ -320,8 +324,10 @@
     html body .app-shell[data-nv-b] .c-person__act { border-color: transparent !important; background: var(--b-btn-surface) !important; color: var(--b-btn-surface-ink) !important; box-shadow: var(--b-btn-surface-edge) !important; } /* premium pass: the white button */
   }
   @media (max-width: 359px) {
-    /* Four tabs on the hero (Insights): every label keeps padding and never touches its neighbour. */
-    html body .app-shell[data-nv-b].app-shell :is(.c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg)) > :is(a, button) { padding: 0 6px !important; font-size: 12px !important; letter-spacing: -0.02em !important; min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+    /* Four tabs on the hero (Insights): every label keeps padding and never touches its neighbour. Target size (Nov 23,
+     * 2026): the label clips at the item's edge, but the kit's ::after hit area reaches the track's 4px pad, so each tab
+     * answers on 44px (overflow: hidden clipped it to the 36px pill). */
+    html body .app-shell[data-nv-b].app-shell :is(.c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg)) > :is(a, button) { padding: 0 6px !important; font-size: 12px !important; letter-spacing: -0.02em !important; min-width: 0 !important; overflow: clip !important; overflow-clip-margin: var(--b-seg-pad) !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
   }
   @media (max-width: 767px) {
     /* Glass tabs on a corporate page: 16px of canvas under their teal frame (the page's own 12px gap counts). */
@@ -451,7 +457,7 @@
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx :is(.manager-corrections-notice, .manager-corrections-empty) { padding-left: var(--b-inset) !important; padding-right: var(--b-inset) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-row { padding: 14px var(--b-inset) var(--b-space-16) !important; box-shadow: none !important; background: linear-gradient(var(--b-line), var(--b-line)) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-row:first-child { background: none !important; }
-    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-topline > span { display: inline-flex !important; align-items: center !important; height: var(--b-chip-h) !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: var(--b-ink2) !important; font-size: var(--b-fs-count) !important; line-height: 16px !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-topline > span { display: inline-flex !important; align-items: center !important; height: var(--b-chip-h) !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: var(--b-ink2) !important; font-size: var(--b-fs-count) !important; line-height: 1rem !important; font-weight: 600 !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button { height: 40px !important; border-radius: var(--b-radius-pill) !important; border: 0 !important; background: var(--b-btn-surface) !important; color: var(--b-btn-surface-ink) !important; box-shadow: var(--b-btn-surface-edge) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button.primary { background: var(--b-teal) !important; color: #FFFFFF !important; box-shadow: var(--b-elev-glow) !important; }
     html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-correction-actions button:disabled { box-shadow: none !important; }
@@ -725,3 +731,14 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) :is(.c-page, .q-page) .wb-box.wb-impact:not(#tp1):not(#tp2):not(#tp3):not(#tp4):not(#tp5):not(#tp6):not(#tp7):not(#tp8):not(#tp9):not(#tp10) { padding-left: 0 !important; padding-right: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
 }
 /* ---------- end of the tint hunt block ---------- */
+
+/* Settings and Team rows at large text (DS-4, DS-5; lead's decision, Nov 23). At the default size a row's title and its
+ * detail stay on one line with an ellipsis, as designed. Once the reader enlarges text, they wrap instead, so "Clocker
+ * tablets" or "Front counter · Calle Loíza" is never cut. --nv-rem is 1rem resolved on body (on the root element itself,
+ * rem would read the browser's initial size), and a registered length compares as pixels: 16px at the default size. A
+ * browser without style queries keeps the one-line look. */
+@property --nv-rem { syntax: '<length>'; inherits: true; initial-value: 16px; }
+body { --nv-rem: 1rem; }
+@container not style(--nv-rem: 16px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page:is(.c-team, .c-setb) :is(.c-row__title, .c-row__detail > span:first-child) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+}

@@ -11,6 +11,11 @@
   /* The selected day on the week strip is a white tile: its ring is teal, inside the tile. */
   /* Live tiles sit in a clipped strip: the ring is an inset shadow above the neighbours, so all four edges show. */
   /* A card's first and last rows: the inside ring follows the card's corners. */
+  /* G51 (Nov 23, 2026): a menu (ActionMenu: a popover from 768px, a sheet on a phone) is white wherever its trigger sits.
+   * A trigger on the band put the band's white ring on every item, white on white, so only the item's faint fill showed.
+   * Every control in a menu takes the kit's teal ring, inside its own box (the popover clips what is outside it). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .nevora-action-menu-popover :is(a, button, [tabindex]):focus-visible {
+    outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: calc(-1 * var(--b-focus-width)) !important; }
 
   /* ---------- Time ranges (Jose, Nov 15, 2026, item 5): BWhen renders both forms; a phone shows the short one ---------- */
   /* The full form is hidden by default and swapped in from 768px, so no width (a zoomed 767.5px included) shows both. */
@@ -30,6 +35,24 @@
     html body .app-shell[data-nv-b] .c-page:has(> header.c-title) > .c-nav--phone:has(> .c-nav__back),
     html body .app-shell[data-nv-b] .q-page:has(> .q-hd) > .q-nav,
     html body .app-shell[data-nv-b] .q-page:has(> article > .q-hd) > .q-nav { background-color: var(--b-band-solid) !important; }
+  }
+  /* G48 (Nov 23, 2026): the glass strips under a title (Payroll's tabs, the section tabs nav.c-seg, the week stepper
+   * nav.c-week, Team's search) sit on the same border-image band, so contrast tools put their white labels on the canvas
+   * (1.08:1), as G11 found on Timecards' strip. Each paints what it sits on, as one opaque fill: the band at the strip's
+   * middle under the 8% glass it shows. The band darkens down the page, so the fill follows where the strip sits: strips
+   * right under a tab page's title (Payroll, Team; Timecards' own rule is the same 84%) take --b-band-solid 84% toward
+   * black; the section tabs and the week stepper, lower on pages with a back link above the title (Time off requests,
+   * Shift requests, Availability, Hours this week), 79%. On screen it moves a few levels a channel at most (the band's own
+   * fall across the 44px strip); tools read the real pair. */
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page > header.c-title ~ :is(nav.c-pay-tabs, form.c-team-search .c-team-search__field):not(#g48a):not(#g48b) {
+      background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 84%, black)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page > header.c-title ~ :is(nav.c-seg, nav.c-week):not(#g48a):not(#g48b) {
+      background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }
+    /* Final fixes K2 (G-ST7, G87): a quiet page (Time off requests) puts the same section tabs under its .q-hd title, below a
+     * back link; axe read their white words on the canvas (1.08:1) at 768 and 1440. Same paint as the section tabs above. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page > .q-hd ~ nav.c-seg:not(#g48a):not(#g48b) {
+      background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }
   }
 
   /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
@@ -248,7 +271,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-step[data-done] .b-step__n, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-step--done .b-step__n { background: var(--b-green-50); color: var(--b-green); }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(main.page-frame, .c-page, .q-page) { font-variant-numeric: normal; }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-num, .b-live__v, .b-kv b, td, time, .b-pill, .nav-count, .q-count, .b-tab-badge, .c-count, .b-week__d b, .b-step__n) { font-variant-numeric: tabular-nums; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-date { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; font-size: 14px; font-weight: 600; color: var(--b-on-band); scale: 1; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-date { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; font-size: 0.875rem; font-weight: 600; color: var(--b-on-band); scale: 1; }
 /* Review F3 (NV-329): the only b-enter and b-fade (owner-b.css no longer repeats them inside its motion queries); b-enter is
  * DESIGN.MD's first-load entrance: opacity, a 4px blur and a 12px rise. */
 @keyframes b-enter { from { opacity: 0; translate: 0 12px; filter: blur(4px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
@@ -295,7 +318,13 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard > .b-ico { width: 48px; height: 48px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard > .b-ico svg { width: 22px; height: 22px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main { display: grid; gap: var(--b-space-4); justify-items: start; min-width: 0; }
-:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__t { margin: var(--b-space-2) 0 0; font: 600 16px/22px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--b-ink); }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__t { margin: var(--b-space-2) 0 0; font: 600 1rem/1.375rem Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--b-ink); }
+/* Final fixes K4 (G88): at 200% text a state card's title, line and buttons wrap inside the card instead of running off
+ * its edge (the closed-page card: "Time-off decisions aren't part of your a…", "Open your schedule"). The title is in rem
+ * (16/22px at the default size); at the default size every line and button already fits, so nothing moves. */
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main > :is(.b-statecard__t, .b-statecard__s) { max-width: 100%; overflow-wrap: break-word; }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard :is(.b-state-actions, .b-closed-actions) { max-width: 100%; }
+:is(#c-root, html) body .app-shell[data-nv-b] .b-statecard :is(.b-btn, .b-closed-also) { max-width: 100%; white-space: normal; text-align: center; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__s { margin: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main > .b-btn { margin-top: 10px; min-height: var(--b-btn-h); padding: 0 18px; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { display: block; width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; }
@@ -318,7 +347,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) body .app-shell .schedule-publication-change li { padding-top: var(--b-space-12); padding-bottom: var(--b-space-12); }
 :is(#c-root, html) body .app-shell .schedule-publication-change .spc-chip { margin-right: var(--b-space-8); vertical-align: 1px; }
 @media (min-width: 768px) {
-  :is(#c-root, html) body .app-shell[data-nv-b] .cm-block__pos { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 15px; font-weight: 500; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-block__pos { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; line-height: 0.9375rem; font-weight: 500; }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend { display: inline-flex; align-items: center; gap: var(--b-space-12); margin-left: auto; margin-right: var(--b-space-12); font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 3px; vertical-align: -1px; }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > [data-k="published"]::before { background: var(--b-teal-50); box-shadow: inset 0 0 0 1px var(--b-teal); }
@@ -454,7 +483,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
    * page's hero (they were 28px ink on the canvas under an empty bar). */
   @media (max-width: 767px) {
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child { position: relative !important; z-index: 1 !important; margin: 0 calc(50% - 50vw) !important; padding: 0 var(--b-space-16) 18px !important; border: 0 !important; border-radius: 0 !important; background: #08504C !important; box-shadow: 0 -16px 0 #08504C !important; color: var(--b-on-band-2) !important; }
-    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child h1 { margin: 0 !important; font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child h1 { margin: 0 !important; font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child p { margin: var(--b-space-2) 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child + * { margin-top: var(--b-space-16) !important; }
   }
@@ -570,6 +599,11 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
    * positioned inside the entry; the outline it replaces was painted under the badge. */
   @media (min-width: 768px) {
     html body .app-shell[data-nv-b] aside.sidebar .nav-link { position: relative !important; }
+    /* Final fixes K (Nov 23, 2026): in the sidebar the ring is the band's dark teal (#08504C, 9.0:1 on the sidebar, 8.2:1
+     * on the current entry's tint; --b-focus was 5.9:1 and 5.4:1), on the entries, the brand, the collapse button and
+     * Help alike. Same 2px width and shape. */
+    html body .app-shell[data-nv-b] aside.sidebar { --b-focus: #08504C; }
+    html body .app-shell[data-nv-b] aside.sidebar :is(a, button, summary):not(.nav-link):focus-visible { outline-color: #08504C !important; }
     html body .app-shell[data-nv-b] aside.sidebar .nav-link:focus-visible { outline: none !important; }
     html body .app-shell[data-nv-b] aside.sidebar .nav-link:focus-visible::after {
       content: "" !important; display: block !important; position: absolute !important; inset: 0 !important; height: auto !important;
@@ -630,6 +664,18 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     height: var(--b-seg-item-h) !important; min-height: var(--b-seg-item-h) !important; margin: 0 !important; border-radius: var(--b-seg-item-r) !important;
     font-weight: 600 !important; line-height: 20px !important; white-space: nowrap !important;
   }
+  /* Final fixes K (Nov 23, 2026): at 200% text a segment's label wraps between words and its pill grows with it (the
+   * track grows too), instead of the labels running into each other. At the default size every label fits on one line,
+   * so the drawn 36px pill and 44px track are unchanged; the 44px hit area stays. The Employee and Lead band tabs carry
+   * the same values (employee-b CSS), so whichever rule wins draws the same. The id steps outrank the per-page rules
+   * that pin a segment's height (owner-b-desktop.css, owner-b-pages.css, owner-b-time-pay.css). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-seg, .q-seg, .c-seg, nav.c-pay-tabs):not(#ks1):not(#ks2):not(#ks3):not(#ks4):not(#ks5):not(#ks6):not(#ks7):not(#ks8):not(#ks9):not(#ks10):not(#ks11) {
+    height: auto !important; max-height: none !important; min-height: var(--b-seg-h) !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-seg, .q-seg, .c-seg, nav.c-pay-tabs) > :is(a, button):not(#ks1):not(#ks2):not(#ks3):not(#ks4):not(#ks5):not(#ks6):not(#ks7):not(#ks8):not(#ks9):not(#ks10):not(#ks11) {
+    height: auto !important; min-height: var(--b-seg-item-h) !important; padding-block: var(--b-space-4) !important; line-height: 1.25rem !important;
+    white-space: normal !important; overflow-wrap: break-word !important; text-align: center !important;
+  }
   /* The 44px hit area is the track's height; a thumb drawn by a pseudo-element is the item's own pill. */
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button)::after { content: "" !important; position: absolute !important; inset: calc(-1 * var(--b-seg-pad)) 0 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button)::before { inset: 0 !important; border-radius: var(--b-seg-item-r) !important; }
@@ -651,10 +697,11 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   /* Narrow phones (320–359px): a track of three or more items without a sliding thumb (Insights' periods, Things to do's
    * filters, Pick up and swap) gives each item its label's width plus an equal share of what is left, so a long label isn't
    * clipped or pressed to its thumb's edge while a short one has room to spare (equal columns clipped "This week" by 4px at
-   * 320). A track whose thumb slides (data-slide) keeps its equal columns, which the thumb's position is computed from. */
+   * 320). A track whose thumb slides (data-slide) keeps its equal columns, which the thumb's position is computed from.
+   * Target size (Nov 23, 2026): no item narrower than 44px (Things to do's "All" was 41px at 320). */
   @media (max-width: 359px) {
     html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) { grid-template-columns: none !important; grid-auto-flow: column !important; grid-auto-columns: auto !important; }
-    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 0 !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
+    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 44px !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
   }
   /* Team's filters (on white, in the people card): the same track as the other controls on white, scrolling on a phone. */
   html body .app-shell[data-nv-b] .b-filters {
@@ -672,7 +719,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
  * Custom properties only: every rule that sets these reads the tokens. */
 @media (max-width: 359px) {
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters):has(> :nth-child(3)) {
-    --b-seg-fs: 12.5px; --b-seg-count-h: 18px; --b-seg-count-fs: 11px; --b-seg-count-px: 4px; --b-seg-count-gap: 4px;
+    --b-seg-fs: min(0.78125rem, 18px); --b-seg-count-h: 18px; --b-seg-count-fs: 11px; --b-seg-count-px: 4px; --b-seg-count-gap: 4px;
   }
 }
 /* NV-074: the main tabs' loaded band heights (the hero's height on a phone, from the top of the screen; on tablets and
@@ -771,6 +818,15 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
 @media (forced-colors: active) {
   html body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]),
   html body .app-shell[data-nv-b] :is(.b-search, .c-team-search__field, .c-pins__search, .b-glass, .b-btn--glass, .b-seg > [aria-current="page"], .b-seg > [aria-pressed="true"], .b-filters > [aria-pressed="true"]) { outline: 1px solid ButtonText; outline-offset: -1px; }
+  /* Z3 (Nov 23, 2026): a filled button's only edge was its fill, which forced colours removes, so "Add employee", "Try
+   * again" or "Delete my account" read as plain text. Every kit button gets a system-colour edge, drawn as an inset
+   * outline because many c-btn rules set border: 0 !important; GrayText when disabled. The layered focus ring still wins. */
+  html body :is(.b-btn, .c-btn):not(:disabled, [aria-disabled="true"]) { outline: 1px solid ButtonText !important; outline-offset: -1px !important; }
+  html body :is(.b-btn, .c-btn):is(:disabled, [aria-disabled="true"]) { outline: 1px solid GrayText !important; outline-offset: -1px !important; }
+  /* Z3 shell (Nov 23, 2026): the top bar's Search, bell and account menu (desktop) and the bell, avatar and Add shift
+   * (phone header) were drawn by their fills alone, so in forced colours they read as loose text and icons. Same inset
+   * outline as the kit buttons; the layered focus ring still wins. */
+  html body .app-shell .mobile-header :is(.command-finder-trigger, .nevora-action-menu-trigger, .portal-notification-bell, .c-top-avatar, .cm-add-shift) { outline: 1px solid ButtonText !important; outline-offset: -1px !important; }
 }
 
 /* ---------- Phase 8 (Nov 17, 2026): short windows (src/lib/b-viewport.ts B_WIDE_SHORT) ----------
@@ -790,8 +846,8 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     --b-title-top: 76px; --b-title-top-back: 118px;
     --b-band-short: 150px; --b-band-sub: 190px; --b-band-strip: 258px; --b-band-figures: 276px;
     --bs-frame-top: var(--b-space-12); --bs-pay-head: 63px;
-    --bs-big-fs: 32px; --bs-big-lh: 38px; --bs-live-gap: var(--b-space-16); --bs-tile-pad: 10px var(--b-space-16);
-    --bs-fig-fs: 22px; --bs-fig-lh: 28px; --bs-figtitle-h: 38px; --bs-live-h: 0px;
+    --bs-big-fs: 2rem; --bs-big-lh: 2.375rem; --bs-live-gap: var(--b-space-16); --bs-tile-pad: 10px var(--b-space-16);
+    --bs-fig-fs: 1.375rem; --bs-fig-lh: 1.75rem; --bs-figtitle-h: 38px; --bs-live-h: 0px;
     --bs-rail-entry: 48px; --bs-rail-pill-py: 3px;
   }
 }
@@ -899,8 +955,8 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
    * bigger control keeps its size. */
   html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *) {
     -webkit-appearance: none !important; appearance: none !important; box-sizing: border-box !important; flex: none !important; display: inline-block !important; vertical-align: middle;
-    width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important; padding: 0 !important;
-    border: 1.5px solid var(--b-field-edge) !important; border-radius: 6px !important; background: #FFFFFF none center / 14px 14px no-repeat !important; box-shadow: none !important; cursor: pointer;
+    width: 1.25rem !important; height: 1.25rem !important; min-width: 1.25rem !important; min-height: 1.25rem !important; padding: 0 !important;
+    border: 1.5px solid var(--b-field-edge) !important; border-radius: 0.375rem !important; background: #FFFFFF none center / 0.875rem 0.875rem no-repeat !important; box-shadow: none !important; cursor: pointer;
   }
   html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *):is(:checked, :indeterminate) { border-color: var(--b-teal) !important; background-color: var(--b-teal) !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23FFFFFF' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") !important; }
   html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *):indeterminate { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23FFFFFF' d='M228,128a12,12,0,0,1-12,12H40a12,12,0,0,1,0-24H216A12,12,0,0,1,228,128Z'/%3E%3C/svg%3E") !important; }
@@ -999,12 +1055,15 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   }
 }
 
-/* Premium pass (Nov 20, 2026): a count inside a segment is a plain numeral in the label's colour at 62%, not a filled
+/* G87 (Nov 23, 2026): the count is the label's own colour at full strength. At 62% (56% on the selected tab) a band
+ * tab's white count was 2.9:1 on the teal (axe color-contrast at 1440); the smaller semibold numeral and the gap keep it
+ * apart from the label.
+ * Premium pass (Nov 20, 2026): a count inside a segment is a plain numeral in the label's colour, not a filled
  * circle (the white thumb's teal circle and the amber one beside "For you" read as stickers). A count that waits on the
  * person keeps one small amber dot before it. Supersedes "a 20px count pill" in NV-103; the gap and the type stay. */
 @layer nv-b {
-  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { display: inline-flex !important; align-items: center !important; min-width: 0 !important; height: auto !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: inherit !important; opacity: 0.62 !important; font-size: var(--b-fs-caption) !important; line-height: 16px !important; font-weight: 600 !important; }
-  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { background: none !important; color: inherit !important; opacity: 0.56 !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { display: inline-flex !important; align-items: center !important; min-width: 0 !important; height: auto !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: inherit !important; opacity: 1 !important; font-size: var(--b-fs-caption) !important; line-height: 16px !important; font-weight: 600 !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { background: none !important; color: inherit !important; opacity: 1 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"]) { background: none !important; color: inherit !important; opacity: 1 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"])::before { content: "" !important; flex: none !important; width: 6px !important; height: 6px !important; margin-inline-end: 5px !important; border-radius: 50% !important; background: #FFC46B !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.eb-segn--amber, .b-count[data-tone="amber"])::before { background: var(--b-amber-solid) !important; }
@@ -1038,4 +1097,19 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-btn, .b-rowact, .nv-btn):is(.b-btn--compact, [data-size="sm"]):not(#bs1):not(#bs2):not(#bs3):not(#bs4):not(#bs5):not(#bs6):not(#bs7) { border-radius: var(--b-radius-btn-sm) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] :is(.c-btn, .q-btn, .q-bs, .wc-btn, .eb-fix-send, .eb-signout__btn, .eb-btn-outline-danger, .button):not(#bs1):not(#bs2):not(#bs3):not(#bs4):not(#bs5):not(#bs6):not(#bs7) { border-radius: var(--b-radius-btn) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-btn, .b-rowact, .nv-btn):focus-visible:not(#bs1):not(#bs2):not(#bs3):not(#bs4):not(#bs5):not(#bs6):not(#bs7) { border-radius: var(--b-radius-btn) !important; }
+}
+
+/* Z3 (A4-05, Nov 23, 2026): forced colours (Windows High Contrast and similar). The mode drops fills and box-shadows, so
+ * the chosen tab of a corporate segment looked like the others, focus rings drawn as shadows vanished on fields, and status
+ * dots drawn as fills disappeared. Each gets a system colour. Same layer and !important as the kit rules they meet, with
+ * more weight so these win; nothing changes outside forced colours. (Buttons' edges: the kit rule from the Timecards
+ * session.) */
+@layer nv-b {
+  @media (forced-colors: active) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.b-seg, .c-seg, .q-seg, .b-filters, .eb-lseg, .c-pay-tabs, .c-tc-seg, .c-tc-tabs, .c-tabs, [data-c-tabs], [role="tablist"]) > :is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [aria-selected="true"]):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { outline: 2px solid Highlight !important; outline-offset: -2px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(input, select, textarea, button, a, summary, [tabindex]):focus-visible:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { outline: 2px solid Highlight !important; outline-offset: 2px !important; }
+    /* The bell's glyph was set to the band's white with layered !important and stayed white on the forced Canvas. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] header.mobile-header .portal-notification-bell svg:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { forced-color-adjust: none !important; color: ButtonText !important; fill: currentColor !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.mb-dot, .b-dot, .eb-unread, .b-week__d > i.has, .b-week__d > i.gap, .b-week__legend > i):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { forced-color-adjust: none !important; background: CanvasText !important; }
+  }
 }

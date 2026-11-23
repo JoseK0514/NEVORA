@@ -4,6 +4,7 @@ import {readEmployeeClockerPin,type EmployeePinView} from '@/lib/clocker/pins.se
 
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedPerson} from '@/components/company-access/scoped-person';
 import {readOperationalEmployeeHours,readOperationalEmployeeProfile} from '@/lib/company-access/operational-read.server';
 import type {PersonHours} from '@/lib/person-hours';
 import {durationSentence} from '@/lib/duration-format';
@@ -72,6 +73,9 @@ export default async function EmployeeProfilePage({
     let bonusApplies=true;if(editing==='core'&&profile.data.employmentDates){try{bonusApplies=christmasBonusApplies((await getWorkspace()).timeZone);}catch{}}
     return {profile,positions,operational,profileUnavailable,invitation,pin,hours,bonusApplies};
   });
+  // G17 (Jose, Nov 23, 2026): the company-wide read refuses a Manager limited to some locations; the scoped read decides
+  // whether this person works at one of them (server-side, the scoped Team list's boundary) and shows only that view.
+  if(source.state==='unavailable'&&source.reason==='access_denied'&&actor.role==='MANAGER')return ScopedPerson({proof,employeeId,view:editing||accessView?'company':'overview'});
   if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
   const {profile,positions,operational,profileUnavailable,invitation,pin,hours,bonusApplies}=source.data;
   if(profile.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={profile.reason}/>;
@@ -151,15 +155,17 @@ export default async function EmployeeProfilePage({
           <li><CorpRow title="Clocked this week" detail="Includes breaks" value={minutes(hours.workedWeekMinutes)} valueTone="soft" /></li>
         </CorpRows>
       </CorpCard> : null}
+      {/* Phase 2 (Nov 23, 2026; agent brief rule 7, axe label-content-name-mismatch): rows are named by their visible text;
+        * the page is the person's, so "for <name>" isn't added. */}
       <CorpCard as="div" ariaLabel="Work">
         <CorpRows label="Work">
-          <li><CorpRow href={shiftsHref} title="Shifts" label={`Shifts for ${name}`} chevron /></li>
-          <li><CorpRow href={`/app/timecards#timecard-${encodeURIComponent(employee.id)}`} title="Timecards" label={`Timecards for ${name}`} chevron /></li>
-          <li><CorpRow href={`/app/availability?employeeId=${encodeURIComponent(employee.id)}`} title="Availability" label={`Availability for ${name}`} chevron /></li>
+          <li><CorpRow href={shiftsHref} title="Shifts" chevron /></li>
+          <li><CorpRow href={`/app/timecards#timecard-${encodeURIComponent(employee.id)}`} title="Timecards" chevron /></li>
+          <li><CorpRow href={`/app/availability?employeeId=${encodeURIComponent(employee.id)}`} title="Availability" chevron /></li>
           {/* Scheduling restrictions (U02): the times agreed with this person, kept apart from the availability they send. */}
-          <li><CorpRow href={`${base}/restrictions`} title="When they can be scheduled" label={`When ${name} can be scheduled`} chevron /></li>
-          {actor.role === "OWNER" ? <li><CorpRow href={`${base}/pay`} title="Pay rate" label={`Pay rate for ${name}`} chevron /></li> : null}
-          {actor.role === "OWNER" ? <li><CorpRow href={`${base}/time-off`} title="Time off balance" label={`Time off balance for ${name}`} chevron /></li> : null}
+          <li><CorpRow href={`${base}/restrictions`} title="When they can be scheduled" chevron /></li>
+          {actor.role === "OWNER" ? <li><CorpRow href={`${base}/pay`} title="Pay rate" chevron /></li> : null}
+          {actor.role === "OWNER" ? <li><CorpRow href={`${base}/time-off`} title="Time off balance" chevron /></li> : null}
         </CorpRows>
       </CorpCard>
       <CorpCard as="div" ariaLabel="Access and sign-in">
@@ -179,20 +185,21 @@ export default async function EmployeeProfilePage({
     <CorpPage className="c-person c-access c-page--narrow" labelledBy="access-title">
       <CorpNav back={{ href: base, label: employee.firstName }} title="Access and sign-in" titleId="access-nav-title" phoneOnly />
       <CorpTitle id="access-title" title="Access and sign-in" sub={name} wide />
-      <CorpCard id="person-access" label="Access">
+      {/* Phase 2 (Nov 23, 2026): the band says "Access and sign-in", so the card carries no second "Access" heading. */}
+      <CorpCard id="person-access" ariaLabel="Access">
         <CorpRows label="Access">
-          <li>{canManageCore ? <CorpRow href={`${base}?edit=1`} title="Role" value={roleLabel} valueTone="soft" label={`Role, ${roleLabel}. Change it in Edit employee`} chevron /> : <CorpRow title="Role" value={roleLabel} valueTone="soft" />}</li>
+          <li>{canManageCore ? <CorpRow href={`${base}?edit=1`} title="Role" value={roleLabel} valueTone="soft" chevron /> : <CorpRow title="Role" value={roleLabel} valueTone="soft" />}</li>
           {/* Phase 6: without a PIN the row says so and what it means, and opens the form that sets one. */}
           {pinShown ? <li>{pin && !pin.configured
-            ? <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy.en.personPinNone} detail={clockerOwnerCopy.en.personPinNoneSub} value={clockerOwnerCopy.en.setPin} valueTone="teal" label={clockerOwnerCopy.en.setPinFor(name)} chevron />
-            : <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy.en.personPinSet} value={pinValue} valueTone="soft" label={pin?.configured ? clockerOwnerCopy.en.resetPinFor(name) : undefined} chevron />}</li> : null}
+            ? <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy.en.personPinNone} detail={clockerOwnerCopy.en.personPinNoneSub} value={clockerOwnerCopy.en.setPin} valueTone="teal" chevron />
+            : <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy.en.personPinSet} value={pinValue} valueTone="soft" chevron />}</li> : null}
           <li><CorpRow title="Account" value={accountValue} valueTone="soft" /></li>
           {/* Review B6 (NV-092): the employee ID lives here, not in the person's first line. */}
           <li><CorpRow title="Employee ID" value={employee.id} valueTone="soft" /></li>
         </CorpRows>
       </CorpCard>
       {canManageCore && employee.active && recoverable ? <CorpCard as="div" ariaLabel="Reset password">
-        <CorpRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} bold title="Reset password" detail="Give them a one-time code to sign back in" chevron />
+        <CorpRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} bold title="Reset password" detail="Give them a link to set a new password" chevron />
       </CorpCard> : null}
       {/* The Owner's account invitation (until the account is activated) and a Manager's management access. */}
       {actor.role==='OWNER'&&(inviting||employee.role==='MANAGER') ? <div className="c-access__panels">

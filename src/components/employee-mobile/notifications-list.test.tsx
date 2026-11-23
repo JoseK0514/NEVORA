@@ -14,7 +14,7 @@ it('groups by day in the workplace time zone',()=>{
 });
 it('board E-Notifications: All / Unread tabs, Yesterday and Earlier cards, an unread dot and plain times',()=>{
  const html=draw(),text=plain(html);
- expect(html).toMatch(/aria-pressed="true"[^>]*>All</);expect(text).toContain('Unread 1');expect(text).not.toContain('Unread (1)');expect(html).toMatch(/<span class="c-count[^"]*"[^>]*>1<\/span>/);
+ expect(html).toMatch(/aria-pressed="true"[^>]*>All</);expect(text).toContain('Unread 1');expect(text).not.toContain('Unread (1)');expect(html).toMatch(/<span class="c-count[^"]*"[^>]*><span class="sr-only">\u00a0<\/span>1<\/span>/);
  expect(text.indexOf('Yesterday')).toBeLessThan(text.indexOf('Earlier'));expect(text).toContain('7:45 PM');expect(text).toContain('Wed, Oct 28 · 8:00 AM');
  expect(text).not.toMatch(/\bAST\b|\bEDT\b|GMT/);expect(html).toContain('em-notif-dot');expect(text).toContain('Action needed · 7:45 PM');
  // Upscale B7: one dot and no icon tile or pill.
@@ -37,7 +37,7 @@ it('a notice says what happened, from its kind, its dates and whether it still n
  expect(title('Shift request update',{actionState:'available',subject:day})).toBe('You can respond to a shift request for Nov 26');
  expect(title('Shift request update',{actionState:'complete',subject:day})).toBe('A shift request for Nov 26 is closed');expect(title('Shift request update',{subject:day})).toBe('A shift request for Nov 26 was updated');
  expect(title('Availability update',{actionState:'required'})).toBe('Reminder to submit your availability');expect(title('Availability update',{actionState:'complete'})).toBe('Your availability was submitted');
- expect(title('Team update',{actionState:'required'})).toBe('A team update needs your acknowledgement');expect(title('Team update')).toBe('A team update was shared with you');
+ expect(title('Team update',{actionState:'required'})).toBe('Confirm the team update');expect(title('Team update')).toBe('A team update was shared with you');
  expect(title('Pay statement update',{actionState:'available'})).toBe('A pay statement was shared with you');
  // A kind with nothing more to say, and a label that isn't a known kind, keep their own words.
  expect(title('Device notification test')).toBe('Device notification test');expect(title('Holiday hours')).toBe('Holiday hours');
@@ -72,7 +72,7 @@ it('Phase 4 (EM-005): a headline is the outcome and its object, in English and S
  expect(head('Cover',{eventType:'COVERAGE_INVITATION',actionState:'available',subject:day})).toEqual({title:'Cover request waiting for you',object:'Thu, Nov 26',decided:null,forYou:true});
  expect(head('Shift swap',{eventType:'SWAP_APPROVED',subject:day}).title).toBe('Shift swap approved');expect(head('Cover',{eventType:'COVERAGE_DENIED',subject:day}).decided).toBe('declined');
  expect(head('Shift request update',{actionState:'complete'}).title).toBe('Shift request closed');expect(head('Can’t-work update',{eventType:'CALLOUT_APPROVED'}).title).toBe('Can’t-work request approved');
- expect(head('Team update',{actionState:'required'})).toEqual({title:'Acknowledge the team update',object:null,decided:null,forYou:false});expect(head('Team update').title).toBe('New team update');
+ expect(head('Team update',{actionState:'required'})).toEqual({title:'Confirm the team update',object:null,decided:null,forYou:false});expect(head('Team update').title).toBe('New team update');
  expect(head('Pay statement update').title).toBe('Pay statement shared');expect(head('Availability update',{actionState:'required'}).title).toBe('Send your availability');
  expect(head('Holiday hours')).toEqual({title:'Holiday hours',object:null,decided:null,forYou:false});
  // Spanish: every part comes from the copy module and the dates from the es-PR formatter.

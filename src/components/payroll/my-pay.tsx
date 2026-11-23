@@ -13,8 +13,6 @@ import { QuietHeader, QuietList, QuietPage, QuietRow } from '../quiet/quiet';
 import { useEmployeeMobile } from '../employee-mobile/use-mobile';
 import { EmployeePayView } from '../employee-mobile/pay';
 import { CorpPayView } from '../employee-mobile/pay-corp';
-import { CorpButtonLink, CorpCard, CorpErrorCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
-import { BState } from '../owner-b/b-kit';
 
 /* My pay in the Signature style (phase 1, approved Oct 20, 2026; target:
  * docs/product/specs/employee-style/signature/phase-1/p1c-pay.png). The band carries the next payday from the pay
@@ -51,10 +49,10 @@ const newestFirst = (a: { payday: string }, b: { payday: string }) => b.payday.l
 /** v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; mockup E11): an Employee's or Lead's Pay tab.
  * The next payday as one line, this week's time, then the published statements and the privacy note (wording unchanged).
  * Same statements read, refresh and download links as before. */
-export function MyPay({ nextPay = null, statement = null, document = null, corporate = false }: { nextPay?: NextPay; statement?: string | null; document?: 'unavailable' | 'failed' | 'temporary' | null; /** Corporate (Release 1): an Employee's Pay on the kit, the same page on a phone and in the desktop column. */ corporate?: boolean }) {
+export function MyPay({ nextPay = null, statement = null, document = null, corporate = false, home }: { nextPay?: NextPay; statement?: string | null; document?: 'unavailable' | 'failed' | 'temporary' | null; /** Corporate (Release 1): an Employee's Pay on the kit, the same page on a phone and in the desktop column. */ corporate?: boolean; /** An Owner's or Manager's name and way back for the same screen. */ home?: { title: string; back?: { href: string; label: string } } }) {
   const { data, loading, error, errorCode, reload } = usePayrollResource('/api/payroll/statements', readStatements);
   const mobile = useEmployeeMobile();
-  if (corporate) return <CorpPayView statements={data?.statements ?? null} loading={loading} error={error} errorCode={errorCode} nextPay={nextPay} statement={statement} document={document} reload={() => void reload()} />;
+  if (corporate) return <CorpPayView statements={data?.statements ?? null} loading={loading} error={error} errorCode={errorCode} nextPay={nextPay} statement={statement} document={document} reload={() => void reload()} home={home} />;
   // One read for both presentations, so rotating a phone never refetches or drops the list.
   if (mobile) return <QuietPage><EmployeePayView statements={data?.statements ?? null} loading={loading} error={error} errorCode={errorCode} nextPay={nextPay} statement={statement} document={document} reload={() => void reload()} /></QuietPage>;
   const statements = data ? [...data.statements].sort(newestFirst) : [];
@@ -86,29 +84,6 @@ export function MyPay({ nextPay = null, statement = null, document = null, corpo
   </QuietPage>;
 }
 
-/** My pay for Owners and Managers. Nov 1 upscale (review M4): on the kit's card pattern, a pushed page ("‹ More", My pay
- * centred on a phone): a Payday card (the next payday and how far away it is), then a Statements card (each statement a
- * row that downloads it, or the kit's empty state). Same statements read, refresh, download links and wording. */
-/** Phase 8 (review B #20): the days to the scheduled payday are plain grey text (the normal state carries no chip), and
- * no statements yet is the kit's empty state card (the grey tray), with the same words. */
-export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
-  const { data, loading, error, reload } = usePayrollResource('/api/payroll/statements', readStatements);
-  const statements = data ? [...data.statements].sort(newestFirst) : [];
-  const days = nextPay?.daysUntil;
-  const payday = nextPay ? new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }).format(utc(nextPay.payday)) : null;
-  const away = days === undefined ? undefined : days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`;
-  return <CorpPage className="c-mypay c-page--narrow" labelledBy="mypay-title">
-    <CorpNav back={{ href: '/app/more', label: 'More' }} title="My pay" titleId="mypay-nav-title" phoneOnly />
-    <CorpTitle id="mypay-title" title="My pay" wide />
-    {payday ? <CorpCard id="mypay-payday" label="Scheduled payday">
-      <CorpRows label="Scheduled payday"><li><CorpRow title={payday} bold detail={nextPay?.period ? `Pay period ${periodLabel(nextPay.period.startDate, nextPay.period.endDate)}` : undefined} value={away} valueTone="soft" /></li></CorpRows>
-    </CorpCard> : null}
-    {loading ? <CorpCard id="mypay-statements" label="Statements"><div className="c-empty c-empty--card" role="status"><span className="c-empty__body">Loading…</span></div></CorpCard>
-      : error ? <CorpErrorCard title={error === PAYROLL_SIGNED_OUT ? 'Sign in again to see your statements.' : 'Couldn’t load your statements.'} body={null}
-        action={error === PAYROLL_SIGNED_OUT ? <CorpButtonLink href="/login" kind="neutral" size="md">Sign in</CorpButtonLink> : <button type="button" className="c-btn c-btn--neutral c-btn--md" onClick={() => void reload()}>Try again</button>} />
-      : <CorpCard id="mypay-statements" label="Statements">{statements.length
-        ? <CorpRows label="Statements">{statements.map(statement => <li key={statement.id}><CorpRow href={documentHref(statement)} native bold
-          title={`Payday ${formatDisplayDate(statement.payday)}`} detail={`${periodLabel(statement.period.startDate, statement.period.endDate)} · PDF`} label={`Download ${statement.filename}`} chevron /></li>)}</CorpRows>
-        : <BState silent kind="empty" title="No statements yet" line="Only you can see them." />}</CorpCard>}
-  </CorpPage>;
-}
+/** Phase 2 (G10, brief rule 1): an Owner's or Manager's My pay is the Employee's Pay screen with their own statements
+ * (the same read), named "My pay" (no band back link: in the Manager shell it lands on the logo; the tab bar and More reach it). The separate look-alike it replaced is gone. */
+export const MY_PAY_HOME = { title: 'My pay' } as const;

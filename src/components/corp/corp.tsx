@@ -379,7 +379,9 @@ export function CorpTabs({ label, items }: { label: string; items: { href: strin
 
 /** A count after a label ("Open shifts 3"): 13/600 #6B7075 with tabular figures, 6px after the label, in place of "(3)". */
 export function CorpCount({ children, label }: { children: ReactNode; label?: string }) {
-  return <span className="c-count c-num" aria-label={label}>{children}</span>;
+  // Final fixes K8 (G74): a heading and its count read as two words ("Clocked in 2", never "Clocked in2"). The space is
+  // screen-reader text (a no-break space, never collapsed), so the drawn 6px gap is unchanged.
+  return <span className="c-count c-num" aria-label={label}><span className="sr-only">{"\u00a0"}</span>{children}</span>;
 }
 
 /** A sub-head inside a card, for a second kind of row in the same card ("Missed clock-ins" under "Open shifts"). */

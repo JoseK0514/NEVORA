@@ -41,7 +41,7 @@ it("keeps inactive employees discoverable with an explicit status", async () => 
   const html = renderToStaticMarkup(await EmployeesPage({ searchParams: Promise.resolve({ all: "1" }) }));
   // Inactive people keep their own group, labelled above its card (Owner premium R5); the label says it once, so the
   // rows carry no pill (R3) and say so to assistive tech.
-  expect(html).toContain('id="team-inactive-label">Inactive<span class="c-count c-num">1</span></h2>');
+  expect(html).toContain('id="team-inactive-label">Inactive<span class="c-count c-num"><span class="sr-only">\u00a0</span>1</span></h2>');
   expect(html).not.toContain('class="c-pill c-pill--neutral">Inactive</span>');
   // QA A4-03 (Nov 21, 2026): a row's visible content is its spoken name, so no label replaces it (dropping the live
   // status) or adds the phone number, which no Team row shows.
@@ -80,7 +80,7 @@ it("renders the retained inactive primary location truthfully in the employee di
   expect(html).toMatch(/Main[^<]*Inactive/);
   expect(html).not.toContain("Location not assigned");
   expect(html).toContain('href="/app/employees/inactive"');
-  expect(html).toContain('id="team-inactive-label">Inactive<span class="c-count c-num">1</span></h2>');
+  expect(html).toContain('id="team-inactive-label">Inactive<span class="c-count c-num"><span class="sr-only">\u00a0</span>1</span></h2>');
 });
 
 it("authorizes before loading any employee data", async () => {

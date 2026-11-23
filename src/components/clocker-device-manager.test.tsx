@@ -90,14 +90,15 @@ describe('the page', () => {
   });
   it('gives each row at most one tinted action and one quiet one, each naming its tablet', () => {
     const html = render(tablets);
-    expect(html).toContain('aria-label="Get a setup code for Patio tablet"');
-    expect(html).toContain('aria-label="Get a new setup code for Bar tablet"');
-    expect(html).toContain('aria-label="Manage Front counter tablet"');
-    expect(html).toContain('aria-label="Set up Back room tablet again"');
-    // A connected tablet has no tinted action; one filled button on the page.
+    expect(html).toContain('aria-label="Get setup code, Patio tablet"');
+    expect(html).toContain('aria-label="New code, Bar tablet"');
+    // The row is named by what it shows, not a differing aria-label.
+    expect(html).not.toContain('aria-label="Manage Front counter tablet"');
+    expect(html).toContain('aria-label="Set up again, Back room tablet"');
+    // A connected tablet has no tinted action; adding is the list's "+ Add tablet" row, so no filled button on the page.
     expect(html.match(/data-clocker-code=/g)).toHaveLength(3);
-    expect(html.match(/b-btn b-btn--teal/g)).toHaveLength(1);
-    expect(html).toMatch(/<button type="button" class="b-btn b-btn--teal" data-clocker-add="" disabled="">Add tablet<\/button>/);
+    expect(html).not.toContain('b-btn b-btn--teal');
+    expect(html).toMatch(/<button type="button" class="ck-trow__main ck-trow__open" data-clocker-add="" disabled="">.*Add tablet<\/span>/);
   });
   it('empty: says what a time clock tablet is and leads to adding one', () => {
     const html = render([]);
@@ -206,7 +207,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
     return all(tree);
   }
   const settle = () => { draw(); hooks.effects[0]?.(); return draw(); };
-  const find = (label: string) => draw().find(node => isButton(node) && (node.props['aria-label'] === label || text(node) === label));
+  const find = (label: string) => draw().find(node => isButton(node) && (node.props['aria-label'] === label || text(node) === label || (!node.props['aria-label'] && text(node).startsWith(label))));
   const button = (label: string) => {
     const found = find(label);
     if (!found) throw Error(`No button “${label}”`);
@@ -258,7 +259,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
 
   it('the code leaves the page when the Owner taps Done, and when the tablet is removed', async () => {
     action.mockResolvedValue({ ok: true, device: { ...tablets[1], state: 'PENDING', enrollmentExpiresAt: '2030-01-01T00:00:00.000Z' }, setup: { code, expiresAt: '2030-01-01T00:00:00.000Z' } });
-    press('Get a setup code for Patio tablet');
+    press('Get setup code, Patio tablet');
     expect(sheet().title).toBe('Get a setup code for Patio tablet?'); expect(sheet().body).toBe('Any earlier setup code for this tablet stops working.');
     await submit();
     expect(ticket()?.props).toMatchObject({ code, added: false }); expect(inState(code)).toBe(true);
@@ -266,9 +267,9 @@ describe('the sheet and the code, driven through the component’s handlers', ()
     expect(ticket()).toBeUndefined(); expect(inState(code)).toBe(false);
     expect(text(draw().find(node => node.props.className === 'ck-notice'))).toBe('Setup code closed.');
     // Issue again, then remove the tablet: the code goes with it.
-    press('Get a new setup code for Patio tablet'); await submit(); expect(inState(code)).toBe(true);
+    press('New code, Patio tablet'); await submit(); expect(inState(code)).toBe(true);
     action.mockResolvedValue({ ok: true, device: { ...tablets[1], state: 'REVOKED' } });
-    press('Manage Patio tablet'); button('Remove tablet').onClick({}); settle(); await submit();
+    press('Patio tablet'); button('Remove tablet').onClick({}); settle(); await submit();
     expect(ticket()).toBeUndefined(); expect(inState(code)).toBe(false);
     // Confirmations B (#30): the row in Removed is the result, so no toast says it a second time.
     expect(toast).not.toHaveBeenCalledWith('Tablet removed. Its time records are kept.');
@@ -278,7 +279,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
     const timers: (() => void)[] = [];
     rs.stubGlobal('window', Object.assign(new EventTarget(), { setTimeout: (fn: () => void) => { timers.push(fn); return 1; }, clearTimeout() {} }));
     action.mockResolvedValue({ ok: true, device: { ...tablets[1], state: 'PENDING' }, setup: { code, expiresAt: '2030-01-01T00:00:00.000Z' } });
-    press('Get a setup code for Patio tablet'); await submit();
+    press('Get setup code, Patio tablet'); await submit();
     hooks.effects[1]?.(); expect(timers).toHaveLength(1);
     timers[0](); draw();
     expect(ticket()).toBeUndefined(); expect(inState(code)).toBe(false);
@@ -286,7 +287,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
   });
 
   it('Manage: the tablet’s name, Done on the right, Replace as the secondary action and Remove as quiet red text', () => {
-    press('Manage Front counter tablet');
+    press('Front counter tablet');
     expect(sheet()).toMatchObject({ title: 'Front counter tablet', body: 'At Calle Loíza.', open: true });
     // No field takes focus, so no keyboard rises over the sheet.
     expect(focused).toEqual([]);
@@ -298,18 +299,18 @@ describe('the sheet and the code, driven through the component’s handlers', ()
   });
 
   it('Done saves a changed name through the same form, and only closes when the name is unchanged', () => {
-    press('Manage Front counter tablet');
+    press('Front counter tablet');
     nameValue = 'Front counter tablet';
     button('Done').onClick({}); draw();
     expect(requestSubmit).not.toHaveBeenCalled(); expect(sheet().open).toBe(false); expect(row.focus).toHaveBeenCalledTimes(1);
-    press('Manage Front counter tablet');
+    press('Front counter tablet');
     nameValue = 'Counter tablet';
     button('Done').onClick({}); draw();
     expect(requestSubmit).toHaveBeenCalledTimes(1); expect(sheet().open).toBe(true);
   });
 
   it('Replace and Remove say what stops working, start on Cancel, and Cancel returns to the row', () => {
-    press('Manage Front counter tablet');
+    press('Front counter tablet');
     button('Replace tablet').onClick({}); settle();
     expect(sheet().title).toBe('Replace Front counter tablet?');
     expect(sheet().body).toContain('stops working right away'); expect(sheet().body).toContain('Time already recorded stays.');
@@ -318,7 +319,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
     button('Cancel').onClick({}); draw();
     expect(sheet()).toMatchObject({ open: false, sheetOpen: false }); expect(row.focus).toHaveBeenCalledTimes(1);
 
-    press('Manage Front counter tablet');
+    press('Front counter tablet');
     button('Remove tablet').onClick({}); settle();
     expect(sheet().title).toBe('Remove Front counter tablet?');
     expect(sheet().body).toBe('Clocking in and out on this tablet stops right away, and any setup code for it stops working. Time already recorded stays. You can set it up again later.');
@@ -332,14 +333,14 @@ describe('the sheet and the code, driven through the component’s handlers', ()
   });
 
   it('a removed tablet offers Set up again and nothing else', () => {
-    press('Set up Back room tablet again');
+    press('Set up again, Back room tablet');
     expect(sheet().title).toBe('Set up Back room tablet again?'); expect(sheet().body).toBe('You get a new setup code for the same location.');
     expect(has('Remove tablet')).toBe(false); expect(text(sheetSubmit())).toBe('Get setup code');
   });
 
   it('an answer that can’t be confirmed is amber "Not confirmed" with one refresh: never saved, never failed', async () => {
     action.mockResolvedValue({ ok: false, error: 'We could not confirm the update. Refresh Devices before trying again.', refresh: true });
-    press('Manage Front counter tablet'); await submit({ name: 'Counter tablet' });
+    press('Front counter tablet'); await submit({ name: 'Counter tablet' });
     const alert = draw().find(node => node.props.role === 'alert')!;
     expect(alert.props['data-tone']).toBe('amber');
     expect(text(alert)).toBe('Not confirmedWe don’t know if this was saved. Refresh the list to see what the tablet looks like now, then try again if you need to.');
@@ -350,20 +351,20 @@ describe('the sheet and the code, driven through the component’s handlers', ()
     expect(draw().some(node => node.type === BRow && node.props.title === 'Counter tablet')).toBe(false);
     // A thrown request is the same state.
     hooks.states = []; hooks.refs = [{ current: fakeForm }]; action.mockRejectedValue(new Error('network'));
-    press('Manage Front counter tablet'); await submit({ name: 'Counter tablet' });
+    press('Front counter tablet'); await submit({ name: 'Counter tablet' });
     expect(draw().find(node => node.props.role === 'alert')!.props['data-tone']).toBe('amber');
   });
 
   it('a definite refusal is red "Not saved" with the server’s reason, and the sheet stays for another try', async () => {
     action.mockResolvedValue({ ok: false, error: 'Device name must contain 1–80 printable characters.', refresh: false });
-    press('Manage Front counter tablet'); await submit({ name: 'Counter tablet' });
+    press('Front counter tablet'); await submit({ name: 'Counter tablet' });
     const alert = draw().find(node => node.props.role === 'alert')!;
     expect(alert.props['data-tone']).toBe('red'); expect(text(alert)).toBe('Not savedDevice name must contain 1–80 printable characters.');
     expect(sheet().open).toBe(true); expect(has('Refresh the list')).toBe(false);
   });
 
   it('Escape (the sheet’s own close) closes without saving and returns focus to the row', () => {
-    press('Manage Front counter tablet');
+    press('Front counter tablet');
     const panel = draw().find(node => node.type === QuietSheet)!;
     (panel.props.onClose as () => void)();
     expect(sheet().open).toBe(false); expect(requestSubmit).not.toHaveBeenCalled(); expect(row.focus).toHaveBeenCalledTimes(1);
@@ -372,7 +373,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
   it('a tablet at an inactive location keeps Done and Remove, cannot be replaced, and Add tablet waits for a location', () => {
     devices = [{ ...device('old-tablet', 'ACTIVE', 'old'), name: 'Old tablet' }]; available = [locations[1]];
     expect(button('Add tablet').disabled).toBe(true);
-    press('Manage Old tablet');
+    press('Old tablet');
     expect(button('Replace tablet').disabled).toBe(true);
     expect(button('Done').disabled).toBeFalsy();
     expect(button('Remove tablet').disabled).toBeFalsy();
@@ -380,7 +381,7 @@ describe('the sheet and the code, driven through the component’s handlers', ()
 
   it('before hydration no button can be pressed, so no sheet can open', () => {
     hooks.server = true;
-    for (const label of ['Manage Front counter tablet', 'Get a setup code for Patio tablet', 'Set up Back room tablet again', 'Add tablet']) expect(button(label).disabled, label).toBe(true);
+    for (const label of ['Front counter tablet', 'Get setup code, Patio tablet', 'Set up again, Back room tablet', 'Add tablet']) expect(button(label).disabled, label).toBe(true);
     expect(draw().some(node => node.type === 'form')).toBe(false);
   });
 });

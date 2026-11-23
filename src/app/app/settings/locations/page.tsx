@@ -1,16 +1,17 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { BSegs } from "@/components/owner-b/b-kit";
 import { currentPresentation } from "@/lib/workspace-presentation/current.server";
 import { lower, wordPreset } from "@/lib/workspace-presentation/words";
-import { CaretRight, Plus } from "@phosphor-icons/react/dist/ssr";
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+import { CorpButtonLink, CorpCard, CorpEmpty, CorpRow, CorpRows } from "@/components/corp/corp";
 import { requireRoles } from "@/lib/auth/permissions";
 import { listLocations, listEmployees } from "@/lib/data/employees";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { listPositions } from "@/lib/data/positions";
 import { listLocationStaffingSettings, listCoverageWindows } from "@/lib/data/schedule-health";
 import { evaluateLocationReadiness } from "@/lib/scheduling/location-readiness";
-import { EmptyState, SettingsFrame } from "../wave-c-kit";
+import { SettingsPageB } from "../settings-b";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
 export const metadata = { title: "Locations" };
@@ -18,10 +19,6 @@ export const metadata = { title: "Locations" };
 type Search = { q?: string | string[]; status?: string | string[] };
 type Filter = "all" | "setup" | "ready" | "inactive";
 const directoryPath = "/app/settings/locations";
-
-
-
-
 
 /** The Owner's own name for a place, whole; a spaced em dash is the one place it may break (see the list below). */
 function placeName(name: string): ReactNode {
@@ -52,39 +49,36 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
     `${location.name} ${location.shortName}`.toLowerCase().includes(query.toLowerCase()) &&
     (filter === "all" || readiness.state === ({ setup: "NEEDS_SETUP", ready: "READY", inactive: "INACTIVE" } as const)[filter]),
   );
-
-
   const activeCount = locations.filter(location => location.active).length;
   const place = lower(words.location), places = lower(words.locations);
 
   const peopleWord = (count: number) => count === 1 ? lower(words.person) : lower(words.people);
-  // Release 1 (board O-Locations): one card with its count line, a row per place (name, its state, how many people can
-  // work there) and an inline "+ Add location" row, then one grey line. Places carry no address or hours yet, so the rows
-  // show what the app holds.
+  // Phase 2 (Nov 23, 2026): Settings' own Direction B frame (SettingsPageB) and one white card of the kit's rows: a row
+  // per place (short name; its full name and state on the facts line; how many people can work there on the right),
+  // then the "Add location" row; every row leads with its icon, so all titles share one left edge. The page title already says "Locations", so the card has no title of its own, and the
+  // grey line that was always true ("Each location keeps its own schedule.") is gone. Rows carry no aria-label: the
+  // name a screen reader hears is the row's visible text.
   return (
-    <SettingsFrame title={words.locations}>
-      <p className="q-sr" role="status">{activeCount} active of {locations.length} {locations.length === 1 ? place : places}</p>
-      {/* Closing F1 (NV-238): the card's title is the page's noun with a count pill ("Locations 2"), as on every index card;
-        (NV-248) a long name wraps to two lines instead of being cut. Phase 8: a dash inside the name stays at the end of
-        its line, so no line starts with "— Condado". Final polish D3 (#30): the line under the short name is the kit's facts
-        line. A name typed with a spaced em dash ("Northside Bakery — Condado") keeps its dash on one line and breaks only
-        there on a narrow phone, where the dash slot is cut off like a facts dot: no line starts or ends on the dash. */}
-      {visible.length ? <ul className="q-list wc-locations" aria-label={words.locations}>
-        <li className="wc-cardhead" aria-hidden="true"><span>{words.locations}<span className="wc-count c-num">{activeCount}</span></span></li>
-        {visible.map(({ location, readiness, eligibleCount }) => <li key={location.id} data-location={location.id}>
-          <Link className={location.name !== location.shortName || readiness.state !== "READY" ? "q-row" : "q-row q-row--one"} href={`${directoryPath}/${encodeURIComponent(location.id)}`} aria-label={`Edit ${location.name}`}>
-            <span className="q-rt"><b>{location.shortName}</b>{location.name !== location.shortName || readiness.state !== "READY" ? <i><BSegs parts={[location.name !== location.shortName ? placeName(location.name) : null,
-              readiness.state === "INACTIVE" ? "Inactive" : readiness.state === "NEEDS_SETUP" ? "Needs setup" : null]} /></i> : null}</span>
-            <span className="wc-meta">{`${eligibleCount} ${peopleWord(eligibleCount)}`}</span>
-            <CaretRight weight="bold" className="q-chev" aria-hidden="true" />
-          </Link>
-        </li>)}
-        <li><Link className="wc-addrow" href={`${directoryPath}/new`}><Plus aria-hidden="true" weight="bold" />{`Add ${place}`}</Link></li>
-      </ul> : <EmptyState icon={null} titleId="locations-empty-title" title={locations.length ? `No matching ${places}` : `No ${places} yet`}
-        action={<Link className={locations.length ? "q-btn q-btn--sec" : "q-btn"} href={locations.length ? directoryPath : `${directoryPath}/new`}>{locations.length ? "Show all" : `Add ${place}`}</Link>}>
-        {locations.length ? "" : `Add the places your team works.`}
-      </EmptyState>}
-      {visible.length ? <p className="wc-foot">{`Each ${place} keeps its own schedule.`}</p> : null}
-    </SettingsFrame>
+    <SettingsPageB title={words.locations} titleId="locations-title">
+      <p className="c-sr" role="status">{activeCount} active of {locations.length} {locations.length === 1 ? place : places}</p>
+      {visible.length ? <CorpCard as="div">
+        <CorpRows label={words.locations}>
+          {visible.map(({ location, readiness, eligibleCount }) => {
+            // Final fixes S2 (G85): the full name only when it says more than the short name; "Condado — Condado" read twice.
+            const fullSaysMore = !location.name.toLowerCase().includes(location.shortName.trim().toLowerCase());
+            const facts = [fullSaysMore ? placeName(location.name) : null,
+              readiness.state === "INACTIVE" ? "Inactive" : readiness.state === "NEEDS_SETUP" ? "Needs setup" : null];
+            return <li key={location.id} data-location={location.id}>
+              <CorpRow href={`${directoryPath}/${encodeURIComponent(location.id)}`} title={location.shortName} icon={<MapPinIcon weight="bold" />}
+                detail={facts.some(Boolean) ? <BSegs parts={facts} /> : undefined}
+                value={`${eligibleCount} ${peopleWord(eligibleCount)}`} valueTone="soft" chevron />
+            </li>;
+          })}
+          <li><CorpRow href={`${directoryPath}/new`} title={`Add ${place}`} icon={<PlusIcon weight="bold" />} chevron={false} /></li>
+        </CorpRows>
+      </CorpCard> : <CorpEmpty title={locations.length ? `No matching ${places}` : `No ${places} yet`}
+        body={locations.length ? undefined : "Add the places your team works."}
+        action={<CorpButtonLink href={locations.length ? directoryPath : `${directoryPath}/new`} kind={locations.length ? "secondary" : "primary"}>{locations.length ? "Show all" : `Add ${place}`}</CorpButtonLink>} />}
+    </SettingsPageB>
   );
 }

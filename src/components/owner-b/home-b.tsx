@@ -157,6 +157,11 @@ export function HomeB(props: HomeBProps) {
     : offline ? "You’re offline" : connection === "paused" ? "Paused while you’re away" : "Checking today…";
   const gapRows = ready && gaps ? gaps.map(item => gapRow(item, ready.timeZone, ready.today)) : [];
   const openHref = gaps?.length === 1 && gapRows[0] ? gapRows[0].href : "/app/schedule";
+  // Gaps G73 (Nov 23, 2026): while Things to do (and the Timecards facts that come with it) is still being read, the
+  // cards that would sit below it wait, so its growth from the loading line moves nothing (phones) and the Timecards
+  // tile doesn't switch content mid-load (desktop). A failed or offline read releases them at once.
+  const overduePay = props.payrollStatus?.state === "ready" && !!props.payrollStatus.overdue;
+  const holdBelow = (connection === "loading" || connection === "reconnecting") && (!value || !props.timecardsReady);
 
   return <BScreen>
     <BHero big eyebrow={eyebrow} title={title} offlineInTitle={!value && offline} sub={<><span role="status" className="b-sr">{props.summary}</span></>}>
@@ -177,6 +182,11 @@ export function HomeB(props: HomeBProps) {
         other: what to do and who is on now at the left, Payday and This week at the right. On phones and tablets the
         two wrappers have no box (owner-b-home.css) and the cards stack in this order. */}
       <div className="b-home-col b-home-col--a">
+        {/* QA A5-01 (Nov 23, 2026): on phones a payroll that is overdue is the first card under the band, before Things to
+          * do (the Owner's one main action, "Prepare <period>"). Payroll status comes with the page, so it is never held
+          * for Things to do's read and nothing moves when that arrives (G73). From 768 the same card leads the right
+          * column as before (owner-b-home.css shows one copy per width). */}
+        {overduePay ? <div className="b-home-payfirst"><PayrollNotice status={props.payrollStatus} /></div> : null}
         {/* Nov 14, 2026 inspection (BR-16): until setup is done its card leads the page (the card hides itself once the
           steps are complete), so a new workplace sees what to finish before the day's figures. */}
         {/* Backend (Nov 15, 2026): the Owner's plan and billing notice leads while it applies. */}
@@ -186,14 +196,18 @@ export function HomeB(props: HomeBProps) {
         {props.setupCard ? props.setup
           : props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
         <NeedsYouCard {...props} gapRows={gapRows} openHref={openHref} />
-        {props.week?.shortcuts ? <Shortcuts items={props.week.shortcuts} place="stack" /> : null}
-        {/* Jose (Nov 22, 2026: no fact twice): once Things to do lists who hasn't clocked in, Today doesn't list them again. */}
-        {ready ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} waitingListed={!!value} attendanceHref={attendanceHref} /> : null}
+        {props.week?.shortcuts && !holdBelow ? <Shortcuts items={props.week.shortcuts} place="stack" /> : null}
+        {/* Jose (Nov 22, 2026: no fact twice): once Things to do lists who hasn't clocked in, Today doesn't list them again.
+          Gaps G56 (Nov 23, 2026): while Things to do's read is on its way, Today waits for it, so it doesn't list those
+          people, then drop them and move. A read that failed (or offline) keeps them on Today. */}
+        {ready && (value || (connection !== "loading" && connection !== "reconnecting")) ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} waitingListed={!!value} attendanceHref={attendanceHref} /> : null}
       </div>
       <div className="b-home-col b-home-col--b">
-        <PayrollNotice status={props.payrollStatus} />
+        {holdBelow ? null : <>
+        {overduePay ? <div className="b-home-paylate"><PayrollNotice status={props.payrollStatus} /></div> : <PayrollNotice status={props.payrollStatus} />}
         <PaydayTile {...props} />
         {props.week && props.week.thisWeek !== false ? <ThisWeek week={props.week} today={ready?.today ?? props.businessDay} /> : null}
+        </>}
       </div>
     </BStack>
   </BScreen>;
@@ -417,7 +431,7 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
   // period has ended, from the server's typed review facts. A card another reviewer approves is named on its own line
   // and never counted; cards whose facts are missing make the count a lower bound ("At least 2").
   const review = paydayReview(timecards, businessDay, nextPay.period?.endDate);
-  const closed = review.toReview, apart = review.otherReviewer + review.unknown, several = review.periods.length > 1;
+  const closed = review.toReview, several = review.periods.length > 1;
   const openEnd = review.openEnd;
   const away = nextPay.daysUntil <= 0 ? "Today" : nextPay.daysUntil === 1 ? "Tomorrow" : `In ${nextPay.daysUntil} days`;
   const href = week?.payrollHref ?? "/app/timecards";
@@ -432,7 +446,9 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     // Phase 8 (a.md #15, b.md #34): a date from the pay schedule is the "Scheduled payday" (DESIGN, payroll scope wording).
     const paydayLine = keepWhole(`Scheduled payday ${fmt(nextPay.payday, { weekday: "short", month: "short", day: "numeric" })}`);
     const view = !timecardsReady ? { big: "Timecards", detail: connection === "loading" || connection === "reconnecting" ? "Checking…" : "Not available right now", chip: null, go: false }
-      : closed ? { big: t.toApprove(closed, review.exact), detail: `${apart ? `${closed} of ${closed + apart} timecards` : plural(closed, "timecard", "timecards")} · ${several ? "Pay periods ended" : "Pay period ended"}`, chip: "Open now", go: true }
+      // Core check (Nov 23, 2026), each fact once: the count is the big line ("10 to approve"); the header already says
+      // Timecards, and the cards someone else reviews are their own line below, so the detail only says when.
+      : closed ? { big: t.toApprove(closed, review.exact), detail: several ? "Pay periods ended" : "Pay period ended", chip: "Open now", go: true }
       // Cards whose review facts are missing are not "none waiting": the tile says they could not be checked.
       : review.unknown ? { big: "Timecards", detail: "Pay period ended", chip: null, go: true }
       : opens ? { big: `Opens ${fmt(opens, { weekday: "short", month: "short", day: "numeric" })}`, detail: "Timecard approval", chip: untilOpen === null ? null : untilOpen <= 0 ? "Today" : untilOpen === 1 ? "Tomorrow" : `In ${untilOpen} days`, go: false }
@@ -458,7 +474,7 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     : openEnd ? { title: "Approve timecards", detail: `From ${fmt(nextDay(openEnd), { weekday: "short", month: "short", day: "numeric" })}`, done: false }
     : { title: "Timecards", detail: "None waiting", done: true };
   // Phase 8 (a.md #5): while a period with no payroll leads the column (PayrollNotice), its Prepare is the column's one
-  // strong action and this tile's button steps back to glass.
+  // strong action and this tile has no button of its own (Core check, Nov 23, 2026).
   const behind = payrollStatus?.state === "ready" && !!payrollStatus.overdue;
   return <BInk label="Scheduled payday">
     {/* Phase 9 (spec 3.1): how far away payday is ("In 9 days") is a time fact, so it is grey header text, not a chip; what
@@ -469,7 +485,9 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     {/* Review B2 (NV-007): the three unlabelled segments never lit, so they are gone; the line below says where payroll is. */}
     <div className="b-ink__r2"><span>{step.title}</span><span>{step.detail}</span></div>
     {routed}
-    <BButtonLink href={href} kind={behind ? "glass" : "white"} full label={href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}>{href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}</BButtonLink>
+    {/* Core check (Nov 23, 2026): one main action. While an overdue payroll leads the column, its "Prepare <period>" is
+      * the way in, so this tile has no second Prepare button. */}
+    {behind ? null : <BButtonLink href={href} kind="white" full label={href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}>{href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}</BButtonLink>}
   </BInk>;
 }
 

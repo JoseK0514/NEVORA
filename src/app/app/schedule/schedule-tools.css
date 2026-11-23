@@ -1,0 +1,319 @@
+/* Schedule tools (Phase 2, Nov 23, 2026): Week templates (C7), Scheduling rules (C9), team Availability (C10) and Shift
+ * requests (C12) for Owners and Managers, on the Corp kit that the Direction B layer draws as the band and white cards.
+ * Text sizes in rem so 200% text scales; every line in a card starts on the card's inset (--b-inset, --b-inset-wide from
+ * 768px), as the kit's rows do. */
+:is(#c-root, html) :is(.c-tpl, .c-rules, .c-avteam, .c-shreq) :is(.c-title h1, .c-nav__title, .c-card__label, .b-statecard__t) { text-wrap: balance; }
+
+/* Feedback lines under the band: one size, the card's left edge. */
+:is(#c-root, html) :is(.c-tpl, .c-rules, .c-shreq) :is(.c-tpl__msg, .c-st__msg) { margin: 0; font-size: 0.9375rem; line-height: 1.375rem; color: var(--c-ink2); }
+:is(#c-root, html) :is(.c-tpl, .c-rules, .c-shreq) :is(.c-tpl__msg--error, .c-st__msg--error) { color: var(--c-red); }
+:is(#c-root, html) :is(.c-tpl, .c-rules, .c-shreq) :is(.c-tpl__msg--warn, .c-st__msg--warn) { color: var(--b-amber, #8A4B00); }
+:is(#c-root, html) :is(.c-tpl, .c-rules) .c-tpl__feedback:focus { outline: none; }
+
+/* C7: a saved week is its name over its shift count, then Archive and Apply. On a phone the two buttons sit under the
+ * text, equal width; from 600px they sit on the row's right, the same height, labels centred. */
+:is(#c-root, html) .c-tpl .c-tpl__list { margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .c-tpl .c-tpl__item { display: flex; flex-direction: column; gap: 12px; padding: 12px var(--b-inset, 16px) 16px; }
+:is(#c-root, html) .c-tpl .c-tpl__item + .c-tpl__item { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-tpl .c-tpl__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+:is(#c-root, html) .c-tpl .c-tpl__name { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 600; color: var(--c-ink); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-tpl .c-tpl__count { font-size: 0.875rem; line-height: 1.25rem; color: var(--c-grey); font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-tpl .c-tpl__count b { font-weight: 400; }
+:is(#c-root, html) .c-tpl .c-tpl__acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-items: start; }
+:is(#c-root, html) .c-tpl .c-tpl__acts > *, :is(#c-root, html) .c-tpl .c-tpl__form { min-width: 0; margin: 0; }
+:is(#c-root, html) .c-tpl .c-tpl__acts .c-btn { width: 100%; }
+/* Archive asks first: the question takes the whole row, its two answers under it. */
+:is(#c-root, html) .c-tpl .c-tpl__form[data-confirming] { grid-column: 1 / -1; }
+:is(#c-root, html) .c-tpl .c-tpl__acts:has(.c-tpl__form[data-confirming]) > :not(.c-tpl__form) { display: none; }
+:is(#c-root, html) :is(.c-tpl, .c-rules) .c-rf-confirm { display: flex; flex-direction: column; gap: 8px; }
+:is(#c-root, html) :is(.c-tpl, .c-rules) .c-rf-confirm .c-rf-text { margin: 0; font-size: 0.9375rem; line-height: 1.375rem; color: var(--c-ink); }
+:is(#c-root, html) :is(.c-tpl, .c-rules) .c-rf-confirm .c-rf-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+:is(#c-root, html) :is(.c-tpl, .c-rules) .c-rf-error { display: flex; gap: 8px; margin: 8px 0 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-red); }
+:is(#c-root, html) :is(.c-tpl, .c-rules) .c-rf-error svg { flex: none; width: 1.125rem; height: 1.125rem; margin-top: 0.0625rem; }
+
+/* New template: the name, then Save under it (full width on a phone). */
+:is(#c-root, html) .c-tpl .c-tpl__save { display: flex; flex-direction: column; gap: 16px; padding: 4px var(--b-inset, 16px) 16px; }
+:is(#c-root, html) .c-tpl .c-tpl__save > .c-btn { width: 100%; }
+:is(#c-root, html) .c-tpl .c-tpl__save .c-in { font-size: 1rem; height: auto; min-height: 48px; }
+
+@media (min-width: 600px) {
+  :is(#c-root, html) .c-tpl .c-tpl__item { flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; }
+  :is(#c-root, html) .c-tpl .c-tpl__acts { grid-template-columns: repeat(2, minmax(7.5rem, auto)); flex: none; }
+  :is(#c-root, html) .c-tpl .c-tpl__acts:has(.c-tpl__form[data-confirming]) { grid-template-columns: minmax(0, 22rem); }
+  :is(#c-root, html) .c-tpl .c-tpl__save { align-items: flex-start; }
+  :is(#c-root, html) .c-tpl .c-tpl__save > .c-field { width: 100%; max-width: 35rem; }
+  :is(#c-root, html) .c-tpl .c-tpl__save > .c-btn { width: auto; min-width: 7.5rem; }
+}
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-tpl :is(.c-tpl__item, .c-tpl__save) { padding-inline: var(--b-inset-wide, 22px); }
+}
+
+/* C12 Shift requests: one card of requests. A row is the kit's row: the face, the name over one line of facts, and when
+ * it was sent on the right (on a phone, under the facts once it is over a day old). The decision sits under the row on
+ * the same inset; what opens under a row is one quiet block of label and value. */
+:is(#c-root, html) .c-shreq .c-shreq__list { margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .c-shreq .c-shreq__item { padding: 0 var(--b-inset, 16px); scroll-margin-top: 96px; }
+:is(#c-root, html) .c-shreq .c-shreq__item + .c-shreq__item { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-shreq .c-shreq__item:focus { outline: none; }
+:is(#c-root, html) .c-shreq .c-shreq__item[data-selected="true"] { background: linear-gradient(var(--b-teal-50, #E8F3F1), var(--b-teal-50, #E8F3F1)) no-repeat left / 3px 100%; }
+:is(#c-root, html) .c-shreq .c-shreq__details > summary { list-style: none; }
+:is(#c-root, html) .c-shreq .c-shreq__details > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-shreq .c-shreq__sum { display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 14px 0; cursor: pointer; border-radius: 10px; }
+:is(#c-root, html) .c-shreq .c-shreq__sum:focus-visible { outline: 2px solid var(--b-teal, #0B6E69); outline-offset: 2px; }
+:is(#c-root, html) .c-shreq .c-shreq__sum > .b-av { flex: none; }
+:is(#c-root, html) .c-shreq .c-shreq__tx { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; padding-top: 1px; }
+:is(#c-root, html) .c-shreq .c-shreq__name { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 600; color: var(--c-ink); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-shreq :is(.c-shreq__line, .c-shreq__age) { font-size: 0.875rem; line-height: 1.25rem; color: var(--c-grey); font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-shreq .c-shreq__end { flex: none; padding-top: 2px; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-grey); white-space: nowrap; display: none; }
+:is(#c-root, html) .c-shreq .c-shreq__end--status { display: block; color: var(--c-ink2); font-weight: 500; }
+:is(#c-root, html) .c-shreq .c-shreq__body { display: flex; flex-direction: column; gap: 8px; padding: 0 0 14px 52px; }
+:is(#c-root, html) .c-shreq .c-shreq__help { margin: 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-ink2); }
+:is(#c-root, html) .c-shreq .c-shreq__help > span { display: block; }
+:is(#c-root, html) .c-shreq .c-shreq__help > span + span { margin-top: 4px; }
+:is(#c-root, html) .c-shreq .b-req-facts { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin: 0; padding: 12px 14px; border-radius: 14px; background: var(--b-quiet, #F0F2F3); }
+:is(#c-root, html) .c-shreq .b-req-facts > div { min-width: 0; }
+:is(#c-root, html) .c-shreq .b-req-facts dt { margin: 0 0 2px; font-size: 0.8125rem; line-height: 1.125rem; font-weight: 500; color: var(--b-grey-on-fill, #5E666B); }
+:is(#c-root, html) .c-shreq .b-req-facts dd { margin: 0; min-width: 0; font-size: 0.9375rem; line-height: 1.375rem; color: var(--c-ink); font-variant-numeric: tabular-nums; }
+/* The decision: under the row's text (the face's column stays clear), the pair at the right edge. */
+:is(#c-root, html) .c-shreq .c-shreq__form { margin: 0; padding: 0 0 16px 52px; }
+:is(#c-root, html) .c-shreq .c-shreq__form .shift-change-fields { margin: 0; padding: 0; border: 0; min-width: 0; }
+:is(#c-root, html) .c-shreq .c-shreq__note { margin: 0 0 8px; font-size: 0.875rem; line-height: 1.25rem; color: var(--b-amber, #8A4B00); }
+:is(#c-root, html) .c-shreq .c-shreq__note a { color: var(--b-teal, #0B6E69); font-weight: 600; }
+:is(#c-root, html) .c-shreq .c-shreq__item > .c-shreq__note { padding: 0 0 16px 52px; }
+/* Two equal buttons side by side; with large text (each under 6rem's worth of room) they stack full width, so Decline and
+ * Approve never squeeze their words against their edges (390 at 200% text). */
+/* Package M (Nov 23): the grid keeps both slots, so a lone Close request (Open cover) or Decline sits in Decline's slot
+ * and every row's buttons line up (auto-fit had stretched it across the row). Two slots at most; one with large text. */
+:is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts { display: grid; grid-template-columns: repeat(auto-fill, minmax(max(min(100%, 6rem), calc(50% - 4px)), 1fr)); gap: 8px; }
+:is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts > * { width: 100%; min-height: 44px; margin: 0; }
+:is(#c-root, html) .c-shreq .c-shreq__form :is(.form-success, .form-error) { margin: 8px 0 0; font-size: 0.875rem; line-height: 1.25rem; }
+:is(#c-root, html) .c-shreq .c-shreq__form .form-error { color: var(--c-red); }
+:is(#c-root, html) .c-shreq .c-shreq__form .b-dres, :is(#c-root, html) .c-shreq .c-shreq__form .b-ask { margin: 0; }
+/* Done: the history of a decided request, as a quiet disclosure in the same block. */
+:is(#c-root, html) .c-shreq .c-shreq__history > summary { list-style: none; }
+:is(#c-root, html) .c-shreq .c-shreq__history > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-shreq .c-shreq__history > summary { min-height: 44px; display: flex; align-items: center; font-size: 0.9375rem; line-height: 1.375rem; font-weight: 600; color: var(--b-teal, #0B6E69); cursor: pointer; }
+:is(#c-root, html) .c-shreq .c-shreq__history ol { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .c-shreq .c-shreq__history li { display: flex; flex-direction: column; gap: 2px; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-ink2); }
+:is(#c-root, html) .c-shreq .c-shreq__history li strong { font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-shreq .shift-change-unavailable { margin: 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-grey); }
+/* Jose (Nov 23, 2026), from schedule-tools-2: a request's summary in three fixed lines. The name and its kind label share
+ * the first line (the label wraps under the name only when the line is too short, and never clips); the day and the hours
+ * stay together on the second, each part whole; who else is involved, or how it ended, is the third. */
+:is(#c-root, html) .c-shreq .c-shreq__head { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; row-gap: 2px; min-width: 0; }
+:is(#c-root, html) .c-shreq .c-shreq__head > .b-chip { flex: none; max-width: 100%; height: auto; min-height: var(--b-chip-h, 22px); padding-block: 2px; font-size: 0.75rem; line-height: 1rem; white-space: nowrap; }
+/* The kit's segments keep each part whole (non-breaking spaces inside a part) and break only between parts. */
+:is(#c-root, html) .c-shreq .c-shreq__when { color: var(--c-ink2); }
+:is(#c-root, html) .c-shreq .c-shreq__who { color: var(--c-grey); }
+
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-shreq .c-shreq__item { padding-inline: var(--b-inset-wide, 22px); }
+  :is(#c-root, html) .c-shreq .c-shreq__age { display: none; }
+  :is(#c-root, html) .c-shreq .c-shreq__end { display: block; }
+  :is(#c-root, html) .c-shreq .b-req-facts { grid-template-columns: minmax(0, max-content) minmax(0, 1fr); column-gap: 24px; }
+  :is(#c-root, html) .c-shreq .b-req-facts > div { display: contents; }
+  :is(#c-root, html) .c-shreq .b-req-facts dt { margin: 0; padding-top: 2px; }
+  :is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts { grid-template-columns: repeat(2, 9rem); justify-content: end; }
+}
+
+/* The desktop kit draws buttons 40px high from its nv-b layer (a layered !important beats unlayered ones), so these
+ * pages keep the 44px target inside the same layer, where the more specific rule wins (as Copy receipt does). */
+@layer nv-b {
+  /* The question before Decline or Close sits where the row's buttons were, on the decision's own inset (the kit's
+   * margin is for the older list's 64px face column). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-shreq .c-shreq__form .b-ask:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) { margin: 0 !important; }
+  /* C10 Not sent / Sent (Jose, Nov 23: "the not sent button, that is wrong"): the kit's segmented control in the card. One
+   * grey track wraps both segments with an even 4px inset (no scroll fade), each segment takes half and keeps the 44px
+   * target, the chosen one is the white pill inside the track, and each count reads as the kit's count (CorpCount: a grey
+   * numeral after a gap). The filter chips' rules had left the chosen pill hanging past the track's left edge at 390. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) {
+    display: grid !important; grid-auto-flow: column !important; grid-auto-columns: minmax(0, 1fr) !important; gap: 0 !important; box-sizing: border-box !important;
+    width: auto !important; max-width: 22rem !important; height: auto !important; margin: 16px var(--b-inset, 16px) 8px !important; padding: 4px !important;
+    border-radius: var(--b-radius-field, 14px) !important; background: var(--b-quiet, #F0F2F3) !important; box-shadow: none !important; overflow: visible !important;
+    -webkit-mask-image: none !important; mask-image: none !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters > button:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) {
+    display: flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; box-sizing: border-box !important;
+    width: auto !important; min-width: 0 !important; height: auto !important; min-height: 44px !important; margin: 0 !important; padding: 4px var(--b-space-12, 12px) !important;
+    border: 0 !important; border-radius: var(--b-radius-small, 10px) !important; background: transparent !important; box-shadow: none !important;
+    color: var(--b-ink2, #3D4347) !important; font-size: 0.875rem !important; line-height: 1.25rem !important; font-weight: 600 !important; white-space: normal !important; text-align: center !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters > button[aria-pressed="true"]:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) {
+    background: #FFFFFF !important; color: var(--b-ink, #16191B) !important; box-shadow: var(--b-shadow-thumb, 0 1px 3px rgb(16 24 32 / 0.12)) !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters > button > b:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) {
+    font-weight: 500 !important; opacity: 1 !important; color: var(--b-grey, #5E666B) !important; font-variant-numeric: tabular-nums !important;
+  }
+  @media (min-width: 768px) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-avteam .c-card > .b-filters:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8):not(#st9) { margin-inline: var(--b-inset-wide, 22px) !important; } }
+  /* The kit's disclosure rules pad every summary in a card; a request row keeps the item's inset only. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-shreq .c-shreq__details > summary.c-shreq__sum:not(#st1) { padding: 14px 0 !important; margin: 0 !important; background: none !important; box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-tpl, .c-rules, .c-avteam, .c-shreq) :is(.c-btn, a.c-btn, .nv-btn):not(#st1) { box-sizing: border-box !important; height: auto !important; min-height: 44px !important; white-space: nowrap; }
+}
+
+/* C10 team Availability: the deadline row, then one card of people. A person who has sent opens their hours in place:
+ * the CaretDown turns, and the hours are one quiet block of day and time under the name. */
+:is(#c-root, html) .c-avteam .c-avteam__list { margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .c-avteam .c-avteam__list > li:focus { outline: none; }
+:is(#c-root, html) .c-avteam .c-avteam__list > li + li { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-avteam .c-avteam__details > summary { list-style: none; }
+:is(#c-root, html) .c-avteam .c-avteam__details > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-avteam .c-avteam__sum { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 12px var(--b-inset, 16px); cursor: pointer; }
+:is(#c-root, html) .c-avteam .c-avteam__sum:focus-visible { outline: 2px solid var(--b-teal, #0B6E69); outline-offset: -2px; border-radius: 10px; }
+:is(#c-root, html) .c-avteam .c-avteam__sum > .b-av { flex: none; }
+:is(#c-root, html) .c-avteam .c-avteam__tx { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+:is(#c-root, html) .c-avteam .c-avteam__name { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 600; color: var(--c-ink); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-avteam .c-avteam__line { font-size: 0.875rem; line-height: 1.25rem; color: var(--c-grey); }
+:is(#c-root, html) .c-avteam .c-avteam__chev { flex: none; width: 1rem; height: 1rem; color: var(--b-field-edge, #838A8F); transition: rotate 150ms ease-out; }
+:is(#c-root, html) .c-avteam .c-avteam__details[open] .c-avteam__chev { rotate: 180deg; }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-avteam .c-avteam__chev { transition: none; } }
+:is(#c-root, html) .c-avteam .c-avteam__hours { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 24px; margin: 0 var(--b-inset, 16px) 12px calc(var(--b-inset, 16px) + 52px); padding: 12px 14px; border-radius: 14px; background: var(--b-quiet, #F0F2F3); }
+:is(#c-root, html) .c-avteam .c-avteam__hours > div { display: contents; }
+:is(#c-root, html) .c-avteam .c-avteam__hours dt { margin: 0; font-size: 0.875rem; line-height: 1.375rem; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-avteam .c-avteam__hours dd { margin: 0; font-size: 0.9375rem; line-height: 1.375rem; color: var(--c-ink); font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-avteam .c-avteam__updated { margin: 0 var(--b-inset, 16px) 14px calc(var(--b-inset, 16px) + 52px); font-size: 0.875rem; line-height: 1.25rem; color: var(--c-grey); }
+:is(#c-root, html) .c-avteam .c-avteam__empty { margin: 0; padding: 16px var(--b-inset, 16px); font-size: 0.9375rem; line-height: 1.375rem; color: var(--c-ink2); }
+:is(#c-root, html) .c-avteam .c-avteam__people { display: flex; flex-direction: column; gap: 12px; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-avteam .c-avteam__sum { padding-inline: var(--b-inset-wide, 22px); }
+  :is(#c-root, html) .c-avteam :is(.c-avteam__hours, .c-avteam__updated) { margin-left: calc(var(--b-inset-wide, 22px) + 52px); margin-right: var(--b-inset-wide, 22px); }
+  :is(#c-root, html) .c-avteam .c-avteam__empty { padding-inline: var(--b-inset-wide, 22px); }
+}
+/* The kit's filter chips at the top of the people card, as on Team (employee-directory-corp.css). */
+:is(#c-root, html) .app-shell[data-nv-b] .c-avteam .c-card > .b-filters button { border: 0; font-family: inherit; cursor: pointer; }
+
+/* C9 Scheduling rules: one card of rules. A rule's row is the kit's row (its name over one line, its value on the right,
+ * a CaretDown that turns); what opens under it is the kit's outlined fields, each label once. Every line starts on the
+ * card's inset. */
+:is(#c-root, html) .c-rules .c-card > form.c-rf { gap: 0; }
+:is(#c-root, html) .c-rules .c-rules__rule + .c-rules__rule, :is(#c-root, html) .c-rules form.c-rf + .c-rules__rule { border-top: 1px solid var(--c-line); }
+:is(#c-root, html) .c-rules :is(.c-rules__rule, .c-rf-disc) > summary { list-style: none; }
+:is(#c-root, html) .c-rules :is(.c-rules__rule, .c-rf-disc) > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-rules .c-rules__sum { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 12px var(--b-inset, 16px); cursor: pointer; }
+:is(#c-root, html) .c-rules :is(.c-rules__sum, .c-rf-disc__sum):focus-visible { outline: 2px solid var(--b-teal, #0B6E69); outline-offset: -2px; border-radius: 10px; }
+:is(#c-root, html) .c-rules .c-rules__tx { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+:is(#c-root, html) .c-rules .c-rules__t { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-rules .c-rules__d { font-size: 0.875rem; line-height: 1.25rem; color: var(--c-grey); }
+:is(#c-root, html) .c-rules .c-rules__v { flex: none; max-width: 45%; font-size: 0.9375rem; line-height: 1.375rem; color: var(--c-ink2); text-align: right; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-rules .c-rules__chev { flex: none; width: 1rem; height: 1rem; color: var(--b-field-edge, #838A8F); transition: rotate 150ms ease-out; }
+:is(#c-root, html) .c-rules details[open] > summary > .c-rules__chev { rotate: 180deg; }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-rules .c-rules__chev { transition: none; } }
+:is(#c-root, html) .c-rules .c-rules__body { display: flex; flex-direction: column; gap: 12px; padding: 0 var(--b-inset, 16px) 16px; }
+:is(#c-root, html) .c-rules .c-rules__body:focus { outline: none; }
+:is(#c-root, html) .c-rules .c-rf { display: flex; flex-direction: column; gap: 12px; margin: 0; }
+:is(#c-root, html) .c-rules :is(.c-rf > fieldset, .c-rf__fields) { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#c-root, html) .c-rules .c-rf-help { margin: 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-ink2); }
+:is(#c-root, html) .c-rules .c-rf-optional { margin-left: 4px; font-weight: 400; color: var(--c-grey); }
+:is(#c-root, html) .c-rules .c-field__help { font-size: 0.8125rem; line-height: 1.125rem; }
+:is(#c-root, html) .c-rules .c-field__label { font-size: 0.8125rem; line-height: 1.125rem; }
+:is(#c-root, html) .c-rules .c-in { height: auto; min-height: 48px; font-size: 1rem; }
+:is(#c-root, html) .c-rules select.c-in { padding-right: 36px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 256 256'%3E%3Cpath fill='none' stroke='%23838A8F' stroke-linecap='round' stroke-linejoin='round' stroke-width='24' d='M208 96l-80 80-80-80'/%3E%3C/svg%3E") no-repeat right 12px center / 16px; }
+:is(#c-root, html) .c-rules :is(.c-rf-saved, .c-rf-error) { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 0.875rem; line-height: 1.25rem; }
+:is(#c-root, html) .c-rules .c-rf-saved { color: var(--b-green, #1D6B45); }
+:is(#c-root, html) .c-rules .c-rf-saved > .b-donemark { flex: none; width: 1.5rem; height: 1.5rem; }
+:is(#c-root, html) .c-rules .c-rf-error { align-items: flex-start; flex-wrap: wrap; color: var(--c-red); }
+:is(#c-root, html) .c-rules .c-rf-error > svg { flex: none; width: 1.125rem; height: 1.125rem; margin-top: 0.0625rem; }
+:is(#c-root, html) .c-rules .c-rf-error > span { flex: 1; min-width: 12rem; }
+:is(#c-root, html) .c-rules .c-rf-actions { display: flex; gap: 8px; }
+/* A form's own button: full width on a phone, its own width from 600px. */
+:is(#c-root, html) .c-rules :is(.c-rf-actions, .c-rf-inline, .c-rf-savebar) .c-btn { width: 100%; }
+:is(#c-root, html) .c-rules .c-rf-inline { display: flex; flex-direction: column; gap: 12px; }
+
+/* Columns named once: Target hours and Maximum hours (or Minimum staff and Shift lead) over the fields of every row. */
+:is(#c-root, html) .c-rules .c-rf-cols, :is(#c-root, html) .c-rules .c-rf-item { display: grid; grid-template-columns: minmax(0, 1fr) 7.5rem 7.5rem; column-gap: 12px; align-items: center; }
+:is(#c-root, html) .c-rules .c-rf-cols { padding: 4px 0 0; font-size: 0.8125rem; line-height: 1.125rem; font-weight: 500; color: var(--c-ink2); }
+:is(#c-root, html) .c-rules .c-rf-list { margin: 0; padding: 0; list-style: none; }
+:is(#c-root, html) .c-rules .c-rf-item { padding: 10px 0; }
+:is(#c-root, html) .c-rules .c-rf-item[hidden] { display: none; }
+:is(#c-root, html) .c-rules .c-rf-list > li + li { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-rules .c-rf-item:focus { outline: none; }
+:is(#c-root, html) .c-rules .c-rf-item__name { display: flex; flex-direction: column; gap: 2px; min-width: 0; margin: 0; }
+:is(#c-root, html) .c-rules .c-rf-item__t { margin: 0; font-size: 0.9375rem; line-height: 1.375rem; font-weight: 600; color: var(--c-ink); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-rules .c-rf-item__m { margin: 0; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-rules .c-rf-item__fields { display: contents; }
+:is(#c-root, html) .c-rules .c-rf-num { text-align: right; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-rules .c-rf-cols > span:not(:first-child) { text-align: right; }
+:is(#c-root, html) .c-rules .c-rf-check { display: flex; align-items: center; justify-content: flex-end; gap: 8px; min-height: 44px; font-size: 0.9375rem; color: var(--c-ink); cursor: pointer; }
+:is(#c-root, html) .c-rules .c-rf-check input[type="checkbox"] { width: 1.375rem; height: 1.375rem; margin: 0; accent-color: var(--b-teal, #0B6E69); }
+/* Phones: the name over its two fields, the column heads over the fields. */
+@media (max-width: 599px) {
+  :is(#c-root, html) .c-rules .c-rf-cols, :is(#c-root, html) .c-rules .c-rf-item { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 8px; }
+  :is(#c-root, html) .c-rules .c-rf-cols > span:first-child { display: none; }
+  :is(#c-root, html) .c-rules .c-rf-cols > span { text-align: left !important; }
+  :is(#c-root, html) .c-rules .c-rf-item__name { grid-column: 1 / -1; }
+  :is(#c-root, html) .c-rules .c-rf-num { text-align: left; }
+  :is(#c-root, html) .c-rules .c-rf-check { justify-content: flex-start; }
+  :is(#c-root, html) .c-rules .c-rf-grid > .c-rf-wide-phone { grid-column: 1 / -1; }
+}
+
+/* Find a person and No target. */
+:is(#c-root, html) .c-rules .c-rf-filterbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+:is(#c-root, html) .c-rules .c-rf-search { position: relative; display: flex; align-items: center; flex: 1 1 14rem; min-width: 0; }
+:is(#c-root, html) .c-rules .c-rf-search > svg { position: absolute; left: 14px; width: 1.125rem; height: 1.125rem; color: var(--c-grey); pointer-events: none; }
+:is(#c-root, html) .c-rules .c-rf-search input { width: 100%; min-height: 44px; margin: 0; padding: 0 14px 0 40px; border: 0; border-radius: 999px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #838A8F); color: var(--c-ink); font: inherit; font-size: 1rem; outline: none; -webkit-appearance: none; appearance: none; }
+:is(#c-root, html) .c-rules .c-rf-search input:focus { box-shadow: inset 0 0 0 2px var(--b-teal, #0B6E69); }
+:is(#c-root, html) .c-rules .c-rf-chip { display: inline-flex; align-items: center; flex: none; min-height: 44px; margin: 0; padding: 0 16px; border: 0; border-radius: 999px; background: var(--b-quiet, #F0F2F3); color: var(--b-ink2, #3F464B); font: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+:is(#c-root, html) .c-rules .c-rf-chip[aria-pressed="true"] { background: var(--b-teal-50, #E8F3F1); color: var(--b-teal, #0B6E69); box-shadow: inset 0 0 0 1.5px var(--b-teal, #0B6E69); }
+:is(#c-root, html) .c-rules .c-rf-chip:focus-visible { outline: 2px solid var(--b-teal, #0B6E69); outline-offset: 2px; }
+:is(#c-root, html) .c-rules .rules-hours-count { margin-left: 6px; font-weight: 700; color: inherit; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-rules .c-rf-none { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+
+/* Save staffing and hours: under the two rules it saves, shown while either is open. */
+:is(#c-root, html) .c-rules .c-rf-savebar { display: none; flex-direction: column; gap: 8px; padding: 0 var(--b-inset, 16px) 16px; }
+:is(#c-root, html) .c-rules form.c-rf:has(> fieldset > .c-rules__rule[open]) > .c-rf-savebar, :is(#c-root, html) .c-rules form.c-rf:has(.c-rf-saved, .c-rf-error) > .c-rf-savebar { display: flex; }
+
+/* Recurring coverage: Add coverage period, then a group per location, a period per row with Remove on its right. */
+:is(#c-root, html) .c-rules .c-rf-disc { border-radius: 14px; box-shadow: inset 0 0 0 1px var(--c-line); }
+:is(#c-root, html) .c-rules .c-rf-disc__sum { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 14px; cursor: pointer; }
+:is(#c-root, html) .c-rules .c-rf-disc__add { display: inline-flex; align-items: center; gap: 8px; flex: 1; font-size: 0.9375rem; line-height: 1.375rem; font-weight: 600; color: var(--b-teal, #0B6E69); }
+:is(#c-root, html) .c-rules .c-rf-disc__add > svg { width: 1.125rem; height: 1.125rem; }
+:is(#c-root, html) .c-rules .c-rf-disc > form, :is(#c-root, html) .c-rules .c-rf-disc > .c-rf-list { padding: 0 14px 14px; }
+:is(#c-root, html) .c-rules .c-rf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+:is(#c-root, html) .c-rules .c-rf-grid > .c-rf-wide { grid-column: 1 / -1; }
+:is(#c-root, html) .c-rules .c-rf-quota { display: flex; flex-direction: column; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#c-root, html) .c-rules .c-rf-legend { padding: 0; }
+:is(#c-root, html) .c-rules .c-rf-period { padding: 10px 0; }
+:is(#c-root, html) .c-rules .c-rf-period:focus { outline: none; }
+:is(#c-root, html) .c-rules .c-rf-period__head { display: flex; align-items: center; gap: 12px; }
+:is(#c-root, html) .c-rules .c-rf-period__head > .c-rf-item__name { flex: 1; }
+:is(#c-root, html) .c-rules .c-rf-remove-form { flex: none; margin: 0; }
+:is(#c-root, html) .c-rules .c-rf-remove-form[data-confirming] { flex: 1 1 100%; }
+:is(#c-root, html) .c-rules .c-rf-period__head:has(.c-rf-remove-form[data-confirming]) { flex-wrap: wrap; }
+:is(#c-root, html) .c-rules .c-rf-quantities { margin-top: 8px; box-shadow: none; background: var(--b-quiet, #F0F2F3); }
+:is(#c-root, html) .c-rules .c-rf-disc__label { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-rules .c-rf-quantities > form { padding: 0 14px 14px; }
+
+/* Shift requests: Trades and Coverage, each its own small form. */
+:is(#c-root, html) .c-rules .c-rf-policy { display: flex; flex-direction: column; gap: 16px; }
+:is(#c-root, html) .c-rules .c-rf-scope { display: flex; flex-direction: column; gap: 12px; }
+:is(#c-root, html) .c-rules .c-rf-scope + .c-rf-scope { padding-top: 16px; box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-rules .c-rf-scope__t { margin: 0; font-size: 1rem; line-height: 1.375rem; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-rules .c-rf-policy .c-rf__fields { display: flex; flex-direction: column; gap: 12px; }
+:is(#c-root, html) .c-rules .c-rf-selectfield { display: flex; flex-direction: column; gap: 6px; }
+:is(#c-root, html) .c-rules .c-rf-selectfield .nevora-field-label { font-size: 0.8125rem; line-height: 1.125rem; font-weight: 500; color: var(--c-ink2); }
+:is(#c-root, html) .c-rules .c-rf-facts { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 6px 24px; margin: 0; padding: 12px 14px; border-radius: 14px; background: var(--b-quiet, #F0F2F3); }
+:is(#c-root, html) .c-rules .c-rf-facts > div { display: contents; }
+:is(#c-root, html) .c-rules .c-rf-facts dt { margin: 0; font-size: 0.875rem; line-height: 1.375rem; color: var(--b-grey-on-fill, #5E666B); }
+:is(#c-root, html) .c-rules .c-rf-facts dd { margin: 0; font-size: 0.9375rem; line-height: 1.375rem; color: var(--c-ink); }
+/* A quiet red text button for Remove; it asks first. */
+:is(#c-root, html) .c-rules .c-rf-remove-form .c-btn { min-width: 6rem; }
+
+@media (min-width: 600px) {
+  :is(#c-root, html) .c-rules :is(.c-rf-actions, .c-rf-inline, .c-rf-savebar) .c-btn { width: auto; min-width: 7.5rem; }
+  :is(#c-root, html) .c-rules .c-rf-inline { align-items: flex-start; }
+  :is(#c-root, html) .c-rules .c-rf-inline > .c-field { width: 100%; max-width: 35rem; }
+  :is(#c-root, html) .c-rules .c-rf-savebar { flex-direction: row; align-items: center; justify-content: flex-end; }
+  :is(#c-root, html) .c-rules .c-rf-savebar > p { flex: 1; }
+  :is(#c-root, html) .c-rules .c-rf-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  :is(#c-root, html) .c-rules .c-rf-grid > .c-rf-wide { grid-column: span 2; }
+  :is(#c-root, html) .c-rules .c-rf-policy .c-rf__fields { max-width: 35rem; }
+  :is(#c-root, html) .c-rules .c-rf-quota .c-rf-grid { grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); }
+}
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-rules .c-rules__sum { padding-inline: var(--b-inset-wide, 22px); }
+  :is(#c-root, html) .c-rules :is(.c-rules__body, .c-rf-savebar) { padding-inline: var(--b-inset-wide, 22px); }
+}
+/* The approval select (SelectField) at the kit field's size and edge, so it lines up with the minutes fields. */
+:is(#c-root, html) .c-rules .c-rf-selectfield .nevora-select-shell { position: relative; display: block; width: 100%; }
+:is(#c-root, html) .c-rules .c-rf-selectfield .nevora-select { box-sizing: border-box; width: 100%; min-height: 48px; margin: 0; padding: 0 40px 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font: inherit; font-size: 1rem; -webkit-appearance: none; appearance: none; }
+:is(#c-root, html) .c-rules .c-rf-selectfield .nevora-select:focus { outline: none; box-shadow: inset 0 0 0 2px var(--c-teal); }
+:is(#c-root, html) .c-rules .c-rf-selectfield .nevora-select-chevron { position: absolute; right: 14px; top: 50%; width: 1rem; height: 1rem; margin-top: -0.5rem; color: var(--b-field-edge, #838A8F); pointer-events: none; }

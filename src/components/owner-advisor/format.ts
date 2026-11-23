@@ -77,5 +77,7 @@ export function attentionDetail(detail: string) {
     .replace(/^1 published shifts started without a recorded clock-in\./, "1 published shift started without a recorded clock-in.")
     .replace(/^1 finished published shifts have no recorded punches\./, "1 finished published shift has no recorded punches.")
     .replace(/^1 planning periods need review,/, "1 planning period needs review,")
-    .replace(/(planning periods? needs? review, starting )(\d{2}:\d{2})\./, (_match, lead: string, time: string) => `${lead}${formatTime(time)}.`);
+    .replace(/(planning periods? needs? review, starting )(\d{2}:\d{2})\./, (_match, lead: string, time: string) => `${lead}${formatTime(time)}.`)
+    // Rondo follow-up (Nov 23): the figure stays on the line with its label ("shortfall: 1." never leaves "1." alone).
+    .replace(/(shortfall:) (\d+)/, "$1\u00a0$2");
 }

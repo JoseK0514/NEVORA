@@ -37,8 +37,8 @@ export function WorkflowControls({ date, disabled, inspect, weeklyEnabled }: { w
   const year = date.slice(0, 4);
   return <CorpSection id="oa-workflows" label="Prepare your next step">
     <CorpCard as="div"><CorpBody>
-      <p className="oa-lede">Use current records to prepare a review. These checks work without an AI connection and do not save business changes.</p>
-      {weeklyEnabled && <p><CorpButtonLink href="/app/ai-manager/weekly" kind="secondary" size="md">Where are we short this week?</CorpButtonLink></p>}
+      <p className="oa-lede">Use current records to prepare a review.</p>
+      {weeklyEnabled && <p className="oa-acts oa-weekly-link"><CorpButtonLink href="/app/ai-manager/weekly" kind="secondary" size="md">Where are we short this week?</CorpButtonLink></p>}
       <div className="oa-checks">
         <form className="oa-check" aria-labelledby="oa-check-coverage" onSubmit={e => { e.preventDefault(); inspect({ name: "coverage_proposals", args: { date: coverageDate } }); }}>
           <h3 className="oa-sub" id="oa-check-coverage">Coverage on a date</h3>

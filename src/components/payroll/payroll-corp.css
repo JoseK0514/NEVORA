@@ -8,12 +8,12 @@
 
 :is(#c-root, html) .c-pay .c-pay__feedback { display: flex; flex-direction: column; gap: 12px; }
 :is(#c-root, html) .c-pay .c-pay__feedback:empty { display: none; }
-:is(#c-root, html) .c-pay .c-pay__strong { display: block; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
-:is(#c-root, html) .c-pay .c-pay__detail { display: block; margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-pay .c-pay__strong { display: block; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-pay .c-pay__detail { display: block; margin-top: 2px; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-pay .c-pay__detail .c-pay__strong { margin-bottom: 2px; }
 :is(#c-root, html) .c-pay .c-pay__amber { color: var(--c-amber); }
 :is(#c-root, html) .c-pay .c-pay__aside { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-:is(#c-root, html) .c-pay .c-pay__code { display: block; margin: 8px 0 0; font: 13px/18px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--c-ink2); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-pay .c-pay__code { display: block; margin: 8px 0 0; font: 0.8125rem/1.125rem ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--c-ink2); overflow-wrap: anywhere; }
 :is(#c-root, html) .c-pay .c-pay__gap { margin-top: 12px; }
 :is(#c-root, html) .c-pay .c-pay__fieldset { display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: 0; padding: 0; border: 0; }
 :is(#c-root, html) .c-pay .c-pay__fieldset:disabled { opacity: .65; }
@@ -26,12 +26,12 @@
 /* Review totals: Gross and deductions as 15px rows, Net pay large over a hairline. */
 :is(#c-root, html) .c-pay .c-pay__totals { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; }
 :is(#c-root, html) .c-pay .c-pay__totals > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-height: 32px; align-items: center; }
-:is(#c-root, html) .c-pay .c-pay__totals dt { min-width: 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
-:is(#c-root, html) .c-pay .c-pay__totals dd { flex: none; font-size: 15px; line-height: 20px; color: var(--c-ink); white-space: nowrap; }
+:is(#c-root, html) .c-pay .c-pay__totals dt { min-width: 0; font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink2); }
+:is(#c-root, html) .c-pay .c-pay__totals dd { flex: none; font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink); white-space: nowrap; }
 :is(#c-root, html) .c-pay .c-pay__totals > .c-pay__net { min-height: 52px; margin: 8px -16px -12px; padding: 0 16px; box-shadow: inset 0 1px 0 var(--c-line); }
 /* Rule 4 (Owner premium): Net pay and its amount at one size, 17/600. */
-:is(#c-root, html) .c-pay .c-pay__net dt { font-size: 17px; line-height: 22px; font-weight: 600; color: var(--c-ink); }
-:is(#c-root, html) .c-pay .c-pay__net dd { font-size: 17px; line-height: 22px; font-weight: 600; }
+:is(#c-root, html) .c-pay .c-pay__net dt { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-pay .c-pay__net dd { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 600; }
 :is(#c-root, html) .c-pay .c-card__head + .c-pay__totals { padding-top: 12px; }
 :is(#c-root, html) .c-pay .c-pay__totals + .c-rows > li > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
 
@@ -40,7 +40,7 @@
 
 /* Approve and Publish: a checkbox row, the full-width primary and a centred 13px note. */
 :is(#c-root, html) .c-pay .c-pay__approve { display: flex; flex-direction: column; gap: 8px; }
-:is(#c-root, html) .c-pay .c-pay__check { display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 12px 0 4px; font-size: 15px; line-height: 20px; color: var(--c-ink); cursor: pointer; }
+:is(#c-root, html) .c-pay .c-pay__check { display: flex; align-items: flex-start; gap: 12px; min-height: 44px; padding: 12px 0 4px; font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink); cursor: pointer; }
 :is(#c-root, html) .c-pay .c-pay__check input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--c-teal); cursor: pointer; }
 :is(#c-root, html) .c-pay .c-card__body .c-pay__check { padding-top: 0; }
 
@@ -57,12 +57,12 @@
 :is(#c-root, html) .c-pay .c-pay__statement .c-pay__doc { min-height: 52px; }
 
 /* Disclosures inside cards: a teal 13/600 summary, 44px to tap. */
-:is(#c-root, html) .c-pay details.c-pay__more > summary { display: flex; align-items: center; min-height: 44px; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 600; cursor: pointer; list-style: none; }
+:is(#c-root, html) .c-pay details.c-pay__more > summary { display: flex; align-items: center; min-height: 44px; color: var(--c-teal); font-size: 0.8125rem; line-height: 1.125rem; font-weight: 600; cursor: pointer; list-style: none; }
 :is(#c-root, html) .c-pay details.c-pay__more > summary::-webkit-details-marker { display: none; }
 :is(#c-root, html) .c-pay details.c-pay__more[open] > summary { margin-bottom: 8px; }
 :is(#c-root, html) .c-pay details.c-pay__more > :not(summary) + * { margin-top: 12px; }
-:is(#c-root, html) .c-pay .c-pay__file { height: auto; min-height: 48px; padding: 10px 12px; font-size: 15px; }
-:is(#c-root, html) .c-pay .c-pay__file::file-selector-button { margin-right: 12px; padding: 6px 10px; border: 0; border-radius: 6px; background: var(--c-neutral-bg); color: var(--c-ink); font-family: inherit; font-weight: 600; font-size: 13px; line-height: 18px; cursor: pointer; }
+:is(#c-root, html) .c-pay .c-pay__file { height: auto; min-height: 48px; padding: 10px 12px; font-size: 0.9375rem; }
+:is(#c-root, html) .c-pay .c-pay__file::file-selector-button { margin-right: 12px; padding: 6px 10px; border: 0; border-radius: 6px; background: var(--c-neutral-bg); color: var(--c-ink); font-family: inherit; font-weight: 600; font-size: 0.8125rem; line-height: 1.125rem; cursor: pointer; }
 
 /* Backlog: a row opens its confirmation under it. */
 :is(#c-root, html) .c-pay .c-pay__expand { display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 16px; }
@@ -75,17 +75,17 @@
 :is(#c-root, html) .c-pay .c-rows > li + li > .c-pay__person > summary { box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-pay .c-pay__lines { padding: 0 16px 16px; }
 :is(#c-root, html) .c-pay .c-pay__lines dl { padding: 8px 12px; border-radius: 8px; background: var(--c-bg); }
-:is(#c-root, html) .c-pay .c-pay__lines dl > div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-pay .c-pay__lines dl > div { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; font-size: 0.8125rem; line-height: 1.125rem; }
 :is(#c-root, html) .c-pay .c-pay__lines dt { color: var(--c-grey); }
 :is(#c-root, html) .c-pay .c-pay__lines dd { color: var(--c-ink); white-space: nowrap; }
 :is(#c-root, html) .c-pay .c-pay__lines .c-pay__linehead dt { padding-top: 6px; font-weight: 600; color: var(--c-ink2); }
-:is(#c-root, html) .c-pay .c-pay__native { margin-top: 12px; font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-pay .c-pay__native { margin-top: 12px; font-size: 0.8125rem; line-height: 1.125rem; }
 
 /* Date field: the kit field with a formatted date; the native input is invisible over it and opens the picker. */
 :is(#c-root, html) .c-pay .c-pay__date, :is(#c-root, html) .c-pset .c-pay__date, :is(#c-root, html) .c-exp .c-pay__date { position: relative; justify-content: space-between; gap: 8px; cursor: pointer; }
 :is(#c-root, html) .c-pay__date[data-empty] > span { color: var(--c-grey); }
 :is(#c-root, html) .c-pay__date .c-ic { color: var(--c-ink2); }
-:is(#c-root, html) .c-pay__date input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; font-size: 16px; }
+:is(#c-root, html) .c-pay__date input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; font-size: 1rem; }
 :is(#c-root, html) .c-pay__date input::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
 :is(#c-root, html) .c-pay__date:focus-within { box-shadow: inset 0 0 0 2px var(--c-teal); }
 :is(#c-root, html) .c-pay__date:has(input:disabled) { opacity: .5; cursor: default; }
@@ -136,19 +136,19 @@
 
 /* Time exports (board O-TimeExports): the period as a kit select, "Send to" as radio rows, the ready count and one
  * Create export; people, other dates, the provider file setup and the handoff record open as rows. */
-:is(#c-root, html) .c-exp select.c-in { font-size: 15px; }
+:is(#c-root, html) .c-exp select.c-in { font-size: 0.9375rem; }
 :is(#c-root, html) .c-exp .c-exp__choice { cursor: pointer; }
 :is(#c-root, html) .c-exp .c-exp__choice input[type=radio] { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--c-teal); cursor: pointer; }
 :is(#c-root, html) .c-exp .c-exp__ready { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px 16px; box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-exp .c-exp__ready > .c-btn { margin-top: 12px; }
 :is(#c-root, html) .c-exp .c-exp__ready > .c-note { margin-top: 8px; display: block; }
-:is(#c-root, html) .c-exp .c-exp__waiting { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-exp .c-exp__waiting { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-exp .c-exp__inline { display: inline; padding: 15px 0; margin: -15px 0; color: var(--c-teal); font: inherit; font-weight: 600; white-space: nowrap; }
 :is(#c-root, html) .c-exp .c-exp__dl { width: 18px; height: 18px; color: var(--c-teal); }
 :is(#c-root, html) .c-exp details.c-exp__more { padding: 0 16px 4px; box-shadow: inset 0 1px 0 var(--c-line); }
-:is(#c-root, html) .c-exp details.c-exp__more > summary { display: flex; align-items: center; min-height: 44px; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 600; cursor: pointer; list-style: none; }
+:is(#c-root, html) .c-exp details.c-exp__more > summary { display: flex; align-items: center; min-height: 44px; color: var(--c-teal); font-size: 0.8125rem; line-height: 1.125rem; font-weight: 600; cursor: pointer; list-style: none; }
 :is(#c-root, html) .c-exp details.c-exp__more > summary::-webkit-details-marker { display: none; }
-:is(#c-root, html) .c-exp .c-exp__receipt { display: flex; flex-direction: column; gap: 8px; padding-bottom: 12px; font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-exp .c-exp__receipt { display: flex; flex-direction: column; gap: 8px; padding-bottom: 12px; font-size: 0.8125rem; line-height: 1.125rem; }
 :is(#c-root, html) .c-exp .c-exp__receipt dt { color: var(--c-grey); }
 :is(#c-root, html) .c-exp .c-exp__receipt dd { color: var(--c-ink2); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; }
 :is(#c-root, html) .c-exp .c-exp__item + .c-exp__item > summary, :is(#c-root, html) .c-exp .c-exp__item + .c-exp__mapping > summary { box-shadow: inset 0 1px 0 var(--c-line); }
@@ -166,21 +166,21 @@
 :is(#c-root, html) .c-exp .c-exp__person[data-off] { cursor: default; }
 :is(#c-root, html) .c-exp .c-exp__person[data-off] .c-row__title { color: var(--c-grey); }
 :is(#c-root, html) .c-exp .c-exp__person input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--c-teal); }
-:is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy { padding: 0 16px 16px; font-size: 13px; line-height: 18px; color: var(--c-ink2); }
+:is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy { padding: 0 16px 16px; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-ink2); }
 :is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy > section.panel { margin: 0; padding: 0; border: 0; box-shadow: none; background: none; }
-:is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy :is(h2, h3, h4) { margin: 12px 0 4px; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy :is(h2, h3, h4) { margin: 12px 0 4px; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy > section.panel > h2 { display: none; }
 :is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy p { margin: 4px 0; }
 /* The provider file setup keeps its own fields; the kit draws its row and frame. */
 :is(#c-root, html) .c-exp .c-exp__mapping > fieldset { margin: 0; padding: 4px 16px 16px; border: 0; min-width: 0; }
-:is(#c-root, html) .c-exp .c-exp__mapping :is(input:not([type=checkbox]), select, textarea) { width: 100%; min-width: 0; min-height: 48px; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font-family: inherit; font-weight: 400; font-size: 15px; line-height: 20px; }
+:is(#c-root, html) .c-exp .c-exp__mapping :is(input:not([type=checkbox]), select, textarea) { width: 100%; min-width: 0; min-height: 48px; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font-family: inherit; font-weight: 400; font-size: 0.9375rem; line-height: 1.25rem; }
 :is(#c-root, html) .c-exp .c-exp__mapping textarea { padding: 12px; min-height: 96px; }
-:is(#c-root, html) .c-exp .c-exp__mapping label > span:first-child { display: block; margin-bottom: 6px; font-size: 13px; line-height: 16px; font-weight: 600; color: var(--c-ink2); }
-:is(#c-root, html) .c-exp .c-exp__mapping h3 { margin: 12px 0 6px; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
-:is(#c-root, html) .c-exp .c-exp__mapping p { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-exp .c-exp__mapping label > span:first-child { display: block; margin-bottom: 6px; font-size: 0.8125rem; line-height: 1rem; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-exp .c-exp__mapping h3 { margin: 12px 0 6px; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-exp .c-exp__mapping p { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-exp .c-exp__mapping select { appearance: none; -webkit-appearance: none; padding-right: 36px; }
 /* Saving a provider file layout is a secondary action here: Create export stays the page's one primary. */
-:is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"] { height: 44px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font-family: inherit; font-weight: 500; font-size: 15px; line-height: 20px; opacity: 1; }
+:is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"] { min-height: 44px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font-family: inherit; font-weight: 500; font-size: 0.9375rem; line-height: 1.25rem; opacity: 1; }
 :is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"]:disabled { box-shadow: none; background: var(--c-neutral-bg); color: var(--c-faint); }
 :is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy :is(button, .button) { min-height: 44px; }
 
@@ -203,7 +203,7 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 @media (min-width: 768px) {
   :is(#c-root, html) .c-pay .c-pay-tabs { display: flex; gap: 24px; margin: 4px 0 4px; box-shadow: inset 0 -1px 0 var(--c-ring); overflow-x: auto; scrollbar-width: none; }
   :is(#c-root, html) .c-pay .c-pay-tabs::-webkit-scrollbar { display: none; }
-  :is(#c-root, html) .c-pay .c-pay-tabs__tab { position: relative; display: inline-flex; align-items: center; flex: none; min-height: 44px; padding: 0; color: var(--c-grey); font-size: 15px; line-height: 20px; font-weight: 400; white-space: nowrap; transition: color 120ms ease-out; }
+  :is(#c-root, html) .c-pay .c-pay-tabs__tab { position: relative; display: inline-flex; align-items: center; flex: none; min-height: 44px; padding: 0; color: var(--c-grey); font-size: 0.9375rem; line-height: 1.25rem; font-weight: 400; white-space: nowrap; transition: color 120ms ease-out; }
   :is(#c-root, html) .c-pay .c-pay-tabs__tab:hover { color: var(--c-ink); }
   :is(#c-root, html) .c-pay .c-pay-tabs__tab[aria-current="page"] { color: var(--c-ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--c-teal); }
   :is(#c-root, html) .c-pay .c-pay-tabs__tab:focus-visible { outline-offset: -2px; border-radius: 4px; }
@@ -216,8 +216,8 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 
 /* One empty or "not available" state (visual-craft K): the kit's centred empty line in a card, one secondary step. */
 :is(#c-root, html) .c-pay .c-pay__empty { display: flex; flex-direction: column; gap: 2px; padding: 32px 16px; text-align: center; }
-:is(#c-root, html) .c-pay .c-pay__empty b { margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
-:is(#c-root, html) .c-pay .c-pay__empty span { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-pay .c-pay__empty b { margin: 0; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-pay .c-pay__empty span { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-pay .c-pay__empty-action { display: flex; justify-content: center; padding: 0 16px 24px; margin-top: -12px; }
 
 /* Forms (P9, P10): a field marked as a problem shows one red ring; the date field's ring follows its hidden input.
@@ -230,7 +230,7 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
   :is(#c-root, html) .c-pay :is(input:not([type=checkbox]):not([type=radio]), select, textarea),
   :is(#c-root, html) .c-pset :is(.c-pset__body, .c-pset__save, .c-pset__group) :is(input:not([type=checkbox]):not([type=radio]), select, textarea),
   :is(#c-root, html) .c-exp .c-exp__mapping :is(input:not([type=checkbox]), select, textarea),
-  :is(#c-root, html) .c-exp select.c-in, :is(#c-root, html) .c-pay .c-pay__file { font-size: 16px; }
+  :is(#c-root, html) .c-exp select.c-in, :is(#c-root, html) .c-pay .c-pay__file { font-size: 1rem; }
 }
 
 /* Desktop (A7): single-column payroll pages keep a 720px column on the title's left edge (until the kit's
@@ -259,7 +259,7 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 /* R5: a list card's section label sits above the card (13/500 grey, 16px in, 8px over the card); 32px between groups. */
 :is(#c-root, html) .c-pay .c-pay__group { display: block; min-width: 0; }
 :is(#c-root, html) .c-pay .c-pay__sec { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 18px; margin: 0 16px 8px; }
-:is(#c-root, html) .c-pay .c-pay__sec h2 { min-width: 0; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--c-grey); }
+:is(#c-root, html) .c-pay .c-pay__sec h2 { min-width: 0; font-size: 0.8125rem; line-height: 1.125rem; font-weight: 500; color: var(--c-grey); }
 :is(#c-root, html) .c-pay .c-pay__sec-aside { flex: none; display: flex; align-items: center; }
 :is(#c-root, html) .c-pay .c-pay__sec-aside button.c-link { border: 0; background: none; cursor: pointer; }
 :is(#c-root, html) .c-pay .c-pay__sec-aside .c-link:disabled { color: var(--c-faint); cursor: default; }
@@ -274,8 +274,8 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
  * action is the neutral secondary button (right on wider screens, full width under the text on phones). */
 :is(#c-root, html) .c-pay .c-pay__unpaid { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 16px; row-gap: 12px; padding: 16px; }
 :is(#c-root, html) .c-pay .c-pay__unpaid-text { flex: 1 1 280px; min-width: 0; }
-:is(#c-root, html) .c-pay .c-pay__unpaid-title { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-red); }
-:is(#c-root, html) .c-pay .c-pay__unpaid-body { margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--c-ink2); }
+:is(#c-root, html) .c-pay .c-pay__unpaid-title { font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-red); }
+:is(#c-root, html) .c-pay .c-pay__unpaid-body { margin-top: 2px; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-ink2); }
 :is(#c-root, html) .c-pay .c-pay__unpaid-go { flex: none; }
 @media (max-width: 599px) {
   :is(#c-root, html) .c-pay .c-pay__unpaid-go { flex: 1 1 100%; }
@@ -317,16 +317,20 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 /* Payroll settings: the same 32px between its labelled groups. */
 :is(#c-root, html) .c-pset .c-pset__fields > .c-pay__group + .c-pay__group,
 :is(#c-root, html) .c-page.c-pset > .c-pset__form + .c-pay__group { margin-top: 20px; }
-:is(#c-root, html) .c-pay .c-pay__sec-aside .c-pay__aside { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-pay .c-pay__sec-aside .c-pay__aside { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 
 /* Closing F1 (NV-255): the section count is the kit's teal-50 count pill (12.5px 700) at every width, with no inner span
    (the desktop band layer styles a label's first span as the 17px title). */
 /* Premium pass (Nov 21, 2026; Jose's board pick 1): a count beside a section title is a grey numeral, not a teal pill. */
-:is(#c-root, html) .c-pay .c-pay__sec .c-pay__count { display: inline; margin-left: 8px; padding: 0; border-radius: 0; background: none; color: #6A7176; font-size: 13.5px; line-height: 18px; font-weight: 600; font-variant-numeric: tabular-nums; vertical-align: baseline; }
+:is(#c-root, html) .c-pay .c-pay__sec .c-pay__count { display: inline; margin-left: 8px; padding: 0; border-radius: 0; background: none; color: #6A7176; font-size: 0.8438rem; line-height: 1.125rem; font-weight: 600; font-variant-numeric: tabular-nums; vertical-align: baseline; }
 :is(#c-root, html) .c-pay .c-pay__sec .c-pay__count * { color: inherit; font: inherit; }
 
 /* Closing F1 (NV-081): an unopened period's quiet "Prepare" pill and the disclosure caret (turns when open). */
-:is(#c-root, html) .c-pay .c-row .c-pay__rowpill { flex: none; display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; background: #F0F2F3; color: #3F464B; font-size: 14px; line-height: 18px; font-weight: 600; white-space: nowrap; }
+:is(#c-root, html) .c-pay .c-row .c-pay__rowpill { flex: none; display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; background: #F0F2F3; color: #3F464B; font-size: 0.875rem; line-height: 1.125rem; font-weight: 600; white-space: nowrap; }
+/* Sweep 1: at large text a row's words never run under its pill. The text keeps at least 7.5rem (it has more at normal
+ * size from 320 up, so nothing moves there); when that and the pill don't fit, the pill drops to its own line. */
+:is(#c-root, html) .c-pay .c-row:has(> .c-pay__rowpill) { flex-wrap: wrap; }
+:is(#c-root, html) .c-pay .c-row:has(> .c-pay__rowpill) > .c-row__main { min-width: 7.5rem; }
 :is(#c-root, html) .c-pay .c-row .c-pay__caret { flex: none; width: 16px; height: 16px; margin-left: 4px; color: #6A7176; transition: rotate 150ms ease-out; }
 :is(#c-root, html) .c-pay .c-row[aria-expanded="true"] .c-pay__caret { rotate: 180deg; }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-pay .c-row .c-pay__caret { transition: none; } }
@@ -347,21 +351,21 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 :is(#c-root, html) .c-pay .c-pay__next { padding: 4px 16px 14px; }
 :is(#c-root, html) .c-pay .b-card > .c-pay__next { padding: 2px 18px 16px; }
 :is(#c-root, html) .c-pay .c-pay__next > ul { margin: 0; padding: 0; list-style: none; }
-:is(#c-root, html) .c-pay .c-pay__next li { position: relative; margin: 0; padding: 9px 0 9px 18px; font-size: 15px; line-height: 20px; color: var(--b-ink); text-wrap: pretty; }
+:is(#c-root, html) .c-pay .c-pay__next li { position: relative; margin: 0; padding: 9px 0 9px 18px; font-size: 0.9375rem; line-height: 1.25rem; color: var(--b-ink); text-wrap: pretty; }
 :is(#c-root, html) .c-pay .c-pay__next li + li { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .c-pay .c-pay__next li::before { content: ""; position: absolute; left: 2px; top: 16px; width: 6px; height: 6px; border-radius: 50%; background: var(--b-teal); }
-:is(#c-root, html) .c-pay .c-pay__next .c-pay__next-note { margin: 8px 0 0; font-size: 13.5px; line-height: 18px; color: var(--b-grey); }
+:is(#c-root, html) .c-pay .c-pay__next .c-pay__next-note { margin: 8px 0 0; font-size: 0.8438rem; line-height: 1.125rem; color: var(--b-grey); }
 
 /* PY-4, PY-9: what approving does and doesn't do, above the Approve button. */
 :is(#c-root, html) .c-pay .c-pay__approve > .c-pay__approve-notes { align-self: stretch; display: flex; flex-direction: column; gap: 4px; }
-:is(#c-root, html) .c-pay .c-pay__approve-notes > p { margin: 0; font-size: 14px; line-height: 20px; color: var(--c-ink2); text-wrap: pretty; }
+:is(#c-root, html) .c-pay .c-pay__approve-notes > p { margin: 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-ink2); text-wrap: pretty; }
 
 /* OW-005 / BR-8: the phone card's three steps, also under Up next on tablets and desktop (no button there: the row above
  * is the step). A done step is the same green tint as on the phone. */
 :is(#c-root, html) .c-pay .c-card > .b-steps.c-pay__steps { padding-top: 6px; padding-bottom: 10px; box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .c-pay .c-card > .c-pay__steps .b-step--done .b-step__n { background: var(--b-green-50); color: var(--b-green); }
 /* OW-005: while an overdue period leads on the phone, this period's step is a quiet teal link under the steps (44px tall). */
-:is(#c-root, html) .c-pay .b-card .b-steps > .c-pay__steplink { align-self: flex-start; margin: 2px -8px -8px; padding: 0 8px; font-size: 15px; }
+:is(#c-root, html) .c-pay .b-card .b-steps > .c-pay__steplink { align-self: flex-start; margin: 2px -8px -8px; padding: 0 8px; font-size: 0.9375rem; }
 
 /* AR-4: "Who’s included" opens from Payroll's blocker and scrolls clear of the app header. */
 :is(#c-root, html) .c-exp .c-exp__included { scroll-margin-top: 96px; }
@@ -369,3 +373,41 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .c-pset .c-pset__item > summary .c-chev, :is(#c-root, html) .c-exp .c-exp__item > summary .c-chev, :is(#c-root, html) .c-pay .c-row .c-pay__caret { transition: none; }
 }
+
+/* Payroll settings in Direction B (Nov 23, 2026): the effective date, reason and Save stand in their own white card (they
+ * stood on the grey canvas), with the card's inset. */
+:is(#c-root, html) .c-page.c-setb.c-pset .c-pset__savecard { display: none; padding: var(--b-space-16, 16px) var(--b-inset, 16px); }
+:is(#c-root, html) .c-page.c-setb.c-pset .c-pset__fields:has(details[open]) > .c-pset__savecard { display: block; }
+:is(#c-root, html) .c-page.c-setb.c-pset .c-pset__savecard > .c-pset__save.c-pset__save { display: flex; padding: 0; }
+@media (min-width: 768px) { :is(#c-root, html) .c-page.c-setb.c-pset .c-pset__savecard { padding-inline: 0; } }
+
+/* Phase 2 (kit check, 200% text): Payroll's step titles ("Prepare payroll", "Review pay", "Approve payroll") wrap onto
+ * lines that keep their spacing. The kit's 20px line height didn't grow with the text, so two-line titles overlapped at
+ * 200%; 1.25rem is the same 20px at the default size. */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-steps .b-step__t { line-height: 1.25rem; }
+/* The step number's circle grows with its digit (it clipped "1" at 200% text); 1.75rem is the kit's 28px by default. */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-steps .b-step__n { width: 1.75rem; height: 1.75rem; }
+/* The overdue period's button ("Prepare Nov 9–15") wraps inside its card instead of running past it at 320 with 200%
+ * text; at the default size it stays on one line. */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-notice > .b-btn { flex: 0 1 auto; min-width: 0; height: auto; white-space: normal; text-align: center; }
+
+/* Phase 2 (G1, 200% text): Recent payrolls on a phone. The card measures itself in em, so its own text size decides:
+ * once fewer than 16em fit across (390 or 320 with 200% text; never at the default size, where the card is ~22em), a
+ * row's amount moves under its text on the text's edge, as the 320px rule above does, instead of squeezing the period,
+ * "Replaced" and the payday to a few letters a line; and "Payroll history" goes under the card's title instead of past
+ * its right edge. Words unchanged. */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-screen #b-payroll-recent { container: payroll-recent / inline-size; }
+@container payroll-recent (max-width: 16em) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent > .b-card__h:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent > .b-card__h > .b-card__a:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { flex: 0 1 auto !important; min-width: 0 !important; margin-left: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent .b-row:has(> .b-row__end):not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent .b-row:has(> .b-row__end) > .b-row__tx:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { flex: 1 1 0 !important; min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent .b-row > .b-row__end:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { order: 3 !important; flex: 1 0 100% !important; flex-direction: row !important; align-items: baseline !important; justify-content: flex-start !important; gap: var(--b-space-8) !important; padding-left: var(--b-space-48) !important; text-align: left !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent .b-row__t > .b-chip:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { max-width: 100% !important; }
+  /* The amount and "Net" wrap as words when even the full line is short (a replaced row is indented under its correction). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen #b-payroll-recent .b-row > .b-row__end:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e):not(#p9f) { flex-wrap: wrap !important; min-width: 0 !important; }
+}
+/* Payroll on a phone: a row's grey line shows whole (the kit clamps it at two lines, which cut "Download hours for payroll"
+ * and the paid time line at 200% text); every line here is one short sentence, so nothing changes at the default size. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b] .c-pay .b-screen .b-row__s:not(#p9a):not(#p9b) { display: block; -webkit-line-clamp: none; line-clamp: none; overflow: visible; }
+

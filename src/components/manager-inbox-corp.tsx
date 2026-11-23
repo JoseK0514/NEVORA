@@ -2,7 +2,7 @@
 import Link from "next/link";
 import "./manager-inbox-corp.css";
 import type { ReactNode } from "react";
-import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpCount, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { useToday } from "./manager-today";
@@ -299,7 +299,7 @@ const rowOf = (row: Row) => <li key={row.key}>
 </li>;
 
 /** R3: one count voice. The label, then the figure in grey, no brackets ("Open shifts 3"). */
-const headed = (title: string, n: number) => <>{title}<span className="c-count c-num">{n}</span></>;
+const headed = (title: string, n: number) => <>{title}<CorpCount>{n}</CorpCount></>;
 
 /** One kind inside a card: its heading row with the count, then its rows. Nov 1 upscale: the Time off kind ends with
  * "See all time off ›", the way to every time off request. */

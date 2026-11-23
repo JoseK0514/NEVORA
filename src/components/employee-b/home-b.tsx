@@ -18,7 +18,7 @@ import {addDays, weekStartFor} from '../../lib/date-utils';
 import type {EmployeeTime} from '../../lib/employee-time';
 import {workCopy} from './work-copy';
 import {useHours} from '../employee-mobile/use-hours';
-import {boardDuration, compactDuration} from '../employee-mobile/hours-model';
+import {compactDuration} from '../employee-mobile/hours-model';
 import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type HomeWeek} from '../employee-home-quiet';
 import {BCardNote, BDay, Dotted, Range, shiftEndedWhileOpen, sinceSpan, wallTime} from './parts';
 import './employee-b.css';
@@ -91,27 +91,22 @@ function daysAway(payday: string, today: string) {
   return days === 0 ? 'today' : days === 1 ? 'tomorrow' : days > 1 ? `in ${days} days` : null;
 }
 
-/** A Lead's current shift as the first figure ("On shift now", the range, "Shift lead · Barista"). */
-export type OnShiftFigure = {range: string; line: string | null; aria: string};
-/** Phase 4 (EM-025): the shift ahead as the strip's first figure where the hero has room ("Next shift", "Tomorrow 9:00 AM").
- * Phones leave it out: the shift card is the next thing on the screen (the stylesheet finds it by its link to the card's
- * heading, #b-home-shift-h). */
-export type NextShiftFigure = {label: string; value: string; line: string | null; aria: string};
-function Figures({week, payday, worked, onShift, nextShift}: {week: HomeWeek | null; payday?: string | null; worked: number | null; onShift?: OnShiftFigure | null; nextShift?: NextShiftFigure | null}) {
+function Figures({week, payday, worked}: {week: HomeWeek | null; payday?: string | null; worked: number | null}) {
   const scheduled = week ? week.shifts.reduce((sum, shift) => { const a = minutesOf(shift.startTime), b = minutesOf(shift.endTime); return sum + (b > a ? b - a : b + 1440 - a); }, 0) : null;
-  const items: BLiveItem[] = onShift ? [{label: 'On shift now', dot: 'live', value: onShift.range, meta: onShift.line ?? undefined, href: '#b-home-shift', aria: onShift.aria}]
-    : nextShift ? [{label: nextShift.label, value: nextShift.value, meta: nextShift.line ?? undefined, href: '#b-home-shift-h', aria: nextShift.aria}] : [];
+  // DEC1 (Jose, Nov 23, 2026; each fact once): the band leaves the shift to the shift card right under it, so its figures
+  // are the two things nothing else on Home says, hours worked and payday. Each figure's link is named by its visible text.
+  const items: BLiveItem[] = [];
   // Phase 4 (EM-007): the figure and its caption read as one sentence ("17 h of 56 h", "worked this week"). Worked time
   // reads as the Time tab writes it ("43 h 34"); the scheduled total stays in hours.
   // Phase 8 (review C, row 11): under 360px the figure stands alone and "of 56 h this week" is the line under it, so the
   // figure clears the tile's divider (employee-b-work.css shows one of the two lines).
   if (worked !== null && scheduled) items.push({label: t.hours, value: compactDuration(worked * 60), small: `\u00a0${t.ofHours(hoursNumber(scheduled))}`,
-    meta: <><span className="eb-of-w">{t.workedThisWeek}</span><span className="eb-of-n">{t.ofHoursThisWeek(hoursNumber(scheduled))}</span></>, href: '/app/my-time', aria: `Hours, ${boardDuration(worked * 60)} worked of ${hoursNumber(scheduled)} scheduled this week`});
-  else if (worked !== null) items.push({label: t.hours, value: compactDuration(worked * 60), meta: t.workedThisWeek, href: '/app/my-time', aria: `Hours, ${boardDuration(worked * 60)} worked this week`});
-  else if (scheduled !== null) items.push({label: t.hours, value: `${hoursNumber(scheduled)} h`, meta: t.scheduledThisWeek, href: '/app/schedule', aria: `Hours, ${hoursNumber(scheduled)} scheduled this week`});
+    meta: <><span className="eb-of-w">{t.workedThisWeek}</span><span className="eb-of-n">{t.ofHoursThisWeek(hoursNumber(scheduled))}</span></>, href: '/app/my-time'});
+  else if (worked !== null) items.push({label: t.hours, value: compactDuration(worked * 60), meta: t.workedThisWeek, href: '/app/my-time'});
+  else if (scheduled !== null) items.push({label: t.hours, value: `${hoursNumber(scheduled)} h`, meta: t.scheduledThisWeek, href: '/app/schedule'});
   // Phase 4 (EM-007): one format for the date at every width ("Fri, Nov 20"), as on Pay, and how far off it is.
   if (payday && week) items.push({label: 'Scheduled payday', value: fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(payday)),
-    meta: daysAway(payday, week.today), href: '/app/my-pay', aria: `Scheduled payday, ${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(utcDay(payday))}`});
+    meta: daysAway(payday, week.today), href: '/app/my-pay'});
   return items.length ? <BLive label="This week at a glance" items={items}/> : null;
 }
 
@@ -124,9 +119,9 @@ function HoursProvider({authority, children}: {authority: string; children: Reac
   const data = panel.read?.view === 'records' && panel.read.data.state === 'ready' ? panel.read.data as Ready : null;
   return <HoursRead.Provider value={data}>{children}</HoursRead.Provider>;
 }
-function HoursFigures({week, payday, onShift, nextShift}: {week: HomeWeek | null; payday?: string | null; onShift?: OnShiftFigure | null; nextShift?: NextShiftFigure | null}) {
+function HoursFigures({week, payday}: {week: HomeWeek | null; payday?: string | null}) {
   const data = useContext(HoursRead) ?? null;
-  return <Figures week={week} payday={payday} worked={data ? workedMinutes(data) : null} onShift={onShift} nextShift={nextShift}/>;
+  return <Figures week={week} payday={payday} worked={data ? workedMinutes(data) : null}/>;
 }
 
 /** Your week (Nov 21, 2026): the hours day by day, from the two reads Home already holds. */
@@ -147,8 +142,7 @@ function TeamCard({place}: {place?: string}) {
   return <BCard title="Today’s team" id="b-home-team" meta={place}>
     {/* Phase 4 (EM-016): a plain row that opens the compose page (no third button look on Home); its note is the card's
       * footer at every width. */}
-    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"
-      label="Message today’s team, everyone on shift today"/></BList>
+    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"/></BList>
     <BCardNote>{t.teamNote}</BCardNote>
   </BCard>;
 }
@@ -162,7 +156,7 @@ export function endedShiftStillOpen(week: HomeWeek | null, snapshot: HomeSnapsho
   return ended ? {startTime: ended.startTime, endTime: ended.endTime} : null;
 }
 
-function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; lead?: boolean; heroShows?: boolean; week?: HomeWeek | null}) {
+function ShiftCard({snapshot, lead, week}: {snapshot: HomeSnapshot; lead?: boolean; week?: HomeWeek | null}) {
   const hours = useContext(HoursRead);
   const zone = snapshot.timeZone;
   if (snapshot.publicationState === 'unavailable') return <BCard title="Next shift" id="b-home-shift"><p className="b-state" role="status">Your schedule couldn’t be checked.</p></BCard>;
@@ -174,17 +168,15 @@ function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; l
   const ends = businessDate(shift.endAt, zone);
   const clockIn = hours?.current && hours.current.state !== 'CLOCKED_OUT' ? hours.current : null;
   const overrun = clockIn ? endedShiftStillOpen(week ?? null, snapshot, clockIn.clockInAt) : null;
-  // Review B6 (NV-161, Jose approved): a Lead's hero already says "On shift now" with the range, so the card is "Your
-  // shift", without the "Until" chip or the sentence (the Shift lead chip stays).
-  const echo = !!(now && heroShows);
   // Phase 9 (spec 1.4): a time fact ("Until 5 PM", "Tomorrow", "Starts in 2 h") is not a state, so it is the header's
-  // quiet meta, not a teal chip.
-  return <BCard id="b-home-shift" title={echo ? 'Your shift' : now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
-    meta={echo ? undefined : now ? `Until ${clock(now.endAt, zone)}` : startsIn(shift, snapshot)}>
+  // quiet meta, not a teal chip. Core screens check (Nov 23, 2026; each fact once): a shift under way has no "Until
+  // 4:00 PM" meta, since the range under the title already ends at that time.
+  return <BCard id="b-home-shift" title={now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
+    meta={now ? undefined : startsIn(shift, snapshot)}>
     <div className="eb-shift">
-      {/* Phase 8 (review C, row 14): each time stays whole; where the line is too short the range breaks before its dash
-        * (the Employee screens' one rule, parts.tsx Range). */}
-      <p className="eb-shift__time"><time dateTime={shift.startAt} className="eb-nb">{keepWhole(clock(shift.startAt, zone))}</time> <span className="eb-nb"><span aria-hidden="true">{'–\u00a0'}</span><span className="b-sr"> to </span><time dateTime={shift.endAt}>{keepWhole(clock(shift.endAt, zone))}</time></span></p>
+      {/* Phase 8 (review C, row 14): each time stays whole. Gaps G53 (Nov 23, 2026): where the line is too short (768px at
+        * 200% text) the range breaks after its dash, as parts.tsx Range does ("5:30 AM –" over "1:30 PM"); it broke before. */}
+      <p className="eb-shift__time"><span className="eb-nb"><time dateTime={shift.startAt}>{keepWhole(clock(shift.startAt, zone))}</time><span aria-hidden="true">{'\u00a0–'}</span></span> <span className="eb-nb"><span className="b-sr">to </span><time dateTime={shift.endAt}>{keepWhole(clock(shift.endAt, zone))}</time></span></p>
       <p className="eb-shift__where"><Dotted text={[today ? null : shortDay(shift.date), where, !today && ends !== shift.date ? `ends ${shortDay(ends)}` : null].filter(Boolean).join(' · ')}/></p>
       {/* Phase 8 (review C, row 15): the Shift lead chip says it once; no sentence repeats it (as review B6 decided for
         * the On shift now card). */}
@@ -248,12 +240,12 @@ function ComingUp({week, snapshot, lead, note}: {week: HomeWeek; snapshot: HomeS
   const allLed = !!lead && shownRows.length > 1 && shownRows.every(shift => shift.lead);
   return <BCard title={allLed ? <>Coming up<span className="eb-hmeta">{t.leadAll(shownRows.length)}</span></> : 'Coming up'} id="b-home-upcoming" link={{href: '/app/schedule', label: 'See all', aria: 'See all shifts'}}>
     <BList>{shownRows.map(shift => {
-      const at = utcDay(shift.date);
       const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${shift.id ? `&shift=${encodeURIComponent(shift.id)}` : ''}`;
-      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date}/>} title={<Range text={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)}/>}
+      // Proposed G67 (Nov 23, 2026): the row is named by what it shows ("Tue 24 9:00 AM – 5:00 PM Barista, Calle Loíza");
+      // its own label ("Tuesday, November 24, 9:00 AM to 5:00 PM, …") differed from it.
+      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date} spoken/>} title={<Range text={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)}/>}
         // Review B6 (NV-163): "Shift lead" leads the sub-line, as on Schedule, so it never competes with a chip.
-        sub={lead && shift.lead && !allLed || shift.where ? <Dotted text={[lead && shift.lead && !allLed ? 'Shift lead' : null, shift.where].filter(Boolean).join(' · ')}/> : undefined}
-        label={keepWhole(`${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(at)}, ${wallTime(shift.startTime)} to ${wallTime(shift.endTime)}${shift.where ? `, ${shift.where}` : ''}${lead && shift.lead ? ', shift lead' : ''}`)}/>;
+        sub={lead && shift.lead && !allLed || shift.where ? <Dotted text={[lead && shift.lead && !allLed ? 'Shift lead' : null, shift.where].filter(Boolean).join(' · ')}/> : undefined}/>;
     })}</BList>
     {/* Review B6 (NV-273): the note about what isn't published yet qualifies these shifts, so it is the card's footer. */}
     {note ? <BCardNote>{note}</BCardNote> : null}
@@ -307,19 +299,6 @@ export type HomeBProps = HomeBExtras & {
 
 export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date, place, intro, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday, team, lead, shortcuts}: HomeBProps) {
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
-  // A Lead's hero adds the shift they're on now (Direction B, Nov 8, 2026); Employees' figures are unchanged.
-  const now = lead && snapshot ? snapshot.currentShift : null;
-  const onShift: OnShiftFigure | null = now && snapshot ? {range: compactRange(`${clock(now.startAt, snapshot.timeZone)} – ${clock(now.endAt, snapshot.timeZone)}`),
-    line: now.designatedLead ? ['Shift lead', now.positionLabel].filter(Boolean).join(' · ') : now.positionLabel || null,
-    aria: `On shift now, ${clock(now.startAt, snapshot.timeZone)} to ${clock(now.endAt, snapshot.timeZone)}${now.designatedLead ? ', shift lead' : ''}`} : null;
-  // Phase 4 (EM-025): with nobody "on shift now" in the hero, the shift ahead is its first figure (tablets and desktop).
-  const ahead = snapshot && snapshot.publicationState !== 'unavailable' && !onShift ? snapshot.currentShift ?? snapshot.nextShift : null;
-  const nextShift: NextShiftFigure | null = ahead && snapshot ? snapshot.currentShift
-    ? {label: t.onShiftUntil, value: clock(ahead.endAt, snapshot.timeZone), line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null,
-      aria: `On shift until ${clock(ahead.endAt, snapshot.timeZone)}`}
-    : {label: t.nextShift, value: `${dayWord(ahead, snapshot)} ${clock(ahead.startAt, snapshot.timeZone)}`,
-      line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null,
-      aria: `Next shift, ${dayWord(ahead, snapshot)}, ${clock(ahead.startAt, snapshot.timeZone)} to ${clock(ahead.endAt, snapshot.timeZone)}`} : null;
   const note = snapshot?.publicationState === 'partial' ? unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations)) : null;
   const todoRow = ({key, item, week: confirm}: HomeTodo) => {
     const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
@@ -330,8 +309,8 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
     // urgent (the first required one) keeps the teal Review pill, so the card has one primary action.
     return item.required
       ? key === firstRequired
-        ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} label={`${title}, action needed, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
-        : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron label={`${title}, action needed`}/>
+        ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
+        : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron/>
       // Round 2 (H2): a request that waits for your answer says so with Requests' own amber chip, and keeps its chevron.
       : needsAnswer(item) ? <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} chip={<BChip tone="amber">{t.needsYourAnswer}</BChip>} sub={sub}/>
       : <BRow key={key} href={item.href} lead={<TodoIcon item={item}/>} title={title} sub={sub}/>;
@@ -354,12 +333,12 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
     {/* A Lead's desktop: Message today's team is the band's white action (eb-desk); phones use the Today's team card. */}
     {/* Review B1 (NV-160): one way to message the team, in the Today’s team card (the band’s copy is gone). */}
     <BHero big eyebrow={<>{snapshot ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time> : date}{place ? <> · {place}</> : null}</>} title={name ? `Welcome back, ${name}` : 'Home'}>
-      {snapshot ? hoursAuthority ? <HoursFigures week={weekShown} payday={payday} onShift={onShift} nextShift={nextShift}/> : <Figures week={weekShown} payday={payday} worked={null} onShift={onShift} nextShift={nextShift}/> : null}
+      {snapshot ? hoursAuthority ? <HoursFigures week={weekShown} payday={payday}/> : <Figures week={weekShown} payday={payday} worked={null}/> : null}
     </BHero>
     <BStack>
       {snapshot ? <>
         <NowCard snapshot={snapshot} week={weekShown}/>
-        <ShiftCard snapshot={snapshot} lead={lead} heroShows={!!onShift} week={weekShown}/>
+        <ShiftCard snapshot={snapshot} lead={lead} week={weekShown}/>
         {intro ?? null}
         {/* Review B6 (NV-162, NV-288): Things to do (with its deadlines) comes before a Lead's optional Today's team, so on
           * a phone the to-dos are higher and on desktop the focus order follows the columns (left, then right). */}

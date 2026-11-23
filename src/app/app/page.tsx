@@ -106,8 +106,8 @@ export default async function DashboardPage({
     const place=one?<span className="b-date b-place"><MapPinIcon size={15} weight="bold" aria-hidden="true"/>{placeName(one)}</span>
       :<ActionMenu id="b-home-location-menu" label="Location" title="Location" ariaLabel={`Location: ${chosen?placeName(chosen):'All your locations'}`} align="start"
         triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="bold" aria-hidden="true"/>{chosen?placeName(chosen):'All your locations'}<CaretDownIcon size={13} weight="bold" aria-hidden="true"/></>}>
-        <Link className="nevora-action-menu-item" href="/app?location=all"><strong>All your locations</strong></Link>
-        {authority.locations.map(location=><Link key={location.id} className="nevora-action-menu-item" href={`/app?location=${encodeURIComponent(location.id)}`}><strong>{placeName(location)}</strong></Link>)}
+        <Link className="nevora-action-menu-item" href="/app?location=all" aria-current={chosen?undefined:'page'}><strong>All your locations</strong></Link>
+        {authority.locations.map(location=><Link key={location.id} className="nevora-action-menu-item" href={`/app?location=${encodeURIComponent(location.id)}`} aria-current={chosen?.id===location.id?'page':undefined}><strong>{placeName(location)}</strong></Link>)}
       </ActionMenu>;
     // This week: the week's shifts at this Manager's places (drafts included, as on the company Home), from the scoped
     // schedule read the Schedule uses. A failed read leaves the card out rather than drawing zeros.

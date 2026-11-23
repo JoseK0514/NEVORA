@@ -140,9 +140,9 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
  const viewState=state.paused?'paused':snapshot?'ready':denied?'denied':state.refreshing?'loading':'unavailable';
  const [hash,setHash]=useState('');
  useEffect(()=>{const read=()=>setHash(decodeURIComponent(window.location.hash.slice(1)));read();window.addEventListener('hashchange',read);return()=>window.removeEventListener('hashchange',read);},[]);
- const unavailable=!snapshot?<CorpCard ariaLabel="Requests status"><div className="c-card__body"><p className="c-ereq__state" role="status">{state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests. Try again.'}</p>
+ const unavailable=!snapshot?<CorpCard ariaLabel="Requests status"><div className="c-card__body"><p className="c-ereq__state" role="status">{state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests.'}</p>
   {denied?<CorpButtonLink href="/login" kind="secondary" size="md" full>Sign in</CorpButtonLink>:!state.paused&&!state.refreshing?<CorpButton kind="secondary" size="md" full onClick={refresh}>Try again</CorpButton>:null}</div></CorpCard>:null;
- const stateB=!snapshot?<BStateCard label="Requests status" text={state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests. Try again.'}
+ const stateB=!snapshot?<BStateCard label="Requests status" text={state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests.'}
   denied={denied} retry={!state.paused&&!state.refreshing?refresh:null} kind={state.paused?'paused':undefined}/>:null;
  if(mode==='hub'){
   const modules=snapshot?.modules;

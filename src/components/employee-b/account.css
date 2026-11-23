@@ -30,6 +30,11 @@
   /* Delete account: "Confirm it's you" as one card under the screen's two. */
   html body .app-shell[data-nv-b] .eb-delete-keep .eb-desk { display: none !important; }
   html body .app-shell[data-nv-b] .eb-delete-keep .c-field__label { font-size: var(--b-fs-meta) !important; color: var(--b-grey) !important; }
+  /* Prodcheck (Nov 23, 2026): the card is a .b-keep (nowrap), so at 200% text on a phone the field label ran past the card
+   * and the screen for Employees and Leads (account-deletion.css fixed it only for `.em-delete--team`). It wraps here for
+   * every role. */
+  html body .app-shell[data-nv-b] .eb-delete-keep .c-field { min-width: 0 !important; max-width: 100% !important; }
+  html body .app-shell[data-nv-b] .eb-delete-keep .c-field__label { display: block !important; max-width: 100% !important; white-space: normal !important; overflow-wrap: break-word !important; }
   html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-confirm { background: var(--b-red-50) !important; box-shadow: none !important; color: rgb(180 35 24 / 0.5) !important; }
   html body .app-shell[data-nv-b] .eb-delete-keep .em-delete-confirm[data-armed]:not(:disabled) { background: var(--b-red) !important; color: #FFFFFF !important; }
   /* Write an update: its form as one lifted card under the screen's hero (the page's own header is the hero). */
@@ -143,7 +148,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-btn-outline-danger { background: #FFFFFF; color: var(--b-red); box-shadow: inset 0 0 0 1.5px var(--b-red); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-textbtn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 var(--b-space-12); font-size: var(--b-fs-body); font-weight: 600; color: var(--b-ink2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-textbtn--danger { color: var(--b-red); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-textlink { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--b-teal); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-textlink { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.875rem; font-weight: 600; color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .eb-textlink { min-height: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px var(--b-inset) var(--b-space-20); text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty b { font-size: 16px; line-height: 21px; font-weight: 600; color: var(--b-ink); }
@@ -196,7 +201,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__head { min-height: 0; padding-bottom: var(--b-space-8); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__body { padding: 0 var(--b-inset) var(--b-space-12) 66px; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); white-space: pre-line; overflow-wrap: break-word; text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--b-space-8); padding: 0 var(--b-inset) var(--b-space-16) 66px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts > .b-btn { width: 100%; min-height: 40px; border-radius: var(--b-radius-pill); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts > .b-btn { width: 100%; min-height: 44px; border-radius: var(--b-radius-pill); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-upd__acts > .b-btn svg { flex: none; }
 /* On the narrowest phones (320px) two equal halves left "✓ Acknowledge" wider than its pill. Open takes only its own
  * width there and Acknowledge the rest, so each label stays inside its button. */
@@ -268,6 +273,8 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-in:focus { box-shadow: inset 0 0 0 2px var(--b-teal); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-in[aria-invalid="true"] { box-shadow: inset 0 0 0 2px var(--b-red); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye { width: 40px; height: 40px; border-radius: var(--b-radius-pill); color: var(--b-grey); }
+/* Target size (Nov 23, 2026): the eye is drawn 40px; an invisible ring 2px out makes it answer on 44px. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye::after { content: ""; position: absolute; inset: -2px; border-radius: inherit; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check { gap: var(--b-space-12); font-size: var(--b-fs-body); line-height: 1.45; color: var(--b-ink); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check input { margin-top: 1px; accent-color: var(--b-teal); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .c-error { margin-top: -10px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-red); }
@@ -282,7 +289,7 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card { border: 0; border-radius: var(--b-radius-card); box-shadow: var(--b-elev-1); }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__head { min-height: 44px; padding: var(--b-space-12) var(--b-inset) var(--b-space-2); box-shadow: none; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__label { font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700; letter-spacing: -0.01em; color: var(--b-ink); }
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:not(.c-btn--secondary):not(.c-btn--danger) { min-height: 52px; border-radius: var(--b-radius-pill); background: var(--b-teal); color: #FFFFFF; font-size: 16px; font-weight: 600; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:not(.c-btn--secondary):not(.c-btn--danger) { min-height: 52px; border-radius: var(--b-radius-pill); background: var(--b-teal); color: #FFFFFF; font-size: 1rem; font-weight: 600; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:is(.c-btn--secondary, .c-btn--danger) { border-radius: var(--b-radius-card); background: var(--b-quiet); box-shadow: none; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep > .em-account-stack > .c-note { padding: 0 6px; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
 @media (max-width: 359px) {
@@ -310,7 +317,8 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { margin: -7px 0; }
 /* Final polish, round 2 (M5): on phones each policy link is a 44px line box (they were 32px drawn 18px apart, so two
  * rows of links shared one finger). The words keep their size and colour; the rows sit 44px apart. */
-@media (max-width: 767px) {
+/* Batch 1 (Nov 23): tablets and desktop too (they were 32px there). */
+@media (min-width: 0) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 0; margin: -4px 0 -8px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { min-height: 44px; margin: 0; }
 }
@@ -335,4 +343,33 @@
 @media (max-width: 767px), (min-width: 768px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__foot { display: flex; margin-top: 18px; padding-top: 18px; box-shadow: inset 0 1px 0 var(--b-line); }
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .b-screen .eb-doc__foot .b-btn--white { min-height: 44px; padding: 0 var(--b-space-20); box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397), 0 1px 2px rgb(16 40 38 / .08); }
+}
+
+/* Batch 1 (Nov 23, item 15): the reading card holds only the summary and/or the deletion action now that every section
+ * is a row of one list; the last piece ends the card and an action on its own has no rule above it. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc > .eb-doc__intro:last-child { margin-bottom: 0; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-screen .eb-doc > .eb-doc__foot:first-child { margin-top: 0; padding-top: 0; box-shadow: none; }
+
+/* Batch 1 (Nov 23, item 18): Passkeys' kept panel is a stack of cards, not a card itself. On tablets and desktop the
+ * shared "kept panel" frame (employee-b-desktop.css) drew it as a white card, so Saved passkeys sat in a second card
+ * 13-14px inside the column; the panel keeps that frame's width and place without its surface or padding. The card's
+ * body text starts on the header's inset. In the nv-b layer, where the frame's !important rule is. */
+@layer nv-b { @media (min-width: 768px) {
+  html body .app-shell[data-nv-b][data-employee-mobile] .c-page:has(> .b-screen--back) > .b-keep.eb-keep { padding: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+} }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__body { padding-inline: var(--b-inset); font-size: 0.875rem; line-height: 1.25rem; }
+/* B8 Write an update at 1440 with 200% text (Phase 2 gate, Nov 23): the intro line ("Send an update to today's team…")
+ * stayed on one line and ran 578px past the card, so the page scrolled sideways. It wraps inside the form now. Same layer
+ * and weight as the shared compose rules in employee-b-desktop.css, which set it with layered !important. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] :is(.em-message-compose, .em-message-preview) :is(p, h2, .em-message-information):not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#eb-wrap) { min-width: 0 !important; max-width: 100% !important; white-space: normal !important; overflow-wrap: break-word !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] .em-message-compose:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#eb-wrap) { min-width: 0 !important; max-width: min(100%, var(--b-frame-form, 100%)) !important; }
+}
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): the language switch shows its choice with a white thumb and a shadow, both
+ * dropped under Windows contrast themes, so "English" and "Español" looked the same. The track keeps an edge and the
+ * chosen language is the Highlight pair. */
+@media (forced-colors: active) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg { border: 1px solid ButtonText; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button[aria-pressed="true"] { forced-color-adjust: none; background: Highlight; color: HighlightText; }
 }

@@ -163,14 +163,20 @@
 :is(#c-root, html) .oa .oa-check .oa-acts { margin-top: var(--b-space-4); }
 /* Phone: the two dates side by side, the language under them; three across from 560px (a lone field keeps a third). */
 :is(#c-root, html) .oa .oa-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--b-space-16) var(--b-space-12); }
+/* Final fixes K (Nov 23, 2026): two fields to a row only while a field is at least 8.5rem wide, so at 200% text "Period
+ * start" and "Period end" stack and show "Mon, Nov 23" whole instead of cutting it (at most two columns; at the default
+ * size each half is wider than 8.5rem, so nothing moves). */
+@media (min-width: 360px) and (max-width: 559px) { :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(auto-fill, minmax(max(8.5rem, calc((100% - var(--b-space-12)) / 2)), 1fr)); } }
 :is(#c-root, html) .oa .oa-fields > :is(:only-child, :nth-child(3)) { grid-column: 1 / -1; }
 @media (min-width: 560px) {
   :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* Final fixes K: three to a row only while each is at least 8.5rem wide (two, then one, at large text). */
+  :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(auto-fill, minmax(max(8.5rem, calc((100% - 2 * var(--b-space-12)) / 3)), 1fr)); }
   :is(#c-root, html) .oa .oa-fields > :is(:only-child, :nth-child(3)) { grid-column: auto; }
 }
 @media (max-width: 359px) { :is(#c-root, html) .oa .oa-fields { grid-template-columns: minmax(0, 1fr); } }
 /* Two dates side by side while each still reads whole ("Wed, Nov 18"), one under the other when it wouldn't. */
-:is(#c-root, html) .oa .oa-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: var(--b-space-16) var(--b-space-12); }
+:is(#c-root, html) .oa .oa-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.25rem), 1fr)); gap: var(--b-space-16) var(--b-space-12); }
 :is(#c-root, html) .oa :is(.oa-check, .oa-form, .oa-editor) .c-field { margin: 0; min-width: 0; }
 :is(#c-root, html) .oa .oa-help { margin: calc(var(--b-space-4) * -1) 0 0; font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .oa .c-field > .oa-help { margin: var(--b-space-4) 0 0; }
@@ -180,7 +186,7 @@
 :is(#c-root, html) .oa .oa-date__v { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--b-ink); font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .oa .oa-date[data-empty] .oa-date__v { color: var(--b-grey); }
 :is(#c-root, html) .oa .oa-date__ic { flex: none; width: 18px; height: 18px; color: var(--b-ink2); }
-:is(#c-root, html) .oa .oa-date input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; font-size: 16px; }
+:is(#c-root, html) .oa .oa-date input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; font-size: 1rem; }
 :is(#c-root, html) .oa .oa-date input::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
 :is(#c-root, html) .oa .oa-date:focus-within { box-shadow: inset 0 0 0 2px var(--b-teal); }
 :is(#c-root, html) .oa .oa-date[data-disabled] { background: var(--b-disabled-bg); cursor: not-allowed; }
@@ -262,4 +268,49 @@
 @media (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .oa .oa-answer { animation: oa-in var(--b-dur-enter) var(--b-ease-out) both; }
   @keyframes oa-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+}
+
+/* Rondo fixes (Nov 23, 2026). What all attention items share is one line above the list; items with one title sit under
+ * it by place. Each issue's four actions are one style (the tinted row button) at one width: two by two in a narrow row,
+ * four across once the row has room for them. The checks' buttons fill the phone's width; the weekly link has its gap. */
+:is(#c-root, html) .oa .oa-att > .oa-att__shared { padding-bottom: var(--b-space-4); }
+:is(#c-root, html) .oa .oa-item__main { container-type: inline-size; }
+:is(#c-root, html) .oa .oa-subitem { display: flex; flex-direction: column; gap: var(--b-space-4); padding-top: var(--b-space-12); }
+:is(#c-root, html) .oa .oa-subitem + .oa-subitem { margin-top: var(--b-space-8); box-shadow: inset 0 1px 0 var(--b-line); }
+:is(#c-root, html) .oa .oa-subitem__t { margin: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); font-weight: 600; color: var(--b-ink); overflow-wrap: anywhere; }
+:is(#c-root, html) .oa .oa-acts.oa-acts--att { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+:is(#c-root, html) .oa .oa-acts.oa-acts--att > :is(a, button) { width: 100%; min-width: 0; padding-left: var(--b-space-8); padding-right: var(--b-space-8); }
+@container (min-width: 44rem) { :is(#c-root, html) .oa .oa-acts.oa-acts--att { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 767px) {
+  :is(#c-root, html) .oa .oa-item:not(.oa-item--flat) > .oa-item__main .oa-subitem { margin-left: -48px; }
+  :is(#c-root, html) .oa .oa-item:not(.oa-item--flat) > .oa-item__main .oa-subitem > .oa-acts { margin-left: 0; }
+  :is(#c-root, html) .oa .oa-check .oa-acts { display: grid; grid-template-columns: minmax(0, 1fr); }
+  :is(#c-root, html) .oa .oa-check .oa-acts > :is(a, button) { width: 100%; }
+}
+:is(#c-root, html) .oa .oa-weekly-link { margin-top: var(--b-space-12); }
+/* Follow-up (Nov 23): a group's one shared "Review source" sits under its title; each place then has three choices, two
+ * then one full-width on a narrow row, three across once there is room. */
+:is(#c-root, html) .oa .oa-acts.oa-acts--one { margin-top: var(--b-space-8); }
+:is(#c-root, html) .oa .oa-acts.oa-acts--att.oa-acts--three > :last-child { grid-column: 1 / -1; }
+@container (min-width: 33rem) {
+  :is(#c-root, html) .oa .oa-acts.oa-acts--att.oa-acts--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  :is(#c-root, html) .oa .oa-acts.oa-acts--att.oa-acts--three > :last-child { grid-column: auto; }
+}
+
+/* Rondo follow-up (Nov 23, 2026): the kit labels on this page in rem at their current sizes, so 200% text keeps the
+ * hierarchy (section labels, stat labels and figures, field labels and help, buttons, empty rows, row values). Same px
+ * at 100%. Inside nv-b so it outranks the B layers' fixed sizes. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .oa :is(.c-section__label, .c-stat__label, .c-field__label, .c-field__help, .c-card__sub, .c-empty__body):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .oa .c-stat__label:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .oa .c-stat__value:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1.25rem !important; line-height: 1.625rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .oa :is(.c-row__value, .c-empty--row, .c-empty__title):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.9375rem !important; line-height: 1.25rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .oa .c-btn:is(.c-btn--md, .c-btn--sm, .c-btn--xs):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.9375rem !important; line-height: 1.25rem !important; height: auto !important; min-height: 2.75rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .oa .oa-date__v:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1rem !important; line-height: 1.375rem !important; }
+}
+
+/* Rondo follow-up (Nov 23, 2026): the phone band title in rem at its current 28/34px (the shell sets px), so it grows with
+ * 200% text like the rest of the page. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .oa.c-page .c-nav--phone .c-nav__title:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1.75rem !important; line-height: 2.125rem !important; }
 }

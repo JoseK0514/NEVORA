@@ -9,13 +9,18 @@ rs.mock('next/link', () => ({ default: ({ children, ...props }: ComponentProps<'
 rs.mock('next/navigation', () => ({ notFound: () => { throw new Error('not found'); } }));
 import LocationPage from './locations/[locationId]/page';
 import PositionsPage from './positions/page';
+import { PositionDialog } from './positions/position-catalog';
 it('Location editable draft carries its exact mounted reviewed database revision', async () => {
   const html = renderToStaticMarkup(await LocationPage({ params: Promise.resolve({ locationId: 'fictional-location' }) }));
   expect(html).toContain('name="expectedUpdatedAt" value="2030-10-10 12:00:00.123456+00"');
   expect(html).toContain('name="name"');
 });
 it('Position editable draft carries its own exact mounted reviewed database revision', async () => {
-  const html = renderToStaticMarkup(await PositionsPage());
+  // J8 in Direction B: the page lists the read position; its editor (a dialog opened from the row) carries that exact revision.
+  const page = renderToStaticMarkup(await PositionsPage());
+  expect(page).toContain('Fictional position');
+  const position = { id: 'fictional-position', workspaceId: 'fictional-workspace', name: 'Fictional position', active: true, createdAt: '2030-10-01 12:00:00+00', updatedAt: '2030-10-10 12:00:00.654321+00' };
+  const html = renderToStaticMarkup(createElement(PositionDialog, { editing: { kind: 'edit', position }, createAction: rs.fn(), updateAction: rs.fn(), onClose: () => {} }));
   expect(html).toContain('name="expectedUpdatedAt" value="2030-10-10 12:00:00.654321+00"');
   expect(html).toContain('name="name"');
 });

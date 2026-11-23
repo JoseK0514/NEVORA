@@ -1,9 +1,9 @@
 /* Employee Pay on the phone, Direction B (dark ink hero). Values are the approved mock's. */
 /* The next payday on the hero: "Scheduled payday · Tomorrow", the date large, then the period and See your hours. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next { padding-top: 18px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__k { font-size: 14px; line-height: 19px; font-weight: 500; color: var(--b-on-band-2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__k { font-size: 0.875rem; line-height: 1.1875rem; font-weight: 500; color: var(--b-on-band-2); }
 /* Review B6 (NV-154): the date is a 28/34 figure under its label, so the page title "Pay" (30px) leads. */
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__v { margin: var(--b-space-2) 0 10px; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.03em; color: var(--b-on-band); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__v { margin: var(--b-space-2) 0 10px; font-size: 1.75rem; line-height: 2.125rem; font-weight: 700; letter-spacing: -0.03em; color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-8); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-btn { min-height: 32px; padding: 0 var(--b-space-12); border-radius: var(--b-radius-pill); font-size: var(--b-fs-meta); }
 /* Inspection Nov 14 (BR-11): See your hours keeps its 32px pill and takes a 44px hit area. */
@@ -15,7 +15,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big { padding: var(--b-space-2) var(--b-inset) var(--b-space-16); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__k { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__v { font-size: var(--b-fs-display); line-height: var(--b-lh-display); font-weight: 700; letter-spacing: -0.025em; color: var(--b-ink); font-variant-numeric: tabular-nums; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__s { margin-top: var(--b-space-2); font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__s { margin-top: var(--b-space-2); font-size: 0.875rem; line-height: 1.1875rem; color: var(--b-grey); text-wrap: pretty; }
 /* The PDF row: the teal file icon, the words, and an "opens separately" glyph at the end. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-pdf { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-pdf__t { flex: 1; min-width: 0; }
@@ -23,8 +23,8 @@
 /* States: a short headline and one sentence, then the one way forward. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status, .ep-empty) { padding: var(--b-space-16) var(--b-inset); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card__h + :is(.ep-status, .ep-empty) { padding-top: 6px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status__t, .ep-empty__t) { font-size: 16px; line-height: 21px; font-weight: 600; color: var(--b-ink); text-wrap: balance; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status__s, .ep-empty__s) { margin-top: var(--b-space-2); font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status__t, .ep-empty__t) { font-size: 1rem; line-height: 1.3125rem; font-weight: 600; color: var(--b-ink); text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status__s, .ep-empty__s) { margin-top: var(--b-space-2); font-size: 0.875rem; line-height: 1.1875rem; color: var(--b-grey); text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-status__act { padding: 0 var(--b-inset) 18px; }
 /* Inspection Nov 14 (EM-003): the last statement's one button, on the card's text edge. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-act { padding: 0 var(--b-inset) 18px; }
@@ -38,3 +38,9 @@
 
 /* Review B6 (NV-155): a statement a correction replaced reads muted; the correction is the current one. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-muted { color: var(--b-grey); font-weight: 600; }
+
+/* Phase 2 (G10): the last statement's status ("Statement ready", "Corrected") wraps under "Last pay statement" when the
+ * two don't fit on one line (390 with 200% text ran past the card's right edge). Every shell that draws this screen:
+ * Employees and Leads, and Owners' and Managers' My pay. At the default size both still share one line. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b] .c-pay > .b-screen:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) #b-pay-last > .b-card__h { flex-wrap: wrap !important; row-gap: 6px !important; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b] .c-pay > .b-screen:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) #b-pay-last > .b-card__h > .b-chip { max-width: 100% !important; white-space: normal !important; }

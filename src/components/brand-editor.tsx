@@ -5,13 +5,13 @@ import Link from "next/link";
 import { keepWhole } from "@/lib/keep-whole";
 import { useRouter } from "next/navigation";
 import { DiscardGuard } from "./kit/discard-dialog";
-import { CaretRightIcon, CheckIcon, XIcon } from "@phosphor-icons/react/ssr";
+import { CheckIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { toast } from "./toaster";
 import { DEFAULT_SEED, brandStyle, contrastReport, deriveBrand, normalizeSeed } from "@/lib/workspace-presentation/derive";
-import { Notice } from "@/app/app/settings/wave-c-kit";
-import { Field } from "@/app/app/settings/wave-c-form";
+import { CorpCard, CorpFormFooter, CorpRow, CorpRows } from "@/components/corp/corp";
+import { FieldB, ResultB } from "@/app/app/settings/settings-b-form";
 
-/** Owner brand editor (B1), Wave C kit layout. The preview runs the same derivation as the
+/** Owner brand editor (B1), Settings in Direction B. The preview runs the same derivation as the
  * server, but only the server's result is ever saved or shown to the team. */
 const PRESETS = [
   { name: "NEVORA teal", hex: DEFAULT_SEED }, { name: "Ocean", hex: "#1D4ED8" }, { name: "Navy", hex: "#1E3A8A" },
@@ -105,58 +105,57 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, sample
 
   const passing = checks.filter(c => c.pass).length;
 
-  // Quiet (v4, approved Oct 23): Color and Logo as rows, then what the team sees. The page's Save (top right) submits.
+  // Settings in Direction B (Nov 23, 2026): Color and Logo are rows in one white card (the Settings rows), Save in its
+  // footer on tablets and desktop and on the phone's band; then what the team sees, as the Employee's own shift card.
   const colourName = PRESETS.find(p => p.hex === effectiveSeed)?.name.replace("NEVORA teal", "Teal") ?? "Custom";
-  return <form id="brand-form" className="wc-brand" data-guard={hydrated ? undefined : ""} data-save-on-change="" data-dirty={dirty || busy === "save" ? "" : undefined} onSubmit={event => { event.preventDefault(); if (dirty) void save(); }}>
-    {/* Review F4 (NV-102): Color and Logo are one card whose footer holds Save on tablets and desktop (phones: the top bar). */}
-    <div className="wc-savecard" style={{ marginTop: 16 }}>
-    <ul className="q-list" style={{ marginTop: 16 }}>
-      <li><button type="button" className="q-row q-row--one" disabled={!hydrated} onClick={() => setPicking(true)} aria-label={`Color, ${colourName}, change`}>
-        <span className="q-rt"><b>Color</b></span><span className="q-rv q-rv--l">{colourName}</span>
-        <span className="q-swatch" style={{ background: brand.tokens.accent }} aria-hidden="true" /><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
-      </button></li>
-      <li><div className="q-row q-row--one">
-        <span className="q-rt"><b>Logo</b></span>
-        {logo ? <span className="q-logo">
+  const swatch = <span className="c-setb-swatch" style={{ background: brand.tokens.accent }} aria-hidden="true" />;
+  return <><form id="brand-form" className="c-card c-setb-form" aria-label="Branding" data-guard={hydrated ? undefined : ""} data-save-on-change="" data-dirty={dirty || busy === "save" ? "" : undefined} onSubmit={event => { event.preventDefault(); if (dirty) void save(); }}>
+      <CorpRows label="Branding">
+        <li><CorpRow onClick={hydrated ? () => setPicking(true) : undefined} disabled={!hydrated} title="Color" value={colourName} trail={swatch} chevron /></li>
+        <li><CorpRow title="Logo" value={logo ? <span className="c-setb-logo">
           {/* eslint-disable-next-line next-preserved/no-img-element -- immutable same-origin asset */}
-          <img src={logoUrl(logo)} alt={`${workspaceName} logo`} /></span> : <span className="q-rv q-rv--ph">None</span>}
-        <input ref={fileInput} id="brand-logo-file" className="q-sr" type="file" accept="image/png,image/webp" onChange={e => upload(e.target.files?.[0])} disabled={busy !== null} />
-        <label htmlFor="brand-logo-file" className="q-bs" aria-disabled={busy !== null || undefined}>{busy === "logo" ? "Uploading…" : logo ? "Replace" : "Upload"}</label>
-      </div></li>
-      {logo ? <li><button type="button" className="q-row q-row--one" onClick={() => { retry.current = null; setLogo(null); }} disabled={busy !== null}><span className="q-rt"><b style={{ color: "#C42B1C" }}>Remove logo</b></span></button></li> : null}
-    </ul>
-    {/* Final polish (Nov 20, 2026): Save appears after a change, as on Company profile (DESIGN.MD Forms). */}
-    {dirty || busy === "save" ? <div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn">Save</button></div> : null}
-    </div>
-    <div className="q-grp"><h2>What your team sees</h2></div>
-    {/* Release 1: the preview is a card like the employee's Today's shift; clocking in happens on the location's tablet. */}
-    <div className="q-list wc-preview" style={previewStyle} aria-hidden="true" inert>
-      <div className="wc-cardhead"><span>Today’s shift</span></div>
-      <div className="wc-tcard__body"><b className="wc-tcard__big">{keepWhole("8:00 AM – 4:00 PM")}</b><i className="wc-preview__detail">{`${sample?.position ?? "Front desk"} · ${sample?.place ?? "Main Street"}`}</i>
-        <span className="wc-preview__btn" style={{ background: brand.tokens.accent }}>{`Clock in on the ${sample?.place ?? "Main Street"} tablet`}</span></div>
-    </div>
-    {notice ? <div ref={feedback} tabIndex={-1} className="wc-feedback" role={notice.tone === "error" ? "alert" : "status"}><Notice tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"}
+          <img src={logoUrl(logo)} alt={`${workspaceName} logo`} /></span> : "None"}
+          trail={<><input ref={fileInput} id="brand-logo-file" className="c-sr" type="file" accept="image/png,image/webp" onChange={e => upload(e.target.files?.[0])} disabled={busy !== null} />
+            <label htmlFor="brand-logo-file" className="c-btn c-btn--secondary c-btn--sm c-setb-upload" aria-disabled={busy !== null || undefined}>{busy === "logo" ? "Uploading…" : logo ? "Replace" : "Upload"}</label></>} /></li>
+        {logo ? <li><CorpRow danger onClick={busy !== null ? undefined : () => { retry.current = null; setLogo(null); }} disabled={busy !== null} title="Remove logo" chevron={false} /></li> : null}
+      </CorpRows>
+      {/* Save appears after a change (DESIGN.MD Forms); phones save from the band. */}
+      {dirty || busy === "save" ? <CorpFormFooter><button type="submit" className="c-btn" disabled={busy !== null}>{busy === "save" ? "Saving…" : "Save"}</button></CorpFormFooter> : null}
+      <p className="c-sr" role="status">{busy === "save" ? "Saving…" : dirty ? "Unsaved changes" : ""}</p>
+      <button type="submit" className="c-sr" tabIndex={-1} disabled={!valid || !dirty || busy !== null}>Save</button>
+      {/* Leaving with a colour or logo that is not saved asks first (Nov 21, 2026). */}
+      <DiscardGuard dirty={dirty} />
+    </form>
+    {notice ? <ResultB innerRef={feedback} tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"}
       title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : notice.text.startsWith("It may not have saved") ? "Not saved yet" : "Not saved") : notice.tone === "success" ? "Branding saved" : undefined}
-      action={notice.text.startsWith("Sign in again") ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : undefined}>{notice.text}</Notice></div> : null}
-    <p className="q-sr" role="status">{busy === "save" ? "Saving…" : dirty ? "Unsaved changes" : ""}</p>
-    <button type="submit" className="q-sr" tabIndex={-1} disabled={!valid || !dirty || busy !== null}>Save</button>
-    <dialog ref={picker} className="wc-dialog" aria-labelledby="brand-colour-title" onClose={() => setPicking(false)} onCancel={() => setPicking(false)}>
-      <div className="wc-dialog__head"><div><h2 className="wc-dialog__title" id="brand-colour-title">Color</h2></div>
-        <button type="button" className="wc-dialog__close" aria-label="Close" onClick={() => setPicking(false)}><XIcon weight="bold" aria-hidden="true" /></button></div>
-      <div className="q-swatches" role="group" aria-label="Suggested colors">
-        {PRESETS.map(p => <button key={p.hex} type="button" aria-pressed={effectiveSeed === p.hex} aria-label={`${p.name}, ${p.hex}`} title={p.name} disabled={!hydrated}
-          onClick={() => choose(p.hex)} style={{ background: p.hex }}>{effectiveSeed === p.hex ? <CheckIcon weight="bold" aria-hidden="true" /> : null}</button>)}
+      action={notice.text.startsWith("Sign in again") ? <Link className="c-btn c-btn--secondary" href="/login">Sign in</Link> : undefined}>{notice.text}</ResultB> : null}
+    {/* Release 1: the preview is a card like the employee's Today's shift; clocking in happens on the location's tablet. */}
+    <CorpCard label="What your team sees">
+      <div className="c-card__body"><div className="c-setb-preview" style={previewStyle} aria-hidden="true" inert>
+        <span className="c-setb-preview__t">Today’s shift</span>
+        <b className="c-setb-preview__big">{keepWhole("8:00 AM – 4:00 PM")}</b><span className="c-setb-preview__detail">{`${sample?.position ?? "Front desk"} · ${sample?.place ?? "Main Street"}`}</span>
+        <span className="c-setb-preview__btn" style={{ background: brand.tokens.accent }}>{`Clock in on the ${sample?.place ?? "Main Street"} tablet`}</span>
+      </div></div>
+    </CorpCard>
+    <dialog ref={picker} className="wc-dialog c-setb-dlg" aria-labelledby="brand-colour-title" onClose={() => setPicking(false)} onCancel={() => setPicking(false)}>
+      <div className="c-setb-dlg__head"><div><h2 className="c-setb-dlg__title" id="brand-colour-title">Color</h2></div>
+        <button type="button" className="c-setb-dlg__close" aria-label="Close" onClick={() => setPicking(false)}><XIcon weight="bold" aria-hidden="true" /></button></div>
+      <div className="c-setb-dlg__body">
+        <div className="c-setb-swatches" role="group" aria-label="Suggested colors">
+          {PRESETS.map(p => <button key={p.hex} type="button" aria-pressed={effectiveSeed === p.hex} aria-label={`${p.name}, ${p.hex}`} title={p.name} disabled={!hydrated}
+            onClick={() => choose(p.hex)} style={{ background: p.hex }}>{effectiveSeed === p.hex ? <CheckIcon weight="bold" aria-hidden="true" /> : null}</button>)}
+        </div>
+        <FieldB label="Hex code" helpId="brand-hex-help"
+          error={valid || (!hexTouched && draft.length < 7) ? undefined : "Enter a color like #1D4ED8."}
+          id="brand-hex" value={draft} onChange={e => { retry.current = null; setDraft(e.target.value.trim()); }} onBlur={() => setHexTouched(true)} spellCheck={false} autoComplete="off"
+          inputMode="text" maxLength={7} disabled={!hydrated} />
+        {brand.adjustments.length ? <p className="c-field__help" role="status">{brand.adjustments[0].message}</p> : null}
+        <p className="c-sr">{passing === checks.length ? `All ${checks.length} readability checks pass` : `${passing} of ${checks.length} readability checks pass`}</p>
       </div>
-      <Field label="Hex code" helpId="brand-hex-help"
-        error={valid || (!hexTouched && draft.length < 7) ? undefined : "Enter a color like #1D4ED8."}
-        id="brand-hex" value={draft} onChange={e => { retry.current = null; setDraft(e.target.value.trim()); }} onBlur={() => setHexTouched(true)} spellCheck={false} autoComplete="off"
-        inputMode="text" maxLength={7} disabled={!hydrated} />
-      {brand.adjustments.length ? <p className="q-help" role="status">{brand.adjustments[0].message}</p> : null}
-      <p className="q-sr">{passing === checks.length ? `All ${checks.length} readability checks pass` : `${passing} of ${checks.length} readability checks pass`}</p>
-      <button type="button" className="q-btn" onClick={() => setPicking(false)}>Done</button>
-      <button type="button" className="q-btn q-btn--quiet" onClick={() => choose(DEFAULT_SEED)} disabled={busy !== null || effectiveSeed === DEFAULT_SEED}>Use NEVORA teal</button>
+      <div className="c-setb-dlg__acts">
+        <button type="button" className="c-btn c-btn--secondary" onClick={() => choose(DEFAULT_SEED)} disabled={busy !== null || effectiveSeed === DEFAULT_SEED}>Use NEVORA teal</button>
+        <button type="button" className="c-btn" onClick={() => setPicking(false)}>Done</button>
+      </div>
     </dialog>
-    {/* Leaving with a colour or logo that is not saved asks first (Nov 21, 2026). */}
-    <DiscardGuard dirty={dirty} />
-  </form>;
+  </>;
 }

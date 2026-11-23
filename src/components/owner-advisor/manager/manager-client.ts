@@ -114,7 +114,7 @@ export function answerText(answer: Pick<ManagerRondoAnswer, "question" | "value"
 /** One day's facts for the week list: published, drafts, released; zero facts are left out. */
 export function dayFacts(day: ManagerAdvisorDay): string[] {
   const facts = [
-    day.publishedShifts ? `${plural(day.publishedShifts, "shift", "shifts")} published` : "",
+    day.publishedShifts ? plural(day.publishedShifts, "shift", "shifts") : "",
     day.draftShifts ? plural(day.draftShifts, "draft", "drafts") : "",
     day.releasedShifts ? `${day.releasedShifts.toLocaleString("en-US")} released` : "",
   ].filter(Boolean);

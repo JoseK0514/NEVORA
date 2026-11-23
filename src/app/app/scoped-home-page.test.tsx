@@ -61,6 +61,6 @@ it('leaves This week out when the schedule read fails',async()=>{
 it("opens Who's working from the same scoped reads, back to the same Home",async()=>{
  f.locations=[{id:'L1',name:'Fictional Cafe — Condado',shortName:'Condado'},{id:'L2',name:'Fictional Cafe — Santurce',shortName:'Santurce'}];
  await page({view:'attendance',location:'L2'});
- expect(f.who).toHaveBeenCalledWith({homeHref:'/app?location=L2',locationId:'L2'});
+ expect(f.who).toHaveBeenCalledWith({homeHref:'/app?location=L2',locationId:'L2',place:'Santurce'});
  expect(f.home).not.toHaveBeenCalled();
 });

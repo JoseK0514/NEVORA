@@ -17,12 +17,12 @@ export function OperationalUnavailable({title='Page unavailable',reason,scoped=f
  // Review 30 (D09): a page that needs company-wide access is closed to this Manager, not broken. It is the designed closed
  // state (DESIGN.MD Phase 3, Closed pages): the page's name on the band, the lock in its 48px circle, the reason as the
  // card's title, who can change it, and one tinted step, with signing in again as the quiet way when access just changed.
- // The sentence keeps its words. A location-scoped Manager's view keeps its schedule as the step.
+ // Gate (Nov 23): the line under the title doesn't repeat it. A location-scoped Manager's view keeps its schedule as the step.
  if(reason==='access_denied')return <ScopedReadFrame unavailable={<div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
   {/* No back link here: the page it leads to (Insights for Christmas bonus hours) needs the same access. */}
   <BStateScreen title={pageName(title)}>
    <BState kind="locked" title={closed?<span lang={closed.lang}>{closed.title}</span>:scoped?'Outside the locations you manage':'Company-wide access needed'}
-    line={closed?<span lang={closed.lang}>{closed.line}</span>:scoped?'This view is not available with your current management access. Return to your schedule to choose a location you manage.':'This page needs company-wide management access. An Owner can give it to you.'}>
+    line={closed?<span lang={closed.lang}>{closed.line}</span>:scoped?'Pick one of your places to see it.':'An Owner can give it to you.'}>
     <div className="b-state-actions b-closed-actions">
      {scoped?<BButtonLink href="/app/schedule" kind="ghost">Open your schedule</BButtonLink>:<BButtonLink href="/app" kind="ghost">Return to Home</BButtonLink>}
      {/* QA A3-06 recheck (Nov 22, 2026): no "Sign in again" here. The person is signed in and lacks access, which is

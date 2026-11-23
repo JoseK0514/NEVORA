@@ -1,12 +1,12 @@
 import { moduleGate } from "@/lib/workspace-presentation/current.server";
-import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { ClockerBreakTypes } from '@/components/clocker-break-types';
 import { requireRoles } from '@/lib/auth/permissions';
 import { requireSessionMutationProof } from '@/lib/auth/session';
 import { listBreakTypes } from '@/lib/clocker/break-types.server';
 import type { BreakType } from '@/lib/clocker/break-types';
 import { saveBreakTypeAction } from './actions';
-import { EmptyState, SettingsFrame } from '../wave-c-kit';
+import { CorpErrorCard } from '@/components/corp/corp';
+import { SettingsPageB } from '../settings-b';
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
 export const metadata = { title: "Breaks" };
@@ -20,14 +20,11 @@ export default async function BreakTypesPage(){
  let types:BreakType[]|null=null;
  try{types=await listBreakTypes({employeeId:session.employee.id,sessionTokenHash:session.sessionTokenHash});}
  catch{/* Show unavailable rather than a false empty catalog. */}
- if(types)return <ClockerBreakTypes initialTypes={types} action={saveBreakTypeAction}/>;
- return <SettingsFrame title="Break types" summary="The breaks your team can start at the Clocker.">
-  <section className="nv-card" role="alert" aria-labelledby="break-types-unavailable-title">
-   <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold"/>} titleId="break-types-unavailable-title" title="Couldn’t load break types."
+ // J9 in Direction B (Nov 23, 2026): the shared Settings frame; a failed read is the kit's one failure card, same words.
+ return <SettingsPageB title="Break types" titleId="break-types-title">
+  {types?<ClockerBreakTypes initialTypes={types} action={saveBreakTypeAction}/>
+   :<CorpErrorCard title="Couldn’t load break types." body="The settings couldn’t be read. Existing break records haven’t changed."
     // eslint-disable-next-line next-preserved/no-html-link-for-pages -- a retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript
-    action={<a href="/app/settings/breaks" className="nv-btn" data-kind="primary">Try again</a>}>
-    The settings couldn’t be read. Existing break records haven’t changed.
-   </EmptyState>
-  </section>
- </SettingsFrame>;
+    action={<a href="/app/settings/breaks" className="c-btn c-btn--secondary">Try again</a>}/>}
+ </SettingsPageB>;
 }

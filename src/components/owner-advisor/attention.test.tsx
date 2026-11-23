@@ -53,3 +53,27 @@ it("saves an exact current issue and confirms it only after a fresh protected re
   expect(state?.snapshot).toBeNull();
   controller.stop();
 });
+it("says what two items share once: one title by place, one day, time and basis line, and one style of action", () => {
+  const snap = snapshot(), first = snap.attention!.items[0];
+  const second = { ...first, id: "c".repeat(64), fingerprint: "d".repeat(64), locationId: "south", locationName: "South" };
+  const html = renderToStaticMarkup(<AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }}
+    view={{ ...initialView, snapshot: { ...snap, attention: { ...snap.attention!, total: 2, items: [{ ...first, locationName: "North" }, second] } } }} actions={actions} />);
+  expect(html.match(/Check shifts without a clock-in/g)).toHaveLength(1);
+  expect(html.match(/Published shifts and recorded punches/g)).toHaveLength(1);
+  expect(html.match(/Observed <time/g)).toHaveLength(1);
+  expect(html).toContain(">North</h4>");
+  expect(html).toContain(">South</h4>");
+  expect(html).not.toContain("b-rowact--quiet");
+});
+it("says a group's draft note and its shared source link once, and keeps each place's own choices", () => {
+  const snap = snapshot(), first = snap.attention!.items[0];
+  const gap = (id: string, place: string) => ({ ...first, id: id.repeat(64), fingerprint: id.repeat(64), kind: "coverage" as const, locationName: place, title: "Review today's planning gaps",
+    detail: "1 planning periods need review, starting 17:00. Maximum staffing shortfall: 1. Includes draft commitments; verify published staffing separately.", basis: "Current planning ledger, including drafts" as const,
+    source: { ...first.source, href: "/app/schedule?week=2026-10-19" } });
+  const html = renderToStaticMarkup(<AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }}
+    view={{ ...initialView, snapshot: { ...snap, attention: { ...snap.attention!, total: 2, items: [gap("c", "West"), gap("d", "Main")] } } }} actions={actions} />);
+  expect(html.match(/Includes draft commitments; verify published staffing separately\./g)).toHaveLength(1);
+  expect(html.match(/Review source/g)).toHaveLength(1);
+  expect(html.match(/Not relevant today/g)).toHaveLength(2);
+  expect(html).toContain("1 planning period needs review, starting 5:00 PM. Maximum staffing shortfall:\u00a01.</p>");
+});

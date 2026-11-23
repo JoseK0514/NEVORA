@@ -14,3 +14,16 @@ it('no longer renders Spanish second lines', () => {
   const html = renderToStaticMarkup(<ClockerPresentation initialLocale="en"><ClockerLanguageToggle/></ClockerPresentation>);
   expect(html).not.toContain('clocker-es');expect(html).not.toContain('aria-pressed');
 });
+
+/* Phase 2 (Nov 23, 2026): the language switch's globe is sized in rem on every Clocker screen that uses the shared switch
+ * (the kiosk's pill and the solid pill on the paused and not-found pages), so it grows at 200% text; 18px by default. */
+it('sizes the switch’s globe in rem for both pills',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const css=readFileSync(new URL('./clocker.module.css',import.meta.url),'utf8').replace(/\/\*[\s\S]*?\*\//g,'');
+ const m=css.match(/(?:^|\n)\.lang svg, \.langSolid svg \{([^}]*)\}/);
+ expect(m?.[1]).toContain('width: 1.125rem');expect(m?.[1]).toContain('height: 1.125rem');
+ const {renderToStaticMarkup}=await import('react-dom/server');
+ const {ClockerLanguageToggle,ClockerPresentation}=await import('./clocker-language');
+ const html=renderToStaticMarkup(<ClockerPresentation initialLocale="en"><ClockerLanguageToggle/></ClockerPresentation>);
+ expect(html).toMatch(/data-clocker-language=""[^>]*>\s*<svg/);
+});

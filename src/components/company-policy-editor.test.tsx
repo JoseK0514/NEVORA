@@ -8,7 +8,7 @@ const locations=[{id:'loc-1',name:'Northside',active:true}];
 const render=(rows=policyUIRows())=>renderToStaticMarkup(<CompanyPolicyEditor history={projectCompanyPolicyHistory(rows)} locations={locations} timeZone="America/Puerto_Rico"/>);
 describe('Owner policy history display',()=>{
  it('uses the numerical current revision and keeps malformed older history readable',()=>{
-  const html=render();expect(html).toContain('q-rv--l">Revision 3<');expect(html).toContain('Revision 2');/* B7 wording (NV-122): main text says "version"; History keeps revision numbers */expect(html).toContain('This version can’t be used');expect(html).toContain('Change details unavailable');expect(html).toContain('value="9"');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');expect(html).not.toContain('private-invalid-key-metadata');
+  const html=render();expect(html).toContain('c-row__value--soft">Revision 3<');expect(html).toContain('Revision 2');/* B7 wording (NV-122): main text says "version"; History keeps revision numbers */expect(html).toContain('This version can’t be used');expect(html).toContain('Change details unavailable');expect(html).toContain('value="9"');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');expect(html).not.toContain('private-invalid-key-metadata');
  });
  it('holds the invalid current policy until explicit earlier-valid replacement review',()=>{
   const html=render(policyUIRows(false));/* B7 wording (NV-122) */expect(html).toContain('Version 2 can’t be used');expect(html).toContain('Start from version 1');expect(html).not.toContain('name="lateness.threshold"');expect(html).not.toContain('Save policies');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');
@@ -20,7 +20,7 @@ describe('Owner policy history display',()=>{
   const html=render();expect(html).toContain('Labor settings');expect(html).toContain('Owner-approved compensation reference');expect(html).toContain('12.125 USD');expect(html).toContain('900.50 USD');expect(html).toContain('owner-method');expect(html).toContain('revision 4');
  });
  it('keeps a truly empty company distinct from malformed history',()=>{
-  const html=render([]);expect(html).toContain('q-rv--l">No changes yet<');/* Final polish (Nov 20, 2026): Save appears after a change, so an untouched draft shows none. */expect(html).not.toContain('Save policies');expect(html).toContain('data-wc-save="card"');expect(html).not.toContain('Current revision');expect(html).toContain('No saved policy changes');
+  const html=render([]);expect(html).toContain('c-row__value--soft">No changes yet<');/* Final polish (Nov 20, 2026): Save appears after a change, so an untouched draft shows none. */expect(html).not.toContain('Save policies');expect(html).toContain('data-save-on-change=""');expect(html).not.toContain('data-dirty');expect(html).not.toContain('Current revision');expect(html).toContain('No saved policy changes');
  });
  it('keeps persisted inactive scope history reachable without offering its correction',()=>{
   const html=render(policyUIRows(false,'retired-location'));expect(html).toContain('retired-location');expect(html).toContain('Historical location');

@@ -1,5 +1,5 @@
 'use client';
-import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import Link from 'next/link';
 import {useEffect,useRef,useState,type MutableRefObject} from 'react';
 import {useRouter} from 'next/navigation';
@@ -11,12 +11,12 @@ import {UsersThreeIcon} from '@phosphor-icons/react/dist/ssr/UsersThree';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {Tile} from './kit/kit';
-import {QuietNav} from './quiet/quiet';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {SigBand,SigHead,SigPage} from './signature/signature';
 import cc from './communication-compose-signature.module.css';
 import {PendingLabel} from './employee-submit-button';
-import {BBusyLabel,BIcon,BRow,BSegs,BState} from './owner-b/b-kit';
+import {BBusyLabel,BCard,BIcon,BRow,BSegs,BState} from './owner-b/b-kit';
+import {ManagerMessagesPage} from './messages-manager-b';
 import {revealFeedback} from '@/lib/reveal-feedback';
 import {keepWhole} from '../lib/keep-whole';
 import {formatDisplayDate,formatTimeRange} from '../lib/date-utils';
@@ -73,6 +73,8 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
  useEffect(()=>{if(!reviewing&&returning.current){returning.current=false;document.getElementById('communication-title')?.focus();}},[reviewing]);
  const typeLabel=type==='TODAYS_TEAM'?'Today’s team':type==='SHIFT_NOTE'?'Shift note':type==='OPERATIONAL_UPDATE'?'Important update':'Announcement';
  const location=context.locations.find(l=>l.id===locationId)?.label;
+ if(action.notice==='signed-out'&&mode==='manager')return <BCard><BState kind="locked" alert title="Your session ended" line="Sign in again to continue." action={{label:'Sign in',href:'/login'}}/></BCard>;
+ if(action.notice==='blocked'&&mode==='manager')return <BCard><BState kind="locked" alert title="Publication unavailable" line="Your current permission does not allow publication." action={{label:'Sign in again',href:'/login'}} quiet={<Link className="b-btn b-btn--quiet" href="/app/updates">Return to updates</Link>}/></BCard>;
  if(action.notice==='signed-out')return <section className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon aria-hidden="true" size={24} weight="bold"/><div><h2 className="wb-notice__title">Your session ended</h2><p>Sign in again to continue.</p><div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in</Link></div></div></section>;
  if(action.notice==='blocked')return <section className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon aria-hidden="true" size={24} weight="bold"/><div><h2 className="wb-notice__title">Publication unavailable</h2><p>Your current permission does not allow publication.</p><div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href="/login">Sign in again</Link><Link className="nv-btn" data-kind="secondary" href="/app/updates">Return to updates</Link></div></div></section>;
  // Phase 4 (Signature, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-4/p4b-board-a.png):
@@ -124,60 +126,58 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
     {useExpiry?<div className={cc.ccWhen}><label htmlFor="communication-expiration">Available until ({timeZoneLabel(context.timeZone)})</label><input id="communication-expiration" type={expiration.endsWith('Z')?'text':'datetime-local'} value={expiration} aria-invalid={errorField==='expiration'||undefined} aria-describedby={errorField==='expiration'?'communication-expiration-error':undefined} onChange={e=>{changed();setExpiration(e.target.value);}}/>{errorField==='expiration'&&error?<p className="wb-error" id="communication-expiration-error"><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/><span>{error}</span></p>:null}</div>:null}
    </div>
    </>:<>
-   {/* Quiet (v4, approved Oct 23): Title and Message, then Send to, Ask them to confirm and Expires as rows; Next (top
-       right) checks the audience. Shift notes, important updates and Today's team stay under Type. */}
-   {/* Final polish (Nov 20, 2026): Title and Message are one card (.wc-savecard), so it has one shadow on phones too. */}
+   {/* Phase 2 (package Messages, Nov 23, 2026): Owners and Managers, Direction B. Step 1 is two kit cards: the message
+       (Title, Message) and its delivery (Send to, Shift, Ask them to confirm, Expires, Type, Who receives it) as outlined
+       fields, ending with Cancel and Next. Same fields, ids, validation and preview as before. */}
    {reviewing?null:<>
-   <div className="wc-savecard">
-   <div className="q-fl q-first">
-    <div className="q-fl__row"><label className="q-fl__label" htmlFor="communication-title">Title</label>{titleCount>100?<span id="communication-title-count" className="q-fl__opt" data-over={titleCount>120||undefined}>{titleCount}/120</span>:<span id="communication-title-count" className="q-sr">{titleCount} of 120 characters</span>}</div>
-    <input id="communication-title" className="q-in" placeholder="e.g. Holiday hours" autoComplete="off" autoCapitalize="sentences" enterKeyHint="next" value={title} onChange={e=>{changed();setTitle(e.target.value);}}
-     onKeyDown={e=>{if(e.key==='Enter'&&!e.nativeEvent.isComposing){e.preventDefault();document.getElementById('communication-body')?.focus();}}} aria-describedby={errorField==='title'?'communication-title-error communication-title-count':'communication-title-count'} aria-invalid={titleCount>120||errorField==='title'}/>
-    {errorField==='title'&&error?<p className="q-fl__error" id="communication-title-error"><WarningCircleIcon weight="bold" className="q-fl__error-ic" aria-hidden="true"/>{error}</p>:null}
-   </div>
-   <div className="q-fl">
-    <div className="q-fl__row"><label className="q-fl__label" htmlFor="communication-body">Message</label>{bodyCount>1800?<span id="communication-body-count" className="q-fl__opt" data-over={bodyCount>2000||undefined}>{bodyCount}/2000</span>:<span id="communication-body-count" className="q-sr">{bodyCount} of 2000 characters</span>}</div>
-    <textarea id="communication-body" className="q-in" placeholder="What does your team need to know?" rows={4} value={body} onChange={e=>{changed();setBody(e.target.value);}} aria-describedby={errorField==='body'?'communication-body-error communication-body-count compose-body-hint':'communication-body-count compose-body-hint'} aria-invalid={bodyCount>2000||errorField==='body'}/>
-    <span className="q-sr" id="compose-body-hint">Plain text. Line breaks are kept.</span>
-    {errorField==='body'&&error?<p className="q-fl__error" id="communication-body-error"><WarningCircleIcon weight="bold" className="q-fl__error-ic" aria-hidden="true"/>{error}</p>:null}
-   </div>
-   </div>
-   {editing?<p className="q-help">Publishing creates a new version. Previous acknowledgements stay with the version they reviewed.</p>:<p className="q-sr">Nothing is published until you review the audience and choose Publish.</p>}
-   {/* Tablets and desktop: the delivery rows are one card whose footer holds Cancel and Next (b-foundation.css,
-       .wc-savecard), as New location and Add shift; phones keep them in the top bar. Same form, same submit. */}
-   <div className="wc-savecard">
-   <ul className="q-list" style={{marginTop:24}} aria-label="Delivery">
-    <li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Send to</b></span>
-     <select id="communication-location" className="q-select-row__control" value={locationId} aria-label="Send to" aria-describedby={scopeKind==='TODAYS_TEAM'?'compose-team-hint':undefined} onChange={e=>{changed();setLocationId(e.target.value);setShiftId('');}}>{context.locations.map(l=><option key={l.id} value={l.id}>{context.locations.length===1&&scopeKind==='LOCATION'?'Everyone':scopeKind==='TODAYS_TEAM'?`Today’s team · ${l.label}`:l.label}</option>)}</select>
-     <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></label></li>
-    {scopeKind==='TODAYS_TEAM'?<li className="q-sr" id="compose-team-hint">Today’s team at {location}, based on current published assignments, including overnight shifts.</li>:null}
-    {scopeKind==='SHIFT'?<li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Shift</b></span><select id="communication-shift" className="q-select-row__control" value={shiftId} aria-label="Published shift" onChange={e=>{changed();setShiftId(e.target.value);}}><option value="">Choose</option>{context.shifts.filter(s=>s.locationId===locationId).map(s=><option key={s.id} value={s.id}>{formatDisplayDate(s.date)} · {formatTimeRange(s.startTime,s.endTime)} · {s.assigneeLabel}{s.positionLabel?` · ${s.positionLabel}`:''}</option>)}</select><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></label></li>:null}
-    {context.management&&type!=='TODAYS_TEAM'?<li><label className="q-row q-row--one"><span className="q-rt"><b>Ask them to confirm</b></span>
-     <input id="communication-requirement" type="checkbox" role="switch" className="q-tog" checked={ack==='REQUIRED'} aria-describedby="compose-requirement-hint" onChange={e=>{changed();setAck(e.target.checked?'REQUIRED':'OPTIONAL');}}/></label>
-     <span id="compose-requirement-hint" className="q-sr">{ack==='REQUIRED'?'Recipients must acknowledge this exact version.':'Recipients can mark the update as read.'}</span></li>:null}
-    <li><div className="q-row q-row--one q-picker-row"><span className="q-rt"><b>Expires</b></span>
-     {useExpiry&&expiration?<><span className="q-rv q-rv--l">{expiration.endsWith('Z')?keepWhole(formatDisplayDate(expiration.slice(0,10))):keepWhole(formatDisplayDate(expiration.slice(0,10)))}</span><button type="button" className="q-bs" onClick={()=>{changed();setUseExpiry(false);}}>Never</button></>
-      :<><span className="q-rv q-rv--l" aria-hidden="true">Never</span><input id="communication-expiration" className="q-picker-row__input" type="datetime-local" value={expiration.endsWith('Z')?'':expiration} aria-label={`Expires (${timeZoneLabel(context.timeZone)}). Never if not set.`} aria-invalid={errorField==='expiration'||undefined}
-       onChange={e=>{changed();setExpiration(e.target.value);setUseExpiry(!!e.target.value);}} onClick={event=>{try{event.currentTarget.showPicker?.();}catch{/* Focus is enough where pickers can't open. */}}}/></>}
-     <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></div></li>
-    {context.management?<li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Type</b></span><select id="communication-type" className="q-select-row__control" value={type} aria-label="Update type" onChange={e=>{const t=e.target.value as CommunicationDraft['type'];changed();setType(t);setScopeKind(t==='TODAYS_TEAM'?'TODAYS_TEAM':t==='SHIFT_NOTE'?'SHIFT':'LOCATION');}}><option value="LOCATION_ANNOUNCEMENT">Announcement</option><option value="SHIFT_NOTE">Shift note</option><option value="OPERATIONAL_UPDATE">Important update</option><option value="TODAYS_TEAM">Today’s team</option></select><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></label></li>:null}
-    {type==='OPERATIONAL_UPDATE'?<li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Who receives it</b></span><select id="communication-scope" className="q-select-row__control" value={scopeKind} aria-label="Who receives it" onChange={e=>{changed();setScopeKind(e.target.value as typeof scopeKind);}}><option value="LOCATION">Location</option><option value="TODAYS_TEAM">Today’s team</option><option value="SHIFT">Published shift</option></select><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true"/></label></li>:null}
-   </ul>
-   <div className="wc-savefoot wc-savefoot--wide"><Link className="q-btn q-btn--sec" href={editing?'/app/updates/'+editing.id:'/app/updates'}>Cancel</Link><button type="submit" className="q-btn">Next</button></div>
-   </div>
-   {errorField==='expiration'&&error?<p className="q-error" id="communication-expiration-error">{error}</p>:null}
+   <section className="b-card mb-form" aria-labelledby="compose-message-h">
+    <h2 className="b-sr" id="compose-message-h">Message</h2>
+    <div className="mb-field">
+     <div className="mb-field__row"><label htmlFor="communication-title">Title</label>{titleCount>100?<span id="communication-title-count" className="mb-field__count" data-over={titleCount>120||undefined}>{titleCount}/120</span>:<span id="communication-title-count" className="b-sr">{titleCount} of 120 characters</span>}</div>
+     <input id="communication-title" className="mb-in" placeholder="e.g. Holiday hours" autoComplete="off" autoCapitalize="sentences" enterKeyHint="next" value={title} onChange={e=>{changed();setTitle(e.target.value);}}
+      onKeyDown={e=>{if(e.key==='Enter'&&!e.nativeEvent.isComposing){e.preventDefault();document.getElementById('communication-body')?.focus();}}} aria-describedby={errorField==='title'?'communication-title-error communication-title-count':'communication-title-count'} aria-invalid={titleCount>120||errorField==='title'}/>
+     {errorField==='title'&&error?<p className="mb-field__error" id="communication-title-error"><WarningCircleIcon size={16} weight="bold" aria-hidden="true"/>{error}</p>:null}
+    </div>
+    <div className="mb-field">
+     <div className="mb-field__row"><label htmlFor="communication-body">Message</label>{bodyCount>1800?<span id="communication-body-count" className="mb-field__count" data-over={bodyCount>2000||undefined}>{bodyCount}/2000</span>:<span id="communication-body-count" className="b-sr">{bodyCount} of 2000 characters</span>}</div>
+     <textarea id="communication-body" className="mb-in mb-in--area" placeholder="What does your team need to know?" rows={5} value={body} onChange={e=>{changed();setBody(e.target.value);}} aria-describedby={errorField==='body'?'communication-body-error communication-body-count compose-body-hint':'communication-body-count compose-body-hint'} aria-invalid={bodyCount>2000||errorField==='body'}/>
+     <span className="b-sr" id="compose-body-hint">Plain text. Line breaks are kept.</span>
+     {errorField==='body'&&error?<p className="mb-field__error" id="communication-body-error"><WarningCircleIcon size={16} weight="bold" aria-hidden="true"/>{error}</p>:null}
+    </div>
+   </section>
+   {editing?<p className="b-note mb-note">Publishing creates a new version. Earlier confirmations stay with the version people reviewed.</p>:<p className="b-sr">Nothing is published until you review the audience and choose Publish.</p>}
+   <section className="b-card mb-form" aria-labelledby="compose-delivery-h">
+    <h2 className="b-sr" id="compose-delivery-h">Delivery</h2>
+    {context.management?<div className="mb-field"><label htmlFor="communication-type">Type</label><span className="mb-select"><select id="communication-type" className="mb-in" value={type} onChange={e=>{const t=e.target.value as CommunicationDraft['type'];changed();setType(t);setScopeKind(t==='TODAYS_TEAM'?'TODAYS_TEAM':t==='SHIFT_NOTE'?'SHIFT':'LOCATION');}}><option value="LOCATION_ANNOUNCEMENT">Announcement</option><option value="SHIFT_NOTE">Shift note</option><option value="OPERATIONAL_UPDATE">Important update</option><option value="TODAYS_TEAM">Today’s team</option></select><CaretDownIcon size={16} weight="bold" aria-hidden="true"/></span></div>:null}
+    {type==='OPERATIONAL_UPDATE'?<div className="mb-field"><label htmlFor="communication-scope">Who receives it</label><span className="mb-select"><select id="communication-scope" className="mb-in" value={scopeKind} onChange={e=>{changed();setScopeKind(e.target.value as typeof scopeKind);}}><option value="LOCATION">Everyone at the location</option><option value="TODAYS_TEAM">Today’s team</option><option value="SHIFT">One published shift</option></select><CaretDownIcon size={16} weight="bold" aria-hidden="true"/></span></div>:null}
+    <div className="mb-field"><label htmlFor="communication-location">Send to</label>
+     <span className="mb-select"><select id="communication-location" className="mb-in" value={locationId} aria-describedby={scopeKind==='TODAYS_TEAM'?'compose-team-hint':undefined} onChange={e=>{changed();setLocationId(e.target.value);setShiftId('');}}>{context.locations.map(l=><option key={l.id} value={l.id}>{scopeKind==='TODAYS_TEAM'?`Today’s team · ${l.label}`:l.label}</option>)}</select><CaretDownIcon size={16} weight="bold" aria-hidden="true"/></span>
+     {scopeKind==='TODAYS_TEAM'?<span className="mb-field__help" id="compose-team-hint">People with a published shift today, overnight shifts included.</span>:null}</div>
+    {scopeKind==='SHIFT'?<div className="mb-field"><label htmlFor="communication-shift">Shift</label><span className="mb-select"><select id="communication-shift" className="mb-in" value={shiftId} onChange={e=>{changed();setShiftId(e.target.value);}}><option value="">Choose a published shift</option>{context.shifts.filter(s=>s.locationId===locationId).map(s=><option key={s.id} value={s.id}>{formatDisplayDate(s.date)} · {formatTimeRange(s.startTime,s.endTime)} · {s.assigneeLabel}{s.positionLabel?` · ${s.positionLabel}`:''}</option>)}</select><CaretDownIcon size={16} weight="bold" aria-hidden="true"/></span></div>:null}
+    {context.management&&type!=='TODAYS_TEAM'?<label className="mb-switch"><span className="mb-switch__tx"><b>Ask them to confirm</b><span id="compose-requirement-hint">{ack==='REQUIRED'?'Each person confirms this version.':'People can mark it read.'}</span></span>
+     <input id="communication-requirement" type="checkbox" role="switch" className="mb-tog" checked={ack==='REQUIRED'} aria-describedby="compose-requirement-hint" onChange={e=>{changed();setAck(e.target.checked?'REQUIRED':'OPTIONAL');}}/></label>:null}
+    <div className="mb-field"><div className="mb-field__row"><label htmlFor="communication-expiration">Expires</label><span className="mb-field__count">Optional</span></div>
+     {useExpiry&&expiration.endsWith('Z')?<div className="mb-fixed"><span>{keepWhole(formatDisplayDate(expiration.slice(0,10)))}</span><button type="button" className="b-btn b-btn--quiet" onClick={()=>{changed();setUseExpiry(false);setExpiration('');}}>Never</button></div>
+      :<input id="communication-expiration" className="mb-in" type="datetime-local" value={expiration} aria-describedby={errorField==='expiration'?'communication-expiration-error compose-expiry-hint':'compose-expiry-hint'} aria-invalid={errorField==='expiration'||undefined}
+       onChange={e=>{changed();setExpiration(e.target.value);setUseExpiry(!!e.target.value);}}/>}
+     <span className="mb-field__help" id="compose-expiry-hint">{`Time in ${timeZoneLabel(context.timeZone)}. Empty means it never expires.`}</span>
+     {errorField==='expiration'&&error?<p className="mb-field__error" id="communication-expiration-error"><WarningCircleIcon size={16} weight="bold" aria-hidden="true"/>{error}</p>:null}</div>
+    <div className="mb-acts mb-foot"><Link className="b-btn b-btn--quiet" href={editing?'/app/updates/'+editing.id:'/app/updates'}>Cancel</Link><button type="submit" className="b-btn b-btn--teal" disabled={(disabled&&!previewing)||undefined} aria-disabled={previewing||undefined} aria-busy={previewing||undefined} onClick={event=>{if(previewing)event.preventDefault();}}><BBusyLabel busy={previewing} busyLabel="Checking…">Next</BBusyLabel></button></div>
+   </section>
    </>}
    </>}
   </fieldset>
   <div ref={feedbackRef} tabIndex={-1} className="wb-form" role="group" aria-label="Update review feedback">
    <p id="communication-form-error" className={errorField?'nv-sr':'wb-error'} role={error?'alert':undefined}>{error?errorField?error:<><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/><span>{error}</span></>:null}</p>
-   {action.notice==='conflict'||staleEdit?<div className="wb-notice" data-tone="review" role="alert"><WarningCircleIcon size={24} weight="bold" aria-hidden="true"/><div><strong>Review the latest information</strong><p>{staleEdit?'A newer version is available. Your retained draft belongs to the version you originally reviewed. Review latest before editing again.':'This update or its audience changed. Review the latest context and preview again.'}</p>{editing?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href={'/app/updates/'+editing.id}>Review latest</Link></div>:null}</div></div>:action.notice==='unavailable'?<div className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} weight="bold" aria-hidden="true"/><div><p>We could not confirm the result. Check status before trying again.</p></div></div>:null}
+   {!signature&&(action.notice==='conflict'||staleEdit)?<BCard><BState kind="failed" alert title="Review the latest information" line={staleEdit?'A newer version is available. Your retained draft belongs to the version you originally reviewed. Review latest before editing again.':'This update or its audience changed. Review the latest context and preview again.'} action={editing?{label:'Review latest',href:'/app/updates/'+editing.id}:undefined}/></BCard>
+    :!signature&&action.notice==='unavailable'&&!action.hasUnknown?<BCard><BState kind="failed" alert title="Couldn’t confirm the result" line="Check status before trying again."/></BCard>
+    :action.notice==='conflict'||staleEdit?<div className="wb-notice" data-tone="review" role="alert"><WarningCircleIcon size={24} weight="bold" aria-hidden="true"/><div><strong>Review the latest information</strong><p>{staleEdit?'A newer version is available. Your retained draft belongs to the version you originally reviewed. Review latest before editing again.':'This update or its audience changed. Review the latest context and preview again.'}</p>{editing?<div className="wb-actions"><Link className="nv-btn" data-kind="secondary" href={'/app/updates/'+editing.id}>Review latest</Link></div>:null}</div></div>:action.notice==='unavailable'?<div className="wb-notice" data-tone="urgent" role="alert"><WarningCircleIcon size={24} weight="bold" aria-hidden="true"/><div><p>We could not confirm the result. Check status before trying again.</p></div></div>:null}
    {signature?sigReview:preview&&action.notice!=='conflict'&&!staleEdit?<section className="b-card compose-reviewed b-cmp-review" aria-labelledby="compose-review-title">
     <div className="b-cmp-review__msg">
      <div className="b-cmp-review__head"><h2 id="compose-review-title" className="b-cmp-review__t" ref={previewHeadingRef} tabIndex={-1}><span className="q-sr">Review: </span>{title.trim()}</h2>
       <button type="button" className="b-btn b-btn--quiet b-rowact b-rowact--quiet b-cmp-review__edit" aria-label="Edit update" disabled={disabled} onClick={backToWrite}>Edit</button></div>
      <p className="b-cmp-review__body">{body.trim()}</p>
-     <p className="b-cmp-review__facts"><BSegs parts={[typeLabel,context.management&&type!=='TODAYS_TEAM'?(ack==='REQUIRED'?'Must be read':'Optional'):null,useExpiry&&expiration?`Expires ${formatDisplayDate(expiration.slice(0,10))}`:'Never expires']}/></p>
+     <p className="b-cmp-review__facts"><BSegs parts={[typeLabel,context.management&&type!=='TODAYS_TEAM'?(ack==='REQUIRED'?'Must be confirmed':'Confirming is optional'):null,useExpiry&&expiration?`Expires ${formatDisplayDate(expiration.slice(0,10))}`:'Never expires']}/></p>
     </div>
     <ul className="b-list b-cmp-review__who" aria-label="Who gets it">
      <BRow lead={<BIcon tone={preview.count===0?'amber':'teal'}><UsersThreeIcon weight="bold"/></BIcon>} title={`Goes to ${preview.count} ${preview.count===1?'person':'people'}`} sub={`At ${location}`}
@@ -188,9 +188,11 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
      <button type="button" className="b-btn b-btn--ghost b-cmp-review__back" disabled={disabled} onClick={backToWrite}>Back</button>
      <button className="b-btn b-btn--teal b-cmp-review__go" type="button" disabled={!action.pending&&(action.notice==='unknown'||staleEdit)} aria-disabled={action.pending||undefined} aria-busy={action.pending||undefined} onClick={()=>{if(!action.pending)publish();}}><BBusyLabel busy={action.pending} busyLabel="Publishing…">{editing?'Publish new version':'Publish update'}</BBusyLabel></button>
     </div>
-   </section>:<section className="nv-card q-compose-next" aria-label="Review before publishing"><div className="nv-card__head"><h2 className="nv-card__title">Review before publishing</h2></div><div className="wb-body"><p className="wb-note">Check the eligible audience before your update goes live.</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" disabled={disabled||previewing} aria-busy={previewing||undefined} type="submit">{previewing?'Checking audience…':'Preview audience'}<ArrowRightIcon size={20} weight="bold" aria-hidden="true"/></button></div></div></section>}
+   </section>:!signature?null:<section className="nv-card q-compose-next" aria-label="Review before publishing"><div className="nv-card__head"><h2 className="nv-card__title">Review before publishing</h2></div><div className="wb-body"><p className="wb-note">Check the eligible audience before your update goes live.</p><div className="wb-actions"><button className="nv-btn" data-kind="primary" disabled={disabled||previewing} aria-busy={previewing||undefined} type="submit">{previewing?'Checking audience…':'Preview audience'}<ArrowRightIcon size={20} weight="bold" aria-hidden="true"/></button></div></div></section>}
    {previewing||action.pending?<p className="nv-sr" role="status">{previewing?'Checking audience…':'Confirming publication…'}</p>:null}
-   {action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div ref={recoveryRef} tabIndex={-1} className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} weight="bold" aria-hidden="true"/><div><strong>Publication needs a status check</strong><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.lookup()}>Check status</button>{action.canRetry?<button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:null}</div></div></div>:null}
+   {!signature&&(action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown)?<div ref={recoveryRef} tabIndex={-1} className="b-card"><BState kind="paused" title="Publication needs a status check" line="We couldn’t confirm the result. Check status before trying again."
+     action={{label:'Check status',onClick:()=>void action.lookup(),busy:action.pending}} quiet={action.canRetry?<button className="b-btn b-btn--quiet" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:undefined}/></div>
+    :action.notice==='unknown'||action.notice==='unavailable'&&action.hasUnknown?<div ref={recoveryRef} tabIndex={-1} className="wb-notice" data-tone="review" role="status"><WarningCircleIcon size={24} weight="bold" aria-hidden="true"/><div><strong>Publication needs a status check</strong><p>We couldn’t confirm the result. Check status before trying again.</p><div className="wb-actions"><button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.lookup()}>Check status</button>{action.canRetry?<button className="nv-btn" data-kind="secondary" type="button" disabled={action.pending} onClick={()=>void action.retry()}>Retry original publication</button>:null}</div></div></div>:null}
   </div>
  </form>;
 }
@@ -219,31 +221,22 @@ function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;m
  const composeFailed=!context&&!resource.state.refreshing;
  const hadFailure=useRef(false);
  useEffect(()=>{if(composeFailed){hadFailure.current=true;return;}if(context&&hadFailure.current){hadFailure.current=false;if(!document.activeElement||document.activeElement===document.body)document.getElementById('communication-title')?.focus({preventScroll:true});}},[composeFailed,context]);
- // One name per place (A3): Updates' button and this page are both "New update".
- const title=updateId?'Edit update':mode==='manager'?'New update':'Message today’s team';
  const content=<div className="nv-content">{context?<ComposeForm key={authority+':'+(editing?.revisionId??'new')} context={context} initial={editing?.management?.draft} editing={editing} mode={mode} authority={authority} retained={retained} retain={(values,revisionId)=>{retained.current={values,revisionId};}} action={action} onStep={setStep} backRef={backRef}/>:<section className="nv-card" role="status" aria-busy={resource.state.refreshing}><div className="wb-body"><div className="wb-receipt"><Tile tone="neutral">{resource.state.refreshing?<ClockIcon size={22} weight="bold"/>:<UsersThreeIcon size={22} weight="bold"/>}</Tile><div><h2 className="wb-strong">{offline?'You’re offline':signedOut?'Your session ended':resource.state.paused?'Paused while you were away':resource.state.refreshing?'Loading the form':'Couldn’t load the form'}</h2><p className="wb-note">{offline?'Connect to the internet, then try again.':signedOut?'Sign in again to keep writing.':resource.state.paused?'Come back to this page to keep writing.':resource.state.refreshing?'Getting your locations and today’s team…':'Check your connection, then try again.'}</p></div></div><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={resource.state.paused||resource.state.refreshing} onClick={resource.refresh}>Try again</button>{signedOut?<Link className="nv-btn" data-kind="secondary" href="/login">Sign in again</Link>:null}</div></div></section>}</div>;
  if(mode==='employee'&&!updateId)return <div ref={pageRef} className="nv-page wb-page wb-narrow wb-compose" data-nv-page="">
   <SigPage className={cc.ccRoot} band={<SigBand eyebrow="Team updates · new"><h1 className="sg-head2">Message<br/>today’s team</h1><p className="sg-sub"><span>Write it once. Everyone working today sees it.</span></p><Link className="sg-band-link" href="/app/updates"><CaretLeftIcon size={14} weight="bold" aria-hidden="true"/>Updates</Link></SigBand>}>{content}</SigPage>
  </div>;
- // Quiet (v4, approved Oct 23): a sheet: Cancel, the title, and Next (review the audience) at the top right.
- // Final polish (Nov 20, 2026): the two steps are named under the title ("Step 1 of 2 · Write"), as Add employee's are
- // (DESIGN.MD Step flows). Step 2 shows the audience and its one filled Publish, so Next leaves the bar there; changing a
- // field returns to step 1. From 768px Cancel and Next are in the delivery card's footer (data-wc-save).
- return <div ref={pageRef} className="q-page wb-compose q-compose" data-nv-page="" data-q-sheet="" data-wc-save={mode==='manager'&&context?'card':undefined}>
-  <QuietNav left={context&&mode==='manager'&&step===2
-    ?/* Step 2: Back returns to Write (phones; from 768px Back is in the review card's footer). An anchor, so it keeps the bar's link styles. */
-     <a className="q-nav__l q-nav__l--teal" role="button" tabIndex={0} href="#communication-title" onClick={event=>{event.preventDefault();backRef.current?.();}} onKeyDown={event=>{if(event.key===' '){event.preventDefault();backRef.current?.();}}}>Back</a>
-    :<Link className="q-nav__l q-nav__l--teal" href={updateId?'/app/updates/'+updateId:'/app/updates'}>Cancel</Link>}
-   title={<>{updateId?'Edit update':'New update'}{context&&mode==='manager'?<span className="q-nav__step">{`Step ${step} of 2`}<span className="q-nav__stepname">{` · ${step===1?'Write':'Review'}`}</span></span>:null}</>}
-   right={context&&step===1?<button type="submit" form="compose-form" className="q-nav__r q-nav__r--b">Next</button>:undefined}/>
-  <h1 className="q-sr">{title}</h1>
-  {/* Phase 3 (package D): until the form is here, Owners and Managers get the kit's one state card (it was an older grey
-      tile with a disabled Try again while loading). The words are the same; the button shows only when it can act. */}
-  {context||mode!=='manager'?content:<section className="b-card b-compose-state"><BState
-    kind={offline?'offline':signedOut?'locked':resource.state.paused?'paused':resource.state.refreshing?'loading':'failed'}
-    title={offline?'You’re offline':signedOut?'Your session ended':resource.state.paused?'Paused while you were away':resource.state.refreshing?'Loading the form':'Couldn’t load the form'}
-    line={offline?'Connect to the internet, then try again.':signedOut?'Sign in again to keep writing.':resource.state.paused?'Come back to this page to keep writing.':resource.state.refreshing?'Getting your locations and today’s team…':'Check your connection, then try again.'}
-    action={signedOut?{label:'Sign in again',href:'/login'}:resource.state.paused||resource.state.refreshing?undefined:{label:'Try again',onClick:resource.refresh}}/></section>}
+ // Phase 2 (package Messages, Nov 23, 2026): Owners and Managers, Direction B. The band (the hero on a phone) says New
+ // update or Edit update with its step ("Step 1 of 2 · Write"); its way back is Cancel. The form's own cards carry Cancel
+ // and Next (step 1) and Back and Publish (step 2) at every width. Until the form is here, the kit's one state card.
+ const stateKind=offline?'offline':signedOut?'locked':resource.state.paused?'paused':resource.state.refreshing?'loading':'failed';
+ return <div ref={pageRef} className="mb-root wb-compose">
+  <ManagerMessagesPage className="mb-compose" titleId="compose-title" title={updateId?'Edit update':'New update'} sub={context?`Step ${step} of 2 · ${step===1?'Write':'Review'}`:undefined}
+   back={{href:updateId?'/app/updates/'+updateId:'/app/updates',label:'Cancel',close:true}}
+   cards={context?<ComposeForm key={authority+':'+(editing?.revisionId??'new')} context={context} initial={editing?.management?.draft} editing={editing} mode={mode} authority={authority} retained={retained} retain={(values,revisionId)=>{retained.current={values,revisionId};}} action={action} onStep={setStep} backRef={backRef}/>
+    :<BCard><BState kind={stateKind}
+     title={offline?'You’re offline':signedOut?'Your session ended':resource.state.paused?'Paused while you were away':resource.state.refreshing?'Loading the form':'Couldn’t load the form'}
+     line={offline?'Connect to the internet, then try again.':signedOut?'Sign in again to keep writing.':resource.state.paused?'Come back to this page to keep writing.':resource.state.refreshing?'Getting your locations and today’s team…':'Check your connection, then try again.'}
+     action={signedOut?{label:'Sign in again',href:'/login'}:resource.state.paused||resource.state.refreshing?undefined:{label:'Try again',onClick:resource.refresh}}/></BCard>}/>
  </div>;
 }
 

@@ -1,0 +1,6 @@
+/* The Owner's Clocker settings (Clocker tablets, Shift matching, Punch photos) on the shared Direction B Settings page
+ * (SettingsPageB, Phase 2 Settings part 2, Nov 23, 2026). Only what the Corp page, the kit and settings-b.css don't
+ * already draw. Sizes in rem so 200% text scales; spacing on the 4/8 scale. */
+:is(#c-root, html) .ck-frame .c-title h1, :is(#c-root, html) .ck-frame .c-nav__title { text-wrap: balance; }
+:is(#c-root, html) .ck-frame .ck-stack { display: grid; gap: 1rem; min-width: 0; }
+@media (min-width: 768px) { :is(#c-root, html) .ck-frame .ck-stack { gap: 1.25rem; } }

@@ -12,6 +12,80 @@ branch.
 - Settings pages build on the shared parts on branch `claude-codex-collab-nevora-settings-base`
   (`src/app/app/settings/settings-b*.tsx`, `settings-b.css`). Additive changes only; say so in the report.
 
+## Late packages (lead, Nov 23, 14:20 UTC): rest of the app
+Jose's standing instruction for Phase 2 is the full app, not only the first 12 packages ("not the 12 package the full
+app"), and to keep starting new work as each part finishes ("if we have finish something continue creating sessions for
+new work"). These packages carry that out. Each session merges `origin/claude-codex-collab-nevora` (9596f934 or later)
+into its own branch first, pushes only to its own branch, and follows the Rules below. That includes the earlier
+"don't capture" lines in briefs, which these packages replace for the pages listed.
+
+| Package | Session branch | Pages |
+|---|---|---|
+| R: recapture held rows | `claude-codex-collab-nevora-core` | B1-O, B1-M, B2-Ml, B4-O-M, B9-O, B9-M, F9 (O, M), E1-M, J17 |
+| X | `claude-codex-collab-nevora-settings-final` | F3 Import a staff list (O, M, Mℓ) to Direction B; I1-Ml Profile matched to I1-O/M |
+| M | `claude-codex-collab-nevora-staff` | C12 Shift changes (O, M) to Direction B; C10 Availability (O) checked against C10-M |
+| Z2: phone and keyboard sweep | `claude-codex-collab-nevora-batch-public` | Every Jose-approved row: 320px, keyboard and focus order, reduced motion; fix defects only |
+| Z3: forced colours and language leaks | `claude-codex-collab-nevora-staff` (sections A–E), `claude-codex-collab-nevora-timecards-final` (F onward) | Every Jose-approved row: forced-colors active (A4-05) and Spanish inside English chrome (A4-07); fix defects only |
+| K3 | `claude-codex-collab-nevora-clocker-states` | K3 Enter Employee ID (EN, ES) |
+| Z: regression sweep | `claude-codex-collab-nevora-sweep-1` | Every Jose-approved row: axe, 390 at 200% text, 1440; fix regressions only |
+
+Package P (billing pages A15–A19) is withdrawn: Jose set the sign-up and billing portal pages aside (gaps ledger G23,
+"focus just on nevora"). Don't change or capture them. (The public-pages session had already finished it before the withdrawal reached it; its commits b2a233d2 and 03b2c198 stay on its branch, unmerged, until Jose decides.)
+
+## Gap closure (Jose, Nov 23, 16:08 UTC): everything except the native app
+Jose's words: "lets do all of them except anything regarding native application since that will be later, everything
+else we do it now and approved to do it all, make sure we make multiple sessions we want to do this fast and also make
+sure quality is never compromised". This approves the items below, including the server change in G17, rebuilding the
+guides (G44), restoring the billing pages (package P), and the release once QA is green. Native app work is out.
+Same rules as above: merge the shared tip first, push only to your own branch, fictional data, tests and the whole
+src/components suite before every push, approved wording unchanged unless Jose decided otherwise.
+
+| Item | Session branch | Work |
+|---|---|---|
+| G44 guides | `claude-codex-collab-nevora-screens-final` | Rebuild the guides with scripts/manuals/build-manuals.mjs so manual-publication passes |
+| F3 live import | `claude-codex-collab-nevora-settings-final` | Run and capture the live import through the isolated-workspace lifecycle harness |
+| G17 | `claude-codex-collab-nevora-staff` | A location Manager can open a person at their own locations (server and UI, scoped) |
+| G98 and signed-in language | `claude-codex-collab-nevora-payroll-2` | Pages with Spanish copy follow the person's language; inventory the rest of the shell |
+| Package P, J18 | `claude-codex-collab-nevora-batch-public` | Restore A15–A19 (revert the reverts) and check J18 with billing configured (mocked) |
+| Flaky tests | `claude-codex-collab-nevora-sweep-1` | managed-runtime under load; shift-concurrency WebKit page errors; no skips |
+| Clocker and motion | `claude-codex-collab-nevora-clocker-states` | K13 sweep, the offline fallback page, reduced motion at 390 and 1440 |
+| Production re-verify | new session `claude-codex-collab-nevora-prodcheck` | Re-check on a production build everything verified only on a development build |
+| QA | `claude-codex-collab-nevora-qa` | WebKit re-run of the scoped read frame fix, then the final production-build QA |
+
+## Signed-in Spanish (Jose's gap closure, 16:30 UTC)
+Source: reports/language-inventory.md on origin/claude-codex-collab-nevora-payroll-2 (about 500 shell strings and 10,000
+English-only strings in signed-in areas). Language source: the existing `readPortalLanguage` (Profile choice, then the
+sign-in `nv-lang` cookie, then Accept-Language, then English). G9 and C8 already follow it (dbc8f854).
+
+Shared contract (the shell session lands it first; everyone else merges it before wiring components):
+- `src/lib/i18n/portal-lang.tsx`: `PortalLangProvider` (rendered once in `src/app/app/layout.tsx` from `readPortalLanguage`)
+  and `usePortalLang(): 'en' | 'es'` for client components. Server components keep calling `readPortalLanguage`.
+- Strings live in one table per area, `<area>-copy.ts`, shaped `{en: {...}, es: {...}}` with the same keys in both (the
+  pattern of `src/components/copy-receipt-copy.ts`), with a test that the key sets match.
+
+Rules for every translation session:
+- Puerto Rico Spanish, tú, following `docs/design/voice.md` and the app's existing Spanish (glossary: Turno disponible,
+  Días libres, Horario, localidad, Por confirmar; times "6:00 a. m. – 2:00 p. m."; dates "7–13 dic").
+- English stays exactly as it is. No rewording while extracting.
+- Payroll, tax, billing and privacy text: translate it, and list every such Spanish line in your report under "For Jose to
+  review". Legal and policy documents (`src/lib/legal`, `src/components/legal`) are out of this pass; leave them.
+- Spanish must fit: check your main screens at 390 and at 390 with 200% text in Spanish (Spanish runs about 20% longer),
+  with axe. No clipping, overlap or sideways scroll; buttons stay one line at 390 where the English is.
+- Tests: key-set match per table, a Spanish render test per main view, and the whole src/components suite, tsc and oxlint
+  before every push. Don't touch files owned by another row below; if you need a shared part changed, tell the lead.
+
+| Area | Session branch |
+|---|---|
+| Shell and plumbing: nav, finder, app-shell, account menu, More, loading/error frames, toasts, form validation, portal-device-setup | `claude-codex-collab-nevora-payroll-2` |
+| `components/employee-mobile` | `claude-codex-collab-nevora-es-mobile` (new) |
+| `components/payroll` | `claude-codex-collab-nevora-es-payroll` (new) |
+| `components/manager`, `components/timecards` | `claude-codex-collab-nevora-timecards-final` |
+| `components/employee`, `components/employee-b` | `claude-codex-collab-nevora-es-employee` (new) |
+| `/app/schedule`, `/app/exchange`, `components/communication`, `components/company-access` | `claude-codex-collab-nevora-screens-final` |
+| `components/owner-advisor` (Rondo and Insights) | `claude-codex-collab-nevora-es-rondo` (new) |
+| `/app/settings`, `components/company`, `components/reports`, `components/premium`, and every English-only area in the inventory not named in this table (except `ui-preview`) | `claude-codex-collab-nevora-es-rest` (new) |
+| `components/owner-b`, `payroll-import`, `roster-import`, `restrictions`, `time-off-admin`, `wages`, `review-details`, `reminders`, `copy`, `workforce` (fill in the missing Spanish) | `claude-codex-collab-nevora-es-owner` (new) |
+
 ## Read first
 1. `CLAUDE.md`, `DESIGN.MD`, `.claude/skills/nevora-design-os/SKILL.md` (with its references; the page done gate is at
    the end), `docs/design/voice.md`, `docs/design/component-picks.md`.

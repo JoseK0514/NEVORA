@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef,useState,type ReactNode} from 'react';
+import {startTransition,useEffect,useRef,useState,type ReactNode} from 'react';
 import {useRouter} from 'next/navigation';
 import type {OperationalAuthorityView} from '@/lib/company-access/model';
 import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
@@ -11,7 +11,6 @@ import {BRouteLoading} from '../owner-b/b-loading';
 import {ScopedRefreshContext} from './scoped-refresh';
 import {OPERATIONAL_RETRY_EVENT} from './use-operational-navigation';
 import {announceOfflineHeld,steppedAway} from '@/lib/offline-hold';
-import {serverActionRunning,serverActionsStarted} from '@/lib/server-action-flight';
 
 export type ScopedObservation={authority:string;observedAt:string;validForMs:number};
 type CurrentAuthority=Extract<OperationalAuthorityView,{state:'ready'}>&{requestStartedAt:number};
@@ -19,7 +18,32 @@ type AuthoritySnapshot=CurrentAuthority|Extract<OperationalAuthorityView,{state:
 type Recovery={required:boolean;view:CurrentAuthority|null};
 /** How long a check may run behind the quiet page shape before the frame shows its words and Refresh current view. */
 export const STUCK_MS=2500;
-type Body={authority:string|null;phase:'ready'|'expired'|'paused';content:ReactNode};
+/** `kept`: the last page this frame showed, held hidden while its window lapses in the foreground (see `lapse`). */
+type Body={authority:string|null;phase:'ready'|'expired'|'paused';content:ReactNode;kept?:ReactNode};
+/** WebKit period history, second route (QA, Nov 23, 2026): when the page's 15 s window ran out before the renewal landed,
+ * the frame dropped its children and the page re-mounted later with its client state gone (Payroll export's loaded
+ * history pages and open sheet). A lapse in the foreground now keeps the last page mounted, with its effects running,
+ * and hides its DOM root (display none, inert, aria-hidden; see `holdHidden`) behind the usual checking state, then shows
+ * it again in place when a current observation arrives. Nothing stale is visible or reachable meanwhile, and the 15 s
+ * window, S-01's "checking" and the step-away retirements (blur, hidden, pagehide: the page is cleared) are unchanged.
+ * A denial drops it. (React Activity was not enough: a hidden Activity tears its effects down and runs them again when
+ * shown, and Payroll export's mount effect then reset the page.) */
+const lapse=(previous:Body):Body=>({authority:null,phase:'expired',content:null,kept:previous.content??previous.kept??null});
+const dropKept=(previous:Body):Body=>previous.kept?{...previous,kept:null}:previous;
+/** Hides the held page while the frame's status section is drawn after it: the element just before that section is the
+ * page's root (pages render one root, a .c-page). Runs at commit, before paint; the returned cleanup (React 19 ref
+ * cleanup) shows the page again when the status section goes, as a current observation arrives. Inline !important beats
+ * the stylesheets' display rules; the page keeps no wrapper, so their child combinators still match. */
+function holdHidden(status:HTMLElement|null){
+ const page=status?.previousElementSibling;
+ if(!(page instanceof HTMLElement))return;
+ const display=page.style.getPropertyValue('display'),priority=page.style.getPropertyPriority('display');
+ page.style.setProperty('display','none','important');page.inert=true;page.setAttribute('aria-hidden','true');
+ return()=>{
+  if(display)page.style.setProperty('display',display,priority);else page.style.removeProperty('display');
+  page.inert=false;page.removeAttribute('aria-hidden');
+ };
+}
 const online=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
 /** A frame holding its page offline keeps it while the device is still offline and the person is still here. */
 const keepOffline=(held:{current:boolean})=>held.current&&!navigator.onLine&&!steppedAway();
@@ -37,19 +61,22 @@ function noteFence(current:CurrentAuthority){
  tab.fence=current;
 }
 function retireTab(){tab.retiredAt=performance.now();tab.cutoff=null;tab.fence=null;}
-/** The proactive refresh re-renders only this page (a same-address replace), so the router cache of other pages, and
- * the tabs' prefetches, survive; router.refresh() emptied it every ~10 s and every tab re-rendered in the background.
- * G58 (Nov 23, 2026): a replace is a navigation, and Next discards a Server Action still at the head of its queue when a
- * navigation starts (its redirect never happens). With 8.5 s replies a Publish landed back on its review, re-rendered
- * after the write as "Coverage changed". After an action started on this page (`afterAction`), refresh instead: Next
- * queues a refresh behind the action, so the action's redirect, or its re-render, lands first. */
-function refreshPage(router:{replace:(href:string,options?:{scroll?:boolean})=>void;refresh:()=>void},version?:{current:string},href=window.location.pathname+window.location.search+window.location.hash,afterAction=false){
- if(afterAction){router.refresh();return;}
+/** How the frame re-renders its page after an access check, and before its 15 s window runs out.
+ * WebKit period history (QA, Nov 23, 2026): the background refresh used to be a same-address router.replace (to keep the
+ * router cache of other pages), then router.refresh() 1.5 s later. A replace is a navigation, and in WebKit it sometimes
+ * showed the route's loading.tsx (Payroll export's skeleton), which unmounted the page: loaded history pages and an open
+ * "Choose who's included" sheet were gone, so a person paging history in Safari lost their place. A background refresh
+ * is now router.refresh() in a transition: never a navigation, so no loading boundary, and React keeps client state
+ * while the new server render arrives. G58 (Nov 23) holds by construction: Next queues a refresh behind a Server Action
+ * still running, so its redirect or re-render lands first (no navigation discards it).
+ * The one navigation left is the explicit recovery from a stalled page change (`source`, "Refresh current view"): a
+ * NAVIGATE preempts Next's pending queue where a refresh would wait behind it. A page answered there from the router
+ * cache, with no newer page after 1.5 s, is refreshed for real. */
+function refreshPage(router:{replace:(href:string,options?:{scroll?:boolean})=>void;refresh:()=>void},version?:{current:string},source?:string){
+ if(source===undefined){startTransition(()=>router.refresh());return;}
  const before=version?.current;
- router.replace(href,{scroll:false});
- // A page that came from a prefetch can be answered from the router cache (kept for minutes) with no new render. If no
- // newer page arrived, refresh for real.
- if(version)setTimeout(()=>{if(version.current===before)router.refresh();},1500);
+ router.replace(source,{scroll:false});
+ if(version)setTimeout(()=>{if(version.current===before)startTransition(()=>router.refresh());},1500);
 }
 /** QA S-01 (Nov 21, 2026): on a slow connection a check still running after STUCK_MS was drawn as a failure ("Couldn’t
  * check your access") although nothing had failed. Only a check that answered unavailable fails; a slow one says it is
@@ -81,9 +108,6 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const required=useRef(true),latest=useRef(-Infinity),retiredThrough=useRef(-Infinity),proactiveVersion=useRef('');
  const anchor=useRef<CurrentAuthority|null>(null);
  const observationRef=useRef(observation),versionRef=useRef('');
- // G58: Server Actions started before this page rendered; a later one (or one still running) makes refreshes queue.
- const actionBaseline=useRef(serverActionsStarted());
- const afterAction=()=>serverActionRunning()||serverActionsStarted()!==actionBaseline.current;
  // Explicit recovery uses a fresh authority read; a stalled navigation also needs a source navigation to preempt it.
  const explicitRefresh=useRef(false),explicitSource=useRef<string|null>(null);
  // Offline with the person still here (review B2, NV-001): the page they loaded stays, read-only, until they reconnect
@@ -98,7 +122,10 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
   // tabWide: a real retirement event clears the tab's fence; a frame's own mount or navigation barrier does not.
   function retire(phase:'paused'|'expired',tabWide=true){
    if(tabWide)retireTab();required.current=true;retiredThrough.current=Math.max(retiredThrough.current,latest.current);
-   setBody(previous=>previous.authority===null&&previous.phase===phase&&previous.content===null?previous:{authority:null,phase,content:null});
+   // A frame's own barrier in the foreground (its window lapsed, or its page arrived too old) keeps the page hidden; a
+   // real retirement (stepping away, offline expiry, an explicit fresh check) clears it as before.
+   if(phase==='expired'&&!tabWide)setBody(lapse);
+   else setBody(previous=>previous.authority===null&&previous.phase===phase&&previous.content===null&&!previous.kept?previous:{authority:null,phase,content:null});
    setRecovery(previous=>previous.required&&previous.view===null?previous:{required:true,view:null});
   }
   const controller=createPrivateSnapshotController<AuthoritySnapshot>(state=>{
@@ -106,13 +133,15 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    const current=!state.paused&&state.snapshot?.state==='ready'?state.snapshot:null;
    const failedNow=!state.paused&&!state.refreshing&&state.snapshot?.state==='unavailable';
    setCheckFailed(previous=>previous===failedNow?previous:failedNow);
+   // Access denied: the held page goes (the existing refused state applies).
+   if(!state.paused&&state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied')setBody(dropKept);
    if(current&&!state.refreshing)noteFence(current);
    setRecovery(previous=>previous.required&&previous.view===current?previous:{required:true,view:current});
    if(current&&!state.refreshing&&!navigation?.pending()){
     const key=JSON.stringify([current.authority,current.observedAt,current.requestStartedAt]);
     // A refresh waits behind an unfinished Server Action. A same-page replace
     // fetches fresh dynamic data while discarding that action's stale router result.
-    if(lastRefresh!==key){lastRefresh=key;if(explicitRefresh.current){explicitRefresh.current=false;const source=explicitSource.current;explicitSource.current=null;if(source!==null)refreshPage(router,versionRef,source);else router.refresh();}else if(anchor.current)refreshPage(router,versionRef,undefined,afterAction());else router.refresh();}
+    if(lastRefresh!==key){lastRefresh=key;if(explicitRefresh.current){explicitRefresh.current=false;const source=explicitSource.current;explicitSource.current=null;if(source!==null)refreshPage(router,versionRef,source);else refreshPage(router);}else refreshPage(router);}
    }
   },async signal=>{
    requestStartedAt=performance.now();
@@ -145,7 +174,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    anchor.current=current;required.current=false;controller.pause();setRecovery({required:false,view:null});
   }
   controls.current={recover,pause,complete};
-  const resume=navigation?.subscribe(()=>{if(!active||!online())return;if(required.current)recover(false);else if(deferredRefresh.current){deferredRefresh.current=false;refreshPage(router,versionRef,undefined,afterAction());}});
+  const resume=navigation?.subscribe(()=>{if(!active||!online())return;if(required.current)recover(false);else if(deferredRefresh.current){deferredRefresh.current=false;refreshPage(router);}});
   const visibility=()=>{if(document.visibilityState==='hidden')pause();else recover();};
   document.addEventListener('visibilitychange',visibility);
   for(const event of ['blur','pagehide'])window.addEventListener(event,pause);
@@ -184,24 +213,23 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    const afterBarrier=!required.current||(!!recovery.view&&observation?.authority===recovery.view.authority&&observed>Date.parse(recovery.view.observedAt));
    if(!valid||!afterBarrier){
     // This page is too old or predates the fence: re-check it. That says nothing about the tab, so its fence stays.
-    if(!required.current)controls.current?.recover(false);
-    else setBody({authority:null,phase:'expired',content:null});
+    if(!observation)setBody(previous=>dropKept({...previous,authority:null,phase:'expired',content:null}));
+    else if(!required.current)controls.current?.recover(false);
+    else setBody(lapse);
     return;
    }
    latest.current=observed;
    if(required.current&&recovery.view)controls.current?.complete(recovery.view);
-   setBody({authority:observation!.authority,phase:'ready',content:children});
+   setBody({authority:observation!.authority,phase:'ready',content:children,kept:null});
    viewDeadline.current=performance.now()+remaining;
-   early=setTimeout(()=>{if(!online())return;if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router,versionRef,undefined,afterAction());}},remaining*.65);
+   early=setTimeout(()=>{if(!online())return;if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router);}},remaining*.65);
    expiry=setTimeout(()=>controls.current?.recover(false),remaining);
   });
   return()=>{active=false;if(early)clearTimeout(early);if(expiry)clearTimeout(expiry);};
  },[version,observed,duration,observation,children,recovery,router,navigation]);
 
  // Effects run before any microtask, so the mount check (queued in the controller effect) reads this page's observation.
- // A page rendered after every started action has settled is the new baseline (the action's re-render, or a refresh
- // queued behind it); while one still runs, the older baseline keeps refreshes queued.
- useEffect(()=>{observationRef.current=observation;versionRef.current=version;if(!serverActionRunning())actionBaseline.current=serverActionsStarted();},[observation,version]);
+ useEffect(()=>{observationRef.current=observation;versionRef.current=version;},[observation,version]);
  const refreshCurrent=()=>{
   // NAVIGATE preempts Next's pending queue; REFRESH waits behind it. Capture the accepted source before discarding.
   explicitSource.current=navigation?.current()?.source??null;
@@ -221,7 +249,10 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
   return()=>{clearTimeout(timer);setStuck(false);};
  },[ready,navigation]);
 
- if(ready)return body.content;
+ // The page sits in one place in the tree in every state, so a lapse and its renewal keep its client state.
+ const page=ready?body.content:body.kept??null;
+ const hold=!ready&&!!body.kept?holdHidden:undefined;
+ if(ready)return <>{page}{null}</>;
  // Phase 2 (package D): the state the page handed over draws its own "Refresh current view" inside its card (it reads
  // this frame's fresh check from the context), so the page has one card with all its actions.
  if(!observation&&unavailable)return <ScopedRefreshContext.Provider value={refreshCurrent}><div className="scoped-unavailable">{unavailable}</div></ScopedRefreshContext.Provider>;
@@ -232,10 +263,10 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  // each main tab's loaded height (b-foundation.css, keyed by the sidebar entry that is the current page), and tablets and
  // desktop draw it too (owner-b-desktop.css treats the placeholder like Home's B screen). Its hero says "Loading…" to
  // assistive technology; the quiet section below shows only where no B screen does.
- if(checking)return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
+ if(checking)return <>{page}<div ref={hold} className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
   <BRouteLoading/>
   {stateSection}
- </div>;
+ </div></>;
  // Round 5 (Nov 7, 2026): paused or stuck, the page says so in the page's own look. Review B2 (NV-032, NV-075): one
  // message under the hero in the shared state card (amber offline or paused, red when the check failed) with one Try
  // again, which also re-checks the shell's menus; the brief "checking" state above keeps its skeleton.
@@ -244,7 +275,7 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  // Direction B screen there, as it does for the placeholder).
  const offlineNow=typeof navigator!=='undefined'&&!navigator.onLine;
  const {kind,title,line}=frameStateWords(body.phase,offlineNow,checkFailed);
- return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
+ return <>{page}<div ref={hold} className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
   <BStateScreen title={title} back={{href:'/app',label:'Home'}} offlineInTitle={kind==='offline'}><BState kind={kind} line={line} action={{label:'Try again',onClick:refreshCurrent}}/></BStateScreen>
- </div>;
+ </div></>;
 }

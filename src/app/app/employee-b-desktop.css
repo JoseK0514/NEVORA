@@ -53,7 +53,7 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-card__h { min-height: 52px !important; padding: 18px var(--b-inset-wide) 6px !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-card__a { font-size: var(--b-fs-body-sm) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen :is(.b-row, .b-add) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-row__s { line-height: 19px !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-row__s { line-height: 1.1875rem !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen :is(.eb-cardnote, .eb-shift, .eb-status, .b-route-state) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-note { padding: 0 var(--b-note-x) !important; margin-top: -6px !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
     /* Lists inside the cards: one inset divider. */
@@ -104,14 +104,16 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .c-esched > .b-screen .b-stack > #b-my-agenda { grid-column: 1 !important; grid-row: span 3 !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-esched > .b-screen .b-stack > :is(#b-my-review, .b-card[aria-label="Open shifts"]) { grid-column: 2 !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-esched > .b-screen .b-stack:has(> .eb-wkc) > :is(.es-changes, .b-note) { display: none !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wk { display: grid !important; grid-template-columns: repeat(7, minmax(0, 1fr)) !important; gap: 10px !important; margin: 0 !important; padding: var(--b-space-8) var(--b-inset-wide) 22px !important; list-style: none !important; }
+    /* Gaps G80 (Nov 23, 2026): seven columns while each day has 4.5rem; with large text the days wrap into rows instead of
+     * overlapping ("6:30 AM –" over "9:00 AM –" at 768 with 200% text). */
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wk { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(max(4.5rem, calc((100% - 60px) / 7)), 1fr)) !important; gap: 10px !important; margin: 0 !important; padding: var(--b-space-8) var(--b-inset-wide) 22px !important; list-style: none !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd { display: flex !important; flex-direction: column !important; gap: var(--b-space-8) !important; min-width: 0 !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd__h { display: flex !important; align-items: baseline !important; gap: 6px !important; padding-left: var(--b-space-2) !important; font-size: var(--b-fs-meta) !important; font-weight: 600 !important; color: var(--b-grey) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd__h b { font-size: 18px !important; font-weight: 700 !important; color: var(--b-ink) !important; font-variant-numeric: tabular-nums !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd__h b { font-size: 1.125rem !important; font-weight: 700 !important; color: var(--b-ink) !important; font-variant-numeric: tabular-nums !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd.is-today .eb-wd__h, html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd.is-today .eb-wd__h b { color: var(--b-teal) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh:not(#e-none) { display: flex !important; flex-direction: column !important; gap: var(--b-space-2) !important; min-height: 92px !important; padding: 10px var(--b-space-12) !important; border-radius: var(--b-radius-field) !important; background: var(--b-canvas) !important; box-shadow: inset 3px 0 0 #A3A9AE !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-ink2) !important; text-decoration: none !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh > span:not(.b-chip):not(#e-none) { overflow-wrap: anywhere !important; text-wrap: balance !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh b { font-size: 14px !important; font-weight: 700 !important; color: var(--b-ink) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh b { font-size: 0.875rem !important; font-weight: 700 !important; color: var(--b-ink) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh--past b { color: var(--b-ink2) !important; font-weight: 600 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh--up:not(#e-none) { background: var(--b-teal-50) !important; box-shadow: inset 3px 0 0 var(--b-teal) !important; color: #08524E !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh--now:not(#e-none) { background: var(--b-teal) !important; box-shadow: none !important; color: var(--b-on-band-2) !important; }
@@ -132,7 +134,7 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wkc__changes summary::-webkit-details-marker { display: none !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wkc__changes summary svg { color: var(--b-teal) !important; width: 16px !important; height: 16px !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wkc__changes .schedule-publication-change[open] summary { margin-left: auto !important; display: flex !important; justify-content: flex-end !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wkc__changes ul { margin: 10px 0 0 !important; padding: 0 !important; list-style: none !important; display: grid !important; gap: 10px !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-ink2) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wkc__changes ul { margin: 10px 0 0 !important; padding: 0 !important; list-style: none !important; display: grid !important; gap: 10px !important; font-size: 0.875rem !important; line-height: 1.1875rem !important; color: var(--b-ink2) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wkc__changes li { display: flex !important; flex-direction: column !important; align-items: stretch !important; }
 
     /* ---------- the shift: a right-hand panel under the top bar, like the Owner timecard ---------- */
@@ -192,7 +194,7 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .b-hero > .b-title:has(+ .ep-next) > .b-title__text { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; white-space: nowrap !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next:not(#e-none):not(#e-none2) { padding: 0 !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__k { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; color: var(--b-on-band-2) !important; margin-bottom: var(--b-space-2) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__v { margin: 0 !important; font-size: 40px !important; line-height: 46px !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__v { margin: 0 !important; font-size: 2.5rem !important; line-height: 2.875rem !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__row { margin-top: 18px !important; gap: 10px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__row .b-btn:not(#e-none):not(#e-none2) { min-height: 42px !important; height: 42px !important; padding: 0 var(--b-space-16) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(.b-screen--back) .b-stack:has(> #b-pay-last):not(#e-none):not(#e-none2) { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; align-items: start !important; }
@@ -439,10 +441,12 @@
   /* ---------- Final round (Nov 8, 2026) ---------- */
   @media (min-width: 1024px) {
     /* A Lead's role line under the workspace name. */
+    /* Final fixes K (Nov 23, 2026): the name and role lines in rem (18px and 12/15px at the default size), so at 200% text
+     * the workplace name no longer overlaps itself or the role line; the full name stays in the card's title. */
     html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) { display: grid !important; grid-template-columns: auto minmax(0, 1fr) !important; column-gap: 10px !important; row-gap: 0 !important; align-items: center !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__mark { grid-row: 1 / span 2 !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org > .cm-org__role { grid-column: 2 !important; font-size: 12px !important; line-height: 15px !important; font-weight: 500 !important; color: var(--b-grey) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__name { line-height: 18px !important; align-self: end !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org > .cm-org__role { grid-column: 2 !important; font-size: 0.75rem !important; line-height: 0.9375rem !important; font-weight: 500 !important; color: var(--b-grey) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__name { line-height: 1.125rem !important; align-self: end !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__role { align-self: start !important; }
   }
   /* The role line goes with the workspace name: not on the icon rail. */
@@ -476,7 +480,7 @@
   }
   /* NV-069: on a tablet under 820px Home's two columns are narrow, so the shift's range is 26px, as on the phone. */
   @media (min-width: 768px) and (max-width: 819px) {
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift__time { font-size: 26px !important; line-height: 32px !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-shift__time { font-size: 1.625rem !important; line-height: 2rem !important; }
   }
 
   /* Review B6: Schedule (desktop and tablet). */
@@ -491,7 +495,7 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh .eb-wsh__chips .b-chip { margin: 0 !important; background: #FFFFFF !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wsh--now .eb-wsh__chips .b-chip { background: #FFFFFF !important; box-shadow: none !important; }
     /* A Lead who leads every shift: the week card's header says so once. */
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wkc .b-card__meta { font-size: 14px !important; color: var(--b-grey) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wkc .b-card__meta { font-size: 0.875rem !important; color: var(--b-grey) !important; }
   }
   @media (min-width: 1024px) {
     /* NV-150: the week card already holds the week, so Coming up beside it shows today and the next shift only. */
@@ -533,7 +537,7 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .b-hero > .b-title:has(+ .ep-next) { position: static !important; top: auto !important; right: auto !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .b-hero > .b-title:has(+ .ep-next) > .b-title__text { position: static !important; width: auto !important; height: auto !important; overflow: visible !important; clip: auto !important; white-space: normal !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next:not(#e-none):not(#e-none2):not(#e-none3) { padding-top: 14px !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__v { font-size: 28px !important; line-height: 34px !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__v { font-size: 1.75rem !important; line-height: 2.125rem !important; }
     /* NV-278: Last pay statement and Earlier end on one line. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(.b-screen--back) .b-stack:has(> #b-pay-last):not(#e-none):not(#e-none2):not(#e-none3) { align-items: stretch !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(.b-screen--back) .b-stack:has(> #b-pay-last) > .b-note { align-self: start !important; }

@@ -5,9 +5,9 @@
 :is(#c-root, html) .c-photos .c-photos__fields { display: flex; flex-direction: column; min-width: 0; margin: 0; padding: 0; border: 0; }
 /* Owner premium R13 (round 2): one card. The state first (15/600 and a 13px line), then hairline-separated rows, a small
  * grey label over the punch switches, the days field, two closed rows (missing photo, help for your team), review, Save. */
-:is(#c-root, html) .c-photos .c-photos__state { display: flex; flex-direction: column; gap: 2px; padding: 16px; }
-:is(#c-root, html) .c-photos .c-photos__state-title { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
-:is(#c-root, html) .c-photos .c-photos__state-body { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-photos .c-photos__state { display: flex; flex-direction: column; gap: 2px; padding: 16px var(--b-inset, 16px); }
+:is(#c-root, html) .c-photos .c-photos__state-title { font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-photos .c-photos__state-body { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-photos .c-photos__fields > .c-photos__switch,
 :is(#c-root, html) .c-photos .c-photos__fields .c-rows > li + li > .c-row,
 :is(#c-root, html) .c-photos .c-photos__more,
@@ -15,9 +15,9 @@
 :is(#c-root, html) .c-photos .c-photos__help,
 :is(#c-root, html) .c-photos .c-card > .c-row,
 :is(#c-root, html) .c-photos .c-photos__helperror { box-shadow: inset 0 1px 0 var(--c-line); }
-:is(#c-root, html) .c-photos .c-photos__label { margin: 0; padding: 16px 16px 4px; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--c-grey); box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-photos .c-photos__label { margin: 0; padding: 16px 16px 4px; font-size: 0.8125rem; line-height: 1.125rem; font-weight: 500; color: var(--c-grey); box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-photos .c-photos__keep { padding: 14px 16px 16px; }
-:is(#c-root, html) .c-photos .c-photos__days { display: flex; align-items: center; gap: 8px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-photos .c-photos__days { display: flex; align-items: center; gap: 8px; font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink2); }
 :is(#c-root, html) .c-photos .c-photos__help > summary { list-style: none; cursor: pointer; }
 :is(#c-root, html) .c-photos .c-photos__help > summary::-webkit-details-marker { display: none; }
 :is(#c-root, html) .c-photos .c-photos__help[open] .c-photos__caret { transform: rotate(180deg); }
@@ -28,22 +28,23 @@
 :is(#c-root, html) .c-photos > .c-card + .c-card { margin-top: 12px; }
 :is(#c-root, html) .c-photos .c-photos__switch { cursor: pointer; }
 :is(#c-root, html) .c-photos .c-photos__switch .c-row__detail > span:first-child { white-space: normal; }
-:is(#c-root, html) .c-photos .c-field__help { display: block; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-photos .c-field__help { display: block; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-photos .c-field__help strong { font-weight: 600; color: var(--c-ink2); }
-:is(#c-root, html) .c-photos input[type="number"].c-in { max-width: 160px; }
+/* Final fixes S2: the FieldB unit ("days") sits inside the field at its right, so the field keeps its 10rem width as a whole. */
+:is(#c-root, html) .c-photos .c-setb-unit { max-width: 10rem; }
 :is(#c-root, html) .c-photos .c-photos__more > summary { list-style: none; cursor: pointer; }
 :is(#c-root, html) .c-photos .c-photos__more > summary::-webkit-details-marker { display: none; }
 :is(#c-root, html) .c-photos .c-photos__more[open] .c-photos__caret { transform: rotate(180deg); }
 :is(#c-root, html) .c-photos .c-photos__caret { transition: transform 200ms cubic-bezier(.32, .72, 0, 1); }
-:is(#c-root, html) .c-photos .c-photos__moretext { padding: 0 16px 14px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-photos .c-photos__moretext { padding: 0 16px 14px; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-photos .c-photos__moretext p + p { margin-top: 8px; }
 :is(#c-root, html) .c-photos .c-photos__foot { flex-direction: column-reverse; align-items: stretch; justify-content: flex-end; }
 :is(#c-root, html) .c-photos .c-photos__helpform .c-photos__feedback { padding: 0; }
 :is(#c-root, html) .c-photos .c-photos__foot > .c-btn { flex: none; width: 100%; }
-:is(#c-root, html) .c-photos .c-photos__feedback { margin: 0; padding: 0 16px 12px; font-size: 13px; line-height: 18px; color: var(--c-teal); }
+:is(#c-root, html) .c-photos .c-photos__feedback { margin: 0; padding: 0 16px 12px; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-teal); }
 :is(#c-root, html) .c-photos .c-photos__feedback--error { color: var(--c-red); }
 :is(#c-root, html) .c-photos fieldset:disabled .c-btn { opacity: .6; }
-@media (max-width: 767px) { :is(#c-root, html) .c-photos .c-in { font-size: 16px; } }
+@media (max-width: 767px) { :is(#c-root, html) .c-photos .c-in { font-size: 1rem; } }
 @media (min-width: 768px) {
   :is(#c-root, html) .c-page.c-embed.c-photos { padding: 16px 16px 0; }
   :is(#c-root, html) .c-photos .c-photos__foot { flex-direction: row; align-items: center; }
@@ -52,3 +53,9 @@
   :is(#c-root, html) .c-photos .c-photos__helpactions { flex-direction: row; justify-content: flex-end; }
 }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-photos .c-photos__caret { transition: none; } }
+/* Regression sweep Z (Nov 23, 2026): the unit inside the field ("days") grows with the text like the value beside it
+ * (the kit draws it at a fixed 15–16px), and stays centred in the field. */
+:is(#c-root, html) .c-photos .c-setb-unit .c-in__suffix { top: 50%; transform: translateY(-50%); font-size: 0.9375rem; line-height: 1.25rem; }
+@media (max-width: 767px) {
+  :is(#c-root, html) .c-photos .c-setb-unit .c-in__suffix { font-size: 1rem; line-height: 1.25rem; }
+}

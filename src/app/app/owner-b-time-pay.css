@@ -130,7 +130,7 @@
    * the canvas and the first card starts under the band. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tcx .manager-corrections[data-band] > .manager-corrections-header { position: absolute !important; width: 1px !important; height: 1px !important; min-height: 0 !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; display: block !important; }
   /* OW-034: the "Waiting" chip is the one chip size on desktop too (it was 24px with 12.5px text). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tcx .manager-correction-topline > span { height: var(--b-chip-h) !important; font-size: var(--b-fs-count) !important; line-height: 16px !important; font-weight: 600 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tcx .manager-correction-topline > span { height: var(--b-chip-h) !important; font-size: 0.75rem !important; line-height: 1rem !important; font-weight: 600 !important; }
 
   @media (max-width: 767px) {
     /* OW-004: the sub-line joins the band. The page's 12px row gap showed the canvas between the bar and the line; the
@@ -263,13 +263,16 @@
    * keeps its dash tight (Inter's tabular dash is wide). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hkicker__when:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 500 !important; color: var(--b-on-band-2) !important; white-space: nowrap !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hbig:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-variant-numeric: normal !important; font-feature-settings: normal !important; }
-  /* #6: at 320px the Settings pill keeps the title's row; the cadence line wraps under both. */
+  /* #6: at 320px the Settings pill keeps the title's row; the cadence line wraps under both. Final fixes K (Nov 23, 2026):
+   * a wrapping row instead of a two-column grid, so when the title and the pill no longer fit side by side (200% text:
+   * "Payroll" with Settings, "Pay" with "See your hours") the pill drops under the title instead of covering it. At the
+   * default size the title fills the row and the pill ends it, as the grid drew. */
   @media (max-width: 359px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; align-items: center !important; column-gap: var(--b-space-12) !important; row-gap: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; column-gap: var(--b-space-12) !important; row-gap: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: contents !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > *:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 1 / -1 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > h1:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 1 !important; grid-row: 1 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title > .b-title__right:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 2 !important; grid-row: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > *:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 2 !important; flex: 0 0 100% !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > h1:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 0 !important; flex: 1 1 auto !important; min-width: min-content !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title > .b-title__right:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 1 !important; flex: none !important; }
   }
   /* #17: Payroll history's View and Download end on the card's text edge, where the amounts and chevrons above end. */
   @media (min-width: 768px) {
@@ -383,10 +386,11 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__quiet[aria-busy="true"]:not(#polq1):not(#polq2):not(#polq3) { color: var(--b-teal) !important; cursor: progress !important; }
   /* The note's one action starts on the note's text edge. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot, .c-tc .c-tc-flow) > .b-callout .b-callout__act > .c-btn:not(#polq1):not(#polq2):not(#polq3) { width: auto !important; margin: 0 0 0 6px !important; }
-  /* From 768px the decision and the result read as one column (a name and its hours stay within reach of each other). */
+  /* From 768px the decision and the result use the card's width, on its edges (Jose's review, Nov 23, 2026: a 560px column
+   * left the rows, the checkbox and Cancel/Approve stopping short of a full-width card). */
   @media (min-width: 768px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .c-tc-flow :is(.c-tc-flow__step, .c-tc-flow__rows, .c-tc-flow__all):not(#polq1):not(#polq2):not(#polq3) { width: 100% !important; max-width: 560px !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .c-tc-flow[data-stage="result"] .c-tc-flow__foot:not(#polq1):not(#polq2):not(#polq3) { max-width: 560px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .c-tc-flow :is(.c-tc-flow__step, .c-tc-flow__rows, .c-tc-flow__all):not(#polq1):not(#polq2):not(#polq3) { width: 100% !important; max-width: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .c-tc-flow[data-stage="result"] .c-tc-flow__foot:not(#polq1):not(#polq2):not(#polq3) { max-width: none !important; }
   }
   @media (max-width: 767px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .c-tc-flow .c-tc-flow__bar:not(#polq1):not(#polq2):not(#polq3) { flex-direction: column !important; align-items: stretch !important; }
@@ -416,4 +420,188 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-exp .c-exp__result .c-exp__receipt dd.c-exp__plain:not(#polr1):not(#polr2):not(#polr3):not(#polr4):not(#polr5):not(#polr6) { font-family: inherit !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-exp .c-exp__result .b-done__quiet:not(#polr1):not(#polr2):not(#polr3):not(#polr4):not(#polr5):not(#polr6) { justify-self: start !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-exp #time-export-send:focus:not(#polr1):not(#polr2):not(#polr3):not(#polr4):not(#polr5):not(#polr6) { outline: none !important; }
+}
+
+/* ---------- G52 (Nov 23, 2026): Timecards on a phone at a large text size. The phone screen is a size container measured
+ * in its own text (ems), so these rules apply only when the text is large for the width: about 200% text below 620px
+ * wide, 150% below 465px. At the default size every phone from 310px up keeps the layout above unchanged. Following
+ * Apple's large-text layouts, things stack rather than truncate: the three figures in the band become rows (label left,
+ * figure right), a Team row keeps the face and chevron at its sides and puts the name, the status and the hours under
+ * one another, each wrapping whole; the tools' second lines show in full. Nothing is clipped, nothing overlaps. ---------- */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen:not(#gq1) { container: tc-b / inline-size !important; }
+  @container tc-b (max-width: 20em) {
+    /* The band's figures: one per row. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen .b-hero .b-live:not(#gq1):not(#gq2):not(#gq3) { grid-auto-flow: row !important; grid-template-columns: minmax(0, 1fr) !important; grid-auto-columns: minmax(0, 1fr) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen .b-hero .b-live__i + .b-live__i:not(#gq1):not(#gq2):not(#gq3) { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen .b-hero :is(.b-live__i > .b-live__a, .b-live__i:not(:has(> .b-live__a))):not(#gq1):not(#gq2):not(#gq3) { flex-direction: row !important; flex-wrap: wrap !important; align-items: baseline !important; justify-content: space-between !important; column-gap: var(--b-space-12) !important; min-height: var(--b-target) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen .b-hero :is(.b-live__l, .b-live__v):not(#gq1):not(#gq2):not(#gq3) { min-width: 0 !important; white-space: normal !important; overflow-wrap: break-word !important; }
+    /* A Team row: face | name, status and hours | chevron. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .b-row:not(#gq1):not(#gq2):not(#gq3) { display: grid !important; grid-template-columns: auto minmax(0, 1fr) auto !important; column-gap: var(--b-space-12) !important; row-gap: var(--b-space-8) !important; align-items: start !important; height: auto !important; min-height: 72px !important; padding-top: var(--b-space-12) !important; padding-bottom: var(--b-space-12) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .b-row > .b-av:not(#gq1):not(#gq2):not(#gq3) { grid-column: 1 !important; grid-row: 1 / span 2 !important; margin-top: var(--gq-face-top, 0px) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .b-row > .b-row__tx:not(#gq1):not(#gq2):not(#gq3) { grid-column: 2 !important; grid-row: 1 !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .b-row > .b-row__end:not(#gq1):not(#gq2):not(#gq3) { grid-column: 2 !important; grid-row: 2 !important; justify-self: start !important; min-width: 0 !important; text-align: left !important; align-items: flex-start !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .b-row > .b-chev:not(#gq1):not(#gq2):not(#gq3) { grid-column: 3 !important; grid-row: 1 / span 2 !important; align-self: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .b-row__t:not(#gq1):not(#gq2):not(#gq3) { flex-wrap: wrap !important; row-gap: var(--b-space-2) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .b-row__tt:not(#gq1):not(#gq2):not(#gq3) { flex: 0 1 auto !important; overflow: visible !important; text-overflow: clip !important; white-space: normal !important; overflow-wrap: break-word !important; text-wrap: balance !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .c-tc-sub:not(#gq1):not(#gq2):not(#gq3) { height: auto !important; overflow: visible !important; row-gap: var(--b-space-2) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .c-tc-sub > :is(span, .b-chip, .b-status):not(#gq1):not(#gq2):not(#gq3) { flex: 0 1 auto !important; min-width: 0 !important; max-width: 100% !important; height: auto !important; overflow: visible !important; text-overflow: clip !important; white-space: normal !important; overflow-wrap: break-word !important; line-height: 1.35 !important; }
+    /* "Clocked in now" on two lines: the live dot sits beside the first line, not between the lines. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .c-tc-sub > .b-status:not(#gq1):not(#gq2):not(#gq3) { align-items: flex-start !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen #b-tc-team .c-tc-sub > .b-status > .b-ldot:not(#gq1):not(#gq2):not(#gq3) { margin-top: calc((1.35em - var(--b-chip-dot)) / 2) !important; }
+    /* The tools' second line in full (it is clamped to two lines at the default size). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .b-screen .b-row__s:not(#gq1):not(#gq2):not(#gq3) { display: block !important; -webkit-line-clamp: none !important; overflow: visible !important; }
+  }
+  /* From 768px the period's subtitle sits under the title on the band; its 21px line stays 21px at the default size and
+   * grows with the text (at 200% the lines ran into each other). */
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > header.c-title .c-title__sub:not(#gq1):not(#gq2):not(#gq3) { line-height: 1.3125rem !important; }
+  }
+}
+
+/* ---------- G90 (Nov 23, 2026): Timecards' text in rem from 768px ----------
+ * The names, table cells, the period control's words, the Show tabs and the band title were fixed px while the statuses
+ * were rem, so at 200% text a status was twice the size of the name beside it. Each now takes the kit's type role
+ * (b-tokens.css): the title stays the band's 32/38 in rem, table text body, column heads meta, tabs and the period words
+ * body-sm. The week control's 36px height is the kit's (--b-seg-item-h) and stays. The faces' initials stay fixed: they
+ * sit in a fixed circle and are hidden from screen readers. The person's week (the inspector or sheet) follows on every
+ * width. ---------- */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > header.c-title h1:not(#gq1):not(#gq2):not(#gq3) { font-size: 2rem !important; line-height: 2.375rem !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc :is(.c-tc-seg, .c-tc-tabs) > button:not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tabs > button > em:not(#gq1):not(#gq2):not(#gq3) { line-height: var(--b-lh-caption) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-table:not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-table thead th:not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-table :is(tbody, tfoot) :is(th, td, .c-tc-person > span:not(.c-av), .c-num, .c-sr, .c-tc-cue, .c-tc-idle__open > span):not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-table .c-num > .c-unit:not(#gq1):not(#gq2):not(#gq3) { font-size: 0.85em !important; line-height: inherit !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > .c-sr:not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-body) !important; }
+  }
+  /* The person's week, on every width. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet :is(.c-sheet__done, .c-btn, summary, .c-tc-day__date, .c-tc-sheet__who h3):not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-row__value, .c-tc-sheet .c-row__value .c-num:not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet :is(.c-stat__label, .c-tc-sheet__note, .c-tc-sheet__issue, .c-tc-sheet__state, .c-tc-sheet__more, .c-tc-sheet__history h3, [class*="__definition"], [class*="__entrySource"], dt, dd, small, strong):not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-stat__value:not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-title) !important; line-height: var(--b-lh-title) !important; }
+}
+/* The person's week at a large text size: the sheet is 420px at most, so once its text is large for that width
+ * (under 22rem, from about 150% text) the name, the stats and each day wrap instead of cutting off ("Elen…", "Recor…",
+ * "7:57 A…"). At the default size 22rem is 352px and nothing changes. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet:not(#gq1) { container: tc-sheet / inline-size !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; }
+  @container tc-sheet (max-width: 22rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-tc-sheet__who:not(#gq1):not(#gq2):not(#gq3) { flex-wrap: wrap !important; align-items: flex-start !important; row-gap: var(--b-space-4) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-tc-sheet__who > .c-row__main:not(#gq1):not(#gq2):not(#gq3) { flex: 1 1 0% !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-tc-sheet__who :is(.c-row__title, .c-row__detail, .c-row__detail > span):not(#gq1):not(#gq2):not(#gq3) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-tc-sheet__who > .c-tc-sheet__state:not(#gq1):not(#gq2):not(#gq3) { flex: 1 0 100% !important; padding-left: calc(32px + var(--b-space-12)) !important; white-space: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-stats:not(#gq1):not(#gq2):not(#gq3) { grid-auto-flow: row !important; grid-template-columns: minmax(0, 1fr) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-stats > .c-stat:not(#gq1):not(#gq2):not(#gq3) { display: flex !important; flex-wrap: wrap !important; align-items: baseline !important; justify-content: space-between !important; column-gap: var(--b-space-12) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-stats > .c-stat + .c-stat:not(#gq1):not(#gq2):not(#gq3) { box-shadow: inset 0 1px 0 var(--c-line) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-stat :is(.c-stat__label, .c-stat__value):not(#gq1):not(#gq2):not(#gq3) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-btn:not(#gq1):not(#gq2):not(#gq3) { height: auto !important; min-height: var(--b-target) !important; padding-top: var(--b-space-8) !important; padding-bottom: var(--b-space-8) !important; white-space: normal !important; text-align: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-tc-day:not(#gq1):not(#gq2):not(#gq3) { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-tc-day > .c-tc-day__date:not(#gq1):not(#gq2):not(#gq3) { flex: 1 1 auto !important; width: auto !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-tc-day > .c-row__value:not(#gq1):not(#gq2):not(#gq3) { order: 2 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-tc-day > .c-row__main:not(#gq1):not(#gq2):not(#gq3) { order: 3 !important; flex: 1 0 100% !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-tc-day .c-row__detail > span:not(#gq1):not(#gq2):not(#gq3) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+  }
+}
+
+/* Gate check (Nov 23, 2026), 44px targets: the Show tabs keep their 36px look from 768px and reach 44px with a taller hit
+ * area above and below (they sit side by side, so no two areas overlap); the person's week's "Review correction" link is
+ * a 44px row. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tabs > button:not(#gq1):not(#gq2):not(#gq3) { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tabs > button:not(#gq1):not(#gq2):not(#gq3)::before { content: "" !important; position: absolute !important; inset: -4px 0 !important; }
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .b-callout a:not(#gq1):not(#gq2):not(#gq3) { display: inline-flex !important; align-items: center !important; min-height: var(--b-target) !important; }
+}
+
+/* The period's table at a large text size (G90 follow-up): with its text in rem, at 768px and 200% text the Person
+ * column (sized to what is left, for its ellipsis) shrank to one letter. Once the table card is narrow for its text
+ * (under 36rem: 576px at the default size, so the default layout is unchanged) names and statuses wrap whole words,
+ * the Person column keeps room for a name, the live dot sits beside the status's first line, and the Breaks column
+ * steps aside as it does on phones (each person's breaks are in their week). */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard:not(#gq1) { container: tc-table / inline-size !important; }
+    @container tc-table (max-width: 36rem) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table :is(th, td):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { padding-left: var(--b-space-8) !important; padding-right: var(--b-space-8) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table td[data-col="person"]:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { max-width: none !important; min-width: 7em !important; width: auto !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table .c-tc-person > span:not(.c-av):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word !important; text-align: left !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table .c-tc-person:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { align-items: flex-start !important; text-align: left !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table td[data-col="status"]:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { min-width: 0 !important; white-space: normal !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table :is(.c-tc-st, .c-tc-st > .b-status, .c-tc-st > .b-chip):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { white-space: normal !important; align-items: flex-start !important; text-align: right !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table .c-tc-st > .b-status > .b-ldot:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { margin-top: calc((var(--b-lh-meta) - var(--b-chip-dot)) / 2) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table [data-col="breaks"]:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { display: none !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table [data-col="person"]:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { width: auto !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table [data-col="status"]:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { width: auto !important; padding-right: var(--b-space-16) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table .c-tc-st > :is(.b-status, .b-chip):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { flex: 0 1 auto !important; min-width: 0 !important; }
+    }
+  }
+}
+
+/* The phone select and review view (the Corp layout under 768px, Nov 23, 2026 follow-up): its title, week words, review
+ * button, count and hours were fixed px, so at 200% text they stayed small beside text that doubled. Each is now the
+ * same size in rem (24/30, 13/18, 13, 15/20 at a 16px root), and the fixed heights become minimums of the same values,
+ * so the default size is unchanged and the controls grow with the text. Cancel keeps its width and the review button
+ * moves under it, at the right edge, when the two no longer fit side by side. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) > header.c-title h1:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 1.5rem !important; line-height: 1.875rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) > header.c-title .c-title__sub:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) > header.c-title .c-title__sub .b-segs__i:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: inherit !important; line-height: inherit !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-seg:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { height: auto !important; min-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-seg > button:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.8125rem !important; height: auto !important; min-height: 36px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot .c-btn:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.9375rem !important; line-height: 1.25rem !important; height: auto !important; min-height: 48px !important; padding-top: 4px !important; padding-bottom: 4px !important; white-space: normal !important; text-align: center !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { height: auto !important; flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot > .c-tc-flow__cancel:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { flex: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot > .c-btn:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { margin-left: auto !important; max-width: 100% !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-rows :is(.c-row__value, .c-row__value .c-num):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.9375rem !important; line-height: 1.25rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-rows .c-row:not(.c-tc-day):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { height: auto !important; }
+}
+
+/* Jose's review (Nov 23, 2026): the person's week. The attention note sits in the person's card under the figures, on the
+ * card's 22px inset with the card's dividing line (it hung between the cards with its icon on the card edge). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-card > .c-tc-sheet__attn:not(#gq1):not(#gq2):not(#gq3) { margin: 0 !important; padding: 14px 22px 16px !important; box-shadow: inset 0 1px 0 var(--c-line) !important; }
+  /* The footer holds "Request time correction" above Approve: one column, 8px apart, both the sheet's full width. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot:not(#gq1):not(#gq2):not(#gq3) { gap: var(--b-space-8) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot > .c-btn.c-btn--secondary:not(:disabled, [aria-disabled="true"]):not(#gq1):not(#gq2):not(#gq3) { border-color: transparent !important; background: var(--b-btn-surface) !important; color: var(--b-btn-surface-ink) !important; box-shadow: var(--b-btn-surface-edge) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot > .c-btn.c-btn--secondary:not(:disabled, [aria-disabled="true"]):active:not(#gq1):not(#gq2):not(#gq3) { background: var(--b-btn-surface-press) !important; }
+}
+
+/* Jose's review (Nov 23, 2026, "not B2 compliant"): Select and the selected set's review on the Direction B kit, on every
+ * width. The card is the kit's white raised card; its heading is the card heading with the week (or the ready count) under
+ * it; each timecard is a kit row (name left, hours or result right, on the card's inset); "I checked these hours" is a
+ * kit row with the kit checkbox and its consequence under it; the two buttons sit on the card's edges at the foot, the
+ * lesser one (Cancel, Refresh) left and the main one right. On a phone the team is kit rows with the checkbox leading. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__head:not(#gq1):not(#gq2):not(#gq3) { flex-direction: column !important; align-items: flex-start !important; gap: var(--b-space-2) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__sub:not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 400 !important; color: var(--b-grey) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__rows:not(#gq1):not(#gq2):not(#gq3) { margin: 0 !important; padding: 0 !important; list-style: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__row:not(#gq1):not(#gq2):not(#gq3) { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: var(--b-space-12) !important; min-height: 52px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .c-tc-flow__n:not(#gq1):not(#gq2):not(#gq3) { min-width: 0 !important; overflow-wrap: anywhere !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 600 !important; color: var(--b-ink) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .c-tc-flow__v:not(#gq1):not(#gq2):not(#gq3) { flex: none !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 500 !important; color: var(--b-ink2) !important; font-variant-numeric: tabular-nums !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .c-tc-flow__v[data-tone="not-submitted"]:not(#gq1):not(#gq2):not(#gq3) { color: var(--b-grey) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .c-tc-flow__v:is([data-tone="outcome-unknown"], [data-tone="blocked"], [data-tone="conflict"], [data-tone="unavailable"], [data-tone="denied"]):not(#gq1):not(#gq2):not(#gq3) { font-weight: 600 !important; color: var(--b-amber) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__check:not(#gq1):not(#gq2):not(#gq3) { display: flex !important; align-items: flex-start !important; gap: var(--b-space-12) !important; min-height: 64px !important; box-shadow: inset 0 1px 0 var(--b-line) !important; cursor: pointer !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__check > input:not(#gq1):not(#gq2):not(#gq3) { flex: none !important; margin: 1px 0 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__check .b-row__tx:not(#gq1):not(#gq2):not(#gq3) { display: flex !important; flex-direction: column !important; gap: var(--b-space-2) !important; min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__check .b-row__tt:not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 600 !important; color: var(--b-ink) !important; white-space: normal !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__check .b-row__s:not(#gq1):not(#gq2):not(#gq3) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; white-space: normal !important; -webkit-line-clamp: none !important; display: block !important; overflow: visible !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__foot:not(#gq1):not(#gq2):not(#gq3) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important; gap: var(--b-space-12) !important; padding: var(--b-space-12) var(--b-inset) var(--b-space-16) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__foot[data-end]:not(#gq1):not(#gq2):not(#gq3) { justify-content: flex-end !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__foot > .b-btn:not(#gq1):not(#gq2):not(#gq3) { min-height: var(--b-target) !important; max-width: 100% !important; white-space: normal !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__foot > .b-btn--teal:not(#gq1):not(#gq2):not(#gq3) { margin-left: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__foot > .b-btn--full:not(#gq1):not(#gq2):not(#gq3) { flex: 1 1 100% !important; margin-left: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__bar:not(#gq1):not(#gq2):not(#gq3) { padding: 0 var(--b-inset) var(--b-space-4) !important; }
+  @media (min-width: 768px) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__action:not(#gq1):not(#gq2):not(#gq3) { max-width: 360px !important; } }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__bar > .b-tc-flow__foot:not(#gq1):not(#gq2):not(#gq3) { margin: var(--b-space-12) calc(-1 * var(--b-inset)) 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__steps:not(#gq1):not(#gq2):not(#gq3) { margin: 0 !important; padding: var(--b-space-4) var(--b-inset) var(--b-space-12) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__pad:not(#gq1):not(#gq2):not(#gq3) { padding: var(--b-space-16) var(--b-inset) 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-flow .b-tc-flow__all > summary:not(#gq1):not(#gq2):not(#gq3) { display: flex !important; align-items: center !important; justify-content: space-between !important; min-height: var(--b-target) !important; padding: 0 var(--b-inset) !important; color: var(--b-teal) !important; font-weight: 600 !important; cursor: pointer !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-pick:not(#gq1):not(#gq2):not(#gq3) { display: flex !important; align-items: center !important; gap: var(--b-space-12) !important; cursor: pointer !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-pick > input:not(#gq1):not(#gq2):not(#gq3) { flex: none !important; margin: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-pick[data-off]:not(#gq1):not(#gq2):not(#gq3) { cursor: default !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .b-tc-pick[data-off] :is(.b-row__tt, .b-row__end):not(#gq1):not(#gq2):not(#gq3) { color: var(--b-grey) !important; }
 }

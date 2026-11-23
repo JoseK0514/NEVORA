@@ -3,6 +3,7 @@ import { listPositions } from "@/lib/data/positions";
 import { listEmployees } from "@/lib/data/employees";
 import type { Position } from "@/lib/domain";
 import { createPositionAction, updatePositionAction } from "../actions";
+import { SettingsPageB } from "../settings-b";
 import { PositionCatalog } from "./position-catalog";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
@@ -21,7 +22,9 @@ export default async function PositionsPage() {
   const employees = available ? await listEmployees().catch(() => null) : null;
   const people = employees ? Object.fromEntries(positions.map(position => [position.id, employees.filter(employee => employee.active && employee.positionIds.includes(position.id)).length])) : undefined;
   return (
-    <PositionCatalog positions={positions} available={available} people={people}
-      createAction={createPositionAction} updateAction={updatePositionAction} />
+    <SettingsPageB title="Positions" titleId="positions-title">
+      <PositionCatalog positions={positions} available={available} people={people}
+        createAction={createPositionAction} updateAction={updatePositionAction} />
+    </SettingsPageB>
   );
 }
