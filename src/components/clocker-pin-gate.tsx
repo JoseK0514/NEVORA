@@ -271,7 +271,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   {tone==='stop'?<p className={styles.clears}>{t('This tablet checks again by itself.')}</p>:null}</div>:null;
  /* The kiosk's offline card: what is not saved, what to do now, and that the screen returns by itself. */
  const offlineCard=offline?<div className={styles.blocked} data-clocker-blocked="offline">
-  <p role="alert" className={styles.smsg}>{t('This tablet is offline, so nothing can be recorded right now.')}</p>
+  <p role="alert" className={styles.smsg}>{t('This tablet is offline.')}</p>
   <p className={styles.blockedHint}>{t('Tell a manager so your time gets recorded.')}</p>
   <button type="button" className={styles.btn} data-kind="primary" onClick={()=>void reset()}>{t('Check connection')}</button>
   <p className={styles.clears}>{t('This tablet checks again by itself when the connection returns.')}</p></div>:null;
@@ -290,7 +290,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
    {blocked||offline?ring:null}
    <div className={styles.head} data-back={step==='pin'&&!blocked&&!offline?'':undefined}>
     {step==='pin'&&!blocked&&!offline?<button type="button" className={styles.back} aria-label={t('Change Employee ID')} disabled={pending} onClick={changeId}><ClockerIcon name="back" size={22}/></button>:null}
-    <h1 ref={heading} tabIndex={-1} className={styles.title}>{t(paused?pausedTitle:offline||unreachable&&!online?'No connection':unreachable?'Can’t reach NEVORA':blocked&&tone==='device'?'This tablet needs to be set up again':step==='pin'?'Enter your PIN':'Enter your Employee ID')}</h1>
+    <h1 ref={heading} tabIndex={-1} className={styles.title}>{t(paused?pausedTitle:offline||unreachable&&!online?'Time can’t be recorded':unreachable?'Can’t reach NEVORA':blocked&&tone==='device'?'This tablet needs to be set up again':step==='pin'?'Enter your PIN':'Enter your Employee ID')}</h1>
    </div>
    {blockedCard}{offlineCard}
    {/* The Employee ID step: the tablet's own keyboard, capitals on, no autocorrect; Enter or Continue moves to the PIN. */}

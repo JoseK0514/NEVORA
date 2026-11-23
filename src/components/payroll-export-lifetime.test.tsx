@@ -233,3 +233,16 @@ it('keeps the old 15-second deadline armed during one pending paired replacement
 it('a changed source in an early 15-second replacement clears draft and selected employees',async()=>{
  let reads=0;rs.stubGlobal('fetch',async(path:string)=>path==='/api/timecards'?Response.json({...ready(15000),cards:++reads===1?[card]:[]}):Response.json(mappings()));await mount();editMapping();await rs.advanceTimersByTimeAsync(10000);expect(reads).toBe(2);expect(html()).not.toContain('Work in progress mapping');expect(html()).toContain('0 selected');expect(html()).not.toContain('PRIVATE Payroll Employee');
 });
+// DEC5 (Jose approved option B, Nov 23, 2026): while the week is still open, the waiting line says when its timecards can
+// be approved without naming the week again (the Week field above it already shows it).
+it('DEC5: an open week says when timecards can be approved, without repeating the week', async () => {
+ const recorded = { ...source, entries: [{ id: 'entry-E1', locationId: 'fixture-office', locationName: 'Fixture office', positionId: null, positionName: null, sourceKind: 'RECORDED', adjustmentId: null, recordedVersion: 1, startAt: '2026-09-22T08:00:00Z', endAt: '2026-09-22T09:00:00Z', rawStartAt: '2026-09-22T08:00:00Z', rawEndAt: '2026-09-22T09:00:00Z', breaks: [] }] };
+ const draft = { source: recorded, sourceHash: 'a'.repeat(32), revision: 0, state: 'DRAFT', history: [] };
+ rs.stubGlobal('fetch', rs.fn(async (path: string) => path === '/api/timecards' ? Response.json({ ...ready(), cards: [draft] }) : Response.json(mappings())));
+ const open = () => { host.cursor = 0; return PayrollExport({ initialPeriod: period, actorId, today: '2026-09-24' }); };
+ open(); host.mounted = true; cleanup = host.effects[0](); await flush();
+ const text = renderToStaticMarkup(open()).replace(/ /g, ' ');
+ expect(text).toContain('Timecards can be approved from Mon, Sep 28.');
+ expect(text).not.toContain('Its timecards');
+ expect(text).not.toMatch(/Timecards for Sep 21/);
+});
