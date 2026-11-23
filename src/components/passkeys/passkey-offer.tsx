@@ -4,13 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { PASSKEY_COPY } from "@/lib/passkeys/copy";
 import { SigPendingLabel } from "@/components/signature/sig-button";
 import { clearPasswordSignIn, deviceName, dismissOffer, isPhoneLike, listPasskeys, offerDismissedRecently, passkeysAvailable, passwordSignInPending, registerPasskey } from "@/lib/passkeys/client";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
 import "./passkeys.css";
-
-const t = PASSKEY_COPY.en;
 
 /** After a password sign-in on a phone that can use Face ID and has no passkey yet, offer it once in a calm sheet.
  * "Not now" (or closing the sheet) is remembered on this device for 30 days. */
 export function PasskeyOffer() {
+  const t = PASSKEY_COPY[usePortalLang()];
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);

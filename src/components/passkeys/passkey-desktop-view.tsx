@@ -5,14 +5,13 @@ import type {Passkey} from '@/lib/passkeys/client';
 import {SigPendingLabel} from '@/components/signature/sig-button';
 import type {AuthLang} from '@/lib/auth-copy';
 import {ACCESS_COPY} from '@/components/access-recovery/copy';
-const t=PASSKEY_COPY.en;
-const dateLabel=(iso:string)=>new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+const dateLabel=(iso:string,lang:AuthLang='en')=>new Date(iso).toLocaleDateString(lang==='es'?'es-PR':'en-US',{month:'short',day:'numeric',year:'numeric'});
 type Props={/** U11: the language of the passkey guidance (the signed-in app is English today). */lang?:AuthLang;load:'loading'|'ready'|'failed';passkeys:Passkey[];busy:'add'|'remove'|null;notice:{tone:'done'|'error'|'info';text:string}|null;confirm:Passkey|null;supported:boolean;phone:boolean;disabled?:boolean;dialog:RefObject<HTMLDialogElement|null>;addButton:RefObject<HTMLButtonElement|null>;onRefresh:()=>void;onAdd:()=>void;onReview:(key:Passkey,button:HTMLButtonElement)=>void;onRemove:(key:Passkey)=>void;onKeep:()=>void};
 /** Shared incumbent desktop/management markup, without a data or ceremony owner. */
 export function PasskeyDesktopView({lang='en',load,passkeys,busy,notice,confirm,supported,phone,disabled=false,dialog,addButton,onRefresh,onAdd,onReview,onRemove,onKeep}:Props){
   // U11 (Nov 17, 2026): what a passkey is in one plain line, that the face or fingerprint never leaves the device, an
   // honest "This device can't use a passkey" with what still works, and a closed prompt said calmly (not an error).
-  const a=ACCESS_COPY[lang].passkey;
+  const a=ACCESS_COPY[lang].passkey,t=PASSKEY_COPY[lang];
   return (
     <section className="nv-card pk-section" aria-labelledby="passkeys-title">
       <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{t.sectionTitle}</h2></div>
@@ -25,7 +24,7 @@ export function PasskeyDesktopView({lang='en',load,passkeys,busy,notice,confirm,
             <li key={passkey.id} className="pk-item">
               <span className="pk-item__text">
                 <span className="pk-item__name">{passkey.name}</span>
-                <span className="pk-item__meta">{t.added(dateLabel(passkey.createdAt))} · {passkey.lastUsedAt ? t.lastUsed(dateLabel(passkey.lastUsedAt)) : t.neverUsed}</span>
+                <span className="pk-item__meta">{t.added(dateLabel(passkey.createdAt,lang))} · {passkey.lastUsedAt ? t.lastUsed(dateLabel(passkey.lastUsedAt,lang)) : t.neverUsed}</span>
               </span>
               <button type="button" className="nv-link pk-remove" aria-label={t.removeLabel(passkey.name)} disabled={disabled || busy !== null}
                 onClick={event => onReview(passkey,event.currentTarget)}>{t.remove}</button>
