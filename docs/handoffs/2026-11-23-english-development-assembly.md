@@ -18,3 +18,11 @@ SCRUM-91 keeps `es-employee`, `es-mobile`, `es-owner`, `es-payroll`, `es-rest` a
 ## Publication
 
 The source checker reports 41 remote branches against the three-branch ceiling. Jose directed keeping the refs and holding Development. The existing CI and Mobile Access candidate workflows may qualify the frozen tree without updating Development. No staging deployment is selected by this assembly. Main and production remain subject to Jose's separate approval.
+
+## Requalification after the first tagged candidate
+
+The first tagged tree `d49d5acf233c455e41cb025ff302f6927f6d9921` passed the [separate Mobile Access workflow](https://github.com/JoseK0514/NEVORA/actions/runs/45283987230). Its [CI attempt](https://github.com/JoseK0514/NEVORA/actions/runs/45283987236) has retained failures. Source-local typecheck, 51 focused owned PostgreSQL Company Access cases and six Chromium/WebKit Clocker break controls passed. The 768 px Home failure reproduced in local Chromium with the Shift details target passing all nine hit points and the focused Time link reporting no painted outline or inset shadow.
+
+The sidebar uses a separate pseudo-element for its touch area. The before/after CSS probe confirmed both the visible 2 px focus edge and the 44 px hit area in Chromium and WebKit at 768 and 1440 px. The full owned Chromium Home suite passed seven widths on exact intermediate `8d3f558a71302db689f4858896bbfbcfdb0a3b2e`. The original Step 4 lifecycle trace separately identified a transparent recovery back-link area intercepting Make reset link. The controlled Chromium and WebKit replay reproduced that interception and confirmed the containing-block fix, including the back link's 44 px target. The exact amended candidate must rerun the full lifecycle.
+
+The continued browser test reconciliation targets the actual reviewed controls and their identities. The frozen original logs retain the superseded selectors. Date, time, persistence, privacy clearance, failed navigation, native focus, audience revision, and original-operation assertions remain release checks. The retained risk for the first tag is not treated as a pass on the revised tree.
