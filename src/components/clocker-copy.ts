@@ -147,6 +147,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "Check setup": "Revisar configuración",
  // Tablet setup (Phase 6, JR-26): the first-time screen, the code that arrives in the Owner's link, and each answer.
  "This tablet will be the time clock for {location}.": "Esta tableta será el registro de tiempo de {location}.",
+ "This tablet becomes this location’s time clock.": "Esta tableta será el registro de tiempo de esta ubicación.",
  "How to set it up": "Cómo configurarla",
  "On another device, the Owner opens Settings → Clocker tablets.": "En otro dispositivo, el dueño abre Settings → Clocker tablets.",
  "The Owner adds this tablet and gets its setup code.": "El dueño añade esta tableta y obtiene su código de configuración.",
@@ -263,6 +264,9 @@ export const CLOCKER_COPY:Record<string,string>={
  "No connection": "Sin conexión",
  "Paused: too many attempts": "En pausa: demasiados intentos",
  "Can’t save punches":"No puede guardar marcaciones",
+ "Connection problem":"Problema de conexión",
+ "Storage problem":"Problema de almacenamiento",
+ "Check needed":"Revisión necesaria",
  "Can’t reach NEVORA":"No se puede conectar con NEVORA",
  "This tablet is paused": "Esta tableta está en pausa",
  // Nov 14 inspection (RA-3; Jose's Nov 11 decisions): Employee ID then PIN, and a pause that names who is paused. The
