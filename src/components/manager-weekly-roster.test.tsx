@@ -1,6 +1,8 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, rs } from '@rstest/core';
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ManagerWeeklyRoster } from "./manager-weekly-roster";
 import { assignedHours, filterRoster, type RosterEmployee } from "../lib/scheduling/manager-roster-presentation";
 import { weekDates } from "../lib/date-utils";
@@ -197,7 +199,7 @@ it("corporate: today's open shifts that already ended say Not filled, and anothe
   expect(out).toMatch(/<button type="button" class="sb-openchip" id="[^"]+" aria-expanded="false">/);
   expect(out).not.toContain("sb-openlist");
   expect(out).toContain('<span class="cm-person__sub sb-opencount"><b class="c-num">4</b><span> this week</span></span>');
-  expect(out).toContain('<a class="c-sched-week__today" href="/app/schedule?week=2026-10-12" aria-label="Go to this week">Today</a>');
+  expect(out).toContain('<a class="c-sched-week__today" href="/app/schedule?week=2026-10-12" aria-label="Today, go to this week">Today</a>');
   // Without the read time, today's open shifts all stay open.
   const unknown = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
     absences: { state: "ready", employeeIds: ["fictional", "unassigned"], rows: [] } as never, openShifts,
@@ -260,4 +262,11 @@ it("says one location once and keeps the key for a mixed week", () => {
   const strip = render(employees);
   expect(strip).not.toMatch(/class="b-week__d"[^>]*aria-label/);
   expect(strip).toMatch(/<span>Tue<\/span><span class="sr-only"> <\/span><b class="c-num">6<\/b><span class="sr-only">, today, 2 shifts, 1 open shift<\/span>/);
+});
+
+// Release sweep (Nov 23, WCAG 2.5.3): both "Today" links name themselves starting with the word they show.
+it('names the week Today links starting with their visible word', () => {
+  const src = readFileSync(join(__dirname, 'manager-weekly-roster.tsx'), 'utf8');
+  expect(src).not.toContain('aria-label="Go to this week"');
+  expect(src.match(/aria-label="Today, go to this week">Today<\/a>/g)).toHaveLength(2);
 });

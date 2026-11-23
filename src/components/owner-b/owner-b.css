@@ -428,6 +428,9 @@
   /* DS-16 (Nov 23): once the reader enlarges text (--nv-rem, owner-b-pages.css), a row's chip ("Action needed") wraps
    * onto a second line instead of being cut with an ellipsis. At the default size it stays one line. */
   @container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); white-space: normal; overflow: visible; text-overflow: clip; } }
+  /* Final fixes K (release sweep, Nov 23): a row's status chip under the name ("Not clocked in · 2 h 11 min" on Team) ran
+   * past the card's edge at 200% text. Once the reader enlarges text it wraps inside the row, as the chip above does. */
+  @container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__state > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); max-width: 100%; flex: 0 1 auto; white-space: normal; overflow-wrap: break-word; } }
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) { grid-auto-columns: auto; }
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 6px; }
 }
