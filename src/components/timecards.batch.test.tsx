@@ -452,16 +452,17 @@ it('BR-1: a person’s time is a row figure and the week’s total a sentence, f
  // Phase 8 (a.md #38): the period total in the table is whole hours; the note under it keeps the exact figure.
  expect(text).toContain('Total10 h');expect(text).not.toContain('Total10 h 6 min');expect(text).toContain('10 h 6 min recorded');
 });
-it('BR-2: says the two steps where they are taken, and names the button for a card with hours',async()=>{
+it('BR-2, DEC8: says the two steps where they are taken (the sheet), not on the page, and names the button for a card with hours',async()=>{
  rs.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[worked('E1',240),card('E2'),card('OWNER')]}));
  await mount();
  const steps='Approve each timecard, then finalize the week to lock it for payroll.';
- expect(html()).toContain(steps);expect(html()).toContain('1 to approve · 0 to finalize');
+ // DEC8 (Jose, Nov 23, 2026): the page's summary already reads "1 to approve · 0 to finalize", so the line isn't on the page.
+ expect(html()).not.toContain(steps);expect(html()).toContain('1 to approve · 0 to finalize');
  openFirstSheet();
  const sheet=html();
  expect(sheet).toContain('Approve timecard');expect(sheet).not.toContain('Approve with no hours');
  expect(sheet).toContain('Request time correction');
- expect(sheet.split(steps).length).toBeGreaterThan(2);
+ expect(sheet).toContain(steps);
 });
 it.each([['prepare','Prepare payroll','href="/app/payroll/prepare"'],['owner','All done. Your Owner runs payroll.',null],[undefined,'Download hours for payroll','href="/app/payroll-export?start=2026-09-21&amp;end=2026-09-27"']] as const)('AR-11: a finalized period leads on (%s)',async(step,title,link)=>{
  payrollStep=step;
@@ -483,7 +484,7 @@ it('phone: the tile names the step under way, the steps are said once and a fina
  const text=(markup:string)=>markup.replace(/<[^>]+>/g,'|').replace(/\s+/g,' ');
  const before=text(html());
  expect(before).toContain('|Approved|');expect(before).not.toContain('|Finalized|');expect(before).toContain('|Recorded|');expect(before).toContain('|8 h|');
- expect(before).toContain('|Approve each timecard, then finalize the week to lock it for payroll.|');expect(before).not.toContain('Next step');
+ expect(before).not.toContain('Approve each timecard');expect(before).not.toContain('Next step');
  cards=[finalized('E1',8*60+6),finalized('E2',60)];click('This week');await flush();
  const after=html();
  expect(text(after)).toContain('|Finalized|');expect(text(after)).toContain('|Prepare payroll|');expect(after).toContain('href="/app/payroll/prepare"');
