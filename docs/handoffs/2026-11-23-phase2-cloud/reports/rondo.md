@@ -100,3 +100,18 @@ None of items 9–14.
 - No keyboard walk recorded beyond the kit's focus styles. No reduced-motion pass (none of these changes animate).
 - The Owner capture uses the standard seed and the Manager capture uses the rich seed, so the data differs between
   roles.
+
+## Follow-up from the lead (commit `31f06892`, after merging `origin/claude-codex-collab-nevora`)
+- **H6:** on wide screens the subtitle is the bonus year's exact dates again ("Oct 1, 2025–Sep 30, 2026 · All
+  locations"), and the band menu reads "Bonus year", so the dates appear once. On the phone there's no subtitle, so the
+  menu itself shows the exact dates. Its screen-reader name keeps the visible words. The "Informational only" text is
+  unchanged. Axe 0 and overflow 0 at every width, including 200% text.
+- **H1 Owner:** in a group of places, "Includes draft commitments; verify published staffing separately." and the
+  shared "Review source" link (both places open the same week's schedule) now appear once under the group title. Each
+  place keeps Track this issue, Later · 1 hour and Not relevant today: these are three across with room, or two plus one
+  full-width when narrow. These three can't be merged into one set without new behaviour: each saves that place's own
+  issue record with its own revision, and the controller sends one save at a time (a second save cancels the first).
+  Axe 0 and overflow 0.
+- Re-captured H1 and H6 (Owner) on `31f06892` at 390, 768, 1440 and 390 with 200% text, plus phone shots at viewport
+  height (`H1-o-390-fold.webp`, `H6-o-390-fold.webp`). H6 is the same screen for the company-wide Manager. The H1
+  Manager screen didn't change.
