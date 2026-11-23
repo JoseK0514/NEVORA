@@ -87,3 +87,39 @@ here, not as findings.
   - Find cover for a single person's shift: it was opened from the first open-gap link.
 - The harness module is scratch (`zz-scan/rel.ts` in an unpacked copy of `tools/ui-scan/zz-scan-scoped.tar.gz`) and
   isn't committed.
+
+## Fixes (Jose's decision: fix before release)
+
+Code `504b63f6` on `claude-codex-collab-nevora-kit-final`, merged with `91c08d19` first. Shots in `fixes/`, named
+`<role>-<screen>-<view>-<before|after>.webp`. Before = production build of `91c08d19`, after = production build of
+`504b63f6`, same harness and fictional data. Views: 390, 390 at 200% text and 1440 for Profile, Team, a Team person's
+page, next week's Schedule and Availability, for all three roles (39 before, 42 after: before has no person page for
+Daniel). `-peek1` / `-peek2` are viewport close-ups of the rows in question.
+
+| # | Fix | Result |
+|---|---|---|
+| 1 | Profile approval rows: at phone widths, once text is enlarged (`@container not style(--nv-rem: 16px)`), the value goes under its label, the same three declarations as the below-360px rule (`owner-b-settings.css`). | "Publish schedules" and "Condado" no longer overlap (`fixes/mgr-location-profile-390-text200-peek1-before/after`). The Access row's value also goes under its label at 200%, since it's the same row. 390 and 1440 at the default size: identical. |
+| 2 | Team status chip (`.b-row__state > .b-chip`) wraps at enlarged text (`owner-b.css`). | "Not clocked in · 2 h 11 min" wraps inside the row (`fixes/mgr-company-team-390-text200-peek2-*`). "Clocked in late · 2 min" now also wraps within its column; before, it ran slightly past it. At the default size the only change on Elena's Team is live data (a clocked-in count went from 5 to 4 between runs). |
+| 3 | Both "Today" links: `aria-label="Today, go to this week"` (`manager-weekly-roster.tsx`). | axe `label-content-name-mismatch` is gone on next week's Schedule for both Managers at 390 and 390 at 200% (before: 1 node each). Shots identical. |
+| 4 | Availability day buttons: text spaces between the day, the bar and the hours (`availability-corp.tsx`). axe joined the spans as "MondayAll day", which isn't in "Monday, All day". | axe `label-content-name-mismatch` is gone on the Lead's Availability at all three views (before: 7 nodes). Shots pixel-identical (spaces between flex items draw nothing). |
+| 5a | Location Manager's Team rows link to the person's page (`scoped-team.tsx`); G17 serves that page for anyone on the scoped roster. | Daniel's rows have a chevron and open the page (`fixes/mgr-location-team-*-after`, `fixes/mgr-location-team-person-*-after`). |
+
+After, every view checked has 0 axe violations (wcag2a/aa, 21a/aa, 22aa) and no document overflow. The remaining probe
+hits are the hidden-text ones listed above (week grid at 1440, the Lead's "Open shifts and changes").
+
+### Investigation (item 5)
+- **12 people on Daniel's Team: fixture data, not a bug.** His read is in LOCATIONS mode with Condado only. The scoped
+  roster (`operational-read.server.ts`, `roster()`) lists anyone whose primary location or `employee_location_eligibility`
+  is one of his locations. The scan fixture (`zz-scan/seed-owner.ts`) makes every person except Miguel eligible at both
+  locations, and `seedOwnedApp` does the same for the Owner, so all of them work at Condado as far as the data says.
+- **Read-only shift sheet: by design, not a missing grant.** `operational-read.server.ts:214` sets `saveAvailability` to
+  `requires_company` for a location Manager on any shift that isn't a draft (or is a draft Build and publish made).
+  Sofía's shift is in the published week, and the sheet says "You can’t change a published shift. Ask an Owner."
+  Publish schedules doesn't change this.
+
+Tests:
+- `kit-text-rem.test.ts` (items 1 and 2), `manager-weekly-roster.test.tsx` (3), `availability-corp.test.tsx` (4), and
+  the new `company-access/scoped-team.test.tsx` (5a).
+- `employees/page.test.tsx`: the two pre-G17 "no person links" assertions now expect the links.
+- `tsc` is clean. `src/components` + `src/app`: 4937 of 4939 passed on the first run; the 2 failures were those old
+  assertions, which now pass (13 of 13 in that file).
