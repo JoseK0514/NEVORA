@@ -713,7 +713,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
  * Custom properties only: every rule that sets these reads the tokens. */
 @media (max-width: 359px) {
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters):has(> :nth-child(3)) {
-    --b-seg-fs: 12.5px; --b-seg-count-h: 18px; --b-seg-count-fs: 11px; --b-seg-count-px: 4px; --b-seg-count-gap: 4px;
+    --b-seg-fs: 0.78125rem; --b-seg-count-h: 18px; --b-seg-count-fs: 11px; --b-seg-count-px: 4px; --b-seg-count-gap: 4px;
   }
 }
 /* NV-074: the main tabs' loaded band heights (the hero's height on a phone, from the top of the screen; on tablets and
