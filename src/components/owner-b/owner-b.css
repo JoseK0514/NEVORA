@@ -136,7 +136,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-dot--live { background: #7EF0C7; box-shadow: 0 0 0 3px rgb(126 240 199 / 0.25); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-dot--warn { background: #FFC46B; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: var(--b-space-16) var(--b-space-20) 0; padding: var(--b-space-4); border-radius: var(--b-radius-field); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-seg > * { display: grid; place-items: center; min-height: 36px; border-radius: var(--b-radius-small); font-size: 14px; font-weight: 600; color: var(--b-on-band); white-space: nowrap; text-align: center; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-seg > * { display: grid; place-items: center; min-height: 36px; border-radius: var(--b-radius-small); font-size: min(0.875rem, 20px); font-weight: 600; color: var(--b-on-band); white-space: nowrap; text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-seg > :is([aria-current="page"], [aria-pressed="true"]) { background: #FFFFFF; color: #0B3B38; box-shadow: var(--b-shadow-thumb); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-search { display: flex; align-items: center; gap: 10px; margin: var(--b-space-16) var(--b-space-20) 0; height: var(--b-seg-h); padding: 0 var(--b-gutter); border-radius: var(--b-radius-field); color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-search input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; color: var(--b-on-band); font: 400 16px/1 Inter, "Inter Fallback", sans-serif; -webkit-appearance: none; appearance: none; }
