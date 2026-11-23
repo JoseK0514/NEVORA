@@ -88,3 +88,21 @@
   /* A form's fields stop at the form width (DESIGN.MD Phase 2: 560px); the rows under them keep the card's width. */
   :is(#c-root, html) .c-page.c-setb .c-setb-fields { max-width: var(--b-frame-form, 560px); }
 }
+
+/* Locations (Nov 23, 2026; additive): an Add form that is done hides the band's Add; the next steps after an add as two
+ * equal buttons under the result (stacked full width on phones, right-aligned from 768px); a row whose title is a link
+ * (a location's Clocker link) with a button on its right. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:has(form[data-done]) > .c-nav .c-nav__right > .c-setb-save:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-acts:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; flex-direction: column-reverse !important; gap: var(--b-space-8) !important; margin-top: var(--b-space-12) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-acts > .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { width: 100% !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-rowlink:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: inline-flex !important; align-items: center !important; min-height: 44px !important; color: var(--b-teal) !important; font-weight: 600 !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-rowlink:focus-visible:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; border-radius: 4px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-linkrow > .c-row__trail:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: none !important; margin-left: auto !important; }
+}
+@media (min-width: 768px) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-acts:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex-direction: row !important; justify-content: flex-end !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-acts > .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { width: auto !important; min-width: 120px !important; }
+  }
+}
