@@ -159,3 +159,16 @@ Tests: `src/app/app/kit-text-rem.test.ts` (new "Home band lines in rem" case); `
 files, 4,252 tests, 0 failures.
 Shots: `img/B1-mgr-loc-390-t200-{before,after}-band-rem.webp`, `img/B1-mgr-loc-390-after-band-rem.webp`,
 `img/B1-employee-390{,-t200}-after-band-rem.webp`.
+
+## Pass 5: Updates list names (merged bd2c353e, merge 404641a6; fix 062735ab)
+The Employee and Lead Updates list ("Other updates") rows had a hand-built name ("title, state, time") that differed from
+the row (axe label-content-name-mismatch on `#b-message-…`; it predates today). `062735ab` drops it, so each row is named
+by its own text (title, author and place, day, and the state once read). An unread row, whose state is drawn only as the
+dot, carries that state as b-sr text. No visible change. The merge conflict was two new test blocks side by side in
+`kit-text-rem.test.ts`, kept both.
+
+Production build of `062735ab`, Employee and Lead, `/app/updates` at 390, 390 with 200% text and 1440: axe clean at each,
+no overflow. At 200% the geometry probe reports the To acknowledge card's clamped body box against its buttons; on screen
+the body ends with an ellipsis above them (the clamp's hidden overflow, not drawn). Tests: `account-b.test.tsx` asserts
+no row aria-label and the b-sr state; the whole `src/components` suite: 280 files, 3,229 tests, 0 failures. tsc and oxlint
+clean. Shots: `img/B6-{employee,lead}-{390,1440}-after-names.webp`.

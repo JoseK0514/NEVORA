@@ -1,0 +1,2267 @@
+{
+  "rec": [
+    {
+      "role": "emp",
+      "route": "/app/updates",
+      "slug": "updates",
+      "tag": "390",
+      "status": 200,
+      "url": "/app/updates",
+      "m": {
+        "url": "/app/updates",
+        "h1": [
+          "Updates"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Walk-in freezer repair on Tuesday · Management · , Mon, Nov ",
+            "name": "Your updates"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "a.b-btn.b-btn--glass.eb-write",
+          "txt": "Write an update",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            209,
+            66,
+            161,
+            48
+          ]
+        },
+        {
+          "el": "input.",
+          "txt": "",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            62,
+            128,
+            218,
+            48
+          ]
+        },
+        {
+          "el": "select.",
+          "txt": "All Unread Action needed",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            302,
+            130,
+            68,
+            48
+          ]
+        },
+        {
+          "el": "a.b-btn.b-btn--ghost",
+          "txt": "Open New closing checklist",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            81,
+            373,
+            134,
+            48
+          ]
+        },
+        {
+          "el": "button.b-btn.b-btn--ghost",
+          "txt": "Acknowledge New closing checklist",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            223,
+            373,
+            134,
+            48
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-updrow",
+          "txt": "Walk-in freezer repair on Tuesday · Management · ,",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            497,
+            360,
+            86
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-updrow",
+          "txt": "Holiday hours for Thanksgiving week · Management ·",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            583,
+            360,
+            86
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            784,
+            76,
+            56
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, checking updates",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            288,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.c-top-avatar",
+          "txt": "More, James Ortiz, JO",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            334,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.b-back",
+          "txt": "More",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            14,
+            4,
+            87,
+            44
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            784,
+            76,
+            56
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, checking updates",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            288,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.c-top-avatar",
+          "txt": "More, James Ortiz, JO",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            334,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.b-back",
+          "txt": "More",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            14,
+            4,
+            87,
+            44
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            784,
+            76,
+            56
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, checking updates",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            288,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.c-top-avatar",
+          "txt": "More, James Ortiz, JO",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            334,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.b-back",
+          "txt": "More",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            14,
+            4,
+            87,
+            44
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            784,
+            76,
+            56
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, checking updates",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            288,
+            4,
+            44,
+            44
+          ]
+        }
+      ],
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·",
+          "p.eb-upd__body y: Starting Monday, every closing shift com"
+        ],
+        "overlaps": [],
+        "offscreen": [],
+        "spill": [
+          "label.eb-select.b-glass ShowAllAllUnreadAction needed"
+        ],
+        "layout": {
+          "vw": 390,
+          "main": [
+            0,
+            390
+          ],
+          "page": [
+            0,
+            390
+          ],
+          "widestCard": 362,
+          "cardWidths": [
+            362,
+            360
+          ]
+        },
+        "fontSizes": {
+          "15.5px": 6,
+          "30px": 1,
+          "14px": 4,
+          "17px": 2,
+          "12px": 1,
+          "13.5px": 12,
+          "14.5px": 4
+        },
+        "mainText": "More\nUpdates\nWrite an update\nSearch this page\nShow\nAll\nAll\nUnread\nAction needed\nTo acknowledge\nNew closing checklist\nAction needed\n·\nManagement\n·\n,\nMon, Nov 23\nStarting Monday, every closing shift completes the new checklist on the back‑office tablet. Read it before your next close and confirm below.\nOpen\nAcknowledge\nOther updates\nWalk-in freezer repair on Tuesday\n·\nManagement\n·\n,\nMon, Nov 23\nUnread\nHoliday hours for Thanksgiving week\n·\nManagement\n·\n,\nMon, Nov 23\nUnread"
+      },
+      "hit": null,
+      "rep": [
+        "Unread ×3",
+        "Action needed ×2",
+        "Management ×3",
+        "Mon, Nov 23 ×3"
+      ]
+    },
+    {
+      "role": "emp",
+      "route": "/app/updates",
+      "slug": "updates",
+      "tag": "390-text200",
+      "status": 200,
+      "url": "/app/updates",
+      "m": {
+        "url": "/app/updates",
+        "h1": [
+          "Updates"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Walk-in freezer repair on Tuesday · Management · , Mon, Nov ",
+            "name": "Your updates"
+          }
+        ]
+      },
+      "fixed": {
+        "span.b-sr": {
+          "n": 1,
+          "size": "14px→14px",
+          "txt": "Show"
+        },
+        "span.eb-select__v": {
+          "n": 1,
+          "size": "14px→14px",
+          "txt": "All"
+        },
+        "a.b-btn.b-btn--ghost": {
+          "n": 1,
+          "size": "14px→14px",
+          "txt": "Open"
+        },
+        "button.b-btn.b-btn--ghost": {
+          "n": 1,
+          "size": "14px→14px",
+          "txt": "Acknowledge"
+        }
+      },
+      "axe": [],
+      "focus": null,
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·",
+          "p.eb-upd__body y: Starting Monday, every closing shift com"
+        ],
+        "overlaps": [
+          "\"Starting Monday, every closing shift com\" × \"Open\" (36x10)",
+          "\"Starting Monday, every closing shift com\" × \"Acknowledge\" (27x10)",
+          "\"Starting Monday, every closing shift com\" × \"Other updates\" (173x14)",
+          "\"Starting Monday, every closing shift com\" × \"Other updates\" (173x22)",
+          "\"Starting Monday, every closing shift com\" × \"Walk-in freezer repair on Tuesday\" (185x32)"
+        ],
+        "offscreen": [],
+        "spill": [
+          "label.eb-select.b-glass ShowAllAllUnreadAction needed"
+        ],
+        "layout": {
+          "vw": 390,
+          "main": [
+            0,
+            390
+          ],
+          "page": [
+            0,
+            390
+          ],
+          "widestCard": 362,
+          "cardWidths": [
+            362,
+            360
+          ]
+        },
+        "fontSizes": {
+          "31px": 10,
+          "60px": 1,
+          "28px": 1,
+          "14px": 3,
+          "34px": 2,
+          "24px": 1,
+          "27px": 12,
+          "29px": 8
+        },
+        "mainText": "More\nUpdates\nWrite an update\nSearch this page\nShow\nAll\nAll\nUnread\nAction needed\nTo acknowledge\nNew closing checklist\nAction needed\n·\nManagement\n·\n,\nMon, Nov 23\nStarting Monday, every closing shift completes the new checklist on the back‑office tablet. Read it before your next close and confirm below.\nOpen\nAcknowledge\nOther updates\nWalk-in freezer repair on Tuesday\n·\nManagement\n·\n,\nMon, Nov 23\nUnread\nHoliday hours for Thanksgiving week\n·\nManagement\n·\n,\nMon, Nov 23\nUnread"
+      },
+      "hit": null,
+      "rep": [
+        "Unread ×3",
+        "Action needed ×2",
+        "Management ×3",
+        "Mon, Nov 23 ×3"
+      ]
+    },
+    {
+      "role": "emp",
+      "route": "/app/updates",
+      "slug": "updates",
+      "tag": "1440",
+      "status": 200,
+      "url": "/app/updates",
+      "m": {
+        "url": "/app/updates",
+        "h1": [
+          "Updates"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Walk-in freezer repair on Tuesday · Management · , Mon, Nov ",
+            "name": "Your updates"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "a.b-btn.b-btn--glass.eb-write",
+          "txt": "Write an update",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            930,
+            83,
+            178,
+            48
+          ]
+        },
+        {
+          "el": "input.",
+          "txt": "",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            338,
+            146,
+            680,
+            48
+          ]
+        },
+        {
+          "el": "select.",
+          "txt": "All Unread Action needed",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1040,
+            148,
+            68,
+            48
+          ]
+        },
+        {
+          "el": "a.b-btn.b-btn--ghost",
+          "txt": "Open New closing checklist",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            827,
+            413,
+            96,
+            44
+          ]
+        },
+        {
+          "el": "button.b-btn.b-btn--ghost",
+          "txt": "Acknowledge New closing checklist",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            931,
+            413,
+            154,
+            44
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-updrow",
+          "txt": "Walk-in freezer repair on Tuesday · Management · ,",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            547,
+            810,
+            65
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-updrow",
+          "txt": "Holiday hours for Thanksgiving week · Management ·",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            612,
+            810,
+            65
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            126,
+            44
+          ]
+        },
+        {
+          "el": "a.brand.sidebar-brand",
+          "txt": "NEVORA Workforce home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            6,
+            148,
+            64
+          ]
+        },
+        {
+          "el": "button.sidebar-toggle",
+          "txt": "Collapse sidebar",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            172,
+            6,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            175,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            217,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            259,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            301,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            343,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link.active",
+          "txt": "Updates",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            433,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.sidebar-help-link",
+          "txt": "Help",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            898,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "button.command-finder-trigger",
+          "txt": "Search Ctrl K",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            895,
+            10,
+            280,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, checking updates",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1185,
+            12,
+            40,
+            40
+          ]
+        },
+        {
+          "el": "button.button.ghost.nevora-action-menu-trigger",
+          "txt": "James Ortiz, account menu",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1235,
+            12,
+            165,
+            40
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            126,
+            44
+          ]
+        },
+        {
+          "el": "a.brand.sidebar-brand",
+          "txt": "NEVORA Workforce home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            6,
+            148,
+            64
+          ]
+        },
+        {
+          "el": "button.sidebar-toggle",
+          "txt": "Collapse sidebar",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            172,
+            6,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            175,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            217,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            259,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            301,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            343,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link.active",
+          "txt": "Updates",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            433,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.sidebar-help-link",
+          "txt": "Help",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            898,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "button.command-finder-trigger",
+          "txt": "Search Ctrl K",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            895,
+            10,
+            280,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, 9 unread in your recent inbox",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1185,
+            12,
+            40,
+            40
+          ]
+        },
+        {
+          "el": "button.button.ghost.nevora-action-menu-trigger",
+          "txt": "James Ortiz, account menu",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1235,
+            12,
+            165,
+            40
+          ]
+        }
+      ],
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·"
+        ],
+        "overlaps": [],
+        "offscreen": [],
+        "spill": [
+          "label.eb-select.b-glass ShowAllAllUnreadAction needed"
+        ],
+        "layout": {
+          "vw": 1440,
+          "main": [
+            232,
+            1208
+          ],
+          "page": [
+            296,
+            1080
+          ],
+          "widestCard": 812,
+          "cardWidths": [
+            812,
+            810
+          ]
+        },
+        "fontSizes": {
+          "32px": 1,
+          "15.5px": 4,
+          "14px": 3,
+          "17px": 2,
+          "12px": 1,
+          "13.5px": 12,
+          "14.5px": 2
+        },
+        "mainText": "Updates\nWrite an update\nSearch this page\nShow\nAll\nAll\nUnread\nAction needed\nTo acknowledge\nNew closing checklist\nAction needed\n·\nManagement\n·\n,\nMon, Nov 23\nStarting Monday, every closing shift completes the new checklist on the back‑office tablet. Read it before your next close and confirm below.\nOpen\nAcknowledge\nOther updates\nWalk-in freezer repair on Tuesday\n·\nManagement\n·\n,\nMon, Nov 23\nUnread\nHoliday hours for Thanksgiving week\n·\nManagement\n·\n,\nMon, Nov 23\nUnread"
+      },
+      "hit": null,
+      "rep": [
+        "Unread ×3",
+        "Action needed ×2",
+        "Management ×3",
+        "Mon, Nov 23 ×3"
+      ]
+    },
+    {
+      "role": "lead",
+      "route": "/app/updates",
+      "slug": "updates",
+      "tag": "390",
+      "status": 200,
+      "url": "/app/updates",
+      "m": {
+        "url": "/app/updates",
+        "h1": [
+          "Updates"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Walk-in freezer repair on Tuesday · Management · , Mon, Nov ",
+            "name": "Your updates"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "a.b-btn.b-btn--glass.eb-write",
+          "txt": "Write an update",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            209,
+            66,
+            161,
+            48
+          ]
+        },
+        {
+          "el": "input.",
+          "txt": "",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            62,
+            128,
+            218,
+            48
+          ]
+        },
+        {
+          "el": "select.",
+          "txt": "All Unread Action needed",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            302,
+            130,
+            68,
+            48
+          ]
+        },
+        {
+          "el": "a.b-btn.b-btn--ghost",
+          "txt": "Open New closing checklist",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            81,
+            373,
+            134,
+            48
+          ]
+        },
+        {
+          "el": "button.b-btn.b-btn--ghost",
+          "txt": "Acknowledge New closing checklist",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            223,
+            373,
+            134,
+            48
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-updrow",
+          "txt": "Walk-in freezer repair on Tuesday · Management · ,",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            497,
+            360,
+            86
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-updrow",
+          "txt": "Holiday hours for Thanksgiving week · Management ·",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            583,
+            360,
+            86
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            784,
+            76,
+            56
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, checking updates",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            288,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.c-top-avatar",
+          "txt": "More, Maria Rivera, MR",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            334,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.b-back",
+          "txt": "More",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            14,
+            4,
+            87,
+            44
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            784,
+            76,
+            56
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, checking updates",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            288,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.c-top-avatar",
+          "txt": "More, Maria Rivera, MR",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            334,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.b-back",
+          "txt": "More",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            14,
+            4,
+            87,
+            44
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            784,
+            76,
+            56
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, checking updates",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            288,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.c-top-avatar",
+          "txt": "More, Maria Rivera, MR",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            334,
+            4,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.b-back",
+          "txt": "More",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            14,
+            4,
+            87,
+            44
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            784,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            784,
+            76,
+            56
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, checking updates",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off -2px",
+          "r": [
+            288,
+            4,
+            44,
+            44
+          ]
+        }
+      ],
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·",
+          "p.eb-upd__body y: Starting Monday, every closing shift com"
+        ],
+        "overlaps": [],
+        "offscreen": [],
+        "spill": [
+          "label.eb-select.b-glass ShowAllAllUnreadAction needed"
+        ],
+        "layout": {
+          "vw": 390,
+          "main": [
+            0,
+            390
+          ],
+          "page": [
+            0,
+            390
+          ],
+          "widestCard": 362,
+          "cardWidths": [
+            362,
+            360
+          ]
+        },
+        "fontSizes": {
+          "15.5px": 6,
+          "30px": 1,
+          "14px": 4,
+          "17px": 2,
+          "12px": 1,
+          "13.5px": 12,
+          "14.5px": 4
+        },
+        "mainText": "More\nUpdates\nWrite an update\nSearch this page\nShow\nAll\nAll\nUnread\nAction needed\nTo acknowledge\nNew closing checklist\nAction needed\n·\nManagement\n·\n,\nMon, Nov 23\nStarting Monday, every closing shift completes the new checklist on the back‑office tablet. Read it before your next close and confirm below.\nOpen\nAcknowledge\nOther updates\nWalk-in freezer repair on Tuesday\n·\nManagement\n·\n,\nMon, Nov 23\nUnread\nHoliday hours for Thanksgiving week\n·\nManagement\n·\n,\nMon, Nov 23\nUnread"
+      },
+      "hit": null,
+      "rep": [
+        "Unread ×3",
+        "Action needed ×2",
+        "Management ×3",
+        "Mon, Nov 23 ×3"
+      ]
+    },
+    {
+      "role": "lead",
+      "route": "/app/updates",
+      "slug": "updates",
+      "tag": "390-text200",
+      "status": 200,
+      "url": "/app/updates",
+      "m": {
+        "url": "/app/updates",
+        "h1": [
+          "Updates"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Walk-in freezer repair on Tuesday · Management · , Mon, Nov ",
+            "name": "Your updates"
+          }
+        ]
+      },
+      "fixed": {
+        "span.b-sr": {
+          "n": 1,
+          "size": "14px→14px",
+          "txt": "Show"
+        },
+        "span.eb-select__v": {
+          "n": 1,
+          "size": "14px→14px",
+          "txt": "All"
+        },
+        "a.b-btn.b-btn--ghost": {
+          "n": 1,
+          "size": "14px→14px",
+          "txt": "Open"
+        },
+        "button.b-btn.b-btn--ghost": {
+          "n": 1,
+          "size": "14px→14px",
+          "txt": "Acknowledge"
+        }
+      },
+      "axe": [],
+      "focus": null,
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·",
+          "p.eb-upd__body y: Starting Monday, every closing shift com"
+        ],
+        "overlaps": [
+          "\"Starting Monday, every closing shift com\" × \"Open\" (36x10)",
+          "\"Starting Monday, every closing shift com\" × \"Acknowledge\" (27x10)",
+          "\"Starting Monday, every closing shift com\" × \"Other updates\" (173x14)",
+          "\"Starting Monday, every closing shift com\" × \"Other updates\" (173x22)",
+          "\"Starting Monday, every closing shift com\" × \"Walk-in freezer repair on Tuesday\" (185x32)"
+        ],
+        "offscreen": [],
+        "spill": [
+          "label.eb-select.b-glass ShowAllAllUnreadAction needed"
+        ],
+        "layout": {
+          "vw": 390,
+          "main": [
+            0,
+            390
+          ],
+          "page": [
+            0,
+            390
+          ],
+          "widestCard": 362,
+          "cardWidths": [
+            362,
+            360
+          ]
+        },
+        "fontSizes": {
+          "31px": 10,
+          "60px": 1,
+          "28px": 1,
+          "14px": 3,
+          "34px": 2,
+          "24px": 1,
+          "27px": 12,
+          "29px": 8
+        },
+        "mainText": "More\nUpdates\nWrite an update\nSearch this page\nShow\nAll\nAll\nUnread\nAction needed\nTo acknowledge\nNew closing checklist\nAction needed\n·\nManagement\n·\n,\nMon, Nov 23\nStarting Monday, every closing shift completes the new checklist on the back‑office tablet. Read it before your next close and confirm below.\nOpen\nAcknowledge\nOther updates\nWalk-in freezer repair on Tuesday\n·\nManagement\n·\n,\nMon, Nov 23\nUnread\nHoliday hours for Thanksgiving week\n·\nManagement\n·\n,\nMon, Nov 23\nUnread"
+      },
+      "hit": null,
+      "rep": [
+        "Unread ×3",
+        "Action needed ×2",
+        "Management ×3",
+        "Mon, Nov 23 ×3"
+      ]
+    },
+    {
+      "role": "lead",
+      "route": "/app/updates",
+      "slug": "updates",
+      "tag": "1440",
+      "status": 200,
+      "url": "/app/updates",
+      "m": {
+        "url": "/app/updates",
+        "h1": [
+          "Updates"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Walk-in freezer repair on Tuesday · Management · , Mon, Nov ",
+            "name": "Your updates"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "a.b-btn.b-btn--glass.eb-write",
+          "txt": "Write an update",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            930,
+            83,
+            178,
+            48
+          ]
+        },
+        {
+          "el": "input.",
+          "txt": "",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            338,
+            146,
+            680,
+            48
+          ]
+        },
+        {
+          "el": "select.",
+          "txt": "All Unread Action needed",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1040,
+            148,
+            68,
+            48
+          ]
+        },
+        {
+          "el": "a.b-btn.b-btn--ghost",
+          "txt": "Open New closing checklist",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            827,
+            413,
+            96,
+            44
+          ]
+        },
+        {
+          "el": "button.b-btn.b-btn--ghost",
+          "txt": "Acknowledge New closing checklist",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            931,
+            413,
+            154,
+            44
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-updrow",
+          "txt": "Walk-in freezer repair on Tuesday · Management · ,",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            547,
+            810,
+            65
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-updrow",
+          "txt": "Holiday hours for Thanksgiving week · Management ·",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            612,
+            810,
+            65
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            126,
+            44
+          ]
+        },
+        {
+          "el": "a.brand.sidebar-brand",
+          "txt": "NEVORA Workforce home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            6,
+            148,
+            64
+          ]
+        },
+        {
+          "el": "button.sidebar-toggle",
+          "txt": "Collapse sidebar",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            172,
+            6,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            175,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            217,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            259,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            301,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            343,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link.active",
+          "txt": "Updates",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            433,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.sidebar-help-link",
+          "txt": "Help",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            898,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "button.command-finder-trigger",
+          "txt": "Search Ctrl K",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            892,
+            10,
+            280,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, 9 unread in your recent inbox",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1182,
+            12,
+            40,
+            40
+          ]
+        },
+        {
+          "el": "button.button.ghost.nevora-action-menu-trigger",
+          "txt": "Maria Rivera, account menu",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1232,
+            12,
+            168,
+            40
+          ]
+        }
+      ],
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·"
+        ],
+        "overlaps": [],
+        "offscreen": [],
+        "spill": [
+          "label.eb-select.b-glass ShowAllAllUnreadAction needed"
+        ],
+        "layout": {
+          "vw": 1440,
+          "main": [
+            232,
+            1208
+          ],
+          "page": [
+            296,
+            1080
+          ],
+          "widestCard": 812,
+          "cardWidths": [
+            812,
+            810
+          ]
+        },
+        "fontSizes": {
+          "32px": 1,
+          "15.5px": 4,
+          "14px": 3,
+          "17px": 2,
+          "12px": 1,
+          "13.5px": 12,
+          "14.5px": 2
+        },
+        "mainText": "Updates\nWrite an update\nSearch this page\nShow\nAll\nAll\nUnread\nAction needed\nTo acknowledge\nNew closing checklist\nAction needed\n·\nManagement\n·\n,\nMon, Nov 23\nStarting Monday, every closing shift completes the new checklist on the back‑office tablet. Read it before your next close and confirm below.\nOpen\nAcknowledge\nOther updates\nWalk-in freezer repair on Tuesday\n·\nManagement\n·\n,\nMon, Nov 23\nUnread\nHoliday hours for Thanksgiving week\n·\nManagement\n·\n,\nMon, Nov 23\nUnread"
+      },
+      "hit": null,
+      "rep": [
+        "Unread ×3",
+        "Action needed ×2",
+        "Management ×3",
+        "Mon, Nov 23 ×3"
+      ]
+    }
+  ],
+  "log": []
+}
