@@ -31,6 +31,9 @@ main.q-auth .su-pair { display: block; }
 main.q-auth .su-error__icon { width: 1em; height: 1em; margin-top: .15em; }
 /* A title receives focus after a step change so the next read starts there; it is not a control, so no ring. */
 main.q-auth [data-signup-title]:focus { outline: none; }
+/* The shared auth shell rings every :focus-visible with !important, which drew a box round "Open the link from your
+ * email" on arrival; this keeps the title ring-free there too. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth [data-signup-title]:focus { outline: none !important; }
 
 /* Three steps. Done: teal dot with a check. Current: teal ring. Next: grey. */
 main.q-auth .su-steps { display: grid; gap: 12px; margin: 0 0 8px; padding: 0; list-style: none; }
