@@ -42,7 +42,7 @@ it('draws Things to do in Spanish when the portal language is Spanish (signed-in
  expect(grouped.families[0].groups[0]).toMatchObject({title:'Turnos por cubrir'});
  expect(grouped.families[0].groups[0].rows[0]).toMatchObject({title:'Asignar el turno de Maria Rivera',value:'Sin asignar'});
  expect(grouped.families[0].groups[0].rows[0].detail).toMatch(/a\. m\./);
- const html=renderToStaticMarkup(createElement(PortalLangProvider,{lang:'es',children:createElement(ThingsToDoPage,{snapshot:null,connection:'unavailable',onRefresh:()=>{},timeZone:'America/Puerto_Rico'})}));
+ const html=renderToStaticMarkup(<PortalLangProvider lang='es'><ThingsToDoPage snapshot={null} connection='unavailable' onRefresh={()=>{}} timeZone='America/Puerto_Rico'/></PortalLangProvider>);
  expect(html).toContain('No pudimos cargar Pendientes');
  expect(html).toContain('Intentar de nuevo');
  expect(html).not.toMatch(/Things to do|Try again|Later and done/);
