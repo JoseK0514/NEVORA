@@ -17,7 +17,7 @@ export function OwnLeaveNote({request}:{request:{id:string;status:string;startDa
  const open=request.status==='PENDING'||request.status==='APPROVED';
  const weeks=useMemo(()=>open?weeksFor(request.startDate,request.endDate):null,[open,request.startDate,request.endDate]);
  const {state,refresh}=useLeaveStaffing(weeks?{weeks,requestId:request.id}:null);
- const t=LEAVE_STAFFING_COPY[usePortalLang()];
+ const lang=usePortalLang(),t=LEAVE_STAFFING_COPY[lang];
  if(!open||!weeks)return null;
  if(state.status==='loading'||state.status==='paused')return null;
  if(state.status!=='ready')return <BCard id="b-timeoff-shifts" label={t.yourShifts}><div className="ls-own ls-own--quiet" role="status">
@@ -30,7 +30,7 @@ export function OwnLeaveNote({request}:{request:{id:string;status:string;startDa
  return <BCard id="b-timeoff-shifts" title={t.yourShifts}>
   {approved?<div className="ls-own"><BDoneMark still/><span><b>{t.approvedTitle}</b><span>{t.approvedSub}</span></span></div>:null}
   <BList label={t.publishedDuring}>{items.map(item=><BRow key={item.id} lead={<BIcon tone="grey"><InfoIcon weight="bold"/></BIcon>} title={t.day(item.date)}
-   sub={<Dotted text={`${t.range(item.startTime,item.endTime)} · ${item.locationName} · ${approved?t.stillOnSchedule:t.onPublished}`}/>}/>)}</BList>
+   sub={<Dotted text={`${t.range(item.startTime,item.endTime)} · ${item.locationName} · ${approved?t.stillOnSchedule:t.onPublished}`} lang={lang}/>}/>)}</BList>
   <p className="ls-own__note">{approved
    ?t.managerTakesCare
    :t.managerWillSee}</p>

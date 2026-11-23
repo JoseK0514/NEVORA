@@ -28,7 +28,6 @@ import {NoHeaderActions} from './account-host';
 import {Dotted} from './parts';
 import {ACCOUNT_LOCALE, accountCopy, type AccountCopy, type AccountLang} from './account-copy';
 import {usePortalLang} from '@/lib/i18n/portal-lang';
-import {esDate} from './es-format';
 import './account.css';
 
 /* Employee phones, Direction B: Notifications, Updates, an update and Write an update (mock e-notifications,
@@ -281,7 +280,7 @@ export function EmployeeUpdateB({back, item, busy, onAction, withdraw, onWithdra
   withdraw: boolean; onWithdraw: (value: boolean) => void; notice?: BStatus | null;
 }) {
   const required = !!item && item.acknowledgement === 'REQUIRED' && !item.ownAcknowledgedAt;
-  const lang = usePortalLang(), A = accountCopy(lang), t = A.messages, when = (at: string, zone: string) => esDate(messageTime(at, zone), lang);
+  const lang = usePortalLang(), A = accountCopy(lang), t = A.messages, when = (at: string, zone: string) => messageTime(at, zone, lang);
   return <BScreen back>
     {/* Review B7 (NV-284): the update's own title leads; "Team update" moves to the sub line. */}
     <BHero back={back} title={item ? item.title : t.teamUpdate} titleId="b-update-title" sub={item ? t.teamUpdateSub(item.authorContext, when(item.publishedAt, item.timeZone)) : t.readReview} />

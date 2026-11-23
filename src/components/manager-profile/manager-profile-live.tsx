@@ -155,7 +155,7 @@ function TopicRow({ topic: read, save, on, onToggle, skeleton = false, t = MANAG
 }
 
 export function ManagerProfileView({ identity, state, onRetry, saves = {}, overrides = {}, onToggle, retrying = false, retried = null, announcement = '', held = null, rowHeights = null, accountCards = null, authority = null }: View) {
-  const t = MANAGER_PROFILE_COPY[usePortalLang()];
+  const lang = usePortalLang(), t = MANAGER_PROFILE_COPY[lang];
   const ready = !state.paused && state.snapshot?.state === 'ready' ? state.snapshot : null;
   const read = readState(state, t), row = 'row' in read ? read.row : undefined;
   // Approved set: without payroll an Owner isn't told about payroll, even if the read lists the topic (switched off).
@@ -184,7 +184,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   const access = managerAccess(places, identity.locationsWord, t);
   return <>
     <div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{identity.name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase()}</span>
-      <div><h1>{identity.name}</h1><p><Dotted text={`${identity.owner ? t.owner : t.manager} · ${identity.company}`} /></p></div></div>
+      <div><h1>{identity.name}</h1><p><Dotted text={`${identity.owner ? t.owner : t.manager} · ${identity.company}`} lang={lang} /></p></div></div>
     <p className="q-sr" role="alert" id="profile-read-said">{said}</p>
     <p className="q-sr" role="status">{read.kind === 'paused' ? read.head : read.kind === 'ready' && retried === 'loaded' ? t.loaded : ''}</p>
     <ul className="q-list" id="profile-details-list" tabIndex={-1} aria-label={t.details} style={{ marginTop: 24 }}>
