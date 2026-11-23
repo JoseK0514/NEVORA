@@ -129,3 +129,28 @@ it("follows the person's language from the app layout when the page passes none"
   expect(html).toContain("No pudimos cargar Pendientes");
   expect(text(renderToStaticMarkup(<PortalLangProvider lang="es"><InboxB ready={null} families={[]} total={null} connection="unavailable" statusLine="" todayFailed={false} onRefresh={() => {}} back={false} lang="en" /></PortalLangProvider>))).toContain("Things to do didn’t load");
 });
+
+it("names every loading placeholder in Spanish, and the route error's Try again", async () => {
+  const { B_LOADING_TABLE, loadingTitle } = await import("./b-loading");
+  const titles = [...B_LOADING_TABLE.management, ...B_LOADING_TABLE.employee].map(([, shape]) => shape.title).filter((title): title is string => typeof title === "string");
+  expect(titles.length).toBeGreaterThan(20);
+  for (const title of titles) {
+    expect(loadingTitle(title, "en")).toBe(title);
+    // Only proper nouns may stay the same ("Clocker PINs" becomes "PIN del Clocker").
+    if (!["Help"].includes(title)) expect(loadingTitle(title, "es"), title).not.toBe(title);
+  }
+  const { PortalLangProvider } = await import("@/lib/i18n/portal-lang");
+  const { BRouteError } = await import("./b-route-error");
+  const html = renderToStaticMarkup(<PortalLangProvider lang="es"><BRouteError title="Equipo" spoken="x" line="y" onRetry={() => {}} /></PortalLangProvider>);
+  expect(html).toContain("Intentar de nuevo");
+  expect(html).not.toContain("Try again");
+});
+
+it("speaks to people with tú in the moments' Spanish, and says tarjeta de tiempo", async () => {
+  const { MOMENTS_COPY } = await import("./moments-copy");
+  const all = paths(MOMENTS_COPY.es).map(path => path.split(".").reduce<unknown>((at, key) => (at as Record<string, unknown>)[key], MOMENTS_COPY.es))
+    .map(value => typeof value === "function" ? String((value as (...a: unknown[]) => unknown)(1, 2)) : String(value)).join(" | ");
+  expect(all).not.toMatch(/\b(usted|Su gerente|Revíselo|Apruébelo|Abra|Mantenga|Actualice|suyo)\b|registros? de horas/);
+  expect(all).toContain("Tu gerente decide");
+  expect(all).toContain("1 tarjeta de tiempo aprobada");
+});
