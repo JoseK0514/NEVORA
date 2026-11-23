@@ -314,3 +314,6 @@
   html body .app-shell[data-nv-b] .b-screen:has(.b-hero ul.b-live[aria-label="Your requests at a glance"] > li:nth-child(1)) #b-requests-waiting > .b-card__h .b-pill,
   html body .app-shell[data-nv-b] .b-screen:has(.b-hero ul.b-live[aria-label="Your requests at a glance"] > li:nth-child(2)) #b-requests-answer > .b-card__h .b-pill { display: none; }
 }
+/* Employee bands' tabs (Pick up and swap, Time off): at 200% text a label longer than its third ran into the next one
+ * ("Open shifts" over "For you"). A label now wraps inside its own tab; at normal sizes nothing changes. */
+:is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-hero .b-seg > * { white-space: normal; overflow-wrap: anywhere; text-align: center; padding-block: var(--b-space-4); }
