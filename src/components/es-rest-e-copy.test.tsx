@@ -109,7 +109,7 @@ it('renders the correction ticket in Spanish times and days', () => {
 
 it('renders the payroll period history and the attendance comparison in Spanish', () => {
   const history = es(<PeriodCloseHistory period={{startDate: '2026-10-05', endDate: '2026-10-11'} as never} actorId="a" />);
-  for (const words of ['Historial completo del periodo', 'Carga el historial para revisar todos los eventos de archivos y entregas.', 'Cargar historial']) expect(history).toContain(words);
+  for (const words of ['Historial completo del período', 'Carga el historial para revisar todos los eventos de archivos y entregas.', 'Cargar historial']) expect(history).toContain(words);
   const compare = es(<ConfiguredAttendancePolicies />);
   for (const words of ['Qué comparamos', 'No establecen ausencias']) expect(compare).toContain(words);
 });

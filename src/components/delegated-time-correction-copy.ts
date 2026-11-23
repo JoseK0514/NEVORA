@@ -44,7 +44,7 @@ const es: typeof en = {
     overlap: 'El tiempo propuesto se solapa con otro trabajo. Revisa la tarjeta de tiempo.',
     live_state: 'Cierra la marcación abierta antes de proponer una corrección.',
     finalized_period: 'Primero reabre la tarjeta de tiempo finalizada con el proceso de revisión existente.',
-    invalid_interval: 'Compara el periodo propuesto con la entrada y los descansos registrados.',
+    invalid_interval: 'Compara el período propuesto con la entrada y los descansos registrados.',
   },
   chooseValid: 'Elige horas válidas y sin ambigüedad, y una razón.',
   sending: 'Enviando solicitud…',

@@ -39,7 +39,7 @@ const es: typeof en = {
   routing: "Manejo", chooseRouting: "Elige el manejo", managerReview: "Revisión del gerente", allow: "Permitir si todo lo demás es válido",
   duration: "Duración (minutos)",
   timeBasis: "Base de tiempo", chooseTimeBasis: "Elige la base de tiempo", elapsed: "Tiempo transcurrido", wallClock: "Hora del reloj",
-  dailyWindow: "Periodo diario", chooseWindow: "Elige el periodo", businessDay: "Día calendario de la empresa", rolling: "24 horas corridas",
+  dailyWindow: "Período diario", chooseWindow: "Elige el período", businessDay: "Día calendario de la empresa", rolling: "24 horas corridas",
   summary: "Reglas operativas revisadas por el dueño",
   disclaimer: "Las proyecciones del horario no son tiempo trabajado, prueba de descansos tomados, pago final de horas extra ni certificación legal. Revisa explícitamente si aplican; ningún valor se deduce del rol del empleado.",
   saving: "Guardando…",
