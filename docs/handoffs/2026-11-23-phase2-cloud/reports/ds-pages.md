@@ -86,3 +86,30 @@ words, and person names wrap.
 | DS-18 | Shared card-aside link (`owner-b-desktop.css`, `.c-card__aside a` 14px !important) | Team's "See all" stays 14px |
 | DS-19 | Build and publish at 390 | "Availability" (`.c-row__value`) stays 15px: the shared phone row-value rule is still px |
 | DS-20 | `employee-b/schedule.css` line 80 | Another 14/20px button on the Employee schedule (not Swap or Call out); not in scope here |
+
+## Follow-up: DS-14 to DS-20 (lead, Nov 23)
+The lead asked me to fix these rows too. I merged the shared tip first (`49487fc5`) and changed only the selectors below.
+
+| Commit | What |
+|---|---|
+| `20cae7ba` | Kit and shared changes (rows below). The Schedule-only and Swap/Call out overrides from the first round are removed, because the kit rules now cover them |
+| `9ef77134` | `corp-upscale.test.tsx` now expects the row value as 0.9375rem/1.25rem (still 15/20px) |
+
+| Row | Change | At 200% text |
+|---|---|---|
+| DS-14 | Kit `.b-week__d`: 12px → 0.75rem | The day names grow on Schedule, Swap, Call out and Employee Schedule |
+| DS-15 | Kit `.b-card__meta` was already 0.875rem on the shared tip (kit session); my page overrides are removed | No change needed |
+| DS-16 | Kit `.b-row__t > .b-chip`: once text is enlarged (`--nv-rem` query), the chip wraps with an auto height | "Action needed" is no longer cut. It stays one line at the default size |
+| DS-17 | `owner-b-home.css`: once text is enlarged, Team's filters use the phone's wrapping pills (G24) on tablets and desktop | "Off today" moves to a second row inside the control; one row at the default size |
+| DS-18 | `owner-b-desktop.css` card-aside link: 14px → 0.875rem | "See all" grows |
+| DS-19 | Kit `corp.css` `.c-row__value`: 15/20px → 0.9375rem/1.25rem | "Availability" grows at 390 |
+| DS-20 | Not changed: the kit session has the Employee Schedule "Confirm" button in flight | — |
+
+**Before and after:**
+- **Default size:** Owner and Employee at 390, 1024 and 1440, production build. The before shots are from `49487fc5`, the after shots from `20cae7ba`. The pages were Home, Schedule, Build and publish, Team, Settings, Swap, Call out and the Requests hub. Team, Home (Owner), Build and publish at 390 and 1024, Settings at 390 and the Requests hub are pixel-identical. The rest differ only in live data: the bell's dot, "Schedule read at", and the Employee shift times that follow the clock.
+- **200% text:** page overflow is 0 everywhere. The probe no longer finds the DS-14, 16, 17, 18 and 19 items.
+- **What the probe still reports belongs to other rows:** Home's live figures and "Prepare" button and the Requests hub's figures (DS-12 and DS-13, Home), the Home timeline labels, and the filters' 20px cap (by design).
+
+**Checks before the push:** tsc passes; oxlint has 0 errors; the whole `src/components` suite has 3245 passed and 0 failed; and `ds-pages-text-rem.test.ts` plus `kit-text-rem.test.ts` pass.
+
+New shots are in `shots/ds-pages/img/k-*`, with rows DS-14, DS-16, DS-17/18 and DS-19 in `rows.json`.
