@@ -47,13 +47,14 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
   // list a Manager already sees (as the closed Settings notice does). A failed read leaves "An Owner".
   const changedBy = owner ? null : await listEmployees().then(list => ownerNames(list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim()))).catch(() => null);
   // SCRUM-215: a Manager's action grants by location, and who to ask for the rest.
-  let authority: ManagerAuthority | null = null, locationNames: Record<string, string> = {}, profileLang: 'en' | 'es' = 'en';
+  let authority: ManagerAuthority | null = null, locationNames: Record<string, string> = {}, placeNames: Record<string, string> = {}, profileLang: 'en' | 'es' = 'en';
   if (!owner) {
     try { profileLang = (await readPortalLanguage(proof)).language; } catch { /* English */ }
     try {
       const [{ access, permissions }, catalog] = await Promise.all([listWorkforcePermissions(proof), listLocations({ includeInactive: true })]);
       authority = { state: 'ready', pairs: permissions, scopeIds: access.scope.mode === 'LOCATIONS' ? access.scope.locationIds : catalog.filter(location => location.active).map(location => location.id) };
       locationNames = Object.fromEntries(catalog.map(location => [location.id, location.shortName || location.name]));
+      placeNames = Object.fromEntries(catalog.map(location => [location.name, location.shortName || location.name]));
     } catch { authority = { state: 'unavailable' }; }
   }
   return <div className="q-page premium-manager-profile c-page--narrow" data-nv-page="">
@@ -72,6 +73,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         payrollAlerts: payrollFeatureEnabled(),
         changedBy,
         locationsWord: wordPreset(brand.words).en.locations.toLowerCase(),
+        placeNames,
       }} authority={authority ? <ManagerAuthoritySection authority={authority} locationNames={locationNames} owners={changedBy} lang={profileLang} /> : null} accountCards={<>
         {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}
         {/* Codex B-01: the passkeys row is a list item like its neighbours; the item hides while passkeys are off. */}
