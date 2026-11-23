@@ -177,7 +177,7 @@
 .eb-dots__in { display: flex; flex-wrap: wrap; margin-left: -0.85em; }
 /* A segment that wraps inside itself (a time range at 200% text) keeps its next line beside the dot column, not under the clipped margin ("9:00 AM –" then ":00 PM"). */
 .eb-dots__p { display: flex; min-width: 0; overflow-wrap: anywhere; }
-.eb-dots__sep { display: inline-block; width: 0.85em; text-align: center; }
+.eb-dots__sep { display: inline-block; flex: none; width: 0.85em; text-align: center; }
 .eb-dots .b-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 :is(#c-root, html) .app-shell .b-screen .eb-desk { display: none; }
 @media (max-width: 767px) {
