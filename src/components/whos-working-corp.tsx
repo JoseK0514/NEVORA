@@ -47,12 +47,14 @@ function WhosWorkingLive({ children, homeHref }: { children?: ReactNode; homeHre
     toCheck={review ? review.signalCount : null} openPastLimit={openPastLimitEntries(review)}>{children}</WhosWorkingView>;
 }
 
-export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, homeHref = "/app", children, toCheck = null, openPastLimit = new Set() }: {
+export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, homeHref = "/app", children, toCheck = null, openPastLimit = new Set(), place }: {
   monitor: ClockMonitor | null; today: Today | null; refreshing?: boolean; onRetry?: () => void; homeHref?: string; children?: ReactNode;
   /** Review 30 (D29): how many clock-ins the attendance review flags, when its read is ready. */
   toCheck?: number | null;
   /** The time entries the review flags as open past 12 hours with no clock-out. */
   openPastLimit?: ReadonlySet<string>;
+  /** The place a location Manager is looking at; named once beside the date. */
+  place?: string;
 }) {
   const [all, setAll] = useState(false);
   // Closing F1 (NV-240): time corrections live under Time (Time corrections), so the row here is only the flagged clock-ins
@@ -83,7 +85,7 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
   const since = (iso: string) => (todayDate ? sinceLabel(iso, timeZone, todayDate) : null) ?? clock(iso, timeZone);
   const flagged = openPastLimit.size;
   // Nov 1 upscale: the time of the last read sits on the Clocked in card ("Updated 2:37 PM"), so the subtitle is the day.
-  const sub = dateLine;
+  const sub = place ? `${dateLine} · ${place}` : dateLine;
   // A7: a single-column page, capped at the kit's narrow width on desktop.
   return <CorpPage className="c-who c-page--narrow" labelledBy="who-title">
     <CorpNav back={{ href: homeHref, label: "Home" }} title="Who’s working" phoneOnly />

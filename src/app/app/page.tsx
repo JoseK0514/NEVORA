@@ -102,7 +102,7 @@ export default async function DashboardPage({
     const placeName=(location:{name:string;shortName:string})=>location.shortName||location.name;
     const homeHref=chosen?`/app?location=${encodeURIComponent(chosen.id)}`:'/app';
     // Home's own "Who's working" view, from the same scoped reads (the company view's attendance review is company-wide).
-    if(params.view==='attendance')return <ScopedReadFrame observation={authority}><ScopedWhosWorking homeHref={homeHref} locationId={chosen?.id}/></ScopedReadFrame>;
+    if(params.view==='attendance')return <ScopedReadFrame observation={authority}><ScopedWhosWorking homeHref={homeHref} locationId={chosen?.id} place={one?placeName(one):chosen?placeName(chosen):undefined}/></ScopedReadFrame>;
     const place=one?<span className="b-date b-place"><MapPinIcon size={15} weight="bold" aria-hidden="true"/>{placeName(one)}</span>
       :<ActionMenu id="b-home-location-menu" label="Location" title="Location" ariaLabel={`Location: ${chosen?placeName(chosen):'All your locations'}`} align="start"
         triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="bold" aria-hidden="true"/>{chosen?placeName(chosen):'All your locations'}<CaretDownIcon size={13} weight="bold" aria-hidden="true"/></>}>

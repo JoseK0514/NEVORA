@@ -61,3 +61,12 @@ it("says the day of an earlier clock-in and shows the 12-hour flag with the coun
   expect(out).toMatch(/Clock-ins to check<\/span><span class="b-count">2<\/span><\/span><span class="c-row__detail"><span>[^<]*<\/span><span class="b-chip b-chip--red">No clock-out after 12 hours<\/span>/);
   expect(out).toContain('aria-label="Clock-ins to check, 2 to review, 1 with no clock-out after 12 hours, collapsed"');
 });
+
+// Gaps G41: a location Manager's Who's working names the place once, beside the date, on desktop and phones.
+it("names the place beside the date when one is given, and only the date otherwise", () => {
+  const withPlace = html({ today: today([]), place: "Condado" });
+  expect(withPlace.match(/Fri, Oct 30 · Condado/g)).toHaveLength(2);
+  const plain = html({ today: today([]) });
+  expect(plain).toContain("Fri, Oct 30");
+  expect(plain).not.toContain("Fri, Oct 30 ·");
+});

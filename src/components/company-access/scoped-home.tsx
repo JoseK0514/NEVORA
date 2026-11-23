@@ -66,8 +66,8 @@ export function ScopedHomeLive({ weekStart, actorId, locationId, ...props }: Sco
 
 /** Home's "Who's working" for this Manager: the company page's view from the same two scoped reads (who is clocked in,
  * who hasn't clocked in, missed clock-ins). The attendance review is company-wide, so it isn't here. */
-export function ScopedWhosWorking({ homeHref, locationId }: { homeHref: string; locationId?: string }) {
+export function ScopedWhosWorking({ homeHref, locationId, place }: { homeHref: string; locationId?: string; place?: string }) {
   const { monitor, refreshing } = useClockMonitor();
   const { snapshot: today, refresh } = useToday();
-  return <WhosWorkingView monitor={monitorAt(monitor, locationId)} today={todayAt(today, locationId)} refreshing={refreshing} onRetry={refresh} homeHref={homeHref} />;
+  return <WhosWorkingView monitor={monitorAt(monitor, locationId)} today={todayAt(today, locationId)} refreshing={refreshing} onRetry={refresh} homeHref={homeHref} place={place} />;
 }
