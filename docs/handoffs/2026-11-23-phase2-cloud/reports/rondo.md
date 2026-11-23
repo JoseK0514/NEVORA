@@ -142,7 +142,7 @@ None of items 9–14.
   the title doubles with 200% text.
 - Daniel (`OWN-DANI`, Condado only), H1: captured with the location Manager harness (`run-scoped.sh`), with Rondo turned
   on in a scratch copy of the harness. Overflow 0, no clipping or overlap, axe 0 at 390, 390 with 200% text, 768 and 1440.
-- One consistent set from `ceb19391` (production build): Owner H1–H6, Elena H1, H5 and H6, Daniel H1. Each at 390, 390
+- One consistent set (production build; refreshed from merge `8600ca02`, which includes `ef0905bf` and `f73c450b`): Owner H1–H6, Elena H1, H5 and H6, Daniel H1. Each at 390, 390
   at screen height, 390 with 200% text, 768 and 1440. Files are in `shots/rondo/img/` (`<row>-<o|m|ml>-<390|390-fold|390t|768|1440>.webp`),
   listed in `shots/rondo/rows.json`. Overflow 0 everywhere. Axe 0 except the known Insights band-line false positive
   at 768 and 1440. At 200% the only fixed-size text left is the Insights segment label and the kit pill
