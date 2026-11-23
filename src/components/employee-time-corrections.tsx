@@ -17,6 +17,9 @@ import {CorrectionTimeTicket} from './correction-time-ticket';
 import {ArrowRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {XIcon} from '@phosphor-icons/react/dist/ssr/X';
+import {usePortalLang,type PortalLang} from '@/lib/i18n/portal-lang';
+import {employeeTimeCopy,type EmployeeTimeCopy} from './employee-time-copy';
+import {LOCALE} from './employee-b/es-format';
 
 const changedEvent='nevora:time-correction-changed';
 
@@ -38,8 +41,8 @@ function useCorrectionRetry(key:string){
 
 function pad(value:number){return String(value).padStart(2,'0');}
 /** "OCT" / "20" for a history row's date block, and "7:55 AM" for its change line, in the workspace zone. */
-function dayPart(at:string,zone:string,part:'short'|'day'){return new Intl.DateTimeFormat('en-US',part==='short'?{timeZone:zone,month:'short'}:{timeZone:zone,day:'numeric'}).format(new Date(at));}
-function clock(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,hour:'numeric',minute:'2-digit'}).format(new Date(at));}
+function dayPart(at:string,zone:string,part:'short'|'day',lang:PortalLang='en'){return new Intl.DateTimeFormat(LOCALE[lang],part==='short'?{timeZone:zone,month:'short'}:{timeZone:zone,day:'numeric'}).format(new Date(at));}
+function clock(at:string,zone:string,lang:PortalLang='en'){return new Intl.DateTimeFormat(LOCALE[lang],{timeZone:zone,hour:'numeric',minute:'2-digit'}).format(new Date(at));}
 function localValue(at:string,zone:string){
   const value=Temporal.Instant.from(at).toZonedDateTimeISO(zone);
   return `${value.year}-${pad(value.month)}-${pad(value.day)}T${pad(value.hour)}:${pad(value.minute)}`;
@@ -47,25 +50,25 @@ function localValue(at:string,zone:string){
 function localInstant(value:string,zone:string){
   return Temporal.PlainDateTime.from(value).toZonedDateTime(zone,{disambiguation:'reject'}).toInstant().toString();
 }
-function stamp(at:string,zone:string){
-  return new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));
+function stamp(at:string,zone:string,lang:PortalLang='en'){
+  return new Intl.DateTimeFormat(LOCALE[lang],{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(at));
 }
-function actionMessage(result:CorrectionActionResponse|null){
+function actionMessage(result:CorrectionActionResponse|null,t:EmployeeTimeCopy=employeeTimeCopy()){
   if(!result)return null;
-  if(result.state==='pending')return 'Correction request sent for manager review.';
-  if(result.state==='conflict')return 'This record changed or already has a pending correction. Refresh before trying again.';
-  if(result.state==='outcome_unknown')return 'We couldn’t confirm your request was sent. Check it before you send another.';
-  if(result.state==='unavailable'&&result.httpStatus===401)return 'Your session ended. Sign in again to send your correction.';
-  if(result.state==='unavailable'&&result.httpStatus===403)return 'Your access changed. Sign in again to check your current access.';
-  if(result.state==='unavailable')return 'We couldn’t send your correction. Try again. If this keeps happening, sign in again.';
-  if(result.state==='invalid')return 'Check the proposed times and reason.';
+  if(result.state==='pending')return t.sent;
+  if(result.state==='conflict')return t.conflict;
+  if(result.state==='outcome_unknown')return t.unknown;
+  if(result.state==='unavailable'&&result.httpStatus===401)return t.ended401;
+  if(result.state==='unavailable'&&result.httpStatus===403)return t.changed403;
+  if(result.state==='unavailable')return t.unavailable;
+  if(result.state==='invalid')return t.invalid;
   if(result.state==='blocked'){
-    if(result.reason==='finalized_period')return 'Ask a manager to reopen the finalized timecard period before requesting a correction.';
-    if(result.reason==='live_state')return 'Close the live entry in Clocker before requesting a correction.';
-    if(result.reason==='overlap')return 'The proposed time overlaps another recorded entry.';
-    if(result.reason==='stale_source')return 'The recorded times changed. Refresh before trying again.';
-    if(result.reason==='invalid_interval')return 'The end time must be after the start time.';
-    return 'You can’t send this request from this account.';
+    if(result.reason==='finalized_period')return t.finalizedPeriod;
+    if(result.reason==='live_state')return t.liveState;
+    if(result.reason==='overlap')return t.overlap;
+    if(result.reason==='stale_source')return t.staleSource;
+    if(result.reason==='invalid_interval')return t.invalidInterval;
+    return t.notThisAccount;
   }
   return null;
 }
@@ -80,20 +83,21 @@ type Target={
 };
 
 export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
+  const t=employeeTimeCopy(usePortalLang());
   const targets=useMemo<Target[]>(()=>{
     if(!entry.clockOutAt)return [];
     return [
-      {key:'entry',label:'Clock in / clock out',kind:'ENTRY_BOUNDARY',startAt:entry.clockInAt,endAt:entry.clockOutAt},
+      {key:'entry',label:t.clockInOut,kind:'ENTRY_BOUNDARY',startAt:entry.clockInAt,endAt:entry.clockOutAt},
       ...entry.breaks.filter((item)=>item.endAt!==null).map((item)=>({
         key:`break:${item.id}`,
-        label:item.name ? `${item.name} break` : 'Recorded break',
+        label:item.name ? t.namedBreak(item.name) : t.recordedBreakLabel,
         kind:'BREAK_BOUNDARY' as const,
         startAt:item.startAt,
         endAt:item.endAt!,
         breakEntryId:item.id,
       })),
     ];
-  },[entry]);
+  },[entry,t]);
   const recovery=useContext(EmployeeCorrectionRecoveryContext);
   const [open,setOpen]=useState(false);
   const [targetKey,setTargetKey]=useState('entry');
@@ -187,34 +191,35 @@ export function EmployeeEntryCorrection({entry,zone}:{entry:EmployeeTimeEntry;zo
   const feedback=busy?null:retry?{state:'outcome_unknown' as const,operationId:retry.operationId}:result;
   return <div className="employee-time-correction">
     <button className="employee-time-correction-trigger" type="button" aria-expanded={open} aria-controls={formId} onClick={()=>{setOpen(value=>!value);setStart('');setEnd('');setResult(current=>current?.state==='outcome_unknown'?current:null);}}>
-      {open?'Cancel correction':'Request a correction'}
+      {open?t.cancelCorrection:t.requestCorrection}
     </button>
-    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}{feedback.state==='unavailable'?<> <Link href="/login">Sign in</Link></>:null}</p>:null}
-    {retry&&(!busy||resending)?<button className="employee-time-correction-retry" type="button" aria-disabled={busy} onClick={()=>void send(retry)}>Try again</button>:null}
+    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback,t)}{feedback.state==='unavailable'?<> <Link href="/login">{t.signIn}</Link></>:null}</p>:null}
+    {retry&&(!busy||resending)?<button className="employee-time-correction-retry" type="button" aria-disabled={busy} onClick={()=>void send(retry)}>{t.tryAgain}</button>:null}
     {open?<form className="employee-time-correction-form" id={formId} onSubmit={submit}>
-      <label>What needs correction?
+      <label>{t.whatNeedsCorrection}
         <select disabled={busy||retry!==null} value={target.key} onChange={(event)=>choose(event.target.value)}>
           {targets.map((item)=><option value={item.key} key={item.key}>{item.label}</option>)}
         </select>
       </label>
       <CorrectionComparison recordedStartAt={target.startAt} recordedEndAt={target.endAt} context={effective??{state:'unavailable'}} zone={zone}/>
       <PriorCorrectionDecisions context={effective??{state:'unavailable'}} zone={zone}/>
-      {!effective?<p className="employee-time-correction-note" role="status">{contextLoading?'Checking current effective time…':'Current effective time could not be confirmed. Reopen the form or return online before editing.'}</p>:null}
+      {!effective?<p className="employee-time-correction-note" role="status">{contextLoading?t.checkingEffective:t.effectiveUnconfirmed}</p>:null}
       <CorrectionTimeTicket start={start} end={end} disabled={busy||retry!==null||!effective} onStart={setStart} onEnd={setEnd}/>
-      <label>Reason
-        <textarea disabled={busy||retry!==null} required maxLength={500} value={reason} onChange={(event)=>setReason(event.target.value)} placeholder="Briefly explain what should be corrected." />
+      <label>{t.reason}
+        <textarea disabled={busy||retry!==null} required maxLength={500} value={reason} onChange={(event)=>setReason(event.target.value)} placeholder={t.reasonPlaceholder} />
       </label>
       <p className="employee-time-correction-note">
-        The original Clocker record stays unchanged. A manager reviews the proposed adjustment.
+        {t.originalUnchanged}
       </p>
       <button className="employee-time-correction-submit" type="submit" aria-disabled={busy} disabled={!busy&&(retry!==null||!reason.trim()||!effective)}>
-        <PendingLabel pending={busy} pendingText="Sending…">Send request</PendingLabel>
+        <PendingLabel pending={busy} pendingText={t.sending}>{t.sendRequest}</PendingLabel>
       </button>
     </form>:null}
   </div>;
 }
 
 export function EmployeeCorrectionCenter({zone}:{zone:string}){
+  const lang=usePortalLang(),t=employeeTimeCopy(lang);
   const [snapshot,setSnapshot]=useState<EmployeeTimeCorrections|null>(null);
   const [loading,setLoading]=useState(true);
   const recovery=useContext(EmployeeCorrectionRecoveryContext);
@@ -294,45 +299,45 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
   const feedback=busy?null:retry?{state:'outcome_unknown' as const,operationId:retry.operationId}:result;
   return <section className="employee-view-surface employee-correction-center" aria-labelledby="employee-corrections-title">
     <header className="employee-time-section-heading">
-      <div><h2 id="employee-corrections-title">Corrections</h2><p>Your manager reviews each request. Your original times are kept.</p></div>
+      <div><h2 id="employee-corrections-title">{t.corrections}</h2><p>{t.correctionsLead}</p></div>
       <button className="employee-time-correction-trigger" data-open={open||undefined} type="button" aria-expanded={open} aria-controls="employee-missing-time-correction" onClick={()=>{setOpen(value=>!value);setReplacementTarget(null);setStart('');setEnd('');setReason('');}} disabled={!ready||ready.locations.length===0}>
         <span className="employee-time-correction-trigger__tile" aria-hidden="true">{open?<XIcon size={18} weight="bold"/>:<PlusIcon size={20} weight="bold"/>}</span>
-        <span className="employee-time-correction-trigger__copy"><b>{open?'Cancel':'Request a correction'}</b>{open?null:<small aria-hidden="true">Add time that wasn’t recorded</small>}</span>
+        <span className="employee-time-correction-trigger__copy"><b>{open?t.cancel:t.requestCorrection}</b>{open?null:<small aria-hidden="true">{t.addUnrecorded}</small>}</span>
         {open?null:<ArrowRightIcon className="employee-time-correction-trigger__go" size={18} weight="bold" aria-hidden="true"/>}
       </button>
     </header>
-    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback)}{feedback.state==='unavailable'?<> <Link href="/login">Sign in</Link></>:null}</p>:null}
-    {retry&&(!busy||resending)?<button className="employee-time-correction-retry" type="button" aria-disabled={busy} onClick={()=>void send(retry)}>Try again</button>:null}
+    {feedback?<p className={'employee-time-correction-status '+(feedback.state==='pending'?'success':'')} role="status">{actionMessage(feedback,t)}{feedback.state==='unavailable'?<> <Link href="/login">{t.signIn}</Link></>:null}</p>:null}
+    {retry&&(!busy||resending)?<button className="employee-time-correction-retry" type="button" aria-disabled={busy} onClick={()=>void send(retry)}>{t.tryAgain}</button>:null}
     {open&&ready?<form className="employee-time-correction-form missing" id="employee-missing-time-correction" onSubmit={submit}>
-      <label>Location
+      <label>{t.location}
         <select disabled={busy||retry!==null||replacementTarget!==null} required value={location} onChange={(event)=>setLocation(event.target.value)}>
           {ready.locations.map((item)=><option value={item.id} key={item.id}>{item.name}</option>)}
         </select>
       </label>
       <CorrectionTimeTicket start={start} end={end} disabled={busy||retry!==null} onStart={setStart} onEnd={setEnd}/>
-      <label>Reason<textarea disabled={busy||retry!==null} required maxLength={500} value={reason} onChange={(event)=>setReason(event.target.value)} placeholder="Explain why the time was not recorded." /></label>
-      <p className="employee-time-correction-note">{replacementTarget?'This replaces the selected approved missing time after manager review. The previous adjustment stays in history.':'Missing time is submitted as a correction record. It does not create a recorded Clocker punch.'}</p>
-      <button className="employee-time-correction-submit" type="submit" aria-disabled={busy} disabled={!busy&&(retry!==null||!location||!reason.trim())}><PendingLabel pending={busy} pendingText="Sending…">Send request</PendingLabel></button>
+      <label>{t.reason}<textarea disabled={busy||retry!==null} required maxLength={500} value={reason} onChange={(event)=>setReason(event.target.value)} placeholder={t.missingPlaceholder} /></label>
+      <p className="employee-time-correction-note">{replacementTarget?t.replacesNote:t.missingNote}</p>
+      <button className="employee-time-correction-submit" type="submit" aria-disabled={busy} disabled={!busy&&(retry!==null||!location||!reason.trim())}><PendingLabel pending={busy} pendingText={t.sending}>{t.sendRequest}</PendingLabel></button>
     </form>:null}
-    {loading&&!snapshot?<p className="employee-time-empty">Loading correction history…</p>:
-      snapshot?.state==='unavailable'?<p className="employee-time-empty">Correction history is unavailable right now.{snapshot.reason==='access_denied'?<> <Link href="/login">Sign in</Link></>:null}</p>:
+    {loading&&!snapshot?<p className="employee-time-empty">{t.loadingHistory}</p>:
+      snapshot?.state==='unavailable'?<p className="employee-time-empty">{t.historyUnavailable}{snapshot.reason==='access_denied'?<> <Link href="/login">{t.signIn}</Link></>:null}</p>:
       recent.length?<div className="employee-correction-history">
         {recent.map((item)=><div className="employee-correction-history-row" key={item.id}>
-          <span className="employee-correction-day" aria-hidden="true"><small>{dayPart(item.proposedStartAt,zone,'short')}</small><b>{dayPart(item.proposedStartAt,zone,'day')}</b></span>
-          <div><strong>{item.kind==='MISSING_ENTRY'?'Unrecorded time':item.kind==='BREAK_BOUNDARY'?(item.breakName??'Break'):'Clock in / clock out'}</strong><span className="employee-correction-change">{item.originalStartAt?<s>{clock(item.originalStartAt,zone)}</s>:<s>Not recorded</s>}<ArrowRightIcon size={14} weight="bold" aria-hidden="true"/><b>{clock(item.proposedStartAt,zone)} – {clock(item.proposedEndAt,zone)}</b></span><small>{item.locationName} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}</small>
-            <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={zone}/>
-            <p className="employee-time-correction-note">{item.status==='PENDING'?'Pending proposal':item.status==='APPROVED'?'Approved proposal':'Declined proposal'} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}{item.status==='REJECTED'?' · does not change effective time':''}</p>
+          <span className="employee-correction-day" aria-hidden="true"><small>{dayPart(item.proposedStartAt,zone,'short',lang)}</small><b>{dayPart(item.proposedStartAt,zone,'day',lang)}</b></span>
+          <div><strong>{item.kind==='MISSING_ENTRY'?t.unrecordedTime:item.kind==='BREAK_BOUNDARY'?(item.breakName??t.breakWord):t.clockInOut}</strong><span className="employee-correction-change">{item.originalStartAt?<s>{clock(item.originalStartAt,zone,lang)}</s>:<s>{t.notRecorded}</s>}<ArrowRightIcon size={14} weight="bold" aria-hidden="true"/><b>{clock(item.proposedStartAt,zone,lang)} – {clock(item.proposedEndAt,zone,lang)}</b></span><small>{item.locationName} · {stamp(item.proposedStartAt,zone,lang)} → {stamp(item.proposedEndAt,zone,lang)}</small>
+            <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?t.approvedMissing:t.recorded} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={zone}/>
+            <p className="employee-time-correction-note">{item.status==='PENDING'?t.pendingProposal:item.status==='APPROVED'?t.approvedProposal:t.declinedProposal} · {stamp(item.proposedStartAt,zone,lang)} → {stamp(item.proposedEndAt,zone,lang)}{item.status==='REJECTED'?t.noEffectChange:''}</p>
             <PriorCorrectionDecisions context={item.context} zone={zone}/>
-            {item.requestedByName?<p className="employee-time-correction-note">Requested by {item.requestedByName} for you.</p>:null}
-            {item.status==='PENDING'&&item.baseChanged?<p className="employee-time-correction-note">Your timecard changed after this request.</p>:null}
+            {item.requestedByName?<p className="employee-time-correction-note">{t.requestedBy(item.requestedByName)}</p>:null}
+            {item.status==='PENDING'&&item.baseChanged?<p className="employee-time-correction-note">{t.timecardChanged}</p>:null}
           {item.kind==='MISSING_ENTRY'&&item.status==='APPROVED'&&item.currentAdjustmentId?<button className="employee-time-correction-trigger" type="button" disabled={busy||Boolean(retry)} aria-controls="employee-missing-time-correction" onClick={()=>{
             setReplacementTarget({id:item.currentAdjustmentId!,revision:item.revision});setLocation(item.locationId);
             setStart(localValue(item.proposedStartAt,zone));setEnd(localValue(item.proposedEndAt,zone));setReason('');setResult(null);setOpen(true);
-          }}>Correct missing time</button>:null}
+          }}>{t.correctMissing}</button>:null}
           </div>
-          <span className={'employee-correction-state '+item.status.toLowerCase()}>{item.status==='PENDING'?'Waiting':item.status==='APPROVED'?'Approved':'Declined'}</span>
+          <span className={'employee-correction-state '+item.status.toLowerCase()}>{item.status==='PENDING'?t.waiting:item.status==='APPROVED'?t.approved:t.declined}</span>
         </div>)}
-        {ready&&ready.totalRequests>recent.length?<small className="employee-correction-more">Showing {recent.length} of {ready.totalRequests} correction requests.</small>:null}
-      </div>:<p className="employee-time-empty">No correction requests yet.</p>}
+        {ready&&ready.totalRequests>recent.length?<small className="employee-correction-more">{t.showingRequests(recent.length,ready.totalRequests)}</small>:null}
+      </div>:<p className="employee-time-empty">{t.noRequests}</p>}
   </section>;
 }
