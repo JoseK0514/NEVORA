@@ -91,3 +91,12 @@ describe('desktop at 200% text (sweep, Nov 23)', () => {
     expect(prof).toContain('font-size: 0.875rem !important; line-height: 1.1875rem !important;');
   });
 });
+
+describe('sweep follow-up: B7 and C4 at 200% text', () => {
+  it('the card meta ("3 of 9"), the desktop shift sheet title and its subtitle line are rem', () => {
+    expect(css('components/owner-b/owner-b.css')).toContain('.b-card__meta { font-size: 0.875rem;');
+    const desk = css('app/app/owner-b-desktop.css');
+    expect(desk).toMatch(/\.c-shift__head \.c-shift__title \{[^}]*font-size: 2rem !important; line-height: 2\.375rem !important;/);
+    expect(desk).toMatch(/\.c-shift__titles \.c-shift__sub \{ font-size: var\(--b-fs-body\) !important; line-height: 1\.25rem !important;/);
+  });
+});

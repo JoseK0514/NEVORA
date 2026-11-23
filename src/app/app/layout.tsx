@@ -92,6 +92,8 @@ import {UnsupportedNativeRole} from '@/components/native-shell/unsupported-role'
 import {commerceEnabled} from '@/lib/commerce/access';
 import {isCommerceRecoveryRoute, RECOVERY_ROUTE_HEADER} from '@/lib/commerce/recovery-routes';
 import {CommerceRecoveryBoundary} from '@/lib/commerce/recovery-boundary';
+import {readPortalLanguage} from '@/lib/activation/language.server';
+import {PortalLangProvider,type PortalLang} from '@/lib/i18n/portal-lang';
 
 export const metadata: Metadata = {
   // Review fix (23/24 of 50): one title per page, so tab changes are announced and tabs are tellable apart.
@@ -129,12 +131,14 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
   }
   const workspace = await getWorkspace();
   const proof = await requireSessionMutationProof();
-  const [operationalAuthority,payrollCapabilities]=await Promise.all([readOperationalAuthority(proof),payrollFeatureEnabled()?readPayrollCapabilities(proof):Promise.resolve(undefined)]);
+  // Signed-in Spanish: the person's language for every client component (usePortalLang); English if the read fails.
+  const [operationalAuthority,payrollCapabilities,lang]=await Promise.all([readOperationalAuthority(proof),payrollFeatureEnabled()?readPayrollCapabilities(proof):Promise.resolve(undefined),
+    readPortalLanguage(proof).then(result=>result.language as PortalLang).catch(():PortalLang=>'en')]);
   const preferenceCookie = "nevora_sidebar_" + createHash("sha256").update(workspace.id + ":" + session.id).digest("hex").slice(0,16);
   const initialCollapsed = (await cookies()).get(preferenceCookie)?.value === "collapsed";
   const brand = await currentBrand();
   return (
-    <CommerceRecoveryBoundary enabled={recoveryEnabled} shell={<AppShell
+    <PortalLangProvider lang={lang}><CommerceRecoveryBoundary enabled={recoveryEnabled} shell={<AppShell
       key={session.id}
       workspaceName={workspace.name}
       initialCollapsed={initialCollapsed}
@@ -167,6 +171,6 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
       <PasskeyOffer />
       {/* Review B6 (NV-326): the B entrance plays on the first page of a session only. */}
       <BEntrance />
-    </AppShell>}>{children}</CommerceRecoveryBoundary>
+    </AppShell>}>{children}</CommerceRecoveryBoundary></PortalLangProvider>
   );
 }
