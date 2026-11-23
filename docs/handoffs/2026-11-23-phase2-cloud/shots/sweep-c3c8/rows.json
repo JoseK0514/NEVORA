@@ -32,7 +32,7 @@
   "row": "C8",
   "page": "Copy receipt",
   "section": "Schedule",
-  "note": "Owner's receipt after Copy last week into Dec 7–13: '51 shifts', Review schedule, and the people whose availability isn't confirmed. Axe clean; nothing clipped at 200% text.",
+  "note": "Owner's receipt after Copy last week into Dec 7–13: '51 shifts', Review schedule, then 'All with warnings' (availability not confirmed) with one row per person. Fixed (49dfc06f): the count is said once when every copied shift has a warning. Axe clean; nothing clipped at 200% text.",
   "shots": [
    {
     "label": "Phone",
@@ -53,8 +53,6 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "'51 shifts' and 'With warnings 51' show the same number when every copied shift has a warning; Jose may want one of them."
-  ]
+  "endSweep": []
  }
 ]

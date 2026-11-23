@@ -17,5 +17,8 @@ Production build of `93d15e53` (the merge of 7a79c96c), Owner. Captured at 390, 
 
 Comparison: no approved C3 or C8 shots exist under `docs/handoffs`, and this clone's history is shallow, so I compared
 against the inventory and the review notes. Both pages are Direction B (band, white cards, the kit's buttons) and
-neither shows "Publishing permission needed" to the Owner. I found no regression and changed no code. One end-sweep
-note: C8 shows "51" twice when every copied shift has a warning ("51 shifts" and "With warnings 51").
+neither shows "Publishing permission needed" to the Owner. I found no regression and changed no code. Follow-up, fixed
+in `49dfc06f`: C8 showed "51" twice when every copied shift had a warning ("51 shifts" and "With warnings 51"). In that
+case the card now reads "All with warnings" with no second count; when only some shifts have warnings it keeps "With
+warnings" and its count. A test covers this, and the full `src/components` suite passes. C8 was recaptured on
+`49dfc06f` (390, 390 with 200% text, 768, 1440); axe is clean and nothing is clipped.
