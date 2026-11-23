@@ -4,8 +4,6 @@ import { isPopoverOpen } from "./kit/popover-open";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { actionMenuGeometry } from "./action-menu-geometry";
 import { CaretDownIcon, DotsThreeIcon } from "@phosphor-icons/react/ssr";
-import { usePortalLang } from "@/lib/i18n/portal-lang";
-import { SHELL_WORDS } from "./shell-copy";
 
 /** G51 (Nov 23, 2026): the trigger's accessible name starts with what it shows (WCAG 2.5.3, label in name). Menus that
  * show a value are named "<label>: <value>" ("Location: Condado", "Bonus year: Oct 2025 – Sep 2026") while the button
@@ -53,7 +51,6 @@ export function ActionMenu({
   width,
   triggerCurrent = false,
 }: ActionMenuProps) {
-  const W = SHELL_WORDS[usePortalLang()];
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const keyboardOpenRef = useRef(false);
@@ -194,7 +191,7 @@ export function ActionMenu({
         // Review B2 (NV-324): a menu popover is a named group (a label on a role-less div is ignored); a sheet is a dialog.
         role={sheet ? "dialog" : "group"}
         aria-modal={sheet || undefined}
-        aria-label={ariaLabel ?? W.actionsFor(label)}
+        aria-label={ariaLabel ?? `${label} actions`}
       >
         {/* Owner premium (phone-native M4, visual-craft O): on a phone the menu is a sheet with a titled header and Done.
           The header is hidden wherever the menu is a popover (CSS), so desktop menus are unchanged. */}
@@ -205,7 +202,7 @@ export function ActionMenu({
         {/* Round 2 (R8): one sheet pattern, "Done" on the right of the centred title (Close and its × retired). */}
         <button className="mobile-workforce-sheet-close" type="button"
           onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
-          <span>{W.done}</span>
+          <span>Done</span>
         </button>
       </div>
     </div>

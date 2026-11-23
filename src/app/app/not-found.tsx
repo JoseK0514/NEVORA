@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { CorpPage } from "@/components/corp/corp";
-import { NotFoundBody } from "./not-found-body";
+import Link from "next/link";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
+import { BButtonLink, BState, BStateScreen } from "@/components/owner-b/b-kit";
+import { accountCopy } from "@/components/employee-b/account-copy";
 
 export const metadata: Metadata = { title: "Page not found" };
 
@@ -14,6 +17,13 @@ export const metadata: Metadata = { title: "Page not found" };
  * button, and Schedule as the quiet text link the closed pages use. Every role has both pages. */
 export default function NotFound() {
   return <CorpPage className="c-page--narrow c-notfound c-route-state--checking" labelledBy="not-found-title">
-    <NotFoundBody />
+    <BStateScreen title="Page not found" titleId="not-found-title" back={{ href: "/app", label: "Home" }}>
+      <BState kind="empty" icon={<MagnifyingGlassIcon weight="bold" />} title="This page doesn’t exist" line="The link may be old, or the page may have moved.">
+        <div className="b-state-actions b-closed-actions">
+          <BButtonLink href="/app" kind="teal">Go to Home</BButtonLink>
+          <Link className="b-closed-also" href="/app/schedule">{accountCopy().openSchedule}</Link>
+        </div>
+      </BState>
+    </BStateScreen>
   </CorpPage>;
 }

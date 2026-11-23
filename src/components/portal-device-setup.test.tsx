@@ -1,9 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, rs } from '@rstest/core';
+import { expect, it } from '@rstest/core';
 import { DeviceSetupContent } from './portal-device-setup';
-// Device settings' words follow the person's language; these tests render outside the shell, so English.
-rs.mock('@/lib/i18n/portal-lang', () => ({ usePortalLang: () => 'en' }));
-
 const base={state:'ready' as const, standalone:false as const, ios:false, installPrompt:false, testAllowed:false, instructions:false, onEnable:()=>{},onDismiss:()=>{},onInstructions:()=>{},onInstall:()=>{},onTurnOff:()=>{},onTest:()=>{},onRetry:()=>{}};
 it('uses approved copy and equal peer action classes',()=>{
  const html=renderToStaticMarkup(<DeviceSetupContent {...base}/>);

@@ -1,7 +1,6 @@
 import { SkeletonRows } from "./skeleton";
 import { QuietSkeleton } from "./quiet/quiet";
 import { CorpSkeleton } from "./corp/corp-client";
-import { RouteLoadingLine } from "./route-loading-line";
 
 /** Page-shaped placeholder for a route segment while its server data loads.
  * The visible shape matches the page (grid, list or cards); the status line
@@ -16,7 +15,7 @@ export function RouteSkeleton({ label, shape = "list", band, overlap = true, rou
 }) {
   return <section className="route-skeleton" data-shape={shape} data-route={route} data-band={band ? (overlap ? "overlap" : "flat") : undefined} data-setup={setup || undefined}
     style={band && !route ? { ["--route-band" as string]: `${band}px` } : undefined} role="status" aria-busy="true">
-    <RouteLoadingLine label={label} />
+    <span className="sr-only">Loading {label}…</span>
     {band ? <div className="route-skeleton-band" aria-hidden="true"><i /><i /><i /></div> : null}
     <div className="route-skeleton-header" aria-hidden="true"><i /><i /></div>
     {shape === "grid" ? <div className="route-skeleton-grid" aria-hidden="true">{Array.from({ length: 21 }, (_, index) => <i key={index} />)}</div>

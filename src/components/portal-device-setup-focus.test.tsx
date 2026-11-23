@@ -11,9 +11,6 @@ rs.mock("react",  () => ({
   useState: (initial: unknown) => [initial, () => {}],
 }));
 import { PortalDeviceSetup } from "./portal-device-setup";
-// Device settings' words follow the person's language; these tests render outside the shell, so English.
-rs.mock('@/lib/i18n/portal-lang', () => ({ usePortalLang: () => 'en' }));
-
 
 let active: TestElement;
 let body: TestElement;

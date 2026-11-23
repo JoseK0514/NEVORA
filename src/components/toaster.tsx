@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { CheckIcon, InfoIcon, XIcon } from "@phosphor-icons/react/ssr";
 import { overlayExitMs } from "./kit/overlay-exit";
-import { usePortalLang } from "@/lib/i18n/portal-lang";
-import { SHELL_WORDS } from "./shell-copy";
 
 /** Calm, Sonner-style confirmations without a dependency. Call `toast()` only
  * after the system has confirmed the outcome (a receipt, a redirect flag), never
@@ -61,12 +59,11 @@ function ToastItem({ item, onClose }: { item: Toast; onClose: (id: number) => vo
     onFocus={() => { focused.current = true; pause(); }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { focused.current = false; run(); } }}>
     <span className="nevora-toast__ic" aria-hidden="true"><Icon size={16} weight="bold" /></span>
     <span>{item.message}</span>
-    <button type="button" aria-label={SHELL_WORDS[usePortalLang()].toastDismiss} onClick={close}><XIcon size={16} weight="bold" aria-hidden="true" /></button>
+    <button type="button" aria-label="Dismiss message" onClick={close}><XIcon size={16} weight="bold" aria-hidden="true" /></button>
   </li>;
 }
 
 export function Toaster() {
-  const W = SHELL_WORDS[usePortalLang()];
   const [items, setItems] = useState<Toast[]>([]);
   const next = useRef(1);
   useEffect(() => {
@@ -85,8 +82,7 @@ export function Toaster() {
     const decided = url.searchParams.get("decided");
     if (decided !== null) {
       // Final polish (said once): Team time off draws the decision's result inline in its list, so no toast there.
-      // Signed-in Spanish: the two decision toasts in the person's language (their English is DECISION_MESSAGES).
-      const message = decided === "timeoff-approved" ? W.timeOffApproved : decided === "timeoff-declined" ? W.timeOffDeclined : DECISION_MESSAGES[decided];
+      const message = DECISION_MESSAGES[decided];
       if (message && pathname !== "/app/requests") toast(message);
       url.searchParams.delete("decided");
     }
@@ -94,8 +90,8 @@ export function Toaster() {
     if (!present.length && decided === null) return;
     present.forEach(flag => url.searchParams.delete(flag));
     window.history.replaceState(window.history.state, "", url);
-  }, [pathname, search, W]);
-  return <ol className="nevora-toaster" aria-live="polite" aria-label={W.toastMessages}>
+  }, [pathname, search]);
+  return <ol className="nevora-toaster" aria-live="polite" aria-label="Messages">
     {items.map(item => <ToastItem key={item.id} item={item} onClose={id => setItems(current => current.filter(t => t.id !== id))} />)}
   </ol>;
 }

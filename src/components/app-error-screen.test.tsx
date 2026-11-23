@@ -101,8 +101,6 @@ it("UI Try again asks Next to refetch (retry), not just re-render the failed res
     expect(tree).toContain('"reset":"RETRY"');
   }
   rs.doMock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
-  // The page is called outside React here, so the language hook answers English.
-  rs.doMock("@/lib/i18n/portal-lang", () => ({ usePortalLang: () => "en" }));
   const PortalError = (await import("../app/app/error")).default;
   const find = (node: unknown): (() => void) | null => {
     if (!node || typeof node !== "object") return null;

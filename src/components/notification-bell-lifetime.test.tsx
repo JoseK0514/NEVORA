@@ -1,8 +1,6 @@
 import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
 import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 const host=rs.hoisted(()=>({effect:undefined as undefined|(()=>void|(()=>void)),changed:rs.fn()}));
-// The bell's words follow the person's language; this harness runs the component outside React, so it is English here.
-rs.mock('@/lib/i18n/portal-lang',()=>({usePortalLang:()=>'en'}));
 rs.mock('react',()=>({...rstestOriginal0,
  useState:(initial:unknown)=>[initial,host.changed],useRef:(initial:unknown)=>({current:initial}),
  useEffect:(effect:()=>void|(()=>void))=>{host.effect=effect;},
