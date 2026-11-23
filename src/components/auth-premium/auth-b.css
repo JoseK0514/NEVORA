@@ -97,6 +97,10 @@
   :is(#q-root, html) .q-auth__support { max-width: 30ch; margin: 18px 0 0; font-size: var(--b-fs-title-sm); line-height: 1.6; color: var(--b-on-band-2); }
   :is(#q-root, html) .q-auth__powered { font-size: var(--b-fs-meta); color: var(--b-on-band); }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col { grid-column: 2; grid-row: 1; align-self: center; justify-self: center; position: relative; box-sizing: border-box; width: 440px !important; max-width: calc(100% - 48px) !important;
+  /* Final fixes K (Nov 23, 2026): the legal footer sits absolutely at the page's foot, so at 200% text a tall card ran
+   * into it ("Forgot password?" over "© 2026 VELANI LLC"). Equal room above and below the centred card keeps it where it
+   * was at the default size and, when the card is taller than the page, leaves the footer's height free under it. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):not(#mobile-access-page) > .q-auth__col { margin-block: 4.5rem !important; }
     margin: 96px auto 72px !important; padding: var(--b-space-32) !important; border-radius: var(--b-radius-card) !important; background: #FFFFFF !important;
     box-shadow: 0 0 0 1px rgb(var(--b-shadow-rgb) / .05), 0 1px 2px rgb(var(--b-shadow-rgb) / .06), 0 24px 48px -24px rgb(var(--b-shadow-rgb) / .24) !important; }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__foot { grid-column: 2; grid-row: 2; padding: 0 var(--b-space-24) 28px !important; text-align: center !important; }
