@@ -749,3 +749,32 @@ From this session's own slice:
   - `src/components/profile-calendar-disclosure.tsx`
   - `src/components/status-pill.tsx`
   - `src/components/illustrations/index.tsx`
+
+## Second release (lead, Nov 23, 18:43 UTC)
+
+Base: origin/claude-codex-collab-nevora-staff at 836964e4 (fast-forward merge). Code tip 772f7ae8.
+
+| Commit | What |
+|---|---|
+| `95d99a10` | Clocker owner pages (tablets, PINs, punch photos, shift matching, recovery) and Reminders: usted → tú; Ubicación → Localidad; "Owner" in a Spanish sentence → "dueño"; Novedades → Avisos; "Reglas de horarios" → "Reglas del horario". Three tests that pinned the usted wording follow the new Spanish. |
+| `2a196e30` | Insights' report definitions, the overtime reason and the coverage/stability definitions (`src/lib/reports/report-copy.ts`, `reportText`). The report data and CSV stay English; translation happens where the page shows it. `reports.tsx` (es-rondo's file) only gained `reportText(...)` calls around these sentences. Notes: `es-rest-parts/R2-B.md`. |
+| `2acc7c31` | Server action messages for Settings and Team (`settings/actions-copy.ts`, `employees/actions-copy.ts`, `src/lib/i18n/server-messages.ts` for lib error sentences that reach a form; the Features save route). Same result shapes and codes; each action reads `readPageLang()` only where it builds a message. Notes: `es-rest-parts/R2-A.md`. |
+| `66e8160d` | Shared lib sentences: notification titles, facts and day headings, time zone names, business date and time ("7 dic, 6:05 p. m."), photo states, attendance words, the overnight weekday in swap times; es-rest callers pass the language. Notes and callers left to other sessions: `es-rest-parts/R2-C.md`. |
+| `772f7ae8` | Clocker recovery passes the language to its already bilingual review (found by the browser check). |
+
+Checks: on 66e8160d, src/components + src/app + src/lib gave 15,501 passed and 0 failed; tsc and oxlint are clean on every
+commit; key-match and Spanish tests come with each new table.
+
+Browser (Spanish via the nv-lang cookie, Owner, fictional data, development build): Insights, Clocker tablets, PINs,
+Punch photos, Photo review, Shift matching and Clocker recovery, at 390, 390 with 200% text and 1440, with axe:
+no sideways scroll, nothing clipped or off the edge, 0 axe violations except the known Insights band contrast
+(`.c-ins__range`, same in English). Captures: `shots/es-rest/img/es2-*.webp`.
+
+Still English, and why:
+- `requests/actions.ts` and `account/delete/actions.ts` return codes and redirects, not sentences.
+- The company-access service's field errors and the operational-rules parser come from lib and aren't in `server-messages.ts`.
+- `periodInsights` in `src/lib/reports/insights.ts` isn't imported by anything.
+- The CSV export's headers stay English because the export is a data file.
+- Callers outside es-rest (employee-mobile, employee-b, timecards, owner-b, manager, communication) don't pass the language to the new lib parameters yet. They're listed in R2-C.md.
+
+For Jose to review (second release): the security and access messages are in R2-A.md, and the overtime, payroll, attendance and privacy definitions are in R2-B.md. The pay-statement, payroll and photo-privacy lib lines are in R2-C.md. Clocker and Reminders only changed usted to tú, so their meaning is unchanged. Jose should also decide on the approved Insights definition: it names "D2", an internal term, which is kept in both languages for now.

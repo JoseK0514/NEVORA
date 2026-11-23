@@ -29,7 +29,7 @@ describe('Clocker owner copy', () => {
   });
   it('names the person or the tablet in the words that take one', () => {
     expect(en.pinDoneSet('Maria Rivera')).toBe('PIN set for Maria Rivera. Tell them in person.');
-    expect(es.pinDoneSet('Maria Rivera')).toBe('PIN creado para Maria Rivera. Dígaselo en persona.');
+    expect(es.pinDoneSet('Maria Rivera')).toBe('PIN creado para Maria Rivera. Díselo en persona.');
     expect(en.removeTitle('Front counter tablet')).toBe('Remove Front counter tablet?');
     expect(en.ticketTitle('Patio tablet')).toBe('Connect Patio tablet');
     expect(en.pinsNeed(1)).toBe('1 person needs a PIN'); expect(en.pinsNeed(3)).toBe('3 people need a PIN');

@@ -177,6 +177,9 @@ export function groupHeading(type: ActionItem['type'], count: number, title: str
  * ended with no punch. "Clocked in late": the person arrived after the start. Today's read tells the first two apart by
  * the shift's status, so a shift still in progress is never called missed. */
 export const ATTENDANCE_WORDS = {notClockedIn: 'Not clocked in', late: 'Clocked in late', missed: 'Missed'} as const;
+/** Signed-in Spanish (es-rest R2): the same words in Puerto Rico Spanish (Team and Home already say these). */
+export const ATTENDANCE_WORDS_ES: Record<keyof typeof ATTENDANCE_WORDS, string> = {notClockedIn: 'Sin marcar entrada', late: 'Marcó entrada tarde', missed: 'Sin marcar'};
+export const attendanceWords = (lang: 'en' | 'es' = 'en'): Record<keyof typeof ATTENDANCE_WORDS, string> => lang === 'es' ? ATTENDANCE_WORDS_ES : ATTENDANCE_WORDS;
 export function splitNoClockIn<T extends {status: string}>(shifts: readonly T[]): {running: T[]; ended: T[]} {
   return {running: shifts.filter(shift => shift.status !== 'no_punches'), ended: shifts.filter(shift => shift.status === 'no_punches')};
 }

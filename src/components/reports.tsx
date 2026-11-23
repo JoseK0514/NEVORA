@@ -32,11 +32,12 @@ import {reviewCopy} from './review-details/copy';
 import {BCallout} from './owner-b/b-kit';
 import {Explain} from './review-details/explain';
 import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {reportText} from '@/lib/reports/report-copy';
 import {REPORTS_COPY,type ChangeEvent,type ChangeWhat,type ReportMode,type ReportState,type ReportsCopy} from './reports-copy';
 /** access_lost: signed out (sign in again). not_allowed: signed in without access to insights (QA A3-06). */
 type State=ReportState;
 /** Rondo Spanish (G98): the person's words, Insights' and the shared review lines, in their language. */
-function useCopy(){const lang=usePortalLang();return {c:REPORTS_COPY[lang],rv:reviewCopy(lang)};}
+function useCopy(){const lang=usePortalLang();return {c:REPORTS_COPY[lang],rv:reviewCopy(lang),lang};}
 /** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
  * and swapped in when verified, so the report only empties if every read fails before expiry.
  * Short-lived snapshots (5s or less) just expire. */
@@ -139,8 +140,8 @@ function Cell({label,value}:{label:string;value:string|null}){
  return <td role="cell"><span className="wb-cell-label" aria-hidden="true">{label}</span><span className="wb-cell-value">{value===null?<><span aria-hidden="true">—</span><span className="nv-sr">{c.notAvailable}</span></>:value}</span></td>;
 }
 function HoursTable({title,rows}:{title:string;rows:ReportHours[]}){
- const {c}=useCopy();
- return <section className="nv-card"><Heading title={title} meta={rows.length?c.rows(rows.length):undefined}/>{rows.length?<div className="wb-table-scroll" role="region" tabIndex={0} aria-label={c.columns(title)}><table role="table" className="wb-table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">{c.name}</th><th scope="col" role="columnheader">{c.recordedTime}</th><th scope="col" role="columnheader">{c.breaksRecorded}</th></tr></thead><tbody role="rowgroup">{rows.map(r=><tr key={r.id} role="row"><th scope="row" role="rowheader">{r.name}</th><Cell label={c.recordedTime} value={hours(r.recordedNanoseconds)}/><Cell label={c.breaksRecorded} value={hours(r.breakNanoseconds)}/></tr>)}</tbody></table></div>:<Empty>{c.noHoursInPeriod}</Empty>}</section>;
+ const {c,lang}=useCopy();
+ return <section className="nv-card"><Heading title={title} meta={rows.length?c.rows(rows.length):undefined}/>{rows.length?<div className="wb-table-scroll" role="region" tabIndex={0} aria-label={c.columns(title)}><table role="table" className="wb-table"><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">{c.name}</th><th scope="col" role="columnheader">{c.recordedTime}</th><th scope="col" role="columnheader">{c.breaksRecorded}</th></tr></thead><tbody role="rowgroup">{rows.map(r=><tr key={r.id} role="row"><th scope="row" role="rowheader">{reportText(r.name,lang)}</th><Cell label={c.recordedTime} value={hours(r.recordedNanoseconds)}/><Cell label={c.breaksRecorded} value={hours(r.breakNanoseconds)}/></tr>)}</tbody></table></div>:<Empty>{c.noHoursInPeriod}</Empty>}</section>;
 }
 /** Approved time off, in days inside the period (one person off for two days counts two). */
 function timeOffDays(report:PeriodReports){
@@ -159,7 +160,7 @@ function timeOffDays(report:PeriodReports){
 export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null;state:State;
  /** MK5 / PD4: when this period has no recorded time and isn't this week, the chart offers this week instead. */
  onThisWeek?:()=>void}){
- const {c,rv}=useCopy(),locale=c.locale;
+ const {c,rv,lang}=useCopy(),locale=c.locale;
  const content=useRef<HTMLDivElement>(null);
  useEffect(()=>{
   const media=window.matchMedia('print');
@@ -188,7 +189,7 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
  const offDays=timeOffDays(report);
  const planned=report.planCoverage.state==='complete';
  // v3: definitions live only in the Report definitions disclosure; their wording is unchanged.
- const definitions=[...new Set([...report.definitions,c.breaksDefinition,report.coverageReliability.definition,report.scheduleStability.definition,report.overtime.reason])];
+ const definitions=[...new Set([...report.definitions,c.breaksDefinition,report.coverageReliability.definition,report.scheduleStability.definition,report.overtime.reason].map(text=>reportText(text,lang)))];
  return <div className="wb-insights-view" ref={content}>
   {/* Desktop: the four figures. On phones the chart card carries the total and the Period list the rest. */}
   <section className="cm-insights__figures" aria-label={c.periodFigures}><StatGrid stats={[
@@ -228,7 +229,7 @@ export function ReportsView({report,state,onThisWeek}:{report:PeriodReports|null
   <details className="cm-insights__more wb-disclosure"><summary><span>{c.periodDetails}</span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary>
    <div className="cm-insights__detail">
     <nav className="wb-jump" aria-label={c.reportSections}><span className="wb-jump__label">{c.jumpTo}</span><a href="#report-hours">{c.hours}</a><a href="#report-attendance">{c.attendance}</a><a href="#report-changes">{c.changes}</a><a href="#report-approvals">{c.approvals}</a></nav>
-    <section className="nv-card" id="report-hours" tabIndex={-1}><Heading title={c.scheduledVsRecorded}/>{planned?null:<div className="wb-body wb-body--tight"><p className="wb-box wb-note wb-inline-icon" role="status"><InfoIcon size={18} weight="bold" aria-hidden="true"/><span>{c.planIncomplete}</span></p></div>}{report.scheduleVsActual.length?<div className="wb-table-scroll" role="region" tabIndex={0} aria-label={c.columns(c.scheduledVsRecorded)}><table role="table" className={planned?'wb-table wb-table--four':'wb-table'}><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">{c.employee}</th>{planned?<th scope="col" role="columnheader">{c.publishedPlan}</th>:null}<th scope="col" role="columnheader">{c.recordedTime}</th>{planned?<th scope="col" role="columnheader">{c.difference}</th>:null}</tr></thead><tbody role="rowgroup">{report.scheduleVsActual.map(r=><tr key={r.employeeId} role="row"><th scope="row" role="rowheader">{r.employeeName}</th>{planned?<Cell label={c.publishedPlan} value={r.scheduledNanoseconds===null?null:hours(r.scheduledNanoseconds)}/>:null}<Cell label={c.recordedTime} value={hours(r.recordedNanoseconds)}/>{planned?<Cell label={c.difference} value={r.differenceNanoseconds===null?null:hours(r.differenceNanoseconds)}/>:null}</tr>)}</tbody></table></div>:<Empty>{c.nothingScheduled}</Empty>}</section>
+    <section className="nv-card" id="report-hours" tabIndex={-1}><Heading title={c.scheduledVsRecorded}/>{planned?null:<div className="wb-body wb-body--tight"><p className="wb-box wb-note wb-inline-icon" role="status"><InfoIcon size={18} weight="bold" aria-hidden="true"/><span>{c.planIncomplete}</span></p></div>}{report.scheduleVsActual.length?<div className="wb-table-scroll" role="region" tabIndex={0} aria-label={c.columns(c.scheduledVsRecorded)}><table role="table" className={planned?'wb-table wb-table--four':'wb-table'}><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">{c.employee}</th>{planned?<th scope="col" role="columnheader">{c.publishedPlan}</th>:null}<th scope="col" role="columnheader">{c.recordedTime}</th>{planned?<th scope="col" role="columnheader">{c.difference}</th>:null}</tr></thead><tbody role="rowgroup">{report.scheduleVsActual.map(r=><tr key={r.employeeId} role="row"><th scope="row" role="rowheader">{reportText(r.employeeName,lang)}</th>{planned?<Cell label={c.publishedPlan} value={r.scheduledNanoseconds===null?null:hours(r.scheduledNanoseconds)}/>:null}<Cell label={c.recordedTime} value={hours(r.recordedNanoseconds)}/>{planned?<Cell label={c.difference} value={r.differenceNanoseconds===null?null:hours(r.differenceNanoseconds)}/>:null}</tr>)}</tbody></table></div>:<Empty>{c.nothingScheduled}</Empty>}</section>
     <div className="wb-insights-grid"><HoursTable title={c.hoursByEmployee} rows={report.hoursByEmployee}/><HoursTable title={c.hoursByLocation} rows={report.hoursByLocation}/><HoursTable title={c.hoursByPosition} rows={report.hoursByPosition}/></div>
     <section className="nv-card" id="report-attendance" tabIndex={-1}><Heading title={c.clockInNotes}/><div className="wb-body wb-body--tight"><p className="wb-note">{c.clockInNotesLine}</p>{report.attendance.state==='limited'&&<p className="wb-box wb-note wb-inline-icon" role="status"><InfoIcon size={18} weight="bold" aria-hidden="true"/><span>{c.someNotCompared}</span></p>}</div>{report.attendance.groups.length?<ul className="wb-records">{report.attendance.groups.map(g=><li key={g.entryId}><span className="wb-record__title">{report.hoursByEmployee.find(e=>e.id===g.employeeId)?.name??c.formerEmployee}</span><span className="wb-record__meta">{report.hoursByLocation.find(l=>l.id===g.locationId)?.name??c.formerLocation}</span><ul className="wb-observations">{g.observations.map(o=><li key={o.id}>{o.message}</li>)}</ul></li>)}</ul>:report.attendance.state==='ready'?<Empty>{c.nothingToNote}</Empty>:null}</section>
     <div className="wb-insights-grid wb-insights-grid--two" id="report-changes" tabIndex={-1}>
@@ -372,7 +373,7 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
 
 /** Quiet (v4, approved Oct 23): four figures for the period, each opening what's behind it, then how they're counted. */
 export function QuietReportsView({report,state}:{report:PeriodReports|null;state:State}){
- const {c}=useCopy(),locale=c.locale;
+ const {c,lang}=useCopy(),locale=c.locale;
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
   return <div className="q-emptyblock q-first" role="status" aria-busy={waiting}>
@@ -388,7 +389,7 @@ export function QuietReportsView({report,state}:{report:PeriodReports|null;state
  const toFinish=report.approvals.filter(card=>card.state!=='FINALIZED').length;
  const offDays=timeOffDays(report);
  const requests=[...report.callouts,...report.timeOff];
- const definitions=[...new Set([...report.definitions,c.breaksDefinition,report.coverageReliability.definition,report.scheduleStability.definition,report.overtime.reason])];
+ const definitions=[...new Set([...report.definitions,c.breaksDefinition,report.coverageReliability.definition,report.scheduleStability.definition,report.overtime.reason].map(text=>reportText(text,lang)))];
  return <>
   <ul className="q-list q-figures" aria-label={c.periodFigures}>
    <QuietFigure title={c.recordedTime} value={quietHours(report.summary.recordedNanoseconds)}>

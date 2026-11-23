@@ -9,7 +9,7 @@ import { useClockMonitor } from "./clean/use-clock-monitor";
 import { useToday } from "./manager-today";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { Today } from "@/lib/today/project";
-import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
+import { attendanceWords } from "@/lib/action-center/present";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
 import { WHOS_WORKING_COPY } from "./whos-working-copy";
 
@@ -57,7 +57,7 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
   /** The place a location Manager is looking at; named once beside the date. */
   place?: string;
 }) {
-  const t = WHOS_WORKING_COPY[usePortalLang()], NO_CLOCK_OUT = t.noClockOut;
+  const lang = usePortalLang(), t = WHOS_WORKING_COPY[lang], NO_CLOCK_OUT = t.noClockOut, ATTENDANCE_WORDS = attendanceWords(lang);
   const clock = (iso: string, zone: string) => t.times(clockEn(iso, zone));
   const [all, setAll] = useState(false);
   // Closing F1 (NV-240): time corrections live under Time (Time corrections), so the row here is only the flagged clock-ins

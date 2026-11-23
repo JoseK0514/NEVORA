@@ -3,6 +3,9 @@ import { parsePresentationCommand } from "@/lib/workspace-presentation/model";
 import { ModuleBusy, saveWorkspacePresentation } from "@/lib/workspace-presentation/service";
 import { blockerText } from "@/lib/workspace-presentation/modules";
 import { correctionBoundary, correctionJson, readCorrectionJson } from "@/lib/time-corrections/http.server";
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import { serverMessage } from "@/lib/i18n/server-messages";
+import { FEATURES_EDITOR_COPY } from "@/components/features-editor-copy";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -18,11 +21,11 @@ export async function POST(request: Request) {
     if (session.role !== "OWNER") return correctionJson({ state: "unavailable" }, 403);
     let command;
     try { command = parsePresentationCommand(await readCorrectionJson(request, 4096)); }
-    catch { return correctionJson({ state: "invalid", message: "Choose a colour like #1D4ED8." }, 400); }
+    catch { return correctionJson({ state: "invalid", message: serverMessage(await readPageLang(), "Choose a colour like #1D4ED8.") }, 400); }
     const result = await saveWorkspacePresentation(await requireSessionMutationProof(), command);
     return correctionJson({ state: "saved", result });
   } catch (error) {
-    if (error instanceof ModuleBusy) return correctionJson({ state: "busy", module: error.module, count: error.count, message: blockerText(error.module, error.count) }, 409);
+    if (error instanceof ModuleBusy) return correctionJson({ state: "busy", module: error.module, count: error.count, message: (await readPageLang()) === "es" ? FEATURES_EDITOR_COPY.es.blocker(error.module, error.count) : blockerText(error.module, error.count) }, 409);
     const message = String(error);
     if (/conflict/i.test(message)) return correctionJson({ state: "conflict" }, 409);
     if (/access_denied/i.test(message)) return correctionJson({ state: "unavailable" }, 403);

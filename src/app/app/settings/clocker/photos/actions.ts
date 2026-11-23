@@ -8,58 +8,61 @@ import { getClockerPhotoSettingsRuntime } from '@/lib/clocker/photo-server/runti
 import { ClockerPhotoError } from '@/lib/clocker/photo-server/contracts';
 import type { PhotoPolicyUpdate, PhotoNoticeProfileUpdate } from '@/lib/clocker/photo-server/contracts';
 import type { PhotoSettingsActionResult, PhotoNoticeActionResult, PhotoActionError } from '@/lib/clocker/photo-server/settings-types';
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { serverMessage } from '@/lib/i18n/server-messages';
+import { SETTINGS_ACTIONS_COPY } from '../../actions-copy';
 
-const unavailable = (): PhotoActionError => ({ state: 'unavailable',
-  message: 'Photo settings could not be confirmed. Reload settings before trying again.' });
-function failed(error: unknown): PhotoActionError {
-  if (error instanceof ClockerPhotoError && error.code !== 'UNAVAILABLE') return { state: 'rejected', code: error.code, message: error.message };
+const unavailable = async (): Promise<PhotoActionError> => ({ state: 'unavailable',
+  message: SETTINGS_ACTIONS_COPY[await readPageLang()].photosUnconfirmed });
+async function failed(error: unknown): Promise<PhotoActionError> {
+  if (error instanceof ClockerPhotoError && error.code !== 'UNAVAILABLE') return { state: 'rejected', code: error.code, message: serverMessage(await readPageLang(), error.message) };
   return unavailable();
 }
 export async function readClockerPhotoNoticeAction(): Promise<PhotoNoticeActionResult> {
   await requireRoles(['OWNER']);
   const session = await requireSessionMutationProof();
-  if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: 'Only an active Owner may manage photo settings.' };
+  if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: SETTINGS_ACTIONS_COPY[await readPageLang()].photosOwnerOnly };
   try {
     const runtime = await getClockerPhotoSettingsRuntime();
-    if (!runtime || !runtime.settingsTransport.enabled) return unavailable();
+    if (!runtime || !runtime.settingsTransport.enabled) return await unavailable();
     const proof = await runtime.portalProof(session);
     return { state: 'available', settings: await runtime.settingsTransport.service.managementNoticeSettings(proof) };
-  } catch (error) { return failed(error); }
+  } catch (error) { return await failed(error); }
 }
 export async function saveClockerPhotoNoticeAction(input: PhotoNoticeProfileUpdate): Promise<PhotoNoticeActionResult> {
   await requireRoles(['OWNER']);
   const session = await requireSessionMutationProof();
-  if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: 'Only an active Owner may manage photo settings.' };
+  if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: SETTINGS_ACTIONS_COPY[await readPageLang()].photosOwnerOnly };
   const originError = clockerOriginFailure(await headers(), await clockerSecurity());
-  if (originError) return { state: 'rejected', message: originError.error, code: 'ORIGIN_REJECTED' };
+  if (originError) return { state: 'rejected', message: serverMessage(await readPageLang(), originError.error), code: 'ORIGIN_REJECTED' };
   try {
     const runtime = await getClockerPhotoSettingsRuntime();
-    if (!runtime || !runtime.settingsTransport.enabled) return unavailable();
+    if (!runtime || !runtime.settingsTransport.enabled) return await unavailable();
     const proof = await runtime.portalProof(session);
     return { state: 'available', settings: await runtime.settingsTransport.service.saveNoticeProfile(proof, input) };
-  } catch (error) { return failed(error); }
+  } catch (error) { return await failed(error); }
 }
 export async function readClockerPhotoPolicyAction(): Promise<PhotoSettingsActionResult> {
   await requireRoles(['OWNER']);
   const session = await requireSessionMutationProof();
-  if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: 'Only an active Owner may manage photo settings.' };
+  if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: SETTINGS_ACTIONS_COPY[await readPageLang()].photosOwnerOnly };
   try {
     const runtime = await getClockerPhotoSettingsRuntime();
-    if (!runtime || !runtime.settingsTransport.enabled) return unavailable();
+    if (!runtime || !runtime.settingsTransport.enabled) return await unavailable();
     const proof = await runtime.portalProof(session);
     return { state: 'available', policy: await runtime.settingsTransport.service.managementPolicy(proof) };
-  } catch (error) { return failed(error); }
+  } catch (error) { return await failed(error); }
 }
 export async function saveClockerPhotoPolicyAction(input: PhotoPolicyUpdate): Promise<PhotoSettingsActionResult> {
   await requireRoles(['OWNER']);
   const session = await requireSessionMutationProof();
-  if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: 'Only an active Owner may manage photo settings.' };
+  if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: SETTINGS_ACTIONS_COPY[await readPageLang()].photosOwnerOnly };
   const originError = clockerOriginFailure(await headers(), await clockerSecurity());
-  if (originError) return { state: 'rejected', message: originError.error, code: 'ORIGIN_REJECTED' };
+  if (originError) return { state: 'rejected', message: serverMessage(await readPageLang(), originError.error), code: 'ORIGIN_REJECTED' };
   try {
     const runtime = await getClockerPhotoSettingsRuntime();
-    if (!runtime || !runtime.settingsTransport.enabled) return unavailable();
+    if (!runtime || !runtime.settingsTransport.enabled) return await unavailable();
     const proof = await runtime.portalProof(session);
     return { state: 'available', policy: await runtime.settingsTransport.service.savePolicy(proof, input) };
-  } catch (error) { return failed(error); }
+  } catch (error) { return await failed(error); }
 }

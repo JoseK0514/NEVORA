@@ -20,5 +20,5 @@ export default async function ClockerRecoveryPage({searchParams}: {searchParams?
   const workspace = await getWorkspace();
   // Settings is Owner-only, so only an Owner's Back returns there.
   const from = (await searchParams)?.from === 'settings' && actor.role === 'OWNER' ? 'settings' : undefined;
-  return <ClockerRecoveryReview key={access.authority} actorId={actor.id} timeZone={workspace.timeZone} from={from} observation={scopedObservation(access)}/>;
+  return <ClockerRecoveryReview key={access.authority} actorId={actor.id} timeZone={workspace.timeZone} from={from} observation={scopedObservation(access)} lang={await readPageLang()}/>;
 }

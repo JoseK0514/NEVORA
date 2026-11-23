@@ -18,11 +18,11 @@ const shortDay = (date: string, locale = 'en-US') => new Intl.DateTimeFormat(loc
 
 /** "Sun, Oct 25 · 8:00 AM – 4:00 PM": the shift being changed, as one row. */
 export function SwapShiftRow({ shift }: { shift: ExchangeShiftDisplay }) {
-  const t = REVIEWED_FORMS_COPY[usePortalLang()];
+  const lang = usePortalLang(), t = REVIEWED_FORMS_COPY[lang];
   const where = [shift.locationName, shift.positionName, shift.isDesignatedLead ? t.shiftLead : null].filter(Boolean).join(' · ');
   return <li><div className="q-row q-row--one">
-    <span className="q-rt"><b><time dateTime={shift.date}>{keepWhole(shortDay(shift.date, t.locale))}</time><span className="nv-sr">, {where}{shift.timeZone ? `, ${t.timesIn(timeZoneLabel(shift.timeZone))}` : ''}</span></b></span>
-    <span className="q-rv q-rv--l">{keepWhole(t.times(swapTimeLabel(shift)))}</span>
+    <span className="q-rt"><b><time dateTime={shift.date}>{keepWhole(shortDay(shift.date, t.locale))}</time><span className="nv-sr">, {where}{shift.timeZone ? `, ${t.timesIn(timeZoneLabel(shift.timeZone, lang))}` : ''}</span></b></span>
+    <span className="q-rv q-rv--l">{keepWhole(t.times(swapTimeLabel(shift, lang)))}</span>
   </div></li>;
 }
 
@@ -33,7 +33,7 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
   sourceFields: ReviewedSource;
   targets: { shift: ExchangeShiftDisplay; fields: ReviewedTarget }[];
 }) {
-  const t = REVIEWED_FORMS_COPY[usePortalLang()];
+  const lang = usePortalLang(), t = REVIEWED_FORMS_COPY[lang];
   const [selected, setSelected] = useState('');
   const id = useId();
   const target = targets.find(item => item.shift.id === selected);
@@ -66,12 +66,12 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
         <p className="nv-sr" id={`${id}-hint`}>{t.chooseOne(keepWhole(t.weekRange(source.weekStart)))}</p>
         <ul className="q-list">
           {sorted.map(({ shift }) => {
-            const detail = [keepWhole(`${shortDay(shift.date, t.locale)} · ${t.times(swapTimeLabel(shift))}`), shift.locationName !== source.locationName ? shift.locationName : null, shift.positionName && shift.positionName !== source.positionName ? shift.positionName : null, shift.isDesignatedLead ? t.shiftLead : null].filter(Boolean).join(' · ');
+            const detail = [keepWhole(`${shortDay(shift.date, t.locale)} · ${t.times(swapTimeLabel(shift, lang))}`), shift.locationName !== source.locationName ? shift.locationName : null, shift.positionName && shift.positionName !== source.positionName ? shift.positionName : null, shift.isDesignatedLead ? t.shiftLead : null].filter(Boolean).join(' · ');
             return <li key={shift.id}><label className="q-row q-row--av q-row--pick">
               <span className="q-av" aria-hidden="true">{initialsOf(shift.employeeName)}</span>
               <span className="q-rt"><b>{shift.employeeName}</b><i>{detail}</i></span>
               <input className="q-pick" type="radio" name="targetShiftId" value={shift.id} required checked={selected === shift.id} onChange={() => setSelected(shift.id)}
-                aria-label={`${swapDateLabel(shift.date)} · ${swapTimeLabel(shift)} · ${shift.employeeName} · ${shift.locationName} · ${swapPositionLabel(shift)} · ${shift.isDesignatedLead ? t.shiftLead : t.notShiftLead}${shift.timeZone ? ` · ${t.timesInCap(shift.timeZone.replaceAll('_', ' '))}` : ''}`} />
+                aria-label={`${swapDateLabel(shift.date, lang)} · ${swapTimeLabel(shift, lang)} · ${shift.employeeName} · ${shift.locationName} · ${swapPositionLabel(shift)} · ${shift.isDesignatedLead ? t.shiftLead : t.notShiftLead}${shift.timeZone ? ` · ${t.timesInCap(shift.timeZone.replaceAll('_', ' '))}` : ''}`} />
               <span className="q-radio" aria-hidden="true" />
             </label></li>;
           })}

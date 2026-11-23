@@ -3,6 +3,7 @@ import {parsePeriod,periodInstants,projectTimecard,type Period} from '../timecar
 import {parseTimecardsResponse,type TimecardItem} from '../timecards/read-model';
 import {projectAttendanceForPeriod} from '../attendance/project';
 import type {AttendanceGroup,ComparisonLimitation} from '../attendance/types';
+import {REPORT_COPY} from './report-copy';
 
 export type ReportHours={id:string;name:string;recordedNanoseconds:string;breakNanoseconds:string};
 export type ReportSchedule={id:string;employeeId:string;locationId:string;locationName:string;positionId:string|null;positionName:string|null;
@@ -102,7 +103,7 @@ export function projectReports(value:unknown):PeriodReports{
       const clipped=projectTimecard({...item.source,entries:[e],pendingCorrections:0,corrections:[]},value.observedAt);
       add(byLocation,e.locationId,e.locationName,clipped.recordedNanoseconds,clipped.breakNanoseconds);
       // Preserve separate captured labels for the same position across revisions.
-      add(byPosition,JSON.stringify([e.positionId,e.positionName]),e.positionName??'Position not captured',clipped.recordedNanoseconds,clipped.breakNanoseconds);
+      add(byPosition,JSON.stringify([e.positionId,e.positionName]),e.positionName??REPORT_COPY.en.positionNotCaptured,clipped.recordedNanoseconds,clipped.breakNanoseconds);
     }
   }
   const plan=new Map<string,{nanoseconds:bigint;unresolved:number}>();
@@ -129,7 +130,7 @@ export function projectReports(value:unknown):PeriodReports{
   const scheduleVsActual=[...new Set([...byEmployee.keys(),...plan.keys()])].sort().map(employeeId=>{
     const actual=byEmployee.get(employeeId),scheduled=plan.get(employeeId);const unresolved=scheduled?.unresolved??0;
     const scheduledNs=scheduled?.nanoseconds??BigInt(0),recordedNs=actual?.recordedNanoseconds??'0';
-    return {employeeId,employeeName:actual?.name??'Historical employee',scheduledNanoseconds:unresolved||!planComplete?null:scheduledNs.toString(),
+    return {employeeId,employeeName:actual?.name??REPORT_COPY.en.historicalEmployee,scheduledNanoseconds:unresolved||!planComplete?null:scheduledNs.toString(),
       recordedNanoseconds:recordedNs,differenceNanoseconds:unresolved||!planComplete?null:(BigInt(recordedNs)-scheduledNs).toString(),unresolvedScheduleCount:unresolved};
   });
   const groups:AttendanceGroup[]=[],limitations:ComparisonLimitation[]=[],unavailableEmployeeIds:string[]=[];
@@ -147,18 +148,13 @@ export function projectReports(value:unknown):PeriodReports{
     hoursByEmployee:[...byEmployee.values()],hoursByLocation:[...byLocation.values()],hoursByPosition:[...byPosition.values()],scheduleVsActual,
     scheduledByDay:{state:planComplete?'complete':'unpublished',basis:'latest_published_elapsed_v1',rows:[...dailyPlan.values()].sort((a,b)=>a.employeeId.localeCompare(b.employeeId)||a.date.localeCompare(b.date)).map(({nanoseconds,...day})=>({...day,scheduledNanoseconds:!planComplete||day.unresolvedScheduleCount?null:nanoseconds.toString()}))},
     attendance:{state:limitations.length||unavailableEmployeeIds.length?'limited':'ready',groups,limitations,unavailableEmployeeIds},
-    overtime:{state:'unavailable',reason:'Overtime needs your pay rules and employee classifications. Hours here aren’t payroll hours.'},
+    overtime:{state:'unavailable',reason:REPORT_COPY.en.overtimeReason},
     callouts:requests.filter(r=>r.kind==='CALLOUT'),timeOff:requests.filter(r=>r.kind==='TIME_OFF'),shiftChanges:changes,
     coverageReliability:{completedCoverageRequests,observedCoverageRequests:new Set(coverage.map(e=>e.requestId)).size,
       unclassifiedEvents:changes.filter(e=>e.requestKind==='EXCHANGE'&&e.kind==='UNKNOWN').length,score:null,
-      definition:'Coverage requests in this period and how many were filled. A count, not a reliability score.'},
+      definition:REPORT_COPY.en.coverageDefinition},
     scheduleStability:{revisionCount:publications.length,revisions:publications,score:null,
-      definition:'Schedule changes published for this period. No stability score is applied.'},
+      definition:REPORT_COPY.en.stabilityDefinition},
     approvals:cards.map(c=>({employeeId:c.card.employeeId,employeeName:c.card.employeeName,state:c.state,revision:c.revision,issueCount:c.card.issues.length,sourceHash:c.sourceHash})),cards,schedules,planCoverage:{state:planComplete?'complete':'unpublished',unpublishedWeeks},
-    definitions:['Actual time uses D2 canonical effective entries and breaks; finalized cards use their immutable snapshots.',
-      'Scheduled time is elapsed time in the latest published plan at observation, with released Unable to work requests excluded. It is not the immutable schedule originally captured on a punch.',
-      'Attendance observations use preserved raw punches and their exact captured publication references. They do not recalculate approved time or decide lateness/discipline.',
-      'Position labels come from captured punch context; absent labels remain unknown. Location and roster labels are current; finalized snapshot labels are retained.',
-      'Time off and Unable to work rows reflect current request state; shift-change outcomes use append-only history. Private absence reasons are excluded.',
-      'Unavailable policy and incomplete source evidence never become zero or healthy scores.']};
+    definitions:[...REPORT_COPY.en.definitions]};
 }
