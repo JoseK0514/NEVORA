@@ -6,21 +6,31 @@
 @layer nv-b {
   html body .app-shell[data-nv-b] .q-page :is(.ar-lastowner, .ar-how, .ar-handover, .ar-ref, .ar-codeacts) :is(p, h2, h3, ol, ul, li) { padding-left: 0 !important; padding-right: 0 !important; margin-left: 0 !important; margin-right: 0 !important; }
   /* The last-Owner card is a state card: at most 560px, with the page's own gutter on a phone. */
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner { box-sizing: border-box !important; width: 100% !important; margin: var(--b-space-16) 0 0 !important; padding: 0 !important; }
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-lastowner__card { box-sizing: border-box !important; width: 100% !important; max-width: var(--b-frame-form) !important; }
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-lastowner__label { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-grey) !important; }
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-path__main > h3 { margin: 3px 0 0 !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-ink) !important; }
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-path__main > p { margin-top: var(--b-space-2) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-path__main > .ar-path__mail { margin-top: 6px !important; font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-caption) !important; color: var(--b-grey) !important; }
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-safe { margin-top: var(--b-space-8) !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; color: var(--b-green) !important; }
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-quiet { color: var(--b-teal) !important; font-size: var(--b-fs-body) !important; font-weight: 600 !important; text-decoration: none !important; }
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-paths { padding: var(--b-space-8) var(--b-space-16) var(--b-space-16) !important; }
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-lastowner__label { margin: 0 var(--b-space-16) !important; padding-top: var(--b-gutter) !important; }
-  html body .app-shell[data-nv-b] .q-page .ar-lastowner .ar-ref { margin: 0 var(--b-space-16) var(--b-space-16) !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner { box-sizing: border-box !important; width: 100% !important; margin: var(--b-space-16) 0 0 !important; padding: 0 !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner .ar-lastowner__card { box-sizing: border-box !important; width: 100% !important; max-width: var(--b-frame-form) !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner .ar-lastowner__label { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-grey) !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner .ar-path__main > h3 { margin: 3px 0 0 !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-ink) !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner .ar-path__main > p { margin-top: var(--b-space-2) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner .ar-path__main > .ar-path__mail { margin-top: 6px !important; font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-caption) !important; color: var(--b-grey) !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner .ar-safe { margin-top: var(--b-space-8) !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; color: var(--b-green) !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner .ar-quiet { color: var(--b-teal) !important; font-size: var(--b-fs-body) !important; font-weight: 600 !important; text-decoration: none !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner .ar-paths { padding: var(--b-space-8) var(--b-space-16) var(--b-space-16) !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner .ar-lastowner__label { margin: 0 var(--b-space-16) !important; padding-top: var(--b-gutter) !important; }
+  html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner .ar-ref { margin: 0 var(--b-space-16) var(--b-space-16) !important; }
   html body .app-shell[data-nv-b] .q-page :is(.ar-how, .ar-handover) { box-sizing: border-box !important; }
   html body .app-shell[data-nv-b] .q-page :is(.ar-how__label, .ar-handover__label) { margin: 0 0 var(--b-space-12) !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-ink) !important; }
   html body .app-shell[data-nv-b] .q-page :is(.ar-how__note, .ar-handover__after) { margin-top: var(--b-gutter) !important; margin-bottom: 0 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
   html body .app-shell[data-nv-b] .q-page .ar-how { margin-top: var(--b-space-20) !important; padding: var(--b-inset-wide) !important; }
+  /* Phase 2 (Nov 23, 2026; density rule 5): "How this works" is a closed row that opens to the steps, so the explanation
+   * isn't read on every visit. The summary is the label's row: a 44px target with the caret on the right. */
+  html body .app-shell[data-nv-b] .q-page details.ar-how { padding: 0 var(--b-inset-wide) !important; }
+  html body .app-shell[data-nv-b] .q-page details.ar-how > summary.ar-how__label { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: var(--b-space-12) !important; min-height: 56px !important; margin: 0 !important; list-style: none !important; cursor: pointer !important; }
+  html body .app-shell[data-nv-b] .q-page details.ar-how > summary.ar-how__label::-webkit-details-marker { display: none !important; }
+  html body .app-shell[data-nv-b] .q-page details.ar-how > summary .ar-how__chev { flex: none !important; color: var(--b-grey) !important; transition: rotate var(--b-dur-press, 120ms) var(--b-ease-out, ease-out) !important; }
+  html body .app-shell[data-nv-b] .q-page details.ar-how[open] > summary .ar-how__chev { rotate: 180deg !important; }
+  html body .app-shell[data-nv-b] .q-page details.ar-how[open] { padding-bottom: var(--b-inset-wide) !important; }
+  html body .app-shell[data-nv-b] .q-page details.ar-how > summary.ar-how__label:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; border-radius: var(--b-radius-small, 10px) !important; }
+  @media (prefers-reduced-motion: reduce) { html body .app-shell[data-nv-b] .q-page details.ar-how > summary .ar-how__chev { transition: none !important; } }
   html body .app-shell[data-nv-b] .q-page .ar-how .ar-before > li { font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
   /* The code and its handover are one card, as the form before it was. */
   html body .app-shell[data-nv-b] .q-page .ar-issued { box-sizing: border-box !important; margin-top: 0 !important; padding: var(--b-inset-wide) !important; }
@@ -42,7 +52,7 @@
 
 @media (max-width: 767px) {
   @layer nv-b {
-    html body .app-shell[data-nv-b] .q-page .ar-lastowner { width: auto !important; margin: var(--b-space-16) var(--b-space-16) 0 !important; }
+    html body .app-shell[data-nv-b] :is(.q-page, .c-page.em-delete--team) .ar-lastowner { width: auto !important; margin: var(--b-space-16) var(--b-space-16) 0 !important; }
   }
 }
 
