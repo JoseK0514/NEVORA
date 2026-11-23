@@ -4,7 +4,7 @@
   "row": "G1",
   "page": "Payroll (Owner)",
   "section": "Payroll and exports",
-  "note": "From 768 the band reads 'Payroll' and the selected tab 'Pay runs'. At 200% text the step titles wrap with even spacing, and Recent payrolls moves each amount under its row text and 'Payroll history' under the title, so 'Replaced' and the payday are no longer squeezed or cut off (390 and 320).",
+  "note": "From 768 the band reads 'Payroll' and the selected tab 'Pay runs'. At 200% text the step titles wrap with even spacing, and Recent payrolls moves each amount under its row text and 'Payroll history' under the title, so 'Replaced' and the payday are no longer squeezed or cut off (390 and 320). A replaced payroll says so once, in its line ('Replaced by a correction'), with its struck-through amount; the grey chip that repeated it is gone.",
   "shots": [
    {
     "label": "Phone",

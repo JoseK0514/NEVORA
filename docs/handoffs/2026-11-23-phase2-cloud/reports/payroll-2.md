@@ -70,3 +70,9 @@ The lead's scope went through several changes:
 - Recapture from `404f14c6`: G1 (Owner and Elena) and G8-m at 390, 390 with 200% text, 320 with 200% text and 1440. Results: axe found 0 violations, with no clipping, overlap or overflow. The 1440 layout is unchanged, and G8-m was captured after load.
 - The other pages' shots come from `84e266b1`, which differs only in this `/app/payroll` CSS. Results: axe found 0 violations, with no clipping or overflow at 390, 390 with 200% text, 320 with 200% text and 1440.
 - Full `src/components` suite: 3,216 tests pass; typecheck is clean.
+
+## G1 replaced row says it once (`5d20485a`)
+- On the phone, Recent payrolls no longer shows a grey "Replaced" chip next to the line "Replaced by a correction". The line stays word for word, and so does the struck-through amount. This matches what `RunRow` already does on tablets and desktop, where sweep-1's `041840cc` is merged; that commit didn't cover the phone's row.
+- Test: `payroll-premium.test.tsx` "batch 1 item 3: on the phone…". It fails without the fix and passes with it.
+- Full `src/components` suite passes (3,225 tests). Typecheck and oxlint are clean.
+- Recapture of G1 Owner from `5d20485a` at 390, 390 with 200% text and 1440: axe found 0 violations, with no clipping, overlap or overflow. The G1-o shots in `img/` are replaced.
