@@ -130,7 +130,7 @@
    * the canvas and the first card starts under the band. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tcx .manager-corrections[data-band] > .manager-corrections-header { position: absolute !important; width: 1px !important; height: 1px !important; min-height: 0 !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; display: block !important; }
   /* OW-034: the "Waiting" chip is the one chip size on desktop too (it was 24px with 12.5px text). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tcx .manager-correction-topline > span { height: var(--b-chip-h) !important; font-size: var(--b-fs-count) !important; line-height: 16px !important; font-weight: 600 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tcx .manager-correction-topline > span { height: var(--b-chip-h) !important; font-size: 0.75rem !important; line-height: 1rem !important; font-weight: 600 !important; }
 
   @media (max-width: 767px) {
     /* OW-004: the sub-line joins the band. The page's 12px row gap showed the canvas between the bar and the line; the

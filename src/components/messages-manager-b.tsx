@@ -79,7 +79,7 @@ export function ManagerUpdatesView({list, status, partial, places}: {
   };
   const cards = status ? <ManagerStateCard status={status} /> : <>
     {partial ? <p className="b-note mb-note" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
-    {required.length ? <BCard title="Must be read" id="updates-required"><BList label="Must be read">{required.map(row)}</BList></BCard> : null}
+    {required.length ? <BCard title="Must be confirmed" id="updates-required"><BList label="Must be confirmed">{required.map(row)}</BList></BCard> : null}
     {other.length ? <BCard title={required.length ? 'Other updates' : undefined} label={required.length ? undefined : 'Updates'} id="updates-other"><BList label={required.length ? 'Other updates' : 'Updates'}>{other.map(row)}</BList></BCard> : null}
     {!items.length ? <BCard label="Updates"><BState kind="empty" icon={<MegaphoneIcon weight="bold" />} title={partial ? 'No updates available in this view' : 'No updates yet'}
       line={partial ? 'Some updates couldn’t be checked. Try again to check for the rest.' : 'Tell your team about hours, menus or events.'} /></BCard> : null}
