@@ -27,7 +27,7 @@ it('Team directory: Spanish title, count, tools and search with the Spanish comp
   const html = es(<EmployeeDirectory lang="es" employees={team} visibleEmployees={team} locations={[place]} canImport filters={{query: '', status: 'all', role: '', location: ''}}/>), words = text(html);
   // The phone band and its filters are owner-b/team-b.tsx (another area); this checks the parts this file says.
   expect(html).toContain('placeholder="Buscar personas"');
-  for (const phrase of ['Equipo', '10 empleados', 'Añadir empleado', 'Buscar empleados', 'Aplicar búsqueda', 'Horas esta semana', 'Importar una lista de personal', 'Ayudar a alguien a iniciar sesión', 'Personas inactivas', '1 ya no está activa', 'Gerente · Lugar', 'Ver todos'])
+  for (const phrase of ['Equipo', '10 empleados', 'Añadir empleado', 'Buscar empleados', 'Aplicar búsqueda', 'Horas esta semana', 'Importar una lista de personal', 'Ayudar a iniciar sesión', 'Personas inactivas', '1 ya no está activa', 'Gerente · Lugar', 'Ver todos'])
     expect(words).toContain(phrase);
   for (const phrase of ['Hours this week', 'Add employee', 'Inactive people', 'Help someone sign in', 'Scheduled hours']) expect(words).not.toContain(phrase);
   // English stays as it was without a language.

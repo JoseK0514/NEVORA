@@ -73,7 +73,7 @@ const es: typeof en = {
   hoursThisWeek: 'Horas esta semana', hoursThisWeekDetail: 'Horas programadas de cada persona',
   availability: 'Disponibilidad', availabilityDetail: 'Quién puede trabajar y cuándo',
   importList: 'Importar una lista de personal', importListDetail: 'Añade muchas personas a la vez',
-  helpSignIn: 'Ayudar a alguien a iniciar sesión', resetPasswordOrPin: 'Restablecer una contraseña o un PIN de Clocker', resetPasswordOrSignIn: 'Restablecer una contraseña o el inicio de sesión',
+  helpSignIn: 'Ayudar a iniciar sesión', resetPasswordOrPin: 'Restablecer una contraseña o un PIN de Clocker', resetPasswordOrSignIn: 'Restablecer una contraseña o el inicio de sesión',
   inactivePeople: 'Personas inactivas', noLongerActive: (n: number) => `${n} ${n === 1 ? 'ya no está activa' : 'ya no están activas'}`,
   addPerson: (person: string) => `Añadir ${person}`,
   countOf: (n: number, word: string) => `${n} ${word}`,

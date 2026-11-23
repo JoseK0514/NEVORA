@@ -125,7 +125,7 @@ Pages: Home, Schedule, Time (`/app/my-time`), Pay (`/app/my-pay`), Requests, Upd
   - "Su sesión se cierra de inmediato. Su historial se queda y puedes reactivarlo."
   - "Después, el dueño le asigna su acceso de gerencia. No se otorga ningún acceso automáticamente."
   - "Restablecer una contraseña o un PIN de Clocker"
-  - "Ayudar a alguien a iniciar sesión"
+  - "Ayudar a iniciar sesión"
 - Christmas bonus hours show the saved details. → Las horas del bono de Navidad muestran los datos guardados.
 
 ## Still English on these screens (other owners, already relayed to the lead)
