@@ -259,3 +259,8 @@ html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-a
  * 14px; the same px in rem here. */
 :is(#c-root, html) .app-shell[data-nv-b] .c-sched .b-week__d { font-size: 0.75rem; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-sched .b-card__meta { font-size: 0.875rem; }
+/* The location menu on tablets and desktop is the kit's 15px (corp.css); the same 15/20px in rem. */
+:is(#c-root, html) .c-page.c-sched .c-select-btn.c-sched-loc { font-size: 0.9375rem; line-height: 1.25rem; }
+/* At large text the day card's "13 shifts · 61 h" drops under the day title instead of running under it (it fits
+ * beside the title at the default size, so nothing moves there). */
+:is(#c-root, html) .app-shell[data-nv-b] .c-sched .b-card__h:has(> .b-card__meta) { flex-wrap: wrap; }
