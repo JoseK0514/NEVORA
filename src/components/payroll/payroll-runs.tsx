@@ -210,10 +210,10 @@ function nextStep(open: PayrollRun | undefined): { label: string; href: string; 
  * in grey (R3). The amount shows only when the payroll holds one (a missing amount is never a zero). */
 function RunRow({ item, replaced = false }: { item: PayrollRun; replaced?: boolean }) {
   const approved = item.status === 'APPROVED';
-  // Closing F1 (NV-082): a payroll a correction replaced says so (a grey "Replaced" chip, "Replaced by a correction"; Phase 8, a.md #47: the words the statements use) and is
+  // Closing F1 (NV-082), batch 1 item 3: a payroll a correction replaced says so once ("Replaced by a correction"; the grey chip that repeated it is gone; "Replaced by a correction"; Phase 8, a.md #47: the words the statements use) and is
   // listed right under its correction (byCorrection), indented.
   if (replaced) return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
-    title={<>{quietRange(item.period.startDate, item.period.endDate)} <CorpPill tone="neutral">Replaced</CorpPill></>}
+    title={quietRange(item.period.startDate, item.period.endDate)}
     detail={<BSegs parts={['Replaced by a correction', `Payday ${quietDay(item.payday)}`.replace(/ /g, '\u00a0')]} />}
     value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink" chevron />;
   // Round 5 (Nov 7, 2026): drawn like Payroll's Recent payrolls: the receipt icon, a "Correction" pill instead of words in
@@ -615,13 +615,13 @@ function PeopleAmounts({ run }: { run: PayrollRun }) {
         <div className="c-pay__net"><dt>{`Net pay · ${plural(run.totals.employeeCount, 'employee', 'employees')}`}</dt><dd>{formatPayrollMoney(run.totals.netMinor)}</dd></div>
       </dl>
     </PayGroup> : null}
-    {run.rows ? <PayGroup id="payroll-people" label="Employee amounts">
+    {run.rows ? <PayGroup id="payroll-people" label="Net pay by person">
       <div className="c-pay__search"><label className="c-sr" htmlFor={searchId}>Find employee amounts</label><input id={searchId} className="c-in" type="search" enterKeyHint="search" autoComplete="off" placeholder="Find an employee" value={filter} onChange={event => setFilter(event.target.value)} /></div>
-      <ul className="c-rows" aria-label="Employee amounts">{rows.map(row => {
+      <ul className="c-rows" aria-label="Net pay by person">{rows.map(row => {
         const result = native ? run.nativeCalculation?.employees.find(item => item.employeeId === row.employeeId) : undefined;
         const exception = run.exceptionRevisions.find(item => item.employeeId === row.employeeId)?.revision;
         return <li key={row.employeeId}><details className="c-pay__person">
-          <summary className="c-row"><span className="c-row__main"><span className="c-row__title c-row__title--b">{row.employeeName}</span><span className="c-row__detail"><span>Net pay</span></span></span><span className="c-row__value">{formatPayrollMoney(row.netMinor)}</span></summary>
+          <summary className="c-row"><span className="c-row__main"><span className="c-row__title c-row__title--b">{row.employeeName}</span></span><span className="c-row__value">{formatPayrollMoney(row.netMinor)}</span></summary>
           <div className="c-pay__lines">
             <dl>
               <div><dt>Gross pay</dt><dd>{formatPayrollMoney(row.grossMinor)}</dd></div>
