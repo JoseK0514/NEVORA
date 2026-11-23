@@ -20,6 +20,19 @@ decision), **device** (needs a real iPhone, Safari or a screen reader, which thi
 Needs Jose: G14, G17. Needs Jose or Codex (a server read change): G4 (Spanish for Copy receipt), G16 (positions in the
 scoped read). Device: G22. Parked: G23.
 
+## Round 2 (Nov 23): packages
+
+| Package | Rows | Owns |
+|---|---|---|
+| F | G58, G59 (and G31) | Review replacement publish result, its route and action, readiness browser tests |
+| P | G45, G49, G56, G65 | Home (`home-b`, `owner-home-corp`, kit `BLive` only), Team directory, Who's working |
+| Q | G47, G50, G52 | Timecards, Clocker receipt |
+| R | G48, G51, G54, G55, G64, G67 | Kit and shell: band glass strips, action menu, route error screen, React #441, skip link, `.b-state` |
+| S | G53, G57, G60, G61, G62, G66 | Employee Home and Schedule, day view, shift sheet header and Person select, delete confirm |
+
+Held until F lands (same Find cover files): G46, G63. Needs Jose: G4, G14, G17, G43, G44, G68. Codex or server: G16.
+Device: G22 (and the screen-reader halves of G18, G42). Spanish: G42.
+
 ## Rows
 
 | # | Screen | Gap | Source | Kind | Status |
