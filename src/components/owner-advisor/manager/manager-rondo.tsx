@@ -5,7 +5,7 @@ import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import { ChatsCircleIcon } from "@phosphor-icons/react/dist/ssr/ChatsCircle";
-import { CorpBody, CorpCard, CorpField, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
+import { CorpBody, CorpCard, CorpField, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { BCallout, BIcon, BSegs, BSpin, BState } from "@/components/owner-b/b-kit";
 import { keepWhole } from "@/lib/keep-whole";
 import { addDays, weekText } from "@/lib/owner-advisor/weekly-client";
@@ -171,7 +171,7 @@ export function ManagerRondo({ currentWeek, timeZone, read: given }: { currentWe
   /* ---------- Render ---------- */
   const head = <>
     <CorpNav back={{ href: "/app/more", label: "More" }} title="Rondo AI" titleId="rm-nav-title" phoneOnly />
-    <CorpTitle wide id="rm-title" title="Rondo AI" sub="Ask about the schedule at your locations" />
+    <CorpTitle wide id="rm-title" title="Rondo AI" sub="Ask about your schedule" />
   </>;
   const page = (body: React.ReactNode) => <CorpPage className="c-page--narrow wk rm" labelledBy="rm-title">{head}{body}</CorpPage>;
 
@@ -222,10 +222,9 @@ export function ManagerRondo({ currentWeek, timeZone, read: given }: { currentWe
             label={item === question ? `${QUESTION_TEXT[item]} Asked.` : undefined} /></li>)}
         </CorpRows>
       </CorpCard>
-      <CorpNote>Rondo answers these four questions. Typed questions are off.</CorpNote>
     </CorpSection>
 
-    <CorpSection id="rm-week" label="Week by day">
+    <CorpSection id="rm-week" label="Published shifts and planned hours">
       <WeekCard summary={summary} state={summaryState} hidden={hidden} now={now} onRetry={() => void loadWeek(place.id, week)} onShow={showAgain} />
     </CorpSection>
   </>);
@@ -283,7 +282,7 @@ export function WeekCard({ summary, state, hidden, now, onRetry, onShow }: {
       {summary.data.days.map((day: ManagerAdvisorDay) => <li key={day.date}><CorpRow title={dayText(day.date)} detail={<BSegs parts={dayFacts(day)} />}
         value={minutesText(day.scheduledMinutes)} valueTone={day.scheduledMinutes ? undefined : "soft"} /></li>)}
     </CorpRows>
-  </CorpCard><CorpNote>Hours are planned time from the schedule. Timecards show hours worked.</CorpNote></>;
+  </CorpCard></>;
   if (state === "loading") return <CorpCard as="div"><BState kind="loading" title="Checking the week" line="Reading the schedule for this location." /></CorpCard>;
   if (state === "invalid") return <CorpCard as="div"><BState kind="paused" title="Rondo can’t read this week" line="Choose another week or location." /></CorpCard>;
   if (state === "unavailable") return <CorpCard as="div"><BState kind="failed" alert title="Couldn’t check this week" line="Check your connection, then try again." action={{ label: "Try again", onClick: onRetry }} /></CorpCard>;

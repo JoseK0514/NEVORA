@@ -21,7 +21,7 @@ it('renders a valid empty catalog with creation available', async () => {
   expect(mocks.list).toHaveBeenCalledWith({ employeeId: 'owner', sessionTokenHash: 'a'.repeat(64) });
   expect(html).toContain('No break types yet');
   expect(html).toContain('class="c-page c-page--narrow c-setb"');
-  expect(html).toMatch(/<button id="break-add" type="button" class="c-btn c-btn--secondary">Add break type<\/button>/);
+  expect(html).toMatch(/<button id="break-add" type="button" class="c-btn">Add break type<\/button>/);
   expect(html).not.toContain('role="alert"');
 });
 

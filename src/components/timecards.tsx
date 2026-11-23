@@ -548,7 +548,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <CorpAvatar name={openItem.card.employeeName} initials={initialsOf(openItem.card.employeeName)}/>
               <span className="c-row__main"><h3 id="cm-tc-sheet-title" className="c-row__title c-row__title--b" tabIndex={-1}>{openItem.card.employeeName}</h3>
                 <span className="c-row__detail"><span>{keepWhole(`${roleOf(openItem.card)?`${roleOf(openItem.card)} · `:''}${rangeText(period)}`)}</span></span></span>
-              {status?<span className="c-tc-sheet__state">{toneOf(openItem)?<BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip>:<BStatusText dot={LIVE_DOT[status.text]}>{status.text}</BStatusText>}</span>:null}
+              {/* Gate check (Nov 23, 2026): with the amber note open, its lines say the status ("Correction awaiting review",
+                * "No clock-out yet"), so the header doesn't repeat it as "Correction waiting" or "Clocked in now". */}
+              {status&&!(openItem.card.issues.length&&tone!=='neutral')?<span className="c-tc-sheet__state">{toneOf(openItem)?<BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip>:<BStatusText dot={LIVE_DOT[status.text]}>{status.text}</BStatusText>}</span>:null}
             </div>
             <CorpStats items={[{label:'Recorded',value:compactHours(openItem.card.recordedNanoseconds)},{label:'Breaks',value:compactHours(openItem.card.breakNanoseconds)},{label:'Clock-ins',value:openItem.card.entries.length}]}/>
           </section>
@@ -560,8 +562,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             // line of the body; a waiting correction keeps its way in as the note's one action (Review B2, NV-133).
             <div className="c-tc-sheet__attn"><BCallout tone="amber" title="Needs attention"
               action={openItem.card.issues.includes('pending_correction')?{label:'Review correction',href:'/app/timecards/corrections'}:undefined}>
-              {openItem.card.issues.map(issue=><p key={issue}>{issueNames[issue]}</p>)}
-              <p>Review the entries and resolve open time or corrections before approval.</p></BCallout></div>:null}
+              {/* Gate check (Nov 23, 2026): the issues are the note; the line on how to clear them before approval is gone. */}
+              {openItem.card.issues.map(issue=><p key={issue}>{issueNames[issue]}</p>)}</BCallout></div>:null}
           <CorpCard id="tc-days" label="Days">
             {days.length?<ul className="c-rows" aria-label="Days with recorded time">{days.map(day=><li key={day.date}><div className="c-row c-tc-day">
               <span className="c-tc-day__date">{day.label}</span>
@@ -706,6 +708,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // text on a 320px phone "Approval opens Mon, Nov 30" wraps after "opens" instead of running off the screen. A part
     // still moves to the next line whole whenever it fits there.
     const subtitle=<BSegs parts={ready?[rangeText(period),`${cards.length} ${cards.length===1?'person':'people'}`,folded&&cards.length?`Approval opens ${approveFrom(period)}`:null]:[rangeText(period)]}/>;
+    // G89 (Nov 23, 2026): on phones the Team card's title carries the count ("Team 12"), so the band says the week (and
+    // when approval opens) without "12 people"; with no Team card the count stays in the band.
+    const phoneSubtitle=ready&&cards.length?<BSegs parts={[rangeText(period),folded?`Approval opens ${approveFrom(period)}`:null]}/>:subtitle;
     const summary=ready&&cards.length&&!showBulk&&!folded?<CorpCard as="div" ariaLabel="Period overview">
       <div className="c-card__body">
         <div className="c-tc-sum"><b>{summaryTitle}</b>
@@ -759,7 +764,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       // Direction B (Jose approved Nov 5, 2026; mock "Owner · Time"): the hero with the week control and this period's figures,
       // then each person's recorded time. Selecting and the reviewed batch keep the layout below, unchanged.
       const bScreen=showBulk||selecting?null:<BScreen>
-        <BHero title="Timecards" titleId="b-tc-title" sub={subtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
+        <BHero title="Timecards" titleId="b-tc-title" sub={phoneSubtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
           <BSeg label="Week" items={[
             {key:'this',label:'This week',current:periodName==='This week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(thisWeek);}},
             {key:'last',label:'Last week',current:periodName==='Last week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(lastWeek);}},
@@ -817,7 +822,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       </BScreen>;
       return <CorpPage className="c-tc" labelledBy="tc-title">
         {bScreen}
-        <CorpTitle id="tc-title" title="Timecards" sub={subtitle} actions={selectButton}/>
+        <CorpTitle id="tc-title" title="Timecards" sub={phoneSubtitle} actions={selectButton}/>
         {seg}
         <HoldHeight holding={!ready} memory="timecards-manager" className="c-tc-hold">
           {stateCard}
