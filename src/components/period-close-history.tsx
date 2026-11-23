@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Period } from "@/lib/timecards/project";
 import type { readPeriodCloseHistory } from "@/lib/period-close/service";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { PERIOD_CLOSE_HISTORY_COPY } from "./period-close-history-copy";
 
 type Page = Awaited<ReturnType<typeof readPeriodCloseHistory>>;
 export type LoadedPeriodHistory = { events: Page['events']; nextCursor: string | null; coverage: Page['coverage'] };
@@ -22,8 +24,9 @@ export function appendPeriodHistory(previous: LoadedPeriodHistory | null, page: 
 }
 
 export function PeriodCloseHistory({ period, actorId }: { period: Period; actorId: string }) {
+  const t = PERIOD_CLOSE_HISTORY_COPY[usePortalLang()];
   const [history, setHistory] = useState<LoadedPeriodHistory | null>(null);
-  const [busy, setBusy] = useState(false), [notice, setNotice] = useState('Load history to review all artifact and handoff events.');
+  const [busy, setBusy] = useState(false), [notice, setNotice] = useState(t.loadToReview);
   const request = useRef<AbortController | null>(null), sequence = useRef({ value: 0 }), mounted = useRef(false);
   const expiry = useRef<ReturnType<typeof setTimeout> | null>(null), timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const retire = useCallback((message: string) => {
@@ -35,7 +38,7 @@ export function PeriodCloseHistory({ period, actorId }: { period: Period; actorI
   useEffect(() => {
     mounted.current = true;
     const lifecycle = sequence.current;
-    const pause = (event?: Event) => { if (event?.type === 'blur' && event.target !== window) return; retire('History paused. Load history again to review current access.'); };
+    const pause = (event?: Event) => { if (event?.type === 'blur' && event.target !== window) return; retire(t.paused); };
     const visibility = () => { if (document.visibilityState === 'hidden') pause(); };
     for (const event of ['blur', 'offline', 'pagehide']) window.addEventListener(event, pause);
     document.addEventListener('visibilitychange', visibility);
@@ -46,17 +49,17 @@ export function PeriodCloseHistory({ period, actorId }: { period: Period; actorI
       for (const event of ['blur', 'offline', 'pagehide']) window.removeEventListener(event, pause);
       document.removeEventListener('visibilitychange', visibility);
     };
-  }, [retire]);
+  }, [retire, t]);
   async function load(restart: boolean) {
     if (request.current && !request.current.signal.aborted || !mounted.current) return;
-    if (!navigator.onLine || document.visibilityState === 'hidden') { retire('History unavailable. Reconnect and load history again.'); return; }
+    if (!navigator.onLine || document.visibilityState === 'hidden') { retire(t.unavailableReconnect); return; }
     const previous = restart ? null : history;
     if (!restart && (!previous || !previous.nextCursor)) return;
     if (restart) setHistory(null);
     const abort = new AbortController(), own = ++sequence.current.value, started = performance.now();
-    request.current = abort; setBusy(true); setNotice('Loading history…');
+    request.current = abort; setBusy(true); setNotice(t.loading);
     const current = () => mounted.current && own === sequence.current.value;
-    timeout.current = setTimeout(() => { if (current()) retire('History expired. Load history again.'); }, 15000);
+    timeout.current = setTimeout(() => { if (current()) retire(t.expired); }, 15000);
     try {
       const response = await fetch('/api/period-close', {
         method: 'POST', cache: 'no-store', credentials: 'same-origin', signal: abort.signal,
@@ -69,22 +72,22 @@ export function PeriodCloseHistory({ period, actorId }: { period: Period; actorI
       const next = appendPeriodHistory(previous, body.result), remaining = started + 15000 - performance.now();
       if (remaining <= 0) throw Error('History expired');
       if (expiry.current) clearTimeout(expiry.current);
-      expiry.current = setTimeout(() => retire('History expired. Load history again.'), remaining);
-      setHistory(next); setNotice(next.nextCursor ? 'More events are available.' : 'All events in this history snapshot are loaded.');
-    } catch { if (current()) retire('History unavailable. Load history again to retry.'); }
+      expiry.current = setTimeout(() => retire(t.expired), remaining);
+      setHistory(next); setNotice(next.nextCursor ? t.more : t.allLoaded);
+    } catch { if (current()) retire(t.unavailableRetry); }
     finally { if (current()) { if (timeout.current) clearTimeout(timeout.current); request.current = null; setBusy(false); } }
   }
-  return <section aria-label="Period artifact and handoff history" aria-busy={busy}>
-    <h3>Full period history</h3>
+  return <section aria-label={t.sectionLabel} aria-busy={busy}>
+    <h3>{t.title}</h3>
     <p role="status">{notice}</p>
-    {history && <p>{history.events.length} of {history.coverage.totalEvents} events loaded. Newest first.{history.coverage.through ? ` Snapshot through ${history.coverage.through.at}.` : ''} Refresh history to include newer events.</p>}
-    <button className="button secondary" type="button" disabled={busy} onClick={() => void load(true)}>{history ? 'Refresh history' : 'Load history'}</button>
-    {history?.nextCursor && <button className="button secondary" type="button" disabled={busy} onClick={() => void load(false)}>Load older events</button>}
+    {history && <p>{t.loaded(history.events.length, history.coverage.totalEvents, history.coverage.through ? history.coverage.through.at : null)}</p>}
+    <button className="button secondary" type="button" disabled={busy} onClick={() => void load(true)}>{history ? t.refresh : t.load}</button>
+    {history?.nextCursor && <button className="button secondary" type="button" disabled={busy} onClick={() => void load(false)}>{t.older}</button>}
     <ol>{history?.events.map(event => <li key={event.id}>
-      {event.kind.replaceAll('_', ' ')} · {event.createdAt} · actor {event.actorId}
-      <details><summary>Event details</summary><p style={{ overflowWrap: 'anywhere' }}>Manifest {event.manifestId}</p>
-        {([['File', 'filename'], ['Destination', 'destination'], ['Reference', 'reference'], ['Format', 'format'], ['Artifact fingerprint', 'sha256']] as const).map(([label, field]) => typeof event.payload[field] === 'string' ? <p key={field} style={{ overflowWrap: 'anywhere' }}>{label}: {String(event.payload[field])}</p> : null)}
-        <p>{event.kind === 'ARTIFACT_SERVED' ? 'Server artifact response recorded. Browser file completion is unverified.' : 'Manager reported. Provider import and payroll processing remain unverified.'}</p>
+      {event.kind.replaceAll('_', ' ')} · {event.createdAt} · {t.actor(event.actorId)}
+      <details><summary>{t.details}</summary><p style={{ overflowWrap: 'anywhere' }}>{t.manifest(event.manifestId)}</p>
+        {([[t.file, 'filename'], [t.destination, 'destination'], [t.reference, 'reference'], [t.format, 'format'], [t.fingerprint, 'sha256']] as const).map(([label, field]) => typeof event.payload[field] === 'string' ? <p key={field} style={{ overflowWrap: 'anywhere' }}>{label}: {String(event.payload[field])}</p> : null)}
+        <p>{event.kind === 'ARTIFACT_SERVED' ? t.served : t.reported}</p>
       </details>
     </li>)}</ol>
   </section>;

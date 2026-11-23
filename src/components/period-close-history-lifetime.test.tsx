@@ -9,6 +9,8 @@ rs.mock('react',  () => ({ ...rstestOriginal0,
   useCallback: (callback: unknown) => callback,
   useEffect: (effect: () => void | (() => void)) => { if (!host.mounted) host.effects.push(effect); },
 }));
+// Signed-in Spanish (es-rest): the panel reads the person's language with a hook; called as a plain function here, it is English.
+rs.mock('@/lib/i18n/portal-lang', () => ({ usePortalLang: () => 'en' }));
 import { PeriodCloseHistory } from './period-close-history';
 const period = { startDate: '2026-09-21', endDate: '2026-09-27' };
 const body = () => ({ state: 'ready', result: { period, events: [{ id: 'event-1', manifestId: 'manifest-1', kind: 'ARTIFACT_SERVED', payload: { filename: 'PRIVATE-file.csv' }, actorId: 'PRIVATE-actor', createdAt: '2026-09-28' }], nextCursor: null, coverage: { kind: 'PAGE', order: 'createdAt DESC, id DESC', totalEvents: 1, returnedEvents: 1, hasMore: false, complete: true, through: { at: '2026-09-28', id: 'event-1' } } } });
