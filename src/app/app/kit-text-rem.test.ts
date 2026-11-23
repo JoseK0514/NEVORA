@@ -124,3 +124,26 @@ describe('corp shell type tokens', () => {
     expect(shell).not.toMatch(/--nv-t-[a-z0-9-]+: \d+ \d+px\//);
   });
 });
+
+describe('kit checkbox, corp buttons, tab fallback and sheet band (Nov 23, evening)', () => {
+  it('the checkbox is 20px in rem (1.25rem) with a 14px (0.875rem) check', () => {
+    expect(css('app/app/b-foundation.css')).toContain('width: 1.25rem !important; height: 1.25rem !important; min-width: 1.25rem !important; min-height: 1.25rem !important;');
+    expect(css('app/app/b-foundation.css')).toContain('background: #FFFFFF none center / 0.875rem 0.875rem no-repeat !important;');
+  });
+  it('corp buttons and the sheet back link are rem; a three-item band tab row falls back to the capped segment size', () => {
+    expect(css('components/corp/corp.css')).toContain('font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; text-decoration: none; white-space: nowrap;');
+    expect(css('components/team/team-forms.css')).toMatch(/\.c-formhead__link \{[^}]*font-size: 0\.9375rem;/);
+    expect(css('components/owner-b/owner-b.css')).toContain('.b-seg > * { display: grid; place-items: center; min-height: 36px; border-radius: var(--b-radius-small); font-size: min(0.875rem, 20px);');
+  });
+  it("a sheet page's band reaches the screen edge with the gutter, not 2px past it", () => {
+    expect(css('app/app/owner-b-pages.css')).toContain(':is(.c-sheetpage, .c-shift-page) :is(.c-shift__head, .c-formhead):not(#sg1):not(#sg2) { margin-left: calc(-1 * var(--b-gutter)) !important; margin-right: calc(-1 * var(--b-gutter)) !important; padding-left: var(--b-gutter) !important; padding-right: var(--b-gutter) !important; }');
+  });
+});
+
+describe('sign-in pages and the header account name (Jose, Nov 23)', () => {
+  it('the legal footer is in the flow on desktop, the sign-in button label and the account name are rem', () => {
+    expect(css('components/auth-premium/auth-b.css')).toContain('main.q-page.q-auth.q-auth:not(.q-doc):not(#mobile-access-page) > .q-auth__foot:not(#af1):not(#af2) { position: static !important; }');
+    expect(css('components/quiet/quiet.css')).toMatch(/\.q-btn \{[^}]*font-size: 1\.0625rem;/);
+    expect(css('app/app/corp-shell.css')).toContain('.portal-account-menu .nevora-action-menu-trigger { font: 400 0.9375rem/1.25rem Inter');
+  });
+});
