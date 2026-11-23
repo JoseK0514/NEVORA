@@ -74,11 +74,13 @@ describe('Home band lines in rem (sweep Z)', () => {
 describe('desktop at 200% text (sweep, Nov 23)', () => {
   it('kit buttons are rem and wrap between words instead of spilling out of their card', () => {
     expect(css('components/owner-b/owner-b.css')).toContain('font-size: 0.875rem; line-height: var(--b-lh-meta); font-weight: 600; white-space: normal; text-align: center; text-wrap: balance;');
+    expect(css('components/owner-b/owner-b.css')).toContain('gap: 6px; flex: none; max-width: 100%; min-height: var(--b-btn-h-compact);');
   });
   it('shell and quiet text in rem: sidebar group label, desktop back link, row values, quiet nav and values, Profile band', () => {
     const desk = css('app/app/owner-b-desktop.css');
     expect(desk).toContain('aside.sidebar .sidebar-group-label { font-size: 0.75rem !important;');
     expect(desk).toContain(':is(.c-row__value, .q-rv) { font-size: 0.875rem !important;');
+    expect(desk).toContain('.q-who :is(b, strong, h1, h2) { font-size: 2rem !important; line-height: 2.375rem !important;');
     expect(css('app/app/corp-shell.css')).toContain('.sidebar .sidebar-group-label { margin: 16px 12px 4px !important; padding: 0 !important; font: 600 0.8125rem/1.125rem Inter');
     const quiet = css('components/quiet/quiet.css');
     expect(quiet).toContain('.q-nav__l { justify-self: start; display: flex; align-items: center; gap: 4px; min-height: 44px; font-size: 1.0625rem; line-height: 1.375rem; }');

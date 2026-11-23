@@ -143,7 +143,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-search input::placeholder { color: var(--b-on-band); opacity: 1; }
 /* Nov 14 inspection (RA-17): forced colours drop the shadow ring; they paint the transparent outline instead. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-search:focus-within { box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.6); outline: 2px solid transparent; outline-offset: 2px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none; min-height: var(--b-btn-h-compact); padding: 0 var(--b-gutter); border-radius: var(--b-radius-pill);
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none; max-width: 100%; min-height: var(--b-btn-h-compact); padding: 0 var(--b-gutter); border-radius: var(--b-radius-pill);
   font-size: 0.875rem; line-height: var(--b-lh-meta); font-weight: 600; white-space: normal; text-align: center; text-wrap: balance; transition-property: scale, background-color; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); position: relative; }
 /* Nov 14 inspection (BR-11): the target is at least 44px tall whatever the pill's drawn height (36px here, 32 and 34px
  * where a screen draws it smaller); it was the pill plus 4px each way, so a 32px pill had a 40px target. */
