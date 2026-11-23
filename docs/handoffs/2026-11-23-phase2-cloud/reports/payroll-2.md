@@ -64,3 +64,9 @@ The lead's scope went through several changes:
   - One clip: the "Replaced" chip on G1 Recent payrolls at 390 with 200% text (`payroll-runs.tsx`).
   - G8-m at 390 with 200% text was captured while the page was still loading.
 - This supersedes the shot notes above.
+
+## G1 Recent payrolls at 200% text (`84e266b1`, `404f14c6`)
+- The card measures itself in em (a container query). When fewer than 16em fit across, which happens at 390 or 320 with 200% text and never at the default size, each amount moves under its row text and "Payroll history" moves under the title. The amount and "Net" wrap as words, and the rows' grey lines show in full instead of clamping at two lines. The wording is unchanged.
+- Recapture from `404f14c6`: G1 (Owner and Elena) and G8-m at 390, 390 with 200% text, 320 with 200% text and 1440. Results: axe found 0 violations, with no clipping, overlap or overflow. The 1440 layout is unchanged, and G8-m was captured after load.
+- The other pages' shots come from `84e266b1`, which differs only in this `/app/payroll` CSS. Results: axe found 0 violations, with no clipping or overflow at 390, 390 with 200% text, 320 with 200% text and 1440.
+- Full `src/components` suite: 3,216 tests pass; typecheck is clean.

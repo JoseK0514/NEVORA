@@ -4,7 +4,7 @@
   "row": "G1",
   "page": "Payroll (Owner)",
   "section": "Payroll and exports",
-  "note": "From 768 the band reads 'Payroll' and the selected tab 'Pay runs'. At 200% text the step titles wrap with even spacing and the step numbers fit their circles.",
+  "note": "From 768 the band reads 'Payroll' and the selected tab 'Pay runs'. At 200% text the step titles wrap with even spacing, and Recent payrolls moves each amount under its row text and 'Payroll history' under the title, so 'Replaced' and the payday are no longer squeezed or cut off (390 and 320).",
   "shots": [
    {
     "label": "Phone",
@@ -15,8 +15,8 @@
     "after": "img/G1-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G1-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G1-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -24,9 +24,7 @@
     "desk": true
    }
   ],
-  "blocking": [
-   "At 390 with 200% text the 'Replaced' chip on a Recent payrolls row is cut off with an ellipsis (payroll-runs.tsx, other session's file)."
-  ],
+  "blocking": [],
   "endSweep": []
  },
  {
@@ -45,8 +43,8 @@
     "after": "img/G1-m-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G1-m-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G1-m-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -73,8 +71,8 @@
     "after": "img/G2-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G2-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G2-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -101,8 +99,8 @@
     "after": "img/G3-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G3-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G3-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -129,8 +127,8 @@
     "after": "img/G4-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G4-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G4-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -157,8 +155,8 @@
     "after": "img/G5-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G5-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G5-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -185,8 +183,8 @@
     "after": "img/G6-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G6-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G6-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -213,8 +211,8 @@
     "after": "img/G7-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G7-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G7-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -241,8 +239,8 @@
     "after": "img/G8-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G8-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G8-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -258,7 +256,7 @@
   "row": "G8",
   "page": "Time exports (Manager, Elena)",
   "section": "Payroll and exports",
-  "note": "No tabs, so the page keeps the title 'Time exports'. The 390 with 200% text shot caught the page still loading.",
+  "note": "No tabs, so the page keeps the title 'Time exports'. Captured after the page loaded.",
   "shots": [
    {
     "label": "Phone",
@@ -269,8 +267,8 @@
     "after": "img/G8-m-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G8-m-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G8-m-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -297,8 +295,8 @@
     "after": "img/G9-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G9-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G9-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -325,8 +323,8 @@
     "after": "img/J12-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/J12-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/J12-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -353,8 +351,8 @@
     "after": "img/G10-o-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G10-o-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G10-o-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -381,8 +379,8 @@
     "after": "img/G10-m-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G10-m-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G10-m-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -409,8 +407,8 @@
     "after": "img/G10-ml-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G10-ml-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G10-ml-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
@@ -437,8 +435,8 @@
     "after": "img/G10-e-390-text200-v1.webp"
    },
    {
-    "label": "Tablet",
-    "after": "img/G10-e-768-v1.webp"
+    "label": "320, 200% text",
+    "after": "img/G10-e-320-text200-v1.webp"
    },
    {
     "label": "Desktop",
