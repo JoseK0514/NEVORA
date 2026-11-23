@@ -7,6 +7,7 @@ import { EmployeeDeletionView, type DeletionView } from "./employee-mobile/delet
 import { shown as onScreen } from "./employee-b/account-host";
 import { LastOwnerCard } from "./access-recovery/last-owner-card";
 import { supportReferenceOfState } from "./access-recovery/support-reference-seam";
+import { SupportReference } from "./access-recovery/support-reference";
 import type { AuthLang } from "@/lib/auth-copy";
 
 type Account = { name: string; role: string; employeeId: string; roleKey?: "OWNER" | "MANAGER" | "LEAD" | "EMPLOYEE" };
@@ -62,6 +63,7 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
   const manager = phone ? undefined : {
     keptHref: "/account-deletion",
     ownerNote: owner ? <>Your company’s workspace stays open for the rest of your team. To close it, email {SUPPORT_EMAIL}.</> : undefined,
+    outcomeExtra: <SupportReference reference={supportReferenceOfState(state)} lang={lang} id="deletion-reference" />,
     lastOwner: lastOwner ? <LastOwnerCard supportEmail={SUPPORT_EMAIL} teamHref={owner ? "/app/employees" : null} lang={lang} outcomeRef={outcome} supportReference={supportReferenceOfState(state)} /> : undefined,
   };
   return <EmployeeDeletionView account={account} view={view} action={action} outcomeRef={outcome} outcomeRefB={outcomeB} passwordRef={bindPassword}

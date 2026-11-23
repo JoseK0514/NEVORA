@@ -146,7 +146,8 @@ describe("help someone sign in (signed in: English on screen, Spanish proven her
   it.each(["en", "es"] as const)("before: the three steps, how long a code lasts and who can't be helped this way, in %s", lang => {
     const u = ACCESS_COPY[lang].assisted, html = assisted(lang);
     for (const line of [u.howLabel, ...u.how, u.lasts, u.limits]) expect(html).toContain(line);
-    expect(html).toContain('<section class="ar-how b-card" aria-labelledby="assisted-how-title">');
+    // Phase 2 (Nov 23, 2026): the steps sit behind a "How this works" disclosure in a kit card (density rule 5).
+    expect(html).toContain('<section class="c-card ar-assisted__how" aria-label="' + u.howLabel + '"><details class="ar-assisted__details">');
   });
 
   it.each(["en", "es"] as const)("with a code: what the helper does, what the other person does, and until when, in %s", lang => {
@@ -172,7 +173,8 @@ describe("help someone sign in (signed in: English on screen, Spanish proven her
     const u = ACCESS_COPY[lang].assisted, html = assisted(lang, { message: OFFLINE_MESSAGE, supportReference: REFERENCE });
     expect(html).toContain(u.offlineTitle);
     expect(html).toContain(u.offline);
-    expect(html).toContain('data-tone="info"');
+    // The same amber offline callout as the request and reset pages (Phase 2, Nov 23, 2026).
+    expect(html).toContain('data-tone="amber"');
     expect(html).not.toContain(REFERENCE);
     expect(html).not.toContain(ACCESS_COPY.en.assisted.notConfirmedTitle);
   });

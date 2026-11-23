@@ -172,6 +172,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   const changeNote = `${identity.changedBy || 'An Owner'} can change these details.`;
   const access = managerAccess(shown ? shown.locations : null, identity.locationsWord);
   const value = (node: ReactNode) => <span className="pmp-value">{node}</span>;
+  const editHref = identity.owner ? `/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1` : undefined;
   return <>
     <p className="c-sr" role="alert" id="profile-read-said">{said}</p>
     <p className="c-sr" role="status">{read.kind === 'paused' ? read.head : read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</p>
@@ -183,8 +184,9 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         {identity.owner ? <li><CorpRow title="Role" bold one value={value('Owner')} /></li>
           : <li data-row="access"><CorpRow title="Role" bold detail={access.covers} value={value(access.value)} /></li>}
         <li><CorpRow title="Company" bold one value={value(identity.company)} /></li>
-        <li data-row="phone" style={rowStyle('phone')}><CorpRow title="Phone" bold one value={<span className="pmp-value pmp-contact">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>{identity.owner ? 'Not added' : 'None'}</span>)}</span>} /></li>
-        <li data-row="email" style={rowStyle('email')}><CorpRow title="Email" bold one value={<span className="pmp-value pmp-contact pmp-email">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>{identity.owner ? 'Not added' : 'None'}</span>)}</span>} /></li>
+        {/* Review B5 (NV-259): an Owner changes Phone and Email on their team page (a chevron); a Manager's are read-only. */}
+        <li data-row="phone" style={rowStyle('phone')}><CorpRow href={editHref} title="Phone" bold one value={<span className="pmp-value pmp-contact">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>{identity.owner ? 'Not added' : 'None'}</span>)}</span>} /></li>
+        <li data-row="email" style={rowStyle('email')}><CorpRow href={editHref} title="Email" bold one value={<span className="pmp-value pmp-contact pmp-email">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>{identity.owner ? 'Not added' : 'None'}</span>)}</span>} /></li>
         <li><CorpRow title="Time zone" bold one value={value(identity.timeZone.replace(/ time$/, ''))} /></li>
       </ul>
       {identity.owner ? null : <p className="pmp-card-note">{changeNote}</p>}

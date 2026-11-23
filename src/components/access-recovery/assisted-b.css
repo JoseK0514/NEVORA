@@ -23,3 +23,7 @@
   :is(#c-root, html) .c-page.ar-assisted .ar-assisted__caret { transition: transform 200ms ease-out; }
 }
 :is(#c-root, html) .c-page.ar-assisted .ar-how__note { margin: var(--b-space-12, 12px) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+/* The button's two labels share one cell, so it keeps the wider one's width; only the current one shows. */
+:is(#c-root, html) .c-page.ar-assisted .wc-swap { display: inline-grid; }
+:is(#c-root, html) .c-page.ar-assisted .wc-swap > span { grid-area: 1 / 1; }
+:is(#c-root, html) .c-page.ar-assisted .wc-swap[data-state="idle"] > span:last-child, :is(#c-root, html) .c-page.ar-assisted .wc-swap[data-state="pending"] > span:first-child { visibility: hidden; }

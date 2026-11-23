@@ -12,8 +12,9 @@
 :is(#c-root, html) .c-page.pmp-b .pmp-aside { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
 :is(#c-root, html) .c-page.pmp-b #profile-details-list:focus, :is(#c-root, html) .c-page.pmp-b #profile-alerts-list:focus { outline: none; }
 /* An alert switch is a row: the topic and its line left, the switch right, the whole row the target. */
-:is(#c-root, html) .c-page.pmp-b button.pmp-switch-row { display: flex; align-items: center; gap: var(--b-space-12, 12px); width: 100%; min-height: 64px; text-align: left; cursor: pointer; }
-:is(#c-root, html) .c-page.pmp-b .pmp-switch-row .c-row__main { flex: 1 1 auto; min-width: 0; }
+:is(#c-root, html) .c-page.pmp-b button.pmp-switch-row { display: flex; align-items: center; gap: var(--b-space-12, 12px); width: 100%; height: auto; min-height: 64px; padding-block: 12px; text-align: left; cursor: pointer; }
+:is(#c-root, html) .c-page.pmp-b .pmp-switch-row .c-row__main { display: flex; flex: 1 1 auto; flex-direction: column; justify-content: center; gap: 2px; min-width: 0; height: auto; }
+:is(#c-root, html) .c-page.pmp-b .pmp-switch-row .c-row__detail { display: grid; margin: 0; }
 :is(#c-root, html) .c-page.pmp-b .pmp-switch-row .c-row__title { white-space: normal; }
 :is(#c-root, html) .c-page.pmp-b .pmp-switch-row > .c-switch { flex: none; pointer-events: none; }
 :is(#c-root, html) .c-page.pmp-b .pmp-switch-row[aria-disabled="true"] { cursor: default; }

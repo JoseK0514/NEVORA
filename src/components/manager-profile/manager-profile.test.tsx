@@ -49,12 +49,12 @@ describe('Owner and Manager Profile', () => {
   it('shows what today’s reads know at once, and says it is checking the rest', () => {
     const html = render(owner, null);
     for (const text of ['Fictional Owner', 'Puerto Rico', 'Checking…']) expect(html).toContain(text);
-    // Phase 8: the role and the company are two whole parts of one line (it broke inside "Northside Café / & Bakery").
-    expect(html).toContain('Owner</span><span class="eb-dots__p"><span class="eb-dots__sep" aria-hidden="true">·</span><span class="b-sr">, </span>Northside QA Workforce</span>');
+    // Phase 2 (Nov 23, 2026): the role and the company are rows of Personal info, as the Employee Profile's details.
+    for (const [title, value] of [['Role', 'Owner'], ['Company', 'Northside QA Workforce']]) expect(html).toMatch(new RegExp(`${title}</span></span><span class="c-row__value"><span class="pmp-value">${value}</span>`));
     expect(html).not.toContain('role="switch"');
     // The read may still list the payroll topic (switched off); the page leaves it out without payroll.
     expect(render({ ...owner, payrollAlerts: false }, parseManagerProfile(fixture('owner'))).match(/role="switch"/g)).toHaveLength(4);
-    expect(html).toContain('<p class="q-sr" role="alert" id="profile-read-said"></p>');
+    expect(html).toContain('<p class="c-sr" role="alert" id="profile-read-said"></p>');
   });
 
   it('shows contact and alert switches when ready', () => {
@@ -82,24 +82,25 @@ describe('Owner and Manager Profile', () => {
   // Review Nov 11 (MG-013): a Manager's reach, from the locations the profile read gives; never more than the read says.
   it('tells a Manager what their access reaches and who can change a read-only detail', () => {
     const assigned = render({ ...manager, changedBy: 'Jose Natal', locationsWord: 'stores' }, parseManagerProfile(fixture('manager')));
-    expect(assigned).toContain('<b>Access</b><i>Schedule and team at your stores. Payroll and Settings are for Owners.</i>');
-    expect(assigned).toContain('<span class="q-rv q-rv--l">Manager, Main Office, West Office</span>');
-    expect(assigned.match(/<small class="pmp-fixed__why">Jose Natal can change this<\/small>/g)).toHaveLength(2);
+    expect(assigned).toContain('<span class="c-row__detail"><span>Schedule and team at your stores. Payroll and Settings are for Owners.</span></span>');
+    expect(assigned).toContain('<span class="pmp-value">Manager, Main Office, West Office</span>');
+    // Phase 2 (Jose: it repeated on every field): who can change the details is said once, under the card.
+    expect(assigned.match(/Jose Natal can change these details\./g)).toHaveLength(1);
     expect(assigned).not.toContain('Read-only');
     const all = render(manager, parseManagerProfile({ ...fixture('manager'), locations: { scope: 'all', names: ['Main Office'] } }));
-    expect(all).toContain('<span class="q-rv q-rv--l">Manager, all locations</span>');
+    expect(all).toContain('<span class="pmp-value">Manager, all locations</span>');
     expect(all).toContain('Schedule, time, team and requests. Payroll and Settings are for Owners.');
-    expect(all).toContain('An Owner can change this<');
+    expect(all).toContain('An Owner can change these details.');
     // Before the read arrives, and when it fails, only the role is said: no locations are claimed.
     for (const html of [render(manager, null), render(manager, { state: 'unavailable', reason: 'read_failed' })]) {
-      expect(html).toContain('<b>Access</b><i>Payroll and Settings are for Owners.</i></span><span class="q-rv q-rv--l">Manager</span>');
+      expect(html).toContain('<span>Payroll and Settings are for Owners.</span></span></span><span class="c-row__value"><span class="pmp-value">Manager</span>');
       expect(html).not.toContain('all locations');
     }
     expect(managerAccess({ scope: 'assigned', names: [] })).toEqual({ value: 'Manager', covers: 'Payroll and Settings are for Owners.' });
     // An Owner's page has no Access row and no "can change this" line.
     const ownerHtml = render(owner, parseManagerProfile(fixture('owner')));
-    expect(ownerHtml).not.toContain('<b>Access</b>');
-    expect(ownerHtml).not.toContain('can change this');
+    expect(ownerHtml).not.toContain('Payroll and Settings are for Owners.');
+    expect(ownerHtml).not.toContain('can change these');
   });
 
   it('says what is not there yet without blame words, and lets an Owner add an email', () => {
@@ -109,8 +110,7 @@ describe('Owner and Manager Profile', () => {
     const ownerEmpty = render(owner, parseManagerProfile({ ...fixture('owner'), contact: { email: null, phone: null } }));
     expect(ownerEmpty).toContain('href="/app/employees/qa-owner?edit=1"');
     // Nov 1 upscale: label + grey value + chevron, never a teal inline action.
-    expect(ownerEmpty).toMatch(/<b>Email<\/b><\/span><span class="q-rv q-rv--l">Not added<\/span><svg[^>]*class="q-chev"/);
-    expect(ownerEmpty).not.toContain('q-rv--go');
+    expect(ownerEmpty).toMatch(/Email<\/span><\/span><span class="c-row__value"><span class="pmp-value pmp-contact pmp-email"><span>Not added<\/span><\/span><\/span><svg[^>]*class="c-chev"/);
   });
 
   it('places the account rows after Notifications, with Sign out left to More and the sidebar (Owner premium A9)', () => {
@@ -137,7 +137,7 @@ describe('Owner and Manager Profile', () => {
     expect(render(manager, { state: 'unavailable', reason: 'read_failed' }, { retried: 'failed' })).toContain('Still couldn’t load');
     expect(render(manager, parseManagerProfile(fixture('manager')), { retried: 'loaded' })).toContain('role="status">Your details loaded.');
     // The status region is always there (empty when nothing to say), so its words are spoken when they arrive.
-    expect(render(manager, parseManagerProfile(fixture('manager')))).toContain('<p class="q-sr" role="status"></p>');
+    expect(render(manager, parseManagerProfile(fixture('manager')))).toContain('<p class="c-sr" role="status"></p>');
     const denied = render(manager, { state: 'unavailable', reason: 'access_denied' });
     expect(denied).toContain('Your session ended.');
     expect(denied).toContain('href="/login"');
@@ -157,7 +157,7 @@ describe('Owner and Manager Profile', () => {
     expect(paused).toMatch(/pmp-hold-value" aria-hidden="true">.*owner/);
     const rereading = render(owner, null, { held: last });
     expect(rereading).not.toContain('pmp-hold-value');
-    expect(rereading).toMatch(/role="switch" aria-checked="true" class="q-row pmp-switch-row"[^>]*data-topic="[a-z-]+" aria-disabled="true"/);
+    expect(rereading).toMatch(/role="switch" aria-checked="true" class="c-row pmp-switch-row"[^>]*data-topic="[a-z-]+" aria-disabled="true"/);
     const denied = render(owner, { state: 'unavailable', reason: 'access_denied' }, { held: last });
     expect(denied).not.toContain('northside-qa');
   });

@@ -116,7 +116,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
     {/* Review F2 (NV-249): the button stays enabled and the form checks on submit; without the confirmation nothing is sent. */}
     <div className="c-card__foot ar-assisted__foot"><button className="c-btn c-btn--full" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle={u.submit} busy={u.submitting}/></button></div>
    </section>
-   {message?<div className="ar-assisted__feedback" ref={feedback} tabIndex={-1} role="alert"><BCallout tone={offline?'grey':'red'} icon={offline?'offline':'stop'} title={offline?u.offlineTitle:ended?u.endedTitle:expired?u.expiredTitle:u.notConfirmedTitle}
+   {message?<div className="ar-assisted__feedback" ref={feedback} tabIndex={-1} role="alert"><BCallout tone={offline?'amber':'red'} icon={offline?'offline':'stop'} title={offline?u.offlineTitle:ended?u.endedTitle:expired?u.expiredTitle:u.notConfirmedTitle}
     action={ended?{label:'Sign in',href:'/login'}:undefined}>{offline?u.offline:ended?u.ended:expired?u.expired:u.notConfirmed}</BCallout>
     <SupportReference reference={offline?null:supportReference} lang={lang} id="assisted-reference"/></div>:null}
   </form>}

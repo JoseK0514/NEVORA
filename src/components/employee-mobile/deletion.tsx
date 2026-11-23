@@ -19,7 +19,9 @@ type Props={account:{name:string;role:string;employeeId:string};view:DeletionVie
  outcomeRefB?:RefObject<HTMLDivElement|null>;passwordRef?:Ref<HTMLInputElement>;onPassword(value:string):void;onShown():void;onConfirmed(value:boolean):void;workplace?:string|null;
  /** Owners and Managers (Nov 23, 2026: the same screen as the Employee's): where "What may be kept" opens, the Owner's
   * workspace line, a quiet "Keep my account" under the red button, and the last-Owner card in place of the form. */
- manager?:{keptHref:string;ownerNote?:ReactNode;lastOwner?:ReactNode}};
+ manager?:{keptHref:string;ownerNote?:ReactNode;lastOwner?:ReactNode;
+  /** The Support reference of this one failed reply, under the outcome (U11). */
+  outcomeExtra?:ReactNode}};
 
 
 const missing=(token:string)=><mark className="legal-unresolved">[CONFIRM_{token}]</mark>;
@@ -88,7 +90,7 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB
        :state.kind==='unavailable'?<>Nothing was sent. Email {support()} and we’ll help you.</>
        :state.kind==='busy'?(checking?'For your security, wait about 15 minutes, then check again. We still don’t know whether your request was saved.':'For your security, wait about 15 minutes, then try again. Nothing was sent.')
        :'The connection ended before NEVORA answered. Enter your password again and choose Check my request to find out. If it wasn’t saved, this sends your deletion request now, so only check if you still want your account deleted.'}</p>
-      {state.kind==='uncertain'||(checking&&state.kind!=='unavailable')?<p>You can also email {support()}. We’ll never ask for your password.</p>:null}</div>
+      {state.kind==='uncertain'||(checking&&state.kind!=='unavailable')?<p>You can also email {support()}. We’ll never ask for your password.</p>:null}{manager?.outcomeExtra??null}</div>
     </div>:null}
     {(()=>{const fields=<>
     <div className="c-field">
