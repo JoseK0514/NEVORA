@@ -251,7 +251,7 @@ const es: typeof en = {
   paydayWas: (day: string) => `El día de pago programado era ${day}`,
   oldestIs: (range: string, day: string) => `El más antiguo es ${range}, día de pago programado ${day}`,
   prepareRange: (range: string) => `Preparar ${range}`,
-  prepareRangeLabel: (range: string) => `Preparar la nómina de ${range}`,
+  prepareRangeLabel: (range: string) => `Preparar ${range} (nómina)`,
   payPeriodsNoPayroll: 'Períodos de pago sin nómina',
   periodsWithNoPayroll: 'Períodos sin nómina',
   prepareEach: 'Prepara la nómina de cada uno',

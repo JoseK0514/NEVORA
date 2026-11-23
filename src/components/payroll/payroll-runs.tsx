@@ -65,6 +65,10 @@ const fixItems = (run: PayrollRun) => run.status === 'APPROVED' ? [] : payrollRe
 
 /** A pushed page's header: "‹ Back · Title" on a phone; on wider screens the kit shows the same back link on its own
  * line over the page title (Owner premium A7), so Payroll no longer draws a second one. */
+/** "Payday Fri, Nov 13" kept on one line in English, as approved; Spanish ("Día de pago vie, 13 nov") may break before
+ * the date at 200% text, so only the date stays whole. */
+const paydayText = (c: { payday: (day: string) => string }, day: string, lang: 'en' | 'es') =>
+  lang === 'en' ? c.payday(day).replace(/ /g, '\u00a0') : c.payday(day.replace(/ /g, '\u00a0'));
 function Pushed({ back, title, id, sub }: { back: { href: string; label: string }; title: string; id: string; sub?: ReactNode }) {
   return <>
     <CorpNav back={back} title={title} phoneOnly />
@@ -215,13 +219,13 @@ function RunRow({ item, replaced = false }: { item: PayrollRun; replaced?: boole
   // listed right under its correction (byCorrection), indented.
   if (replaced) return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
     title={quietRange(item.period.startDate, item.period.endDate, lang)}
-    detail={<BSegs parts={[c.replacedByCorrection, c.payday(quietDay(item.payday, lang)).replace(/ /g, '\u00a0')]} />}
+    detail={<BSegs parts={[c.replacedByCorrection, paydayText(c, quietDay(item.payday, lang), lang)]} />}
     value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink" chevron />;
   // Round 5 (Nov 7, 2026): drawn like Payroll's Recent payrolls: the receipt icon, a "Correction" pill instead of words in
   // the title, the amount bold. A status that needs the Owner still wins the pill.
   return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
     title={<>{quietRange(item.period.startDate, item.period.endDate, lang)}{approved && item.correctionOf ? <> <CorpMeta>{c.correction}</CorpMeta></> : null}</>}
-    detail={<BSegs parts={[c.payday(quietDay(item.payday, lang)).replace(/ /g, '\u00a0'), approved ? c.approved : null]} />}
+    detail={<BSegs parts={[paydayText(c, quietDay(item.payday, lang), lang), approved ? c.approved : null]} />}
     value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink"
     trail={!approved ? <CorpPill tone={statusTone[item.status]}>{c.status[item.status]}</CorpPill> : undefined} chevron />;
 }
@@ -377,7 +381,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             return <BRow key={item.id} href={reviewHref(item.id)} lead={<BIcon tone="teal"><ReceiptIcon weight="bold" /></BIcon>}
               title={<span className={replaced ? 'c-pay__was' : undefined}>{quietRange(item.period.startDate, item.period.endDate, lang)}</span>} chip={replaced ? /* Batch 1 item 3 (as RunRow): the line below already says "Replaced by a correction", so no chip repeats it. */ undefined : item.correctionOf ? /* Final polish (Nov 20, 2026): a correction is a fact about the payroll, so grey meta beside the period; the chip stays for "Replaced". */ <BStatusText>{c.correction}</BStatusText> : approved ? undefined : <BChip tone="amber">{c.status[item.status]}</BChip>}
               /* Premium pass FA (final verification A #10): "Payday Fri, Nov 6" is one unit and never splits. */
-              sub={<BSegs parts={[replaced ? c.replacedByCorrection : null, c.payday(quietDay(item.payday, lang)).replace(/ /g, '\u00a0'), approved && !replaced ? c.approved : null]} />}
+              sub={<BSegs parts={[replaced ? c.replacedByCorrection : null, paydayText(c, quietDay(item.payday, lang), lang), approved && !replaced ? c.approved : null]} />}
               end={item.totals ? <><b className="c-num">{formatPayrollMoney(item.totals.netMinor, lang)}</b><span>{c.net}</span></> : undefined} chevron={!item.totals} />;
           })}</BList> : <p className="b-state">{c.noPastLine}</p>}
         </BCard>
