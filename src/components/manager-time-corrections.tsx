@@ -54,7 +54,9 @@ function CorrectionDecide({name,disabled,onDecision}:{name:string;disabled:boole
 function requestLabel(item:ManagerCorrectionItem){
   if(item.kind==='MISSING_ENTRY')return 'Missing time';
   if(item.kind==='BREAK_BOUNDARY')return item.breakName?item.breakName+' break':'Recorded break';
-  return 'Clock in / Clock out';
+  // Phase 2 gate (Nov 23): a clock in and out is what most requests are and the Recorded line already shows both
+  // times, so only the other kinds (a missing time, a break) get a label beside the location.
+  return null;
 }
 function noticeFor(result:CorrectionActionResponse){
   if(result.state==='approved')return approvedNotice;

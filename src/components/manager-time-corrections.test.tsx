@@ -42,6 +42,13 @@ describe('D2 manager correction surface',()=>{
     expect(html).toContain('Times in Puerto Rico time');
     expect(html).not.toContain('America/Puerto_Rico');
   });
+  it('Phase 2 gate: a clock in and out request names only its location; other kinds keep their label',()=>{
+    const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} busyId={null} notice={null} onDecision={rs.fn()} onRetry={rs.fn()} retry={null}/>);
+    expect(html).toContain('Fuel Coffee Drive');
+    expect(html).not.toContain('Clock in / Clock out');
+    const missing=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={{...ready,requests:[{...ready.requests[0],kind:'MISSING_ENTRY' as const}]}} loading={false} busyId={null} notice={null} onDecision={rs.fn()} onRetry={rs.fn()} retry={null}/>);
+    expect(missing).toContain('Missing time');
+  });
   it('OW-015: on the Time corrections page the count and the note about times are said once, under the title',()=>{
     const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={ready} loading={false} busyId={null} notice={null} onDecision={rs.fn()} onRetry={rs.fn()} retry={null} band={{zone:'America/Puerto_Rico'}}/>);
     const line=`${ready.requests.length} waiting · Fixes your team asked for. Original times are always kept. Times in Puerto Rico time.`;
