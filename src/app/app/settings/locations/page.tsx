@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { BSegs } from "@/components/owner-b/b-kit";
 import { currentPresentation } from "@/lib/workspace-presentation/current.server";
 import { lower, wordPreset } from "@/lib/workspace-presentation/words";
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { CorpButtonLink, CorpCard, CorpEmpty, CorpRow, CorpRows } from "@/components/corp/corp";
 import { requireRoles } from "@/lib/auth/permissions";
@@ -54,7 +55,7 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
   const peopleWord = (count: number) => count === 1 ? lower(words.person) : lower(words.people);
   // Phase 2 (Nov 23, 2026): Settings' own Direction B frame (SettingsPageB) and one white card of the kit's rows: a row
   // per place (short name; its full name and state on the facts line; how many people can work there on the right),
-  // then the "Add location" row. The page title already says "Locations", so the card has no title of its own, and the
+  // then the "Add location" row; every row leads with its icon, so all titles share one left edge. The page title already says "Locations", so the card has no title of its own, and the
   // grey line that was always true ("Each location keeps its own schedule.") is gone. Rows carry no aria-label: the
   // name a screen reader hears is the row's visible text.
   return (
@@ -66,7 +67,7 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
             const facts = [location.name !== location.shortName ? placeName(location.name) : null,
               readiness.state === "INACTIVE" ? "Inactive" : readiness.state === "NEEDS_SETUP" ? "Needs setup" : null];
             return <li key={location.id} data-location={location.id}>
-              <CorpRow href={`${directoryPath}/${encodeURIComponent(location.id)}`} title={location.shortName}
+              <CorpRow href={`${directoryPath}/${encodeURIComponent(location.id)}`} title={location.shortName} icon={<MapPinIcon weight="bold" />}
                 detail={facts.some(Boolean) ? <BSegs parts={facts} /> : undefined}
                 value={`${eligibleCount} ${peopleWord(eligibleCount)}`} valueTone="soft" chevron />
             </li>;
