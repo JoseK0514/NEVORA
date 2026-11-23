@@ -489,7 +489,7 @@ export default async function SchedulePage({
                 <Link className="nevora-action-menu-item" href={publishHref}><strong>Build and publish</strong></Link>
                 {/* Review Nov 14 (AR-9): team Availability had no menu entry for an Owner or Manager; it opens here, on the
                   week being planned, before the week is built. */}
-                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`} aria-label="Availability: who can work and when"><strong>Availability</strong><span className="c-menu-value">Who can work and when</span></Link>
+                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`}><strong>Availability</strong><span className="b-sr">, </span><span className="c-menu-value">Who can work and when</span></Link>
                 <ScheduleCopyForm actorId={session.id} className="nevora-action-menu-item c-sched-menu-copy" label={<strong>Copy previous week</strong>} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
                 <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Week templates</strong></Link>
                 <PrintScheduleButton />
@@ -499,7 +499,7 @@ export default async function SchedulePage({
                 <p className="c-menu-label" id="schedule-options-settings">Settings</p>
                 <div className="c-menu-card">
                 <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong></Link>
-                <Link className="nevora-action-menu-item manager-issue-target" id="schedule-deadline" href={`/app/schedule/settings?week=${weekStart}&open=deadline#rules-deadline`} aria-label={`Availability deadline, ${deadlineText}`}><strong>Availability deadline</strong><span className="c-menu-value">{deadlineText}</span></Link>
+                <Link className="nevora-action-menu-item manager-issue-target" id="schedule-deadline" href={`/app/schedule/settings?week=${weekStart}&open=deadline#rules-deadline`} ><strong>Availability deadline</strong><span className="b-sr">, </span><span className="c-menu-value">{deadlineText}</span></Link>
                 <Link className="nevora-action-menu-item" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><strong>Activity</strong></Link>
                 </div>
               </div>
