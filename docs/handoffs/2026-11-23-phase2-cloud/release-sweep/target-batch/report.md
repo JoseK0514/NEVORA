@@ -57,3 +57,27 @@ Inline links inside sentences (Privacy, Terms, Delete account) are exempt under 
 
 ## Shots
 `shots/` holds before and after for Team, Schedule, Publish and Clocker recovery at 1440 (Owner), Availability at 390, and Employee Schedule at 1024 and 1440.
+
+## Addendum: full check on `13509ca2` against `91c08d19` (lead, after Jose chose the full check)
+Production builds of `origin/claude-codex-collab-nevora` at `91c08d19` (before) and `13509ca2` (after; it contains this
+batch plus other sessions' changes, mainly accessible names and 200%-text rules). Owner: 15 routes. Employee: 5 routes.
+Each at 320, 390, 768, 1024 and 1440: 100 views per side, 200 in all.
+
+**Default-size pixel diff:** nothing moves beyond live data, with one drawn change.
+- **The rail badge at 1024:** the Things to do count ("16") on the rail icon shows 2px more at its right edge. Before, the rail nav's sideways clip cut the badge's rounded end at x=56; now that the nav is 2px wider on each side, it's complete. That's 30 pixels per page, all inside the rail. Icons, badge position, content column and page don't move. Shot: `shots/final-rail-badge-1024-before-after.png`. The lead was told straight away.
+- **Live data only, each checked by eye:**
+  - the bell's unread dot (768 and 1440);
+  - Timecards' running minutes;
+  - Employee Home's clock-driven shift card;
+  - Owner Home at 768, the same faded card caught at a different point of its entrance animation.
+- **Identical:** every other page and width, including Team, Schedule, Publish, Add shift, Add person, Profile, Time off policies, Clocker recovery, Things to do, Requests and Delete account at 1024. Same for Employee Availability, Schedule, Time and Pick up and swap.
+
+**44px probe (reach from the centre, inline text links excepted):**
+
+| | Under 44px before | After |
+|---|---|---|
+| Total | 405 | 195 |
+| Week arrows, desktop back links, bell, Done, See all, rail icons 40 → 44 wide | present | 0 |
+| Left (accepted spacing group) | | sidebar links at 1440 (40–42 tall), Help at 1440 (40), the rail's top Home and Team at 1024 (42 and 41 tall, 44 wide: the rail's edge and the Team count badge), the 320 week strip (39–40 wide), Team "All" at 1024 (41 wide) |
+
+Everything left is in the group the lead accepted under WCAG 2.5.8 spacing. The shots are `shots/final-*`.
