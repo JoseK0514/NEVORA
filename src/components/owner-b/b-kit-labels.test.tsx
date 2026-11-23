@@ -113,9 +113,9 @@ describe("BLive", () => {
 });
 
 describe("The stylesheet behind them", () => {
-  it("a chip is 22px, 12/16 600, one line, with its tone's 16% edge and a transparent outline for High Contrast", () => {
+  it("a chip is 22px, 12/16 600 (in rem, so it grows with 200% text), one line, with its tone's 16% edge and a transparent outline for High Contrast", () => {
     const chip = sheet.match(/\.app-shell\[data-nv-b\] \.b-chip \{([^}]*)\}/)?.[1] ?? "";
-    for (const part of ["height: var(--b-chip-h)", "font-weight: 600", "white-space: nowrap", "inset 0 0 0 1px var(--b-chip-edge, transparent)", "outline: 1px solid transparent"]) expect(chip).toContain(part);
+    for (const part of ["height: max(var(--b-chip-h), 1.375rem)", "font-size: 0.75rem; line-height: 1rem; font-weight: 600", "white-space: nowrap", "inset 0 0 0 1px var(--b-chip-edge, transparent)", "outline: 1px solid transparent"]) expect(chip).toContain(part);
     // tabular figures where a figure ticks (a live chip, the quiet text, counts), not on every chip: in Inter they widen the hyphen
     expect(chip).not.toContain("tabular-nums");
     expect(sheet).toMatch(/\.b-chip\[data-dot\] \{[^}]*font-variant-numeric: tabular-nums;/);
