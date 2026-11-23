@@ -11,9 +11,10 @@ import {ReceiptIcon} from '@phosphor-icons/react/dist/ssr/Receipt';
 import {BEmpty} from './requests-b';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {BButtonLink, BCard, BChip, BHero, BList, BNote, BRow, BScreen, BStack} from '../owner-b/b-kit';
-import {PAY_DIFFERENCE_LINE, PAY_SCOPE_LINE, type PayView} from '../employee-mobile/pay';
+import {type PayView} from '../employee-mobile/pay';
 import {workCopy} from './work-copy';
 import {payCopy} from './pay-copy';
+import {payCopy as payLines} from '../employee-mobile/copy/pay';
 import {LOCALE,type FormatLang} from './es-format';
 import {usePortalLang} from '@/lib/i18n/portal-lang';
 import './pay.css';
@@ -108,7 +109,7 @@ export function PayB(props: PayBProps) {
               {item.correctedBy ? <p className="ep-big__s">{P.replacedLine}</p>
                 : item.corrects ? <p className="ep-big__s">{P.correctsLine}</p> : null}
               {/* Inspection Nov 14 (PY-11): a correction can change the amount; say whom to ask. */}
-              {item.correctedBy || item.corrects ? <p className="ep-big__s">{PAY_DIFFERENCE_LINE}</p> : null}</div>
+              {item.correctedBy || item.corrects ? <p className="ep-big__s">{payLines[w.lang].difference}</p> : null}</div>
             <BList label={P.statement}>
               {item.correctedBy && byId.has(item.correctedBy) ? <BRow href={paycheckHref(item.correctedBy)} title={P.useCorrected} label={P.useCorrected}/> : null}
               <li className="b-li"><a id={`b-pay-pdf-${item.id}`} className="b-add ep-pdf" href={item.viewUrl ? `${documentHref(item)}/view` : documentHref(item)} {...(item.viewUrl ? {target: '_blank', rel: 'noopener'} : {})}
@@ -183,7 +184,7 @@ export function PayB(props: PayBProps) {
         {earlierWide.length ? <ul className="b-list eb-desk" aria-label={workCopy(w.lang).moreEarlierStatements}>{earlierWide.map(item => <Row key={item.id} item={item} byId={byId} w={w}/>)}</ul> : null}
       </BCard> : latest ? <BCard label={P.payHistory}><BList><BRow href="/app/my-pay?view=history" title={P.payHistory} sub={P.everyStatement}/></BList></BCard> : null}
       {/* Inspection Nov 14 (PY-7): a scheduled payday is not a payment from NEVORA; one quiet line says who pays. */}
-      {listed ? <BNote>{PAY_SCOPE_LINE}</BNote> : null}
+      {listed ? <BNote>{payLines[w.lang].scope}</BNote> : null}
       {latest ? <BNote>{P.openToDownload}</BNote> : null}
     </BStack>
   </BScreen>;
