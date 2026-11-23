@@ -1,0 +1,54 @@
+# Package X: F3 Import a staff list and I1-Ml Profile (report)
+
+Branch `claude-codex-collab-nevora-settings-final`, after merging `origin/claude-codex-collab-nevora` at `ef0905bf`
+(`96f42336`). Fictional data and a throwaway local database only. No kit or shell files changed.
+
+## Commits
+| Commit | What |
+|---|---|
+| `28674094` | F3: the closed page (Manager, location Manager) and the not-available page (Owner) go back to "‹ Team" (was "‹ Home"). `OwnerOnlyNotice`'s plain layout honours its existing `back` prop; callers without it are unchanged. |
+| `5781ae07` | I1-Ml: the place is named by its short name ("Condado", was "Northside Bakery — Condado"), from the location list the page already reads (server read unchanged); an empty Phone or Email reads "Not added", the Owner's word (was "None"). |
+| `dbb1c39c` | F3: a row that still needs a fix shows a 10-digit phone formatted (787-555-0144), like checked rows (display only); the sideways-scrolling example is a named region the keyboard can reach (axe scrollable-region-focusable). |
+| `bed5d1ea` | F3: the review rows are stacked row cards at every width; in the ~500px sheet card at 1440 the six-column table broke names, phones and emails mid-word. |
+| `0cf6a6b7` | I1 (Manager): "What you can approve" values break only between words ("Not granted" broke as "grante/d" at 200% text). |
+
+Checks: `tsc --noEmit` clean; oxlint clean on the changed paths; tests pass in `src/app/app/employees/import`,
+`src/components/roster-import` (two new tests) and `src/components/manager-profile` (updated and new assertions).
+
+## F3 Import a staff list
+- **Owner:** the page already uses the approved Team form frame (F2 Add person's `FormHead` and `c-teamform`: one band
+  with the step dots, Cancel or Back on the band, one solid main action per step). The live import only runs where
+  workspace routing is configured (isolated workspace mode with a control database); the capture build runs the single
+  company mode, so the Owner sees "Staff list import isn't available for this workplace yet." To show the three steps,
+  the real step components (`AddListStep`, `ReviewStep` with two rows to fix, `DoneStep`) were rendered with fictional
+  rows and placed into the signed-in Owner page with the app's CSS. These rows are marked "static" in the sheet: they
+  show layout, words and states, not the live server answers. A live capture needs the step 4 isolated-workspace
+  lifecycle test (`src/test/integration/step4-production-screens.ts` already screenshots the import).
+- **Manager and location Manager:** the closed page ("Importing a staff list is for Owners", the Owner named once, Add
+  one person), now back to Team.
+- Words before/after: band back link "Home" → "Team". Row phone "7875550144" → "787-555-0144".
+
+## I1-Ml Profile
+Same card order and buttons as the approved I1-M (details card with Phone, Email, Time zone and Access; What you can
+approve; the Owner line; Notifications; Privacy and terms). The place is named once, in Access, by its short name.
+Words before/after: "Northside Bakery — Condado" → "Condado"; "None" → "Not added".
+
+## Captures
+`shots/package-x/`: `<screen>-<O|M|Ml>-<390|390t200|768|1440>.webp`, `index.html` (side by side) and `rows.json`.
+Production build, viewport-height shots stitched. F3 and I1-O at `bed5d1ea`; I1-M and I1-Ml again at `0cf6a6b7` (after the word-break fix).
+axe: 0 violations on every capture. No page overflow. The measurement flags left are by design: the review table's header
+row is for screen readers only, the example table scrolls sideways, the phone-only band link is hidden from 768, and the
+profile's hidden "·" separators.
+
+## Impeccable audit
+- Hierarchy: one band title; each step has one solid action; the closed page has one action.
+- Spacing and layout: review rows are one stacked card per person at every width; nothing breaks mid-word.
+- Accessibility: the example region is focusable with the kit's ring; no new aria-labels that differ from visible text.
+- States: add, check with rows to fix, done (static); closed for Managers; not available for the Owner in this build.
+
+## Left
+- Live Owner import captures need the isolated-workspace fixture (see above).
+- End sweep (proposed rows): I1 detail values (555-0126, Not added, Puerto Rico, Condado) are fixed px and don't grow at
+  200% text, while the labels do. F3 step 1 opens with a paragraph on how the import works ("Paste rows from a
+  spreadsheet or choose a CSV file… Nothing is saved until you check the list and choose Import."); kept as onboarding
+  help, flag for Jose if it reads as explanation.
