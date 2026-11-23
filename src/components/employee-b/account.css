@@ -308,12 +308,6 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::placeholder { font-size: var(--b-fs-body); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 6px; margin: var(--b-space-2) 0 -7px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { margin: -7px 0; }
-/* Sweep 1: from 768 up each policy link keeps its 32px drawn box and gets a 44px hit area (6px above and below), drawn by
- * nothing and taking no space, as the band back link does (ledger G5). Phones already get 44px line boxes below. */
-@media (min-width: 768px) {
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links a { position: relative; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links a::after { content: ""; position: absolute; inset: -6px 0; }
-}
 /* Final polish, round 2 (M5): on phones each policy link is a 44px line box (they were 32px drawn 18px apart, so two
  * rows of links shared one finger). The words keep their size and colour; the rows sit 44px apart. */
 @media (max-width: 767px) {

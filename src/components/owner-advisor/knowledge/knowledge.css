@@ -50,7 +50,7 @@
 
 /* Dates: one field-shaped disclosure that says what is set; the three pickers open under it. */
 :is(#c-root, html) .kn .kn-dates__toggle { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-12); width: 100%; min-height: 48px; margin: 0; padding: 0 14px;
-  border: 1px solid var(--b-field-edge); border-radius: var(--b-radius-field); background: #FFFFFF; box-shadow: none; color: var(--b-ink); font: inherit; font-size: 1rem; line-height: 1.375rem; text-align: left; cursor: pointer; }
+  border: 1px solid var(--b-field-edge); border-radius: var(--b-radius-field); background: #FFFFFF; box-shadow: none; color: var(--b-ink); font: inherit; font-size: 16px; line-height: 22px; text-align: left; cursor: pointer; }
 :is(#c-root, html) .kn .kn-dates__toggle:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset, 2px); }
 :is(#c-root, html) .kn .kn-dates__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--b-ink); }
 :is(#c-root, html) .kn .kn-dates__caret { flex: none; width: 16px; height: 16px; color: var(--b-grey); }
