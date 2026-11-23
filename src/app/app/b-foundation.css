@@ -53,6 +53,11 @@
      * back link; axe read their white words on the canvas (1.08:1) at 768 and 1440. Same paint as the section tabs above. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page > .q-hd ~ nav.c-seg:not(#g48a):not(#g48b) {
       background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }
+    /* Final fixes K (Insights): the date range line under Insights' title (p.c-ins__range) sits on the same border-image
+     * band, so axe read its white words on the canvas (1.08:1) at 1024 and 1440. It has no glass, so it paints the band
+     * itself at its height: --b-band-solid 84% toward black. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page > header.c-title ~ p.c-ins__range:not(#g48a):not(#g48b) {
+      background: color-mix(in srgb, var(--b-band-solid) 84%, black) !important; }
   }
 
   /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
@@ -955,8 +960,8 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
    * bigger control keeps its size. */
   html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *) {
     -webkit-appearance: none !important; appearance: none !important; box-sizing: border-box !important; flex: none !important; display: inline-block !important; vertical-align: middle;
-    width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important; padding: 0 !important;
-    border: 1.5px solid var(--b-field-edge) !important; border-radius: 6px !important; background: #FFFFFF none center / 14px 14px no-repeat !important; box-shadow: none !important; cursor: pointer;
+    width: 1.25rem !important; height: 1.25rem !important; min-width: 1.25rem !important; min-height: 1.25rem !important; padding: 0 !important;
+    border: 1.5px solid var(--b-field-edge) !important; border-radius: 0.375rem !important; background: #FFFFFF none center / 0.875rem 0.875rem no-repeat !important; box-shadow: none !important; cursor: pointer;
   }
   html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *):is(:checked, :indeterminate) { border-color: var(--b-teal) !important; background-color: var(--b-teal) !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23FFFFFF' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") !important; }
   html body .app-shell[data-nv-b] input[type="checkbox"]:not(.q-tog, .c-switch, .av-switch-track, .q-tc-box, .q-deletion__box, .c-check__box, [role="switch"], [class*="switch"], [class*="Switch"], [class*="tog"], :is(.av-switch, .av-filter, .em-delete-check, [class*="avSwitch"]) *):indeterminate { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23FFFFFF' d='M228,128a12,12,0,0,1-12,12H40a12,12,0,0,1,0-24H216A12,12,0,0,1,228,128Z'/%3E%3C/svg%3E") !important; }

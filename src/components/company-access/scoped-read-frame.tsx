@@ -20,7 +20,32 @@ type AuthoritySnapshot=CurrentAuthority|Extract<OperationalAuthorityView,{state:
 type Recovery={required:boolean;view:CurrentAuthority|null};
 /** How long a check may run behind the quiet page shape before the frame shows its words and Refresh current view. */
 export const STUCK_MS=2500;
-type Body={authority:string|null;phase:'ready'|'expired'|'paused';content:ReactNode};
+/** `kept`: the last page this frame showed, held hidden while its window lapses in the foreground (see `lapse`). */
+type Body={authority:string|null;phase:'ready'|'expired'|'paused';content:ReactNode;kept?:ReactNode};
+/** WebKit period history, second route (QA, Nov 23, 2026): when the page's 15 s window ran out before the renewal landed,
+ * the frame dropped its children and the page re-mounted later with its client state gone (Payroll export's loaded
+ * history pages and open sheet). A lapse in the foreground now keeps the last page mounted, with its effects running,
+ * and hides its DOM root (display none, inert, aria-hidden; see `holdHidden`) behind the usual checking state, then shows
+ * it again in place when a current observation arrives. Nothing stale is visible or reachable meanwhile, and the 15 s
+ * window, S-01's "checking" and the step-away retirements (blur, hidden, pagehide: the page is cleared) are unchanged.
+ * A denial drops it. (React Activity was not enough: a hidden Activity tears its effects down and runs them again when
+ * shown, and Payroll export's mount effect then reset the page.) */
+const lapse=(previous:Body):Body=>({authority:null,phase:'expired',content:null,kept:previous.content??previous.kept??null});
+const dropKept=(previous:Body):Body=>previous.kept?{...previous,kept:null}:previous;
+/** Hides the held page while the frame's status section is drawn after it: the element just before that section is the
+ * page's root (pages render one root, a .c-page). Runs at commit, before paint; the returned cleanup (React 19 ref
+ * cleanup) shows the page again when the status section goes, as a current observation arrives. Inline !important beats
+ * the stylesheets' display rules; the page keeps no wrapper, so their child combinators still match. */
+function holdHidden(status:HTMLElement|null){
+ const page=status?.previousElementSibling;
+ if(!(page instanceof HTMLElement))return;
+ const display=page.style.getPropertyValue('display'),priority=page.style.getPropertyPriority('display');
+ page.style.setProperty('display','none','important');page.inert=true;page.setAttribute('aria-hidden','true');
+ return()=>{
+  if(display)page.style.setProperty('display',display,priority);else page.style.removeProperty('display');
+  page.inert=false;page.removeAttribute('aria-hidden');
+ };
+}
 const online=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
 /** A frame holding its page offline keeps it while the device is still offline and the person is still here. */
 const keepOffline=(held:{current:boolean})=>held.current&&!navigator.onLine&&!steppedAway();
@@ -113,7 +138,10 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
   // tabWide: a real retirement event clears the tab's fence; a frame's own mount or navigation barrier does not.
   function retire(phase:'paused'|'expired',tabWide=true){
    if(tabWide)retireTab();required.current=true;retiredThrough.current=Math.max(retiredThrough.current,latest.current);
-   setBody(previous=>previous.authority===null&&previous.phase===phase&&previous.content===null?previous:{authority:null,phase,content:null});
+   // A frame's own barrier in the foreground (its window lapsed, or its page arrived too old) keeps the page hidden; a
+   // real retirement (stepping away, offline expiry, an explicit fresh check) clears it as before.
+   if(phase==='expired'&&!tabWide)setBody(lapse);
+   else setBody(previous=>previous.authority===null&&previous.phase===phase&&previous.content===null&&!previous.kept?previous:{authority:null,phase,content:null});
    setRecovery(previous=>previous.required&&previous.view===null?previous:{required:true,view:null});
   }
   const controller=createPrivateSnapshotController<AuthoritySnapshot>(state=>{
@@ -121,6 +149,8 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
    const current=!state.paused&&state.snapshot?.state==='ready'?state.snapshot:null;
    const failedNow=!state.paused&&!state.refreshing&&state.snapshot?.state==='unavailable';
    setCheckFailed(previous=>previous===failedNow?previous:failedNow);
+   // Access denied: the held page goes (the existing refused state applies).
+   if(!state.paused&&state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied')setBody(dropKept);
    if(current&&!state.refreshing)noteFence(current);
    setRecovery(previous=>previous.required&&previous.view===current?previous:{required:true,view:current});
    if(current&&!state.refreshing&&!navigation?.pending()){
@@ -199,13 +229,14 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
    const afterBarrier=!required.current||(!!recovery.view&&observation?.authority===recovery.view.authority&&observed>Date.parse(recovery.view.observedAt));
    if(!valid||!afterBarrier){
     // This page is too old or predates the fence: re-check it. That says nothing about the tab, so its fence stays.
-    if(!required.current)controls.current?.recover(false);
-    else setBody({authority:null,phase:'expired',content:null});
+    if(!observation)setBody(previous=>dropKept({...previous,authority:null,phase:'expired',content:null}));
+    else if(!required.current)controls.current?.recover(false);
+    else setBody(lapse);
     return;
    }
    latest.current=observed;
    if(required.current&&recovery.view)controls.current?.complete(recovery.view);
-   setBody({authority:observation!.authority,phase:'ready',content:children});
+   setBody({authority:observation!.authority,phase:'ready',content:children,kept:null});
    viewDeadline.current=performance.now()+remaining;
    early=setTimeout(()=>{if(!online())return;if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router);}},remaining*.65);
    expiry=setTimeout(()=>controls.current?.recover(false),remaining);
@@ -234,7 +265,10 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
   return()=>{clearTimeout(timer);setStuck(false);};
  },[ready,navigation]);
 
- if(ready)return body.content;
+ // The page sits in one place in the tree in every state, so a lapse and its renewal keep its client state.
+ const page=ready?body.content:body.kept??null;
+ const hold=!ready&&!!body.kept?holdHidden:undefined;
+ if(ready)return <>{page}{null}</>;
  // Phase 2 (package D): the state the page handed over draws its own "Refresh current view" inside its card (it reads
  // this frame's fresh check from the context), so the page has one card with all its actions.
  if(!observation&&unavailable)return <ScopedRefreshContext.Provider value={refreshCurrent}><div className="scoped-unavailable">{unavailable}</div></ScopedRefreshContext.Provider>;
@@ -245,10 +279,10 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
  // each main tab's loaded height (b-foundation.css, keyed by the sidebar entry that is the current page), and tablets and
  // desktop draw it too (owner-b-desktop.css treats the placeholder like Home's B screen). Its hero says "Loading…" to
  // assistive technology; the quiet section below shows only where no B screen does.
- if(checking)return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
+ if(checking)return <>{page}<div ref={hold} className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
   <BRouteLoading/>
   {stateSection}
- </div>;
+ </div></>;
  // Round 5 (Nov 7, 2026): paused or stuck, the page says so in the page's own look. Review B2 (NV-032, NV-075): one
  // message under the hero in the shared state card (amber offline or paused, red when the check failed) with one Try
  // again, which also re-checks the shell's menus; the brief "checking" state above keeps its skeleton.
@@ -256,7 +290,7 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
  // the older corporate card with a grey Try again; that copy is gone (the wrapper's class lets the desktop layer draw the
  // Direction B screen there, as it does for the placeholder).
  const offlineNow=typeof navigator!=='undefined'&&!navigator.onLine;
- return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
+ return <>{page}<div ref={hold} className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
   <FrameStateScreen phase={body.phase} offline={offlineNow} checkFailed={checkFailed} lang={lang} onRetry={refreshCurrent}/>
- </div>;
+ </div></>;
 }

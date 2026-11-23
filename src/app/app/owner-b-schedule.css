@@ -573,3 +573,14 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid .sb-openchip:not(#dsg1):not(#dsg2):not(#dsg3):not(#dsg4):not(#dsg5):not(#dsg6):not(#dsg7):not(#dsg8) { height: auto !important; white-space: nowrap !important; }
   }
 }
+
+/* Target size (Nov 23, first release): on tablets and desktop the week grid's open-shift chip is drawn 36px tall and an
+ * empty cell's "+ Add" 24px. Each gets a transparent ::after that reaches 44px tall, centred, inside its own cell (a grid
+ * row is at least 52px and the cells keep their widths), so neighbouring targets don't overlap and nothing drawn changes.
+ * No translate: the ring's top and bottom are min(0px, 50% - 22px), which is 0 for a target that is already 44px. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-grid :is(.sb-openchip, td > .cm-add):not(#t44a):not(#t44b):not(#t44c) { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-grid :is(.sb-openchip, td > .cm-add):not(#t44a):not(#t44b):not(#t44c)::after { content: "" !important; display: block !important; position: absolute !important; left: 0 !important; right: 0 !important; top: min(0px, calc(50% - 22px)) !important; bottom: min(0px, calc(50% - 22px)) !important; width: auto !important; height: auto !important; margin: 0 !important; translate: none !important; transform: none !important; border: 0 !important; background: none !important; box-shadow: none !important; }
+  }
+}
