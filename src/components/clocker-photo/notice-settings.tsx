@@ -7,6 +7,7 @@ import {noticeSettingsDraft,noticeSettingsUpdate,readCompanyNoticeSettings,verif
 import {ClockerPhotoNotice} from './photo-notice';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {ReturnToNext} from '../team/return-to-next';
+import {FieldB} from '@/app/app/settings/settings-b-form';
 
 export function ClockerPhotoNoticeSettings({initialSettings,saveAction,readAction}:{initialSettings:PhotoCompanyNoticeSettings;
  saveAction:(input:PhotoNoticeProfileUpdate)=>Promise<PhotoNoticeActionResult>;readAction:()=>Promise<PhotoNoticeActionResult>}){
@@ -39,10 +40,10 @@ export function ClockerPhotoNoticeSettings({initialSettings,saveAction,readActio
    <h3 className="c-sr" id="photo-assistance-title">Help for your team</h3>
    <fieldset disabled={pending} className="c-photos__fields"><legend className="c-sr">Help for your team</legend>
     {settings.companyName?null:<p className="c-field__help">Your company name is missing. Add it in Company profile.</p>}
-    <div className="c-field"><label className="c-field__label" htmlFor="photo-assistance-contact">Assistance contact</label><input id="photo-assistance-contact" className="c-in" required maxLength={200} value={draft.assistanceContact} autoComplete="off" autoCorrect="off" enterKeyHint="next" aria-describedby="photo-contact-help" onChange={event=>setDraft({...draft,assistanceContact:event.target.value})}/>
-     <span id="photo-contact-help" className="c-field__help">Who your team can ask for help, like a manager’s name and phone number.</span></div>
-    <div className="c-field"><label className="c-field__label" htmlFor="photo-assistance-instructions">Assistance instructions</label><textarea id="photo-assistance-instructions" className="c-in" required maxLength={1000} rows={4} value={draft.assistanceInstructions} aria-describedby="photo-instructions-help" onChange={event=>setDraft({...draft,assistanceInstructions:event.target.value})}/>
-     <span id="photo-instructions-help" className="c-field__help">How to ask for help. Shows on the tablet.</span></div>
+    <FieldB label="Assistance contact" id="photo-assistance-contact" helpId="photo-contact-help" help="Who your team can ask for help, like a manager’s name and phone number."
+     required maxLength={200} value={draft.assistanceContact} autoComplete="off" autoCorrect="off" enterKeyHint="next" onChange={event=>setDraft({...draft,assistanceContact:event.target.value})}/>
+    <FieldB kind="textarea" label="Assistance instructions" id="photo-assistance-instructions" helpId="photo-instructions-help" help="How to ask for help. Shows on the tablet."
+     required maxLength={1000} rows={4} value={draft.assistanceInstructions} onChange={event=>setDraft({...draft,assistanceInstructions:event.target.value})}/>
     {settings.notice?<ClockerPhotoNotice policy={settings.policy} notice={settings.notice}/>:<p className="c-field__help">Saving this doesn’t turn on photos or show a notice to your team.</p>}
     {feedback?<p className={feedback.error?'c-photos__feedback c-photos__feedback--error':'c-photos__feedback'} role={feedback.error?'alert':'status'}>{feedback.text}</p>:null}
     <div className="c-photos__helpactions">
