@@ -16,7 +16,10 @@ import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {SigBand,SigHead,SigPage} from './signature/signature';
 import cc from './communication-compose-signature.module.css';
 import {PendingLabel} from './employee-submit-button';
-import {BBusyLabel,BIcon,BRow,BSegs,BState} from './owner-b/b-kit';
+import {BBusyLabel,BHero,BIcon,BRow,BScreen,BSegs,BState} from './owner-b/b-kit';
+import {useEmployeeMobile} from './employee-mobile/use-mobile';
+import './employee-b/account.css';
+import './communication-compose-b.css';
 import {revealFeedback} from '@/lib/reveal-feedback';
 import {keepWhole} from '../lib/keep-whole';
 import {formatDisplayDate,formatTimeRange} from '../lib/date-utils';
@@ -212,7 +215,7 @@ function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;m
  const backRef=useRef<(()=>void)|null>(null);
  useEffect(()=>{actionRef.current=action;},[action]);
  const editing=(context as (Context&{editing?:Extract<CommunicationRead,{state:'ready'}>})|null)?.editing;
- const [step,setStep]=useState<1|2>(1);
+ const [step,setStep]=useState<1|2>(1),phone=useEmployeeMobile();
  const signedOut=(!!resource.value&&'state' in resource.value&&resource.value.state==='unauthorized')||(resource.state.snapshot?.state==='unavailable'&&resource.state.snapshot.reason==='access_denied');
  const offline=resource.state.paused&&typeof navigator!=='undefined'&&navigator.onLine===false;
  // IS-B12: when the form arrives after a failed load (Try again), focus goes to its first field.
@@ -229,12 +232,18 @@ function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;m
  // Final polish (Nov 20, 2026): the two steps are named under the title ("Step 1 of 2 · Write"), as Add employee's are
  // (DESIGN.MD Step flows). Step 2 shows the audience and its one filled Publish, so Next leaves the bar there; changing a
  // field returns to step 1. From 768px Cancel and Next are in the delivery card's footer (data-wc-save).
- return <div ref={pageRef} className="q-page wb-compose q-compose" data-nv-page="" data-q-sheet="" data-wc-save={mode==='manager'&&context?'card':undefined}>
+ // Phase 2 (B8, Nov 23, 2026): Owners and Managers get the Lead's Direction B frame on phones: the hero with Cancel (an X),
+ // the title and the step line, over the same form (b-keep), and Next or Publish as the card's one full-width teal button
+ // (communication-compose-b.css). Tablets and desktop keep the band with the step line and the card footers. Same form,
+ // same steps, same submit.
+ const cancelHref=updateId?'/app/updates/'+updateId:'/app/updates',stepLine=context&&mode==='manager'?`Step ${step} of 2 · ${step===1?'Write':'Review'}`:undefined;
+ return <>{phone?<div className="c-page c-embed eb-host b-cmp-host"><BScreen back><BHero back={{href:cancelHref,label:'Cancel',close:true}} title={updateId?'Edit update':'New update'} titleId="b-compose-title" sub={stepLine}/></BScreen></div>:null}
+ <div ref={pageRef} className={phone?'q-page wb-compose q-compose b-keep b-cmp-b':'q-page wb-compose q-compose'} data-nv-page="" data-q-sheet="" data-wc-save={mode==='manager'&&context?'card':undefined}>
   <QuietNav left={context&&mode==='manager'&&step===2
-    ?/* Step 2: Back returns to Write (phones; from 768px Back is in the review card's footer). An anchor, so it keeps the bar's link styles. */
+    ?/* Step 2: Back returns to Write (from 768px Back is also in the review card's footer). An anchor, so it keeps the bar's link styles. */
      <a className="q-nav__l q-nav__l--teal" role="button" tabIndex={0} href="#communication-title" onClick={event=>{event.preventDefault();backRef.current?.();}} onKeyDown={event=>{if(event.key===' '){event.preventDefault();backRef.current?.();}}}>Back</a>
-    :<Link className="q-nav__l q-nav__l--teal" href={updateId?'/app/updates/'+updateId:'/app/updates'}>Cancel</Link>}
-   title={<>{updateId?'Edit update':'New update'}{context&&mode==='manager'?<span className="q-nav__step">{`Step ${step} of 2`}<span className="q-nav__stepname">{` · ${step===1?'Write':'Review'}`}</span></span>:null}</>}
+    :<Link className="q-nav__l q-nav__l--teal" href={cancelHref}>Cancel</Link>}
+   title={<>{updateId?'Edit update':'New update'}{stepLine?<span className="q-nav__step">{`Step ${step} of 2`}<span className="q-nav__stepname">{` · ${step===1?'Write':'Review'}`}</span></span>:null}</>}
    right={context&&step===1?<button type="submit" form="compose-form" className="q-nav__r q-nav__r--b">Next</button>:undefined}/>
   <h1 className="q-sr">{title}</h1>
   {/* Phase 3 (package D): until the form is here, Owners and Managers get the kit's one state card (it was an older grey
@@ -244,7 +253,7 @@ function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;m
     title={offline?'You’re offline':signedOut?'Your session ended':resource.state.paused?'Paused while you were away':resource.state.refreshing?'Loading the form':'Couldn’t load the form'}
     line={offline?'Connect to the internet, then try again.':signedOut?'Sign in again to keep writing.':resource.state.paused?'Come back to this page to keep writing.':resource.state.refreshing?'Getting your locations and today’s team…':'Check your connection, then try again.'}
     action={signedOut?{label:'Sign in again',href:'/login'}:resource.state.paused||resource.state.refreshing?undefined:{label:'Try again',onClick:resource.refresh}}/></section>}
- </div>;
+ </div></>;
 }
 
 export function CommunicationCompose(props:{authority:string;mode:CommunicationMode;updateId?:string}){

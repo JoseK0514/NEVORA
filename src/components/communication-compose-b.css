@@ -1,0 +1,22 @@
+/* Phase 2 (B8, Nov 23, 2026): New update and Edit update for Owners and Managers on phones, in the Lead's Direction B frame.
+ * The hero (Cancel as an X, the title, the step line) replaces the sheet bar; the form follows it as kept cards; Next and
+ * Publish are each the card's one full-width teal button, with Back beside Publish at the same height. From 768px the
+ * hero is not shown and the band, the step line and the card footers are unchanged. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose.b-cmp-b.b-keep > :is(.q-nav, h1.q-sr) { display: none !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose.b-cmp-b.b-keep { padding-top: 0 !important; }
+    /* Step 1: Next under the delivery card, the full width; Cancel is the hero's X. */
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose.b-cmp-b.b-keep .wc-savefoot.wc-savefoot--wide { display: flex !important; margin: var(--b-space-16) 0 0 !important; padding: 0 !important; box-shadow: none !important; background: none !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose.b-cmp-b.b-keep .wc-savefoot.wc-savefoot--wide > a { display: none !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose.b-cmp-b.b-keep .wc-savefoot.wc-savefoot--wide > button {
+      flex: 1 1 auto !important; width: 100% !important; min-height: var(--b-btn-h-full, 52px) !important; margin: 0 !important; border-radius: var(--b-radius-pill) !important; }
+    /* Step 2: Back and Publish side by side, equal width and height, in the review card's footer. */
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose.b-cmp-b.b-keep .b-cmp-review__back { display: inline-flex !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose.b-cmp-b.b-keep .b-cmp-review__foot > .b-btn { flex: 1 1 0 !important; width: auto !important; min-width: 0 !important; min-height: var(--b-btn-h-full, 52px) !important; }
+    html body .app-shell[data-nv-b]:not([data-employee-mobile]) .q-page.q-compose.b-cmp-b.b-keep .b-cmp-review { margin: 0 !important; }
+  }
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] .c-page.c-embed.eb-host.b-cmp-host { display: none !important; }
+  }
+}
