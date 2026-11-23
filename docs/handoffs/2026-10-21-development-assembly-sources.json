@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-23T03:00:00Z",
+  "observedAt": "2026-11-23T01:49:06Z",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -496,7 +496,8 @@
       "branch": "claude/eager-meitner-wioy6k",
       "sha": "57e58b92653f9a4b51e5a3dfa00cbf1e22529b71",
       "disposition": "reference",
-      "reason": "Preserved fourth review ref under Jose's explicit November 22 custody instruction. Claude session session_01N2UNZFBxnmqY4hGAbQjzz3 owns this design-skill delivery. The exact tip is an ancestor of reviewed Collab b15cf3d81 and its content arrives through that linear import. No PR was found for this head. Retention is authorized, and deletion requires separate authorization."
+      "reason": "Claude session session_01N2UNZFBxnmqY4hGAbQjzz3 owns this design-skill delivery. The exact tip is an ancestor of reviewed Collab b15cf3d81 and its content arrives through that linear import. No PR was found for this head. Jose subsequently chose Archive and retire it in the coordinating Phase 2 session. That owner recorded a SHA-leased retirement in /tmp/nevora-phase2-closeout-20261122-handoff.md. The integrator independently verified this exact remote archive and three remaining heads before final qualification.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-22/claude/eager-meitner-wioy6k"
     },
     {
       "branch": "scrum190-signup-ui",
@@ -541,14 +542,7 @@
       "archiveRef": "refs/tags/archive/branches/2026-11-19/nevora-30-day-phase"
     }
   ],
-  "maximumActiveBranches": 4,
-  "retainedReviewRefException": {
-    "date": "2026-11-22",
-    "authorizedBy": "Jose's explicit joined Development release continuation request",
-    "branch": "claude/eager-meitner-wioy6k",
-    "sha": "57e58b92653f9a4b51e5a3dfa00cbf1e22529b71",
-    "reason": "Preserve the existing fourth remote review ref and account for custody. The normal three branch policy plus this named retained ref defines this assembly's ceiling."
-  },
+  "maximumActiveBranches": 3,
   "phase5FinalSourceReconciliation": {
     "date": "2026-11-16",
     "previousCollaboration": "40ccc4e4e5b74b48c8fd86ef50c4ec6efe9b4dd1",

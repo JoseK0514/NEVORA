@@ -63,7 +63,7 @@ async function verify(p,pin='2468',diagnostic,employeeId='PUNCH-A'){
  diagnostic?.phase('keypad','before');for(const n of pin)await p.getByRole('button',{name:'Number '+n,exact:true}).click();diagnostic?.phase('keypad','after');
  diagnostic?.phase('continue','before');await p.getByRole('button',{name:'Continue',exact:true}).click();diagnostic?.phase('continue','after');
 }
-async function startBreak(p){await p.getByRole('button',{name:'Start break',exact:true}).click();await p.getByRole('heading',{name:'Choose a break',exact:true}).waitFor();await p.getByRole('button',{name:'Start Fixture rest',exact:true}).click();}
+async function startBreak(p){await p.getByRole('button',{name:'Start break',exact:true}).click();await p.getByRole('heading',{name:'Choose a break',exact:true}).waitFor();await p.getByRole('button',{name:'Start Fixture rest, Suggested: 15 min',exact:true}).click();}
 // Since 57a04195 a pending action lives in the tablet's IndexedDB journal (one slot per location and employee), not sessionStorage.
 // Read location 2's only slot without ever creating the database (an aborted upgrade leaves it absent).
 async function journalPending(p){return p.evaluate(()=>new Promise((resolve,reject)=>{const r=indexedDB.open('nevora.clocker.recovery');r.onupgradeneeded=()=>r.transaction.abort();r.onerror=()=>resolve(null);
@@ -217,10 +217,10 @@ try{
   }
   await t.getByRole('button',{name:'Start break',exact:true}).click();
   await editBreak(ownerPage,'Meal reference','MEAL',30);
-  await t.getByRole('button',{name:'Start Fixture rest',exact:true}).click();await t.getByRole('button',{name:'Check if it saved',exact:true}).waitFor();
+  await t.getByRole('button',{name:'Start Fixture rest, Suggested: 15 min',exact:true}).click();await t.getByRole('button',{name:'Check if it saved',exact:true}).waitFor();
   assert.equal(await count(),typedStart+1,'A changed type cannot record from a stale choice');
   await t.getByRole('button',{name:'Check if it saved',exact:true}).click();await reviewObsolete(t,typedStart+1);await t.getByRole('button',{name:'Start break',exact:true}).click();
-  assert.equal(await t.getByRole('button',{name:'Start Fixture rest',exact:true}).count(),0);
+  assert.equal(await t.getByRole('button',{name:'Start Fixture rest, Suggested: 15 min',exact:true}).count(),0);
   await t.getByRole('button',{name:/^Start Meal reference(,|$)/}).click();await success(t,'Break start');await done(t);
   checked(engine+': stale break selection rejects safely, then requires an explicit current type');
   await editBreak(ownerPage,'Future rest','REST',5);await archiveBreak(ownerPage,'Archive');

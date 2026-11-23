@@ -37,7 +37,7 @@ it.each(['MANAGER','OWNER'])('keeps the clean Insights layout and period props i
 it('denied company authority withholds the report body and avoids workspace loading',async()=>{
  fixture.denied=true;
  const output=renderToStaticMarkup(await ReportsPage({searchParams:Promise.resolve({})}));
- expect(output).toContain('current company-wide management access');
+ expect(output).toContain('This page needs company-wide management access. An Owner can give it to you.');
  expect(output).not.toContain('Protected period reports');
  expect(fixture.reports).not.toHaveBeenCalled();
  expect(fixture.workspace).not.toHaveBeenCalled();

@@ -107,7 +107,17 @@ it.each(['chromium', 'webkit'])('%s manages and withdraws exact company knowledg
     await page.getByLabel('Title', { exact: true }).fill('Private fictional revoked draft'); await page.getByLabel('Text', { exact: true }).fill('Private ORCHID unsaved text');
     await q("DELETE FROM employee_sessions WHERE employee_id='QAOWNER'");
     const forbidden = response('draft_document'); await page.getByRole('button', { name: /^Save(?: draft)?$/ }).click(); expect([401,403]).toContain((await forbidden).status());
-    await page.locator('.kn').getByRole('alert').getByText('Your session ended', { exact: true }).waitFor(); expect(await page.locator('.kn textarea').count()).toBe(0);
+    const revoked = page.locator('.kn').getByRole('alert').getByText('Your session ended', { exact: true });
+    const signIn = page.locator('#login-employee-id');
+    await revoked.or(signIn).first().waitFor();
+    if (await signIn.isVisible()) {
+      expect(new URL(page.url()).pathname).toBe('/login');
+      await page.getByRole('button', { name: 'Sign in', exact: true }).waitFor();
+    } else {
+      expect(await revoked.isVisible()).toBe(true);
+    }
+    expect(await page.locator('.kn textarea').count()).toBe(0);
+    expect(await page.locator('body').innerText()).not.toContain('Private ORCHID unsaved text');
     checks.push(engine + ': revoked real session clears editor and unsaved private text');
     expect(responseWaitErrors).toEqual([]); expect(external).toEqual([]); expect(errors).toEqual([]); completedEngines++;
   } catch (error) { await writeFile(resolve(evidence, engine + '-failure.json'), JSON.stringify({ phase, message: String(error) }, null, 2));

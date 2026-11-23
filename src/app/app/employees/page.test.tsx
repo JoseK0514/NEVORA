@@ -129,7 +129,7 @@ beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scope
 
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 
-it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({}));expect(html).toContain('current company-wide management access');expect(fixture.events).toEqual(['authorize']);expect(html).not.toContain('Active Person');});
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({}));expect(html).toContain('This page needs company-wide management access. An Owner can give it to you.');expect(fixture.events).toEqual(['authorize']);expect(html).not.toContain('Active Person');});
 
 it('uses the released minimal directory projection for a location-scoped Manager',async()=>{
  operationalPageFixture.scoped=true;

@@ -73,7 +73,7 @@ it('uses notFound for missing employees', async () => {
   await expect(render()).rejects.toThrow('notFound'); expect(m.read).not.toHaveBeenCalled();
 });
 it('withholds company PIN and profile reads when current scope denies the page',async()=>{
- m.denied=true;const html=await render();expect(html).toContain('current company-wide management access');expect(html).not.toContain('<form');expect(m.profile).not.toHaveBeenCalled();expect(m.read).not.toHaveBeenCalled();
+ m.denied=true;const html=await render();expect(html).toContain('This page needs company-wide management access. An Owner can give it to you.');expect(html).not.toContain('<form');expect(m.profile).not.toHaveBeenCalled();expect(m.read).not.toHaveBeenCalled();
 });
 
 // This suite checks server-page composition. Mounted lifetime behavior has its own browser harness.

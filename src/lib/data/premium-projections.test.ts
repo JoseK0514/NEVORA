@@ -1,10 +1,11 @@
 import * as rstestOriginal0 from "../../test/fixtures/business-sql-session" with { rstest: 'importActual' };
 rs.mock('./sql-session-contract',()=>rstestOriginal0);
-import {expect,it,rs} from '@rstest/core';
+import {beforeEach,expect,it,rs} from '@rstest/core';
 rs.mock('server-only',()=>({}));
-const mocks=rs.hoisted(()=>({today:rs.fn(),actions:rs.fn(),query:rs.fn()}));
+const mocks=rs.hoisted(()=>({today:rs.fn(),actions:rs.fn(),query:rs.fn(),access:rs.fn(),originalAccess:rs.fn()}));
+rs.mock('../company-access/operational-scope.server',()=>({assertOperationalAccess:mocks.access,assertOriginalOperationalAccess:mocks.originalAccess}));
 rs.mock('./today.server',()=>({readToday:mocks.today}));
-rs.mock('../action-center/service',()=>({readActionCenter:mocks.actions}));
+rs.mock('../action-center/service',()=>({readActionCenterForCurrentScope:mocks.actions}));
 rs.mock('../db',()=>({getDb:()=>({query:mocks.query}),queryRows:(rows:unknown)=>rows}));
 import {readInboxCount} from './inbox-count.server';
 import {describeCopyRow} from './schedule-copy';
@@ -13,11 +14,30 @@ import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor} from '../notifications/types';
 const proof:SessionMutationProof={employee:{id:'self',firstName:'QA',lastName:'Owner',role:'OWNER',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 const executor={transaction:rs.fn(async()=>[]),query:rs.fn()} as unknown as SqlExecutor;
+const access={authority:'b'.repeat(64),scope:{mode:'COMPANY',locationIds:[]},workspace:{id:'workspace-fuel',name:'Fictional company',active:true,timeZone:'America/Puerto_Rico',createdAt:'2026-10-01T00:00:00Z',updatedAt:'2026-10-01T00:00:00Z'},observedAt:'2026-10-19T14:00:00Z',validForMs:15000};
+beforeEach(()=>{
+  mocks.access.mockReset().mockResolvedValue(access);
+  mocks.originalAccess.mockReset().mockResolvedValue(undefined);
+  mocks.today.mockReset();
+  mocks.actions.mockReset();
+});
 it('uses exactly needsYou semantics including no-clock-in shifts and excluding planning/past',async()=>{
   mocks.today.mockResolvedValue({state:'ready',today:'2026-10-19',observedAt:'2026-10-19T14:00:00Z',validForMs:45000,missed:[{id:'no-punch'}]});
   const item={title:'QA',detail:'QA',href:'/app/inbox'};
   mocks.actions.mockResolvedValue({state:'ready',observedAt:'2026-10-19T14:00:01Z',items:[{...item,id:'request',type:'TIME_OFF',category:'requests',priority:'REVIEW'},{...item,id:'plan',type:'HOURS_REVIEW',category:'scheduling',priority:'MISSING_INPUT'},{...item,id:'past',type:'COVERAGE_GAP',category:'scheduling',priority:'URGENT',dateTime:'2026-10-18T12:00'}]});
   expect(await readInboxCount(proof,executor)).toEqual({state:'ready',count:2,observedAt:'2026-10-19T14:00:01Z'});
+  expect(mocks.access).toHaveBeenCalledWith(proof,undefined,executor);
+  expect(mocks.today).toHaveBeenCalledWith(proof,executor,access);
+  expect(mocks.originalAccess).toHaveBeenCalledWith(proof,access,executor);
+});
+it('withholds the count when admission is denied or the original authority is revoked during the read',async()=>{
+  mocks.access.mockRejectedValueOnce(new Error('operational_authorization'));
+  expect(await readInboxCount(proof,executor)).toEqual({state:'unavailable'});
+  expect(mocks.today).not.toHaveBeenCalled();
+  mocks.today.mockResolvedValue({state:'ready',today:'2026-10-19',timeZone:'America/Puerto_Rico',observedAt:'2026-10-19T14:00:00Z',validForMs:15000,missed:[]});
+  mocks.actions.mockResolvedValue({state:'ready',observedAt:'2026-10-19T14:00:01Z',items:[]});
+  mocks.originalAccess.mockRejectedValueOnce(new Error('operational_authorization'));
+  expect(await readInboxCount(proof,executor)).toEqual({state:'unavailable'});
 });
 it('never represents a failed source or wrong role as zero',async()=>{
   mocks.today.mockResolvedValue({state:'unavailable',reason:'read_failed'});expect(await readInboxCount(proof,executor)).toEqual({state:'unavailable'});

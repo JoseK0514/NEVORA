@@ -188,7 +188,7 @@ rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({
 
 beforeEach(()=>{operationalPageFixture.denied=false;});
 
-it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('current company-wide management access');expect(html).not.toContain('Sam');expect(html).not.toContain('employee-core-profile-form');});
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));expect(html).toContain('This page needs company-wide management access. An Owner can give it to you.');expect(html).not.toContain('Sam');expect(html).not.toContain('employee-core-profile-form');});
 
 rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalEmployeeHours:m.hours,readOperationalEmployeeProfile:async(_proof:unknown,_id:unknown,_ex:unknown,options?:{employmentDates?:boolean})=>{
  m.profileOptions.push(options);

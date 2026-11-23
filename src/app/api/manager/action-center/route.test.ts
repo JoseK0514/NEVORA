@@ -1,11 +1,25 @@
 import {beforeEach,it,expect,rs} from '@rstest/core';
-const state=rs.hoisted(()=>({session:{id:'M1',role:'MANAGER'} as {id:string;role:string}|null,read:rs.fn()}));
+const state=rs.hoisted(()=>({session:{id:'M1',role:'MANAGER'} as {id:string;role:string}|null,read:rs.fn(),scoped:rs.fn()}));
 rs.mock('@/lib/auth/session',()=>({getSession:async()=>state.session,requireSessionMutationProof:async()=>({employee:state.session,sessionTokenHash:'a'.repeat(64)})}));
-rs.mock('@/lib/action-center/service',()=>({readActionCenter:state.read}));
+rs.mock('@/lib/action-center/service',()=>({readActionCenter:state.read,readActionCenterForCurrentScope:state.scoped}));
 import {POST} from './route';
 const req=(body:unknown={weekStart:'2026-10-05'},headers:Record<string,string>={})=>new Request('https://example.test/api/manager/action-center',{method:'POST',headers:{origin:'https://example.test','content-type':'application/json','x-nevora-action-center':'1','x-nevora-actor':'M1',...headers},body:JSON.stringify(body)});
-beforeEach(()=>{state.session={id:'M1',role:'MANAGER'};state.read.mockReset();state.read.mockResolvedValue({state:'ready',items:[]});});
+beforeEach(()=>{state.session={id:'M1',role:'MANAGER'};state.read.mockReset();state.read.mockResolvedValue({state:'ready',items:[]});state.scoped.mockReset().mockResolvedValue({state:'ready',items:[]});});
 it('D7 passes the current manager proof and exact week, with private no-store headers',async()=>{const response=await POST(req());expect(response.status).toBe(200);expect(response.headers.get('cache-control')).toContain('no-store');expect(state.read).toHaveBeenCalledWith({employee:state.session,sessionTokenHash:'a'.repeat(64)},'2026-10-05');});
+it('requires explicit assigned projection selection and forwards the current proof',async()=>{
+ const response=await POST(req(undefined,{'x-nevora-action-center-scope':'assigned'}));
+ expect(response.status).toBe(200);expect(response.headers.get('cache-control')).toContain('no-store');
+ expect(state.scoped).toHaveBeenCalledWith({employee:state.session,sessionTokenHash:'a'.repeat(64)},'2026-10-05');
+ expect(state.read).not.toHaveBeenCalled();
+});
+it('rejects unknown projections and retains Employee and Lead denial on the assigned projection',async()=>{
+ expect((await POST(req(undefined,{'x-nevora-action-center-scope':'company-bypass'}))).status).toBe(400);
+ for(const role of ['EMPLOYEE','LEAD']){
+  state.session={id:'M1',role};
+  expect((await POST(req(undefined,{'x-nevora-action-center-scope':'assigned'}))).status).toBe(403);
+ }
+ expect(state.scoped).not.toHaveBeenCalled();expect(state.read).not.toHaveBeenCalled();
+});
 it.each<Record<string,string>>([{origin:'https://other.test'},{'sec-fetch-site':'cross-site'},{'x-nevora-action-center':''},{'content-type':'text/plain'},{'x-nevora-actor':'OLD'},{'x-nevora-actor':''}])('D7 rejects boundary/actor mismatch %j before reading private sources',async headers=>{expect((await POST(req(undefined,headers))).status).toBe(403);expect(state.read).not.toHaveBeenCalled();});
 it('D7 rejects absent login and Employee/Lead authority',async()=>{state.session=null;expect((await POST(req())).status).toBe(401);for(const role of ['EMPLOYEE','LEAD']){state.session={id:'M1',role};expect((await POST(req())).status).toBe(403);}expect(state.read).not.toHaveBeenCalled();});
 it.each([{weekStart:'2026-10-06'},{weekStart:'2026-02-30'},{weekStart:'2026-10-05',employeeId:'OTHER'},{}])('D7 rejects invalid/unscoped body %j',async body=>{expect((await POST(req(body))).status).toBe(400);expect(state.read).not.toHaveBeenCalled();});

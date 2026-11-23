@@ -60,7 +60,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
       for (const actor of ['UI-COMPANY', 'UI-LOCAL']) {
         const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce' });
         const page = await context.newPage(); page.setDefaultTimeout(20000);
-        const pause = async () => { await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.waitForLoadState('networkidle'); };
+        const pause = async () => { await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); };
         const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(app.url + path); };
         failureShot = () => page.screenshot({ path: resolve(evidence, `${engine}-${actor}-failure.png`), fullPage: true });
         page.on('pageerror', (error: Error) => errors.push(`${engine} ${actor}: ${error.message}`));
@@ -98,7 +98,6 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         }
         await page.screenshot({ path: resolve(evidence, `${engine}-${actor}-conflict.png`), fullPage: true });
         checks.push(`${engine} ${actor}: edit/delete reject original stale review, keep draft, keyboard confirmation, 320/390/768/1440`);
-        await page.waitForLoadState('networkidle');
         await page.getByRole('button', { name: 'Reload current shift', exact: true }).first().click();
         await form.locator('[name="notes"]').waitFor();
         expect(await form.locator('[name="notes"]').inputValue()).toBe('Concurrent edit');

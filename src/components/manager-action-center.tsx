@@ -109,7 +109,7 @@ export function ActionCenterSurface({snapshot,connection,onRefresh,expanded=fals
 }
 /** The live, authority-checked action center read shared by Home Tasks and the
  * Inbox. It pauses offline and in background tabs and never keeps items past their validity. */
-export function useActionCenter(weekStart:string,actorId:string,inlineAccessDenied=false){
+export function useActionCenter(weekStart:string,actorId:string,inlineAccessDenied=false,scoped=false){
  const [snapshot,setSnapshot]=useState<ActionCenter|null>(null),[connection,setConnection]=useState<Connection>('loading');
  const controller=useRef<ReturnType<typeof createPrivateSnapshotController<ActionCenter>>|null>(null);
  // Why the last read was refused; the shared ActionCenter shape keeps one access_denied reason for both.
@@ -120,7 +120,9 @@ export function useActionCenter(weekStart:string,actorId:string,inlineAccessDeni
    // clears it when its validity runs out, when a read fails, offline and in the background, so nothing stale outlives its window.
    if(value.refreshing&&!value.paused&&value.snapshot?.state==='ready')return;
    setSnapshot(value.refreshing?null:value.snapshot);if(value.paused)setConnection(navigator.onLine?'paused':'offline');else if(value.refreshing)setConnection(previous=>previous==='reconnecting'?'reconnecting':'loading');else if(value.snapshot?.state==='ready')setConnection('ready');else setConnection(value.snapshot?.state==='unavailable'&&value.snapshot.reason==='access_denied'?denial.current==='not_allowed'?'not_allowed':'access_lost':'unavailable');},async signal=>{
-   const response=await fetch('/api/manager/action-center',{method:'POST',credentials:'same-origin',cache:'no-store',signal,headers:{'Content-Type':'application/json','X-Nevora-Action-Center':'1','X-Nevora-Actor':actorId},body:JSON.stringify({weekStart})});
+   const headers:Record<string,string>={'Content-Type':'application/json','X-Nevora-Action-Center':'1','X-Nevora-Actor':actorId};
+   if(scoped)headers['X-Nevora-Action-Center-Scope']='assigned';
+   const response=await fetch('/api/manager/action-center',{method:'POST',credentials:'same-origin',cache:'no-store',signal,headers,body:JSON.stringify({weekStart})});
    // X-Nevora-Failure (Nov 9, 2026): one shared mapping; anything that clears data reads as access ended, the rest as unavailable.
    const read=await privateReadBody(response,{inlineAccessDenied});denial.current=read.ok?null:read.denial;return read.ok?read.body:{state:'unavailable',reason:read.reason};
   },value=>parseActionCenter(value,weekStart),reason=>({state:'unavailable',reason}),()=> 'read_failed');controller.current=c;
@@ -128,7 +130,7 @@ export function useActionCenter(weekStart:string,actorId:string,inlineAccessDeni
   const current=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;active=document.visibilityState==='visible'&&navigator.onLine;if(active)c.start();else c.pause();},pause=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;c.pause();},online=()=>{setConnection('reconnecting');current();};
   for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.addEventListener(name,current);const offline=offlineListener({pause:()=>pause(),hold:()=>{active=false;c.hold();}});for(const name of ['blur','pagehide'])window.addEventListener(name,pause);window.addEventListener('offline',offline);window.addEventListener('online',online);document.addEventListener('visibilitychange',current);current();
   return()=>{c.stop();controller.current=null;for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.removeEventListener(name,current);for(const name of ['blur','pagehide'])window.removeEventListener(name,pause);window.removeEventListener('offline',offline);window.removeEventListener('online',online);document.removeEventListener('visibilitychange',current);};
- },[weekStart,actorId,inlineAccessDenied]);
+ },[weekStart,actorId,inlineAccessDenied,scoped]);
  return {snapshot,connection,refresh:()=>controller.current?.refresh()};
 }
 export type ActionCenterConnection=Connection;
