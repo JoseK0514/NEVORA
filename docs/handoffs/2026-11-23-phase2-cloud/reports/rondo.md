@@ -115,3 +115,23 @@ None of items 9–14.
 - Re-captured H1 and H6 (Owner) on `31f06892` at 390, 768, 1440 and 390 with 200% text, plus phone shots at viewport
   height (`H1-o-390-fold.webp`, `H6-o-390-fold.webp`). H6 is the same screen for the company-wide Manager. The H1
   Manager screen didn't change.
+
+## Second follow-up: 200% text (code `addbd028`, `c59a8d5c`, after merge `f0acc3b9`)
+- Kit labels on these pages are now in rem at their current sizes, so they match at 100%. This covers section labels,
+  stat labels and figures, field labels and help, buttons, empty rows and row values. They live in each page's sheet
+  inside `@layer nv-b` (`advisor.css`, `weekly.css`, `knowledge.css`, `business.css`, `reports-corp.css`). At 200% the
+  probe finds no fixed-px text left on H1–H4 or H6. Stat labels wrap instead of cutting off.
+- H5: the period segments wrap to a second row at large text, so the selected pill no longer becomes a tall circle. The
+  period line wraps instead of being cut off. Two small kit sizes stay fixed: the Insights pill "… under plan" (12px,
+  `CorpPill`) and the segment label (20px at 200%).
+- H6: the phone bonus-year menu wraps inside the page. At 390 with 200% text the page is now 390px wide (it was 402px).
+- H1 Owner: "shortfall: 1." keeps the figure on its line (no-break space added in `attentionDetail`).
+- H2: the week field keeps "·" with "This week". On H1 Manager the kit's segment dot already sits with "This week".
+- Not fixed, kit: at 200% the phone band titles ("Weekly plan", "Rondo AI") stay about 26px while body text doubles.
+  That comes from the shared band or nav rules, and I couldn't trace it to a page sheet.
+- Daniel (`OWN-DANI`) isn't captured. With the desk harness he gets "Page not found" on /app/ai-manager, because his
+  one-location access is set up only by the scoped harness (`run-scoped.sh`, `NEVORA_SCAN_LIMITED`), which has no
+  Rondo flags. His Rondo is the same component as Elena's, with the location as fixed text.
+- Captures (production build): Owner H1–H6 and Elena H1, H5 and H6 at 390, 390 viewport-height (`-390-fold`), 768,
+  1440 and 390 with 200% text. Overflow 0 everywhere. Axe 0 except the known Insights band-line false positive at 768
+  and 1440.
