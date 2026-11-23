@@ -15,7 +15,7 @@ type ViewProps={mobile?:boolean;state:PasskeyState;supported:boolean;confirm:Pas
 
 /** One presentation on every width (board style): a "Saved passkeys" card with one row per key, the review inline, and
  * one primary Add a passkey. The device ceremony, removal review and refresh are unchanged. */
-export function EmployeePasskeyView({mobile,state,supported,confirm,onAdd,onRefresh,onRemove,onReview,onKeep,onCancel,addRef,confirmationRef,feedbackRef}:ViewProps){
+export function EmployeePasskeyView({state,supported,confirm,onAdd,onRefresh,onRemove,onReview,onKeep,onCancel,addRef,confirmationRef,feedbackRef}:ViewProps){
  const ready=state.phase==='ready',keys=ready?state.passkeys??[]:[],busy=state.busy!==null;
  const reviewed=ready?keys.find(key=>key.id===confirm?.id):null;
  if(state.phase==='ended')return null;
