@@ -1,3 +1,5 @@
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import { EMPLOYEES_COPY } from "../../employees-copy";
 import { scopedObservation } from "@/lib/company-access/observation";
 import { withOperationalCompany } from "@/lib/company-access/operational-scope.server";
 import { readOperationalEmployeeProfile } from "@/lib/company-access/operational-read.server";
@@ -11,7 +13,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { listEmployees } from "@/lib/data/employees";
 import { AccountScreen } from "@/components/time-off-admin/account-screen";
 
-export const metadata = { title: "Time off balance" };
+export async function generateMetadata() { return { title: EMPLOYEES_COPY[await readPageLang()].timeOffBalance }; }
 
 /* PTO screens (Nov 20, 2026): one person's time off balance, for Owners only (a Manager is sent to the restricted page
  * before anything is read). The page reads the person's name, the workplace's date and the Owners' names; the balance,

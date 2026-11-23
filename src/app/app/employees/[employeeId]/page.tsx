@@ -33,13 +33,15 @@ import { BCallout, BSegs } from "@/components/owner-b/b-kit";
 import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr/ChatText";
 import { PhoneIcon } from "@phosphor-icons/react/dist/ssr/Phone";
 import "@/components/team/team-forms.css";
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import { EMPLOYEES_COPY, invitedDate } from "../employees-copy";
 import {
   saveEmployeeCoreProfileAction,
   saveEmployeeSchedulingProfileAction,
 } from "../actions";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Team member" };
+export async function generateMetadata() { return { title: EMPLOYEES_COPY[await readPageLang()].teamMember }; }
 
 export default async function EmployeeProfilePage({
   params, searchParams,
@@ -52,6 +54,7 @@ export default async function EmployeeProfilePage({
 
   const proof=await requireSessionMutationProof();
   const actor=proof.employee;
+  const lang=await readPageLang(),t=EMPLOYEES_COPY[lang];
   const query = (await searchParams) ?? {};
   const editing = query.edit === "1" ? "core" : query.edit === "positions" ? "positions" : query.edit === "rules" ? "rules" : null;
   const accessView = !editing && query.view === "access";
@@ -72,16 +75,16 @@ export default async function EmployeeProfilePage({
     let bonusApplies=true;if(editing==='core'&&profile.data.employmentDates){try{bonusApplies=christmasBonusApplies((await getWorkspace()).timeZone);}catch{}}
     return {profile,positions,operational,profileUnavailable,invitation,pin,hours,bonusApplies};
   });
-  if(source.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable title={t.profileUnavailable} reason={source.reason}/>;
   const {profile,positions,operational,profileUnavailable,invitation,pin,hours,bonusApplies}=source.data;
-  if(profile.state==='unavailable')return <OperationalUnavailable title="Employee profile unavailable" reason={profile.reason}/>;
+  if(profile.state==='unavailable')return <OperationalUnavailable title={t.profileUnavailable} reason={profile.reason}/>;
   const {profile:employee,locations,ownerScope,employmentDates}=profile.data;
   const primaryLocation = locations.find(
     (location) => location.id === employee.primaryLocationId,
   );
   const canManageCore = actor.role === "OWNER" || employee.role !== "OWNER";
 
-  const roleLabel = employeeRoleLabel(employee.role);
+  const roleLabel = lang === "es" ? t.roles[employee.role] ?? employeeRoleLabel(employee.role) : employeeRoleLabel(employee.role);
   const positionList = employee.positionIds.map(id => positions.find(position => position.id === id)?.name).filter((name): name is string => !!name);
   const positionNames = positionList.join(", ");
   const name = `${employee.firstName} ${employee.lastName}`;
@@ -89,26 +92,26 @@ export default async function EmployeeProfilePage({
   const recoverable = employee.id !== actor.id && (actor.role === "OWNER" || employee.role === "EMPLOYEE" || employee.role === "LEAD");
   const dial = employee.phone ? employee.phone.replace(/(?!^\+)[^\d]/g, "") : "";
   const pinShown = canManageCore && employee.active && actor.role === 'OWNER' && employee.role !== 'OWNER';
-  const pinValue = pin ? (pin.configured ? "Set" : "Not set") : "Unavailable";
-  const accountValue = !employee.active ? "Inactive" : invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED" ? (invitation.invitation?.state === "ISSUED" ? "Invited" : "Not activated") : "Active";
+  const pinValue = pin ? (pin.configured ? t.pinSet : t.pinNotSet) : t.unavailable;
+  const accountValue = !employee.active ? t.inactive : invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED" ? (invitation.invitation?.state === "ISSUED" ? t.invited : t.notActivated) : t.active;
   const inviting = invitation !== null && !(invitation.state === "ready" && invitation.eligibility === "ALREADY_ACTIVATED");
-  const place = primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : " (inactive)"}` : null;
+  const place = primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : t.placeInactive}` : null;
   // Nov 14, 2026 inspection (BR-3): where this person stands on signing in, said under their name. Only an Owner's page
   // reads the invitation, so a Manager's page says nothing rather than guess. The date is the workplace's day.
   const issued = invitation?.state === "ready" && invitation.invitation?.state === "ISSUED" ? new Date(invitation.invitation.issuedAt) : null;
   let invitedOn: string | null = null;
-  if (issued && hours && Number.isFinite(issued.getTime())) { try { invitedOn = new Intl.DateTimeFormat("en-US", { timeZone: hours.timeZone, month: "short", day: "numeric" }).format(issued); } catch { /* no date: "Invited, not activated" */ } }
+  if (issued && hours && Number.isFinite(issued.getTime())) { try { invitedOn = invitedDate(lang, issued, hours.timeZone); } catch { /* no date: "Invited, not activated" */ } }
   const signIn = !employee.active || invitation?.state !== "ready" || invitation.eligibility === "SELF_ISSUE_DENIED" ? null
-    : invitation.eligibility === "ALREADY_ACTIVATED" ? "Sign-in active"
-    : invitation.eligibility === "NO_EMAIL" ? "No email, can’t sign in"
-    : invitation.invitation?.state === "ISSUED" ? `Invited${invitedOn ? ` ${invitedOn}` : ""}, not activated`
-    : invitation.invitation?.state === "EXPIRED" ? "Invitation expired" : "Not invited yet";
-  const signInOpen = signIn && signIn !== "Sign-in active" ? signIn : null;
-  const pinOpen = pinShown && pin && !pin.configured ? "No Clocker PIN yet" : null;
+    : invitation.eligibility === "ALREADY_ACTIVATED" ? t.signInActive
+    : invitation.eligibility === "NO_EMAIL" ? t.noEmail
+    : invitation.invitation?.state === "ISSUED" ? t.invitedOn(invitedOn)
+    : invitation.invitation?.state === "EXPIRED" ? t.invitationExpired : t.notInvited;
+  const signInOpen = signIn && signIn !== t.signInActive ? signIn : null;
+  const pinOpen = pinShown && pin && !pin.configured ? t.noPin : null;
   // The person's hours as figures. Phase 8 (a.md #31): the scheduled figures are null when the schedule read was not
   // complete, so a dash would read as "none"; the row says the figure isn't available and why. Worked time keeps the dash.
   const minutes = (value: number | null) => value === null ? CORP_NO_VALUE : durationSentence(value, "0 h");
-  const scheduled = (value: number | null) => value === null ? { value: "Not available", detail: "The whole schedule couldn’t be read" } : { value: minutes(value) };
+  const scheduled = (value: number | null) => value === null ? { value: t.notAvailable, detail: t.scheduleUnread } : { value: minutes(value) };
   // AR-10: Shifts opens the schedule at this person's location (the schedule has no one-person view), and Availability
   // opens this person's availability.
   const shiftsHref = primaryLocation?.active ? `/app/schedule?location=${encodeURIComponent(primaryLocation.id)}` : "/app/schedule";
@@ -117,8 +120,8 @@ export default async function EmployeeProfilePage({
   if (!editing && !accessView) return (<ScopedReadFrame observation={scopedObservation(source)}>
     <TeamLiveProvider>
     <CorpPage className="c-person c-page--narrow" labelledBy="person-title">
-      <CorpNav back={{ href: "/app/employees", label: "Team" }} title={name} titleId="person-nav-title" right={canManageCore ? <Link href={`${base}?edit=1`}>Edit</Link> : undefined} phoneOnly />
-      <CorpTitle id="person-title" title={name} sub={signIn ?? undefined} wide actions={canManageCore ? <CorpButtonLink href={`${base}?edit=1`} kind="secondary" size="sm">Edit</CorpButtonLink> : undefined} />
+      <CorpNav back={{ href: "/app/employees", label: t.team }} title={name} titleId="person-nav-title" right={canManageCore ? <Link href={`${base}?edit=1`}>{t.edit}</Link> : undefined} phoneOnly />
+      <CorpTitle id="person-title" title={name} sub={signIn ?? undefined} wide actions={canManageCore ? <CorpButtonLink href={`${base}?edit=1`} kind="secondary" size="sm">{t.edit}</CorpButtonLink> : undefined} />
       {/* Owner premium R7: what they do and where first; the employee ID moves to the detail line, and their state is grey
         words beside it (R3), not a header or a pill. */}
       <CorpCard id="person-who" ariaLabel={name}>
@@ -136,38 +139,38 @@ export default async function EmployeeProfilePage({
               * ("Front counter · Kitchen · Barista · Baker", wrapping whole between positions), not chips; and the state
               * follows the phone on its line, after a "·" (a chip or a live dot needs none), at every width. */}
             {positionList.length ? <span className="c-person__roles"><BSegs parts={positionList} /></span> : null}
-            <span className="c-row__detail"><span className="c-person__bits"><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span></span>
-              <span className="c-person__state">{employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpMeta>Inactive</CorpMeta>}</span></span>
+            <span className="c-row__detail"><span className="c-person__bits"><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : t.noPhone}</span></span>
+              <span className="c-person__state">{employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpMeta>{t.inactive}</CorpMeta>}</span></span>
           </span>
-          {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={`Call ${name}`}><PhoneIcon weight="bold" className="c-ic" aria-hidden="true" /></a> : null}
-          {dial ? <a className="c-person__act" href={`sms:${dial}`} aria-label={`Message ${name}`}><ChatTextIcon weight="bold" className="c-ic" aria-hidden="true" /></a> : null}
+          {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={t.call(name)}><PhoneIcon weight="bold" className="c-ic" aria-hidden="true" /></a> : null}
+          {dial ? <a className="c-person__act" href={`sms:${dial}`} aria-label={t.message(name)}><ChatTextIcon weight="bold" className="c-ic" aria-hidden="true" /></a> : null}
         </div>
       </CorpCard>
-      {hours ? <CorpCard id="person-hours" label="Hours">
-        <CorpRows label="Hours">
-          <li><CorpRow title="Scheduled today" {...scheduled(hours.scheduledTodayMinutes)} valueTone="soft" /></li>
-          <li><CorpRow title="Scheduled this week" {...scheduled(hours.scheduledWeekMinutes)} valueTone="soft" /></li>
+      {hours ? <CorpCard id="person-hours" label={t.hours}>
+        <CorpRows label={t.hours}>
+          <li><CorpRow title={t.scheduledToday} {...scheduled(hours.scheduledTodayMinutes)} valueTone="soft" /></li>
+          <li><CorpRow title={t.scheduledWeek} {...scheduled(hours.scheduledWeekMinutes)} valueTone="soft" /></li>
           {/* Worked time is time on the clock with breaks in it, so the row never says "paid". */}
-          <li><CorpRow title="Clocked this week" detail="Includes breaks" value={minutes(hours.workedWeekMinutes)} valueTone="soft" /></li>
+          <li><CorpRow title={t.clockedWeek} detail={t.includesBreaks} value={minutes(hours.workedWeekMinutes)} valueTone="soft" /></li>
         </CorpRows>
       </CorpCard> : null}
       {/* Phase 2 (Nov 23, 2026; agent brief rule 7, axe label-content-name-mismatch): rows are named by their visible text;
         * the page is the person's, so "for <name>" isn't added. */}
-      <CorpCard as="div" ariaLabel="Work">
-        <CorpRows label="Work">
-          <li><CorpRow href={shiftsHref} title="Shifts" chevron /></li>
-          <li><CorpRow href={`/app/timecards#timecard-${encodeURIComponent(employee.id)}`} title="Timecards" chevron /></li>
-          <li><CorpRow href={`/app/availability?employeeId=${encodeURIComponent(employee.id)}`} title="Availability" chevron /></li>
+      <CorpCard as="div" ariaLabel={t.work}>
+        <CorpRows label={t.work}>
+          <li><CorpRow href={shiftsHref} title={t.shifts} chevron /></li>
+          <li><CorpRow href={`/app/timecards#timecard-${encodeURIComponent(employee.id)}`} title={t.timecards} chevron /></li>
+          <li><CorpRow href={`/app/availability?employeeId=${encodeURIComponent(employee.id)}`} title={t.availability} chevron /></li>
           {/* Scheduling restrictions (U02): the times agreed with this person, kept apart from the availability they send. */}
-          <li><CorpRow href={`${base}/restrictions`} title="When they can be scheduled" chevron /></li>
-          {actor.role === "OWNER" ? <li><CorpRow href={`${base}/pay`} title="Pay rate" chevron /></li> : null}
-          {actor.role === "OWNER" ? <li><CorpRow href={`${base}/time-off`} title="Time off balance" chevron /></li> : null}
+          <li><CorpRow href={`${base}/restrictions`} title={t.restrictions} chevron /></li>
+          {actor.role === "OWNER" ? <li><CorpRow href={`${base}/pay`} title={t.payRate} chevron /></li> : null}
+          {actor.role === "OWNER" ? <li><CorpRow href={`${base}/time-off`} title={t.timeOffBalance} chevron /></li> : null}
         </CorpRows>
       </CorpCard>
-      <CorpCard as="div" ariaLabel="Access and sign-in">
+      <CorpCard as="div" ariaLabel={t.accessTitle}>
         {/* Owner premium R7: the one thing to act on (no Clocker PIN yet, an invitation), else their role. */}
-        <CorpRow href={`${base}?view=access`} bold title="Access and sign-in" chevron
-          detail={signInOpen || pinOpen ? [signInOpen, pinOpen].filter(Boolean).join(" · ") : accountValue !== "Active" ? accountValue : roleLabel} />
+        <CorpRow href={`${base}?view=access`} bold title={t.accessTitle} chevron
+          detail={signInOpen || pinOpen ? [signInOpen, pinOpen].filter(Boolean).join(" · ") : accountValue !== t.active ? accountValue : roleLabel} />
       </CorpCard>
     </CorpPage>
     </TeamLiveProvider>
@@ -179,28 +182,28 @@ export default async function EmployeeProfilePage({
   if (accessView && actor.role === "OWNER" && employee.role === "MANAGER") { try { accessLang = (await readPortalLanguage(proof)).language; } catch { /* English */ } }
   if (accessView) return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-person c-access c-page--narrow" labelledBy="access-title">
-      <CorpNav back={{ href: base, label: employee.firstName }} title="Access and sign-in" titleId="access-nav-title" phoneOnly />
-      <CorpTitle id="access-title" title="Access and sign-in" sub={name} wide />
+      <CorpNav back={{ href: base, label: employee.firstName }} title={t.accessTitle} titleId="access-nav-title" phoneOnly />
+      <CorpTitle id="access-title" title={t.accessTitle} sub={name} wide />
       {/* Phase 2 (Nov 23, 2026): the band says "Access and sign-in", so the card carries no second "Access" heading. */}
-      <CorpCard id="person-access" ariaLabel="Access">
-        <CorpRows label="Access">
-          <li>{canManageCore ? <CorpRow href={`${base}?edit=1`} title="Role" value={roleLabel} valueTone="soft" chevron /> : <CorpRow title="Role" value={roleLabel} valueTone="soft" />}</li>
+      <CorpCard id="person-access" ariaLabel={t.access}>
+        <CorpRows label={t.access}>
+          <li>{canManageCore ? <CorpRow href={`${base}?edit=1`} title={t.role} value={roleLabel} valueTone="soft" chevron /> : <CorpRow title={t.role} value={roleLabel} valueTone="soft" />}</li>
           {/* Phase 6: without a PIN the row says so and what it means, and opens the form that sets one. */}
           {pinShown ? <li>{pin && !pin.configured
-            ? <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy.en.personPinNone} detail={clockerOwnerCopy.en.personPinNoneSub} value={clockerOwnerCopy.en.setPin} valueTone="teal" chevron />
-            : <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy.en.personPinSet} value={pinValue} valueTone="soft" chevron />}</li> : null}
-          <li><CorpRow title="Account" value={accountValue} valueTone="soft" /></li>
+            ? <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy[lang].personPinNone} detail={clockerOwnerCopy[lang].personPinNoneSub} value={clockerOwnerCopy[lang].setPin} valueTone="teal" chevron />
+            : <CorpRow href={`${base}/clocker-pin`} title={clockerOwnerCopy[lang].personPinSet} value={pinValue} valueTone="soft" chevron />}</li> : null}
+          <li><CorpRow title={t.account} value={accountValue} valueTone="soft" /></li>
           {/* Review B6 (NV-092): the employee ID lives here, not in the person's first line. */}
-          <li><CorpRow title="Employee ID" value={employee.id} valueTone="soft" /></li>
+          <li><CorpRow title={t.employeeId} value={employee.id} valueTone="soft" /></li>
         </CorpRows>
       </CorpCard>
-      {canManageCore && employee.active && recoverable ? <CorpCard as="div" ariaLabel="Reset password">
-        <CorpRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} bold title="Reset password" detail="Give them a link to set a new password" chevron />
+      {canManageCore && employee.active && recoverable ? <CorpCard as="div" ariaLabel={t.resetPassword}>
+        <CorpRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} bold title={t.resetPassword} detail={t.resetDetail} chevron />
       </CorpCard> : null}
       {/* The Owner's account invitation (until the account is activated) and a Manager's management access. */}
       {actor.role==='OWNER'&&(inviting||employee.role==='MANAGER') ? <div className="c-access__panels">
         {inviting ? <EmployeeInvitationPanel actorId={actor.id} employeeId={employee.id} initialStatus={invitation}/> : null}
-        {employee.role==='MANAGER'?(ownerScope?<ManagerOperationalScopePanel actorId={actor.id} current={ownerScope} locations={locations}/>:<p className="c-note" role="status">Management access could not be confirmed. Refresh this employee before changing access.</p>):null}
+        {employee.role==='MANAGER'?(ownerScope?<ManagerOperationalScopePanel actorId={actor.id} current={ownerScope} locations={locations}/>:<p className="c-note" role="status">{t.scopeUnconfirmed}</p>):null}
         {/* SCRUM-215: the actions this Manager may take, granted one by one at each location they manage. */}
         {employee.role==='MANAGER'&&ownerScope?<ManagerActionGrants key={`${employee.id}:${ownerScope.scopeRevision}:${ownerScope.roleGeneration}`} employeeId={employee.id} firstName={employee.firstName} lang={accessLang}
           manager={ownerScope.active} locations={locations.map(location=>({id:location.id,name:location.shortName||location.name,active:location.active}))}
@@ -217,50 +220,50 @@ export default async function EmployeeProfilePage({
   if (editing === "positions") return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-sheetpage c-editpos" labelledBy="person-edit-title">
       <SheetMarker />
-      <FormHead titleId="person-edit-title" title="Positions" left={<FormHeadLink href={`${base}?edit=1`}>Cancel</FormHeadLink>} right={<button type="submit" form="employee-scheduling">Save</button>} />
+      <FormHead titleId="person-edit-title" title={t.positions} left={<FormHeadLink href={`${base}?edit=1`}>{t.cancel}</FormHeadLink>} right={<button type="submit" form="employee-scheduling">{t.save}</button>} />
       <ConfigurationForm id="employee-scheduling" action={saveEmployeeSchedulingProfileAction} className="c-teamform" reviewedUpdatedAt={employee.updatedAt}>
         <input type="hidden" name="employeeId" value={employee.id} />
-        <ChoiceField listed label="Positions" name="positionIds" empty="No positions yet. Positions are optional."
-          choices={positions.filter(position => position.active || employee.positionIds.includes(position.id)).map(position => ({ value: position.id, label: position.name, checked: employee.positionIds.includes(position.id), help: position.active ? undefined : "Inactive, kept as a qualification" }))} />
-        <ChoiceField listed label="Locations they can work at" name="eligibleLocationIds"
+        <ChoiceField listed label={t.positions} name="positionIds" empty={t.noPositions}
+          choices={positions.filter(position => position.active || employee.positionIds.includes(position.id)).map(position => ({ value: position.id, label: position.name, checked: employee.positionIds.includes(position.id), help: position.active ? undefined : t.inactiveQualification }))} />
+        <ChoiceField listed label={t.workLocations} name="eligibleLocationIds"
           choices={locations.filter(location => location.active || employee.eligibleLocationIds.includes(location.id) || employee.primaryLocationId === location.id).map(location => ({
             value: location.id, label: location.shortName, checked: employee.eligibleLocationIds.includes(location.id) || employee.primaryLocationId === location.id, disabled: employee.primaryLocationId === location.id,
-            help: [!location.active ? "Inactive" : null, employee.primaryLocationId === location.id ? "Their location, always included" : null].filter(Boolean).join(" · ") || undefined }))} />
+            help: [!location.active ? t.inactive : null, employee.primaryLocationId === location.id ? t.theirLocation : null].filter(Boolean).join(" · ") || undefined }))} />
       </ConfigurationForm>
     </CorpPage>
   </ScopedReadFrame>);
 
   if (editing === "rules") return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-forms wa-page wa-member" labelledBy="person-rules-title">
-      <CorpNav back={{ href: `${base}?edit=1`, label: "Edit" }} title="Hours and rules" titleId="person-rules-title" />
-      <CorpCard id="member-rules" label="Operational rules">
-        {profileUnavailable ? <CorpBody><p className="c-error" role="alert">Couldn’t load the rules. Reconnect and reload the page.</p></CorpBody>
+      <CorpNav back={{ href: `${base}?edit=1`, label: t.edit }} title={t.hoursRules} titleId="person-rules-title" />
+      <CorpCard id="member-rules" label={t.operationalRules}>
+        {profileUnavailable ? <CorpBody><p className="c-error" role="alert">{t.rulesFailed}</p></CorpBody>
           : operational ? <OperationalRuleFields employeeId={employee.id} profile={operational} canEdit={actor.role === "OWNER"} />
-          : <CorpBody><p className="c-line2">Set this person’s weekly hours first. No maximum is created by this review.</p>
-            <Link className="c-link c-link--l" href={`/app/schedule/settings#target-${encodeURIComponent(employee.id)}`}>Set weekly hours</Link></CorpBody>}
+          : <CorpBody><p className="c-line2">{t.setWeeklyFirst}</p>
+            <Link className="c-link c-link--l" href={`/app/schedule/settings#target-${encodeURIComponent(employee.id)}`}>{t.setWeekly}</Link></CorpBody>}
       </CorpCard>
     </CorpPage>
   </ScopedReadFrame>);
 
   const more = <>
-    <SheetField label="Positions" value={positionNames} placeholder="None yet" href={`${base}?edit=positions`} />
-    <SheetField label="Hours and rules" value={profileUnavailable ? "Unavailable" : operational ? "Set" : "Not set"} href={`${base}?edit=rules`} />
+    <SheetField label={t.positions} value={positionNames} placeholder={t.noneYet} href={`${base}?edit=positions`} />
+    <SheetField label={t.hoursRules} value={profileUnavailable ? t.unavailable : operational ? t.pinSet : t.pinNotSet} href={`${base}?edit=rules`} />
   </>;
   // Review 30 (D21): "Add hire date" on Christmas bonus hours opens this sheet with from=bonus (and the report's year). The
   // hire date takes focus, Cancel goes back to the report, and the saved state's next step returns there.
   const bonusYear = /^\d{4}$/.test(query.year ?? "") ? query.year : null;
-  const fromBonus = query.from === "bonus" ? { href: `/app/reports/christmas-bonus${bonusYear ? `?year=${bonusYear}` : ""}`, label: "Back to Christmas bonus hours", focusHire: true } : undefined;
+  const fromBonus = query.from === "bonus" ? { href: `/app/reports/christmas-bonus${bonusYear ? `?year=${bonusYear}` : ""}`, label: t.backToBonus, focusHire: true } : undefined;
   return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-sheetpage c-editemp" labelledBy="person-edit-title">
       <SheetMarker />
       {canManageCore ? (
         <EmployeeCoreProfileForm employee={employee} locations={locations} actorId={actor.id} actorRole={actor.role} ownerScope={ownerScope} action={saveEmployeeCoreProfileAction} cancelHref={fromBonus?.href ?? base} more={more} employmentDates={employmentDates} bonusApplies={bonusApplies} returnTo={fromBonus} />
       ) : (<>
-        <FormHead titleId="person-edit-title" title="Edit employee" left={<FormHeadLink href={base}>Cancel</FormHeadLink>} />
+        <FormHead titleId="person-edit-title" title={t.editEmployee} left={<FormHeadLink href={base}>{t.cancel}</FormHeadLink>} />
         {/* Final verification F (F05): a Manager editing an Owner sees the sheet's one card, as the Owner's form is: the
           lock note as its first item (grey, set by someone else; same words) and the two pickers at the form's 560 block. */}
-        <section className="c-card c-teamform-lock" aria-label="What you can change">
-          <BCallout tone="grey" icon="locked" title="Only an Owner can change another Owner">Positions and hours stay available here.</BCallout>
+        <section className="c-card c-teamform-lock" aria-label={t.whatYouCanChange}>
+          <BCallout tone="grey" icon="locked" title={t.ownerOnly}>{t.positionsStay}</BCallout>
           <div className="c-teamform">{more}</div>
         </section>
       </>)}

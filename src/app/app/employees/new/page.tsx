@@ -14,17 +14,11 @@ import { christmasBonusApplies } from "@/lib/reports/christmas-bonus";
 import { createEmployeeFormAction } from "@/app/app/employees/actions";
 
 import {NewEmployeeForm} from "@/components/company-access/new-employee-form";
+import {readPageLang} from "@/lib/i18n/page-lang.server";
+import {EMPLOYEES_COPY} from "../employees-copy";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Add employee" };
-
-const errors: Record<string, string> = {
-  permission: "Only an Owner can add another Owner.",
-  save: "Couldn’t add this person. Check that the employee ID and email aren’t already in use.",
-  id: "Enter a unique employee ID with no more than 128 characters.",
-  name: "Enter a first and last name.",
-  email: "Check the email, or leave it blank.",
-};
+export async function generateMetadata() { return { title: EMPLOYEES_COPY[await readPageLang()].addEmployee }; }
 
 export default async function NewEmployeePage({
   searchParams,
@@ -33,10 +27,11 @@ export default async function NewEmployeePage({
 }) {
   const session = await requireRoles(MANAGER_ROLES);
   const params=await searchParams;
+  const t=EMPLOYEES_COPY[await readPageLang()];
   // Review 30 (D38): the workspace's time zone says whether Christmas bonus hours exist here (Puerto Rico only). A failed
   // read keeps today's line; it never takes the form down.
   const source=await withOperationalCompany(await requireSessionMutationProof(),()=>Promise.all([listLocations(),listPositions(),getWorkspace().then(workspace=>christmasBonusApplies(workspace.timeZone)).catch(()=>true)]));
-  if(source.state==='unavailable')return <OperationalUnavailable title="Add employee unavailable" reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable title={t.addUnavailable} reason={source.reason}/>;
   const [locations,positions,bonusApplies]=source.data;
   const activeLocations = locations.filter((location) => location.active);
 
@@ -45,8 +40,8 @@ export default async function NewEmployeePage({
     <ScopedReadFrame observation={scopedObservation(source)}><CorpPage className="c-addemp c-sheetpage" labelledBy="new-employee-title">
       <SheetMarker />
       <NewEmployeeForm actorRole={session.role} locations={activeLocations} positions={positions} action={createEmployeeFormAction} bonusApplies={bonusApplies} notice={<>
-        {params.error ? <p className="c-error" role="alert">{errors[params.error] ?? "Complete all required employee fields."}</p> : null}
-        {!activeLocations.length ? <p className="c-note" role="status">{session.role === "OWNER" ? <span>Add a location first.{" "}<Link className="c-link c-link--l" href="/app/settings/locations">Locations</Link></span> : "Ask an Owner to add a location first."}</p> : null}
+        {params.error ? <p className="c-error" role="alert">{t.addErrors[params.error] ?? t.addIncomplete}</p> : null}
+        {!activeLocations.length ? <p className="c-note" role="status">{session.role === "OWNER" ? <span>{t.addLocationFirst}{" "}<Link className="c-link c-link--l" href="/app/settings/locations">{t.locations}</Link></span> : t.askOwnerLocation}</p> : null}
       </>}/>
     </CorpPage></ScopedReadFrame>
   );
