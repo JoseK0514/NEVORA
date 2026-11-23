@@ -263,7 +263,7 @@
 @keyframes ckSpin { to { transform: rotate(360deg); } }
 
 /* Language switch (the existing English/Spanish choice, remembered per tablet). */
-.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-btn, 10px); background: var(--ck-soft); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
+.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-btn, 10px); background: #FFFFFF; color: var(--ck-ink); box-shadow: 0 0 0 1px rgb(16 40 38 / 0.12), 0 1px 2px rgb(16 40 38 / 0.08); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
 .lang:active { transform: scale(var(--b-press-scale)); }
 /* The same switch on a page outside the kiosk frame (the paused page and the Clocker's not-found page): a white pill that
  * reads on the teal band and on the canvas, with a ring that shows on both. It reads only the shared tokens. */
