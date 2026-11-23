@@ -286,12 +286,13 @@ it.sequential.each(["chromium", "webkit"] as const)("checks Owner Rondo AI again
               await page.getByText('Answers to typed questions are off', { exact: true }).waitFor();
               const attention = page.getByRole("region", { name: "Needs your attention", exact: true });
               await attention.getByRole("heading", { name: "Needs your attention", exact: true }).waitFor();
-              const planningGroup = attention.locator("ol > li").filter({ has: attention.getByRole("heading", { name: "Review today's planning gaps", exact: true }) });
+              const planningHeading = page.getByRole("heading", { name: "Review today's planning gaps", exact: true });
+              const planningGroup = attention.locator("ol > li").filter({ has: planningHeading });
               expect(await planningGroup.count()).toBe(1);
               // Each location still owns its own actions when its issue shares a heading with another location.
               const firstIssue = planningGroup.locator(".oa-subitem, .oa-item__main:not(:has(.oa-subitem))").filter({ hasText: "Main Office" });
               expect(await firstIssue.count()).toBe(1);
-              const reviewedPlanningIssue = attention.locator("ul.oa-items--quiet > li").filter({ hasText: "Main Office" }).filter({ has: attention.getByRole("heading", { name: "Review today's planning gaps", exact: true }) });
+              const reviewedPlanningIssue = attention.locator("ul.oa-items--quiet > li").filter({ hasText: "Main Office" }).filter({ has: planningHeading });
               await firstIssue.getByRole("button", { name: "Track this issue", exact: true }).click();
               await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
               await firstIssue.getByRole("button", { name: "Later · 1 hour", exact: true }).click();
