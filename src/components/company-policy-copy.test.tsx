@@ -20,7 +20,7 @@ it('holds the same keys in English and Spanish', () => {
 
 it('renders the policies editor in Puerto Rico Spanish', () => {
   const editor = createElement(CompanyPolicyEditor, {history: projectCompanyPolicyHistory(policyUIRows()), locations: [{id: 'loc-1', name: 'Condado', active: true}], timeZone: 'America/Puerto_Rico'});
-  const es = text(renderToStaticMarkup(createElement(PortalLangProvider, {lang: 'es', children: editor})));
+  const es = text(renderToStaticMarkup(<PortalLangProvider lang="es">{editor}</PortalLangProvider>));
   for (const words of ['Aplica a', 'Todas las localidades', 'Avísame sobre', 'Llegadas tarde', 'Cerca de horas extra', 'Nunca cambian el pago.', 'Registros',
     'Configuración laboral', 'Solo el dueño', 'por hora', 'Historial', 'Revisión 3', 'Esta versión no se puede usar.', 'Actualizar historial de políticas'])
     expect(es).toContain(words);
