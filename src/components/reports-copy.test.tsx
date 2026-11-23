@@ -68,6 +68,18 @@ describe('Insights in Spanish (Rondo Spanish, G98)', () => {
     const quiet = spanish(createElement(QuietReportsView, { report, state: 'ready' }));
     expect(quiet).toContain('Personas sin tiempo');expect(quiet).toContain('Cómo se cuentan');expect(quiet).not.toContain('Time off taken');
   });
+  it('shows the report’s own definitions in Spanish (es-rest, second release)', () => {
+    for (const view of [ReportsView, QuietReportsView]) {
+      const html = spanish(createElement(view, { report, state: 'ready' }));
+      expect(html).toContain('Estas horas no son horas de nómina.');
+      expect(html).toContain('Es un conteo, no una medida de confiabilidad.');
+      expect(html).toContain('No recalculan el tiempo aprobado ni deciden tardanzas o medidas disciplinarias.');
+      expect(html).not.toContain('Hours here aren’t payroll hours.');
+      expect(html).not.toContain('A count, not a reliability score.');
+      const english = renderToStaticMarkup(createElement(view, { report, state: 'ready' }));
+      expect(english).toContain('Hours here aren’t payroll hours.');
+    }
+  });
   it('writes the state cards in Spanish', () => {
     const html = spanish(createElement(CorpReportsView, { report: null, state: 'access_lost' }));
     expect(html).toContain('Tu sesión terminó');expect(html).toContain('Iniciar sesión');expect(html).not.toContain('Sign in');
