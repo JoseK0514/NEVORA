@@ -69,6 +69,20 @@ company database (QA-CSV-1, Employee, at Main). Captures `F3live-<step>-O-<390|3
 no page overflow on all 15.
 
 Compared with the rendered captures Jose approved: the words, the order and the buttons match on every step. One
-difference, fixed in `d12401f1`: the row editor kept a field's red error after the fix was typed. Not a difference in F3
-itself: the provisioned company's phone shell shows no bottom tab bar on these pages, while the single-company capture build
-does; that belongs to the shell, not to this page.
+difference, fixed in `d12401f1`: the row editor kept a field's red error after the fix was typed. The phone tab bar was missing on these pages; see "Tab bar in a new company" below.
+
+## Tab bar in a new company (follow-up): by design, no app change
+Probed on the same production build and provisioned company (`098115ae`), at 390 in both the harness's desktop window and
+a phone context (touch, mobile): for each page the probe read `.mobile-nav`'s computed display and every CSS rule that
+sets it.
+- Home (`/app`) and Team (`/app/employees`): the tab bar is there (display grid, 60px, at the bottom) in both contexts.
+  Evidence: `shell-new-company-home-O-390.webp`, `shell-new-company-team-O-390.webp`.
+- Import a staff list: the tab bar is hidden by the shell's sheet rule, `.app-shell[data-nv-quiet]:has(.q-page[data-q-sheet])
+  .mobile-nav { display: none }` (quiet-shell.css). The page renders `<SheetMarker />` (team-forms.tsx: "Marks the page as
+  a sheet, so the shell covers the tab bar"), as Add person (F2), a person's page, Paid time and the payroll run do: a
+  sheet's way out is its Cancel or Back in the band. Evidence: `shell-new-company-import-O-390.webp`.
+- So it is a property of the route, the same for any company, not of the provisioned company or the harness. A real new
+  company has the tab bar on every page that isn't a sheet.
+- Why the earlier F3 captures showed a tab bar: on the single-company capture build the Owner got the not-available page,
+  which has no SheetMarker, and the rendered steps replaced the page element that held the marker. Those shots were the
+  odd ones; the live import is right.
