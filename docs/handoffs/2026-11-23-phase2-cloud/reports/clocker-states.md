@@ -14,6 +14,10 @@ No real device, payment, billing provider, deploy or publishing.
   "Your week, in one place.". The billing pages' frame renders byte-identical markup before and after (EN and ES,
   with and without `below`/`legal`, compared with renderToStaticMarkup).
 - `d01b7e15` The paused scan also captures `/login` and `/app/billing` at 1440 (both unchanged).
+- `22b0c470` K15: from 1024px the © line under the card steps aside, so the panel's "Powered by VELANI LLC" is the one
+  company line (as on K1–K14); phones and portrait tablets keep the © line. The panel stays otherwise plain: the paused
+  page has only the tablet key, so the place and its clock would need a server read.
+- `74aced0e` K13: the keyboard capture is taken on the first Tab, when Done / Listo has its 3px ring.
 - Shots commit (latest): this report, `shots/clocker-states/rows.json` and `img/`.
 
 ## How each state was reached
@@ -70,5 +74,5 @@ None.
 1. K13: a second tab on the same tablet opens a normal Clock in screen while another person's punch is waiting in the
    first tab; only the tab that holds the punch shows K13. A kiosk runs one tab, so it's low risk. Behaviour, not layout.
 2. Kiosk-wide: the Spanish band clock reads `9:18 a. m.`; the one time format is `7:00 AM`. Jose to decide for Spanish.
-3. K15 at 1024x768: the panel now holds only the wordmark and "Powered by VELANI LLC"; a kiosk band there (clock,
-   place) would match K1–K14. Left for Jose.
+3. K15 at 1024x768: the panel holds only the wordmark and "Powered by VELANI LLC". A kiosk band there (clock, place)
+   would match K1–K14, but needs the paused page to read the location on the server. Left for Jose.
