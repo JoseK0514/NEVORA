@@ -60,8 +60,7 @@ names against visible text, targets under 44px, Tab order with focus rings at 14
   data reached them.
 
 ## Blocking items left
-1. B8 Compose at 390 (Lead and Employee): the form runs past the right edge. In `final-fixes.md` Package F, so left
-   for that session.
+1. (Resolved: B8 Compose at 390 was fixed by G86 on origin; 1440 with 200% text by d7b495a1.)
 2. G10 Pay (check only) at 390 with 200% text: the "Statement ready" chip runs past the right edge. For the Pay session.
 
 ## End-sweep items (proposed ledger rows)
@@ -88,3 +87,13 @@ so the fixed tab bar sits only at the bottom and hides no row. `390t200` is 390 
   clipping, overflow, overlap or axe findings.
 - 1683948e fixes what that recheck found on the hub at 320 with 200% text ("swaps for yo…", "Needs your ans…").
   The B5 rows' shots above were taken before this fix and look the same at 390.
+
+## B8 Compose follow-up (14:00)
+- d7b495a1 (`account.css`): at 1440 with 200% text the page was 2018px wide. The intro line ("Send an update to today's
+  team…") inherited `white-space: nowrap` from the compose page's container and ran 578px past the card. The form's text now
+  wraps; the rule sits in `@layer nv-b` with the weight of the shared compose rules in `employee-b-desktop.css`.
+- Back link: Compose has Cancel → Updates on the band at 390, 768 and 1440 for Lead and Employee. Updates is a tab root
+  (in the sidebar), like the Requests hub, and has no back link at desktop widths, as the other Employee tab roots.
+- Recaptured B8 for Lead and Employee from d7b495a1 (origin cbbad9ff merged) at 390, 768, 1440 and 390 and 1440 with
+  200% text: 0px overflow, no clipped, offscreen or overlapping text, axe 0 at every width. The 390 overflow is gone
+  (G86 from origin). Rows `B8-l` and `B8-e` now point at these shots.

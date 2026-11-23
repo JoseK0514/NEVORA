@@ -94,7 +94,7 @@
   "row": "B8",
   "page": "Write an update (Lead)",
   "section": "Messages",
-  "note": "Write an update for a Lead and an Employee: location, title, message, expiry and Review audience.",
+  "note": "Write an update: location, title, message, expiry and Review audience; Cancel on the band goes back to Updates at every width. At 1440 with 200% text the intro line now wraps (the page scrolled 578px sideways).",
   "shots": [
    {
     "label": "Phone",
@@ -112,13 +112,17 @@
    {
     "label": "Phone, 200% text",
     "after": "img/B8-l-390t200.webp"
+   },
+   {
+    "label": "Desktop, 200% text",
+    "after": "img/B8-l-1440t200.webp",
+    "desk": true
    }
   ],
-  "blocking": [
-   "At 390 the form runs past the right edge (the expiry hint \"Leave blank for no set e…\"); listed in final-fixes.md Package F, left to that session."
-  ],
+  "blocking": [],
   "endSweep": [
-   "Cancel in the band is 32px tall at 768 and 1440 (kit BHero)."
+   "Cancel in the band is 32px tall at 768 and 1440 (kit BHero).",
+   "At 200% text the sidebar's workplace name (\"Northside QA…\") overlaps itself (app shell)."
   ]
  },
  {
@@ -368,7 +372,7 @@
   "row": "B8",
   "page": "Write an update (Employee)",
   "section": "Messages",
-  "note": "Write an update for a Lead and an Employee: location, title, message, expiry and Review audience.",
+  "note": "Write an update: location, title, message, expiry and Review audience; Cancel on the band goes back to Updates at every width. At 1440 with 200% text the intro line now wraps (the page scrolled 578px sideways).",
   "shots": [
    {
     "label": "Phone",
@@ -386,13 +390,17 @@
    {
     "label": "Phone, 200% text",
     "after": "img/B8-e-390t200.webp"
+   },
+   {
+    "label": "Desktop, 200% text",
+    "after": "img/B8-e-1440t200.webp",
+    "desk": true
    }
   ],
-  "blocking": [
-   "At 390 the form runs past the right edge (the expiry hint \"Leave blank for no set e…\"); listed in final-fixes.md Package F, left to that session."
-  ],
+  "blocking": [],
   "endSweep": [
-   "Cancel in the band is 32px tall at 768 and 1440 (kit BHero)."
+   "Cancel in the band is 32px tall at 768 and 1440 (kit BHero).",
+   "At 200% text the sidebar's workplace name (\"Northside QA…\") overlaps itself (app shell)."
   ]
  },
  {
