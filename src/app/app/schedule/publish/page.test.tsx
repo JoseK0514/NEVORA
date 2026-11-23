@@ -86,7 +86,7 @@ it("lists changes to the published week and publishes them once with Publish cha
   f.pending = pendingData();
   const out = await html();
   expect(out).toContain(">2 changes<");
-  expect(out).toContain('>Changes not published<span class="c-count c-num">2</span><');
+  expect(out).toContain('>Changes not published<span class="c-count c-num"><span class="sr-only">\u00a0</span>2</span><');
   // Final polish (confirmations review A #19): the facts are whole parts; the chip alone says Added.
   const words = out.replace(/<span class="b-when-s">[^<]*<\/span>/g, "").replace(/<[^>]+>/g, "").replace(/[\u00a0\u2060\u202f]/g, m => m === "\u2060" ? "" : " ");
   expect(words).toContain("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM");
