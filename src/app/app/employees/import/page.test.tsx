@@ -54,12 +54,16 @@ describe("/app/employees/import", () => {
     expect(html).toContain("Jose Natal can import a staff list for you.");
     expect(html).not.toContain("rimp-list");
     expect(html.includes('href="/app/employees/new"')).toBe(role === "MANAGER");
+    // Package X: the closed page sits under Team, so its band goes back to Team, not Home.
+    expect(html).toContain('href="/app/employees"');
+    expect(html).toMatch(/href="\/app\/employees"[^>]*>(?:<[^>]+>)*Team</);
   });
   it("says the import isn't available where the routes would answer unavailable, instead of a form", async () => {
     m.routed = false;
     const html = await render();
     expect(html).toContain("Staff list import isn’t available for this workplace yet.");
     expect(html).toContain("You can still add people one at a time.");
+    expect(html).toContain('href="/app/employees"');
     expect(html).toContain('href="/app/employees/new"');
     expect(html).not.toContain("<form");
     expect(html).not.toContain("rimp-list");

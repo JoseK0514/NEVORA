@@ -271,7 +271,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-step[data-done] .b-step__n, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-step--done .b-step__n { background: var(--b-green-50); color: var(--b-green); }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(main.page-frame, .c-page, .q-page) { font-variant-numeric: normal; }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-num, .b-live__v, .b-kv b, td, time, .b-pill, .nav-count, .q-count, .b-tab-badge, .c-count, .b-week__d b, .b-step__n) { font-variant-numeric: tabular-nums; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-date { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; font-size: 14px; font-weight: 600; color: var(--b-on-band); scale: 1; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-date { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; font-size: 0.875rem; font-weight: 600; color: var(--b-on-band); scale: 1; }
 /* Review F3 (NV-329): the only b-enter and b-fade (owner-b.css no longer repeats them inside its motion queries); b-enter is
  * DESIGN.MD's first-load entrance: opacity, a 4px blur and a 12px rise. */
 @keyframes b-enter { from { opacity: 0; translate: 0 12px; filter: blur(4px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
@@ -697,10 +697,11 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   /* Narrow phones (320–359px): a track of three or more items without a sliding thumb (Insights' periods, Things to do's
    * filters, Pick up and swap) gives each item its label's width plus an equal share of what is left, so a long label isn't
    * clipped or pressed to its thumb's edge while a short one has room to spare (equal columns clipped "This week" by 4px at
-   * 320). A track whose thumb slides (data-slide) keeps its equal columns, which the thumb's position is computed from. */
+   * 320). A track whose thumb slides (data-slide) keeps its equal columns, which the thumb's position is computed from.
+   * Target size (Nov 23, 2026): no item narrower than 44px (Things to do's "All" was 41px at 320). */
   @media (max-width: 359px) {
     html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) { grid-template-columns: none !important; grid-auto-flow: column !important; grid-auto-columns: auto !important; }
-    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 0 !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
+    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 44px !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
   }
   /* Team's filters (on white, in the people card): the same track as the other controls on white, scrolling on a phone. */
   html body .app-shell[data-nv-b] .b-filters {

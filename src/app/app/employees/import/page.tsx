@@ -16,6 +16,8 @@ import {headcountsOf} from '@/components/roster-import/contract';
 
 export const metadata = { title: "Import a staff list" };
 
+const TEAM_BACK = {href: '/app/employees', label: 'Team'};
+
 /** The roster routes (POST /api/onboarding/roster and /preview) answer only where company workspaces are routed: they
  * read the same configuration first and answer "unavailable" (HTTP 503) without it. The page asks the same question
  * before it draws a form, so a deployment without the import says so instead of failing on the first check. */
@@ -31,10 +33,11 @@ export default async function RosterImportPage() {
   if (session.role !== 'OWNER') {
     const owners = await listEmployees().then(list => list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim())).catch(() => []);
     // A Manager can still add people one at a time; that page is theirs.
-    return <OwnerOnlyNotice title={copy.title} reason={copy.closed.reason} help={copy.closed.help} ownersCan={copy.closed.ownersCan} owners={owners}
+    // Package X (Nov 23, 2026): the page sits under Team, so its band goes back to Team (it said "‹ Home"), as the form does.
+    return <OwnerOnlyNotice title={copy.title} back={TEAM_BACK} reason={copy.closed.reason} help={copy.closed.help} ownersCan={copy.closed.ownersCan} owners={owners}
       next={isManagerRole(session.role) ? {href: '/app/employees/new', label: copy.closed.addOne} : undefined}/>;
   }
-  if (!rosterImportAvailable()) return <OwnerOnlyNotice title={copy.title} reason={copy.off.title} help={copy.off.line} next={{href: '/app/employees/new', label: copy.off.action}}/>;
+  if (!rosterImportAvailable()) return <OwnerOnlyNotice title={copy.title} back={TEAM_BACK} reason={copy.off.title} help={copy.off.line} next={{href: '/app/employees/new', label: copy.off.action}}/>;
   // The same company-wide read Add employee makes, plus the people the three headcounts are counted from.
   const source = await withOperationalCompany(await requireSessionMutationProof(), () => Promise.all([listLocations(), listEmployees()]));
   if (source.state === 'unavailable') return <OperationalUnavailable title={copy.sourceUnavailable} reason={source.reason}/>;
