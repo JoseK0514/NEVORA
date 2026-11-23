@@ -173,7 +173,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__h { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 44px; padding: var(--b-space-12) var(--b-inset) var(--b-space-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__h h2 { display: flex; align-items: center; gap: var(--b-space-8); font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700; letter-spacing: -0.01em; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__a { display: inline-flex; align-items: center; min-height: 44px; margin: -10px -6px -10px 0; padding: 0 6px; font-size: 0.875rem; font-weight: 600; color: var(--b-teal); white-space: nowrap; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-card__meta { font-size: 14px; color: var(--b-grey); white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-card__meta { font-size: 0.875rem; color: var(--b-grey); white-space: nowrap; }
 /* Phase 9: one inline count (BCard's count and BCount): 20px, 12/16 700 tabular, teal on teal-50, never wraps. */
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-pill, .b-count) { display: inline-grid; place-items: center; box-sizing: border-box; flex: none; min-width: var(--b-count-h); height: var(--b-count-h); padding: 0 6px; border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal);
   font-size: var(--b-fs-count); line-height: 16px; font-weight: 700; letter-spacing: 0; white-space: nowrap; font-variant-numeric: tabular-nums; }
