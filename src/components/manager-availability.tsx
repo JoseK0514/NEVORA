@@ -71,7 +71,7 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
       <p className="c-phone-sub" aria-hidden="true">{weekLine}</p>
       <CorpTitle title="Availability" sub={weekLine} wide />
       <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} remind={remind} needsDeadline={!deadlineAt} before={<>
-        {invalidWeek ? <p className="c-st__msg c-st__msg--error" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
+        {invalidWeek ? <p className="c-st__msg c-st__msg--error form-error" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
         <CorpCard ariaLabel="Deadline"><CorpRows>
           {/* Phase 3 (MG-016): the row says what a deadline does. The reminder goes out 24 hours before the deadline
               (notifications/policy.ts), so the line shows only where the workplace's alerts are on. */}

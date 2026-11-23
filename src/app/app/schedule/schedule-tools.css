@@ -8,7 +8,7 @@
 :is(#c-root, html) :is(.c-tpl, .c-rules, .c-shreq) :is(.c-tpl__msg, .c-st__msg) { margin: 0; font-size: 0.9375rem; line-height: 1.375rem; color: var(--c-ink2); }
 :is(#c-root, html) :is(.c-tpl, .c-rules, .c-shreq) :is(.c-tpl__msg--error, .c-st__msg--error) { color: var(--c-red); }
 :is(#c-root, html) :is(.c-tpl, .c-rules, .c-shreq) :is(.c-tpl__msg--warn, .c-st__msg--warn) { color: var(--b-amber, #8A4B00); }
-:is(#c-root, html) .c-tpl .c-tpl__feedback:focus { outline: none; }
+:is(#c-root, html) :is(.c-tpl, .c-rules) .c-tpl__feedback:focus { outline: none; }
 
 /* C7: a saved week is its name over its shift count, then Archive and Apply. On a phone the two buttons sit under the
  * text, equal width; from 600px they sit on the row's right, the same height, labels centred. */
@@ -106,6 +106,9 @@
 /* The desktop kit draws buttons 40px high from its nv-b layer (a layered !important beats unlayered ones), so these
  * pages keep the 44px target inside the same layer, where the more specific rule wins (as Copy receipt does). */
 @layer nv-b {
+  /* The question before Decline or Close sits where the row's buttons were, on the decision's own inset (the kit's
+   * margin is for the older list's 64px face column). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-shreq .c-shreq__form .b-ask:not(#st1):not(#st2):not(#st3):not(#st4):not(#st5):not(#st6):not(#st7):not(#st8) { margin: 0 !important; }
   /* The kit's disclosure rules pad every summary in a card; a request row keeps the item's inset only. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-shreq .c-shreq__details > summary.c-shreq__sum:not(#st1) { padding: 14px 0 !important; margin: 0 !important; background: none !important; box-shadow: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-tpl, .c-rules, .c-avteam, .c-shreq) :is(.c-btn, a.c-btn, .nv-btn):not(#st1) { box-sizing: border-box !important; height: auto !important; min-height: 44px !important; white-space: nowrap; }

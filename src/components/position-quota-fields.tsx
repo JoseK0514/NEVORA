@@ -18,10 +18,10 @@ export function PositionQuotaFields({
       <legend className={legendHidden ? "sr-only" : "c-field__label c-rf-legend"}>
         Position quantities {legendHidden ? null : <span className="c-rf-optional">Optional</span>}
       </legend>
-      <p className="c-rf-help">
+      {legendHidden ? null : <p className="c-rf-help">
         Enter a whole number from 1 to 100. Leave blank to remove only that
         position quota.
-      </p>
+      </p>}
       {shown.length ? <div className="c-rf-grid">
       {shown.map((p) => (
           <label key={p.id} className="c-field">
