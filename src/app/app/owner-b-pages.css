@@ -742,3 +742,35 @@ body { --nv-rem: 1rem; }
 @container not style(--nv-rem: 16px) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page:is(.c-team, .c-setb) :is(.c-row__title, .c-row__detail > span:first-child) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 }
+
+/* Target size, release batch (Nov 23, 2026): each control below is drawn under 44px (the sidebar links 40px tall, the bell
+ * 40px, week arrows 36px wide, "Today" 32px tall, the "…" menu 36px, Availability's Requests 42px, the publish page's Done
+ * 42px, Team's See all 41px, Apply search 42px wide, the desktop back link 32px, Home's card links 41–43px at 320). A
+ * transparent ::after makes the tap area 44px, centred: each side is min(0px, 50% - 22px), so a side that is already
+ * 44px or more doesn't grow, and the ring stays inside the gaps around it (4px between sidebar links, 10px around the
+ * bell). Nothing drawn moves. The back link isn't made relative here: on desktop it is already positioned. */
+@layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] aside.sidebar .nav-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .portal-notification-bell:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-week__arrow:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched-week__today:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched-actions :is(button, a):not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .eb-avail-req:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-shift__cancel:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.c-card__aside, .q-sec__aside) .c-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-search__go:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-card__a:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-row__hit:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] aside.sidebar .nav-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .portal-notification-bell:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-week__arrow:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched-week__today:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched-actions :is(button, a):not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .eb-avail-req:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-shift__cancel:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.c-card__aside, .q-sec__aside) .c-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-search__go:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-card__a:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-row__hit:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-nav > .q-nav__l:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after { content: "" !important; display: block !important; position: absolute !important; top: min(0px, calc(50% - 22px)) !important; bottom: min(0px, calc(50% - 22px)) !important; left: min(0px, calc(50% - 22px)) !important; right: min(0px, calc(50% - 22px)) !important; width: auto !important; height: auto !important; margin: 0 !important; translate: none !important; transform: none !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; opacity: 0 !important; }
+}
