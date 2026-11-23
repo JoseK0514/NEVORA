@@ -1,0 +1,109 @@
+[
+ {
+  "id": "C7",
+  "row": "C7",
+  "page": "Week templates",
+  "section": "Schedule tools",
+  "note": "Direction B card page: the week once in the band, each saved week with Archive and Apply, New template with Save.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "C7-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "C7-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "C7-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "G-ST6"
+  ]
+ },
+ {
+  "id": "C9",
+  "row": "C9",
+  "page": "Scheduling rules",
+  "section": "Schedule tools",
+  "note": "One card of rules, each with its value; opened settings use the kit's fields with each label once and one teal save.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "C9-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "C9-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "C9-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "G-ST5",
+   "G-ST6"
+  ]
+ },
+ {
+  "id": "C10",
+  "row": "C10",
+  "page": "Availability (Owner and Manager)",
+  "section": "Schedule tools",
+  "note": "Band holds the title and week; Not sent and Sent are the people card's chips, as on Team, so each count shows once.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "C10-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "C10-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "C10-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "G-ST2",
+   "G-ST4"
+  ]
+ },
+ {
+  "id": "C12",
+  "row": "C12",
+  "page": "Shift requests (Owner and Manager)",
+  "section": "Schedule tools",
+  "note": "One card of the kit's request rows with Decline and Approve; Done shows each decision's history in plain words.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "C12-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "C12-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "C12-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "G-ST1",
+   "G-ST3"
+  ]
+ }
+]
