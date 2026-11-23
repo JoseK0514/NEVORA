@@ -79,3 +79,14 @@ describe('Timecards gate check (Nov 23, 2026)', () => {
     expect(css).toMatch(/\.c-tc-sheet \.b-callout a:not\(#gq1\):not\(#gq2\):not\(#gq3\) \{[^}]*min-height: var\(--b-target\) !important;/);
   });
 });
+
+describe('the period table at a large text size (G90 follow-up)', () => {
+  const table = block('@container tc-table (max-width: 36rem)');
+  it('lets names and statuses wrap and steps the Breaks column aside only when the card is narrow for its text', () => {
+    expect(css).toMatch(/\.c-tc-tablecard:not\(#gq1\) \{ container: tc-table \/ inline-size !important; \}/);
+    expect(table).toMatch(/td\[data-col="person"\][^{]*\{ max-width: none !important; min-width: 7em !important;/);
+    expect(table).toMatch(/\.c-tc-person > span:not\(\.c-av\)[^{]*\{ white-space: normal !important;/);
+    expect(table).toMatch(/\[data-col="breaks"\][^{]*\{ display: none !important; \}/);
+    expect(table).toMatch(/\.c-tc-st > :is\(\.b-status, \.b-chip\)[^{]*\{ flex: 0 1 auto !important; min-width: 0 !important; \}/);
+  });
+});
