@@ -5,8 +5,10 @@ import { readOperationalAuthority } from "@/lib/company-access/operational-scope
 import { getWorkspace } from "@/lib/data/workspaces";
 import { BusinessPage } from "@/components/owner-advisor/business/business-page";
 import { viewFromParams } from "@/components/owner-advisor/business/views";
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { ROUTE_COPY } from '../../route-copy';
 
-export const metadata = { title: "Business records" };
+export async function generateMetadata() { return { title: ROUTE_COPY[await readPageLang()].businessRecords }; }
 
 /* Rondo's business records (contract: docs/handoffs/2026-11-16-rondo-business-evidence-ui-contract.md and the Nov 17
  * answers, question 8). The same door as the AI manager and company knowledge: a company-wide Owner with the adviser on.

@@ -16,6 +16,8 @@ import { SheetMarker } from '@/components/team/team-forms';
 import { PayrollImportFlow } from '@/components/payroll-import/import-flow';
 import { workCopy } from '@/components/employee-b/work-copy';
 import './payroll-workflow.css';
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { ROUTE_COPY } from '../route-copy';
 
 /** Every Payroll page (Release 1): the same access check, then one view of the payroll workspace. The review pages are
  * their own URLs so a phone shows them as pushed pages (‹ Payroll) and Back returns where it should. */
@@ -24,6 +26,7 @@ async function ownerNamesFor() {
 }
 
 export async function PayrollRoute({ view, runId = null }: { view: PayrollView; runId?: string | null }) {
+  const lang = await readPageLang(), t = ROUTE_COPY[lang];
   if (!payrollFeatureEnabled()) notFound();
   const proof = await requireSessionMutationProof();
   const capabilities = await readPayrollCapabilities(proof);
@@ -39,15 +42,15 @@ export async function PayrollRoute({ view, runId = null }: { view: PayrollView; 
         .then(([operational, brand]) => navigationForRole('MANAGER', capabilities, { operational, modules: brand.modules })).catch(() => []);
       // Phase 8 (B #22, #23): a name never breaks across two lines; "or" between two names still may.
       const closed = closedPayrollForManager(href => navigation.some(item => item.href === href), ownerNames(owners.map(name => name.replace(/ /g, '\u00A0'))));
-      return <OwnerOnlyNotice state title="Payroll" reason="Payroll is for Owners" line={closed.line} next={closed.next} also={closed.also} />;
+      return <OwnerOnlyNotice state title={t.payroll} reason={t.payrollForOwners} line={closed.line} next={closed.next} also={closed.also} />;
     }
     // Phase 8 (review C, row 12): an Employee or Lead gets the same state screen, and their own pay is the way on when
     // their navigation has Pay (the rule More and the shell use); otherwise the notice names who can help, as before.
     const navigation = await currentBrand().then(brand => navigationForRole(proof.employee.role, capabilities, { modules: brand.modules })).catch(() => []);
     if (navigation.some(item => item.href === '/app/my-pay')) {
-      return <OwnerOnlyNotice state title="Payroll" reason="Payroll is for Owners" line={workCopy().payIsInPay} next={{ href: '/app/my-pay', label: workCopy().openPay }} />;
+      return <OwnerOnlyNotice state title={t.payroll} reason={t.payrollForOwners} line={workCopy(lang).payIsInPay} next={{ href: '/app/my-pay', label: workCopy(lang).openPay }} />;
     }
-    return <OwnerOnlyNotice state title="Payroll" reason="Payroll is for Owners" help="Owners can give you payroll access." ownersCan="give you payroll access" owners={owners} />;
+    return <OwnerOnlyNotice state title={t.payroll} reason={t.payrollForOwners} help={t.ownersCanGive} ownersCan={t.giveAccess} owners={owners} />;
   }
   const workspace = await getWorkspace();
   const recoveryScope = payrollRecoveryScope(workspace.id, proof.employee.id);

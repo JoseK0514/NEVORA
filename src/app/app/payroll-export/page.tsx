@@ -13,15 +13,17 @@ import {OwnerOnlyNotice} from '@/components/owner-only-notice';
 import {payrollFeatureEnabled,readPayrollCapabilities} from '@/lib/payroll/service';
 import {payrollTabs} from '@/components/payroll/payroll-tabs';
 import './payroll-page.css';
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { ROUTE_COPY } from '../route-copy';
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Time exports" };
-export default async function PayrollExportPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
+export async function generateMetadata() { return { title: ROUTE_COPY[await readPageLang()].timeExports }; }
+export default async function PayrollExportPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){const t = ROUTE_COPY[await readPageLang()];
   const session=await requireSession();
   // Review F2 (NV-136): a closed page says why, never a silent redirect to Home.
-  if(!isManagerRole(session.role))return <OwnerOnlyNotice state title="Time exports" reason="Time exports are for Owners and Managers." help="Your own hours are on Time." next={{href:'/app/my-time',label:'Open Time'}}/>;
+  if(!isManagerRole(session.role))return <OwnerOnlyNotice state title={t.timeExports} reason={t.timeExportsFor} help={t.ownHoursOnTime} next={{href:'/app/my-time',label:t.openTime}}/>;
   const proof=await requireSessionMutationProof();
-  const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Time exports unavailable" reason={access.reason}/>;
+  const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title={t.timeExportsUnavailable} reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   // Quiet (v4): the default is this week, Monday to Sunday (the period Timecards and Payroll show).
