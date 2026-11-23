@@ -59,6 +59,8 @@
    * unfold under the row's text. */
   :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq:has(> .c-sreq__acts):not(:has(.c-sreq__note)) { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq:not(:has(.c-sreq__note)) > .c-sreq__acts { max-width: 22rem; padding: 10px var(--sr-x) 10px 0; }
+  /* While closed, the buttons are centred on the row; an open request keeps them level with its first lines. */
+  :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq:not(:has(.c-sreq__note)):not(:has(.c-sreq__details[open])) > .c-sreq__acts { align-self: center; }
 }
 
 /* Jose (Nov 23, 2026): the summary in three fixed lines. The name and its kind label share the first line (the label
