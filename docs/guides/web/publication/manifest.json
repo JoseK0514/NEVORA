@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-23",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "5d4b95cad5ee591feec01fa77bca6b927620b958",
-  "applicationHash": "e023e8b7ce9b8ffd9428eee76c99c9d8c978c8cdd45901ede86ca62766b68e7a",
+  "sourceSha": "494b82de0367d0d0cc57cd62b6d557eaacd1ab78",
+  "applicationHash": "365a9f02c951aa0f76b940ac57c719e7924f7ec81636e802c1871faf7af630da",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "d0367bb2633dd3849874a9d721f29d13ed6de255f92794be5b0cf55ed192de1a"
@@ -39,7 +39,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "19af388711eff7e731c5c42389a9fa18db8dc85bbd77e5ae229c3d565d699d5b"
+          "sha256": "30c2726a03864da14c954e716f69d9c53af6039d525b88ea72467dcd086ceee1"
         },
         {
           "path": "src/components/company-access/employee-invitation-panel.tsx",
@@ -87,7 +87,7 @@
         },
         {
           "path": "src/components/management-close-form.tsx",
-          "sha256": "777fc763ae1c27e2d2d28c901f60edcb0cffb9d6d2a1fad7349ac8b8a35c79af"
+          "sha256": "c6dd76ef43c2c5ab4ad7d8fbbd44a92492b9c91a834553a1486b42685614f88f"
         },
         {
           "path": "src/components/delegated-time-correction-form.tsx",
@@ -212,7 +212,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "94ee3abff59d522906caf14c5bb1973f66330e91edd7e9907219d1925cd60895",
+        "sha256": "bea34e424614726499edfe28b89830b53f9d5fbaf52c477727b1d8466e542f45",
         "pageCount": 7
       }
     },
@@ -250,7 +250,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "19af388711eff7e731c5c42389a9fa18db8dc85bbd77e5ae229c3d565d699d5b"
+          "sha256": "30c2726a03864da14c954e716f69d9c53af6039d525b88ea72467dcd086ceee1"
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
@@ -274,7 +274,7 @@
         },
         {
           "path": "src/components/management-close-form.tsx",
-          "sha256": "777fc763ae1c27e2d2d28c901f60edcb0cffb9d6d2a1fad7349ac8b8a35c79af"
+          "sha256": "c6dd76ef43c2c5ab4ad7d8fbbd44a92492b9c91a834553a1486b42685614f88f"
         },
         {
           "path": "src/components/delegated-time-correction-form.tsx",
@@ -335,7 +335,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "aef023a1a22ae0412f0f614c16fcf402be7d74ba6731d7b3af5e342b7153db69",
+        "sha256": "6e6ddce210c639ce80146e540998fdde6fedff00492f37f5bf10d8325fa4d1c0",
         "pageCount": 4
       }
     },
@@ -454,7 +454,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "54e51f929e595f68b7ee5ccf686f790a91d928cc9d300f9b6ed2a8e5ee6ca70d",
+        "sha256": "734121dbd329f3f1620a2c76020887c9f2afad73a3c0e46aba43300a341aee24",
         "pageCount": 3
       }
     },
@@ -629,7 +629,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "4fa2af8c87ed384145aea18ca427f1d9d2105f40ce897fea2282693d40ebf9f2",
+        "sha256": "d7faff8b7b2faf9daf69609e5b49adc2f2a742706495922fac1ee189eeb856e3",
         "pageCount": 5
       }
     },
@@ -892,7 +892,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "8a51ed26967291a27bf771433b2ad3b9230434489baef693f3458ae001655fe3",
+        "sha256": "f388398895c8b09dbb90cbecdc7cf0ef84410f3eef17d1b6738046d07d4650dc",
         "pageCount": 7
       }
     },
@@ -1087,7 +1087,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "66d6fba345159798b0f60e7488160a211c8b41954f1d72379cfc6a9f0469c844",
+        "sha256": "bdaefb17d2daa9af6cadb156bb68766bad3742ee7fc321e9b7cb8f05a703eb80",
         "pageCount": 7
       }
     }

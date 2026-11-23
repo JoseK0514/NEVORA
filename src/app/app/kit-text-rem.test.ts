@@ -147,3 +147,16 @@ describe('sign-in pages and the header account name (Jose, Nov 23)', () => {
     expect(css('app/app/corp-shell.css')).toContain('.portal-account-menu .nevora-action-menu-trigger { font: 400 0.9375rem/1.25rem Inter');
   });
 });
+
+describe('Employee Schedule at 200% text (Nov 23, late)', () => {
+  it('the changes list "Added Mon, Nov 23" line and the week labels are rem; the row chip wraps once text grows', () => {
+    const corp = css('components/employee-schedule-corp.css');
+    expect(corp).toContain('.c-esched .schedule-publication-change li strong { color: var(--c-ink); font-size: 0.9375rem; line-height: 1.25rem;');
+    expect(corp).toContain('.c-esched .c-card .schedule-publication-change li strong { font-size: 0.9375rem; line-height: 1.25rem;');
+    expect(corp).not.toMatch(/schedule-publication-change li strong \{[^}]*15px/);
+    const kit = css('components/owner-b/owner-b.css');
+    expect(kit).toMatch(/\.b-week__d \{[^}]*font-size: 0\.75rem;/);
+    expect(kit).toMatch(/\.b-days-l \{[^}]*font-size: 0\.75rem;/);
+    expect(kit).toContain('@container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); white-space: normal; overflow: visible; text-overflow: clip; } }');
+  });
+});
