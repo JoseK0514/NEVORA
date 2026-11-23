@@ -6,7 +6,7 @@ const noop=()=>{},key={id:'11111111-1111-4111-8111-111111111111',name:'My phone'
 const state:PasskeyState={phase:'ready',passkeys:[key],busy:null,notice:'',needsRefresh:false};
 const render=(next:Partial<PasskeyState>={},supported=true,confirm=false)=>renderToStaticMarkup(<EmployeePasskeyView mobile state={{...state,...next}} supported={supported} confirm={confirm?key:null} onAdd={noop} onRefresh={noop} onRemove={noop} onReview={noop} onKeep={noop} onCancel={noop}/>);
 it('shows only saved own metadata with honest native setup instructions',()=>{
- const html=render();expect(html).toContain('Saved passkeys');expect(html).toContain('My phone');expect(html).toContain('Not used yet');expect(html).toContain('NEVORA does not receive your biometric data');expect(render({passkeys:[]})).toContain('device’s screen lock');expect(render({passkeys:[]})).toContain('No saved passkeys');expect(html).not.toContain('Set up Face ID');expect(html).not.toContain('Rename');
+ const html=render();expect(html).toContain('Saved passkeys');expect(html).toContain('My phone');expect(html).toContain('Not used yet');expect(html).toContain('NEVORA does not receive your biometric data');expect(render({passkeys:[]})).toContain('device’s screen lock');expect(render({passkeys:[]})).toContain('None yet');expect(html).not.toContain('Set up Face ID');expect(html).not.toContain('Rename');
 });
 it('keeps saved-key removal available when this browser cannot create credentials',()=>{
  const html=render({},false);expect(html).toContain('Remove My phone');expect(html).not.toContain('>Add a passkey<');expect(html).toContain('still manage your saved passkeys');
