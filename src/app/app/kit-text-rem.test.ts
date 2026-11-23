@@ -38,3 +38,14 @@ describe('phone band titles in rem', () => {
     }
   });
 });
+
+describe('band title and its button at 320px', () => {
+  it('Payroll and Pay wrap the button under a title that no longer fits beside it (no two-column grid)', () => {
+    const sheet = css('app/app/owner-b-time-pay.css').replace(/:not\(#fa\d+\)/g, '');
+    const rule = (tail: string) => sheet.match(new RegExp(`\\.c-page\\.c-pay > \\.b-screen \\.b-hero > \\.b-title${tail} \\{([^}]*)\\}`))?.[1] ?? '';
+    expect(rule(':has\\(> \\.b-title__right\\)')).toContain('display: flex !important; flex-wrap: wrap !important;');
+    expect(rule(':has\\(> \\.b-title__right\\)')).not.toContain('grid-template-columns');
+    expect(rule(':has\\(> \\.b-title__right\\) > \\.b-title__text > h1')).toContain('min-width: min-content !important;');
+    expect(rule(' > \\.b-title__right')).toContain('order: 1 !important; flex: none !important;');
+  });
+});

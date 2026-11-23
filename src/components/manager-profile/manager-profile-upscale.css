@@ -7,6 +7,12 @@
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > summary.q-row::after { display: none; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section > .nv-card__head { display: none; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section { grid-template-columns: minmax(0, 1fr); row-gap: 12px; padding-top: 4px; box-shadow: none; }
+/* Phase 2 Z2 (Nov 23, 2026): on a phone "Add a passkey" goes under its explanation. The shared passkey row puts the
+ * button in grid column 2, which added a column beside the one-column row above and squeezed the explanation to about
+ * 130px at 320. From 768px the button stays beside the text as before. */
+@media (max-width: 767px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section .pk-add { grid-column: 1; grid-row: auto; justify-self: start; }
+}
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-device-other { display: none; }
 @media (min-width: 768px) {
   :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-device-phone { display: none; }
