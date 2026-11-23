@@ -33,7 +33,7 @@ export default async function EditLocationPage({
     // once something changed); tablets and desktop save from the form card's footer.
     <SettingsPageB title={location.shortName} titleId="edit-location-title" back={{ href: "/app/settings/locations", label: words.locations }}
       phoneRight={<button type="submit" form="edit-location-form" className="c-setb-save">Save</button>}>
-      <EditLocationForm key={`${location.id}:${location.updatedAt ?? ""}`} location={location} action={updateLocationAction} words={{ location: words.location, locations: words.locations }}
+      <EditLocationForm key={location.id} location={location} action={updateLocationAction} words={{ location: words.location, locations: words.locations }}
         staffing={minimum === null ? undefined : `${minimum} per shift`} eligible={eligible} />
     </SettingsPageB>
   );
