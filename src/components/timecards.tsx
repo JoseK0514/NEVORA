@@ -706,6 +706,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // text on a 320px phone "Approval opens Mon, Nov 30" wraps after "opens" instead of running off the screen. A part
     // still moves to the next line whole whenever it fits there.
     const subtitle=<BSegs parts={ready?[rangeText(period),`${cards.length} ${cards.length===1?'person':'people'}`,folded&&cards.length?`Approval opens ${approveFrom(period)}`:null]:[rangeText(period)]}/>;
+    // G89 (Nov 23, 2026): on phones the Team card's title carries the count ("Team 12"), so the band says the week (and
+    // when approval opens) without "12 people"; with no Team card the count stays in the band.
+    const phoneSubtitle=ready&&cards.length?<BSegs parts={[rangeText(period),folded?`Approval opens ${approveFrom(period)}`:null]}/>:subtitle;
     const summary=ready&&cards.length&&!showBulk&&!folded?<CorpCard as="div" ariaLabel="Period overview">
       <div className="c-card__body">
         <div className="c-tc-sum"><b>{summaryTitle}</b>
@@ -759,7 +762,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       // Direction B (Jose approved Nov 5, 2026; mock "Owner · Time"): the hero with the week control and this period's figures,
       // then each person's recorded time. Selecting and the reviewed batch keep the layout below, unchanged.
       const bScreen=showBulk||selecting?null:<BScreen>
-        <BHero title="Timecards" titleId="b-tc-title" sub={subtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
+        <BHero title="Timecards" titleId="b-tc-title" sub={phoneSubtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
           <BSeg label="Week" items={[
             {key:'this',label:'This week',current:periodName==='This week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(thisWeek);}},
             {key:'last',label:'Last week',current:periodName==='Last week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(lastWeek);}},
@@ -817,7 +820,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       </BScreen>;
       return <CorpPage className="c-tc" labelledBy="tc-title">
         {bScreen}
-        <CorpTitle id="tc-title" title="Timecards" sub={subtitle} actions={selectButton}/>
+        <CorpTitle id="tc-title" title="Timecards" sub={phoneSubtitle} actions={selectButton}/>
         {seg}
         <HoldHeight holding={!ready} memory="timecards-manager" className="c-tc-hold">
           {stateCard}
