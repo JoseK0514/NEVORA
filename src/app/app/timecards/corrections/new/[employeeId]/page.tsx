@@ -15,7 +15,7 @@ import {DelegatedTimeCorrectionForm} from '@/components/delegated-time-correctio
 export const metadata={title:'Request time correction'};
 export default async function DelegatedCorrectionPage({params}:{params:Promise<{employeeId:string}>}){
  const session=await requireRoles(MANAGER_ROLES),proof=await requireSessionMutationProof(),workspace=await getWorkspace(),access=await withOperationalCompany(proof,async()=>null),{employeeId}=await params;
- if(access.state==='unavailable')return <OperationalUnavailable title="Time corrections unavailable" reason={access.reason}/>;
+ if(access.state==='unavailable')return <OperationalUnavailable title="Request time correction unavailable" reason={access.reason}/>;
  const authority=correctionAuthority(proof),recoveryScope=delegatedRecoveryScope(workspace.id);
  return <ScopedReadFrame observation={scopedObservation(access)}><CorpPage className="c-page--narrow" labelledBy="delegated-title"><CorpNav back={{href:'/app/timecards',label:'Time'}} title="Request time correction" phoneOnly/><CorpTitle id="delegated-title" title="Request time correction" wide/><CorpCard><CorpBody><DelegatedTimeCorrectionForm key={JSON.stringify([recoveryScope,session.id,authority,employeeId])} employeeId={employeeId} actorId={session.id} authority={authority} recoveryScope={recoveryScope}/></CorpBody></CorpCard></CorpPage></ScopedReadFrame>;
 }
