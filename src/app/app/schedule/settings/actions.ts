@@ -10,6 +10,8 @@ import { redirect } from "next/navigation";
 import { isManagementAuthorizationError } from "@/lib/data/management-session";
 import { timeMinutes } from "@/lib/scheduling/periods";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
+import { readPortalLanguage } from "@/lib/activation/language.server";
+import { SCHEDULE_WORDS, scheduleWords, type ScheduleLang } from "../schedule-copy";
 import {
   createCoverageWindow,
   replaceCoverageWindowPositionRequirements,
@@ -19,6 +21,10 @@ import {
   saveScheduleHealthSettings,
 } from "@/lib/data/schedule-health";
 
+type Proof=Awaited<ReturnType<typeof requireSessionMutationProof>>;
+/** The person's language for a returned message (English when it can't be read). The inline wrappers below only see
+ * the form, so they read the session proof again for it; the policy action uses its own proof. */
+async function langOf(proof?:Proof):Promise<ScheduleLang>{try{return (await readPortalLanguage(proof??await requireSessionMutationProof())).language;}catch{return 'en';}}
 async function configurationAdmission(proof:Awaited<ReturnType<typeof requireSessionMutationProof>>,inline:boolean){
  try{await assertOperationalAccess(proof,{kind:'COMPANY'});}
  catch(error){if(!inline&&(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)))redirect('/app/schedule/settings?error=ACCESS_DENIED');throw error;}
@@ -116,7 +122,7 @@ async function saveSettings(formData: FormData, inline = false) {
 
   revalidatePath("/app/schedule");
   revalidatePath("/app/schedule/settings");
-  if (inline) return { success: "Schedule health settings updated." };
+  if (inline) return { success: scheduleWords(await langOf(proof)).rulesActions.settingsUpdated };
   redirect("/app/schedule/settings?saved=1");
 }
 /** Adds a same-day coverage requirement; midnight end input is normalized to 24:00. */
@@ -170,7 +176,7 @@ async function addWindow(formData: FormData, inline=false) {
 
   revalidatePath("/app/schedule");
   revalidatePath("/app/schedule/settings");
-  if(inline)return {success:"Coverage window added."};
+  if(inline)return {success:scheduleWords(await langOf(proof)).rulesActions.windowAdded};
   redirect("/app/schedule/settings?windowSaved=1");
 }
 
@@ -199,29 +205,30 @@ export async function deleteCoverageWindowAction(formData: FormData) {
   redirect("/app/schedule/settings?windowDeleted=1");
 }
 
-const inputErrors:Record<string,string>={
- invalid_staffing:'Staffing requirements must be whole numbers between 1 and 100. Choose whether a designated Lead is required for each unconfigured location.',
- invalid_hours:'Targets and maximums must be between 0 and 168 hours.',
- invalid_window:'Enter a valid day, time range, and optional staffing override.',
- duplicate_window:'Coverage window could not be saved. Check duplicate periods, active positions, and whole-number quantities from 1 to 100.',
-};
+/** Inline validation throws the English line; the form wrappers return it in the person's language. */
+const inputErrors:Record<string,string>=SCHEDULE_WORDS.en.rulesActions.inputErrors;
+async function inlineError(error:unknown,fallback:'settingsFailed'|'windowFailed'){
+ const t=scheduleWords(await langOf()).rulesActions;
+ const code=error instanceof Error?Object.keys(inputErrors).find(key=>inputErrors[key]===error.message):undefined;
+ return {error:code?t.inputErrors[code]:t[fallback]};
+}
 function validationFailure(code:string,inline:boolean):never {if(inline)throw new Error(inputErrors[code]);redirect(`/app/schedule/settings?error=${code}`);}
 function readRequirements(data:FormData){return data.getAll('quotaPositionId').map(String).flatMap(positionId=>{const raw=String(data.get(`quota-${positionId}`)??'').trim();return raw?[{positionId,quantity:Number(raw)}]:[];});}
 export async function saveScheduleHealthSettingsAction(data:FormData):Promise<void>{await saveSettings(data);}
 export async function addCoverageWindowAction(data:FormData):Promise<void>{await addWindow(data);}
-export async function saveScheduleHealthSettingsFormAction(data:FormData){try{return (await saveSettings(data,true))!;}catch(error){return {error:error instanceof Error&&Object.values(inputErrors).includes(error.message)?error.message:'Settings could not be saved. Your entries are preserved.'};}}
-export async function addCoverageWindowFormAction(data:FormData){try{return (await addWindow(data,true))!;}catch(error){return {error:error instanceof Error&&Object.values(inputErrors).includes(error.message)?error.message:'Coverage window could not be saved. Your entries are preserved.'};}}
+export async function saveScheduleHealthSettingsFormAction(data:FormData){try{return (await saveSettings(data,true))!;}catch(error){return inlineError(error,'settingsFailed');}}
+export async function addCoverageWindowFormAction(data:FormData){try{return (await addWindow(data,true))!;}catch(error){return inlineError(error,'windowFailed');}}
 export async function replaceCoverageWindowPositionRequirementsAction(data:FormData){
  const proof=await requireSessionMutationProof();
  if(!MANAGER_ROLES.includes(proof.employee.role))redirect("/app");
  const actor=proof.employee;
- try {await configurationAdmission(proof,true);await replaceCoverageWindowPositionRequirements({windowId:String(data.get('windowId')??''),requirements:readRequirements(data),actorEmployeeId:actor.id,proof});revalidatePath('/app/schedule/settings');revalidatePath('/app/settings/locations');return {success:'Position quantities updated.'};}
- catch(error){if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))return {error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.'};return {error:'Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.'};}
+ try {await configurationAdmission(proof,true);await replaceCoverageWindowPositionRequirements({windowId:String(data.get('windowId')??''),requirements:readRequirements(data),actorEmployeeId:actor.id,proof});revalidatePath('/app/schedule/settings');revalidatePath('/app/settings/locations');return {success:scheduleWords(await langOf(proof)).rulesActions.quantitiesUpdated};}
+ catch(error){const t=scheduleWords(await langOf(proof));if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))return {error:t.actions.accessDenied};return {error:t.rulesActions.quantitiesInvalid};}
 }
 
 export async function saveShiftChangePolicyAction(data:FormData):Promise<import('@/lib/shift-changes/types').PolicyWriteResult>{
- const input=parseWorkflowPolicyForm(data);if(!input)return {status:'invalid',fieldErrors:[{field:'mode',message:'Review approval mode and whole-number deadlines. Blank is unknown; completion advance must not exceed submission advance.'}]};
- const proof=await requireSessionMutationProof();if(proof.employee.role!=='OWNER')return {status:'invalid',fieldErrors:[{field:'authorization',message:'Only an active Owner can save this policy.'}]};
+ const input=parseWorkflowPolicyForm(data);if(!input)return {status:'invalid',fieldErrors:[{field:'mode',message:scheduleWords(await langOf()).rulesActions.policyInvalid}]};
+ const proof=await requireSessionMutationProof();if(proof.employee.role!=='OWNER')return {status:'invalid',fieldErrors:[{field:'authorization',message:scheduleWords(await langOf(proof)).rulesActions.policyOwnerOnly}]};
  const result=await saveShiftChangePolicy({...input,proof},neonNotificationExecutor());
  if(result.status==='saved'){revalidatePath('/app/schedule/settings');revalidatePath('/app/exchange');revalidatePath('/app');}return result;
 }
