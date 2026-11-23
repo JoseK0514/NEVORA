@@ -23,3 +23,7 @@
 @media (max-width: 767px) {
   :is(#c-root, html) .c-photo-review__acts > .c-btn { flex: 1 1 0; min-width: 0; }
 }
+/* From 768px the card's text takes the kit's wide inset (22px), the edge of its label and rows. */
+@media (min-width: 768px) {
+  :is(#c-root, html) :is(.c-photo-review__lede, .c-photo-review__body) { padding-left: var(--b-inset-wide, 22px); padding-right: var(--b-inset-wide, 22px); }
+}
