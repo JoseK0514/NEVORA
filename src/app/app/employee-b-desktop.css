@@ -104,7 +104,9 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .c-esched > .b-screen .b-stack > #b-my-agenda { grid-column: 1 !important; grid-row: span 3 !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-esched > .b-screen .b-stack > :is(#b-my-review, .b-card[aria-label="Open shifts"]) { grid-column: 2 !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-esched > .b-screen .b-stack:has(> .eb-wkc) > :is(.es-changes, .b-note) { display: none !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wk { display: grid !important; grid-template-columns: repeat(7, minmax(0, 1fr)) !important; gap: 10px !important; margin: 0 !important; padding: var(--b-space-8) var(--b-inset-wide) 22px !important; list-style: none !important; }
+    /* Gaps G80 (Nov 23, 2026): seven columns while each day has 4.5rem; with large text the days wrap into rows instead of
+     * overlapping ("6:30 AM –" over "9:00 AM –" at 768 with 200% text). */
+    html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wk { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(max(4.5rem, calc((100% - 60px) / 7)), 1fr)) !important; gap: 10px !important; margin: 0 !important; padding: var(--b-space-8) var(--b-inset-wide) 22px !important; list-style: none !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd { display: flex !important; flex-direction: column !important; gap: var(--b-space-8) !important; min-width: 0 !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd__h { display: flex !important; align-items: baseline !important; gap: 6px !important; padding-left: var(--b-space-2) !important; font-size: var(--b-fs-meta) !important; font-weight: 600 !important; color: var(--b-grey) !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .b-screen .eb-wd__h b { font-size: 1.125rem !important; font-weight: 700 !important; color: var(--b-ink) !important; font-variant-numeric: tabular-nums !important; }

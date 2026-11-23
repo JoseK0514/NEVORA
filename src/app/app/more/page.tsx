@@ -115,6 +115,9 @@ export default async function MorePage() {
   const has = (href: string) => navigation.some(entry => entry.href === href);
   const label = (href: string, fallback: string) => navigation.find(entry => entry.href === href)?.label ?? fallback;
   const owner = session.role === "OWNER";
+  // Navigation check (Nov 23, 2026): a location Manager's line names their places ("Manager · Condado · …"), from the
+  // authority read this page already makes; a company-wide Manager or an Owner keeps "Manager · Company".
+  const places = operational.state === "ready" && operational.scope?.mode === "LOCATIONS" ? operational.locations.map(location => location.shortName || location.name) : [];
   // Review B1 (NV-099): every navigation row leads with its Phosphor bold icon (a tinted circle, as Team and Timecards rows
   // do) and ends with its chevron; a row may end in a grey value before the chevron ("24 h this week").
   const rowIcons: Record<string, ReactNode> = { "/app/reports": <ChartBarIcon weight="bold" />, "/app/updates": <MegaphoneIcon weight="bold" />,
@@ -139,8 +142,8 @@ export default async function MorePage() {
     {/* Review Nov 11 (OW-032, TB-016), polish Nov 20, 2026: on tablets and desktop the groups read as one card in the
       812 column and Sign out is that card's last row (owner-b-settings.css); phones keep their separate cards. */}
     <CorpSection ariaLabel="You"><CorpCard as="div">
-      <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={<Dotted text={`${owner ? "Owner" : "Manager"} · ${company}`} />}
-        label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} name={name} />} chevron /></li></CorpRows>
+      <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={<Dotted text={[owner ? "Owner" : "Manager", ...places, company].join(" · ")} />}
+        avatar={<CorpAvatar initials={initialsOf(name)} name={name} />} chevron /></li></CorpRows>
     </CorpCard></CorpSection>
     {/* Owner premium R5: each group is a section, 32px from the next (12px inside one); More's groups need no visible label. */}
     {has("/app/reports") || has("/app/updates") || has("/app/my-pay") || has("/app/ai-manager") ? <CorpSection ariaLabel="Work"><CorpCard as="div">

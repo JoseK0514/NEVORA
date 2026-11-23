@@ -140,8 +140,10 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
       // alone). Final regression review: the kit's facts line (BSegs), so at 320 no line ends on the dot either.
       sub={needs === null ? undefined : <><BSegs parts={[needs, timecards ? `${plural(timecards, "timecard", "timecards")} to approve`.replace(/ /g, "\u00a0") : null]} /><span role="status" className="b-sr">{statusLine}</span></>}>
       {families.length ? <BSeg label="Show" items={[
-        // Review F5 (NV-103): each count is the segmented control's count pill; the name still reads "All, 13".
-        { key: "all", label: total === null ? "All" : <>All<CorpCount>{total}</CorpCount></>, current: filter === "all", onSelect: () => setFilter("all") },
+        // Review F5 (NV-103): each count is the segmented control's count pill. Batch nav gate and final fixes K: the name is
+        // the visible words with CorpCount's spoken space ("All 13"), never an aria-label.
+        // Navigation check (Nov 23, 2026), each fact once: the band already says the total, so "All" carries no count.
+        { key: "all", label: "All", current: filter === "all", onSelect: () => setFilter("all") },
         ...families.map(family => { const name = FILTER_LABEL[family.id as Exclude<Filter, "all">] ?? family.title, count = familyCount(family);
           return { key: family.id, label: <>{name}<CorpCount>{count}</CorpCount></>, current: filter === family.id, onSelect: () => setFilter(family.id as Filter) }; }),
       ]} /> : null}
@@ -166,7 +168,7 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
           {!scoped && <BRow lead={<BIcon tone="teal"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />}
           {/* Nov 14, 2026 inspection (AR-9): who can work is one tap from the requests it helps decide. */}
           {!scoped && <BRow lead={<BIcon tone="teal"><UserCheckIcon weight="bold" /></BIcon>} title="Availability" sub="Who can work and when" href="/app/availability" />}
-          <BRow lead={<BIcon tone="teal"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub={laterLine(later)} href="/app/inbox?view=more" label={`Later and done: ${laterLine(later).toLowerCase()}`} />
+          <BRow lead={<BIcon tone="teal"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub={laterLine(later)} href="/app/inbox?view=more" />
         </BList>
       </BCard>
     </BStack>
@@ -197,12 +199,12 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
         // place and the need are the facts under it ("Today · Calle Loíza · Needs 1"). The day sat in the title and broke
         // after "Today," on a phone, alone on the first line. Every width writes the full range (BWhen, Nov 23).
         const parts = (row.detail ?? "").split(" · ").map(part => part.replace(/Needs[\s\u00a0](\d+)[\s\u00a0](person|people)/, "Needs $1"));
-        return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={<span className="b-keep"><BWhen text={row.title} /></span>} sub={<BSegs parts={parts} />} href={row.href} label={row.label}
+        return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={<span className="b-keep"><BWhen text={row.title} /></span>} sub={<BSegs parts={parts} />} href={row.href}
         trail={<BButtonLink href={row.href} kind="ghost" label={`Find cover: ${row.title}`}>Find cover</BButtonLink>} />;
       }
       // Approved leave over a published shift: the schedule's job ("Fill Maria Rivera’s shift"), no Approve or Decline.
       if (group.id === "repair") return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={row.title}
-        chip={row.value ? <BChip tone="amber">{row.value}</BChip> : <BChip tone="amber">Approved time off</BChip>} sub={row.detail} href={row.href} label={row.label}
+        chip={row.value ? <BChip tone="amber">{row.value}</BChip> : <BChip tone="amber">Approved time off</BChip>} sub={row.detail} href={row.href}
         trail={<BButtonLink href={row.href} kind="ghost" label={`Fill shift: ${row.title}`}>Fill</BButtonLink>} />;
       // Jose's attendance words (Nov 11, 2026): a shift in progress with no punch is "Not clocked in"; "Missed" is only a
       // shift that ended with no punch. Phase 8 (a.md #11): the chip reads as Team's does ("Not clocked in · 49 min").
@@ -212,7 +214,7 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
       // with no dot (the amber dot beside "1 h" read as a second, different status from Team's chip).
       if (group.id === "missed" || group.id === "not-clocked-in") return <BRow key={row.key} lead={<BAvatar name={row.title} ring="late" />} title={row.title}
         chip={row.value ? group.id === "not-clocked-in" ? <BStatusText label={`${ATTENDANCE_WORDS.notClockedIn} · ${row.value}`}>{row.value}</BStatusText>
-          : <BChip tone="amber" dot>{`${ATTENDANCE_WORDS.notClockedIn} · ${row.value}`}</BChip> : undefined} sub={keepParts(row.detail)} href={row.href} label={row.label} />;
+          : <BChip tone="amber" dot>{`${ATTENDANCE_WORDS.notClockedIn} · ${row.value}`}</BChip> : undefined} sub={keepParts(row.detail)} href={row.href} />;
       const item = items.get(row.key);
       const requestId = group.id === "time-off" ? requestIdOf(item) : null;
       if (requestId) {
@@ -223,7 +225,7 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
           // Final polish (confirmations A #13): no "Checking the schedule…" under every row while the one read is out.
           : conflicts || (checked.has(requestId) && staffing.status === "loading") ? null : <span className="b-leave-note">{!checked.has(requestId) ? "Check the schedule on its page" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
         // Phase 3 (OW-012): a row with buttons has no chevron (the row itself opens the request); the buttons end the row.
-        return <BRow key={row.key} lead={<BAvatar name={row.title} />} title={row.title} sub={<>{keepParts(row.detail)}{note}</>} href={reviewHref} label={row.label} chevron={false}
+        return <BRow key={row.key} lead={<BAvatar name={row.title} />} title={row.title} sub={<>{keepParts(row.detail)}{note}</>} href={reviewHref} chevron={false}
           actions={<TimeOffDecisionForm checkHref={reviewHref}>
             <input type="hidden" name="requestId" value={requestId} /><input type="hidden" name="returnTo" value="inbox" /><input type="hidden" name="returnFilter" value="all" />
             <Decide name={row.title} approve={clear} reviewHref={reviewHref} />
@@ -237,7 +239,7 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
       // period ended") is the expected state, so it is quiet grey words beside the title, not a grey chip.
       // Final polish (Nov 20, 2026): a swap's two names sit round the bold swap glyph (BSwapNames), read "A and B".
       return <BRow key={row.key} lead={<BIcon tone={row.quiet ? "grey" : kind.tone}>{kind.icon}</BIcon>} title={row.swapWith ? <BSwapNames a={row.title} b={row.swapWith} /> : row.title}
-        chip={row.value ? /^\d+$/.test(row.value) ? <BCount>{row.value}</BCount> : <BStatusText>{row.value}</BStatusText> : undefined} sub={group.id.endsWith("corrections") ? correctionSub(row) : subOf(row)} href={row.href} label={row.label}
+        chip={row.value ? /^\d+$/.test(row.value) ? <BCount>{row.value}</BCount> : <BStatusText>{row.value}</BStatusText> : undefined} sub={group.id.endsWith("corrections") ? correctionSub(row) : subOf(row)} href={row.href}
         trail={review ? <BButtonLink href={row.href} kind="ghost" label={`Review ${row.title}${row.swapWith ? ` and ${row.swapWith}` : ""}`}>Review</BButtonLink> : undefined} />;
     })}</BList>
   </BCard>;

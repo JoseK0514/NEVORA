@@ -14,7 +14,6 @@ export const CHRISTMAS_BONUS_DISCLAIMER = "Informational only. Christmas bonus e
 const [DISCLAIMER_TITLE, ...DISCLAIMER_REST] = CHRISTMAS_BONUS_DISCLAIMER.split(/(?<=\.) /);
 
 const fullDate = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
-const yearRange = (year: BonusYear) => formatDateRange(year.startDate, year.endDate);
 const grouped = (value: number) => value.toLocaleString("en-US");
 /** A figure as Insights writes hours ("812 h 5 min", "45 min"; final verification F, F19: it read "812 h 05"), with
  * thousands grouped so it reads beside "1,350 h". */
@@ -66,10 +65,9 @@ function detail(row: BonusRow): ReactNode {
 function PersonRow({ row, year }: { row: BonusRow; year: number }) {
   const title = <><span className="c-bonus__name">{row.name}</span>{status(row)}</>;
   // Without a hire date there is no threshold: the row opens Edit employee on the hire date, and comes back here after
-  // Save (Review 30, D21). Other rows are not links, so their visible words are what is read.
+  // Save (Review 30, D21). Its name is its visible words (Rondo fix, Nov 23: no separate label).
   return row.status === "NEEDS_HIRE_DATE"
-    ? <CorpRow bold title={title} detail={detail(row)} href={`/app/employees/${encodeURIComponent(row.employeeId)}?edit=1&from=bonus&year=${year}`}
-      label={`${row.name}, no hire date, ${hoursFigure(row.recordedNanoseconds)} recorded, employee ID ${row.employeeId}. Open their profile to add it.`} chevron />
+    ? <CorpRow bold title={title} detail={detail(row)} href={`/app/employees/${encodeURIComponent(row.employeeId)}?edit=1&from=bonus&year=${year}`} chevron />
     : <CorpRow bold title={title} detail={detail(row)} chevron={false} />;
 }
 
@@ -84,9 +82,9 @@ export function ChristmasBonusView({ report, choices }: { report: ChristmasBonus
   return <CorpPage className="c-bonus c-page--narrow" labelledBy="bonus-title">
     <CorpNav back={{ href: "/app/reports", label: "Insights" }} title="Christmas bonus hours" titleId="bonus-nav-title" phoneOnly />
     {/* D11: the year is the band's pill (a menu), as Insights keeps its period; on a phone it sits under the title. */}
-    <CorpTitle id="bonus-title" title="Christmas bonus hours" sub={<>{keepWhole(`Bonus year ${yearRange(year)}`)} · All locations</>} wide
-      actions={<BonusYearMenu id="bonus-year-menu" current={year.endYear} choices={years} />} />
-    <div className="c-phone-sub c-bonus__phoneyear"><BonusYearMenu id="bonus-year-menu-phone" current={year.endYear} choices={years} /></div>
+    <CorpTitle id="bonus-title" title="Christmas bonus hours" sub={<>{keepWhole(formatDateRange(year.startDate, year.endDate))} · All locations</>} wide
+      actions={<BonusYearMenu id="bonus-year-menu" current={year.endYear} choices={years} text="Bonus year" />} />
+    <div className="c-phone-sub c-bonus__phoneyear"><BonusYearMenu id="bonus-year-menu-phone" current={year.endYear} choices={years} text={formatDateRange(year.startDate, year.endDate)} /></div>
     <CorpCard id="bonus-about" ariaLabel="About this report">
       {/* The disclaimer is the kit's information note (Jose's words unchanged as its body). */}
       <BCallout tone="teal" icon="info" title={DISCLAIMER_TITLE.replace(/\.$/, "")}>{DISCLAIMER_REST.join(" ")}</BCallout>

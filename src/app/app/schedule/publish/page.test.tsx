@@ -72,7 +72,11 @@ it("lists readiness warnings per location before Publish anyway confirms", async
 
 it("says when nothing is left to publish, and stops when access is unavailable", async () => {
   f.statuses = [{ locationId: "loc-1", status: "PUBLISHED" }];
-  expect(await html()).toContain("Everything planned this week is published.");
+  // Batch nav gate (Nov 23, 2026): the week's green Published says it once; no row pill or closing line repeats it.
+  const done = await html();
+  expect(done.match(/>Published</g)).toHaveLength(1);
+  expect(done).not.toContain("Everything planned this week is published.");
+  expect(done).not.toContain('class="c-btn c-btn--full"');
   f.denied = true;
   expect(await html()).toContain("Build and publish unavailable");
 });

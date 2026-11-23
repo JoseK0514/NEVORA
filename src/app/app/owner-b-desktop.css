@@ -1050,3 +1050,13 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .policy-private-review > .q-rule__body > p:not(#nvd-none):not(#nvd-none2) { text-wrap: pretty; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) select:has(> option[value=""][disabled]:checked) option:not([value=""]):not(#nvd-none) { color: var(--b-ink); }
 }
+
+/* Timecards (Nov 23, 2026 gate check): from 768px "Select" sits in the band's actions, but it is the page's own text button
+ * (teal, no fill), so it drew teal on the teal band (contrast 1.05:1) and could not be seen. It takes the band's glass
+ * action: the same 48px height, pill, glass fill and edge as the other band actions. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > header.c-title .c-tc-select:not(#gq1):not(#gq2):not(#gq3) { display: inline-flex !important; align-items: center !important; height: var(--b-btn-h-band) !important; min-height: var(--b-btn-h-band) !important; padding: 0 var(--b-inset) !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; font-weight: 600 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > header.c-title .c-tc-select:disabled:not(#gq1):not(#gq2):not(#gq3) { opacity: 0.6 !important; }
+  }
+}

@@ -131,6 +131,7 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
   const attentionCard = attention ? <section className="c-card c-setb-attn" ref={issueRef as never} tabIndex={-1} aria-label={t.unknownTitle}>{attention}</section> : null;
 
   let body: ReactNode;
+  let phoneSave: ReactNode = null;
   const title = draft ? (draft.revision ? t.editPolicy : t.newPolicy) : t.policiesTitle;
   if (load.state === "loading") body = <CorpCard ariaLabel={t.policiesCard}><div className="rs-skel" role="status" aria-busy="true"><span className="c-sr">{t.loadingPolicies}</span>
     <span className="rs-skel__bar rs-skel__bar--head" aria-hidden="true" />{[46, 38].map((w, i) => <span key={i} className="rs-skel__row" aria-hidden="true"><span className="rs-skel__bar rs-skel__bar--day" /><span className="rs-skel__bar" style={{ width: `${w}%` }} /></span>)}</div></CorpCard>;
@@ -147,6 +148,7 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
     const codeErr = problems.includes("codeTaken") ? t.codeTaken : t.needCode;
     const saving = custody?.status === "sending";
     const saveButton = (cls: string) => <button type="button" className={cls} aria-busy={saving || undefined} disabled={busy || !!custody} onClick={save}>{saving ? t.saving : t.save}</button>;
+    phoneSave = saveButton("c-setb-save");
     const cancel = () => leaveWithDiscardGuard(() => { setDraft(null); setProblems([]); setIssue(null); });
     // The card's footer holds Cancel and Save on tablets and desktop; phones stack them full width at the card's end (the
     // band has no Back while a policy is open, so Cancel is the way out).
@@ -169,7 +171,8 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
         <ul className="c-rows"><li><SwitchRowB id="pto-enabled" label={t.enabled} description={t.enabledHelp} checked={draft.enabled} disabled={busy} onChange={on => set({ enabled: on })} /></li></ul>
         {problems.length ? <p className="c-error c-setb-sum" ref={problemRef} tabIndex={-1} role="alert"><WarningCircleIcon weight="bold" aria-hidden="true" />{t.problems(problems.length)}</p> : null}
         <CorpFormFooter><Act kind="text" disabled={busy || !!custody} onClick={cancel}>{t.cancel}</Act>{saveButton("c-btn")}</CorpFormFooter>
-        <div className="c-only-phone c-setb-phoneacts">{saveButton("c-btn")}<Act kind="text" disabled={busy || !!custody} onClick={cancel}>{t.cancel}</Act></div>
+        {/* Final fixes S2 (G85): a phone saves from the band, as every Settings form does; Cancel stays at the card's end. */}
+        <div className="c-only-phone c-setb-phoneacts"><Act kind="text" disabled={busy || !!custody} onClick={cancel}>{t.cancel}</Act></div>
       </section>
     </>;
   } else {
@@ -197,7 +200,7 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
     </>;
   }
 
-  return <SettingsPageB title={title} titleId={TITLE_ID} back={draft ? null : { href: "/app/settings", label: t.settingsBack }} className="pto" lang={lang}>
+  return <SettingsPageB title={title} titleId={TITLE_ID} back={draft ? null : { href: "/app/settings", label: t.settingsBack }} className="pto" lang={lang} phoneRight={phoneSave}>
     <p className="c-sr" role="status" aria-live="polite">{said}</p>
     {body}
     {/* Leaving with policy edits that are not saved asks first (Nov 21, 2026); a save that is being checked keeps its own hold. */}

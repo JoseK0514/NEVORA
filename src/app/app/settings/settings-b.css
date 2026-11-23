@@ -12,11 +12,32 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-fields + .c-rows:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { box-shadow: inset 0 1px 0 var(--b-line) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-opt:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-weight: 400 !important; color: var(--b-grey) !important; }
 
+  /* A field's error: the 16px bold warning glyph, 6px, then the words (DESIGN.MD Forms, OW-023). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-error:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; align-items: flex-start !important; gap: 6px !important; margin: 0 !important; }
+
   /* A locked value: the grey value, then the 16px bold lock in the chevron's place. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-lock:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: block !important; width: 16px !important; height: 16px !important; color: var(--b-grey) !important; }
 
   /* A card's one grey note, as its footer: the card's text edge, 12px above, 16px below. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card .c-setb-cardnote:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { margin: 0 !important; padding: var(--b-space-12) var(--b-inset) var(--b-space-16) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; font: 400 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", -apple-system, sans-serif !important; color: var(--b-grey) !important; }
+
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card .c-setb-cardnote:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+
+  /* The Settings hub on tablets (768–1023px): one column of cards. Two columns there cut a title beside its value
+   * ("Clocker ta…  • 1 not set up"). Desktop keeps its two columns. */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-settings.c-setb:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { display: flex !important; flex-direction: column !important; gap: var(--b-space-20) !important; columns: auto !important; }
+  }
+
+  /* Text that scales with the reader's setting (200% text): the kit's fixed 13 and 15px pieces on these pages take the
+   * rem type roles. A field's text stays at least 16px so iOS never zooms on focus. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-setb :is(.c-row__value, .c-btn):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body-sm) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-setb .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { height: auto !important; min-height: max(44px, 2.75rem) !important; padding-top: var(--b-space-8) !important; padding-bottom: var(--b-space-8) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-setb :is(.c-field__label, .c-section__label, .c-field__help, .c-error):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-setb .c-in:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: max(1rem, var(--b-fs-body)) !important; line-height: var(--b-lh-body-sm) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-setb .b-chip:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-caption) !important; height: auto !important; }
 
   /* A switch row and a radio row: the whole row is the target; the control sits where the chevron would. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb :is(.c-setb-switch, .c-setb-radio):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { cursor: pointer !important; gap: var(--b-space-12) !important; }
@@ -80,8 +101,15 @@
 :is(#c-root, html) .c-page.c-setb .c-setb-swatches button svg { width: 24px; height: 24px; }
 :is(#c-root, html) .c-page.c-setb .c-setb-swatches button[aria-pressed="true"] { box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px var(--b-ink); }
 :is(#c-root, html) .c-page.c-setb .c-setb-swatches button:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: 6px; }
+/* The sheet's box wins over the shell's general dialog rules (layered, as they are). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb dialog.c-setb-dlg:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { position: fixed !important; inset: auto 0 0 0 !important; width: 100% !important; max-width: 100% !important; max-height: 92dvh !important; margin: 0 !important; border-radius: var(--b-radius-card) var(--b-radius-card) 0 0 !important; }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb dialog.c-setb-dlg:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { inset: 0 !important; width: min(480px, calc(100% - 48px)) !important; max-height: min(720px, calc(100dvh - 48px)) !important; margin: auto !important; border-radius: var(--b-radius-card) !important; }
+  }
+}
 @media (min-width: 768px) {
-  :is(#c-root, html) .c-page.c-setb dialog.c-setb-dlg { inset: 0; width: min(480px, calc(100% - 48px)); max-height: min(720px, calc(100dvh - 48px)); margin: auto; padding-bottom: var(--b-space-24); border-radius: var(--b-radius-card); }
+  :is(#c-root, html) .c-page.c-setb dialog.c-setb-dlg { padding-bottom: var(--b-space-24); }
   :is(#c-root, html) .c-page.c-setb .c-setb-dlg__acts { flex-direction: row; justify-content: flex-end; align-items: center; }
   :is(#c-root, html) .c-page.c-setb .c-setb-dlg__acts > .c-btn { width: auto; min-width: 120px; }
   :is(#c-root, html) .c-page.c-setb .c-setb-dlg__acts > .c-setb-dlg__danger { margin-right: auto; }
@@ -190,3 +218,7 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:is(.pto, .cp) :is(.c-card > .c-setb-fields, .c-setb-fieldset > .c-setb-fields, .c-card .c-setb-cardnote, .c-card > .c-setb-sum, .c-setb-legend):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
   }
 }
+
+/* Final fixes S2 (G85, J5): a result's icon lines up with its first line (the title), not the middle of two lines. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-result .b-notice:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { align-items: flex-start !important; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-result .b-notice__tx:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-top: max(0px, calc((36px - 1.25rem) / 2)) !important; }

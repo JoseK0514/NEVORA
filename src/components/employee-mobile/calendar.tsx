@@ -13,7 +13,7 @@ type Props=Omit<CalendarClientState,'pendingKind'>&{pendingKind?:CalendarCommand
 
 const PROVIDERS=CALENDAR_PROVIDERS;
 
-/** Board E-Calendar: "Your calendar link" (status pill, what it does, one primary action), "Or add it straight to"
+/** Board E-Calendar: "Subscription" (status pill, what it does, one primary action), "Or add it straight to"
  * (setup steps per calendar app), then Reset link in red. The client owner, commands and confirmations are unchanged:
  * the private URL is shown once after it's created, Reset (rotate) and Revoke ask first. */
 export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendingKind,onCommand,onCopy,onRetry}:Props){
@@ -37,14 +37,13 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
  return <><EmployeeCalendarB {...{status,url,paused,busy,notice,pendingKind,onCommand,onCopy,onRetry,confirmation,open}} onOpen={setOpen} onAsk={ask} onCancel={cancel} onConfirm={confirmNow} feedbackRef={bFeedback} confirmRef={bConfirm} resetRef={bReset} revokeRef={bRevoke}/>
  <section className="em-account-stack em-calendar" aria-labelledby="employee-calendar-heading" data-calendar-setting data-calendar-state={paused?'paused':busy?'working':status?.state??'loading'}>
   <div className="c-card" aria-busy={busy}>
-   <div className="c-card__head"><h2 className="c-card__label" id="employee-calendar-heading">Your calendar link</h2>{pill?<div className="c-card__aside">{pill}</div>:null}</div>
+   <div className="c-card__head"><h2 className="c-card__label" id="employee-calendar-heading">Subscription</h2>{pill?<div className="c-card__aside">{pill}</div>:null}</div>
    <div className="c-card__body em-calendar-body">
     {paused?<p role="status">Calendar settings paused. Return to this window to check your link.</p>:busy?<p role="status">Saving your calendar request…</p>:!status?<p role="status">Checking your calendar link…</p>:!available?<>
      <p role="status">{status.state==='unauthorized'?'Your access could not be confirmed. Sign in again to manage your link.':'Calendar settings could not be checked. Try again to see the current status.'}</p>
      {status.state==='unauthorized'?<Link className="c-btn c-btn--secondary c-btn--full" href="/login">Sign in</Link>:<button type="button" className="c-btn c-btn--secondary c-btn--full" onClick={onRetry}>Try again</button>}
     </>:<>
-     <h3 className="em-calendar-lead">Your shifts, in your calendar</h3>
-     <p>Your calendar app picks up schedule changes the next time it refreshes, which can take a while. Anyone with the link can see your shift times and locations, so keep it to yourself.</p>
+     <p>Anyone with the link can see your shift times and locations, so keep it to yourself.</p>
      {unknown?<p className="em-calendar-extra">Your previous request still needs to be checked before you can change this link.</p>
       :active?currentUrl?<div className="em-calendar-secret">
        <label className="c-field__label" htmlFor="employee-calendar-link">Your private calendar link</label>

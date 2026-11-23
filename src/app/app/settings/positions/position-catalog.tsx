@@ -71,7 +71,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
           onClick={() => open({ kind: "add" }, "position-add")} /></li>
       </CorpRows>
     </CorpCard> : <CorpEmpty title="No positions yet" body="Shifts can still be added without a position."
-      action={<button id="position-add" type="button" className="c-btn c-btn--secondary" disabled={!ready} onClick={() => open({ kind: "add" }, "position-add")}>Add position</button>} />}
+      action={<button id="position-add" type="button" className="c-btn" disabled={!ready} onClick={() => open({ kind: "add" }, "position-add")}>Add position</button>} />}
     {archived.length ? <CorpCard id="positions-archived" label="Archived" count={archived.length}>
       <CorpRows label="Archived positions">{archived.map(row)}</CorpRows>
     </CorpCard> : null}
