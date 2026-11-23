@@ -8,7 +8,12 @@ Branch `claude-codex-collab-nevora-requests-account`, based on `claude-codex-col
 |---|---|
 | `b2e5f8a2` | Delete my account, Manager Profile, Help someone sign in and Person access onto Direction B (code and tests) |
 | `4a693129` | Help someone sign in: the closed "How this works" card is the row's height on phones |
-| (this commit) | Captures and this report only |
+| `f784dc05` | Captures and the first report |
+| `6f618133` | Person (F4): rows named by their visible text (axe label-content-name-mismatch) |
+| (this commit) | Report update after the 2-hour-target accessibility pass (docs only) |
+
+**Scope change (lead, 11:42 UTC, read 12:02):** this package is now E1 and F4 only; F9, I1 and I6 go to another
+session. Their commits above were already pushed; the lead can take or drop them. Nothing was reverted.
 
 ## Proof run
 
@@ -129,11 +134,28 @@ Not checked: axe, 320 px, 200% text, keyboard order, Mℓ captures (see Gaps)
 
 None in this package's files. Needs Jose's OK (trust wording): F4 "Give them a one-time link to sign back in".
 
+## Accessibility pass on E1 and F4 (2-hour target)
+
+Production build, scoped harness (`mgr.ts` extended with `NEVORA_MGR_LOGIN` and `NEVORA_MGR_ROUTES`, scratch only), as
+Owner `QAOWNER` and Manager `OWN-ELENA`: 320, 390, 390 at 200% text and 1440; axe, keyboard focus walk (40 tabs),
+clipped and overlapping text, overflow.
+
+| Page | Finding | Where it lives | Done |
+|---|---|---|---|
+| F4 person, F4 access | axe label-content-name-mismatch: Work rows ("Shifts for Carlos Vega"), When they can be scheduled, Role, Clocker PIN rows | page | Fixed (`6f618133`), every width |
+| E1 list and Approved, 390 and 1440 | Band segments are 36 px tall (track 44 px) | shared token `--b-seg-item-h` and band segment rules (`owner-b-desktop.css`, `b-foundation.css`) | Kit/shell: report |
+| E1 list and Approved, 1440 | axe color-contrast 1.08 on the inactive segments: axe reads the canvas (#f3f6f5) behind white text; on screen they sit on the band (white on teal) | shared band painting on desktop (`--b-band-solid` isn't under the segments) | Kit/shell: report (likely a measuring false positive, needs the solid band under the segment row) |
+| E1, F4, 1440 | Band back link ("Things to do", "Team", "Carlos") is 32 px tall | `CorpNav` / `QuietNav` | Kit: report |
+| F4 person, 390 | "Edit" on the phone band is 40 px tall | `CorpNav` right slot | Kit: report |
+| E1 Manager without the grant, 390 at 200% | Closed card text clipped ("Time-off decisions aren’t part of your a…", "Open your schedule") | `OperationalUnavailable` / `BState` | Shared: report |
+| all | No missing focus rings in the main column; overflow 0; no overlaps | | ✓ |
+
 ## Gaps
 
 - No location Manager (Mℓ) captures: the scoped harness wasn't run in the time. E1, F4 and F9 show the shared closed
   notice for Mℓ; I1 and I6 use the same components as the Manager.
-- No axe, 320 px, 200% text or keyboard run on the after state.
+- E1 and F4: axe, 320 px, 200% text and keyboard were run (table above). F9, I1 and I6: not run (moved to another
+  session).
 - The LAST_OWNER card under the new layout is covered by the U11 tests, not by a capture (the harness can't trigger it).
 
 ## End sweep (proposed ledger rows)
@@ -144,7 +166,10 @@ None in this package's files. Needs Jose's OK (trust wording): F4 "Give them a o
 | RA-2 | I1 | Move the Owner and Manager Profile from Quiet rows to Corp rows | end sweep |
 | RA-3 | E1 | Closed card for a Manager without "Approve time off": "time off" three times; "Open your schedule" for a company-wide Manager (shared component) | end sweep |
 | RA-4 | I6 | Desktop card head gap (Corp card) larger than the B screen's | end sweep |
-| RA-5 | all | axe, 320 px, 200% text and keyboard pass on the after state; Mℓ captures | end sweep |
+| RA-5 | F9, I1, I6 | axe, 320 px, 200% text and keyboard pass on the after state; Mℓ captures | for the session that owns them now |
+| RA-6 | kit | Band segment items 36 px (`--b-seg-item-h`), back links 32 px, phone band "Edit" 40 px | kit/shell |
+| RA-7 | shell | Desktop band segments read as white on #f3f6f5 by axe (1.08:1) | kit/shell |
+| RA-8 | shared | Closed state card clips at 200% text on a phone | kit/shell |
 
 ## Kit or shell changes requested
 
