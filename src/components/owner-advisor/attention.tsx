@@ -49,19 +49,19 @@ export function AttentionSection({ briefing, disabled, saving, review, refresh, 
   // the same title sit under one title by place, so a briefing never repeats a line per item.
   const items = briefing.items;
   const shared = <T,>(pick: (item: (typeof items)[number]) => T) => items.length > 1 && items.every(item => pick(item) === pick(items[0]));
-  const oneDay = shared(i => i.date), oneTime = shared(i => i.source.observedAt), oneBasis = shared(i => i.basis);
+  const oneDay = shared(i => i.date), oneTime = shared(i => whenText(i.source.observedAt, clock.timeZone, clock.today)), oneBasis = shared(i => i.basis);
   const groups: { title: string; items: typeof items }[] = [];
   for (const item of items) {
     const group = groups.find(g => g.title === item.title);
     if (group) group.items.push(item); else groups.push({ title: item.title, items: [item] });
   }
   const observed = (at: string) => <>Observed <time dateTime={at}>{whenText(at, clock.timeZone, clock.today)}</time></>;
-  const itemBody = (item: (typeof items)[number], withPlace: boolean) => {
+  const itemBody = (item: (typeof items)[number], withPlace: boolean, groupBasis = false) => {
     const facts = [withPlace ? item.locationName : null, oneDay ? null : dayText(item.date, "en", year), oneTime ? null : observed(item.source.observedAt)];
     return <>
       {facts.some(Boolean) ? <p className="oa-facts"><BSegs parts={facts} /></p> : null}
       <p className="oa-item__d">{attentionDetail(item.detail)}</p>
-      {oneBasis ? null : <p className="oa-item__basis">{basisWords(item.basis)}</p>}
+      {oneBasis || groupBasis ? null : <p className="oa-item__basis">{basisWords(item.basis)}</p>}
       <div className="oa-acts oa-acts--att">
         <CorpButtonLink native href={item.source.href} kind="secondary" size="md" className="b-rowact b-rowact--go">Review source</CorpButtonLink>
         <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" disabled={disabled || item.disposition === "tracking"} onClick={() => review(item.id, "tracking")}>{item.disposition === "tracking" ? "Tracking" : "Track this issue"}</CorpButton>
@@ -87,11 +87,16 @@ export function AttentionSection({ briefing, disabled, saving, review, refresh, 
                 <BIcon tone="amber">{KIND_ICON[group.items[0].kind]}</BIcon>
                 <div className="oa-item__main">
                   <h3 className="oa-item__t">{group.title}</h3>
-                  {group.items.length === 1 ? itemBody(group.items[0], true)
-                    : group.items.map(item => <div key={item.id} className="oa-subitem">
-                      <h4 className="oa-subitem__t">{item.locationName}</h4>
-                      {itemBody(item, false)}
-                    </div>)}
+                  {group.items.length === 1 ? itemBody(group.items[0], true) : (() => {
+                    const groupBasis = !oneBasis && group.items.every(item => item.basis === group.items[0].basis);
+                    return <>
+                      {groupBasis ? <p className="oa-item__basis">{basisWords(group.items[0].basis)}</p> : null}
+                      {group.items.map(item => <div key={item.id} className="oa-subitem">
+                        <h4 className="oa-subitem__t">{item.locationName}</h4>
+                        {itemBody(item, false, groupBasis)}
+                      </div>)}
+                    </>;
+                  })()}
                 </div>
               </li>)}</ol>}
             {unreviewed > briefing.items.length ? <p className="oa-foot">Showing {briefing.items.length} of {unreviewed} unreviewed items. Review the source screens for the full picture.</p> : null}
