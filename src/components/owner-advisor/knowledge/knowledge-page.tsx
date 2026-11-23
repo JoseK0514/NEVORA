@@ -22,11 +22,14 @@ import { BCallout, BState } from "@/components/owner-b/b-kit";
 import { FormHead, FormHeadLink } from "@/components/team/team-forms";
 import { toast } from "@/components/toaster";
 import {
-  CATEGORIES, KNOWLEDGE_LIMITS, LOCALE_LABELS, PROFILE_FIELDS, PROFILE_LABELS, categoryLabel, companyTime, createKnowledgeClient, documentErrors, entryState,
+  CATEGORIES, KNOWLEDGE_LIMITS, PROFILE_FIELDS, companyTime, createKnowledgeClient, documentErrors, entryState,
   entrySummary, newRequestId, normalizeText, profileBody, profileErrors, sizeText, utf8Bytes, versionHref, zonedInput, zonedInstant,
   type DateField, type DraftErrors, type KnowledgeClient, type KnowledgeCommand, type KnowledgeEntry, type KnowledgeLocale, type KnowledgeSnapshot,
   type KnowledgeVersion, type ProfileFields, type WriteOutcome,
 } from "@/lib/owner-advisor/knowledge-client";
+import type { Lang } from "../format";
+import { useAdvisorLang } from "../lang";
+import { KNOWLEDGE_COPY, type KnowledgeCopy, type KnowledgeVerb } from "./knowledge-copy";
 import { viewHref, type KnowledgeView } from "./views";
 import "./knowledge.css";
 
@@ -39,15 +42,24 @@ const LIBRARY = viewHref({ name: "library" });
 type Issue = { kind: "uncertain" | "conflict" | "limit" | "invalid"; op: KnowledgeCommand["op"] };
 type Custody = { command: KnowledgeCommand; status: "sending" | "uncertain" };
 type Load = { state: "loading" } | { state: "ready"; snapshot: KnowledgeSnapshot } | { state: "failed" } | { state: "revoked" };
-type Ctx = { client: KnowledgeClient; timeZone: string; snapshot: KnowledgeSnapshot; now: number; busy: boolean;
+type Ctx = { client: KnowledgeClient; timeZone: string; snapshot: KnowledgeSnapshot; now: number; busy: boolean; t: KnowledgeCopy; lang: Lang;
   send: (command: KnowledgeCommand) => Promise<boolean>; go: (view: KnowledgeView) => void };
 
-const verb = (op: KnowledgeCommand["op"]) => op === "publish" ? "publish" : op === "archive" ? "archive" : op === "delete" ? "delete" : "save";
-const shortDay = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, month: "short", day: "numeric" }).format(new Date(iso));
+const verb = (op: KnowledgeCommand["op"]): KnowledgeVerb => op === "publish" ? "publish" : op === "archive" ? "archive" : op === "delete" ? "delete" : "save";
+const LOCALE: Record<Lang, string> = { en: "en-US", es: "es-PR" };
+const shortDay = (iso: string, timeZone: string, lang: Lang = "en") => new Intl.DateTimeFormat(LOCALE[lang], { timeZone, month: "short", day: "numeric" }).format(new Date(iso));
+/** The lib's company time ("Fri, Nov 20, 2026, 2:30 PM"), read in Spanish as "vie, 20 nov 2026, 2:30 p. m.". */
+function zonedTime(iso: string | null, timeZone: string, lang: Lang, withZone = false) {
+  if (lang === "en" || !iso) return companyTime(iso, timeZone, withZone);
+  return new Intl.DateTimeFormat(LOCALE.es, { timeZone, weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", ...(withZone ? { timeZoneName: "short" } : {}) }).format(new Date(iso));
+}
+const topicOf = (t: KnowledgeCopy, value: string) => t.categories[value] ?? t.categories.other;
 
 export function KnowledgePage({ timeZone, view, client: given }: { timeZone: string; view: KnowledgeView; client?: KnowledgeClient }) {
   const client = useMemo(() => given ?? createKnowledgeClient(), [given]);
   const router = useRouter();
+  const lang = useAdvisorLang();
+  const t = KNOWLEDGE_COPY[lang];
   const [load, setLoad] = useState<Load>({ state: "loading" });
   const [custody, setCustody] = useState<Custody | null>(null);
   const [issue, setIssue] = useState<Issue | null>(null);
@@ -114,20 +126,20 @@ export function KnowledgePage({ timeZone, view, client: given }: { timeZone: str
     setIssue(null);
     await reload();
     if (receipt.state === "draft_saved" && receipt.versionId) {
-      toast("Draft saved");
+      toast(t.toastDraftSaved);
       go({ name: "version", documentId: receipt.documentId, versionId: receipt.versionId });
     } else if (receipt.state === "published") {
-      toast("Published");
+      toast(t.toastPublished);
       go({ name: "entry", documentId: receipt.documentId });
     } else if (receipt.state === "archived") {
-      toast("Archived");
+      toast(t.toastArchived);
       go({ name: "entry", documentId: receipt.documentId });
     } else {
-      toast("Deleted");
+      toast(t.toastDeleted);
       go({ name: "library" });
     }
     return true;
-  }, [go, reload, revoke]);
+  }, [go, reload, revoke, t]);
 
   const send = useCallback(async (command: KnowledgeCommand) => {
     if (custody) return false;
@@ -144,38 +156,38 @@ export function KnowledgePage({ timeZone, view, client: given }: { timeZone: str
   const abandon = useCallback(async () => {
     setCustody(null);
     await reload();
-    toast("Reloaded. Check your change before retrying.", "info");
-  }, [reload]);
+    toast(t.toastReloaded, "info");
+  }, [reload, t]);
 
   const entries = load.state === "ready" ? load.snapshot.entries : [];
   const entry = "documentId" in view && view.documentId ? entries.find(item => item.documentId === view.documentId) ?? null : null;
-  const head = heading(view, entry, load.state === "ready");
+  const head = heading(view, entry, load.state === "ready", t);
 
   if (load.state === "revoked") return <CorpPage className="c-page--narrow kn" labelledBy="kn-title">
-    <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "Rondo AI" }} title="Company knowledge" />
-    <CorpTitle wide id="kn-title" title="Company knowledge" />
-    <CorpCard as="div"><BState kind="locked" alert title="Your session ended" line="Sign in again to see company knowledge."
-      action={{ label: "Sign in", href: "/login" }} /></CorpCard>
+    <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: t.rondoAi }} title={t.pageTitle} />
+    <CorpTitle wide id="kn-title" title={t.pageTitle} />
+    <CorpCard as="div"><BState kind="locked" alert title={t.sessionEnded} line={t.signInAgain}
+      action={{ label: t.signIn, href: "/login" }} /></CorpCard>
   </CorpPage>;
 
-  const shown = custody?.status === "uncertain" ? <IssueCard kind="uncertain" op={custody.command.op} onRetry={() => void retry()} onAbandon={() => void abandon()} />
-    : issue ? <IssueCard kind={issue.kind} op={issue.op} /> : null;
+  const shown = custody?.status === "uncertain" ? <IssueCard t={t} kind="uncertain" op={custody.command.op} onRetry={() => void retry()} onAbandon={() => void abandon()} />
+    : issue ? <IssueCard t={t} kind={issue.kind} op={issue.op} /> : null;
   const frame = `kn ${head.sheet ? "c-sheetpage" : "c-page--narrow"}`;
 
   if (load.state !== "ready") return <CorpPage className={frame} labelledBy="kn-title">
     {head.node}
-    {load.state === "loading" ? <Skeleton label="Loading company knowledge" />
-      : <CorpCard as="div"><BState kind="failed" alert title="Couldn’t load company knowledge" line="Check your connection, then try again."
-        action={{ label: "Try again", onClick: () => { setLoad({ state: "loading" }); void reload(); } }} /></CorpCard>}
+    {load.state === "loading" ? <Skeleton label={t.loadingKnowledge} />
+      : <CorpCard as="div"><BState kind="failed" alert title={t.loadFailed} line={t.checkConnection}
+        action={{ label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} /></CorpCard>}
   </CorpPage>;
 
-  const ctx: Ctx = { client, timeZone, snapshot: load.snapshot, now, busy: custody?.status === "sending", send, go };
+  const ctx: Ctx = { client, timeZone, snapshot: load.snapshot, now, busy: custody?.status === "sending", t, lang, send, go };
   return <CorpPage className={frame} labelledBy="kn-title">
     {head.node}
     {view.name === "library" ? <Library ctx={ctx} problem={shown} />
       : view.name === "profile" ? <ProfileEditor key="profile" ctx={ctx} entry={entries.find(item => item.kind === "profile") ?? null} problem={shown} />
-      : view.name === "document" ? (view.documentId && !entry ? <Gone /> : <DocumentEditor key={view.documentId ?? "new"} ctx={ctx} entry={entry} problem={shown} />)
-      : !entry ? <Gone />
+      : view.name === "document" ? (view.documentId && !entry ? <Gone t={t} /> : <DocumentEditor key={view.documentId ?? "new"} ctx={ctx} entry={entry} problem={shown} />)
+      : !entry ? <Gone t={t} />
       : view.name === "entry" ? <EntryDetail key={`${entry.documentId}:${load.snapshot.revision}`} ctx={ctx} entry={entry} problem={shown} />
       : <VersionReview key={view.versionId} ctx={ctx} entry={entry} versionId={view.versionId} problem={shown} />}
   </CorpPage>;
@@ -183,44 +195,44 @@ export function KnowledgePage({ timeZone, view, client: given }: { timeZone: str
 
 /* ---------- Page heads ---------- */
 function latestOf(entry: KnowledgeEntry) { return entry.versions[entry.versions.length - 1]; }
-function entryName(entry: KnowledgeEntry | null) {
-  if (!entry) return "Document";
-  return entry.kind === "profile" ? "Business profile" : latestOf(entry)?.title ?? "Document";
+function entryName(entry: KnowledgeEntry | null, t: KnowledgeCopy) {
+  if (!entry) return t.document;
+  return entry.kind === "profile" ? t.businessProfile : latestOf(entry)?.title ?? t.document;
 }
-function heading(view: KnowledgeView, entry: KnowledgeEntry | null, ready: boolean): { node: ReactNode; sheet?: boolean } {
-  const name = ready ? entryName(entry) : "";
+function heading(view: KnowledgeView, entry: KnowledgeEntry | null, ready: boolean, t: KnowledgeCopy): { node: ReactNode; sheet?: boolean } {
+  const name = ready ? entryName(entry, t) : "";
   switch (view.name) {
     case "library": return { node: <>
       {/* Rondo fix (Nov 23): adding a document is the Documents card's last row only, not a second band button. */}
-      <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "Rondo AI" }} title="Company knowledge" titleId="kn-nav-title" />
-      <CorpTitle wide id="kn-title" title="Company knowledge" sub="Only Owners can see this" />
+      <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: t.rondoAi }} title={t.pageTitle} titleId="kn-nav-title" />
+      <CorpTitle wide id="kn-title" title={t.pageTitle} sub={t.ownersOnly} />
     </> };
     case "entry": {
       const edit = entry?.kind === "profile" ? viewHref({ name: "profile" }) : viewHref({ name: "document", documentId: view.documentId });
       const latest = entry ? latestOf(entry) : null;
-      const sub = !entry ? undefined : entry.kind === "profile" ? "Shared with every Owner" : `${categoryLabel(latest!.category)} · ${LOCALE_LABELS[latest!.locale]}`;
+      const sub = !entry ? undefined : entry.kind === "profile" ? t.sharedWithOwners : `${topicOf(t, latest!.category)} · ${t.locales[latest!.locale]}`;
       // An archived entry can be edited too: saving brings it back as a draft (the server clears its archive mark).
       const editable = ready && !!entry;
       return { node: <>
-        <CorpNav phoneOnly back={{ href: LIBRARY, label: "Knowledge" }} title={name} titleId="kn-nav-title" right={editable ? <Link href={edit}>Edit</Link> : undefined} />
-        <CorpTitle wide id="kn-title" title={name} sub={sub} actions={editable ? <CorpButtonLink href={edit} kind="primary" size="md">Edit</CorpButtonLink> : undefined} />
+        <CorpNav phoneOnly back={{ href: LIBRARY, label: t.knowledge }} title={name} titleId="kn-nav-title" right={editable ? <Link href={edit}>{t.edit}</Link> : undefined} />
+        <CorpTitle wide id="kn-title" title={name} sub={sub} actions={editable ? <CorpButtonLink href={edit} kind="primary" size="md">{t.edit}</CorpButtonLink> : undefined} />
       </> };
     }
     case "version": {
-      const back = { href: viewHref({ name: "entry", documentId: view.documentId }), label: entry?.kind === "profile" ? "Profile" : "Document" };
+      const back = { href: viewHref({ name: "entry", documentId: view.documentId }), label: entry?.kind === "profile" ? t.profile : t.document };
       return { node: <>
-        <CorpNav phoneOnly back={back} title="Review" titleId="kn-nav-title" />
-        <CorpTitle wide id="kn-title" title="Review the saved text" sub={name || undefined} />
+        <CorpNav phoneOnly back={back} title={t.review} titleId="kn-nav-title" />
+        <CorpTitle wide id="kn-title" title={t.reviewSavedText} sub={name || undefined} />
       </> };
     }
     case "profile":
     case "document": {
-      const title = view.name === "profile" ? "Business profile" : view.documentId ? "Edit document" : "New document";
+      const title = view.name === "profile" ? t.businessProfile : view.documentId ? t.editDocument : t.newDocument;
       const cancel = view.name === "document" && view.documentId ? viewHref({ name: "entry", documentId: view.documentId })
         : view.name === "profile" && entry ? viewHref({ name: "entry", documentId: entry.documentId }) : LIBRARY;
-      return { sheet: true, node: <FormHead titleId="kn-title" title={title} back={{ href: cancel, label: cancel === LIBRARY ? "Knowledge" : view.name === "profile" ? "Profile" : "Document" }}
-        left={<FormHeadLink href={cancel}>Cancel</FormHeadLink>}
-        right={ready ? <button type="submit" form="kn-form">Save</button> : undefined} /> };
+      return { sheet: true, node: <FormHead titleId="kn-title" title={title} back={{ href: cancel, label: cancel === LIBRARY ? t.knowledge : view.name === "profile" ? t.profile : t.document }}
+        left={<FormHeadLink href={cancel}>{t.cancel}</FormHeadLink>}
+        right={ready ? <button type="submit" form="kn-form">{t.save}</button> : undefined} /> };
     }
   }
 }
@@ -232,29 +244,29 @@ function Skeleton({ label }: { label: string }) {
   </section>;
 }
 
-function Gone() {
-  return <CorpCard as="div"><BState kind="empty" title="This isn’t in company knowledge anymore" line="Another Owner may have deleted it." action={{ label: "Back to company knowledge", href: LIBRARY }} /></CorpCard>;
+function Gone({ t }: { t: KnowledgeCopy }) {
+  return <CorpCard as="div"><BState kind="empty" title={t.goneTitle} line={t.goneLine} action={{ label: t.goneBack, href: LIBRARY }} /></CorpCard>;
 }
 
 /** What went wrong with a write, in one state card at the top, focused when it appears. */
-function IssueCard({ kind, op, onRetry, onAbandon }: { kind: Issue["kind"]; op: KnowledgeCommand["op"]; onRetry?: () => void; onAbandon?: () => void }) {
-  const done = op === "publish" ? "published" : op === "archive" ? "archived" : op === "delete" ? "deleted" : "saved";
+function IssueCard({ t, kind, op, onRetry, onAbandon }: { t: KnowledgeCopy; kind: Issue["kind"]; op: KnowledgeCommand["op"]; onRetry?: () => void; onAbandon?: () => void }) {
   const copy = {
-    uncertain: { title: `We couldn’t confirm your ${verb(op)}`, line: "Check again can’t apply it twice." },
-    conflict: { title: "Changed by someone else", line: "Your edits are kept. Check them, then save again." },
-    limit: { title: "Company knowledge is full", line: "Delete a document to make room." },
-    invalid: { title: `That couldn’t be ${done}`, line: "Check the text, file name and dates." },
+    uncertain: { title: t.uncertainTitle(verb(op)), line: t.uncertainLine },
+    conflict: { title: t.conflictTitle, line: t.conflictLine },
+    limit: { title: t.limitTitle, line: t.limitLine },
+    invalid: { title: t.invalidTitle(verb(op)), line: t.invalidLine },
   }[kind];
   const failed = kind === "limit" || kind === "invalid";
   return <section className="c-card kn-issue" tabIndex={-1} aria-label={copy.title}>
     <BState kind={failed ? "failed" : "paused"} icon={failed ? undefined : <WarningIcon weight="bold" />} alert title={copy.title} line={copy.line}>
-      {onRetry ? <span className="kn-issue__acts"><CorpButton kind="primary" size="md" onClick={onRetry}>Check again</CorpButton><CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={onAbandon}>Stop and reload</CorpButton></span> : null}
+      {onRetry ? <span className="kn-issue__acts"><CorpButton kind="primary" size="md" onClick={onRetry}>{t.checkAgain}</CorpButton><CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={onAbandon}>{t.stopReload}</CorpButton></span> : null}
     </BState>
   </section>;
 }
 
 /* ---------- Library ---------- */
 function Library({ ctx, problem }: { ctx: Ctx; problem: ReactNode }) {
+  const { t, lang } = ctx;
   const entries = ctx.snapshot.entries;
   const profile = entries.find(entry => entry.kind === "profile") ?? null;
   const documents = entries.filter(entry => entry.kind === "document" && !entry.archived);
@@ -267,32 +279,40 @@ function Library({ ctx, problem }: { ctx: Ctx; problem: ReactNode }) {
     const isProfile = entry.kind === "profile";
     return <li key={entry.documentId}><CorpRow href={viewHref({ name: "entry", documentId: entry.documentId })}
       icon={isProfile ? <StorefrontIcon weight="bold" /> : <FileTextIcon weight="bold" />}
-      title={isProfile ? "Business profile" : latest.title}
-      detail={isProfile ? `${LOCALE_LABELS[latest.locale]} · updated ${shortDay(latest.createdAt, ctx.timeZone)}` : `${categoryLabel(latest.category)} · ${LOCALE_LABELS[latest.locale]}`}
-      value={summary.chip ? <CorpPill tone={summary.chip.tone}>{summary.chip.label}</CorpPill> : summary.value ?? undefined} valueTone="soft" /></li>;
+      title={isProfile ? t.businessProfile : latest.title}
+      detail={isProfile ? t.profileUpdated(t.locales[latest.locale], shortDay(latest.createdAt, ctx.timeZone, lang)) : `${topicOf(t, latest.category)} · ${t.locales[latest.locale]}`}
+      value={summary.chip ? <CorpPill tone={summary.chip.tone}>{summaryText(summary.chip.label, entry, ctx)}</CorpPill> : summary.value ? summaryText(summary.value, entry, ctx) : undefined} valueTone="soft" /></li>;
   };
   return <>
     {problem}
-    <CorpCard as="div" id="kn-profile"><CorpRows label="Business profile">
-      {profile ? row(profile) : <li><CorpRow href={viewHref({ name: "profile" })} icon={<StorefrontIcon weight="bold" />} title="Write your business profile" detail="What Rondo reads first" /></li>}
+    <CorpCard as="div" id="kn-profile"><CorpRows label={t.businessProfile}>
+      {profile ? row(profile) : <li><CorpRow href={viewHref({ name: "profile" })} icon={<StorefrontIcon weight="bold" />} title={t.writeProfile} detail={t.readsFirst} /></li>}
     </CorpRows></CorpCard>
-    <CorpSection id="kn-docs" label="Documents" aside={count ? <span className="kn-meta">{count} of {KNOWLEDGE_LIMITS.documents}</span> : undefined}>
-      <CorpCard as="div"><CorpRows label="Documents">
-        {documents.length ? documents.map(row) : <CorpEmptyRow as="li">No documents yet</CorpEmptyRow>}
-        {full ? null : <li><Link className="kn-addrow" href={viewHref({ name: "document", documentId: null })}><PlusIcon weight="bold" aria-hidden="true" />Add document</Link></li>}
+    <CorpSection id="kn-docs" label={t.documents} aside={count ? <span className="kn-meta">{t.countOf(count, KNOWLEDGE_LIMITS.documents)}</span> : undefined}>
+      <CorpCard as="div"><CorpRows label={t.documents}>
+        {documents.length ? documents.map(row) : <CorpEmptyRow as="li">{t.noDocuments}</CorpEmptyRow>}
+        {full ? null : <li><Link className="kn-addrow" href={viewHref({ name: "document", documentId: null })}><PlusIcon weight="bold" aria-hidden="true" />{t.addDocument}</Link></li>}
       </CorpRows></CorpCard>
     </CorpSection>
-    {archived.length ? <CorpSection id="kn-archived" label="Archived" count={archived.length}>
-      <CorpCard as="div"><CorpRows label="Archived">{archived.map(row)}</CorpRows></CorpCard>
+    {archived.length ? <CorpSection id="kn-archived" label={t.archivedSection} count={archived.length}>
+      <CorpCard as="div"><CorpRows label={t.archivedSection}>{archived.map(row)}</CorpRows></CorpCard>
     </CorpSection> : null}
-    {full ? <p className="kn-foot">Library full. Delete a document to add another.</p> : null}
+    {full ? <p className="kn-foot">{t.libraryFull}</p> : null}
   </>;
+}
+
+/** A row status from the lib's entrySummary, in the page's language (a later start or an end carries its day). */
+function summaryText(label: string, entry: KnowledgeEntry, ctx: Ctx) {
+  if (ctx.lang === "en") return label;
+  const published = entryState(entry, ctx.now, ctx.timeZone).published;
+  if (label.startsWith("Starts ") && published?.effectiveFrom) return ctx.t.startsDay(shortDay(published.effectiveFrom, ctx.timeZone, ctx.lang));
+  if (label.startsWith("Ended ") && published?.effectiveUntil) return ctx.t.endedDay(shortDay(published.effectiveUntil, ctx.timeZone, ctx.lang));
+  return ctx.t.summary[label] ?? label;
 }
 
 /* ---------- Dates ---------- */
 type LocalDates = Record<DateField, string>;
 const DATE_FIELDS: DateField[] = ["effectiveFrom", "effectiveUntil", "reviewDue"];
-const DATE_LABELS: Record<DateField, string> = { effectiveFrom: "Starts", effectiveUntil: "Ends", reviewDue: "Review by" };
 const localDates = (version: { effectiveFrom: string | null; effectiveUntil: string | null; reviewDue: string | null } | null, timeZone: string): LocalDates => ({
   effectiveFrom: zonedInput(version?.effectiveFrom ?? null, timeZone), effectiveUntil: zonedInput(version?.effectiveUntil ?? null, timeZone), reviewDue: zonedInput(version?.reviewDue ?? null, timeZone),
 });
@@ -302,23 +322,23 @@ const instants = (dates: LocalDates, timeZone: string) => ({
   reviewDue: dates.reviewDue ? zonedInstant(dates.reviewDue, timeZone) : null,
 });
 /** Dates are optional, so they sit behind one disclosure that says what is set. */
-function DateFields({ dates, onChange, errors, timeZone, idPrefix }: { dates: LocalDates; onChange: (next: LocalDates) => void; errors: DraftErrors; timeZone: string; idPrefix: string }) {
+function DateFields({ dates, onChange, errors, timeZone, idPrefix, t, lang }: { dates: LocalDates; onChange: (next: LocalDates) => void; errors: DraftErrors; timeZone: string; idPrefix: string; t: KnowledgeCopy; lang: Lang }) {
   const set = DATE_FIELDS.filter(field => dates[field]);
   const [open, setOpen] = useState(set.length > 0);
   const failed = DATE_FIELDS.some(field => errors[field]);
   const expanded = open || failed;
-  const summary = set.length ? set.map(field => `${DATE_LABELS[field]} ${shortDay(zonedInstant(dates[field], timeZone) ?? "", timeZone)}`).join(" · ") : "Starts when published";
+  const summary = set.length ? set.map(field => t.dateSummary(field, shortDay(zonedInstant(dates[field], timeZone) ?? "", timeZone, lang))).join(" · ") : t.startsWhenPublished;
   return <div className="c-field kn-dates">
-    <span className="c-field__label" id={`${idPrefix}-dates-label`}>Dates (optional)</span>
+    <span className="c-field__label" id={`${idPrefix}-dates-label`}>{t.datesOptional}</span>
     <button type="button" className="kn-dates__toggle" aria-expanded={expanded} aria-controls={`${idPrefix}-dates`} aria-describedby={`${idPrefix}-dates-label`} onClick={() => setOpen(value => !value)}>
       <span className="kn-dates__value">{summary}</span>{expanded ? <CaretUpIcon weight="bold" className="kn-dates__caret" aria-hidden="true" /> : <CaretDownIcon weight="bold" className="kn-dates__caret" aria-hidden="true" />}
     </button>
     <div className="kn-dates__body" id={`${idPrefix}-dates`} hidden={!expanded}>
       <div className="kn-dates__grid">
         {DATE_FIELDS.map(field => {
-          const id = `${idPrefix}-${field}`, resolved = dates[field] ? companyTime(zonedInstant(dates[field], timeZone), timeZone, true) : null;
-          return <CorpField key={field} label={DATE_LABELS[field]} htmlFor={id} error={errors[field] ? <ErrorText>{errors[field]}</ErrorText> : undefined} errorId={`${id}-error`}
-            help={resolved ? <span className="kn-resolved">{resolved} · <button type="button" className="kn-textbtn" onClick={() => onChange({ ...dates, [field]: "" })} aria-label={`Clear ${DATE_LABELS[field].toLowerCase()}`}>Clear</button></span> : undefined}>
+          const id = `${idPrefix}-${field}`, resolved = dates[field] ? zonedTime(zonedInstant(dates[field], timeZone), timeZone, lang, true) : null;
+          return <CorpField key={field} label={t.dateLabels[field]} htmlFor={id} error={errors[field] ? <ErrorText>{t.draftError(errors[field])}</ErrorText> : undefined} errorId={`${id}-error`}
+            help={resolved ? <span className="kn-resolved">{resolved} · <button type="button" className="kn-textbtn" onClick={() => onChange({ ...dates, [field]: "" })} aria-label={t.clearDate(field)}>{t.clear}</button></span> : undefined}>
             <input className="c-in" id={id} type="datetime-local" value={dates[field]} aria-invalid={errors[field] ? true : undefined} aria-describedby={errors[field] ? `${id}-error` : undefined}
               onChange={event => onChange({ ...dates, [field]: event.target.value })} />
           </CorpField>;
@@ -352,20 +372,20 @@ function useLatest(ctx: Ctx, entry: KnowledgeEntry | null) {
   }, [documentId]);
   return state;
 }
-function EditorState({ state, back }: { state: { kind: string }; back: string }) {
-  if (state.kind === "loading") return <Skeleton label="Loading the saved text" />;
-  return <CorpCard as="div"><BState kind="failed" alert title="Couldn’t load the saved text" line="Go back and try again." action={{ label: "Back", href: back }} /></CorpCard>;
+function EditorState({ state, back, t }: { state: { kind: string }; back: string; t: KnowledgeCopy }) {
+  if (state.kind === "loading") return <Skeleton label={t.loadingSaved} />;
+  return <CorpCard as="div"><BState kind="failed" alert title={t.savedFailed} line={t.goBackTryAgain} action={{ label: t.back, href: back }} /></CorpCard>;
 }
 function SaveFooter({ ctx, cancel }: { ctx: Ctx; cancel: string }) {
   return <CorpFormFooter>
-    <CorpButtonLink href={cancel} kind="secondary" size="md" className="b-rowact b-rowact--quiet">Cancel</CorpButtonLink>
-    <CorpButton type="submit" kind="primary" size="md" disabled={ctx.busy}>{ctx.busy ? "Saving…" : "Save draft"}</CorpButton>
+    <CorpButtonLink href={cancel} kind="secondary" size="md" className="b-rowact b-rowact--quiet">{ctx.t.cancel}</CorpButtonLink>
+    <CorpButton type="submit" kind="primary" size="md" disabled={ctx.busy}>{ctx.busy ? ctx.t.saving : ctx.t.saveDraft}</CorpButton>
   </CorpFormFooter>;
 }
-function LocaleField({ value, onChange, id }: { value: KnowledgeLocale; onChange: (value: KnowledgeLocale) => void; id: string }) {
-  return <CorpField label="Written in" htmlFor={id}>
+function LocaleField({ value, onChange, id, t }: { value: KnowledgeLocale; onChange: (value: KnowledgeLocale) => void; id: string; t: KnowledgeCopy }) {
+  return <CorpField label={t.writtenIn} htmlFor={id}>
     <select className="c-in" id={id} value={value} onChange={event => onChange(event.target.value as KnowledgeLocale)}>
-      {(Object.keys(LOCALE_LABELS) as KnowledgeLocale[]).map(locale => <option key={locale} value={locale}>{LOCALE_LABELS[locale]}</option>)}
+      {(Object.keys(t.locales) as KnowledgeLocale[]).map(locale => <option key={locale} value={locale}>{t.locales[locale]}</option>)}
     </select>
   </CorpField>;
 }
@@ -374,7 +394,7 @@ function LocaleField({ value, onChange, id }: { value: KnowledgeLocale; onChange
 function ProfileEditor({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry | null; problem: ReactNode }) {
   const latest = useLatest(ctx, entry);
   const back = entry ? viewHref({ name: "entry", documentId: entry.documentId }) : LIBRARY;
-  if (latest.kind === "loading" || latest.kind === "failed") return <EditorState state={latest} back={back} />;
+  if (latest.kind === "loading" || latest.kind === "failed") return <EditorState state={latest} back={back} t={ctx.t} />;
   return <ProfileForm ctx={ctx} cancel={back} version={latest.version ?? null} problem={problem} />;
 }
 function ProfileForm({ ctx, cancel, version, problem }: { ctx: Ctx; cancel: string; version: KnowledgeVersion | null; problem: ReactNode }) {
@@ -403,16 +423,16 @@ function ProfileForm({ ctx, cancel, version, problem }: { ctx: Ctx; cancel: stri
     {problem}
     {PROFILE_FIELDS.map(key => {
       const id = `kn-profile-${key}`, required = key === "businessDescription";
-      return <CorpField key={key} label={required ? PROFILE_LABELS[key].label : `${PROFILE_LABELS[key].label} (optional)`} htmlFor={id}
-        help={<span id={`${id}-help`}>{PROFILE_LABELS[key].help}</span>} error={shown[key] ? <ErrorText>{shown[key]}</ErrorText> : undefined} errorId={`${id}-error`}>
+      return <CorpField key={key} label={required ? ctx.t.profileFields[key].label : ctx.t.optional(ctx.t.profileFields[key].label)} htmlFor={id}
+        help={<span id={`${id}-help`}>{ctx.t.profileFields[key].help}</span>} error={shown[key] ? <ErrorText>{ctx.t.draftError(shown[key])}</ErrorText> : undefined} errorId={`${id}-error`}>
         <textarea className="c-in kn-area" id={id} rows={required ? 4 : 3} value={fields[key] ?? ""} required={required}
           aria-invalid={shown[key] ? true : undefined} aria-describedby={shown[key] ? `${id}-error` : `${id}-help`}
           onChange={event => setFields(old => ({ ...old, [key]: event.target.value }))} />
       </CorpField>;
     })}
-    <p className={bytes > KNOWLEDGE_LIMITS.profileBytes ? "kn-size kn-size--over" : "kn-size"}>{sizeText(bytes)} of {sizeText(KNOWLEDGE_LIMITS.profileBytes)}</p>
-    <LocaleField value={locale} onChange={setLocale} id="kn-profile-locale" />
-    <DateFields dates={dates} onChange={setDates} errors={shown} timeZone={ctx.timeZone} idPrefix="kn-profile" />
+    <p className={bytes > KNOWLEDGE_LIMITS.profileBytes ? "kn-size kn-size--over" : "kn-size"}>{ctx.t.sizeOf(sizeText(bytes), sizeText(KNOWLEDGE_LIMITS.profileBytes))}</p>
+    <LocaleField value={locale} onChange={setLocale} id="kn-profile-locale" t={ctx.t} />
+    <DateFields dates={dates} onChange={setDates} errors={shown} timeZone={ctx.timeZone} idPrefix="kn-profile" t={ctx.t} lang={ctx.lang} />
     <SaveFooter ctx={ctx} cancel={cancel} />
   </form>;
 }
@@ -434,10 +454,11 @@ export async function readTextFile(file: File): Promise<{ text: string; name: st
 function DocumentEditor({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry | null; problem: ReactNode }) {
   const latest = useLatest(ctx, entry);
   const back = entry ? viewHref({ name: "entry", documentId: entry.documentId }) : LIBRARY;
-  if (latest.kind === "loading" || latest.kind === "failed") return <EditorState state={latest} back={back} />;
+  if (latest.kind === "loading" || latest.kind === "failed") return <EditorState state={latest} back={back} t={ctx.t} />;
   return <DocumentForm ctx={ctx} entry={entry} cancel={back} version={latest.version ?? null} problem={problem} />;
 }
 function DocumentForm({ ctx, entry, cancel, version, problem }: { ctx: Ctx; entry: KnowledgeEntry | null; cancel: string; version: KnowledgeVersion | null; problem: ReactNode }) {
+  const t = ctx.t;
   const [title, setTitle] = useState(version?.title ?? "");
   const [category, setCategory] = useState(version && version.category !== "profile" ? version.category : "operations");
   const [locale, setLocale] = useState<KnowledgeLocale>(version?.locale ?? "en");
@@ -478,43 +499,45 @@ function DocumentForm({ ctx, entry, cancel, version, problem }: { ctx: Ctx; entr
   const fileProblem = fileError ?? shown.sourceName ?? null;
   return <form ref={form} id="kn-form" className="c-teamform kn-form" onSubmit={submit} noValidate aria-labelledby="kn-title">
     {problem}
-    {entry?.archived ? <p className="c-field__help">Archived. Saving makes it a draft again</p> : null}
-    <CorpField label="Title" htmlFor="kn-doc-title" error={shown.title ? <ErrorText>{shown.title}</ErrorText> : undefined} errorId="kn-doc-title-error">
+    {entry?.archived ? <p className="c-field__help">{t.archivedEdit}</p> : null}
+    <CorpField label={t.title} htmlFor="kn-doc-title" error={shown.title ? <ErrorText>{t.draftError(shown.title)}</ErrorText> : undefined} errorId="kn-doc-title-error">
       <input className="c-in" id="kn-doc-title" value={title} required maxLength={240} autoComplete="off" enterKeyHint="next"
         aria-invalid={shown.title ? true : undefined} aria-describedby={shown.title ? "kn-doc-title-error" : undefined} onChange={event => setTitle(event.target.value)} />
     </CorpField>
     <div className="c-field__row kn-pair">
-      <CorpField label="Topic" htmlFor="kn-doc-category">
-        <select className="c-in" id="kn-doc-category" value={category} onChange={event => setCategory(event.target.value)}>{CATEGORIES.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select>
+      <CorpField label={t.topic} htmlFor="kn-doc-category">
+        <select className="c-in" id="kn-doc-category" value={category} onChange={event => setCategory(event.target.value)}>{CATEGORIES.map(item => <option key={item.value} value={item.value}>{topicOf(t, item.value)}</option>)}</select>
       </CorpField>
-      <LocaleField value={locale} onChange={setLocale} id="kn-doc-locale" />
+      <LocaleField value={locale} onChange={setLocale} id="kn-doc-locale" t={t} />
     </div>
-    <CorpField label="Text" htmlFor="kn-doc-body" error={shown.body ? <ErrorText>{shown.body}</ErrorText> : undefined} errorId="kn-doc-body-error"
-      help={<span className="kn-bodyhelp" id="kn-doc-body-help"><span>Plain text</span><span className={over ? "kn-size kn-size--over" : "kn-size"}>{sizeText(bytes)} of {sizeText(KNOWLEDGE_LIMITS.documentBytes)}</span></span>}>
+    <CorpField label={t.text} htmlFor="kn-doc-body" error={shown.body ? <ErrorText>{t.draftError(shown.body)}</ErrorText> : undefined} errorId="kn-doc-body-error"
+      help={<span className="kn-bodyhelp" id="kn-doc-body-help"><span>{t.plainText}</span><span className={over ? "kn-size kn-size--over" : "kn-size"}>{t.sizeOf(sizeText(bytes), sizeText(KNOWLEDGE_LIMITS.documentBytes))}</span></span>}>
       <textarea className="c-in kn-area kn-area--doc" id="kn-doc-body" value={body} rows={12} required
         aria-invalid={shown.body ? true : undefined} aria-describedby={shown.body ? "kn-doc-body-error" : "kn-doc-body-help"} onChange={event => setBody(event.target.value)} />
     </CorpField>
     <div className="kn-file">
       <input ref={fileInput} className="kn-file__input" id="kn-doc-file" type="file" accept=".txt,.md,text/plain,text/markdown" onChange={event => void load(event)} tabIndex={-1} aria-hidden="true" />
-      <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" onClick={() => fileInput.current?.click()} aria-describedby="kn-doc-file-help">{sourceName ? "Load another file" : "Load a .txt or .md file"}</CorpButton>
+      <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" onClick={() => fileInput.current?.click()} aria-describedby="kn-doc-file-help">{sourceName ? t.loadAnother : t.loadFile}</CorpButton>
       <span className="c-field__help" id="kn-doc-file-help">{sourceName
-        ? <>From {sourceName} · <button type="button" className="kn-textbtn" onClick={() => setSourceName(null)}>Forget file name</button></>
-        : "UTF-8 .txt or .md"}</span>
-      {fileProblem ? <span className="c-error" role="alert"><ErrorText>{fileProblem}</ErrorText></span> : null}
+        ? <>{t.fromFile(sourceName)} · <button type="button" className="kn-textbtn" onClick={() => setSourceName(null)}>{t.forgetFile}</button></>
+        : t.fileHelp}</span>
+      {fileProblem ? <span className="c-error" role="alert"><ErrorText>{t.draftError(fileProblem)}</ErrorText></span> : null}
     </div>
-    <DateFields dates={dates} onChange={setDates} errors={shown} timeZone={ctx.timeZone} idPrefix="kn-doc" />
+    <DateFields dates={dates} onChange={setDates} errors={shown} timeZone={ctx.timeZone} idPrefix="kn-doc" t={t} lang={ctx.lang} />
     <SaveFooter ctx={ctx} cancel={cancel} />
   </form>;
 }
 
 /* ---------- One document ---------- */
 function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry; problem: ReactNode }) {
+  const { t, lang } = ctx;
+  const day = (iso: string) => shortDay(iso, ctx.timeZone, lang);
   const state = entryState(entry, ctx.now, ctx.timeZone);
   const [confirm, setConfirm] = useState<"archive" | "delete" | null>(null);
   const [acknowledged, setAcknowledged] = useState(false);
   const requestId = useRef<string | null>(null);
   const confirmRef = useRef<HTMLDivElement>(null);
-  const name = entry.kind === "profile" ? "the business profile" : `“${state.latest.title}”`;
+  const name = entry.kind === "profile" ? t.theProfile : `“${state.latest.title}”`;
   useEffect(() => { if (confirm) confirmRef.current?.querySelector<HTMLElement>("h2")?.focus(); }, [confirm]);
   const act = async (op: "archive" | "delete") => {
     requestId.current ??= newRequestId();
@@ -531,48 +554,48 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
   const versions = [...entry.versions].reverse();
   return <>
     {problem}
-    <CorpSection id="kn-status" label="Status">
-      <CorpCard as="div"><CorpRows label="Status">
+    <CorpSection id="kn-status" label={t.status}>
+      <CorpCard as="div"><CorpRows label={t.status}>
         <li><CorpRow icon={entry.archived ? <ArchiveIcon weight="bold" /> : <CheckCircleIcon weight="bold" />}
-          title={entry.archived ? "Archived" : !published ? "Not in use yet" : startsLater ? `Starts ${companyTime(published.effectiveFrom, ctx.timeZone)}` : ended ? "Ended" : "In use by Rondo"}
-          detail={entry.archived ? "Edit and publish to use it again" : !published ? "Publish a draft to use it"
-            : `Version ${number(published.versionId)} · published ${shortDay(published.publishedAt!, ctx.timeZone)}${published.effectiveUntil && !ended ? ` · until ${shortDay(published.effectiveUntil, ctx.timeZone)}` : ""}`} /></li>
+          title={entry.archived ? t.archived : !published ? t.notInUse : startsLater ? t.startsAt(zonedTime(published.effectiveFrom, ctx.timeZone, lang) ?? "") : ended ? t.ended : t.inUseByRondo}
+          detail={entry.archived ? t.editToUse : !published ? t.publishToUse
+            : t.publishedLine(number(published.versionId), day(published.publishedAt!), published.effectiveUntil && !ended ? day(published.effectiveUntil) : null)} /></li>
         {state.draft ? <li><CorpRow href={viewHref({ name: "version", documentId: entry.documentId, versionId: state.draft.versionId })} icon={<PencilSimpleIcon weight="bold" />}
-          title="Draft waiting for review" detail={`Version ${number(state.draft.versionId)} · saved ${shortDay(state.draft.createdAt, ctx.timeZone)}`} /></li> : null}
-        {published?.reviewDue && !entry.archived ? <li><CorpRow icon={<ClockIcon weight="bold" />} title={`Review by ${shortDay(published.reviewDue, ctx.timeZone)}`}
-          detail={overdue ? undefined : "Still used after this date"} value={overdue ? <CorpPill tone="amber">Past due</CorpPill> : undefined} /></li> : null}
+          title={t.draftWaiting} detail={t.savedLine(number(state.draft.versionId), day(state.draft.createdAt))} /></li> : null}
+        {published?.reviewDue && !entry.archived ? <li><CorpRow icon={<ClockIcon weight="bold" />} title={t.reviewBy(day(published.reviewDue))}
+          detail={overdue ? undefined : t.stillUsed} value={overdue ? <CorpPill tone="amber">{t.pastDue}</CorpPill> : undefined} /></li> : null}
       </CorpRows></CorpCard>
     </CorpSection>
 
-    <CorpSection id="kn-versions" label="Versions" count={entry.versions.length}>
-      <CorpCard as="div"><CorpRows label="Versions">{versions.map(version => {
+    <CorpSection id="kn-versions" label={t.versions} count={entry.versions.length}>
+      <CorpCard as="div"><CorpRows label={t.versions}>{versions.map(version => {
         const current = version.versionId === entry.publishedVersionId;
         return <li key={version.versionId}><CorpRow href={viewHref({ name: "version", documentId: entry.documentId, versionId: version.versionId })}
-          title={`Version ${number(version.versionId)}`}
-          detail={`Saved ${shortDay(version.createdAt, ctx.timeZone)}${version.sourceName ? ` · ${version.sourceName}` : ""}`}
-          value={!version.publishedAt ? <CorpPill tone="amber">Draft</CorpPill> : current ? "In use" : "Earlier"} valueTone="soft" /></li>;
+          title={t.version(number(version.versionId))}
+          detail={`${t.savedDay(day(version.createdAt))}${version.sourceName ? ` · ${version.sourceName}` : ""}`}
+          value={!version.publishedAt ? <CorpPill tone="amber">{t.draft}</CorpPill> : current ? t.inUse : t.earlier} valueTone="soft" /></li>;
       })}</CorpRows></CorpCard>
     </CorpSection>
 
-    <CorpSection id="kn-remove" label={entry.archived ? "Delete" : "Archive or delete"}>
+    <CorpSection id="kn-remove" label={entry.archived ? t.delete : t.archiveOrDelete}>
       {confirm ? <CorpCard as="div"><div ref={confirmRef} className="kn-confirm">
-        <h2 tabIndex={-1} className="kn-confirm__t">{confirm === "archive" ? `Archive ${name}?` : `Delete ${name}?`}</h2>
+        <h2 tabIndex={-1} className="kn-confirm__t">{confirm === "archive" ? t.archiveQ(name) : t.deleteQ(name)}</h2>
         {confirm === "archive"
-          ? <p className="kn-confirm__b">Rondo stops using it for every Owner. Versions stay readable.</p>
+          ? <p className="kn-confirm__b">{t.archiveBody}</p>
           : <ul className="kn-confirm__list">
-              <li>Erases {entry.versions.length === 1 ? "its only version" : `all ${entry.versions.length} versions`} for every Owner</li>
-              <li>Rondo chats and text already sent to the AI provider stay</li>
+              <li>{t.erases(entry.versions.length)}</li>
+              <li>{t.providerStays}</li>
             </ul>}
-        {confirm === "delete" ? <label className="kn-check"><input type="checkbox" checked={acknowledged} onChange={event => setAcknowledged(event.target.checked)} /><span>I understand this can’t be undone</span></label> : null}
+        {confirm === "delete" ? <label className="kn-check"><input type="checkbox" checked={acknowledged} onChange={event => setAcknowledged(event.target.checked)} /><span>{t.cantUndo}</span></label> : null}
         <div className="kn-actions">
-          <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={ctx.busy} onClick={cancel}>Cancel</CorpButton>
+          <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={ctx.busy} onClick={cancel}>{t.cancel}</CorpButton>
           <CorpButton kind={confirm === "delete" ? "danger" : "primary"} size="md" disabled={ctx.busy || (confirm === "delete" && !acknowledged)} onClick={() => void act(confirm)}>
-            {ctx.busy ? (confirm === "archive" ? "Archiving…" : "Deleting…") : confirm === "archive" ? "Archive" : "Delete"}</CorpButton>
+            {ctx.busy ? (confirm === "archive" ? t.archiving : t.deleting) : confirm === "archive" ? t.archive : t.delete}</CorpButton>
         </div>
       </div></CorpCard>
-      : <CorpCard as="div"><CorpRows label="Archive or delete">
-          {entry.archived ? null : <li><CorpRow onClick={() => setConfirm("archive")} icon={<ArchiveIcon weight="bold" />} title="Archive" detail="Rondo stops using it" /></li>}
-          <li><CorpRow onClick={() => setConfirm("delete")} danger icon={<TrashIcon weight="bold" />} title="Delete" detail="Erases every version" /></li>
+      : <CorpCard as="div"><CorpRows label={t.archiveOrDelete}>
+          {entry.archived ? null : <li><CorpRow onClick={() => setConfirm("archive")} icon={<ArchiveIcon weight="bold" />} title={t.archive} detail={t.stopsUsing} /></li>}
+          <li><CorpRow onClick={() => setConfirm("delete")} danger icon={<TrashIcon weight="bold" />} title={t.delete} detail={t.erasesEvery} /></li>
         </CorpRows></CorpCard>}
     </CorpSection>
   </>;
@@ -580,6 +603,7 @@ function EntryDetail({ ctx, entry, problem }: { ctx: Ctx; entry: KnowledgeEntry;
 
 /* ---------- Review the exact saved version ---------- */
 function VersionReview({ ctx, entry, versionId, problem }: { ctx: Ctx; entry: KnowledgeEntry; versionId: string; problem: ReactNode }) {
+  const { t, lang } = ctx;
   const [state, setState] = useState<{ kind: "loading" } | { kind: "ready"; version: KnowledgeVersion } | { kind: "failed" | "missing" }>({ kind: "loading" });
   const [attempt, setAttempt] = useState(0);
   const requestId = useRef<string | null>(null);
@@ -592,11 +616,11 @@ function VersionReview({ ctx, entry, versionId, problem }: { ctx: Ctx; entry: Kn
     });
     return () => controller.abort();
   }, [ctx.client, entry.documentId, versionId, attempt]);
-  if (!meta) return <Gone />;
-  if (state.kind === "missing") return <Gone />;
-  if (state.kind === "loading") return <Skeleton label="Loading the saved text" />;
-  if (state.kind !== "ready") return <CorpCard as="div"><BState kind="failed" alert title="Couldn’t load the saved text" line="Check your connection, then try again."
-    action={{ label: "Try again", onClick: () => { setState({ kind: "loading" }); setAttempt(value => value + 1); } }} /></CorpCard>;
+  if (!meta) return <Gone t={t} />;
+  if (state.kind === "missing") return <Gone t={t} />;
+  if (state.kind === "loading") return <Skeleton label={t.loadingSaved} />;
+  if (state.kind !== "ready") return <CorpCard as="div"><BState kind="failed" alert title={t.savedFailed} line={t.checkConnection}
+    action={{ label: t.tryAgain, onClick: () => { setState({ kind: "loading" }); setAttempt(value => value + 1); } }} /></CorpCard>;
   const version = state.version;
   const number = (id: string) => entry.versions.findIndex(item => item.versionId === id) + 1;
   const publishable = !version.publishedAt && version.versionId === latestOf(entry)?.versionId;
@@ -611,50 +635,53 @@ function VersionReview({ ctx, entry, versionId, problem }: { ctx: Ctx; entry: Kn
     const ok = await ctx.send({ op: "publish", requestId: requestId.current, expectedRevision: ctx.snapshot.revision, documentId: entry.documentId, versionId: version.versionId, reviewedTextDigest: version.textDigest });
     if (!ok) requestId.current = null;
   };
-  const status = version.current ? "In use" : version.publishedAt ? "Earlier version" : "Draft";
-  const short = (iso: string | null) => iso ? new Intl.DateTimeFormat("en-US", { timeZone: ctx.timeZone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(iso)) : null;
+  const status = version.current ? t.inUse : version.publishedAt ? t.earlierVersion : t.draft;
+  const short = (iso: string | null) => iso ? new Intl.DateTimeFormat(LOCALE[lang], { timeZone: ctx.timeZone, month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(iso)) : null;
   const fact = (label: string, value: ReactNode) => <li key={label}><CorpRow one title={label} value={value} valueTone="soft" /></li>;
-  const effect = current ? `Replaces version ${number(current.versionId)} for every Owner.`
-    : futureStart ? `Starts ${companyTime(version.effectiveFrom, ctx.timeZone, true)}.` : "Rondo uses it right away.";
+  const effect = current ? t.replaces(number(current.versionId))
+    : futureStart ? t.startsSentence(zonedTime(version.effectiveFrom, ctx.timeZone, lang, true) ?? "") : t.rightAway;
   return <>
     {problem}
-    <CorpSection id="kn-text" label={`Version ${number(version.versionId)}`} aside={<span className="kn-meta">{status} · plain text</span>}>
+    <CorpSection id="kn-text" label={t.version(number(version.versionId))} aside={<span className="kn-meta">{t.plainTextMeta(status)}</span>}>
       <CorpCard as="div">
-        <pre className="kn-source" tabIndex={0} aria-label={`Saved text of version ${number(version.versionId)}`}>{version.body}</pre>
+        <pre className="kn-source" tabIndex={0} aria-label={t.savedTextOf(number(version.versionId))}>{version.body}</pre>
       </CorpCard>
     </CorpSection>
 
-    {publishable ? <CorpSection id="kn-publish" label="Publish for Rondo">
+    {publishable ? <CorpSection id="kn-publish" label={t.publishForRondo}>
       <CorpCard as="div"><CorpBody>
         <div className="kn-publish">
-          {current && futureStart ? <BCallout tone="amber" title={<>Gap until {shortDay(version.effectiveFrom!, ctx.timeZone)}.</>}>Version {number(current.versionId)} stops when you publish.</BCallout> : null}
+          {current && futureStart ? <BCallout tone="amber" title={t.gapUntil(shortDay(version.effectiveFrom!, ctx.timeZone, lang))}>{t.stopsWhenPublish(number(current.versionId))}</BCallout> : null}
           <p className="kn-para">{effect}</p>
-          {mismatch ? <p className="c-error" role="alert"><ErrorText>Out of date. Open the newest draft</ErrorText></p> : null}
+          {mismatch ? <p className="c-error" role="alert"><ErrorText>{t.outOfDate}</ErrorText></p> : null}
           <div className="kn-actions">
-            <CorpButtonLink href={edit} kind="secondary" size="md" className="b-rowact b-rowact--quiet">Edit</CorpButtonLink>
-            <CorpButton kind="primary" size="md" disabled={ctx.busy || mismatch} onClick={() => void publish()}>{ctx.busy ? "Publishing…" : "Publish for Rondo"}</CorpButton>
+            <CorpButtonLink href={edit} kind="secondary" size="md" className="b-rowact b-rowact--quiet">{t.edit}</CorpButtonLink>
+            <CorpButton kind="primary" size="md" disabled={ctx.busy || mismatch} onClick={() => void publish()}>{ctx.busy ? t.publishing : t.publishForRondo}</CorpButton>
           </div>
         </div>
       </CorpBody></CorpCard>
     </CorpSection> : null}
 
-    <CorpSection id="kn-details" label="Details">
-      <CorpCard as="div"><CorpRows label="Details">
-        {fact("Title", version.title)}
-        {fact("Written in", LOCALE_LABELS[version.locale])}
-        {version.kind === "document" ? fact("Topic", categoryLabel(version.category)) : null}
-        {version.sourceName ? fact("From file", version.sourceName) : null}
-        {fact("Starts", short(version.effectiveFrom) ?? "When published")}
-        {version.effectiveUntil ? fact("Ends", short(version.effectiveUntil)) : null}
-        {version.reviewDue ? fact("Review by", short(version.reviewDue)) : null}
-        {fact("Saved", short(version.createdAt))}
-        <li><CorpRow title="Text fingerprint" detail={<span className="kn-digest">{version.textDigest}</span>} /></li>
+    <CorpSection id="kn-details" label={t.details}>
+      <CorpCard as="div"><CorpRows label={t.details}>
+        {fact(t.title, version.title)}
+        {fact(t.writtenIn, t.locales[version.locale])}
+        {version.kind === "document" ? fact(t.topic, topicOf(t, version.category)) : null}
+        {version.sourceName ? fact(t.fromFileLabel, version.sourceName) : null}
+        {fact(t.dateLabels.effectiveFrom, short(version.effectiveFrom) ?? t.whenPublished)}
+        {version.effectiveUntil ? fact(t.dateLabels.effectiveUntil, short(version.effectiveUntil)) : null}
+        {version.reviewDue ? fact(t.dateLabels.reviewDue, short(version.reviewDue)) : null}
+        {fact(t.saved, short(version.createdAt))}
+        <li><CorpRow title={t.fingerprint} detail={<span className="kn-digest">{version.textDigest}</span>} /></li>
         <li><a className="c-row kn-extrow" href={versionHref(entry.documentId, version.versionId)} target="_blank" rel="noreferrer">
           <span className="c-row__icon" aria-hidden="true"><ArrowSquareOutIcon weight="bold" /></span>
-          <span className="c-row__main"><span className="c-row__title">Open as plain text</span><span className="c-row__detail"><span>Private · opens in a new tab</span></span></span>
+          <span className="c-row__main"><span className="c-row__title">{t.openPlain}</span><span className="c-row__detail"><span>{t.privateTab}</span></span></span>
         </a></li>
       </CorpRows></CorpCard>
     </CorpSection>
-    {!publishable && !version.publishedAt ? <CorpNote>A newer draft exists. Publish that one.</CorpNote> : null}
+    {!publishable && !version.publishedAt ? <CorpNote>{t.newerDraft}</CorpNote> : null}
   </>;
 }
+
+/** The views a loaded page shows, for render tests (the page itself reads the list after the first paint). */
+export const KNOWLEDGE_VIEWS = { Library, EntryDetail, ProfileForm, DocumentForm, IssueCard };
