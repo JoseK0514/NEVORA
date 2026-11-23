@@ -1,5 +1,5 @@
 'use client';
-import Link from 'next/link';
+import {NavigationLink} from '../navigation-link';
 import {useCallback,useEffect,useId,useRef,useState,useSyncExternalStore,type ReactNode} from 'react';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpField,CorpNote,CorpPill,CorpRow,CorpRows,CorpSegments,CorpStats,CorpTitle} from '../corp/corp';
@@ -58,13 +58,13 @@ export function CorpHoursFrame({contextKey,view,state,ready,refresh,head,headIns
 }
 /** A pushed page's white bar: "‹ Back" left, the title centred. */
 export function CorpHoursNav({back,title}:{back:{href:string;label:string};title:string}){
- return <div className="c-nav"><Link className="c-nav__back" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/>{back.label}</Link>
+ return <div className="c-nav"><NavigationLink className="c-nav__back" href={back.href} intent="auto"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/>{back.label}</NavigationLink>
   <h1 className="c-nav__title" id="hours-title" tabIndex={-1}>{title}</h1><span className="c-nav__right"/></div>;
 }
 /** The correction sheet's bar: Cancel · Fix my time · Send. */
 export function CorpHoursSheetHead({cancel,cancelLabel,send}:{cancel:string;cancelLabel?:string;send?:ReactNode}){
  const t=hoursCorpCopy[useMobileLang()].frame;
- return <div className="c-nav c-hours-sheet"><Link className="c-nav__back c-hours-cancel" href={cancel}>{cancelLabel??t.cancel}</Link>
+ return <div className="c-nav c-hours-sheet"><NavigationLink className="c-nav__back c-hours-cancel" href={cancel} intent="auto">{cancelLabel??t.cancel}</NavigationLink>
   <h1 className="c-nav__title" id="hours-title" tabIndex={-1}>{t.fixMyTime}</h1><span className="c-nav__right">{send??null}</span></div>;
 }
 /** The Time tab's title: Past timecards on the right, the date and location under it. */
