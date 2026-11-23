@@ -44,8 +44,9 @@ it("respects an Action Center day focus while keeping full-week totals and contr
   expect(output).toContain("Full week");
   expect(output).toContain("No assignments on this day");
   // Nov 21, 2026: the day view is a timeline. 8:00 PM to midnight on a 4:00 PM–12:00 AM axis starts halfway and fills the rest; the
-  // link keeps its name. The week grid carries no axis.
-  expect(output).toMatch(/<span class="cm-tl"><a class="cm-block draft"[^>]*style="left:50%;width:50%"/);
+  // link keeps its name. The week grid carries no axis. G8 (Nov 23, 2026): a capsule in the later half is placed from the axis
+  // end (right:0), so if its time needs more room than its hours it grows toward earlier hours, never out of the card.
+  expect(output).toMatch(/<span class="cm-tl"><a class="cm-block draft"[^>]*style="right:0%;width:50%"/);
   expect(output).toContain('<span class="cm-axis" aria-hidden="true"><em style="left:0%">4:00\u00a0PM</em>');
   expect(output).toContain('<em style="right:0">12:00\u00a0AM</em>');
   expect(output).toMatch(/Edit Avery Taylor’s shift, [^<]*Main Office, draft/);

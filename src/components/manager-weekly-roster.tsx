@@ -82,7 +82,7 @@ const editHref = (shift: RosterShift) => `/app/schedule/edit?shiftId=${encodeURI
 function Block({ shift, person, onLeave = false, place }: { shift: RosterShift; person: string; onLeave?: boolean; place?: AxisPlace }) {
   const hint = [`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`, shift.position, shift.location, shift.status === "PUBLISHED" ? null : statusWord(shift.status), onLeave ? "Needs cover (time off)" : null].filter(Boolean).join(" · ");
   return <Link className={`cm-block${shift.status === "DRAFT" ? " draft" : ""}${onLeave ? " conflict" : ""}`} href={editHref(shift)} title={hint}
-    data-cut={place?.cut || undefined} style={place ? { left: `${place.left}%`, width: `${place.width}%` } : undefined}>
+    data-cut={place?.cut || undefined} style={place ? { [place.end ? "right" : "left"]: `${place.end ? place.right : place.left}%`, width: `${place.width}%` } : undefined}>
     {onLeave ? <WarningIcon className="cm-block__warn" size={13} weight="bold" aria-hidden="true" /> : null}
     <span aria-hidden="true"><CorpTime>{range(shift.startTime, shift.endTime)}</CorpTime></span>
     {onLeave ? <span className="cm-block__need">Needs cover</span> : null}

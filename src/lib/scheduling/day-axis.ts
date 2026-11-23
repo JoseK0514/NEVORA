@@ -11,7 +11,11 @@ export type DayAxis = {
   /** A label every `stepHours` from the start: where it sits (0–100) and what it says ("6:00 AM", "2:00 PM", "12:00 AM"). */
   ticks: { at: number; label: string }[];
 };
-export type AxisPlace = { left: number; width: number; /** The shift runs past midnight: its capsule is cut flat at the axis end. */ cut: boolean };
+export type AxisPlace = { left: number; width: number; /** The shift runs past midnight: its capsule is cut flat at the axis end. */ cut: boolean;
+  /** G8 (Nov 23, 2026): a capsule is never narrower than its time, so a short shift's capsule can need more room than its
+   * hours. One whose middle is in the later half of the axis is held at its end (`right`, from the axis end) and grows
+   * toward earlier hours, so it never runs past the axis end and out of the card; the others grow toward later hours. */
+  end: boolean; right: number };
 
 const MIN_HOURS = 8;
 const DAY = 24 * 60;
@@ -49,5 +53,6 @@ export function dayAxis(shifts: readonly { startTime: string; endTime: string }[
 export function axisPlace(axis: DayAxis, startTime: string, endTime: string): AxisPlace {
   const span = shiftSpan(startTime, endTime), total = axis.end - axis.start;
   const from = Math.max(axis.start, Math.min(span.start, axis.end)), to = Math.max(from, Math.min(span.end, axis.end));
-  return { left: round(((from - axis.start) / total) * 100), width: round(((to - from) / total) * 100), cut: span.cut || span.end > axis.end };
+  const left = round(((from - axis.start) / total) * 100), width = round(((to - from) / total) * 100);
+  return { left, width, cut: span.cut || span.end > axis.end, end: left + width / 2 > 50, right: round(100 - left - width) };
 }
