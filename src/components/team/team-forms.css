@@ -132,3 +132,10 @@
   :is(#c-root, html) .c-formhead .c-formhead__up .c-ic { width: 16px; height: 16px; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-formhead .c-formhead__up { color: #FFFFFF; }
 }
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): the step dots are drawn with a shadow and a fill, both dropped under Windows
+ * contrast themes, so the dots vanished. They keep a border, and the current step stays filled. */
+@media (forced-colors: active) {
+  :is(#c-root, html) .c-formhead .c-formhead__dots > i { border: 1.5px solid CanvasText; box-shadow: none; }
+  :is(#c-root, html) .c-formhead .c-formhead__dots > i[data-on] { forced-color-adjust: none; background: CanvasText; }
+}

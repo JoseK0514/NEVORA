@@ -222,3 +222,21 @@
 /* Final fixes S2 (G85, J5): a result's icon lines up with its first line (the title), not the middle of two lines. */
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-result .b-notice:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { align-items: flex-start !important; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-result .b-notice__tx:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-top: max(0px, calc((36px - 1.25rem) / 2)) !important; }
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): the switch is painted by its background alone, so under Windows contrast
+ * themes its track and thumb vanished and on, off and locked looked the same. It keeps an edge and a thumb in system
+ * colours; on is the Highlight track. The branding swatch is content (the chosen colour), so it keeps its colour with an
+ * edge. Nothing changes outside forced colours. */
+@media (forced-colors: active) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border: 1px solid ButtonText !important; forced-color-adjust: none !important; background-color: Canvas !important; opacity: 1 !important; filter: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { forced-color-adjust: none !important; background-color: ButtonText !important; box-shadow: none !important; top: 1px !important; left: 1px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:is(:checked, [aria-checked="true"]):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { background-color: Highlight !important; border-color: Highlight !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:is(:checked, [aria-checked="true"]):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { background-color: HighlightText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:disabled:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border-color: GrayText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:disabled:not(:checked):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { background-color: GrayText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:disabled:checked:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { background-color: GrayText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:disabled:checked:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { background-color: Canvas !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb :is(.c-setb-swatch, .c-setb-swatches button):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { forced-color-adjust: none !important; border: 1px solid CanvasText !important; }
+  }
+}
