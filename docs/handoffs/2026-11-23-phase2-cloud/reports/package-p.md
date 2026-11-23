@@ -1,13 +1,34 @@
 # Package P: signed-out billing pages (A15–A19)
 
-Branch `claude-codex-collab-nevora-batch-public`, with `claude-codex-collab-nevora` merged up to `ef0905bf`.
+Branch `claude-codex-collab-nevora-batch-public`, with `claude-codex-collab-nevora` merged up to `07978531`.
+
+Restored for Jose's gap closure (16:08): `b2a233d2` and its shots `03b2c198` were withdrawn under G23 (reverts
+`3b29fe48`, `5727bf3f`) and are back as `5da599e4` and `65f01653` (reverts of those reverts).
 
 ## Commits
 | Commit | What |
 |---|---|
 | `b2a233d2` | Code: `src/components/commerce-recovery/recovery.module.css` only. Footer links are 44 × 44 minimum boxes and stack on phones; the desktop brand line's size bounds are in rem. |
+| `5da599e4` | The same change, restored (revert of the revert `3b29fe48`). |
+| `bcd96705` | Code: `recovery.module.css` only, for J18. The legal line takes the footer's own size, so it grows at 200% text on `/app/billing`. These pages already used that size: no change here (see below). |
 
 The shots commit (this report, `shots/package-p/rows.json` and 44 webp files) comes last.
+
+## Re-checked on the current tip
+On `bcd96705` (shared tip `07978531` merged), production build, same harness and fictional billing answers:
+- **Captures**: all 44 views are pixel-identical to the approved ones (`03b2c198`), so the shots in `shots/package-p/img`
+  stand as they are. That includes 390 with 200% text: the new kit rem sizes and the J18 legal-line rule change
+  nothing here.
+- **Probe**: overflow 0 and overlap 0 on all 44 views; text edges 36/354 in English and Spanish at 390.
+- **Accessibility** at 390 and 1440 on every state (22 views):
+  - axe: 0 violations
+  - every Tab stop has a ring
+  - every link and button hit area is 44px or more
+  - no text fixed at 200%
+- **API**: only `POST /v1/handoff/exchange`, `GET /v1/status` and `GET /v1/plans` (32 each); no checkout, portal, plan
+  change or Stripe.
+- **Repeats** for Jose (none removed): “per month”/“al mes” once on each plan's price line; “Small” as the current plan and
+  in the plan list. Each states a separate fact.
 
 ## How it was checked
 - **Production build** of `b2a233d2`, run like the repo's central-billing suite: `createOwnedNextApp`, production, with the
