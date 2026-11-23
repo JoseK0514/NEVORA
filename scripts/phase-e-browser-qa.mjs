@@ -72,10 +72,11 @@ function originalRuntimeDiagnostic(name, message, page) {
 }
 
 /** Window exceptions and unproven native events remain fatal. */
-export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false,reloadDiagnosticVerified=false,authorityDiagnosticVerified=false,navigationReadKinds,requireNotificationGetWitness=false,requireAuthorityGetWitness=false,routerReadsDuringNavigation=false}={}) {
+export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false,reloadDiagnosticVerified=false,authorityDiagnosticVerified=false,navigationReadKinds,requireNotificationGetWitness=false,requireAuthorityGetWitness=false,navigationCancelledReads=false}={}) {
   const start = errors.length;
-  // Opt-in (Nov 23, 2026, flaky-test gap): WebKit rejects a Next router read (`?_rsc=`) that a hard navigation cancels
-  // with the same native refusal, and reports it once more as a window `error`. Only with this option, and only under
+  // Opt-in (Nov 23, 2026, flaky-test gap): WebKit rejects a read that a hard navigation cancels before it is sent with the
+  // native refusal: a Next router read (`?_rsc=`, also reported once more as a window `error`) or the shell's authority
+  // read (a plain GET of /api/company-access/operational-authority, whose route exports GET only). Only with this option, and only under
   // every proof the static reads need (WebKit, verified probe, a pending main-frame navigation on that page, scenario
   // phase, the exact canonical message), is such a read recorded as a navigation diagnostic; each one may absorb at most
   // one window `error` from the same page within 1.5 s while that navigation is still pending. Anything else stays fatal.
@@ -108,10 +109,11 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
           const witnessRequired=authority?requireAuthorityGetWitness:requireNotificationGetWitness;
           const methodProven=authority?requireAuthorityGetWitness&&methodWitness?.verified===true:!requireNotificationGetWitness||(diagnostic.resourceKind==='notification-read'&&methodWitness?.verified===true);
           const verified=scoped&&methodProven&&(authority?authorityDiagnosticVerified===true:reload?reloadDiagnosticVerified===true&&diagnostic.resourceKind==='notification-read':navigationDiagnosticVerified);
-          if(routerReadsDuringNavigation&&execution.engine==='webkit'&&navigationDiagnosticVerified===true&&state.navigation.pending()&&phase==='scenario'
-            &&diagnostic.canonicalMessage==='Fetch API cannot load resource due to access control checks.'&&diagnostic.routerRead===true){
+          if(navigationCancelledReads&&execution.engine==='webkit'&&navigationDiagnosticVerified===true&&state.navigation.pending()&&phase==='scenario'
+            &&diagnostic.canonicalMessage==='Fetch API cannot load resource due to access control checks.'
+            &&(diagnostic.routerRead===true||diagnostic.resourceKind==='authority-read'&&diagnostic.plainOwnRead===true)){
             classified.add(error);execution.navigationDiagnostics??=[];
-            execution.navigationDiagnostics.push({type:'navigation-router-read-diagnostic',role,pageIndex:index,phase,diagnostic,pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});
+            execution.navigationDiagnostics.push({type:diagnostic.routerRead===true?'navigation-router-read-diagnostic':'navigation-cancelled-read-diagnostic',role,pageIndex:index,phase,diagnostic,pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});
             const held=state.heldWindowErrors?.shift();
             if(held){clearTimeout(held.timer);execution.navigationDiagnostics.push({type:'navigation-router-read-window-error',role,pageIndex:index,phase,kind:'error'});}
             else (state.routerClaims??=[]).push(Date.now()+ROUTER_WINDOW_MS);
@@ -129,7 +131,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
       if(requireAuthorityGetWitness)authorityWitness=await observeAuthorityReadWitness(context,page=>{const state=pages.get(page);errors.push({type:'unproven-authority-read',role:state?.role??role,pageIndex:state?.index??null,phase});});
       if(navigationDiagnosticVerified||reloadDiagnosticVerified||authorityDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);
         const report=()=>errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});
-        if(!routerReadsDuringNavigation||kind!=='error'||!state||phase!=='scenario'||!state.navigation.pending()){report();return;}
+        if(!navigationCancelledReads||kind!=='error'||!state||phase!=='scenario'||!state.navigation.pending()){report();return;}
         const now=Date.now();state.routerClaims=(state.routerClaims??[]).filter(until=>until>=now);
         if(state.routerClaims.length){state.routerClaims.shift();execution.navigationDiagnostics??=[];execution.navigationDiagnostics.push({type:'navigation-router-read-window-error',role:state.role,pageIndex:state.index,phase,kind});return;}
         const held={timer:setTimeout(()=>{const at=state.heldWindowErrors?.indexOf(held)??-1;if(at>=0)state.heldWindowErrors.splice(at,1);report();},ROUTER_WINDOW_MS)};
