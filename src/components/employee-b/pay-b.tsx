@@ -50,15 +50,14 @@ export type PayBProps = {
   onOpenPdf: (id: string) => void;
 };
 
+// Sweep 1 (brief rule 7): a row's name is its visible text, so there is no aria-label that differs from it.
 function Row({item, byId}: {item: Statement; byId?: Map<string, Statement>}) {
   const by = item.correctedBy ? byId?.get(item.correctedBy) : undefined;
   // Final polish, round 2 (P2): a statement whose correction is in the list is not a second payday. It reads "Earlier
   // version" over "Replaced by the Nov 13 correction" (the correction's payday), muted, with no chip (the line says it);
   // the correction keeps its date and "Corrected". Without the correction at hand it keeps its date and "Replaced".
-  if (by) return <BRow href={paycheckHref(item.id)} title={<span className="ep-muted">Earlier version</span>} sub={`Replaced by the ${fmt({month: 'short', day: 'numeric'}).format(utc(by.payday))} correction`}
-    label={`${paydayLong(item.payday)}, ${role(item)} for ${period(item.period.startDate, item.period.endDate)}`}/>;
-  return <BRow href={paycheckHref(item.id)} title={item.correctedBy ? <span className="ep-muted">{payday(item.payday)}</span> : payday(item.payday)} chip={tag(item)} sub={`For work ${period(item.period.startDate, item.period.endDate)}`}
-    label={`${paydayLong(item.payday)}, ${role(item)} for ${period(item.period.startDate, item.period.endDate)}`}/>;
+  if (by) return <BRow href={paycheckHref(item.id)} title={<span className="ep-muted">Earlier version</span>} sub={`Replaced by the ${fmt({month: 'short', day: 'numeric'}).format(utc(by.payday))} correction`}/>;
+  return <BRow href={paycheckHref(item.id)} title={item.correctedBy ? <span className="ep-muted">{payday(item.payday)}</span> : payday(item.payday)} chip={tag(item)} sub={`For work ${period(item.period.startDate, item.period.endDate)}`}/>;
 }
 
 function StatusCard({status, state}: {status: NonNullable<PayBStatus>; state: string}) {

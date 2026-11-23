@@ -252,7 +252,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__sec > summary { min-height: 56px; padding: 10px var(--b-inset); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__body { padding: 0 var(--b-inset) 18px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { display: flex; flex-wrap: wrap; gap: 0 18px; padding: 0 var(--b-inset); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { display: inline-flex; align-items: center; min-height: 32px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { display: inline-flex; align-items: center; min-height: 44px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links a { color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links [aria-current="page"] { color: var(--b-ink2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .legal-unresolved { padding: 0 var(--b-space-2); border-radius: 4px; background: var(--b-amber-50); color: var(--b-amber); }
@@ -307,7 +307,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input:placeholder-shown::-webkit-search-cancel-button { display: none; -webkit-appearance: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::placeholder { font-size: var(--b-fs-body); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 6px; margin: var(--b-space-2) 0 -7px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { margin: -7px 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { margin: -13px 0; }
 /* Final polish, round 2 (M5): on phones each policy link is a 44px line box (they were 32px drawn 18px apart, so two
  * rows of links shared one finger). The words keep their size and colour; the rows sit 44px apart. */
 @media (max-width: 767px) {

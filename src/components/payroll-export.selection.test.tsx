@@ -25,17 +25,17 @@ async function mount(cards=[card('E1'),card('DRAFT',false)],validForMs=45000){rs
 beforeEach(()=>{host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];rs.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});rs.stubGlobal('window',new EventTarget());rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));rs.stubGlobal('navigator',{onLine:true});});
 afterEach(()=>{cleanup?.();cleanup=undefined;rs.unstubAllGlobals();rs.useRealTimers();});
 it('deliberately selects only visible finalized cards and exposes the exclusion count',async()=>{
- await mount();expect(html()).toContain('0 selected');click('Select visible finalized timecards');expect(html()).toContain('1 selected');expect(html()).toContain('1 not finalized');
+ await mount();expect(html()).toContain('0 selected');click('Select all finalized timecards');expect(html()).toContain('1 selected');expect(html()).toContain('1 not finalized');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE E1').checked).toBe(true);expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE DRAFT').checked).toBe(false);
  click('Clear employee selection');expect(html()).toContain('0 selected');
 });
 it('selects at most 100 visible finalized cards and explicitly reports overflow',async()=>{
- await mount(Array.from({length:101},(_,i)=>card(`E${i}`)));click('Select visible finalized timecards');expect(html()).toContain('100 selected');expect(html()).toContain('Select up to 100 people at a time.');
+ await mount(Array.from({length:101},(_,i)=>card(`E${i}`)));click('Select all finalized timecards');expect(html()).toContain('100 selected');expect(html()).toContain('Select up to 100 people at a time.');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE E100').disabled).toBe(true);
 });
 it('refresh and expiry remove the convenience selection with protected private data',async()=>{
- await mount(undefined,1000);click('Select visible finalized timecards');window.dispatchEvent(new Event('pageshow'));await flush();expect(html()).toContain('0 selected');
- click('Select visible finalized timecards');rs.stubGlobal('fetch',()=>new Promise<Response>(()=>{}));await rs.advanceTimersByTimeAsync(1001);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Select visible finalized timecards');
+ await mount(undefined,1000);click('Select all finalized timecards');window.dispatchEvent(new Event('pageshow'));await flush();expect(html()).toContain('0 selected');
+ click('Select all finalized timecards');rs.stubGlobal('fetch',()=>new Promise<Response>(()=>{}));await rs.advanceTimersByTimeAsync(1001);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Select visible finalized timecards');
 });
 
 it('guides recorded approval and reviewed zero-time finalization separately while preserving finalized-only selection',async()=>{
@@ -45,7 +45,7 @@ it('guides recorded approval and reviewed zero-time finalization separately whil
  // BR-2 (Nov 14): the step export is missing, finalizing, is named for every timecard that isn't finalized.
  expect(rendered).toContain('Approve 1 timecard, then finalize 2 first');
  expect(rendered).toContain('start=2026-09-21&amp;end=2026-09-27');
- click('Select visible finalized timecards');expect(html()).toContain('1 selected');
+ click('Select all finalized timecards');expect(html()).toContain('1 selected');
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE APPROVED').disabled).toBe(true);
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE BLANK').checked).toBe(false);
 });

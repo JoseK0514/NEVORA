@@ -88,8 +88,8 @@ describe('Unpaid periods first (A6, round 2 R3)', () => {
     // Phase 8 (a.md #15): a period's payday comes from the pay schedule, and a passed one says so.
     expect(html).toContain('Scheduled payday was <span class="c-num">');
     expect(buttons.filter(button => /class="c-btn[ "]/.test(button))).toHaveLength(1);
-    expect(buttons.find(button => /class="c-btn[ "]/.test(button))).toContain('aria-label="Prepare payroll for Sep 21–27"');
-    expect(buttons.find(button => button.includes('c-pay__quiet-go'))).toContain('aria-label="Prepare payroll for Oct 5–11"');
+    expect(buttons.find(button => /class="c-btn[ "]/.test(button))).toContain('aria-label="Prepare Sep 21–27 payroll"');
+    expect(buttons.find(button => button.includes('c-pay__quiet-go'))).toContain('aria-label="Prepare Oct 5–11 payroll"');
     expect(html).not.toContain('c-btn--secondary');
     expect(html).not.toContain('Prepare draft');
   });
@@ -334,7 +334,9 @@ it('the phone steps card lists Timecards as a step line before its action, and a
   const phone = onlyB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings />));
   const card = phone.slice(phone.indexOf('id="b-payroll-steps"'));
   expect(card).toMatch(/<a class="b-step b-step--link"[^>]*href="\/app\/timecards\?start=2026-11-09&amp;end=2026-11-15"/);
-  expect(card.replace(/[\u00a0\u2009\u202f]/g, ' ')).toContain('aria-label="Timecards, Can be approved from Mon, Nov 16"');
+  // Sweep 1: its name is its visible text (Timecards, then the line), with no aria-label that differs from it.
+  expect(card.replace(/[\u00a0\u2009\u202f]/g, ' ')).toContain('Can be approved from Mon, Nov 16');
+  expect(card).not.toMatch(/<a class="b-step b-step--link"[^>]*aria-label=/);
   expect(card.indexOf('b-step--link')).toBeLessThan(card.search(/>Prepare [A-Z][a-z]{2} \d+–\d+<\/a>/));
   expect(card.search(/>Prepare [A-Z][a-z]{2} \d+–\d+<\/a>/)).toBeGreaterThan(0);
   const original = nativeRun({ id: 'run-original', status: 'APPROVED' });
