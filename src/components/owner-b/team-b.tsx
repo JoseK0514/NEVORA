@@ -24,7 +24,7 @@ export type TeamBToolIcon = "hours" | "availability" | "import" | "key" | "inact
 
 export function TeamB({ people, inactive, total, query, filtered, people_word, person_word, seeAll, tools, searchHidden, status, limit, right, clearHref = "/app/employees", searchPlaceholder = "Search people" }: {
   people: TeamBPerson[]; inactive: TeamBPerson[]; total: number; query: string; filtered: boolean; people_word: string; person_word: string;
-  /** "See all N" when the list is cut short. */ seeAll?: { href: string; label: string };
+  /** "See all" when the list is cut short (the band says how many). */ seeAll?: { href: string; label: string };
   tools: { href: string; title: string; detail: string; icon: TeamBToolIcon }[];
   /** Hidden fields the page's search keeps (role, location). */ searchHidden?: ReactNode;
   /** The directory's status filter, kept by the search's Apply button. */ status: string;
@@ -84,7 +84,7 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
           ...(live.partial ? [] : [{ key: "off", label: "Off today", count: off, current: filter === "off", onSelect: () => setFilter("off") }]),
         ]} /> : null}
         {shown.length ? <BList label={people_word}>{(filter === "all" && limit ? shown.slice(0, limit) : shown).map(row)}
-          {seeAll && filter === "all" ? <BRow href={seeAll.href} lead={<span className="b-lead-space" aria-hidden="true" />} title={seeAll.label} label={seeAll.label} /> : null}</BList>
+          {seeAll && filter === "all" ? <BRow href={seeAll.href} lead={<span className="b-lead-space" aria-hidden="true" />} title={seeAll.label} /> : null}</BList>
           : <><p className="b-state">{people.length ? (filter === "working" ? "No one is clocked in right now." : filter === "late" ? "Everyone on shift has clocked in." : "No one is off today.") : total ? (query ? `No ${lowerPeople} match “${query}”.` : "No one matches this search.") : `No ${lowerPeople} yet.`}</p>
             {/* Gaps G13 (Nov 23, 2026): an empty search offers Clear search on phones too, as the desktop card does. */}
             {!people.length && total && query ? <div className="b-state-actions b-team-clear"><BButtonLink href={clearHref} kind="ghost">Clear search</BButtonLink></div> : null}</>}

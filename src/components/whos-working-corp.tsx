@@ -119,15 +119,19 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
     {children ? <CorpCard as="div" ariaLabel="Review">
       {/* Review 30 (D29): the folded row says how many clock-ins wait, and a punch open past 12 hours shows its red chip
         here too, so it is seen without opening the review. */}
-      <CorpRow onClick={() => setReviewOpen(open => !open)} bold chevron={false}
-        /* Final polish D3 (#25): the folded row is this card's heading, so its words take the card label's size and weight
-          (17/22 at 700, as "Clocked in" and "Not clocked in" above), and the red chip follows the sub-line instead of
-          sitting between the heading and it. */
-        title={<><span className="c-who__name c-who__check">Clock-ins to check</span>{toCheck ? <BCount>{toCheck}</BCount> : null}</>}
-        detail="Times that don’t match the schedule or breaks"
-        detailEnd={flagged ? <BChip tone="red">{flagged === 1 ? NO_CLOCK_OUT : `${flagged} with ${NO_CLOCK_OUT.charAt(0).toLowerCase()}${NO_CLOCK_OUT.slice(1)}`}</BChip> : null}
-        trail={<CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" />}
-        label={`Clock-ins to check${toCheck ? `, ${toCheck} to review` : ""}${flagged ? `, ${flagged} with no clock-out after 12 hours` : ""}, ${reviewOpen ? "expanded" : "collapsed"}`} />
+      {/* Final polish D3 (#25): the folded row is this card's heading, so its words take the card label's size and weight
+        (17/22 at 700, as "Clocked in" and "Not clocked in" above), and the red chip follows the sub-line instead of
+        sitting between the heading and it. Gaps G65 (Nov 23, 2026): the row is named by what it shows ("Clock-ins to
+        check 2 Times that don't match…"), with aria-expanded for open or closed instead of an aria-label that words it
+        differently. It is CorpRow's markup (a bold title, a detail line, a trail), which has no aria-expanded; the spaces
+        between the parts draw nothing (each sits in a flex box) and keep the spoken words apart. */}
+      <button type="button" className="c-row" aria-expanded={reviewOpen} aria-controls={reviewOpen ? "review" : undefined} onClick={() => setReviewOpen(open => !open)}>
+        <span className="c-row__main">
+          <span className="c-row__title c-row__title--b"><span className="c-who__name c-who__check">Clock-ins to check</span>{toCheck ? <>{" "}<BCount>{toCheck}</BCount></> : null}</span>{" "}
+          <span className="c-row__detail"><span>Times that don’t match the schedule or breaks</span>{flagged ? <>{" "}<BChip tone="red">{flagged === 1 ? NO_CLOCK_OUT : `${flagged} with ${NO_CLOCK_OUT.charAt(0).toLowerCase()}${NO_CLOCK_OUT.slice(1)}`}</BChip></> : null}</span>
+        </span>
+        <span className="c-row__trail"><CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" /></span>
+      </button>
     </CorpCard> : null}
     {children && reviewOpen ? <div className="c-who__review" id="review">{children}</div> : null}
   </CorpPage>;
