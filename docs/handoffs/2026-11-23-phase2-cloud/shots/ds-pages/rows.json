@@ -474,9 +474,47 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "Payroll history link (Payroll, tablet and desktop) measures 41px tall",
-   "Schedule grid: open-shift chips are 36px tall and the empty cell's \"+ Add\" 24px tall from 768px (not in this round's list)"
-  ]
+  "endSweep": []
+ },
+ {
+  "id": "t44-grid",
+  "row": "Target size",
+  "page": "Schedule week grid",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "The open-shift chips (36px) and an empty cell's \"+ Add\" (24px) look the same; each now has a 44px tall tap area inside its own cell from 768px.",
+  "shots": [
+   {
+    "label": "Tablet",
+    "before": "img/t44b-schedule-owner-768-before.webp",
+    "after": "img/t44b-schedule-owner-768-after.webp"
+   },
+   {
+    "label": "Desktop",
+    "before": "img/t44b-schedule-owner-1440-before.webp",
+    "after": "img/t44b-schedule-owner-1440-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "t44-payhistory",
+  "row": "Target size",
+  "page": "Payroll",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "\"Payroll history\" looks the same; the first payroll row no longer covers the bottom 3px of its tap area, so it is 44px.",
+  "shots": [
+   {
+    "label": "Desktop",
+    "before": "img/t44b-payroll-owner-1440-before.webp",
+    "after": "img/t44b-payroll-owner-1440-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
  }
 ]

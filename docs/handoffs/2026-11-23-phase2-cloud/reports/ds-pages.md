@@ -136,6 +136,24 @@ far a tap still lands on it (`elementFromPoint`, a tap on its label counts). Bef
 - **Checks:** tsc passes; oxlint has 0 errors; the whole `src/components` suite has 3257 passed and 0 failed; `target-size-44-desk.test.ts` (new), `target-size-44.test.ts` and `ds-pages-text-rem.test.ts` pass.
 - **Shots:** `shots/ds-pages/img/t44-*` (before and after).
 
-Found but not in this round's list (proposed rows):
-- The Payroll history link is 41px tall at 768px and wider.
-- The Schedule grid's open-shift chips are 36px tall, and the empty cell's "+ Add" is 24px tall, from 768px.
+Found but not in this round's list: the Payroll history link, the Schedule grid's open-shift chips and the empty
+cell's "+ Add". The lead then asked for all three; see the next section.
+
+## Follow-up: the three extra targets (lead, Nov 23)
+I merged the shared tip first (`a8694e7d`). Code: `880af013`.
+
+Measured the same way, as the reach from the centre, on a production build at 390, 768, 1024 and 1440. Before is
+`dd3c6d56` plus the merged tip; after is `880af013`.
+
+| Target | Before | Change | After |
+|---|---|---|---|
+| "Payroll history" (Payroll, header of the Recent payrolls card) | 41px tall from 768px: the first payroll row below overlapped the link's lowest 3px | The link is `position: relative; z-index: 1` (`payroll-corp.css`), so all 44px of it is its own | 44px. The row stays over 44px tall |
+| Schedule grid open-shift chips ("4 open") | 36px tall from 768px | A transparent `::after` reaches 44px tall, centred, inside the chip's own cell (`owner-b-schedule.css`, from 768px) | 44px |
+| Schedule grid empty cell "+ Add" | 24px tall from 768px | The same rule | 44px |
+
+- **No overlap:** each ring keeps its target's width (`left: 0; right: 0`) and stays inside the target's own cell.
+- **Spacing:** the grid rows are tall enough for a full 44px ring, so the 24px spacing fallback of WCAG 2.5.8 wasn't needed. Every probed control on Schedule and Payroll now reaches 44px at all four widths.
+- **No translate:** the ring's top and bottom are `min(0px, 50% - 22px)`, because the production build had dropped a `translate` override before.
+- **Default look:** nothing drawn changes. At 390, 768, 1024 and 1440 the default-size pixel diff against the build without the fix differs only in the live "Schedule read at" time.
+- **Checks:** tsc passes; oxlint has 0 errors; the `src/components` and `src/app` suites have 4928 passed and 0 failed; `target-size-44-desk.test.ts` is extended with both rules.
+- **Shots:** `shots/ds-pages/img/t44b-*` (before and after).
