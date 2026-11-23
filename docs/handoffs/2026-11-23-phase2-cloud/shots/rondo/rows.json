@@ -1,0 +1,344 @@
+[
+ {
+  "id": "H1-o",
+  "row": "H1",
+  "page": "Rondo AI (Owner)",
+  "section": "Rondo AI and insights",
+  "note": "The Owner's Rondo AI with no AI service: what needs attention (the shared day, time and draft note said once; same-title items grouped by place), the live briefing, the checks, the conversation and the notebook.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H1-o-390.webp"
+   },
+   {
+    "label": "Phone, screen height",
+    "after": "img/H1-o-390-fold.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H1-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H1-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H1-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the back link in the band ('More', 'Rondo AI', 'Insights') is 32px tall at 768 and 1440."
+  ]
+ },
+ {
+  "id": "H1-m",
+  "row": "H1",
+  "page": "Rondo AI (Manager)",
+  "section": "Rondo AI and insights",
+  "note": "Elena (company-wide Manager) picks a location and week, asks one of four questions, and sees published shifts and planned hours by day.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H1-m-390.webp"
+   },
+   {
+    "label": "Phone, screen height",
+    "after": "img/H1-m-390-fold.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H1-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H1-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H1-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the back link in the band ('More', 'Rondo AI', 'Insights') is 32px tall at 768 and 1440."
+  ]
+ },
+ {
+  "id": "H1-ml",
+  "row": "H1",
+  "page": "Rondo AI (location Manager)",
+  "section": "Rondo AI and insights",
+  "note": "Daniel (one location, Condado) sees the same screen with his location as fixed text.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H1-ml-390.webp"
+   },
+   {
+    "label": "Phone, screen height",
+    "after": "img/H1-ml-390-fold.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H1-ml-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H1-ml-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H1-ml-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "H2-o",
+  "row": "H2",
+  "page": "Weekly plan",
+  "section": "Rondo AI and insights",
+  "note": "Weekly plan setup: the week, what Rondo may change, locations and Compare options. The subtitle no longer repeats the button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H2-o-390.webp"
+   },
+   {
+    "label": "Phone, screen height",
+    "after": "img/H2-o-390-fold.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H2-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H2-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H2-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the back link in the band ('More', 'Rondo AI', 'Insights') is 32px tall at 768 and 1440.",
+   "Radio circles are 22px inside full-width labelled rows (the row is the target)."
+  ]
+ },
+ {
+  "id": "H3-o",
+  "row": "H3",
+  "page": "Business records",
+  "section": "Rondo AI and insights",
+  "note": "Business records with none yet: one action, 'Add record', in the empty card.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H3-o-390.webp"
+   },
+   {
+    "label": "Phone, screen height",
+    "after": "img/H3-o-390-fold.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H3-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H3-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H3-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the back link in the band ('More', 'Rondo AI', 'Insights') is 32px tall at 768 and 1440."
+  ]
+ },
+ {
+  "id": "H4-o",
+  "row": "H4",
+  "page": "Company knowledge",
+  "section": "Rondo AI and insights",
+  "note": "Company knowledge with no documents: the business profile row and the Documents card, whose last row is the only 'Add document'.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H4-o-390.webp"
+   },
+   {
+    "label": "Phone, screen height",
+    "after": "img/H4-o-390-fold.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H4-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H4-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H4-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the back link in the band ('More', 'Rondo AI', 'Insights') is 32px tall at 768 and 1440."
+  ]
+ },
+ {
+  "id": "H5-o",
+  "row": "H5",
+  "page": "Insights (Owner)",
+  "section": "Rondo AI and insights",
+  "note": "Insights for this week so far, all locations. Text grows with the reader's setting; at large text the period segments wrap to a second row.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H5-o-390.webp"
+   },
+   {
+    "label": "Phone, screen height",
+    "after": "img/H5-o-390-fold.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H5-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H5-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H5-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Axe flags the band's date line at 768 and 1440 (white on teal measured against the canvas: a false positive).",
+   "Older-kit wrapper classes wb-page, wb-reports and wb-insights stay; premium-wave-b.css print rules use them.",
+   "Kit pill '… under plan' is a fixed 12px.",
+   "Worked and under-plan are rounded separately (one minute apart)."
+  ]
+ },
+ {
+  "id": "H5-m",
+  "row": "H5",
+  "page": "Insights (Manager)",
+  "section": "Rondo AI and insights",
+  "note": "Elena's Insights: the same screen with her data.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H5-m-390.webp"
+   },
+   {
+    "label": "Phone, screen height",
+    "after": "img/H5-m-390-fold.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H5-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H5-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H5-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Same as the Owner's Insights."
+  ]
+ },
+ {
+  "id": "H6-o",
+  "row": "H6",
+  "page": "Christmas bonus (Owner)",
+  "section": "Rondo AI and insights",
+  "note": "Christmas bonus hours: the exact bonus year once (the subtitle on wide screens, the year menu on phones), the informational note word for word, the dates and the people.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H6-o-390.webp"
+   },
+   {
+    "label": "Phone, screen height",
+    "after": "img/H6-o-390-fold.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H6-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H6-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H6-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the back link in the band ('More', 'Rondo AI', 'Insights') is 32px tall at 768 and 1440."
+  ]
+ },
+ {
+  "id": "H6-m",
+  "row": "H6",
+  "page": "Christmas bonus (Manager)",
+  "section": "Rondo AI and insights",
+  "note": "Elena's Christmas bonus hours: the same screen with her data.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/H6-m-390.webp"
+   },
+   {
+    "label": "Phone, screen height",
+    "after": "img/H6-m-390-fold.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/H6-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/H6-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/H6-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit: the back link in the band ('More', 'Rondo AI', 'Insights') is 32px tall at 768 and 1440."
+  ]
+ }
+]

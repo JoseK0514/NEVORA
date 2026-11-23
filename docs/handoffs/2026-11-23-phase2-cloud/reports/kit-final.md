@@ -116,3 +116,24 @@ entry, outline on the brand, collapse button and Help) but only 5.9:1 on the sid
 tint. In the sidebar the ring is now #08504C (the band's dark end): 9.0:1 and 8.2:1, same width and shape, for every
 focusable control in the sidebar. Checked by keyboard Tab for both roles (`img/sidebar-focus-*`); unfocused, the sidebar
 and pages are unchanged (the only differences were a loading frame, the "read at" time and the focus the Tab walk left).
+
+## Follow-up 5: sidebar workplace name and J17 filters at 200% text (14:10 UTC)
+- `5b2023f7` + `90559bbe`: the Employee and Lead sidebar's workplace name had a fixed 17px/18px line height while its
+  font is rem, so at 200% its two clamped lines overlapped each other and the role line. The name's line height is now
+  1.0625rem/1.125rem and the role line 0.75rem/0.9375rem (both the same at the default size); the name still clamps to
+  two lines, and the full name is in the card's `title`. At 1440 with 200% text it now reads "Northside / QA…" over
+  "Employee". At 768 the sidebar is the rail (no name). The Owner's card already wrapped cleanly. At the default size the
+  sidebar is pixel-identical (Owner and Employee, 768 and 1440).
+- J17 Clocker PINs: its filter is a `.c-seg`, so the segment commits (`cd348986`, `735e06ee`, `b171c7fd`) already make
+  it grow and fit: at 390 with 200% text "No PIN 12" and "PIN set 0" sit inside their pills
+  (`img/j17-pins-owner-390-200pct.webp`). No further change; default size identical at 390, 768 and 1440.
+
+## Follow-up 6: band title in rem, phone band button 44px (14:25 UTC)
+- `e14b4904`: the band title is rem everywhere it was px: 2rem/2.375rem (32/38px) on desktop titles (`.c-title`,
+  `.q-hd`, the B band, sheet pages, `--bs-big-fs/lh`) and 2.125rem/2.5rem (34/40px) for the phone's big title and
+  `.b-hbig`. At 768 and 1440 every page matches before (only live data differs); at 390 with 200% text no title is
+  clipped, overlaps or overflows (Home, Timecards, Payroll, Schedule, Team, Updates; Employee Home and Schedule).
+- `05fedbf6`: the phone band's action button (`.b-hero` white or glass, not full or big) has a 44px minimum, up from
+  40px. This is the one intended change at the default size, at 390 only: Team's "Add", Payroll's "Settings",
+  Schedule's band action and Timecards' "Select" (the same glass button; none to select in this fictional week). Pages
+  with such a button are 4px taller. 768 and up already used 48px.
