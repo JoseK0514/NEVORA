@@ -42,6 +42,8 @@ it('Direction B phone screen: the link card with its chip, the keep-it-private n
  // Final polish, round 2 (M2): a setting's state in a card header is one chip: grey while off, teal while Active.
  expect(none).toContain('b-chip--grey">Off<');expect(none).not.toContain('class="b-status"');
  const active=phone(<CalendarSubscriptionView {...base}/>);expect(active).toContain('b-chip--teal">Active<');expect(active).toContain('>Get a new link<');expect(active).toContain('>Turn off link<');expect(active).toContain('aria-controls="b-calendar-link-confirmation"');
+ expect(active).toContain('Your calendar app picks up schedule changes the next time it refreshes, which can take a while.');
+ expect(corp(<CalendarSubscriptionView {...base}/>)).toContain('Your calendar app picks up schedule changes the next time it refreshes, which can take a while.');
  const once=phone(<CalendarSubscriptionView {...base} url="PRIVATE-ONCE"/>);expect(once).toContain('PRIVATE-ONCE');expect(once).toContain('>Copy calendar link<');expect(once).toContain('id="b-calendar-link"');
  expect(phone(<CalendarSubscriptionView {...base} notice="The result is unknown." pendingKind="ROTATE"/>)).toContain('Retry original request');
  expect(phone(<CalendarSubscriptionView {...base} paused/>)).toContain('Calendar settings paused.');
