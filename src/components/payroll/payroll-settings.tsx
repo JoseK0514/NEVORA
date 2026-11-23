@@ -91,7 +91,9 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
   // large title and the approved scope sentence on tablets and desktop), then the Time and pay tabs.
   /* Phase 8 (review B #35): the band says what payroll does, as Payroll above the same tabs does (the approved scope
      sentence, unchanged); "US dollars" read as a stray fact, and the currency is fixed. */
-  return <SettingsPageB className="c-pay c-pset" titleId="payroll-settings-title" title="Payroll settings" back={{ href: '/app/payroll', label: 'Payroll' }} sub="Calculate pay and share statements. You pay your team outside NEVORA.">
+  // Phase 2 (J12, item 4): from 768, where Payroll's tabs show, the band names the section ("Payroll") and the selected
+  // "Settings" tab names the page; the phone band (no tabs) keeps "Payroll settings".
+  return <SettingsPageB className="c-pay c-pset" titleId="payroll-settings-title" title="Payroll settings" wideTitle={tabs?.length ? 'Payroll' : undefined} back={{ href: '/app/payroll', label: 'Payroll' }} sub="Calculate pay and share statements. You pay your team outside NEVORA.">
     <PayrollTabs items={tabs} current="/app/settings/payroll" />
     <BusinessZone.Provider value={timeZone}><SavingForm.Provider value={savingForm}>
     <KeepFocusClear />
