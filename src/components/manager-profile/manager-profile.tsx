@@ -23,12 +23,15 @@ import { readPortalLanguage } from '@/lib/activation/language.server';
 import { listWorkforcePermissions } from '@/lib/workforce/authority.server';
 import { listLocations } from '@/lib/data/locations';
 import { ManagerAuthoritySection, type ManagerAuthority } from '@/components/workforce/manager-authority';
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { MANAGER_PROFILE_COPY } from './manager-profile-copy';
 
 /** Phase 3.5: the Owner and Manager Profile, laid out like the employee Profile (band, details, settings, Sign out).
  * Name, role, company, time zone, My pay and device alerts come from today's reads. Contact, locations and
  * alert choices come from the management profile read in CODEX.md, which the client asks for. */
 export async function ManagerProfilePage({ proof }: { proof: SessionMutationProof }) {
   const nativeApp = nativeContext((await headers()).get('user-agent'));
+  const lang = await readPageLang(), t = MANAGER_PROFILE_COPY[lang];
   const [workspace, brand, initial] = await Promise.all([
     getWorkspace(),
     currentBrand(),
@@ -45,7 +48,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
   const owner = proof.employee.role === 'OWNER';
   // Review Nov 11 (MG-013): a Manager's read-only details name who can change them: the workspace's Owners, from the team
   // list a Manager already sees (as the closed Settings notice does). A failed read leaves "An Owner".
-  const changedBy = owner ? null : await listEmployees().then(list => ownerNames(list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim()))).catch(() => null);
+  const changedBy = owner ? null : await listEmployees().then(list => ownerNames(list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim()), lang)).catch(() => null);
   // SCRUM-215: a Manager's action grants by location, and who to ask for the rest.
   let authority: ManagerAuthority | null = null, locationNames: Record<string, string> = {}, placeNames: Record<string, string> = {}, profileLang: 'en' | 'es' = 'en';
   if (!owner) {
@@ -58,7 +61,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
     } catch { authority = { state: 'unavailable' }; }
   }
   return <div className="q-page premium-manager-profile c-page--narrow" data-nv-page="">
-    <QuietNav back={{ href: "/app/more", label: "More" }} right={owner ? <Link className="q-nav__r" href={`/app/employees/${encodeURIComponent(proof.employee.id)}?edit=1`}>Edit</Link> : undefined} />
+    <QuietNav back={{ href: "/app/more", label: t.more }} right={owner ? <Link className="q-nav__r" href={`/app/employees/${encodeURIComponent(proof.employee.id)}?edit=1`}>{t.edit}</Link> : undefined} />
     <div className="pmp-content">
       <ManagerProfileLive key={proof.employee.id} initial={initial} identity={{
         employeeId: proof.employee.id,
@@ -72,7 +75,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         deviceAlerts: nativeApp ? !!readNativeRegistrationConfig(process.env) : readNotificationConfig(process.env).featureEnabled,
         payrollAlerts: payrollFeatureEnabled(),
         changedBy,
-        locationsWord: wordPreset(brand.words).en.locations.toLowerCase(),
+        locationsWord: wordPreset(brand.words)[lang].locations.toLowerCase(),
         placeNames,
       }} authority={authority ? <ManagerAuthoritySection authority={authority} locationNames={locationNames} owners={changedBy} lang={profileLang} /> : null} accountCards={<>
         {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}

@@ -1,6 +1,8 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { usePortalLang } from '@/lib/i18n/portal-lang';
+import { SMALL_PARTS_COPY } from './small-parts-copy';
 import { readThemeChoice, writeThemeChoice, THEME_KEY, DEFAULT_THEME, type ThemeChoice } from '@/lib/theme';
 
 const listeners = new Set<() => void>();
@@ -21,11 +23,12 @@ export function setThemeChoice(choice: ThemeChoice) {
 }
 
 /** System / Light / Dark for this device, styled like the Language switch beside it. The pressed option is the choice. */
-export function ThemeSwitch({ label = 'Appearance' }: { label?: string }) {
+export function ThemeSwitch({ label: given }: { label?: string }) {
+  const t = SMALL_PARTS_COPY[usePortalLang()].theme, label = given ?? t.label;
   const choice = useSyncExternalStore(subscribe, readThemeChoice, () => DEFAULT_THEME);
   return (
     <div className="ap-lang" role="group" aria-label={label}>
-      {([['system', 'System'], ['light', 'Light'], ['dark', 'Dark']] as const).map(([value, name]) => (
+      {([['system', t.system], ['light', t.light], ['dark', t.dark]] as const).map(([value, name]) => (
         <button key={value} type="button" aria-pressed={choice === value} onClick={() => { writeThemeChoice(value); listeners.forEach(listener => listener()); }}>
           <span>{name}</span>
         </button>

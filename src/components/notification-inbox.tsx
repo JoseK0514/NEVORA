@@ -31,6 +31,8 @@ import './notification-inbox-corp.css';
 import {CorpEmpty} from './corp/corp';
 import {BSegs,BState} from './owner-b/b-kit';
 import {KeepSelectedVisible} from './kit/keep-selected-visible';
+import {NOTIFICATION_COPY} from './notification-copy';
+import type {PortalLang} from '@/lib/i18n/portal-lang';
 
 
 /* Premium pass FA (final verification A #14): one glyph per meaning. "Things to do are waiting" is Things to do's tray (the
@@ -52,15 +54,15 @@ export const whenLong=(at:string,timeZone?:string)=>new Intl.DateTimeFormat('en-
 const SUMMARY_EVENTS=['MANAGER_REVIEW','COVERAGE_ATTENTION'];
 const SUMMARY_SCOPE='Open shifts, requests or missing availability';
 function summaryCount(item:EmployeeNotificationItem){return SUMMARY_EVENTS.includes(item.eventType??'')&&Number.isSafeInteger(item.count)&&(item.count??-1)>=0?item.count as number:null;}
-const summaryWords=(n:number)=>`${n} ${n===1?'item was':'items were'} waiting`;
-export function rowText(item:EmployeeNotificationItem):{title:string;detail:string|null}{
+const summaryWords=(n:number,lang:PortalLang='en')=>NOTIFICATION_COPY[lang].summaryWords(n);
+export function rowText(item:EmployeeNotificationItem,lang:PortalLang='en'):{title:string;detail:string|null}{
  const n=summaryCount(item);
- return n===null?notificationTitle(item):{title:summaryWords(n),detail:SUMMARY_SCOPE};
+ return n===null?notificationTitle(item):{title:summaryWords(n,lang),detail:lang==='es'?NOTIFICATION_COPY.es.summaryScope:SUMMARY_SCOPE};
 }
 /** A held row's facts, each whole (premium pass: drawn with BSegs, so no line starts or ends on the middle dot). */
-export function rowFacts(item:EmployeeNotificationItem){
+export function rowFacts(item:EmployeeNotificationItem,lang:PortalLang='en'){
  const n=summaryCount(item);
- return [notificationName(item),notificationOutcomeNote(item),n===null?notificationCountNote(item):summaryWords(n)].filter((fact):fact is string=>!!fact);
+ return [notificationName(item),notificationOutcomeNote(item),n===null?notificationCountNote(item):summaryWords(n,lang)].filter((fact):fact is string=>!!fact);
 }
 
 export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;onMarkRead?:(id:string)=>Promise<void>;

@@ -6,7 +6,8 @@ import {ClockCountdownIcon} from '@phosphor-icons/react/dist/ssr/ClockCountdown'
 import {BDoneMark} from '../owner-b/b-kit';
 import {useLeaveStaffing,type StaffingState} from './use-leave-staffing';
 import {weeksFor} from '@/lib/time-off-staffing/client';
-import {conflictConsequence,conflictShift,conflictTotal} from '@/lib/time-off-staffing/present';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {LEAVE_STAFFING_COPY} from './leave-staffing-copy';
 import type {StaffingConflict} from '@/lib/time-off-staffing/model';
 import './leave-staffing.css';
 
@@ -27,23 +28,24 @@ export function LeaveConflictCheck({request,employeeName}:{request:PendingLeave;
  const {state,refresh}=useLeaveStaffing(weeks?{weeks,requestId:request.id}:null);
  const first=employeeName.split(/\s+/)[0]||employeeName;
  const conflicts=conflictsFor(state,request.id);
- const head=<div className="c-card__head"><h2 className="c-card__label" id="leave-check-title">Published shifts</h2></div>;
+ const t=LEAVE_STAFFING_COPY[usePortalLang()];
+ const head=<div className="c-card__head"><h2 className="c-card__label" id="leave-check-title">{t.publishedShifts}</h2></div>;
  let body;
- if(!weeks)body=<Line tone="amber" icon={<WarningIcon weight="bold"/>} title="Too long to check here" sub="This request spans more than six weeks. Check each week’s schedule before you decide."/>;
- else if(state.status==='loading')body=<p className="ls-check__state" aria-busy="true">Checking the published schedule…</p>;
- else if(state.status==='paused')body=<p className="ls-check__state">Paused while you’re away. It checks again when you come back.</p>;
- else if(state.status==='expired')body=<Line tone="amber" icon={<ClockCountdownIcon weight="bold"/>} title="This check expired" sub="Check again before you decide." action={<button type="button" className="c-btn c-btn--secondary ls-check__retry" onClick={refresh}>Check again</button>}/>;
+ if(!weeks)body=<Line tone="amber" icon={<WarningIcon weight="bold"/>} title={t.tooLong} sub={t.tooLongSub}/>;
+ else if(state.status==='loading')body=<p className="ls-check__state" aria-busy="true">{t.checking}</p>;
+ else if(state.status==='paused')body=<p className="ls-check__state">{t.paused}</p>;
+ else if(state.status==='expired')body=<Line tone="amber" icon={<ClockCountdownIcon weight="bold"/>} title={t.expired} sub={t.expiredSub} action={<button type="button" className="c-btn c-btn--secondary ls-check__retry" onClick={refresh}>{t.checkAgain}</button>}/>;
  else if(state.status==='unavailable')body=state.denied
-  ?<Line tone="red" icon={<WarningCircleIcon weight="bold"/>} title="Your access changed" sub="Reload the page to check this request with your current access."/>
-  :<Line tone="amber" icon={<WarningIcon weight="bold"/>} title="Couldn’t check for shift conflicts" sub="This doesn’t mean there are none. Try again before you decide." action={<button type="button" className="c-btn c-btn--secondary ls-check__retry" onClick={refresh}>Try again</button>}/>;
- else if(!conflicts?.length)body=<Line tone="green" icon={null} title="No published shifts overlap" sub={`${first} isn’t on the published schedule during this time off.`}/>;
+  ?<Line tone="red" icon={<WarningCircleIcon weight="bold"/>} title={t.accessChanged} sub={t.accessChangedSub}/>
+  :<Line tone="amber" icon={<WarningIcon weight="bold"/>} title={t.couldntCheck} sub={t.couldntCheckSub} action={<button type="button" className="c-btn c-btn--secondary ls-check__retry" onClick={refresh}>{t.tryAgain}</button>}/>;
+ else if(!conflicts?.length)body=<Line tone="green" icon={null} title={t.noOverlap} sub={t.notOnSchedule(first)}/>;
  else body=<>
-  <Line tone="amber" icon={<WarningIcon weight="bold"/>} title={`${first} is on the schedule then`} sub={`${conflictTotal(conflicts)} would need someone else.`}/>
-  <ul className="ls-check__list" aria-label="Overlapping published shifts">{conflicts.map(item=><li key={item.id}>
-   <span className="ls-check__shift">{conflictShift(item)}</span>
-   <span className="ls-check__gap">{conflictConsequence(item)}</span>
+  <Line tone="amber" icon={<WarningIcon weight="bold"/>} title={t.onScheduleThen(first)} sub={t.wouldNeed(t.total(conflicts))}/>
+  <ul className="ls-check__list" aria-label={t.overlapping}>{conflicts.map(item=><li key={item.id}>
+   <span className="ls-check__shift">{t.shift(item)}</span>
+   <span className="ls-check__gap">{t.consequence(item)}</span>
   </li>)}</ul>
-  <p className="ls-check__after">If you approve, the time off is approved and these shifts stay published. Each becomes a shift to fill on the schedule, assigned to you.</p>
+  <p className="ls-check__after">{t.ifApprove}</p>
  </>;
  return <section className="c-card ls-check" aria-labelledby="leave-check-title" aria-live="polite" data-check={state.status==='ready'?(conflicts?.length?'conflicts':'clear'):weeks?state.status:'too-long'}>{head}<div className="ls-check__body">{body}</div></section>;
 }

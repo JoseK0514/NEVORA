@@ -25,7 +25,7 @@ export default async function ChristmasBonusPage({searchParams}:{searchParams:Pr
   const proof=await requireSessionMutationProof();
   let lang:'en'|'es'='en';try{lang=(await readPortalLanguage(proof)).language;}catch{/* English */}
   const t=CHRISTMAS_BONUS_COPY[lang];
-  if(!isManagerRole(session.role))return <OwnerOnlyNotice state title={t.title} reason={t.closedReason} help={t.ownHours} next={{href:'/app/my-time',label:t.openTime}}/>;
+  if(!isManagerRole(session.role))return <OwnerOnlyNotice state lang={lang} title={t.title} reason={t.closedReason} help={t.ownHours} next={{href:'/app/my-time',label:t.openTime}}/>;
   const params=await searchParams;
   const source=await withOperationalCompany(proof,async()=>{
     const workspace=await getWorkspace();
@@ -38,7 +38,7 @@ export default async function ChristmasBonusPage({searchParams}:{searchParams:Pr
   const insights={href:'/app/reports',label:t.insights};
   if(source.state==='unavailable')return <OperationalUnavailable title={t.unavailableTitle} reason={source.reason} back={insights}/>;
   // Review 30 (D19): closed by Puerto Rico's rule, not by this person's access, so the card shows the information glyph.
-  if(source.data===null)return <OwnerOnlyNotice state info back={insights} title={t.title} reason={t.otherZoneReason} help={t.otherZoneHelp} next={{href:'/app/reports',label:t.openInsights}}/>;
+  if(source.data===null)return <OwnerOnlyNotice state info lang={lang} back={insights} title={t.title} reason={t.otherZoneReason} help={t.otherZoneHelp} next={{href:'/app/reports',label:t.openInsights}}/>;
   const {choices,result}=source.data;
   // Review 30 (D08): a failed read is the kit's failed state under the Insights back link: what happened, that nothing
   // changed, and one Try again that reads the same year again. It no longer blames the connection.

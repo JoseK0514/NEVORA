@@ -6,13 +6,16 @@ import { clockerDeviceView, type ClockerDeviceView, type ClockerLocationView } f
 import { listLocations } from '@/lib/data/locations';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { manageClockerDeviceAction } from './actions';
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import { SETTINGS_COPY } from "../settings-copy";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Clocker tablets" };
+export async function generateMetadata() { return { title: SETTINGS_COPY[await readPageLang()].clockerTablets }; }
 
 export const dynamic = 'force-dynamic';
 export default async function ClockerDevicesPage() {
   await requireRoles(['OWNER']);
+  const lang = await readPageLang();
   const session = await requireSessionMutationProof();
   let data: { devices: ClockerDeviceView[]; locations: ClockerLocationView[]; timeZone: string; shortNames: Record<string, string> } | null;
   try {
@@ -27,6 +30,6 @@ export default async function ClockerDevicesPage() {
       shortNames: Object.fromEntries(locations.filter(location => location.shortName).map(location => [location.id, location.shortName])),
     };
   } catch { data = null; }
-  if (data) return <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone} locations={data.locations} shortNames={data.shortNames} action={manageClockerDeviceAction} />;
-  return <ClockerDevicesUnavailable />;
+  if (data) return <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone} locations={data.locations} shortNames={data.shortNames} action={manageClockerDeviceAction} lang={lang} />;
+  return <ClockerDevicesUnavailable lang={lang} />;
 }

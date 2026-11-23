@@ -8,8 +8,9 @@ import type {AuthLang} from '@/lib/auth-copy';
 import {isPublicAccountProof} from '@/lib/auth/public-proof';
 import {OFFLINE_MESSAGE} from './access-recovery/recovery-guidance';
 import {supportReferenceOf} from './access-recovery/support-reference-seam';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {ACCOUNT_COPY} from './account-copy';
 const subscribe=()=>()=>{};
-const assistedUnavailable='The recovery code could not be confirmed. Check current access before preparing another code.';
 type Issued={proof:string;expiresAt:string;employeeId:string};
 export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=false,lang='en',mobileAccess=false,workspaceName=null}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string;from?:'settings';timeZone?:string;
  /** Assisted, Owner only: link to Employee PINs from the same page. */
@@ -19,6 +20,8 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
  /** Sign-in pages only: the workplace's public name, shown as a chip under the title (PB-021). */
  workspaceName?:string|null}){
  const hydrated=useSyncExternalStore(subscribe,()=>true,()=>false);
+ // Signed-in Spanish (es-rest): an assisted code's messages follow the signed-in person's language (English outside the app).
+ const words=ACCOUNT_COPY[usePortalLang()],assistedUnavailable=words.assistedUnavailable;
  const [message,setMessage]=useState(''),[busy,setBusy]=useState(false),[done,setDone]=useState(false),[issued,setIssued]=useState<Issued|null>(null);
  // U11 (Nov 17, 2026): the Support reference of the one failed reply on screen (null until Codex's reader lands, and
  // again on every new attempt), so a reference is never shown beside a later, different failure.
@@ -49,7 +52,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
   window.addEventListener('pagehide',clear);window.addEventListener('offline',clear);if(kind==='assisted')window.addEventListener('blur',clear);document.addEventListener('visibilitychange',hidden);
   return()=>{stop();cancelAnimationFrame(frame);window.removeEventListener('hashchange',receiveProof);window.removeEventListener('pagehide',clear);window.removeEventListener('offline',clear);window.removeEventListener('blur',clear);document.removeEventListener('visibilitychange',hidden);};
  },[kind,actorId,mobileAccess,retire]);
- useEffect(()=>{if(!issued)return;const timer=setTimeout(()=>{setIssued(null);setMessage('This code expired. Verify identity again before issuing another.');},Math.max(0,Date.parse(issued.expiresAt)-Date.now()));return()=>clearTimeout(timer);},[issued]);
+ useEffect(()=>{if(!issued)return;const timer=setTimeout(()=>{setIssued(null);setMessage(words.codeExpired);},Math.max(0,Date.parse(issued.expiresAt)-Date.now()));return()=>clearTimeout(timer);},[issued,words]);
  async function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();if(sending.current)return;
   const form=new FormData(event.currentTarget),password=String(form.get('password')??'');
@@ -69,7 +72,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=fals
    else if(kind==='reset'&&response.ok&&data.state==='reset'){setMessage('Password reset. You’re signed out on every device. Sign in with your new password.');setDone(true);}
    else if(kind==='assisted'&&response.ok&&data.state==='issued'&&isPublicAccountProof(data.proof)&&Number.isFinite(Date.parse(data.expiresAt))&&data.employeeId===(body as {employeeId:string}).employeeId){setIssued(data);}
    else if(kind==='reset'&&response.status===400&&data.state==='invalid'&&isPasswordRejection(data.passwordReason)){setReference(supportReferenceOf(response));setMessage(passwordRejectionMessage(lang,data.passwordReason));}
-   else{setReference(supportReferenceOf(response));setMessage(kind==='reset'&&data.state==='invalid'?'This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.':response.status===401||response.status===403?(kind==='assisted'?'Your session ended. Sign in again to issue a code.':'Your access ended. Sign in again.'):kind==='assisted'?assistedUnavailable:'Recovery could not be confirmed. Keep your current access and try again.');}
+   else{setReference(supportReferenceOf(response));setMessage(kind==='reset'&&data.state==='invalid'?'This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.':response.status===401||response.status===403?(kind==='assisted'?words.assistedSessionEnded:'Your access ended. Sign in again.'):kind==='assisted'?assistedUnavailable:'Recovery could not be confirmed. Keep your current access and try again.');}
   }catch{if(current===generation.current)setMessage(kind==='reset'?'The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.':kind==='assisted'?assistedUnavailable:'Recovery is unavailable. Try again or contact your manager for assisted recovery.');}
   finally{clearTimeout(timeout);if(current===generation.current){setBusy(false);sending.current=false;active.current=null;}}
  }

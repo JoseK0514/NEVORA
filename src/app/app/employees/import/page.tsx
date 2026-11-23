@@ -1,3 +1,5 @@
+import {readPageLang} from '@/lib/i18n/page-lang.server';
+import {EMPLOYEES_COPY} from '../employees-copy';
 import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
@@ -14,9 +16,9 @@ import {RosterImport} from '@/components/roster-import/roster-import';
 import {rosterImportCopy} from '@/components/roster-import/copy';
 import {headcountsOf} from '@/components/roster-import/contract';
 
-export const metadata = { title: "Import a staff list" };
+export async function generateMetadata() { return { title: rosterImportCopy[await readPageLang()].title }; }
 
-const TEAM_BACK = {href: '/app/employees', label: 'Team'};
+const TEAM_BACK = (lang: 'en' | 'es') => ({href: '/app/employees', label: EMPLOYEES_COPY[lang].team});
 
 /** The roster routes (POST /api/onboarding/roster and /preview) answer only where company workspaces are routed: they
  * read the same configuration first and answer "unavailable" (HTTP 503) without it. The page asks the same question
@@ -26,18 +28,19 @@ function rosterImportAvailable() {
 }
 
 /** Owner roster import (docs/handoffs/2026-11-14-owner-simplicity.md): add your list, check it, import. Owners only, as
- * the routes are. English for now, like every signed-in page; the Spanish copy is in the same module. */
+ * the routes are. The page's words follow the person's language (es-rest). */
 export default async function RosterImportPage() {
   const session = await requireSession();
-  const copy = rosterImportCopy.en;
+  const lang = await readPageLang();
+  const copy = rosterImportCopy[lang];
   if (session.role !== 'OWNER') {
     const owners = await listEmployees().then(list => list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim())).catch(() => []);
     // A Manager can still add people one at a time; that page is theirs.
     // Package X (Nov 23, 2026): the page sits under Team, so its band goes back to Team (it said "‹ Home"), as the form does.
-    return <OwnerOnlyNotice title={copy.title} back={TEAM_BACK} reason={copy.closed.reason} help={copy.closed.help} ownersCan={copy.closed.ownersCan} owners={owners}
+    return <OwnerOnlyNotice lang={lang} title={copy.title} back={TEAM_BACK(lang)} reason={copy.closed.reason} help={copy.closed.help} ownersCan={copy.closed.ownersCan} owners={owners}
       next={isManagerRole(session.role) ? {href: '/app/employees/new', label: copy.closed.addOne} : undefined}/>;
   }
-  if (!rosterImportAvailable()) return <OwnerOnlyNotice title={copy.title} back={TEAM_BACK} reason={copy.off.title} help={copy.off.line} next={{href: '/app/employees/new', label: copy.off.action}}/>;
+  if (!rosterImportAvailable()) return <OwnerOnlyNotice lang={lang} title={copy.title} back={TEAM_BACK(lang)} reason={copy.off.title} help={copy.off.line} next={{href: '/app/employees/new', label: copy.off.action}}/>;
   // The same company-wide read Add employee makes, plus the people the three headcounts are counted from.
   const source = await withOperationalCompany(await requireSessionMutationProof(), () => Promise.all([listLocations(), listEmployees()]));
   if (source.state === 'unavailable') return <OperationalUnavailable title={copy.sourceUnavailable} reason={source.reason}/>;

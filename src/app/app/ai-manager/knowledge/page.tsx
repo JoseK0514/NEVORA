@@ -5,8 +5,10 @@ import { readOperationalAuthority } from "@/lib/company-access/operational-scope
 import { getWorkspace } from "@/lib/data/workspaces";
 import { KnowledgePage } from "@/components/owner-advisor/knowledge/knowledge-page";
 import { viewFromParams } from "@/components/owner-advisor/knowledge/views";
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { ROUTE_COPY } from '../../route-copy';
 
-export const metadata = { title: "Company knowledge" };
+export async function generateMetadata() { return { title: ROUTE_COPY[await readPageLang()].companyKnowledge }; }
 
 /* Rondo's company knowledge: the same door as the AI manager (a company-wide Owner with the adviser on). The knowledge
  * API checks Owner and company authority itself on every read and write; this page holds no knowledge text. The editor

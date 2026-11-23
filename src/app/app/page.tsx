@@ -26,6 +26,8 @@ import type {HomeWeek} from '@/components/employee-home-quiet';
 import {readEmployeeWeeklyReview} from '@/lib/data/employee-weekly-review.server';
 import {ManagerDashboard,type ManagerDashboardView} from '@/components/manager-dashboard';
 import {readPortalLanguage} from '@/lib/activation/language.server';
+import {readPageLang} from '@/lib/i18n/page-lang.server';
+import {HOME_PAGE_COPY} from './home-page-copy';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {homeAuthority} from '@/lib/data/employee-home.server';
 import {isManagerRole} from '@/lib/auth/permissions';
@@ -58,7 +60,7 @@ function validWeek(value?: string) {
   );
 }
 
-export const metadata = { title: { absolute: "Home · NEVORA" } };
+export async function generateMetadata() { return { title: { absolute: HOME_PAGE_COPY[await readPageLang()].title } }; }
 
 export default async function DashboardPage({
   searchParams,
@@ -71,6 +73,7 @@ export default async function DashboardPage({
   const params = await searchParams;
   const currentDate = businessDate(new Date(), workspace.timeZone);
   const currentWeek = weekStartFor(currentDate);
+  const lang = await readPageLang(), t = HOME_PAGE_COPY[lang];
 
   if (!manager) {
     const proof=await requireSessionMutationProof();
@@ -85,12 +88,12 @@ export default async function DashboardPage({
     const teamMessage=session.role==='LEAD'&&presentation.modules.updates;
     // Direction B: hours worked this week (the Time tab's own read) and the next payday (pay schedule), Employees and Leads.
     const b=session.role==='EMPLOYEE'||session.role==='LEAD'?{lead:session.role==='LEAD',hoursAuthority:employeeViewAuthority(proof,'hours'),payday:payrollFeatureEnabled()&&presentation.modules.payStatements?(await readNextPay(workspace.timeZone).catch(()=>null))?.payday??null:null,shortcuts:[...(presentation.modules.timeOff?['timeOff'as const]:[]),...(presentation.modules.marketplace?['callout'as const,'swap'as const]:[]),'fixTime'as const]}:undefined;
-    return <EmployeeDashboard b={b} intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang="en" timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'||session.role==='LEAD'}/>;
+    return <EmployeeDashboard b={b} intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang={lang} timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'||session.role==='LEAD'}/>;
   }
 
   const proof=await requireSessionMutationProof();
   const authority=await readOperationalAuthority(proof);
-  if(authority.state==='unavailable')return <OperationalUnavailable title="Home unavailable" reason={authority.reason}/>;
+  if(authority.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={authority.reason}/>;
   if(authority.scope?.mode!=='COMPANY'){
     if(authority.scope?.mode!=='LOCATIONS'||!authority.locations.length)return <ScopedManagementHome view={authority}/>;
     // Nov 22, 2026 (Jose: the same screens other Managers have, limited to their place): the location Manager's Home is
@@ -104,9 +107,9 @@ export default async function DashboardPage({
     // Home's own "Who's working" view, from the same scoped reads (the company view's attendance review is company-wide).
     if(params.view==='attendance')return <ScopedReadFrame observation={authority}><ScopedWhosWorking homeHref={homeHref} locationId={chosen?.id} place={one?placeName(one):chosen?placeName(chosen):undefined}/></ScopedReadFrame>;
     const place=one?<span className="b-date b-place"><MapPinIcon size={15} weight="bold" aria-hidden="true"/>{placeName(one)}</span>
-      :<ActionMenu id="b-home-location-menu" label="Location" title="Location" ariaLabel={`Location: ${chosen?placeName(chosen):'All your locations'}`} align="start"
-        triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="bold" aria-hidden="true"/>{chosen?placeName(chosen):'All your locations'}<CaretDownIcon size={13} weight="bold" aria-hidden="true"/></>}>
-        <Link className="nevora-action-menu-item" href="/app?location=all" aria-current={chosen?undefined:'page'}><strong>All your locations</strong></Link>
+      :<ActionMenu id="b-home-location-menu" label={t.location} title={t.location} ariaLabel={t.locationIs(chosen?placeName(chosen):t.allLocations)} align="start"
+        triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="bold" aria-hidden="true"/>{chosen?placeName(chosen):t.allLocations}<CaretDownIcon size={13} weight="bold" aria-hidden="true"/></>}>
+        <Link className="nevora-action-menu-item" href="/app?location=all" aria-current={chosen?undefined:'page'}><strong>{t.allLocations}</strong></Link>
         {authority.locations.map(location=><Link key={location.id} className="nevora-action-menu-item" href={`/app?location=${encodeURIComponent(location.id)}`} aria-current={chosen?.id===location.id?'page':undefined}><strong>{placeName(location)}</strong></Link>)}
       </ActionMenu>;
     // This week: the week's shifts at this Manager's places (drafts included, as on the company Home), from the scoped
@@ -115,15 +118,15 @@ export default async function DashboardPage({
     const shifts=source?.state==='ready'&&source.authority===authority.authority?source.data.shifts:null;
     const {modules}=await currentPresentation();
     const homeB={firstName:session.firstName,place,
-      days:weekDates(currentWeek).map(date=>({date,weekday:new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US',{weekday:'short',timeZone:'UTC'}),shiftCount:(shifts??[]).filter(shift=>shift.date===date).length})),
+      days:weekDates(currentWeek).map(date=>({date,weekday:new Date(`${date}T12:00:00Z`).toLocaleDateString(t.locale,{weekday:'short',timeZone:'UTC'}).replace('.',''),shiftCount:(shifts??[]).filter(shift=>shift.date===date).length})),
       scheduledHours:(shifts??[]).reduce((total,shift)=>total+durationMinutes(shift.startTime,shift.endTime),0)/60,
       people:new Set((shifts??[]).map(shift=>shift.employeeId)).size,
       ...(shifts?{}:{thisWeek:false as const}),
       // Add shift opens the scoped shift form; Time off opens the requests this Manager may decide (a closed page says who
       // decides when they may not). Add employee and Send update are company-wide, so they aren't offered.
       shortcuts:['shift',...(modules.timeOff?['timeOff' as const]:[])] as HomeShortcut[]};
-    const dateLabel=new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'long',day:'numeric'}).format(new Date(`${currentDate}T12:00:00Z`));
-    return <ScopedReadFrame observation={authority}><ScopedHomeLive key={`${authority.authority}:${chosen?.id??'all'}`} greeting={`Welcome back, ${session.firstName}`} dateLabel={dateLabel}
+    const dateLabel=new Intl.DateTimeFormat(t.locale,{timeZone:'UTC',weekday:'long',month:'long',day:'numeric'}).format(new Date(`${currentDate}T12:00:00Z`));
+    return <ScopedReadFrame observation={authority}><ScopedHomeLive key={`${authority.authority}:${chosen?.id??'all'}`} greeting={t.welcome(session.firstName)} dateLabel={dateLabel}
       timeZone={workspace.timeZone} workspaceName={workspace.name} weekStart={currentWeek} actorId={session.id} locationId={chosen?.id} homeB={homeB}
       week={{weekStart:currentWeek,weekLabel:formatWeekRange(currentWeek),plannedShifts:shifts?.length??0,availabilitySubmitted:0,availabilityEligible:0,locations:[]}}/></ScopedReadFrame>;
   }
@@ -135,7 +138,7 @@ export default async function DashboardPage({
   const nextWeek = addDays(weekStart, 7);
 
   const source=await withOperationalCompany(proof,()=>loadManagerDashboardData(weekStart,proof));
-  if(source.state==='unavailable'&&source.reason!=='read_failed')return <OperationalUnavailable title="Home unavailable" reason={source.reason}/>;
+  if(source.state==='unavailable'&&source.reason!=='read_failed')return <OperationalUnavailable title={t.unavailable} reason={source.reason}/>;
   const dashboardData=source.state==='ready'?source.data:null;
   const reviewAuthority=correctionAuthority(proof);
   const recoveryKey=managerReviewRecoveryKey(session.id,reviewAuthority,source.state==='ready'?source.authority:authority.authority,view);
@@ -144,9 +147,9 @@ export default async function DashboardPage({
   const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
   // Phase 2 (package D, optional): the one Direction B route error screen. It was the older kit page, which had no band
   // under Direction B. The words and both actions are unchanged; Try again stays a link to this exact view.
-  if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><BRouteError title="This page didn’t load" sub="Nothing was changed."
-    spoken="This page didn’t load. Nothing was changed. Check your connection, then try again." line="Check your connection, then try again."
-    retryHref={retry?`/app?${retry}`:'/app'} away={view!=='overview'?{href:'/app',label:'Back to Home'}:undefined}/></ManagerCorrectionRecoveryBoundary>;
+  if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><BRouteError title={t.didntLoad} sub={t.nothingChanged}
+    spoken={t.spoken} line={t.checkConnection}
+    retryHref={retry?`/app?${retry}`:'/app'} away={view!=='overview'?{href:'/app',label:t.backHome}:undefined}/></ManagerCorrectionRecoveryBoundary>;
   const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision,coverageMinutes}=dashboardData;
 
   const {modules}=await currentPresentation();

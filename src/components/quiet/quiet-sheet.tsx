@@ -4,6 +4,8 @@ import Link from 'next/link';
 import {usePathname, useRouter} from 'next/navigation';
 import {createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {SMALL_PARTS_COPY} from '../small-parts-copy';
 import {cancelOverlayExit, closeDialogWithExit, overlayExitMs, useExitHold, useExitValue} from '../kit/overlay-exit';
 
 /* v5 "One look" bottom sheet (approved Oct 24, 2026; mockups E03–E05 and E08). A native modal dialog, so focus stays
@@ -159,7 +161,8 @@ export function RouteSheet({label, match, children,restoreShiftFocus=false}: {la
 }
 
 /** The sheet's left action: closes the sheet, or on a full page goes to `href`. */
-export function SheetCancel({href, children = 'Cancel', className = 'q-nav__l q-nav__l--teal'}: {href: string; children?: ReactNode; className?: string}) {
+export function SheetCancel({href, children: given, className = 'q-nav__l q-nav__l--teal'}: {href: string; children?: ReactNode; className?: string}) {
+  const cancel = SMALL_PARTS_COPY[usePortalLang()].sheet.cancel, children = given ?? cancel;
   const close = useSheetClose();
   if (close) return <button type="button" className={className} onClick={close}>{children}</button>;
   return <Link className={className} href={href}>{children}</Link>;
@@ -168,6 +171,7 @@ export function SheetCancel({href, children = 'Cancel', className = 'q-nav__l q-
 /** A row that opens its details as a sheet (a request, a decided item). `anchor` (an element id) also opens it when the
  * page is reached with that #hash, so links that point at the item still land on it. */
 export function SheetRow({ title, detail, value, sheetTitle, anchor, avatar, status, children }: { title: ReactNode; detail?: ReactNode; value?: ReactNode; sheetTitle: string; anchor?: string; avatar?: ReactNode; /** The item's state, kept on the row for its readers (data-employee-status). */ status?: string; children: ReactNode }) {
+  const lang = usePortalLang();
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (!anchor) return;
@@ -187,7 +191,7 @@ export function SheetRow({ title, detail, value, sheetTitle, anchor, avatar, sta
       setOpen(false);
       if (anchor && window.location.hash === `#${anchor}`) history.replaceState(history.state, '', window.location.pathname + window.location.search);
     }}>
-      <div className="q-nav"><span /><span className="q-nav__t">{sheetTitle}</span><SheetCancel href="#" className="q-nav__r q-nav__r--b">Done</SheetCancel></div>
+      <div className="q-nav"><span /><span className="q-nav__t">{sheetTitle}</span><SheetCancel href="#" className="q-nav__r q-nav__r--b">{SMALL_PARTS_COPY[lang].sheet.done}</SheetCancel></div>
       {children}
     </QuietSheet>
   </li>;

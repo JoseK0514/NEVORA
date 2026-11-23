@@ -14,6 +14,8 @@ rs.mock('react',  () => ({ ...rstestOriginal0, useState: (initial: unknown) => {
   if (!(index in hooks.slots)) hooks.slots[index] = { current: initial };
   return hooks.slots[index];
 } }));
+// Signed-in Spanish (es-rest): the form reads the person's language with a hook; called as a plain function here, it is English.
+rs.mock('@/lib/i18n/portal-lang', () => ({ usePortalLang: () => 'en' }));
 import { ConfigurationForm, type ConfigurationResult } from './configuration-form';
 import { ShiftReviewRecovery } from './shift-review-recovery';
 import { resetServerActionFlight, serverActionRunning, serverActionsStarted } from '@/lib/server-action-flight';

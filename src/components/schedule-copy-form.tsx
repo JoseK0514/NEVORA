@@ -2,10 +2,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import type { CopyCommand } from "@/lib/data/schedule-copy";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { scheduleCopy } from "./schedule-copy";
 export function ScheduleCopyForm({
   command,
   actorId,
-  label = "Copy previous week",
+  label,
   className = "button secondary",
   ariaLabel,
   children,
@@ -17,6 +19,7 @@ export function ScheduleCopyForm({
   ariaLabel?: string;
   children?: ReactNode;
 }) {
+  const t = scheduleCopy(usePortalLang()).copy;
   const router = useRouter();
   const key = `nevora-copy-pending:${actorId}`;
   const [pending, setPending] = useState<CopyCommand | null>(null),
@@ -30,9 +33,7 @@ export function ScheduleCopyForm({
         setPending(saved ? JSON.parse(saved) : null);
         setReady(true);
       } catch {
-        setNotice(
-          "Local recovery storage is unavailable. Enable browser storage before copying.",
-        );
+        setNotice(t.storageUnavailable);
       }
     };
     sync();
@@ -42,7 +43,7 @@ export function ScheduleCopyForm({
       window.removeEventListener("storage", sync);
       window.removeEventListener("nevora-copy-pending", sync);
     };
-  }, [key]);
+  }, [key, t.storageUnavailable]);
   async function send() {
     if (busy || !ready) return;
     let original: CopyCommand;
@@ -53,11 +54,11 @@ export function ScheduleCopyForm({
       setPending(original);
       window.dispatchEvent(new Event("nevora-copy-pending"));
     } catch {
-      setNotice("Could not retain the operation for retry. No copy was sent.");
+      setNotice(t.notRetained);
       return;
     }
     setBusy(true);
-    setNotice("Checking the original operation…");
+    setNotice(t.checking);
     try {
       const response = await fetch("/api/schedule-copy", {
         method: "POST",
@@ -94,18 +95,16 @@ export function ScheduleCopyForm({
         // clear the stored reference instead of showing "Check or retry" on every week forever.
         localStorage.removeItem(key);
         window.dispatchEvent(new Event("nevora-copy-pending"));
-        setNotice("The original copy didn’t go through. You can start a new copy when ready.");
+        setNotice(t.didntGoThrough);
         return;
       }
       setNotice(
         response.status === 401 || response.status === 403
-          ? "Current management access is required. Sign in again to check the original operation."
-          : "Outcome is unconfirmed. Check or retry the original operation; its reference is retained across reloads.",
+          ? t.accessRequired
+          : t.unconfirmed,
       );
     } catch {
-      setNotice(
-        "Response unavailable. Check or retry the original operation. A new copy is blocked until it is resolved.",
-      );
+      setNotice(t.noResponse);
     } finally {
       setBusy(false);
     }
@@ -114,13 +113,13 @@ export function ScheduleCopyForm({
     <div>
       <button
         className={className}
-        aria-label={pending ? "Check / retry original copy" : ariaLabel}
+        aria-label={pending ? t.checkRetry : ariaLabel}
         type="button"
         disabled={!ready || busy}
         onClick={() => void send()}
       >
         {/* Round 5 (Nov 8): a server-built label sits beside children; its own fragment keeps React's list check quiet. */}
-        {pending ? "Check / retry original copy" : <>{label}</>}
+        {pending ? t.checkRetry : <>{label ?? t.copyPrevious}</>}
         {!pending && children}
       </button>
       {pending && (
@@ -128,7 +127,7 @@ export function ScheduleCopyForm({
           <a
             href={`/app/schedule/copy-receipt?operation=${pending.operationId}`}
           >
-            View original operation {pending.operationId}
+            {t.viewOriginal(pending.operationId)}
           </a>
         </p>
       )}

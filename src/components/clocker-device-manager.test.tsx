@@ -19,6 +19,8 @@ rs.mock('react', () => {
     },
     useRef: (initial: unknown) => { if (!hooks.on) return react.useRef(initial); const index = hooks.r++; return hooks.refs[index] ??= { current: initial }; },
     useEffect: (effect: () => void | (() => void), deps?: unknown[]) => { if (!hooks.on) return react.useEffect(effect, deps); hooks.effects.push(effect); },
+    // Signed-in Spanish: the shared form reads the person's language from context; outside a render it is the default.
+    useContext: (context: { _currentValue?: unknown }) => hooks.on ? context._currentValue : react.useContext(context as never),
     useSyncExternalStore: (subscribe: () => () => void, snapshot: () => unknown, server?: () => unknown) => {
       if (!hooks.on) return react.useSyncExternalStore(subscribe, snapshot, server);
       return hooks.server && server ? server() : snapshot();

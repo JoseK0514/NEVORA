@@ -1,6 +1,8 @@
 "use client";
 import "./team-forms.css";
 import Link from "next/link";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { TEAM_COPY } from "@/components/team-copy";
 import { useId, useState, type ReactNode } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
@@ -33,8 +35,9 @@ export function PhoneField({ id, name, defaultValue = "", required, autoComplete
   /** The sentence shown when it is left empty (form-validation.tsx reads data-missing). */
   missing?: string }) {
   const [value, setValue] = useState(() => phoneTyping(defaultValue));
+  const t = TEAM_COPY[usePortalLang()];
   return <input id={id} className="c-in" name={name} type="tel" inputMode="tel" autoComplete={autoComplete} enterKeyHint={enterKeyHint} value={value} required={required}
-    placeholder="(787) 555-0123" maxLength={14} pattern="\(\d{3}\) \d{3}-\d{4}" title="Enter all 10 digits of the phone number" data-missing={missing}
+    placeholder="(787) 555-0123" maxLength={14} pattern="\(\d{3}\) \d{3}-\d{4}" title={t.phoneTitle} data-missing={missing}
     onChange={event => {
       const next = event.target.value;
       const digits = (text: string) => text.replace(/\D/g, "");
@@ -48,8 +51,10 @@ export type Choice = { value: string; label: string; help?: string; checked?: bo
 
 /** A field that opens a checklist ("Positions › Cashier, Barista"). The checkboxes stay in the form while it's closed. */
 /** `listed`: the checklist is the page (its own sheet), so it shows without the picker button. */
-export function ChoiceField({ label, name, choices, empty, none = "None", listed = false }: { label: string; name: string; choices: Choice[]; empty?: string; none?: string; listed?: boolean }) {
+export function ChoiceField({ label, name, choices, empty, none: noneWord, listed = false }: { label: string; name: string; choices: Choice[]; empty?: string; none?: string; listed?: boolean }) {
   const id = useId().replace(/:/g, "");
+  const lang = usePortalLang();
+  const none = noneWord ?? TEAM_COPY[lang].none;
   const [open, setOpen] = useState(listed);
   const [chosen, setChosen] = useState(() => new Set(choices.filter(choice => choice.checked).map(choice => choice.value)));
   const names = choices.filter(choice => chosen.has(choice.value)).map(choice => choice.label);

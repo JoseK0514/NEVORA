@@ -9,6 +9,8 @@ export type ConfigurationResult = { error?: string; success?: string; updatedAt?
 
 /** QA A3-01 (Nov 21, 2026): a lost or failed reply doesn't tell us whether the server saved. The shift may already be on
  * the schedule, so say that, keep the entries, and point to the shift's own day instead of inviting a blind second save. */
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { SMALL_PARTS_COPY } from "./small-parts-copy";
 export const UNCONFIRMED_SHIFT = "This change could not be confirmed. It may already be on the schedule; check it before you save again. Your entries are kept.";
 export const UNCONFIRMED_CHANGE = "This change could not be confirmed. It may already be saved; reload to check before you save again. Your entries are kept until you reload.";
 /** After an unconfirmed save, an overlap may be the person's own saved shift (QA A3-01). */
@@ -54,6 +56,7 @@ export function ConfigurationForm({
   unconfirmedCheck?: { title: string; label: string; href: string };
 }) {
   const [result, setResult] = useState<ConfigurationResult>({});
+  const t = SMALL_PARTS_COPY[usePortalLang()].configuration, saving = SMALL_PARTS_COPY[usePortalLang()].policy.saving;
   const [pending, setPending] = useState(false);
   // Double tap (Wave A ST, Oct 19): a second submit can arrive before the disabled fieldset renders; only one save runs.
   const inFlight = useRef(false);
@@ -80,7 +83,7 @@ export function ConfigurationForm({
     try {
       const saved = await action(data);
       // An overlap right after an unconfirmed save may be the person's own shift: say so instead of implying someone else's.
-      setResult(unconfirmed && saved.issueCode === "SHIFT_OVERLAP" ? { ...saved, error: UNCONFIRMED_OVERLAP } : saved);
+      setResult(unconfirmed && saved.issueCode === "SHIFT_OVERLAP" ? { ...saved, error: t.unconfirmedOverlap } : saved);
       if (saved.success && !saved.error) setUnconfirmed(null);
       if (saved.success && !saved.error && saved.updatedAt && draftUpdatedAt !== undefined) setDraftUpdatedAt(saved.updatedAt);
     } catch (error) {
@@ -88,7 +91,7 @@ export function ConfigurationForm({
       // and not ours to rethrow from this event handler (nothing awaits it, so it would be an unhandled rejection).
       if (isNavigation(error)) return;
       setUnconfirmed({ href: unconfirmedCheck?.href ?? checkHref });
-      setResult({ error: unconfirmedCheck?.title ?? (checkHref ? UNCONFIRMED_SHIFT : UNCONFIRMED_CHANGE) });
+      setResult({ error: unconfirmedCheck?.title ?? (checkHref ? t.unconfirmedShift : t.unconfirmedChange) });
     } finally {
       settled();
       inFlight.current = false;
@@ -102,12 +105,12 @@ export function ConfigurationForm({
         {shiftVersion !== undefined ? <input type="hidden" name="expectedReviewVersion" value={shiftVersion} /> : null}
         {children}
       </fieldset>
-      {pending ? <p role="status">Saving…</p> : null}
+      {pending ? <p role="status">{saving}</p> : null}
       {/* Refinement (Nov 20, 2026; Jose: red words on a pink bar look cheap): a refusal is the kit's note (white panel, a
         * red mark, the reason as its title), announced once. */}
       {result.error ? <div className="form-result">{unconfirmed
         // Unknown outcome: amber means "wait or check" (DESIGN.MD status colours); the action opens the shift's own day.
-        ? <BCallout tone="amber" role="alert" title={result.error} action={unconfirmed.href ? { label: unconfirmedCheck?.label ?? "Check the schedule", href: unconfirmed.href } : undefined} />
+        ? <BCallout tone="amber" role="alert" title={result.error} action={unconfirmed.href ? { label: unconfirmedCheck?.label ?? t.checkSchedule, href: unconfirmed.href } : undefined} />
         : <BCallout tone="red" role="alert" title={result.error} />}</div> : null}
       {shiftVersion !== undefined && (result.issueCode === 'SHIFT_REVIEW_CONFLICT' || result.issueCode === 'ACCESS_DENIED') ? <ShiftReviewRecovery draft={submittedShift} /> : null}
       {result.success ? <div className="form-result"><BCallout tone="green" role="status" title={result.success} /></div> : null}

@@ -1,6 +1,8 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {FAILURE_EVENT,FAILURE_MESSAGES,NOT_ALLOWED_MESSAGE,type FailureRecovery} from '@/lib/http/nevora-failure';
+import {FAILURE_EVENT,FAILURE_MESSAGES,type FailureRecovery} from '@/lib/http/nevora-failure';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {LEAVE_STAFFING_COPY} from './leave-staffing-copy';
 import {BGlyph,type BMeaning} from '../owner-b/b-kit';
 import './leave-staffing.css';
 
@@ -20,6 +22,7 @@ export function NevoraFailureNotice(){
  // A refusal from a signed-in session (access_denied) is "not allowed", not "access changed" (QA A3-06).
  const [notAllowed,setNotAllowed]=useState(false);
  const box=useRef<HTMLDivElement>(null);
+ const t=LEAVE_STAFFING_COPY[usePortalLang()];
  useEffect(()=>{
   const listen=(event:Event)=>{
    const detail=(event as CustomEvent<{recovery?:FailureRecovery;notAllowed?:boolean}>).detail,value=detail?.recovery;
@@ -35,14 +38,14 @@ export function NevoraFailureNotice(){
  },[]);
  useEffect(()=>{if(recovery&&recovery!=='refresh_view')box.current?.focus({preventScroll:true});},[recovery]);
  if(!recovery)return null;
- const message=recovery==='access_ended'&&notAllowed?NOT_ALLOWED_MESSAGE:FAILURE_MESSAGES[recovery],look=LOOK[recovery];
+ const message=recovery==='access_ended'&&notAllowed?t.notAllowed:t.failures[recovery],look=LOOK[recovery];
  return <div ref={box} className="ls-failure" role={recovery==='refresh_view'?'status':'alert'} tabIndex={-1} data-recovery={recovery}>
   <span className="ls-ring" data-tone={look.tone} aria-hidden="true"><BGlyph meaning={look.meaning}/></span>
   <span className="ls-failure__tx"><b>{message.title}</b><span>{message.body}</span></span>
   <span className="ls-failure__acts">
-   {recovery==='sign_in'?<a className="b-btn b-btn--teal" href="/login">Sign in</a>:null}
-   {recovery==='contract'||recovery==='refresh_view'?<button type="button" className="b-btn b-btn--quiet" onClick={()=>window.location.reload()}>Reload</button>:null}
-   <button type="button" className="b-btn b-btn--quiet" onClick={()=>setRecovery(null)} aria-label="Close this message">Close</button>
+   {recovery==='sign_in'?<a className="b-btn b-btn--teal" href="/login">{t.signIn}</a>:null}
+   {recovery==='contract'||recovery==='refresh_view'?<button type="button" className="b-btn b-btn--quiet" onClick={()=>window.location.reload()}>{t.reload}</button>:null}
+   <button type="button" className="b-btn b-btn--quiet" onClick={()=>setRecovery(null)} aria-label={t.closeMessage}>{t.close}</button>
   </span>
  </div>;
 }

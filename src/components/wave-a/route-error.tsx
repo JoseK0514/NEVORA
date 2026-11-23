@@ -2,11 +2,13 @@
 
 import { useOnline } from "@/components/app-error-screen";
 import { BRouteError } from "@/components/owner-b/b-route-error";
+import { usePortalLang, type PortalLang } from "@/lib/i18n/portal-lang";
+import { ERROR_SCREENS_COPY } from "../error-screens-copy";
 
 /** The card's line: what was kept, then the cause only when it changes what to do (writing guide, "Errors"). Online, the
  * fault is ours, so it doesn't send people to check their connection; offline, the connection is the next step. */
-export function routeErrorLine(online: boolean): string {
-  return online ? "Something went wrong on our side. Nothing was changed." : "You’re offline. Nothing was changed.";
+export function routeErrorLine(online: boolean, lang: PortalLang = "en"): string {
+  return online ? ERROR_SCREENS_COPY[lang].routeOnline : ERROR_SCREENS_COPY[lang].routeOffline;
 }
 
 /** A failed read on a Wave A page: the page's band, one card, Try again (reads the server again).
@@ -17,9 +19,9 @@ export function routeErrorLine(online: boolean): string {
  * it) and the cause honestly: a route error is a server fault unless the browser is offline. The button is the next step,
  * so no sentence repeats "Try again". */
 export function WaveARouteError({ retry, title, back }: { retry: () => void; title: string; back?: { href: string; label: string } }) {
-  const online = useOnline();
-  const line = routeErrorLine(online);
+  const online = useOnline(), lang = usePortalLang(), t = ERROR_SCREENS_COPY[lang];
+  const line = routeErrorLine(online, lang);
   // The alert is read on its own, so it names the page; on screen the band does.
-  return <BRouteError title={title} back={back} spoken={`${title} didn’t load. ${line}`}
-    cardTitle="This page didn’t load" line={line} onRetry={retry} />;
+  return <BRouteError title={title} back={back} spoken={t.titleDidntLoad(title, line)}
+    cardTitle={t.didntLoad} line={line} onRetry={retry} />;
 }

@@ -4,6 +4,8 @@ import { guardSingleSubmit } from "./wave-a/single-submit";
 import { DecisionAsk } from "./owner-b/decision-parts";
 import { BBusyLabel } from "./owner-b/b-kit";
 import { useAskStep } from "./owner-b/ask-step";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { shiftCopy } from "./shift-copy";
 
 /* Jose (Nov 21, 2026): Decline on a swap, a cover request or a call-out, and Close request on open cover, ask first.
  * These are the buttons of one waiting request inside its ShiftChangeForm (manager-shift-requests.tsx). The first tap
@@ -14,12 +16,13 @@ export type ShiftAsk = { question: string; consequence: string; keep: string; go
   /** Accessible names: the group ("Decline the swap request from Ana Colon?"), the way out and the commit. */
   groupLabel: string; keepLabel: string; goLabel: string };
 
-export function ShiftRequestDecide({ decline, declineWords = "Decline", pending = "Declining…", declineLabel, approve, approveLabel, ask }: {
+export function ShiftRequestDecide({ decline, declineWords: ownDeclineWords, pending: ownPending, declineLabel, approve, approveLabel, ask }: {
   /** The `kind` the commit sends (MANAGER_DECLINE, DECLINE_CALLOUT); none when the form's own fields carry it (Close). */
   decline?: string; declineWords?: string; pending?: string; declineLabel: string;
   /** The `kind` Approve sends; left out when approving is not allowed right now. */
   approve?: string; approveLabel?: string; ask: ShiftAsk;
 }) {
+  const t = shiftCopy(usePortalLang()).decide, declineWords = ownDeclineWords ?? t.decline, pending = ownPending ?? t.declining;
   const { open, ask: openAsk, keep, done: closeAsk, titleRef, openerRef } = useAskStep();
   // The form marks itself busy while its request is out (ShiftChangeForm); this watches it, as PendingButton does, so
   // the opener can say "Declining…" for the commit that came from the question.
@@ -63,6 +66,6 @@ export function ShiftRequestDecide({ decline, declineWords = "Decline", pending 
     {approve ? <button type="submit" className="c-btn b-rowact b-rowact--go" name="kind" value={approve} aria-label={approving ? undefined : approveLabel}
       aria-disabled={approving || undefined} aria-busy={approving || undefined} disabled={busy && !approving}
       onClick={event => { if (event.currentTarget.form?.getAttribute("aria-busy") === "true") event.preventDefault(); }}>
-      <BBusyLabel busy={approving} busyLabel="Approving…">Approve</BBusyLabel></button> : null}
+      <BBusyLabel busy={approving} busyLabel={t.approving}>{t.approve}</BBusyLabel></button> : null}
   </div>;
 }

@@ -4,6 +4,7 @@ import { CircleIcon } from "@phosphor-icons/react/dist/ssr/Circle";
 import { BCard, BChip, BDoneMark, BList, BRow, BState } from "@/components/owner-b/b-kit";
 import { activationCopy } from "@/lib/activation/copy";
 import type { FirstWeekProgress, FirstWeekStepId } from "@/lib/activation/first-week";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
 
 /* SCRUM-218 (Nov 19, 2026): first-week setup on Owner Home, in Home's existing setup slot. Progress is the server's
  * (GET /api/setup/first-week with X-Nevora-First-Week: 1); nothing here guesses a step done. Each step opens the
@@ -56,7 +57,9 @@ async function read(signal?: AbortSignal): Promise<Load> {
   }
 }
 
-export function FirstWeekSetupCard({ lang = "en", initial }: { lang?: SetupLang; initial?: Load }) {
+export function FirstWeekSetupCard({ lang: givenLang, initial }: { lang?: SetupLang; initial?: Load }) {
+  // Signed-in Spanish (es-rest): the person's language when the caller doesn't name one.
+  const portalLang = usePortalLang(), lang = givenLang ?? portalLang;
   const t = activationCopy[lang], w = words[lang];
   const [load, setLoad] = useState<Load>(initial ?? { state: "loading" });
   const [retrying, setRetrying] = useState(false);

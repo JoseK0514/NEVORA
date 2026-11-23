@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { CorpAvatar, CorpCard, CorpRow, CorpRows } from "./corp/corp";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { TEAM_COPY } from "./team-copy";
 import { BFilters } from "./owner-b/b-kit";
 import { TeamLivePill, teamStateOf, useTeamLive, type TeamState } from "./team-live";
 
@@ -20,21 +22,22 @@ const inFilter = (filter: Filter, state: TeamState | null) => filter === "all" |
  * count; the clocked-in count is the filter's alone. */
 export function TeamDeskPeople({ rows, limit, peopleLabel }: { rows: TeamDeskRow[]; limit?: number; peopleLabel: string }) {
   const live = useTeamLive();
+  const t = TEAM_COPY[usePortalLang()];
   const [filter, setFilter] = useState<Filter>("all");
   const count = (key: Filter) => rows.filter(row => inFilter(key, teamStateOf(live, row.id))).length;
   const shown = rows.filter(row => inFilter(filter, teamStateOf(live, row.id)));
   const listed = filter === "all" && limit ? shown.slice(0, limit) : shown;
   return <CorpCard as="div">
-    {live.ready && rows.length ? <BFilters label="Show" items={[
-      { key: "all", label: "All", current: filter === "all", onSelect: () => setFilter("all") },
-      { key: "working", label: "On the clock", count: count("working"), current: filter === "working", onSelect: () => setFilter("working") },
-      { key: "late", label: "Not clocked in", count: count("late"), current: filter === "late", onSelect: () => setFilter("late") },
-      ...(live.partial ? [] : [{ key: "off" as const, label: "Off today", count: count("off"), current: filter === "off", onSelect: () => setFilter("off") }]),
+    {live.ready && rows.length ? <BFilters label={t.show} items={[
+      { key: "all", label: t.all, current: filter === "all", onSelect: () => setFilter("all") },
+      { key: "working", label: t.onTheClock, count: count("working"), current: filter === "working", onSelect: () => setFilter("working") },
+      { key: "late", label: t.notClockedIn, count: count("late"), current: filter === "late", onSelect: () => setFilter("late") },
+      ...(live.partial ? [] : [{ key: "off" as const, label: t.offToday, count: count("off"), current: filter === "off", onSelect: () => setFilter("off") }]),
     ]} /> : null}
     {listed.length ? <CorpRows label={peopleLabel}>{listed.map(row => <li key={row.id}>
       <CorpRow href={row.href} bold title={row.name} detail={row.detail} avatar={<CorpAvatar name={row.name} initials={row.initials} />}
         trail={<TeamLivePill employeeId={row.id} />} chevron={!!row.href} />
     </li>)}</CorpRows>
-      : <p className="c-team__empty c-team__empty--filter" role="status">{filter === "working" ? "No one is clocked in right now." : filter === "late" ? "Everyone on shift has clocked in." : "No one is off today."}</p>}
+      : <p className="c-team__empty c-team__empty--filter" role="status">{filter === "working" ? t.noOneClockedIn : filter === "late" ? t.everyoneClockedIn : t.noOneOff}</p>}
   </CorpCard>;
 }

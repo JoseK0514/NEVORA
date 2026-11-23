@@ -9,8 +9,10 @@ import { listLocations } from "@/lib/data/locations";
 import { coverageUuid } from "@/lib/owner-advisor/coverage-actions";
 import { WeeklyPage } from "@/components/owner-advisor/weekly/weekly-page";
 import { WeeklyOpenError } from "@/components/owner-advisor/weekly/weekly-open-error";
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { ROUTE_COPY } from '../../route-copy';
 
-export const metadata = { title: "Weekly plan" };
+export async function generateMetadata() { return { title: ROUTE_COPY[await readPageLang()].weeklyPlan }; }
 
 /* Rondo's weekly plan (contract docs/handoffs/2026-11-16-rondo-weekly-ui-contract.md in Codex's candidate). The page is
  * behind the parent adviser's door: a company-wide Owner with NEVORA_OWNER_ADVISOR_ENABLED. With the weekly switch off it

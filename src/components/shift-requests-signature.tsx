@@ -5,6 +5,8 @@ import { formatDayLabel, formatTime } from "@/lib/date-utils";
 import { timeZoneLabel } from "@/lib/time-zone-label";
 import type { ExchangeShift } from "@/lib/data/exchanges";
 import { SigDay } from "./signature/signature";
+import type { PortalLang } from "@/lib/i18n/portal-lang";
+import { shiftCopy } from "./shift-copy";
 
 /* Shift requests in the Signature style (phase 3, approved Oct 20, 2026; target:
  * docs/product/specs/employee-style/signature/phase-3/p3c-board-b.png). Compact pieces the page composes: a shift row's
@@ -16,9 +18,11 @@ const longWeekday = (date: string) => new Intl.DateTimeFormat("en-US", { weekday
 const range = (shift: ExchangeShift) => `${keepWhole(formatTime(shift.startTime))} – ${keepWhole(formatTime(shift.endTime))}`;
 
 /** "Customer Support · Main Office", with Lead and a time zone note when the shift's zone isn't the workspace's. */
-export function shiftPlace(shift: ExchangeShift, zone?: string) {
-  const position = shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : null);
-  return [position, shift.locationName, shift.isDesignatedLead ? "Shift lead" : null, shift.timeZone && zone && shift.timeZone !== zone ? `Times in ${timeZoneLabel(shift.timeZone)}` : null].filter(Boolean).join(" · ");
+/** `lang`: the person's language (Signed-in Spanish); English when left out. */
+export function shiftPlace(shift: ExchangeShift, zone?: string, lang: PortalLang = "en") {
+  const t = shiftCopy(lang).place;
+  const position = shift.positionName ?? (shift.positionId ? t.position(shift.positionId) : null);
+  return [position, shift.locationName, shift.isDesignatedLead ? t.shiftLead : null, shift.timeZone && zone && shift.timeZone !== zone ? t.timesIn(timeZoneLabel(shift.timeZone)) : null].filter(Boolean).join(" · ");
 }
 
 export function ShiftDay({ shift }: { shift: ExchangeShift }) {

@@ -6,7 +6,9 @@ const m = rs.hoisted(() => ({
   actorRole: "MANAGER",
   employeeRole: "EMPLOYEE",
   profileUnavailable:false, invitation:rs.fn(), hours:rs.fn(), scoped:rs.fn(), profileOptions:[] as unknown[],
+  lang: 'en' as 'en' | 'es',
 }));
+rs.mock('@/lib/i18n/page-lang.server', () => ({ readPageLang: async () => m.lang }));
 
 rs.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
@@ -74,6 +76,7 @@ beforeEach(() => {
   m.profileUnavailable=false;m.invitation.mockReset().mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'2026-10-05 12:00:00+00',eligibility:'INVITABLE',registeredEmailMasked:'s***@example.invalid',invitationRevision:0,invitation:null,delivery:'UNAVAILABLE',deliveryAvailable:true,allowedCommands:['ISSUE'],retryAfterMs:null});
   m.actorRole = "MANAGER";
   m.employeeRole = "EMPLOYEE";
+  m.lang = 'en';
   m.hours.mockReset().mockResolvedValue({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},
     data:{employeeId:'worker',today:'2026-10-14',weekStart:'2026-10-12',timeZone:'America/Puerto_Rico',scheduledTodayMinutes:480,scheduledWeekMinutes:1920,workedWeekMinutes:null,workedBasis:'EFFECTIVE_ELAPSED_INCLUDING_BREAKS'}});
 });
@@ -104,6 +107,21 @@ it('shows the person’s hours, opens their own availability and their location�
   expect(await overview()).toContain('<span class="c-title__sub">Sign-in active</span>');
   m.invitation.mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'v',eligibility:'NO_EMAIL',registeredEmailMasked:null,invitationRevision:0,invitation:null,delivery:'UNAVAILABLE',allowedCommands:[],retryAfterMs:null});
   expect(await overview()).toContain('<span class="c-title__sub">No email, can’t sign in</span>');
+});
+
+it('draws the person, Access and sign-in and the sheets in Puerto Rico Spanish when the person reads Spanish (es-rest)', async () => {
+  m.lang = 'es'; m.actorRole = 'OWNER';
+  m.invitation.mockResolvedValue({state:'ready',employeeId:'worker',employeeVersion:'v',eligibility:'INVITABLE',registeredEmailMasked:'s***@example.invalid',invitationRevision:1,
+    invitation:{id:'i1',state:'ISSUED',issuedAt:'2026-10-13T02:30:00Z',expiresAt:'2026-10-20T02:30:00Z',issuerName:'Owner'},delivery:'PROVIDER_ACCEPTED',allowedCommands:['ISSUE','REVOKE'],retryAfterMs:null});
+  const page = (searchParams?: Record<string, string>) => EmployeeProfilePage({ params: Promise.resolve({ employeeId: 'worker' }), searchParams: searchParams && Promise.resolve(searchParams) }).then(renderToStaticMarkup);
+  const overview = await page();
+  for (const words of ['Invitado el 12 oct, sin activar', 'Programado hoy', 'Programado esta semana', 'Incluye descansos', 'Turnos', 'Tarjetas de tiempo', 'Disponibilidad', 'Tarifa de pago', 'Balance de días libres', 'Acceso e inicio de sesión', 'Editar', 'Llamar a Sam Rivera'])
+    expect(overview).toContain(words);
+  for (const english of ['Scheduled today', 'Timecards', 'Pay rate', 'Access and sign-in', '>Edit<', 'Invited']) expect(overview).not.toContain(english);
+  const access = await page({ view: 'access' });
+  for (const words of ['Rol', 'Cuenta', 'ID de empleado', 'Restablecer contraseña']) expect(access).toContain(words);
+  expect(await page({ edit: 'positions' })).toContain('Localidades donde puede trabajar');
+  expect(await page({ edit: 'rules' })).toContain('Horas y reglas');
 });
 
 it('says a scheduled figure is not available, and why, when the schedule read was incomplete (Phase 8, a.md #31)', async () => {

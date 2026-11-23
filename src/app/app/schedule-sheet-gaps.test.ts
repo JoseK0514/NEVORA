@@ -55,5 +55,7 @@ it('G62: a narrow Person field draws the chosen name over the select, wrapping, 
   expect(query).toContain('padding: 0.875rem 40px 0.875rem 52px !important;');
   expect(query).toMatch(/\.c-shift__person > \.c-shift__person-v \{[^}]*display: block !important;[^}]*overflow-wrap: anywhere !important;[^}]*pointer-events: none !important;/);
   const form = readFileSync(join(root, 'components/schedule-shift-form.tsx'), 'utf8');
-  expect(form).toMatch(/<span className=\{name \? "c-shift__person-v" : "c-shift__person-v c-shift__person-v--none"\} aria-hidden="true">\{name \|\| "Choose someone"\}<\/span>/);
+  expect(form).toMatch(/<span className=\{name \? "c-shift__person-v" : "c-shift__person-v c-shift__person-v--none"\} aria-hidden="true">\{name \|\| w\.chooseSomeone\}<\/span>/);
+  // Signed-in Spanish (es-rest): the empty choice is the copy table's "Choose someone" / "Elige a alguien".
+  expect(readFileSync(join(root, 'components/schedule-copy.ts'), 'utf8')).toContain("chooseSomeone: 'Choose someone'");
 });
