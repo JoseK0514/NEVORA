@@ -1,10 +1,9 @@
 "use client";
-import { BRouteError } from "@/components/owner-b/b-route-error";
+import { WaveARouteError } from "@/components/wave-a/route-error";
 
-/** Phase 2 (package D): the one Direction B route error screen. The words are the ones this page had; the alert now says
- * all of them once (it was the card's two lines only). */
+/** Phase 2 (package D): the one Direction B route error screen.
+ * G54 (Nov 23, 2026): the same words as every other route error (the band names Team once; the card says the page didn't
+ * load and the honest cause); Team is a tab, so it has no back link. */
 export default function EmployeesError({ retry }: { retry: () => void }) {
-  return <BRouteError title="Team" sub="Team didn’t load. Check your connection, then try again."
-    spoken="Team didn’t load. Check your connection, then try again. Directory unavailable. Try again to load your employees."
-    cardTitle="Directory unavailable" line="Try again to load your employees." onRetry={retry} />;
+  return <WaveARouteError retry={retry} title="Team" />;
 }
