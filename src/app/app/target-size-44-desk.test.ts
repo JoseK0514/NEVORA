@@ -35,7 +35,8 @@ describe('44px targets on tablets and desktop', () => {
   it('on phones the review checkbox is inside its row label, so the whole row is its tap area', () => {
     const tsx = readFileSync(new URL('../../components/timecards.tsx', import.meta.url), 'utf8');
     expect(tsx).toContain('<label className="c-row c-tc-pick" data-off={pickDisabled(item)||undefined}>\n                <input type="checkbox" className="c-tc-box"');
-    expect(tsx).toContain('<label className="c-row c-row--one c-tc-pick"><input type="checkbox" className="c-tc-box" aria-label="Select all eligible timecards"');
+    // Signed-in Spanish (integration): the label's words come from Timecards' copy (T.selectAllEligibleLabel).
+    expect(tsx).toContain('<label className="c-row c-row--one c-tc-pick"><input type="checkbox" className="c-tc-box" aria-label={T.selectAllEligibleLabel}');
   });
 
   it('the week grid\'s open-shift chip and the empty cell\'s "+ Add" reach 44px inside their own cell from 768px', () => {
