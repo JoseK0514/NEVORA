@@ -354,7 +354,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__h > span { display: flex; align-items: center; gap: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__arrow { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--b-radius-pill); color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-week__d { display: flex; flex-direction: column; align-items: center; gap: var(--b-space-2); min-height: 44px; padding: 6px 0; border-radius: var(--b-radius-field); font-size: 12px; font-weight: 500; color: var(--b-on-band); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-week__d { display: flex; flex-direction: column; align-items: center; gap: var(--b-space-2); min-height: 44px; padding: 6px 0; border-radius: var(--b-radius-field); font-size: 0.75rem; font-weight: 500; color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__d b { font-size: var(--b-fs-title-sm); font-weight: 600; color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__d i { width: 5px; height: 5px; border-radius: 3px; background: transparent; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__d i.has { background: rgb(255 255 255 / 0.55); }
@@ -425,6 +425,9 @@
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-week__h > span:last-child:not(:first-child) { margin-left: auto; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__tx { min-width: 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { display: block; width: fit-content; max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; line-height: max(22px, 1.375rem); }
+  /* DS-16 (Nov 23): once the reader enlarges text (--nv-rem, owner-b-pages.css), a row's chip ("Action needed") wraps
+   * onto a second line instead of being cut with an ellipsis. At the default size it stays one line. */
+  @container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); white-space: normal; overflow: visible; text-overflow: clip; } }
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) { grid-auto-columns: auto; }
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 6px; }
 }

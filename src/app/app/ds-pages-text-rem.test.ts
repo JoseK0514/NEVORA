@@ -43,7 +43,7 @@ describe('Time corrections (DS-8)', () => {
 describe('Swap and Call out (DS-9)', () => {
   it('the card meta line and the confirm button are the same px in rem', () => {
     const sheet = css('components/employee-b/schedule.css');
-    expect(sheet).toContain(':is(#c-root, html) .app-shell[data-nv-b] .b-card__meta.es-wide { font-size: 0.875rem; }');
+    expect(css('components/owner-b/owner-b.css')).toContain(':is(#c-root, html) .app-shell[data-nv-b] .b-card__meta { font-size: 0.875rem;');
     expect(sheet).toContain('font: 600 0.875rem/1.25rem Inter, "Inter Fallback", sans-serif !important;');
   });
 });
@@ -63,5 +63,25 @@ describe('Settings and Team rows at large text (DS-4, DS-5)', () => {
     expect(block).toMatch(/\.c-page:is\(\.c-team, \.c-setb\) :is\(\.c-row__title, \.c-row__detail > span:first-child\) \{ white-space: normal !important; overflow: visible !important; text-overflow: clip !important;/);
     // The kit's one-line rule stays as designed at the default size.
     expect(css('components/corp/corp.css')).toMatch(/\.c-row__title \{[^}]*text-overflow: ellipsis; white-space: nowrap;/);
+  });
+});
+
+describe('kit and shared follow-ups (DS-14 to DS-20)', () => {
+  it('the week strip day names are 12px in rem, in the kit (no page overrides left)', () => {
+    expect(css('components/owner-b/owner-b.css')).toMatch(/\.b-week__d \{[^}]*font-size: 0\.75rem;/);
+    expect(css('app/app/schedule/schedule-corp.css')).not.toContain('.c-sched .b-week__d');
+    expect(css('components/employee-b/schedule.css')).not.toContain('.b-card__meta.es-wide');
+  });
+  it('a row chip wraps instead of an ellipsis once text is enlarged', () => {
+    expect(css('components/owner-b/owner-b.css')).toContain('@container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); white-space: normal; overflow: visible; text-overflow: clip; } }');
+  });
+  it("Team's filters wrap as the phone's pills once text is enlarged on tablets and desktop", () => {
+    const block = css('app/app/owner-b-home.css').split("Team's filters at large text")[1] ?? '';
+    expect(block).toContain('@container not style(--nv-rem: 16px) {');
+    expect(block).toMatch(/\.c-page\.c-team \.b-filters:not\(#fa1\)[^{]*:not\(#ds1\) \{ display: flex !important; flex-wrap: wrap !important;/);
+  });
+  it('"See all" and the kit row value are the same px in rem', () => {
+    expect(css('app/app/owner-b-desktop.css')).toContain(':is(.c-card__aside, .q-sec__aside) :is(a, .c-link) { color: var(--b-teal) !important; font-weight: 600 !important; font-size: 0.875rem !important; }');
+    expect(css('components/corp/corp.css')).toContain(':is(#c-root, html) .c-row__value { flex: none; font-size: 0.9375rem; line-height: 1.25rem;');
   });
 });
