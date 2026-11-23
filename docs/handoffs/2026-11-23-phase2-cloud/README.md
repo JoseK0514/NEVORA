@@ -52,6 +52,40 @@ src/components suite before every push, approved wording unchanged unless Jose d
 | Production re-verify | new session `claude-codex-collab-nevora-prodcheck` | Re-check on a production build everything verified only on a development build |
 | QA | `claude-codex-collab-nevora-qa` | WebKit re-run of the scoped read frame fix, then the final production-build QA |
 
+## Signed-in Spanish (Jose's gap closure, 16:30 UTC)
+Source: reports/language-inventory.md on origin/claude-codex-collab-nevora-payroll-2 (about 500 shell strings and 10,000
+English-only strings in signed-in areas). Language source: the existing `readPortalLanguage` (Profile choice, then the
+sign-in `nv-lang` cookie, then Accept-Language, then English). G9 and C8 already follow it (dbc8f854).
+
+Shared contract (the shell session lands it first; everyone else merges it before wiring components):
+- `src/lib/i18n/portal-lang.tsx`: `PortalLangProvider` (rendered once in `src/app/app/layout.tsx` from `readPortalLanguage`)
+  and `usePortalLang(): 'en' | 'es'` for client components. Server components keep calling `readPortalLanguage`.
+- Strings live in one table per area, `<area>-copy.ts`, shaped `{en: {...}, es: {...}}` with the same keys in both (the
+  pattern of `src/components/copy-receipt-copy.ts`), with a test that the key sets match.
+
+Rules for every translation session:
+- Puerto Rico Spanish, tú, following `docs/design/voice.md` and the app's existing Spanish (glossary: Turno disponible,
+  Días libres, Horario, localidad, Por confirmar; times "6:00 a. m. – 2:00 p. m."; dates "7–13 dic").
+- English stays exactly as it is. No rewording while extracting.
+- Payroll, tax, billing and privacy text: translate it, and list every such Spanish line in your report under "For Jose to
+  review". Legal and policy documents (`src/lib/legal`, `src/components/legal`) are out of this pass; leave them.
+- Spanish must fit: check your main screens at 390 and at 390 with 200% text in Spanish (Spanish runs about 20% longer),
+  with axe. No clipping, overlap or sideways scroll; buttons stay one line at 390 where the English is.
+- Tests: key-set match per table, a Spanish render test per main view, and the whole src/components suite, tsc and oxlint
+  before every push. Don't touch files owned by another row below; if you need a shared part changed, tell the lead.
+
+| Area | Session branch |
+|---|---|
+| Shell and plumbing: nav, finder, app-shell, account menu, More, loading/error frames, toasts, form validation, portal-device-setup | `claude-codex-collab-nevora-payroll-2` |
+| `components/employee-mobile` | `claude-codex-collab-nevora-es-mobile` (new) |
+| `components/payroll` | `claude-codex-collab-nevora-es-payroll` (new) |
+| `components/manager`, `components/timecards` | `claude-codex-collab-nevora-timecards-final` |
+| `components/employee`, `components/employee-b` | `claude-codex-collab-nevora-es-employee` (new) |
+| `/app/schedule`, `/app/exchange`, `components/communication`, `components/company-access` | `claude-codex-collab-nevora-screens-final` |
+| `components/owner-advisor` (Rondo and Insights) | `claude-codex-collab-nevora-es-rondo` (new) |
+| `/app/settings`, `components/company`, `components/reports`, `components/premium`, and every English-only area in the inventory not named in this table (except `ui-preview`) | `claude-codex-collab-nevora-es-rest` (new) |
+| `components/owner-b`, `payroll-import`, `roster-import`, `restrictions`, `time-off-admin`, `wages`, `review-details`, `reminders`, `copy`, `workforce` (fill in the missing Spanish) | `claude-codex-collab-nevora-es-owner` (new) |
+
 ## Read first
 1. `CLAUDE.md`, `DESIGN.MD`, `.claude/skills/nevora-design-os/SKILL.md` (with its references; the page done gate is at
    the end), `docs/design/voice.md`, `docs/design/component-picks.md`.

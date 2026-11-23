@@ -11,7 +11,7 @@ import { rosterImportCopy } from "./copy";
 import { headcountsOf, readPreviewResponse, type PreviewReady } from "./contract";
 import { importStep, offlineNotice } from "./messages";
 import { RosterImport } from "./roster-import";
-import { AddListStep, DoneStep, ImportingStep, NoticeCard, ReviewStep, RowEditor, StepActions, UnknownStep } from "./views";
+import { fieldEdited, AddListStep, DoneStep, ImportingStep, NoticeCard, ReviewStep, RowEditor, StepActions, UnknownStep } from "./views";
 
 const copy = rosterImportCopy.en;
 const locations = [{ id: "cafe", name: "Café" }, { id: "bakery", name: "Bakery" }];
@@ -238,5 +238,18 @@ describe("Package X: phone fixes", () => {
     const html = renderToStaticMarkup(<ReviewStep {...reviewProps(review(["E-4,Mara,Gerente,7875550104,m@example.invalid,MANAGER"]))} />);
     expect(html).toContain('<span class="rimp-row__main">787-555-0104</span>');
     expect(html).not.toContain(">7875550104<");
+  });
+});
+
+describe("Package X: live import", () => {
+  it("hides a field's error in the row editor once its value changes", () => {
+    const start: Record<"firstName" | "phone", string> = { firstName: "", phone: "555" };
+    expect(fieldEdited(start, start, "firstName")).toBe(false);
+    expect(fieldEdited({ ...start, firstName: "Rosa" }, start, "firstName")).toBe(true);
+    expect(fieldEdited({ ...start, firstName: "Rosa" }, start, "phone")).toBe(false);
+    // Opened, the editor still shows the row's errors.
+    const row = review(["E-1,,Otra,nope,,"]).rows[0];
+    const html = renderToStaticMarkup(<RowEditor copy={copy} row={row} locations={locations} errors={row.fieldErrors} busy={false} onSave={nothing} onCancel={nothing} onRemove={nothing} />);
+    expect(html).toContain(copy.problems.firstNameMissing);
   });
 });
