@@ -214,7 +214,7 @@ const en = {
       },
       line: (hold: Hold): string => {
         switch (hold.kind) {
-          case "peopleNotReviewed": return "Go through everyone on the team for this period on Time exports, then come back.";
+          case "peopleNotReviewed": return "Go through everyone on the team for this period, then come back.";
           case "peopleChanged": return "Review who’s included again on Time exports. The export uses exactly that list.";
           case "tooManyPeople": return "A paid time export covers up to 300 people.";
           case "notFinalized": return `Still open: ${list(hold.names, "and", n => `${n} more`)}. Paid time is exported only from finalized timecards.`;
@@ -491,7 +491,7 @@ const es: PayrollImportCopy = {
       },
       line: (hold): string => {
         switch (hold.kind) {
-          case "peopleNotReviewed": return "Repasa a todas las personas del equipo para este período en Exportar horas y vuelve aquí.";
+          case "peopleNotReviewed": return "Repasa a todas las personas del equipo para este período y vuelve aquí.";
           case "peopleChanged": return "Revisa otra vez quién está incluido en Exportar horas. La exportación usa exactamente esa lista.";
           case "tooManyPeople": return "Una exportación de tiempo pagado cubre hasta 300 personas.";
           case "notFinalized": return `Siguen abiertas: ${list(hold.names, "y", n => `${n} más`)}. El tiempo pagado se exporta solo de hojas de tiempo finalizadas.`;
