@@ -100,3 +100,27 @@ describe('sweep follow-up: B7 and C4 at 200% text', () => {
     expect(desk).toMatch(/\.c-shift__titles \.c-shift__sub \{ font-size: var\(--b-fs-body\) !important; line-height: 1\.25rem !important;/);
   });
 });
+
+describe('gap closure (Nov 23): Home, kit buttons, skip link, sign-in footer', () => {
+  it('full and big buttons, live figures and the ink chip are rem; the ink header wraps', () => {
+    const kit = css('components/owner-b/owner-b.css');
+    expect(kit).toContain('.b-btn--full { display: flex; width: 100%; min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 1rem; line-height: 1.375rem; }');
+    expect(kit).toContain('.b-btn--big { min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 1rem; line-height: 1.375rem; font-weight: 600; }');
+    expect(kit).toContain('.b-ink__top { display: flex; flex-wrap: wrap;');
+    expect(kit).toMatch(/\.b-ink__due \{[^}]*font-size: 0\.75rem;/);
+    expect(css('app/app/b-foundation.css')).toContain('--bs-fig-fs: 1.375rem; --bs-fig-lh: 1.75rem;');
+    expect(css('app/app/owner-b-desktop.css')).toContain('b-live__v { font-size: var(--bs-fig-fs, 1.75rem) !important; line-height: var(--bs-fig-lh, 2.125rem) !important; }');
+  });
+  it('the skip link is real text in rem', () => {
+    expect(css('app/app/premium-desktop.css')).toContain('font: 600 0.9375rem/1 Inter');
+  });
+});
+
+describe('corp shell type tokens', () => {
+  it('are rem (13–24px at the default size), so the skip link and every token user grow with text', () => {
+    const shell = css('app/app/corp-shell.css');
+    expect(shell).toContain('--nv-t-label: 600 0.8125rem/1rem var(--nv-font);');
+    expect(shell).toContain('--nv-t-title-1: 600 1.5rem/1.875rem var(--nv-font);');
+    expect(shell).not.toMatch(/--nv-t-[a-z0-9-]+: \d+ \d+px\//);
+  });
+});
