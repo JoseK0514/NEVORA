@@ -286,6 +286,13 @@ it('IS-P4-09 and IS-P4-14: Home\'s views end the trail with their own name, and 
  const {html} = render('MANAGER', '/app');
  expect(html.indexOf('class="portal-skip-link" href="#main-content"')).toBeLessThan(html.indexOf('<aside'));
 });
+// G64 (Nov 23, 2026): unfocused, the skip link is moved above the window and also transparent, so a full-page capture of a
+// scrolled page (which paints above the window) never draws it; with keyboard focus it shows as before.
+it('G64: the skip link draws only with keyboard focus', () => {
+ const css = readFileSync(new URL('../app/app/premium-desktop.css', import.meta.url), 'utf8');
+ expect(css).toContain('html body .app-shell.nevora-portal.nevora-portal .portal-skip-link:not(:focus-visible) { opacity: 0; pointer-events: none; }');
+ expect(css).toContain('html body .app-shell.nevora-portal.nevora-portal .portal-skip-link:focus-visible { transform: none;');
+});
 
 it.each(['EMPLOYEE','LEAD'] as const)('scopes the teal mobile foundation to %s with current navigation ownership',role=>{
  const {html,mobile}=render(role,'/app');

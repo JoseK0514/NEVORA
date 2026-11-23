@@ -188,7 +188,9 @@
  * card's text edge (the rows' inset; the card's transparent edge is already outside it). */
 :is(#c-root, html) .app-shell[data-nv-b] .b-card > .b-note:last-child:not(.eb-callout, .eb-copied) { padding: var(--b-space-12) var(--b-inset) var(--b-space-16); }
 @media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] .b-card > .b-note:last-child:not(.eb-callout, .eb-copied) { padding-left: var(--b-inset-wide); padding-right: var(--b-inset-wide); } }
-:is(#c-root, html) .app-shell[data-nv-b] .b-state { padding: 6px var(--b-inset) var(--b-space-16); font-size: 14px; color: var(--b-grey); }
+/* G67 (Nov 23, 2026): the state line's 14px is 0.875rem, so it grows with the reader's text size (it stayed 14px at 200%);
+ * its line height is the screen's 1.4, which follows. Same size at 100%. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-state { padding: 6px var(--b-inset) var(--b-space-16); font-size: 0.875rem; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-li + .b-li { box-shadow: inset 0 1px 0 var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit) { display: flex; align-items: center; gap: var(--b-space-12); min-width: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-row { min-height: 64px; padding: var(--b-space-12) var(--b-inset); width: 100%; }

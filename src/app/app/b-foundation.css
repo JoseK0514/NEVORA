@@ -11,6 +11,11 @@
   /* The selected day on the week strip is a white tile: its ring is teal, inside the tile. */
   /* Live tiles sit in a clipped strip: the ring is an inset shadow above the neighbours, so all four edges show. */
   /* A card's first and last rows: the inside ring follows the card's corners. */
+  /* G51 (Nov 23, 2026): a menu (ActionMenu: a popover from 768px, a sheet on a phone) is white wherever its trigger sits.
+   * A trigger on the band put the band's white ring on every item, white on white, so only the item's faint fill showed.
+   * Every control in a menu takes the kit's teal ring, inside its own box (the popover clips what is outside it). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .nevora-action-menu-popover :is(a, button, [tabindex]):focus-visible {
+    outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: calc(-1 * var(--b-focus-width)) !important; }
 
   /* ---------- Time ranges (Jose, Nov 15, 2026, item 5): BWhen renders both forms; a phone shows the short one ---------- */
   /* The full form is hidden by default and swapped in from 768px, so no width (a zoomed 767.5px included) shows both. */
@@ -30,6 +35,20 @@
     html body .app-shell[data-nv-b] .c-page:has(> header.c-title) > .c-nav--phone:has(> .c-nav__back),
     html body .app-shell[data-nv-b] .q-page:has(> .q-hd) > .q-nav,
     html body .app-shell[data-nv-b] .q-page:has(> article > .q-hd) > .q-nav { background-color: var(--b-band-solid) !important; }
+  }
+  /* G48 (Nov 23, 2026): the glass strips under a title (Payroll's tabs, the section tabs nav.c-seg, the week stepper
+   * nav.c-week, Team's search) sit on the same border-image band, so contrast tools put their white labels on the canvas
+   * (1.08:1), as G11 found on Timecards' strip. Each paints what it sits on, as one opaque fill: the band at the strip's
+   * middle under the 8% glass it shows. The band darkens down the page, so the fill follows where the strip sits: strips
+   * right under a tab page's title (Payroll, Team; Timecards' own rule is the same 84%) take --b-band-solid 84% toward
+   * black; the section tabs and the week stepper, lower on pages with a back link above the title (Time off requests,
+   * Shift requests, Availability, Hours this week), 79%. On screen it moves a few levels a channel at most (the band's own
+   * fall across the 44px strip); tools read the real pair. */
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page > header.c-title ~ :is(nav.c-pay-tabs, form.c-team-search .c-team-search__field):not(#g48a):not(#g48b) {
+      background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 84%, black)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page > header.c-title ~ :is(nav.c-seg, nav.c-week):not(#g48a):not(#g48b) {
+      background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }
   }
 
   /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */

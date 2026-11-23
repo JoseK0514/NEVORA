@@ -20,6 +20,8 @@ export type LocalTransportHooks = {
 };
 type Statement = { text: string; values: readonly unknown[]; signal?: AbortSignal };
 type PendingQuery = { statement: Statement; started: boolean; promise?: Promise<LocalRows> };
+/** How long a read waits for a free pooled connection (G55, below). */
+export const OWNED_PG_CONNECTION_WAIT_MS = 15_000;
 
 /**
  * Scratch-app test transport only. Implements the repository's observed tagged,
@@ -45,7 +47,12 @@ export function createOwnedPgTransport(
   // A portal read fans out into many statements. Bound connections per owned
   // runtime instead of opening hundreds during concurrent browser requests.
   // Production uses Neon HTTP and never imports this test-only transport.
-  const pool = new Pool({ connectionString, max: 12, connectionTimeoutMillis: 3000, statement_timeout: 5000, idleTimeoutMillis: 1000, allowExitOnIdle: true });
+  // G55 (Nov 23, 2026): a read that waits for one of the 12 connections waits up to 15 s. With 3 s, the sweeps' parallel
+  // signed-in tabs on a busy machine queued past it, the page's server render failed ("timeout exceeded when trying to
+  // connect", or "Workspace configuration is unavailable." where that read maps any failure), and the browser logged React's
+  // production stand-in for a server render error, "Minified React error #441", on fictional pages that were fine.
+  // Each statement still stops after 5 s.
+  const pool = new Pool({ connectionString, max: 12, connectionTimeoutMillis: OWNED_PG_CONNECTION_WAIT_MS, statement_timeout: 5000, idleTimeoutMillis: 1000, allowExitOnIdle: true });
   // An owned cluster may be torn down while an idle connection is parked. pg
   // removes that connection; active query failures still reject their caller.
   pool.on('error', () => {});
