@@ -28,7 +28,7 @@
 :is(#c-root, html) .c-copy .c-copy__buttons p { grid-column: 1 / -1; margin: 8px 0 0; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-ink2); overflow-wrap: anywhere; }
 :is(#c-root, html) .c-copy .b-statecard__main > .c-copy__buttons { justify-self: stretch; align-self: stretch; }
 /* The desktop kit draws buttons 40px high; this page keeps the 44px target at every width. */
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-copy .c-btn:not(#c-copy-a) { min-height: 44px !important; height: auto !important; white-space: nowrap; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-copy :is(.c-btn, a.c-btn):not(#cr1):not(#cr2):not(#cr3):not(#cr4):not(#cr5):not(#cr6):not(#cr7) { --c-hit: 0px !important; box-sizing: border-box !important; height: auto !important; min-height: var(--b-btn-h, 44px) !important; max-height: none !important; white-space: nowrap; }
 
 @media (min-width: 768px) {
   :is(#c-root, html) .c-copy .c-copy__kind { padding-inline: var(--b-inset-wide, 22px); }
