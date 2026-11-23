@@ -148,7 +148,7 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
   if (view === 'people') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-people-title">
     {/* Round 5 (Nov 8): the way back is named like the page it returns to ("Payroll details" once approved). */}
     <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: run?.status === 'APPROVED' ? 'Payroll details' : 'Review payroll' }} title="People" id="payroll-people-title" />
-    {state ?? missingRun ?? (run && <PeopleAmounts run={run} />)}
+    {state ?? missingRun ?? (run && <PeopleAmounts run={run} replaced={!!data?.runs.some(item => item.correctionOf === run.id)} />)}
   </CorpPage>;
   return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-review-title">
     {/* Nov 1 upscale: the payroll's period, payday and status are the subtitle ("Oct 5–11 · Payday Tue, Oct 13 · Approved"). */}
@@ -606,13 +606,13 @@ function FixList({ run, capabilities, names, operation }: { run: PayrollRun; cap
 }
 
 /** Each person's amounts for the review (opened from the People row). */
-function PeopleAmounts({ run }: { run: PayrollRun }) {
+function PeopleAmounts({ run, replaced = false }: { run: PayrollRun; replaced?: boolean }) {
   const [filter, setFilter] = useState('');
   const searchId = useId();
   const native = run.sourceAuthority === 'NATIVE_RECORDED_TIME';
   const rows = run.rows?.filter(row => row.employeeName.toLowerCase().includes(filter.toLowerCase())) ?? [];
   return <>
-    {run.totals ? <PayGroup id="payroll-people-totals" label={periodText(run)}>
+    {run.totals ? <PayGroup id="payroll-people-totals" label={replaced ? `${periodText(run)} · Replaced by a correction` : periodText(run)}>
       <dl className="c-pay__totals">
         <div><dt>Gross pay</dt><dd>{formatPayrollMoney(run.totals.grossMinor)}</dd></div>
         <div><dt>Employee deductions</dt><dd>{`−${formatPayrollMoney(run.totals.deductionsMinor)}`}</dd></div>
