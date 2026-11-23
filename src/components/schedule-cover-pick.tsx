@@ -2,6 +2,8 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { useState } from "react";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { scheduleCopy } from "./schedule-copy";
 
 export type CoverPickPerson = { employeeId: string; employeeName: string; detail: string; href?: string };
 
@@ -11,12 +13,14 @@ const initialsOf = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 
 /** Assign says it is opening while the review loads (form pattern, pending). */
 function AssignLabel({reviewOnly}:{reviewOnly?:boolean}) {
   const { pending } = useLinkStatus();
-  return <span role={pending ? "status" : undefined} aria-live="polite" aria-atomic="true">{pending ? "Opening review…" : reviewOnly ? "Review replacement" : "Assign"}</span>;
+  const t = scheduleCopy(usePortalLang()).cover;
+  return <span role={pending ? "status" : undefined} aria-live="polite" aria-atomic="true">{pending ? t.opening : reviewOnly ? t.reviewReplacement : t.assign}</span>;
 }
 
 /** Find cover (board O-FindCover): "Who can cover" as a radio list in the suggested order, the first one chosen, then
  * Assign, which opens the existing review for the chosen person. Nothing is saved on this page. */
 export function ScheduleCoverPick({ people, reviewOnly }: { people: CoverPickPerson[]; repair?: boolean; reviewOnly?: boolean }) {
+  const t = scheduleCopy(usePortalLang()).cover;
   const [chosen, setChosen] = useState(people[0]?.employeeId ?? "");
   const [all, setAll] = useState(false);
   const person = people.find(item => item.employeeId === chosen) ?? people[0];
@@ -24,7 +28,7 @@ export function ScheduleCoverPick({ people, reviewOnly }: { people: CoverPickPer
   const shown = all ? people : people.filter((item, index) => index < SHOWN || item.employeeId === chosen);
   return <>
     <fieldset className="c-cover__pick">
-      <legend className="c-sr">Choose who covers it</legend>
+      <legend className="c-sr">{t.chooseWho}</legend>
       <ul className="c-rows">
         {shown.map((item, index) => <li key={item.employeeId} id={`coverage-candidate-${item.employeeId}`}>
           <label className="c-row c-cover__person">
@@ -35,14 +39,14 @@ export function ScheduleCoverPick({ people, reviewOnly }: { people: CoverPickPer
               <span className="c-row__detail"><span>{item.detail}</span></span>
             </span>
             {/* R3: "Best fit" is plain grey text, not a teal pill (teal is for actions). */}
-            {index === 0 ? <span className="c-meta c-cover__state">Best fit</span> : null}
+            {index === 0 ? <span className="c-meta c-cover__state">{t.bestFit}</span> : null}
           </label>
         </li>)}
       </ul>
-      {shown.length < people.length ? <button type="button" className="c-cover__more" onClick={() => { setAll(true); const next = people.find((item, index) => index >= SHOWN && item.employeeId !== chosen); requestAnimationFrame(() => document.querySelector<HTMLInputElement>(`#coverage-candidate-${CSS.escape(next?.employeeId ?? "")} input`)?.focus()); }}>{`Show ${people.length - shown.length} more`}</button> : null}
+      {shown.length < people.length ? <button type="button" className="c-cover__more" onClick={() => { setAll(true); const next = people.find((item, index) => index >= SHOWN && item.employeeId !== chosen); requestAnimationFrame(() => document.querySelector<HTMLInputElement>(`#coverage-candidate-${CSS.escape(next?.employeeId ?? "")} input`)?.focus()); }}>{t.showMore(people.length - shown.length)}</button> : null}
     </fieldset>
     {person?.href ? <div className="c-card__foot">
-      <Link className="c-btn c-btn--full" href={person.href} prefetch={false} aria-label={reviewOnly ? `Review replacement for ${person.employeeName}` : `Assign ${person.employeeName}`}><AssignLabel reviewOnly={reviewOnly} /></Link>
+      <Link className="c-btn c-btn--full" href={person.href} prefetch={false} aria-label={reviewOnly ? t.reviewFor(person.employeeName) : t.assignName(person.employeeName)}><AssignLabel reviewOnly={reviewOnly} /></Link>
     </div> : null}
   </>;
 }
