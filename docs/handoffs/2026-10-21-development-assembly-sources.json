@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "b15cf3d81b7ce2a6d72164db83dbb94c81fcf74f",
+      "sha": "29486165ddac453d251835c7e3f982573477b7df",
       "disposition": "reference",
-      "reason": "Jose authorized the joined Development continuation on November 22. Reviewed delivery is identified by Jira comments 10594 and 10597. This exact Collab head contains Development 1f6602cb9 and is imported with a squash to preserve required linear history. Its full source tree is carried into the assembly before source-inventory reconciliation, diagnosed repairs, the incoming validated Phase 2 backend commits, and final guide regeneration. Exact candidate and branch-push qualification are required."
+      "reason": "Jose authorized the joined Development continuation on November 22. Reviewed delivery b15cf3d81b7ce2a6d72164db83dbb94c81fcf74f is identified by Jira comments 10594 and 10597 and imported with a squash to preserve required linear history. The six newer commits through this recorded head contain a cross-app time-format pass, Location Manager Team UI and gaps ledger. They remain a separate reference delivery pending review and qualification, as the coordinating Phase 2 handoff directs preserving the exact reviewed candidate during live source drift. This assembly includes the validated four-commit Phase 2 backend handoff, diagnosed repairs and regenerated guides. Exact candidate and branch-push qualification are required."
     },
     {
       "branch": "claude/eager-meitner-wioy6k",
