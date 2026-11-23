@@ -374,6 +374,30 @@ it('phone: the number of people is said once, in the Team card',async()=>{
  expect(band).not.toMatch(/\d+ (people|person)\b/);
  expect(html()).toContain('id="b-tc-team"');
 });
+// Jose's review (Nov 23, 2026, "not B2 compliant"): on a phone, Select and the review are a Direction B screen (the band,
+// the set's kit card, the team as kit rows with the kit checkbox); on every width the set's card is the kit card with kit
+// buttons. The steps and labels are unchanged.
+it('phone: Select and the review are the Direction B screen with kit rows and kit buttons',async()=>{
+ phoneWindow();transport();await mountAll();click('Select');
+ const page=html();
+ expect(page).toContain('class="b-screen');
+ expect(page).toContain('id="b-tc-title"');
+ expect(page).toContain('class="b-card b-tc-flow"');
+ expect(page).toContain('class="b-row b-tc-pick"');
+ expect(page).not.toMatch(/c-tc-pick|class="c-rows"|class="c-card c-tc-flow"/);
+ check('Select PRIVATE E1');click('Review selected timecards');
+ const reviewed=html();
+ expect(reviewed).toContain('class="b-row b-tc-flow__check"');
+ expect(reviewed).toMatch(/<button type="button" class="b-btn b-btn--ghost"[^>]*>Cancel<\/button>/);
+ expect(reviewed).toMatch(/<button type="button" class="b-btn b-btn--teal"[^>]*>Approve 1 timecard<\/button>/);
+});
+it('wide: the selected set is the kit card with kit buttons',async()=>{
+ transport();await mount();check('Select PRIVATE E1');click('Review selected timecards');
+ const reviewed=html();
+ expect(reviewed).toContain('class="b-card b-tc-flow"');
+ expect(reviewed).not.toContain('c-card c-tc-flow');
+ expect(reviewed).toMatch(/class="b-btn b-btn--teal"[^>]*>Approve 1 timecard</);
+});
 it('phone: Select in the top bar opens eligible cards; self-review stays excluded with its reason',async()=>{
  phoneWindow();transport();await mountAll();
  expect(html()).toContain('c-page c-tc"');expect(html()).not.toContain('Selected timecard review');
