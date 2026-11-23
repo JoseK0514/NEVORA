@@ -5,6 +5,7 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import Link from "next/link";
 import { CorpCard, CorpNav, CorpPage, CorpTitle } from "@/components/corp/corp";
+import { TemplateFeedback } from "@/components/schedule-template-controls";
 import { keepWhole } from "@/lib/keep-whole";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
@@ -75,8 +76,15 @@ export default async function ScheduleSettingsPage({ searchParams }: {
       .sort((a, b) => weekOrder.indexOf(a.dayOfWeek) - weekOrder.indexOf(b.dayOfWeek) || a.startTime.localeCompare(b.startTime));
     // A period that still asks for an inactive position opens its group, as its quantities do.
     const needsReview = windows.some(window => window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active)));
-    return { locationId, label: locationLabel(locationId, locationId), windows, days: new Set(windows.map(window => window.dayOfWeek)).size, needsReview };
+    // Phase 2 (C9, density rule 2): a time or staffing that every period in the place shares is said once, on the place's
+    // row; a period's own line says only what differs.
+    const times = new Set(windows.map(window => formatTimeRange(window.startTime, window.endTime)));
+    const staffs = new Set(windows.map(window => window.minimumStaff ?? null));
+    const sharedTime = windows.length > 1 && times.size === 1 ? [...times][0] : null;
+    const sharedStaff = windows.length > 1 && staffs.size === 1 ? staffText([...staffs][0]) : null;
+    return { locationId, label: locationLabel(locationId, locationId), windows, days: new Set(windows.map(window => window.dayOfWeek)).size, needsReview, sharedTime, sharedStaff };
   });
+  function staffText(minimumStaff: number | null) { return minimumStaff ? minimumStaff + " staff required" : "Location staffing"; }
   function locationLabel(locationId: string, fallback: string) {
     return locations.find(location => location.id === locationId)?.shortName ?? fallback;
   }
@@ -109,7 +117,8 @@ export default async function ScheduleSettingsPage({ searchParams }: {
       <CorpNav back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }} title="Scheduling rules" titleId="rules-title" phoneOnly />
       <CorpTitle title="Scheduling rules" wide />
       <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" /><KeepFocusClear />
-      {params.error ? <p className="c-st__msg c-st__msg--error" role="alert">{
+      {params.error || params.deadlineSaved || params.saved || params.windowSaved || params.windowDeleted ? <TemplateFeedback key={JSON.stringify(params)}>
+      {params.error ? <p className="c-st__msg c-st__msg--error form-error" role="alert">{
         params.error === "INVALID_DEADLINE" ? "Enter a valid availability deadline."
           : params.error === "DEADLINE_WORKSPACE_CHANGED" ? "Company settings changed. Check the deadline and try again."
           : params.error === "INVALID_SHIFT" ? "Choose a valid Monday for the schedule week."
@@ -118,10 +127,11 @@ export default async function ScheduleSettingsPage({ searchParams }: {
           : params.error === "duplicate_window" ? "That coverage period already exists."
           : params.error === "ACCESS_DENIED" ? "That change isn’t part of your access. Ask an Owner to make it."
           : "Enter a day, a start and end time, and staff numbers if you need them."}</p> : null}
-      {params.deadlineSaved ? <p className="c-st__msg" role="status">Availability deadline saved.</p> : null}
-      {params.saved ? <p className="c-st__msg" role="status">Scheduling rules saved.</p> : null}
-      {params.windowSaved ? <p className="c-st__msg" role="status">Coverage period added.</p> : null}
-      {params.windowDeleted ? <p className="c-st__msg" role="status">Coverage period removed.</p> : null}
+      {params.deadlineSaved ? <p className="c-st__msg form-success" role="status">Availability deadline saved.</p> : null}
+      {params.saved ? <p className="c-st__msg form-success" role="status">Scheduling rules saved.</p> : null}
+      {params.windowSaved ? <p className="c-st__msg form-success" role="status">Coverage period added.</p> : null}
+      {params.windowDeleted ? <p className="c-st__msg form-success" role="status">Coverage period removed.</p> : null}
+      </TemplateFeedback> : null}
 
       <CorpCard ariaLabel="Rules">
         <RulesSaveForm action={saveScheduleHealthSettingsFormAction} bar={staffing.length > 0 || employees.length > 0}>
@@ -183,12 +193,13 @@ export default async function ScheduleSettingsPage({ searchParams }: {
             </details> : <p className="c-rf-help">Add a location first. <Link className="c-link" href="/app/settings/locations">Locations</Link></p>}
             {coverageGroups.map(group => (
               <details className="c-rf-disc c-rf-group" key={group.locationId} open={coverageGroups.length === 1 || group.needsReview}>
-                <summary className="c-rf-disc__sum"><span className="c-rules__tx"><span className="c-rules__t">{group.label}</span><span className="c-rules__d">{group.windows.length} {group.windows.length === 1 ? "period" : "periods"} · {group.days} {group.days === 1 ? "day" : "days"} a week</span></span><CaretDownIcon className="c-rules__chev" weight="bold" aria-hidden="true" /></summary>
+                <summary className="c-rf-disc__sum"><span className="c-rules__tx"><span className="c-rules__t">{group.label}</span><span className="c-rules__d">{[`${group.windows.length} ${group.windows.length === 1 ? "period" : "periods"}`, `${group.days} ${group.days === 1 ? "day" : "days"} a week`, group.sharedTime ? keepWhole(group.sharedTime) : null, group.sharedStaff].filter(Boolean).join(" · ")}</span></span><CaretDownIcon className="c-rules__chev" weight="bold" aria-hidden="true" /></summary>
                 <ul className="c-rf-list c-rf-periods">
                   {group.windows.map(window => (
                     <li className="c-rf-period manager-issue-target" id={"coverage-" + window.id} tabIndex={-1} key={window.id}>
                       <div className="c-rf-period__head">
-                        <div className="c-rf-item__name"><h3 className="c-rf-item__t">{dayNames[window.dayOfWeek]}</h3><p className="c-rf-item__m">{keepWhole(formatTimeRange(window.startTime, window.endTime))} · {window.minimumStaff ? window.minimumStaff + " staff required" : "Location staffing"}</p></div>
+                        <div className="c-rf-item__name"><h3 className="c-rf-item__t">{dayNames[window.dayOfWeek]}</h3>{[group.sharedTime ? null : keepWhole(formatTimeRange(window.startTime, window.endTime)), group.sharedStaff ? null : staffText(window.minimumStaff ?? null)].some(Boolean)
+                          ? <p className="c-rf-item__m">{[group.sharedTime ? null : keepWhole(formatTimeRange(window.startTime, window.endTime)), group.sharedStaff ? null : staffText(window.minimumStaff ?? null)].filter(Boolean).join(" · ")}</p> : null}</div>
                         <ActionForm action={deleteCoverageWindowAction} className="c-rf-remove-form" failure="Not removed. Check your connection and try again." confirm={{ prompt: `Remove ${dayNames[window.dayOfWeek]}, ${formatTimeRange(window.startTime, window.endTime)}?`, keepLabel: "Keep period" }} submit={{ label: "Remove", pendingLabel: "Removing…", ariaLabel: "Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTimeRange(window.startTime, window.endTime) + " coverage period", className: "c-btn c-btn--danger c-rf-remove", kind: "danger" }}><input type="hidden" name="windowId" value={window.id} /></ActionForm>
                       </div>
                       <details className="c-rf-disc c-rf-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>
@@ -207,7 +218,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
           <Summary title="Week starts on" detail="The days Schedule shows together" value={calendar ? WEEKDAYS.en[calendar.startsOn] : "Unavailable"} />
           <div className="c-rules__body" id="rules-week-start">
             {calendar ? <PlanningWeekFields startsOn={calendar.startsOn} revision={calendar.revision} canEdit={session.role === "OWNER"} owner="An Owner" labelHidden />
-              : <p className="c-st__msg c-st__msg--error" role="alert">Couldn’t load this setting. Reload the page to try again.</p>}
+              : <p className="c-st__msg c-st__msg--error form-error" role="alert">Couldn’t load this setting. Reload the page to try again.</p>}
           </div>
         </details>
         <details className="c-rules__rule" open={open.deadline || undefined}>
@@ -225,7 +236,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
         <details className="c-rules__rule">
           <Summary title="Shift requests" detail="Who approves swaps and covers" value={policyValue} />
           <div className="c-rules__body" id="rules-policy" tabIndex={-1}>
-            {policyUnavailable ? <p className="c-st__msg c-st__msg--error" role="alert">Couldn’t load this policy. Reload the page to try again.</p> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}
+            {policyUnavailable ? <p className="c-st__msg c-st__msg--error form-error" role="alert">Couldn’t load this policy. Reload the page to try again.</p> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}
           </div>
         </details>
       </CorpCard>

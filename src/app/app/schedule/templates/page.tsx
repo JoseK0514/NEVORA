@@ -84,7 +84,7 @@ export default async function ScheduleTemplatesPage({
           {templates.map((template, index) => <li className="c-tpl__item" key={template.id}>
             <div className="c-tpl__text"><span className="c-tpl__name">{template.name}</span><span className="c-tpl__count"><b>{plural(template.shiftCount, "shift", "shifts")}</b></span></div>
             <div className="c-tpl__acts">
-              <ActionForm action={archiveTemplateAction} className="c-tpl__form" failure="Template not archived. Check your connection and try again." confirm={{ prompt: `Archive ${template.name}? Shifts already in your schedule stay.`, keepLabel: "Keep" }} submit={{ label: "Archive", pendingLabel: "Archiving…", ariaLabel: `Archive ${template.name}`, className: "c-btn c-btn--secondary" }}>
+              <ActionForm action={archiveTemplateAction} className="c-tpl__form" failure="Template not archived. Check your connection and try again." confirm={{ prompt: `Archive ${template.name}? Shifts already in your schedule stay.`, keepLabel: "Keep" }} submit={{ label: "Archive", pendingLabel: "Archiving…", ariaLabel: `Archive ${template.name}`, className: "c-btn c-btn--secondary", kind: "danger" }}>
                 <input type="hidden" name="weekStart" value={weekStart} />
                 <input type="hidden" name="templateId" value={template.id} />
               </ActionForm>

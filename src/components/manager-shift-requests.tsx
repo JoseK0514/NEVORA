@@ -213,7 +213,7 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
     {/* R12: the kit's segmented control; counts read "Waiting 2" (countLabel). */}
     <CorpSegments label="Shift request sections" items={tabs.map(item => ({ href: `/app/exchange?tab=${item.id}`, current: selected.id === item.id,
       label: item.id === "pending" && waiting ? `Waiting (${waiting})` : item.label }))} />
-    {error ? <p className="c-st__msg c-st__msg--error" role="alert">{errors[error] ?? "The request may have changed. Check it and decide again."}</p> : null}
+    {error ? <p className="c-st__msg c-st__msg--error form-error" role="alert">{errors[error] ?? "The request may have changed. Check it and decide again."}</p> : null}
 
     {selected.id === "pending" ? (waiting ? <CorpCard ariaLabel="Waiting shift requests"><ul className="c-shreq__list">
       {livePending.map(exchange => {
