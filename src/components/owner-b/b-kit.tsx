@@ -56,7 +56,7 @@ export function BHero({ title, titleId, eyebrow, sub, right, back, children, big
   </header>;
 }
 
-export type BLiveItem = { label: ReactNode; value: ReactNode; small?: ReactNode; dot?: "live" | "warn"; href?: string; aria?: string;
+export type BLiveItem = { label: ReactNode; value: ReactNode; small?: ReactNode; dot?: "live" | "warn"; href?: string;
   /** Closing F1 (NV-006): a figure that filters the list below it (a toggle; `pressed` while the filter is on). */
   onSelect?: () => void; pressed?: boolean;
   /** A short line under the figure; Employee desktop shows it (employee-b-desktop.css), phones don't. */
@@ -68,7 +68,7 @@ export function BLive({ items, label }: { items: BLiveItem[]; label: string }) {
     // Gaps G45 (Nov 23, 2026): a space between the label, the figure and its line, so a tile's name reads "Not clocked in 0",
     // never "Not clocked in0". Final fixes K7: a bare space between flex items is dropped from the layout and from the name,
     // so the space is screen-reader text (a no-break space, which nothing collapses); it draws nothing.
-    // The tile's name is its visible words (label in name): `aria` is no longer read; the words on the tile carry it.
+    // The tile's name is its visible words (label in name), so a tile takes no aria-label.
     const gap = <span className="b-sr">{"\u00a0"}</span>;
     const body = <>
       <span className="b-live__l">{item.dot ? <span className={`b-dot b-dot--${item.dot}`} aria-hidden="true" /> : null}{item.label}</span>{gap}
