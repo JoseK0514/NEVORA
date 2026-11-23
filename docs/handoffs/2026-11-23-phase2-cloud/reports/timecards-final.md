@@ -102,3 +102,36 @@ width; the selection rules, labels, steps and the approve and finalize actions a
   1440: 24 captures, no overflow, overlaps or clipped text, axe 0. `src/components` 3233/3233 pass.
 - Captures retaken after merging the shared tip c32ae519 (kit buttons in rem at 200%): 24 again clean.
 - Kit item left: the kit checkbox stays 20px at 200% text (a fixed size in b-foundation.css).
+
+## Signed-in Spanish: Timecards (Nov 23, 2026)
+Tables: `src/components/timecards-copy.ts` (Timecards list, sheet, select, review, heading, own-approver lines) and
+`src/components/management-close-copy.ts` ("Close open punch"), each `{en, es}` with `es: typeof en`, read through
+`usePortalLang()` (contract from c38ff7a9). English is unchanged; status texts stay English as logic keys and are
+translated when shown. Tests: key sets match, tú and glossary checks, English unchanged, Spanish render of the phone list,
+the wide list, the sheet and the review (`timecards.batch.test.tsx`).
+
+Browser (development build, fictional rich Owner data, `nv-lang=es`): list, Luis Torres's sheet, select and review at 390,
+390 with 200% text, 1440 and 320. Overflow 0, no overlaps, no clipped text, axe 0 (default rules plus
+label-content-name-mismatch and target-size). Shots: `shots/timecards-es/`.
+
+### Jose: "this does not seem B2 style compliant" (the open "Close open punch" form)
+The form opened under the sheet's buttons as loose parts: a plain-text heading, a centred grey facts line, fields outside
+any card, a small checkbox line and link-style Cancel. It is now a kit card beside "Days": the card heading, the punch's
+facts left-aligned, outlined fields, "I verified this end time and reason." as a check row, "Refresh current punch" as a
+text action, and the kit buttons on the card's inset (Cancel close left, Record close right; each full width once they no
+longer fit side by side). At 390 the fields and the check row no longer run past the card's right edge; with 200% text
+the labels, fields and link scale (rem). The closed state ("Close open punch", white kit button) was already the kit's;
+it looked grey in one capture only because the pointer was over it. Server calls, recovery and messages are unchanged.
+Captures `close-{es,en}-{390,390-200,1440,320}.png`: overflow 0, no clipped text, axe 0 at the default level (the stricter
+AAA contrast rule flags the kit's grey meta text, as elsewhere).
+
+### For the lead / other rows
+- `src/components/owner-b/moments-copy.ts` (es-owner row): the review heading reads "¿Aprobar 3 registros de horas?" and
+  the select line "3 listos"; the glossary wants "tarjetas de tiempo" and "3 listas". Also usted in places (sent earlier).
+- The bottom tab bar (Home, Schedule, Time, Payroll, Team) is shell wording, still English in Spanish.
+- Kit: the checkbox stays 20px with 200% text; Chromium hides the date field's calendar icon at 390 with 200% text.
+
+### For Jose to review (payroll wording in Spanish)
+- "Aprueba cada tarjeta de tiempo y luego finaliza la semana para cerrarla para la nómina."
+- "Empieza una corrección de nómina antes de cambiar tiempo en este período de nómina aprobado."
+- "Exportar horas" / "Descargar horas para la nómina".
