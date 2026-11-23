@@ -380,3 +380,13 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 :is(#c-root, html) .c-page.c-setb.c-pset .c-pset__fields:has(details[open]) > .c-pset__savecard { display: block; }
 :is(#c-root, html) .c-page.c-setb.c-pset .c-pset__savecard > .c-pset__save.c-pset__save { display: flex; padding: 0; }
 @media (min-width: 768px) { :is(#c-root, html) .c-page.c-setb.c-pset .c-pset__savecard { padding-inline: 0; } }
+
+/* Phase 2 (kit check, 200% text): Payroll's step titles ("Prepare payroll", "Review pay", "Approve payroll") wrap onto
+ * lines that keep their spacing. The kit's 20px line height didn't grow with the text, so two-line titles overlapped at
+ * 200%; 1.25rem is the same 20px at the default size. */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-steps .b-step__t { line-height: 1.25rem; }
+/* The step number's circle grows with its digit (it clipped "1" at 200% text); 1.75rem is the kit's 28px by default. */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-steps .b-step__n { width: 1.75rem; height: 1.75rem; }
+/* The overdue period's button ("Prepare Nov 9–15") wraps inside its card instead of running past it at 320 with 200%
+ * text; at the default size it stays on one line. */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-notice > .b-btn { max-width: 100%; height: auto; white-space: normal; text-align: center; }
