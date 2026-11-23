@@ -536,3 +536,22 @@
     }
   }
 }
+
+/* The phone select and review view (the Corp layout under 768px, Nov 23, 2026 follow-up): its title, week words, review
+ * button, count and hours were fixed px, so at 200% text they stayed small beside text that doubled. Each is now the
+ * same size in rem (24/30, 13/18, 13, 15/20 at a 16px root), and the fixed heights become minimums of the same values,
+ * so the default size is unchanged and the controls grow with the text. Cancel keeps its width and the review button
+ * moves under it, at the right edge, when the two no longer fit side by side. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) > header.c-title h1:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 1.5rem !important; line-height: 1.875rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) > header.c-title .c-title__sub:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) > header.c-title .c-title__sub .b-segs__i:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: inherit !important; line-height: inherit !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-seg:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { height: auto !important; min-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-seg > button:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.8125rem !important; height: auto !important; min-height: 36px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot .c-btn:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.9375rem !important; line-height: 1.25rem !important; height: auto !important; min-height: 48px !important; padding-top: 4px !important; padding-bottom: 4px !important; white-space: normal !important; text-align: center !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { height: auto !important; flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot > .c-tc-flow__cancel:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { flex: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot > .c-btn:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { margin-left: auto !important; max-width: 100% !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-rows :is(.c-row__value, .c-row__value .c-num):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.9375rem !important; line-height: 1.25rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-rows .c-row:not(.c-tc-day):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { height: auto !important; }
+}

@@ -441,10 +441,12 @@
   /* ---------- Final round (Nov 8, 2026) ---------- */
   @media (min-width: 1024px) {
     /* A Lead's role line under the workspace name. */
+    /* Final fixes K (Nov 23, 2026): the name and role lines in rem (18px and 12/15px at the default size), so at 200% text
+     * the workplace name no longer overlaps itself or the role line; the full name stays in the card's title. */
     html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) { display: grid !important; grid-template-columns: auto minmax(0, 1fr) !important; column-gap: 10px !important; row-gap: 0 !important; align-items: center !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__mark { grid-row: 1 / span 2 !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org > .cm-org__role { grid-column: 2 !important; font-size: 12px !important; line-height: 15px !important; font-weight: 500 !important; color: var(--b-grey) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__name { line-height: 18px !important; align-self: end !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org > .cm-org__role { grid-column: 2 !important; font-size: 0.75rem !important; line-height: 0.9375rem !important; font-weight: 500 !important; color: var(--b-grey) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__name { line-height: 1.125rem !important; align-self: end !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__role { align-self: start !important; }
   }
   /* The role line goes with the workspace name: not on the icon rail. */
