@@ -89,13 +89,17 @@ function PersonRows({ rows, withPlace }: { rows: Row[]; withPlace: boolean }) {
   const people = new Map<string, Row[]>();
   for (const row of rows) people.set(personOf(row), [...(people.get(personOf(row)) ?? []), row]);
   return <CorpRows>{[...people].map(([name, own]) => {
+    // A person's one location is said once, at the end of their line; several are said with each time.
+    const theirPlaces = new Set(own.map(row => row.locationName).filter(Boolean));
+    const placeEach = withPlace && theirPlaces.size > 1;
+    const placeOnce = withPlace && theirPlaces.size === 1 ? [...theirPlaces][0] : null;
     const parts = new Map<string, string[]>();
     for (const row of own) {
       if (!described(row)) { parts.set(row.sourceId, []); continue; }
-      const key = [timeOf(row), withPlace ? row.locationName : null].filter(Boolean).join(DOT);
+      const key = [timeOf(row), placeEach ? row.locationName : null].filter(Boolean).join(DOT);
       parts.set(key, [...(parts.get(key) ?? []), formatDayLabel(row.date).weekday]);
     }
-    const detail = [...parts].map(([key, days]) => days.length ? `${days.join(", ")}${DOT}${key}` : key).join("; ");
+    const detail = [...parts].map(([key, days]) => days.length ? `${days.join(", ")}${DOT}${key}` : key).join("; ") + (placeOnce ? `${DOT}${placeOnce}` : "");
     return <li key={name}><CorpRow title={name} detail={detail} /></li>;
   })}</CorpRows>;
 }

@@ -121,11 +121,13 @@ it('says the previous week was empty when there was nothing to copy',async()=>{
 });
 
 it('shows a person once per reason with their days when shifts were not copied',async()=>{
- fixtures.receipt=receipt([row('a','COMMITTED'),row('m','SKIPPED',{employeeName:'Luis Torres'}),row('t','SKIPPED',{employeeName:'Luis Torres',date:'2026-10-20'}),row('w','SKIPPED',{employeeName:'Luis Torres',date:'2026-10-21',startTime:'14:00',endTime:'22:00'})]);
+ fixtures.receipt=receipt([row('a','COMMITTED',{locationName:'Calle Loíza'}),row('m','SKIPPED',{employeeName:'Luis Torres'}),row('t','SKIPPED',{employeeName:'Luis Torres',date:'2026-10-20'}),row('w','SKIPPED',{employeeName:'Luis Torres',date:'2026-10-21',startTime:'14:00',endTime:'22:00'})]);
  const html=await render();
  const skipped=text(html.slice(html.indexOf('id="copy-skipped"')));
  expect(skipped.match(/Luis T\./g)).toHaveLength(1);
- expect(skipped).toContain('Mon, Tue · 9 AM – 5 PM; Wed · 2–10 PM');
+ // Two locations in the copy: Luis's one location is said once, at the end of his line.
+ expect(skipped).toContain('Mon, Tue · 9 AM – 5 PM; Wed · 2–10 PM · Condado');
+ expect(skipped.match(/Condado/g)).toHaveLength(1);
 });
 
 it('keeps older receipts that carry only a source reference readable',async()=>{
