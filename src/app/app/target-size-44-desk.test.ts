@@ -74,4 +74,10 @@ describe('placeholder contrast (release batch)', () => {
       expect(read(sheet)).not.toMatch(/::placeholder \{ color: var\(--(c|q)-faint\)/);
     }
   });
+
+  it('the Employee and Lead week arrows are centred for the -50% translate their own rule keeps', () => {
+    expect(read('./owner-b-pages.css')).toContain('[data-employee-mobile] .b-week__arrow:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h):not(#r44i)::after { top: 50% !important; left: 50% !important; right: auto !important; bottom: auto !important; width: max(100%, 44px) !important; height: max(100%, 44px) !important; translate: -50% -50% !important; }');
+    expect(read('./owner-b-pages.css')).toContain('aside.sidebar nav.sidebar-nav:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { box-sizing: border-box !important; width: calc(100% + 4px) !important; max-width: none !important; padding-inline: 2px !important; margin-inline: -2px !important; }');
+  });
 });
+
