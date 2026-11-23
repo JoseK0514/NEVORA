@@ -151,3 +151,11 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-notifs .mb-cards button.b-row .b-row__tx { align-items: flex-start !important; text-align: left !important; }
   :is(#c-root, html) .app-shell[data-nv-b] .mb-notifs .mb-cards button.b-row:focus-visible { outline: 2px solid var(--b-teal); outline-offset: -2px; }
 }
+
+/* 2-hour target (Nov 23): every target on these pages is at least 44px tall: Remind on a recipient row and the hero's
+ * New update on a phone (the kit draws both at 36 and 40px). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients .b-rem :is(.b-rem__go, .b-rem__act) { height: auto !important; min-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2) .c-page.mb-page > .b-screen .b-hero .b-seg > * { height: auto !important; min-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.mb-page > .b-screen .b-title__right .b-btn { min-height: 44px !important; }
+}
