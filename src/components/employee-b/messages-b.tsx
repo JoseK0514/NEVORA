@@ -246,7 +246,7 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
             {/* Phase 8 (review C, row 32): a hyphenated word ("back-of-house") keeps its hyphens unbreakable here, so the preview's
               * "…" never lands right after a hyphen. */}
             <p className="eb-upd__body">{item.body.replace(/\s*\n+\s*/g, ' ').trim().replace(/(\w)-(?=\w)/g, '$1\u2011')}</p>
-            <div className="eb-upd__acts">
+            <div className="eb-upd__acts" lang={lang}>
               <Link id={'b-message-' + item.id} className="b-btn b-btn--ghost" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)} aria-label={t.openLabel(item.title)}>{t.open}</Link>
               <BButton kind="ghost" onClick={() => list.onConfirm(item)} disabled={list.busy} label={t.confirmLabel(item.title)}><CheckIcon size={16} weight="bold" aria-hidden="true" />{t.confirm}</BButton>
             </div>

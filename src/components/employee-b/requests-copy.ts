@@ -24,7 +24,7 @@ const en = {
   swapsNeedAnswer: (n: number) => `${n} swaps need your answer`,
   reviewSwap: 'Review the swap request', reviewSwaps: 'Review swap requests',
   // Pick up and swap tabs
-  openShifts: 'Open shifts', forYou: 'For you', myRequests: 'My requests', schedule: 'Schedule',
+  openShifts: 'Open shifts', openTab: 'Open shifts', forYou: 'For you', myRequests: 'My requests', schedule: 'Schedule',
   // The phone's first frame
   swapShift: 'Swap shift', offerForCover: 'Offer for cover', cantWorkThisShift: 'Can’t work this shift',
   hubSub: 'Time off and shift changes you’ve sent', requestDetails: 'Request details', cancel: 'Cancel',
@@ -84,7 +84,7 @@ const es: typeof en = {
   swapsCouldntCheck: 'No pudimos verificar los cambios para ti.', openSwapsForYou: 'Abrir cambios para ti',
   swapsNeedAnswer: (n: number) => `${n} cambios necesitan tu respuesta`,
   reviewSwap: 'Revisar la solicitud de cambio', reviewSwaps: 'Revisar solicitudes de cambio',
-  openShifts: 'Turnos disponibles', forYou: 'Para ti', myRequests: 'Mis solicitudes', schedule: 'Horario',
+  openShifts: 'Turnos disponibles', openTab: 'Disponibles', forYou: 'Para ti', myRequests: 'Mis solicitudes', schedule: 'Horario',
   swapShift: 'Cambiar turno', offerForCover: 'Ofrecer para cubrir', cantWorkThisShift: 'No puedo trabajar este turno',
   hubSub: 'Días libres y cambios de turno que enviaste', requestDetails: 'Detalles de la solicitud', cancel: 'Cancelar',
   timeOff: 'Días libres', timeOffRequests: 'Solicitudes de días libres', allDay: 'Todo el día', days: (n: number) => `${n} días`,

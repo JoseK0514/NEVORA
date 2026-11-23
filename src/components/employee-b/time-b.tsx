@@ -97,9 +97,11 @@ const chip=(status:{word:string;tone:StatusTone},T:TimeCopy)=><BChip tone={statu
 /** Phase 9 (spec 1.1, 1.4): a state that stands alone in a card's header. A week still under way ("In progress") is the
  * expected state, so it is quiet grey text; a green or red chip there carries its glyph (Check, WarningCircle), so the two
  * colours colour-blind readers confuse differ by shape; Declined is grey (a decision isn't an error). */
-const headChip=(status:{word:string;tone:StatusTone},T:TimeCopy)=>{const word=timeWord(T,'statusWords',status.word);
+/* Declined is told by the record's status code where the caller has one (a correction), so the check holds whatever
+ * language the model's word comes back in; elsewhere by the model's English word. */
+const headChip=(status:{word:string;tone:StatusTone},T:TimeCopy,declined=status.word==='Declined')=>{const word=timeWord(T,'statusWords',status.word);
  return status.tone==='teal'&&status.word==='In progress'?<BStatusText>{word}</BStatusText>
- :status.word==='Declined'?<BChip tone="grey">{word}</BChip>
+ :declined?<BChip tone="grey">{word}</BChip>
  :<BChip tone={status.tone} icon={status.tone==='green'?'check':status.tone==='red'?'stop':undefined}>{word}</BChip>;};
 
 /* ---------- Time tab ---------- */
@@ -249,7 +251,7 @@ export function PastTimecardsB({data,period,today,chosen,weeks,earlier,earlierCo
 
 /* ---------- Your correction requests ---------- */
 
-const correctionChip=(status:PublicCorrectionItem['status'],T:TimeCopy,head?:boolean)=>{const look=correctionStatus(status);return head?headChip(look,T):chip(look.word==='Declined'?{...look,tone:'grey'}:look,T);};
+const correctionChip=(status:PublicCorrectionItem['status'],T:TimeCopy,head?:boolean)=>{const look=correctionStatus(status),declined=status==='REJECTED';return head?headChip(look,T,declined):chip(declined?{...look,tone:'grey'}:look,T);};
 export function CorrectionsB({snapshot,decided}:{snapshot:Extract<EmployeeTimeCorrections,{state:'ready'}>;decided:boolean}){
  const zone=snapshot.timeZone,rows=snapshot.requests.filter(r=>decided?r.status!=='PENDING':r.status==='PENDING'),{T,date:dateText}=useTimeWords();
  // Desktop: Fix a missed punch is the band's white action (the card's own row is the phone's).

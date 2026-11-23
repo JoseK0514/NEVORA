@@ -40,7 +40,7 @@ const openShift = (id: string) => ({id, revision: 1, date: '2026-11-24', startTi
 it('draws Pick up and swap in Spanish: Open shifts, For you, and a request’s page', () => {
   const open = es(<OpenShiftsB state={null} enabled failed={false} refreshing={false} onRefresh={() => {}} results={null}
     rows={[{shift: openShift('a'), hours: '8 h', nextWeek: true, selected: false, action: <button type="button">Tomar</button>, status: null}]} unconfirmed={[]} refused={[]} note={null}/>);
-  for (const text of ['Tomar y cambiar turnos', 'Turnos disponibles', 'Para ti', 'Mis solicitudes', 'Puedes tomar', '10:00 p. m. – 6:00 a. m.', 'termina mié', 'Próxima semana', 'Ver todos los turnos publicados', 'Horario'])
+  for (const text of ['Tomar y cambiar turnos', 'Disponibles', 'Para ti', 'Mis solicitudes', 'Puedes tomar', '10:00 p. m. – 6:00 a. m.', 'termina mié', 'Próxima semana', 'Ver todos los turnos publicados', 'Horario'])
     expect(open, text).toContain(text);
   for (const text of ['You can pick up', 'See every posted shift', 'Next week', 'PM', 'For you']) expect(open, text).not.toContain(text);
   const list = es(<ExchangeListB mode="incoming" state={null} enabled recoveries={null} rows={[]}/>);

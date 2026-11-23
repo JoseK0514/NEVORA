@@ -48,7 +48,7 @@ function OpenShiftRow({row}: {row: OpenRowB}) {
   const overnight = shift.endTime <= shift.startTime;
   // An overnight shift ends the next day; the row's day already says which, so its weekday is enough ("ends Sat").
   const first = [shift.position, spanIn(row.hours, lang), overnight ? copy.ends(spanIn(weekdayB(addDays(shift.date, 1)), lang)) : null].filter(Boolean).join(' · ');
-  return <BRow lead={<BDay date={shift.date}/>} title={<span ref={title} id={`b-request-${shift.id}`} data-selected={row.selected || undefined}>{range(shift, lang)}</span>}
+  return <BRow lead={<BDay date={shift.date} lang={lang}/>} title={<span ref={title} id={`b-request-${shift.id}`} data-selected={row.selected || undefined}>{range(shift, lang)}</span>}
     sub={<><span className="eb-line"><Dotted text={first}/></span><span className="eb-line">{/* "Next week" rides on the place line (board E-Open draws no chip). */}<Dotted text={row.nextWeek ? `${shift.location} · ${copy.nextWeek}` : shift.location}/></span></>}
     trail={row.action ?? undefined} actions={row.status ?? undefined}/>;
 }
@@ -184,7 +184,7 @@ function SlotCard({slot, title}: {slot: RequestSlot | null; title: string}) {
   if (!slot) return <BCard title={title}><p className="b-state">{copy.detailsUnavailable}</p></BCard>;
   const lines = [[slot.location, slot.position].filter(Boolean).join(' · '), slot.lead ? copy.shiftLead : null,
     slot.endTime <= slot.startTime ? copy.endsAt(dayB(addDays(slot.date, 1), lang), spanIn(formatTime(slot.endTime), lang)) : null].filter(Boolean) as string[];
-  return <BCard title={title}><BList><BRow lead={<BDay date={slot.date}/>} title={range(slot, lang)} sub={<>{lines.map(line => <span key={line} className="eb-line">{line}</span>)}</>}/></BList></BCard>;
+  return <BCard title={title}><BList><BRow lead={<BDay date={slot.date} lang={lang}/>} title={range(slot, lang)} sub={<>{lines.map(line => <span key={line} className="eb-line">{line}</span>)}</>}/></BList></BCard>;
 }
 
 function HistoryTime({slot, title}: {slot: HistorySlot | null; title: string}) {

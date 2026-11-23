@@ -168,7 +168,8 @@ export const EXCHANGE_TABS: {key: ExchangeTab; label: string; href: string}[] = 
 ];
 const tabLabel = (key: ExchangeTab, lang: 'en' | 'es') => {
   const copy = requestsCopy(lang);
-  return key === 'open' ? copy.openShifts : key === 'foryou' ? copy.forYou : copy.myRequests;
+  // Signed-in Spanish: the tab says "Disponibles", short enough for its pill at 200% text; the page title keeps "Turnos disponibles".
+  return key === 'open' ? copy.openTab : key === 'foryou' ? copy.forYou : copy.myRequests;
 };
 
 /** The hero of Pick up and swap: back to Schedule, the title, and its three places on glass (left out when shift requests
