@@ -68,7 +68,7 @@ describe('Direction B foundation (Nov 14 inspection)', () => {
     const sheet = css('app/app/b-foundation.css');
     const rule = /\.c-page > \.c-nav--phone > \.c-nav__back::after \{([^}]*)\}/.exec(sheet);
     expect(rule?.[1]).toMatch(/content: "" !important;[\s\S]*position: absolute !important;[\s\S]*height: max\(100%, 44px\) !important;/);
-    expect(sheet).toMatch(/\.c-page > \.c-nav--phone > \.c-nav__back \{ position: relative !important; \}/);
+    expect(sheet).toMatch(/\.c-page > \.c-nav--phone > \.c-nav__back \{ position: relative !important; inset: auto !important; \}/);
     const where = contexts(sheet, '.c-page > .c-nav--phone > .c-nav__back::after');
     expect(where).toEqual([['@layer nv-b', '@media (min-width: 768px)']]);
   });
@@ -81,6 +81,6 @@ describe('Direction B foundation (Nov 14 inspection)', () => {
     const sheet = css('app/app/owner-b-time-pay.css');
     expect(sheet).toMatch(/\.c-tc-desk \.c-tc-tabs button em \{[^}]*color: var\(--b-grey-on-fill\) !important; opacity: 1 !important;/);
     expect(sheet).toMatch(/\.c-tc-desk \.c-tc-tabs button\[aria-pressed="true"\] em \{ background: none !important; color: var\(--b-grey-on-fill\) !important; opacity: 1 !important; \}/);
-    expect(sheet).toMatch(/\.c-page\.c-tc-desk > header\.c-title ~ \.c-tc-seg \{ background: color-mix\(in srgb, var\(--b-on-band\) 8%, color-mix\(in srgb, var\(--b-band-solid\) 86%, black\)\) !important; \}/);
+    expect(sheet).toMatch(/\.c-page\.c-tc-desk > header\.c-title ~ \.c-tc-seg \{ background: color-mix\(in srgb, var\(--b-on-band\) 8%, color-mix\(in srgb, var\(--b-band-solid\) 84%, black\)\) !important; \}/);
   });
 });

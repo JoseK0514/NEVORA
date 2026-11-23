@@ -25,9 +25,9 @@
     /* G11 (Nov 23, 2026): the week strip (This week, Last week, Earlier) is glass on the band, and the band there is the
      * title's border-image, which contrast tools can't read: they put the white labels on the canvas (1.08:1). As DESIGN.MD
      * asks wherever the band is a border-image, the strip paints what it sits on: the band at that height (--b-band-solid
-     * 86% toward black, the gradient's colour 44px under the title) under the 8% glass it shows, as one opaque fill. On
-     * screen it moves under 3 levels a channel; tools read the real pair (the labels' 86% white, 5.2:1). */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc-desk > header.c-title ~ .c-tc-seg { background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 86%, black)) !important; }
+     * 84% toward black, the gradient's colour under the strip) under the 8% glass it shows, as one opaque fill. On screen
+     * it moves a few levels a channel at most; tools read the real pair (the white labels, 5.9:1). */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc-desk > header.c-title ~ .c-tc-seg { background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 84%, black)) !important; }
   }
   @media (min-width: 768px) and (hover: hover) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-desk .c-tc-table tbody tr.c-clickable:hover:not([data-open]) > td { background: var(--b-hover) !important; }
