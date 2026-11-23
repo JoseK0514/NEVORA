@@ -147,7 +147,9 @@
    * item the row's width: the place never joins the clock's row on a wide phone and squeezes the date. */
   .clock { order: 1; flex: none; margin-top: var(--b-space-12); }
   .band::before { content: ""; order: 3; flex: 0 0 100%; height: 0; }
-  .date { order: 2; margin-top: var(--b-space-12); flex: 1 1 0; min-width: 0; text-align: right; text-wrap: balance; }
+  /* G50: the date never shrinks below its longest word (it was cut to "Monday, Novem…" at 200% text); when it can't
+   * stand beside the clock it takes its own line under it. */
+  .date { order: 2; margin-top: var(--b-space-12); flex: 1 1 0; min-width: min-content; text-align: right; text-wrap: balance; }
   .location { order: 4; min-height: 34px; margin-top: 10px; font-size: .875rem; }
   .status { order: 5; max-width: 100%; margin-top: 10px; min-height: 34px; padding: 6px var(--b-gutter) 6px var(--b-space-12); }
   .card .title { font-size: 1.625rem; }
@@ -159,6 +161,9 @@
   .clock > span { font-size: min(var(--b-fs-title), .4em); }
   .date { font-size: .9375rem; line-height: 1.3; }
   .zone, .device { display: none; }
+  /* G50: at a large text size (the band under 16em of its own text: 200% text below about 550px) the date is a line of
+   * its own under the clock, on the band's left edge. At the default size every phone keeps it beside the clock. */
+  @container (max-width: 16em) { .date { flex-basis: 100%; text-align: left; } }
   .task { margin-top: -44px; padding: 0 max(14px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
   .card { padding: var(--b-space-24) var(--b-space-20) var(--b-space-20); }
 }
@@ -391,13 +396,18 @@
 
 /* Confirm clock-out facts */
 /* Premium pass (Nov 21, 2026; Jose's facts pick): no grey panel. The two figures sit between two hairlines. */
-.facts { display: grid; grid-template-columns: 1fr 1fr; width: 100%; margin: 18px 0 0; border-top: 1px solid var(--ck-line); border-bottom: 1px solid var(--ck-line); text-align: left; }
-.facts > div { padding: 14px var(--b-inset); min-width: 0; }
-.facts > div + div { box-shadow: inset 1px 0 0 var(--ck-line); }
+/* G50 (Nov 23, 2026): two columns while each holds 7.5em of its own text (every kiosk and phone width at the default
+ * size), one above the other at a larger size (390px with 200% text broke "1:40 A / M"). Each fact draws its hairline on
+ * its left and top edge, and the list clips the ones on its outer edges, so the divider is vertical between two columns
+ * and horizontal between two rows. */
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5em), 1fr)); width: 100%; margin: 18px 0 0; border-top: 1px solid var(--ck-line); border-bottom: 1px solid var(--ck-line); overflow: clip; text-align: left; }
+.facts > div { padding: 14px var(--b-inset); min-width: 0; box-shadow: -1px 0 0 var(--ck-line), 0 -1px 0 var(--ck-line); }
 .facts dt { font-size: var(--b-fs-meta); color: var(--ck-grey); }
 /* One fact alone takes the row (a break with no suggested length on the receipt). */
 .facts > div:only-child { grid-column: 1 / -1; text-align: center; }
-.facts dd { text-wrap: balance; margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.facts dd { text-wrap: balance; margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: break-word; }
+/* A time keeps its narrow no-break space (wholeTime): it may wrap only at the spaces around it ("Oct 19 · 10:02 PM"). */
+.facts dd time { overflow-wrap: normal; }
 
 /* ---------- recorded ---------- */
 /* The done mark (Nov 21, 2026): the app's one success mark (BDoneMark, b-moments.css) on the kiosk, from the same tokens.
@@ -415,7 +425,11 @@
 @keyframes ckPop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes ckDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes ckRing { from { opacity: .5; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
-.hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; container-type: inline-size; }
+/* G50: the recorded time follows the text size up to the card's width: "12:40 PM" (and "12:40 p. m.") is about 4.2em, so
+ * 23% of the card's content width per em keeps it inside (at 390px with 200% text it was 112px and cut at "AM"). At the
+ * default size every kiosk and phone width keeps 3.5rem. */
+.hero > time { display: block; font-size: min(var(--ck-hero, 3.5rem), 23cqi); }
 .bye { margin: var(--b-space-8) 0 0; font-size: 1.125rem; font-weight: 600; color: var(--ck-green); }
 .saved { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-body-sm); line-height: 1.45; color: var(--ck-ink2); overflow-wrap: anywhere; text-wrap: balance; }
 .saved time { font-weight: 600; color: var(--ck-ink); white-space: nowrap; } /* "1:41 AM" stays whole (Nov 21, 2026) */
@@ -540,7 +554,7 @@
   .ring { width: 52px; height: 52px; margin-bottom: 10px; }
   .check:not([data-size]) { width: 72px; height: 72px; margin: var(--b-space-12) auto 14px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 8px var(--b-done-halo), var(--b-done-glow); }
   .check:not([data-size]) svg { width: 40px; height: 40px; }
-  .hero { font-size: 2.75rem; }
+  .hero { --ck-hero: 2.75rem; }
   .acts { gap: 10px; margin-top: var(--b-space-16); }
   .act { min-height: 72px; }
   .stack { margin-top: var(--b-space-16); }
