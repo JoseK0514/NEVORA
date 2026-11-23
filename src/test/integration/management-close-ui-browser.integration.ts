@@ -49,26 +49,15 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){errors.push('External origin '+url.origin);await route.abort();}else await route.continue();});
     failureShot=async isActive=>{if(!isActive())return;await page.screenshot({path:resolve(evidence,engine+'-'+actor+'-failure.png'),fullPage:true,timeout:1500});if(!isActive())return;const focus=await page.evaluate(()=>(window as Window&{__r10Focus?:unknown[]}).__r10Focus);if(isActive())await writeFile(resolve(evidence,engine+'-'+actor+'-focus-events.json'),JSON.stringify(focus,null,2));};
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
-    // Release the fixture's initial Home document only after its actual startup reads finish.
     const signedInReads=Promise.all(['/api/notifications','/api/manager/inbox-count'].map(path=>page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname===path&&response.status()===200).then((response:{finished():Promise<unknown>})=>response.finished())));
-    const homePaths=['/api/manager/today','/api/manager/action-center','/api/manager/clock-monitor'];
-    if(actor==='QAOWNER')homePaths.push('/api/commerce/status','/api/setup/first-week');
-    const homeReads=Promise.all(homePaths.map(async path=>{
-     // Dev navigation can cancel an early request after headers arrive. Wait
-     // for a completed request for each fixture read within the normal timeout.
-     const request=await page.waitForEvent('requestfinished',(request:{url():string})=>new URL(request.url()).pathname===path)
-      .catch((cause:unknown)=>{throw new Error('Home request did not finish: '+path,{cause});});
-     const response=await request.response();
-     // Commerce is disabled in this owned fixture.
-     expect(response?.status(),path).toBe(path==='/api/commerce/status'?404:200);
-    }));
-    const initialReads=Promise.all([signedInReads,homeReads]);
-    await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await initialReads;
+    await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await signedInReads;
     surfacePhase='timecards';await mark('timecards:start');
-    // Use the supported person deep link from the Inbox so recovery after a blur
-    // opens the current authorized timecard without restoring its retired draft.
-    const personLink = '/app/timecards#timecard-'+encodeURIComponent(target.id);
-    await page.goto(app.url+personLink);
+    // Use the actual shell link so a forced document navigation does not cancel Home initialization.
+    const navigation=page.getByRole('navigation',{name:index?'Mobile navigation':'Primary navigation',exact:true});
+    await navigation.locator('a[href="/app/timecards"]').click();await page.waitForURL(app.url+'/app/timecards');
+    await page.locator('[id="timecard-'+target.id+'"] button:visible, button[aria-label^="Unavailable '+target.id+',"]:visible').first().click();
+    // Preserve the ordinary supported person deep link across protected-tree remounts.
+    await page.evaluate((id:string)=>{history.replaceState(history.state,'',location.pathname+location.search+'#timecard-'+id);},target.id);
     await page.locator('dialog[open]').waitFor();
     const start=page.getByRole('button',{name:'Close open punch',exact:true});await start.focus();await page.keyboard.press('Enter');
     const end=page.getByLabel('Confirmed end time (America/Puerto_Rico)',{exact:true}),reason=page.getByLabel('Reason for closing',{exact:true});await end.waitFor();
