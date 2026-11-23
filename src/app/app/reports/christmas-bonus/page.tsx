@@ -11,14 +11,17 @@ import {readChristmasBonusReport} from '@/lib/reports/christmas-bonus.server';
 import {ChristmasBonusView} from '@/components/christmas-bonus-report';
 import {OwnerOnlyNotice} from '@/components/owner-only-notice';
 import {BRouteError} from '@/components/owner-b/b-route-error';
-export const metadata = { title: "Christmas bonus hours" };
+import {readPageLang} from '@/lib/i18n/page-lang.server';
+import {reportsCopy} from '@/components/reports-copy';
+export async function generateMetadata(){ return { title: reportsCopy(await readPageLang()).christmasBonus }; }
 
 /** Insights' Christmas bonus hours: the same authority as Insights (Owners and Managers with current company-wide
  * access; Leads and Employees get the closed notice and nothing is read). Only workspaces whose business time zone
  * is America/Puerto_Rico read it. The year defaults to the latest completed bonus year in the business time zone. */
 export default async function ChristmasBonusPage({searchParams}:{searchParams:Promise<{year?:string}>}){
   const session=await requireSession();
-  if(!isManagerRole(session.role))return <OwnerOnlyNotice state title="Christmas bonus hours" reason="Christmas bonus hours are for Owners and Managers" help="Your own hours are on Time." next={{href:'/app/my-time',label:'Open Time'}}/>;
+  const w=reportsCopy(await readPageLang());
+  if(!isManagerRole(session.role))return <OwnerOnlyNotice state title={w.christmasBonus} reason={w.bonusClosedReason} help={w.ownHours} next={{href:'/app/my-time',label:w.openTime}}/>;
   const proof=await requireSessionMutationProof(),params=await searchParams;
   const source=await withOperationalCompany(proof,async()=>{
     const workspace=await getWorkspace();
@@ -28,16 +31,16 @@ export default async function ChristmasBonusPage({searchParams}:{searchParams:Pr
     const year=selectBonusYear(params.year,today);
     return {choices:bonusYearChoices(today),result:await readChristmasBonusReport(proof,year)};
   });
-  const insights={href:'/app/reports',label:'Insights'};
-  if(source.state==='unavailable')return <OperationalUnavailable title="Christmas bonus hours unavailable" reason={source.reason} back={insights}/>;
+  const insights={href:'/app/reports',label:w.insights};
+  if(source.state==='unavailable')return <OperationalUnavailable title={w.bonusUnavailable} reason={source.reason} back={insights}/>;
   // Review 30 (D19): closed by Puerto Rico's rule, not by this person's access, so the card shows the information glyph.
-  if(source.data===null)return <OwnerOnlyNotice state info back={insights} title="Christmas bonus hours" reason="Christmas bonus hours apply to Puerto Rico workspaces" help="This report follows Puerto Rico’s Christmas bonus rules, and this workspace is set to another time zone." next={{href:'/app/reports',label:'Open Insights'}}/>;
+  if(source.data===null)return <OwnerOnlyNotice state info back={insights} title={w.christmasBonus} reason={w.bonusPrOnly} help={w.bonusPrOnlyHelp} next={{href:'/app/reports',label:w.openInsights}}/>;
   const {choices,result}=source.data;
   // Review 30 (D08): a failed read is the kit's failed state under the Insights back link: what happened, that nothing
   // changed, and one Try again that reads the same year again. It no longer blames the connection.
-  if(result.state==='unavailable'&&result.reason==='read_failed')return <BRouteError title="Christmas bonus hours" back={insights}
-    spoken="Couldn’t load Christmas bonus hours. Nothing was changed." cardTitle="Couldn’t load Christmas bonus hours" line="Nothing was changed."
+  if(result.state==='unavailable'&&result.reason==='read_failed')return <BRouteError title={w.christmasBonus} back={insights}
+    spoken={`${w.bonusLoadFailed}. ${w.nothingChanged}`} cardTitle={w.bonusLoadFailed} line={w.nothingChanged}
     retryHref={`/app/reports/christmas-bonus${typeof params.year==='string'&&/^\d{4}$/.test(params.year)?`?year=${params.year}`:''}`}/>;
-  if(result.state==='unavailable')return <OperationalUnavailable title="Christmas bonus hours unavailable" reason={result.reason} back={insights}/>;
+  if(result.state==='unavailable')return <OperationalUnavailable title={w.bonusUnavailable} reason={result.reason} back={insights}/>;
   return <ScopedReadFrame observation={scopedObservation(source)}><ChristmasBonusView report={result.report} choices={choices}/></ScopedReadFrame>;
 }

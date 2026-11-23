@@ -32,7 +32,7 @@ it.each(['MANAGER','OWNER'])('keeps the clean Insights layout and period props i
  expect(output).toContain('Protected period reports');
  expect(output).not.toContain('class="nv-content"');
  // MK5 / PD4: Insights opens on this week so far (Monday Oct 19 to today), not last week.
- expect(fixture.reports).toHaveBeenCalledWith({initialPeriod:{startDate:'2026-10-19',endDate:'2026-10-20'},today:'2026-10-20',christmasBonus:true});
+ expect(fixture.reports).toHaveBeenCalledWith({initialPeriod:{startDate:'2026-10-19',endDate:'2026-10-20'},today:'2026-10-20',christmasBonus:true,lang:'en'});
 });
 it('denied company authority withholds the report body and avoids workspace loading',async()=>{
  fixture.denied=true;
