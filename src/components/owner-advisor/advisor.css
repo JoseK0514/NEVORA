@@ -282,3 +282,11 @@
   :is(#c-root, html) .oa .oa-check .oa-acts > :is(a, button) { width: 100%; }
 }
 :is(#c-root, html) .oa .oa-weekly-link { margin-top: var(--b-space-12); }
+/* Follow-up (Nov 23): a group's one shared "Review source" sits under its title; each place then has three choices, two
+ * then one full-width on a narrow row, three across once there is room. */
+:is(#c-root, html) .oa .oa-acts.oa-acts--one { margin-top: var(--b-space-8); }
+:is(#c-root, html) .oa .oa-acts.oa-acts--att.oa-acts--three > :last-child { grid-column: 1 / -1; }
+@container (min-width: 33rem) {
+  :is(#c-root, html) .oa .oa-acts.oa-acts--att.oa-acts--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  :is(#c-root, html) .oa .oa-acts.oa-acts--att.oa-acts--three > :last-child { grid-column: auto; }
+}
