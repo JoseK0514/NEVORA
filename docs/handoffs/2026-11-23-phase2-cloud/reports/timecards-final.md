@@ -85,3 +85,19 @@ no clipped text and axe 0. `src/components` 3231/3231 pass.
 
 Before → after words: the disabled "Approve timecard" → "Approve after the waiting correction is reviewed."; the steps
 line "Approve each timecard, then finalize the week to lock it for payroll." steps aside while the reason line shows.
+
+## Jose's review, part 2: "on the select review page, this is not b2 COMPLIANT" (Nov 23, 2026)
+Commit 22c67232. Select and the selected set's review are rebuilt on the Direction B kit for Owner and Manager at every
+width; the selection rules, labels, steps and the approve and finalize actions are unchanged.
+- Phone: Select and the review are a Direction B screen: the band with the week segment (as on the list, Done on the
+  band), the set's card, the team as kit rows with the kit checkbox leading ("Select all eligible" first, people who
+  can't be picked greyed with their reason), and the Time tools card. Before: the corporate small title, week control and
+  rows.
+- Every width: the set's card is the kit's white raised card: the card heading ("3 selected" with the ready count, or
+  "Approve 3 timecards?" with the week), the steps line, the outlined action field (360px wide from 768), kit rows for
+  each timecard and its hours or result, "I checked these hours" as a kit row with its consequence under it, and the
+  kit buttons on the card edges (Cancel or Refresh left as the white outlined button, the main teal button right; full
+  width alone on a phone).
+- Production recapture: Owner and Elena; list, Luis Torres's sheet, select and review at 390, 390 with 200% text and
+  1440: 24 captures, no overflow, overlaps or clipped text, axe 0. `src/components` 3233/3233 pass.
+- Kit item left: the kit checkbox stays 20px at 200% text (a fixed size in b-foundation.css).
