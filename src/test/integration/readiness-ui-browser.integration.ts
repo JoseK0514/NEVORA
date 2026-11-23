@@ -149,7 +149,11 @@ it('connects original shift reviews and explicit period history in owned Chromiu
           expect(await history.locator('li').count()).toBe(50);
           await history.getByRole('button', { name: 'Load older events', exact: true }).focus(); await page.keyboard.press('Enter');
           await history.getByText(/100 of 1001 events loaded/).waitFor();
-          for (let i = 0; i < 19; i++) { await history.getByRole('button', { name: 'Load older events', exact: true }).click(); await history.getByRole('button', { name: 'Refresh history', exact: true }).waitFor({ state: 'visible' }); await page.waitForFunction(() => document.querySelector('[aria-label="Period artifact and handoff history"]')?.getAttribute('aria-busy') === 'false'); }
+          for (let i = 0; i < 19; i++) {
+            await history.getByRole('button', { name: 'Load older events', exact: true }).focus();
+            await page.keyboard.press('Enter');
+            await expect.poll(() => history.locator('li').count()).toBe(Math.min(150 + i * 50, 1001));
+          }
           await history.getByText('All events in this history snapshot are loaded.', { exact: true }).waitFor();
           expect(await history.locator('li').count()).toBe(1001);
           expect(await history.getByRole('button', { name: 'Load older events', exact: true }).count()).toBe(0);

@@ -106,6 +106,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         }
       } finally { await controlContext.close(); }
       const pendingRouterReads = [new Set<object>(), new Set<object>(), new Set<object>()];
+      const pendingAuthorityReads = [new Set<object>(), new Set<object>(), new Set<object>()];
       const documentRequests = [0, 0, 0], drainReceipts: { page: number; pending: number }[] = [];
       for (const n of [0, 1, 2]) {
         const p = page(n); p.setDefaultTimeout(20000);
@@ -113,6 +114,9 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         const kind = (address: string) => { const url = new URL(address); if (url.origin !== app.url) return null; const paths: Record<string, string> = { '/login': 'login', '/app': 'manager-home', '/app/schedule': 'schedule', '/app/schedule/edit': 'schedule-edit', '/api/manager/today': 'manager-today', '/api/company-access/operational-authority': 'authority', '/api/notifications': 'notifications', '/__nextjs_original-stack-frames': 'framework-frames' }; return paths[url.pathname] ?? null; };
         const requestMetadata = (request: TracedRequest) => { const resource = kind(request.url()); if (!resource) return null; if (!requestIds.has(request)) requestIds.set(request, ++requestSerial); return { resource, requestId: requestIds.get(request), method: request.method(), document: request.isNavigationRequest(), rsc: request.headers().rsc === '1', serverAction: typeof request.headers()['next-action'] === 'string' }; };
         p.on('request', (request: TracedRequest) => { const metadata = requestMetadata(request); if (metadata) { if (metadata.document) documentRequests[n]++; if (metadata.method === 'GET' && metadata.rsc && ['manager-home', 'schedule', 'schedule-edit'].includes(metadata.resource)) pendingRouterReads[n].add(request); trace({ engine, index: n, event: 'request', ...metadata }); } });
+        p.on('request', (request: TracedRequest) => { if (kind(request.url()) === 'authority') pendingAuthorityReads[n].add(request); });
+        p.on('requestfinished', (request: TracedRequest) => pendingAuthorityReads[n].delete(request));
+        p.on('requestfailed', (request: TracedRequest) => pendingAuthorityReads[n].delete(request));
         p.on('response', (response: { request(): TracedRequest; status(): number }) => { const metadata = requestMetadata(response.request()); if (metadata) trace({ engine, index: n, event: 'response', status: response.status(), ...metadata }); });
         p.on('requestfinished', (request: TracedRequest) => { pendingRouterReads[n].delete(request); const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'finished', ...metadata }); });
         p.on('requestfailed', (request: TracedRequest) => { pendingRouterReads[n].delete(request); const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'failed', category: requestFailureCategory(request.failure()?.errorText), ...metadata }); });
@@ -131,7 +135,15 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         await expect.poll(() => pendingRouterReads[n].size, { timeout: 20000 }).toBe(0);
         trace({ engine, index: n, event: 'router-reads-drained', pendingAtStart: receipt.pending });
       };
-      const open = async (n: number, id: string) => { const p = page(n); await drainRouterReads(n); await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await p.goto(app.url + '/app/schedule/edit?shiftId=' + id); await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' }); };
+      const open = async (n: number, id: string) => {
+        const p = page(n);
+        await drainRouterReads(n);
+        await p.locator('main h1').first().waitFor();
+        await expect.poll(() => pendingAuthorityReads[n].size, { timeout: 20000 }).toBe(0);
+        await p.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+        await p.goto(app.url + '/app/schedule/edit?shiftId=' + id);
+        await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' });
+      };
       // Negative control: even a previously idle document must not let a held
       // real Next RSC read be cancelled by the next fixture navigation.
       const probeSource = await seed(), probeDestination = await seed();
