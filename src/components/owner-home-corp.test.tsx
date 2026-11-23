@@ -320,6 +320,10 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     // Gaps G56 (Nov 23, 2026): while Things to do's read is on its way, Today waits for it (it would list them, then drop
     // them and move).
     for (const connection of ["loading", "reconnecting"] as const) expect(phone({ value: null, connection, today: today([shift("e", "not_clocked_in")]) })).not.toContain('id="b-home-on"');
+    // Gaps G73 (Nov 23, 2026): the cards below Things to do (Payday, This week) wait for its read too, so its growth moves
+    // nothing and the Timecards tile never switches content mid-load; a failed read releases them.
+    for (const connection of ["loading", "reconnecting"] as const) expect(phone({ value: null, connection, timecardsReady: false })).toContain('<div class="b-home-col b-home-col--b"></div>');
+    expect(phone({ value: null, connection: "unavailable", timecardsReady: false })).toContain("Not available right now");
     expect(card).toMatch(/9:00\sAM\s–\s5:00\sPM/);
     expect(card).not.toMatch(/Person b|Person c/);
     // Nobody on: the card says so and names the next start; it never lists a shift that hasn't begun.
