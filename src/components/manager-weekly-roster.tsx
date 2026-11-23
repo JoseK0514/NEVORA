@@ -520,10 +520,13 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
         <div className="b-week__days" role="group" aria-label="Schedule day">{dates.map(date => {
           const shifts = shiftsOn(date).length, open = openShifts.filter(row => row.date === date && !ended(row)).length;
           const day = formatDayLabel(date);
+          // Recheck (Nov 23, 2026): the name starts with what the button shows ("Mon 16"), and the rest is hidden text, so the
+          // spoken name never differs from the visible one (axe label-content-name-mismatch on every day).
           return <button key={date} type="button" className="b-week__d" aria-pressed={phoneDay === date} data-today={date === today || undefined}
-            aria-label={`${longWeekday(date)}, ${day.day}${date === today ? ", today" : ""}, ${shifts + open ? plural(shifts + open, "shift", "shifts") : "no shifts"}${open ? `, ${plural(open, "open shift", "open shifts")}` : ""}`}
             onClick={() => setPhoneDay(date)}>
-            <span aria-hidden="true">{day.weekday}</span><b aria-hidden="true" className="c-num">{Number(date.slice(8))}</b><i aria-hidden="true" className={open ? "gap" : shifts ? "has" : undefined} />
+            <span>{day.weekday}</span><span className="sr-only"> </span><b className="c-num">{Number(date.slice(8))}</b>
+            <span className="sr-only">{`${date === today ? ", today" : ""}, ${shifts + open ? plural(shifts + open, "shift", "shifts") : "no shifts"}${open ? `, ${plural(open, "open shift", "open shifts")}` : ""}`}</span>
+            <i aria-hidden="true" className={open ? "gap" : shifts ? "has" : undefined} />
           </button>;
         })}</div>
         {/* Review B1 (NV-089): the amber dot is explained once. */}

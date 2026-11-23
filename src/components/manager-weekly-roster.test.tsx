@@ -252,4 +252,8 @@ it("says one location once and keeps the key for a mixed week", () => {
   expect(day(render(employees))).toContain(" Draft ");
   const drafts = employees.map(person => ({ ...person, shifts: person.shifts.map(shift => ({ ...shift, status: "DRAFT" as const })) }));
   expect(day(render(drafts))).not.toContain(" Draft ");
+  // The week strip's days are named by what they show, then hidden text (no aria-label that differs from it).
+  const strip = render(employees);
+  expect(strip).not.toMatch(/class="b-week__d"[^>]*aria-label/);
+  expect(strip).toMatch(/<span>Tue<\/span><span class="sr-only"> <\/span><b class="c-num">6<\/b><span class="sr-only">, today, 2 shifts, 1 open shift<\/span>/);
 });
