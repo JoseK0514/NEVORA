@@ -82,10 +82,11 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-editor__acts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-8); }
 :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-editor__acts > .b-btn { min-height: 44px; }
 
-/* Under 1024px (phones, and tablets where the card is narrow) each person is a stacked card: the row number and the
- * Fix button on the first line, then the person, the role and location, the contact and the status with its problems.
- * The header row stays for screen readers only; the cells keep their table roles. */
-@media (max-width: 1023px) {
+/* Each person is a stacked card: the row number and the Fix button on the first line, then the person, the role and
+ * location, the contact and the status with its problems. The header row stays for screen readers only; the cells keep
+ * their table roles. Package X (Nov 23, 2026): at every width, since the import sits in the narrow sheet card (about
+ * 500px at 1440), where six columns broke names, phones and emails mid-word ("Santiag/o", "787-555-/0141"). */
+@media all {
   :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-table, :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-table tr { display: block; }
   :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-table thead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   :is(#c-root, html) body .app-shell[data-nv-b] .rimp .rimp-table tbody { display: grid; gap: 10px; }
