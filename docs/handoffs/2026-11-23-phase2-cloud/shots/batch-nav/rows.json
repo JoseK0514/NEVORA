@@ -1,0 +1,1298 @@
+[
+ {
+  "id": "B2-owner",
+  "row": "B2",
+  "page": "More (phone menu) (Owner)",
+  "section": "Home and navigation",
+  "note": "Owner and company-wide Manager menu: profile, then Insights/Updates/My pay, Settings and Help, then Sign out. Direction B at every width; one button style; edges line up with the band.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B2-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B2-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B2-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "B2: label-content-name-mismatch on the profile row (screen-reader name differs from visible text)."
+  ]
+ },
+ {
+  "id": "B2-manager",
+  "row": "B2",
+  "page": "More (phone menu) (Manager)",
+  "section": "Home and navigation",
+  "note": "Owner and company-wide Manager menu: profile, then Insights/Updates/My pay, Settings and Help, then Sign out. Direction B at every width; one button style; edges line up with the band.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B2-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B2-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B2-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "B2: label-content-name-mismatch on the profile row (screen-reader name differs from visible text)."
+  ]
+ },
+ {
+  "id": "B2-loc-manager",
+  "row": "B2",
+  "page": "More (phone menu) (Location Manager)",
+  "section": "Home and navigation",
+  "note": "Location Manager menu: profile, My pay, Help, Sign out. Clean, but the profile line says “Manager · Northside Café & Bakery” and never names Condado, the one place Daniel works.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B2-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B2-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B2-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "B2 Mℓ: the place Daniel works (Condado) isn’t on the profile line; needs the location name the page doesn’t read today (no new read added here)."
+  ],
+  "endSweep": [
+   "B2: label-content-name-mismatch on the profile row (screen-reader name differs from visible text)."
+  ]
+ },
+ {
+  "id": "B2-lead",
+  "row": "B2",
+  "page": "More (phone menu) (Lead)",
+  "section": "Home and navigation",
+  "note": "Employee and Lead More: profile with work locations, Your work, Help and legal, Sign out. Direction B; at 1440 the profile sits in the band with Profile and settings as its pill.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B2-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B2-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B2-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B2-employee",
+  "row": "B2",
+  "page": "More (phone menu) (Employee)",
+  "section": "Home and navigation",
+  "note": "Employee and Lead More: profile with work locations, Your work, Help and legal, Sign out. Direction B; at 1440 the profile sits in the band with Profile and settings as its pill.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B2-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B2-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B2-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B4-owner",
+  "row": "B4",
+  "page": "Things to do (Owner)",
+  "section": "Home and navigation",
+  "note": "Owner’s Things to do: open shifts, time corrections, time off, shift requests, can’t work, timecards. Long but each row is one item; the band count and the “All 14” filter repeat the same total (set on purpose in reviews F5 and MG-005, so left for Jose).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B4-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B4-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B4-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "B4: band “14 things need you” and filter “All 14” repeat one count; card titles repeat the filter counts (Open shifts 2 / Shifts 2). Reviews F5 and MG-005 chose this; needs Jose’s call before changing."
+  ],
+  "endSweep": [
+   "B4: 21 label-content-name-mismatch nodes (row actions); 2 colour-contrast nodes at 1440.",
+   "B4 Owner at 768: “Couldn’t check the schedule” on 5 time off rows in this run (staffing check read failed; see Manager desktop note)."
+  ]
+ },
+ {
+  "id": "B4-manager",
+  "row": "B4",
+  "page": "Things to do (Manager)",
+  "section": "Home and navigation",
+  "note": "Company-wide Manager: same list as the Owner at 390 and 768. At 1440 this run showed “Things to do didn’t load” because /api/manager/action-center failed while Elena had three sessions open (phone, tablet, desktop); it failed the same way in the development run.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B4-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B4-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B4-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "B4 M 1440: “Things to do didn’t load” in both runs. Server log: server_request_error on /api/manager/action-center while the same person had 2 other live sessions. Server read, outside this package; needs a check of the per-person lock under concurrent sessions."
+  ],
+  "endSweep": [
+   "B4: band count and “All” count repeat (see Owner)."
+  ]
+ },
+ {
+  "id": "B4-loc-manager",
+  "row": "B4",
+  "page": "Things to do (Location Manager)",
+  "section": "Home and navigation",
+  "note": "Location Manager now gets the real Things to do (the Nov 22 double “no access” notice is gone): Condado’s open shift with Find cover, plus Time off requests and Later and done.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B4-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B4-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B4-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "B4 Mℓ: 4 label-content-name-mismatch nodes."
+  ]
+ },
+ {
+  "id": "B4-lead",
+  "row": "B4",
+  "page": "Things to do (Lead)",
+  "section": "Home and navigation",
+  "note": "Lead and Employee are sent to the Requests hub (redirect works); these shots are that page.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B4-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B4-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B4-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B4-employee",
+  "row": "B4",
+  "page": "Things to do (Employee)",
+  "section": "Home and navigation",
+  "note": "Lead and Employee are sent to the Requests hub (redirect works); these shots are that page.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B4-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B4-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B4-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B5-owner",
+  "row": "B5",
+  "page": "Requests hub (Owner)",
+  "section": "Home and navigation",
+  "note": "Managers see one card: “This Requests page is for employees” with Open Things to do. Direction B, one button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B5-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B5-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B5-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B5-manager",
+  "row": "B5",
+  "page": "Requests hub (Manager)",
+  "section": "Home and navigation",
+  "note": "Managers see one card: “This Requests page is for employees” with Open Things to do. Direction B, one button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B5-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B5-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B5-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B5-loc-manager",
+  "row": "B5",
+  "page": "Requests hub (Location Manager)",
+  "section": "Home and navigation",
+  "note": "Managers see one card: “This Requests page is for employees” with Open Things to do. Direction B, one button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B5-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B5-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B5-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B5-lead",
+  "row": "B5",
+  "page": "Requests hub (Lead)",
+  "section": "Home and navigation",
+  "note": "Employee and Lead Requests: Waiting and Needs your answer in the band, then Waiting, Decided and Shift requests cards. Direction B. The band’s “Waiting 5” and the card “Waiting 5” repeat one count.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B5-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B5-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B5-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "B5 L/E: “Waiting 5” in the band tile and as the Waiting card’s title and count. Approved Employee Requests layout, so left for Jose."
+  ],
+  "endSweep": [
+   "B5: 3–8 label-content-name-mismatch nodes on request rows.",
+   "B5 Lead 1440 (B4 redirect shot only): first load showed the error card while three sessions of the same person were open; the next load was fine."
+  ]
+ },
+ {
+  "id": "B5-employee",
+  "row": "B5",
+  "page": "Requests hub (Employee)",
+  "section": "Home and navigation",
+  "note": "Employee and Lead Requests: Waiting and Needs your answer in the band, then Waiting, Decided and Shift requests cards. Direction B. The band’s “Waiting 5” and the card “Waiting 5” repeat one count.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B5-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B5-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B5-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "B5 L/E: “Waiting 5” in the band tile and as the Waiting card’s title and count. Approved Employee Requests layout, so left for Jose."
+  ],
+  "endSweep": [
+   "B5: 3–8 label-content-name-mismatch nodes on request rows.",
+   "B5 Lead 1440 (B4 redirect shot only): first load showed the error card while three sessions of the same person were open; the next load was fine."
+  ]
+ },
+ {
+  "id": "B9-owner",
+  "row": "B9",
+  "page": "Help (Owner)",
+  "section": "Home and navigation",
+  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B9-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B9-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B9-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "B9: 1 label-content-name-mismatch on Email support.",
+   "B9: the reply-times paragraph is 3–4 lines on phones; it is support wording, so it stays word for word."
+  ]
+ },
+ {
+  "id": "B9-manager",
+  "row": "B9",
+  "page": "Help (Manager)",
+  "section": "Home and navigation",
+  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B9-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B9-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B9-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "B9: 1 label-content-name-mismatch on Email support.",
+   "B9: the reply-times paragraph is 3–4 lines on phones; it is support wording, so it stays word for word."
+  ]
+ },
+ {
+  "id": "B9-loc-manager",
+  "row": "B9",
+  "page": "Help (Location Manager)",
+  "section": "Home and navigation",
+  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B9-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B9-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B9-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "B9: 1 label-content-name-mismatch on Email support.",
+   "B9: the reply-times paragraph is 3–4 lines on phones; it is support wording, so it stays word for word."
+  ]
+ },
+ {
+  "id": "B9-lead",
+  "row": "B9",
+  "page": "Help (Lead)",
+  "section": "Home and navigation",
+  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B9-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B9-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B9-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "B9: 1 label-content-name-mismatch on Email support.",
+   "B9: the reply-times paragraph is 3–4 lines on phones; it is support wording, so it stays word for word."
+  ]
+ },
+ {
+  "id": "B9-employee",
+  "row": "B9",
+  "page": "Help (Employee)",
+  "section": "Home and navigation",
+  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B9-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B9-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B9-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "B9: 1 label-content-name-mismatch on Email support.",
+   "B9: the reply-times paragraph is 3–4 lines on phones; it is support wording, so it stays word for word."
+  ]
+ },
+ {
+  "id": "B10-manager",
+  "row": "B10",
+  "page": "Restricted (Manager)",
+  "section": "Home and navigation",
+  "note": "“That page is for Owners” with “Ask your Owner if you need access.” and Go to Home. One card, one button; nothing repeated.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B10-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B10-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B10-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B10-loc-manager",
+  "row": "B10",
+  "page": "Restricted (Location Manager)",
+  "section": "Home and navigation",
+  "note": "“That page is for Owners” with “Ask your Owner if you need access.” and Go to Home. One card, one button; nothing repeated.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B10-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B10-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B10-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B10-lead",
+  "row": "B10",
+  "page": "Restricted (Lead)",
+  "section": "Home and navigation",
+  "note": "“That page is for Owners and Managers”, the same one card and Go to Home. The title wraps to two lines on phones without clipping.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B10-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B10-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B10-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B10-employee",
+  "row": "B10",
+  "page": "Restricted (Employee)",
+  "section": "Home and navigation",
+  "note": "“That page is for Owners and Managers”, the same one card and Go to Home. The title wraps to two lines on phones without clipping.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B10-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B10-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B10-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B11-owner",
+  "row": "B11",
+  "page": "Page not found (Owner)",
+  "section": "Home and navigation",
+  "note": "Signed-in 404 inside the app: “This page doesn’t exist”, Go to Home (teal) and Open Schedule (text link). Same at every width and role.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B11-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B11-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B11-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B11-manager",
+  "row": "B11",
+  "page": "Page not found (Manager)",
+  "section": "Home and navigation",
+  "note": "Signed-in 404 inside the app: “This page doesn’t exist”, Go to Home (teal) and Open Schedule (text link). Same at every width and role.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B11-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B11-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B11-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B11-loc-manager",
+  "row": "B11",
+  "page": "Page not found (Location Manager)",
+  "section": "Home and navigation",
+  "note": "Signed-in 404 inside the app: “This page doesn’t exist”, Go to Home (teal) and Open Schedule (text link). Same at every width and role.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B11-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B11-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B11-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B11-lead",
+  "row": "B11",
+  "page": "Page not found (Lead)",
+  "section": "Home and navigation",
+  "note": "Signed-in 404 inside the app: “This page doesn’t exist”, Go to Home (teal) and Open Schedule (text link). Same at every width and role.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B11-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B11-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B11-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B11-employee",
+  "row": "B11",
+  "page": "Page not found (Employee)",
+  "section": "Home and navigation",
+  "note": "Signed-in 404 inside the app: “This page doesn’t exist”, Go to Home (teal) and Open Schedule (text link). Same at every width and role.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B11-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B11-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B11-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C5-owner",
+  "row": "C5",
+  "page": "Find cover (who can cover) (Owner)",
+  "section": "Schedule",
+  "note": "Capture only (another agent is fixing Find cover): open shift card, Who can cover with three people and Best fit, Assign, and the review note.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C5-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C5-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C5-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "C5: owned by the Find cover agent; not gate-checked here."
+  ]
+ },
+ {
+  "id": "C5-manager",
+  "row": "C5",
+  "page": "Find cover (who can cover) (Manager)",
+  "section": "Schedule",
+  "note": "Capture only (another agent is fixing Find cover): open shift card, Who can cover with three people and Best fit, Assign, and the review note.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C5-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C5-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C5-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "C5: owned by the Find cover agent; not gate-checked here."
+  ]
+ },
+ {
+  "id": "C5-loc-manager",
+  "row": "C5",
+  "page": "Find cover (who can cover) (Location Manager)",
+  "section": "Schedule",
+  "note": "Capture only: Daniel’s Find cover for Condado’s open shift opens (not a notice).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C5-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C5-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C5-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "C5: owned by the Find cover agent."
+  ]
+ },
+ {
+  "id": "C6-owner",
+  "row": "C6",
+  "page": "Build and publish (Owner)",
+  "section": "Schedule",
+  "note": "Build and publish with the whole week published. Fixed here: “Published” showed four times (week pill, a pill on each location, and a closing line); now the week says it once and each location keeps its shift count. Phone keeps the sheet bar (Done and title) by design.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C6-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C6-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C6-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "C6: the card’s bottom padding is 29px against 20px at the top once the closing line is gone (rows carry 12px each); worth a look in the end sweep."
+  ]
+ },
+ {
+  "id": "C6-manager",
+  "row": "C6",
+  "page": "Build and publish (Manager)",
+  "section": "Schedule",
+  "note": "Build and publish with the whole week published. Fixed here: “Published” showed four times (week pill, a pill on each location, and a closing line); now the week says it once and each location keeps its shift count. Phone keeps the sheet bar (Done and title) by design.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C6-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C6-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C6-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "C6: the card’s bottom padding is 29px against 20px at the top once the closing line is gone (rows carry 12px each); worth a look in the end sweep."
+  ]
+ },
+ {
+  "id": "C6-loc-manager",
+  "row": "C6",
+  "page": "Build and publish (Location Manager)",
+  "section": "Schedule",
+  "note": "Build and publish with the whole week published. Fixed here: “Published” showed four times (week pill, a pill on each location, and a closing line); now the week says it once and each location keeps its shift count. Phone keeps the sheet bar (Done and title) by design.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C6-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C6-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C6-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "C6: the card’s bottom padding is 29px against 20px at the top once the closing line is gone (rows carry 12px each); worth a look in the end sweep."
+  ]
+ },
+ {
+  "id": "C11-owner",
+  "row": "C11",
+  "page": "Availability agreement (Owner)",
+  "section": "Schedule",
+  "note": "Owners and Managers are redirected to team Availability (C10, Schedule tools package); these shots are that page.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C11-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C11-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C11-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C11-manager",
+  "row": "C11",
+  "page": "Availability agreement (Manager)",
+  "section": "Schedule",
+  "note": "Owners and Managers are redirected to team Availability (C10, Schedule tools package); these shots are that page.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C11-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C11-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C11-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C11-loc-manager",
+  "row": "C11",
+  "page": "Availability agreement (Location Manager)",
+  "section": "Schedule",
+  "note": "Location Manager is redirected to team Availability, which shows “Company-wide access needed” with a sentence about access. That page belongs to the Schedule tools package (C10).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C11-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C11-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C11-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "C11 Mℓ: lands on C10’s “Company-wide access needed” card with an access paragraph (Jose rule: no paragraphs about access). Owned by C10."
+  ],
+  "endSweep": []
+ },
+ {
+  "id": "C11-lead",
+  "row": "C11",
+  "page": "Availability agreement (Lead)",
+  "section": "Schedule",
+  "note": "Agreed times for the Lead and Employee: “Nothing agreed yet”, one sentence, Ask for agreed times. The Lead’s copy loads now (it failed in the Nov 22 sweep).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C11-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C11-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C11-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C11-employee",
+  "row": "C11",
+  "page": "Availability agreement (Employee)",
+  "section": "Schedule",
+  "note": "Agreed times for the Lead and Employee: “Nothing agreed yet”, one sentence, Ask for agreed times. The Lead’s copy loads now (it failed in the Nov 22 sweep).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C11-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C11-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C11-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C13-owner",
+  "row": "C13",
+  "page": "Posted open shifts (Owner)",
+  "section": "Schedule",
+  "note": "Posted open shifts for managers: Post an open shift form and the postings card. Fixed here: the empty line drops “authorized”: “No posted shifts at your locations yet.”",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C13-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C13-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C13-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C13-manager",
+  "row": "C13",
+  "page": "Posted open shifts (Manager)",
+  "section": "Schedule",
+  "note": "Posted open shifts for managers: Post an open shift form and the postings card. Fixed here: the empty line drops “authorized”: “No posted shifts at your locations yet.”",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C13-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C13-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C13-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C13-loc-manager",
+  "row": "C13",
+  "page": "Posted open shifts (Location Manager)",
+  "section": "Schedule",
+  "note": "Posted open shifts for managers: Post an open shift form and the postings card. Fixed here: the empty line drops “authorized”: “No posted shifts at your locations yet.”",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C13-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C13-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C13-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C13-lead",
+  "row": "C13",
+  "page": "Posted open shifts (Lead)",
+  "section": "Schedule",
+  "note": "Fixed here: the Employee and Lead page moved off the older quiet frame onto the same frame as the managers’ page. On phones the empty card had no gutter and ran edge to edge; now it sits 16px in, lined up with the band title. Claimable shifts would show as kit rows with a quiet Claim (unit-tested; no claimable postings in this data).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C13-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C13-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C13-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "C13 L/E phone: card gutter is 16px here against 14px on other employee pages (internally aligned with the band)."
+  ]
+ },
+ {
+  "id": "C13-employee",
+  "row": "C13",
+  "page": "Posted open shifts (Employee)",
+  "section": "Schedule",
+  "note": "Fixed here: the Employee and Lead page moved off the older quiet frame onto the same frame as the managers’ page. On phones the empty card had no gutter and ran edge to edge; now it sits 16px in, lined up with the band title. Claimable shifts would show as kit rows with a quiet Claim (unit-tested; no claimable postings in this data).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C13-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C13-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C13-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "C13 L/E phone: card gutter is 16px here against 14px on other employee pages (internally aligned with the band)."
+  ]
+ },
+ {
+  "id": "C14-loc-manager",
+  "row": "C14",
+  "page": "Ask for a swap (Location Manager)",
+  "section": "Schedule",
+  "note": "Location Manager is sent to Team shift requests, which shows “Company-wide access needed” (C12 page, Schedule tools package).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C14-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C14-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C14-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "C14/C15 Mℓ: land on C12’s “Company-wide access needed” card with an access paragraph. Owned by C12."
+  ],
+  "endSweep": []
+ },
+ {
+  "id": "C14-lead",
+  "row": "C14",
+  "page": "Ask for a swap (Lead)",
+  "section": "Schedule",
+  "note": "Swap shift with a chosen shift. Fixed here: the stray line above “Your shift” at the card’s top edge; the inline Refresh that opened a whole-line gap on phones; “Offer this shift for cover instead” now ends near Send’s right edge on desktop. These shots are from the development build after those fixes (the production run had the earlier version).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C14-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C14-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C14-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "C14 desktop: “Offer this shift for cover instead” still ends 8px inside Send’s right edge.",
+   "C14: “Some teammates’ shifts couldn’t be checked.” appears in this fictional data for both people (a partial read, not a layout issue).",
+   "C14: Refresh is inline text (18px tall) with a 44px hit area from its ::after."
+  ]
+ },
+ {
+  "id": "C14-employee",
+  "row": "C14",
+  "page": "Ask for a swap (Employee)",
+  "section": "Schedule",
+  "note": "Swap shift with a chosen shift. Fixed here: the stray line above “Your shift” at the card’s top edge; the inline Refresh that opened a whole-line gap on phones; “Offer this shift for cover instead” now ends near Send’s right edge on desktop. These shots are from the development build after those fixes (the production run had the earlier version).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C14-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C14-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C14-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "C14 desktop: “Offer this shift for cover instead” still ends 8px inside Send’s right edge.",
+   "C14: “Some teammates’ shifts couldn’t be checked.” appears in this fictional data for both people (a partial read, not a layout issue).",
+   "C14: Refresh is inline text (18px tall) with a 44px hit area from its ::after."
+  ]
+ },
+ {
+  "id": "C15-loc-manager",
+  "row": "C15",
+  "page": "Can’t work (call out) (Location Manager)",
+  "section": "Schedule",
+  "note": "Location Manager is sent to Team shift requests (“Company-wide access needed”, C12 page).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C15-loc-manager-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C15-loc-manager-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C15-loc-manager-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C15-lead",
+  "row": "C15",
+  "page": "Can’t work (call out) (Lead)",
+  "section": "Schedule",
+  "note": "Can’t work this shift: the shift, Reason, an optional note, who gets it, and the red Send to manager. Fixed here: the stray line at the card’s top edge. Development-build shots after the fix.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C15-lead-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C15-lead-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C15-lead-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C15-employee",
+  "row": "C15",
+  "page": "Can’t work (call out) (Employee)",
+  "section": "Schedule",
+  "note": "Can’t work this shift: the shift, Reason, an optional note, who gets it, and the red Send to manager. Fixed here: the stray line at the card’s top edge. Development-build shots after the fix.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C15-employee-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C15-employee-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C15-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
