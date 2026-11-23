@@ -17,6 +17,8 @@ import { workspaceNow } from "@/lib/action-center/inbox";
 import { needsYou, needsYouSentence, type NeedsYou } from "@/lib/action-center/needs-you";
 import { needsYouTotal } from "@/lib/action-center/review-routing";
 import { reviewCopy } from "@/components/review-details/copy";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { PREMIUM_HOME_COPY } from "./premium-home-copy";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor, ClockMonitorEmployee } from "@/lib/time-clock";
@@ -113,6 +115,7 @@ export type PremiumHomeSurfaceProps = PremiumHomeProps & {
 /** Presentation only, so the fictional preview can show Home without a session. */
 export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceName, setup, setupCard = false, billing, setupHoldsItems = false, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
   actions, actionsConnection, onRetryActions, liveReaders, offline = false, nextPay, payrollStatus, corporate = false, homeB }: PremiumHomeSurfaceProps) {
+  const lang = usePortalLang(), words = PREMIUM_HOME_COPY[lang];
   const readyToday = today?.state === "ready" ? today : null;
   // r4 QA: Home remembers whether the Owner setup card shows, so the next route placeholder starts with its shape.
   const hasSetup = !!setup;
@@ -127,11 +130,11 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
   // Corporate Home names its card ("5 things to do today."); the older looks keep their line.
   // Phase 4 (U03): with clock-ins unread or review facts missing, the count is a lower bound and a zero is not all-clear.
   const total = value ? needsYouTotal(value, { clockInsUnavailable: todayFailed }) : null;
-  const summary = value && total ? corporate ? toDoSentence(value.count, total.exact) : total.exact ? needsYouSentence(value.count) : value.count ? `${reviewCopy().needYou(value.count, false)} today.` : `${reviewCopy().notAllChecked}.`
-    : actionsConnection === "offline" ? "You’re offline."
-    : actionsConnection === "paused" ? "Paused while you’re away."
-    : actionsConnection === "unavailable" || actionsConnection === "access_lost" || today?.state === "unavailable" ? "Couldn’t load everything."
-    : "Checking what needs you…";
+  const summary = value && total ? corporate ? toDoSentence(value.count, total.exact) : total.exact ? needsYouSentence(value.count) : value.count ? words.today(reviewCopy(lang).needYou(value.count, false)) : `${reviewCopy(lang).notAllChecked}.`
+    : actionsConnection === "offline" ? words.offline
+    : actionsConnection === "paused" ? words.paused
+    : actionsConnection === "unavailable" || actionsConnection === "access_lost" || today?.state === "unavailable" ? words.failed
+    : words.checking;
 
   // WR-64 / ST-28: once Home has shown what needs you, a pause, an offline spell or a failed refresh keeps the Needs you
   // column at its last height, so nothing below moves.
