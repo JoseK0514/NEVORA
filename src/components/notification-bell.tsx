@@ -3,6 +3,8 @@ import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useEffect,useRef,useState} from 'react';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {SHELL_WORDS} from './shell-copy';
 import {createPrivateSnapshotController,type PrivatePanelState} from '../lib/private-snapshot-client';
 import {parseEmployeeView,type EmployeeViewSnapshot} from '../lib/employee-view';
 
@@ -39,8 +41,8 @@ function useNotificationsSnapshot(authority:string){
 export function NotificationBell({authority}:{authority:string}) {
  const pathname=usePathname();
  const {ready,count,partial,refreshing}=useNotificationsSnapshot(authority);
- const state={refreshing};
- const label=ready?`Notifications, ${partial?'at least ':''}${count} unread in your recent inbox`:state.refreshing?'Notifications, checking updates':'Notifications, current count unavailable';
+ const state={refreshing},W=SHELL_WORDS[usePortalLang()];
+ const label=ready?W.bellUnread(count??0,!!partial):state.refreshing?W.bellChecking:W.bellUnknown;
  return <Link href="/app/notifications" className="portal-notification-bell" aria-current={pathname==='/app/notifications'?'page':undefined} aria-label={label} title={label} data-state={ready?'ready':state.refreshing?'loading':'unavailable'}>
   {/* Phase 9 (Nov 18, 2026): one bell, Phosphor Bell bold at the 20px control size, at every width (desktop drew
     * BellSimple and phones Bell). */}
@@ -51,6 +53,6 @@ export function NotificationBell({authority}:{authority:string}) {
 
 /** v5 One look (More page): the unread count beside Notifications, from the same private snapshot; nothing when zero. */
 export function NotificationCount({authority}:{authority:string}) {
- const {count,partial}=useNotificationsSnapshot(authority);
- return typeof count==='number'&&count>0?<span className="q-count" aria-label={`${partial?'at least ':''}${count} unread`}>{count}{partial?'+':''}</span>:null;
+ const {count,partial}=useNotificationsSnapshot(authority),W=SHELL_WORDS[usePortalLang()];
+ return typeof count==='number'&&count>0?<span className="q-count" aria-label={W.bellUnreadVisible(count,!!partial)}>{count}{partial?'+':''}</span>:null;
 }

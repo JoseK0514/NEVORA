@@ -2,6 +2,11 @@
 
 import { useEffect, type ReactNode } from "react";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { usePortalLang, type PortalLang } from "@/lib/i18n/portal-lang";
+import { VALIDATION_WORDS } from "./shell-copy";
+
+/** The person's language for the messages built in the listeners below (set by FormValidation, which the shell renders once). */
+let validationLang: PortalLang = "en";
 
 /** Inline validation for every portal form, built on native constraints
  * (required, pattern, min/max, type). Errors appear under the field once the
@@ -37,22 +42,22 @@ function labelText(field: Field) {
 }
 
 function message(field: Field) {
-  const v = field.validity, label = labelText(field);
+  const v = field.validity, label = labelText(field), V = VALIDATION_WORDS[validationLang];
   if (v.valueMissing) {
     // Review Nov 11 (OW-023): a field may say its own sentence ("Enter a first name"): the label alone cannot give the
     // article. Fields without one keep the sentence built from their label.
     if (field.dataset.missing) return field.dataset.missing;
-    if (field instanceof HTMLSelectElement) return label ? `Choose ${label}` : "Choose an option";
-    if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio")) return "Select this to continue";
-    return label ? `Enter ${label}` : "Fill in this field";
+    if (field instanceof HTMLSelectElement) return label ? V.choose(label) : V.chooseOption;
+    if (field instanceof HTMLInputElement && (field.type === "checkbox" || field.type === "radio")) return V.selectToContinue;
+    return label ? V.enter(label) : V.fillIn;
   }
-  if (v.typeMismatch && field instanceof HTMLInputElement && field.type === "email") return "Enter an email like name@example.com";
-  if (v.tooShort && "minLength" in field) return `Use at least ${field.minLength} characters`;
+  if (v.typeMismatch && field instanceof HTMLInputElement && field.type === "email") return V.email;
+  if (v.tooShort && "minLength" in field) return V.atLeast(field.minLength);
   // Review 30 (D03): a field may word its own floor ("Enter a date in 1900 or later"); a date's raw minimum reads as
   // "Use 1900-01-01 or more" while the field shows mm/dd/yyyy.
   if (v.rangeUnderflow && field.dataset.underflow) return field.dataset.underflow;
-  if (v.rangeUnderflow && field instanceof HTMLInputElement) return `Use ${field.min} or more`;
-  if (v.rangeOverflow && field instanceof HTMLInputElement) return `Use ${field.max} or less`;
+  if (v.rangeUnderflow && field instanceof HTMLInputElement) return V.orMore(field.min);
+  if (v.rangeOverflow && field instanceof HTMLInputElement) return V.orLess(field.max);
   if (v.patternMismatch && field.title) return field.title;
   return field.validationMessage;
 }
@@ -156,6 +161,8 @@ export function revealField(field: HTMLElement) {
 }
 
 export function FormValidation() {
+  const lang = usePortalLang();
+  useEffect(() => { validationLang = lang; }, [lang]);
   useEffect(() => {
     let firstInvalid: Field | null = null;
     // Final verification F (F06): a message shown while a pointer is pressed (leaving a field by pressing Next) pushed the

@@ -158,6 +158,16 @@
  * New update on a phone (the kit draws both at 36 and 40px). */
 @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients .b-rem :is(.b-rem__go, .b-rem__act) { height: auto !important; min-height: 44px !important; }
+  /* Prodcheck (Nov 23, 2026): a row's state in words ("This changed while you were looking." with Refresh) wraps inside
+   * the card. At 390 with 200% text it stayed on one line and the card cut it off, Refresh with it. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients :is(.b-rem-slot, .b-rem) { max-width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients :is(.b-rem__tx, .b-rem__tx > span) { white-space: normal !important; min-width: 0 !important; }
+  /* The row's trail (flex: none) held the words at their full length. On phones a trail with words takes its own line
+   * under the name, as wide as the row, and the words and their button wrap inside it. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients .b-row__trail:has(.b-rem__tx) { flex: 1 1 100% !important; min-width: 0 !important; max-width: 100% !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients .b-rem:has(.b-rem__tx) { flex-wrap: wrap !important; justify-content: flex-start !important; }
+  }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2) .c-page.mb-page > .b-screen .b-hero .b-seg > * { height: auto !important; min-height: 44px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.mb-page > .b-screen .b-title__right .b-btn { min-height: 44px !important; }
 }
