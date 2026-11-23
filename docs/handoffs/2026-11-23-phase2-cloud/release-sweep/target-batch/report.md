@@ -64,7 +64,7 @@ batch plus other sessions' changes, mainly accessible names and 200%-text rules)
 Each at 320, 390, 768, 1024 and 1440: 100 views per side, 200 in all.
 
 **Default-size pixel diff:** nothing moves beyond live data, with one drawn change.
-- **The rail badge at 1024:** the Things to do count ("16") on the rail icon shows 2px more at its right edge. Before, the rail nav's sideways clip cut the badge's rounded end at x=56; now that the nav is 2px wider on each side, it's complete. That's 30 pixels per page, all inside the rail. Icons, badge position, content column and page don't move. Shot: `shots/final-rail-badge-1024-before-after.png`. The lead was told straight away.
+- **The rail badge at 1024:** the Things to do count ("16") on the rail icon shows 2px more at its right edge. Before, the rail nav's sideways clip cut the badge's rounded end at x=56; now that the nav is 2px wider on each side, it's complete. That's 30 pixels per page, all inside the rail. Icons, badge position, content column and page don't move. Shot: `shots/final-rail-badge-1024-before-after.png`. The lead was told straight away and kept it: it is the one intended drawn change at 1024 (a badge that is no longer clipped is a fix, not a regression).
 - **Live data only, each checked by eye:**
   - the bell's unread dot (768 and 1440);
   - Timecards' running minutes;
