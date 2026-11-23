@@ -95,3 +95,22 @@ Tip `22293552`, merged at `4ed588b1`.
 - **Sidebar links at 1440 (still under the spacing exception):** `aside.sidebar .nav-link::after` does render, and the release-batch rule overrides the `display: none` in `owner-b-desktop.css`. The links are only about 2px apart, so each ring runs into its neighbour's in the gap and the later link paints over the earlier. Reach stops at about 42, and 40 for the first and last links where the nav's own edge clips. There's no free space for 44 without overlapping targets or moving the links.
 
 **Checks:** the `src/components` and `src/app` suites had 4951 passed and 0 failed; tsc passed.
+
+## Final two (Jose, before release): Time off segments and the Publish explain
+Tip `7201e71c`. Code: `397f37d0`. Measured with QA's reach test (elementFromPoint at ±21.5px), production build, touch emulation.
+
+- **Time off, empty state (`/app/requests`):** "You're all caught up" overlapped the segment pills by 14px on phones.
+  - **Cause:** `owner-b-requests.css` forced `margin-top: 0` on the empty card, overriding the kit's gap after a segment row (34px on phones, 44px from 768px).
+  - **Fix:** the empty card now takes that gap when it follows a segment row, so it sits exactly where the full list does: 20px below the pills at 320 and 390, 56px at 768 and 1440.
+  - **Result:** 0 misses at 320, 390, 768 and 1440. Nothing overflows or clips at 390 with 200% text.
+  - **Full list:** pixel-identical at 320 and 390. At 768 and 1440 the only difference is a 14×19px live figure inside the list.
+  - **Shots:** `shots/timeoff-empty-390-before.webp` and `-after.webp`.
+  - Raising the segments above the card would also have passed the test, but moving the card fixes the drawn overlap itself, so the simpler change was kept.
+- **"What this measures" on Build and publish (draft week):** the centred ring had pill-rounded corners, and hit-testing follows rounded corners, so QA's diagonal points fell outside the tap area.
+  - **Fix:** the transparent ring now has square corners (`b-review-details.css`), and the summary sits above the row text and the Publish form (`z-index`).
+  - **Result:** 0 misses in the draft state, with empty and full lists. The 390 pixel diff is identical.
+  - **Shots:** `shots/publish-draft-390-*.webp`.
+  - **Fixture:** the draft week comes from a scratch-harness switch that leaves next week unpublished, opened at `?week=2026-11-30`.
+- **Not in this brief:** with a full list at 768 and 1440, the desktop back link "‹ Things to do" misses at its top edge, where the point lands on `main.page-frame`.
+
+**Checks:** the `src/components` and `src/app` suites had 4952 passed and 0 failed; tsc passed. `target-size-44-desk.test.ts` is extended.
