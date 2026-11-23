@@ -48,9 +48,9 @@ describe("payroll action feedback", () => {
   });
   it("no toast repeats a result the screen draws inline; a screen without the card keeps its toast", () => {
     const hook = readFileSync(join(__dirname, "use-payroll.ts"), "utf8");
-    expect(hook).toContain("if (!inlineResult) toast(confirmedMessage(next));");
+    expect(hook).toContain("if (!inlineResult) toast(confirmedMessage(next, lang));");
     expect(hook).not.toContain("Pay statements shared");
-    expect(hook).toContain("if (!inlineResult) toast('Saved');");
+    expect(hook).toContain("if (!inlineResult) toast(t.saved);");
     expect(hook.match(/toast\(/g)).toHaveLength(2);
     // The native pay setup has no Feedback card, so it keeps the toast.
     expect(readFileSync(join(__dirname, "native-payroll-config.tsx"), "utf8")).toContain(":native-profiles`,false)");

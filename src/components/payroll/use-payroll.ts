@@ -3,14 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PayrollReceipt, PayrollRunCommand, PayrollSettingsCommand } from '@/lib/payroll/contracts';
 import type { NativeProfileCommand } from '@/lib/payroll/native/contracts';
-import { PayrollRequestError, payrollRequest, readReceipt } from './api';
+import { PayrollRequestError, payrollErrorText, payrollRequest, readReceipt } from './api';
+import { usePayrollLang, type PayrollLang } from './payroll-lang';
+import { statusCopy } from './copy/status';
 import { toast } from '../toaster';
 
 type Command = PayrollRunCommand | PayrollSettingsCommand | NativeProfileCommand;
 type WithoutOperation<T> = T extends unknown ? Omit<T, 'operationId'> : never;
 
 /** The read failed because the session ended (HTTP 401). */
-export const PAYROLL_SIGNED_OUT = 'Your session ended. Sign in again to see payroll.';
+export const PAYROLL_SIGNED_OUT = statusCopy.en.resource.signedOut;
 
 /**
  * Loads a decoded private payroll resource and ignores superseded responses.
@@ -22,6 +24,8 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const lang = usePayrollLang();
+  const words = statusCopy[lang].resource;
   // Why the read stopped, for callers that explain it: SIGNED_OUT (any 401), FORBIDDEN (any 403), a server code (MODULE_OFF), an HTTP status,
   // NETWORK, UNREADABLE, PAUSED or OFFLINE.
   const [errorCode, setErrorCode] = useState('');
@@ -37,16 +41,16 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
         setData(null);
         // A dropped connection surfaces as the browser's own TypeError ("Failed to fetch"); show the existing words instead.
         // IS-B13: an ended session says so, and the state offers Sign in (PayrollState), not a retry that can't work.
-        setError(failure instanceof PayrollRequestError && failure.status === 401 ? PAYROLL_SIGNED_OUT
-          : failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'Payroll could not load.');
+        setError(failure instanceof PayrollRequestError && failure.status === 401 ? words.signedOut
+          : payrollErrorText(failure, lang, words.couldNotLoad));
         setErrorCode(failure instanceof PayrollRequestError ? (failure.status === 401 ? 'SIGNED_OUT' : failure.status === 403 ? 'FORBIDDEN' : failure.code || String(failure.status)) : failure instanceof TypeError ? 'NETWORK' : 'UNREADABLE');
       }
     } finally { if (generation.current.value === current) setLoading(false); }
-  }, [path, decode]);
+  }, [path, decode, lang, words]);
   useEffect(() => {
     let active = true; const lifecycle = generation.current;
     queueMicrotask(() => { if (active) void reload(); });
-    const clear = () => { lifecycle.value++; setData(null); setLoading(false); setErrorCode(navigator.onLine ? 'PAUSED' : 'OFFLINE'); setError(navigator.onLine ? 'Payroll is paused while this page is hidden. Return to reload current access.' : 'Payroll is unavailable offline. Reconnect to reload current access.'); };
+    const clear = () => { lifecycle.value++; setData(null); setLoading(false); setErrorCode(navigator.onLine ? 'PAUSED' : 'OFFLINE'); setError(navigator.onLine ? words.paused : words.offline); };
     // Review B2 (NV-001): offline with the person still here, the loaded pay stays on screen read-only (in-flight reads are
     // dropped); stepping away still clears.
     // This legacy resource has no finite authority lease. Preserve development's
@@ -63,25 +67,26 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
       window.removeEventListener('pagehide', clear); window.removeEventListener('pageshow', refresh);
       document.removeEventListener('visibilitychange', visible);
     };
-  }, [reload]);
+  }, [reload, words]);
   return { data, loading, error, errorCode, reload };
 }
 
 /** Phase 7 (moments): what the receipt itself confirms, for the shared done state. Publishing only queues the statements
  * (the worker shares them later), so its receipt is "Saved" and never borrows the success mark for "shared". The words
  * are the existing ones; no payroll sentence is new. */
-export function confirmedTitle(command: { action?: string }): string | null {
-  return command.action === 'PUBLISH' ? null : confirmedMessage(command);
+export function confirmedTitle(command: { action?: string }, lang: PayrollLang = 'en'): string | null {
+  return command.action === 'PUBLISH' ? null : confirmedMessage(command, lang);
 }
 /** Toast copy for a receipt-confirmed command; never shown before the receipt. */
-function confirmedMessage(command: { action?: string }) {
+function confirmedMessage(command: { action?: string }, lang: PayrollLang = 'en') {
+  const t = statusCopy[lang].operation;
   switch (command.action) {
-    case 'APPROVE': return 'Payroll approved';
+    case 'APPROVE': return t.approved;
     // Publishing only queues the statements; the worker shares them later. The receipt confirms the save, not the sharing,
     // so it says "Saved" (decided Nov 17, 2026; the old toast said the statements were already shared).
-    case 'PUBLISH': return 'Saved';
-    case 'PAYMENT_EXPORT': return 'Payment file ready';
-    default: return 'Saved';
+    case 'PUBLISH': return t.saved;
+    case 'PAYMENT_EXPORT': return t.paymentReady;
+    default: return t.saved;
   }
 }
 
@@ -111,6 +116,8 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
   const command = useRef<Command | null>(null);
   const reconstructedCommand = useRef(false);
   const inFlight = useRef(false);
+  const lang = usePayrollLang();
+  const t = statusCopy[lang].operation;
 
   const finish = useCallback((id: string) => {
     if (localStorage.getItem(referenceKey) === id) localStorage.removeItem(referenceKey);
@@ -122,18 +129,18 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
     inFlight.current = true; setBusy(true); setError(''); setConfirmed(null);
     try {
       const receipt = readReceipt(await payrollRequest(`/api/payroll/receipts?operationId=${encodeURIComponent(id)}`));
-      if (receipt && receipt.operationId !== id) throw new Error('The returned receipt does not match this action reference. Check the same reference again.');
+      if (receipt && receipt.operationId !== id) throw new Error(t.receiptMismatch);
       if (receipt && receipt.operationId === id) {
-        setReceipt(receipt); finish(id); setMessage('Saved. Check the status below.'); setConfirmed('Saved'); if (!inlineResult) toast('Saved'); await reload();
+        setReceipt(receipt); finish(id); setMessage(t.savedCheck); setConfirmed(t.saved); if (!inlineResult) toast(t.saved); await reload();
       } else {
         setUnconfirmed(true);
-        setMessage('No receipt is available yet. Check this same reference again; the action has not been confirmed.');
+        setMessage(t.noReceipt);
       }
     } catch (failure) {
       if (failure instanceof PayrollRequestError && [401, 403].includes(failure.status)) { setReceipt(null); setUnconfirmed(true); await reload(); }
-      setError(failure instanceof Error ? failure.message : 'The action reference could not be checked.');
+      setError(failure instanceof TypeError ? failure.message : payrollErrorText(failure, lang, t.checkFailed));
     } finally { inFlight.current = false; setBusy(false); }
-  }, [finish, reload, inlineResult]);
+  }, [finish, reload, inlineResult, lang, t]);
   useEffect(() => {
     let active = true;
     queueMicrotask(() => {
@@ -150,24 +157,24 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
     inFlight.current = true; setBusy(true); setError(''); setMessage(''); setConfirmed(null); setReceipt(null); setRevisionConflict(false); setResuming(false); setUnconfirmed(false);
     try {
       const receipt = readReceipt(await payrollRequest(path, next));
-      if (!receipt || receipt.operationId !== next.operationId) throw new Error('The action response is unconfirmed. Check its saved reference.');
-      setReceipt(receipt); finish(next.operationId); setMessage('Saved. Check the status below.'); setConfirmed(confirmedTitle(next)); if (!inlineResult) toast(confirmedMessage(next)); await reload();
+      if (!receipt || receipt.operationId !== next.operationId) throw new Error(t.unconfirmed);
+      setReceipt(receipt); finish(next.operationId); setMessage(t.savedCheck); setConfirmed(confirmedTitle(next, lang)); if (!inlineResult) toast(confirmedMessage(next, lang)); await reload();
     } catch (failure) {
       if (failure instanceof PayrollRequestError && (failure.code === 'OPERATION_CONFLICT' || (reconstructed && [400, 409].includes(failure.status)))) {
         command.current = null; setRetryAvailable(false);
-        setMessage('This reference remains unconfirmed. Check the original action before reconstructing it again; a recorded reference cannot accept changed details.');
+        setMessage(t.stillUnconfirmed);
         await reload();
       }
       else if (failure instanceof PayrollRequestError && [401, 403].includes(failure.status)) { setUnconfirmed(true); setRetryAvailable(true); await reload(); }
       else if (failure instanceof PayrollRequestError && [400, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409); finish(next.operationId); await reload(); }
       else setRetryAvailable(true);
-      setError(failure instanceof Error && !(failure instanceof TypeError) ? failure.message : 'The action response was interrupted. Check its reference.');
+      setError(payrollErrorText(failure, lang, t.interrupted));
     } finally { inFlight.current = false; setBusy(false); }
   };
   const submit = async (input: WithoutOperation<Command>) => {
     if ((reference.current && !resuming) || inFlight.current) return;
     if ('reason' in input && (!input.reason || input.reason.length > 300 || /[\u0000-\u001f\u007f]/.test(input.reason))) {
-      setError('Enter a single-line reason of 1 to 300 characters.'); return;
+      setError(t.reasonInvalid); return;
     }
     const reconstructed = resuming && !!reference.current;
     const operationId = reconstructed ? reference.current! : crypto.randomUUID();
@@ -176,14 +183,14 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
       if (previous && (!reconstructed || previous !== operationId)) { reference.current = previous; setPending(previous); setResuming(false); await check(previous); return; }
       localStorage.setItem(referenceKey, operationId);
     }
-    catch { setError('The browser could not save a recovery reference. Enable browser storage before recording this action.'); return; }
+    catch { setError(t.storageFailed); return; }
     const next = { ...input, operationId } as Command;
     reference.current = operationId; command.current = next; reconstructedCommand.current = reconstructed; setPending(operationId);
     await dispatch(next, reconstructed);
   };
   return { pending, busy, message, confirmed, receipt, error, retryAvailable, revisionConflict, resuming, locked: busy || (!!pending && !resuming),
     resumeAvailable: unconfirmed && !retryAvailable && !busy && !resuming,
-    resume: () => { if (unconfirmed && !command.current && !inFlight.current) { setResuming(true); setError(''); setConfirmed(null); setMessage('Re-enter the original action and details below. Submission will reuse this exact reference; changed details cannot replace a recorded action.'); } },
+    resume: () => { if (unconfirmed && !command.current && !inFlight.current) { setResuming(true); setError(''); setConfirmed(null); setMessage(t.resumePrompt); } },
     pauseResume: () => setResuming(false),
     submit, check: () => check(), retry: () => command.current ? dispatch(command.current, reconstructedCommand.current) : check() };
 }
