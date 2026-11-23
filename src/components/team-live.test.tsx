@@ -32,8 +32,8 @@ it("says nothing for someone with nothing here today when the reads cover only a
 it("reads only the chosen place's shifts when a location Manager filters Team to one place", () => {
   const html = renderToStaticMarkup(<TeamLiveProvider partial locationId="main"><TeamDeskPeople rows={rows} peopleLabel="people" /></TeamLiveProvider>);
   // Ana is clocked in at East, not at Main, so Main's list says nothing about her.
-  expect(html).toContain("Clocked in<b>0</b>");
-  expect(renderToStaticMarkup(<TeamLiveProvider partial locationId="east"><TeamDeskPeople rows={rows} peopleLabel="people" /></TeamLiveProvider>)).toContain("Clocked in<b>1</b>");
+  expect(html).toContain("On the clock<b>0</b>");
+  expect(renderToStaticMarkup(<TeamLiveProvider partial locationId="east"><TeamDeskPeople rows={rows} peopleLabel="people" /></TeamLiveProvider>)).toContain("On the clock<b>1</b>");
 });
 
 // Gaps G24 and G13 (Nov 23, 2026): each count once for every role, and Clear search on phones.
@@ -45,11 +45,11 @@ it("says the clocked-in count once, in the filter, for every role (band and All 
   const html = teamB();
   expect(html).toContain('<p class="b-sub">2 people</p>');
   expect(html).not.toMatch(/· \d+ clocked in|No one clocked in/);
-  expect(html).toContain("Clocked in<b>1</b>");
+  expect(html).toContain("On the clock<b>1</b>");
   expect(html).toMatch(/>All<\/button>/);
   const desk = renderToStaticMarkup(<TeamLiveProvider><TeamDeskPeople rows={rows} peopleLabel="people" /></TeamLiveProvider>);
   expect(desk).toMatch(/>All<\/button>/);
-  expect(desk).toContain("Clocked in<b>1</b>");
+  expect(desk).toContain("On the clock<b>1</b>");
   // The company Team title's live part adds nothing now.
   expect(renderToStaticMarkup(<TeamLiveProvider><TeamWorkingNow /></TeamLiveProvider>)).toBe("");
 });
@@ -62,3 +62,14 @@ it("offers Clear search on phones when a search finds no one, keeping the chosen
   // No search, no button: an empty team is not a search.
   expect(teamB({ people: [], total: 0 })).not.toContain("Clear search");
 });
+
+// DEC3 / G14 (Jose, Nov 23, 2026): the filter names the group ("On the clock") and each row keeps its state, "Clocked in",
+// the word Home, Who's working and the Schedule use; the two words no longer sit one above the other.
+it("DEC3: the filter reads On the clock on phones and desktop, and never Clocked in", () => {
+  expect(teamB()).toMatch(/>On the clock<b>1<\/b><\/button>/);
+  expect(teamB()).not.toMatch(/>Clocked in<b>/);
+  const desk = renderToStaticMarkup(<TeamLiveProvider><TeamDeskPeople rows={rows} peopleLabel="people" /></TeamLiveProvider>);
+  expect(desk).toMatch(/>On the clock<b>1<\/b><\/button>/);
+  expect(desk).not.toMatch(/>Clocked in<b>/);
+});
+

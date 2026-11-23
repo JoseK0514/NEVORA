@@ -251,3 +251,31 @@ describe("payroll scope and reuse", () => {
     expect(refusalFix("REVISION_CONFLICT", [])).toBe("amounts");
   });
 });
+
+// DEC5 (Jose approved option B, Nov 23, 2026): the paid time export's hold card sits under "‹ Time exports", so its line
+// doesn't send people back to Time exports again and its button names what to do there. English and Spanish together.
+describe("DEC5: the hold card says Time exports once", () => {
+  const holds = ["peopleNotReviewed", "peopleChanged", "alreadyComplete"] as const;
+  it("English", () => {
+    const { hold } = payrollImportCopy.en.exp;
+    expect(holds.map(kind => [hold.line({ kind }), hold.action({ kind })])).toEqual([
+      ["Go through everyone on the team for this period, then come back.", "Review who’s included"],
+      ["The export uses exactly the list of who’s included.", "Review who’s included"],
+      ["The server already has a complete record of this period.", "See the files"],
+    ]);
+    for (const kind of holds) expect(`${hold.line({ kind })} ${hold.action({ kind })}`).not.toContain("Time exports");
+    expect(hold.action({ kind: "notFinalized", names: [] })).toBe("Open Timecards");
+    expect(hold.action({ kind: "tooManyPeople" })).toBe("Go to Payroll");
+  });
+  it("Spanish", () => {
+    const { hold } = payrollImportCopy.es.exp;
+    expect(holds.map(kind => [hold.line({ kind }), hold.action({ kind })])).toEqual([
+      ["Repasa a todas las personas del equipo para este período y vuelve aquí.", "Revisar quién está incluido"],
+      ["La exportación usa exactamente la lista de quién está incluido.", "Revisar quién está incluido"],
+      ["El servidor ya tiene un registro completo de este período.", "Ver los archivos"],
+    ]);
+    for (const kind of holds) expect(`${hold.line({ kind })} ${hold.action({ kind })}`).not.toContain("Exportar horas");
+    expect(hold.action({ kind: "notFinalized", names: [] })).toBe("Abrir Hojas de tiempo");
+    expect(hold.action({ kind: "tooManyPeople" })).toBe("Ir a Nómina");
+  });
+});

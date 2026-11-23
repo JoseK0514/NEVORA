@@ -28,7 +28,7 @@ it('keeps employee authorship limited to today’s team without management requi
 });
 it('shows escaped complete editing content and explains version-specific acknowledgements',()=>{
  const html=render({editing,initial:draft});expect(html).toContain('Opening routine');expect(html).toContain('&lt;script&gt;plain text&lt;/script&gt;');
- expect(html).not.toContain('<script>plain text');expect(html).toContain('Previous acknowledgements stay with the version they reviewed.');
+ expect(html).not.toContain('<script>plain text');expect(html).toContain('Earlier confirmations stay with the version people reviewed.');
 });
 it('preserves stale retained editing content while requiring review of the latest version',()=>{
  const html=render({editing,initial:draft,retained:{current:{revisionId:'old-revision',values:{...draft,scopeKind:'LOCATION',locationId:'main',shiftId:'',title:'Retained draft',body:'Retained message',ack:'REQUIRED',expiration:'',useExpiry:false}}}});

@@ -27,7 +27,7 @@ import {ReminderControl,ReminderProvider} from './reminders/reminders';
 
 
 /** TC-B-01: a soft hyphen lets the long word break cleanly at large text sizes instead of clipping. */
-const ACK_WORD='Ac\u00adknowl\u00adedge\u00adment';
+const ACK_WORD='Con\u00adfir\u00adma\u00adtion';
 const ACK_REQUIRED=`${ACK_WORD} required`;
 
 export function CommunicationDetailView({read,paused,pending,notice,onAction,onRefresh,signature=false,justPublished=false,place=null}:{/** Owners and Managers: the update's place, when they have more than one. */place?:string|null;/** Final polish (Nov 21, 2026): this visit follows a publish from New update (Owners and Managers): the result is said once, above the message, from the numbers this read already holds. */justPublished?:boolean;read:CommunicationRead|null;paused:boolean;pending:boolean;notice:CommunicationNotice;onAction:(kind:'ACKNOWLEDGE'|'MARK_READ'|'WITHDRAW'|'LOOKUP')=>void;onRefresh:()=>void;/** Employee Signature style (phase 3): a Signature band and sheet around the same sections. */signature?:boolean}){
@@ -61,7 +61,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   const offline=paused&&typeof navigator!=='undefined'&&navigator.onLine===false;
   const signedOut=notice==='signed-out'||read?.state==='unauthorized'&&read.reason==='session_ended';
   const title=signedOut?'Your session ended':offline?'You’re offline':paused?'Paused while you were away':notice==='blocked'?'Access changed':notice==='conflict'?'This update changed':read?.state==='withdrawn'?'Update withdrawn':read?.state==='unauthorized'?'Access changed':loading?'Loading update…':'Couldn’t load this update';
-  const description=signedOut?'Sign in again to check your current access.':offline?'Connect to the internet, then try again.':paused?'Come back to this page to see the current update.':notice==='blocked'?'You no longer have access to this update. Refresh to check.':notice==='conflict'?'Review the latest version before acknowledging it.':read?.state==='withdrawn'?'This update is no longer available.':read?.state==='unauthorized'?'Your current permission does not allow this update. Sign in to check your access.':loading?'Getting the latest version and your review status.':'Check your connection, then try again.';
+  const description=signedOut?'Sign in again to check your current access.':offline?'Connect to the internet, then try again.':paused?'Come back to this page to see the current update.':notice==='blocked'?'You no longer have access to this update. Refresh to check.':notice==='conflict'?'Review the latest version before confirming it.':read?.state==='withdrawn'?'This update is no longer available.':read?.state==='unauthorized'?'Your current permission does not allow this update. Sign in to check your access.':loading?'Getting the latest version and your review status.':'Check your connection, then try again.';
   // The band says what happened; the card holds only what to do next (TC-B-16).
   const failedBody=<div className="nv-content">
     <section ref={surface} className="nv-card" aria-busy={loading} aria-label={title}>
@@ -92,7 +92,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  const withdraw=ready.canWithdraw?(confirmWithdraw?<div className="wb-confirm" role="group" aria-labelledby="withdraw-confirm-text"><p className="wb-text" id="withdraw-confirm-text">{audience?`Withdraw this update for ${audience} ${audience===1?'person':'people'}? They won’t see it anymore.`:'Withdraw this update? People won’t see it anymore.'}</p><div className="wb-actions"><button ref={confirmRef} type="button" className="nv-btn" data-kind="danger" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('WITHDRAW');}}>{pending?'Withdrawing…':'Withdraw update'}</button><button type="button" className="nv-btn" data-kind="secondary" disabled={pending} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(false);}}>Keep update</button></div></div>:<button ref={withdrawRef} type="button" className="nv-btn" data-kind="secondary" data-tone="urgent" disabled={locked} onClick={()=>{askedWithdraw.current=true;setConfirmWithdraw(true);}}>Withdraw update</button>):null;
  const article=<article ref={surface} className="nv-content wb-focus-target" tabIndex={-1} data-update-revision={ready.revisionId}>
    <section className="nv-card" aria-label="Update content">
-    <div className="nv-card__head"><h2 className="nv-card__title">Message</h2><span className="nv-card__meta"><Status tone={acknowledged||markedRead?'done':required?'review':'neutral'}>{acknowledged?'Acknowledged':markedRead?'Marked read':required?ACK_REQUIRED:'For your information'}</Status></span></div>
+    <div className="nv-card__head"><h2 className="nv-card__title">Message</h2><span className="nv-card__meta"><Status tone={acknowledged||markedRead?'done':required?'review':'neutral'}>{acknowledged?'Confirmed':markedRead?'Marked read':required?ACK_REQUIRED:'For your information'}</Status></span></div>
     <div className="wb-body">
      <div className="wb-update-body">{ready.body}</div>
      {ready.editedAt||ready.expiresAt?<div className="wb-update-facts">
@@ -107,20 +107,20 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
     <div className="wb-body">
      <p role="status" aria-live="polite" className="nv-sr">{pending?'Confirming your review…':''}</p>
      <div className="wb-receipt"><span className="communication-result-icon">{acknowledged||markedRead?<BDoneMark still/>:<Tile tone={required?'review':'neutral'}>{required?<FileTextIcon size={22} weight="bold"/>:<CircleIcon size={22} weight="bold"/>}</Tile>}</span>
-      {acknowledged?<div role="status"><h2 className="wb-strong">Acknowledged</h2><p className="wb-note">You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<div><h2 className="wb-strong">{required?ACK_REQUIRED:'Informational update'}</h2><p className="wb-note">{required?'Recipients must review and acknowledge this version.':'No acknowledgement is required from recipients.'}</p></div>:required?<div><h2 className="wb-strong">Confirm you received this update</h2><p className="wb-note" id="communication-acknowledgement-help">{ACK_WORD} confirms receipt of this version. It does not indicate agreement or attendance.</p></div>:markedRead?<div role="status"><h2 className="wb-strong">Marked read</h2><p className="wb-note">Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No acknowledgement is required.</p></div>:<div><h2 className="wb-strong">No acknowledgement needed</h2><p className="wb-note">You can mark this update as read to keep your updates organized.</p></div>}
+      {acknowledged?<div role="status"><h2 className="wb-strong">Confirmed</h2><p className="wb-note">You confirmed receipt of this version on <time dateTime={ready.ownAcknowledgedAt!}>{stamp(ready.ownAcknowledgedAt!)}</time>.</p></div>:ready.management?<div><h2 className="wb-strong">{required?ACK_REQUIRED:'Informational update'}</h2><p className="wb-note">{required?'Recipients must review and confirm this version.':'Recipients don’t have to confirm it.'}</p></div>:required?<div><h2 className="wb-strong">Confirm you received this update</h2><p className="wb-note" id="communication-acknowledgement-help">Confirming records receipt of this version. It does not indicate agreement or attendance.</p></div>:markedRead?<div role="status"><h2 className="wb-strong">Marked read</h2><p className="wb-note">Recorded on <time dateTime={ready.ownReadAt!}>{stamp(ready.ownReadAt!)}</time>. No confirmation is needed.</p></div>:<div><h2 className="wb-strong">No confirmation needed</h2><p className="wb-note">You can mark this update as read to keep your updates organized.</p></div>}
      </div>
      {!acknowledged&&!ready.management&&required?<>
       <label className="wb-check"><input type="checkbox" checked={reviewed} disabled={locked} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label>
-      <div className="wb-actions"><button type="button" className="nv-btn" data-kind="primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><CheckCircleIcon size={20} weight="bold" aria-hidden="true"/><PendingLabel pending={pending} pendingText="Confirming…">Acknowledge update</PendingLabel></button></div>
+      <div className="wb-actions"><button type="button" className="nv-btn" data-kind="primary" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><CheckCircleIcon size={20} weight="bold" aria-hidden="true"/><PendingLabel pending={pending} pendingText="Confirming…">Confirm I read it</PendingLabel></button></div>
      </>:null}
      {!acknowledged&&!ready.management&&!required&&!markedRead?<div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('MARK_READ');}}><CheckCircleIcon size={20} weight="bold" aria-hidden="true"/><PendingLabel pending={pending} pendingText="Saving…">Mark read</PendingLabel></button></div>:null}
     </div>
    </section>
 
-   {ready.management?<section className="nv-card" aria-label="Acknowledgement status">
+   {ready.management?<section className="nv-card" aria-label="Confirmation status">
     <details className="wb-disclosure">
-     <summary><span className="wb-summary-text"><span className="nv-card__title" role="heading" aria-level={2}>Recipient status</span><span>{count} of {ready.management.recipients.length} acknowledged</span></span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary>
-     {ready.management.recipients.length?<ul className="wb-recipients">{ready.management.recipients.map((recipient,index)=><li key={index}><span>{recipient.name}</span><Status tone={recipient.acknowledgedAt?'done':'neutral'}>{recipient.acknowledgedAt?'Acknowledged':'Not acknowledged yet'}</Status></li>)}</ul>:<div className="wb-body"><p className="wb-note">No recipients are available in your current view.</p></div>}
+     <summary><span className="wb-summary-text"><span className="nv-card__title" role="heading" aria-level={2}>Recipient status</span><span>{count} of {ready.management.recipients.length} confirmed</span></span><CaretDownIcon size={20} weight="bold" aria-hidden="true"/></summary>
+     {ready.management.recipients.length?<ul className="wb-recipients">{ready.management.recipients.map((recipient,index)=><li key={index}><span>{recipient.name}</span><Status tone={recipient.acknowledgedAt?'done':'neutral'}>{recipient.acknowledgedAt?'Acknowledged':'Not confirmed yet'}</Status></li>)}</ul>:<div className="wb-body"><p className="wb-note">No recipients are available in your current view.</p></div>}
     </details>
     <div className="wb-body wb-body--ruled wb-manage">
      {sent}
@@ -148,14 +148,14 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
   :notice==='unavailable'?<section ref={noticeRef} className="b-card" aria-label="Unable to confirm"><BState kind="failed" alert title="Unable to confirm" line="Try again." action={{label:'Try again',onClick:()=>{if(!pending)onRefresh();}}}/></section>:null;
  const own=people?null:<section ref={receiptRef} tabIndex={-1} className="b-card mb-own" aria-label="Your review status">
   <p role="status" aria-live="polite" className="b-sr">{pending?'Confirming your review…':''}</p>
-  {acknowledged?<BState kind="done" title="Acknowledged" line={stamp(ready.ownAcknowledgedAt!)}/>:markedRead?<BState kind="done" title="Marked read" line={stamp(ready.ownReadAt!)}/>
+  {acknowledged?<BState kind="done" title="Confirmed" line={stamp(ready.ownAcknowledgedAt!)}/>:markedRead?<BState kind="done" title="Marked read" line={stamp(ready.ownReadAt!)}/>
    :required?<div className="mb-own__ask"><label className="mb-check"><input type="checkbox" checked={reviewed} disabled={locked} onChange={e=>setReviewed(e.target.checked)} aria-describedby="communication-acknowledgement-help"/><span>I have reviewed this update</span></label>
-     <p className="b-sr" id="communication-acknowledgement-help">{ACK_WORD} confirms receipt of this version. It does not indicate agreement or attendance.</p>
-     <button type="button" className="b-btn b-btn--teal b-btn--full" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><BBusyLabel busy={pending} busyLabel="Confirming…">Acknowledge update</BBusyLabel></button></div>
+     <p className="b-sr" id="communication-acknowledgement-help">Confirming records receipt of this version. It does not indicate agreement or attendance.</p>
+     <button type="button" className="b-btn b-btn--teal b-btn--full" disabled={!reviewed||notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('ACKNOWLEDGE');}}><BBusyLabel busy={pending} busyLabel="Confirming…">Confirm I read it</BBusyLabel></button></div>
    :<div className="mb-own__ask"><button type="button" className="b-btn b-btn--quiet b-btn--full" disabled={notice==='unknown'} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={()=>{if(!pending)onAction('MARK_READ');}}><BBusyLabel busy={pending} busyLabel="Saving…">Mark read</BBusyLabel></button></div>}
  </section>;
  const remind=required&&people?people.filter(recipient=>!recipient.acknowledgedAt).map(recipient=>({employeeId:recipient.employeeId,name:recipient.name,source:{kind:'COMMUNICATION' as const,communicationId:ready.id,expectedRevisionId:ready.revisionId}})):[];
- const recipients=people?<BCard title="Acknowledged" meta={`${count} of ${people.length}`} id="update-recipients">
+ const recipients=people?<BCard title="Confirmed" meta={`${count} of ${people.length}`} id="update-recipients">
   {people.length?<BList label="Recipients">{people.map(recipient=><BRow key={recipient.employeeId} lead={<BAvatar name={recipient.name} size={36}/>} title={recipient.name}
     sub={recipient.acknowledgedAt?<time dateTime={recipient.acknowledgedAt}>{short(recipient.acknowledgedAt)}</time>:'Not yet'}
     trail={required&&!recipient.acknowledgedAt?<ReminderControl employeeId={recipient.employeeId} name={recipient.name}/>:undefined}/>)}</BList>
@@ -164,7 +164,7 @@ export function CommunicationDetailView({read,paused,pending,notice,onAction,onR
  const page=<ManagerMessagesPage className="mb-update" titleId="update-title" title={ready.title} back={{href:'/app/updates',label:'Updates'}} deskBack
   sub={<BSegs parts={[place,short(ready.publishedAt)]}/>}
   cards={<>
-   {justPublished?<div className="b-card b-upd-done"><BState kind="done" titleRef={publishedRef} title={audience?`Published to ${audience} ${audience===1?'person':'people'}`:'Update published'} line={people?`Acknowledged by ${count} of ${people.length} so far`:undefined}/></div>:null}
+   {justPublished?<div className="b-card b-upd-done"><BState kind="done" titleRef={publishedRef} title={audience?`Published to ${audience} ${audience===1?'person':'people'}`:'Update published'} line={people?`Confirmed by ${count} of ${people.length} so far`:undefined}/></div>:null}
    <article ref={surface} className="b-card mb-msg wb-focus-target" tabIndex={-1} data-update-revision={ready.revisionId} aria-label="Update content">
     <p className="mb-msg__meta"><BSegs parts={facts}/><span className="b-sr">{` · ${category} · ${ready.authorContext}`}</span></p>
     <p className="mb-msg__body">{ready.body}</p>

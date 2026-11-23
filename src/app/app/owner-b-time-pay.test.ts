@@ -115,3 +115,25 @@ describe('the phone select and review view at a large text size (Nov 23, 2026 fo
     expect(rule('.c-tc-flow__foot > .c-btn')).toContain('margin-left: auto !important;');
   });
 });
+
+describe("Jose's review of the person's week and the review panel (Nov 23, 2026)", () => {
+  it('puts the attention note on the card inset with its dividing line', () => {
+    expect(css).toMatch(/\.c-tc-sheet \.c-card > \.c-tc-sheet__attn:not\(#gq1\)[^{]*\{ margin: 0 !important; padding: 14px 22px 16px !important; box-shadow: inset 0 1px 0 var\(--c-line\) !important; \}/);
+  });
+  it('spaces the two footer actions 8px apart', () => {
+    expect(css).toMatch(/dialog\.q-sheet \.c-tc-sheet \.c-tc-sheet__foot:not\(#gq1\)[^{]*\{ gap: var\(--b-space-8\) !important; \}/);
+  });
+  it('lets the review panel use the card width from 768px', () => {
+    expect(css).not.toMatch(/c-tc-flow[^{]*\{[^}]*max-width: 560px/);
+    expect(css).toMatch(/\.c-tc-flow :is\(\.c-tc-flow__step, \.c-tc-flow__rows, \.c-tc-flow__all\)[^{]*\{ width: 100% !important; max-width: none !important; \}/);
+  });
+});
+
+describe('Select and review on the Direction B kit (Nov 23, 2026)', () => {
+  it('lays the set out as kit rows and puts the two buttons on the card edges', () => {
+    expect(css).toMatch(/\.b-tc-flow \.b-tc-flow__row:not\(#gq1\)[^{]*\{ display: flex !important; align-items: center !important; justify-content: space-between !important;/);
+    expect(css).toMatch(/\.b-tc-flow \.b-tc-flow__foot:not\(#gq1\)[^{]*\{ display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: space-between !important;[^}]*padding: var\(--b-space-12\) var\(--b-inset\) var\(--b-space-16\) !important;/);
+    expect(css).toMatch(/\.b-tc-flow \.b-tc-flow__foot > \.b-btn:not\(#gq1\)[^{]*\{ min-height: var\(--b-target\) !important;/);
+    expect(css).toMatch(/\.b-tc-pick:not\(#gq1\)[^{]*\{ display: flex !important; align-items: center !important; gap: var\(--b-space-12\) !important;/);
+  });
+});

@@ -69,8 +69,8 @@ export function AddListStep({ copy, text, fileNote, listError, locations, locati
   const a = copy.add, file = useRef<HTMLInputElement>(null);
   const template = `data:text/csv;charset=utf-8,${encodeURIComponent(`﻿${a.templateText}`)}`;
   return <>
+    {/* Package X: the intro paragraph went; it repeated the list field's help and the step names. */}
     <h2 className="rimp-h">{copy.stepNames[0]}</h2>
-    <p className="rimp-p">{a.intro}</p>
     <section className="rimp-needs" aria-labelledby="rimp-needs-title">
       <h3 className="rimp-h3" id="rimp-needs-title">{a.needsTitle}</h3>
       <p className="rimp-p">{a.needsLead}</p>
@@ -113,6 +113,11 @@ const ROLES = ["EMPLOYEE", "LEAD", "MANAGER"] as const;
 
 /** Fix one row where it is. Saving writes the cells back to the list and asks for the check again; nothing is saved to
  * the company from here. */
+/** Package X: whether the Owner has changed a field in the row editor since it opened; its error is then hidden. */
+export function fieldEdited<F extends string>(values: Record<F, string>, start: Record<F, string>, field: NoInfer<F>): boolean {
+  return values[field] !== start[field];
+}
+
 export function RowEditor({ copy, row, locations, errors, busy, onSave, onCancel, onRemove }: {
   copy: RosterImportCopy; row: RosterRow; locations: ImportLocation[]; errors: FieldError[]; busy: boolean;
   onSave: (changes: Partial<Record<RosterField, string>>) => void; onCancel: () => void; onRemove: () => void;
@@ -129,7 +134,9 @@ export function RowEditor({ copy, row, locations, errors, busy, onSave, onCancel
   const first = useRef<HTMLInputElement>(null);
   useEffect(() => { first.current?.focus(); }, []);
   const set = (field: EditorField) => (event: { target: { value: string } }) => setValues(current => ({ ...current, [field]: event.target.value }));
-  const problem = (field: EditorField) => { const found = errors.find(error => editorField(error) === field); return found ? rowProblemText(copy, found, v) : null; };
+  // Package X (live import, Nov 23): a field's error stays until its value changes; once the Owner types a fix, the red line
+  // goes (it stayed until "Save and check again"). The check after Save says whether the new value is right.
+  const problem = (field: EditorField) => { if (fieldEdited(values, start, field)) return null; const found = errors.find(error => editorField(error) === field); return found ? rowProblemText(copy, found, v) : null; };
   function save() {
     const changes: Partial<Record<RosterField, string>> = {};
     for (const field of ["id", "firstName", "lastName", "phone", "email"] as const) if (values[field].trim() !== start[field]) changes[field] = values[field];
@@ -204,11 +211,13 @@ export function ReviewStep({ copy, preview, locations, defaultLocationId, headco
     {removedCount ? <p className="c-note rimp-note"><span>{r.removed(removedCount)}</span></p> : null}
     {summary.managers ? <section className="rimp-manager" aria-labelledby="rimp-manager-title">
       <h3 className="rimp-h3" id="rimp-manager-title">{r.manager.title}</h3>
+      {/* Package X: no red border before anyone has chosen; the Manager row's own line says what is missing, and Import
+        waits for the choice. */}
       <p className="rimp-p" id="rimp-scope-help">{r.manager.line}</p>
       <div className="c-field">
         <label className="c-field__label" htmlFor="rimp-scope">{r.manager.label}</label>
         <select id="rimp-scope" className="c-in" value={scopeChoice} onChange={event => onScope(event.target.value)} disabled={busy}
-          aria-invalid={summary.needsManagerScope ? true : undefined} aria-describedby="rimp-scope-help">
+          aria-describedby="rimp-scope-help" aria-required={summary.needsManagerScope || undefined}>
           <option value="">{r.manager.choose}</option>
           <option value="COMPANY">{r.manager.company}</option>
           {locations.map(location => <option key={location.id} value={`LOCATION:${location.id}`}>{r.manager.only(location.name)}</option>)}

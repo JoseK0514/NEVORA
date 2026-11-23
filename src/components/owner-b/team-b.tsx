@@ -79,7 +79,7 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
       <BCard label={filtered ? `${people.length} ${people.length === 1 ? "match" : "matches"}` : people_word}>
         {live.ready && people.length ? <BFilters label="Show" items={[
           { key: "all", label: "All", current: filter === "all", onSelect: () => setFilter("all") },
-          { key: "working", label: "Clocked in", count: working, current: filter === "working", onSelect: () => setFilter("working") },
+          { key: "working", label: "On the clock", count: working, current: filter === "working", onSelect: () => setFilter("working") },
           { key: "late", label: "Not clocked in", count: late, current: filter === "late", onSelect: () => setFilter("late") },
           ...(live.partial ? [] : [{ key: "off", label: "Off today", count: off, current: filter === "off", onSelect: () => setFilter("off") }]),
         ]} /> : null}
