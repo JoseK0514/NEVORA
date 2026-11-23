@@ -68,3 +68,14 @@ describe('Timecards text in rem from 768px (G90)', () => {
     expect(sheet).toMatch(/\.c-tc-day > \.c-row__main[^{]*\{ order: 3 !important; flex: 1 0 100% !important;/);
   });
 });
+
+describe('Timecards gate check (Nov 23, 2026)', () => {
+  const desktop = readFileSync(join(__dirname, 'owner-b-desktop.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  it('draws Select on the band as the glass action, never teal on teal', () => {
+    expect(desktop).toMatch(/\.c-page\.c-tc > header\.c-title \.c-tc-select:not\(#gq1\):not\(#gq2\):not\(#gq3\) \{[^}]*height: var\(--b-btn-h-band\) !important;[^}]*background: var\(--b-glass\) !important;[^}]*color: var\(--b-on-band\) !important;/);
+  });
+  it('gives the Show tabs and the sheet\'s note link a 44px target', () => {
+    expect(css).toMatch(/\.c-tc-tabs > button:not\(#gq1\):not\(#gq2\):not\(#gq3\)::before \{ content: "" !important; position: absolute !important; inset: -4px 0 !important; \}/);
+    expect(css).toMatch(/\.c-tc-sheet \.b-callout a:not\(#gq1\):not\(#gq2\):not\(#gq3\) \{[^}]*min-height: var\(--b-target\) !important;/);
+  });
+});
