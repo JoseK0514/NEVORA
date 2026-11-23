@@ -162,3 +162,25 @@
   /* A row inside a Settings dialog (a switch, the item an Archive confirms) starts on the dialog's text edge, like its fields. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-dlg .c-rows > li > .c-row:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-left: 0 !important; padding-right: 0 !important; }
 }
+
+/* Added for Time off policies and Company policies (Nov 23, 2026, additive). A choice of kinds as radio rows under a
+ * field label; a form's error summary inside its card; an in-page editor's Cancel and Save on phones, stacked full width
+ * at the card's end (the band has no Back while the editor is open); a row list that follows another inside one card. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-choice:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { min-width: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-legend:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { float: left !important; width: 100% !important; margin: 0 !important; padding: var(--b-space-16) var(--b-inset) var(--b-space-4) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-legend + .c-rows:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { clear: both !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card > .c-setb-sum:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { margin: 0 !important; padding: var(--b-space-12) var(--b-inset) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card > .c-rows + .c-rows:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6),
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card > .c-empty + .c-rows:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { box-shadow: inset 0 1px 0 var(--b-line) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-phoneacts:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; flex-direction: column !important; gap: var(--b-space-8) !important; padding: var(--b-space-16) var(--b-inset) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-phoneacts > .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { width: 100% !important; }
+}
+@layer nv-b {
+  /* A field stack the page hides (a rule that is off) stays hidden: the stack's flex rule above must not undo [hidden]. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-fields[hidden]:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: none !important; }
+  /* Time off policies and Company policies: a field stack directly in a card (or under a rule's switch row) takes the
+   * card's inset, 16px above and below. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:is(.pto, .cp) :is(.c-card > .c-setb-fields, .c-setb-fieldset > .c-setb-fields):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding: var(--b-space-16) var(--b-inset) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:is(.pto, .cp) .c-setb-fieldset > .c-setb-fields:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-top: var(--b-space-4) !important; }
+}

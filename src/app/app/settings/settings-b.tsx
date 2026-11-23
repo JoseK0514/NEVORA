@@ -11,11 +11,12 @@ import "./settings-b.css";
 
 export type SettingsBack = { href: string; label: string };
 
-export function SettingsPageB({ title, titleId = "settings-page-title", back = { href: "/app/settings", label: "Settings" }, sub, phoneRight, actions, className, children }: {
+export function SettingsPageB({ title, titleId = "settings-page-title", back = { href: "/app/settings", label: "Settings" }, sub, phoneRight, actions, className, lang, children }: {
   title: ReactNode;
   titleId?: string;
-  /** Where the phone band's back link goes; Settings, unless the page sits under another Settings page. */
-  back?: SettingsBack;
+  /** Where the phone band's back link goes; Settings, unless the page sits under another Settings page. `null`: no back
+   * link (an in-page editor whose Cancel is its way out). */
+  back?: SettingsBack | null;
   /** One grey line under the title (tablets and desktop; the phone band keeps the title alone). */
   sub?: ReactNode;
   /** The phone band's one action (Save, Add), right of the title. */
@@ -23,11 +24,13 @@ export function SettingsPageB({ title, titleId = "settings-page-title", back = {
   /** Tablets and desktop: an action on the title's row. */
   actions?: ReactNode;
   className?: string;
+  /** The page's language when it differs from the app's ("es"). */
+  lang?: string;
   children: ReactNode;
 }) {
   return (
-    <CorpPage className={className ? `c-page--narrow c-setb ${className}` : "c-page--narrow c-setb"} labelledBy={titleId}>
-      <CorpNav back={back} title={title} titleId={`${titleId}-nav`} right={phoneRight} phoneOnly />
+    <CorpPage className={className ? `c-page--narrow c-setb ${className}` : "c-page--narrow c-setb"} labelledBy={titleId} lang={lang}>
+      <CorpNav back={back ?? undefined} title={title} titleId={`${titleId}-nav`} right={phoneRight} phoneOnly />
       <CorpTitle id={titleId} title={title} sub={sub} actions={actions} wide />
       {children}
     </CorpPage>
