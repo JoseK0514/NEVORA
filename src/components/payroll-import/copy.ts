@@ -214,14 +214,15 @@ const en = {
       },
       line: (hold: Hold): string => {
         switch (hold.kind) {
-          case "peopleNotReviewed": return "Go through everyone on the team for this period on Time exports, then come back.";
-          case "peopleChanged": return "Review who’s included again on Time exports. The export uses exactly that list.";
+          case "peopleNotReviewed": return "Go through everyone on the team for this period, then come back.";
+          case "peopleChanged": return "The export uses exactly the list of who’s included.";
           case "tooManyPeople": return "A paid time export covers up to 300 people.";
           case "notFinalized": return `Still open: ${list(hold.names, "and", n => `${n} more`)}. Paid time is exported only from finalized timecards.`;
-          case "alreadyComplete": return "The server already has a complete record of this period. Its files are on Time exports.";
+          case "alreadyComplete": return "The server already has a complete record of this period.";
         }
       },
-      action: (hold: Hold): string => hold.kind === "notFinalized" ? "Open Timecards" : hold.kind === "tooManyPeople" ? "Go to Payroll" : "Open Time exports",
+      // Phase 2 (G9): the back link already reads "Time exports", so the line and the button name what to do there.
+      action: (hold: Hold): string => hold.kind === "notFinalized" ? "Open Timecards" : hold.kind === "tooManyPeople" ? "Go to Payroll" : hold.kind === "alreadyComplete" ? "See the files" : "Review who’s included",
     },
     breaks: {
       heading: "Decide every recorded break",
