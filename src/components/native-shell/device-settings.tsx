@@ -12,6 +12,10 @@ import { BButton, BHero, BScreen, BStack } from '../owner-b/b-kit';
 import { BCardNote } from '../employee-b/parts';
 import { shown } from '../employee-b/account-host';
 import './device-settings.css';
+import { usePortalLang } from '@/lib/i18n/portal-lang';
+import { NATIVE_SHELL_COPY } from './native-shell-copy';
+
+type Words = typeof NATIVE_SHELL_COPY.en;
 type Props = {
     snapshot: NativeDeviceSnapshot;
     review?: string | null;
@@ -29,10 +33,10 @@ type Props = {
  * (it showed the "off" text under "Setup needs a check"). Nov 23 (L1 fix): no line repeats the title or a button's words,
  * and each state has one main action (`main`): Turn on alerts when off, Review app setup when the setup changed, Check
  * again otherwise. The rest are white secondaries; Turn off alerts is a secondary with red words, always last. */
-function describe(p: Props) {
+function describe(p: Props, t: Words) {
     const s = p.snapshot, busy = ['pending', 'loading'].includes(s.state), review = !!p.review && p.review === s.generation && !busy && !p.paused;
-    const title = p.paused ? 'Alerts check paused' : s.state === 'enabled' ? 'Alerts are on' : s.state === 'denied' ? 'Permission is blocked' : s.state === 'revoked' ? 'Device setup changed' : s.state === 'error' ? 'Setup needs a check' : s.state === 'unavailable' ? 'Alerts are unavailable' : busy ? 'Checking this device…' : 'Alerts are off';
-    const text = p.paused ? 'It continues when you come back to this screen.' : s.state === 'enabled' ? 'The NEVORA app is set up for this account. Alerts also depend on workplace and phone settings.' : s.state === 'denied' ? 'Allow NEVORA notifications in your phone settings, then come back to this screen.' : s.state === 'revoked' ? 'NEVORA and this app no longer match on this phone’s alert setup.' : s.state === 'error' ? 'NEVORA couldn’t confirm this phone’s alert setup.' : busy ? 'Confirming notification permission and this app’s enrollment.' : 'Get schedule changes, request answers and updates in the NEVORA app. Your phone may ask for notification permission.';
+    const title = p.paused ? t.pausedTitle : s.state === 'enabled' ? t.onTitle : s.state === 'denied' ? t.blockedTitle : s.state === 'revoked' ? t.changedTitle : s.state === 'error' ? t.errorTitle : s.state === 'unavailable' ? t.unavailableTitle : busy ? t.checkingTitle : t.offTitle;
+    const text = p.paused ? t.pausedText : s.state === 'enabled' ? t.onText : s.state === 'denied' ? t.blockedText : s.state === 'revoked' ? t.changedText : s.state === 'error' ? t.errorText : busy ? t.checkingText : t.offText;
     const acts = !busy && !p.paused, enable = s.state === 'ready', off = !!s.generation && !review && !p.recover, setup = ['error', 'revoked'].includes(s.state) && !p.recover;
     // While a confirmation is open, its own action is the main one; the state card's actions step down to secondaries.
     const main: 'enable' | 'setup' | 'refresh' | 'none' = review || (p.recover && !busy && !p.paused) ? 'none' : enable ? 'enable' : setup && s.state === 'revoked' ? 'setup' : 'refresh';
@@ -41,34 +45,35 @@ function describe(p: Props) {
 }
 /** The card view: the Owner's device popover and, in the Employee app, the presentation a phone held sideways keeps. */
 export function NativeDeviceSettingsView(p: Props) {
-    const d = describe(p), s = d.s;
+    const t = NATIVE_SHELL_COPY[usePortalLang()];
+    const d = describe(p, t), s = d.s;
     const kind = (which: typeof d.main) => d.main === which ? 'c-btn' : 'c-btn c-btn--secondary nd-btn-2';
-    const refresh = <button key="refresh" type="button" className={kind('refresh')} onClick={p.onRefresh}>Check again</button>;
-    const setup = d.setup ? <button key="setup" type="button" className={kind('setup')} data-native-review-setup onClick={p.onReviewSetup}>Review app setup</button> : null;
+    const refresh = <button key="refresh" type="button" className={kind('refresh')} onClick={p.onRefresh}>{t.checkAgain}</button>;
+    const setup = d.setup ? <button key="setup" type="button" className={kind('setup')} data-native-review-setup onClick={p.onReviewSetup}>{t.reviewSetup}</button> : null;
     return <section className="c-card native-device-card" aria-labelledby="nd-card-h" aria-busy={d.busy}>
-  <div className="c-card__head"><h2 className="c-card__label" id="nd-card-h">This device</h2></div>
+  <div className="c-card__head"><h2 className="c-card__label" id="nd-card-h">{t.thisDevice}</h2></div>
   <div className="c-card__body">
    {/* Review F2 (NV-213): the same state block as the Alerts page (ring, title, explanation). */}
    <div className="nd-state">{ring(p, d.busy)}<h3 className="nd-title" tabIndex={-1} data-native-status>{d.title}</h3><p className="nd-text">{d.text}</p>
     {/* One live line, in place from the start, so a failure's own message is announced when it appears. */}
     <div role="status" className="nd-live">{d.message ? <p className="nd-msg" data-tone={['error', 'revoked', 'denied'].includes(s.state) ? 'amber' : undefined}>{d.message}</p> : null}</div></div>
-   {p.paused ? <div className="c-btns c-btns--stack"><button type="button" className="c-btn" onClick={p.onRefresh}>Check now</button></div> : null}
+   {p.paused ? <div className="c-btns c-btns--stack"><button type="button" className="c-btn" onClick={p.onRefresh}>{t.checkNow}</button></div> : null}
    {d.acts ? <div className="c-btns c-btns--stack">
-    {d.enable ? <button type="button" className="c-btn" onClick={p.onEnable}>Turn on alerts</button> : null}
+    {d.enable ? <button type="button" className="c-btn" onClick={p.onEnable}>{t.turnOn}</button> : null}
     {d.main === 'setup' ? [setup, refresh] : [refresh, setup]}
-    {d.off ? <button type="button" className="c-btn c-btn--secondary nd-btn-2 nd-btn-off" data-native-review-off onClick={p.onReview}>Turn off alerts</button> : null}
+    {d.off ? <button type="button" className="c-btn c-btn--secondary nd-btn-2 nd-btn-off" data-native-review-off onClick={p.onReview}>{t.turnOff}</button> : null}
    </div> : null}
    {d.recover ? <div role="group" aria-labelledby="nd-card-recover" tabIndex={-1} data-native-confirm className="nd-card-confirm">
-    <h3 className="nd-confirm__t" id="nd-card-recover">Use alerts for this account?</h3>
-    <p>Turn on app alerts for the account you are signed in to now? This replaces any previous account’s alert setup in this app. Your other devices stay the same.</p>
-    <div className="c-btns c-btns--stack"><button type="button" className="c-btn" onClick={p.onRecover}>Turn on for this account</button><button type="button" className="c-btn c-btn--secondary nd-btn-2" onClick={p.onKeep}>Keep current setup</button></div>
+    <h3 className="nd-confirm__t" id="nd-card-recover">{t.recoverTitle}</h3>
+    <p>{t.recoverText}</p>
+    <div className="c-btns c-btns--stack"><button type="button" className="c-btn" onClick={p.onRecover}>{t.turnOnForAccount}</button><button type="button" className="c-btn c-btn--secondary nd-btn-2" onClick={p.onKeep}>{t.keepSetup}</button></div>
    </div> : null}
    {d.review ? <div role="group" aria-labelledby="nd-card-off" tabIndex={-1} data-native-confirm className="nd-card-confirm">
-    <h3 className="nd-confirm__t" id="nd-card-off">Turn off alerts here?</h3>
-    <p>Turn off alerts for this account in this app? Your phone permission and other devices stay the same. An alert already queued by your phone may still appear.</p>
-    <div className="c-btns c-btns--stack"><button type="button" className="c-btn c-btn--danger" onClick={p.onTurnOff}>Turn off alerts</button><button type="button" className="c-btn c-btn--secondary nd-btn-2" onClick={p.onKeep}>Keep current setup</button></div>
+    <h3 className="nd-confirm__t" id="nd-card-off">{t.offAskTitle}</h3>
+    <p>{t.offAskText}</p>
+    <div className="c-btns c-btns--stack"><button type="button" className="c-btn c-btn--danger" onClick={p.onTurnOff}>{t.turnOff}</button><button type="button" className="c-btn c-btn--secondary nd-btn-2" onClick={p.onKeep}>{t.keepSetup}</button></div>
    </div> : null}
-   <p className="c-note">Your notifications always stay in NEVORA. Your phone’s settings can block app alerts.</p>
+   <p className="c-note">{t.alwaysInNevora}</p>
   </div>
  </section>;
 }
@@ -90,54 +95,56 @@ function ring(p: Props, busy: boolean) {
  * back to Notifications, one card with the state as a 64px ring, its explanation and the stacked pill actions, and the
  * two confirmations as their own cards. Same words, controls, handlers and data-native-* hooks as the card view. */
 export function NativeDeviceSettingsB(p: Props) {
-    const d = describe(p), s = d.s;
+    const t = NATIVE_SHELL_COPY[usePortalLang()];
+    const d = describe(p, t), s = d.s;
     const cls = (which: typeof d.main) => `b-btn b-btn--${d.main === which ? 'teal' : 'quiet nd-btn-2'} b-btn--big b-btn--full`;
-    const refresh = <button key="refresh" type="button" className={cls('refresh')} onClick={p.onRefresh}>Check again</button>;
-    const setup = d.setup ? <button key="setup" type="button" className={cls('setup')} data-native-review-setup onClick={p.onReviewSetup}>Review app setup</button> : null;
+    const refresh = <button key="refresh" type="button" className={cls('refresh')} onClick={p.onRefresh}>{t.checkAgain}</button>;
+    const setup = d.setup ? <button key="setup" type="button" className={cls('setup')} data-native-review-setup onClick={p.onReviewSetup}>{t.reviewSetup}</button> : null;
     return <BScreen back>
-    <BHero back={{ href: '/app/notifications', label: 'Notifications' }} title="Alerts" titleId="b-native-alerts-title"/>
+    <BHero back={{ href: '/app/notifications', label: t.notifications }} title={t.alerts} titleId="b-native-alerts-title"/>
     <BStack>
       {/* Review B6 (NV-211): "This device" is the centred stack's eyebrow, not a left header over centred content. NV-060:
         * a failure's own message sits in the card under its explanation (amber ink), not in a teal note under the card. */}
       <section className="b-card nd-card" aria-labelledby="nd-device-h" aria-busy={d.busy}>
         <div className="nd-state">
-          <h2 className="nd-eyebrow" id="nd-device-h">This device</h2>
+          <h2 className="nd-eyebrow" id="nd-device-h">{t.thisDevice}</h2>
           {ring(p, d.busy)}
           <h3 className="nd-title" tabIndex={-1} data-native-status>{d.title}</h3>
           <p className="nd-text">{d.text}</p>
           <div role="status" className="nd-live">{d.message ? <p className="nd-msg" data-tone={['error', 'revoked', 'denied'].includes(s.state) ? 'amber' : undefined}>{d.message}</p> : null}</div>
         </div>
         {/* Review F2 (NV-209): paused has one way forward, Check now (it also ends the pause). */}
-        {p.paused ? <div className="nd-acts"><BButton kind="teal" big full onClick={p.onRefresh}>Check now</BButton></div> : null}
+        {p.paused ? <div className="nd-acts"><BButton kind="teal" big full onClick={p.onRefresh}>{t.checkNow}</BButton></div> : null}
         {d.acts ? <div className="nd-acts">
           {/* One solid main action first, white secondaries after it, the red-worded turn-off last (Nov 23, L1 fix). */}
-          {d.enable ? <BButton kind="teal" big full onClick={p.onEnable}>Turn on alerts</BButton> : null}
+          {d.enable ? <BButton kind="teal" big full onClick={p.onEnable}>{t.turnOn}</BButton> : null}
           {d.main === 'setup' ? [setup, refresh] : [refresh, setup]}
-          {d.off ? <button type="button" className="b-btn b-btn--quiet nd-btn-2 nd-btn-off b-btn--big b-btn--full" data-native-review-off onClick={p.onReview}>Turn off alerts</button> : null}
+          {d.off ? <button type="button" className="b-btn b-btn--quiet nd-btn-2 nd-btn-off b-btn--big b-btn--full" data-native-review-off onClick={p.onReview}>{t.turnOff}</button> : null}
         </div> : null}
-        <BCardNote center>Your notifications always stay in NEVORA. Your phone’s settings can block app alerts.</BCardNote>
+        <BCardNote center>{t.alwaysInNevora}</BCardNote>
       </section>
       {d.recover ? <div className="b-card nd-confirm" role="group" aria-labelledby="nd-confirm-recover" tabIndex={-1} data-native-confirm>
-        <h2 className="nd-confirm__t" id="nd-confirm-recover">Use alerts for this account?</h2>
-        <p className="nd-text">Turn on app alerts for the account you are signed in to now? This replaces any previous account’s alert setup in this app. Your other devices stay the same.</p>
-        <div className="nd-acts"><button type="button" className="b-btn b-btn--quiet nd-btn-2 b-btn--big b-btn--full" onClick={p.onKeep}>Keep current setup</button><BButton kind="teal" big full onClick={p.onRecover}>Turn on for this account</BButton></div>
+        <h2 className="nd-confirm__t" id="nd-confirm-recover">{t.recoverTitle}</h2>
+        <p className="nd-text">{t.recoverText}</p>
+        <div className="nd-acts"><button type="button" className="b-btn b-btn--quiet nd-btn-2 b-btn--big b-btn--full" onClick={p.onKeep}>{t.keepSetup}</button><BButton kind="teal" big full onClick={p.onRecover}>{t.turnOnForAccount}</BButton></div>
       </div> : null}
       {d.review ? <div className="b-card nd-confirm" role="group" aria-labelledby="nd-confirm-off" tabIndex={-1} data-native-confirm>
-        <h2 className="nd-confirm__t" id="nd-confirm-off">Turn off alerts here?</h2>
-        <p className="nd-text">Turn off alerts for this account in this app? Your phone permission and other devices stay the same. An alert already queued by your phone may still appear.</p>
-        <div className="nd-acts"><button type="button" className="b-btn b-btn--quiet nd-btn-2 b-btn--big b-btn--full" onClick={p.onKeep}>Keep current setup</button><button type="button" className="b-btn b-btn--big b-btn--full eb-btn-danger" onClick={p.onTurnOff}>Turn off alerts</button></div>
+        <h2 className="nd-confirm__t" id="nd-confirm-off">{t.offAskTitle}</h2>
+        <p className="nd-text">{t.offAskText}</p>
+        <div className="nd-acts"><button type="button" className="b-btn b-btn--quiet nd-btn-2 b-btn--big b-btn--full" onClick={p.onKeep}>{t.keepSetup}</button><button type="button" className="b-btn b-btn--big b-btn--full eb-btn-danger" onClick={p.onTurnOff}>{t.turnOff}</button></div>
       </div> : null}
     </BStack>
   </BScreen>;
 }
 /** The phone app's Alerts page when the workplace hasn't made app alerts available (Direction B). */
 export function NativeAlertsUnavailableB() {
+    const t = NATIVE_SHELL_COPY[usePortalLang()];
     return <BScreen back>
-    <BHero back={{ href: '/app/notifications', label: 'Notifications' }} title="Alerts" titleId="b-native-alerts-title"/>
+    <BHero back={{ href: '/app/notifications', label: t.notifications }} title={t.alerts} titleId="b-native-alerts-title"/>
     <BStack>
       <section className="b-card nd-card" aria-labelledby="nd-device-h">
-        <div className="nd-state"><h2 className="nd-eyebrow" id="nd-device-h">This device</h2><Ring tone="grey"><BellSlashIcon size={28} weight="bold"/></Ring>
-          <p className="nd-text">Your workplace has not made app alerts available. Your notifications remain in NEVORA.</p></div>
+        <div className="nd-state"><h2 className="nd-eyebrow" id="nd-device-h">{t.thisDevice}</h2><Ring tone="grey"><BellSlashIcon size={28} weight="bold"/></Ring>
+          <p className="nd-text">{t.notAvailable}</p></div>
       </section>
     </BStack>
   </BScreen>;
