@@ -325,3 +325,22 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#a4b) { height: auto !important; min-height: 36px !important; padding-block: var(--b-space-4) !important; }
   }
 }
+
+/* Location Manager Home (Nov 22, 2026; WCAG 1.4.4): Home at 200% text on phones. A shortcut tile's label wraps instead
+ * of ending in "…". The band's figures and their labels ("Not set up", "Not clocked in") wrap between words instead of
+ * running into the next figure, and Today's three figures move to a second line, only once the text is large for the
+ * width: the band and the Today card are size containers measured in rem, which follow the reader's text size (16rem
+ * and 15rem are below a 320px phone at the default size, so default layouts don't change). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { white-space: normal !important; padding-block: var(--b-space-8) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { overflow: visible !important; text-overflow: clip !important; overflow-wrap: normal !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { container-type: inline-size; }
+  @container (max-width: 16rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live :is(.b-live__v, .b-live__l):not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { white-space: normal !important; overflow-wrap: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live .b-live__l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { align-items: baseline !important; }
+  }
+  @container (max-width: 15rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on .b-kv:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { flex-wrap: wrap !important; row-gap: var(--b-space-12) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on .b-kv > div:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { min-width: min-content !important; }
+  }
+}
