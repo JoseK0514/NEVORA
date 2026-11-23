@@ -5,6 +5,7 @@
  * render tests use to draw a screen in Spanish. Words live in employee-mobile-copy.ts; dates and times in
  * mobile-format.ts. */
 import {createContext,useContext} from 'react';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
 import type {MobileLang} from './mobile-format';
 
 export type {MobileLang} from './mobile-format';
@@ -15,12 +16,9 @@ export const MobileLangProvider=Override.Provider;
 
 /** The language for the Employee phone screens: an override when one is set, else the person's portal language. */
 export function useMobileLang():MobileLang{
- const own=useContext(Override);
- return own??portalLang();
+ const own=useContext(Override),portal=usePortalLang();
+ return own??portal;
 }
-
-/* Until the shell's PortalLangProvider lands (src/lib/i18n/portal-lang.tsx), the portal language reads as English. */
-function portalLang():MobileLang{return 'en';}
 
 /** One screen's words in the person's language: `const t=useMobileCopy(hoursCopy)`. */
 export function useMobileCopy<T>(table:{en:T;es:T}):T{return table[useMobileLang()];}
