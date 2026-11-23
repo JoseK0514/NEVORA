@@ -128,7 +128,7 @@
     html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-row__detail, .q-rt span, .q-rt small) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
 
     /* Pills become chips; buttons become the mock's pills. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-pill:not(.b-status) { height: var(--b-chip-h) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-count) !important; line-height: 16px !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-pill:not(.b-status) { height: max(var(--b-chip-h), 1.375rem) !important; border-radius: var(--b-radius-pill) !important; font-size: 0.75rem !important; line-height: 1rem !important; font-weight: 600 !important; }
     /* Round 5 (Nov 7): a primary button is a pill whether or not it can be pressed (disabled ones were 5–8px rectangles);
      * only the soft shadow waits for it to be enabled. */
     /* Nov 14 inspection (SY-015): the red secondary is a pill too (it kept the corporate 8px corners); b-foundation.css
