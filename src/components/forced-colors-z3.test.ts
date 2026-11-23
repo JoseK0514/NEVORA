@@ -53,4 +53,13 @@ describe('forced colours keep controls visible (Z3)', () => {
   it('keeps the billing and Clocker paused actions as buttons', () => {
     expect(forced(read('src/components/commerce-recovery/recovery.module.css'))).toMatch(/\.action, \.secondary, \.lang \{ border: 1px solid ButtonText; \}/);
   });
+  it('keeps the page-loading bar and the skeleton blocks visible (shell and kit)', () => {
+    expect(forced(read('src/app/app/corp-shell.css'))).toMatch(/\.c-progress > i \{ forced-color-adjust: none; background: Highlight; \}/);
+    expect(forced(read('src/app/app/b-shimmer.css'))).toMatch(/\.b-screen\[data-b-load\] \.b-skel, \.b-skel-card \.b-skel,[^{]*\{ border: 1px solid GrayText; \}/);
+    // Outside forced colours neither file draws these.
+    for (const path of ['src/app/app/corp-shell.css', 'src/app/app/b-shimmer.css']) {
+      const plain = read(path).replace(/@media \(forced-colors: active\) \{[\s\S]*?\n\}\n?/g, '');
+      expect(plain).not.toMatch(/Highlight;|GrayText/);
+    }
+  });
 });
