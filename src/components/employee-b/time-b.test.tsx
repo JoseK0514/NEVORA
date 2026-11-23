@@ -39,8 +39,10 @@ describe('Time tab (e-time)',()=>{
   expect(b).toContain('href="/app/my-time?view=corrections&amp;edit=new"');expect(plain).toContain('Fix a missed punch');expect(plain).toContain('Hours include breaks.');
   // Final polish, round 2 (T1), Nov 23, 2026: a day row's range is Range, which breaks only after the dash, so a 320px row
   // reads "7:59 AM –" over "4:01 PM"; the link's spoken label is the plain range.
-  expect(b).toContain('<span id="b-hours-entry-own-1"><span class="eb-nb">7:59\u00a0AM\u00a0–</span> <span class="eb-nb">4:01\u00a0PM</span></span>');
-  expect(b).toContain('aria-label="Monday, October 26, 7:59 AM – 4:01 PM, 8 h 2 min, 30 min break"');
+  expect(b).toContain('<span id="b-hours-entry-own-1"><span class="b-sr">Monday, October 26, </span><span class="eb-nb">7:59\u00a0AM\u00a0–</span> <span class="eb-nb">4:01\u00a0PM</span></span>');
+  // Phase 2 gate (Nov 23): the row is named by what it shows, with the day (drawn aria-hidden) said first for screen readers.
+  expect(b).not.toContain('aria-label="Monday, October 26');
+  expect(b).toContain('<span id="b-hours-entry-own-1"><span class="b-sr">Monday, October 26, </span>');
   // Last week is its own private read: hidden until it arrives.
   expect(plain).not.toContain('Last week');
  });
