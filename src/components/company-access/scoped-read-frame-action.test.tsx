@@ -5,7 +5,8 @@ import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 // person, but the page reloaded the review and ended on "Coverage changed". The frame's re-check refreshed the page
 // with router.replace, a navigation, and Next discards a Server Action still at the head of its router queue when a
 // navigation starts, redirect included. These tests pin the rule: after a Server Action starts on this page, the
-// frame's refresh is router.refresh(), which Next queues behind the action, never a replace.
+// frame's refresh is router.refresh(), which Next queues behind the action, never a replace (and since the WebKit
+// history fix, no background refresh is a replace at all).
 const fixture=rs.hoisted(()=>({
  states:[] as unknown[],effects:[] as (()=>void|(()=>void))[],
  start:rs.fn(),pause:rs.fn(),stop:rs.fn(),
@@ -80,17 +81,19 @@ it('after the reply, while the router is still applying its redirect, the refres
  expect(fixture.router.refresh).toHaveBeenCalledTimes(1);
 });
 
-it('with no Server Action on the page, the re-check keeps its same-page replace (router cache kept), as before',async()=>{
+// WebKit period history (QA, Nov 23, 2026): with no Server Action either, a re-check refreshes and never navigates. The
+// same-address replace this used to be could show the route's loading.tsx in WebKit and drop the page's client state.
+it('with no Server Action on the page, the re-check refreshes in place, never a replace',async()=>{
  await reviewOnScreen();
  recheckAnswers();
- expect(fixture.router.replace).toHaveBeenCalledWith('/app/schedule/new?review=fictional-token',{scroll:false});
- expect(fixture.router.refresh).not.toHaveBeenCalled();
+ expect(fixture.router.replace).not.toHaveBeenCalled();
+ expect(fixture.router.refresh).toHaveBeenCalledTimes(1);
 });
 
-it('a page rendered after the action settled is the new baseline: its later re-checks replace again',async()=>{
+it('a page rendered after the action settled refreshes the same way on its later re-checks',async()=>{
  serverActionStarted()();
  await reviewOnScreen();
  recheckAnswers();
- expect(fixture.router.replace).toHaveBeenCalledTimes(1);
- expect(fixture.router.refresh).not.toHaveBeenCalled();
+ expect(fixture.router.replace).not.toHaveBeenCalled();
+ expect(fixture.router.refresh).toHaveBeenCalledTimes(1);
 });
