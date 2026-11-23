@@ -402,7 +402,8 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
           <li className="c-payroll__upnext"><CorpRow href={step.href} bold title={frequency}
             detail={<><Num>{quietRange(current.period.startDate, current.period.endDate)}</Num>{' · Scheduled payday '}<Num>{quietDay(current.payday)}</Num></>}
             value={nextValue} valueTone="soft" chevron
-            label={`${frequency}, ${quietRange(current.period.startDate, current.period.endDate)}, scheduled payday ${quietDay(current.payday)}${people.length ? `, ${plural(people.length, 'person', 'people')}` : ''}. ${step.label}`} /></li>
+            // Sweep 1: the name starts with the row's visible text; the step is added only when the row doesn't show it.
+            label={`${frequency} ${quietRange(current.period.startDate, current.period.endDate)} · Scheduled payday ${quietDay(current.payday)}${nextValue ? ` ${nextValue}` : `. ${step.label}`}`} /></li>
           {timecards ? <li><CorpRow href={timecards.href} title="Timecards" detail={timecards.line} chevron /></li> : null}
           {missing && !oldest ? <li><CorpRow href="/app/payroll/prepare" bold title="Periods with no payroll" detail="Prepare payroll for each one" value={missing.missingCount === null ? 'Check' : <Num>{String(missing.missingCount)}</Num>} chevron /></li> : null}
         </CorpRows>
