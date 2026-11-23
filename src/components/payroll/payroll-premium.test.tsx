@@ -27,7 +27,9 @@ describe('Payroll next step (A2)', () => {
   it('prepares when no draft exists, and the label matches the Prepare payroll page', () => {
     const html = home();
     // Nov 1 upscale: Up next is one row that opens the step (no button); the step is in its name.
-    expect(html).toMatch(/<li class="c-payroll__upnext"><a class="c-row" aria-label="Weekly payroll [A-Z][a-z]{2} [^"]* · Scheduled payday [^"]*\. Prepare payroll" href="\/app\/payroll\/prepare">/);
+    // Sweep 1: named by its own text (no aria-label); the step it opens is read, not drawn.
+    expect(html).toMatch(/<li class="c-payroll__upnext"><a class="c-row" href="\/app\/payroll\/prepare">/);
+    expect(html).toMatch(/<li class="c-payroll__upnext">.*?<span class="c-sr">\. Prepare payroll<\/span>/);
     expect(html).not.toContain('c-btn');
     expect(html).not.toContain('>Review<');
   });
