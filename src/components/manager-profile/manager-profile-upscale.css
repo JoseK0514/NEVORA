@@ -7,6 +7,12 @@
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > summary.q-row::after { display: none; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section > .nv-card__head { display: none; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section { grid-template-columns: minmax(0, 1fr); row-gap: 12px; padding-top: 4px; box-shadow: none; }
+/* Phase 2 Z2 (Nov 23, 2026): on a phone "Add a passkey" goes under its explanation. The shared passkey row puts the
+ * button in grid column 2, which added a column beside the one-column row above and squeezed the explanation to about
+ * 130px at 320. From 768px the button stays beside the text as before. */
+@media (max-width: 767px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section .pk-add { grid-column: 1; grid-row: auto; justify-self: start; }
+}
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-device-other { display: none; }
 @media (min-width: 768px) {
   :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-device-phone { display: none; }
@@ -88,5 +94,18 @@
 @layer nv-b {
   @media (max-width: 767px) {
     html body .app-shell[data-nv-b] .q-page.premium-manager-profile .ma :is(.ma-h, .ma-escalate) { padding-left: var(--b-space-20) !important; padding-right: var(--b-space-20) !important; }
+  }
+}
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): a notification switch is painted by its background alone, so under Windows
+ * contrast themes it vanished and on and off looked the same. It keeps an edge and a thumb in system colours; on is the
+ * Highlight track. Nothing changes outside forced colours. */
+@media (forced-colors: active) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row > .q-tog:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border: 1px solid ButtonText !important; forced-color-adjust: none !important; background-color: Canvas !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row > .q-tog:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { forced-color-adjust: none !important; background-color: ButtonText !important; box-shadow: none !important; top: 1px !important; left: 1px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row > .q-tog[aria-checked="true"]:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { background-color: Highlight !important; border-color: Highlight !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row > .q-tog[aria-checked="true"]:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { background-color: HighlightText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .pmp-switch-row[aria-disabled="true"] > .q-tog:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border-color: GrayText !important; }
   }
 }

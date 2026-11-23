@@ -342,7 +342,7 @@ export type SectionTabGroup = { label: string; items: { href: string; label: str
 
 /** Pages that share one place in the navigation show tabs between each other.
  * Every tab is an existing URL; only destinations the role can open appear. */
-/** Owner premium (Oct 31): Payroll's own tabs under its title (Payroll · Time exports · Payroll settings), with the access
+/** Owner premium (Oct 31): Payroll's own tabs under its title (Pay runs · Time exports · Settings), with the access
  * rules the retired "Time and pay" row used. Timecards belongs to Time and is not one of them. A lone tab is no tab row. */
 export function payrollTabsFor(role: UserRole, payroll?: PayrollCapabilities, context: NavContext = {}): SectionTabGroup["items"] | null {
   if (role === "EMPLOYEE" || role === "LEAD") return null;
@@ -350,9 +350,11 @@ export function payrollTabsFor(role: UserRole, payroll?: PayrollCapabilities, co
   const authorized = new Set(navigationForRole(role, payroll, context).map(item => item.href));
   if (payroll?.canConfigure) authorized.add("/app/settings/payroll");
   const items = [
-    ...(authorized.has("/app/payroll") ? [{ href: "/app/payroll", label: "Payroll" }] : []),
+    // Phase 2 (G1, G8, J12): from 768 the band title on all three pages is the section, "Payroll", and the tabs name the
+    // pages, so the selected tab never repeats the title.
+    ...(authorized.has("/app/payroll") ? [{ href: "/app/payroll", label: "Pay runs" }] : []),
     { href: "/app/payroll-export", label: "Time exports" },
-    ...(payroll?.canConfigure ? [{ href: "/app/settings/payroll", label: "Payroll settings" }] : []),
+    ...(payroll?.canConfigure ? [{ href: "/app/settings/payroll", label: "Settings" }] : []),
   ].filter(item => pathEnabled(item.href, modules) && (role !== "MANAGER" || authorized.has(item.href)));
   return items.length > 1 ? items : null;
 }

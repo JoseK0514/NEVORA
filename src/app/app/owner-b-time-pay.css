@@ -263,13 +263,16 @@
    * keeps its dash tight (Inter's tabular dash is wide). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hkicker__when:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 500 !important; color: var(--b-on-band-2) !important; white-space: nowrap !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hbig:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-variant-numeric: normal !important; font-feature-settings: normal !important; }
-  /* #6: at 320px the Settings pill keeps the title's row; the cadence line wraps under both. */
+  /* #6: at 320px the Settings pill keeps the title's row; the cadence line wraps under both. Final fixes K (Nov 23, 2026):
+   * a wrapping row instead of a two-column grid, so when the title and the pill no longer fit side by side (200% text:
+   * "Payroll" with Settings, "Pay" with "See your hours") the pill drops under the title instead of covering it. At the
+   * default size the title fills the row and the pill ends it, as the grid drew. */
   @media (max-width: 359px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; align-items: center !important; column-gap: var(--b-space-12) !important; row-gap: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; column-gap: var(--b-space-12) !important; row-gap: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: contents !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > *:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 1 / -1 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > h1:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 1 !important; grid-row: 1 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title > .b-title__right:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 2 !important; grid-row: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > *:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 2 !important; flex: 0 0 100% !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > h1:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 0 !important; flex: 1 1 auto !important; min-width: min-content !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title > .b-title__right:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 1 !important; flex: none !important; }
   }
   /* #17: Payroll history's View and Download end on the card's text edge, where the amounts and chevrons above end. */
   @media (min-width: 768px) {

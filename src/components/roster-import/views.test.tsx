@@ -224,3 +224,15 @@ describe("the whole screen as it opens", () => {
     expect(html).toContain(">Revisar lista</button>");
   });
 });
+
+describe("Package X: phone fixes", () => {
+  it("the example scrolls as a named region the keyboard can reach", () => {
+    const html = renderToStaticMarkup(<AddListStep copy={copy} text="" fileNote={null} listError={null} locations={locations} locationId="" locationError={null} busy={false} onText={nothing} onFile={nothing} onLocation={nothing} />);
+    expect(html).toContain('<div class="rimp-scroll" tabindex="0" role="region" aria-label="Example">');
+  });
+  it("a row that needs a fix shows a 10-digit phone as checked rows do", () => {
+    const html = renderToStaticMarkup(<ReviewStep {...reviewProps(review(["E-4,Mara,Gerente,7875550104,m@example.invalid,MANAGER"]))} />);
+    expect(html).toContain('<span class="rimp-row__main">787-555-0104</span>');
+    expect(html).not.toContain(">7875550104<");
+  });
+});

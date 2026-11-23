@@ -271,7 +271,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-step[data-done] .b-step__n, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-step--done .b-step__n { background: var(--b-green-50); color: var(--b-green); }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(main.page-frame, .c-page, .q-page) { font-variant-numeric: normal; }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-num, .b-live__v, .b-kv b, td, time, .b-pill, .nav-count, .q-count, .b-tab-badge, .c-count, .b-week__d b, .b-step__n) { font-variant-numeric: tabular-nums; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-date { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; font-size: 14px; font-weight: 600; color: var(--b-on-band); scale: 1; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-date { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; font-size: 0.875rem; font-weight: 600; color: var(--b-on-band); scale: 1; }
 /* Review F3 (NV-329): the only b-enter and b-fade (owner-b.css no longer repeats them inside its motion queries); b-enter is
  * DESIGN.MD's first-load entrance: opacity, a 4px blur and a 12px rise. */
 @keyframes b-enter { from { opacity: 0; translate: 0 12px; filter: blur(4px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
@@ -483,7 +483,7 @@ html body .app-shell[data-nv-b] :is(.b-glass, .b-btn--glass, nav.c-pay-tabs, nav
    * page's hero (they were 28px ink on the canvas under an empty bar). */
   @media (max-width: 767px) {
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child { position: relative !important; z-index: 1 !important; margin: 0 calc(50% - 50vw) !important; padding: 0 var(--b-space-16) 18px !important; border: 0 !important; border-radius: 0 !important; background: #08504C !important; box-shadow: 0 -16px 0 #08504C !important; color: var(--b-on-band-2) !important; }
-    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child h1 { margin: 0 !important; font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; }
+    html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child h1 { margin: 0 !important; font: 700 1.75rem/2.125rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child p { margin: var(--b-space-2) 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2) !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav + article > .q-hd:first-child + * { margin-top: var(--b-space-16) !important; }
   }
@@ -697,10 +697,11 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   /* Narrow phones (320–359px): a track of three or more items without a sliding thumb (Insights' periods, Things to do's
    * filters, Pick up and swap) gives each item its label's width plus an equal share of what is left, so a long label isn't
    * clipped or pressed to its thumb's edge while a short one has room to spare (equal columns clipped "This week" by 4px at
-   * 320). A track whose thumb slides (data-slide) keeps its equal columns, which the thumb's position is computed from. */
+   * 320). A track whose thumb slides (data-slide) keeps its equal columns, which the thumb's position is computed from.
+   * Target size (Nov 23, 2026): no item narrower than 44px (Things to do's "All" was 41px at 320). */
   @media (max-width: 359px) {
     html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) { grid-template-columns: none !important; grid-auto-flow: column !important; grid-auto-columns: auto !important; }
-    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 0 !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
+    html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg):not([data-slide]):has(> :nth-child(3)) > :is(a, button) { flex: 1 1 auto !important; min-width: 44px !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; }
   }
   /* Team's filters (on white, in the people card): the same track as the other controls on white, scrolling on a phone. */
   html body .app-shell[data-nv-b] .b-filters {
@@ -817,6 +818,11 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
 @media (forced-colors: active) {
   html body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]),
   html body .app-shell[data-nv-b] :is(.b-search, .c-team-search__field, .c-pins__search, .b-glass, .b-btn--glass, .b-seg > [aria-current="page"], .b-seg > [aria-pressed="true"], .b-filters > [aria-pressed="true"]) { outline: 1px solid ButtonText; outline-offset: -1px; }
+  /* Z3 (Nov 23, 2026): a filled button's only edge was its fill, which forced colours removes, so "Add employee", "Try
+   * again" or "Delete my account" read as plain text. Every kit button gets a system-colour edge, drawn as an inset
+   * outline because many c-btn rules set border: 0 !important; GrayText when disabled. The layered focus ring still wins. */
+  html body :is(.b-btn, .c-btn):not(:disabled, [aria-disabled="true"]) { outline: 1px solid ButtonText !important; outline-offset: -1px !important; }
+  html body :is(.b-btn, .c-btn):is(:disabled, [aria-disabled="true"]) { outline: 1px solid GrayText !important; outline-offset: -1px !important; }
 }
 
 /* ---------- Phase 8 (Nov 17, 2026): short windows (src/lib/b-viewport.ts B_WIDE_SHORT) ----------
@@ -1045,12 +1051,15 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
   }
 }
 
-/* Premium pass (Nov 20, 2026): a count inside a segment is a plain numeral in the label's colour at 62%, not a filled
+/* G87 (Nov 23, 2026): the count is the label's own colour at full strength. At 62% (56% on the selected tab) a band
+ * tab's white count was 2.9:1 on the teal (axe color-contrast at 1440); the smaller semibold numeral and the gap keep it
+ * apart from the label.
+ * Premium pass (Nov 20, 2026): a count inside a segment is a plain numeral in the label's colour, not a filled
  * circle (the white thumb's teal circle and the amber one beside "For you" read as stickers). A count that waits on the
  * person keeps one small amber dot before it. Supersedes "a 20px count pill" in NV-103; the gap and the type stay. */
 @layer nv-b {
-  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { display: inline-flex !important; align-items: center !important; min-width: 0 !important; height: auto !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: inherit !important; opacity: 0.62 !important; font-size: var(--b-fs-caption) !important; line-height: 16px !important; font-weight: 600 !important; }
-  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { background: none !important; color: inherit !important; opacity: 0.56 !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { display: inline-flex !important; align-items: center !important; min-width: 0 !important; height: auto !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: inherit !important; opacity: 1 !important; font-size: var(--b-fs-caption) !important; line-height: 16px !important; font-weight: 600 !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { background: none !important; color: inherit !important; opacity: 1 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"]) { background: none !important; color: inherit !important; opacity: 1 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"])::before { content: "" !important; flex: none !important; width: 6px !important; height: 6px !important; margin-inline-end: 5px !important; border-radius: 50% !important; background: #FFC46B !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.eb-segn--amber, .b-count[data-tone="amber"])::before { background: var(--b-amber-solid) !important; }

@@ -9,9 +9,7 @@ export type PayrollTab = { href: string; label: string };
  * them (it belongs to Time, and its tab moved the reader out of Payroll with no way back). The list and its access
  * rules are the ones the shell's retired "Time and pay" row used (navigation.ts payrollTabsFor). */
 export function payrollTabs(role: UserRole, payroll?: PayrollCapabilities): PayrollTab[] | null {
-  // Phase 2 (G1, G8): the band title above these tabs is "Payroll", so the runs page's tab is "Pay runs" (it repeated the
-  // title right under it from 768). The shell's own "Payroll" entry is unchanged.
-  return payrollTabsFor(role, payroll)?.map(item => item.href === '/app/payroll' ? { ...item, label: 'Pay runs' } : item) ?? null;
+  return payrollTabsFor(role, payroll);
 }
 
 /** 44px text tabs with a 2px teal line under the current one, on tablets and desktop (a phone reaches these pages from
