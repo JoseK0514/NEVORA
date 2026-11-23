@@ -11,7 +11,9 @@ The lead's scope went through several changes:
 ## Commits to merge
 | Commit | What |
 |---|---|
-| `9104de3c` | Item 4 (G1, G8): Payroll's runs tab reads "Pay runs" under the band title "Payroll". On the Owner's Time exports, from 768, the band reads "Payroll" and the selected tab reads "Time exports". |
+| `9104de3c` | Item 4, first step: the Owner's Time exports band reads "Payroll" from 768. Its payroll-tabs relabel was replaced by `a58fdbb2`. |
+| `a58fdbb2` | Item 4 (G1, G8, J12): the tab labels come from `navigation.ts` payrollTabsFor ("Pay runs", "Time exports", "Settings"). From 768 the band reads "Payroll" on all three pages; phones keep each page's own title. `SettingsPageB` gains an optional `wideTitle` prop, an additive change to `settings-b.tsx`. |
+| `e18c2c25` | G10 Pay: the band and card lines are in rem, at the same sizes by default. Covers `pay.css` and the `.ep-next` lines at `employee-b-work.css:199` and `employee-b-desktop.css:197/540`. |
 | `2c4e556b` | G10 Pay: "Statement ready" / "Corrected" wraps under "Last pay statement" when they don't fit together. This covers the Employee, the Lead and Owner/Manager My pay. |
 | `066b0b5d` | Payroll at 200% text: step titles use a 1.25rem line height (20px by default), the step number's circle uses 1.75rem, and the Prepare button wraps. |
 | `aaaccf21` | Payroll at 200% text: the Prepare button shrinks to fit beside the phone’s 48px text offset (checked at 320 with 200% text: no longer clipped). |
@@ -52,3 +54,13 @@ The lead's scope went through several changes:
 - Shell, Package K: from 768 the Owner/Manager shell hides `.b-screen`, so their My pay shows the corporate desktop half of the same component. Same cause as F10.
 - Time exports at 768 with 200% text: the Paid time export detail line is cut off with an ellipsis in its row.
 - Payroll settings (J12) still repeats "Payroll settings" in its band and its tab. I left it to the Settings session.
+
+## Final recapture (from `e18c2c25`)
+- Screens: G1–G9 and J12 for the Owner; G1 and G8 for Elena; My pay for the Owner, Elena, Daniel and James.
+- Widths: 390, 390 with 200% text, 768 and 1440, with viewport-height phone shots. The files are in `shots/payroll-2/img`, listed in `rows.json`.
+- Results:
+  - axe: 0 violations on all 64 captures.
+  - No horizontal overflow, overlap or off-screen text.
+  - One clip: the "Replaced" chip on G1 Recent payrolls at 390 with 200% text (`payroll-runs.tsx`).
+  - G8-m at 390 with 200% text was captured while the page was still loading.
+- This supersedes the shot notes above.
