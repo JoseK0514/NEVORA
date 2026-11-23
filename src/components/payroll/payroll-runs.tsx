@@ -367,11 +367,11 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
         <BCard title="Recent payrolls" id="b-payroll-recent" link={{ href: '/app/payroll/history', label: 'Payroll history' }}>
           {past.length ? <BList label="Past periods">{byCorrection(past).slice(0, 3).map(({ item, replaced }) => {
             const approved = item.status === 'APPROVED';
-            // Closing F1 (NV-082): a replaced payroll follows its correction with a grey "Replaced" chip.
+            // Closing F1 (NV-082): a replaced payroll follows its correction; it says so once, in its line ("Replaced by a correction").
             // Premium pass FA (final verification A #30): one payroll row, the one Payroll history draws: a row that opens leads
             // with the teal circle, "Approved" is the last fact of its line, and the amount is "Net".
             return <BRow key={item.id} href={reviewHref(item.id)} lead={<BIcon tone="teal"><ReceiptIcon weight="bold" /></BIcon>}
-              title={<span className={replaced ? 'c-pay__was' : undefined}>{quietRange(item.period.startDate, item.period.endDate)}</span>} chip={replaced ? <BChip>Replaced</BChip> : item.correctionOf ? /* Final polish (Nov 20, 2026): a correction is a fact about the payroll, so grey meta beside the period; the chip stays for "Replaced". */ <BStatusText>Correction</BStatusText> : approved ? undefined : <BChip tone="amber">{statusLabels[item.status]}</BChip>}
+              title={<span className={replaced ? 'c-pay__was' : undefined}>{quietRange(item.period.startDate, item.period.endDate)}</span>} chip={replaced ? /* Batch 1 item 3 (as RunRow): the line below already says "Replaced by a correction", so no chip repeats it. */ undefined : item.correctionOf ? /* Final polish (Nov 20, 2026): a correction is a fact about the payroll, so grey meta beside the period; the chip stays for "Replaced". */ <BStatusText>Correction</BStatusText> : approved ? undefined : <BChip tone="amber">{statusLabels[item.status]}</BChip>}
               /* Premium pass FA (final verification A #10): "Payday Fri, Nov 6" is one unit and never splits. */
               sub={<BSegs parts={[replaced ? 'Replaced by a correction' : null, `Payday ${quietDay(item.payday)}`.replace(/ /g, '\u00a0'), approved && !replaced ? 'Approved' : null]} />}
               end={item.totals ? <><b className="c-num">{formatPayrollMoney(item.totals.netMinor)}</b><span>Net</span></> : undefined} chevron={!item.totals} />;
