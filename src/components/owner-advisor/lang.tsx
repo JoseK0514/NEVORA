@@ -3,10 +3,9 @@
  * portal's (`usePortalLang`, the Profile choice, then the sign-in cookie, then the browser's, then English), unless a
  * caller sets it for a subtree (tests and previews). Strings live in each screen's `*-copy.ts` table. */
 import { createContext, useContext, type ReactNode } from "react";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
 import type { Lang } from "./format";
 
-// Until the shell's `usePortalLang` lands on the shared branch, the portal language reads as English.
-const usePortalLang = (): Lang => "en";
 
 const Override = createContext<Lang | null>(null);
 
