@@ -45,11 +45,12 @@ describe('Notifications', () => {
     // Inspection Nov 14 (BR-6, EM-005): each title says what happened, not the category's name.
     for (const value of ['Notifications', 'All', 'Unread 2', 'Today', 'Yesterday', 'Earlier', 'Confirm your schedule', 'Action needed', 'Acknowledge the team update', 'Pay statement shared', 'Settings']) expect(plain).toContain(value);
     for (const gone of ['Schedule update', 'Pay statement update']) expect(plain).not.toContain(gone);expect(plain).not.toMatch(/Team update(?! to acknowledge)/);
-    expect(html).toContain('aria-label="Confirm your schedule, unread, action needed, 2:10 PM"');
+    // Sweep Z (B3): rows are named by their own text; the unread dot's meaning is b-sr text inside the row.
+    expect(html).not.toMatch(/<a [^>]*class="b-row b-row--link eb-notif[^"]*"[^>]*aria-label=/);expect(html).toContain('<span class="b-sr">unread, </span>');
     expect(html).toContain('href="/app/profile/device-alerts"');expect(html).toContain('class="eb-noacts"');
     expect(html.match(/class="eb-unread"/g)).toHaveLength(2);expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(2);
     // Phase 4 (EM-009): "Action needed" is the amber chip, the dot comes before the time, and an earlier day shows its date then its hour.
-    expect(html.match(/b-chip b-chip--amber">Action needed</g)).toHaveLength(2);expect(html).toMatch(/<i class="eb-unread" aria-hidden="true"><\/i><span class="eb-when__t">2:10 PM<\/span>/);
+    expect(html.match(/b-chip b-chip--amber">Action needed</g)).toHaveLength(2);expect(html).toMatch(/<i class="eb-unread" aria-hidden="true"><\/i><span class="b-sr">unread, <\/span><span class="eb-when__t">2:10 PM<\/span>/);
     expect(html).toContain('<span class="eb-when__t">Oct 30, 9:00 AM</span>');expect(html.match(/eb-notif--unread/g)).toHaveLength(2);
     // On phones the time ends the sub-line instead (the wide and phone copies are shown by width; the label says it once).
     expect(html.match(/eb-notif__o--p/g)).toHaveLength(3);expect(html.match(/eb-notif__s--p/g)).toHaveLength(1);expect(html).not.toContain('eb-notif__o--w');
@@ -65,7 +66,7 @@ describe('Notifications', () => {
     expect(plain).toContain('Confirm your schedule');expect(plain).toContain('2 notifications');
     // Closed, neither notice is a separate row yet; the Earlier one is unchanged.
     expect(html).not.toContain('id="b-message-n1"');expect(html).not.toContain('id="b-message-n1b"');expect(html).toContain('id="b-message-n3"');
-    expect(html).toContain('aria-label="Confirm your schedule, 2 notifications, 1 unread, action needed, 2:10 PM"');
+    expect(html).not.toMatch(/<button [^>]*class="b-row b-row--link eb-notif eb-fold[^"]*"[^>]*aria-label=/);expect(html).toContain('<span class="b-sr">1 unread, </span>');
   });
   // Phase 4 (EM-005): the title is the outcome and the sub-line is what it is about, from the event type and subject the list sends.
   it('a decision leads with its state and says its dates; a schedule says its week and shifts; a swap says who asked', async () => {
@@ -77,12 +78,12 @@ describe('Notifications', () => {
     ];
     const html = renderToStaticMarkup(<EmployeeNotificationsB list={list({items: facts})} />), plain = text(html);
     for (const value of ['Time off approved', 'Nov 30–Dec 2', 'Time off declined', 'Sat, Dec 5', 'Schedule published', 'Week of Nov 9', '2 shifts', 'Swap request waiting for you', 'Sat, Nov 28', 'From Ana Colon']) expect(plain).toContain(value);
-    expect(html).toContain('aria-label="Time off approved, Nov 30–Dec 2, unread, 2:10 PM"');expect(html).toContain('aria-label="Schedule published, Week of Nov 9, 2 shifts, 12:10 PM"');
+    expect(html).not.toContain('aria-label="Time off approved');expect(html).not.toContain('aria-label="Schedule published');
     expect(html.match(/b-ico b-ico--green/g)).toHaveLength(1);expect(html.match(/eb-notif--declined/g)).toHaveLength(1);expect(plain).not.toContain('Action needed');
     // Final polish, round 2 (H2, N1): a swap that waits for this person's answer is amber with the Requests page's chip,
     // and a row's parts keep one order: title, grey line, then the chip.
     expect(html.match(/b-chip b-chip--amber">Needs your answer</g)).toHaveLength(1);expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(1);
-    expect(html).toContain('aria-label="Swap request waiting for you, Sat, Nov 28, From Ana Colon, unread, needs your answer, 11:10 AM"');
+    expect(html).not.toContain('aria-label="Swap request waiting for you');
     const swapRow = html.slice(html.indexOf('id="b-message-d"'));
     expect(swapRow.indexOf('Swap request waiting for you')).toBeLessThan(swapRow.indexOf('From Ana Colon'));expect(swapRow.indexOf('From Ana Colon')).toBeLessThan(swapRow.indexOf('Needs your answer<'));
     // Final review C (row 16): a declined time off keeps its kind's glyph (CalendarMinus) in the grey circle; no x.

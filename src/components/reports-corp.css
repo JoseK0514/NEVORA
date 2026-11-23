@@ -130,4 +130,14 @@
   /* At large text the period segments wrap to rows instead of squeezing each label onto two lines (a tall circle). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins .c-ins__seg:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { flex-wrap: wrap !important; height: auto !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins .c-ins__seg > button:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { flex: 1 1 auto !important; white-space: nowrap !important; }
+  /* Final fixes K (Nov 23, 2026): the period labels grow with text without the kit's 20px cap (14px, 12.5px under 360px at the
+   * default size); the four tabs wrap to rows at 200%, which is fine here. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins .c-ins__seg:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { --b-seg-fs: 0.875rem; }
+  @media (max-width: 359px) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins .c-ins__seg:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { --b-seg-fs: 0.78125rem; } }
+}
+
+/* Rondo follow-up (Nov 23, 2026): the phone band title in rem at its current 28/34px (the shell sets px), so it grows with
+ * 200% text like the rest of the page. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins.c-page .c-nav--phone .c-nav__title:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1.75rem !important; line-height: 2.125rem !important; }
 }

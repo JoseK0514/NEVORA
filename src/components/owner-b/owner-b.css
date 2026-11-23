@@ -116,13 +116,13 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-title { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--b-space-12); padding: 14px var(--b-space-20) 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title__text { min-width: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title h1 { font-size: var(--b-fs-display); line-height: var(--b-lh-display); font-weight: 700; letter-spacing: -0.03em; color: var(--b-on-band); text-wrap: balance; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-title--big h1 { font-size: 34px; line-height: 40px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-title--big h1 { font-size: 2.125rem; line-height: 2.5rem; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-eyebrow { font-size: var(--b-fs-body); line-height: 1.25rem; font-weight: 500; color: var(--b-on-band-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-sub { margin-top: var(--b-space-2); font-size: 0.875rem; line-height: 1.1875rem; color: var(--b-on-band-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title__right { display: flex; gap: var(--b-space-8); align-items: center; flex: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-hrow { display: flex; flex-wrap: wrap; gap: var(--b-space-8); align-items: center; padding: 14px var(--b-space-20) 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-hpad { padding: var(--b-space-16) var(--b-space-20) 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-hbig { margin: var(--b-space-4) 0 0; font-size: 34px; line-height: 40px; font-weight: 700; letter-spacing: -0.03em; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-hbig { margin: var(--b-space-4) 0 0; font-size: 2.125rem; line-height: 2.5rem; font-weight: 700; letter-spacing: -0.03em; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-hkicker { display: flex; justify-content: space-between; align-items: center; gap: var(--b-space-8); font-size: 14px; color: var(--b-on-band-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-live { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: var(--b-space-16) var(--b-space-20) 0; border-radius: 18px; overflow: hidden; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-live__i + .b-live__i { box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.14); }
@@ -131,7 +131,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-live__a:active { background-color: rgb(255 255 255 / 0.08); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-live__l { display: flex; align-items: center; gap: 6px; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-on-band); white-space: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-live__v { font-size: var(--b-fs-figure); line-height: var(--b-lh-figure); font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; color: var(--b-on-band); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-live__v small { font-size: 14px; font-weight: 500; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-live__v small { font-size: 0.875rem; font-weight: 500; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-dot { flex: none; width: 7px; height: 7px; border-radius: 4px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-dot--live { background: #7EF0C7; box-shadow: 0 0 0 3px rgb(126 240 199 / 0.25); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-dot--warn { background: #FFC46B; }
@@ -159,7 +159,7 @@
 /* Phase 9: every control in a band row shares one height: 40px on a phone (the round glass buttons' size; glass pills
  * drew 36px), 48px from 768px (the desktop sheets' band actions, 15.5/22). On a phone the pills keep their type and
  * sides: a wider pill pushed Payroll's "Settings" under its title. */
-:is(#c-root, html) .app-shell[data-nv-b] .b-hero :is(.b-btn--white, .b-btn--glass):not(.b-btn--full, .b-btn--big) { min-height: 40px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-hero :is(.b-btn--white, .b-btn--glass):not(.b-btn--full, .b-btn--big) { min-height: var(--b-btn-h); } /* Final fixes K: 44px on phones (was 40px) */
 :is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-btn--glass:not(.b-btn--full, .b-btn--big) { font-size: 0.875rem; }
 @media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] .b-hero :is(.b-btn--white, .b-btn--glass):not(.b-btn--full, .b-btn--big) { min-height: var(--b-btn-h-band); } }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--full { display: flex; width: 100%; min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 16px; line-height: 22px; }

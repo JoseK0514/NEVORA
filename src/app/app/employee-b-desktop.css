@@ -194,7 +194,7 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .b-hero > .b-title:has(+ .ep-next) > .b-title__text { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; white-space: nowrap !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next:not(#e-none):not(#e-none2) { padding: 0 !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__k { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; color: var(--b-on-band-2) !important; margin-bottom: var(--b-space-2) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__v { margin: 0 !important; font-size: 40px !important; line-height: 46px !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__v { margin: 0 !important; font-size: 2.5rem !important; line-height: 2.875rem !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__row { margin-top: 18px !important; gap: 10px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__row .b-btn:not(#e-none):not(#e-none2) { min-height: 42px !important; height: 42px !important; padding: 0 var(--b-space-16) !important; border-radius: var(--b-radius-pill) !important; font-size: var(--b-fs-body) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(.b-screen--back) .b-stack:has(> #b-pay-last):not(#e-none):not(#e-none2) { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; align-items: start !important; }
@@ -441,10 +441,12 @@
   /* ---------- Final round (Nov 8, 2026) ---------- */
   @media (min-width: 1024px) {
     /* A Lead's role line under the workspace name. */
+    /* Final fixes K (Nov 23, 2026): the name and role lines in rem (18px and 12/15px at the default size), so at 200% text
+     * the workplace name no longer overlaps itself or the role line; the full name stays in the card's title. */
     html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) { display: grid !important; grid-template-columns: auto minmax(0, 1fr) !important; column-gap: 10px !important; row-gap: 0 !important; align-items: center !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__mark { grid-row: 1 / span 2 !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org > .cm-org__role { grid-column: 2 !important; font-size: 12px !important; line-height: 15px !important; font-weight: 500 !important; color: var(--b-grey) !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__name { line-height: 18px !important; align-self: end !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org > .cm-org__role { grid-column: 2 !important; font-size: 0.75rem !important; line-height: 0.9375rem !important; font-weight: 500 !important; color: var(--b-grey) !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__name { line-height: 1.125rem !important; align-self: end !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__role { align-self: start !important; }
   }
   /* The role line goes with the workspace name: not on the icon rail. */
@@ -535,7 +537,7 @@
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .b-hero > .b-title:has(+ .ep-next) { position: static !important; top: auto !important; right: auto !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .b-hero > .b-title:has(+ .ep-next) > .b-title__text { position: static !important; width: auto !important; height: auto !important; overflow: visible !important; clip: auto !important; white-space: normal !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next:not(#e-none):not(#e-none2):not(#e-none3) { padding-top: 14px !important; }
-    html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__v { font-size: 28px !important; line-height: 34px !important; }
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__v { font-size: 1.75rem !important; line-height: 2.125rem !important; }
     /* NV-278: Last pay statement and Earlier end on one line. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(.b-screen--back) .b-stack:has(> #b-pay-last):not(#e-none):not(#e-none2):not(#e-none3) { align-items: stretch !important; }
     html body .app-shell[data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(.b-screen--back) .b-stack:has(> #b-pay-last) > .b-note { align-self: start !important; }

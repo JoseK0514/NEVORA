@@ -95,3 +95,9 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .kn :is(.c-row__value, .c-empty--row, .c-empty__title):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.9375rem !important; line-height: 1.25rem !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .kn .c-btn:is(.c-btn--md, .c-btn--sm, .c-btn--xs):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.9375rem !important; line-height: 1.25rem !important; height: auto !important; min-height: 2.75rem !important; }
 }
+
+/* Rondo follow-up (Nov 23, 2026): the phone band title in rem at its current 28/34px (the shell sets px), so it grows with
+ * 200% text like the rest of the page. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .kn.c-page .c-nav--phone .c-nav__title:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1.75rem !important; line-height: 2.125rem !important; }
+}

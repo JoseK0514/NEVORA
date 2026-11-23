@@ -24,12 +24,13 @@ into its own branch first, pushes only to its own branch, and follows the Rules 
 | R: recapture held rows | `claude-codex-collab-nevora-core` | B1-O, B1-M, B2-Ml, B4-O-M, B9-O, B9-M, F9 (O, M), E1-M, J17 |
 | X | `claude-codex-collab-nevora-settings-final` | F3 Import a staff list (O, M, Mℓ) to Direction B; I1-Ml Profile matched to I1-O/M |
 | M | `claude-codex-collab-nevora-staff` | C12 Shift changes (O, M) to Direction B; C10 Availability (O) checked against C10-M |
-| P | `claude-codex-collab-nevora-batch-public` | A15 Plans, A16 Billing, A17 Billing return, A18 Facturación, A19 Pago |
+| Z2: phone and keyboard sweep | `claude-codex-collab-nevora-batch-public` | Every Jose-approved row: 320px, keyboard and focus order, reduced motion; fix defects only |
+| Z3: forced colours and language leaks | `claude-codex-collab-nevora-staff` (sections A–E), `claude-codex-collab-nevora-timecards-final` (F onward) | Every Jose-approved row: forced-colors active (A4-05) and Spanish inside English chrome (A4-07); fix defects only |
 | K3 | `claude-codex-collab-nevora-clocker-states` | K3 Enter Employee ID (EN, ES) |
 | Z: regression sweep | `claude-codex-collab-nevora-sweep-1` | Every Jose-approved row: axe, 390 at 200% text, 1440; fix regressions only |
 
-Package P wording rule: billing, price, tax and legal wording stays word for word. Only a line that repeats another may
-come out, never be reworded, and each one removed is listed in the report for Jose. No real checkout or payment.
+Package P (billing pages A15–A19) is withdrawn: Jose set the sign-up and billing portal pages aside (gaps ledger G23,
+"focus just on nevora"). Don't change or capture them. (The public-pages session had already finished it before the withdrawal reached it; its commits b2a233d2 and 03b2c198 stay on its branch, unmerged, until Jose decides.)
 
 ## Read first
 1. `CLAUDE.md`, `DESIGN.MD`, `.claude/skills/nevora-design-os/SKILL.md` (with its references; the page done gate is at

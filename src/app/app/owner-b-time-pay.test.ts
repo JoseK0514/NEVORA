@@ -90,3 +90,28 @@ describe('the period table at a large text size (G90 follow-up)', () => {
     expect(table).toMatch(/\.c-tc-st > :is\(\.b-status, \.b-chip\)[^{]*\{ flex: 0 1 auto !important; min-width: 0 !important; \}/);
   });
 });
+
+describe('the phone select and review view at a large text size (Nov 23, 2026 follow-up)', () => {
+  const C = '.c-page.c-tc:not(.c-tc-desk)';
+  const rule = (selector: string) => {
+    const start = css.indexOf(`${C} ${selector}:not(#gq1)`);
+    return start < 0 ? '' : css.slice(start, css.indexOf('}', start) + 1);
+  };
+  it('sets the title, week words, review button, count and hours in rem at their default sizes', () => {
+    expect(rule('> header.c-title h1')).toContain('font-size: 1.5rem !important; line-height: 1.875rem !important;');
+    expect(rule('> header.c-title .c-title__sub')).toContain('font-size: 0.8125rem !important; line-height: 1.125rem !important;');
+    expect(rule('.c-tc-seg > button')).toContain('font-size: 0.8125rem !important;');
+    expect(rule('.c-tc-flow__foot .c-btn')).toContain('font-size: 0.9375rem !important; line-height: 1.25rem !important;');
+    expect(rule('.c-rows :is(.c-row__value, .c-row__value .c-num)')).toContain('font-size: 0.9375rem !important; line-height: 1.25rem !important;');
+  });
+  it('keeps the default heights as minimums so the controls stay at least 44px and grow with the text', () => {
+    expect(rule('.c-tc-seg')).toContain('min-height: 44px !important;');
+    expect(rule('.c-tc-seg > button')).toContain('min-height: 36px !important;');
+    expect(rule('.c-tc-flow__foot .c-btn')).toContain('min-height: 48px !important;');
+  });
+  it('lets the review footer wrap with Cancel whole and the button at the right edge', () => {
+    expect(rule('.c-tc-flow__foot')).toContain('flex-wrap: wrap !important;');
+    expect(rule('.c-tc-flow__foot > .c-tc-flow__cancel')).toContain('flex: none !important;');
+    expect(rule('.c-tc-flow__foot > .c-btn')).toContain('margin-left: auto !important;');
+  });
+});

@@ -209,7 +209,8 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
   expect(html).toContain('<h1 id="b-todo-title" tabindex="-1">Things to do</h1>');
   // Review F5 (NV-103): each filter's count is the segmented control's count pill; its name still reads "Shifts, 1".
   // Final fixes K: a filter's name is its visible words with a spoken space ("All 4"), not an aria-label.
-  expect(html).toMatch(/aria-pressed="true">All<span class="c-count c-num"><span class="sr-only">[\u00a0 ]<\/span>\d+<\/span><\/button>/);
+  // Navigation check (Nov 23, 2026), each fact once: the band says the total, so "All" carries no count.
+  expect(html).toMatch(/aria-pressed="true">All<\/button>/);
   expect(html).toMatch(/aria-pressed="false">Shifts<span class="c-count c-num"><span class="sr-only">[\u00a0 ]<\/span>1<\/span><\/button>/);
   // Review B1 (NV-078): one teal primary per screen, so a row's Find cover is a ghost pill.
   expect(html).toMatch(/class="b-btn b-btn--ghost"[^>]*>Find cover<\/a>/);
@@ -279,7 +280,7 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   // The band counts the two requests and the correction; the tabs add up to it; the timecards to approve are named after it.
   // Final regression review: the band's line is the kit's facts line (BSegs); the dot belongs to the second fact.
   expect(html).toContain('<p class="b-sub"><span class="b-segs"><span class="b-segs__i">3 things need you</span><span class="b-segs__i"><span class="b-sr"> · </span>1 timecard to approve</span></span><span');
-  expect(html).toMatch(/>All<span class="c-count c-num"><span class="sr-only">[\u00a0 ]<\/span>3<\/span>/);
+  expect(html).toMatch(/>All<\/button>/);
   expect(html).toMatch(/>Time<span class="c-count c-num"><span class="sr-only">[\u00a0 ]<\/span>1<\/span>/);
   expect(html).toMatch(/>Requests<span class="c-count c-num"><span class="sr-only">[\u00a0 ]<\/span>2<\/span>/);
 });
