@@ -48,3 +48,6 @@
   :is(#c-root, html) :is(#c-root, body) .c-review #replacement-shift > .c-card__body { padding-top: var(--b-inset-wide, 16px); padding-bottom: var(--b-inset-wide, 16px); }
   :is(#c-root, html) .c-review .c-review__checks { padding: 12px var(--b-inset-wide, 16px) var(--b-inset-wide, 16px); }
 }
+/* G36 (Nov 23, 2026): while Publish change or Save draft is out, the button already says "Publishing…" or "Saving…";
+ * the form's own "Saving…" line stays for screen readers only, so the state shows once. */
+:is(#c-root, html) .c-review .c-review__form > p[role="status"] { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
