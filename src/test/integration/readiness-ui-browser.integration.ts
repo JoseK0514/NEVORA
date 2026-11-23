@@ -111,7 +111,10 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         await page.screenshot({ path: resolve(evidence, `${engine}-${actor}-conflict.png`), fullPage: true });
         checks.push(`${engine} ${actor}: edit/delete reject original stale review, keep draft, keyboard confirmation, 320/390/768/1440`);
         await page.waitForLoadState('networkidle');
-        await page.getByRole('button', { name: 'Reload current shift', exact: true }).first().click();
+        // "Reload current shift" is window.location.reload(). The old document still has [name="notes"] with the retained
+        // draft, and WebKit can start the reload after the click resolves, so wait for the new document's load before
+        // reading the field (QA, Nov 23, 2026: 3 of 13 WebKit runs read the old page).
+        await Promise.all([page.waitForEvent('load'), page.getByRole('button', { name: 'Reload current shift', exact: true }).first().click()]);
         await form.locator('[name="notes"]').waitFor();
         expect(await form.locator('[name="notes"]').inputValue()).toBe('Concurrent edit');
         await form.locator('[name="notes"]').fill('Fresh reviewed edit');
