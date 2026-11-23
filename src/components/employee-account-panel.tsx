@@ -9,6 +9,8 @@ import {NotificationInbox} from './notification-inbox';
 import {NotificationInboxSignature} from './notification-inbox-signature';
 import {EmployeeProfileDetails} from './employee-profile-details';
 import {NavIcon} from './nav-icon';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {employeeTeamCopy} from './employee-team-copy';
 import {EmployeeMobileProfileView} from './employee-mobile/profile-view';
 import {EmployeeNotificationsSnapshotView} from './employee-mobile/notifications-list';
 
@@ -16,32 +18,37 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
  if(kind==='notifications'&&corp&&!onMarkRead)return <EmployeeNotificationsSnapshotView state={state} onRetry={onRetry}/>;
  if(kind==='notifications')return signature&&!onMarkRead?<NotificationInboxSignature state={state} onRetry={onRetry}/>:<NotificationInbox state={state} onRetry={onRetry} onMarkRead={onMarkRead} quiet={quiet}/>;
  if(employeeMobile)return <EmployeeMobileProfileView state={state} onRetry={onRetry}/>;
+ return <EmployeeProfileAccountView kind={kind} state={state} onRetry={onRetry} notificationsEnabled={notificationsEnabled} quiet={quiet}/>;
+}
+/* The Profile presentations, in the person's language (signed-in Spanish). */
+function EmployeeProfileAccountView({kind,state,onRetry,notificationsEnabled,quiet}:{kind:EmployeeViewKind;state:PrivatePanelState<EmployeeViewSnapshot>;onRetry:()=>void;notificationsEnabled:boolean;quiet:boolean}){
+ const t=employeeTeamCopy(usePortalLang());
  const ready=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.kind==='profile'?state.snapshot:null;
  // v5 Profile (mockup E16): the work details as two rows and the note; the Name, role and company sit in the header.
  if(quiet&&kind==='profile'){const deniedQ=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied',failed=state.snapshot?.state==='unavailable';
   return <section aria-labelledby="profile-work-title" data-private-view={kind}>
-   <div className="q-grp"><h2 id="profile-work-title">Work details</h2></div>
+   <div className="q-grp"><h2 id="profile-work-title">{t.workDetails}</h2></div>
    <ul className="q-list">
-    <li><div className="q-row q-row--one"><span className="q-rt"><b>Locations</b></span><span className="q-rv q-rv--l">{ready?ready.profile.locations.join(' · '):'–'}</span></div></li>
-    <li><div className="q-row q-row--one"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{ready?timeZoneLabel(ready.profile.timeZone).replace(/ time$/,''):'–'}</span></div></li>
+    <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.locations}</b></span><span className="q-rv q-rv--l">{ready?ready.profile.locations.join(' · '):'–'}</span></div></li>
+    <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.timeZone}</b></span><span className="q-rv q-rv--l">{ready?timeZoneLabel(ready.profile.timeZone).replace(/ time$/,''):'–'}</span></div></li>
    </ul>
-   {ready?<p className="q-help">Something wrong here? Ask your manager to update it.</p>
-    :<p className="q-help" role="status">{state.paused?'Updates paused. Return to this window while online.':deniedQ?<>Your session ended. <Link href="/login">Sign in</Link></>:failed?<>Couldn’t load your details. <button type="button" className="q-linkbtn" disabled={state.refreshing} onClick={onRetry}>Try again</button></>:'Checking your current details…'}</p>}
+   {ready?<p className="q-help">{t.somethingWrong}</p>
+    :<p className="q-help" role="status">{state.paused?t.pausedShort:deniedQ?<>{t.sessionEnded} <Link href="/login">{t.signIn}</Link></>:failed?<>{t.couldntLoad} <button type="button" className="q-linkbtn" disabled={state.refreshing} onClick={onRetry}>{t.tryAgain}</button></>:t.checkingDetails}</p>}
   </section>;}
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const unavailable=state.snapshot?.state==='unavailable';
- const name='Profile';
+ const name=t.profile;
  // While the details load, what follows keeps its space but stays hidden: a long name wraps further than the placeholder rows.
  const loading=!ready&&!denied&&!unavailable&&!state.paused;
  return <section className="employee-view-surface employee-account-panel employee-profile-panel" aria-label={name} data-private-view={kind} data-loading={loading?'true':undefined}>
-  <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="employee" size={24}/></span><div><h2>Work details</h2></div></header>
+  <header className="profile-section-heading"><span className="profile-icon-tile"><NavIcon name="employee" size={24}/></span><div><h2>{t.workDetails}</h2></div></header>
   {/* P3-ST-04: until the details arrive, the same five rows show "–", so the card is the same height from the first frame. */}
   {/* P3-ST-04: while loading, the status is for screen readers only, so the placeholder rows sit where the real rows arrive. */}
-  {!ready?<><p className={loading?'nv-sr':'profile-supporting-copy employee-profile-status'} role="status">{state.paused?'Updates paused. Return to this window while online to check current information.':denied?'Your session ended. Sign in again to see your details.':unavailable?'Couldn’t load your details. Check your connection, then try again.':'Checking your current details…'}</p>
-   <dl className="employee-profile-details" aria-hidden="true">{['Name','Company','Work locations','App access','Time zone'].map(label=><div key={label}><dt>{label}</dt><dd>–</dd></div>)}</dl></>:
+  {!ready?<><p className={loading?'nv-sr':'profile-supporting-copy employee-profile-status'} role="status">{state.paused?t.pausedLong:denied?t.sessionEndedLong:unavailable?t.couldntLoadLong:t.checkingDetails}</p>
+   <dl className="employee-profile-details" aria-hidden="true">{[t.name,t.company,t.workLocations,t.appAccess,t.timeZone].map(label=><div key={label}><dt>{label}</dt><dd>–</dd></div>)}</dl></>:
    <EmployeeProfileDetails profile={ready.profile} notificationsEnabled={notificationsEnabled}/>}
-  <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">Sign in</Link>:unavailable?<button type="button" className="nv-btn" data-kind="primary" disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true"/>{state.refreshing?'Checking…':'Try again'}<span className="nv-sr">{kind==='profile'?' to load work details':' to load notifications'}</span></button>
-   :<button type="button" className={kind==='profile'?'profile-refresh-link':'button secondary'} disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':kind==='profile'?'Refresh details':'Refresh'}</button>}</footer>
+  <footer className="employee-account-footer">{denied?<Link className="button secondary" href="/login">{t.signIn}</Link>:unavailable?<button type="button" className="nv-btn" data-kind="primary" disabled={state.paused||state.refreshing} onClick={onRetry}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true"/>{state.refreshing?t.checking:t.tryAgain}<span className="nv-sr">{kind==='profile'?t.toLoadWorkDetails:t.toLoadNotifications}</span></button>
+   :<button type="button" className={kind==='profile'?'profile-refresh-link':'button secondary'} disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?t.checking:kind==='profile'?t.refreshDetails:t.refresh}</button>}</footer>
  </section>;
 }
 /** The private own read behind an account panel (Profile, Notifications): one controller, refreshed on focus and

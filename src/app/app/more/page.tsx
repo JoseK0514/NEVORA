@@ -64,7 +64,7 @@ async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstN
   const count = <NotificationCount authority={employeeViewAuthority(proof, "notifications")} />;
   return <CorpPage className="c-more c-more--employee" labelledBy="more-title">
     {/* Direction B on a phone (mock e-more): the same rows, links, values and Sign out. */}
-    <EmployeeMoreB name={name} place={[...locations, workspaceName].join(" · ")} availability={availability}
+    <EmployeeMoreB lang={(await readPortalLanguage(proof).catch(()=>null))?.language??'en'} name={name} place={[...locations, workspaceName].join(" · ")} availability={availability}
       has={{ availability: has.has("/app/availability"), notifications: has.has("/app/notifications"), updates: has.has("/app/updates") }} count={count} />
     <CorpNav back={{ href: "/app", label: L("Home") }} title={L("More")} titleId="more-title" />
     <CorpCard as="div" ariaLabel={L("Profile")}>

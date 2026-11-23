@@ -305,6 +305,7 @@ export default async function SchedulePage({
       ) : employeeAcknowledgement.acknowledged ? <span className="employee-quiet-status success">Confirmed</span> : <span className="employee-quiet-status">Confirmation unavailable — review the current schedule again.</span>
     ) : undefined;
     return <EmployeeMySchedule
+      lang={(await readPortalLanguage(await requireSessionMutationProof()).catch(()=>null))?.language??'en'}
       corporate={session.role === 'EMPLOYEE' || session.role === 'LEAD'}
       lead={session.role === 'LEAD'}
       modules={modules}

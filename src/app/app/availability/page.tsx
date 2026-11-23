@@ -195,8 +195,8 @@ export default async function AvailabilityPage({
   return (
     <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="availability" selection={selectedWeek??'normal'}><CorpPage className="c-avail c-page--narrow" lang={lang === "es" ? "es" : undefined}>
       {/* Direction B (phones): the phone page replaces this one once it loads; until then the same hero, not the old layout. */}
-      <AvailabilityB sub={availabilitySubB(selectedWeek ?? null, selectedWeek ? formatWeekRange(selectedWeek) : undefined)} change={selectedWeek ? null : `/app/availability?week=${nextWeek}`}>
-        <AvailabilityStatusB message={t.loading} />
+      <AvailabilityB lang={lang} sub={availabilitySubB(selectedWeek ?? null, selectedWeek ? formatWeekRange(selectedWeek) : undefined, lang)} change={selectedWeek ? null : `/app/availability?week=${nextWeek}`}>
+        <AvailabilityStatusB lang={lang} message={t.loading} />
       </AvailabilityB>
       <CorpNav back={{ href: "/app/schedule", label: t.schedule }} title={t.title} phoneOnly />
       <CorpTitle wide title={t.title} sub={sub} />

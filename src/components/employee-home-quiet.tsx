@@ -19,6 +19,8 @@ import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {AttentionItem, EmployeeHomeRead, HomeSnapshot, HomeSource, PublishedAssignment} from '../lib/employee-home/types';
 import {unpublishedNote} from '../lib/publication-note';
 import {keepWhole} from '../lib/keep-whole';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {employeeHomeCopy, HOME_LOCALE, type HomeLang} from './employee-home-copy';
 
 /* Employee and Lead Home in the v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; the target is
  * docs/product/specs/employee-v5-quiet/mockups/E01-Home.png). The date and a greeting, the next shift as the one teal
@@ -47,47 +49,48 @@ export type EmployeeHomeQuietViewProps = {
   teamMessage?: boolean;
 };
 
-export const sourceNames: Record<HomeSource, string> = {
-  schedule: 'Schedule', acknowledgements: 'Schedule reviews', exchanges: 'Shift requests',
-  timeOff: 'Time off', ownTime: 'Recorded time and corrections', communications: 'Communications',
-};
+export const sourceNames: Record<HomeSource, string> = employeeHomeCopy('en').sources;
+/** The source names in the person's language. */
+export const sourceNamesFor = (lang: HomeLang = 'en'): Record<HomeSource, string> => employeeHomeCopy(lang).sources;
 export const sourceDestinations: Record<HomeSource, string> = {
   schedule: '/app/schedule', acknowledgements: '/app/schedule', exchanges: '/app/exchange',
   timeOff: '/app/requests?tab=my', ownTime: '/app/my-time', communications: '/app/updates',
 };
 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
-export const fmt = (zone: string, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('en-US', {timeZone: zone, ...options});
-export const clock = (at: string, zone: string) => fmt(zone, {hour: 'numeric', minute: '2-digit'}).format(new Date(at));
+export const fmt = (zone: string, options: Intl.DateTimeFormatOptions, lang: HomeLang = 'en') => new Intl.DateTimeFormat(HOME_LOCALE[lang], {timeZone: zone, ...options});
+export const clock = (at: string, zone: string, lang: HomeLang = 'en') => fmt(zone, {hour: 'numeric', minute: '2-digit'}, lang).format(new Date(at));
 
 export function businessDate(at: string, zone: string) {
   const parts = fmt(zone, {year: 'numeric', month: '2-digit', day: '2-digit'}).formatToParts(new Date(at));
   return ['year', 'month', 'day'].map(key => parts.find(part => part.type === key)!.value).join('-');
 }
 
-function greeting(at: string, zone: string) {
+function greeting(at: string, zone: string, lang: HomeLang = 'en') {
   const hour = Number(fmt(zone, {hour: 'numeric', hourCycle: 'h23'}).format(new Date(at)));
-  return hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const c = employeeHomeCopy(lang);
+  return hour < 12 ? c.goodMorning : hour < 18 ? c.goodAfternoon : c.goodEvening;
 }
 
 /** "Oct 19–25", or "Oct 26–Nov 1" across a month (the app's one date-range form, Nov 21, 2026). */
-export function weekRange(weekStart: string) {
+export function weekRange(weekStart: string, lang: HomeLang = 'en') {
   const end = new Date(utcDay(weekStart).getTime() + 6 * 86_400_000);
-  return keepWhole(dateRange(weekStart, end.toISOString().slice(0, 10), {year: 'never'}));
+  return keepWhole(dateRange(weekStart, end.toISOString().slice(0, 10), {year: 'never', locale: HOME_LOCALE[lang]}));
 }
 
 /** "Today", "Tomorrow" or "Wednesday". */
-export function dayWord(shift: PublishedAssignment, snapshot: HomeSnapshot) {
+export function dayWord(shift: PublishedAssignment, snapshot: HomeSnapshot, lang: HomeLang = 'en') {
   const today = businessDate(snapshot.observedAt, snapshot.timeZone);
   const tomorrow = businessDate(new Date(Date.parse(snapshot.observedAt) + 86_400_000).toISOString(), snapshot.timeZone);
-  return shift.date === today ? 'Today' : shift.date === tomorrow ? 'Tomorrow' : fmt('UTC', {weekday: 'long'}).format(utcDay(shift.date));
+  const c = employeeHomeCopy(lang);
+  return shift.date === today ? c.today : shift.date === tomorrow ? c.tomorrow : fmt('UTC', {weekday: 'long'}, lang).format(utcDay(shift.date));
 }
 
 /** "Sunday, October 25", plus the end day when the shift runs past midnight. */
-export function longDay(shift: PublishedAssignment, zone: string) {
-  const day = (date: string) => fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(utcDay(date));
+export function longDay(shift: PublishedAssignment, zone: string, lang: HomeLang = 'en') {
+  const day = (date: string) => fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}, lang).format(utcDay(date));
   const endDate = businessDate(shift.endAt, zone);
-  return keepWhole(endDate !== shift.date ? `${day(shift.date)} · ends ${fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(endDate))}` : day(shift.date));
+  return keepWhole(endDate !== shift.date ? `${day(shift.date)} · ${employeeHomeCopy(lang).ends(fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}, lang).format(utcDay(endDate)))}` : day(shift.date));
 }
 
 /** "40 h" or "37.5 h" across the week's shifts (overnight and 24:00 ends included). */
@@ -103,19 +106,20 @@ export function weekHours(shifts: HomeWeek['shifts']) {
 
 /** The same outcome words as the Time off page (waiting, declined, withdrawn). Display only. */
 const outcomeWords: Record<string, string> = {pending: 'waiting', denied: 'declined', rejected: 'declined', cancelled: 'withdrawn'};
-export function attentionLabel(item: AttentionItem) {
-  return item.label
+export function attentionLabel(item: AttentionItem, lang: HomeLang = 'en') {
+  return employeeHomeCopy(lang).label(item.label
     .replace(/^(Time off|Time correction|Shift request) (pending|denied|rejected|cancelled)\b/, (_, what: string, status: string) => `${what} ${outcomeWords[status]}`)
-    .replace(/ — review required$/, item.required ? '' : ' — review required');
+    .replace(/ — review required$/, item.required ? '' : ' — review required'));
 }
 
 export const confirmsWeek = (item: AttentionItem) => item.ref.kind === 'SCHEDULE' && !item.label.startsWith('Schedule removed');
 
 /** What to do, said as an action. Display only; each row's link is the server's. */
-export function todoTitle(item: AttentionItem) {
-  if (confirmsWeek(item)) return 'Confirm your schedule';
-  if (item.ref.kind === 'COMMUNICATION' && /^Review update: /.test(item.label)) return 'Read the team update';
-  return attentionLabel(item);
+export function todoTitle(item: AttentionItem, lang: HomeLang = 'en') {
+  const c = employeeHomeCopy(lang);
+  if (confirmsWeek(item)) return c.confirmSchedule;
+  if (item.ref.kind === 'COMMUNICATION' && /^Review update: /.test(item.label)) return c.readUpdate;
+  return attentionLabel(item, lang);
 }
 
 function TodoIcon({item}: {item: AttentionItem}) {
@@ -135,67 +139,72 @@ export function todoRows(items: readonly AttentionItem[]) {
   return rows;
 }
 
-export function weeksDetail(weeks: AttentionItem[]) {
-  const range = (week: AttentionItem) => <time key={week.ref.id} dateTime={week.ref.id}>{weekRange(week.ref.id)}</time>;
-  return weeks.length <= 2 ? <>{range(weeks[0])}{weeks[1] ? <> and {range(weeks[1])}</> : null}</>
-    : <>{range(weeks[0])} and {weeks.length - 1} more weeks{weeks.slice(1).map(week => <time key={week.ref.id} dateTime={week.ref.id} hidden />)}</>;
+export function weeksDetail(weeks: AttentionItem[], lang: HomeLang = 'en') {
+  const c = employeeHomeCopy(lang);
+  const range = (week: AttentionItem) => <time key={week.ref.id} dateTime={week.ref.id}>{weekRange(week.ref.id, lang)}</time>;
+  return weeks.length <= 2 ? <>{range(weeks[0])}{weeks[1] ? <>{c.and}{range(weeks[1])}</> : null}</>
+    : <>{range(weeks[0])}{c.moreWeeks(weeks.length - 1)}{weeks.slice(1).map(week => <time key={week.ref.id} dateTime={week.ref.id} hidden />)}</>;
 }
 
-function TodoRow({row, zone}: {row: ReturnType<typeof todoRows>[number]; zone: string}) {
+function TodoRow({row, zone, lang}: {row: ReturnType<typeof todoRows>[number]; zone: string; lang: HomeLang}) {
   const {item, weeks} = row;
+  const c = employeeHomeCopy(lang);
   const update = item.ref.kind === 'COMMUNICATION' && /^Review update: /.test(item.label) ? item.label.replace(/^Review update: /, '') : null;
-  const due = item.deadlineAt ? `Respond by ${keepWhole(fmt(zone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : null;
-  const detail = weeks ? weeksDetail(weeks) : due ?? (update ? keepWhole(update) : <>Recorded <time dateTime={item.changedAt}>{keepWhole(fmt(zone, {month: 'short', day: 'numeric'}).format(new Date(item.changedAt)))}</time></>);
-  return <QuietRow href={item.href} variant="tint" avatar={<TodoIcon item={item}/>} title={keepWhole(todoTitle(item))} detail={<>{detail}{item.required ? <><span className="nv-sr">, </span><small className="nv-sr">Review needed</small></> : null}</>}/>;
+  const due = item.deadlineAt ? c.respondBy(keepWhole(fmt(zone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}, lang).format(new Date(item.deadlineAt)))) : null;
+  const detail = weeks ? weeksDetail(weeks, lang) : due ?? (update ? keepWhole(update) : <>{c.recorded} <time dateTime={item.changedAt}>{keepWhole(fmt(zone, {month: 'short', day: 'numeric'}, lang).format(new Date(item.changedAt)))}</time></>);
+  return <QuietRow href={item.href} variant="tint" avatar={<TodoIcon item={item}/>} title={keepWhole(todoTitle(item, lang))} detail={<>{detail}{item.required ? <><span className="nv-sr">, </span><small className="nv-sr">{c.reviewNeeded}</small></> : null}</>}/>;
 }
 
 /** Complete, or only waiting on a location to publish (a known state, said under the card). */
 export const isComplete = (source: HomeSnapshot['sources'][keyof HomeSnapshot['sources']]) =>
   source.state === 'complete' || (source.state === 'partial' && source.reason === 'unpublished');
 
-function SourceRows({snapshot}: {snapshot: HomeSnapshot}) {
+function SourceRows({snapshot, lang}: {snapshot: HomeSnapshot; lang: HomeLang}) {
+  const c = employeeHomeCopy(lang);
   return HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key])).map(key => {
     const source = snapshot.sources[key];
     const state = source.state === 'unavailable'
-      ? (source.reason === 'review_unavailable' ? 'A changed schedule needs review' : 'Couldn’t be checked')
-      : source.reason === 'source_cap' ? 'Partially shown — more records are available' : 'Partly checked';
-    return <QuietRow key={key} href={sourceDestinations[key]} avatar={<WarningCircleIcon weight="bold" className="q-ic" aria-hidden="true"/>} title={sourceNames[key]} detail={state} label={`Open ${sourceNames[key].toLowerCase()}, ${state.toLowerCase()}`}/>;
+      ? (source.reason === 'review_unavailable' ? c.needsReview : c.couldntCheck)
+      : source.reason === 'source_cap' ? c.partiallyShown : c.partlyChecked;
+    return <QuietRow key={key} href={sourceDestinations[key]} avatar={<WarningCircleIcon weight="bold" className="q-ic" aria-hidden="true"/>} title={c.sources[key]} detail={state} label={c.openWithState(c.sources[key], state)}/>;
   });
 }
 
-function NextCard({snapshot, mobile = false}: {snapshot: HomeSnapshot; mobile?: boolean}) {
+function NextCard({snapshot, mobile = false, lang}: {snapshot: HomeSnapshot; mobile?: boolean; lang: HomeLang}) {
   const zone = snapshot.timeZone;
+  const c = employeeHomeCopy(lang);
   if (snapshot.publicationState === 'unavailable') return <div className="q-next" role="status">
-    <div className="q-next__top"><span>Next shift</span><span/></div>
-    <b className="q-next__time">Schedule unavailable</b>
-    <span className="q-next__day">Your schedule couldn’t be checked.</span>
+    <div className="q-next__top"><span>{c.nextShift}</span><span/></div>
+    <b className="q-next__time">{c.scheduleUnavailable}</b>
+    <span className="q-next__day">{c.scheduleNotChecked}</span>
   </div>;
   const now = snapshot.currentShift, shift = now ?? snapshot.nextShift;
-  if (!shift) return <Link className="q-next" href="/app/schedule" aria-label="View schedule, no upcoming shift">
-    <div className="q-next__top"><span>Next shift</span><span/></div>
-    <b className="q-next__time">No upcoming shift</b>
-    <span className="q-next__day">New shifts show here once they’re published.</span>
+  if (!shift) return <Link className="q-next" href="/app/schedule" aria-label={c.viewScheduleNoShift}>
+    <div className="q-next__top"><span>{c.nextShift}</span><span/></div>
+    <b className="q-next__time">{c.noUpcomingShift}</b>
+    <span className="q-next__day">{c.newShiftsShow}</span>
   </Link>;
-  const where = [shift.locationLabel, shift.positionLabel, shift.designatedLead ? 'Shift lead' : null].filter(Boolean).join(' · ');
+  const where = [shift.locationLabel, shift.positionLabel, shift.designatedLead ? c.shiftLead : null].filter(Boolean).join(' · ');
   return <Link className="q-next" href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${mobile ? `&shift=${encodeURIComponent(shift.shiftId)}` : ''}`}
-    aria-label={keepWhole(`View schedule, ${now ? 'scheduled now, ' : ''}${longDay(shift, zone)}, ${clock(shift.startAt, zone)} to ${clock(shift.endAt, zone)}, ${where}`)}>
-    <div className="q-next__top"><span>{now ? 'Scheduled now' : 'Next shift'}</span><span>{now ? `Until ${clock(now.endAt, zone)}` : dayWord(shift, snapshot)}</span></div>
-    <b className="q-next__time"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="nv-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></b>
-    <span className="q-next__day">{longDay(shift, zone)}</span>
+    aria-label={keepWhole(c.nextLabel(!!now, longDay(shift, zone, lang), clock(shift.startAt, zone, lang), clock(shift.endAt, zone, lang), where))}>
+    <div className="q-next__top"><span>{now ? c.scheduledNow : c.nextShift}</span><span>{now ? c.until(clock(now.endAt, zone, lang)) : dayWord(shift, snapshot, lang)}</span></div>
+    <b className="q-next__time"><time dateTime={shift.startAt}>{clock(shift.startAt, zone, lang)}</time><span aria-hidden="true"> – </span><span className="nv-sr">{c.to}</span><time dateTime={shift.endAt}>{clock(shift.endAt, zone, lang)}</time></b>
+    <span className="q-next__day">{longDay(shift, zone, lang)}</span>
     <div className="q-next__meta"><MapPinIcon weight="bold" className="q-ic" aria-hidden="true"/><span>{where}</span></div>
-    <span className="em-mobile-only em-next-action">{now ? "View today’s shift" : "View shift details"}<ArrowRightIcon size={20} weight="bold" aria-hidden="true"/></span>
+    <span className="em-mobile-only em-next-action">{now ? c.viewTodaysShift : c.viewShiftDetails}<ArrowRightIcon size={20} weight="bold" aria-hidden="true"/></span>
   </Link>;
 }
 
-function Glance({week}: {week: HomeWeek}) {
+function Glance({week, lang}: {week: HomeWeek; lang: HomeLang}) {
+  const c = employeeHomeCopy(lang);
   const working = new Set(week.shifts.map(shift => shift.date));
   return <ul className="q-glance">
     {week.dates.map(date => {
       const at = utcDay(date), count = week.shifts.filter(shift => shift.date === date).length;
-      const label = `${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(at)}${date === week.today ? ', today' : ''}, ${count ? `${count} ${count === 1 ? 'shift' : 'shifts'}` : 'no shifts'}`;
+      const label = c.dayLabel(fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}, lang).format(at), date === week.today, count);
       return <li key={date} className={`${working.has(date) ? 'is-work' : ''}${date === week.today ? ' is-today' : ''}`.trim() || undefined}>
         <Link href={`/app/schedule?week=${encodeURIComponent(week.weekStart)}&day=${encodeURIComponent(date)}`} aria-label={label} aria-current={date === week.today ? 'date' : undefined}>
-          <small aria-hidden="true">{fmt('UTC', {weekday: 'narrow'}).format(at)}</small><b aria-hidden="true">{at.getUTCDate()}</b>
+          <small aria-hidden="true">{fmt('UTC', {weekday: 'narrow'}, lang).format(at)}</small><b aria-hidden="true">{at.getUTCDate()}</b>
         </Link>
       </li>;
     })}
@@ -205,6 +214,7 @@ function Glance({week}: {week: HomeWeek}) {
 export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTimeSlot, intro, displayName, timeZone, workspaceName, week, teamMessage = false}: EmployeeHomeQuietViewProps) {
   const [showAll, setShowAll] = useState(false);
   const mobile = useEmployeeMobile();
+  const lang = usePortalLang(), c = employeeHomeCopy(lang);
   // Offline and "window in the background" both pause Home; the card says which.
   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
   const paused = status === 'paused';
@@ -221,27 +231,27 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
   const visible = showAll ? todos : todos.slice(0, 3);
   const allSet = !!snapshot && !partial && released!.allSet;
   // The card's two lines while Home isn't released: what state Home is in, then what happens to the shift.
-  const summary = paused ? (online ? 'Paused while you’re away.' : 'You’re offline.') : denied ? 'Your session ended.' : loading ? 'Loading Home…' : 'Couldn’t load Home.';
-  const recovery = paused ? (online ? 'Your shift updates when you come back.' : 'Your shift updates when you reconnect.')
-    : denied ? 'Sign in again to see your shift.' : loading ? '\u00a0' : 'Couldn’t load your shift.';
+  const summary = paused ? (online ? c.pausedAway : c.offline) : denied ? c.sessionEnded : loading ? c.loadingHome : c.couldntLoadHome;
+  const recovery = paused ? (online ? c.updatesWhenBack : c.updatesWhenReconnect)
+    : denied ? c.signInToSee : loading ? '\u00a0' : c.couldntLoadShift;
   const date = snapshot
-    ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time>
+    ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'long', day: 'numeric'}, lang).format(new Date(snapshot.observedAt)))}</time>
     // Before Home is read, the workspace's public date, so the line is there from the first frame.
-    : <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(new Date()))}</time>;
+    : <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'long', day: 'numeric'}, lang).format(new Date()))}</time>;
   const underWay = snapshot && snapshot.publicationState !== 'unavailable' ? snapshot.currentShift : null;
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
 
   return <QuietPage>
     <div className="q-home" data-home-state={viewState} aria-busy={refreshing || loading}>
-      <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon weight="bold" className="q-ic" aria-hidden="true"/></QuietBarIcon></QuietBar>
-      <div className="q-hello"><small>{date}</small><h1>{mobile ? 'Today' : name && snapshot ? `${greeting(snapshot.observedAt, snapshot.timeZone)}, ${name}` : 'Home'}</h1></div>
+      <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label={c.notifications}><BellIcon weight="bold" className="q-ic" aria-hidden="true"/></QuietBarIcon></QuietBar>
+      <div className="q-hello"><small>{date}</small><h1>{mobile ? c.today : name && snapshot ? c.greet(greeting(snapshot.observedAt, snapshot.timeZone, lang), name) : c.home}</h1></div>
       {snapshot ? <section aria-labelledby="employee-reviewed-next-heading">
-        <h2 id="employee-reviewed-next-heading" className={mobile ? "em-section-title" : "nv-sr"}>Your shift</h2>
+        <h2 id="employee-reviewed-next-heading" className={mobile ? "em-section-title" : "nv-sr"}>{c.yourShift}</h2>
         <div className="em-day-summary">
-        <NextCard snapshot={snapshot} mobile={mobile}/>
-        {snapshot.publicationState === 'partial' ? <p className="q-next__note" role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p> : null}
+        <NextCard snapshot={snapshot} mobile={mobile} lang={lang}/>
+        {snapshot.publicationState === 'partial' ? <p className="q-next__note" role="status">{(lang === 'en' ? unpublishedNote : c.unpublishedNote)(snapshot.unpublishedLocations ?? [])}</p> : null}
         {/* The independent recorded-time reader also stays available without a scheduled shift. */}
-        {underWay || mobile ? <aside className="q-home__clock" aria-label="Own recorded time"><h2 className="em-mobile-only em-section-title">Your time today</h2>{ownTimeSlot}</aside> : null}
+        {underWay || mobile ? <aside className="q-home__clock" aria-label={c.ownRecordedTime}><h2 className="em-mobile-only em-section-title">{c.yourTimeToday}</h2>{ownTimeSlot}</aside> : null}
         </div>
       </section> : <div className="q-next q-next--wait" role="status">
         <div className="q-next__top"><span>{summary}</span><span/></div>
@@ -249,25 +259,25 @@ export function EmployeeHomeQuietView({home, status, refreshing, onRetry, ownTim
         <span className="q-next__day q-next__recovery">{recovery}</span>
       </div>}
       {!snapshot && !loading && !paused ? <div className="q-home__retry">
-        {denied ? <Link className="q-btn" href="/login">Sign in</Link>
-          : <button className="q-btn" type="button" data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></button>}
+        {denied ? <Link className="q-btn" href="/login">{c.signIn}</Link>
+          : <button className="q-btn" type="button" data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? c.checking : c.tryAgain}<span className="nv-sr">{c.toLoadHome}</span></button>}
       </div> : null}
       {intro}
-      {snapshot ? <div data-home-group="actions"><QuietSection id="employee-home-todo" title="Needs you" aside={partial ? `${todos.length} known ${todos.length === 1 ? 'item' : 'items'}` : undefined}>
+      {snapshot ? <div data-home-group="actions"><QuietSection id="employee-home-todo" title={c.needsYou} aside={partial ? c.knownItems(todos.length) : undefined}>
         <QuietList>
-          {todos.length ? visible.map(row => <TodoRow key={row.key} row={row} zone={snapshot.timeZone}/>)
-            : <QuietRow variant="tint" avatar={<CheckIcon weight="bold" className="q-ic" aria-hidden="true"/>} title={<span role="status">{allSet ? 'You’re all set' : 'Nothing to do right now'}</span>} detail={partial ? 'In the sections that could be checked.' : 'Nothing needs your review.'}/>}
-          {todos.length > 3 ? <li><button className="q-btn q-btn--quiet" type="button" aria-expanded={showAll} onClick={() => setShowAll(value => !value)}>{showAll ? 'Show fewer' : `Show all ${todos.length}`}</button></li> : null}
-          {partial ? <SourceRows snapshot={snapshot}/> : null}
+          {todos.length ? visible.map(row => <TodoRow key={row.key} row={row} zone={snapshot.timeZone} lang={lang}/>)
+            : <QuietRow variant="tint" avatar={<CheckIcon weight="bold" className="q-ic" aria-hidden="true"/>} title={<span role="status">{allSet ? c.allSetShort : c.nothingNow}</span>} detail={partial ? c.inCheckedSections : c.nothingNeedsReview}/>}
+          {todos.length > 3 ? <li><button className="q-btn q-btn--quiet" type="button" aria-expanded={showAll} onClick={() => setShowAll(value => !value)}>{showAll ? c.showFewer : c.showAll(todos.length)}</button></li> : null}
+          {partial ? <SourceRows snapshot={snapshot} lang={lang}/> : null}
         </QuietList>
       </QuietSection></div> : null}
-      {snapshot && teamMessage ? <QuietSection id="employee-home-team" title="Today’s team" aside={(snapshot.currentShift ?? snapshot.nextShift)?.locationLabel}>
-        <QuietList><QuietRow href="/app/updates/compose" variant="tint" avatar={<MegaphoneIcon weight="bold" className="q-ic" aria-hidden="true"/>} title="Message today’s team" detail="Everyone on shift today"/></QuietList>
+      {snapshot && teamMessage ? <QuietSection id="employee-home-team" title={c.todaysTeam} aside={(snapshot.currentShift ?? snapshot.nextShift)?.locationLabel}>
+        <QuietList><QuietRow href="/app/updates/compose" variant="tint" avatar={<MegaphoneIcon weight="bold" className="q-ic" aria-hidden="true"/>} title={c.messageTeam} detail={c.everyoneToday}/></QuietList>
       </QuietSection> : null}
-      {weekShown ? <QuietSection id="employee-home-week" title="This week" aside={weekShown.shifts.length ? `${weekShown.shifts.length} ${weekShown.shifts.length === 1 ? 'shift' : 'shifts'} · ${weekHours(weekShown.shifts)}` : 'No shifts'}>
-        <Glance week={weekShown}/>
+      {weekShown ? <QuietSection id="employee-home-week" title={c.thisWeek} aside={weekShown.shifts.length ? `${c.weekShifts(weekShown.shifts.length)} · ${weekHours(weekShown.shifts)}` : c.noShifts}>
+        <Glance week={weekShown} lang={lang}/>
       </QuietSection> : null}
-      {snapshot ? <p className="nv-sr" data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{clock(snapshot.observedAt, snapshot.timeZone)}</time>, times in {snapshot.timeZone.split('/').pop()!.replace(/_/g, ' ')} time</p> : null}
+      {snapshot ? <p className="nv-sr" data-home-updated="true">{c.updated} <time dateTime={snapshot.observedAt}>{clock(snapshot.observedAt, snapshot.timeZone, lang)}</time>{c.updatedIn(snapshot.timeZone.split('/').pop()!.replace(/_/g, ' '))}</p> : null}
     </div>
   </QuietPage>;
 }
