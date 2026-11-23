@@ -11,6 +11,11 @@
   /* The selected day on the week strip is a white tile: its ring is teal, inside the tile. */
   /* Live tiles sit in a clipped strip: the ring is an inset shadow above the neighbours, so all four edges show. */
   /* A card's first and last rows: the inside ring follows the card's corners. */
+  /* G51 (Nov 23, 2026): a menu (ActionMenu: a popover from 768px, a sheet on a phone) is white wherever its trigger sits.
+   * A trigger on the band put the band's white ring on every item, white on white, so only the item's faint fill showed.
+   * Every control in a menu takes the kit's teal ring, inside its own box (the popover clips what is outside it). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .nevora-action-menu-popover :is(a, button, [tabindex]):focus-visible {
+    outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: calc(-1 * var(--b-focus-width)) !important; }
 
   /* ---------- Time ranges (Jose, Nov 15, 2026, item 5): BWhen renders both forms; a phone shows the short one ---------- */
   /* The full form is hidden by default and swapped in from 768px, so no width (a zoomed 767.5px included) shows both. */
