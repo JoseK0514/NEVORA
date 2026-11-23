@@ -18,7 +18,96 @@ How it works:
 - Every area has a `<area>-copy.ts` table `{en, es}` with the same keys, a key-set test and a Spanish render test.
   English was moved over word for word; the existing English tests pass unchanged.
 
-COMMITS_PLACEHOLDER
+## Commits (branch claude-codex-collab-nevora-es-rest)
+
+- `034c5e11` the claim (below)
+- `61d22816f` Signed-in Spanish contract: PortalLangProvider in the app layout (readPortalLanguage, English if it fails) and usePortalLang() for client components
+- `67b29e50d` es-rest: readPageLang(), the person's language for server components (same readPortalLanguage read as the layout, cached per request)
+- `6094a450d` es-rest: Settings and its pages follow the person's language (J1–J18 words, Break types, Punch photos and Photo review, the closed-page notice)
+- `d4cbb83cd` es-rest (premium): Home's live summary line follows the person's language (premium-home-copy.ts, en and es)
+- `bdc9ea841` es-rest (reports): Insights and Christmas bonus hours in Puerto Rico Spanish (reports-copy.ts, en and es; page passes readPageLang, views fall back to usePortalLang)
+- `301ec7d37` es-rest: settings-es test passes children as a prop (tsc)
+- `6fef1f53c` es-rest: Company policies (J6) follows the person's language; device-manager test shim reads context
+- `e60d304d9` es-rest: Spanish render tests use JSX children (oxlint no-children-prop)
+- `d041859af` es-rest B: Notifications (Owner and Manager), Things to do and Notifications titles in Puerto Rico Spanish
+- `a15e40a2e` es-rest B: Team pages (/app/employees: person, Access and sign-in, sheets, Add employee, titles) in Puerto Rico Spanish
+- `31c0265dd` es-rest B: Owner and Manager Profile and the Profile route titles in Puerto Rico Spanish
+- `ae3ce055b` es-rest B: account (Delete account, assisted recovery code), passkeys and employment date fields in Puerto Rico Spanish
+- `90ccf86eb` es-rest B: notes (areas, gaps, lines for Jose to review)
+- `773c2602f` es-rest D: Time off and Requests hub follow the person's language (requests-copy.ts, en and Puerto Rico Spanish)
+- `a94a38b56` es-rest D: time-off decision parts, Withdraw request and the correction comparison in Spanish (time-copy.ts; lang prop on the correction comparison for its callers)
+- `614eb37cb` es-rest D: leave and staffing notes in Spanish (leave-staffing-copy.ts: conflict check, repair note, failure notice; Spanish shift and duration lines from the same facts)
+- `a4012f352` es-rest D: Branding editor in Spanish (brand-copy.ts); notices keyed instead of matched on English text
+- `faf6ecb5f` es-rest D: Team live states, filters and form fields in Spanish (team-copy.ts; the attendance helpers take an optional language)
+- `bd27f7bd8` es-rest D: phone app Alerts settings and the use-the-browser page in Spanish (native-shell-copy.ts; UnsupportedNativeRole takes lang for the layout to pass)
+- `b4d932275` es-rest D: an Employee's own leave note and Team's Hours this week in Spanish (lang prop for the dashboard to pass)
+- `3e031c2f9` es-rest D: Help's frame follows the person's language (help-copy.ts); the support policy's answers stay as published, marked lang=en
+- `66e5e6b66` es-rest D: small signed-in routes and Home's route words follow the person's language (route-copy.ts, home-page-copy.ts: tab titles, closed and unavailable notices, the location menu, the payday line)
+- `420301128` es-rest D: notes (areas, gaps, Spanish pay and privacy lines for Jose)
+- `285358edc` es-rest (E): time and attendance parts follow the person's language (close a punch, fix someone's time, correction ticket, period history, attendance comparison, Who's working, operational rules, Can't work and Swap sheets)
+- `d3fafb451` es-rest (E): settings forms, Updates list, error screens, shared parts and small routes follow the person's language; key-set and Spanish render tests
+- `c522f77c7` es-rest (E): notes, gaps and Spanish lines for Jose to review
+- `0fa4090d4` es-rest: Owner Home's corporate cards and the setup row follow the person's language
+- `a813e48a1` es-rest: closed-page notices pass the person's language; Help says correo electrónico; report body
+- `9a2c975ad` es-rest (C): Schedule's shared parts follow the person's language (Add and Edit shift, What changed, publishing, Build draft, Copy previous week, Find cover, coverage line)
+- `d7398529e` es-rest (C): Availability follows the person's language (the person's page and editor, day rows and sheet, the team list, Agreed times title)
+- `714ca4d95` es-rest (C): shift request parts follow the person's language (request results, Decline and Approve, request history, trade and coverage rules, held-edit recovery, place line)
+- `76ddbead4` es-rest (C): Find cover, Review replacement and the coverage figures follow the person's language
+- `454b62097` es-rest (C): Christmas bonus hours follows the person's language (report and year menu; Spanish pay wording listed for Jose)
+- `9fb56037e` es-rest (C): Swap shift, Offer for cover, Can't work's reason check and the swap labels follow the person's language
+- `f4cc67c3a` es-rest (C): tests follow the language wiring (decline-asks' React stand-in reads context; swap label test types)
+- `06175bf79` es-rest (C): notes for part C (areas, checks, gaps, pay wording for Jose)
+- `6f4707263` es-rest: Christmas bonus calls Insights Informes, as the Insights page does
+- `b03450dad` es-rest: Spanish fits at 200% text (Break types button, Christmas bonus deadline row); Settings band says Configuración
+- `cc60de9ba` es-rest: Christmas bonus exemption row fits at 200% text (Plazo de la exención)
+- the shots and this report: the last commit on the branch
+
+## Checks
+
+- **Unit tests:** whole `src/components` plus `src/app/app` on the merged tip: 4,390 passed, 0 failed (6f470726). The
+  final fixes were re-run on their own files (settings, clocker, Christmas bonus, reports). The final code tip (cc60de9ba): 4,392 passed, 0 failed
+  (src/components, src/app/app, src/lib/i18n).
+- **tsc and oxlint:** clean before every push.
+- **Key sets:** every new `*-copy.ts` has a test that its `en` and `es` keys match (recursively). Each main view has a
+  Spanish render test that checks the Spanish words and the absence of the English ones. Existing English tests are unchanged,
+  apart from five tests whose hand-written React stand-ins needed `useContext` or a language stub (clocker-device-manager,
+  decline-asks, time-off-withdrawal, configuration-form, period-close-history-lifetime). No assertion was changed.
+- **Browser (Spanish, Owner, fictional data, development build):** the `nv-lang=es` cookie the sign-in switch sets
+  (no saved Profile language). 19 pages: Settings and its pages (J1–J18 rows the Owner opens, including Time off policies,
+  Payroll settings and Plan and billing), Insights and Christmas bonus hours. Each one was checked at 390, at 390 with 200%
+  text and at 1440, and axe ran on all 57 views (wcag2a/aa, 21a/aa, 22aa).
+  - **Sideways scroll:** none.
+  - **Clipped or past-the-edge text:** none after the fixes. Two items were fixed: Break types' empty-state button at 200%
+    text is now "Añadir descanso", and the Christmas bonus exemption row is now "Plazo de la exención".
+  - **axe:** 0 violations, except one `color-contrast` on Insights at 1440 (`.c-ins__range`, the grey range line on the
+    band). That is the same element in English, so it isn't caused by the language. It's proposed below as an end-sweep row.
+  - **Data:** `shots/es-rest/scan-summary.json` holds the per-view results. The captures are in `shots/es-rest/img/`
+    (`es-<page>-owner-<390|390-200|1440>.webp`).
+- **Not checked in a browser:** the other roles, the pages from parts B–E outside Settings and Insights (they have render
+  tests only), the production build, keyboard order and reduced motion. Those are outside this package's browser brief.
+
+## Impeccable audit (Settings and Insights in Spanish)
+
+- **Hierarchy:** the band title, the card labels and the rows keep the English structure. Spanish titles wrap to two lines
+  on the band at 390 at 200% ("Tipos de descanso"), as the English ones do; nothing is truncated.
+- **Spacing and alignment:** unchanged, because only the words changed. The values on the right ("Aún no hay", "Semanal")
+  fit beside their titles at 390.
+- **Accessibility:** `lang="es"` is set on each Spanish page root (Payroll settings and Billing are drawn by other rows'
+  components, so they lack it). Screen-reader-only lines are translated, and button names start with their visible words.
+- **States:** the failure, empty and closed states are translated (Positions, Break types, Policies unavailable, the
+  Settings-for-Owners notice, Photo review unavailable).
+- **Leftover English on these pages, owned elsewhere:** the shell (tab bar, desktop sidebar, Search, account menu) and the
+  bodies of Payroll settings and Billing.
+- **Note:** at 200% text the native "Aplica a" select on Company policies shows "Todas las localidade…". That is the
+  browser's own truncation of a select.
+
+## Proposed ledger rows (end sweep)
+
+- Insights band range line (`.c-ins__range`) fails color-contrast at 1440 over the band's lighter top; same in English.
+- `CorpTime`/`timeParts` should render "a. m."/"p. m." at the same size (kit).
+- Settings `RouteSkeleton` labels and server action messages in Spanish (see Decisions 3–4).
+
+
 
 ## Decisions for Jose and the lead
 

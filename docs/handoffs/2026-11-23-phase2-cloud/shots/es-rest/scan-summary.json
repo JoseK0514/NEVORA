@@ -1,0 +1,403 @@
+[
+ {
+  "route": "/app/settings",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/workspace",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/workspace",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/workspace",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/locations",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/locations",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/locations",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/locations/new",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/locations/new",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/locations/new",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/branding",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/branding",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/branding",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/features",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/features",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/features",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/company-policies",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/company-policies",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/company-policies",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/positions",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/positions",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/positions",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/breaks",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/breaks",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/breaks",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/time-off",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/time-off",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/time-off",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/pins",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/pins",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/pins",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/photos",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/photos",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/photos",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/photos/review",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/photos/review",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/photos/review",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/matching",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/matching",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/clocker/matching",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/payroll",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/payroll",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/settings/payroll",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/billing",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/billing",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/billing",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/reports",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/reports",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/reports",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [
+   "color-contrast"
+  ],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/reports/christmas-bonus",
+  "view": "390",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/reports/christmas-bonus",
+  "view": "390-200",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ },
+ {
+  "route": "/app/reports/christmas-bonus",
+  "view": "1440",
+  "sideways": 0,
+  "axe": [],
+  "clippedOrOffEdge": []
+ }
+]

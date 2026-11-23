@@ -123,7 +123,7 @@ it('renders the Owner-reviewed operational rules in Spanish', () => {
 
 it('renders Features and team terms and Add location in Spanish', () => {
   const features = es(<FeaturesEditor revision={1} preset="standard" disabled={[]} blockers={{}} payrollEnabled={false} />);
-  for (const words of ['Cómo llamar a las personas y los lugares', 'Estándar', 'Empleados, ubicaciones', 'Funciones', 'Días libres', 'Disponible cuando la nómina está activa.']) expect(features).toContain(words);
+  for (const words of ['Cómo llamar a las personas y los lugares', 'Estándar', 'Empleados, localidades', 'Funciones', 'Días libres', 'Disponible cuando la nómina está activa.']) expect(features).toContain(words);
   const add = es(<NewLocationForm action={async () => ({})} />);
   for (const words of ['Nombre', 'Nombre corto', 'Clave del Clocker', 'Cancelar', 'Añadir']) expect(add).toContain(words);
 });

@@ -75,7 +75,7 @@ const es: BreakTypesCopy = {
   active: 'Activos',
   configured: 'Tipos de descanso configurados',
   noActive: 'No hay tipos de descanso activos',
-  add: 'Añadir tipo de descanso',
+  add: 'Añadir descanso',
   newOnly: 'Los cambios aplican solo a descansos nuevos.',
   noneYet: 'Aún no hay tipos de descanso',
   noneYetBody: 'Añade los descansos que toma tu equipo, como una comida de 30 minutos.',

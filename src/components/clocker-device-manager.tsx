@@ -251,7 +251,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const canAdd = hydrated && activeLocations.length > 0;
   // Phase 2 (Settings part 2): the Direction B page frame. The band is the title alone: what the tablets are for and that one
   // per location works best were lines shown on every visit (density rule 5); the list and its states say the rest.
-  return <SettingsPageB className="ck-owner ck-frame ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} titleId="clocker-tablets-title">
+  return <SettingsPageB lang={lang === 'es' ? 'es' : undefined} className="ck-owner ck-frame ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} titleId="clocker-tablets-title">
     <div className="ck-stack">
       <p className="b-sr" role="status">{t.tabletsCount(connected, waiting, revoked)}</p>
       {notice ? <p className="ck-notice" role="status">{notice}</p> : null}
@@ -332,7 +332,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
 /** The page when the tablets could not be read: the band, one state card, one retry. */
 export function ClockerDevicesUnavailable({ lang = 'en' }: { lang?: ClockerOwnerLang }) {
   const t = clockerOwnerCopy[lang];
-  return <SettingsPageB className="ck-owner ck-frame ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} titleId="clocker-tablets-title">
+  return <SettingsPageB lang={lang === 'es' ? 'es' : undefined} className="ck-owner ck-frame ck-tablets" back={{ href: '/app/settings', label: t.settings }} title={t.tabletsTitle} titleId="clocker-tablets-title">
     <div className="ck-stack"><BCard label={t.loadFailedTitle}>
       <BState kind="failed" alert title={t.loadFailedTitle} line={t.loadFailedBody}>
         {/* A retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript. */}
