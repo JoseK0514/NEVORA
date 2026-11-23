@@ -6,7 +6,7 @@ const mocks=rs.hoisted(()=>({today:rs.fn(),actions:rs.fn(),query:rs.fn(),access:
 // Inbox counts are scoped to the actor's operational access (6eee084e); fixtures stand in for that read.
 rs.mock('../company-access/operational-scope.server',()=>({assertOperationalAccess:mocks.access,assertOriginalOperationalAccess:mocks.original}));
 rs.mock('./today.server',()=>({readToday:mocks.today}));
-rs.mock('../action-center/service',()=>({readActionCenter:mocks.actions}));
+rs.mock('../action-center/service',()=>({readActionCenterForCurrentScope:mocks.actions}));
 rs.mock('../db',()=>({getDb:()=>({query:mocks.query}),queryRows:(rows:unknown)=>rows}));
 import {readInboxCount} from './inbox-count.server';
 import {describeCopyRow} from './schedule-copy';

@@ -217,7 +217,7 @@ try{
   assert.equal(await approve.evaluate((el)=>document.activeElement===el),true);
   checked(engine+': keyboard focus reaches employee-specific approval control');
   await approve.click();
-  await mp.getByText('Correction approved. The original recorded punch remains unchanged.',{exact:true}).waitFor();
+  await mp.locator('.manager-corrections-notice[data-result]').getByText('Correction approved',{exact:true}).waitFor();
   await mp.getByText('Nothing to fix',{exact:true}).waitFor();
   checked(engine+': manager approves through real D2 API and inbox clears');
 
