@@ -1,0 +1,210 @@
+[
+ {
+  "id": "c10-avail-owner",
+  "row": "C10",
+  "page": "Availability",
+  "section": "Schedule tools",
+  "note": "Availability on Direction B: the counts live on Not sent and Sent, the week titles the deadline card, and the people are kit rows.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/c10-avail-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/c10-avail-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/c10-avail-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Band segments: axe color-contrast on unselected labels at 768 and 1440 (kit)"
+  ]
+ },
+ {
+  "id": "c10-avail-mgr",
+  "row": "C10",
+  "page": "Availability",
+  "section": "Schedule tools",
+  "note": "Availability on Direction B: the counts live on Not sent and Sent, the week titles the deadline card, and the people are kit rows.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/c10-avail-mgr-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/c10-avail-mgr-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/c10-avail-mgr-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Band segments: axe color-contrast on unselected labels at 768 and 1440 (kit)"
+  ]
+ },
+ {
+  "id": "c12-exch-owner",
+  "row": "C12",
+  "page": "Shift changes: Waiting",
+  "section": "Schedule tools",
+  "note": "Each request reads in three lines: the name with its kind, the day and hours, then who else is involved. Decline and Approve match Things to do.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/c12-exch-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/c12-exch-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/c12-exch-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Band segments: axe color-contrast on unselected labels at 768 and 1440 (kit)"
+  ]
+ },
+ {
+  "id": "c12-exch-mgr",
+  "row": "C12",
+  "page": "Shift changes: Waiting",
+  "section": "Schedule tools",
+  "note": "Each request reads in three lines: the name with its kind, the day and hours, then who else is involved. Decline and Approve match Things to do.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/c12-exch-mgr-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/c12-exch-mgr-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/c12-exch-mgr-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Band segments: axe color-contrast on unselected labels at 768 and 1440 (kit)"
+  ]
+ },
+ {
+  "id": "c12-cover-owner",
+  "row": "C12",
+  "page": "Shift changes: Open cover",
+  "section": "Schedule tools",
+  "note": "Open cover rows carry only who asked and when; the tab already says each is a cover request nobody has picked up.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/c12-cover-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/c12-cover-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/c12-cover-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Band segments: axe color-contrast on unselected labels at 768 and 1440 (kit)"
+  ]
+ },
+ {
+  "id": "c12-cover-mgr",
+  "row": "C12",
+  "page": "Shift changes: Open cover",
+  "section": "Schedule tools",
+  "note": "Open cover rows carry only who asked and when; the tab already says each is a cover request nobody has picked up.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/c12-cover-mgr-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/c12-cover-mgr-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/c12-cover-mgr-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Band segments: axe color-contrast on unselected labels at 768 and 1440 (kit)"
+  ]
+ },
+ {
+  "id": "c12-done-owner",
+  "row": "C12",
+  "page": "Shift changes: Done",
+  "section": "Schedule tools",
+  "note": "Finished requests in the same three lines with how each ended at the right; each opens its history.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/c12-done-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/c12-done-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/c12-done-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Band segments: axe color-contrast on unselected labels at 768 and 1440 (kit)"
+  ]
+ },
+ {
+  "id": "c12-done-mgr",
+  "row": "C12",
+  "page": "Shift changes: Done",
+  "section": "Schedule tools",
+  "note": "Finished requests in the same three lines with how each ended at the right; each opens its history.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/c12-done-mgr-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/c12-done-mgr-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/c12-done-mgr-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Band segments: axe color-contrast on unselected labels at 768 and 1440 (kit)"
+  ]
+ }
+]
