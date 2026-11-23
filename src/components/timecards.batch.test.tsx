@@ -264,6 +264,17 @@ function closeSheet(kind:'escape'|'done'|'automatic'='escape'){
 function openFirstSheet(){
  (control(n=>n.type==='button'&&n.props.className==='c-tc-person').onClick as ()=>void)();
 }
+// Gate check (Nov 23, 2026): a person's week says a waiting correction once (in the amber note), without the header's
+// "Correction waiting" and without a line on how to clear issues before approval.
+it('says a timecard issue once in the person\'s week',async()=>{
+ const own=card('E1');
+ rs.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-27T12:00:00Z',cards:[{...own,source:{...own.source,pendingCorrections:1}}]}));
+ await mount();openFirstSheet();
+ const sheet=html().slice(html().indexOf('c-tc-sheet__who'));
+ expect(sheet).toContain('Correction awaiting review');
+ expect(sheet).not.toContain('Correction waiting');
+ expect(sheet).not.toContain('Review the entries');
+});
 it.each(['escape','done'] as const)('returns focus to the replacement current row on %s after a refresh replaces the original trigger',async kind=>{
  transport();await mount();openFirstSheet();
  const focus=sheetFocusFixture();
@@ -331,6 +342,13 @@ let media:{matches:boolean;listeners:(()=>void)[]};
 function phoneWindow(matches=true){media={matches,listeners:[]};rs.stubGlobal('window',Object.assign(new EventTarget(),{matchMedia:()=>({get matches(){return media.matches;},addEventListener:(_:string,l:()=>void)=>{media.listeners.push(l);},removeEventListener:()=>{}})}));}
 async function mountAll(){render();host.mounted=true;const cleanups=host.effects.map(effect=>effect());cleanup=()=>cleanups.forEach(c=>{if(typeof c==='function')c();});await flush();}
 const resize=(matches:boolean)=>{media.matches=matches;for(const listener of media.listeners)listener();};
+// G89 (Nov 23, 2026): on phones the Team card's title carries the count, so the band doesn't also say "N people".
+it('phone: the number of people is said once, in the Team card',async()=>{
+ phoneWindow();transport();await mountAll();
+ const band=html().match(/<header class="b-hero[\s\S]*?<\/header>/)?.[0]??html().slice(0,html().indexOf('b-tc-team'));
+ expect(band).not.toMatch(/\d+ (people|person)\b/);
+ expect(html()).toContain('id="b-tc-team"');
+});
 it('phone: Select in the top bar opens eligible cards; self-review stays excluded with its reason',async()=>{
  phoneWindow();transport();await mountAll();
  expect(html()).toContain('c-page c-tc"');expect(html()).not.toContain('Selected timecard review');
@@ -470,6 +488,25 @@ it('phone: the tile names the step under way, the steps are said once and a fina
  const after=html();
  expect(text(after)).toContain('|Finalized|');expect(text(after)).toContain('|Prepare payroll|');expect(after).toContain('href="/app/payroll/prepare"');
  expect(after).toContain('Every timecard for Sep 21–27 is finalized.');expect(after).not.toContain('Approve each timecard');
+});
+
+// G47 (Nov 23, 2026): a Team row on a phone is named by what it shows. No aria-label rewrites it ("Ana Colon, No time
+// yet" over a row that also drew the face's initials failed axe's label-content-name-mismatch on 12 rows); the initials
+// stay aria-hidden, so the spoken name starts with the person's name, then "You", the status and the hours.
+it('phone (G47): each Team row is named by its visible words, with no label that rewrites them',async()=>{
+ phoneWindow();rs.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[worked('E1',8*60+6),card('E2'),card('OWNER')]}));await mountAll();
+ const markup=html();
+ const rows=[...markup.matchAll(/<button type="button" class="(?:b-row b-row--link|c-row)"([^>]*)>([\s\S]*?)<\/button>/g)];
+ expect(rows.length).toBeGreaterThanOrEqual(3);
+ for(const [,attrs] of rows)expect(attrs).not.toContain('aria-label');
+ const spoken=(inner:string)=>inner.replace(/<span[^>]*aria-hidden="true"[^>]*>[^<]*<\/span>/g,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+ const team=rows.filter(([,,inner])=>inner.includes('b-row__tt')).map(([,,inner])=>spoken(inner));
+ expect(team).toHaveLength(3);
+ expect(team).toContain('PRIVATE E2 No time yet');
+ expect(team.find(name=>name.startsWith('PRIVATE OWNER'))).toBe('PRIVATE OWNER You No time yet');
+ expect(team.find(name=>name.startsWith('PRIVATE E1'))).toMatch(/^PRIVATE E1 .+ 8 h 06$/);
+ // The initials are drawn but never spoken.
+ expect(markup).toMatch(/<span class="b-av"[^>]*aria-hidden="true">PE<\/span>/);
 });
 
 it('after an approval the reviewer moves on when they choose: Next timecard, never on a timer (Jose, Nov 15, 2026)',async()=>{

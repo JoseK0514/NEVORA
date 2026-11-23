@@ -172,7 +172,7 @@
   box-shadow: var(--b-elev-1); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__h { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 44px; padding: var(--b-space-12) var(--b-inset) var(--b-space-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__h h2 { display: flex; align-items: center; gap: var(--b-space-8); font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700; letter-spacing: -0.01em; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-card__a { display: inline-flex; align-items: center; min-height: 44px; margin: -10px -6px -10px 0; padding: 0 6px; font-size: 14px; font-weight: 600; color: var(--b-teal); white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-card__a { display: inline-flex; align-items: center; min-height: 44px; margin: -10px -6px -10px 0; padding: 0 6px; font-size: 0.875rem; font-weight: 600; color: var(--b-teal); white-space: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__meta { font-size: 14px; color: var(--b-grey); white-space: nowrap; }
 /* Phase 9: one inline count (BCard's count and BCount): 20px, 12/16 700 tabular, teal on teal-50, never wraps. */
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-pill, .b-count) { display: inline-grid; place-items: center; box-sizing: border-box; flex: none; min-width: var(--b-count-h); height: var(--b-count-h); padding: 0 6px; border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal);
@@ -236,8 +236,8 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-add .b-ico { width: 32px; height: 32px; border-radius: var(--b-radius-pill); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-add .b-ico svg { width: var(--b-ic-inline); height: var(--b-ic-inline); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-link { display: inline-flex; align-items: center; gap: var(--b-space-2); flex: none; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--b-teal); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-day { display: flex; flex-direction: column; flex: none; width: 44px; text-align: center; line-height: 1.1; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-day span { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-day { display: flex; flex-direction: column; flex: none; width: max(44px, 2.75rem); text-align: center; line-height: 1.1; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-day span { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-day b { font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -0.02em; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-av { display: grid; place-items: center; flex: none; width: var(--s, 36px); height: var(--s, 36px); border-radius: 50%; font-size: calc(var(--s, 36px) * 0.36); font-weight: 600; line-height: 1; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-av--open { border: 1.5px dashed #9AA3A8; background: #FFFFFF; }
@@ -279,8 +279,8 @@
  * shift each minute (only there: Inter's tabular set also widens the hyphen, "Missing clock - out"); a standalone red
  * or green chip leads with a 12px glyph.
  * In a phone row's title the chip is a block (below), so the dot and glyph space themselves with a margin, not a gap. */
-:is(#c-root, html) .app-shell[data-nv-b] .b-chip { display: inline-flex; align-items: center; gap: var(--b-space-4); flex: none; box-sizing: border-box; height: var(--b-chip-h); padding: 0 var(--b-chip-px); border-radius: var(--b-radius-pill);
-  font-size: var(--b-fs-count); line-height: 16px; font-weight: 600; letter-spacing: 0; white-space: nowrap;
+:is(#c-root, html) .app-shell[data-nv-b] .b-chip { display: inline-flex; align-items: center; gap: var(--b-space-4); flex: none; box-sizing: border-box; height: max(var(--b-chip-h), 1.375rem); padding: 0 var(--b-chip-px); border-radius: var(--b-radius-pill);
+  font-size: 0.75rem; line-height: 1rem; font-weight: 600; letter-spacing: 0; white-space: nowrap;
   box-shadow: inset 0 0 0 1px var(--b-chip-edge, transparent); outline: 1px solid transparent; outline-offset: -1px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-chip--grey { background: var(--b-quiet); color: var(--b-ink2); --b-chip-edge: var(--b-quiet-edge); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-chip--amber { background: var(--b-amber-50); color: var(--b-amber); --b-chip-edge: var(--b-amber-edge); }
@@ -424,7 +424,7 @@
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-week__h { flex-wrap: wrap; row-gap: 6px; }
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-week__h > span:last-child:not(:first-child) { margin-left: auto; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__tx { min-width: 0; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { display: block; width: fit-content; max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; line-height: 22px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { display: block; width: fit-content; max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; line-height: max(22px, 1.375rem); }
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) { grid-auto-columns: auto; }
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 6px; }
 }

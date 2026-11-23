@@ -9,6 +9,8 @@ import type { AttentionBriefing, AttentionDisposition, AttentionKind, AttentionR
 import { attentionDetail, dayText, whenText, type Clock } from "./format";
 
 /** QA S-09 recheck (Nov 22, 2026): the briefing's basis is a fixed contract value; the person reads plain words. */
+/** The closing sentence the server puts on every planning-gap item (src/lib/owner-advisor/briefing.ts). */
+const DRAFT_NOTE = "Includes draft commitments; verify published staffing separately.";
 const basisWords = (basis: string) => basis === "Current planning ledger, including drafts" ? "From the current schedule, including drafts" : basis;
 
 function reviewText(item: AttentionReviewed, clock: Clock) {
@@ -45,31 +47,71 @@ export function AttentionSection({ briefing, disabled, saving, review, refresh, 
   }, [saving]);
   const year = clock.today?.slice(0, 4);
   const unreviewed = briefing.total - briefing.hidden;
+  // Rondo fix (Nov 23): what every item shares (day, observed time, basis) is said once above the list, and items with
+  // the same title sit under one title by place, so a briefing never repeats a line per item.
+  const items = briefing.items;
+  const shared = <T,>(pick: (item: (typeof items)[number]) => T) => items.length > 1 && items.every(item => pick(item) === pick(items[0]));
+  const oneDay = shared(i => i.date), oneTime = shared(i => whenText(i.source.observedAt, clock.timeZone, clock.today)), oneBasis = shared(i => i.basis);
+  const groups: { title: string; items: typeof items }[] = [];
+  for (const item of items) {
+    const group = groups.find(g => g.title === item.title);
+    if (group) group.items.push(item); else groups.push({ title: item.title, items: [item] });
+  }
+  const observed = (at: string) => <>Observed <time dateTime={at}>{whenText(at, clock.timeZone, clock.today)}</time></>;
+  /* Follow-up (lead, Nov 23): in a group, a closing sentence every place shares (the draft-commitments note) and a source
+   * link every place shares are said once under the title. Track, Later and Not relevant stay with each place: each saves
+   * that place's own issue record, one save at a time. */
+  const groupShared = (group: { items: typeof items }) => {
+    const note = DRAFT_NOTE;
+    return { note: group.items.length > 1 && group.items.every(item => item.detail.endsWith(note)) ? note : null,
+      href: group.items.length > 1 && group.items.every(item => item.source.href === group.items[0].source.href) ? group.items[0].source.href : null };
+  };
+  const reviewLink = (href: string) => <CorpButtonLink native href={href} kind="secondary" size="md" className="b-rowact b-rowact--go">Review source</CorpButtonLink>;
+  const itemBody = (item: (typeof items)[number], withPlace: boolean, groupBasis = false, inGroup: { note: string | null; href: string | null } = { note: null, href: null }) => {
+    const facts = [withPlace ? item.locationName : null, oneDay ? null : dayText(item.date, "en", year), oneTime ? null : observed(item.source.observedAt)];
+    const detail = inGroup.note ? item.detail.slice(0, -inGroup.note.length).trimEnd() : item.detail;
+    return <>
+      {facts.some(Boolean) ? <p className="oa-facts"><BSegs parts={facts} /></p> : null}
+      <p className="oa-item__d">{attentionDetail(detail)}</p>
+      {oneBasis || groupBasis ? null : <p className="oa-item__basis">{basisWords(item.basis)}</p>}
+      <div className={inGroup.href ? "oa-acts oa-acts--att oa-acts--three" : "oa-acts oa-acts--att"}>
+        {inGroup.href ? null : reviewLink(item.source.href)}
+        <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" disabled={disabled || item.disposition === "tracking"} onClick={() => review(item.id, "tracking")}>{item.disposition === "tracking" ? "Tracking" : "Track this issue"}</CorpButton>
+        <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" disabled={disabled} onClick={() => review(item.id, "deferred")}>Later · 1 hour</CorpButton>
+        <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" disabled={disabled} onClick={() => review(item.id, "dismissed")}>Not relevant today</CorpButton>
+      </div>
+    </>;
+  };
   return <CorpSection id="oa-attention" label="Needs your attention"
     aside={<button type="button" className="c-link oa-headbtn" disabled={disabled} onClick={refresh}>Check again</button>}>
     <CorpCard as="div">
       <div className="oa-att" aria-busy={saving}>
-        <p className="oa-lede oa-pad">Today’s staffing and recorded-punch issues. Your briefing choices do not change schedules or time records.</p>
+        <p className="oa-lede oa-pad">Today’s staffing and recorded-punch issues.</p>
+        {oneDay || oneTime || oneBasis ? <p className="oa-facts oa-pad oa-att__shared"><BSegs parts={[oneDay ? dayText(items[0].date, "en", year) : null,
+          oneTime ? observed(items[0].source.observedAt) : null, oneBasis ? basisWords(items[0].basis) : null]} /></p> : null}
         {briefing.state === "unavailable"
           ? <BState kind="failed" title="The priority briefing is unavailable." line="Check again to refresh the records." />
           : <>
             {briefing.partial ? <div className="oa-pad"><BCallout tone="amber">Some sources could not be fully assessed. This briefing cannot confirm that everything is clear.</BCallout></div> : null}
             {briefing.items.length === 0
               ? <CorpEmptyRow>{briefing.hidden > 0 ? "Your reviewed items are below. Deferring or dismissing an item does not resolve it." : briefing.partial ? "No priority items could be confirmed from the available sources." : "No staffing or recorded-punch issues were found in today's assessed sources."}</CorpEmptyRow>
-              : <ol className="oa-items">{briefing.items.map(item => <li key={item.id} className="oa-item">
-                <BIcon tone="amber">{KIND_ICON[item.kind]}</BIcon>
+              : <ol className="oa-items">{groups.map(group => <li key={group.items[0].id} className="oa-item">
+                <BIcon tone="amber">{KIND_ICON[group.items[0].kind]}</BIcon>
                 <div className="oa-item__main">
-                  <h3 className="oa-item__t">{item.title}</h3>
-                  <p className="oa-facts"><BSegs parts={[item.locationName, dayText(item.date, "en", year),
-                    <>Observed <time dateTime={item.source.observedAt}>{whenText(item.source.observedAt, clock.timeZone, clock.today)}</time></>]} /></p>
-                  <p className="oa-item__d">{attentionDetail(item.detail)}</p>
-                  <p className="oa-item__basis">{basisWords(item.basis)}</p>
-                  <div className="oa-acts">
-                    <CorpButtonLink native href={item.source.href} kind="secondary" size="md" className="b-rowact b-rowact--go">Review source</CorpButtonLink>
-                    <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={disabled || item.disposition === "tracking"} onClick={() => review(item.id, "tracking")}>{item.disposition === "tracking" ? "Tracking" : "Track this issue"}</CorpButton>
-                    <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={disabled} onClick={() => review(item.id, "deferred")}>Later · 1 hour</CorpButton>
-                    <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" disabled={disabled} onClick={() => review(item.id, "dismissed")}>Not relevant today</CorpButton>
-                  </div>
+                  <h3 className="oa-item__t">{group.title}</h3>
+                  {group.items.length === 1 ? itemBody(group.items[0], true) : (() => {
+                    const groupBasis = !oneBasis && group.items.every(item => item.basis === group.items[0].basis);
+                    const inGroup = groupShared(group);
+                    return <>
+                      {inGroup.note ? <p className="oa-item__d">{inGroup.note}</p> : null}
+                      {groupBasis ? <p className="oa-item__basis">{basisWords(group.items[0].basis)}</p> : null}
+                      {inGroup.href ? <div className="oa-acts oa-acts--one">{reviewLink(inGroup.href)}</div> : null}
+                      {group.items.map(item => <div key={item.id} className="oa-subitem">
+                        <h4 className="oa-subitem__t">{item.locationName}</h4>
+                        {itemBody(item, false, groupBasis, inGroup)}
+                      </div>)}
+                    </>;
+                  })()}
                 </div>
               </li>)}</ol>}
             {unreviewed > briefing.items.length ? <p className="oa-foot">Showing {briefing.items.length} of {unreviewed} unreviewed items. Review the source screens for the full picture.</p> : null}
