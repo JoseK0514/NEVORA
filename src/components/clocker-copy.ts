@@ -275,7 +275,9 @@ export const CLOCKER_COPY:Record<string,string>={
  "Employee ID": "ID de empleado",
  "Change Employee ID": "Cambiar ID de empleado",
  "Don’t know your Employee ID? Ask your manager.": "¿No sabes tu ID de empleado? Pregúntale a tu gerente.",
- "Employee ID or PIN not recognized. Check both, or ask your manager.": "ID de empleado o PIN no reconocido. Revisa ambos o pide ayuda a tu gerente.",
+ "Employee ID or PIN not recognized. Check your Employee ID and PIN, or ask your manager.": "ID de empleado o PIN no reconocido. Revisa tu ID de empleado y tu PIN, o pide ayuda a tu gerente.",
+ "Time can’t be recorded": "No se puede registrar el tiempo",
+ "This tablet is offline.": "Esta tableta está sin conexión.",
  "Your PIN is paused": "Tu PIN está en pausa",
  "You can ask a manager to record your time.": "Puedes pedirle a un gerente que registre tu tiempo.",
  // The kiosk's own error screen (RA-4).
@@ -448,7 +450,7 @@ export function clockerErrorText(locale:ClockerLocale,failure:{code?:unknown;err
 const PIN_ERRORS:Record<string,string>={
  PIN_INPUT_INVALID:'Enter exactly four PIN digits.',
  DEVICE_REQUIRED:'Tell a manager. Your Owner sets this tablet up again in Settings → Clocker tablets.',
- PIN_DENIED:'Employee ID or PIN not recognized. Check both, or ask your manager.',
+ PIN_DENIED:'Employee ID or PIN not recognized. Check your Employee ID and PIN, or ask your manager.',
  PIN_LIMITED:'Too many attempts. Wait a few minutes before trying again.',
  PIN_UNAVAILABLE:'Your PIN was not checked, and nothing was recorded.',
  ORIGIN_REJECTED:'This tablet did not open the Clocker from its own link. Ask a manager to open it again.',

@@ -217,7 +217,7 @@ which are the notice and not-found pages themselves.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | F1 | Team | `/app/employees` | ✓ | ✓ | ✓* | – | – | B (company); Older (Mℓ: scoped directory) | Filters, live status | O B 123w 4b · M B 124w 4b · Mℓ **Older** 131w 0b · L – · E – | Mℓ M O ✓ (Jose, Nov 23) |
 | F2 | Add person | `/app/employees/new` | ✓ | ✓ | n† | – | – | Corp | Invite | O B 73w 1b · M B 73w 1b · Mℓ n | ✓ (Jose, Nov 23) |
-| F3 | Import a staff list | `/app/employees/import` | n† | n | n | – | – | Corp |  | O n · M n · Mℓ n | ☐ |
+| F3 | Import a staff list | `/app/employees/import` | n† | n | n | – | – | Corp |  | O n · M n · Mℓ n | Mℓ M O ✓ (Jose, Nov 23) |
 | F4 | Person (profile, role, access) | `/app/employees/[employeeId]` | ✓ | ✓ | n† | – | – | Mixed | Invitation, operational scope, action grants | O B 54w 2b · M B 46w 2b · Mℓ n | ✓ (Jose, Nov 23) |
 | F5 | Person's pay rate | `/app/employees/[employeeId]/pay` | ✓ | – | – | – | – | Own (wages screen) |  | O B 62w 1b · M – · Mℓ – | ✓ (Jose, Nov 23) |
 | F6 | When they can be scheduled (restrictions) | `/app/employees/[employeeId]/restrictions` | ✓ | ✓ | n† | – | – | Own (restrictions screen) |  | O B 65w 2b · M B 65w 2b · Mℓ n | ✓ (Jose, Nov 23) |
@@ -229,27 +229,27 @@ which are the notice and not-found pages themselves.
 
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| G1 | Payroll | `/app/payroll` | ✓ | n† | n† | n† | n† | Own (payroll runs) | When payroll is on; settings edits are Owner-only | O B 140w 2b · M n · Mℓ n · L n · E n | ☐ |
-| G2 | Prepare payroll | `/app/payroll/prepare` | ✓ | n† | n† | – | – | Own |  | O B 80w 3b · M n · Mℓ n | ☐ |
-| G3 | Review pay | `/app/payroll/review` | ✓ | n† | n† | – | – | Own |  | O B 54w 2b · M n · Mℓ n | ☐ |
-| G4 | People in this payroll | `/app/payroll/people` | ✓ | n† | n† | – | – | Own |  | O B 81w 0b · M n · Mℓ n | ☐ |
-| G5 | Fix payroll | `/app/payroll/fix` | ✓ | n† | n† | – | – | Own |  | O B 9w 0b · M n · Mℓ n | ☐ |
-| G6 | Import payroll | `/app/payroll/import` | ✓ | n† | n† | – | – | Own |  | O B 21w 1b · M n · Mℓ n | ☐ |
-| G7 | Payroll history | `/app/payroll/history` | ✓ | n† | n† | – | – | Own |  | O B 80w 1b · M n · Mℓ n | ☐ |
-| G8 | Time exports | `/app/payroll-export` | ✓ | ✓ | n† | n | n | Own | Recent exports card (A3-03) | O B 82w 1b · M B 74w 1b · Mℓ n · L n · E n | ☐ |
-| G9 | Paid time export | `/app/payroll-export/paid-time` | ✓ | ✓ | n† | n | n | Corp |  | O B 31w 1b · M B 31w 1b · Mℓ n · L n · E n | ☐ |
-| G10 | My pay (statements) | `/app/my-pay` | – | – | ✓† | ✓ | ✓ | Own |  | Mℓ B 24w 0b · L B 72w 2b · E B 72w 2b | ☐ |
+| G1 | Payroll | `/app/payroll` | ✓ | n† | n† | n† | n† | Own (payroll runs) | When payroll is on; settings edits are Owner-only | O B 140w 2b · M n · Mℓ n · L n · E n | ✓ (Jose, Nov 23) |
+| G2 | Prepare payroll | `/app/payroll/prepare` | ✓ | n† | n† | – | – | Own |  | O B 80w 3b · M n · Mℓ n | ✓ (Jose, Nov 23) |
+| G3 | Review pay | `/app/payroll/review` | ✓ | n† | n† | – | – | Own |  | O B 54w 2b · M n · Mℓ n | ✓ (Jose, Nov 23) |
+| G4 | People in this payroll | `/app/payroll/people` | ✓ | n† | n† | – | – | Own |  | O B 81w 0b · M n · Mℓ n | ✓ (Jose, Nov 23) |
+| G5 | Fix payroll | `/app/payroll/fix` | ✓ | n† | n† | – | – | Own |  | O B 9w 0b · M n · Mℓ n | ✓ (Jose, Nov 23) |
+| G6 | Import payroll | `/app/payroll/import` | ✓ | n† | n† | – | – | Own |  | O B 21w 1b · M n · Mℓ n | ✓ (Jose, Nov 23) |
+| G7 | Payroll history | `/app/payroll/history` | ✓ | n† | n† | – | – | Own |  | O B 80w 1b · M n · Mℓ n | ✓ (Jose, Nov 23) |
+| G8 | Time exports | `/app/payroll-export` | ✓ | ✓ | n† | n | n | Own | Recent exports card (A3-03) | O B 82w 1b · M B 74w 1b · Mℓ n · L n · E n | ✓ (Jose, Nov 23) |
+| G9 | Paid time export | `/app/payroll-export/paid-time` | ✓ | ✓ | n† | n | n | Corp |  | O B 31w 1b · M B 31w 1b · Mℓ n · L n · E n | ✓ (Jose, Nov 23) |
+| G10 | My pay (statements) | `/app/my-pay` | – | – | ✓† | ✓ | ✓ | Own |  | Mℓ B 24w 0b · L B 72w 2b · E B 72w 2b | ✓ (Jose, Nov 23) |
 
 ## H. Rondo AI and insights
 
 | # | Page | Route | O | M | Mℓ | L | E | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | H1 | Rondo AI | `/app/ai-manager` | ✓* | ✓* | ✓* | nf† | nf† | Own (owner advisor / manager Rondo) | When the AI manager is on; day plans, coverage, attendance | O B 426w 5b · M B 113w 2b · Mℓ B 116w 2b · L nf · E nf (Rondo module on) | Mℓ M O ✓ (Jose, Nov 23) |
-| H2 | Weekly plan ("Where are we short this week?") | `/app/ai-manager/weekly` | ✓ | nf† | nf† | nf† | nf† | Corp + B |  | O B 38w 2b · M nf · Mℓ nf · L nf · E nf (Rondo module on) | ☐ |
-| H3 | Business records | `/app/ai-manager/business` | ✓ | nf† | nf† | nf† | nf† | Own |  | O B 20w 1b · M nf · Mℓ nf · L nf · E nf (Rondo module on) | ☐ |
-| H4 | Company knowledge | `/app/ai-manager/knowledge` | ✓ | nf† | nf† | nf† | nf† | Own |  | O B 22w 0b · M nf · Mℓ nf · L nf · E nf (Rondo module on) | ☐ |
-| H5 | Insights | `/app/reports` | ✓ | ✓ | n† | n | n | Own |  | O B 97w 2b · M B 97w 2b · Mℓ n · L n · E n | ☐ |
-| H6 | Christmas bonus | `/app/reports/christmas-bonus` | ✓ | ✓ | n† | n | n | Own |  | O B 55w 1b · M B 55w 1b · Mℓ n · L n · E n | ☐ |
+| H2 | Weekly plan ("Where are we short this week?") | `/app/ai-manager/weekly` | ✓ | nf† | nf† | nf† | nf† | Corp + B |  | O B 38w 2b · M nf · Mℓ nf · L nf · E nf (Rondo module on) | ✓ (Jose, Nov 23) |
+| H3 | Business records | `/app/ai-manager/business` | ✓ | nf† | nf† | nf† | nf† | Own |  | O B 20w 1b · M nf · Mℓ nf · L nf · E nf (Rondo module on) | ✓ (Jose, Nov 23) |
+| H4 | Company knowledge | `/app/ai-manager/knowledge` | ✓ | nf† | nf† | nf† | nf† | Own |  | O B 22w 0b · M nf · Mℓ nf · L nf · E nf (Rondo module on) | ✓ (Jose, Nov 23) |
+| H5 | Insights | `/app/reports` | ✓ | ✓ | n† | n | n | Own |  | O B 97w 2b · M B 97w 2b · Mℓ n · L n · E n | ✓ (Jose, Nov 23) |
+| H6 | Christmas bonus | `/app/reports/christmas-bonus` | ✓ | ✓ | n† | n | n | Own |  | O B 55w 1b · M B 55w 1b · Mℓ n · L n · E n | ✓ (Jose, Nov 23) |
 
 ## I. Profile and account
 
@@ -277,12 +277,12 @@ which are the notice and not-found pages themselves.
 | J9 | Breaks | `/app/settings/breaks` | Older (`wave-c`) | Break types | O **Mixed** 20w 2b · M n | ✓ (Jose, Nov 23) |
 | J10 | Time off policies | `/app/settings/time-off` | Own (policies screen) | QA A1-05: three button styles in its empty state | O B 52w 3b · M n | ✓ (Jose, Nov 23) |
 | J11 | Company policies | `/app/settings/company-policies` | Older (`wave-c`) |  | O **Mixed** 48w 0b · M n | ✓ (Jose, Nov 23) |
-| J12 | Payroll settings | `/app/settings/payroll` | Own | When payroll is on | O B 52w 0b · M n | ☐ |
+| J12 | Payroll settings | `/app/settings/payroll` | Own | When payroll is on | O B 52w 0b · M n | ✓ (Jose, Nov 23) |
 | J13 | Clocker devices | `/app/settings/clocker` | Own (device manager) | Add a tablet, setup ticket | O B 36w 3b · M n | ✓ (Jose, Nov 23) |
 | J14 | Clocker schedule matching | `/app/settings/clocker/matching` | Older (`wave-c`) + Corp | Grace minutes | O B 49w 0b · M n | ✓ (Jose, Nov 23) |
 | J15 | Clocker photos | `/app/settings/clocker/photos` | Older (`wave-c`) | Photo and notice settings | O B 105w 0b · M n | ✓ (Jose, Nov 23) |
 | J16 | Clocker photo review | `/app/settings/clocker/photos/review` | Older (`wave-c`) + Corp |  | O B 47w 1b · M n | ✓ (Jose, Nov 23) |
-| J17 | Clocker PINs | `/app/settings/clocker/pins` | Older (`wave-c`) |  | O B 139w 3b · M n | ☐ |
+| J17 | Clocker PINs | `/app/settings/clocker/pins` | Older (`wave-c`) |  | O B 139w 3b · M n | ✓ (Jose, Nov 23) |
 | J18 | Billing (account recovery / plan) | `/app/billing` | Own (recovery frame) | Owner; when billing needs attention | O B 79w 3b (dev build) · M n | ✓ (Jose, Nov 23) |
 
 ## K. Clocker (shared tablet)
@@ -294,7 +294,7 @@ route with these screens (DESIGN.MD "Clocker Direction B"; English and Spanish).
 |---|---|---|---|---|---|
 | K1 | Tablet setup: not connected / enter setup code | Own (Clocker setup) | Redeem the Owner's code | B 119w 3b | ☐ |
 | K2 | Tablet connected (ready) | Own |  | B 51w 3b | ☐ |
-| K3 | Enter Employee ID | Own |  | B 51w 3b | ☐ |
+| K3 | Enter Employee ID | Own |  | B 51w 3b | ✓ (Jose, Nov 23) |
 | K4 | PIN keypad | Own | Masked | B 66w 3b | ☐ |
 | K5 | Choose an action (clock in / out, break) | Own |  | B 78w 4b | ☐ |
 | K6 | Choose a break (rest or meal) | Own |  | B 66w 4b | ☐ |

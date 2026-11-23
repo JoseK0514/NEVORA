@@ -198,7 +198,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
  // when they can (Timecards' own date); once it has ended the line names the steps left, as before.
  const notYet=!!today&&period.endDate>=today&&unapproved>0;
  // Batch 1 item 5: the Week field names the period, so the line doesn't repeat it; without Payroll the back link is Timecards.
- const waitingLine=notYet?`Its timecards can be approved from ${dayText(addDays(period.endDate,1))}.`:waiting;
+ const waitingLine=notYet?`Timecards can be approved from ${dayText(addDays(period.endDate,1))}.`:waiting;
  const weeks=weekChoices();
  const periodKey=`${period.startDate}|${period.endDate}`;
  const listed=weeks.some(w=>w.value===periodKey);

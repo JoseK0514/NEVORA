@@ -56,14 +56,14 @@ it('keeps a wrong entry on the form and a missing tablet registration blocking',
 });
 // Phase 6 (item 1): every refusal reads by its stable code; the server's English sentence never reaches the screen.
 it.each([
- [401,{state:'denied',code:'PIN_DENIED',error:'Server words A.'},'Employee ID or PIN not recognized. Check both, or ask your manager.'],
+ [401,{state:'denied',code:'PIN_DENIED',error:'Server words A.'},'Employee ID or PIN not recognized. Check your Employee ID and PIN, or ask your manager.'],
  [503,{state:'unavailable',code:'PIN_UNAVAILABLE',error:'Server words B.'},'Your PIN was not checked, and nothing was recorded.'],
  [403,{code:'ORIGIN_REJECTED',error:'Server words C.'},'This tablet did not open the Clocker from its own link. Ask a manager to open it again.'],
  [400,{code:'LOCATION_INVALID',error:'Server words D.'},'This tablet’s link is not valid. Tell a manager.'],
  [400,{code:'PIN_INPUT_INVALID',error:'Server words E.'},'Enter exactly four PIN digits.'],
  // An older server that sends no code: the status decides.
  [401,{state:'device_required',error:'Server words F.'},'Tell a manager. Your Owner sets this tablet up again in Settings\u00a0→\u00a0Clocker\u00a0tablets.'],
- [401,{error:'Server words G.'},'Employee ID or PIN not recognized. Check both, or ask your manager.'],
+ [401,{error:'Server words G.'},'Employee ID or PIN not recognized. Check your Employee ID and PIN, or ask your manager.'],
  [503,{error:'Server words H.'},'Your PIN was not checked, and nothing was recorded.'],
  [418,{error:'Server words I.'},'We couldn’t check your PIN. Try again, or ask a manager to record your time.'],
 ] as const)('reads a %s refusal by its code, not by the server sentence',async(status,body,sentence)=>{
@@ -87,7 +87,7 @@ it('announces the PIN keypad as a group and keeps a live line for the entered co
 it('names who does what, titles each blocked card by its state, and never shows the done mark for nothing recorded',async()=>{
  const source=await (await import('node:fs/promises')).readFile(new URL('./clocker-pin-gate.tsx',import.meta.url),'utf8');
  expect(source).not.toMatch(/Ask a manager to set up this tablet/);expect(source).toContain("'This tablet needs to be set up again'");
- expect(source).toContain("unreachable&&!online?'No connection':unreachable?'Can’t reach NEVORA'");
+ expect(source).toContain("unreachable&&!online?'Time can’t be recorded':unreachable?'Can’t reach NEVORA'");
  expect(source).toContain("online?'unreached':'offline'");
  expect(source).not.toContain('data-tone="green"');expect(source).not.toContain('This screen clears automatically');
  expect(source).not.toMatch(/role="alert"[^\n]*styles\.sr/);

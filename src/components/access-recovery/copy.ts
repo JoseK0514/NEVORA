@@ -58,11 +58,11 @@ const en = {
   assisted: {
     /* Phase 5 (PB-008, PB-014): the helper hands over a one-time reset link, as a QR code the other person scans or a
      * link the helper copies. The code itself stays behind "Show code". One word for the task: reset. */
-    summary: "Give someone a one-time link to reset their password.",
+    summary: "Give someone a link to set a new password.",
     howLabel: "How this works",
     how: [
       "You check who they are, using details you already have.",
-      "You get a one-time reset link: a QR code they scan, or a link you copy.",
+      "You get a reset link: a QR code they scan, or a link you copy.",
       "They open it on their own phone and choose a new password.",
     ],
     lasts: "The link works once and lasts 15 minutes.",
