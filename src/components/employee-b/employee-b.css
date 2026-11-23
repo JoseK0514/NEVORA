@@ -327,3 +327,9 @@
     white-space: normal !important; overflow-wrap: break-word !important; text-align: center !important;
   }
 }
+/* B5 Requests hub at 320 with 200% text (Phase 2 gate, Nov 23): a row's grey line was cut after two lines ("swaps for
+ * yo…") and a chip after a word ("Needs your ans…"). On this page both show in full; normal sizes don't change. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] .b-screen:has(#b-requests-title) .b-row__s:not(#eb-hub-full) { display: block !important; -webkit-line-clamp: none !important; line-clamp: none !important; max-height: none !important; overflow: visible !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] .b-screen:has(#b-requests-title) .b-chip:not(#eb-hub-full) { max-width: 100% !important; height: auto !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+}
