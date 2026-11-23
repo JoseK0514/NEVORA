@@ -12,6 +12,8 @@ rs.mock('react',()=>({...rstestOriginal0,
 }));
 rs.mock('next/navigation',()=>({...rstestOriginal1,useRouter:()=>({refresh:()=>{}})}));
 rs.mock('@/app/app/requests/actions',()=>({withdrawTimeOffAction:rs.fn()}));
+// The form is called as a function here (outside a render), so its language hook is stubbed to English.
+rs.mock('@/lib/i18n/portal-lang',()=>({usePortalLang:()=>'en'}));
 import {withdrawTimeOffAction} from '@/app/app/requests/actions';
 import {TimeOffWithdrawal} from './time-off-withdrawal';
 const requestId='dc6b44c9-6e3f-4f0e-890c-328067ebfe9e';
