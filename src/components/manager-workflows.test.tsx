@@ -190,14 +190,16 @@ describe("management sees every shift in full before deciding (Codex review, Oct
     expect(facts).toContain("Reason Transportation issue"); expect(facts).toContain("Note Fictional bus strike");
     // The collapsed line is the shift only (OW-011); the reason shows once the row opens.
     const summary = html.slice(html.indexOf("<summary"), html.indexOf("</summary>"));
-    expect(text(summary)).toContain("Can’t work · Mon, Oct 5 · 8:00 AM – 12:00 PM");
+    // Jose (Nov 23): the kind is a label beside the name, and the day and hours are their own line.
+    expect(summary).toContain('<span class="b-chip b-chip--amber">Can’t work</span>');
+    expect(text(summary)).toContain("Can’t work Mon, Oct 5 · 8:00 AM – 12:00 PM");
     expect(summary.slice(summary.indexOf(">"))).not.toContain("Fictional bus strike");
   });
   it("a shift in another year carries its year, in the row and in the opened list", async () => {
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([]);
     rs.mocked(listPendingCallouts).mockResolvedValue([{ id: "callout", requestRevision: 4, shiftId: "s", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2027-01-04", date: "2027-01-04", startTime: "22:00", endTime: "24:00", reasonCode: "OTHER", status: "PENDING", createdAt: "2026-10-03T00:00:00Z" }]);
     const words = text(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" }))));
-    expect(words).toContain("Can’t work · Mon, Jan 4, 2027 · 10:00 PM – 12:00 AM");
+    expect(words).toContain("Can’t work Mon, Jan 4, 2027 · 10:00 PM – 12:00 AM");
     expect(words).toContain("Fictional Ana’s shift Mon, Jan 4, 2027 · 10:00 PM – 12:00 AM · North Office");
   });
   it("a deep-linked request opens with its shifts showing", async () => {

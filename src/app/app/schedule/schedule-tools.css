@@ -94,6 +94,14 @@
 :is(#c-root, html) .c-shreq .c-shreq__history li { display: flex; flex-direction: column; gap: 2px; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-ink2); }
 :is(#c-root, html) .c-shreq .c-shreq__history li strong { font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-shreq .shift-change-unavailable { margin: 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--c-grey); }
+/* Jose (Nov 23, 2026), from schedule-tools-2: a request's summary in three fixed lines. The name and its kind label share
+ * the first line (the label wraps under the name only when the line is too short, and never clips); the day and the hours
+ * stay together on the second, each part whole; who else is involved, or how it ended, is the third. */
+:is(#c-root, html) .c-shreq .c-shreq__head { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; row-gap: 2px; min-width: 0; }
+:is(#c-root, html) .c-shreq .c-shreq__head > .b-chip { flex: none; max-width: 100%; height: auto; min-height: var(--b-chip-h, 22px); padding-block: 2px; font-size: 0.75rem; line-height: 1rem; white-space: nowrap; }
+/* The kit's segments keep each part whole (non-breaking spaces inside a part) and break only between parts. */
+:is(#c-root, html) .c-shreq .c-shreq__when { color: var(--c-ink2); }
+:is(#c-root, html) .c-shreq .c-shreq__who { color: var(--c-grey); }
 
 @media (min-width: 768px) {
   :is(#c-root, html) .c-shreq .c-shreq__item { padding-inline: var(--b-inset-wide, 22px); }
