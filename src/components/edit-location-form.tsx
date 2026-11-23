@@ -48,6 +48,18 @@ export function EditLocationForm({ location, action, words = { location: "Locati
     if (result.error || result.success) feedback.current?.focus();
   }, [result]);
 
+  // The page refreshes after a save (or when the place changed elsewhere): take the server's values in place, without
+  // remounting, so the result under the card stays; edits in progress are never overwritten.
+  const server = `${location.name}\u0000${location.shortName}\u0000${location.active}\u0000${location.updatedAt ?? ""}`;
+  const [seen, setSeen] = useState(server);
+  if (seen !== server) {
+    setSeen(server);
+    if (!dirty && !pending) {
+      const next = { name: location.name, shortName: location.shortName, active: location.active };
+      setDraft(next); setSaved(next);
+    }
+  }
+
   function change(next: Partial<Draft>) {
     setDraft((current) => ({ ...current, ...next }));
     setResult({});
