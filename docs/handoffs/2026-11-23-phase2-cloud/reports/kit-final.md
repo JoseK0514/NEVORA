@@ -171,3 +171,20 @@ listed were already in `d8761477`, `43f2fd27` and `0723d7cb`.
   difference across Owner Home, Team, Timecards and Schedule and Employee Home and Time is live minutes and fictional
   to-do data. At 320 with 200% text, nothing overlaps (`img/title-button-*`).
 - Tests: `kit-text-rem.test.ts` covers the rule. The whole `src/components` suite passes (3209 tests, 0 failures).
+
+## Follow-up 9: Insights period labels and Rondo in the desk harness (15:20 UTC)
+Merged 3c12d8c2 first (`60824da0`).
+- `03128d14`: Insights' period tabs (`.c-ins__seg`, reports-corp.css) set `--b-seg-fs: 0.875rem` (0.78125rem under 360px).
+  The labels are 14px (12.5px) at the default size and grow without the kit's 20px cap. At 390 with 200% text they go
+  from 14px to 28px and wrap to two rows (left as is, per the lead). Default size: identical apart from live hours.
+  Test in `kit-text-rem.test.ts`.
+- `4010fe51`: `tools/ui-scan` (`zz-scan.tar.gz`, README): `NEVORA_SCAN_ADVISOR=1` passes `ownerAdvisorEnabled`,
+  `managerAdvisorEnabled`, `ownerAdvisorWeeklyEnabled`, `ownerAdvisorKnowledgeEnabled` and
+  `ownerAdvisorBusinessImportsEnabled` to `createOwnedNextApp`. No provider or pilot is set, so nothing calls an AI
+  provider. Harness only, no app change. Run from the committed harness, `tools/ui-scan/desk.sh ...
+  "NEVORA_SCAN_ADVISOR=1 NEVORA_SCAN_RICH_OWNER=1"` captures H1 Rondo AI and the Weekly plan at 390, 768 and 1440
+  (`img/h1-rondo-owner-*`, `img/h2-weekly-owner-390.webp`). Before this, both were "Page not found". Their phone titles
+  measure 28px → 56px at 200% text.
+- The whole `src/components` suite passes (3211 tests, 0 failures).
+- Seen on H1 at 390 with 200% text (page markup, for the Rondo owner): the attention card's date (`.oa-date__v`,
+  "Mon, Nov 23") is cut with an ellipsis and overlaps its twin.
