@@ -5,7 +5,8 @@ import {CalendarXIcon} from '@phosphor-icons/react/dist/ssr/CalendarX';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
 import {BDoneMark} from '../owner-b/b-kit';
 import {useLeaveStaffing,useStaffingAuthority} from './use-leave-staffing';
-import {conflictShift,minutesText} from '@/lib/time-off-staffing/present';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {LEAVE_STAFFING_COPY} from './leave-staffing-copy';
 import './leave-staffing.css';
 
 /* The schedule opened from a staffing repair (Nov 9, 2026): "Fill Maria Rivera's shift". The person's approved leave
@@ -48,25 +49,26 @@ export function LeaveRepairProvider({weekStart,employeeId,repairId,children}:{we
 export function LeaveRepairNote({variant}:{variant:'b'|'corp'}){
  const authority=useStaffingAuthority();
  const read=useContext(Repair);
+ const t=LEAVE_STAFFING_COPY[usePortalLang()];
  if(!read)return null;
  const {state,refresh,repairId}=read;
  const item=state.status==='ready'?state.read.items.find(entry=>entry.id===repairId&&entry.state==='repair_required')??null:undefined;
  const person=item?.employeeName;
- const first=person?.split(/\s+/)[0]??'they';
+ const first=person?.split(/\s+/)[0]??t.they;
  let tone:'amber'|'green'|'grey'='amber',icon=<CalendarXIcon weight="bold"/>,title:string,body:React.ReactNode,action:React.ReactNode=null;
- if(state.status==='loading'){tone='grey';title='Checking this repair…';body='Reading the approved time off and the published shift.';}
- else if(state.status==='paused'){tone='grey';title='Repair check paused';body='It checks again when you come back.';}
- else if(state.status==='expired'){icon=<WarningIcon weight="bold"/>;title='This check expired';body='Check again to see whether this shift still needs a replacement.';action=<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>Check again</button>;}
- else if(state.status==='unavailable'){icon=<WarningIcon weight="bold"/>;title=state.denied?'Your access changed':'Couldn’t check this repair';body=state.denied?'Reload the page to see the schedule with your current access.':'This doesn’t mean it’s fixed. Try again.';action=state.denied?null:<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>Try again</button>;}
- else if(!item){tone='green';title='This shift no longer needs a replacement';body='A published schedule changed it, or the time off changed. Nothing else to do here.';}
+ if(state.status==='loading'){tone='grey';title=t.repairChecking;body=t.repairCheckingSub;}
+ else if(state.status==='paused'){tone='grey';title=t.repairPaused;body=t.repairPausedSub;}
+ else if(state.status==='expired'){icon=<WarningIcon weight="bold"/>;title=t.expired;body=t.repairExpiredSub;action=<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>{t.checkAgain}</button>;}
+ else if(state.status==='unavailable'){icon=<WarningIcon weight="bold"/>;title=state.denied?t.accessChanged:t.repairCouldntCheck;body=state.denied?t.repairDeniedSub:t.repairFailedSub;action=state.denied?null:<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>{t.tryAgain}</button>;}
+ else if(!item){tone='green';title=t.repairCleared;body=t.repairClearedSub;}
  else{
-  title=`Fill ${person}’${/s$/i.test(person!)?'':'s'} shift`;
+  title=t.fillShift(person!);
   body=<>
-   <span className="ls-repair__fact">{`${first}’s time off is approved and overlaps this published shift: ${conflictShift(item)} (${minutesText(item.overlapMinutes)}).`}</span>
-   <span>{`Assign someone else or change the shift, then publish. Draft changes don’t clear this; it clears once a published schedule no longer has ${first} on it.`}</span>
-   <span className="ls-repair__owner">{item.ownerEmployeeId===null?'No one is assigned yet. An Owner can take it.':item.ownerEmployeeId===authority?.actorId?'You approved this time off, so this shift is yours to fill.':'Assigned to the manager who approved the time off.'}</span>
+   <span className="ls-repair__fact">{t.overlapsFact(first,item)}</span>
+   <span>{t.assignElse(first)}</span>
+   <span className="ls-repair__owner">{item.ownerEmployeeId===null?t.noOneAssigned:item.ownerEmployeeId===authority?.actorId?t.yoursToFill:t.assignedToManager}</span>
   </>;
-  action=<Link className={variant==='b'?'b-btn b-btn--teal':'c-btn'} href={`/app/schedule/edit?shiftId=${encodeURIComponent(item.shiftId)}`}>Open the shift</Link>;
+  action=<Link className={variant==='b'?'b-btn b-btn--teal':'c-btn'} href={`/app/schedule/edit?shiftId=${encodeURIComponent(item.shiftId)}`}>{t.openShift}</Link>;
  }
  return <section id={variant==='b'?'leave-repair':'leave-repair-desk'} tabIndex={-1} className={`ls-repair ls-repair--${variant}`} data-tone={tone}
   data-repair={state.status==='ready'?(item?'open':'cleared'):state.status} aria-labelledby={`ls-repair-${variant}-title`} aria-live="polite">

@@ -12,7 +12,7 @@ import { BSegs, BState, BWhen } from "@/components/owner-b/b-kit";
 import { useLeaveStaffing } from "@/components/leave-staffing/use-leave-staffing";
 import { conflictsFor } from "@/components/leave-staffing/conflict-check";
 import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
-import { conflictShift } from "@/lib/time-off-staffing/present";
+import { LEAVE_STAFFING_COPY } from "@/components/leave-staffing/leave-staffing-copy";
 import "@/components/leave-staffing/leave-staffing.css";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
 import { TIME_COPY } from "@/components/time-copy";
@@ -47,13 +47,14 @@ export function TimeOffWaitingList({ requests, result }: { requests: WaitingTime
   const { state: staffing } = useLeaveStaffing(weeks.length ? { weeks } : null);
   const checked = useMemo(() => new Set(leaves.filter(leave => leave.weeks?.every(week => weeks.includes(week))).map(leave => leave.id)), [leaves, weeks]);
   const kept = useKeptResult(result);
-  const t = TIME_COPY[usePortalLang()];
+  const lang = usePortalLang();
+  const t = TIME_COPY[lang];
   // #25: nothing waits and nothing was just decided: the kit's empty state, in the list's card.
   if (!requests.length && !kept) return <div className="q-list q-emptycard"><BState kind="empty" title={t.allCaughtUp} line={t.newShowUpHere} /></div>;
   return <ul className="q-list q-requests" aria-label={t.waitingTimeOff} aria-busy={staffing.status === "loading" || undefined}>{kept ? <li className="q-result">{kept}</li> : null}{requests.map(request => {
     const conflicts = checked.has(request.id) ? conflictsFor(staffing, request.id) : null;
     const clear = conflicts !== null && conflicts.length === 0;
-    const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{t.onSchedule(conflictShift(conflicts[0]), conflicts.length - 1)}</span>
+    const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{t.onSchedule(LEAVE_STAFFING_COPY[lang].shift(conflicts[0]), conflicts.length - 1)}</span>
       // Final polish (confirmations A #13): while the one schedule read is out, the rows stay quiet ("Checking the
       // schedule…" stood under every row at once); the list says it once for screen readers. A check that did not come
       // back still says so on its row.
