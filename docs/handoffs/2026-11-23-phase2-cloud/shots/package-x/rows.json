@@ -1,5 +1,125 @@
 [
  {
+  "id": "F3live-1-add-O",
+  "row": "F3-O",
+  "page": "Import a staff list: Owner, live: 1 Add your list",
+  "section": "Team",
+  "note": "Live import, production build (isolated workspace, Chromium). Same as the approved rendered step 1.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "F3live-1-add-O-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "F3live-1-add-O-390t200.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "F3live-1-add-O-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F3live-2-check-O",
+  "row": "F3-O",
+  "page": "Import a staff list: Owner, live: 2 Check it, two rows to fix",
+  "section": "Team",
+  "note": "Live: four fictional rows, two to fix (no first name; a 3-digit phone). Headline once, 'Fix or remove them, then import.' Matches the rendered step.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "F3live-2-check-O-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "F3live-2-check-O-390t200.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "F3live-2-check-O-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F3live-3-fix-O",
+  "row": "F3-O",
+  "page": "Import a staff list: Owner, live: fixing row 4",
+  "section": "Team",
+  "note": "Live: row 4's editor with the first name typed; its red error now clears once the value changes (it stayed until Save).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "F3live-3-fix-O-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "F3live-3-fix-O-390t200.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "F3live-3-fix-O-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F3live-4-ready-O",
+  "row": "F3-O",
+  "page": "Import a staff list: Owner, live: all 4 ready",
+  "section": "Team",
+  "note": "Live: both rows fixed, 'All 4 people are ready to import.', Import 4 people.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "F3live-4-ready-O-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "F3live-4-ready-O-390t200.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "F3live-4-ready-O-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F3live-5-done-O",
+  "row": "F3-O",
+  "page": "Import a staff list: Owner, live: 3 Import done",
+  "section": "Team",
+  "note": "Live: '4 people added', nobody skipped, the no-email note, next steps, Import another list. Checked in the company database.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "F3live-5-done-O-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "F3live-5-done-O-390t200.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "F3live-5-done-O-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
   "id": "F3-import-O",
   "row": "F3-O",
   "page": "Import a staff list: Owner (import not available in this build)",
@@ -49,9 +169,7 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "Live-flow capture needs workspace routing (proposed ledger row G-X1)"
-  ]
+  "endSweep": []
  },
  {
   "id": "F3s-review-O",
@@ -75,9 +193,7 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "Live-flow capture needs workspace routing (proposed ledger row G-X1)"
-  ]
+  "endSweep": []
  },
  {
   "id": "F3s-done-O",
@@ -105,9 +221,7 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "Live-flow capture needs workspace routing (proposed ledger row G-X1)"
-  ]
+  "endSweep": []
  },
  {
   "id": "F3-import-M",
