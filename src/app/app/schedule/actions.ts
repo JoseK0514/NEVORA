@@ -30,6 +30,8 @@ import {assertOperationalAccess,assertOriginalOperationalAccess,isOperationalAut
 import {isManagementAuthorizationError} from '@/lib/data/management-session';
 import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
 import { coverageRepairUrl, CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
+import { readPortalLanguage } from "@/lib/activation/language.server";
+import { scheduleWords, type ScheduleLang } from "./schedule-copy";
 
 function scheduleUrl(weekStart: string, suffix = "") {
   return `/app/schedule?week=${encodeURIComponent(weekStart)}${suffix}`;
@@ -40,7 +42,11 @@ function shiftReturnUrl(shift: { weekStart: string; locationId: string; date: st
   return `${scheduleUrl(shift.weekStart, `&location=${encodeURIComponent(shift.locationId)}&day=${encodeURIComponent(shift.date)}${suffix}`)}#schedule-employee-${encodeURIComponent(shift.employeeId)}`;
 }
 
-const accessError=()=>({error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.',issueCode:'ACCESS_DENIED'});
+type Proof=Awaited<ReturnType<typeof requireSessionMutationProof>>;
+/** The person's language for a returned message; English when it can't be read (only read when a message is returned). */
+async function langOf(proof:Proof):Promise<ScheduleLang>{try{return (await readPortalLanguage(proof)).language;}catch{return 'en';}}
+const accessError=async(proof:Proof)=>({error:scheduleWords(await langOf(proof)).actions.accessDenied,issueCode:'ACCESS_DENIED'});
+const assignmentUnavailable=async(proof:Proof)=>({error:scheduleWords(await langOf(proof)).actions.assignmentUnavailable,issueCode:'SOURCE_CHANGED'});
 const shiftConflict=()=>({error:new ShiftReviewConflictError().message,issueCode:'SHIFT_REVIEW_CONFLICT'});
 const denied=(error:unknown)=>isOperationalAuthorizationError(error)||isManagementAuthorizationError(error);
 /** Re-check the original scope after awaited work; a role alone cannot prove unchanged access. */
@@ -86,7 +92,7 @@ export async function createShiftAction(formData: FormData) {
 
   let admission:Awaited<ReturnType<typeof assertOperationalAccess>>;
   try{admission=await assertOperationalAccess(proof,{kind:'LOCATIONS',locationIds:[locationId]});}
-  catch(error){if(denied(error))return accessError();throw error;}
+  catch(error){if(denied(error))return accessError(proof);throw error;}
   const company=admission.scope.mode==='COMPANY';
 
   if (formData.has('coverageRepairReview')) {
@@ -95,11 +101,11 @@ export async function createShiftAction(formData: FormData) {
       saved = await createCoverageRepairShift({ review: String(formData.get('coverageRepairReview') ?? ''),
         weekStart, employeeId, locationId, date, startTime, endTime, positionId, isDesignatedLead, publicationConsent: formData.get('publicationConsent') === 'on', actorEmployeeId: session.id, proof });
     } catch (error) {
-      if(denied(error))return accessError();
-      if (error instanceof CoverageRepairConflictError || error instanceof ManualAssignmentConflictError){if(!await currentAdmission(proof,admission))return accessError();return {error:error.message,issueCode:error.code};}
+      if(denied(error))return accessError(proof);
+      if (error instanceof CoverageRepairConflictError || error instanceof ManualAssignmentConflictError){if(!await currentAdmission(proof,admission))return accessError(proof);return {error:error.message,issueCode:error.code};}
       throw error;
     }
-    if(!await currentAdmission(proof,admission))return accessError();
+    if(!await currentAdmission(proof,admission))return accessError(proof);
     revalidatePath('/app/schedule');
     redirect(`${coverageRepairUrl(saved.locator, true)}&saved=1`);
   }
@@ -126,26 +132,26 @@ export async function createShiftAction(formData: FormData) {
     const editor=await readOperationalShiftEditor(proof,{weekStart,locationId});
     if(editor.state!=='ready'||editor.data.saveAvailability!=='available'
       ||!editor.data.employeeOptions.some(e=>e.id===employeeId)
-      ||(positionId&&!editor.data.positionOptions.some(p=>p.id===positionId)))return accessError();
+      ||(positionId&&!editor.data.positionOptions.some(p=>p.id===positionId)))return accessError(proof);
   }
   let validation:ReturnType<typeof validateShift>|undefined;
   if(company){
     const context=await getShiftValidationContext({employeeId,locationId,positionId:positionId||undefined,date,weekStart});
-    if(!context){if(!await currentAdmission(proof,admission))return accessError();redirect(scheduleUrl(weekStart,"&error=EMPLOYEE_NOT_FOUND"));}
+    if(!context){if(!await currentAdmission(proof,admission))return accessError(proof);redirect(scheduleUrl(weekStart,"&error=EMPLOYEE_NOT_FOUND"));}
     validation=validateShift({candidate:{employeeId,locationId,positionId:positionId||undefined,date,startTime,endTime,isDesignatedLead},...context,mode:'MANAGER_SCHEDULE'});
     const blocking=validation.issues.find(issue=>issue.severity==='error');
-    if(!await currentAdmission(proof,admission))return accessError();
+    if(!await currentAdmission(proof,admission))return accessError(proof);
     if(blocking)return {error:blocking.message,issueCode:blocking.code};
   }
   try{
     await insertShiftAtLocation({actorEmployeeId:session.id,proof,locationId,weekStart,employeeId,date,startTime,endTime,notes:notes||undefined,positionId,isDesignatedLead});
   }catch(error){
-    if(denied(error))return accessError();
-    if(error instanceof ManualAssignmentConflictError){if(company&&!await currentAdmission(proof,admission))return accessError();return company?{error:error.message,issueCode:error.code}:{error:'Assignment is unavailable. Reload and try again.',issueCode:'SOURCE_CHANGED'};}
+    if(denied(error))return accessError(proof);
+    if(error instanceof ManualAssignmentConflictError){if(company&&!await currentAdmission(proof,admission))return accessError(proof);return company?{error:error.message,issueCode:error.code}:await assignmentUnavailable(proof);}
     throw error;
   }
 
-  if(company&&!await currentAdmission(proof,admission))return accessError();
+  if(company&&!await currentAdmission(proof,admission))return accessError(proof);
   revalidatePath("/app/schedule");
 
   const warning = validation?.issues.find((issue) => issue.severity === "warning");
@@ -267,28 +273,28 @@ export async function updateShiftAction(formData: FormData) {
 
   let admission:Awaited<ReturnType<typeof assertOperationalAccess>>;
   try{admission=await assertOperationalAccess(proof,undefined);}
-  catch(error){if(denied(error))return accessError();throw error;}
+  catch(error){if(denied(error))return accessError(proof);throw error;}
   const company=admission.scope.mode==='COMPANY';
   const editor=await readOperationalShiftEditor(proof,{shiftId});
-  if(company&&!await currentAdmission(proof,admission))return accessError();
-  if(editor.state!=='ready'||editor.data.saveAvailability!=='available')return accessError();
+  if(company&&!await currentAdmission(proof,admission))return accessError(proof);
+  if(editor.state!=='ready'||editor.data.saveAvailability!=='available')return accessError(proof);
   try{requireShiftReview(expectedReviewVersion);}catch{return shiftConflict();}
   if(editor.data.shift?.reviewVersion!==expectedReviewVersion)return shiftConflict();
   const existing=company?await getShiftForManagement(shiftId):editor.data.shift;
-  if(company&&!await currentAdmission(proof,admission))return accessError();
+  if(company&&!await currentAdmission(proof,admission))return accessError(proof);
   if(!existing||!employeeId||!date||!startTime||!endTime||!isDateInWeek(date,existing.weekStart))redirect('/app/schedule?error=INVALID_SHIFT');
-  if(!company&&(!editor.data.employeeOptions.some(e=>e.id===employeeId)||(positionId&&!editor.data.positionOptions.some(p=>p.id===positionId))))return accessError();
+  if(!company&&(!editor.data.employeeOptions.some(e=>e.id===employeeId)||(positionId&&!editor.data.positionOptions.some(p=>p.id===positionId))))return accessError(proof);
   const workspace=await getWorkspace();
   try{shiftBoundaryInstants({date,startTime,endTime},workspace.timeZone);}
   catch{redirect(`/app/schedule/edit?shiftId=${encodeURIComponent(shiftId)}&error=INVALID_SHIFT`);}
   let validation:ReturnType<typeof validateShift>|undefined;
   if(company){
     const context=await getShiftValidationContext({employeeId,locationId:existing.locationId,positionId:positionId===undefined?existing.positionId:positionId||undefined,date,weekStart:existing.weekStart});
-    if(!context){if(!await currentAdmission(proof,admission))return accessError();redirect(scheduleUrl(existing.weekStart,'&error=EMPLOYEE_NOT_FOUND'));}
+    if(!context){if(!await currentAdmission(proof,admission))return accessError(proof);redirect(scheduleUrl(existing.weekStart,'&error=EMPLOYEE_NOT_FOUND'));}
     const adjusted=employeeId===existing.employeeId?prepareExchangeContext(context,existing):context;
     validation=validateShift({candidate:{employeeId,locationId:existing.locationId,positionId:positionId===undefined?existing.positionId:positionId||undefined,date,startTime,endTime,isDesignatedLead},...adjusted,mode:'MANAGER_SCHEDULE'});
     const blocking=validation.issues.find(issue=>issue.severity==='error');
-    if(!await currentAdmission(proof,admission))return accessError();
+    if(!await currentAdmission(proof,admission))return accessError(proof);
     if(blocking)return {error:blocking.message,issueCode:blocking.code};
   }
 
@@ -308,13 +314,13 @@ export async function updateShiftAction(formData: FormData) {
       isDesignatedLead,
     });
   } catch (error) {
-    if(denied(error))return accessError();
-    if(error instanceof ShiftReviewConflictError){if(!await currentAdmission(proof,admission))return accessError();return shiftConflict();}
-    if(error instanceof ManualAssignmentConflictError){if(company&&!await currentAdmission(proof,admission))return accessError();return company?{error:error.message,issueCode:error.code}:{error:'Assignment is unavailable. Reload and try again.',issueCode:'SOURCE_CHANGED'};}
+    if(denied(error))return accessError(proof);
+    if(error instanceof ShiftReviewConflictError){if(!await currentAdmission(proof,admission))return accessError(proof);return shiftConflict();}
+    if(error instanceof ManualAssignmentConflictError){if(company&&!await currentAdmission(proof,admission))return accessError(proof);return company?{error:error.message,issueCode:error.code}:await assignmentUnavailable(proof);}
     throw error;
   }
 
-  if(company&&!await currentAdmission(proof,admission))return accessError();
+  if(company&&!await currentAdmission(proof,admission))return accessError(proof);
   if (!updated) {
     redirect(scheduleUrl(existing.weekStart, "&error=INVALID_SHIFT"));
   }
@@ -343,13 +349,13 @@ export async function deleteShiftAction(formData: FormData) {
   // Missing and out-of-scope shifts deliberately share the same private refusal.
   // Keep the reviewed draft mounted; a redirect would discard recovery after a
   // concurrent deletion or a lost successful delete response.
-  if(editor.state!=='ready'||editor.data.saveAvailability!=='available'||!editor.data.shift)return accessError();
+  if(editor.state!=='ready'||editor.data.saveAvailability!=='available'||!editor.data.shift)return accessError(proof);
   const existing=editor.data.shift;
   try{requireShiftReview(expectedReviewVersion);}catch{return shiftConflict();}
   if(existing.reviewVersion!==expectedReviewVersion)return shiftConflict();
   let deleted:boolean;
   try{deleted=await deleteShift(shiftId,proof,undefined,expectedReviewVersion);}
-  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');if(error instanceof ShiftReviewConflictError){if(!await currentAdmission(proof,admission))return accessError();return shiftConflict();}throw error;}
+  catch(error){if(denied(error))redirect('/app/schedule?error=ACCESS_DENIED');if(error instanceof ShiftReviewConflictError){if(!await currentAdmission(proof,admission))return accessError(proof);return shiftConflict();}throw error;}
 
   if(!await currentAdmission(proof,admission))redirect('/app/schedule?error=ACCESS_DENIED');
   if (!deleted) {

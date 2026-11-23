@@ -13,6 +13,8 @@ import { clearGenerationExclusion } from '@/lib/data/generation-exclusions';
 import { GenerationConflictError, GenerationPermissionError, GenerationScopeError, GenerationTargetNotDraftError } from '@/lib/data/generation-guards';
 import { weekStartFor } from '@/lib/date-utils';
 import { schedulingIssueMessage } from '@/lib/scheduling/validate-shift';
+import { readPortalLanguage } from '@/lib/activation/language.server';
+import { scheduleWords, type ScheduleLang, type ScheduleWords } from './schedule-copy';
 
 export type GenerationActionState = {
   status:'idle'|'success'|'error'; message:string;
@@ -35,15 +37,19 @@ function fields(form:FormData,allowed:readonly string[]) {
   }
 }
 function value(form:FormData,key:string) {const v=form.get(key);return typeof v==='string'?v:'';}
-function failure(error:unknown):GenerationActionState {
-  const message=error instanceof GenerationTargetNotDraftError?`Automatic scheduling requires Draft targets. Review: ${error.locationNames.join(', ')}.`:error instanceof GenerationConflictError?'Scheduling inputs changed or are busy. Reload this week and try again.':error instanceof GenerationPermissionError||isOperationalAuthorizationError(error)?'Your scheduling permission changed. Reload and try again.':error instanceof GenerationScopeError?'Choose a valid Monday, location scope and Draft schedule.':'The schedule could not be updated. Please try again.';
+type Proof=Awaited<ReturnType<typeof requireSessionMutationProof>>;
+/** The person's language for the returned message; English when it can't be read. */
+async function langOf(proof:Proof):Promise<ScheduleLang>{try{return (await readPortalLanguage(proof)).language;}catch{return 'en';}}
+function failure(error:unknown,lang:ScheduleLang='en'):GenerationActionState {
+  const t=scheduleWords(lang).generation;
+  const message=error instanceof GenerationTargetNotDraftError?t.notDraft(error.locationNames.join(', ')):error instanceof GenerationConflictError?t.conflict:error instanceof GenerationPermissionError||isOperationalAuthorizationError(error)?t.permission:error instanceof GenerationScopeError?t.scope:t.failed;
   return {status:'error',message};
 }
-function projection(result:GenerationResult,locations:{id:string;shortName:string}[],positions:{id:string;name:string}[]):NonNullable<GenerationActionState['result']> {
-  const locationName=(id:string)=>locations.find(l=>l.id===id)?.shortName || 'Location unavailable';
-  const positionName=(id:string)=>positions.find(p=>p.id===id)?.name || 'Position unavailable';
-  const messages:Record<string,string>={MANAGER_EXCLUDED:'Manager excluded · Automatic fill off.',COUPLED_RESERVATION:'A Lead assignment would recreate Manager-excluded staffing.',NO_AUTOMATIC_CAPACITY:'No legal automatic capacity remains.',BUDGET_EXHAUSTED:'Search limit reached. Review remaining gaps.',LOCATION_NOT_READY:'Location needs setup.',TARGET_NOT_DRAFT:'Automatic scheduling requires a Draft target.',UNREPRESENTABLE_PERIOD:'A required period cannot be assigned automatically.'};
-  const notices=[...result.explanations.filter(e=>e.code!=='LOCATION_NOT_READY'||!result.excludedLocations.some(l=>l.locationId===e.locationId)).map(e=>`${e.locationId?`${locationName(e.locationId)} · `:''}${e.distinctEmployeeCount?`${e.distinctEmployeeCount} employees unavailable for this constraint. `:''}${messages[e.code] || schedulingIssueMessage(e.code) || 'A scheduling constraint prevented automatic assignment.'}`),...result.warnings.map(w=>schedulingIssueMessage(w.code) || 'Review a scheduling warning.')];
+function projection(result:GenerationResult,locations:{id:string;shortName:string}[],positions:{id:string;name:string}[],t:ScheduleWords['generation']=scheduleWords('en').generation):NonNullable<GenerationActionState['result']> {
+  const locationName=(id:string)=>locations.find(l=>l.id===id)?.shortName || t.locationUnavailable;
+  const positionName=(id:string)=>positions.find(p=>p.id===id)?.name || t.positionUnavailable;
+  const messages=t.explanations;
+  const notices=[...result.explanations.filter(e=>e.code!=='LOCATION_NOT_READY'||!result.excludedLocations.some(l=>l.locationId===e.locationId)).map(e=>`${e.locationId?`${locationName(e.locationId)} · `:''}${e.distinctEmployeeCount?t.unavailableEmployees(e.distinctEmployeeCount):''}${(Object.hasOwn(messages,e.code)?messages[e.code]:'') || schedulingIssueMessage(e.code) || t.constraintFallback}`),...result.warnings.map(w=>schedulingIssueMessage(w.code) || t.warningFallback)];
   return {status:result.status,changed:result.changed,setupExceptions:projectGenerationSetup(result.excludedLocations,locations),summary:{added:result.summary.added,removed:result.summary.removed,preserved:result.summary.preserved,coverage:{requiredMinutes:result.summary.coverage.requiredMinutes,coveredMinutes:result.summary.coverage.coveredMinutes,percentage:result.summary.coverage.percentage,unavailable:result.summary.coverage.unavailable},attempted:result.locationIds.length,needsSetup:result.excludedLocations.length},gaps:result.gaps.map(g=>({locationName:locationName(g.locationId),date:g.date,startTime:g.startTime,endTime:g.endTime,missingStaff:g.missingStaff,missingLead:g.missingLead,positions:g.positions.map(p=>({name:positionName(p.positionId),missing:p.missing}))})),notices:[...new Set(notices)]};
 }
 /**
@@ -68,9 +74,10 @@ export async function generateWeekAction(_previous:GenerationActionState,form:Fo
     const result=await generateWeekDraft({proof,workspaceId:workspace.id,actorEmployeeId:session.id,weekStart,mode:mode as 'BUILD_WEEK'|'FILL_GAPS_ONLY',locationScope:scope==='ALL'?{kind:'ALL'}:{kind:'SELECTED',locationIds:[locationId]}});
     await assertOriginalOperationalAccess(proof,original);
     if(result.changed) revalidatePath('/app/schedule');
-    const message=result.status==='INVALID'?'Needs setup. No automatic assignments were made.':result.status==='BUDGET_EXHAUSTED'?'Search limit reached. Review the partial draft and remaining gaps.':result.status==='PARTIAL'?result.summary.added===0?'No legal additions were found. Review the remaining gaps.':'Partial draft saved. Review the remaining gaps.':result.changed?'Draft complete for configured coverage. Review before publishing.':'No changes needed. Configured coverage is complete.';
-    return {status:'success',message,result:projection(result,locations,positions)};
-  } catch(error) {if(original){try{await assertOriginalOperationalAccess(proof,original);}catch(lost){return failure(lost);}}return failure(error);}
+    const t=scheduleWords(await langOf(proof)).generation;
+    const message=result.status==='INVALID'?t.invalid:result.status==='BUDGET_EXHAUSTED'?t.budget:result.status==='PARTIAL'?result.summary.added===0?t.partialNone:t.partial:result.changed?t.complete:t.noChanges;
+    return {status:'success',message,result:projection(result,locations,positions,t)};
+  } catch(error) {const lang=await langOf(proof);if(original){try{await assertOriginalOperationalAccess(proof,original);}catch(lost){return failure(lost,lang);}}return failure(error,lang);}
 }
 /** Removes one explicit automatic-fill exclusion; generation still requires a separate command. */
 export async function clearGenerationExclusionAction(_previous:GenerationActionState,form:FormData):Promise<GenerationActionState> {
@@ -87,6 +94,6 @@ export async function clearGenerationExclusionAction(_previous:GenerationActionS
     await clearGenerationExclusion({proof,workspaceId:workspace.id,actorEmployeeId:session.id,weekStart,locationId,exclusionId});
     await assertOriginalOperationalAccess(proof,original);
     revalidatePath('/app/schedule');
-    return {status:'success',message:'Automatic fill allowed for this need. Run Build draft or Fill gaps only when ready.'};
-  } catch(error) {if(original){try{await assertOriginalOperationalAccess(proof,original);}catch(lost){return failure(lost);}}return failure(error);}
+    return {status:'success',message:scheduleWords(await langOf(proof)).generation.exclusionCleared};
+  } catch(error) {const lang=await langOf(proof);if(original){try{await assertOriginalOperationalAccess(proof,original);}catch(lost){return failure(lost,lang);}}return failure(error,lang);}
 }
