@@ -361,6 +361,17 @@ it('batch 1 item 1: a payroll a correction replaced says so, opens the correctio
   expect(fix).not.toContain('Replaced by a correction');
 });
 
+it('batch 1 item 3: on the phone, a replaced payroll in Recent payrolls says so once, in its line', () => {
+  const week = { period: { startDate: '2026-09-28', endDate: '2026-10-04' }, payday: '2026-10-09' };
+  const original = nativeRun({ id: 'run-original', status: 'APPROVED', ...week });
+  const correction = nativeRun({ id: 'run-fix', status: 'APPROVED', correctionOf: 'run-original', ...week });
+  boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [correction, original], jobs: [] };
+  const phone = onlyB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings />));
+  const recent = phone.slice(phone.indexOf('id="b-payroll-recent"'));
+  expect(recent).toContain('Replaced by a correction');
+  expect(recent).not.toMatch(/b-chip[^>]*>(?:<[^>]+>)*Replaced</);
+});
+
 it('batch 1 item 2: People for a replaced payroll says so in its period line', () => {
   const original = nativeRun({ id: 'run-original', status: 'APPROVED' });
   const correction = nativeRun({ id: 'run-fix', status: 'APPROVED', correctionOf: 'run-original' });
