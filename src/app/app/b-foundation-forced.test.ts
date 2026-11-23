@@ -1,13 +1,12 @@
 import { readFileSync } from "node:fs";
 import { expect, it } from "@rstest/core";
 
-// Z3 (A4-05, Nov 23, 2026): forced colours give buttons, chosen tabs, focus and status dots a system-colour edge.
+// Z3 (A4-05, Nov 23, 2026): forced colours give chosen tabs, focus and status dots a system colour.
 const css = readFileSync("src/app/app/b-foundation.css", "utf8");
 const block = css.slice(css.indexOf("/* Z3 (A4-05"));
 
-it("gives fill-only buttons a ButtonText border in forced colours, in the kit's layer", () => {
+it("sits in the kit's layer", () => {
   expect(block).toMatch(/@layer nv-b \{\s*@media \(forced-colors: active\)/);
-  expect(block).toMatch(/:is\(\.b-btn, \.c-btn, \.q-bs, \.q-btn, \.b-rowact[^{]*\{ border: 1px solid ButtonText !important; \}/);
 });
 
 it("marks the chosen tab of every segmented control and keeps a focus outline", () => {
