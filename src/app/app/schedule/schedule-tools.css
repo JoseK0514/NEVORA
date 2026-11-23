@@ -80,7 +80,9 @@
 :is(#c-root, html) .c-shreq .c-shreq__note { margin: 0 0 8px; font-size: 0.875rem; line-height: 1.25rem; color: var(--b-amber, #8A4B00); }
 :is(#c-root, html) .c-shreq .c-shreq__note a { color: var(--b-teal, #0B6E69); font-weight: 600; }
 :is(#c-root, html) .c-shreq .c-shreq__item > .c-shreq__note { padding: 0 0 16px 52px; }
-:is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+/* Two equal buttons side by side; with large text (each under 6rem's worth of room) they stack full width, so Decline and
+ * Approve never squeeze their words against their edges (390 at 200% text). */
+:is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6rem), 1fr)); gap: 8px; }
 :is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts > * { width: 100%; min-height: 44px; margin: 0; }
 :is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts > :only-child { grid-column: 1 / -1; }
 :is(#c-root, html) .c-shreq .c-shreq__form :is(.form-success, .form-error) { margin: 8px 0 0; font-size: 0.875rem; line-height: 1.25rem; }
