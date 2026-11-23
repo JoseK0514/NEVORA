@@ -1,0 +1,514 @@
+[
+ {
+  "id": "J1-o",
+  "row": "J1",
+  "page": "Settings",
+  "section": "Settings",
+  "note": "Settings list, unchanged in this package; the reference for card labels and rows.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J1-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J1-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J1-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J1-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J2-o",
+  "row": "J2",
+  "page": "Company profile",
+  "section": "Settings",
+  "note": "Company profile: Save on the phone band after a change, the card footer from 768. Unchanged here.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J2-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J2-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J2-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J2-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J3-o",
+  "row": "J3",
+  "page": "Branding",
+  "section": "Settings",
+  "note": "Branding: same Save placement; its colour dialog (white secondary, then Done) is the dialog order the others follow.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J3-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J3-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J3-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J3-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J4-o",
+  "row": "J4",
+  "page": "Features",
+  "section": "Settings",
+  "note": "Features save each switch as it changes, so there is no Save to place. Unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J4-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J4-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J4-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J4-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J5-o",
+  "row": "J5",
+  "page": "Locations",
+  "section": "Settings",
+  "note": "Locations: a row's second line no longer repeats the short name; the error page is titled Locations; result icons line up with the first line.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J5-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J5-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J5-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J5-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J6-o",
+  "row": "J6",
+  "page": "Add location",
+  "section": "Settings",
+  "note": "Add location: Add in the phone band, Cancel and Add in the card footer from 768. Unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J6-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J6-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J6-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J6-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J7-o",
+  "row": "J7",
+  "page": "Edit location",
+  "section": "Settings",
+  "note": "Edit location: Save in the phone band after a change, the card footer from 768. Unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J7-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J7-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J7-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J7-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J8-o",
+  "row": "J8",
+  "page": "Positions",
+  "section": "Settings",
+  "note": "Positions: the list ends with the + Add position row; the empty state's Add is the one solid button; the dialog is Cancel (white) then Save (solid).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J8-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J8-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J8-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J8-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J9-o",
+  "row": "J9",
+  "page": "Break types",
+  "section": "Settings",
+  "note": "Break types: in the edit dialog Archive or Reactivate is now a white secondary (Reactivate was red); red stays only on the Archive confirm.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J9-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J9-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J9-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J9-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J10-o",
+  "row": "J10",
+  "page": "Time off policies",
+  "section": "Settings",
+  "note": "Time off policies: adding is the + Add rows; an open policy saves from the phone band, with Cancel at the card's end.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J10-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J10-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J10-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J10-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J11-o",
+  "row": "J11",
+  "page": "Company policies",
+  "section": "Settings",
+  "note": "Company policies: Save in the phone band and the card footer. Unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J11-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J11-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J11-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J11-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J12-o",
+  "row": "J12",
+  "page": "Payroll settings",
+  "section": "Settings",
+  "note": "Payroll settings: group labels (Pay schedule, Reminders and pay statements, People) now sit inside the cards; Payroll's tabs stay. Its effective-date save card is the approved payroll flow and stays.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J12-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J12-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J12-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J12-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J13-o",
+  "row": "J13",
+  "page": "Clocker devices",
+  "section": "Settings",
+  "note": "Clocker tablets: Add tablet is now the list's last + Add row, like the other Settings lists.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J13-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J13-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J13-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J13-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Row buttons (ck-trow__open) showed no outline or box-shadow ring in the keyboard walk; confirm the ring"
+  ]
+ },
+ {
+  "id": "J14-o",
+  "row": "J14",
+  "page": "Shift matching",
+  "section": "Settings",
+  "note": "Shift matching: the field is FieldB with its minutes unit; Save in the phone band after a change and at the card footer's right edge from 768; the card sits directly in the page. The minutes unit sits inside a 10rem field.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J14-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J14-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J14-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J14-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Screen readers hear 'Shift matching' as page title, the form heading and its legend; drop the hidden heading and legend"
+  ]
+ },
+ {
+  "id": "J15-o",
+  "row": "J15",
+  "page": "Punch photos",
+  "section": "Settings",
+  "note": "Punch photos: switches are SwitchRowB (keeping their On/Off words), the days and help fields are FieldB, and Save sits where J14's does. The days unit sits inside a 10rem field.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J15-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J15-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J15-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J15-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J16-o",
+  "row": "J16",
+  "page": "Photo review",
+  "section": "Settings",
+  "note": "Photo review: unchanged; the two privacy lines stay word for word.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J16-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J16-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J16-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J16-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J17-o",
+  "row": "J17",
+  "page": "Clocker PINs",
+  "section": "Settings",
+  "note": "Clocker PINs: unchanged. The filter segments' text spills at 390 and with 200% text (kit CorpSegments, Package K).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J17-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J17-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J17-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J17-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "Segment label spills out of the button at 390 (kit CorpSegments height; Package K item 3)"
+  ],
+  "endSweep": [
+   "Search field showed no focus ring in the keyboard walk"
+  ]
+ },
+ {
+  "id": "J18-o",
+  "row": "J18",
+  "page": "Billing",
+  "section": "Settings",
+  "note": "Billing: the Owner's recovery frame (no app shell). This build has no billing service, so it shows 'We can't check billing right now'.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "J18-owner-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "J18-owner-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "J18-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "J18-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
