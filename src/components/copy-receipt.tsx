@@ -140,6 +140,7 @@ export function CopyReceiptView({ receipt }: { receipt: CopyReceipt }) {
   const skipped = receipt.rows.filter(row => row.status === "SKIPPED");
   // A warning on a shift that wasn't copied doesn't apply to anything on the schedule; the reason it wasn't copied does.
   const warned = copied.filter(row => row.warnings.length > 0);
+  const allWarned = copied.length > 0 && warned.length === copied.length;
   const places = new Set(receipt.rows.map(row => row.locationName).filter(Boolean));
   const withPlace = places.size > 1;
   const place = places.size === 1 ? [...places][0] : null;
@@ -170,7 +171,9 @@ export function CopyReceiptView({ receipt }: { receipt: CopyReceipt }) {
   return <Frame title={title} back={back}>
     {summary}
     <Action href={back}>Review schedule</Action>
-    {warnings.length ? <CorpCard id="copy-warnings" label="With warnings" aside={count(warned.length)}>
+    {/* Each count once: when every copied shift has a warning, the summary's count already covers them, so the card says
+      * "All with warnings" without a second, equal number. */}
+    {warnings.length ? <CorpCard id="copy-warnings" label={allWarned ? "All with warnings" : "With warnings"} aside={allWarned ? undefined : count(warned.length)}>
       {warnings.map((kind, index) => <section className="c-copy__group" key={kind.id} aria-labelledby={`copy-warning-${index}`}>
         <h3 className="c-copy__kind" id={`copy-warning-${index}`}><WarningIcon className="c-copy__warn" weight="bold" aria-hidden="true" /><span>{kind.label}</span></h3>
         <PersonRows rows={kind.rows} withPlace={withPlace} href={openShifts} />
