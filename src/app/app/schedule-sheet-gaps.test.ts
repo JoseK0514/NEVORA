@@ -18,6 +18,13 @@ const phoneBlocks = (text: string) => {
   return out;
 };
 
+it('G57: a day-view capsule keeps 4px above its first line and 6px between its last line and the 3px bar', () => {
+  const sheet = css('app/app/owner-b-schedule.css');
+  expect(sheet).toMatch(/\.cm-grid\[data-days="1"\] \.cm-tl > \.cm-block(?::not\(#pN\d\))+ \{[^}]*padding: 4px 10px 9px !important;/);
+  expect(sheet).toMatch(/\.cm-grid\[data-days="1"\] \.cm-tl > \.cm-block \.c-time(?::not\(#pN\d\))+ \{[^}]*line-height: 1rem !important; \}/);
+  expect(sheet).toMatch(/\.cm-grid \.cm-block(?::not\(#pN\d\))+::after \{[^}]*bottom: 0 !important; height: 3px !important;/);
+});
+
 it('G60: on phones Keep shift and Delete stack full width, at least 44px tall, labels centred', () => {
   const blocks = phoneBlocks(css('app/app/owner-b-schedule.css'));
   const acts = blocks.find(block => block.includes('.c-shift__ask > .c-shift__ask-acts'));
