@@ -52,7 +52,7 @@ it('draws Time off’s list on the phone with the same rows, links and empty wor
   expect(b).toContain('>Time off</h1>');expect(b).toContain('aria-current="page" href="/app/requests"');expect(b).toContain(`href="/app/requests?requestId=${PENDING}"`);
   expect(b).toContain('aria-hidden="true">·</span>Thu – Sat</span>');expect(b).toContain('<span class="b-sr">, </span>3 days</span>');expect(b).toContain('href="/app/requests?tab=new"');
   // Phase 4 (EM-023): a waiting row ends with the amber Waiting chip, and the Waiting tab carries its count.
-  expect(b).toContain('b-chip--amber">Waiting<');expect(b).toContain('3 days, Waiting"');
+  expect(b).toContain('b-chip--amber">Waiting<');expect(b).not.toContain('3 days, Waiting"'); // the row's name is its visible text (rule 7)
   expect(b).toContain('Waiting<span class="eb-segn"><span class="b-sr">, </span>1</span>');expect(b).toContain('>Decided</a>');
   // Phase 2 gate (Nov 23): no line that explains how the list works.
   expect(b).not.toContain('Open a request to see its details');

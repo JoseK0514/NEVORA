@@ -60,7 +60,7 @@ function TimeOffRowB({request, filter}: {request: TimeOffView; filter: string}) 
     lead={<BIcon tone="grey"><CalendarMinusIcon weight="bold"/></BIcon>} title={keepWhole(timeOffRange(request))} sub={<Dotted text={timeOffSpan(request)}/>}
     // Phase 4 (EM-023): every row ends with its state before the chevron, so "did it go through?" is answered on the row:
     // amber Waiting, green Approved, grey Declined or Withdrawn. (Review B1, NV-280, had left the Waiting tab's rows bare.)
-    end={<BChip tone={bTone(pill.tone)}>{pill.text}</BChip>} chevron label={`${timeOffDates(request)}, ${timeOffLength(request)}, ${pill.text}`}/>;
+    end={<BChip tone={bTone(pill.tone)}>{pill.text}</BChip>} chevron/>;
 }
 
 /** One request: its dates as the title with its status chip (amber Waiting, as in the list), then its length, when it was
