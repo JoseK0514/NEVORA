@@ -42,6 +42,8 @@ describe('first paint', () => {
   it('set: who it is for, two masked four-digit fields that are never password fields, and one filled Save', () => {
     const html = editor(0);
     expect(html).toContain('Set a PIN for Maria Rivera'); expect(html).toContain('Each person needs their own.'); expect(html).not.toContain('4 digits. Each');
+    // Phase 2 gate: the name is said by the heading (and the back link), not again under the title.
+    expect(html).not.toMatch(/<div class="q-hd"><h1[^>]*>Clocker PIN<\/h1><p>/);
     expect(html).not.toContain('type="password"'); expect(html.match(/type="text" inputMode="numeric" autoComplete="off"/g)).toHaveLength(2);
     expect(html.match(/<label class="ck-field__l" for="(new|confirm)-clocker-pin">/g)).toHaveLength(2);
     expect(html.match(/b-btn b-btn--teal/g)).toHaveLength(1); expect(html).toMatch(/disabled="">Save PIN</);
