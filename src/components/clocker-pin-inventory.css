@@ -21,3 +21,11 @@
   :is(#c-root, html) .c-pins .c-pins__search { flex: 1 1 auto; min-width: 0; }
   :is(#c-root, html) .c-pins .c-pins__tools > .c-seg { flex: 0 0 auto; width: auto; min-width: 280px; }
 }
+/* From 768px the kit's rows sit on the wide inset (22px); the tools and the card's note take the same edge, so the search,
+ * the avatars, the note and the Set PIN buttons share one left and one right edge. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-pins__tools:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card.c-pins .c-setb-cardnote:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+}
