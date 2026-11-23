@@ -653,3 +653,8 @@
   .content[data-clocker-step=pin]:has([data-clocker-keypad]) .keys { grid-area: 1 / 2 / 6 / 3; margin-top: 0; }
   .content[data-clocker-step=pin]:has([data-clocker-keypad]) > .meta { grid-area: 5 / 1; align-self: end; }
 }
+/* K12 kept-punches help (Nov 23): Back follows "Ask Owner to check" on the 8px step (the empty live line takes no
+ * gap), and Reference sits directly under Back. Both keep their 56px targets; only the extra air between them goes. */
+.helpStack { gap: var(--b-space-8); }
+.helpStack > .quietLine:empty { margin-top: calc(-1 * var(--b-space-8)); }
+.helpStack + .reference { margin-top: 0; }
