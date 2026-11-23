@@ -53,3 +53,15 @@ it("saves an exact current issue and confirms it only after a fresh protected re
   expect(state?.snapshot).toBeNull();
   controller.stop();
 });
+it("says what two items share once: one title by place, one day, time and basis line, and one style of action", () => {
+  const snap = snapshot(), first = snap.attention!.items[0];
+  const second = { ...first, id: "c".repeat(64), fingerprint: "d".repeat(64), locationId: "south", locationName: "South" };
+  const html = renderToStaticMarkup(<AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }}
+    view={{ ...initialView, snapshot: { ...snap, attention: { ...snap.attention!, total: 2, items: [{ ...first, locationName: "North" }, second] } } }} actions={actions} />);
+  expect(html.match(/Check shifts without a clock-in/g)).toHaveLength(1);
+  expect(html.match(/Published shifts and recorded punches/g)).toHaveLength(1);
+  expect(html.match(/Observed <time/g)).toHaveLength(1);
+  expect(html).toContain(">North</h4>");
+  expect(html).toContain(">South</h4>");
+  expect(html).not.toContain("b-rowact--quiet");
+});
