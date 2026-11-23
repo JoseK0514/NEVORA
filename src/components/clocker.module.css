@@ -656,5 +656,5 @@
 /* K12 kept-punches help (Nov 23): Back follows "Ask Owner to check" on the 8px step (the empty live line takes no
  * gap), and Reference sits directly under Back. Both keep their 56px targets; only the extra air between them goes. */
 .helpStack { gap: var(--b-space-8); }
-.helpStack > .quietLine:empty { margin-top: calc(-1 * var(--b-space-8)); }
+.helpStack > .quietLine:empty { height: 0; min-height: 0; padding: 0; margin-top: calc(-1 * var(--b-space-8)); overflow: hidden; }
 .helpStack + .reference { margin-top: 0; }
