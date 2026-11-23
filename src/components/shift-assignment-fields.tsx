@@ -148,7 +148,7 @@ export function ShiftAssignmentFields({
           onSelectionChange?.({ employeeId: selectedEmployee, positionId: event.target.value });
         }}
         options={[
-          { value: "", label: "No position" },
+          { value: "", label: "None" },
           ...choices.map((position) => ({
             value: position.id,
             label: position.name,

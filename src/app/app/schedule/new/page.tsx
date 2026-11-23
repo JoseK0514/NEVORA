@@ -150,7 +150,7 @@ export default async function NewShiftPage({
       <ScheduleShiftForm mode="add" formId={CREATE_SHIFT_FORM_ID} action={createShiftAction} employees={employees} positions={positions}
         {...(fixed?{fixedLocation:placeName(fixed),fixedLocationHelp:null}:{locations:open.map(read=>({id:read.locationId,shortName:placeName(read.locationId)}))})}
         weekStart={weekStart} date={date} employeeId={person?.id} positionId={positionId} locationId={chosen}
-        startTime={params.start} endTime={params.end} isDesignatedLead={params.lead==="1"} hidden={fixed?{weekStart,locationId:fixed}:{weekStart}} cancelHref={cancelHref} blocked={blocked} holdAfterUnconfirmed notePlaceholder="Optional" plainChoices/>
+        startTime={params.start} endTime={params.end} isDesignatedLead={params.lead==="1"} hidden={fixed?{weekStart,locationId:fixed}:{weekStart}} cancelHref={cancelHref} blocked={blocked} holdAfterUnconfirmed/>
     </CorpPage></ScopedReadFrame>;
   }
   const source=await withOperationalCompany(proof,()=>Promise.all([

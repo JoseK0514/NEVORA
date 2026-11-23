@@ -17,8 +17,8 @@ it('second-location entry visibly selects its destination and cancel keeps the l
 });
 it.each([undefined,'foreign-location'])('all-locations or invalid entry requires an explicit active location: %s',async locationId=>{
  const html=renderToStaticMarkup(await NewShiftPage({searchParams:Promise.resolve({week:'2026-10-05',locationId})}));
- // Quiet (v4): the Location picker row starts on Choose.
- expect(html).toContain('<option value="" disabled="" selected="">Choose a location</option>');
+ // The Location list starts empty (G28: its label says what to choose); nothing is preselected.
+ expect(html).toContain('<select id="create-shift-form-location" class="c-in c-shift__empty" name="locationId" required=""><option value="" disabled="" selected=""></option>');
  expect(html).not.toContain('type="hidden" name="locationId"');
 });
 it('opened for a day and person, Back returns to that day and person (W2)',async()=>{

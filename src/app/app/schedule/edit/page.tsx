@@ -76,7 +76,7 @@ export default async function EditShiftPage({
         fixedLocation={placeName} fixedLocationHelp={access.locations.length>1?undefined:null} weekStart={data.weekStart} date={scopedShift.date}
         employeeId={scopedShift.employeeId} positionId={scopedShift.positionId??""} startTime={scopedShift.startTime} endTime={scopedShift.endTime} keepMidnightEnd
         isDesignatedLead={scopedShift.isDesignatedLead} notes={scopedShift.notes??""} hidden={{weekStart:data.weekStart,locationId:data.locationId,shiftId:scopedShift.id}} cancelHref={back}
-        subtitle={scopedState} error={scopedError} holdAfterUnconfirmed notePlaceholder="Optional" plainChoices
+        subtitle={scopedState} error={scopedError} holdAfterUnconfirmed
         footer={<ActionForm action={deleteShiftAction} reviewedShiftVersion={scopedShift.reviewVersion} shiftDraftFormId="edit-shift-form" className="c-shift__delete" failure={{ title: "The shift wasn’t deleted", body: "Check your connection and try again." }}>
           <input type="hidden" name="shiftId" value={scopedShift.id} />
           <DeleteShiftConfirm warning={keepWhole(`${scopedShift.employeeName} won’t be scheduled on ${scopedDay.weekday}, ${scopedDay.day}. This can’t be undone.`)} />
@@ -107,12 +107,11 @@ export default async function EditShiftPage({
   const heldChange = held?.changes.find(change => change.shiftId === shift.id && change.kind !== "REMOVED");
   const was = heldChange?.before && (heldChange.before.startTime !== heldChange.after?.startTime || heldChange.before.endTime !== heldChange.after?.endTime || heldChange.before.date !== heldChange.after?.date)
     ? `Was ${heldChange.before.date !== heldChange.after?.date ? `${formatDayLabel(heldChange.before.date).weekday} ` : ""}${formatTime(heldChange.before.startTime)} – ${formatTime(heldChange.before.endTime)}` : null;
-  // Nov 1 upscale: the state and the day are the title's subtitle ("Published · Wed, Oct 14"); Draft and Not published in
-  // amber text (R3, no pill). A held time change keeps its "Was …" line above the fields.
-  const shortDay = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${shift.date}T12:00:00Z`));
+  // The title's subtitle is the shift's state only (Jose, Nov 23, 2026; gaps G28): the Date field holds the day. Draft and
+  // Not published in amber text (R3, no pill); a failed read leaves it out. A held time change keeps its "Was …" line.
   const changedHeld = !!held && held.changedShiftIds.includes(shift.id);
   const stateWord = shift.scheduleStatus === "DRAFT" ? "Draft" : changedHeld ? "Not published" : held ? "Published" : null;
-  const subtitle = <>{stateWord ? <><span data-tone={stateWord === "Published" ? undefined : "amber"}>{stateWord}</span>{" · "}</> : null}{shortDay}</>;
+  const subtitle = stateWord ? <span data-tone={stateWord === "Published" ? undefined : "amber"}>{stateWord}</span> : undefined;
   const status = changedHeld && was ? <p className="c-shift__state"><span className="c-shift__was">{keepWhole(was)}</span></p> : null;
   const errorBody = params.error ? (Object.hasOwn(ERROR_MESSAGES, params.error) ? ERROR_MESSAGES[params.error] : schedulingIssueMessage(params.error)) ?? "The shift could not be updated." : null;
 
