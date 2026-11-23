@@ -82,9 +82,10 @@
 :is(#c-root, html) .c-shreq .c-shreq__item > .c-shreq__note { padding: 0 0 16px 52px; }
 /* Two equal buttons side by side; with large text (each under 6rem's worth of room) they stack full width, so Decline and
  * Approve never squeeze their words against their edges (390 at 200% text). */
-:is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6rem), 1fr)); gap: 8px; }
+/* Package M (Nov 23): the grid keeps both slots, so a lone Close request (Open cover) or Decline sits in Decline's slot
+ * and every row's buttons line up (auto-fit had stretched it across the row). Two slots at most; one with large text. */
+:is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts { display: grid; grid-template-columns: repeat(auto-fill, minmax(max(min(100%, 6rem), calc(50% - 4px)), 1fr)); gap: 8px; }
 :is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts > * { width: 100%; min-height: 44px; margin: 0; }
-:is(#c-root, html) .c-shreq .c-shreq__form .c-shreq__acts > :only-child { grid-column: 1 / -1; }
 :is(#c-root, html) .c-shreq .c-shreq__form :is(.form-success, .form-error) { margin: 8px 0 0; font-size: 0.875rem; line-height: 1.25rem; }
 :is(#c-root, html) .c-shreq .c-shreq__form .form-error { color: var(--c-red); }
 :is(#c-root, html) .c-shreq .c-shreq__form .b-dres, :is(#c-root, html) .c-shreq .c-shreq__form .b-ask { margin: 0; }

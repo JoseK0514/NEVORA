@@ -275,6 +275,9 @@
 .langSolid { display: inline-flex; align-items: center; gap: 7px; flex: none; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-pill); background: #FFFFFF; color: var(--b-ink);
   box-shadow: 0 0 0 1px rgb(var(--b-shadow-rgb) / .08), 0 1px 2px rgb(var(--b-shadow-rgb) / .06); font: inherit; font-size: .9375rem; line-height: 1.25; font-weight: 600; white-space: nowrap; cursor: pointer; }
 .langSolid svg { display: block; flex: none; color: var(--b-teal); }
+/* The globe grows with the reader's text size on every Clocker screen with the switch (Phase 2): 18px at the default size,
+ * as before, and 36px at 200%. */
+.lang svg, .langSolid svg { flex: none; width: 1.125rem; height: 1.125rem; }
 .langSolid.langSolid:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; box-shadow: 0 0 0 6px var(--b-focus); }
 
 /* ---------- setup ---------- */
@@ -310,6 +313,9 @@
 .slots > span[data-filled=true] { background: var(--ck-focus); box-shadow: none; }
 .pin[data-error=true] { background: var(--ck-red-wash); box-shadow: inset 0 0 0 2px var(--ck-red); }
 .pin[data-error=true] .slots > span { box-shadow: inset 0 0 0 2px #C2554A; }
+/* K3/K4 (Phase 2): while a refusal shows, the red border holds the box-shadow, so focus is a teal outline outside it and
+ * stays visible (the box-shadow ring above was replaced by the red one). */
+.pin[data-error=true]:focus-within { outline: 3px solid var(--ck-focus); outline-offset: 3px; }
 .pin[data-shake=a] { animation: ckShakeA 220ms ease-in-out 1; }
 .pin[data-shake=b] { animation: ckShakeB 220ms ease-in-out 1; }
 @keyframes ckShakeA { 0%, 100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
@@ -344,6 +350,8 @@
 .idEntry input:focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: inset 0 0 0 2px var(--ck-focus), 0 0 0 4px rgb(11 110 105 / .18); }
 .pinForm fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .pinForm .continue { margin-top: var(--b-space-16); }
+/* The Continue arrow grows with the reader's text size (K3/K4, Phase 2): 20px at the default size, 40px at 200%. */
+.continue svg { flex: none; width: 1.25rem; height: 1.25rem; }
 /* A blocked ID or PIN step (premium pass, #5): the same anatomy as every state card, ring, title, message, one button and
  * the "clears" line, all on the white card (the grey inset with its off-scale 18px corner is gone). */
 .blocked { display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; margin: 0; }
@@ -554,6 +562,7 @@
   .card .title { font-size: 1.375rem; }
   .pin { height: 52px; margin-top: var(--b-space-8); }
   .idEntry input { height: 52px; }
+  .idEntry { margin-top: var(--b-space-8); }
   .pinMsg { min-height: 2.6em; margin-top: var(--b-space-4); font-size: .8125rem; }
   .keys { gap: 6px; margin-top: var(--b-space-4); }
   .pinForm .continue { margin-top: var(--b-space-8); }
@@ -573,8 +582,8 @@
  * privacy reminder stays in view with its button wrapped under the line (NV-053). */
 @media (max-width: 599px) {
   .strow, .breakContext { margin-left: 0; }
-  .idEntry { margin-top: 14px; }
-  .idEntry input { height: 54px; }
+  /* K3 (Phase 2): the Employee ID field is the PIN field's size and place on a phone too, so the two steps line up
+   * (it was 54px and 6px lower than the 60px PIN field at 390x844). */
   .privacy { position: fixed; bottom: max(16px, env(safe-area-inset-bottom)); width: calc(100% - 32px); }
   .privacy .btn { flex: 1 0 100%; }
   /* A phone is read in the hand: the Employee ID help keeps 13.5px there and stays on one line (C2 is for tablets). */
@@ -597,6 +606,7 @@
   .card .title { font-size: 1.375rem; }
   .pin { height: 52px; margin-top: var(--b-space-8); }
   .idEntry input { height: 52px; }
+  .idEntry { margin-top: var(--b-space-8); }
   .pinMsg { min-height: 1.4em; margin-top: var(--b-space-4); font-size: .8125rem; }
   .keys { gap: 6px; margin-top: var(--b-space-4); }
   .pinForm .continue { margin-top: var(--b-space-8); }
@@ -615,8 +625,8 @@
   .card { padding: var(--b-space-16) var(--b-space-16) var(--b-space-12); }
   .card .title { font-size: 1.375rem; }
   .pin { height: 52px; margin-top: var(--b-space-8); }
-  .idEntry { margin-top: var(--b-space-12); }
   .idEntry input { height: 52px; }
+  .idEntry { margin-top: var(--b-space-8); }
   /* Final polish, round 2 (C4): the slot holds two full lines (2.8em; at 2.6em a two-line refusal pushed the keys down) and
    * the keys keep 12px under it, as on every other phone (a two-line refusal sat 4px over the keys). The refusal stays
    * centred text with its glyph in the line: its second line needs the card's whole width to stay on two lines at 320px
@@ -636,7 +646,7 @@
   .under { margin-top: var(--b-space-8); }
   .task { margin-top: -40px; }
   .card { padding-top: var(--b-space-20); }
-  .pin { margin-top: var(--b-space-8); }
+  .pin, .idEntry { margin-top: var(--b-space-8); }
   .pinMsg { margin-top: var(--b-space-4); }
   .pinForm .continue { margin-top: var(--b-space-8); }
   .meta { margin-top: 6px; }

@@ -78,7 +78,8 @@ export function AddListStep({ copy, text, fileNote, listError, locations, locati
       <p className="rimp-p">{a.optional}</p>
       <p className="rimp-p rimp-p--strong">{a.noEmail}</p>
       <p className="rimp-p">{a.headers} {a.limit}</p>
-      <div className="rimp-scroll">
+      {/* Package X: the example scrolls sideways on a phone, so the keyboard can reach and scroll it too (axe). */}
+      <div className="rimp-scroll" tabIndex={0} role="region" aria-label={a.exampleLabel}>
         <table className="rimp-example">
           <caption>{a.exampleLabel}</caption>
           <thead><tr>{a.example.head.map(cell => <th key={cell} scope="col">{cell}</th>)}</tr></thead>

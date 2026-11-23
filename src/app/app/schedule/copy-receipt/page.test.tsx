@@ -168,3 +168,14 @@ it('keeps older receipts that carry only a source reference readable',async()=>{
  expect(html).toContain('older-source');
  expect(html).toContain('Not copied');
 });
+
+it('says the count once when every copied shift has a warning: "All with warnings", no second equal number',async()=>{
+ fixtures.receipt=receipt([row('a','COMMITTED',{warnings:[availability]}),row('b','COMMITTED',{warnings:[availability],employeeName:'Second Person'})]);
+ const html=await render();
+ const start=html.indexOf('id="copy-warnings"');
+ expect(text(html.slice(html.indexOf('id="copy-result"'),start))).toContain('2 shifts');
+ const warnings=text(html.slice(start));
+ expect(warnings).toMatch(/^.*All with warnings /);
+ expect(warnings).not.toMatch(/With warnings 2/);
+ expect(html).not.toContain('c-copy__count');
+});

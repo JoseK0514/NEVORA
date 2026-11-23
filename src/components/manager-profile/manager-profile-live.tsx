@@ -29,6 +29,8 @@ export type ManagerProfileIdentity = {
   changedBy?: string | null;
   /** The company's word for its locations, lower case ("stores"); "locations" without it. */
   locationsWord?: string;
+  /** Package X (Nov 23, 2026): each location's full name → the short name every other page uses ("Condado"). */
+  placeNames?: Record<string, string>;
 };
 
 /** Review Nov 11 (MG-013): a Manager's reach, from the locations the profile read already gives: "Manager, all locations"
@@ -172,7 +174,9 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
   // Final review B #24: a locked value's reason line has no closing period, as Company profile's ("Locked while you have
   // shifts") and the field errors.
   const changeLine = `${identity.changedBy || 'An Owner'} can change this`;
-  const access = managerAccess(shown ? shown.locations : null, identity.locationsWord);
+  // Package X: the place reads as it does everywhere else in the app ("Condado", not "Northside Bakery — Condado").
+  const places = shown ? { ...shown.locations, names: shown.locations.names.map(name => identity.placeNames?.[name] ?? name) } : null;
+  const access = managerAccess(places, identity.locationsWord);
   return <>
     <div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{identity.name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase()}</span>
       <div><h1>{identity.name}</h1><p><Dotted text={`${identity.owner ? 'Owner' : 'Manager'} · ${identity.company}`} /></p></div></div>
@@ -185,7 +189,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`}><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
         // Review Nov 11 (MG-013): a Manager's read-only value says who can change it, in a grey line under it (it was a bare lock).
         // Phase 8 (B #33): the value keeps the 16px lock beside it, as Company profile's locked values do (B5).
-        : <div className="q-row q-row--one pmp-fixed"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>None</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /><span className="sr-only">{`, ${changeLine}`}</span></span></span></div>}</li>
+        : <div className="q-row q-row--one pmp-fixed"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /><span className="sr-only">{`, ${changeLine}`}</span></span></span></div>}</li>
       <li data-row="email" style={rowStyle('email')}>{shown && !shown.contact.email && identity.owner
         // Nov 1 upscale: one trailing pattern, label + grey value + chevron (no teal "Add").
         ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`}><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">Not added</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
@@ -193,8 +197,8 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         // owner-b-settings.css), so it stays on one line; if it must break, it still breaks only after the @ or before a
         // dot (TC-02). A Manager's says who can change it, and is laid out as their locked Phone is (Phase 8, B #33).
         : identity.owner
-          ? <div className="q-row q-row--one pmp-email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>None</span>)}</span></div>
-          : <div className="q-row q-row--one pmp-email pmp-fixed"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>None</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /><span className="sr-only">{`, ${changeLine}`}</span></span></span></div>}</li>
+          ? <div className="q-row q-row--one pmp-email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>Not added</span>)}</span></div>
+          : <div className="q-row q-row--one pmp-email pmp-fixed"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>Not added</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /><span className="sr-only">{`, ${changeLine}`}</span></span></span></div>}</li>
       <li><div className="q-row q-row--one"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{identity.timeZone.replace(/ time$/, '')}</span></div></li>
       {/* Review Nov 11 (MG-013): what a Manager's access reaches, and what it covers. */}
       {identity.owner ? null : <li data-row="access"><div className="q-row pmp-access"><span className="q-rt"><b>Access</b><i>{access.covers}</i></span>

@@ -11,8 +11,11 @@ import "./settings-b.css";
 
 export type SettingsBack = { href: string; label: string };
 
-export function SettingsPageB({ title, titleId = "settings-page-title", back = { href: "/app/settings", label: "Settings" }, sub, phoneRight, actions, className, lang, children }: {
+export function SettingsPageB({ title, wideTitle, titleId = "settings-page-title", back = { href: "/app/settings", label: "Settings" }, sub, phoneRight, actions, className, lang, children }: {
   title: ReactNode;
+  /** Tablets and desktop only: the band's title when it differs from the phone's (a section with tabs names the section,
+   * and the selected tab names the page). Defaults to `title`. */
+  wideTitle?: ReactNode;
   titleId?: string;
   /** Where the phone band's back link goes; Settings, unless the page sits under another Settings page. `null`: no back
    * link (an in-page editor whose Cancel is its way out). */
@@ -31,7 +34,7 @@ export function SettingsPageB({ title, titleId = "settings-page-title", back = {
   return (
     <CorpPage className={className ? `c-page--narrow c-setb ${className}` : "c-page--narrow c-setb"} labelledBy={titleId} lang={lang}>
       <CorpNav back={back ?? undefined} title={title} titleId={`${titleId}-nav`} right={phoneRight} phoneOnly />
-      <CorpTitle id={titleId} title={title} sub={sub} actions={actions} wide />
+      <CorpTitle id={titleId} title={wideTitle ?? title} sub={sub} actions={actions} wide />
       {children}
     </CorpPage>
   );
