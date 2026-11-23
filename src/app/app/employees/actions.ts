@@ -9,6 +9,8 @@ import {MANAGER_ROLES,requireRoles} from '@/lib/auth/permissions';
 import {saveEmployeeSchedulingProfile} from '@/lib/data/employees';
 import {saveEmployeeCoreAccessProfile,createEmployeeWithAccess} from '@/lib/company-access/employee-profile.server';
 import type {EmployeeCoreAccessCommand,CreateEmployeeWithAccessCommand,EmployeeCoreAccessResult} from '@/lib/company-access/model';
+import {readPageLang} from '@/lib/i18n/page-lang.server';
+import {EMPLOYEES_ACTIONS_COPY} from './actions-copy';
 
 /** Bounds one serialized command; detailed validation remains with the company-access service. */
 function readEmployeeCommand(data:FormData):unknown {
@@ -23,7 +25,7 @@ function refreshEmployee(receipt:Extract<EmployeeCoreAccessResult,{state:'saved'
 /** Saves core identity/access through the receipt-based service; refresh failure cannot undo a receipt. */
 export async function saveEmployeeCoreProfileAction(data:FormData):Promise<EmployeeCoreAccessResult> {
  const command=readEmployeeCommand(data);
- if(command===null)return {state:'invalid',fieldErrors:[{field:'command',message:'Submit one complete employee command.'}]};
+ if(command===null)return {state:'invalid',fieldErrors:[{field:'command',message:EMPLOYEES_ACTIONS_COPY[await readPageLang()].submitCommand}]};
  try{
   const proof=await requireSessionMutationProof();
   const result=await saveEmployeeCoreAccessProfile(proof,command as EmployeeCoreAccessCommand);
@@ -33,7 +35,7 @@ export async function saveEmployeeCoreProfileAction(data:FormData):Promise<Emplo
 /** Creates an employee with explicit access configuration using the authenticated actor's proof. */
 export async function createEmployeeFormAction(data:FormData):Promise<EmployeeCoreAccessResult> {
  const command=readEmployeeCommand(data);
- if(command===null)return {state:'invalid',fieldErrors:[{field:'command',message:'Submit one complete employee command.'}]};
+ if(command===null)return {state:'invalid',fieldErrors:[{field:'command',message:EMPLOYEES_ACTIONS_COPY[await readPageLang()].submitCommand}]};
  try{
   const proof=await requireSessionMutationProof();
   const result=await createEmployeeWithAccess(proof,command as CreateEmployeeWithAccessCommand);
@@ -62,21 +64,19 @@ export async function saveEmployeeSchedulingProfileAction(formData: FormData) {
       expectedUpdatedAt: String(formData.get('expectedUpdatedAt') ?? ''),
     });
     try{revalidatePath('/app/employees');revalidatePath(`/app/employees/${encodeURIComponent(employeeId)}`);}catch{/* The returned write version establishes a committed save. */}
-    return { success: "Scheduling profile updated.", updatedAt: written.updatedAt };
+    return { success: EMPLOYEES_ACTIONS_COPY[await readPageLang()].schedulingSaved, updatedAt: written.updatedAt };
   } catch (error) {
-    if(isOperationalAuthorizationError(error))return {error:'You don’t have access to make this change here. Reload to see your current access, or ask the Owner.'};
-    if (error instanceof Error && error.message.includes('profile_stale')) return { error: 'This employee changed since you opened the profile. Reload and review the latest scheduling details.' };
-    return {
-      error:
-        "Profile could not be saved. Choose active positions and locations; existing inactive references may be retained.",
-    };
+    const t = EMPLOYEES_ACTIONS_COPY[await readPageLang()];
+    if(isOperationalAuthorizationError(error))return {error:t.noAccessHere};
+    if (error instanceof Error && error.message.includes('profile_stale')) return { error: t.profileStale };
+    return { error: t.profileFailed };
   }
 }
 
 
 /** Owner-only operational-policy form; configured/unknown rule states must be explicit. */
 export async function saveOperationalRulesAction(data:FormData):Promise<import('@/lib/shift-changes/types').PolicyWriteResult>{
- const input=parseOperationalProfileForm(data);if(!input)return {status:'invalid',fieldErrors:[{field:'profile',message:'Choose every rule status explicitly and complete configured values, time basis and routing.'}]};
- const proof=await requireSessionMutationProof();if(proof.employee.role!=='OWNER')return {status:'invalid',fieldErrors:[{field:'authorization',message:'Only an active Owner can review operational rules.'}]};
+ const input=parseOperationalProfileForm(data);if(!input)return {status:'invalid',fieldErrors:[{field:'profile',message:EMPLOYEES_ACTIONS_COPY[await readPageLang()].rulesIncomplete}]};
+ const proof=await requireSessionMutationProof();if(proof.employee.role!=='OWNER')return {status:'invalid',fieldErrors:[{field:'authorization',message:EMPLOYEES_ACTIONS_COPY[await readPageLang()].rulesOwnerOnly}]};
  const result=await saveOperationalRuleProfile({...input,proof},neonNotificationExecutor());if(result.status==='saved'){revalidatePath('/app/employees');revalidatePath(`/app/employees/${encodeURIComponent(input.employeeId)}`);revalidatePath('/app/exchange');revalidatePath('/app/schedule');revalidatePath('/app');}return result;
 }
