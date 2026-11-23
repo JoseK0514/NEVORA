@@ -53,6 +53,11 @@
      * back link; axe read their white words on the canvas (1.08:1) at 768 and 1440. Same paint as the section tabs above. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page > .q-hd ~ nav.c-seg:not(#g48a):not(#g48b) {
       background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }
+    /* Final fixes K (Insights): the date range line under Insights' title (p.c-ins__range) sits on the same border-image
+     * band, so axe read its white words on the canvas (1.08:1) at 1024 and 1440. It has no glass, so it paints the band
+     * itself at its height: --b-band-solid 84% toward black. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page > header.c-title ~ p.c-ins__range:not(#g48a):not(#g48b) {
+      background: color-mix(in srgb, var(--b-band-solid) 84%, black) !important; }
   }
 
   /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
