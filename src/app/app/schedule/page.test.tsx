@@ -180,6 +180,20 @@ it('an operational company denial does not remove the Employee self schedule',as
 rs.mock('@/lib/company-access/operational-read.server',()=>({readSchedulePendingChanges:async()=>f.pending?{state:'ready',data:f.pending}:{state:'unavailable',reason:'read_failed'},readOperationalSchedule:async(_proof:unknown,query:{weekStart:string;locationId?:string})=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{weekStart:query.weekStart,selectedLocationId:query.locationId??null,locations:[{id:'loc',name:'Managed location',shortName:'Managed',active:true}],shifts:[{id:'local-shift',scheduleId:'local-week',employeeId:'local',employeeName:'Local Shift',locationId:'loc',date:'2026-10-05',startTime:'08:00',endTime:'12:00',positionName:'Recorded position',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:'PUBLISHED'}],roster:[],companyControls:{state:'requires_company'}}})}));
 it('uses the actual scoped schedule DTO without loading the canonical full roster',async()=>{f.role='MANAGER';operationalPageFixture.scoped=true;const output=await html();expect(output).toContain('Local Shift');expect(output).toContain('Recorded position');const future=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2030-10-07'})}));expect(future).toContain('/app/schedule/coverage?repair=local&amp;date=2030-10-07');expect(future).toContain('Find cover');expect(output).not.toContain('Build and publish');expect(output).not.toContain('Copy previous week');expect(f.managerReads).not.toHaveBeenCalled();});
 
+// G27 (Nov 23, 2026): after a save the scoped Schedule opens on the saved day (`day=` from the actions' redirect), on the
+// phone's week strip and as the desktop day view; a day outside the week on screen is ignored.
+it('a scoped Schedule opens on the day named by day=',async()=>{
+ f.role='MANAGER';operationalPageFixture.scoped=true;
+ const pressed=(output:string)=>[...output.matchAll(/<button type="button" class="b-week__d" aria-pressed="true"[^>]*><span>(\w+)<\/span><span class="sr-only"> <\/span><b class="c-num">(\d+)<\/b>/g)].map(m=>`${m[1]} ${m[2]}`);
+ const thursday=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc',day:'2026-10-08'})}));
+ expect(pressed(thursday)).toEqual(['Thu 8']);
+ expect(thursday).toContain('data-days="1"');
+ expect(thursday).toContain('Full week');
+ const outside=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc',day:'2026-10-15'})}));
+ expect(pressed(outside)).toEqual(['Mon 5']);
+ expect(outside).not.toContain('data-days="1"');
+});
+
 it.each([
  ['error','INVALID_SHIFT','Couldn’t open that shift. Pick it again from this week.','alert'],
  ['error','SHIFT_HAS_EXCHANGE_HISTORY','This shift has scheduling history and cannot be deleted. Edit it instead.','alert'],

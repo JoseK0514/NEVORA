@@ -152,6 +152,9 @@ export default async function SchedulePage({
       // with avatars and live states), built from the scoped read. Same reads and links as before; nothing company-wide.
       const data = source.data;
       const scopedDates = weekDates(weekStart);
+      // G27 (Nov 23, 2026): after a save the address names the day (`day=`, the actions' redirect); open on it, as the
+      // company Schedule does. Only a day of the week on screen is taken.
+      const scopedDay = scopedDates.includes(params.day ?? "") ? params.day : undefined;
       const shortName = (id: string) => { const l = data.locations.find(x => x.id === id); return l ? (l.shortName || l.name) : ""; };
       // Everyone on the location's roster, plus anyone holding a shift here who isn't on it (a recorded shift always shows).
       const people = [...data.roster.map(person => ({ id: person.id, name: `${person.firstName} ${person.lastName}`, role: person.role as string })),
@@ -206,7 +209,7 @@ export default async function SchedulePage({
         {/* As on the company page: the print title (and the first block under the title on desktop, so the roster keeps its
           place under the week stepper instead of being lifted into the band). */}
         <p className="mws-print-title" aria-hidden="true">{workspace.name} · {formatWeekRange(weekStart)} · {placeName} · Times in {workspace.timeZone.replaceAll("_", " ")}</p>
-        <ManagerWeeklyRoster key={`${weekStart}:${data.selectedLocationId ?? "all"}`} employees={scopedRoster} dates={scopedDates} today={today} timeZone={workspace.timeZone}
+        <ManagerWeeklyRoster key={`${weekStart}:${data.selectedLocationId ?? "all"}:${scopedDay ?? "all"}`} employees={scopedRoster} dates={scopedDates} today={today} reviewDay={scopedDay} timeZone={workspace.timeZone}
           locationId={data.selectedLocationId ?? one?.id} openShifts={scopedOpen} absences={scopedAbsences}
           corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${addDays(weekStart, -7)}${locQuery}`, nextHref: `/app/schedule?week=${addDays(weekStart, 7)}${locQuery}`,
             status: scopedStateCorp, addShiftHref: scopedAdd, todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locQuery}`, observedAt: observedAt.toISOString() }}
