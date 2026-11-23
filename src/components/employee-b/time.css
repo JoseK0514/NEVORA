@@ -218,3 +218,6 @@
 :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:first-child { border-radius: var(--b-radius-field) var(--b-radius-field) 0 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:last-child { border-radius: 0 0 var(--b-radius-field) var(--b-radius-field); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:only-child { border-radius: var(--b-radius-field); }
+/* Phase 2 gate (Nov 23, lead review of D4 at 390): in This week the card's footer note follows the "Fix a missed punch"
+ * row, whose own 16px bottom padding is the gap; the footer rule's 12px on top made it 28px, off the card's rhythm. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen #b-hours-week.b-card > .b-list + .eb-cardnote:not(#h-none):not(#h-none2):not(#h-none3):not(#h-none4):not(#h-none5):not(#h-none6) { padding-top: 0 !important; }
