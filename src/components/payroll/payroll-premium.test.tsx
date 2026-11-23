@@ -360,3 +360,11 @@ it('batch 1 item 1: a payroll a correction replaced says so, opens the correctio
   const fix = withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId="run-fix" />));
   expect(fix).not.toContain('Replaced by a correction');
 });
+
+it('batch 1 item 2: People for a replaced payroll says so in its period line', () => {
+  const original = nativeRun({ id: 'run-original', status: 'APPROVED' });
+  const correction = nativeRun({ id: 'run-fix', status: 'APPROVED', correctionOf: 'run-original' });
+  boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [correction, original], jobs: [] };
+  expect(withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-original" />))).toContain('· Replaced by a correction');
+  expect(withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-fix" />))).not.toContain('Replaced by a correction');
+});
