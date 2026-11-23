@@ -15,6 +15,7 @@ Fictional data and a throwaway local database only.
 | f0badef6 | Blocking: from 768 the band's Select was teal on the teal band (1.05:1, invisible). It's now the band's glass action. Show tabs get a 44px hit area; "Review correction" is now 44px. |
 | 6f44f6b1, f8c12233 | G90 follow-up: at 768 with 200% text the Person column had shrunk to one letter. Under 36rem of table card, names and statuses wrap and Breaks steps aside, as on phones. |
 | 9487f191 | 320: "Correction wai…" becomes the short form "Correction" (screen readers keep "Correction waiting"). |
+| 08a33d62 | Phone select and review (Corp layout): title, week words, review button, count and hours in rem at the same default sizes; fixed heights became minimums (44/36/48px). Default pixel-identical (full-page diff at 390). At 320 with 200% text the footer wraps so Cancel stays whole. |
 | 2e24fa18 | 320: Manager's own row "Jose approves thi…" becomes "Jose approves"; the Ready card's line breaks after the week, never inside "Nov 16–22". |
 
 ## Before and after words
@@ -41,6 +42,10 @@ Fictional data and a throwaway local database only.
 - Time format: day rows read "5:55 AM – 2:00 PM" (CorpTime); no other time ranges on the page.
 - Not run: WebKit; reduced motion beyond the captures' `reducedMotion: reduce`; Clocker.
 
+- Follow-up recapture (08a33d62, production, on ef0905bf merged): review view for Owner and Elena at 390, 390 with 200%
+  text, 1440 and 320 with 200% text. Overflow 0, no overlaps, no clipped text, axe 0. Before, the phone select/review view
+  left the title, week words, review button, count and hours fixed px at 200%; now they scale.
+
 ## Button styles and alignment
 - Band: Select is the glass action (48px), the week control is the kit's segmented track (36px items, Package K).
 - Summary: "Approve N ready timecards" is solid teal. Sheet: "Request time correction" and "Close open punch" are white
@@ -59,7 +64,6 @@ Fictional data and a throwaway local database only.
 ## Left for others (proposed ledger rows)
 | Area | Item | Owner | Type |
 |---|---|---|---|
-| Timecards phone select and review (Corp layout, `timecards-corp.css`) | At 390 with 200% text the small title "Timecards", the week buttons, "Approve N timecards", the "3" count and the row hours stay fixed px while the rest scales. Nothing overlaps or clips. Found at the final capture after the 14:15 target, so not fixed here. | Timecards follow-up | text size |
 | Kit `BSeg` / `--b-seg-fs` | Phone and desktop week control words are 14px fixed; item height 36px. | Package K | end sweep |
 | Kit band rule (`owner-b-desktop.css` shared h1) | Every other page's band title is 32px fixed; Timecards now uses 2rem. | Package K | end sweep |
 | Kit `BHero` glass Select | 40px on phones (under 44). | Package K | end sweep |

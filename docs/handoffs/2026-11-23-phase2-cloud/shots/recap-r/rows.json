@@ -1,0 +1,316 @@
+[
+ {
+  "id": "B1-O",
+  "row": "B1",
+  "page": "Home",
+  "section": "Home",
+  "note": "Owner Home: one Prepare button while Nov 9–15 is overdue ('Prepare Nov 9–15'); the payday card has no second one. Layout shift while loading is 0 at 390 and 1440 (G73). Axe clean.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B1-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B1-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B1-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B1-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B1-M",
+  "row": "B1",
+  "page": "Home",
+  "section": "Home",
+  "note": "Elena's Home: Timecards says '10 to approve' once, then 'Pay period ended' and the payday. Layout shift 0 at 390 and 1440. Axe clean.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B1-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B1-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B1-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B1-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B2-Ml",
+  "row": "B2",
+  "page": "More",
+  "section": "Home",
+  "note": "Daniel (location Manager, Condado): the profile line reads 'Manager · Condado'. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B2-ml-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B2-ml-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B2-ml-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B2-ml-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 200% text the avatar centres on the profile row's four lines rather than its first line."
+  ]
+ },
+ {
+  "id": "B4-O",
+  "row": "B4",
+  "page": "Things to do",
+  "section": "Home",
+  "note": "Owner: the band says the total once ('14 things need you · 11 timecards to approve') and All has no count. Fixed here: on phones the More card no longer moves while the list loads (layout shift 0.38 → 0 at 390).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B4-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B4-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B4-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B4-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "At 1440 the band filter's counts ('2', '10') are white at 62% on the teal, 2.9:1 (axe color-contrast). The cause is the kit's Premium-pass rule in b-foundation.css:1052 (opacity 0.62 !important), so it isn't fixed here: about 0.95 opacity is needed on the band for 4.5:1."
+  ],
+  "endSweep": []
+ },
+ {
+  "id": "B4-M",
+  "row": "B4",
+  "page": "Things to do",
+  "section": "Home",
+  "note": "Elena: the band says the total once and All has no count. Same loading fix (layout shift 0.38 → 0 at 390).",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B4-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B4-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B4-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B4-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [
+   "At 1440 the band filter's counts ('2', '10') are white at 62% on the teal, 2.9:1 (axe color-contrast). The cause is the kit's Premium-pass rule in b-foundation.css:1052 (opacity 0.62 !important), so it isn't fixed here: about 0.95 opacity is needed on the band for 4.5:1."
+  ],
+  "endSweep": []
+ },
+ {
+  "id": "B9-O",
+  "row": "B9",
+  "page": "Help",
+  "section": "Home",
+  "note": "Owner Help: the Contact note runs the card's full width at 1440. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B9-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B9-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B9-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B9-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "B9-M",
+  "row": "B9",
+  "page": "Help",
+  "section": "Home",
+  "note": "Elena's Help: the same. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/B9-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/B9-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/B9-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/B9-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F9-O",
+  "row": "F9",
+  "page": "Help someone sign in",
+  "section": "Team",
+  "note": "Owner: on phones the guidance and Make reset link sit inside the form card; Reset a Clocker PIN is its own row below. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F9-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F9-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F9-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F9-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "F9-M",
+  "row": "F9",
+  "page": "Help someone sign in",
+  "section": "Team",
+  "note": "Elena: the same form, without the Clocker PIN row. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/F9-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/F9-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/F9-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/F9-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "E1-M",
+  "row": "E1",
+  "page": "Team time off",
+  "section": "Requests",
+  "note": "Elena without the time off grant: one closed card, 'Time off is decided by an Owner', naming Jose, with Return to Home. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/E1-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/E1-m-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/E1-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/E1-m-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J17-O",
+  "row": "J17",
+  "page": "Clocker PINs",
+  "section": "Settings",
+  "note": "Owner: at 390 with 200% text the filter labels ('No PIN 12', 'PIN set 0') stay inside their pills. Nothing blocking.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/J17-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J17-o-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/J17-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J17-o-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
