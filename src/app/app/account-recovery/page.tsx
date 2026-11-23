@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AccountRecoveryPage({searchParams}:{searchParams?:Promise<{employee?:string;from?:string}>} = {}) {
  const actor=await requireRoles(['OWNER','MANAGER']);
  const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);
- if(access.state==='unavailable')return <OperationalUnavailable title={ROUTE_PAGES_COPY[await readPageLang()].accountRecovery.unavailable} reason={access.reason}/>;
+ if(access.state==='unavailable')return <OperationalUnavailable lang={await readPageLang()} title={ROUTE_PAGES_COPY[await readPageLang()].accountRecovery.unavailable} reason={access.reason}/>;
  const params=await searchParams;
  // Only a prefill; the server still checks the employee and attestation.
  const employee=params?.employee?.trim().slice(0,200)||undefined;

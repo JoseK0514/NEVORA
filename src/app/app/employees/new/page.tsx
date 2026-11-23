@@ -31,7 +31,7 @@ export default async function NewEmployeePage({
   // Review 30 (D38): the workspace's time zone says whether Christmas bonus hours exist here (Puerto Rico only). A failed
   // read keeps today's line; it never takes the form down.
   const source=await withOperationalCompany(await requireSessionMutationProof(),()=>Promise.all([listLocations(),listPositions(),getWorkspace().then(workspace=>christmasBonusApplies(workspace.timeZone)).catch(()=>true)]));
-  if(source.state==='unavailable')return <OperationalUnavailable title={t.addUnavailable} reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable lang={await readPageLang()} title={t.addUnavailable} reason={source.reason}/>;
   const [locations,positions,bonusApplies]=source.data;
   const activeLocations = locations.filter((location) => location.active);
 

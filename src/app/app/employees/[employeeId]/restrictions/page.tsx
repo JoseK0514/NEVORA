@@ -27,9 +27,9 @@ export default async function EmployeeRestrictionsPage({ params }: { params: Pro
     const profile = await readOperationalEmployeeProfile(proof, employeeId);
     return { profile, workspace: profile.state === "unavailable" ? null : await getWorkspace() };
   });
-  if (source.state === "unavailable") return <OperationalUnavailable title={t.profileUnavailable} reason={source.reason} />;
+  if (source.state === "unavailable") return <OperationalUnavailable lang={await readPageLang()} title={t.profileUnavailable} reason={source.reason} />;
   const { profile, workspace } = source.data;
-  if (profile.state === "unavailable" || !workspace) return <OperationalUnavailable title={t.profileUnavailable} reason={profile.state === "unavailable" ? profile.reason : "read_failed"} />;
+  if (profile.state === "unavailable" || !workspace) return <OperationalUnavailable lang={await readPageLang()} title={t.profileUnavailable} reason={profile.state === "unavailable" ? profile.reason : "read_failed"} />;
   const employee = profile.data.profile;
   const base = `/app/employees/${encodeURIComponent(employee.id)}`;
   return <ScopedReadFrame observation={scopedObservation(source)}>

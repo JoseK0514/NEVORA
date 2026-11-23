@@ -221,7 +221,7 @@ const scopedReady={state:'ready',authority:'fixture',observedAt:'2026-10-14T12:0
 it('G17: a location Manager opens a person at one of their locations and sees only the scoped facts, hours and Shifts',async()=>{
  operationalPageFixture.denied=true;m.scoped.mockResolvedValue(scopedReady);const {default:GuardedPage}=await import('./page');
  const html=renderToStaticMarkup(await GuardedPage({params:Promise.resolve({employeeId:'worker'})}));
- expect(html).toContain('Sam Rivera');expect(html).toContain('EMPLOYEE');expect(html).toContain('Condado'); // the role label is mocked to the raw role in this file
+ expect(html).toContain('Sam Rivera');expect(html).toContain('Employee');expect(html).toContain('Condado'); // the role label comes from the page's copy
  expect(html).toMatch(/Scheduled this week<\/span><\/span><span class="c-row__value c-row__value--soft">32 h</);
  expect(html).toContain('href="/app/schedule?location=loc-c"');expect(html).toContain('href="/app/employees"');
  // Nothing the scoped Team list doesn't show, and no action that needs company-wide access.

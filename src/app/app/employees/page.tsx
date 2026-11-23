@@ -26,7 +26,7 @@ export default async function EmployeesPage({ searchParams }: {
   const params=await(searchParams??Promise.resolve({}));
   const source=await readOperationalDirectory(await requireSessionMutationProof());
   const lang=await readPageLang(),t=EMPLOYEES_COPY[lang];
-  if(source.state==='unavailable')return <OperationalUnavailable title={t.employeesUnavailable} reason={source.reason}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.employeesUnavailable} reason={source.reason}/>;
   // Phase 2 (Nov 22, 2026): a location Manager's Team is the company Manager's Team with the scoped read's people. The
   // search and the place filter only choose among those people; the place must be one of the Manager's own.
   if(source.data.mode==='LOCATIONS'){
@@ -41,7 +41,7 @@ export default async function EmployeesPage({ searchParams }: {
   // not become an empty catalogue and silently substitute access roles.
   let positions: Awaited<ReturnType<typeof listPositions>>;
   try { positions = await listPositions({ includeInactive: true }); }
-  catch { return <OperationalUnavailable title={t.employeesUnavailable} reason="read_failed"/>; }
+  catch { return <OperationalUnavailable lang={lang} title={t.employeesUnavailable} reason="read_failed"/>; }
   return <ScopedReadFrame observation={scopedObservation(source)}><EmployeeDirectory clockerRecovery={actor.role==='OWNER'} canImport={actor.role==='OWNER'&&rosterImportAvailable()} positions={positions} lang={lang} words={wordPreset((await currentPresentation()).words)[lang]} employees={employees} locations={locations} filters={filters}
     visibleEmployees={filterDirectoryEmployees(employees, filters, new Map(positions.map(position => [position.id, position.name])))} showAll={(params as DirectorySearchParams).all === '1'} /></ScopedReadFrame>;
 }

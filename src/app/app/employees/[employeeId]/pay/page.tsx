@@ -34,9 +34,9 @@ export default async function EmployeePayPage({ params }: { params: Promise<{ em
     return { profile, workspace, owners };
   });
   const title = lang === "es" ? "Perfil no disponible" : "Employee profile unavailable";
-  if (source.state === "unavailable") return <OperationalUnavailable title={title} reason={source.reason} />;
+  if (source.state === "unavailable") return <OperationalUnavailable lang={lang} title={title} reason={source.reason} />;
   const { profile, workspace, owners } = source.data;
-  if (profile.state === "unavailable" || !workspace) return <OperationalUnavailable title={title} reason={profile.state === "unavailable" ? profile.reason : "read_failed"} />;
+  if (profile.state === "unavailable" || !workspace) return <OperationalUnavailable lang={lang} title={title} reason={profile.state === "unavailable" ? profile.reason : "read_failed"} />;
   const { profile: employee, locations } = profile.data;
   const defaults = [employee.primaryLocationId, ...employee.eligibleLocationIds.filter(id => id !== employee.primaryLocationId)];
   return <ScopedReadFrame observation={scopedObservation(source)}>

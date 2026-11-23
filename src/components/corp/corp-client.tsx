@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import { BLoadingScreen, BState } from "../owner-b/b-kit";
 import { BRouteLoading, loadingShape } from "../owner-b/b-loading";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
 
 /* Owner premium (Oct 31, 2026): the kit's client pieces. Presentation and navigation only; no data is read or written. */
 
@@ -183,12 +184,13 @@ function SkelShape({ shape, title, variant }: { shape: Shape; title: string | nu
  * older white card, which dropped the band). Offline is the amber card; slow is the grey one, still loading. It is drawn
  * only after the timer, so the shell is there to ask whose it is. */
 function CorpSkeletonSlow({ pathname, title, offline }: { pathname: string; title: string | null; offline: boolean }) {
-  const router = useRouter();
+  const router = useRouter(), es = usePortalLang() === "es";
   const shape = loadingShape(pathname, document.querySelector(".app-shell[data-employee-mobile]") !== null);
   return <div className="c-page c-embed c-skel c-skel--slow c-route-state--checking" data-corp="">
-    <BLoadingScreen {...shape} title={title ?? shape.title} state={<BState alert kind={offline ? "offline" : "loading"}
-      title={offline ? "You’re offline" : "This is taking longer than usual"} line={offline ? "Reconnect, then try again." : "Check your connection, then try again."}
-      action={{ label: "Try again", onClick: () => router.refresh() }} />} />
+    <BLoadingScreen {...shape} title={title ?? shape.title} loadingText={es ? "Cargando…" : "Loading…"} state={<BState alert kind={offline ? "offline" : "loading"}
+      title={es ? offline ? "Estás sin conexión" : "Esto está tardando más de lo normal" : offline ? "You’re offline" : "This is taking longer than usual"}
+      line={es ? offline ? "Vuelve a conectarte y vuelve a intentarlo." : "Revisa tu conexión y vuelve a intentarlo." : offline ? "Reconnect, then try again." : "Check your connection, then try again."}
+      action={{ label: es ? "Intentar de nuevo" : "Try again", onClick: () => router.refresh() }} />} />
   </div>;
 }
 

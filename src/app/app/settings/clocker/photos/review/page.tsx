@@ -18,7 +18,7 @@ export const dynamic='force-dynamic';
 export default async function ClockerPunchPhotoReviewPage(){
  await requireRoles(['OWNER']);const proof=await requireSessionMutationProof();const lang=await readPageLang(),t=SETTINGS_COPY[lang];
  const source=await withOperationalCompany(proof,()=>listClockerPunchPhotosAction({limit:20,cursor:null}));
- if(source.state==='unavailable')return <OperationalUnavailable title={t.photoReviewUnavailable} reason={source.reason}/>;const result=source.data;
+ if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.photoReviewUnavailable} reason={source.reason}/>;const result=source.data;
  return <ScopedReadFrame observation={scopedObservation(source)}><SettingsPageB back={{href:"/app/settings/clocker/photos",label:t.punchPhotos}} title={t.photoReview} titleId="photo-review-title" lang={lang === "es" ? "es" : undefined}><ClockerOwnerNav current="photos"/>
   {/* Phase 2 (Nov 23, 2026): the cards are the Settings page's own, in its frame (no second page inside it). */}
   {result.state==='available'?<ClockerPhotoReview initialPage={result.page} listAction={listClockerPunchPhotosAction} detailAction={readClockerPunchPhotoDetailAction} removeAction={removeClockerPunchPhotoAction}/>:<CorpErrorCard title={t.photoReviewIsUnavailable} body={result.message} action={<CorpButtonLink href="/app/settings/clocker/photos/review" kind="secondary" size="md">{t.reloadReview}</CorpButtonLink>}/>}

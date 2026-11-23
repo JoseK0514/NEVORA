@@ -36,7 +36,7 @@ export default async function ChristmasBonusPage({searchParams}:{searchParams:Pr
     return {choices:bonusYearChoices(today),result:await readChristmasBonusReport(proof,year)};
   });
   const insights={href:'/app/reports',label:t.insights};
-  if(source.state==='unavailable')return <OperationalUnavailable title={t.unavailableTitle} reason={source.reason} back={insights}/>;
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailableTitle} reason={source.reason} back={insights}/>;
   // Review 30 (D19): closed by Puerto Rico's rule, not by this person's access, so the card shows the information glyph.
   if(source.data===null)return <OwnerOnlyNotice state info lang={lang} back={insights} title={t.title} reason={t.otherZoneReason} help={t.otherZoneHelp} next={{href:'/app/reports',label:t.openInsights}}/>;
   const {choices,result}=source.data;
@@ -45,6 +45,6 @@ export default async function ChristmasBonusPage({searchParams}:{searchParams:Pr
   if(result.state==='unavailable'&&result.reason==='read_failed')return <BRouteError title={t.title} back={insights}
     spoken={`${t.loadFailed}. ${t.nothingChanged}`} cardTitle={t.loadFailed} line={t.nothingChanged}
     retryHref={`/app/reports/christmas-bonus${typeof params.year==='string'&&/^\d{4}$/.test(params.year)?`?year=${params.year}`:''}`}/>;
-  if(result.state==='unavailable')return <OperationalUnavailable title={t.unavailableTitle} reason={result.reason} back={insights}/>;
+  if(result.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailableTitle} reason={result.reason} back={insights}/>;
   return <ScopedReadFrame observation={scopedObservation(source)}><ChristmasBonusView report={result.report} choices={choices} lang={lang}/></ScopedReadFrame>;
 }

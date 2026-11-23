@@ -25,7 +25,7 @@ export default async function ReportsPage({searchParams}:{searchParams:Promise<{
   const t=REPORTS_COPY[lang];
   // Review F2 (NV-136): a closed page says why, never a silent redirect to Home.
   if(!isManagerRole(session.role))return <OwnerOnlyNotice state lang={lang} title={t.insights} reason={t.closedReason} help={t.ownHours} next={{href:'/app/my-time',label:t.openTime}}/>;
-  const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title={t.unavailableTitle} reason={access.reason}/>;
+  const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailableTitle} reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   // MK5 / PD4: the default is this week so far, Monday to today (the This week preset); Last week is one tap away.

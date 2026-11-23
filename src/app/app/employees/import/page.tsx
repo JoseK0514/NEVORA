@@ -43,7 +43,7 @@ export default async function RosterImportPage() {
   if (!rosterImportAvailable()) return <OwnerOnlyNotice lang={lang} title={copy.title} back={TEAM_BACK(lang)} reason={copy.off.title} help={copy.off.line} next={{href: '/app/employees/new', label: copy.off.action}}/>;
   // The same company-wide read Add employee makes, plus the people the three headcounts are counted from.
   const source = await withOperationalCompany(await requireSessionMutationProof(), () => Promise.all([listLocations(), listEmployees()]));
-  if (source.state === 'unavailable') return <OperationalUnavailable title={copy.sourceUnavailable} reason={source.reason}/>;
+  if (source.state === 'unavailable') return <OperationalUnavailable lang={lang} title={copy.sourceUnavailable} reason={source.reason}/>;
   const [locations, employees] = source.data;
   return (
     <ScopedReadFrame observation={scopedObservation(source)}><CorpPage className="c-addemp c-sheetpage c-rimp" labelledBy="roster-import-title">

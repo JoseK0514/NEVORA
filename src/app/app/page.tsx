@@ -93,7 +93,7 @@ export default async function DashboardPage({
 
   const proof=await requireSessionMutationProof();
   const authority=await readOperationalAuthority(proof);
-  if(authority.state==='unavailable')return <OperationalUnavailable title={t.unavailable} reason={authority.reason}/>;
+  if(authority.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={authority.reason}/>;
   if(authority.scope?.mode!=='COMPANY'){
     if(authority.scope?.mode!=='LOCATIONS'||!authority.locations.length)return <ScopedManagementHome view={authority}/>;
     // Nov 22, 2026 (Jose: the same screens other Managers have, limited to their place): the location Manager's Home is
@@ -138,7 +138,7 @@ export default async function DashboardPage({
   const nextWeek = addDays(weekStart, 7);
 
   const source=await withOperationalCompany(proof,()=>loadManagerDashboardData(weekStart,proof));
-  if(source.state==='unavailable'&&source.reason!=='read_failed')return <OperationalUnavailable title={t.unavailable} reason={source.reason}/>;
+  if(source.state==='unavailable'&&source.reason!=='read_failed')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason}/>;
   const dashboardData=source.state==='ready'?source.data:null;
   const reviewAuthority=correctionAuthority(proof);
   const recoveryKey=managerReviewRecoveryKey(session.id,reviewAuthority,source.state==='ready'?source.authority:authority.authority,view);

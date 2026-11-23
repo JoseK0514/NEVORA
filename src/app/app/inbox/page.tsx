@@ -30,7 +30,7 @@ export default async function InboxPage({ searchParams }: { searchParams?: Promi
   if (session.role === "MANAGER") {
     const access = await readOperationalAuthority(await requireSessionMutationProof());
     if (access.state !== "ready" || !access.scope) {
-      return <OperationalUnavailable title={INBOX_TITLE[await readPageLang()]} reason={access.state === "ready" ? "access_denied" : access.reason} scoped />;
+      return <OperationalUnavailable lang={await readPageLang()} title={INBOX_TITLE[await readPageLang()]} reason={access.state === "ready" ? "access_denied" : access.reason} scoped />;
     }
     if (access.scope.mode === "LOCATIONS") {
       return <ScopedReadFrame observation={scopedObservation(access)}>

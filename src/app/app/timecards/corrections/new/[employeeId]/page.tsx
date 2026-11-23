@@ -17,7 +17,7 @@ import { ROUTE_COPY } from '../../../../route-copy';
 export async function generateMetadata() { return { title: ROUTE_COPY[await readPageLang()].requestCorrection }; }
 export default async function DelegatedCorrectionPage({params}:{params:Promise<{employeeId:string}>}){const t = ROUTE_COPY[await readPageLang()];
  const session=await requireRoles(MANAGER_ROLES),proof=await requireSessionMutationProof(),workspace=await getWorkspace(),access=await withOperationalCompany(proof,async()=>null),{employeeId}=await params;
- if(access.state==='unavailable')return <OperationalUnavailable title={t.requestCorrectionUnavailable} reason={access.reason}/>;
+ if(access.state==='unavailable')return <OperationalUnavailable lang={await readPageLang()} title={t.requestCorrectionUnavailable} reason={access.reason}/>;
  const authority=correctionAuthority(proof),recoveryScope=delegatedRecoveryScope(workspace.id);
  return <ScopedReadFrame observation={scopedObservation(access)}><CorpPage className="c-page--narrow" labelledBy="delegated-title"><CorpNav back={{href:'/app/timecards',label:t.time}} title={t.requestCorrection} phoneOnly/><CorpTitle id="delegated-title" title={t.requestCorrection} wide/><CorpCard><CorpBody><DelegatedTimeCorrectionForm key={JSON.stringify([recoveryScope,session.id,authority,employeeId])} employeeId={employeeId} actorId={session.id} authority={authority} recoveryScope={recoveryScope}/></CorpBody></CorpCard></CorpPage></ScopedReadFrame>;
 }

@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useSyncExternalStore, type ReactNode } from "react";
 import { BLoadingScreen, type BLoadingShape } from "./b-kit";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
 
 /* Phase 2 (package D): which frame a page's loading placeholder keeps. One table for every role, read by the route's
  * loading.tsx (CorpSkeleton) and by the access check (ScopedReadFrame), so a tab tap and the check that follows look the
@@ -151,11 +152,12 @@ export function BRouteLoading({ pathname, title }: { pathname?: string; title?: 
     window.setTimeout(() => { for (const screen of document.querySelectorAll("main.page-frame .b-screen")) screen.setAttribute("data-b-arrived", ""); }, 150);
     window.setTimeout(() => root.removeAttribute("data-c-arrived"), 250);
   }, []);
+  const loadingText = usePortalLang() === "es" ? "Cargando…" : "Loading…";
   const path = pathname || here;
-  if (!path) return <BLoadingScreen title={title} />;
+  if (!path) return <BLoadingScreen title={title} loadingText={loadingText} />;
   const management = loadingShape(path, false), employee = loadingShape(path, true);
   return <>
-    <BLoadingScreen {...management} title={title ?? management.title} shell="management" route={path} />
-    <BLoadingScreen {...employee} title={title ?? employee.title} shell="employee" route={path} />
+    <BLoadingScreen {...management} title={title ?? management.title} shell="management" route={path} loadingText={loadingText} />
+    <BLoadingScreen {...employee} title={title ?? employee.title} shell="employee" route={path} loadingText={loadingText} />
   </>;
 }

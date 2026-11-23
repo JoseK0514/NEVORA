@@ -22,8 +22,8 @@ export async function generateMetadata() { return { title: ROUTE_COPY[await read
 export default async function TimeCorrectionsPage(){const t = ROUTE_COPY[await readPageLang()];
   const session=await requireRoles(MANAGER_ROLES);
   const proof=await requireSessionMutationProof(),access=await readOperationalAuthority(proof);
-  if(access.state==='unavailable')return <OperationalUnavailable title={ROUTE_COPY[await readPageLang()].timeCorrectionsUnavailable} reason={access.reason}/>;
-  if(!access.scope)return <OperationalUnavailable title={ROUTE_COPY[await readPageLang()].timeCorrectionsUnavailable} reason="access_denied" scoped/>;
+  if(access.state==='unavailable')return <OperationalUnavailable lang={await readPageLang()} title={ROUTE_COPY[await readPageLang()].timeCorrectionsUnavailable} reason={access.reason}/>;
+  if(!access.scope)return <OperationalUnavailable lang={await readPageLang()} title={ROUTE_COPY[await readPageLang()].timeCorrectionsUnavailable} reason="access_denied" scoped/>;
   const scoped=access.scope.mode==='LOCATIONS';
   const authority=correctionAuthority(proof),workspace=await getWorkspace();
   return <ManagerCorrectionRecoveryBoundary key={managerReviewRecoveryKey(session.id,authority,access.authority,'time-corrections')}>

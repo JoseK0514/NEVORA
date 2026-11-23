@@ -23,7 +23,7 @@ export const dynamic='force-dynamic';
 export default async function ClockerPhotosPage(){
  await requireRoles(['OWNER']);const proof=await requireSessionMutationProof();const lang=await readPageLang();
  const source=await withOperationalCompany(proof,()=>Promise.all([readClockerPhotoPolicyAction(),readClockerPhotoNoticeAction()]));
- if(source.state==='unavailable')return <OperationalUnavailable title={SETTINGS_COPY[lang].photoSettingsUnavailable} reason={source.reason}/>;
+ if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={SETTINGS_COPY[lang].photoSettingsUnavailable} reason={source.reason}/>;
  const [result,noticeResult]=source.data,t=clockerOwnerCopy[lang];
  const help=noticeResult.state==='available'
   ?<ClockerPhotoNoticeSettings initialSettings={noticeResult.settings} saveAction={saveClockerPhotoNoticeAction} readAction={readClockerPhotoNoticeAction}/>

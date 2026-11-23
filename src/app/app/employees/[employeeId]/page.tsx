@@ -78,10 +78,10 @@ export default async function EmployeeProfilePage({
   });
   // G17 (Jose, Nov 23, 2026): the company-wide read refuses a Manager limited to some locations; the scoped read decides
   // whether this person works at one of them (server-side, the scoped Team list's boundary) and shows only that view.
-  if(source.state==='unavailable'&&source.reason==='access_denied'&&actor.role==='MANAGER')return ScopedPerson({proof,employeeId,view:editing||accessView?'company':'overview'});
-  if(source.state==='unavailable')return <OperationalUnavailable title={t.profileUnavailable} reason={source.reason}/>;
+  if(source.state==='unavailable'&&source.reason==='access_denied'&&actor.role==='MANAGER')return ScopedPerson({proof,employeeId,view:editing||accessView?'company':'overview',lang});
+  if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.profileUnavailable} reason={source.reason}/>;
   const {profile,positions,operational,profileUnavailable,invitation,pin,hours,bonusApplies}=source.data;
-  if(profile.state==='unavailable')return <OperationalUnavailable title={t.profileUnavailable} reason={profile.reason}/>;
+  if(profile.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.profileUnavailable} reason={profile.reason}/>;
   const {profile:employee,locations,ownerScope,employmentDates}=profile.data;
   const primaryLocation = locations.find(
     (location) => location.id === employee.primaryLocationId,

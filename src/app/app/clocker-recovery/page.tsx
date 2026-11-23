@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ClockerRecoveryPage({searchParams}: {searchParams?: Promise<{from?: string}>} = {}) {
   const actor = await requireRoles(['OWNER']);
-  const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title={ROUTE_PAGES_COPY[await readPageLang()].clockerRecovery.unavailable} reason={access.reason}/>;
+  const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);if(access.state==='unavailable')return <OperationalUnavailable lang={await readPageLang()} title={ROUTE_PAGES_COPY[await readPageLang()].clockerRecovery.unavailable} reason={access.reason}/>;
   const workspace = await getWorkspace();
   // Settings is Owner-only, so only an Owner's Back returns there.
   const from = (await searchParams)?.from === 'settings' && actor.role === 'OWNER' ? 'settings' : undefined;

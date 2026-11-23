@@ -21,7 +21,7 @@ export const dynamic='force-dynamic';
 export default async function ClockerPinsPage(){
  await requireRoles(['OWNER']);const proof=await requireSessionMutationProof();const lang=await readPageLang();
  const source=await withOperationalCompany(proof,async()=>{try{return await listOwnerClockerPinStatuses({employeeId:proof.employee.id,sessionTokenHash:proof.sessionTokenHash});}catch{return null;}});
- if(source.state==='unavailable')return <OperationalUnavailable title={SETTINGS_COPY[lang].pinsUnavailable} reason={source.reason}/>;const statuses=source.data;
+ if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={SETTINGS_COPY[lang].pinsUnavailable} reason={source.reason}/>;const statuses=source.data;
  // Owner premium R13: each row names the person's position and location (Team's own reads), never their employee ID. A failed
  // read leaves the line out.
  const details=statuses?await personDetails(proof).catch(()=>({})):{};
