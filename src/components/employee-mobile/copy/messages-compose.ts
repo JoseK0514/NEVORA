@@ -1,0 +1,60 @@
+/* Signed-in Spanish (Nov 23, 2026): the words on Write an update (messages-compose.tsx): the form, its field errors,
+ * the audience review and the published notice, in English and Puerto Rico Spanish (docs/design/voice.md: tú, sentence
+ * case, buttons in the infinitive, the glossary: Update → "Aviso", location → "localidad", manager → "gerente", Shift →
+ * "Turno"). English is byte for byte what the form said before. The time zone's name follows the language: "Puerto Rico
+ * time" (timeZoneLabel) or "hora de Puerto Rico". */
+import {timeZoneLabel} from '@/lib/time-zone-label';
+const esZone = (timeZone: string) => {const place = timeZone.split('/').at(-1)?.replaceAll('_', ' ').trim();return place ? `hora de ${place}` : timeZone;};
+const en = {
+  zone: (timeZone: string) => timeZoneLabel(timeZone),
+  titleError: 'Use 1–120 plain text characters on one line. Remove unsupported hidden characters.',
+  bodyError: 'Use 1–2,000 plain text characters. Remove unsupported hidden characters.',
+  expiryPast: 'Choose an expiry later than now.',
+  expiryInvalid: (zone: string) => 'Choose a valid date and time in ' + zone + '.',
+  fieldsError: 'Check the highlighted fields before reviewing the audience.',
+  locationError: 'Check the location and date before reviewing the audience.',
+  audienceNoAssignment: 'The audience couldn’t be checked. You need a current published assignment at this location today. Refresh and try again.',
+  audienceFailed: 'The audience couldn’t be checked. Your draft is kept. Try again.',
+  published: 'Update published', publishedBody: 'Your publication was recorded. Each recipient reads and confirms it separately.',
+  viewPublished: 'View published update', writeAnother: 'Write another update',
+  notScheduled: 'You’re not scheduled today',
+  notScheduledBody: 'You can send an update to today’s team at a location where you have a published shift today. Ask your manager to share it, or send it on a day you’re scheduled.',
+  backToUpdates: 'Back to Updates',
+  intro: 'Send an update to today’s team at a location where you have a published shift today. Your recipients don’t have to confirm it.',
+  earlierDay: 'Your draft is from an earlier day', earlierDayBody: 'It has not been sent. Review it for today before checking the audience again.',
+  reviewForToday: 'Review draft for today',
+  location: 'Today’s team location', chooseLocation: 'Choose a location', previousLocation: 'Previous location · unavailable',
+  title: 'Title', titleCount: (n: number) => `${n} of 120 characters`,
+  message: 'Message', bodyCount: (n: number) => `${n} of 2,000 characters · Plain text`,
+  expiry: 'Expiry · optional', expiryHelp: (zone: string) => `Date and time in ${zone}. Leave blank for no set expiry.`,
+  reviewTitle: 'Review before sending', recipients: (n: number) => `${n} ${n === 1 ? 'recipient' : 'recipients'}`,
+  availableUntil: (at: string) => 'Available until ' + at, noExpiry: 'No set expiry', optional: ' · Confirming is optional',
+  send: 'Send update', keepEditing: 'Continue editing', checkingAudience: 'Checking audience…', reviewAudience: 'Review audience',
+};
+const es: typeof en = {
+  zone: esZone,
+  titleError: 'Usa de 1 a 120 caracteres de texto simple en una línea. Quita los caracteres ocultos no admitidos.',
+  bodyError: 'Usa de 1 a 2,000 caracteres de texto simple. Quita los caracteres ocultos no admitidos.',
+  expiryPast: 'Elige un vencimiento posterior a este momento.',
+  expiryInvalid: (zone: string) => 'Elige una fecha y hora válidas en ' + zone + '.',
+  fieldsError: 'Corrige los campos marcados antes de revisar la audiencia.',
+  locationError: 'Verifica la localidad y la fecha antes de revisar la audiencia.',
+  audienceNoAssignment: 'No pudimos verificar la audiencia. Necesitas una asignación publicada vigente en esta localidad hoy. Actualiza e inténtalo de nuevo.',
+  audienceFailed: 'No pudimos verificar la audiencia. Tu borrador se conserva. Inténtalo de nuevo.',
+  published: 'Aviso publicado', publishedBody: 'Tu publicación quedó registrada. Cada destinatario lo lee y lo confirma por separado.',
+  viewPublished: 'Ver aviso publicado', writeAnother: 'Escribir otro aviso',
+  notScheduled: 'No tienes turno hoy',
+  notScheduledBody: 'Puedes enviar un aviso al equipo de hoy en una localidad donde tengas un turno publicado hoy. Pídele a tu gerente que lo comparta o envíalo un día en que tengas turno.',
+  backToUpdates: 'Volver a Avisos',
+  intro: 'Envía un aviso al equipo de hoy en una localidad donde tengas un turno publicado hoy. Tus destinatarios no tienen que confirmarlo.',
+  earlierDay: 'Tu borrador es de un día anterior', earlierDayBody: 'No se ha enviado. Revísalo para hoy antes de verificar la audiencia otra vez.',
+  reviewForToday: 'Revisar borrador para hoy',
+  location: 'Localidad del equipo de hoy', chooseLocation: 'Elige una localidad', previousLocation: 'Localidad anterior · no disponible',
+  title: 'Título', titleCount: (n: number) => `${n} de 120 caracteres`,
+  message: 'Mensaje', bodyCount: (n: number) => `${n} de 2,000 caracteres · Texto simple`,
+  expiry: 'Vencimiento · opcional', expiryHelp: (zone: string) => `Fecha y hora en ${zone}. Déjalo en blanco para no fijar un vencimiento.`,
+  reviewTitle: 'Revisa antes de enviar', recipients: (n: number) => `${n} ${n === 1 ? 'destinatario' : 'destinatarios'}`,
+  availableUntil: (at: string) => 'Disponible hasta el ' + at, noExpiry: 'Sin vencimiento', optional: ' · Confirmar es opcional',
+  send: 'Enviar aviso', keepEditing: 'Seguir editando', checkingAudience: 'Verificando audiencia…', reviewAudience: 'Revisar audiencia',
+};
+export const messagesComposeCopy = {en, es};

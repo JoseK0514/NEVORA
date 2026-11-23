@@ -8,10 +8,14 @@ import {ArrowSquareOutIcon} from '@phosphor-icons/react/dist/ssr/ArrowSquareOut'
 import {businessDate} from '@/lib/business-time';
 import type {NextPay} from '../payroll/my-pay';
 import {CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpLink,CorpNote,CorpRow,CorpRows,CorpTitle} from '../corp/corp';
-import {PAY_DIFFERENCE_LINE,PAY_SCOPE_LINE,arrangeStatements,type PayView} from './pay';
+import {arrangeStatements,type PayView} from './pay';
 import './pay-corp.css';
 import {PayB, type PayBStatus} from '../employee-b/pay-b';
 import {BButton, BButtonLink} from '../owner-b/b-kit';
+import {useMobileLang} from './mobile-lang';
+import {LOCALE,dateText,type MobileLang} from './mobile-format';
+import {payCopy} from './copy/pay';
+import {payCorpCopy} from './copy/pay-corp';
 
 /** The element to focus: the phone screen's (Direction B) when it is the one showing, else the corporate one. */
 const shownById=(...ids:string[])=>ids.map(id=>document.getElementById(id)).find(el=>!!el&&el.getClientRects().length>0)??document.getElementById(ids[ids.length-1]);
@@ -21,19 +25,17 @@ const shownById=(...ids:string[])=>ids.map(id=>document.getElementById(id)).find
  * pages show paydays, periods and the provider's PDF, never figures; a scheduled payday is never called a payment. */
 
 type Statement=NonNullable<PayView['statements']>[number];
-const utc=(date:string)=>new Date(`${date}T12:00:00Z`);
-const fmt=(options:Intl.DateTimeFormatOptions)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',...options});
-/** "Fri, Oct 30" */
-const payday=(date:string)=>fmt({weekday:'short',month:'short',day:'numeric'}).format(utc(date));
+/** "Fri, Oct 30" · "vie, 30 oct" */
+const payday=(date:string,lang:MobileLang)=>dateText(date,lang,{weekday:'short',month:'short',day:'numeric'});
 /** "Friday, October 30, 2026" for a screen reader label and the paycheck's title. */
-const paydayLong=(date:string)=>fmt({weekday:'long',month:'long',day:'numeric',year:'numeric'}).format(utc(date));
-/** "Oct 19–25", or "Sep 28–Oct 4" across a month. */
-const period=(start:string,end:string)=>dateRange(start,end,{year:'never'});
+const paydayLong=(date:string,lang:MobileLang)=>dateText(date,lang,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+/** "Oct 19–25", or "Sep 28–Oct 4" across a month ("19–25 oct" in Spanish). */
+const period=(start:string,end:string,lang:MobileLang)=>dateRange(start,end,lang==='en'?{year:'never'}:{year:'never',locale:LOCALE[lang]});
 const documentHref=(statement:Statement)=>`/api/payroll/documents/${encodeURIComponent(statement.id)}`;
 const paycheckHref=(id:string)=>`/app/my-pay?paycheck=${encodeURIComponent(id)}`;
-const role=(item:Statement)=>item.correctedBy?'replaced statement':item.corrects?'corrected statement':'statement';
+const role=(item:Statement,lang:MobileLang)=>{const words=payCopy[lang].role;return item.correctedBy?words.replaced:item.corrects?words.corrected:words.statement;};
 // Upscale S4: a statement's state is grey text, not a pill (blue is not a NEVORA colour).
-const pill=(item:Statement)=>item.correctedBy?<span className="c-meta">Replaced</span>:item.corrects?<span className="c-meta">Correction</span>:null;
+const pill=(item:Statement,lang:MobileLang)=>item.correctedBy?<span className="c-meta">{payCopy[lang].replacedChip}</span>:item.corrects?<span className="c-meta">{payCopy[lang].correctionChip}</span>:null;
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 /** Days until the scheduled payday, kept current while the page stays open (it starts from the server's count). */
@@ -55,7 +57,8 @@ function PayNav({back,title}:{back:{href:string;label:string};title:string}){
 }
 
 export function CorpPayView({statements,loading,error,errorCode,nextPay,statement:arrivedTarget,document:arrivedFailure,reload,home}:PayView&{home?:{title:string;back?:{href:string;label:string}}}){
- const title=home?.title??'Pay';
+ const lang=useMobileLang(),p=payCopy[lang],t=payCorpCopy[lang];
+ const title=home?.title??p.title;
  const search=useSearchParams(),requested=search?.get('paycheck')??null,paycheck=requested&&UUID.test(requested)?requested:null;
  const view=paycheck?'paycheck':search?.get('view')==='history'?'history':'pay';
  const daysUntil=useDaysUntil(nextPay);
@@ -96,23 +99,23 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
  const listed=state==='ready'||state==='empty'||state==='loading';
  const surface=(title:string,body:string,action?:ReactNode,live:'status'|'alert'='status')=><CorpCard ariaLabel={title}><CorpBody>
   <div role={live} aria-labelledby={`pay-${state}-title`}><h2 className="c-big" id={`pay-${state}-title`}>{title}</h2><p className="c-line2">{body}</p></div>{action}</CorpBody></CorpCard>;
- const status=state==='loading'?<CorpCard label="Recent pay statements"><p className="c-empty" role="status">Loading your statements…</p></CorpCard>
-  :state==='signed-out'?surface('Sign in to see your statements','Your session ended. Statements stay private until you sign in again.',<CorpButtonLink href="/login?returnTo=%2Fapp%2Fmy-pay" kind="secondary" size="md" full>Sign in</CorpButtonLink>,'alert')
-  :state==='denied'?surface('Your access to pay statements changed','NEVORA can’t show your statements right now. If that seems wrong, ask your manager.')
-  :state==='module-off'?surface('Pay statements are turned off','Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.')
-  :state==='paused'?surface(errorCode==='OFFLINE'?'You’re offline':'Statements are paused',errorCode==='OFFLINE'?'Reconnect to see your current statements.':'Statements are hidden while NEVORA is in the background. They reload when you return.')
-  :state==='error'?surface('Couldn’t load your statements','Check your connection, then try again.',<CorpButton kind="secondary" size="md" full onClick={reload}>Try again</CorpButton>,'alert')
-  :state==='empty'?<CorpCard label="Recent pay statements"><p className="c-empty"><b>No published statements yet</b>Your statements appear here after your employer shares them.</p></CorpCard>:null;
- const row=(item:Statement)=><li key={item.id}><CorpRow id={`pay-statement-${item.id}`} href={paycheckHref(item.id)} bold title={payday(item.payday)} detail={period(item.period.startDate,item.period.endDate)}
-  label={`${paydayLong(item.payday)}, ${role(item)} for ${period(item.period.startDate,item.period.endDate)}`} trail={pill(item)} chevron/></li>;
+ const status=state==='loading'?<CorpCard label={t.recentStatements}><p className="c-empty" role="status">{p.loading}</p></CorpCard>
+  :state==='signed-out'?surface(p.signedOutTitle,p.signedOutBody,<CorpButtonLink href="/login?returnTo=%2Fapp%2Fmy-pay" kind="secondary" size="md" full>{p.signIn}</CorpButtonLink>,'alert')
+  :state==='denied'?surface(p.deniedTitle,p.deniedBody)
+  :state==='module-off'?surface(p.offTitle,p.offBody)
+  :state==='paused'?surface(errorCode==='OFFLINE'?p.offlineTitle:p.pausedTitle,errorCode==='OFFLINE'?p.offlineBody:p.pausedBody)
+  :state==='error'?surface(p.errorTitle,p.errorBody,<CorpButton kind="secondary" size="md" full onClick={reload}>{p.tryAgain}</CorpButton>,'alert')
+  :state==='empty'?<CorpCard label={t.recentStatements}><p className="c-empty"><b>{p.emptyTitle}</b>{p.emptyBody}</p></CorpCard>:null;
+ const row=(item:Statement)=><li key={item.id}><CorpRow id={`pay-statement-${item.id}`} href={paycheckHref(item.id)} bold title={payday(item.payday,lang)} detail={period(item.period.startDate,item.period.endDate,lang)}
+  label={t.rowLabel(paydayLong(item.payday,lang),role(item,lang),period(item.period.startDate,item.period.endDate,lang))} trail={pill(item,lang)} chevron/></li>;
  // Direction B (phones): the same states, words and links on the dark ink screen.
- const bStatus:PayBStatus=state==='signed-out'?{title:'Sign in to see your statements',body:'Your session ended. Statements stay private until you sign in again.',action:<BButtonLink href="/login?returnTo=%2Fapp%2Fmy-pay" kind="teal" full>Sign in</BButtonLink>,live:'alert'}
-  :state==='denied'?{title:'Your access to pay statements changed',body:'NEVORA can’t show your statements right now. If that seems wrong, ask your manager.',live:'status'}
-  :state==='module-off'?{title:'Pay statements are turned off',body:'Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.',live:'status'}
-  :state==='paused'?{title:errorCode==='OFFLINE'?'You’re offline':'Statements are paused',body:errorCode==='OFFLINE'?'Reconnect to see your current statements.':'Statements are hidden while NEVORA is in the background. They reload when you return.',live:'status'}
-  :state==='error'?{title:'Couldn’t load your statements',body:'Check your connection, then try again.',action:<BButton kind="quiet" full onClick={reload}>Try again</BButton>,live:'alert'}:null;
- const bNoticeText=failure||missing?{title:failure==='failed'||failure==='temporary'?'We couldn’t open that statement':'That statement isn’t available',
-  body:failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':failure==='temporary'?'NEVORA couldn’t open it just now. Try again in a moment.':state==='empty'?'It may have been replaced, or your access changed.':'It may have been replaced, or your access changed. Your current statements are below.'}:null;
+ const bStatus:PayBStatus=state==='signed-out'?{title:p.signedOutTitle,body:p.signedOutBody,action:<BButtonLink href="/login?returnTo=%2Fapp%2Fmy-pay" kind="teal" full>{p.signIn}</BButtonLink>,live:'alert'}
+  :state==='denied'?{title:p.deniedTitle,body:p.deniedBody,live:'status'}
+  :state==='module-off'?{title:p.offTitle,body:p.offBody,live:'status'}
+  :state==='paused'?{title:errorCode==='OFFLINE'?p.offlineTitle:p.pausedTitle,body:errorCode==='OFFLINE'?p.offlineBody:p.pausedBody,live:'status'}
+  :state==='error'?{title:p.errorTitle,body:p.errorBody,action:<BButton kind="quiet" full onClick={reload}>{p.tryAgain}</BButton>,live:'alert'}:null;
+ const bNoticeText=failure||missing?{title:failure==='failed'||failure==='temporary'?p.couldntOpen:p.notAvailable,
+  body:failure==='failed'?p.failedCheck:failure==='temporary'?p.temporary:state==='empty'?p.maybeReplaced:p.maybeReplacedBelow}:null;
  const b=<PayB view={view} state={state} ordered={ordered} byId={byId} paycheck={paycheck} nextPay={nextPay} daysUntil={daysUntil} listed={listed} thisYear={thisYear}
   notice={bNoticeText} noticeRef={bNotice} status={bStatus} onOpenPdf={id=>{returnTo.current=id;}} home={home}/>;
  const frame=(children:ReactNode,sub:boolean)=><div className={sub?'c-page c-page--narrow c-pay c-pay--sub':'c-page c-page--narrow c-pay'} data-nv-page="" data-corp="" data-pay-state={state} data-pay-view={view} aria-busy={loading}>{b}{children}</div>;
@@ -120,34 +123,34 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
  if(view==='paycheck'){
   const item=paycheck?byId.get(paycheck):undefined;
   return frame(<>
-   <PayNav back={{href:'/app/my-pay',label:title}} title="Pay statement"/>
-   {state!=='ready'?status:!item?<CorpCard ariaLabel="Pay statement"><CorpBody><div role="status"><h2 className="c-big">That statement isn’t available</h2><p className="c-line2">It may have been replaced, or your access changed.</p></div></CorpBody></CorpCard>:<>
-    <CorpCard id="pay-paycheck" label={`Pay period ${period(item.period.startDate,item.period.endDate)}`} aside={pill(item)}>
-     <CorpBody><span className="c-line3">Payday</span><b className="c-big">{fmt({weekday:'short',month:'short',day:'numeric',...(item.payday.slice(0,4)===thisYear?{}:{year:'numeric'})}).format(utc(item.payday))}</b>
-      {item.correctedBy?<span className="c-line3 c-pay-gap">A corrected statement replaced this one. Use the corrected statement for this period.</span>
-       :item.corrects?<span className="c-line3 c-pay-gap">This corrects your earlier statement for the same period.</span>:null}
-      {item.correctedBy||item.corrects?<span className="c-line3">{PAY_DIFFERENCE_LINE}</span>:null}</CorpBody>
-     <CorpRows label="Statement">
-      {item.correctedBy&&byId.has(item.correctedBy)?<li><CorpRow href={paycheckHref(item.correctedBy)} title={<span className="c-link c-link--l">Use the corrected statement</span>} label="Use the corrected statement" one/></li>:null}
+   <PayNav back={{href:'/app/my-pay',label:title}} title={t.payStatement}/>
+   {state!=='ready'?status:!item?<CorpCard ariaLabel={t.payStatement}><CorpBody><div role="status"><h2 className="c-big">{p.notAvailable}</h2><p className="c-line2">{p.maybeReplaced}</p></div></CorpBody></CorpCard>:<>
+    <CorpCard id="pay-paycheck" label={t.payPeriod(period(item.period.startDate,item.period.endDate,lang))} aside={pill(item,lang)}>
+     <CorpBody><span className="c-line3">{t.payday}</span><b className="c-big">{dateText(item.payday,lang,{weekday:'short',month:'short',day:'numeric',...(item.payday.slice(0,4)===thisYear?{}:{year:'numeric'})})}</b>
+      {item.correctedBy?<span className="c-line3 c-pay-gap">{p.replacedBy}</span>
+       :item.corrects?<span className="c-line3 c-pay-gap">{p.corrects}</span>:null}
+      {item.correctedBy||item.corrects?<span className="c-line3">{p.difference}</span>:null}</CorpBody>
+     <CorpRows label={t.statement}>
+      {item.correctedBy&&byId.has(item.correctedBy)?<li><CorpRow href={paycheckHref(item.correctedBy)} title={<span className="c-link c-link--l">{p.useCorrected}</span>} label={p.useCorrected} one/></li>:null}
       {/* Upscale S8: one row for the one document. It opens the PDF separately (on a phone the viewer offers Save); without
         * a viewer link it goes to the route, whose attachment header downloads it. No `download` attribute, so a failed
         * file's redirect back to Pay is shown, not saved. */}
       <li><a id={`pay-pdf-${item.id}`} className="c-row c-row--one" href={item.viewUrl?`${documentHref(item)}/view`:documentHref(item)} {...(item.viewUrl?{target:'_blank',rel:'noopener'}:{})}
-       aria-label={`Pay statement (PDF), ${role(item)}, payday ${paydayLong(item.payday)}${item.viewUrl?' (opens separately)':''}`} onClick={()=>{returnTo.current=`pay-pdf-${item.id}`;}}>
-       <span className="c-row__main"><span className="c-row__title c-pay-action">Pay statement (PDF)</span></span><ArrowSquareOutIcon className="c-pay-icon" weight="bold" aria-hidden="true"/></a></li>
+       aria-label={t.pdfLabel(role(item,lang),paydayLong(item.payday,lang),!!item.viewUrl)} onClick={()=>{returnTo.current=`pay-pdf-${item.id}`;}}>
+       <span className="c-row__main"><span className="c-row__title c-pay-action">{t.pdf}</span></span><ArrowSquareOutIcon className="c-pay-icon" weight="bold" aria-hidden="true"/></a></li>
      </CorpRows>
     </CorpCard>
-    <CorpNote>Downloaded files may contain personal pay information.</CorpNote>
+    <CorpNote>{t.downloaded}</CorpNote>
    </>}
   </>,true);
  }
  if(view==='history'){
   const months=new Map<string,Statement[]>();for(const item of ordered){const key=item.payday.slice(0,7);months.set(key,[...(months.get(key)??[]),item]);}
   return frame(<>
-   <PayNav back={{href:'/app/my-pay',label:title}} title="Pay history"/>
+   <PayNav back={{href:'/app/my-pay',label:title}} title={t.payHistory}/>
    {state!=='ready'?status:<>
-    <CorpNote>Your published pay statements, newest first.</CorpNote>
-    {[...months].map(([month,items])=><CorpCard key={month} label={fmt({month:'long',...(month.slice(0,4)===thisYear?{}:{year:'numeric'})}).format(utc(`${month}-15`))}>
+    <CorpNote>{t.newestFirst}</CorpNote>
+    {[...months].map(([month,items])=><CorpCard key={month} label={dateText(`${month}-15`,lang,{month:'long',...(month.slice(0,4)===thisYear?{}:{year:'numeric'})})}>
      <CorpRows>{items.map(row)}</CorpRows>
     </CorpCard>)}
    </>}
@@ -155,21 +158,21 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
  }
  return frame(<>
   <CorpTitle id="pay-title" title={title}
-   actions={state==='ready'?<CorpButtonLink href="/app/my-pay?view=history" kind="neutral" size="sm">Pay history</CorpButtonLink>:undefined}/>
+   actions={state==='ready'?<CorpButtonLink href="/app/my-pay?view=history" kind="neutral" size="sm">{t.payHistory}</CorpButtonLink>:undefined}/>
   {(failure||missing)&&listed&&state!=='loading'?<div ref={notice} tabIndex={-1} className="c-callout c-pay-notice" role="alert" aria-labelledby="pay-notice-title">
-   <b id="pay-notice-title">{failure==='failed'||failure==='temporary'?'We couldn’t open that statement':'That statement isn’t available'}</b>
-   <span>{failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':failure==='temporary'?'NEVORA couldn’t open it just now. Try again in a moment.':state==='empty'?'It may have been replaced, or your access changed.':'It may have been replaced, or your access changed. Your current statements are below.'}</span>
+   <b id="pay-notice-title">{failure==='failed'||failure==='temporary'?p.couldntOpen:p.notAvailable}</b>
+   <span>{failure==='failed'?p.failedCheck:failure==='temporary'?p.temporary:state==='empty'?p.maybeReplaced:p.maybeReplacedBelow}</span>
   </div>:null}
   {/* Upscale S16: the payday said once. The card head carries the period, the body the date, then how far away it is. */}
-  {nextPay&&listed&&daysUntil!==null&&daysUntil>=0?<CorpCard id="pay-period" label={nextPay.period?`This pay period · ${period(nextPay.period.startDate,nextPay.period.endDate)}`:'This pay period'}>
-   <CorpBody><b className="c-big">{payday(nextPay.payday)}</b>
-    <span className="c-line3">{daysUntil===0?'Scheduled payday is today':daysUntil===1?'Scheduled payday is tomorrow':`Scheduled payday is in ${daysUntil} days`}</span></CorpBody>
-   <CorpRows><li><CorpRow href="/app/my-time" title={<span className="c-link c-link--l">See your hours</span>} label="See your hours" one/></li></CorpRows>
+  {nextPay&&listed&&daysUntil!==null&&daysUntil>=0?<CorpCard id="pay-period" label={nextPay.period?t.thisPeriodOf(period(nextPay.period.startDate,nextPay.period.endDate,lang)):t.thisPeriod}>
+   <CorpBody><b className="c-big">{payday(nextPay.payday,lang)}</b>
+    <span className="c-line3">{daysUntil===0?t.paydayToday:daysUntil===1?t.paydayTomorrow:t.paydayIn(daysUntil)}</span></CorpBody>
+   <CorpRows><li><CorpRow href="/app/my-time" title={<span className="c-link c-link--l">{t.seeHours}</span>} label={t.seeHours} one/></li></CorpRows>
   </CorpCard>:null}
-  {state==='ready'?<CorpCard id="pay-recent" label="Recent pay statements" aside={ordered.length>3?<CorpLink href="/app/my-pay?view=history" label="See all statements">See all</CorpLink>:undefined}>
-   <CorpRows label="Recent pay statements">{ordered.slice(0,3).map(row)}</CorpRows>
+  {state==='ready'?<CorpCard id="pay-recent" label={t.recentStatements} aside={ordered.length>3?<CorpLink href="/app/my-pay?view=history" label={t.seeAllStatements}>{t.seeAll}</CorpLink>:undefined}>
+   <CorpRows label={t.recentStatements}>{ordered.slice(0,3).map(row)}</CorpRows>
   </CorpCard>:status}
   {/* Inspection Nov 14 (PY-7): a scheduled payday is not a payment from NEVORA; one quiet line says who pays. */}
-  {listed?<CorpNote>{PAY_SCOPE_LINE}</CorpNote>:null}
+  {listed?<CorpNote>{p.scope}</CorpNote>:null}
  </>,false);
 }
