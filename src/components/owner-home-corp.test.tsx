@@ -286,16 +286,23 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(card).toContain('<a href="/app?view=attendance" class="b-card__a" aria-label="See everyone working today">See everyone</a>');
     // Final polish (Nov 20, 2026): the card leads with today's chart and, for phones, one row of faces; the people's rows
     // are the "On now" list.
-    expect(card.slice(card.indexOf('aria-label="On now"')).match(/<li class="b-li">/g)).toHaveLength(3);
+    // Jose (Nov 22, 2026: no fact twice): who hasn't clocked in is listed once, under Things to do, so On now keeps the two
+    // people on the clock.
+    expect(card.slice(card.indexOf('aria-label="On now"')).match(/<li class="b-li">/g)).toHaveLength(2);
     expect(card).toContain('<h2 id="b-home-on-h">Today</h2>');
     expect(card).toContain("People scheduled by hour");
-    expect(card).toContain('aria-label="2 clocked in. See everyone working today"');
+    // The row's name is its visible text (no aria-label that differs from it).
+    expect(card).toContain(">2 clocked in<");
+    expect(card).not.toContain('aria-label="2 clocked in');
     // Phase 8 (a.md #11): the live word is Team's, "Clocked in". Phase 9 (spec 1.2): the normal state is quiet grey words
     // with the green live dot; only the exceptions are amber chips, with the live dot, and "Not clocked in" says how long.
     expect(card).toContain('<span class="b-status" data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"></span>Clocked in</span>');
     expect(card).not.toContain('b-chip--green');
     expect(card).toContain('<span class="b-chip b-chip--amber" data-dot=""><span class="b-ldot" data-tone="amber" aria-hidden="true"></span>Clocked in late</span>');
-    expect(card).toMatch(/<span class="b-chip b-chip--amber" data-dot=""><span class="b-ldot" data-tone="amber" aria-hidden="true"><\/span>Not clocked in( · [^<]+)?<\/span>/);
+    expect(card).not.toContain("Person e");
+    // While Things to do hasn't loaded, On now still lists them, with how long in Jose's words.
+    const waiting = phone({ value: null, today: today([shift("a", "clocked_in"), shift("e", "not_clocked_in")]) });
+    expect(waiting.slice(waiting.indexOf('id="b-home-on"'))).toMatch(/<span class="b-chip b-chip--amber" data-dot=""><span class="b-ldot" data-tone="amber" aria-hidden="true"><\/span>Not clocked in( · [^<]+)?<\/span>/);
     expect(card).toMatch(/9:00\sAM\s–\s5:00\sPM/);
     expect(card).not.toMatch(/Person b|Person c/);
     // Nobody on: the card says so and names the next start; it never lists a shift that hasn't begun.
@@ -315,8 +322,9 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     const out=phone({today:today([]),monitor:live});
     const card=out.slice(out.indexOf('id="b-home-on"'),out.indexOf('class="b-home-col b-home-col--b"'));
     expect(card).toContain("Person unscheduled");
-    expect(card).toMatch(/Clocked in 9:02\sAM/);
-    expect(card).toContain("Condado");
+    // The status says "Clocked in"; the line says since when, and names no place when the card shows only one.
+    expect(card).toMatch(/In since 9:02\sAM/);
+    expect(card).not.toContain("Condado");
     expect(card).toContain('data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"></span>Clocked in</span>');
     expect(card).not.toContain("Nobody is working right now");
     expect(card).not.toContain("5:00 PM");
@@ -337,7 +345,9 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
   it("draws This week from the page's own hours and shifts per day, today in teal, and nothing estimated", () => {
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((weekday, i) => ({ date: `2026-10-${26 + i}`, weekday, shiftCount: i + 1 }));
     const out = phone({ week: { firstName: "Carmen", days, scheduledHours: 112, people: 3 } });
-    expect(out).toContain(">112 h</b><span>Scheduled</span>");
+    // Jose (Nov 22, 2026: no label twice): Today says "Scheduled" and "People"; the week says "Planned" and "Staff".
+    expect(out).toContain(">112 h</b><span>Planned</span>");
+    expect(out).toContain(">3</b><span>Staff</span>");
     expect(out).toContain(">28</b><span>Shifts</span>");
     expect(out).toContain('class="today" style="height:71%"');
     expect(out).not.toMatch(/estimate|\$/i);

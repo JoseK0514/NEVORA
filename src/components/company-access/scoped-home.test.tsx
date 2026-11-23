@@ -50,16 +50,20 @@ it("is the company Manager's Direction B Home: the band names the place, three l
   for (const label of ["Clocked in", "Not clocked in", "Open shifts", "Things to do", "Find cover", "Add shift", "Time off", "Today", "This week", "Shifts by day"]) expect(html).toContain(label);
   // Nothing this Manager can't open or that has no scoped read: payroll, timecard counts, company-wide shortcuts.
   for (const absent of ["Payroll", "payday", "Timecards", "Add employee", "Send update", "company-wide"]) expect(html).not.toContain(absent);
+  // Each fact once (Jose, Nov 22, 2026): the band's title has the count and the band's figure the open shifts, so the
+  // card has no count pill and its row doesn't repeat the number.
+  expect(html).not.toContain('class="b-pill"');
+  expect(html).toContain("Cover an open shift");
 });
 
 it("keeps only the chosen location's shifts, clock-ins and open shifts", () => {
   const html = render({ locationId: "loc-2" });
   expect(html).toContain("Person A");
   expect(html).not.toContain("Person C");
-  expect(html).toContain('aria-label="Open shifts: 1"');
+  expect(html).toMatch(/Open shifts<\/span><span class="b-live__v">1</);
   const all = render();
   expect(all).toContain("Person C");
-  expect(all).toContain('aria-label="Open shifts: 2"');
+  expect(all).toMatch(/Open shifts<\/span><span class="b-live__v">2</);
   // With two places on the card, each row says where.
   expect(all).toContain("Santurce");
 });

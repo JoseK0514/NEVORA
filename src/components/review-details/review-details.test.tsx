@@ -99,7 +99,8 @@ describe("U03: totals say how complete they are", () => {
     const items = [request("r1", "Ana Colón"), request("r2", "Luis Ortiz")];
     const out = onlyB(home({ today: unavailable, value: needsYou(items, "2026-10-30", []), timecards: [] }));
     expect(text(out)).toContain("At least 2 things need you");
-    expect(out).toContain('<span class="b-pill">At least 2</span>');
+    // The band's title carries the lower bound; the card repeats no count (Jose, Nov 22, 2026: no fact twice).
+    expect(out).not.toContain('<span class="b-pill">At least 2</span>');
     expect(text(out)).toContain(t.clockInsUnchecked);
     expect(text(out)).not.toContain("You’re all set");
   });

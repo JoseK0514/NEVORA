@@ -160,7 +160,7 @@ export function HomeB(props: HomeBProps) {
         ...(noClock ? [clockTile] : [{ label: "Clocked in", dot: "live" as const, value: checking ? CORP_NO_VALUE : onShift, small: !checking && scheduled ? `/${scheduled}` : undefined,
           href: checking ? undefined : "/app?view=attendance", aria: checking ? undefined : `Clocked in: ${onShift} of ${scheduled}. Who’s working` },
         attendance]),
-        { label: "Open shifts", dot: gaps?.length ? "warn" : undefined, value: gaps ? gaps.length : CORP_NO_VALUE, href: gaps ? openHref : undefined, aria: gaps ? `Open shifts: ${gaps.length}` : undefined },
+        { label: "Open shifts", dot: gaps?.length ? "warn" : undefined, value: gaps ? gaps.length : CORP_NO_VALUE, href: gaps ? openHref : undefined },
       ]} />
       {props.week?.shortcuts ? <Shortcuts items={props.week.shortcuts} place="band" /> : null}
       </div>
@@ -180,7 +180,8 @@ export function HomeB(props: HomeBProps) {
           : props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
         <NeedsYouCard {...props} gapRows={gapRows} openHref={openHref} />
         {props.week?.shortcuts ? <Shortcuts items={props.week.shortcuts} place="stack" /> : null}
-        {ready ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} /> : null}
+        {/* Jose (Nov 22, 2026: no fact twice): once Things to do lists who hasn't clocked in, Today doesn't list them again. */}
+        {ready ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} waitingListed={!!value} /> : null}
       </div>
       <div className="b-home-col b-home-col--b">
         <PayrollNotice status={props.payrollStatus} />
@@ -202,8 +203,8 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   if (gapRows.length) {
     const next = gapRows[0];
     // Phase 8 (b.md #46): a row's button is the tinted pill, as on Things to do; the filled teal stays the page's one main action.
-    rows.push(<BRow key="gaps" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={`Cover ${plural(gapRows.length, "open shift", "open shifts")}`}
-      sub={<>{`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}`}<BWhen text={next.title} /></>} href={openHref} label={`Open shifts, ${gapRows.length}`}
+    rows.push(<BRow key="gaps" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={gapRows.length === 1 ? "Cover an open shift" : "Cover open shifts"}
+      sub={<>{`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}`}<BWhen text={next.title} /></>} href={openHref}
       trail={<BButtonLink href={next.href} kind="ghost" label={`Find cover: ${next.title}`}>Find cover</BButtonLink>} />);
   }
   // Nov 9, 2026: approved leave over a published shift: "Fill Maria Rivera’s shift" (one) or "Fill 2 shifts for approved
@@ -263,11 +264,11 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   // Phase 9 (spec 3.2): these wait on this person, so the circle is amber, with the timecards' Clock (it was a grey calendar).
   if (rows.length < NEEDS_ROWS && others.length) rows.push(<BRow key="others" lead={<BIcon tone="amber"><ClockIcon weight="bold" /></BIcon>}
     title={plural(others.length, "item to review", "items to review")} sub="Time corrections and timecards" href="/app/inbox#todo-review" />);
-  // Phase 4 (U03): a lower bound reads "At least N" in the count pill, and an empty card with a source unread says what
-  // could not be checked instead of "Nothing needs you".
+  // Phase 4 (U03): an empty card with a source unread says what could not be checked instead of "Nothing needs you".
+  // Jose (Nov 22, 2026: no fact twice): the band's title already says how many things need you ("At least N" when it is
+  // a lower bound), so the card carries no count pill; the open-shift row's count is the band's Open shifts figure.
   const total = needsYouTotal(value, { clockInsUnavailable: today?.state === "unavailable" });
-  const count = total.exact ? value.count : value.count ? t.atLeast(value.count) : undefined;
-  return <BCard title="Things to do" count={count} id="b-home-needs" link={{ href: "/app/inbox", label: "See all", aria: "See all things to do" }}>
+  return <BCard title="Things to do" id="b-home-needs" link={{ href: "/app/inbox", label: "See all", aria: "See all things to do" }}>
     {rows.length ? <BList label="Things to do">{rows.slice(0, NEEDS_ROWS)}</BList>
       : <p className="b-state">{total.clockInsUnchecked ? "Clock-ins can’t be checked right now." : total.exact ? "Nothing needs you right now." : t.notAllCheckedLine}</p>}
     {rows.length && !total.exact ? <p className="b-card__note b-home-partial" role="note">{total.clockInsUnchecked ? t.clockInsUnchecked : t.correctionsUnchecked(total.uncheckedReviews)}</p> : null}
@@ -277,25 +278,26 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
 /** Phase 3 (MG-011, OW-031): who is working right now, from Today's shifts (the read Home already has). People on the
  * clock first (a late arrival says so in Jose's words), then people whose shift began with no clock-in. No estimate: a
  * shift that hasn't started isn't listed, and when nobody is on the card says so and names the next start. */
-function OnNow({ shifts, open, timeZone, observedAt }: { shifts: TodayShift[]; open: ClockMonitorEmployee[] | null; timeZone: string; observedAt: string }) {
+function OnNow({ shifts, open, timeZone, observedAt, waitingListed = false }: { shifts: TodayShift[]; open: ClockMonitorEmployee[] | null; timeZone: string; observedAt: string; waitingListed?: boolean }) {
   const byStart = (a: TodayShift, b: TodayShift) => a.startAt.localeCompare(b.startAt) || a.employeeName.localeCompare(b.employeeName);
   const seen = new Set<string>();
   const once = (shift: TodayShift) => seen.has(shift.employeeId) ? false : (seen.add(shift.employeeId), true);
-  const on = [...shifts.filter(working).sort(byStart), ...shifts.filter(shift => shift.status === "not_clocked_in").sort(byStart)].filter(once);
+  const on = [...shifts.filter(working).sort(byStart), ...(waitingListed ? [] : shifts.filter(shift => shift.status === "not_clocked_in").sort(byStart))].filter(once);
   // A real clock-in can have no scheduled match. Keep that person visible, with the actual start only;
   // a matching Today row remains the single row for that person. Retired monitor data supplies no extras.
   const extra = (open ?? []).filter(person => !seen.has(person.employeeId)).filter(person => (seen.add(person.employeeId), true))
     .sort((a, b) => a.clockInAt.localeCompare(b.clockInAt) || a.employeeName.localeCompare(b.employeeName));
   const total = on.length + extra.length;
   const next = shifts.filter(shift => shift.status === "upcoming" || shift.status === "starting").sort(byStart)[0];
-  const places = new Set(shifts.map(shift => shift.locationName)).size > 1;
+  // A row names its place only when the card shows more than one (a single place is named once, on the band or nowhere).
+  const places = new Set([...shifts.map(shift => shift.locationName), ...(open ?? []).map(person => person.locationName)]).size > 1;
   const onClock = [...on.filter(working).map(shift => shift.employeeName), ...extra.map(person => person.employeeName)];
   return <BCard title="Today" id="b-home-on" link={{ href: "/app?view=attendance", label: "See everyone", aria: "See everyone working today" }}>
     <DayChart shifts={shifts} timeZone={timeZone} observedAt={observedAt} />
     {/* Phones: the people on the clock are one row of faces that opens the list of everyone; from 768px each has a row. */}
     {onClock.length ? <div className="b-tdy-faces"><BList label="Clocked in now"><BRow lead={<BFaces names={onClock.slice(0, 4)} />} title={`${onClock.length} clocked in`}
       sub={firstNames(onClock.map(name => name.split(" ")[0]))}
-      href="/app?view=attendance" label={`${onClock.length} clocked in. See everyone working today`} /></BList></div> : null}
+      href="/app?view=attendance" /></BList></div> : null}
     {total ? <BList label="On now">{[...on.map(shift => {
       const waiting = shift.status === "not_clocked_in";
       // Phase 8 (a.md #36): someone still on the clock after their shift ended says so in amber, in the words Employee
@@ -313,7 +315,9 @@ function OnNow({ shifts, open, timeZone, observedAt }: { shifts: TodayShift[]; o
         end={exception ? <BChip tone="amber" dot>{exception}</BChip> : <BStatusText dot={shift.status === "on_break" ? undefined : "green"}>{state}</BStatusText>}
         label={`${shift.employeeName}, ${state}, ${when}${places ? `, ${shift.locationName}` : ""}`} />;
     }), ...extra.map(person => <BRow key={`clock:${person.timeEntryId}`} lead={<BAvatar name={person.employeeName} ring="on" />} title={person.employeeName}
-      sub={keepWhole(`Clocked in ${clockText(person.clockInAt, timeZone)} · ${person.locationName}`)}
+      // Jose (Nov 22, 2026: no wording twice): the row's status already says "Clocked in", so the line says since when
+      // (Who's working's words).
+      sub={keepWhole(places ? `In since ${clockText(person.clockInAt, timeZone)} · ${person.locationName}` : `In since ${clockText(person.clockInAt, timeZone)}`)}
       end={<BStatusText dot={person.state === "ON_BREAK" ? undefined : "green"}>{person.state === "ON_BREAK" ? "On break" : CLOCKED_IN}</BStatusText>} />)].slice(0, ON_NOW_ROWS)}</BList>
       : <p className="b-state">{next ? `Nobody is working right now. Next shift starts ${clockText(next.startAt, timeZone)}.` : "Nobody is working right now."}</p>}
     {/* Premium pass FA (final verification A #22, B #25): the people the card leaves out are one teal action to the list of
@@ -354,7 +358,7 @@ function DayChart({ shifts, timeZone, observedAt }: { shifts: TodayShift[]; time
   const nowAt = day.hours.findIndex(hour => hour.state === "now");
   return <div className="b-tdy">
     <div className="b-kv">
-      <div><b className="c-num">{day.people}</b><span>{day.people === 1 ? "Person today" : "People today"}</span></div>
+      <div><b className="c-num">{day.people}</b><span>{day.people === 1 ? "Person" : "People"}</span></div>
       <div><b className="c-num">{durationTotal(day.minutes).replace(" ", "\u00a0")}</b><span>Scheduled</span></div>
       <div><b className="c-num">{day.peak.people}</b><span>{`Peak, ${hourText(day.peak.at)}`}</span></div>
     </div>
@@ -490,9 +494,11 @@ function ThisWeek({ week, today }: { week: HomeBWeek; today?: string }) {
     <div className="b-wk">
       <div className="b-wk__a">
         <div className="b-kv">
-          <div><b className="c-num">{hoursText(week.scheduledHours)}</b><span>Scheduled</span></div>
+          {/* Jose (Nov 22, 2026: no label twice): Today's card says "Scheduled" and "People"; the week's hours include drafts
+            * (planned), and its people are the staff on the week's schedule. */}
+          <div><b className="c-num">{hoursText(week.scheduledHours)}</b><span>Planned</span></div>
           <div><b className="c-num">{shifts}</b><span>{shifts === 1 ? "Shift" : "Shifts"}</span></div>
-          <div><b className="c-num">{week.people}</b><span>{week.people === 1 ? "Person" : "People"}</span></div>
+          <div><b className="c-num">{week.people}</b><span>Staff</span></div>
         </div>
         {week.coverage ? <CoverageLine coverage={week.coverage} /> : null}
       </div>

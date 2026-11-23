@@ -326,21 +326,46 @@
   }
 }
 
-/* Location Manager Home (Nov 22, 2026; WCAG 1.4.4): Home at 200% text on phones. A shortcut tile's label wraps instead
- * of ending in "…". The band's figures and their labels ("Not set up", "Not clocked in") wrap between words instead of
- * running into the next figure, and Today's three figures move to a second line, only once the text is large for the
- * width: the band and the Today card are size containers measured in rem, which follow the reader's text size (16rem
- * and 15rem are below a 320px phone at the default size, so default layouts don't change). */
+/* Home: alignment, buttons and large text (Jose, Nov 22, 2026: "buttons and text alignment are critical"; WCAG 1.4.4).
+ * - Phones: the band's title, date and figures start on the cards' left edge (the 14px gutter) and the figures end on
+ *   their right edge, as they already do from 768px.
+ * - Shortcut tiles: the icon is centred on the label's first line; a label never wraps or ends in "…": once two tiles
+ *   no longer fit their labels side by side, they stack one per row at full width.
+ * - Band shortcuts (desktop) and the location menu (phones): 44px, the height of every other button on Home.
+ * - Card and row titles wrap in balanced lines, so a title never leaves one word alone.
+ * - Large text only: the band's figures and their labels ("Not set up", "Not clocked in") wrap between words instead of
+ *   running into the next figure, and Today's three figures move to a second line. The band, the shortcuts and the Today
+ *   card are size containers measured in rem, which follow the reader's text size; every threshold is below a 320px
+ *   phone at the default size, so default layouts don't change. */
 @layer nv-b {
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { white-space: normal !important; padding-block: var(--b-space-8) !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { overflow: visible !important; text-overflow: clip !important; overflow-wrap: normal !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { container-type: inline-size; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { align-items: flex-start !important; white-space: nowrap !important; padding-block: max(var(--b-space-8), calc((56px - 1lh) / 2)) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__ic:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { margin-block: calc((1lh - 36px) / 2) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { overflow: visible !important; text-overflow: clip !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen :is(.b-card__h h2, .b-row__tt):not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { text-wrap: balance !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { container-type: inline-size; }
+  @container (max-width: 30rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  }
+  @container (max-width: 18rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { grid-template-columns: minmax(0, 1fr) !important; }
+  }
   @container (max-width: 16rem) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live :is(.b-live__v, .b-live__l):not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { white-space: normal !important; overflow-wrap: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live :is(.b-live__v, .b-live__l):not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { white-space: normal !important; overflow-wrap: normal !important; text-wrap: balance !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live .b-live__l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { align-items: baseline !important; }
   }
   @container (max-width: 15rem) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on .b-kv:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { flex-wrap: wrap !important; row-gap: var(--b-space-12) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on .b-kv > div:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { min-width: min-content !important; }
+  }
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero :is(.b-title, .b-hrow):not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { padding-left: var(--b-gutter) !important; padding-right: var(--b-gutter) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { margin-left: var(--b-gutter) !important; margin-right: var(--b-gutter) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-hrow .b-btn--glass:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { min-height: 44px !important; }
+  }
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__ic:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { margin-block: calc((1lh - 20px) / 2) !important; }
+  }
+  @media (min-width: 1024px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { min-height: 44px !important; }
   }
 }
