@@ -117,3 +117,26 @@ Daniel" above it doesn't scale, so the two no longer match. Nothing overflows or
 commit in `2651a312`, not the page. Whether big band titles should scale fully at 200% is a kit and design call, so I
 left it. Captures: `img/B1-mgr-approved-390-t200.webp` (approved), `img/B1-mgr-loc-390-t200-before-2651a312.webp`,
 `img/B1-mgr-loc-390-t200-after-2651a312.webp`. At 1440 nothing changed.
+
+## Pass 3: the lead's two follow-ups (merged 72d6615b, merge b4ade5da)
+**B3 Notifications (Employee): fixed in `62bb955f`.** Each notification row and folded group drops its hand-built
+aria-label ("Confirm the week of Nov 23, 7 shifts, unread, action needed, …"); the name is now the row's own text
+(title, grey line, chip, time), with the unread dot's meaning as b-sr text in the row ("unread, " / "2 unread, "). The
+Unread tab drops `aria-label="Unread, 9"`; a space before its count (it collapses in the tab's grid) makes its name
+"Unread 9". Production build of `62bb955f`, Employee, 320, 390, 390 with 200% text, 768 and 1440: axe clean at every
+width (was 8 label-content-name-mismatch nodes), no overflow, no overlap. No visible change: at 1440 the only
+pixel difference is the clock column; at 390 with 200% text the rows and tab are identical. The band is 4px shorter
+because of the kit's phone band button in the tip merge, not this commit. Shots:
+`img/B3-employee-{390-t200,1440}-{before,after}-fix.webp`. Tests: `account-b.test.tsx` asserts no row aria-label and the
+b-sr unread text; employee-b and employee-mobile 254 pass; the whole `src/components` suite: 276 files, 3,211 tests, 0
+failures. tsc and oxlint clean.
+
+**D4 My time (Employee, 1440): not a change since approval; left as is.** The band's "This week" and "Breaks" figures
+(`BLive` in `src/components/employee-b/time-b.tsx`) were already there at `7c37af0b` (02:06, before approval). They show
+only when the week has recorded time (`m.week.length`). The approved Employee shot had "nothing recorded yet this week",
+so the strip was hidden there; this run's fictional Employee is clocked in. They say each fact once: the week's total and
+its breaks, against each shift's own hours on the card. On the first worked day the week total equals the one shift
+("1 h 30"), so the number repeats only by coincidence.
+
+Items 3 (A8 and A9 sign-up 404 without commerce) and 4 (the shell's "connection isn't secure" notice on the plain-http
+harness origin) are harness-only, as noted above.

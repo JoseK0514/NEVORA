@@ -1,0 +1,1026 @@
+{
+  "rec": [
+    {
+      "role": "emp",
+      "route": "/app/notifications",
+      "slug": "notifications",
+      "tag": "320",
+      "status": 200,
+      "url": "/app/notifications",
+      "m": {
+        "url": "/app/notifications",
+        "h1": [
+          "Notifications"
+        ],
+        "overflow": 0,
+        "small": [
+          {
+            "el": "button.",
+            "txt": "All",
+            "w": 136,
+            "h": 36,
+            "inline": false
+          },
+          {
+            "el": "button.",
+            "txt": "Unread 9",
+            "w": 136,
+            "h": 36,
+            "inline": false
+          }
+        ],
+        "smallCount": 2,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "New team update · 2 notifications · , 10:55 AM 2 unread, Ack",
+            "name": "Today notifications"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Time off approved · Dec 17–18 · , 6:55 AM Confirm the week o",
+            "name": "Yesterday notifications"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Confirm the week of Nov 23 · 7 shifts · , Nov 19 Action need",
+            "name": "Earlier notifications"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": null,
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·"
+        ],
+        "overlaps": [],
+        "offscreen": [],
+        "spill": [
+          "button. All",
+          "button. Unread 9"
+        ],
+        "layout": {
+          "vw": 320,
+          "main": [
+            0,
+            320
+          ],
+          "page": [
+            0,
+            320
+          ],
+          "widestCard": 292,
+          "cardWidths": [
+            292,
+            290
+          ]
+        },
+        "fontSizes": {
+          "15.5px": 12,
+          "30px": 1,
+          "14px": 3,
+          "12.5px": 1,
+          "17px": 3,
+          "13.5px": 30,
+          "12px": 4
+        },
+        "mainText": "Home\nNotifications\nSettings\nAll\nUnread\n9\nToday\nNew team update\n·\n2 notifications\n·\n,\n10:55 AM\n2 unread,\nAcknowledge the team update\n·\n10:55 AM\nAction needed\nunread,\nTime off declined\n·\nSat, Dec 12\n·\n,\n10:34 AM\nunread,\nYesterday\nTime off approved\n·\nDec 17–18\n·\n,\n6:55 AM\nConfirm the week of Nov 30\n·\n4 shifts\n·\n,\n2 notifications\n·\n,\n5:55 AM\nAction needed\n2 unread,\nEarlier\nConfirm the week of Nov 23\n·\n7 shifts\n·\n,\nNov 19\nAction needed\nunread,\nConfirm the week of Dec 7\n·\n1 shift\n·\n,\n2 notifications\n·\n,\nNov 18\nAction needed\n2 unread,"
+      },
+      "hit": null,
+      "rep": [
+        "2 notifications ×3",
+        "10:55 AM ×2",
+        "2 unread, ×3",
+        "Action needed ×4",
+        "unread, ×3"
+      ]
+    },
+    {
+      "role": "emp",
+      "route": "/app/notifications",
+      "slug": "notifications",
+      "tag": "390",
+      "status": 200,
+      "url": "/app/notifications",
+      "m": {
+        "url": "/app/notifications",
+        "h1": [
+          "Notifications"
+        ],
+        "overflow": 0,
+        "small": [
+          {
+            "el": "button.",
+            "txt": "All",
+            "w": 171,
+            "h": 36,
+            "inline": false
+          },
+          {
+            "el": "button.",
+            "txt": "Unread 9",
+            "w": 171,
+            "h": 36,
+            "inline": false
+          }
+        ],
+        "smallCount": 2,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "New team update · 2 notifications · , 10:55 AM 2 unread, Ack",
+            "name": "Today notifications"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Time off approved · Dec 17–18 · , 6:55 AM Confirm the week o",
+            "name": "Yesterday notifications"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Confirm the week of Nov 23 · 7 shifts · , Nov 19 Action need",
+            "name": "Earlier notifications"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "a.b-btn.b-btn--glass",
+          "txt": "Settings for alerts on this device",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            282,
+            66,
+            88,
+            44
+          ]
+        },
+        {
+          "el": "button.",
+          "txt": "All",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            24,
+            130,
+            171,
+            36
+          ]
+        },
+        {
+          "el": "button.",
+          "txt": "Unread 9",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            195,
+            130,
+            171,
+            36
+          ]
+        },
+        {
+          "el": "button.b-row.b-row--link.eb-notif",
+          "txt": "New team update · 2 notifications · , 10:55 AM 2 u",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            237,
+            360,
+            66
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-notif",
+          "txt": "Acknowledge the team update · 10:55 AM Action need",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            303,
+            360,
+            94
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-notif",
+          "txt": "Time off declined · Sat, Dec 12 · , 10:34 AM unrea",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            397,
+            360,
+            66
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-notif",
+          "txt": "Time off approved · Dec 17–18 · , 6:55 AM",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            523,
+            360,
+            66
+          ]
+        },
+        {
+          "el": "button.b-row.b-row--link.eb-notif",
+          "txt": "Confirm the week of Nov 30 · 4 shifts · , 2 notifi",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            589,
+            360,
+            94
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-notif",
+          "txt": "Confirm the week of Nov 23 · 7 shifts · , Nov 19 A",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            743,
+            360,
+            94
+          ]
+        },
+        {
+          "el": "button.b-row.b-row--link.eb-notif",
+          "txt": "Confirm the week of Dec 7 · 1 shift · , 2 notifica",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            15,
+            837,
+            360,
+            94
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            6,
+            955,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            82,
+            955,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            157,
+            955,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            233,
+            955,
+            76,
+            56
+          ]
+        },
+        {
+          "el": "a.mobile-nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            308,
+            955,
+            76,
+            56
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            141,
+            44
+          ]
+        },
+        {
+          "el": "a.b-back",
+          "txt": "Home",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            14,
+            4,
+            92,
+            44
+          ]
+        }
+      ],
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·"
+        ],
+        "overlaps": [],
+        "offscreen": [],
+        "spill": [
+          "button. All",
+          "button. Unread 9"
+        ],
+        "layout": {
+          "vw": 390,
+          "main": [
+            0,
+            390
+          ],
+          "page": [
+            0,
+            390
+          ],
+          "widestCard": 362,
+          "cardWidths": [
+            362,
+            360
+          ]
+        },
+        "fontSizes": {
+          "15.5px": 8,
+          "30px": 1,
+          "14px": 3,
+          "12.5px": 1,
+          "17px": 3,
+          "13.5px": 30,
+          "12px": 4
+        },
+        "mainText": "Home\nNotifications\nSettings\nAll\nUnread\n9\nToday\nNew team update\n·\n2 notifications\n·\n,\n10:55 AM\n2 unread,\nAcknowledge the team update\n·\n10:55 AM\nAction needed\nunread,\nTime off declined\n·\nSat, Dec 12\n·\n,\n10:34 AM\nunread,\nYesterday\nTime off approved\n·\nDec 17–18\n·\n,\n6:55 AM\nConfirm the week of Nov 30\n·\n4 shifts\n·\n,\n2 notifications\n·\n,\n5:55 AM\nAction needed\n2 unread,\nEarlier\nConfirm the week of Nov 23\n·\n7 shifts\n·\n,\nNov 19\nAction needed\nunread,\nConfirm the week of Dec 7\n·\n1 shift\n·\n,\n2 notifications\n·\n,\nNov 18\nAction needed\n2 unread,"
+      },
+      "hit": null,
+      "rep": [
+        "2 notifications ×3",
+        "10:55 AM ×2",
+        "2 unread, ×3",
+        "Action needed ×4",
+        "unread, ×3"
+      ]
+    },
+    {
+      "role": "emp",
+      "route": "/app/notifications",
+      "slug": "notifications",
+      "tag": "390-text200",
+      "status": 200,
+      "url": "/app/notifications",
+      "m": {
+        "url": "/app/notifications",
+        "h1": [
+          "Notifications"
+        ],
+        "overflow": 0,
+        "small": [],
+        "smallCount": 0,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "New team update · 2 notifications · , 10:55 AM 2 unread, Ack",
+            "name": "Today notifications"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Time off approved · Dec 17–18 · , 6:55 AM Confirm the week o",
+            "name": "Yesterday notifications"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Confirm the week of Nov 23 · 7 shifts · , Nov 19 Action need",
+            "name": "Earlier notifications"
+          }
+        ]
+      },
+      "fixed": {
+        "button.": {
+          "n": 2,
+          "size": "14px→20px",
+          "txt": "All"
+        }
+      },
+      "axe": [],
+      "focus": null,
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·"
+        ],
+        "overlaps": [],
+        "offscreen": [],
+        "spill": [
+          "button. All",
+          "button. Unread 9"
+        ],
+        "layout": {
+          "vw": 390,
+          "main": [
+            0,
+            390
+          ],
+          "page": [
+            0,
+            390
+          ],
+          "widestCard": 362,
+          "cardWidths": [
+            362,
+            360
+          ]
+        },
+        "fontSizes": {
+          "31px": 16,
+          "60px": 1,
+          "28px": 1,
+          "20px": 2,
+          "25px": 1,
+          "34px": 3,
+          "27px": 30,
+          "24px": 4
+        },
+        "mainText": "Home\nNotifications\nSettings\nAll\nUnread\n9\nToday\nNew team update\n·\n2 notifications\n·\n,\n10:55 AM\n2 unread,\nAcknowledge the team update\n·\n10:55 AM\nAction needed\nunread,\nTime off declined\n·\nSat, Dec 12\n·\n,\n10:34 AM\nunread,\nYesterday\nTime off approved\n·\nDec 17–18\n·\n,\n6:55 AM\nConfirm the week of Nov 30\n·\n4 shifts\n·\n,\n2 notifications\n·\n,\n5:55 AM\nAction needed\n2 unread,\nEarlier\nConfirm the week of Nov 23\n·\n7 shifts\n·\n,\nNov 19\nAction needed\nunread,\nConfirm the week of Dec 7\n·\n1 shift\n·\n,\n2 notifications\n·\n,\nNov 18\nAction needed\n2 unread,"
+      },
+      "hit": null,
+      "rep": [
+        "2 notifications ×3",
+        "10:55 AM ×2",
+        "2 unread, ×3",
+        "Action needed ×4",
+        "unread, ×3"
+      ]
+    },
+    {
+      "role": "emp",
+      "route": "/app/notifications",
+      "slug": "notifications",
+      "tag": "768",
+      "status": 200,
+      "url": "/app/notifications",
+      "m": {
+        "url": "/app/notifications",
+        "h1": [
+          "Notifications"
+        ],
+        "overflow": 0,
+        "small": [
+          {
+            "el": "button.",
+            "txt": "All",
+            "w": 50,
+            "h": 36,
+            "inline": false
+          },
+          {
+            "el": "button.",
+            "txt": "Unread 9",
+            "w": 101,
+            "h": 36,
+            "inline": false
+          }
+        ],
+        "smallCount": 2,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "New team update · 2 notifications 2 unread, 10:55 AM Acknowl",
+            "name": "Today notifications"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Time off approved · Dec 17–18 6:55 AM Confirm the week of No",
+            "name": "Yesterday notifications"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Confirm the week of Nov 23 · 7 shifts Action needed unread, ",
+            "name": "Earlier notifications"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": null,
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·"
+        ],
+        "overlaps": [],
+        "offscreen": [],
+        "spill": [
+          "button. All",
+          "button. Unread 9"
+        ],
+        "layout": {
+          "vw": 768,
+          "main": [
+            80,
+            688
+          ],
+          "page": [
+            108,
+            632
+          ],
+          "widestCard": 632,
+          "cardWidths": [
+            632,
+            630
+          ]
+        },
+        "fontSizes": {
+          "32px": 1,
+          "15.5px": 8,
+          "14px": 2,
+          "12.5px": 1,
+          "17px": 3,
+          "13.5px": 23,
+          "12px": 4
+        },
+        "mainText": "Notifications\nSettings\nAll\nUnread\n9\nToday\nNew team update\n·\n2 notifications\n2 unread,\n10:55 AM\nAcknowledge the team update\nAction needed\nunread,\n10:55 AM\nTime off declined\n·\nSat, Dec 12\nunread,\n10:34 AM\nYesterday\nTime off approved\n·\nDec 17–18\n6:55 AM\nConfirm the week of Nov 30\n·\n4 shifts\n·\n,\n2 notifications\nAction needed\n2 unread,\n5:55 AM\nEarlier\nConfirm the week of Nov 23\n·\n7 shifts\nAction needed\nunread,\nNov 19, 3:55 AM\nConfirm the week of Dec 7\n·\n1 shift\n·\n,\n2 notifications\nAction needed\n2 unread,\nNov 18, 2:55 AM"
+      },
+      "hit": null,
+      "rep": [
+        "2 notifications ×3",
+        "2 unread, ×3",
+        "10:55 AM ×2",
+        "Action needed ×4",
+        "unread, ×3"
+      ]
+    },
+    {
+      "role": "emp",
+      "route": "/app/notifications",
+      "slug": "notifications",
+      "tag": "1440",
+      "status": 200,
+      "url": "/app/notifications",
+      "m": {
+        "url": "/app/notifications",
+        "h1": [
+          "Notifications"
+        ],
+        "overflow": 0,
+        "small": [
+          {
+            "el": "button.",
+            "txt": "All",
+            "w": 50,
+            "h": 36,
+            "inline": false
+          },
+          {
+            "el": "button.",
+            "txt": "Unread 9",
+            "w": 101,
+            "h": 36,
+            "inline": false
+          }
+        ],
+        "smallCount": 2,
+        "mismatch": [
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "New team update · 2 notifications 2 unread, 10:55 AM Acknowl",
+            "name": "Today notifications"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Time off approved · Dec 17–18 6:55 AM Confirm the week of No",
+            "name": "Yesterday notifications"
+          },
+          {
+            "el": "ul.b-list",
+            "role": null,
+            "visible": "Confirm the week of Nov 23 · 7 shifts Action needed unread, ",
+            "name": "Earlier notifications"
+          }
+        ]
+      },
+      "fixed": null,
+      "axe": [],
+      "focus": [
+        {
+          "el": "a.b-btn.b-btn--glass",
+          "txt": "Settings for alerts on this device",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1010,
+            83,
+            98,
+            48
+          ]
+        },
+        {
+          "el": "button.",
+          "txt": "All",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            300,
+            152,
+            50,
+            36
+          ]
+        },
+        {
+          "el": "button.",
+          "txt": "Unread 9",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            350,
+            152,
+            101,
+            36
+          ]
+        },
+        {
+          "el": "button.b-row.b-row--link.eb-notif",
+          "txt": "New team update · 2 notifications 2 unread, 10:55 ",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            297,
+            810,
+            67
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-notif",
+          "txt": "Acknowledge the team update Action needed unread, ",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            364,
+            810,
+            70
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-notif",
+          "txt": "Time off declined · Sat, Dec 12 unread, 10:34 AM",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            434,
+            810,
+            67
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-notif",
+          "txt": "Time off approved · Dec 17–18 6:55 AM",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            575,
+            810,
+            67
+          ]
+        },
+        {
+          "el": "button.b-row.b-row--link.eb-notif",
+          "txt": "Confirm the week of Nov 30 · 4 shifts · , 2 notifi",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            642,
+            810,
+            70
+          ]
+        },
+        {
+          "el": "a.b-row.b-row--link.eb-notif",
+          "txt": "Confirm the week of Nov 23 · 7 shifts Action neede",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            786,
+            810,
+            70
+          ]
+        },
+        {
+          "el": "button.b-row.b-row--link.eb-notif",
+          "txt": "Confirm the week of Dec 7 · 1 shift · , 2 notifica",
+          "inMain": true,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off -2px",
+          "r": [
+            297,
+            856,
+            810,
+            70
+          ]
+        },
+        null,
+        {
+          "el": "a.portal-skip-link",
+          "txt": "Skip to content",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(11, 110, 105) off 2px",
+          "r": [
+            12,
+            12,
+            126,
+            44
+          ]
+        },
+        {
+          "el": "a.brand.sidebar-brand",
+          "txt": "NEVORA Workforce home",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            6,
+            148,
+            64
+          ]
+        },
+        {
+          "el": "button.sidebar-toggle",
+          "txt": "Collapse sidebar",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            172,
+            6,
+            44,
+            44
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Home",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            175,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Schedule",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            217,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Time",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            259,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Pay",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            301,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Requests",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            343,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.nav-link",
+          "txt": "Updates",
+          "inMain": false,
+          "ring": false,
+          "outline": "none",
+          "r": [
+            16,
+            433,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "a.sidebar-help-link",
+          "txt": "Help",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(8, 80, 76) off -2px",
+          "r": [
+            16,
+            898,
+            200,
+            40
+          ]
+        },
+        {
+          "el": "button.command-finder-trigger",
+          "txt": "Search Ctrl K",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            895,
+            10,
+            280,
+            44
+          ]
+        },
+        {
+          "el": "a.portal-notification-bell",
+          "txt": "Notifications, 9 unread in your recent inbox",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1185,
+            12,
+            40,
+            40
+          ]
+        },
+        {
+          "el": "button.button.ghost.nevora-action-menu-trigger",
+          "txt": "James Ortiz, account menu",
+          "inMain": false,
+          "ring": true,
+          "outline": "2px rgb(255, 255, 255) off 2px",
+          "r": [
+            1235,
+            12,
+            165,
+            40
+          ]
+        }
+      ],
+      "g": {
+        "docOverflow": 0,
+        "clipped": [
+          "span.eb-dots x: ·"
+        ],
+        "overlaps": [],
+        "offscreen": [],
+        "spill": [
+          "button. All",
+          "button. Unread 9"
+        ],
+        "layout": {
+          "vw": 1440,
+          "main": [
+            232,
+            1208
+          ],
+          "page": [
+            296,
+            1080
+          ],
+          "widestCard": 812,
+          "cardWidths": [
+            812,
+            810
+          ]
+        },
+        "fontSizes": {
+          "32px": 1,
+          "15.5px": 8,
+          "14px": 2,
+          "12.5px": 1,
+          "17px": 3,
+          "13.5px": 23,
+          "12px": 4
+        },
+        "mainText": "Notifications\nSettings\nAll\nUnread\n9\nToday\nNew team update\n·\n2 notifications\n2 unread,\n10:55 AM\nAcknowledge the team update\nAction needed\nunread,\n10:55 AM\nTime off declined\n·\nSat, Dec 12\nunread,\n10:34 AM\nYesterday\nTime off approved\n·\nDec 17–18\n6:55 AM\nConfirm the week of Nov 30\n·\n4 shifts\n·\n,\n2 notifications\nAction needed\n2 unread,\n5:55 AM\nEarlier\nConfirm the week of Nov 23\n·\n7 shifts\nAction needed\nunread,\nNov 19, 3:55 AM\nConfirm the week of Dec 7\n·\n1 shift\n·\n,\n2 notifications\nAction needed\n2 unread,\nNov 18, 2:55 AM"
+      },
+      "hit": null,
+      "rep": [
+        "2 notifications ×3",
+        "2 unread, ×3",
+        "10:55 AM ×2",
+        "Action needed ×4",
+        "unread, ×3"
+      ]
+    }
+  ],
+  "log": []
+}
