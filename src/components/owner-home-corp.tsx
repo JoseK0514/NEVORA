@@ -31,7 +31,6 @@ import { OWNER_HOME_COPY } from "./owner-home-copy";
 
 const working = (shift: TodayShift) => shift.status === "clocked_in" || shift.status === "on_break";
 const people = (shifts: TodayShift[]) => new Set(shifts.map(shift => shift.employeeId)).size;
-const t = reviewCopy();
 
 
 export type OwnerHomeCorpProps = {
@@ -165,7 +164,7 @@ const nextDay = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86_
  * review only for periods that have ended; and it never says "approved" (an empty list can mean none were recorded) or
  * claims anything while the read is loading or has failed. Owner payroll preparation facts use the same card. */
 function PaydayCard({ nextPay, payrollStatus, timecards, ready, connection, businessDay }: { nextPay?: NextPay; payrollStatus?: HomePayrollStatus | null; timecards: ActionItem[]; ready: boolean; connection: ActionCenterConnection; businessDay?: string }) {
-  const h = OWNER_HOME_COPY[usePortalLang()], dayName = h.dayName;
+  const lang = usePortalLang(), h = OWNER_HOME_COPY[lang], dayName = h.dayName, t = reviewCopy(lang);
   const payrollNeedsAttention = payrollStatus?.state === 'unavailable' || (payrollStatus?.state === 'ready' && (payrollStatus.overdue || payrollStatus.reviewRequired));
   if (!nextPay && !payrollNeedsAttention && !(ready && timecards.length)) return null;
   // "Tue, Nov 3" with how far away it is in grey ("Tomorrow", "In 3 days"); the card's label already says Payday.
@@ -213,6 +212,7 @@ function PaydayCard({ nextPay, payrollStatus, timecards, ready, connection, busi
  * clock-in and open shifts stay in Today above, so no count shows twice. The header carries no total: each row says what
  * it counts, and the full page and the sidebar keep the one shared total. Each row opens where the decision is made. */
 function ThingsToDo({ value, connection, offline, onRetryActions, setup, setupCard, today }: OwnerHomeCorpProps) {
+  const t = reviewCopy(usePortalLang());
   const h = OWNER_HOME_COPY[usePortalLang()];
   if (!value) {
     const busy = connection === "loading" || connection === "reconnecting";
