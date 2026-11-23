@@ -42,13 +42,12 @@ The access frame's own states (checking, paused, needs a fresh check, couldn't c
 they show only for a moment in the browser, so they weren't captured.
 
 ## Still English on these screens (other sessions' files)
-- Week grid `manager-weekly-roster`, `components/schedule/*` (generation and publication controls, copy form, print), the
-  shift form `ScheduleShiftForm`, Find cover and Review replacement (`CoverageAssistant`, `CoverageReview`), `RulesSaveForm`
-  and the other rules fields, `TemplateFeedback`, `Celebration`, `HeldReviewNote`, `LeaveRepairNote`.
+- (Second pass, below: the week grid, the shift form, Find cover, Review replacement and `ManagerShiftRequests` are now
+  Spanish.)
 - Employee and Lead phone views: `ResponsiveEmployeeRequests` / `ResponsiveEmployeeExchange`, `SwapPageContent`,
   `CalloutView`, `ResponsiveEmployeeCreation`, `ShiftChangeForm`, `ShiftChangeHistory`, the Lead's compose (employee-mobile).
 - Shell (nav, tab bar, "Loading {label}…" from `RouteSkeleton`), `TeamB`'s band, `BRouteLoading`, `ManagerMessagesPage`
-  chrome, `ManagerShiftRequests` (the Manager's exchange page), `EmploymentDateFields`, `FormHead`, `ChoiceField`.
+  chrome, `EmploymentDateFields`, `FormHead`, `ChoiceField`.
 - Library messages: `schedulingIssueMessage`, the conflict errors, `momentsCopy('es')` (uses usted: "Su equipo…"), the
   reminder copy (uses usted). Both need tú; they belong to the owner-b and reminders rows.
 - `QuietPage` has no `lang` prop, so the Employee exchange page can't set `lang="es"` (one line in `quiet/quiet.tsx`).
@@ -79,3 +78,54 @@ they show only for a moment in the browser, so they weren't captured.
 cancelada", "Crear y publicar" (Build and publish), "Disponibles" for the Open shifts tab (to fit three tabs at 390),
 "Turnos disponibles publicados" (Posted open shifts, about 60% longer), "Aceptar intercambio" (voice.md forbids a bare
 "Aceptar"). "Ustedes" appears only where a swap message speaks to both people (voice.md allows it for a group).
+
+## Second pass: the rest of the Schedule tools (Nov 23, evening)
+Staff's tip merged first (`746074e3`, then `c9ba77d8` merged at `a2617040`; the newer tip carries staff's fix to
+`management-close-card.test.ts`, which read English words from the Timecards form after the Spanish merge).
+
+| Commit | What |
+|---|---|
+| `215fe886` | Week grid `manager-weekly-roster.tsx` in Spanish in all four views (desktop people × days grid, phone day card, Direction B phone, Quiet list): `manager-weekly-roster-copy.ts` (about 100 strings, screen-reader text included), dates and times through `schedule-copy.ts` ("lun, 23 nov", "6:00 a. m."). Spanish-only fix: the amber "missed" chip compared against the English word; it now reads the Spanish table |
+| `2479d906` (merge `bcd72494`) | Shift requests `manager-shift-requests.tsx` in Spanish: `manager-shift-requests-copy.ts` (tabs, kind chips, facts, help lines such as "Approving gives this shift…", history, Decline/Approve/Close questions, empty states, the closed card); `/app/exchange` reads the language once in its manager branch. Reuses `exchange-copy`/`shift-copy` lines; passes `review-details` a Spanish copy with tú and the glossary (that file still says "Inténtelo", "Su tarjeta", "cobertura" on other screens) |
+| `d96e6831` | Week grid "Find cover" reads "Buscar cobertura", the title of the page it opens (Find cover, Owner Home) |
+
+The shift form (Add shift), Find cover and Review replacement were already Spanish from `coverage-copy.ts` and
+`components/schedule-copy.ts`; the browser check below confirms it.
+
+### Checks
+- `tsc`, oxlint on every changed file, `src/components` + `src/app/app/{schedule,exchange}`: 4,082 tests, 0 failures. New
+  tests: key, kind and argument-count match per table, no "¡", no usted, glossary, plurals, Spanish dates and times, and
+  Spanish render tests for the four roster views and the three Shift requests tabs (English output unchanged).
+- Browser (held development build, fictional data, saved language Spanish), 390, 390 with 200% text, 1440, axe:
+
+| Screen | Person | Sideways scroll | Overlap | axe | English words left |
+|---|---|---|---|---|---|
+| Schedule week grid | Owner, Daniel | none | 0 at 390 and 390 200%; 1440 flags are hidden text (see below) | 0 | 0 (35 at 390, 90–190 at 1440 before) |
+| Add shift | Owner | none | 0 | 0 | 0 |
+| Find cover | Owner | none | 0 | 0 | 0 |
+| Review replacement | Owner | none | 0 | 0 | 0 |
+| Shift requests | Owner, Elena | none | 0 | 0 | 0 |
+
+- The 1440 week grid's overlap flags are the phone coverage line and segments (`display:none` on desktop) and the grid
+  bar's "Cubierto esta semana" summary, which sits under the grid's header cell in a 0-height bar (same element in
+  English; nothing visible). One "esta semana" flag is a 1px screen-reader span.
+- At 390 with 200% text the Shift requests tabs wrap to two lines and "Terminadas" breaks with a hyphen ("Termi-nadas");
+  at the default size all three fit on one line. The tabs are the kit's segments (13px, can't grow); a shorter word for
+  Done would lose meaning, so it's left for the kit's 200% segment work (G88).
+- Shots `shots/es-screens-final/`: `owner-week-*`, `daniel-week-*`, `owner-add-shift-*`, `owner-find-cover-*`,
+  `owner-review-*`, `owner-requests-*`, `elena-requests-*` (`-1440`, `-390`, `-390-200`, first viewport).
+
+### Left in English (server data)
+Role and position names, the server's availability notices on Shift requests ("Needs Owner rule review"; the publish link
+matches the English text), and unknown status codes shown as they come.
+
+### For Jose to review (second pass)
+- Hour limits on the week grid: "4 h por encima del límite de 40 h", "12 de 30 h de meta", "12 de 40 h de límite", the
+  short " · 4 h sobre 40 h", and "16 h asignadas esta semana".
+- "Al aprobar, el turno sale de su horario. Todavía necesitará a alguien que lo cubra." (can't-work approval)
+- "Ausencia aprobada" / "Ausencia rechazada" / "¿Rechazar esta ausencia?" (kept from review-details; "ausencia" isn't in
+  the glossary).
+- History steps: Creada, Aceptada, Completada, Rechazada, Retirada, Vencida, "Enviada a un gerente", Desactualizada.
+- Glossary deviations to fit 390: the Open cover tab is "Por cubrir"; the cover request chip is "Reemplazo" (the full
+  "Solicitud de reemplazo" is used in sentences and labels); grid chip "4 disponibles" (was "4 open").
+- No payroll, tax or legal lines on these screens.
