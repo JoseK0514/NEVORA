@@ -140,6 +140,9 @@ it('connects original shift reviews and explicit period history in owned Chromiu
 
         if (actor === 'UI-COMPANY') {
           await visit('/app/payroll-export?start=' + period.startDate + '&end=' + period.endDate);
+          await page.getByRole('heading', { name: 'Time exports', exact: true }).filter({ visible: true }).waitFor();
+          await page.waitForLoadState('networkidle');
+          await expect.poll(() => pendingRouterRequests.size, { timeout: 20000 }).toBe(0);
           await page.getByText(/^(Who’s included and sent files|Export history)$/).filter({ visible: true }).click();
           const mobile = page.getByRole('button', { name: 'Choose who’s included', exact: true });
           await mobile.click();
