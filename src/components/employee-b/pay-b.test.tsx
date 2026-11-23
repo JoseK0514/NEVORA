@@ -49,8 +49,9 @@ it('P2: a replaced statement reads "Earlier version" under its correction, not a
   // The correction keeps its date and "Corrected".
   expect(rows[0]).toContain('<span class="b-row__tt">Fri, Nov 13</span>');expect(rows[0]).toContain('Corrected');expect(rows[0]).toContain('For work Nov 2–8');
   // The one it replaced: no date title, no chip, the correction's payday in its line.
-  expect(rows[1]).toContain('<span class="b-row__tt"><span class="ep-muted">Earlier version</span></span>');expect(rows[1]).toContain('<span class="b-row__s">Replaced by the Nov 13 correction</span>');
-  expect(rows[1]).not.toContain('b-chip');expect(rows[1]).not.toContain('>Fri, Nov 13<');
+  // Batch 1 item 8: it keeps its payday, muted, and says once that it is the earlier version.
+  expect(rows[1]).toContain('<span class="b-row__tt"><span class="ep-muted">Fri, Nov 13</span></span>');expect(rows[1]).toContain('<span class="b-row__s">Earlier version · replaced by a correction</span>');
+  expect(rows[1]).not.toContain('b-chip');
   // Sweep 1: the link's name is its visible text (no aria-label that differs from it).
   expect(rows[1]).not.toContain('aria-label=');
   // The correction is not in the list this screen holds: the row keeps its date and "Replaced".
