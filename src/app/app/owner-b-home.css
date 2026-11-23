@@ -418,3 +418,11 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds1)::after { inset: -4px 0 !important; }
   }
 }
+
+/* Target size (release, Nov 23): Team's four filters are two rows of two with an 8px row gap. Each pill's 4px ring meets
+ * the other row's at the gap's midline, and the second row, later in the page, won that boundary, so the first row reached
+ * a sub-pixel under 44px below its centre. The first row sits above the second (z-index only), so each pill's ring is its
+ * own: 36 + 2 × 4 = 44 for both rows. Nothing drawn moves. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:has(> :nth-child(4)) > button:nth-child(-n+2):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 1 !important; }
+}
