@@ -95,3 +95,17 @@ Every test that asserts BLive markup (`b-live__v`) passes: b-kit-labels, employe
   sub line-height is fixed. (b) On Employee Time off at 390 with 200% text, a row's time reads "9:00 AM – :00 PM", with
   the hour cut. (c) If segment labels should grow with text, `--b-seg-fs` would need to move to rem; that is a visible
   change at 200% and needs a decision.
+
+## Follow-up 3: segment text and band subtitle in rem (lead's decision, 13:45 UTC)
+- `735e06ee` + `b171c7fd`: `--b-seg-fs` is `min(0.875rem, 20px)` (narrow phones `min(0.78125rem, 18px)`): 14px at the
+  default size, growing with text up to 20px. Uncapped 0.875rem (28px at 200%) made "Approved" wider than a third of the
+  390px Time off track, so the labels ran together and the "5" count was pushed out (axe overlap 3). With the cap there
+  is no overlap at 390 or 768, and two-word labels ("Open cover") wrap and the track grows. iOS segmented controls cap
+  their text at large accessibility sizes in the same way.
+- `1c23591e`: the band subtitle (`.c-title__sub`, `.q-hd > p`, from 768px, `owner-b-desktop.css`) has line-height
+  1.3125rem (21px at the default size). At 768 with 200% text the subtitle lines of Payroll and Timecards no longer
+  overlap (Timecards: 5 overlaps → 0; Payroll's title overlap is gone).
+- Default size, before and after, 390/768/1440: Payroll, Things to do and Time off (390, 768) are identical; the rest
+  differs only in live minutes, "x min ago" and the bell's dot.
+- Still flagged at 200% text (page markup, not kit): Payroll's step titles (`.b-step__t`) and the Timecards team rows at
+  390, and Shift requests' `dt` and facts lines (25 overlaps before and after).
