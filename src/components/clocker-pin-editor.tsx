@@ -16,7 +16,9 @@ function backOf(origin:PinOrigin,employeeId:string,name:string,lang:ClockerOwner
 export function ClockerPinEditor({employeeId,name,initialVersion,action,checkStatus,origin='person',lang='en'}:{employeeId:string;name:string;initialVersion:number;
  action:(data:FormData)=>Promise<PinActionResult>;checkStatus:(data:FormData)=>Promise<PinSaveStatus>;origin?:PinOrigin;lang?:ClockerOwnerLang}){
  const t=clockerOwnerCopy[lang],back=backOf(origin,employeeId,name,lang);
- return <SettingsFrame className="ck-owner ck-pin" back={back} settingsCrumb={false} title={t.pinTitle} summary={name}>
+ // Phase 2 gate (Nov 23): the card's heading already names the person ("Set a PIN for …"), so no line under the title
+ // repeats the name.
+ return <SettingsFrame className="ck-owner ck-pin" back={back} settingsCrumb={false} title={t.pinTitle}>
   <div className="ck-stack"><ClockerPinForm employeeId={employeeId} name={name} initialVersion={initialVersion} action={action} checkStatus={checkStatus} origin={origin} lang={lang}/></div>
  </SettingsFrame>;
 }
