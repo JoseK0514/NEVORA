@@ -1,0 +1,520 @@
+[
+ {
+  "id": "ds6-schedule",
+  "row": "DS-6",
+  "page": "Schedule",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "The week grid's text, the location menu and the week state now grow with the reader's text. At large text the grid's columns widen and the grid scrolls sideways inside its own box; the page doesn't.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/schedule-owner-390-200pct-before.webp",
+    "after": "img/schedule-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/schedule-owner-390-default.webp"
+   },
+   {
+    "label": "Tablet landscape 200% text",
+    "before": "img/schedule-owner-1024-200pct-before.webp",
+    "after": "img/schedule-owner-1024-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Tablet landscape default size",
+    "after": "img/schedule-owner-1024-default.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/schedule-owner-1440-200pct-before.webp",
+    "after": "img/schedule-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/schedule-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds7-addshift",
+  "row": "DS-7",
+  "page": "Add shift",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "The \"Add shift\" title and the \"Save shift\" button now grow with text. Same look at the default size.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/schedule-new-owner-390-200pct-before.webp",
+    "after": "img/schedule-new-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/schedule-new-owner-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/schedule-new-owner-1440-200pct-before.webp",
+    "after": "img/schedule-new-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/schedule-new-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds7-publish",
+  "row": "DS-7",
+  "page": "Build and publish",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "The title, the week and the buttons now grow with text.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/schedule-publish-owner-390-200pct-before.webp",
+    "after": "img/schedule-publish-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/schedule-publish-owner-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/schedule-publish-owner-1440-200pct-before.webp",
+    "after": "img/schedule-publish-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/schedule-publish-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds8-corrections",
+  "row": "DS-8",
+  "page": "Time corrections",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "The Recorded and Asked for times, the change pill and the reason now grow with text, and the phone subtitle too.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/timecards-corrections-owner-390-200pct-before.webp",
+    "after": "img/timecards-corrections-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/timecards-corrections-owner-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/timecards-corrections-owner-1440-200pct-before.webp",
+    "after": "img/timecards-corrections-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/timecards-corrections-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds11-profile",
+  "row": "DS-11",
+  "page": "Profile",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "\"Edit\" and the row values (phone number, region, alerts) now grow with text. The same rules cover device alerts and passkeys.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/profile-owner-390-200pct-before.webp",
+    "after": "img/profile-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/profile-owner-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/profile-owner-1440-200pct-before.webp",
+    "after": "img/profile-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/profile-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds4-settings",
+  "row": "DS-4",
+  "page": "Settings",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "Row titles keep the one-line ellipsis at the default size and wrap onto a second line once text is enlarged (\"Clocker tablets\", \"Features and team terms\").",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/settings-owner-390-200pct-before.webp",
+    "after": "img/settings-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/settings-owner-390-default.webp"
+   },
+   {
+    "label": "Tablet landscape 200% text",
+    "before": "img/settings-owner-1024-200pct-before.webp",
+    "after": "img/settings-owner-1024-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Tablet landscape default size",
+    "after": "img/settings-owner-1024-default.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/settings-owner-1440-200pct-before.webp",
+    "after": "img/settings-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/settings-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds5-team",
+  "row": "DS-5",
+  "page": "Team",
+  "section": "Desktop and phone at 200% text",
+  "role": "Owner",
+  "note": "Row details (\"Front counter · Calle Loíza\") keep the one-line ellipsis at the default size and wrap once text is enlarged.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/employees-owner-390-200pct-before.webp",
+    "after": "img/employees-owner-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/employees-owner-390-default.webp"
+   },
+   {
+    "label": "Tablet landscape 200% text",
+    "before": "img/employees-owner-1024-200pct-before.webp",
+    "after": "img/employees-owner-1024-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Tablet landscape default size",
+    "after": "img/employees-owner-1024-default.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/employees-owner-1440-200pct-before.webp",
+    "after": "img/employees-owner-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/employees-owner-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds9-swap",
+  "row": "DS-9",
+  "page": "Swap",
+  "section": "Desktop and phone at 200% text",
+  "role": "Employee",
+  "note": "The card's date line (\"Mon, Nov 23\") and the Confirm button now grow with text.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/exchange-swap-employee-390-200pct-before.webp",
+    "after": "img/exchange-swap-employee-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/exchange-swap-employee-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/exchange-swap-employee-1440-200pct-before.webp",
+    "after": "img/exchange-swap-employee-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/exchange-swap-employee-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds9-callout",
+  "row": "DS-9",
+  "page": "Call out",
+  "section": "Desktop and phone at 200% text",
+  "role": "Employee",
+  "note": "Same as Swap: the date line and the Confirm button grow with text.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/exchange-callout-employee-390-200pct-before.webp",
+    "after": "img/exchange-callout-employee-390-200pct-after.webp"
+   },
+   {
+    "label": "Phone default size",
+    "after": "img/exchange-callout-employee-390-default.webp"
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/exchange-callout-employee-1440-200pct-before.webp",
+    "after": "img/exchange-callout-employee-1440-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop default size",
+    "after": "img/exchange-callout-employee-1440-default.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds14-weekstrip",
+  "row": "DS-14",
+  "page": "Employee Schedule (week strip)",
+  "section": "Kit follow-ups at 200% text",
+  "role": "Employee",
+  "note": "The week strip's day names (Mon, Tue…) now grow with text everywhere the strip appears. Same size at the default.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/k-schedule-employee-390-200pct-before.webp",
+    "after": "img/k-schedule-employee-390-200pct-after.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds16-chip",
+  "row": "DS-16",
+  "page": "Swap",
+  "section": "Kit follow-ups at 200% text",
+  "role": "Employee",
+  "note": "\"Action needed\" wraps instead of being cut once text is enlarged; one line at the default size.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/k-exchange-swap-employee-390-200pct-before.webp",
+    "after": "img/k-exchange-swap-employee-390-200pct-after.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds17-teamfilters",
+  "row": "DS-17, DS-18",
+  "page": "Team",
+  "section": "Kit follow-ups at 200% text",
+  "role": "Owner",
+  "note": "With enlarged text the four filters wrap like the phone's pills, so \"Off today\" no longer runs off the edge; \"See all\" grows with text. One row at the default size.",
+  "shots": [
+   {
+    "label": "Tablet landscape 200% text",
+    "before": "img/k-employees-owner-1024-200pct-before.webp",
+    "after": "img/k-employees-owner-1024-200pct-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop 200% text",
+    "before": "img/k-employees-owner-1440-200pct-before.webp",
+    "after": "img/k-employees-owner-1440-200pct-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "ds19-availability",
+  "row": "DS-19",
+  "page": "Build and publish",
+  "section": "Kit follow-ups at 200% text",
+  "role": "Owner",
+  "note": "The \"Availability\" value now grows with text on the phone.",
+  "shots": [
+   {
+    "label": "Phone 200% text",
+    "before": "img/k-schedule-publish-owner-390-200pct-before.webp",
+    "after": "img/k-schedule-publish-owner-390-200pct-after.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "t44-tabs",
+  "row": "Target size",
+  "page": "Timecards week control, Payroll tabs",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "The band's tabs keep their 36px look; a tap anywhere in the 44px track (4px above and below) now reaches the tab.",
+  "shots": [
+   {
+    "label": "Desktop",
+    "before": "img/t44-timecards-owner-1440-before.webp",
+    "after": "img/t44-timecards-owner-1440-after.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone",
+    "before": "img/t44-timecards-owner-390-before.webp",
+    "after": "img/t44-timecards-owner-390-after.webp"
+   },
+   {
+    "label": "Desktop",
+    "before": "img/t44-payroll-owner-1440-before.webp",
+    "after": "img/t44-payroll-owner-1440-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "t44-formhead",
+  "row": "Target size",
+  "page": "Add person (form head back link)",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "\"‹ Team\" looks the same; its tap area is now 44px tall.",
+  "shots": [
+   {
+    "label": "Desktop",
+    "before": "img/t44-employees-new-owner-1440-before.webp",
+    "after": "img/t44-employees-new-owner-1440-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "t44-explain",
+  "row": "Target size",
+  "page": "Schedule (What this measures)",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "The 44px ring around \"What this measures\" was sitting half above the button; it is centred now. Nothing drawn changes.",
+  "shots": [
+   {
+    "label": "Phone",
+    "before": "img/t44-schedule-owner-390-before.webp",
+    "after": "img/t44-schedule-owner-390-after.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "t44-checkbox",
+  "row": "Target size",
+  "page": "Timecards, Select",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "Each review checkbox's tap area is 44px wide on desktop (it was 32); the box stays where it was.",
+  "shots": [
+   {
+    "label": "Desktop",
+    "after": "img/t44-timecards-lastweek-select-owner-1440-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "t44-grid",
+  "row": "Target size",
+  "page": "Schedule week grid",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "The open-shift chips (36px) and an empty cell's \"+ Add\" (24px) look the same; each now has a 44px tall tap area inside its own cell from 768px.",
+  "shots": [
+   {
+    "label": "Tablet",
+    "before": "img/t44b-schedule-owner-768-before.webp",
+    "after": "img/t44b-schedule-owner-768-after.webp"
+   },
+   {
+    "label": "Desktop",
+    "before": "img/t44b-schedule-owner-1440-before.webp",
+    "after": "img/t44b-schedule-owner-1440-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "t44-payhistory",
+  "row": "Target size",
+  "page": "Payroll",
+  "section": "44px targets (first release)",
+  "role": "Owner",
+  "note": "\"Payroll history\" looks the same; the first payroll row no longer covers the bottom 3px of its tap area, so it is 44px.",
+  "shots": [
+   {
+    "label": "Desktop",
+    "before": "img/t44b-payroll-owner-1440-before.webp",
+    "after": "img/t44b-payroll-owner-1440-after.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
