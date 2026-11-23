@@ -264,6 +264,31 @@ function closeSheet(kind:'escape'|'done'|'automatic'='escape'){
 function openFirstSheet(){
  (control(n=>n.type==='button'&&n.props.className==='c-tc-person').onClick as ()=>void)();
 }
+// Jose's review (Nov 23, 2026): with a correction waiting, the sheet offers no second request and no grey Approve; one line
+// says why it can't be approved yet, and the attention note sits in the person's card.
+it('a waiting correction: no second request, no dead Approve, one line says why',async()=>{
+ const own=card('E1');
+ rs.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-27T12:00:00Z',cards:[{...own,source:{...own.source,pendingCorrections:1}}]}));
+ await mount();openFirstSheet();
+ const sheet=html().slice(html().indexOf('c-tc-sheet__who'));
+ expect(sheet).not.toContain('Request time correction');
+ expect(sheet).not.toMatch(/>Approve timecard</);
+ expect(sheet).toContain('Approve after the waiting correction is reviewed.');
+ const personCard=sheet.slice(0,sheet.indexOf('</section>'));
+ expect(personCard).toContain('c-tc-sheet__attn');
+ expect(personCard).toContain('Correction awaiting review');
+});
+// Jose's review (Nov 23, 2026): when Approve is the footer, "Request time correction" sits in the footer above it, so the
+// sticky footer never covers it.
+it('a timecard ready to approve keeps Request time correction in the footer above Approve',async()=>{
+ transport();await mount();openFirstSheet();
+ const page=html();const foot=page.slice(page.indexOf('c-tc-sheet__foot'));
+ expect(page.indexOf('c-tc-sheet__foot')).toBeGreaterThan(-1);
+ expect(foot.indexOf('Request time correction')).toBeGreaterThan(-1);
+ expect(foot.search(/Approve (timecard|with no hours)/)).toBeGreaterThan(-1);
+ expect(foot.indexOf('Request time correction')).toBeLessThan(foot.search(/Approve (timecard|with no hours)/));
+ expect(page.slice(page.indexOf('c-tc-sheet__actions'),page.indexOf('c-tc-sheet__foot'))).not.toContain('Request time correction');
+});
 // Gate check (Nov 23, 2026): a person's week says a waiting correction once (in the amber note), without the header's
 // "Correction waiting" and without a line on how to clear issues before approval.
 it('says a timecard issue once in the person\'s week',async()=>{
