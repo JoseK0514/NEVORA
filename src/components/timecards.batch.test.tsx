@@ -331,6 +331,13 @@ let media:{matches:boolean;listeners:(()=>void)[]};
 function phoneWindow(matches=true){media={matches,listeners:[]};rs.stubGlobal('window',Object.assign(new EventTarget(),{matchMedia:()=>({get matches(){return media.matches;},addEventListener:(_:string,l:()=>void)=>{media.listeners.push(l);},removeEventListener:()=>{}})}));}
 async function mountAll(){render();host.mounted=true;const cleanups=host.effects.map(effect=>effect());cleanup=()=>cleanups.forEach(c=>{if(typeof c==='function')c();});await flush();}
 const resize=(matches:boolean)=>{media.matches=matches;for(const listener of media.listeners)listener();};
+// G89 (Nov 23, 2026): on phones the Team card's title carries the count, so the band doesn't also say "N people".
+it('phone: the number of people is said once, in the Team card',async()=>{
+ phoneWindow();transport();await mountAll();
+ const band=html().match(/<header class="b-hero[\s\S]*?<\/header>/)?.[0]??html().slice(0,html().indexOf('b-tc-team'));
+ expect(band).not.toMatch(/\d+ (people|person)\b/);
+ expect(html()).toContain('id="b-tc-team"');
+});
 it('phone: Select in the top bar opens eligible cards; self-review stays excluded with its reason',async()=>{
  phoneWindow();transport();await mountAll();
  expect(html()).toContain('c-page c-tc"');expect(html()).not.toContain('Selected timecard review');
