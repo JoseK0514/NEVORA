@@ -248,3 +248,11 @@ html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-a
 @media (prefers-reduced-motion: reduce) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block { transition: none; }
 }
+
+/* Recheck (Nov 23, 2026), the gate's point 4. One location is said as plain band text (pin and name), not drawn as a
+ * button; it sits on the actions' line, centred with them. */
+:is(#c-root, html) .c-page .c-sched-place { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; white-space: nowrap; color: inherit; }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-page > header.c-title .c-sched-place { color: var(--b-on-band); }
+/* A shift's position wraps whole words inside its block instead of ending in "Front co…" (768, Jose's comment): the
+ * week grid's blocks are narrow there. The day view (one day, timeline) keeps its own one-line rule. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]) .c-sched .cm-sched-slot .cm-grid:not([data-days="1"]) .cm-block > .cm-block__pos:not(#pN1):not(#pN2):not(#pN3):not(#pN4):not(#pN5):not(#pN6):not(#pN7):not(#pN8):not(#pN9) { overflow: visible !important; text-overflow: clip !important; white-space: normal !important; overflow-wrap: break-word !important; text-wrap: balance; }

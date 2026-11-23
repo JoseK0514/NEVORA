@@ -232,3 +232,20 @@ it("grid: whole-minute durations, one coverage line and the week's state beside 
   // A day already over: a grey chip that still opens its list.
   expect(out).toContain('data-over="true" aria-expanded="false"><span aria-hidden="true">1 open</span><span class="sr-only">1 open shift, Mon Oct 5, day already over</span>');
 });
+
+// Recheck (Nov 23, 2026), the gate's point 4: each fact once. A page for one location names it on the band, so its open
+// shifts don't repeat it; the grid's key shows only when the week mixes published and draft blocks.
+it("says one location once and keeps the key for a mixed week", () => {
+  const openShifts = [{ id: "gap", date: "2026-10-06", startTime: "13:00", endTime: "15:00", location: "Main Office", href: "/app/schedule/coverage?repair=x" }];
+  const corp = { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05" };
+  const b = { sub: null, actions: null, location: null, weekState: null, toPlan: [] };
+  const render = (roster: RosterEmployee[], locationId?: string) => renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees: roster, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
+    absences: { state: "ready", employeeIds: ["fictional", "unassigned"], rows: [] } as never, openShifts, locationId, corp, b }));
+  const day = (out: string) => { const from = out.indexOf('id="b-schedule-day"'); return out.slice(from, out.indexOf("</section>", from)).replace(/<[^>]+>/g, " "); };
+  expect(day(render(employees, "main"))).not.toContain("Main Office");
+  expect(day(render(employees))).toContain("Main Office");
+  // Avery's week has a published and a draft shift: the key explains the two looks.
+  expect(render(employees)).toContain('<span class="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span>');
+  const published = employees.map(person => ({ ...person, shifts: person.shifts.map(shift => ({ ...shift, status: "PUBLISHED" as const })) }));
+  expect(render(published)).toContain('<span class="cm-legend" aria-hidden="true"></span>');
+});

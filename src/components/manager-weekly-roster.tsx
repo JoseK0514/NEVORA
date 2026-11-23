@@ -359,6 +359,8 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   const axisStep = axis ? `${Math.round((axis.stepHours * 60 / (axis.end - axis.start)) * 1e6) / 1e4}%` : undefined;
   const shown = (employee: RosterEmployee) => employee.shifts.filter(shift => visibleDates.includes(shift.date));
   const scheduled = employees.filter(employee => shown(employee).length);
+  const shownStatuses = new Set(scheduled.flatMap(shown).map(shift => shift.status === "DRAFT"));
+  const mixedWeek = shownStatuses.size > 1;
   const unscheduled = employees.filter(employee => !shown(employee).length);
   const gridOpen = openShifts.filter(open => visibleDates.includes(open.date));
   const openOn = (date: string) => gridOpen.filter(open => open.date === date).sort((a, b) => a.startTime.localeCompare(b.startTime));
@@ -400,7 +402,9 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       left, the legend at the right. The week's state sits inside the stepper, on the band. */}
     {corp ? <div className="c-sched-gridbar">{weekNav(<>{corp.status ?? null}</>)}
       {b?.coverage ? <ScheduleCoverageLine coverage={b.coverage} label="Covered this week" /> : null}
-      <span className="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span></div> : null}
+      {/* Recheck (Nov 23, 2026): the key shows only when the week mixes published and draft blocks; otherwise the week's
+        state beside the stepper already says it ("Published" twice). The empty key keeps the bar's place. */}
+      <span className="cm-legend" aria-hidden="true">{mixedWeek ? <><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></> : null}</span></div> : null}
     {focus !== "all" ? <div className="cm-grid__focus">
       <span>{`${longWeekday(focus)}, ${formatDayLabel(focus).day}`}</span>
       <button type="button" className="cm-kbtn" onClick={() => setFocus("all")}>Full week</button>
@@ -486,15 +490,16 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       : { state: <BChip tone="amber" dot={live.text !== ATTENDANCE_WORDS.missed}>{live.text}</BChip>, text: live.text, ring: "late" };
     return shift.status === "DRAFT" ? { state: <BChip tone="amber">Draft</BChip>, text: "Draft" } : corp?.changedShiftIds?.includes(shift.id) ? { state: <BChip tone="amber">Changed</BChip>, text: "Changed" } : {};
   };
-  // A day's shifts at one place don't repeat it on every row (the open shifts keep theirs).
+  // A day's shifts at one place don't repeat it on every row. Open shifts keep theirs unless the page is for one location,
+  // which the band already names (recheck, Nov 23, 2026: "Condado" was said on the band and on every open shift).
   const bPlaces = new Set(dayShifts.map(entry => entry.shift.location)).size;
   const bRows = [
     ...dayShifts.map(({ shift, employee }) => { const live = repairEmployeeId === employee.id && repairDay === shift.date ? { state: <BChip tone="amber">Approved time off</BChip>, ring: "late" as const } : bLive(shift, employee.id); return { start: shift.startTime, node: <BRow key={`shift-${shift.id}`} href={editHref(shift)} label={`${shiftLabel(shift, employee.name)}${repairEmployeeId === employee.id && repairDay === shift.date ? ", approved leave, needs a replacement" : ""}`}
       lead={<BAvatar name={employee.name} ring={live.ring} />} title={employee.name} chip={live.state}
       sub={<BSegs parts={[range(shift.startTime, shift.endTime) === "All day" ? "All day" : compactRange(`${clock(shift.startTime)} – ${clock(shift.endTime)}`), shift.position || employee.role, !locationId && bPlaces > 1 ? shift.location : null]} />} chevron={false} /> }; }),
     ...dayOpen.map(open => { const over = ended(open); return { start: open.startTime, node: <BRow key={`open-${open.id}`} lead={<BAvatar open />} title="Open shift"
-      sub={<BSegs parts={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), open.location]} />}
-      href={over ? undefined : open.href} label={`${over ? "Open shift, not filled" : "Find cover for the open shift"}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}
+      sub={<BSegs parts={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), locationId ? null : open.location]} />}
+      href={over ? undefined : open.href} label={`${over ? "Open shift, not filled" : "Find cover for the open shift"}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location && !locationId ? `, ${open.location}` : ""}`}
       /* Final polish (Nov 20, 2026): no "Not filled" chip on a row titled "Open shift" (it said the title again, as a chip
          on a normal fact); a shift that can still be filled carries Fill, one that ended carries nothing. */
       trail={over ? undefined : <BButtonLink href={open.href} kind="ghost" label={`Fill the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}`}>Fill</BButtonLink>} /> }; }),

@@ -129,3 +129,28 @@ it('a draft week needs no publish permission and keeps its save',async()=>{
   expect(html).not.toContain('publicationConsent');
   expect(html).not.toContain('Publishing permission needed');
 });
+// Jose (Nov 23, 2026): "organize this like date / time / and whatever": one fact per row, each with its icon. The visible
+// text is only the value; a screen reader hears the row's name from hidden text (no aria-label).
+it("stacks the change as one fact per row: date, time, place, position, week hours", async () => {
+  state.read.mockResolvedValue({ ...selected, publication: "PUBLISHED", weekHours: { beforeMinutes: 0, afterMinutes: 450, targetMinutes: 300 } });
+  const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) })).replace(/[   ]/g, " ");
+  const rows = [...html.matchAll(/<li class="c-review__fact">([\s\S]*?)<\/li>/g)].map(match => match[1]);
+  expect(rows).toHaveLength(5);
+  const text = (row: string) => row.replace(/<span class="c-sr">[^<]*<\/span>/, "").replace(/<[^>]+>/g, "");
+  expect(rows.map(row => row.match(/<span class="c-sr">([^<]*)<\/span>/)?.[1])).toEqual(["Date: ", "Time: ", "Place: ", "Position: ", "Week hours: "]);
+  expect(text(rows[0])).toBe("Mon, Oct 7");
+  expect(text(rows[1])).toMatch(/^8:00 ?PM – 12:00 ?AM ?Ends Tue, Oct 8$/);
+  expect(text(rows[2])).toBe("Main Office");
+  expect(text(rows[3])).toBe("Customer Support · Shift lead");
+  expect(text(rows[4])).toBe("7 h 30 min this week (target 5 h)");
+  for (const row of rows) expect(row).toMatch(/^<span class="c-review__icon"><svg[^>]*aria-hidden="true"/);
+  expect(html).not.toContain("c-review__when");
+  // The time is the row a person reads first.
+  expect(rows[1]).toContain('class="c-review__value c-review__value--strong"');
+});
+it("leaves the Position row out when the repair names no position and no lead", async () => {
+  state.read.mockResolvedValue({ ...selected, positionName: undefined, isDesignatedLead: false });
+  const html = renderToStaticMarkup(await NewShiftPage({ searchParams: Promise.resolve({ review: "retained-review" }) }));
+  expect(html.match(/<li class="c-review__fact">/g)).toHaveLength(4);
+  expect(html).not.toContain("Position: ");
+});

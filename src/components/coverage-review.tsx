@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { BriefcaseIcon } from "@phosphor-icons/react/dist/ssr/Briefcase";
+import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
+import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
+import { HourglassMediumIcon } from "@phosphor-icons/react/dist/ssr/HourglassMedium";
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { ConfigurationForm } from "@/components/configuration-form";
 import { CorpBody, CorpCard, CorpNav, CorpPage, CorpTitle } from "@/components/corp/corp";
 import { compactRange } from "@/components/owner-b/b-kit";
@@ -57,7 +62,8 @@ export function CoverageReview(props: CoverageReviewProps) {
   // An overnight or full-day shift keeps both halves ("12:00 AM – 12:00 AM", then "Ends Tue, Dec 8"); "12–12 AM" was ambiguous.
   const full = `${formatTime(startTime)} – ${formatTime(endTime)}`;
   const time = overnight ? full : compactRange(full);
-  const facts = [props.positionName, props.isDesignatedLead ? "Shift lead" : null, nextDay ? `Ends ${nextDay.weekday},\u00a0${nextDay.day}` : null].filter(Boolean).join(" · ");
+  // Jose (Nov 23, 2026): one fact per row (date, time, place, position), each with its icon, for scanning.
+  const position = [props.positionName, props.isDesignatedLead ? "Shift lead" : null].filter(Boolean).join(" · ");
   const warnings = props.warnings;
   const saves = props.mode === "publish" || props.mode === "draft";
   const hours = props.weekHours;
@@ -76,9 +82,13 @@ export function CoverageReview(props: CoverageReviewProps) {
         <ArrowRightIcon className="c-review__arrow" weight="bold" aria-label="replaced by" />
         <span>{props.employeeName}</span>
       </p>
-      <p className="c-review__when"><span>{shortDate}</span>{" · "}<strong>{time}</strong>{" · "}<span>{props.locationName}</span></p>
-      {facts ? <p className="c-line3">{facts}</p> : null}
-      <p className="c-review__hours">{`${durationText(hours.afterMinutes)} this week`}{hours.targetMinutes !== null ? <span className="c-review__muted">{` (target ${durationText(hours.targetMinutes)})`}</span> : null}</p>
+      <ul className="c-review__facts">
+        <Fact icon={CalendarBlankIcon} label="Date">{shortDate}</Fact>
+        <Fact icon={ClockIcon} label="Time" strong>{time}{nextDay ? <span className="c-review__sub">{`Ends ${nextDay.weekday},\u00a0${nextDay.day}`}</span> : null}</Fact>
+        <Fact icon={MapPinIcon} label="Place">{props.locationName}</Fact>
+        {position ? <Fact icon={BriefcaseIcon} label="Position">{position}</Fact> : null}
+        <Fact icon={HourglassMediumIcon} label="Week hours">{`${durationText(hours.afterMinutes)} this week`}{hours.targetMinutes !== null ? <span className="c-review__muted">{` (target ${durationText(hours.targetMinutes)})`}</span> : null}</Fact>
+      </ul>
     </CorpBody>
     {warnings.length ? <ul className="c-review__checks" aria-label="Before you publish">
       {warnings.map(code => <li key={code} className="c-review__warn"><WarningIcon weight="fill" aria-hidden="true" />{warningWords[code] ?? schedulingIssueMessage(code)}</li>)}
@@ -106,6 +116,14 @@ export function CoverageReview(props: CoverageReviewProps) {
       {actions}
     </ConfigurationForm> : <div className="c-review__form">{actions}</div>}
   </CorpPage>;
+}
+
+/** One fact of the change: a bold icon on the first text line, the value, and a hidden name for screen readers. */
+function Fact({ icon: Icon, label, strong, children }: { icon: ComponentType<{ weight?: "bold"; className?: string; "aria-hidden"?: boolean | "true" }>; label: string; strong?: boolean; children: ReactNode }) {
+  return <li className="c-review__fact">
+    <span className="c-review__icon"><Icon weight="bold" aria-hidden="true" /></span>
+    <span className={strong ? "c-review__value c-review__value--strong" : "c-review__value"}><span className="c-sr">{`${label}: `}</span>{children}</span>
+  </li>;
 }
 
 function Blocked({ title, children }: { title: string; children: ReactNode }) {

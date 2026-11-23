@@ -159,6 +159,20 @@ it('a location Manager with Publish schedules gets Publish; one without it gets 
  expect(plain).not.toMatch(/href="\/app\/schedule\/publish/);
  expect(plain).toContain('Add shift');
 });
+// Recheck (Nov 23, 2026), the gate's point 4: one location is plain band text, not a button with an aria-label; the phone
+// band has no date line and no second Add shift (the day card names the day and ends with Add shift).
+it('a one-location Manager sees the place once, as text, and one Add shift per layout',async()=>{
+ f.role='MANAGER';operationalPageFixture.scoped=true;
+ const output=await html();
+ expect(output).toContain('<span class="c-sched-place">');
+ expect(output).toContain('<span class="b-date">');
+ expect(output).toContain('<span class="sr-only">Location: </span>Managed</span>');
+ expect(output).not.toContain('aria-label="Location: Managed"');
+ const hero=output.slice(output.indexOf('<header class="b-hero'),output.indexOf('</header>',output.indexOf('<header class="b-hero')));
+ expect(hero).not.toContain('Add shift');
+ expect(hero).not.toContain('class="b-sub"');
+ expect(output).toMatch(/class="b-add"[^>]*>.*?Add shift<\/a>/);
+});
 
 it('company denial withholds global schedule rows and all editing controls',async()=>{f.role='MANAGER';operationalPageFixture.denied=true;const output=await html();expect(output).toContain('Company-wide access needed');expect(output).not.toContain('Add shift');expect(output).not.toContain('Publish');expect(f.managerReads).not.toHaveBeenCalled();});
 it('an operational company denial does not remove the Employee self schedule',async()=>{operationalPageFixture.denied=true;const output=await html();expect(output).toContain('c-esched');expect(output).toContain('aria-label="Days in this week"');expect(output).not.toContain('Company-wide access needed');expect(f.managerReads).not.toHaveBeenCalled();});

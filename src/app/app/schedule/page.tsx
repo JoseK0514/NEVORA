@@ -176,8 +176,10 @@ export default async function SchedulePage({
       const scopedStateCorp = scopedState.tone === "due" ? <span className="c-meta c-sched-weekstate" data-tone="amber">{scopedState.text}</span>
         : scopedState.tone === "ok" ? <span className="c-meta c-sched-weekstate" data-tone="green"><CheckIcon className="c-sched-weekstate__ic" weight="bold" aria-hidden="true" />Published</span>
         : <span className="c-meta c-sched-weekstate">{scopedState.text}</span>;
+      // Recheck (Nov 23, 2026): one place is a fact, not a control. It is the band's plain label (pin and name), never a
+      // button; the menu stays for a Manager with more than one location.
       const locationControl = (b: boolean) => one
-        ? <span className={b ? "b-btn b-btn--glass" : "c-select-btn c-sched-loc"} aria-label={`Location: ${placeName}`}>{b ? <MapPinIcon size={15} weight="bold" aria-hidden="true" /> : null}{placeName}</span>
+        ? <span className={b ? "b-date" : "c-sched-place"}><MapPinIcon size={15} weight="bold" aria-hidden="true" /><span className="sr-only">Location: </span>{placeName}</span>
         : <ActionMenu id={b ? "b-scoped-location-menu" : "scoped-location-menu"} label="Location" title="Location" ariaLabel={`Location: ${placeName}`} align="end"
             triggerClassName={b ? "b-btn b-btn--glass" : "c-select-btn c-sched-loc"} triggerContent={<>{b ? <MapPinIcon size={15} weight="bold" aria-hidden="true" /> : null}{placeName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>
             <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=all`}><strong>All your locations</strong></Link>
@@ -208,9 +210,12 @@ export default async function SchedulePage({
           locationId={data.selectedLocationId ?? one?.id} openShifts={scopedOpen} absences={scopedAbsences}
           corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${addDays(weekStart, -7)}${locQuery}`, nextHref: `/app/schedule?week=${addDays(weekStart, 7)}${locQuery}`,
             status: scopedStateCorp, addShiftHref: scopedAdd, todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locQuery}`, observedAt: observedAt.toISOString() }}
-          b={{ sub: scopedTodayLong, weekState: scopedState, toPlan: [],
+          // Recheck (Nov 23, 2026), each fact once on phones: the day card already names the day ("Today · Sun, Nov 22") and
+          // ends with Add shift for that day, so the band has no date line and no second Add shift (it keeps one when the
+          // roster is empty and the card offers Go to Team instead).
+          b={{ sub: null, weekState: scopedState, toPlan: [],
             actions: <>{scopedMore(true)}{scopedPublish ? <BButtonLink href={scopedPublish} kind="white" label={`Publish, ${formatWeekRange(weekStart)}`}>Publish</BButtonLink>
-              : <BButtonLink href={scopedAdd} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>}</>,
+              : !scopedRoster.length ? <BButtonLink href={scopedAdd} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink> : null}</>,
             location: locationControl(true),
             notes: <>{repairNote("b")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>{openShifts === null ? <CorpNote>Couldn’t check open shifts. Reload to try again.</CorpNote> : null}</> }}
           notices={<>
