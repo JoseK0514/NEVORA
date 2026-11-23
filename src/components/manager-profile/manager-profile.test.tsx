@@ -83,17 +83,20 @@ describe('Owner and Manager Profile', () => {
   it('tells a Manager what their access reaches and who can change a read-only detail', () => {
     const assigned = render({ ...manager, changedBy: 'Jose Natal', locationsWord: 'stores' }, parseManagerProfile(fixture('manager')));
     expect(assigned).toContain('<b>Access</b><i>Schedule and team at your stores. Payroll and Settings are for Owners.</i>');
-    expect(assigned).toContain('<span class="q-rv q-rv--l">Manager, Main Office, West Office</span>');
-    expect(assigned.match(/<small class="pmp-fixed__why">Jose Natal can change this<\/small>/g)).toHaveLength(2);
+    // Phase 2 (Nov 23, 2026): the band says "Manager", so the value is the reach only; who can change a locked value is
+    // said to screen readers beside its lock, not as a visible line under every row.
+    expect(assigned).toContain('<span class="q-rv q-rv--l">Main Office, West Office</span>');
+    expect(assigned.match(/<span class="sr-only">, Jose Natal can change this<\/span>/g)).toHaveLength(2);
+    expect(assigned).not.toContain('pmp-fixed__why');
     expect(assigned).not.toContain('Read-only');
     const all = render(manager, parseManagerProfile({ ...fixture('manager'), locations: { scope: 'all', names: ['Main Office'] } }));
-    expect(all).toContain('<span class="q-rv q-rv--l">Manager, all locations</span>');
+    expect(all).toContain('<span class="q-rv q-rv--l">All locations</span>');
     expect(all).toContain('Schedule, time, team and requests. Payroll and Settings are for Owners.');
     expect(all).toContain('An Owner can change this<');
     // Before the read arrives, and when it fails, only the role is said: no locations are claimed.
     for (const html of [render(manager, null), render(manager, { state: 'unavailable', reason: 'read_failed' })]) {
       expect(html).toContain('<b>Access</b><i>Payroll and Settings are for Owners.</i></span><span class="q-rv q-rv--l">Manager</span>');
-      expect(html).not.toContain('all locations');
+      expect(html).not.toContain('ll locations');
     }
     expect(managerAccess({ scope: 'assigned', names: [] })).toEqual({ value: 'Manager', covers: 'Payroll and Settings are for Owners.' });
     // An Owner's page has no Access row and no "can change this" line.

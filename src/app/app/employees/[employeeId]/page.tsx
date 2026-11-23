@@ -179,7 +179,8 @@ export default async function EmployeeProfilePage({
     <CorpPage className="c-person c-access c-page--narrow" labelledBy="access-title">
       <CorpNav back={{ href: base, label: employee.firstName }} title="Access and sign-in" titleId="access-nav-title" phoneOnly />
       <CorpTitle id="access-title" title="Access and sign-in" sub={name} wide />
-      <CorpCard id="person-access" label="Access">
+      {/* Phase 2 (Nov 23, 2026): the band says "Access and sign-in", so the card carries no second "Access" heading. */}
+      <CorpCard id="person-access" ariaLabel="Access">
         <CorpRows label="Access">
           <li>{canManageCore ? <CorpRow href={`${base}?edit=1`} title="Role" value={roleLabel} valueTone="soft" label={`Role, ${roleLabel}. Change it in Edit employee`} chevron /> : <CorpRow title="Role" value={roleLabel} valueTone="soft" />}</li>
           {/* Phase 6: without a PIN the row says so and what it means, and opens the form that sets one. */}
@@ -192,7 +193,7 @@ export default async function EmployeeProfilePage({
         </CorpRows>
       </CorpCard>
       {canManageCore && employee.active && recoverable ? <CorpCard as="div" ariaLabel="Reset password">
-        <CorpRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} bold title="Reset password" detail="Give them a one-time code to sign back in" chevron />
+        <CorpRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} bold title="Reset password" detail="Give them a one-time link to sign back in" chevron />
       </CorpCard> : null}
       {/* The Owner's account invitation (until the account is activated) and a Manager's management access. */}
       {actor.role==='OWNER'&&(inviting||employee.role==='MANAGER') ? <div className="c-access__panels">

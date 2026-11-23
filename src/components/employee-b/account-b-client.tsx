@@ -237,20 +237,23 @@ export function EmployeeAlertsB({confirmationRef, feedbackRef, turnOffRef, endin
 
 /** Delete account (board E-DeleteAccount), the parts that aren't the form: what we delete and what your workplace keeps
  * (the form follows this screen, b-keep); the receipt; or the signed-out and changed-account outcomes. */
-export function EmployeeDeleteB({state, period, workplace, outcomeRef, missingPeriod, support}: {
+export function EmployeeDeleteB({state, period, workplace, outcomeRef, missingPeriod, support, keptHref = '/app/profile/account-deletion', profileHref = '/app/profile#profile-account-deletion', owner = false, lastOwner = false}: {
   state: DeletionFormState; period: string | null; workplace?: string | null; outcomeRef?: RefObject<HTMLDivElement | null>;
+  /** Owners and Managers (Phase 2): where "What may be kept" opens, the Owner's workspace sentence, and the LAST_OWNER card. */
+  keptHref?: string; profileHref?: string; owner?: boolean;
+  /** The LAST_OWNER card shows under this band, drawn once by the page (deletion.tsx). */ lastOwner?: boolean;
   /** The unresolved-fact marker the page shows for a missing period. */
   missingPeriod: ReactNode; support: (reference?: string) => ReactNode;
 }) {
-  const receipt = state.kind === 'received' || state.kind === 'duplicate', ended = state.kind === 'signed_out' || state.kind === 'changed';
+  const receipt = state.kind === 'received' || state.kind === 'duplicate', ended = state.kind === 'signed_out' || state.kind === 'changed' || lastOwner;
   const within = period ?? missingPeriod;
   return <BScreen back={!receipt && !ended}>
     {/* Review B6 (NV-159): a form's screen hides the tab bar, the bell and the avatar (account.css). */}
     {!receipt && !ended ? <span className="eb-form" hidden /> : null}
-    <BHero back={!receipt && !ended ? {href: '/app/profile#profile-account-deletion', label: 'Profile'} : undefined} title={receipt ? 'Deletion requested' : 'Delete account'} titleId="b-deletion-title"
+    <BHero back={!receipt && !ended ? {href: profileHref, label: 'Profile'} : undefined} title={receipt ? 'Deletion requested' : 'Delete account'} titleId="b-deletion-title"
       sub={receipt || ended ? undefined : 'Your NEVORA sign-in, not your job'} />
     <BStack>
-      {receipt ? <>
+      {lastOwner ? null : receipt ? <>
         <div className="b-card" ref={outcomeRef} tabIndex={-1} role="status" aria-labelledby="b-deletion-done-title">
           <div className="b-card__h"><h2>Your request</h2><BChip tone="teal">Received</BChip></div>
           <div className="eb-body"><p className="eb-lead" id="b-deletion-done-title">{state.kind === 'received' ? 'Your deletion request was received' : 'A deletion request is already in progress'}</p><p className="eb-para">Keep your reference until it’s done.</p>
@@ -278,7 +281,8 @@ export function EmployeeDeleteB({state, period, workplace, outcomeRef, missingPe
         </BCard>
         <BCard title={`What ${workplace ?? 'your employer'} keeps`} id="b-deletion-kept">
           <p className="eb-para eb-para--lg eb-pad">Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</p>
-          <ul className="b-list eb-list-top"><li className="b-li"><Link className="b-row b-row--link" href="/app/profile/account-deletion"><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">What may be kept</span></span></span><Chev /></Link></li></ul>
+          {owner ? <p className="eb-para eb-pad">Your company’s workspace stays open for the rest of your team. To close it, email {support()}.</p> : null}
+          <ul className="b-list eb-list-top"><li className="b-li"><Link className="b-row b-row--link" href={keptHref}><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">What may be kept</span></span></span><Chev /></Link></li></ul>
         </BCard>
       </>}
     </BStack>
