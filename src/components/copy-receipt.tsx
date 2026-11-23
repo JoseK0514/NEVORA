@@ -69,7 +69,9 @@ const byWhen = (a: Row, b: Row) => sortKey(a).localeCompare(sortKey(b));
 function when(row: Row, withPlace: boolean) {
   if (!described(row)) return row.sourceId;
   const day = formatDayLabel(row.date);
-  return [`${day.weekday}, ${day.day}`, compactRange(formatTimeRange(row.startTime, row.endTime)), withPlace ? row.locationName : null].filter(Boolean).join(" · ");
+  // Each part stays whole at 200% text ("Mon, Nov 30" and "9 AM – 5 PM" never split inside), and a " · " never starts a line.
+  const whole = (text: string) => text.replace(/ /g, " ");
+  return [whole(`${day.weekday}, ${day.day}`), whole(compactRange(formatTimeRange(row.startTime, row.endTime))), withPlace ? row.locationName : null].filter(Boolean).join(" · ");
 }
 
 /** One shift in a group: the person, then the day and time. A copied shift opens in Edit shift. */
