@@ -64,5 +64,5 @@ wording decisions the lead is putting to Jose; not changed.
    "Offline", or a heading "This tablet is offline" on K1, K3 and the fallback together.
 3. Unknown ID: the message says "Check both" on the PIN step, where the Employee ID isn't shown; the way back is the
    icon-only back arrow ("Change Employee ID"). Proposed: show the entered ID under the heading with a Change link (K4).
-5. New: the globe in the language switch stays 16px at 200% text (outside this fix's scope; the switch is shared by
-   every Clocker screen).
+5. Fixed in `c1b44d98`: the language switch's globe is 1.125rem on every Clocker screen with the shared switch (18px at
+   the default size as before, 36px at 200%). Recaptured K3 typed and K15 paused at 390 with 200% text.

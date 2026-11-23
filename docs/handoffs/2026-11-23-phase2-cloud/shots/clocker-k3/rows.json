@@ -4,7 +4,7 @@
   "row": "K3",
   "page": "Enter Employee ID",
   "section": "Clocker",
-  "note": "One field, one Continue, help under the field. The field is now the PIN field's size and place, so the card no longer shifts between the two steps (it was 54px and 6px lower on a phone). Field, help, Continue and the keypad share one left and right edge at every size. The Continue arrow now grows with the text size.",
+  "note": "One field, one Continue, help under the field. The field is now the PIN field's size and place, so the card no longer shifts between the two steps (it was 54px and 6px lower on a phone). Field, help, Continue and the keypad share one left and right edge at every size. The Continue arrow now grows with the text size. The language switch's globe grows too (36px at 200%).",
   "shots": [
    {
     "label": "Phone",

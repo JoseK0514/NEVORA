@@ -81,6 +81,10 @@
     "after": "img/k15-clocker-paused-en-390.webp"
    },
    {
+    "label": "Phone, 200% text (globe grows)",
+    "after": "img/k15-clocker-paused-en-390-text200.webp"
+   },
+   {
     "label": "Tablet portrait",
     "after": "img/k15-clocker-paused-en-768.webp"
    },
