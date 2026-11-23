@@ -413,4 +413,3 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 /* Payroll on a phone: a row's grey line shows whole (the kit clamps it at two lines, which cut "Download hours for payroll"
  * and the paid time line at 200% text); every line here is one short sentence, so nothing changes at the default size. */
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b] .c-pay .b-screen .b-row__s:not(#p9a):not(#p9b) { display: block; -webkit-line-clamp: none; line-clamp: none; overflow: visible; }
-

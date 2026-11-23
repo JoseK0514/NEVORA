@@ -93,7 +93,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         for (const pending of [true, false]) {
           const label = pendingDeletionLabelMarkup(pending);
           await controlPage.setContent('<form id="edit-shift-form"><fieldset><input name="notes" value="Fictional retained draft"></fieldset></form><form class="c-shift__delete"><fieldset disabled><button type="submit">' + label + '</button></fieldset><input type="hidden" name="expectedReviewVersion" value="fictional-version"><div role="alert"><p>Deletion outcome unknown</p></div></form>');
-          const legacyMatches = await controlPage.locator('form').filter({ has: controlPage.getByRole('button', { name: 'Delete this shift', exact: true }) }).count();
+          const legacyMatches = await controlPage.locator('form').filter({ has: controlPage.getByRole('button', { name: 'Delete', exact: true }) }).count();
           expect(legacyMatches).toBe(pending ? 0 : 1);
           const deletion = await unknownDeletionLock(controlPage, 'fictional-version');
           // An unrelated disabled edit form must never prove deletion safety.
@@ -185,7 +185,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         checks.push(`${engine}: held real RSC read blocks next hard navigation until response completion`);
       } finally { if (probeTimer) clearTimeout(probeTimer); holdProbe = false; releaseProbe(); await nextProbe?.catch(() => {}); await p0.unroute(probePattern); await q('DELETE FROM shifts WHERE id=ANY($1::text[])', [[probeSource, probeDestination]]); }
       const edit = async (n: number, note: string, reassign = false) => { if (reassign) await form(n).locator('select[name="employeeId"]').selectOption('MATRIX-OTHER'); await form(n).locator('[name="notes"]').fill(note); await form(n).evaluate((element: HTMLFormElement) => element.requestSubmit()); };
-      const remove = async (n: number) => { const p = page(n); await p.getByRole('button', { name: n ? 'Review deletion' : 'Delete shift', exact: true }).click(); await p.getByRole('button', { name: n ? 'Delete this draft shift' : 'Delete this shift', exact: true }).click(); };
+      const remove = async (n: number) => { const p = page(n); await p.getByRole('button', { name: 'Delete shift', exact: true }).click(); await p.getByRole('group', { name: 'Delete this shift?', exact: true }).getByRole('button', { name: 'Delete', exact: true }).click(); };
       const refused = async (n: number, version: string, unavailable = false) => { await page(n).getByRole('alert').filter({ hasText: unavailable ? 'You don’t have access to make this change' : 'changed since you opened' }).first().waitFor(); expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version); await page(n).getByRole('button', { name: 'Reload current shift', exact: true }).first().waitFor(); };
       const loseNextResponse = async (n: number, id: string) => {
         const pattern = '**/app/schedule/edit?shiftId=' + id;

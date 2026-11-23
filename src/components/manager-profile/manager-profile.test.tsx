@@ -214,4 +214,3 @@ describe('Profile approval rows on a 320px phone (Z2)', () => {
     expect(css.slice(0, at).lastIndexOf('@layer nv-b {')).toBeGreaterThan(-1);
   });
 });
-

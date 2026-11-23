@@ -62,6 +62,7 @@ describe('44px targets on tablets and desktop', () => {
     }
     expect(block).toContain('top: min(0px, calc(50% - 22px)) !important; bottom: min(0px, calc(50% - 22px)) !important; left: min(0px, calc(50% - 22px)) !important; right: min(0px, calc(50% - 22px)) !important;');
     expect(block).toContain('background: none !important; box-shadow: none !important; opacity: 0 !important;');
+    expect(css).toContain('.q-nav > .q-nav__l { contain: layout !important; }');
     // The back link keeps its own positioning on desktop.
     expect(block).not.toContain('.q-nav > .q-nav__l:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) {');
   });
@@ -92,4 +93,3 @@ describe('placeholder contrast (release batch)', () => {
     expect(css).toContain('.c-pub .b-explain > summary:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { z-index: 2 !important; }');
   });
 });
-

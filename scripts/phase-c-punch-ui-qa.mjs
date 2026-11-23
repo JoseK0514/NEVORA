@@ -40,7 +40,7 @@ async function enroll(owner,p,name){
 }
 async function editBreak(owner,name,category,minutes){
  await goto(owner,'/app/settings/breaks');const row=owner.getByRole('list',{name:'Configured break types',exact:true}).locator('button#break-type-ui-rest');
- assert.match(await row.getAttribute('aria-label'),/^Edit /);await row.click();const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();
+ assert.match((await row.innerText()).trim(),/^(Fixture rest|Future rest)\b/);await row.click();const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();
  await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel(/^Reference time/).fill(String(minutes));
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
 }

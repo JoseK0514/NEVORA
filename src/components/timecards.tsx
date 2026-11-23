@@ -816,7 +816,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               * line breaks after the week, never inside it ("Nov 16– / 22"). */}<BSegs parts={[rangeText(period),attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`]}/></span></span>
             <BButton onClick={()=>{setSelecting(true);selectAll(true);}}>Review</BButton></div></BCard>
           :ready&&cards.length&&open&&approvedCount?<BCard label="Approval"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{summaryTitle}</span><span className="b-notice__s">{`You can approve the rest from ${approveFrom(period)}`}</span></span></div></BCard>:null}
-          
+
           {ready&&cards.length?<BCard id="b-tc-team" title={attentionShown?'Needs attention':'Team'} count={attentionShown?phoneRows.length:cards.length}
             chip={attentionShown?<button type="button" className="b-card__a" onClick={()=>setAttentionOnly(false)}>Show all</button>:undefined}>
             <BList label={attentionShown?'Timecards that need attention':'Timecards in this period'}>{phoneRows.map(item=>{

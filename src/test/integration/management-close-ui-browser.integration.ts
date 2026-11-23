@@ -51,7 +51,7 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
     const signedInReads=Promise.all(['/api/notifications','/api/manager/inbox-count'].map(path=>page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname===path&&response.status()===200).then((response:{finished():Promise<unknown>})=>response.finished())));
     await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await signedInReads;
-    surfacePhase='timecards';await mark('timecards:start');await page.locator('a[href="/app/timecards"]:visible').first().click();await page.waitForURL(app.url+'/app/timecards');
+    surfacePhase='timecards';await mark('timecards:start');
     // Use the supported person deep link from the Inbox so recovery after a blur
     // opens the current authorized timecard without restoring its retired draft.
     const personLink = '/app/timecards#timecard-'+encodeURIComponent(target.id);

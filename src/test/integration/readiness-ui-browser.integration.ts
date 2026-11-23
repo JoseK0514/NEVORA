@@ -106,8 +106,8 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         await form.getByText('Unsaved changes to copy', { exact: true }).click();
         expect(await form.getByLabel('Submitted shift changes').inputValue()).toContain('Retained fictional draft');
         expect(await q('SELECT notes FROM shifts WHERE id=$1', [id])).toEqual([{ notes: 'Concurrent edit' }]);
-        await page.getByRole('button', { name: actor === 'UI-LOCAL' ? 'Review deletion' : 'Delete shift', exact: true }).click();
-        const deleteButton = page.getByRole('button', { name: actor === 'UI-LOCAL' ? 'Delete this draft shift' : 'Delete this shift', exact: true });
+        await page.getByRole('button', { name: 'Delete shift', exact: true }).click();
+        const deleteButton = page.getByRole('group', { name: 'Delete this shift?', exact: true }).getByRole('button', { name: 'Delete', exact: true });
         await deleteButton.focus(); await page.keyboard.press('Enter');
         await page.getByText('This shift changed since you opened it.', { exact: false }).last().waitFor();
         expect(await q('SELECT count(*)::int n FROM shifts WHERE id=$1', [id])).toEqual([{ n: 1 }]);
@@ -130,9 +130,9 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         expect(await q('SELECT notes FROM shifts WHERE id=$1', [id])).toEqual([{ notes: 'Fresh reviewed edit' }]);
         checks.push(`${engine} ${actor}: explicit reload and valid review save`);
         await visit('/app/schedule/edit?shiftId=' + id);
-        await page.getByRole('button', { name: actor === 'UI-LOCAL' ? 'Review deletion' : 'Delete shift', exact: true }).click();
+        await page.getByRole('button', { name: 'Delete shift', exact: true }).click();
         const deletedScheduleReady = waitForRead('/api/manager/today');
-        await page.getByRole('button', { name: actor === 'UI-LOCAL' ? 'Delete this draft shift' : 'Delete this shift', exact: true }).click();
+        await page.getByRole('group', { name: 'Delete this shift?', exact: true }).getByRole('button', { name: 'Delete', exact: true }).click();
         await page.waitForURL(/\/app\/schedule\?/);
         await deletedScheduleReady;
         expect(await q('SELECT count(*)::int n FROM shifts WHERE id=$1', [id])).toEqual([{ n: 0 }]);

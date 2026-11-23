@@ -72,4 +72,3 @@ it("DEC3: the filter reads On the clock on phones and desktop, and never Clocked
   expect(desk).toMatch(/>On the clock<b>1<\/b><\/button>/);
   expect(desk).not.toMatch(/>Clocked in<b>/);
 });
-

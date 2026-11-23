@@ -748,8 +748,10 @@ body { --nv-rem: 1rem; }
  * 42px, Team's See all 41px, Apply search 42px wide, the desktop back link 32px, Home's card links 41–43px at 320). A
  * transparent ::after makes the tap area 44px, centred: each side is min(0px, 50% - 22px), so a side that is already
  * 44px or more doesn't grow, and the ring stays inside the gaps around it (4px between sidebar links, 10px around the
- * bell). Nothing drawn moves. The back link isn't made relative here: on desktop it is already positioned. */
+ * bell). Nothing drawn moves. */
 @layer nv-b {
+    /* A back link may be static. Use the link itself as the containing block so the touch area cannot cover the form. */
+    html body .app-shell[data-nv-b] .q-nav > .q-nav__l { contain: layout !important; }
     /* The tablet rail's nav scrolls vertically and clips sideways at its edge; 2px of padding that its negative margin gives
      * back moves that edge out by the ring's 2px, so the 40px icons reach 44px wide. Sidebar hit targets use ::before so
      * b-foundation.css can paint its keyboard focus ring on ::after. */

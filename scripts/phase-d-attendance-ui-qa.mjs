@@ -325,8 +325,10 @@ try {
     await page.getByRole('heading', { name: /^Today’s clock-ins\s*1 to review$/, level: 2 }).waitFor();
     await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     checked(engine + ': attendance review opens from Who’s working');
-    // Same-document fragment change only: later reloads and remounts keep the review open through #review.
+    // Replay a document loaded with its deep link so the App Router owns the fragment before reauthorization.
     await page.goto(app.url + '/app?view=attendance#review');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.getByText('Clock-in after scheduled start', { exact: true }).waitFor();
     assert.equal(new URL(page.url()).hash, '#review');
     const body = await page.locator('body').innerText();
     assert.match(body, /Alexandria Attendance Review Employee With A Long Name/);
