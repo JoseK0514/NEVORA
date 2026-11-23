@@ -20,6 +20,7 @@ All data is fictional, and nothing was sent or published.
 | payroll-2 d9282e71 (`<html lang>` only; the rest of that branch is payroll work) | cherry-pick | a7fff9e8 |
 | timecards-final 093f5ca0 (8347506a plus its shared-tip merge) | all | e09b9b06 |
 | release candidate `claude-codex-collab-nevora` 91c08d19 (Insights `.c-ins__range` contrast 95bad13a, the English Close open punch card, the guide rebuild) | all; the guide PDFs and manifest are the candidate's; Close open punch keeps the Spanish wiring on the same card layout | 164bd39b |
+| es-employee second release 84e8109b (198cea83 time corrections queue and Time on the lang-aware helpers, bb17dd9e Home and Updates on the shared helpers, 04d3cae5 the queue's zone in Spanish, report) | all, no conflicts | 5eb14ec9 |
 
 ### How the conflicts were settled
 
@@ -60,6 +61,9 @@ All data is fictional, and nothing was sent or published.
 
 ## Still English or open
 
+Closed since: the manager's time corrections queue and the Employee Time screen on the language-aware helpers
+(es-employee's second release, merged above).
+
 The lead assigned these: Schedule tools to screens-final; `lib/reports`, server messages, `clocker-owner-copy` and
 reminders to es-rest; time corrections and the time-b helpers to es-employee; `components/manager` to timecards-final.
 They are integrated here as each lands. Jose's word decisions below wait for his answer.
@@ -68,11 +72,6 @@ They are integrated here as each lands. Jose's word decisions below wait for his
 - **Week grid** (`manager-weekly-roster.tsx`, about 42 strings, and `components/schedule`): only the times follow the
   language, through CorpTime. The live words ("Clocked in", "On break") come from `ATTENDANCE_WORDS` there.
 - **Shift form, Find cover, Review replacement, ManagerShiftRequests** (screens-final's list).
-- **Time corrections queue** (`manager-time-corrections.tsx`, about 17 strings; `employee-time-corrections.tsx`, about
-  22 strings). The comparison inside follows the language; the lists around it don't.
-- **Employee Time screen** (`employee-b/time-b.tsx`): correct Spanish, but through the older English-to-Spanish
-  rewriting (`esDate`, `esTime`, `timeWord`). Switching to the language-aware hours-model helpers is a refactor that is
-  still to do.
 - **TeamB's band, QuietPage's `lang` prop, "What changed in your schedule", the Time, Profile and Availability page
   titles** (employee-mobile): from the session reports, not yet checked here.
 - **Server action messages** (Settings, breaks, clocker, photos, matching, employees, requests, scheduling, policies) and
@@ -385,6 +384,21 @@ From `reports/es-employee.md`.
   - "Restablecer una contraseña o un PIN de Clocker"
   - "Ayudar a iniciar sesión"
 - Christmas bonus hours show the saved details. → Las horas del bono de Navidad muestran los datos guardados.
+
+### es-employee (second release): For Jose to review (approval and timecard wording)
+
+From `reports/es-employee.md`, section "Second release".
+
+- Correction approved. The original recorded punch remains unchanged. → Corrección aprobada. La marcación original registrada no cambia.
+- Correction declined. The original recorded punch remains unchanged. → Corrección rechazada. La marcación original registrada no cambia.
+- The timecard shows the new times. The original clock times stay in its history. → La tarjeta de tiempo muestra las horas nuevas. Las horas originales del reloj quedan en su historial.
+- The timecard keeps its recorded times. → La tarjeta de tiempo conserva sus horas registradas.
+- Approving changes the timecard; the original clock times stay in the history → Al aprobar, cambia la tarjeta de tiempo; las horas originales del reloj quedan en el historial
+- This period is finalized. Reopen it in Timecards before reviewing this correction. → Este período está finalizado. Reábrelo en Tarjetas de tiempo antes de revisar esta corrección.
+- Fixes to past clock times wait here for your decision. The original Clocker record is kept. → Las correcciones de horas pasadas esperan aquí tu decisión. El registro original del Clocker se guarda.
+- Fixes your team asked for. Original times are always kept. Times in {zone}. → Correcciones que pidió tu equipo. Las horas originales siempre se guardan. Hora de {lugar}.
+- We couldn’t confirm your decision. Try again; it won’t be applied twice. → No pudimos confirmar tu decisión. Inténtalo de nuevo; no se aplicará dos veces.
+- Another manager or an Owner reviews your own request. → Otro gerente o el dueño revisa tu propia solicitud.
 
 ### screens-final (Spanish): For Jose to review
 
