@@ -1,0 +1,186 @@
+[
+ {
+  "id": "C12-o",
+  "row": "C12",
+  "page": "Shift requests (Owner)",
+  "section": "Schedule tools",
+  "note": "Shift requests for the Owner: five waiting (two swaps, a picked-up cover request, two can't-work), five open cover requests and one decided. Each row is the name with its kind, then the day and hours, then who else is involved; Decline and Approve sit as one pair on every row, and a lone Close request now sits in Decline's slot.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C12-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C12-o-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C12-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C12-o-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop, 200% text",
+    "after": "img/C12-o-1440t200.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone · Open cover",
+    "after": "img/C12-o-cover-390.webp"
+   },
+   {
+    "label": "Tablet · Open cover",
+    "after": "img/C12-o-cover-768.webp"
+   },
+   {
+    "label": "Desktop · Open cover",
+    "after": "img/C12-o-cover-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone · Done",
+    "after": "img/C12-o-done-390.webp"
+   },
+   {
+    "label": "Tablet · Done",
+    "after": "img/C12-o-done-768.webp"
+   },
+   {
+    "label": "Desktop · Done",
+    "after": "img/C12-o-done-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C10-o",
+  "row": "C10",
+  "page": "Availability (Owner)",
+  "section": "Schedule tools",
+  "note": "Availability for the Owner: the week in the band, the deadline row, then Not sent and Sent with one person not sent (location under the name). Same component and layout as the Manager's.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C10-o-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C10-o-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C10-o-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C10-o-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop, 200% text",
+    "after": "img/C10-o-1440t200.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C12-m",
+  "row": "C12",
+  "page": "Shift requests (Manager)",
+  "section": "Schedule tools",
+  "note": "The same page for a Manager (Elena), same data and layout as the Owner's.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C12-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C12-m-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C12-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C12-m-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop, 200% text",
+    "after": "img/C12-m-1440t200.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone · Open cover",
+    "after": "img/C12-m-cover-390.webp"
+   },
+   {
+    "label": "Tablet · Open cover",
+    "after": "img/C12-m-cover-768.webp"
+   },
+   {
+    "label": "Desktop · Open cover",
+    "after": "img/C12-m-cover-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone · Done",
+    "after": "img/C12-m-done-390.webp"
+   },
+   {
+    "label": "Tablet · Done",
+    "after": "img/C12-m-done-768.webp"
+   },
+   {
+    "label": "Desktop · Done",
+    "after": "img/C12-m-done-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "C10-m",
+  "row": "C10",
+  "page": "Availability (Manager)",
+  "section": "Schedule tools",
+  "note": "Availability for a Manager, for side-by-side comparison with the Owner's: no difference found.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/C10-m-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/C10-m-390t200.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/C10-m-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/C10-m-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Desktop, 200% text",
+    "after": "img/C10-m-1440t200.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
