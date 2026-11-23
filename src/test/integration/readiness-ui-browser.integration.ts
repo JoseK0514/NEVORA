@@ -72,6 +72,8 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         await page.getByLabel('Employee ID', { exact: true }).fill(actor);
         await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
         await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(app.url + '/app');
+        await page.getByRole('main').getByRole('heading', { level: 1 }).filter({ visible: true }).waitFor();
+        await page.waitForLoadState('load');
         const id = `${engine}-${actor}`;
         await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,'ui-review','UI-WORKER','2026-10-12','08:00','16:00')", [id]);
         await visit('/app/schedule/edit?shiftId=' + id);
