@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "date": "2026-11-22",
+  "date": "2026-11-23",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "0da8154996c1da3ffb9ba68738366cddfe65d9c8",
-  "applicationHash": "0274d376f0b9dcd02b5d60a85eca9b6664c34ae340ef6fdf5d6fae6a09e21a04",
+  "sourceSha": "9dd32affb9f9bfbce4f695f839ecef9639f922f7",
+  "applicationHash": "05dd4e9861e4e3efb2fe69d3f5484e6ee2bdc3b89bfab689be05eed016928b33",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "37461cc1c4d239db0b500a7b191f11b30a8ae74b95974b7aa0b86c92f890ffb1"
@@ -212,7 +212,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "80298a9bc904c30d8650805c9aa1241150adc0f36b046dd097ef2b114247535b",
+        "sha256": "3bd3f270b851b26fb3d3c48d20c3259a144c06463b4c659b50bd2c2253aacf3d",
         "pageCount": 7
       }
     },
@@ -335,7 +335,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "8233a2910fb3769f1c4283ead3639061e1344d09a6708bc94d8f6191640fef28",
+        "sha256": "c563ad249c17398fb5e6d4fda5df482ff020f6d37bcee92f24335a73658113d6",
         "pageCount": 4
       }
     },
@@ -454,7 +454,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "2ca7e9276e1daafbcdd5c14dd62af815541167b4a3b8d6e094340347e4ac1232",
+        "sha256": "b3c02c0cb7584bc7fd18e19be80a7f70fbec16a42969c7b4ae1a60ed7d14f608",
         "pageCount": 3
       }
     },
@@ -629,7 +629,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "7f68aa50eacfdb9a8d2fa09b349b1796c25e06dad2fda7104bd79d686471c4b4",
+        "sha256": "526d106855f89988b44a000d6c0c2e6e78e95f9a91dd55f9902353396c45b716",
         "pageCount": 5
       }
     },
@@ -659,7 +659,7 @@
         },
         {
           "path": "docs/handoffs/2026-10-21-development-assembly-sources.json",
-          "sha256": "cedb69131a57c8bfd28457b73f80c5fc22a7a5ced8a9102e7a3e44004a15af1f"
+          "sha256": "06b91e861bae96e584be12b40c270c2a83a6ded672f4127af78f084536ac454f"
         },
         {
           "path": "src/lib/company-access/operational-scope.server.ts",
@@ -892,7 +892,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "b67c03bc6e5237031291fc8050954c47d64122efe263c740b25264e5b1fcba6c",
+        "sha256": "8340edeb2039f9615c9f482d376dd61c32ba98cd35d74d70c8cb5b3de097be5d",
         "pageCount": 7
       }
     },
@@ -1087,7 +1087,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "57d2cc2c536bc60a72a669ba3d4ce2b11cfbe041660debbb222b3eb45045d672",
+        "sha256": "f9db4904057dd45de09d1bcfb447e8112d8a755e679e0ad4445e4c504bea7b7c",
         "pageCount": 7
       }
     }
