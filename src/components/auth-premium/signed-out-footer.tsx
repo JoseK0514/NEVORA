@@ -31,6 +31,7 @@ export function SignedOutFooter({ lang, current, deletion = false, links = true 
         ? <span aria-current="page">{t.links[slug]}</span>
         : <Link href={`/${slug}`}>{t.links[slug]}</Link>}</span>)}
     </nav> : null}
-    <span className="q-sr">{` ${NUVORA_BRAND.ownership}`}</span>
+    {/* Z3 (A4-07): the ownership line is English in both languages, so a Spanish page marks it (as brand-legal.tsx does). */}
+    <span className="q-sr" lang="en">{` ${NUVORA_BRAND.ownership}`}</span>
   </div>;
 }

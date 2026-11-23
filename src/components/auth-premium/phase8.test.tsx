@@ -74,6 +74,8 @@ describe("one footer (row 6)", () => {
     expect(html.match(/<span class="so-foot__item"><span class="so-foot__dot" aria-hidden="true">·<\/span>/g)).toHaveLength(4);
     expect(html).toContain('<span aria-current="page">');
     expect(renderToStaticMarkup(createElement(SignedOutFooter, { lang })).match(/class="so-foot__item"/g)).toHaveLength(3);
+    // Z3 (A4-07): the English ownership line is marked as English, so a Spanish page doesn't read it as Spanish.
+    expect(html).toContain('<span class="q-sr" lang="en"> NEVORA is a product of VELANI LLC.</span>');
   });
   it("ends the public error screen too, in place of its own \"Powered by\" line", () => {
     const html = renderToStaticMarkup(createElement(PublicErrorScreen, { reset: () => {} }));
