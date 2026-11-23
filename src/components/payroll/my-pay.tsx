@@ -85,5 +85,5 @@ export function MyPay({ nextPay = null, statement = null, document = null, corpo
 }
 
 /** Phase 2 (G10, brief rule 1): an Owner's or Manager's My pay is the Employee's Pay screen with their own statements
- * (the same read), named "My pay" (no band back link: in the Manager shell it lands on the logo; the tab bar and More reach it). The separate look-alike it replaced is gone. */
-export const MY_PAY_HOME = { title: 'My pay' } as const;
+ * (the same read), named "My pay" and, on a phone, pushed from More. The separate look-alike it replaced is gone. */
+export const MY_PAY_HOME = { title: 'My pay', back: { href: '/app/more', label: 'More' } } as const;

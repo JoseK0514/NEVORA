@@ -538,8 +538,6 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__links:not(#ab-none) { column-gap: var(--b-space-20) !important; margin: var(--b-space-24) var(--b-space-16) 0 !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__under { display: flex; flex-direction: column; align-items: stretch; margin: var(--b-space-24) var(--b-space-16) 0; text-align: center; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__under > .q-auth__links:not(#ab-none) { margin: 0 !important; }
-/* PB-009 (Spanish only): the app after sign-in is in English for now, said in one grey line before the person signs in. */
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__langnote { margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); letter-spacing: 0; text-wrap: balance; }
 @media (min-width: 1024px) {
   /* The column is the card, so what sits under it hangs from its foot; it may be a little wider than the card so the
    * Spanish links stay on one row. The card keeps room for it above the legal line. */
@@ -635,7 +633,6 @@
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside:has(> .q-auth__links) { position: absolute; top: 100%; left: -56px; right: -56px; margin: var(--b-space-24) 0 0 !important; gap: 0 !important; text-align: center; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside > .q-auth__links:not(#ab-none) { margin: 0 !important; flex-direction: row !important; flex-wrap: wrap !important; justify-content: center !important; column-gap: var(--b-space-20) !important; row-gap: 0 !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.ma-outside > .q-auth__links) { margin-bottom: 104px !important; }
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside > .q-auth__langnote { margin-top: var(--b-space-8) !important; }
 }
 
 /* Welcome in short touch landscape: the illustration (.ma-hero) is not drawn there, so the band keeps its own 56px under
@@ -720,7 +717,6 @@
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside:has(> .q-auth__links):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { left: 0 !important; right: 0 !important; }
   @layer nv-b {
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.q-auth__links > :nth-child(3)):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-bottom: 208px !important; }
-    :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.q-auth__langnote):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-bottom: 256px !important; }
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.ar-under__more:not([hidden])):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-bottom: 304px !important; }
   }
 }
@@ -772,8 +768,6 @@
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):has(> .q-auth__foot > .ma-footer-help) > .q-auth__col:not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { --fd-hang: 0px; margin-bottom: calc(var(--fd-hang) + var(--b-space-12)) !important; }
     /* 24px to the links, then one 44px row of links (Sign in in English, Find your Employee ID). */
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):has(> .q-auth__foot > .ma-footer-help) > .q-auth__col:has(.ma-outside > .q-auth__links):not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { --fd-hang: 68px; }
-    /* Spanish Sign in: the two links take two rows, then 8px and the two lines that say the app is in English for now. */
-    :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):has(> .q-auth__foot > .ma-footer-help) > .q-auth__col:has(.ma-outside > .q-auth__links):has(.q-auth__langnote):not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { --fd-hang: 156px; }
     /* Welcome: the link, then its one-line note. */
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):has(> .q-auth__foot > .ma-footer-help) > .q-auth__col:has(.ma-outside > .ma-note):not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { --fd-hang: 119px; }
   }
@@ -870,10 +864,8 @@
 /* It takes its line's colour (the band's rule for spans would paint it white on the white card). */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-whole:not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { color: inherit !important; }
 
-/* Row 8 is the markup's order (the error right under its field, then the helper). Row 11: Sign in's Spanish line is
- * centred under its centred links at every width. Row 12: "Need help?" is a link, teal 600 like the links under the
+/* Row 8 is the markup's order (the error right under its field, then the helper). Row 12: "Need help?" is a link, teal 600 like the links under the
  * card. */
-:is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-outside > .q-auth__langnote:not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { text-align: center !important; }
 :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-footer-help:not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { color: var(--b-teal) !important; font-weight: 600 !important; }
 
 /* Row 9. "You're set" on a phone: the Employee ID is a plain field with its label above it, as at every other width;

@@ -6,7 +6,8 @@ import type {PhotoSettingsActionResult} from '@/lib/clocker/photo-server/setting
 import {photoSettingsDraft,photoSettingsUpdate,verifySavedPhotoPolicy,type PhotoSettingsDraft} from '@/lib/clocker/photo-client/settings';
 import {readPhotoPolicy} from '@/lib/clocker/photo-client/session';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
-import {CorpCard} from '../corp/corp';
+import {CorpCard,CorpFormFooter} from '../corp/corp';
+import {FieldB,SwitchRowB} from '@/app/app/settings/settings-b-form';
 import {BCallout} from '../owner-b/b-kit';
 import {ReturnToNext} from '../team/return-to-next';
 import {clockerOwnerCopy,type ClockerOwnerLang} from '../clocker-owner-copy';
@@ -72,28 +73,24 @@ export function ClockerPhotoSettings({initialPolicy,saveAction,readAction,childr
         * a 600 title over the 400 line, a hairline edge), not a bold line floating between the sentence and the switch. */}
       <BCallout tone="teal" title={t.photosUnavailableTitle}>{t.photosUnavailableBody}</BCallout>
     </div>
-    <form id="photo-policy-form" onSubmit={save} className="c-photos__form" aria-busy={pending} aria-labelledby="photo-settings-title">
+    <form id="photo-policy-form" onSubmit={save} className="c-photos__form" aria-busy={pending} aria-labelledby="photo-settings-title" data-save-on-change="" data-dirty={(changed||pending)&&!mustReload?'':undefined}>
       <h2 className="c-sr" id="photo-settings-title">{t.photosTitle}</h2>
       <fieldset disabled={pending} className="c-photos__fields">
         <legend className="c-sr">{t.photosTitle}</legend>
-        <label className="c-row c-photos__switch" htmlFor="photo-enabled">
-          <span className="c-row__main"><span className="c-row__title">{t.photosMain}</span></span>
-          {state(draft.enabled)}<input id="photo-enabled" type="checkbox" role="switch" className="c-switch" checked={draft.enabled} onChange={e=>setDraft({...draft,enabled:e.target.checked})}/>
-        </label>
+        <ul className="c-rows"><li><SwitchRowB id="photo-enabled" label={t.photosMain} status={state(draft.enabled)} checked={draft.enabled} onChange={on=>setDraft({...draft,enabled:on})}/></li></ul>
         {/* Review B5 (NV-083): while punch photos are off, the moments read as off too (disabled, the disabled look); the
           choices are kept and come back when photos are turned on. Phase 8 (B #6): a disabled moment is drawn and announced
           off, since no photo is taken at it; the kept choice lives in the draft, not in the switch. */}
         <fieldset className="c-photos__events" disabled={!draft.enabled} data-off={!draft.enabled || undefined}>
         <legend className="c-photos__label" id="photo-events">{t.photosMoments}</legend>
         {draft.enabled?null:<p className="ck-photos__why" id="photo-events-why">{t.photosMomentsOff}</p>}
-        <ul className="c-rows" aria-labelledby="photo-events" aria-describedby={draft.enabled?undefined:'photo-events-why'}>{PHOTO_ACTIONS.map(action=><li key={action}><label className="c-row c-row--one c-photos__switch" htmlFor={`photo-event-${action}`}>
-          <span className="c-row__main"><span className="c-row__title">{labels[action]}</span></span>
-          {state(draft.events.includes(action),!draft.enabled)}<input id={`photo-event-${action}`} type="checkbox" role="switch" className="c-switch" aria-describedby={draft.enabled?undefined:'photo-events-why'} checked={draft.enabled&&draft.events.includes(action)} onChange={e=>setDraft({...draft,events:e.target.checked?[...draft.events,action]:draft.events.filter(value=>value!==action)})}/>
-        </label></li>)}</ul>
+        <ul className="c-rows" aria-labelledby="photo-events" aria-describedby={draft.enabled?undefined:'photo-events-why'}>{PHOTO_ACTIONS.map(action=><li key={action}>
+          <SwitchRowB id={`photo-event-${action}`} label={labels[action]} status={state(draft.events.includes(action),!draft.enabled)} describedBy={draft.enabled?undefined:'photo-events-why'}
+            checked={draft.enabled&&draft.events.includes(action)} onChange={on=>setDraft({...draft,events:on?[...draft.events,action]:draft.events.filter(value=>value!==action)})}/>
+        </li>)}</ul>
         </fieldset>
-        <div className="c-field c-photos__keep"><label className="c-field__label" htmlFor="photo-retention-days">{t.photosKeep}</label>
-          <span className="c-photos__days"><input id="photo-retention-days" className="c-in" aria-describedby="photo-retention-help" type="number" min={1} max={30} step={1} inputMode="numeric" enterKeyHint="done" value={draft.retentionDays} onChange={e=>setDraft({...draft,retentionDays:e.target.value})}/><span aria-hidden="true">{t.photosDays}</span></span>
-          <span id="photo-retention-help" className="c-field__help">{t.photosKeepHelp}</span></div>
+        <div className="c-photos__keep c-setb-fields"><FieldB label={t.photosKeep} id="photo-retention-days" name="retentionDays" unit={t.photosDays} helpId="photo-retention-help" help={t.photosKeepHelp}
+          type="number" min={1} max={30} step={1} inputMode="numeric" enterKeyHint="done" value={draft.retentionDays} onChange={e=>setDraft({...draft,retentionDays:e.target.value})}/></div>
         <details className="c-photos__more"><summary className="c-row c-row--one"><span className="c-row__main"><span className="c-row__title">{t.photosMissing}</span></span><CaretDownIcon weight="bold" className="c-chev c-photos__caret" aria-hidden="true"/></summary>
           <div className="c-photos__moretext">{t.photosMissingBody.map(line=><p key={line}>{line}</p>)}</div></details>
       </fieldset>
@@ -101,9 +98,14 @@ export function ClockerPhotoSettings({initialPolicy,saveAction,readAction,childr
     </form>
     {children}
     {feedback?<p ref={said} tabIndex={feedback.focus?-1:undefined} role={feedback.focus?undefined:feedback.error?'alert':'status'} className={feedback.error?'c-photos__feedback c-photos__feedback--error':'c-photos__feedback'}>{feedback.text}</p>:null}
-    {changed||mustReload||pending?<div className="c-card__foot c-photos__foot" ref={foot}>
-      {mustReload?<button type="button" className="c-btn c-btn--secondary" disabled={pending} onClick={()=>void reload()}>{t.photosReload}</button>:null}
-      <button type="submit" form="photo-policy-form" disabled={pending||mustReload} className="c-btn">{pending?t.saving:t.photosSave}</button>
-    </div>:null}
+    {/* Final fixes S2 (G85): Save as on every Settings form: a phone's band (the page's `phoneRight`, shown while the form
+      is `data-dirty`), the card's footer at its right edge from 768px. Reload, when a save couldn't be confirmed, is the
+      card's own footer at every width. */}
+    {mustReload?<div className="c-card__foot c-photos__foot" ref={foot}>
+      <button type="button" className="c-btn c-btn--secondary" disabled={pending} onClick={()=>void reload()}>{t.photosReload}</button>
+      <button type="submit" form="photo-policy-form" disabled className="c-btn">{t.photosSave}</button>
+    </div>:changed||pending?<div ref={foot} style={{display:'contents'}}><CorpFormFooter>
+      <button type="submit" form="photo-policy-form" disabled={pending} className="c-btn">{pending?t.saving:t.photosSave}</button>
+    </CorpFormFooter></div>:null}
   </CorpCard>;
 }

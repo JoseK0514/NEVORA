@@ -264,6 +264,17 @@ function closeSheet(kind:'escape'|'done'|'automatic'='escape'){
 function openFirstSheet(){
  (control(n=>n.type==='button'&&n.props.className==='c-tc-person').onClick as ()=>void)();
 }
+// Gate check (Nov 23, 2026): a person's week says a waiting correction once (in the amber note), without the header's
+// "Correction waiting" and without a line on how to clear issues before approval.
+it('says a timecard issue once in the person\'s week',async()=>{
+ const own=card('E1');
+ rs.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-27T12:00:00Z',cards:[{...own,source:{...own.source,pendingCorrections:1}}]}));
+ await mount();openFirstSheet();
+ const sheet=html().slice(html().indexOf('c-tc-sheet__who'));
+ expect(sheet).toContain('Correction awaiting review');
+ expect(sheet).not.toContain('Correction waiting');
+ expect(sheet).not.toContain('Review the entries');
+});
 it.each(['escape','done'] as const)('returns focus to the replacement current row on %s after a refresh replaces the original trigger',async kind=>{
  transport();await mount();openFirstSheet();
  const focus=sheetFocusFixture();
@@ -331,6 +342,13 @@ let media:{matches:boolean;listeners:(()=>void)[]};
 function phoneWindow(matches=true){media={matches,listeners:[]};rs.stubGlobal('window',Object.assign(new EventTarget(),{matchMedia:()=>({get matches(){return media.matches;},addEventListener:(_:string,l:()=>void)=>{media.listeners.push(l);},removeEventListener:()=>{}})}));}
 async function mountAll(){render();host.mounted=true;const cleanups=host.effects.map(effect=>effect());cleanup=()=>cleanups.forEach(c=>{if(typeof c==='function')c();});await flush();}
 const resize=(matches:boolean)=>{media.matches=matches;for(const listener of media.listeners)listener();};
+// G89 (Nov 23, 2026): on phones the Team card's title carries the count, so the band doesn't also say "N people".
+it('phone: the number of people is said once, in the Team card',async()=>{
+ phoneWindow();transport();await mountAll();
+ const band=html().match(/<header class="b-hero[\s\S]*?<\/header>/)?.[0]??html().slice(0,html().indexOf('b-tc-team'));
+ expect(band).not.toMatch(/\d+ (people|person)\b/);
+ expect(html()).toContain('id="b-tc-team"');
+});
 it('phone: Select in the top bar opens eligible cards; self-review stays excluded with its reason',async()=>{
  phoneWindow();transport();await mountAll();
  expect(html()).toContain('c-page c-tc"');expect(html()).not.toContain('Selected timecard review');

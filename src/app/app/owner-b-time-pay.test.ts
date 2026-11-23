@@ -43,3 +43,50 @@ describe('Timecards at a large text size (G52)', () => {
       .toContain('.c-title__sub:not(#gq1):not(#gq2):not(#gq3) { line-height: 1.3125rem !important; }');
   });
 });
+
+describe('Clocked in now on two lines (Nov 23, 2026)', () => {
+  const large = block('@container tc-b (max-width: 20em)');
+  it('puts the live dot beside the first line', () => {
+    expect(large).toMatch(/\.c-tc-sub > \.b-status:not\(#gq1\):not\(#gq2\):not\(#gq3\) \{ align-items: flex-start !important; \}/);
+    expect(large).toMatch(/\.c-tc-sub > \.b-status > \.b-ldot[^{]*\{ margin-top: calc\(\(1\.35em - var\(--b-chip-dot\)\) \/ 2\) !important; \}/);
+  });
+});
+
+describe('Timecards text in rem from 768px (G90)', () => {
+  const g90 = css.slice(css.indexOf('.c-page.c-tc > header.c-title h1:not(#gq1)') - 200);
+  it('sets the title, the period words, the tabs and the table in rem with the kit roles', () => {
+    expect(css.indexOf('.c-page.c-tc > header.c-title h1:not(#gq1)')).toBeGreaterThan(-1);
+    expect(g90).toMatch(/\.c-page\.c-tc > header\.c-title h1[^{]*\{ font-size: 2rem !important; line-height: 2\.375rem !important; \}/);
+    expect(g90).toMatch(/:is\(\.c-tc-seg, \.c-tc-tabs\) > button[^{]*\{ font-size: var\(--b-fs-body-sm\) !important; line-height: var\(--b-lh-body-sm\) !important; \}/);
+    expect(g90).toMatch(/\.c-tc-table[^{]*\{ font-size: var\(--b-fs-body\) !important; line-height: var\(--b-lh-body\) !important; \}/);
+    expect(g90).toMatch(/\.c-tc-table thead th[^{]*\{ font-size: var\(--b-fs-meta\) !important;/);
+  });
+  it('lets the person\'s week wrap once its text is large for the sheet', () => {
+    expect(css).toMatch(/\.c-tc-sheet:not\(#gq1\) \{ container: tc-sheet \/ inline-size !important; font-size: var\(--b-fs-body\) !important;/);
+    const sheet = block('@container tc-sheet (max-width: 22rem)');
+    expect(sheet).toMatch(/\.c-stats[^{]*\{ grid-auto-flow: row !important;/);
+    expect(sheet).toMatch(/\.c-tc-day > \.c-row__main[^{]*\{ order: 3 !important; flex: 1 0 100% !important;/);
+  });
+});
+
+describe('Timecards gate check (Nov 23, 2026)', () => {
+  const desktop = readFileSync(join(__dirname, 'owner-b-desktop.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  it('draws Select on the band as the glass action, never teal on teal', () => {
+    expect(desktop).toMatch(/\.c-page\.c-tc > header\.c-title \.c-tc-select:not\(#gq1\):not\(#gq2\):not\(#gq3\) \{[^}]*height: var\(--b-btn-h-band\) !important;[^}]*background: var\(--b-glass\) !important;[^}]*color: var\(--b-on-band\) !important;/);
+  });
+  it('gives the Show tabs and the sheet\'s note link a 44px target', () => {
+    expect(css).toMatch(/\.c-tc-tabs > button:not\(#gq1\):not\(#gq2\):not\(#gq3\)::before \{ content: "" !important; position: absolute !important; inset: -4px 0 !important; \}/);
+    expect(css).toMatch(/\.c-tc-sheet \.b-callout a:not\(#gq1\):not\(#gq2\):not\(#gq3\) \{[^}]*min-height: var\(--b-target\) !important;/);
+  });
+});
+
+describe('the period table at a large text size (G90 follow-up)', () => {
+  const table = block('@container tc-table (max-width: 36rem)');
+  it('lets names and statuses wrap and steps the Breaks column aside only when the card is narrow for its text', () => {
+    expect(css).toMatch(/\.c-tc-tablecard:not\(#gq1\) \{ container: tc-table \/ inline-size !important; \}/);
+    expect(table).toMatch(/td\[data-col="person"\][^{]*\{ max-width: none !important; min-width: 7em !important;/);
+    expect(table).toMatch(/\.c-tc-person > span:not\(\.c-av\)[^{]*\{ white-space: normal !important;/);
+    expect(table).toMatch(/\[data-col="breaks"\][^{]*\{ display: none !important; \}/);
+    expect(table).toMatch(/\.c-tc-st > :is\(\.b-status, \.b-chip\)[^{]*\{ flex: 0 1 auto !important; min-width: 0 !important; \}/);
+  });
+});

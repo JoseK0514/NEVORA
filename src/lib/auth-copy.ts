@@ -55,8 +55,6 @@ const en = {
   forgotAccess: "Forgot password?",
   /** The second link under the sign-in card (Phase 5, PB-012): who it is for, then what it does. */
   setUpAccount: "New here? Set up your account",
-  /** Spanish only (Phase 5, PB-009): the app after sign-in is in English for now, said before the person signs in. */
-  appLanguageNote: "",
   signIn: "Sign in",
   accountHelp: "Account help",
   signingIn: "Signing in…",
@@ -223,7 +221,6 @@ const es: AuthCopy = {
   hidePasswords: "Ocultar contraseñas",
   forgotAccess: "¿Olvidaste tu contraseña?",
   setUpAccount: "¿Primera vez? Configura tu cuenta",
-  appLanguageNote: "Por ahora, la aplicación se muestra en inglés después de iniciar sesión.",
   signIn: "Iniciar sesión",
   accountHelp: "Ayuda con la cuenta",
   signingIn: "Iniciando sesión…",

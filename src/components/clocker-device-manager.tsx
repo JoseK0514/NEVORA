@@ -5,6 +5,7 @@ import { DeviceTabletIcon } from '@phosphor-icons/react/dist/ssr/DeviceTablet';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { QuestionIcon } from '@phosphor-icons/react/dist/ssr/Question';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import type { ClockerDeviceView, ClockerLocationView, ClockerOwnerResult } from '../lib/clocker/views';
 import { toast } from './toaster';
 import { SettingsPageB } from '../app/app/settings/settings-b';
@@ -259,8 +260,15 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
       </section> : null}
       {!activeLocations.length ? <BCard label={t.noLocationTitle}><BState kind="paused" title={t.noLocationTitle} line={t.noLocationBody} action={{ label: t.goToLocations, href: '/app/settings/locations' }} /></BCard> : null}
       {current.length ? <BCard id="clocker-tablets" title={t.tabletsCard} count={current.length}>
-        <BList label={t.tabletsList}>{current.map(row)}</BList>
-        <div className="ck-foot"><button type="button" className="b-btn b-btn--teal" data-clocker-add="" disabled={!canAdd} onClick={event => open({ operation: 'REGISTER' }, event)}>{t.addTablet}</button></div>
+        {/* Final fixes S2 (G85): adding is the "+ Add …" row every Settings list ends with (Locations, Positions, Breaks). */}
+        <BList label={t.tabletsList}>{current.map(row)}
+          <li className="b-li"><div className="b-row ck-trow ck-trow--add" data-open="">
+            <button type="button" className="ck-trow__main ck-trow__open" data-clocker-add="" disabled={!canAdd} onClick={event => open({ operation: 'REGISTER' }, event)}>
+              <BIcon tone="teal"><PlusIcon weight="bold" /></BIcon><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{t.addTablet}</span></span></span>
+            </button>
+            <span className="ck-trow__act" /><span className="ck-trow__chev" aria-hidden="true" />
+          </div></li>
+        </BList>
       </BCard> : activeLocations.length ? <BCard label={t.emptyTitle}>
         <BState kind="empty" icon={<DeviceTabletIcon weight="bold" />} title={t.emptyTitle} line={t.emptyBody}>
           <button type="button" className="b-btn b-btn--teal" data-clocker-add="" disabled={!canAdd} onClick={event => open({ operation: 'REGISTER' }, event)}>{t.addFirstTablet}</button>

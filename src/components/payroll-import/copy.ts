@@ -215,14 +215,13 @@ const en = {
       line: (hold: Hold): string => {
         switch (hold.kind) {
           case "peopleNotReviewed": return "Go through everyone on the team for this period, then come back.";
-          case "peopleChanged": return "The export uses exactly the list of who’s included.";
+          case "peopleChanged": return "Review who’s included again on Time exports. The export uses exactly that list.";
           case "tooManyPeople": return "A paid time export covers up to 300 people.";
           case "notFinalized": return `Still open: ${list(hold.names, "and", n => `${n} more`)}. Paid time is exported only from finalized timecards.`;
-          case "alreadyComplete": return "The server already has a complete record of this period.";
+          case "alreadyComplete": return "The server already has a complete record of this period. Its files are on Time exports.";
         }
       },
-      // Phase 2 (G9): the back link already reads "Time exports", so the line and the button name what to do there.
-      action: (hold: Hold): string => hold.kind === "notFinalized" ? "Open Timecards" : hold.kind === "tooManyPeople" ? "Go to Payroll" : hold.kind === "alreadyComplete" ? "See the files" : "Review who’s included",
+      action: (hold: Hold): string => hold.kind === "notFinalized" ? "Open Timecards" : hold.kind === "tooManyPeople" ? "Go to Payroll" : "Open Time exports",
     },
     breaks: {
       heading: "Decide every recorded break",
@@ -259,8 +258,8 @@ const en = {
       lead: "Batches go one at a time. Each one is saved only when the server’s reply is checked against what was sent.",
       status: { waiting: "Waiting", sending: "Sending…", saved: "Saved", unknown: "Not confirmed", refused: "Not accepted", blocked: "Stopped" } satisfies Record<RunStatus, string>,
       sendAll: "Send batches", sendRest: "Continue sending", sending: "Sending…",
-      checkBatch: "Check this batch", checkBatchFor: (index: number) => `Check batch ${index}`,
-      download: "Download CSV", downloadFor: (index: number) => `Download the CSV for batch ${index}`,
+      checkBatch: "Check this batch", checkBatchFor: (index: number) => `Check this batch, batch ${index}`,
+      download: "Download CSV", downloadFor: (index: number) => `Download CSV, batch ${index}`,
       unknownLine: "The reply didn’t arrive or couldn’t be verified. Checking sends the exact same file again, so it can’t be saved twice. A changed file is never sent under the same receipt.",
       conflictLine: "The timecards, the people or the file format changed after this plan was made, and the server has no record of this batch. This plan stops here. Start a new export from Time exports.",
       duplicateLine: "These hours were already exported under a different receipt, which can’t stand in for this batch. This plan stops here. Open Time exports to see the files that were sent.",
@@ -492,7 +491,7 @@ const es: PayrollImportCopy = {
       },
       line: (hold): string => {
         switch (hold.kind) {
-          case "peopleNotReviewed": return "Repasa a todas las personas del equipo para este período en Exportar horas y vuelve aquí.";
+          case "peopleNotReviewed": return "Repasa a todas las personas del equipo para este período y vuelve aquí.";
           case "peopleChanged": return "Revisa otra vez quién está incluido en Exportar horas. La exportación usa exactamente esa lista.";
           case "tooManyPeople": return "Una exportación de tiempo pagado cubre hasta 300 personas.";
           case "notFinalized": return `Siguen abiertas: ${list(hold.names, "y", n => `${n} más`)}. El tiempo pagado se exporta solo de hojas de tiempo finalizadas.`;
@@ -536,8 +535,8 @@ const es: PayrollImportCopy = {
       lead: "Los lotes van uno a la vez. Cada uno queda guardado solo cuando la respuesta del servidor se compara con lo que se envió.",
       status: { waiting: "En espera", sending: "Enviando…", saved: "Guardado", unknown: "Sin confirmar", refused: "No aceptado", blocked: "Detenido" },
       sendAll: "Enviar lotes", sendRest: "Seguir enviando", sending: "Enviando…",
-      checkBatch: "Verificar este lote", checkBatchFor: index => `Verificar el lote ${index}`,
-      download: "Descargar CSV", downloadFor: index => `Descargar el CSV del lote ${index}`,
+      checkBatch: "Verificar este lote", checkBatchFor: index => `Verificar este lote, lote ${index}`,
+      download: "Descargar CSV", downloadFor: index => `Descargar CSV, lote ${index}`,
       unknownLine: "La respuesta no llegó o no se pudo verificar. Verificar envía exactamente el mismo archivo otra vez, así que no puede guardarse dos veces. Un archivo cambiado nunca se envía con el mismo recibo.",
       conflictLine: "Las hojas de tiempo, las personas o el formato del archivo cambiaron después de hacer este plan, y el servidor no tiene constancia de este lote. Este plan se detiene aquí. Empieza una exportación nueva desde Exportar horas.",
       duplicateLine: "Estas horas ya se exportaron con otro recibo, que no puede sustituir a este lote. Este plan se detiene aquí. Abre Exportar horas para ver los archivos que se enviaron.",
