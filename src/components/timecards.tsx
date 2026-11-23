@@ -548,7 +548,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <CorpAvatar name={openItem.card.employeeName} initials={initialsOf(openItem.card.employeeName)}/>
               <span className="c-row__main"><h3 id="cm-tc-sheet-title" className="c-row__title c-row__title--b" tabIndex={-1}>{openItem.card.employeeName}</h3>
                 <span className="c-row__detail"><span>{keepWhole(`${roleOf(openItem.card)?`${roleOf(openItem.card)} · `:''}${rangeText(period)}`)}</span></span></span>
-              {status?<span className="c-tc-sheet__state">{toneOf(openItem)?<BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip>:<BStatusText dot={LIVE_DOT[status.text]}>{status.text}</BStatusText>}</span>:null}
+              {/* Gate check (Nov 23, 2026): with the amber note open, its lines say the status ("Correction awaiting review",
+                * "No clock-out yet"), so the header doesn't repeat it as "Correction waiting" or "Clocked in now". */}
+              {status&&!(openItem.card.issues.length&&tone!=='neutral')?<span className="c-tc-sheet__state">{toneOf(openItem)?<BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip>:<BStatusText dot={LIVE_DOT[status.text]}>{status.text}</BStatusText>}</span>:null}
             </div>
             <CorpStats items={[{label:'Recorded',value:compactHours(openItem.card.recordedNanoseconds)},{label:'Breaks',value:compactHours(openItem.card.breakNanoseconds)},{label:'Clock-ins',value:openItem.card.entries.length}]}/>
           </section>
@@ -560,8 +562,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             // line of the body; a waiting correction keeps its way in as the note's one action (Review B2, NV-133).
             <div className="c-tc-sheet__attn"><BCallout tone="amber" title="Needs attention"
               action={openItem.card.issues.includes('pending_correction')?{label:'Review correction',href:'/app/timecards/corrections'}:undefined}>
-              {openItem.card.issues.map(issue=><p key={issue}>{issueNames[issue]}</p>)}
-              <p>Review the entries and resolve open time or corrections before approval.</p></BCallout></div>:null}
+              {/* Gate check (Nov 23, 2026): the issues are the note; the line on how to clear them before approval is gone. */}
+              {openItem.card.issues.map(issue=><p key={issue}>{issueNames[issue]}</p>)}</BCallout></div>:null}
           <CorpCard id="tc-days" label="Days">
             {days.length?<ul className="c-rows" aria-label="Days with recorded time">{days.map(day=><li key={day.date}><div className="c-row c-tc-day">
               <span className="c-tc-day__date">{day.label}</span>
@@ -702,7 +704,13 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // Phase 8 (b.md #27): each part stays whole ("Approval opens Mon, Nov 23" never splits); the line breaks only after " · ".
     // Premium pass FA (final verification B #8): one line of facts (BSegs): each part whole, and no line starts or ends on
     // a "·" ("12 people · / Approval opens Mon, Nov 23" left the dot at the end of the first line).
-    const subtitle=<BSegs parts={ready?[rangeText(period),`${cards.length} ${cards.length===1?'person':'people'}`,folded&&cards.length?`Approval opens ${approveFrom(period)}`:null].map(part=>part?part.replace(/ /g,'\u00a0'):part):[rangeText(period)]}/>;
+    // G52 (Nov 23, 2026): a part keeps its date whole (BSegs' keepWhole) but is no longer one unbreakable run, so at 200%
+    // text on a 320px phone "Approval opens Mon, Nov 30" wraps after "opens" instead of running off the screen. A part
+    // still moves to the next line whole whenever it fits there.
+    const subtitle=<BSegs parts={ready?[rangeText(period),`${cards.length} ${cards.length===1?'person':'people'}`,folded&&cards.length?`Approval opens ${approveFrom(period)}`:null]:[rangeText(period)]}/>;
+    // G89 (Nov 23, 2026): on phones the Team card's title carries the count ("Team 12"), so the band says the week (and
+    // when approval opens) without "12 people"; with no Team card the count stays in the band.
+    const phoneSubtitle=ready&&cards.length?<BSegs parts={[rangeText(period),folded?`Approval opens ${approveFrom(period)}`:null]}/>:subtitle;
     const summary=ready&&cards.length&&!showBulk&&!folded?<CorpCard as="div" ariaLabel="Period overview">
       <div className="c-card__body">
         <div className="c-tc-sum"><b>{summaryTitle}</b>
@@ -756,7 +764,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       // Direction B (Jose approved Nov 5, 2026; mock "Owner · Time"): the hero with the week control and this period's figures,
       // then each person's recorded time. Selecting and the reviewed batch keep the layout below, unchanged.
       const bScreen=showBulk||selecting?null:<BScreen>
-        <BHero title="Timecards" titleId="b-tc-title" sub={subtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
+        <BHero title="Timecards" titleId="b-tc-title" sub={phoneSubtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
           <BSeg label="Week" items={[
             {key:'this',label:'This week',current:periodName==='This week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(thisWeek);}},
             {key:'last',label:'Last week',current:periodName==='Last week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(lastWeek);}},
@@ -797,7 +805,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               // Premium pass FA (final verification A #25, B #31): the breaks fitted on some rows and were left out of others by
               // an invisible rule, so a phone row says its status only; the breaks are in the row's sheet and the wide table.
               const parts=[tone||liveDot?null:row.text].filter(Boolean) as string[];
-              return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,isOwn(item)?'You':null,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
+              // G47 (Nov 23, 2026): the row is named by what it shows (name, "You", status, hours), never a label that
+              // rewrites it; the face's initials are aria-hidden.
+              return <BRow key={id} onClick={()=>setOpenId(id)} lead={<BAvatar name={name}/>}
                 title={name} chip={isOwn(item)?youChip:undefined}
                 sub={tone||liveDot||parts.length?<span className="c-tc-sub">{tone?<BChip tone={tone}>{NARROW_STATUS[row.text]?<><span className="c-tc-chip-full">{row.text}</span><span className="c-tc-chip-short" aria-hidden="true">{NARROW_STATUS[row.text]}</span></>:row.text}</BChip>:liveDot?<BStatusText dot={liveDot}>{row.text}</BStatusText>:null}{parts.map((part,index)=><span key={part}>{index||tone||liveDot?' · ':''}{part}</span>)}</span>:undefined}
                 end={hours?<b className="c-num c-tc-hours">{hours}</b>:undefined} chevron/>;
@@ -812,7 +822,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       </BScreen>;
       return <CorpPage className="c-tc" labelledBy="tc-title">
         {bScreen}
-        <CorpTitle id="tc-title" title="Timecards" sub={subtitle} actions={selectButton}/>
+        <CorpTitle id="tc-title" title="Timecards" sub={phoneSubtitle} actions={selectButton}/>
         {seg}
         <HoldHeight holding={!ready} memory="timecards-manager" className="c-tc-hold">
           {stateCard}
@@ -833,7 +843,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               return <li key={id} id={`timecard-${id}`} tabIndex={-1}>{picking?<label className="c-row c-tc-pick" data-off={pickDisabled(item)||undefined}>
                 <input type="checkbox" className="c-tc-box" aria-label={`Select ${name}`} title={exclusionShort(item)??undefined} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/>
                 <span className="c-row__main"><span className="c-row__title c-row__title--b">{name}</span><span className="c-row__detail"><span>{excluded??row.text}</span></span></span>{hours?<span className="c-row__value"><CorpDuration>{hours}</CorpDuration></span>:null}
-              </label>:<button type="button" className="c-row" onClick={()=>setOpenId(id)} aria-label={[name,row.text,hours].filter(Boolean).join(', ')}>
+              </label>:<button type="button" className="c-row" onClick={()=>setOpenId(id)}>
                 <CorpAvatar name={name} initials={initialsOf(name)}/>
                 <span className="c-row__main"><span className="c-row__title c-row__title--b">{name}</span><span className="c-row__detail"><span><span className="c-tc-cue" data-act={row.act||undefined}>{row.text}</span></span></span></span>
                 {hours?<span className="c-row__value"><CorpDuration>{hours}</CorpDuration></span>:null}

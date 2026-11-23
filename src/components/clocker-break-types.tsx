@@ -129,7 +129,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
       </CorpRows>
       <p className="c-setb-cardnote">Changes apply to new breaks only.</p>
     </CorpCard> : <CorpEmpty title="No break types yet" body="Add the breaks your team takes, like a 30-minute meal."
-      action={<button id="break-add" type="button" className="c-btn c-btn--secondary" onClick={() => open({ operation: 'CREATE' }, 'break-add')}>Add break type</button>} />}
+      action={<button id="break-add" type="button" className="c-btn" onClick={() => open({ operation: 'CREATE' }, 'break-add')}>Add break type</button>} />}
     {archived.length ? <CorpCard id="break-types-archived" label="Archived" count={archived.length}>
       <CorpRows label="Archived break types">{archived.map(row)}</CorpRows>
     </CorpCard> : null}
@@ -165,7 +165,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
         {error ? <ResultB innerRef={errorMessage} tone="urgent" title={error.message.startsWith('It may not have saved') ? 'Not saved yet' : 'Not saved'}>{error.message}</ResultB> : null}
         <p role="status" className="c-sr">{pending ? 'Saving your changes…' : ''}</p>
         <div className="c-setb-dlg__acts">
-          {selection.operation === 'EDIT' && selection.type ? <button className="c-btn c-btn--danger c-setb-dlg__danger" type="button" disabled={pending}
+          {selection.operation === 'EDIT' && selection.type ? <button className="c-btn c-btn--secondary c-setb-dlg__danger" type="button" disabled={pending}
             onClick={() => { clear(); setError(null); setSelection({ operation: selection.type!.active ? 'ARCHIVE' : 'REACTIVATE', type: selection.type }); }}>{selection.type.active ? 'Archive break type' : 'Reactivate break type'}</button> : null}
           <button className="c-btn c-btn--secondary" type="button" disabled={pending} onClick={askClose} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
           {error?.refresh ? <button type="button" className="c-btn" onClick={() => window.location.reload()}>Reload</button>

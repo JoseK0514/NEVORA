@@ -123,13 +123,12 @@ export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKin
     <BHero back={{href: '/app/more', label: 'More'}} title="Add to calendar" titleId="b-calendar-title" sub="Keep your shifts in the calendar you already use" />
     <BStack>
       <section className="b-card" aria-labelledby="b-calendar-heading" aria-busy={busy}>
-        <div className="b-card__h"><h2 id="b-calendar-heading">Your calendar link</h2>{chip}</div>
+        <div className="b-card__h"><h2 id="b-calendar-heading">Subscription</h2>{chip}</div>
         <div className="eb-body">
           {paused ? <p className="b-state" role="status">Calendar settings paused. Return to this window to check your link.</p> : busy ? <p className="b-state" role="status">Saving your calendar request…</p> : !status ? <p className="b-state" role="status">Checking your calendar link…</p> : !available ? <>
             <p className="b-state" role="status">{status.state === 'unauthorized' ? 'Your access could not be confirmed. Sign in again to manage your link.' : 'Calendar settings could not be checked. Try again to see the current status.'}</p>
             {status.state === 'unauthorized' ? <BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink> : <BButton kind="quiet" full onClick={onRetry}>Try again</BButton>}
           </> : <>
-            <p className="eb-para eb-para--even">Your calendar app picks up schedule changes the next time it refreshes, which can take a while.</p>
             {/* Phase 9 (spec 2.2): privacy information is the kit's teal callout with ShieldCheck (no circle in a tint). */}
             <BCallout tone="teal" icon="privacy" title="Keep the link to yourself">Anyone with it can see your shift times and locations.</BCallout>
             {unknown ? <p className="eb-para">Your previous request still needs to be checked before you can change this link.</p>
@@ -190,7 +189,7 @@ type AlertsBProps = {snapshot: DeviceSnapshot | null; paused: boolean; enabled: 
  * turning off is reviewed first. The device owner and its commands are the page's own. */
 export function EmployeeAlertsB({confirmationRef, feedbackRef, turnOffRef, ending, ...p}: AlertsBProps) {
   const s = p.snapshot, allowed = p.enabled && !p.paused && !s?.accessChanged, state = allowed ? s?.state : null, busy = state === 'loading' || state === 'pending', cleanup = !!s?.cleanupPending;
-  const title = !p.enabled ? 'Your workplace hasn’t turned on device alerts' : p.paused ? 'Device settings paused' : s?.accessChanged ? 'Your access changed' : !s ? 'Checking this device…' : cleanup ? 'Alerts may still be on' : state === 'enabled' ? 'Alerts are on' : state === 'denied' ? 'Permission is blocked' : state === 'revoked' ? 'Device access changed' : state === 'install' ? 'Open from your Home Screen' : state === 'unavailable' ? 'Alerts are unavailable' : state === 'error' ? 'Setup needs a check' : busy ? 'Checking this device…' : 'Alerts are off';
+  const title = !p.enabled ? 'Your workplace hasn’t turned on device alerts' : p.paused ? 'Device settings paused' : s?.accessChanged ? 'Your access changed' : !s ? 'Checking this device…' : cleanup ? 'Alerts may still be on' : state === 'enabled' ? 'Alerts are on' : state === 'denied' ? 'Permission is blocked' : state === 'revoked' ? 'Device access changed' : state === 'install' ? 'Open from your Home Screen' : state === 'unavailable' ? 'Alerts are unavailable' : state === 'error' ? 'We couldn’t verify this device' : busy ? 'Checking this device…' : 'Alerts are off';
   const chip = !p.enabled ? <BChip>Unavailable</BChip> : !allowed || !s || busy ? null : cleanup ? <BChip tone="amber">Check</BChip> : state === 'enabled' ? <BChip tone="teal">On</BChip> : state === 'denied' ? <BChip tone="red">Blocked</BChip> : state === 'error' || state === 'revoked' ? <BChip tone="amber">Check</BChip> : <BChip>Off</BChip>;
   const settled = allowed && s && !busy && !p.confirm;
   const primary = settled && (state === 'ready' || state === 'dismissed') ? <BButton kind="teal" big full onClick={p.onEnable}>{state === 'dismissed' ? 'Review setup' : 'Turn on alerts'}</BButton>
@@ -202,7 +201,7 @@ export function EmployeeAlertsB({confirmationRef, feedbackRef, turnOffRef, endin
     : p.paused ? 'Return to this window to check the current status. No new setup will start automatically.'
     : s?.accessChanged ? <><Link className="eb-textlink" href="/login">Sign in again</Link> to check this account and device.</>
     : !s || busy ? state === 'pending' ? 'Finishing your device request…' : 'Checking permission and this device’s enrollment…'
-    : cleanup ? 'Check again asks NEVORA for the latest status. Retry turn off sends your earlier turn-off request again.' : state === 'enabled' ? 'This browser is set up for your account. Alerts also depend on your workplace and device settings.' : state === 'denied' ? 'Allow notifications in your browser or device settings, then check again here. NEVORA cannot change that permission for you.' : state === 'revoked' ? 'Permission or this browser’s setup changed. Turn off the previous setup before starting again.' : state === 'install' ? 'Add NEVORA to your Home Screen, then open it from that icon to set up alerts.' : state === 'unavailable' ? 'This browser or the current configuration cannot set up alerts. You can keep using your notifications in NEVORA.' : state === 'error' ? 'We could not verify this device. Check again before starting a new request. You can also turn off a previous setup.' : state === 'dismissed' ? 'Setup is postponed. You can return whenever you are ready.' : 'Get schedule changes, request answers and updates on this device. If permission is needed, your browser will ask.';
+    : cleanup ? 'Check again asks NEVORA for the latest status. Retry turn off sends your earlier turn-off request again.' : state === 'enabled' ? 'This browser is set up for your account. Alerts also depend on your workplace and device settings.' : state === 'denied' ? 'Allow notifications in your browser or device settings, then check again here. NEVORA cannot change that permission for you.' : state === 'revoked' ? 'Permission or this browser’s setup changed. Turn off the previous setup before starting again.' : state === 'install' ? 'Add NEVORA to your Home Screen, then open it from that icon to set up alerts.' : state === 'unavailable' ? 'This browser or the current configuration cannot set up alerts. You can keep using your notifications in NEVORA.' : state === 'error' ? 'Check again before starting a new request. You can also turn off the previous setup.' : state === 'dismissed' ? 'Setup is postponed. You can return whenever you are ready.' : 'Get schedule changes, request answers and updates on this device. If permission is needed, your browser will ask.';
   const checking = p.enabled && !p.paused && !s?.accessChanged && (!s || busy);
   return <BScreen back>
     <BHero back={{href: '/app/notifications', label: 'Notifications'}} title="Alerts on this device" titleId="b-alerts-title" sub="Settings for this browser only" />
@@ -228,7 +227,7 @@ export function EmployeeAlertsB({confirmationRef, feedbackRef, turnOffRef, endin
         </div> : null}
         <div ref={feedbackRef} tabIndex={-1} className="eb-feedback">{/* Phase 9 (spec 2.2): the note's tone follows the card's chip: amber
           * where it says Check (setup could not finish, turn-off pending), teal information otherwise. */}
-          {allowed && s?.message ? <BCallout tone={cleanup || state === 'error' ? 'amber' : 'teal'} role="status">{cleanup ? DEVICE_TURN_OFF_PENDING_MESSAGE : state === 'error' ? 'Setup could not finish. Check again before starting a new request. You can ask your manager for help.' : s.message}</BCallout> : null}
+          {allowed && s?.message ? <BCallout tone={cleanup || state === 'error' ? 'amber' : 'teal'} role="status">{cleanup ? DEVICE_TURN_OFF_PENDING_MESSAGE : state === 'error' ? 'Setup could not finish. You can ask your manager for help.' : s.message}</BCallout> : null}
           {allowed && p.installMessage ? <BCallout tone="teal" role="status">{p.installMessage}</BCallout> : null}</div>
       </>}
     </BStack>

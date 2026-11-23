@@ -39,9 +39,13 @@ it("lists every location with its people and status", async () => {
   // Release 1 (board O-Locations): the full name and state under the short name; how many people on the right.
   // Final polish D3 (#30): the line is the kit's facts line (BSegs), each fact whole.
   const facts = html.replace(/<[^>]+>/g, "");
-  expect(facts).toContain("East Office · Needs setup");
+  // Final fixes S2 (G85): a full name that only repeats the short name ("East" / "East Office") is left out; one that
+  // says more ("Studio" / "West Office") stays.
+  expect(facts).toContain("EastNeeds setup");
+  expect(facts).not.toContain("East Office");
+  expect(facts).toContain("West Office");
   expect(html).toContain('<span class="c-row__value c-row__value--soft">1 employee</span>');
-  expect(facts).toContain("Old Office · Inactive");
+  expect(facts).toContain("OldInactive");
   // Phase 2 (Nov 23, 2026): Settings' Direction B frame and the kit's card; the band says "Locations" once, so the card
   // has no title repeating it, and the always-true line under the card is gone. Rows have no aria-label of their own.
   expect(html).toContain('class="c-page c-page--narrow c-setb"');
