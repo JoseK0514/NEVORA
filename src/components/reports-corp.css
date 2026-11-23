@@ -115,4 +115,4 @@
 }
 
 /* Rondo and Insights fixes (Nov 23, 2026): the phone's period segments are 44px tap targets (they were 36px). */
-@media (max-width: 767px) { :is(#c-root, html) .c-ins .c-ins__seg > button { min-height: 2.75rem; } }
+@media (max-width: 767px) { :is(#c-root, html) .c-ins .c-ins__seg { --b-seg-item-h: 2.75rem; height: auto; } }
