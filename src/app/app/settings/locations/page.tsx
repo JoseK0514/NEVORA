@@ -64,7 +64,9 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
       {visible.length ? <CorpCard as="div">
         <CorpRows label={words.locations}>
           {visible.map(({ location, readiness, eligibleCount }) => {
-            const facts = [location.name !== location.shortName ? placeName(location.name) : null,
+            // Final fixes S2 (G85): the full name only when it says more than the short name; "Condado — Condado" read twice.
+            const fullSaysMore = !location.name.toLowerCase().includes(location.shortName.trim().toLowerCase());
+            const facts = [fullSaysMore ? placeName(location.name) : null,
               readiness.state === "INACTIVE" ? "Inactive" : readiness.state === "NEEDS_SETUP" ? "Needs setup" : null];
             return <li key={location.id} data-location={location.id}>
               <CorpRow href={`${directoryPath}/${encodeURIComponent(location.id)}`} title={location.shortName} icon={<MapPinIcon weight="bold" />}

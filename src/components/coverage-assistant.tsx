@@ -6,6 +6,7 @@ import { durationText } from "@/lib/duration-text";
 import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpRows,CorpTime,CorpTitle } from "./corp/corp";
 import { ManagerIssueFocus } from "./manager-issue-focus";
 import { ScheduleCoverPick } from "./schedule-cover-pick";
+import { KeptSaved, UnlessSaved } from "./coverage-saved";
 import "./coverage-assistant.css";
 
 export type CoverageEmployee = {
@@ -62,14 +63,14 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
   // R3 / copy table 28: no "Not filled" pill (the card already says Open shift); a change of state is plain grey text.
   // G63 (Nov 23, 2026): each fact once. After a save, "Replacement saved." says it; otherwise the Covered state does. A
   // stale gap says "Coverage changed" in its own card, so the shift card carries no second "Changed".
-  const state = props.status === "RESOLVED" && !props.saved ? <span className="c-meta c-cover__state">Covered</span> : null;
+  const state = props.status === "RESOLVED" ? <UnlessSaved saved={!!props.saved}><span className="c-meta c-cover__state">Covered</span></UnlessSaved> : null;
   const facts = [props.positionName, shortDate, props.locationName, props.designatedLead ? "Shift lead needed" : null, nextDay ? `Ends ${nextDay.weekday},\u00a0${nextDay.day}` : null].filter(Boolean).join(" · ");
   const needs = props.requirements?.length && (props.status === "READY" || props.status === "CHOOSE") && (props.requirements.length > 1 || props.status === "CHOOSE") ? props.requirements : null;
   return <CorpPage className="c-cover c-page--narrow" labelledBy="coverage-title">
     <CorpNav back={{ href: props.backHref, label: "Schedule" }} title="Find cover" titleId="coverage-title" phoneOnly />
     <CorpTitle title="Find cover" wide />
     <ManagerIssueFocus prefix="coverage-" />
-    {props.saved ? <CorpNote icon={<BDoneMark />}>Replacement saved.</CorpNote> : null}
+    <KeptSaved saved={!!props.saved}><CorpNote icon={<BDoneMark />}>Replacement saved.</CorpNote></KeptSaved>
     <div className="wa-target" id="coverage-issue" tabIndex={-1}>
       <CorpCard id="coverage-shift" label={props.status === "RESOLVED" ? "Shift" : "Open shift"} aside={state ?? undefined}>
         <CorpBody>

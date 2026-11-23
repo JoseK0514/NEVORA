@@ -292,10 +292,13 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
   // Things to do (Inbox) opens from Home, so Home stays lit there. Without payroll review Inbox keeps a tab.
   // Review Nov 14 (BR-4): Notifications opens from the bell and is not one of the tabs, so it lights none.
   const payrollTab = authorized.has("/app/payroll");
-  const inboxPages = ["/app/inbox", "/app/requests", "/app/exchange", "/app/availability"];
+  // Final fixes K (Nov 23, 2026): shift swaps, callouts, open shifts and Availability belong to Schedule (their back link and
+  // the Schedule sub-pages they sit beside), as on Employee phones; Things to do and time off stay with Home (or To do).
+  const shiftPages = ["/app/exchange", "/app/availability"];
+  const inboxPages = ["/app/inbox", "/app/requests"];
   const tabs:MobileTab[] = [
     { ...home, owns: ["/app", ...(payrollTab ? inboxPages : [])] },
-    schedule,
+    { ...schedule, owns: [...schedule.owns, ...shiftPages] },
     { href: "/app/timecards", label: "Time", icon: "clock", owns: ["/app/timecards", ...(payrollTab ? [] : ["/app/payroll-export"])] },
     payrollTab
       ? { href: "/app/payroll", label: "Payroll", icon: "payroll", owns: ["/app/payroll", "/app/payroll-export", "/app/settings/payroll"] }

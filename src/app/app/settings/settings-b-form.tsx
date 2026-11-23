@@ -51,9 +51,11 @@ export function FieldB(props: FieldBProps) {
 
 /** A yes/no setting: the whole row is the target, the corporate kit's switch on its right. A locked row keeps its state
  * and says why on its second line. */
-export function SwitchRowB({ id, name, label, description, checked, defaultChecked, onChange, disabled, locked, describedBy, value }: {
+export function SwitchRowB({ id, name, label, description, checked, defaultChecked, onChange, disabled, locked, describedBy, value, status }: {
   id: string; name?: string; label: ReactNode; description?: ReactNode; checked?: boolean; defaultChecked?: boolean;
   onChange?: (checked: boolean) => void; disabled?: boolean; locked?: boolean; describedBy?: string; value?: string;
+  /** Optional words for the state beside the switch ("On", "Off"), hidden from screen readers (the switch says it). */
+  status?: ReactNode;
 }) {
   const descriptionId = description ? `${id}-description` : undefined;
   return <label className={description ? "c-row c-setb-switch" : "c-row c-row--one c-setb-switch"} htmlFor={id} data-disabled={disabled ? "" : undefined} data-locked={locked ? "" : undefined}>
@@ -61,6 +63,7 @@ export function SwitchRowB({ id, name, label, description, checked, defaultCheck
       <span className="c-row__title" id={`${id}-label`}>{label}</span>
       {description ? <span className="c-row__detail"><span id={descriptionId}>{description}</span></span> : null}
     </span>
+    {status ?? null}
     <input id={id} name={name} value={value} type="checkbox" role="switch" className="c-switch" disabled={disabled}
       {...(checked === undefined ? { defaultChecked } : { checked })}
       onChange={event => onChange?.(event.target.checked)}

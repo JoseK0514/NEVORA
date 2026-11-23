@@ -11,6 +11,7 @@ import { CalendarMinusIcon } from "@phosphor-icons/react/dist/ssr/CalendarMinus"
 import { UserMinusIcon } from "@phosphor-icons/react/dist/ssr/UserMinus";
 import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
 import { DecisionAsk } from "@/components/owner-b/decision-parts";
+import { CorpCount } from "@/components/corp/corp";
 import { ASK, firstName } from "@/components/time-off-waiting-list";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
@@ -139,11 +140,12 @@ export function InboxB({ ready, families, waiting = [], closed = [], total, exac
       // alone). Final regression review: the kit's facts line (BSegs), so at 320 no line ends on the dot either.
       sub={needs === null ? undefined : <><BSegs parts={[needs, timecards ? `${plural(timecards, "timecard", "timecards")} to approve`.replace(/ /g, "\u00a0") : null]} /><span role="status" className="b-sr">{statusLine}</span></>}>
       {families.length ? <BSeg label="Show" items={[
-        // Review F5 (NV-103): each count is the segmented control's count pill; the name still reads "All, 13". Batch nav
-        // gate (Nov 23, 2026): through a hidden ", " instead of an aria-label, so the name contains the visible text.
-        { key: "all", label: total === null ? "All" : <>All<span className="b-sr">, </span><span className="c-count c-num">{total}</span></>, current: filter === "all", onSelect: () => setFilter("all") },
+        // Review F5 (NV-103): each count is the segmented control's count pill. Batch nav gate and final fixes K: the name is
+        // the visible words with CorpCount's spoken space ("All 13"), never an aria-label.
+        // Navigation check (Nov 23, 2026), each fact once: the band already says the total, so "All" carries no count.
+        { key: "all", label: "All", current: filter === "all", onSelect: () => setFilter("all") },
         ...families.map(family => { const name = FILTER_LABEL[family.id as Exclude<Filter, "all">] ?? family.title, count = familyCount(family);
-          return { key: family.id, label: <>{name}<span className="b-sr">, </span><span className="c-count c-num">{count}</span></>, current: filter === family.id, onSelect: () => setFilter(family.id as Filter) }; }),
+          return { key: family.id, label: <>{name}<CorpCount>{count}</CorpCount></>, current: filter === family.id, onSelect: () => setFilter(family.id as Filter) }; }),
       ]} /> : null}
     </BHero>
     <BStack>

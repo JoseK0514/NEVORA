@@ -81,6 +81,14 @@ function shiftLine(shift: FactShift, year: string) {
   const position = shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : null);
   return [shiftDay(shift.date, year), `${shiftHours(shift)}${overnight ? `, ends ${shiftDay(addDays(shift.date, 1), year)}` : ""}`, shift.locationName, position, shift.isDesignatedLead ? "Shift lead" : null].filter(Boolean).join(" · ");
 }
+/** Gaps G87 (Nov 23, 2026), each fact once: the row above already says the request's day and hours, so the shift it opens
+ * to adds only what the row doesn't (an overnight end, where, the position, the lead). */
+function shiftRest(shift: FactShift, year: string) {
+  const start = shift.startTime.slice(0, 5), end = shift.endTime.slice(0, 5);
+  const overnight = end !== "24:00" && end < start;
+  const position = shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : null);
+  return [overnight ? `Ends ${shiftDay(addDays(shift.date, 1), year)}` : null, shift.locationName, position, shift.isDesignatedLead ? "Shift lead" : null].filter(Boolean).join(" · ");
+}
 
 /** Phase 4 (U09): a cover request's result, one phrase per state. This page reads the request's full record, so a
  * request still in progress with nobody on it is "Nobody has picked it up yet"; a finished one says how it ended. */
@@ -99,22 +107,24 @@ function Facts({ rows }: { rows: { label: string; value: string; parts?: boolean
 function ExchangeFacts({ exchange, year }: { exchange: ExchangeRecord; year: string }) {
   const other = exchange.targetShift;
   const owner = (name: string) => `${possessive(name)} shift`;
-  const source = { label: owner(exchange.sourceShift.employeeName), value: shiftLine(exchange.sourceShift, year), parts: true };
+  const rest = shiftRest(exchange.sourceShift, year);
+  const source = rest ? [{ label: owner(exchange.sourceShift.employeeName), value: rest, parts: true }] : [];
   if (exchange.kind === "SWAP") return <>
-    <Facts rows={[source, ...(other ? [{ label: owner(other.employeeName), value: shiftLine(other, year), parts: true }] : [])]} />
+    <Facts rows={[...source, ...(other ? [{ label: owner(other.employeeName), value: shiftLine(other, year), parts: true }] : [])]} />
     <p className="c-shreq__help">{other ? "Approving trades these two shifts." : "The other shift isn’t available right now. Reload to see the latest."}</p>
   </>;
   // Phase 4 (U09): the result of a cover request, one phrase per state from its status: picked up by whom, nobody yet,
   // waiting for an answer, withdrawn, expired. A status this page doesn't know reads "Result not known", never "nobody".
   return <>
-    <Facts rows={[source, { label: t.outcome, value: coverResult(exchange) }]} />
+    {/* G87: the row's own line already says the result ("Picked up by …", "Nobody has picked it up yet"). */}
+    {source.length ? <Facts rows={source} /> : null}
     <p className="c-shreq__help">{exchange.targetEmployeeName ? "Approving gives this shift to the person who picked it up." : `Closing stops anyone else from picking it up. The shift stays with ${exchange.requestedByName}.`}</p>
   </>;
 }
 
 function CalloutFacts({ callout, reason, year }: { callout: CalloutRecord; reason: string; year: string }) {
   return <>
-    <Facts rows={[{ label: `${possessive(callout.employeeName)} shift`, value: shiftLine(callout, year), parts: true }, { label: "Reason", value: reason }, ...(callout.reasonNote ? [{ label: "Note", value: callout.reasonNote }] : []),
+    <Facts rows={[...(shiftRest(callout, year) ? [{ label: `${possessive(callout.employeeName)} shift`, value: shiftRest(callout, year), parts: true }] : []), { label: "Reason", value: reason }, ...(callout.reasonNote ? [{ label: "Note", value: callout.reasonNote }] : []),
       // Phase 4 (U09): what the linked cover requests recorded. History only: it names nobody and is not today's staffing.
       { label: t.coverHistory, value: calloutCoverText(callout.coverage, t) }]} />
     {/* Jose (Nov 21, 2026): the explaining sentences are one grey paragraph under the facts. */}

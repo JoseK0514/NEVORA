@@ -230,7 +230,7 @@ it.each(['MANAGER','OWNER'] as const)('gives %s one More link (the header avatar
  expect(header).not.toContain('role-chip');
 });
 
-it.each([['MANAGER','/app/exchange','/app/inbox'],['OWNER','/app/availability','/app/inbox'],['MANAGER','/app/inbox','/app/inbox'],['OWNER','/app/requests','/app/inbox'],['MANAGER','/app/employees/AUDIT-E','/app/employees'],['EMPLOYEE','/app/exchange','/app/schedule'],['EMPLOYEE','/app/requests','/app/requests/hub'],['LEAD','/app/availability','/app/schedule']] as const)('lights the %s tab that owns %s',(role,pathname,tab)=>{
+it.each([['MANAGER','/app/exchange','/app/schedule'],['OWNER','/app/availability','/app/schedule'],['OWNER','/app/exchange/open-shifts','/app/schedule'],['MANAGER','/app/inbox','/app/inbox'],['OWNER','/app/requests','/app/inbox'],['MANAGER','/app/employees/AUDIT-E','/app/employees'],['EMPLOYEE','/app/exchange','/app/schedule'],['EMPLOYEE','/app/requests','/app/requests/hub'],['LEAD','/app/availability','/app/schedule']] as const)('lights the %s tab that owns %s',(role,pathname,tab)=>{
  const {mobile}=render(role,pathname);
  expect(mobile).toContain(`href="${tab}" class="mobile-nav-link active" aria-current="page"`);
 });

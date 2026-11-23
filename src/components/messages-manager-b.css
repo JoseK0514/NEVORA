@@ -118,7 +118,8 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__msg { display: flex !important; flex-direction: column !important; gap: var(--b-space-8) !important; padding: var(--b-space-16) var(--b-inset) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__head { display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: var(--b-space-12) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__t { margin: 0 !important; min-width: 0 !important; font-size: 1.125rem !important; line-height: 1.5rem !important; font-weight: 600 !important; color: var(--b-ink) !important; overflow-wrap: anywhere !important; text-wrap: balance !important; outline: none !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__edit { flex: none !important; min-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__edit { flex: none !important; min-height: 44px !important; margin-top: calc((1.5rem - 44px) / 2) !important; }
+  /* Gaps item F9 (Nov 23, 2026): Edit centres on the title's first line (1.5rem), not on a two-line title's middle. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__body { margin: 0 !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; color: var(--b-ink) !important; white-space: pre-wrap !important; overflow-wrap: break-word !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__facts { margin: 0 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__who { margin: 0 !important; padding: 0 !important; list-style: none !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
@@ -135,10 +136,11 @@
 }
 
 /* Recipients: a name never breaks inside a word to make room for Remind; when both don't fit on one line (a narrow phone,
- * 200% text), Remind moves under the name. */
+ * 200% text), Remind moves under the name. Queue review (Nov 23): it stays on the row while the name's longest word fits
+ * beside it (the name took a 12rem basis, so Remind dropped at 390 even at 100% text). */
 @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row:has(> .b-row__trail) { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row > .b-row__hit { flex: 1 1 12rem !important; min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row > .b-row__hit { flex: 1 1 0 !important; min-width: auto !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row > .b-row__trail { margin-left: auto !important; padding-left: 0 !important; flex-basis: auto !important; }
   :is(#c-root, html) .app-shell[data-nv-b] #update-recipients .b-row__tt { overflow-wrap: normal; word-break: normal; }
 }

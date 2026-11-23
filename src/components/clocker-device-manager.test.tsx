@@ -95,10 +95,10 @@ describe('the page', () => {
     // The row is named by what it shows, not a differing aria-label.
     expect(html).not.toContain('aria-label="Manage Front counter tablet"');
     expect(html).toContain('aria-label="Set up again, Back room tablet"');
-    // A connected tablet has no tinted action; one filled button on the page.
+    // A connected tablet has no tinted action; adding is the list's "+ Add tablet" row, so no filled button on the page.
     expect(html.match(/data-clocker-code=/g)).toHaveLength(3);
-    expect(html.match(/b-btn b-btn--teal/g)).toHaveLength(1);
-    expect(html).toMatch(/<button type="button" class="b-btn b-btn--teal" data-clocker-add="" disabled="">Add tablet<\/button>/);
+    expect(html).not.toContain('b-btn b-btn--teal');
+    expect(html).toMatch(/<button type="button" class="ck-trow__main ck-trow__open" data-clocker-add="" disabled="">.*Add tablet<\/span>/);
   });
   it('empty: says what a time clock tablet is and leads to adding one', () => {
     const html = render([]);

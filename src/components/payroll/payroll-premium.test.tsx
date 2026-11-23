@@ -173,9 +173,9 @@ describe('Payroll details documents (R9)', () => {
 });
 
 describe('Payroll tabs and forms', () => {
-  it('leaves Timecards out and calls the Payroll page Payroll', () => {
+  it('leaves Timecards out and calls the runs page Pay runs, under the band title Payroll', () => {
     const tabs = payrollTabs('OWNER', nativeCapabilities);
-    expect(tabs?.map(item => item.label)).toEqual(['Payroll', 'Time exports', 'Payroll settings']);
+    expect(tabs?.map(item => item.label)).toEqual(['Pay runs', 'Time exports', 'Payroll settings']);
   });
   it('names every missing field in one message', () => {
     const field = (name: string) => ({ getAttribute: (key: string) => key === 'aria-label' ? name : null, validity: { valueMissing: true }, validationMessage: '' }) as unknown as HTMLInputElement;
@@ -367,4 +367,8 @@ it('batch 1 item 2: People for a replaced payroll says so in its period line', (
   boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [correction, original], jobs: [] };
   expect(withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-original" />))).toContain('· Replaced by a correction');
   expect(withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-fix" />))).not.toContain('Replaced by a correction');
+  // Batch 1 item 3: the approved group title stays, and "Net pay" is said once as its column label, not on each row.
+  const people = withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="people" runId="run-fix" />));
+  expect(people).toContain('>Employee amounts</h2><div class="c-pay__sec-aside"><span class="c-pay__aside">Net pay</span></div>');
+  expect(people).not.toContain('<span class="c-row__detail"><span>Net pay</span></span>');
 });

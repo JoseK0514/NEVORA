@@ -7,7 +7,7 @@ import type {ReactNode} from 'react';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {CalendarMinusIcon} from '@phosphor-icons/react/dist/ssr/CalendarMinus';
 import {BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack, BState} from '../owner-b/b-kit';
-import {BCardNote, Dotted} from './parts';
+import {Dotted} from './parts';
 import {BEmpty, BStateCard, BText, FormMark, bTone} from './requests-b';
 import {timeOffPill} from '../employee-requests-corp';
 import {sentDay, timeOffDates, timeOffDecision, timeOffLength, type TimeOffView} from '../employee-mobile/timeoff-parts';
@@ -60,7 +60,7 @@ function TimeOffRowB({request, filter}: {request: TimeOffView; filter: string}) 
     lead={<BIcon tone="grey"><CalendarMinusIcon weight="bold"/></BIcon>} title={keepWhole(timeOffRange(request))} sub={<Dotted text={timeOffSpan(request)}/>}
     // Phase 4 (EM-023): every row ends with its state before the chevron, so "did it go through?" is answered on the row:
     // amber Waiting, green Approved, grey Declined or Withdrawn. (Review B1, NV-280, had left the Waiting tab's rows bare.)
-    end={<BChip tone={bTone(pill.tone)}>{pill.text}</BChip>} chevron label={`${timeOffDates(request)}, ${timeOffLength(request)}, ${pill.text}`}/>;
+    end={<BChip tone={bTone(pill.tone)}>{pill.text}</BChip>} chevron/>;
 }
 
 /** One request: its dates as the title with its status chip (amber Waiting, as in the list), then its length, when it was
@@ -103,7 +103,6 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
         {/* Review B2 (NV-140): waiting soonest first; decided most recently decided first. */}
         {[...requests].sort(filter === 'decided' ? (a, b) => (b.reviewedAt ?? '').localeCompare(a.reviewedAt ?? '') : (a, b) => a.startDate.localeCompare(b.startDate)).map(item => <TimeOffRowB key={item.id} request={item} filter={filter}/>)}
       </BList>
-      {requests.length && filter !== 'decided' ? <BCardNote>Open a request to see its details or withdraw it.</BCardNote> : null}
     </BCard>
       : request ? <><RequestCardB request={request} zone={zone}/><OwnLeaveNote request={request}/></>
       // Review B2 (NV-139): the shared state card, with the way back as a pill.
