@@ -210,10 +210,10 @@ function nextStep(open: PayrollRun | undefined): { label: string; href: string; 
  * in grey (R3). The amount shows only when the payroll holds one (a missing amount is never a zero). */
 function RunRow({ item, replaced = false }: { item: PayrollRun; replaced?: boolean }) {
   const approved = item.status === 'APPROVED';
-  // Closing F1 (NV-082): a payroll a correction replaced says so (a grey "Replaced" chip, "Replaced by a correction"; Phase 8, a.md #47: the words the statements use) and is
+  // Closing F1 (NV-082), batch 1 item 3: a payroll a correction replaced says so once ("Replaced by a correction"; the grey chip that repeated it is gone; "Replaced by a correction"; Phase 8, a.md #47: the words the statements use) and is
   // listed right under its correction (byCorrection), indented.
   if (replaced) return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
-    title={<>{quietRange(item.period.startDate, item.period.endDate)} <CorpPill tone="neutral">Replaced</CorpPill></>}
+    title={quietRange(item.period.startDate, item.period.endDate)}
     detail={<BSegs parts={['Replaced by a correction', `Payday ${quietDay(item.payday)}`.replace(/ /g, '\u00a0')]} />}
     value={item.totals ? <NetAmount minor={item.totals.netMinor} /> : undefined} valueTone="ink" chevron />;
   // Round 5 (Nov 7, 2026): drawn like Payroll's Recent payrolls: the receipt icon, a "Correction" pill instead of words in
@@ -349,7 +349,7 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             {steps}
             {/* The period's timecards read as one more line of the steps (same circle, text column and divider), above the
               * card's action, so it doesn't trail after the button. */}
-            {timecards ? <Link className="b-step b-step--link" href={timecards.href} aria-label={`Timecards, ${timecards.line}`}>
+            {timecards ? <Link className="b-step b-step--link" href={timecards.href}>
               {/* Phase 9 (spec 3.6): timecards are the Clock everywhere (the sidebar's Time). */}
               <span className="b-step__n" aria-hidden="true"><ClockIcon weight="bold" /></span>
               <span className="b-step__tx"><span className="b-step__t">Timecards</span><span className="b-step__s">{keepWhole(timecards.line)}</span></span>
@@ -357,8 +357,8 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             </Link> : null}
             {/* OW-005: while an overdue period leads, its Prepare is the screen's one button and this period's step is a
               * quiet teal link (as on Prepare payroll), not a second button in another style. */}
-            {data && oldest ? <Link className="b-link c-pay__steplink" href={step.href} aria-label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{stepName}</Link>
-              : <BButtonLink href={step.href} kind={step.quiet ? 'ghost' : 'teal'} full big label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{stepName}</BButtonLink>}
+            {data && oldest ? <Link className="b-link c-pay__steplink" href={step.href} aria-label={stepName === step.label ? `${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}` : undefined}>{stepName}</Link>
+              : <BButtonLink href={step.href} kind={step.quiet ? 'ghost' : 'teal'} full big label={stepName === step.label ? `${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}` : undefined}>{stepName}</BButtonLink>}
           </div>
           {missing && !oldest ? <BList label="Periods with no payroll"><BRow href="/app/payroll/prepare" title="Periods with no payroll" sub="Prepare payroll for each one" end={<b className="c-num">{missing.missingCount === null ? 'Check' : String(missing.missingCount)}</b>} /></BList> : null}
         </BCard> : <BCard label="Pay schedule"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">No pay schedule yet</span><span className="b-notice__s">Set your pay schedule to see the current period.</span></span>
@@ -400,9 +400,9 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
       {current ? <PayGroup id="payroll-next" label="Up next">
         <CorpRows label="Up next">
           <li className="c-payroll__upnext"><CorpRow href={step.href} bold title={frequency}
-            detail={<><Num>{quietRange(current.period.startDate, current.period.endDate)}</Num>{' · Scheduled payday '}<Num>{quietDay(current.payday)}</Num></>}
-            value={nextValue} valueTone="soft" chevron
-            label={`${frequency}, ${quietRange(current.period.startDate, current.period.endDate)}, scheduled payday ${quietDay(current.payday)}${people.length ? `, ${plural(people.length, 'person', 'people')}` : ''}. ${step.label}`} /></li>
+            detail={<><Num>{quietRange(current.period.startDate, current.period.endDate)}</Num>{' · Scheduled payday '}<Num>{quietDay(current.payday)}</Num>{nextValue ? null : <span className="c-sr">{`. ${step.label}`}</span>}</>}
+            // Sweep 1: no aria-label; the row is named by its own text, and the step it opens is read (not drawn) when the row doesn't show it.
+            value={nextValue} valueTone="soft" chevron /></li>
           {timecards ? <li><CorpRow href={timecards.href} title="Timecards" detail={timecards.line} chevron /></li> : null}
           {missing && !oldest ? <li><CorpRow href="/app/payroll/prepare" bold title="Periods with no payroll" detail="Prepare payroll for each one" value={missing.missingCount === null ? 'Check' : <Num>{String(missing.missingCount)}</Num>} chevron /></li> : null}
         </CorpRows>
@@ -615,13 +615,13 @@ function PeopleAmounts({ run }: { run: PayrollRun }) {
         <div className="c-pay__net"><dt>{`Net pay · ${plural(run.totals.employeeCount, 'employee', 'employees')}`}</dt><dd>{formatPayrollMoney(run.totals.netMinor)}</dd></div>
       </dl>
     </PayGroup> : null}
-    {run.rows ? <PayGroup id="payroll-people" label="Employee amounts">
+    {run.rows ? <PayGroup id="payroll-people" label="Net pay by person">
       <div className="c-pay__search"><label className="c-sr" htmlFor={searchId}>Find employee amounts</label><input id={searchId} className="c-in" type="search" enterKeyHint="search" autoComplete="off" placeholder="Find an employee" value={filter} onChange={event => setFilter(event.target.value)} /></div>
-      <ul className="c-rows" aria-label="Employee amounts">{rows.map(row => {
+      <ul className="c-rows" aria-label="Net pay by person">{rows.map(row => {
         const result = native ? run.nativeCalculation?.employees.find(item => item.employeeId === row.employeeId) : undefined;
         const exception = run.exceptionRevisions.find(item => item.employeeId === row.employeeId)?.revision;
         return <li key={row.employeeId}><details className="c-pay__person">
-          <summary className="c-row"><span className="c-row__main"><span className="c-row__title c-row__title--b">{row.employeeName}</span><span className="c-row__detail"><span>Net pay</span></span></span><span className="c-row__value">{formatPayrollMoney(row.netMinor)}</span></summary>
+          <summary className="c-row"><span className="c-row__main"><span className="c-row__title c-row__title--b">{row.employeeName}</span></span><span className="c-row__value">{formatPayrollMoney(row.netMinor)}</span></summary>
           <div className="c-pay__lines">
             <dl>
               <div><dt>Gross pay</dt><dd>{formatPayrollMoney(row.grossMinor)}</dd></div>
@@ -665,8 +665,8 @@ function PreparePayroll({ current, data, today, operation }: { current: OpenPayP
           * action (the same press, the same Prepare), so the open overdue row's Prepare payroll is the only filled one. */}
         {open ? oldest ? <Link className="c-link c-link--l c-pay__gap c-pay__quiet-go" href={step.href}>{step.label}</Link>
           : <CorpButtonLink href={step.href} full size="md" kind={step.quiet ? 'secondary' : undefined} className="c-pay__gap">{step.label}</CorpButtonLink>
-          : oldest ? <button type="button" className="c-link c-link--l c-pay__gap c-pay__quiet-go" disabled={locked} aria-label={`Prepare payroll for ${range}`} onClick={() => void operation.submit({ action: 'PREPARE', period: current.period, payday: current.payday })}>{`Prepare ${range}`}</button>
-          : <CorpButton full size="md" className="c-pay__gap" disabled={locked} aria-label={`Prepare payroll for ${range}`} onClick={() => void operation.submit({ action: 'PREPARE', period: current.period, payday: current.payday })}>{`Prepare ${range}`}</CorpButton>}
+          : oldest ? <button type="button" className="c-link c-link--l c-pay__gap c-pay__quiet-go" disabled={locked} aria-label={`Prepare ${range} payroll`} onClick={() => void operation.submit({ action: 'PREPARE', period: current.period, payday: current.payday })}>{`Prepare ${range}`}</button>
+          : <CorpButton full size="md" className="c-pay__gap" disabled={locked} aria-label={`Prepare ${range} payroll`} onClick={() => void operation.submit({ action: 'PREPARE', period: current.period, payday: current.payday })}>{`Prepare ${range}`}</CorpButton>}
       </CorpBody>
     </PayGroup> : null}
     <Backlog data={data} operation={operation} lead={oldest} today={today} />
@@ -750,7 +750,7 @@ function Backlog({ data, operation, lead, today }: { data: PayrollRunsResponse; 
           {item.state === 'AMBIGUOUS_TRANSITION' ? <div className="c-pay__check-dates"><b className="c-pay__strong">Check this period’s dates</b><p className="c-pay__detail">{item.issues.join(' ')} Confirm these period boundaries and payday before you prepare it.</p></div> : null}
           <p className="c-pay__detail">Uses your saved payroll settings. You review its timecards and amounts, then approve it separately.</p>
           {item.state === 'AMBIGUOUS_TRANSITION' ? <Check checked={acknowledged} disabled={locked} onChange={setAcknowledged}>I reviewed this schedule transition, period boundaries and payday.</Check> : null}
-          <CorpButton kind={primary ? undefined : 'secondary'} size="md" full aria-label={`Prepare payroll for ${range}`} disabled={locked || (item.state === 'AMBIGUOUS_TRANSITION' && !acknowledged)} onClick={() => void operation.submit({ action: 'PREPARE', period: item.period, payday: item.payday })}>{`Prepare ${range}`}</CorpButton>
+          <CorpButton kind={primary ? undefined : 'secondary'} size="md" full aria-label={`Prepare ${range} payroll`} disabled={locked || (item.state === 'AMBIGUOUS_TRANSITION' && !acknowledged)} onClick={() => void operation.submit({ action: 'PREPARE', period: item.period, payday: item.payday })}>{`Prepare ${range}`}</CorpButton>
         </div> : null}
       </li>;
     })}</ul>
