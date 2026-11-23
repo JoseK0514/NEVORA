@@ -34,9 +34,9 @@
  * edge on a phone, 44px high, labels centred; the question that replaces them keeps the same edges. */
 :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts { padding: 0 var(--sr-x) var(--b-space-12, 12px) var(--sr-text); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__form { display: block; margin: 0; }
-:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .q-acts { display: flex; gap: var(--b-space-8, 8px); padding: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .q-acts { display: flex; flex-wrap: wrap; gap: var(--b-space-8, 8px); padding: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .q-acts::after { display: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .q-acts > .q-bs { flex: 1 1 0; min-width: 0; height: auto; min-height: 44px; padding: 0 var(--b-space-16, 16px); font-size: 0.9375rem; line-height: 1.25rem; white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .q-acts > .q-bs { flex: 1 1 7rem; min-width: 0; height: auto; min-height: 44px; padding: 0 var(--b-space-16, 16px); font-size: 0.9375rem; line-height: 1.25rem; white-space: nowrap; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .b-ask { margin: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__note { margin: 0 0 var(--b-space-8, 8px); font-size: 0.875rem; line-height: 1.25rem; color: var(--b-grey, #5E666C); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__note a { color: var(--b-teal, #0B6E69); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
