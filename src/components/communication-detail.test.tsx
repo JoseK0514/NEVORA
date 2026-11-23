@@ -55,3 +55,10 @@ it('shows the publish result above the message only on the visit that follows a 
  expect(await render({read:managed})).not.toContain('Published to');
  expect(await render({read:managed,justPublished:true,signature:true})).not.toContain('Published to');
 });
+it('names the confirmation rule in the manager meta line (DEC6)',async()=>{
+ const managed={...read,canWithdraw:true,sentCount:2,management:{draft:{},recipients:[{employeeId:'e1',name:'Recipient one',acknowledgedAt:null}]}};
+ const required=await render({read:managed});
+ expect(required).toContain('Must be confirmed');expect(required).not.toContain('Must be read');
+ const optional=await render({read:{...managed,acknowledgement:'OPTIONAL'}});
+ expect(optional).toContain('Confirming is optional');expect(optional).not.toMatch(/>Optional</);
+});
