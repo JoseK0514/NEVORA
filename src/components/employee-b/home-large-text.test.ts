@@ -22,7 +22,7 @@ it('G53: Home and Schedule text that wraps has line heights in rem, never px', (
 it('G53: from 768px the shortcuts, Your week and the band figures stack when larger text no longer fits', () => {
   const work = css('app/app/employee-b-work.css');
   const wide = work.slice(work.lastIndexOf('@media (min-width: 768px)'));
-  expect(wide).toMatch(/\.eb-qa > ul \{ grid-template-columns: repeat\(auto-fit, minmax\(min\(100%, max\(8rem, calc\(\(100% - var\(--b-space-12\)\) \/ 2\)\)\), 1fr\)\) !important; \}/);
+  expect(wide).toMatch(/\.eb-qa > ul \{ grid-template-columns: repeat\(auto-fit, minmax\(min\(100%, max\(10rem, calc\(\(100% - var\(--b-space-12\)\) \/ 2\)\)\), 1fr\)\) !important; \}/);
   expect(wide).toContain('@container (max-width: 14rem)');
   expect(wide).toMatch(/\.b-hero:has\(> \.b-live\) \{ container: eb-band \/ inline-size !important; \}/);
   expect(wide).toContain('@container eb-band (max-width: 36rem)');

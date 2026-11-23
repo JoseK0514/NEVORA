@@ -343,7 +343,8 @@
  * moves; each change waits until the larger text no longer fits as drawn (Apple HIG: stack rather than truncate).
  * - A card heading lets its link and count move under the title; a wrapped "Barista · Calle Loíza" segment keeps its
  *   hanging indent.
- * - The shortcuts stay two across while two fit, then go one per row (they were cut to "Ti…" and "Ca…").
+ * - The shortcuts stay two across while each is at least 10rem (160px), then go one per row: they were cut to "Ti…" and
+ *   "Ca…" at 200% text, and "Can’t w…" even at the default size at 768px (147px each). 1024px keeps two across (169px).
  * - Your week becomes the phone's list (day, bar, hours) when its seven columns are narrower than their labels.
  * - The band's figures stack two across (then one) when three across would cut them ("Scheduled payd", "Barista · Call…"),
  *   and their lines wrap instead of ending in an ellipsis. 36rem is 576px at the default size, narrower than the band at
@@ -353,7 +354,7 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) :is(.b-card__h, .b-card__h > h2) { flex-wrap: wrap !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-dots__p { padding-left: 0.85em !important; text-indent: -0.85em !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-dots__p > * { text-indent: 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-qa > ul { grid-template-columns: repeat(auto-fit, minmax(min(100%, max(8rem, calc((100% - var(--b-space-12)) / 2))), 1fr)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-qa > ul { grid-template-columns: repeat(auto-fit, minmax(min(100%, max(10rem, calc((100% - var(--b-space-12)) / 2))), 1fr)) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw { container-type: inline-size !important; }
     @container (max-width: 14rem) {
       :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .eb-hw__days { grid-template-columns: minmax(0, 1fr) !important; gap: var(--b-space-4) !important; }
