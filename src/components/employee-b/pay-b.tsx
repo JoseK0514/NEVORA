@@ -52,13 +52,17 @@ export type PayBProps = {
 
 function Row({item, byId}: {item: Statement; byId?: Map<string, Statement>}) {
   const by = item.correctedBy ? byId?.get(item.correctedBy) : undefined;
-  // Final polish, round 2 (P2): a statement whose correction is in the list is not a second payday. It reads "Earlier
-  // version" over "Replaced by the Nov 13 correction" (the correction's payday), muted, with no chip (the line says it);
-  // the correction keeps its date and "Corrected". Without the correction at hand it keeps its date and "Replaced".
-  if (by) return <BRow href={paycheckHref(item.id)} title={<span className="ep-muted">Earlier version</span>} sub={`Replaced by the ${fmt({month: 'short', day: 'numeric'}).format(utc(by.payday))} correction`}
-    label={`${paydayLong(item.payday)}, ${role(item)} for ${period(item.period.startDate, item.period.endDate)}`}/>;
+  // Phase 2 (G10): the name starts with the row's visible date (it read "Friday, November 13, 2026, …", which a voice
+  // user can't say from the screen); the rest names the kind and the period, as before.
+  const label = `${payday(item.payday)}, ${role(item)} for ${period(item.period.startDate, item.period.endDate)}`;
+  // Final polish, round 2 (P2): a statement whose correction is in the list reads as its own payday, muted, over
+  // "Replaced by the Nov 13 correction" (the correction's payday), with no chip (the line says it); the correction keeps
+  // its date and "Corrected". Phase 2 (G10): the title is the payday, not "Earlier version", which repeated the Earlier
+  // card's heading and hid the date; when the correction has the same payday the line doesn't name it again.
+  if (by) return <BRow href={paycheckHref(item.id)} title={<span className="ep-muted">{payday(item.payday)}</span>}
+    sub={by.payday === item.payday ? 'Replaced by the correction' : `Replaced by the ${fmt({month: 'short', day: 'numeric'}).format(utc(by.payday))} correction`} label={label}/>;
   return <BRow href={paycheckHref(item.id)} title={item.correctedBy ? <span className="ep-muted">{payday(item.payday)}</span> : payday(item.payday)} chip={tag(item)} sub={`For work ${period(item.period.startDate, item.period.endDate)}`}
-    label={`${paydayLong(item.payday)}, ${role(item)} for ${period(item.period.startDate, item.period.endDate)}`}/>;
+    label={label}/>;
 }
 
 function StatusCard({status, state}: {status: NonNullable<PayBStatus>; state: string}) {
