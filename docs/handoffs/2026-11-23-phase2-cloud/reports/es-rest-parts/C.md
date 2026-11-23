@@ -45,7 +45,7 @@ stand-in gains `useContext`, so components that read the language render).
   generation-explanation-panel, schedule-location-control, availability-editor, availability-feedback, shift-slot,
   coverage-review-content, exchange-assignment, shift-assignment-fields' components (its helpers are used; no words),
   and calendar-subscription-panel's desktop view (the live panel always draws employee-mobile's view).
-- Words to settle with other sessions: "Insights" is "Análisis" here (owner-advisor has no Spanish name yet); "Build and
+- Words to settle with other sessions: "Insights" is "Informes" here (owner-advisor has no Spanish name yet); "Build and
   publish" is "Crear y publicar"; Shift requests is "Solicitudes de turnos"; the location word follows the glossary
   ("localidad"), while the workspace word preset's Spanish default is "Ubicación".
 - Loading files' screen-reader labels (`availability/agreement/loading.tsx`) stay English.

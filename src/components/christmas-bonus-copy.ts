@@ -38,7 +38,7 @@ const es: typeof en = {
   hired: (date: string) => `Ingresó el ${date}`, id: (id: string) => `ID ${id}`, includesBreaks: (hours: string) => `Incluye ${hours} de descansos`,
   notFinalized: (days: string) => `${days} sin finalizar`, inactive: 'Inactivo',
   unfinalized: (people: number, days: string, dayCount: number) => `${people === 1 ? '1 persona tiene' : `${people} personas tienen`} tiempo registrado en ${days} que todavía no ${dayCount === 1 ? 'está' : 'están'} en una tarjeta de tiempo finalizada.`,
-  insights: 'Análisis', title: 'Horas para el bono de Navidad', allLocations: 'Todas las localidades', bonusYear: 'Año del bono', bonusYearIs: (label: string) => `Año del bono: ${label}`,
+  insights: 'Informes', title: 'Horas para el bono de Navidad', allLocations: 'Todas las localidades', bonusYear: 'Año del bono', bonusYearIs: (label: string) => `Año del bono: ${label}`,
   about: 'Sobre este informe', dates: 'Fechas de este año del bono', paymentWindow: 'Período de pago', exemptionDeadline: 'Fecha límite para radicar la exención',
   atAGlance: 'Resumen', people: 'Personas', finalizedOnly: 'Las horas cuentan solo tarjetas de tiempo finalizadas', openTimecards: 'Abrir Tarjetas de tiempo',
   peopleInYear: 'Personas en este año del bono', noHours: 'No hay horas registradas en NEVORA para este año del bono',
