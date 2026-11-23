@@ -51,3 +51,20 @@ describe('Clocked in now on two lines (Nov 23, 2026)', () => {
     expect(large).toMatch(/\.c-tc-sub > \.b-status > \.b-ldot[^{]*\{ margin-top: calc\(\(1\.35em - var\(--b-chip-dot\)\) \/ 2\) !important; \}/);
   });
 });
+
+describe('Timecards text in rem from 768px (G90)', () => {
+  const g90 = css.slice(css.indexOf('.c-page.c-tc > header.c-title h1:not(#gq1)') - 200);
+  it('sets the title, the period words, the tabs and the table in rem with the kit roles', () => {
+    expect(css.indexOf('.c-page.c-tc > header.c-title h1:not(#gq1)')).toBeGreaterThan(-1);
+    expect(g90).toMatch(/\.c-page\.c-tc > header\.c-title h1[^{]*\{ font-size: 2rem !important; line-height: 2\.375rem !important; \}/);
+    expect(g90).toMatch(/:is\(\.c-tc-seg, \.c-tc-tabs\) > button[^{]*\{ font-size: var\(--b-fs-body-sm\) !important; line-height: var\(--b-lh-body-sm\) !important; \}/);
+    expect(g90).toMatch(/\.c-tc-table[^{]*\{ font-size: var\(--b-fs-body\) !important; line-height: var\(--b-lh-body\) !important; \}/);
+    expect(g90).toMatch(/\.c-tc-table thead th[^{]*\{ font-size: var\(--b-fs-meta\) !important;/);
+  });
+  it('lets the person\'s week wrap once its text is large for the sheet', () => {
+    expect(css).toMatch(/\.c-tc-sheet:not\(#gq1\) \{ container: tc-sheet \/ inline-size !important; font-size: var\(--b-fs-body\) !important;/);
+    const sheet = block('@container tc-sheet (max-width: 22rem)');
+    expect(sheet).toMatch(/\.c-stats[^{]*\{ grid-auto-flow: row !important;/);
+    expect(sheet).toMatch(/\.c-tc-day > \.c-row__main[^{]*\{ order: 3 !important; flex: 1 0 100% !important;/);
+  });
+});
