@@ -81,7 +81,7 @@ and information the form requests, then check whether the result is waiting,
 approved or declined. Use withdrawal only when the current record offers it.
 Submitting a request is not approval.
 
-Open a shift's offered options from Schedule or **Shift requests** to request a
+Open a shift's offered options from Schedule or **Pick up and swap** to request a
 swap, offer it for cover or report **Unable to work**. Review the exact shift,
 other person and exchange terms before sending. For incoming work, use the
 offered **Accept**, **Decline** or **Claim** control. Some requests still need
