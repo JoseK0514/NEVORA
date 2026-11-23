@@ -8,7 +8,13 @@ No real device, payment, billing provider, deploy or publishing.
 - `5151a9b0` Scan modes (in `tools/ui-scan/zz-scan.tar.gz`): `NEVORA_SCAN_CLOCKER_FLOW=states` (K13) and
   `NEVORA_SCAN_CLOCKER_FLOW=paused` with `NEVORA_SCAN_COMMERCE_RECOVERY=1` (K15).
 - `0801bfe9` Fixes in the Clocker's own files: `src/components/clocker.module.css`, `src/components/clocker-copy.ts`.
-- Shots commit: this report, `shots/clocker-states/rows.json` and `img/`.
+- `9e6a9b95` First shots commit.
+- `96be1370` K15 follow-up from the lead: no "Time clock" eyebrow on the paused page; `RecoveryFrame` takes
+  `brandLine={false}` (only the paused Clocker passes it), so from 1024px the tablet no longer shows the sign-in line
+  "Your week, in one place.". The billing pages' frame renders byte-identical markup before and after (EN and ES,
+  with and without `below`/`legal`, compared with renderToStaticMarkup).
+- `d01b7e15` The paused scan also captures `/login` and `/app/billing` at 1440 (both unchanged).
+- Shots commit (latest): this report, `shots/clocker-states/rows.json` and `img/`.
 
 ## How each state was reached
 - **K13 Someone else's punch is waiting.** The kiosk shows it when the tablet holds an unconfirmed punch for one person
@@ -29,13 +35,15 @@ No server change was needed for either state.
 |---|---|---|
 | K13 | At 768x1024 the "Clears in 8 s / Keep my place" pill covered the only button, Done. | The pill steps aside on this screen, as it does on a receipt. The screen still clears on time and screen readers still hear "This screen clears in 10 seconds." |
 | K15 (Spanish) | "Pídele al propietario de tu negocio que revise…" | "Pídele al dueño del negocio que revise…" (the Clocker's word everywhere else, 25 strings). |
+| K15 | Eyebrow "Time clock" over "This time clock is paused" (ES "Registro de tiempo" over "El registro de tiempo está en pausa"). | No eyebrow; the heading says it once. |
+| K15 at 1024 | Panel beside the card showed the sign-in line "NEVORA Workforce / Your week, in one place." | Panel shows the wordmark and "Powered by VELANI LLC" only. Sign-in and billing recovery keep their panel. |
 
 ## Gate check (390x844, 768x1024, 1024x768; English and Spanish)
 | Check | K13 | K15 |
 |---|---|---|
 | Horizontal or vertical overflow | none | none |
 | Buttons | one primary Done / Listo, 56px tall, 322px wide at 390, 34px from each edge | one primary Try again / Intentar de nuevo, 56px tall, 36px from each edge; language switch 56px |
-| Repeated wording | none | eyebrow repeats "time clock" (end sweep below) |
+| Repeated wording | none | none (eyebrow removed) |
 | Overlap, cut-off text | fixed (pill over Done at 768) | none |
 | Time format | band clock `9:17 AM` (English) | no times on the page |
 | Targets under 44px | none | none |
@@ -62,8 +70,5 @@ None.
 1. K13: a second tab on the same tablet opens a normal Clock in screen while another person's punch is waiting in the
    first tab; only the tab that holds the punch shows K13. A kiosk runs one tab, so it's low risk. Behaviour, not layout.
 2. Kiosk-wide: the Spanish band clock reads `9:18 a. m.`; the one time format is `7:00 AM`. Jose to decide for Spanish.
-3. K15: the eyebrow "Time clock" over "This time clock is paused" repeats the words (Spanish too). Proposed: drop the
-   eyebrow on this page. Not changed because the eyebrow-and-heading pattern is shared with the billing recovery pages.
-4. K15 at 1024x768: the shared recovery frame (`src/components/commerce-recovery/frame.tsx`) shows the sign-in panel
-   "Your week, in one place." on a shared tablet. Proposed: a plain band on the Clocker paused page (shared file, not
-   changed).
+3. K15 at 1024x768: the panel now holds only the wordmark and "Powered by VELANI LLC"; a kiosk band there (clock,
+   place) would match K1–K14. Left for Jose.

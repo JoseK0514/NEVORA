@@ -74,7 +74,7 @@
   "row": "K15",
   "page": "Clocker paused",
   "section": "Clocker",
-  "note": "Reached with commerce turned on and no billing connection (the commerce recovery test setup), so no billing provider was contacted. Paused and 'Access could not be checked' both show one 56px Try again button and no overflow.",
+  "note": "Reached with commerce on and no billing connection (the commerce recovery test setup); no billing provider was contacted. The 'Time clock' eyebrow is gone, and from 1024 the panel no longer shows the sign-in line 'Your week, in one place.'",
   "shots": [
    {
     "label": "Phone",
@@ -100,12 +100,19 @@
    {
     "label": "Keyboard focus on Try again",
     "after": "img/k15-clocker-paused-focus-en-1024.webp"
+   },
+   {
+    "label": "Sign-in at 1440 (unchanged)",
+    "after": "img/k15-neighbour-login-en-1440.webp"
+   },
+   {
+    "label": "Billing recovery at 1440 (unchanged)",
+    "after": "img/k15-neighbour-billing-en-1440.webp"
    }
   ],
   "blocking": [],
   "endSweep": [
-   "Eyebrow 'Time clock' sits over 'This time clock is paused' (Spanish: 'Registro de tiempo' over 'El registro de tiempo está en pausa', then 'registrar tiempo'), so the words repeat. Left as is: the eyebrow-and-heading pattern is shared with the billing recovery pages; proposed: drop the eyebrow on this page.",
-   "At 1024x768 the shared recovery frame shows the sign-in panel 'Your week, in one place.' on a shared tablet. The frame is src/components/commerce-recovery/frame.tsx (shared, not changed); proposed: a plain band on the Clocker paused page."
+   "At 1024x768 the shared frame's panel shows the wordmark and 'Powered by VELANI LLC' with nothing between; a kiosk band there (clock, place) would match K1–K14. Left for Jose."
   ]
  },
  {
@@ -113,7 +120,7 @@
   "row": "K15",
   "page": "Clocker paused (Spanish)",
   "section": "Clocker",
-  "note": "The Spanish now says 'dueño' like the rest of the Clocker, not 'propietario de tu negocio'. Nothing overflows at any width.",
+  "note": "Spanish: 'dueño' like the rest of the Clocker, no repeated 'Registro de tiempo' eyebrow, and no sign-in line beside the card at 1024. Nothing overflows.",
   "shots": [
    {
     "label": "Phone",
@@ -143,8 +150,7 @@
   ],
   "blocking": [],
   "endSweep": [
-   "Eyebrow 'Time clock' sits over 'This time clock is paused' (Spanish: 'Registro de tiempo' over 'El registro de tiempo está en pausa', then 'registrar tiempo'), so the words repeat. Left as is: the eyebrow-and-heading pattern is shared with the billing recovery pages; proposed: drop the eyebrow on this page.",
-   "At 1024x768 the shared recovery frame shows the sign-in panel 'Your week, in one place.' on a shared tablet. The frame is src/components/commerce-recovery/frame.tsx (shared, not changed); proposed: a plain band on the Clocker paused page."
+   "At 1024x768 the shared frame's panel shows the wordmark and 'Powered by VELANI LLC' with nothing between; a kiosk band there (clock, place) would match K1–K14. Left for Jose."
   ]
  }
 ]
