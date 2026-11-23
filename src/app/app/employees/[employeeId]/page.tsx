@@ -195,7 +195,7 @@ export default async function EmployeeProfilePage({
         </CorpRows>
       </CorpCard>
       {canManageCore && employee.active && recoverable ? <CorpCard as="div" ariaLabel="Reset password">
-        <CorpRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} bold title="Reset password" detail="Give them a one-time link to sign back in" chevron />
+        <CorpRow href={`/app/account-recovery?employee=${encodeURIComponent(employee.id)}`} bold title="Reset password" detail="Give them a link to set a new password" chevron />
       </CorpCard> : null}
       {/* The Owner's account invitation (until the account is activated) and a Manager's management access. */}
       {actor.role==='OWNER'&&(inviting||employee.role==='MANAGER') ? <div className="c-access__panels">

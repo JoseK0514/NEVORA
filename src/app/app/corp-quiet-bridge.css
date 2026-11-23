@@ -17,7 +17,7 @@
 :is(#q-root, html) .app-shell[data-nv-corp] .q-nav__l { color: #0B6E69; font-size: 15px; line-height: 20px; font-weight: 600; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-nav__l .q-ic { width: 18px; height: 18px; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-nav__t { font-size: 17px; line-height: 22px; font-weight: 600; }
-:is(#q-root, html) .app-shell[data-nv-corp] .q-nav__r { font-size: 15px; line-height: 20px; font-weight: 600; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-nav__r { font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-bar { padding-left: 16px; padding-right: 16px; }
 
 /* Title: 22/28 600 with a 13px line. */
