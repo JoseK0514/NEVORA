@@ -1,0 +1,162 @@
+[
+ {
+  "id": "DEC1-e-home",
+  "row": "B1",
+  "page": "Employee Home",
+  "section": "Home",
+  "note": "DEC1: the band shows Hours and Scheduled payday only; the shift is said once, in the card under it.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC1-employee-home-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC1-employee-home-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/DEC1-employee-home-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC1-employee-home-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC1-l-home",
+  "row": "B1",
+  "page": "Lead Home",
+  "section": "Home",
+  "note": "DEC1: the band shows Hours and Scheduled payday only; the card is titled \"On shift now\" again, with the range, place and Shift lead.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC1-lead-home-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC1-lead-home-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/DEC1-lead-home-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC1-lead-home-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC1-e-schedule",
+  "row": "C1",
+  "page": "Employee Schedule",
+  "section": "Schedule",
+  "note": "DEC1: the band says \"56 h this week\"; the Confirm row under it keeps \"Nov 23–29 · 7 shifts\".",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC1-employee-schedule-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC1-employee-schedule-390t.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "img/DEC1-employee-schedule-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC1-employee-schedule-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC2-DEC3-team",
+  "row": "F1",
+  "page": "Team (Owner)",
+  "section": "Team",
+  "note": "DEC2: at 390 the four filters are two rows of two; 320 and 200% text keep wrapping to their labels. DEC3: the filter reads \"On the clock\"; rows keep \"Clocked in\".",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/DEC2-DEC3-team-320.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/DEC2-DEC3-team-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC2-DEC3-team-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC2-DEC3-team-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC4-c8-all-es",
+  "row": "C8",
+  "page": "Copy receipt, Spanish (all with warnings)",
+  "section": "Schedule",
+  "note": "DEC4: the receipt's Spanish, \"Semana copiada · 54 turnos · Todos con advertencias\". Rendered with a capture-only language switch; the shipped page shows English until a per-person language exists.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC4-c8-all-es-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC4-c8-all-es-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC4-c8-all-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "DEC4-c8-some-es",
+  "row": "C8",
+  "page": "Copy receipt, Spanish (some with warnings)",
+  "section": "Schedule",
+  "note": "DEC4: \"Con advertencias 3\" and \"No copiados 54\" in Spanish. Same capture-only switch.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/DEC4-c8-some-es-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/DEC4-c8-some-es-390t.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/DEC4-c8-some-es-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
