@@ -182,9 +182,9 @@ function ShiftCard({snapshot, lead, heroShows, week}: {snapshot: HomeSnapshot; l
   return <BCard id="b-home-shift" title={echo ? 'Your shift' : now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
     meta={echo ? undefined : now ? `Until ${clock(now.endAt, zone)}` : startsIn(shift, snapshot)}>
     <div className="eb-shift">
-      {/* Phase 8 (review C, row 14): each time stays whole; where the line is too short the range breaks before its dash
-        * (the Employee screens' one rule, parts.tsx Range). */}
-      <p className="eb-shift__time"><time dateTime={shift.startAt} className="eb-nb">{keepWhole(clock(shift.startAt, zone))}</time> <span className="eb-nb"><span aria-hidden="true">{'–\u00a0'}</span><span className="b-sr"> to </span><time dateTime={shift.endAt}>{keepWhole(clock(shift.endAt, zone))}</time></span></p>
+      {/* Phase 8 (review C, row 14): each time stays whole. Gaps G53 (Nov 23, 2026): where the line is too short (768px at
+        * 200% text) the range breaks after its dash, as parts.tsx Range does ("5:30 AM –" over "1:30 PM"); it broke before. */}
+      <p className="eb-shift__time"><span className="eb-nb"><time dateTime={shift.startAt}>{keepWhole(clock(shift.startAt, zone))}</time><span aria-hidden="true">{'\u00a0–'}</span></span> <span className="eb-nb"><span className="b-sr">to </span><time dateTime={shift.endAt}>{keepWhole(clock(shift.endAt, zone))}</time></span></p>
       <p className="eb-shift__where"><Dotted text={[today ? null : shortDay(shift.date), where, !today && ends !== shift.date ? `ends ${shortDay(ends)}` : null].filter(Boolean).join(' · ')}/></p>
       {/* Phase 8 (review C, row 15): the Shift lead chip says it once; no sentence repeats it (as review B6 decided for
         * the On shift now card). */}

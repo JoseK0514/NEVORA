@@ -26,6 +26,11 @@ const props = (patch: Partial<HomeBProps> = {}): HomeBProps => ({snapshot: snaps
 const draw = (patch: Partial<HomeBProps> = {}) => renderToStaticMarkup(<EmployeeHomeB {...props(patch)}/>);
 const text = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/[  ]/g, ' ').replace(/\s+/g, ' ');
 
+it('gaps G53: the shift card’s range keeps its dash with the first time, so it can only break after the dash', () => {
+  const html = draw(), time = html.slice(html.indexOf('class="eb-shift__time"'), html.indexOf('</p>', html.indexOf('class="eb-shift__time"')));
+  expect(time).toMatch(/^class="eb-shift__time"><span class="eb-nb"><time [^>]*>[^<]*<\/time><span aria-hidden="true"> –<\/span><\/span> <span class="eb-nb"><span class="b-sr">to <\/span><time /);
+});
+
 it('proposed G67: Coming up and required to-do rows are named by what they show (no label that differs)', () => {
   const html = draw({todos: [todo('req', true), todo('r2', true)]});
   const upcoming = html.slice(html.indexOf('id="b-home-upcoming"'));

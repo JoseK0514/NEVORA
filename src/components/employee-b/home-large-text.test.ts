@@ -27,6 +27,7 @@ it('G53: from 768px the shortcuts, Your week and the band figures stack when lar
   expect(wide).toMatch(/\.b-hero:has\(> \.b-live\) \{ container: eb-band \/ inline-size !important; \}/);
   expect(wide).toContain('@container eb-band (max-width: 36rem)');
   expect(wide).toMatch(/:is\(\.b-live__l, \.b-live__v, \.b-live__m\) \{[^}]*white-space: normal !important;/);
+  expect(wide).toMatch(/\.b-hero > \.b-live \{ grid-auto-flow: row !important; grid-template-columns: minmax\(0, 1fr\) !important; \}/);
   // The week's key never shrinks under its own words, so its dates wrap to the next line instead of over it.
   expect(css('components/employee-b/employee-b.css')).toMatch(/\.eb-hw__keys \{[^}]*min-width: min-content; \}/);
 });
