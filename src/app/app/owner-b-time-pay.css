@@ -263,13 +263,16 @@
    * keeps its dash tight (Inter's tabular dash is wide). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hkicker__when:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 500 !important; color: var(--b-on-band-2) !important; white-space: nowrap !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hbig:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { font-variant-numeric: normal !important; font-feature-settings: normal !important; }
-  /* #6: at 320px the Settings pill keeps the title's row; the cadence line wraps under both. */
+  /* #6: at 320px the Settings pill keeps the title's row; the cadence line wraps under both. Final fixes K (Nov 23, 2026):
+   * a wrapping row instead of a two-column grid, so when the title and the pill no longer fit side by side (200% text:
+   * "Payroll" with Settings, "Pay" with "See your hours") the pill drops under the title instead of covering it. At the
+   * default size the title fills the row and the pill ends it, as the grid drew. */
   @media (max-width: 359px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; align-items: center !important; column-gap: var(--b-space-12) !important; row-gap: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; column-gap: var(--b-space-12) !important; row-gap: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: contents !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > *:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 1 / -1 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > h1:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 1 !important; grid-row: 1 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title > .b-title__right:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { grid-column: 2 !important; grid-row: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > *:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 2 !important; flex: 0 0 100% !important; min-width: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title:has(> .b-title__right) > .b-title__text > h1:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 0 !important; flex: 1 1 auto !important; min-width: min-content !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay > .b-screen .b-hero > .b-title > .b-title__right:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { order: 1 !important; flex: none !important; }
   }
   /* #17: Payroll history's View and Download end on the card's text edge, where the amounts and chevrons above end. */
   @media (min-width: 768px) {
@@ -383,10 +386,11 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__quiet[aria-busy="true"]:not(#polq1):not(#polq2):not(#polq3) { color: var(--b-teal) !important; cursor: progress !important; }
   /* The note's one action starts on the note's text edge. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot, .c-tc .c-tc-flow) > .b-callout .b-callout__act > .c-btn:not(#polq1):not(#polq2):not(#polq3) { width: auto !important; margin: 0 0 0 6px !important; }
-  /* From 768px the decision and the result read as one column (a name and its hours stay within reach of each other). */
+  /* From 768px the decision and the result use the card's width, on its edges (Jose's review, Nov 23, 2026: a 560px column
+   * left the rows, the checkbox and Cancel/Approve stopping short of a full-width card). */
   @media (min-width: 768px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .c-tc-flow :is(.c-tc-flow__step, .c-tc-flow__rows, .c-tc-flow__all):not(#polq1):not(#polq2):not(#polq3) { width: 100% !important; max-width: 560px !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .c-tc-flow[data-stage="result"] .c-tc-flow__foot:not(#polq1):not(#polq2):not(#polq3) { max-width: 560px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .c-tc-flow :is(.c-tc-flow__step, .c-tc-flow__rows, .c-tc-flow__all):not(#polq1):not(#polq2):not(#polq3) { width: 100% !important; max-width: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .c-tc-flow[data-stage="result"] .c-tc-flow__foot:not(#polq1):not(#polq2):not(#polq3) { max-width: none !important; }
   }
   @media (max-width: 767px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc .c-tc-flow .c-tc-flow__bar:not(#polq1):not(#polq2):not(#polq3) { flex-direction: column !important; align-items: stretch !important; }
@@ -554,4 +558,14 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-tc-flow__foot > .c-btn:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { margin-left: auto !important; max-width: 100% !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-rows :is(.c-row__value, .c-row__value .c-num):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.9375rem !important; line-height: 1.25rem !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc:not(.c-tc-desk) .c-rows .c-row:not(.c-tc-day):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { height: auto !important; }
+}
+
+/* Jose's review (Nov 23, 2026): the person's week. The attention note sits in the person's card under the figures, on the
+ * card's 22px inset with the card's dividing line (it hung between the cards with its icon on the card edge). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .c-card > .c-tc-sheet__attn:not(#gq1):not(#gq2):not(#gq3) { margin: 0 !important; padding: 14px 22px 16px !important; box-shadow: inset 0 1px 0 var(--c-line) !important; }
+  /* The footer holds "Request time correction" above Approve: one column, 8px apart, both the sheet's full width. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot:not(#gq1):not(#gq2):not(#gq3) { gap: var(--b-space-8) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot > .c-btn.c-btn--secondary:not(:disabled, [aria-disabled="true"]):not(#gq1):not(#gq2):not(#gq3) { border-color: transparent !important; background: var(--b-btn-surface) !important; color: var(--b-btn-surface-ink) !important; box-shadow: var(--b-btn-surface-edge) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) dialog.q-sheet .c-tc-sheet .c-tc-sheet__foot > .c-btn.c-btn--secondary:not(:disabled, [aria-disabled="true"]):active:not(#gq1):not(#gq2):not(#gq3) { background: var(--b-btn-surface-press) !important; }
 }

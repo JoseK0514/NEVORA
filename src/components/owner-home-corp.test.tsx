@@ -258,6 +258,17 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     // The notice sits before the payday tile, which has no Prepare button of its own then (Core check, Nov 23, 2026).
     expect(out.indexOf("has no payroll")).toBeLessThan(out.indexOf('class="b-ink"'));
     expect(out).not.toContain('aria-label="Prepare payroll"');
+    // QA A5-01 (Nov 23, 2026): on phones the overdue card is first under the band, before Things to do; from 768 the copy
+    // in the right column shows (owner-b-home.css). The phone copy isn't held for Things to do's read (G73).
+    const first = out.indexOf('<div class="b-home-payfirst">');
+    expect(first).toBeGreaterThan(-1);
+    expect(first).toBeLessThan(out.indexOf('id="b-home-needs"'));
+    expect(out).toContain('<div class="b-home-paylate">');
+    const loading = phone({ week: payrollWeek, payrollStatus: overdue, value: null, connection: "loading", timecardsReady: false });
+    expect(loading).toContain('<div class="b-home-payfirst">');
+    expect(loading).not.toContain('<div class="b-home-paylate">');
+    // Only an overdue payroll moves up: a schedule that needs review keeps its place.
+    expect(phone({ week: payrollWeek, payrollStatus: { state: "ready", reviewRequired: overdue.overdue } })).not.toContain("b-home-payfirst");
     // A schedule that needs review is amber and opens Payroll; a status that couldn't be read says so, never calm.
     const review = phone({ week: payrollWeek, payrollStatus: { state: "ready", reviewRequired: overdue.overdue } });
     expect(review).toContain(">Payroll schedule needs review<");

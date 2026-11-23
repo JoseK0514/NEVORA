@@ -115,3 +115,16 @@ describe('the phone select and review view at a large text size (Nov 23, 2026 fo
     expect(rule('.c-tc-flow__foot > .c-btn')).toContain('margin-left: auto !important;');
   });
 });
+
+describe("Jose's review of the person's week and the review panel (Nov 23, 2026)", () => {
+  it('puts the attention note on the card inset with its dividing line', () => {
+    expect(css).toMatch(/\.c-tc-sheet \.c-card > \.c-tc-sheet__attn:not\(#gq1\)[^{]*\{ margin: 0 !important; padding: 14px 22px 16px !important; box-shadow: inset 0 1px 0 var\(--c-line\) !important; \}/);
+  });
+  it('spaces the two footer actions 8px apart', () => {
+    expect(css).toMatch(/dialog\.q-sheet \.c-tc-sheet \.c-tc-sheet__foot:not\(#gq1\)[^{]*\{ gap: var\(--b-space-8\) !important; \}/);
+  });
+  it('lets the review panel use the card width from 768px', () => {
+    expect(css).not.toMatch(/c-tc-flow[^{]*\{[^}]*max-width: 560px/);
+    expect(css).toMatch(/\.c-tc-flow :is\(\.c-tc-flow__step, \.c-tc-flow__rows, \.c-tc-flow__all\)[^{]*\{ width: 100% !important; max-width: none !important; \}/);
+  });
+});

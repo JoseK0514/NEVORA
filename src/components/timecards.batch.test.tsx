@@ -264,6 +264,31 @@ function closeSheet(kind:'escape'|'done'|'automatic'='escape'){
 function openFirstSheet(){
  (control(n=>n.type==='button'&&n.props.className==='c-tc-person').onClick as ()=>void)();
 }
+// Jose's review (Nov 23, 2026): with a correction waiting, the sheet offers no second request and no grey Approve; one line
+// says why it can't be approved yet, and the attention note sits in the person's card.
+it('a waiting correction: no second request, no dead Approve, one line says why',async()=>{
+ const own=card('E1');
+ rs.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-27T12:00:00Z',cards:[{...own,source:{...own.source,pendingCorrections:1}}]}));
+ await mount();openFirstSheet();
+ const sheet=html().slice(html().indexOf('c-tc-sheet__who'));
+ expect(sheet).not.toContain('Request time correction');
+ expect(sheet).not.toMatch(/>Approve timecard</);
+ expect(sheet).toContain('Approve after the waiting correction is reviewed.');
+ const personCard=sheet.slice(0,sheet.indexOf('</section>'));
+ expect(personCard).toContain('c-tc-sheet__attn');
+ expect(personCard).toContain('Correction awaiting review');
+});
+// Jose's review (Nov 23, 2026): when Approve is the footer, "Request time correction" sits in the footer above it, so the
+// sticky footer never covers it.
+it('a timecard ready to approve keeps Request time correction in the footer above Approve',async()=>{
+ transport();await mount();openFirstSheet();
+ const page=html();const foot=page.slice(page.indexOf('c-tc-sheet__foot'));
+ expect(page.indexOf('c-tc-sheet__foot')).toBeGreaterThan(-1);
+ expect(foot.indexOf('Request time correction')).toBeGreaterThan(-1);
+ expect(foot.search(/Approve (timecard|with no hours)/)).toBeGreaterThan(-1);
+ expect(foot.indexOf('Request time correction')).toBeLessThan(foot.search(/Approve (timecard|with no hours)/));
+ expect(page.slice(page.indexOf('c-tc-sheet__actions'),page.indexOf('c-tc-sheet__foot'))).not.toContain('Request time correction');
+});
 // Gate check (Nov 23, 2026): a person's week says a waiting correction once (in the amber note), without the header's
 // "Correction waiting" and without a line on how to clear issues before approval.
 it('says a timecard issue once in the person\'s week',async()=>{
@@ -452,16 +477,17 @@ it('BR-1: a person’s time is a row figure and the week’s total a sentence, f
  // Phase 8 (a.md #38): the period total in the table is whole hours; the note under it keeps the exact figure.
  expect(text).toContain('Total10 h');expect(text).not.toContain('Total10 h 6 min');expect(text).toContain('10 h 6 min recorded');
 });
-it('BR-2: says the two steps where they are taken, and names the button for a card with hours',async()=>{
+it('BR-2, DEC8: says the two steps where they are taken (the sheet), not on the page, and names the button for a card with hours',async()=>{
  rs.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[worked('E1',240),card('E2'),card('OWNER')]}));
  await mount();
  const steps='Approve each timecard, then finalize the week to lock it for payroll.';
- expect(html()).toContain(steps);expect(html()).toContain('1 to approve · 0 to finalize');
+ // DEC8 (Jose, Nov 23, 2026): the page's summary already reads "1 to approve · 0 to finalize", so the line isn't on the page.
+ expect(html()).not.toContain(steps);expect(html()).toContain('1 to approve · 0 to finalize');
  openFirstSheet();
  const sheet=html();
  expect(sheet).toContain('Approve timecard');expect(sheet).not.toContain('Approve with no hours');
  expect(sheet).toContain('Request time correction');
- expect(sheet.split(steps).length).toBeGreaterThan(2);
+ expect(sheet).toContain(steps);
 });
 it.each([['prepare','Prepare payroll','href="/app/payroll/prepare"'],['owner','All done. Your Owner runs payroll.',null],[undefined,'Download hours for payroll','href="/app/payroll-export?start=2026-09-21&amp;end=2026-09-27"']] as const)('AR-11: a finalized period leads on (%s)',async(step,title,link)=>{
  payrollStep=step;
@@ -483,7 +509,7 @@ it('phone: the tile names the step under way, the steps are said once and a fina
  const text=(markup:string)=>markup.replace(/<[^>]+>/g,'|').replace(/\s+/g,' ');
  const before=text(html());
  expect(before).toContain('|Approved|');expect(before).not.toContain('|Finalized|');expect(before).toContain('|Recorded|');expect(before).toContain('|8 h|');
- expect(before).toContain('|Approve each timecard, then finalize the week to lock it for payroll.|');expect(before).not.toContain('Next step');
+ expect(before).not.toContain('Approve each timecard');expect(before).not.toContain('Next step');
  cards=[finalized('E1',8*60+6),finalized('E2',60)];click('This week');await flush();
  const after=html();
  expect(text(after)).toContain('|Finalized|');expect(text(after)).toContain('|Prepare payroll|');expect(after).toContain('href="/app/payroll/prepare"');

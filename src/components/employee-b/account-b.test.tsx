@@ -43,13 +43,14 @@ describe('Notifications', () => {
   it('All and Unread on glass, grouped by day, a grey icon per kind (amber for one that needs you), time and a teal dot', () => {
     const html = renderToStaticMarkup(<EmployeeNotificationsB list={list()} settingsHref="/app/profile/device-alerts" />), plain = text(html);
     // Inspection Nov 14 (BR-6, EM-005): each title says what happened, not the category's name.
-    for (const value of ['Notifications', 'All', 'Unread 2', 'Today', 'Yesterday', 'Earlier', 'Confirm your schedule', 'Action needed', 'Acknowledge the team update', 'Pay statement shared', 'Settings']) expect(plain).toContain(value);
+    for (const value of ['Notifications', 'All', 'Unread 2', 'Today', 'Yesterday', 'Earlier', 'Confirm your schedule', 'Action needed', 'Confirm the team update', 'Pay statement shared', 'Settings']) expect(plain).toContain(value);
     for (const gone of ['Schedule update', 'Pay statement update']) expect(plain).not.toContain(gone);expect(plain).not.toMatch(/Team update(?! to acknowledge)/);
-    expect(html).toContain('aria-label="Confirm your schedule, unread, action needed, 2:10 PM"');
+    // Sweep Z (B3): rows are named by their own text; the unread dot's meaning is b-sr text inside the row.
+    expect(html).not.toMatch(/<a [^>]*class="b-row b-row--link eb-notif[^"]*"[^>]*aria-label=/);expect(html).toContain('<span class="b-sr">unread, </span>');
     expect(html).toContain('href="/app/profile/device-alerts"');expect(html).toContain('class="eb-noacts"');
     expect(html.match(/class="eb-unread"/g)).toHaveLength(2);expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(2);
     // Phase 4 (EM-009): "Action needed" is the amber chip, the dot comes before the time, and an earlier day shows its date then its hour.
-    expect(html.match(/b-chip b-chip--amber">Action needed</g)).toHaveLength(2);expect(html).toMatch(/<i class="eb-unread" aria-hidden="true"><\/i><span class="eb-when__t">2:10 PM<\/span>/);
+    expect(html.match(/b-chip b-chip--amber">Action needed</g)).toHaveLength(2);expect(html).toMatch(/<i class="eb-unread" aria-hidden="true"><\/i><span class="b-sr">unread, <\/span><span class="eb-when__t">2:10 PM<\/span>/);
     expect(html).toContain('<span class="eb-when__t">Oct 30, 9:00 AM</span>');expect(html.match(/eb-notif--unread/g)).toHaveLength(2);
     // On phones the time ends the sub-line instead (the wide and phone copies are shown by width; the label says it once).
     expect(html.match(/eb-notif__o--p/g)).toHaveLength(3);expect(html.match(/eb-notif__s--p/g)).toHaveLength(1);expect(html).not.toContain('eb-notif__o--w');
@@ -65,7 +66,7 @@ describe('Notifications', () => {
     expect(plain).toContain('Confirm your schedule');expect(plain).toContain('2 notifications');
     // Closed, neither notice is a separate row yet; the Earlier one is unchanged.
     expect(html).not.toContain('id="b-message-n1"');expect(html).not.toContain('id="b-message-n1b"');expect(html).toContain('id="b-message-n3"');
-    expect(html).toContain('aria-label="Confirm your schedule, 2 notifications, 1 unread, action needed, 2:10 PM"');
+    expect(html).not.toMatch(/<button [^>]*class="b-row b-row--link eb-notif eb-fold[^"]*"[^>]*aria-label=/);expect(html).toContain('<span class="b-sr">1 unread, </span>');
   });
   // Phase 4 (EM-005): the title is the outcome and the sub-line is what it is about, from the event type and subject the list sends.
   it('a decision leads with its state and says its dates; a schedule says its week and shifts; a swap says who asked', async () => {
@@ -77,12 +78,12 @@ describe('Notifications', () => {
     ];
     const html = renderToStaticMarkup(<EmployeeNotificationsB list={list({items: facts})} />), plain = text(html);
     for (const value of ['Time off approved', 'Nov 30–Dec 2', 'Time off declined', 'Sat, Dec 5', 'Schedule published', 'Week of Nov 9', '2 shifts', 'Swap request waiting for you', 'Sat, Nov 28', 'From Ana Colon']) expect(plain).toContain(value);
-    expect(html).toContain('aria-label="Time off approved, Nov 30–Dec 2, unread, 2:10 PM"');expect(html).toContain('aria-label="Schedule published, Week of Nov 9, 2 shifts, 12:10 PM"');
+    expect(html).not.toContain('aria-label="Time off approved');expect(html).not.toContain('aria-label="Schedule published');
     expect(html.match(/b-ico b-ico--green/g)).toHaveLength(1);expect(html.match(/eb-notif--declined/g)).toHaveLength(1);expect(plain).not.toContain('Action needed');
     // Final polish, round 2 (H2, N1): a swap that waits for this person's answer is amber with the Requests page's chip,
     // and a row's parts keep one order: title, grey line, then the chip.
     expect(html.match(/b-chip b-chip--amber">Needs your answer</g)).toHaveLength(1);expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(1);
-    expect(html).toContain('aria-label="Swap request waiting for you, Sat, Nov 28, From Ana Colon, unread, needs your answer, 11:10 AM"');
+    expect(html).not.toContain('aria-label="Swap request waiting for you');
     const swapRow = html.slice(html.indexOf('id="b-message-d"'));
     expect(swapRow.indexOf('Swap request waiting for you')).toBeLessThan(swapRow.indexOf('From Ana Colon'));expect(swapRow.indexOf('From Ana Colon')).toBeLessThan(swapRow.indexOf('Needs your answer<'));
     // Final review C (row 16): a declined time off keeps its kind's glyph (CalendarMinus) in the grey circle; no x.
@@ -118,31 +119,31 @@ const update = (patch: Partial<ReadyUpdate> = {}): ReadyUpdate => ({state: 'read
 describe('Updates', () => {
   const list = (patch: Partial<UpdatesBList> = {}): UpdatesBList => ({items: [update(), update({id: 'u2', title: 'Break room rules', acknowledgement: 'NONE', ownReadAt: '2026-10-29T12:00:00Z', publishedAt: '2026-10-28T12:00:00Z'})],
     partial: false, search: '', filter: 'all', timeZone: 'America/Puerto_Rico', onSearch: noop, onFilter: noop, onOpen: noop, more: false, busy: false, onConfirm: noop, onCompose: noop, ...patch});
-  it('search and Show on glass, To acknowledge with Open and Acknowledge, Other updates rows, Write an update at the foot', () => {
+  it('search and Show on glass, To confirm with Open and Confirm, Other updates rows, Write an update at the foot', () => {
     const html = renderToStaticMarkup(<EmployeeUpdatesB list={list()} />), plain = text(html);
-    for (const value of ['Updates', 'To acknowledge', 'Holiday hours', 'Action needed', /* B6 (NV-157): a Dotted line */'Management', 'Wed, Nov 4', 'Fictional store hours for the week.', 'Open', /* B7 wording (NV-284): one verb */'Acknowledge', 'Other updates', 'Break room rules', 'Write an update']) expect(plain).toContain(value);
+    for (const value of ['Updates', 'To confirm', 'Holiday hours', 'Action needed', /* B6 (NV-157): a Dotted line */'Management', 'Wed, Nov 4', 'Fictional store hours for the week.', 'Open', /* B7 wording (NV-284): one verb; DEC6 (Nov 23, 2026): Confirm */'Confirm', 'Other updates', 'Break room rules', 'Write an update']) expect(plain).toContain(value);
     expect(html).toContain('placeholder="Search update titles"');expect(html).toMatch(/<select id="b-updates-filter"/);expect(html).toContain('href="/app/updates/compose"');expect(html).toContain('href="/app/more"');
     expect(html).toContain('href="/app/updates/u1"');expect(html).toContain('href="/app/updates/u2"');
-    expect(plain.indexOf('To acknowledge')).toBeLessThan(plain.indexOf('Other updates'));
+    expect(plain.indexOf('To confirm')).toBeLessThan(plain.indexOf('Other updates'));
     // Review B6 (NV-166): Write an update is the band's action at every width (white on desktop, glass on the phone), not a
     // row under the read items.
-    expect(plain.indexOf('Write an update')).toBeLessThan(plain.indexOf('To acknowledge'));expect(html).not.toContain('class="b-add"');
+    expect(plain.indexOf('Write an update')).toBeLessThan(plain.indexOf('To confirm'));expect(html).not.toContain('class="b-add"');
     // Final review C (row 5): the update that waits for you leads with the amber circle; the read-only rows don't.
     expect(html).toContain('<div class="b-row eb-upd__head"><span class="b-ico b-ico--amber" aria-hidden="true">');
     // Phase 4 (EM-021): one glass pill at every width; (EM-033) a preview has no line breaks; an unread row's word is for its label only.
     expect(html.match(/href="\/app\/updates\/compose"/g)).toHaveLength(1);expect(html).toContain('class="b-btn b-btn--glass eb-write"');expect(html).not.toContain('b-btn--white');
     const breaks = renderToStaticMarkup(<EmployeeUpdatesB list={list({items: [update({body: 'First line.\nSecond line.\n\nThird.'}), update({id: 'u3', title: 'Unread one', acknowledgement: 'NONE'})]})} />);
-    expect(breaks).toContain('<p class="eb-upd__body">First line. Second line. Third.</p>');expect(breaks).toContain('aria-label="Unread one, Unread, ');expect(text(breaks)).not.toMatch(/Nov 4 Unread|· Unread/);expect(breaks).toContain('eb-updrow--unread');
+    expect(breaks).toContain('<p class="eb-upd__body">First line. Second line. Third.</p>');/* Sweep Z (B6): named by its text; the unread state is b-sr text. */expect(breaks).not.toMatch(/<a [^>]*class="b-row b-row--link eb-updrow[^"]*"[^>]*aria-label=/);expect(breaks).toContain('<span class="b-sr">Unread</span>');expect(text(breaks.replace(/<span class="b-sr">[^<]*<\/span>/g, ''))).not.toMatch(/Nov 4 Unread|· Unread/);expect(breaks).toContain('eb-updrow--unread');
   });
   it('a search with no match, an empty page and a confirm in flight', () => {
     expect(text(renderToStaticMarkup(<EmployeeUpdatesB list={list({search: 'nothing like this'})} />))).toContain('No matches on this page');
     const empty = text(renderToStaticMarkup(<EmployeeUpdatesB list={list({items: []})} />));expect(empty).toContain('No current updates');expect(empty).toContain('Write an update');
-    expect(renderToStaticMarkup(<EmployeeUpdatesB list={list({busy: true})} />)).toMatch(/aria-label="Acknowledge Holiday hours" disabled=""/);
+    expect(renderToStaticMarkup(<EmployeeUpdatesB list={list({busy: true})} />)).toMatch(/aria-label="Confirm Holiday hours" disabled=""/);
     expect(text(renderToStaticMarkup(<EmployeeUpdatesB list={null} notice={{copy: 'Updates are turned off for your workspace. Your other employee tools remain available.'}} />))).toContain('Updates are turned off');
   });
   it('an update: its text, Acknowledge for a required one, and Withdraw reviewed first', () => {
     const html = renderToStaticMarkup(<EmployeeUpdateB back={{href: '/app/updates', label: 'Updates'}} item={update({canWithdraw: true})} busy={false} onAction={noop} withdraw={false} onWithdraw={noop} />), plain = text(html);
-    for (const value of ['Team update', 'Holiday hours', 'Action needed', 'Your acknowledgement is required.', 'Acknowledge update', 'Withdraw update']) expect(plain).toContain(value);
+    for (const value of ['Team update', 'Holiday hours', 'Action needed', 'Confirm that you’ve read it. Opening it doesn’t count.', 'Confirm I read it', 'Withdraw update']) expect(plain).toContain(value);
     expect(plain).not.toContain('Mark as read');
     expect(text(renderToStaticMarkup(<EmployeeUpdateB back={{href: '/app/updates', label: 'Updates'}} item={update({canWithdraw: true})} busy={false} onAction={noop} withdraw onWithdraw={noop} />))).toContain('Confirm withdrawal');
   });

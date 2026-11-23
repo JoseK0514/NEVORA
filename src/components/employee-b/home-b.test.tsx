@@ -88,10 +88,11 @@ it('round 2 (H2, H4): a request that waits for your answer is amber with Request
   expect(todoDeadline('2026-11-24T16:00:00Z', zone).full.replace(/[\u00a0\u202f]/g, ' ')).toBe('Respond by Nov 24, 12:00 PM');
 });
 
-it('EM-007, EM-025: the hours read as one sentence, the payday is one format, and the shift ahead is the first figure', () => {
+it('EM-007; DEC1: the hours read as one sentence, the payday is one format, and the band leaves the shift to its card', () => {
   const html = draw(), strip = html.slice(html.indexOf('class="b-live b-glass"'), html.indexOf('</ul>', html.indexOf('class="b-live b-glass"')));
   const plain = text(strip);
-  expect(plain).toContain('Next shift Tomorrow 9:00 AM Customer Support · Main Office');
+  // DEC1 (Jose, Nov 23, 2026; each fact once): the shift card under the band says the shift, so the band doesn't.
+  expect(plain).not.toContain('Next shift');expect(plain).not.toContain('Tomorrow 9:00 AM');
   // Final fixes K7 and core screens check (Nov 23, 2026): each figure's link is named by its visible text (no aria-label).
   expect(strip).not.toContain('aria-label="Next shift');
   expect(strip).not.toMatch(/<a [^>]*aria-label=/);
@@ -206,7 +207,8 @@ it('final polish: Home’s shortcuts open the page that starts each request, and
   expect(nav(draw({shortcuts: []}))).toBe('');
 });
 
-it('Core screens check: a Lead on shift now reads the range in the band, split after its dash so a narrow tile can wrap it', () => {
+it('DEC1: a Lead on shift now sees the shift once, in the "On shift now" card; the band has hours and payday only', () => {
   const html = draw({lead: true}), strip = html.includes('class="b-live b-glass"') ? html.slice(html.indexOf('class="b-live b-glass"'), html.indexOf('</ul>', html.indexOf('class="b-live b-glass"'))) : '';
-  if (strip.includes('On shift now')) { expect(strip).toMatch(/<span class="eb-nb">[^<]+\u00a0–<\/span> <span class="eb-nb">/); expect(strip).not.toMatch(/<a [^>]*aria-label=/); }
+  expect(strip).not.toContain('On shift now');expect(strip).not.toContain('b-dot--live');
+  expect(html).not.toContain('>Your shift<');
 });

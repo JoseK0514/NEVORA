@@ -24,7 +24,7 @@
   /* ---------- Home ---------- */
   /* EM-007: "17 h of 56 h" on one line over "worked this week"; the payday as "Fri, Nov 20" at every width. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-live__v { font-variant-numeric: tabular-nums !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-live__v small { font-size: 14px !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-on-band-2) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-live__v small { font-size: 0.875rem !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--b-on-band-2) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6) .b-live__m { display: block !important; min-width: 0 !important; max-width: 100% !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-on-band-2) !important; }
   @media (max-width: 767px) {
     /* EM-025: the shift ahead is a figure only where the band has room; on a phone the shift card is the next thing down. */
@@ -374,14 +374,6 @@
       :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a) .b-hero > .b-live :is(.b-live__l, .b-live__v, .b-live__m) { overflow: visible !important; text-overflow: clip !important; white-space: normal !important; overflow-wrap: break-word !important; }
     }
   }
-}
-
-/* Core screens check (Nov 23, 2026): a Lead's "On shift now" range may break after its dash ("8:00 AM –" over "4:00 PM",
- * each time kept whole by .eb-nb) instead of running into the Hours figure at 768px and off the band at 200% text. */
-@layer nv-b {
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a):not(#cs1) .b-hero > .b-live .b-live__i:has(.b-dot--live) .b-live__v { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; text-wrap: balance; }
-  /* When that range takes two lines, the other figures keep their labels on the band's top line (they centred). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4):not(#e-none5):not(#e-none6):not(#a4a):not(#cs1) .b-hero > .b-live:has(.b-dot--live) :is(.b-live__i > .b-live__a, .b-live__i:not(:has(> .b-live__a))) { justify-content: flex-start !important; }
 }
 
 /* Core screens check (Nov 23, 2026): from 768 to 1023px Home's Things to do column is narrow, so "Respond by Nov 30, 9:00

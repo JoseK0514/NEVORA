@@ -38,3 +38,35 @@ describe('phone band titles in rem', () => {
     }
   });
 });
+
+describe('band title and its button at 320px', () => {
+  it('Payroll and Pay wrap the button under a title that no longer fits beside it (no two-column grid)', () => {
+    const sheet = css('app/app/owner-b-time-pay.css').replace(/:not\(#fa\d+\)/g, '');
+    const rule = (tail: string) => sheet.match(new RegExp(`\\.c-page\\.c-pay > \\.b-screen \\.b-hero > \\.b-title${tail} \\{([^}]*)\\}`))?.[1] ?? '';
+    expect(rule(':has\\(> \\.b-title__right\\)')).toContain('display: flex !important; flex-wrap: wrap !important;');
+    expect(rule(':has\\(> \\.b-title__right\\)')).not.toContain('grid-template-columns');
+    expect(rule(':has\\(> \\.b-title__right\\) > \\.b-title__text > h1')).toContain('min-width: min-content !important;');
+    expect(rule(' > \\.b-title__right')).toContain('order: 1 !important; flex: none !important;');
+  });
+});
+
+describe('Insights period labels', () => {
+  it('grow with text without the 20px cap (14px, and 12.5px under 360px, at 100%)', () => {
+    const sheet = css('components/reports-corp.css');
+    expect(sheet).toMatch(/\.c-ins \.c-ins__seg(?::not\(#rz\d+\))+ \{ --b-seg-fs: 0\.875rem; \}/);
+    expect(sheet).toMatch(/@media \(max-width: 359px\) \{[^{]*\.c-ins \.c-ins__seg(?::not\(#rz\d+\))+ \{ --b-seg-fs: 0\.78125rem; \} \}/);
+  });
+});
+
+describe('Home band lines in rem (sweep Z)', () => {
+  // The band greeting already follows the token (--b-fs-body, rem); the date and place line under the title and the
+  // "/3" beside a figure were 14px, so at 200% text they stayed put while the title doubled. Same 14px at 100%.
+  it('the date and place line and a figure\'s small part are 0.875rem', () => {
+    expect(css('app/app/b-foundation.css')).toMatch(/\.b-hero \.b-date \{[^}]*font-size: 0\.875rem;/);
+    expect(css('components/owner-b/owner-b.css')).toContain('.b-live__v small { font-size: 0.875rem; font-weight: 500; }');
+    expect(css('app/app/owner-b-desktop.css')).toContain('.b-live__v small { font-size: 0.875rem !important; line-height: 1.4 !important; }');
+    expect(css('app/app/employee-b-work.css')).toMatch(/\.b-live__v small \{ font-size: 0\.875rem !important;/);
+    expect(css('components/owner-b/owner-b.css')).toMatch(/\.b-eyebrow \{ font-size: var\(--b-fs-body\);/);
+    expect(css('app/b-tokens.css')).toContain('--b-fs-body: 0.96875rem;');
+  });
+});

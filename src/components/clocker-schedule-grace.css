@@ -27,3 +27,9 @@
   :is(#c-root, html) .c-grace .c-grace__foot { flex-direction: row; align-items: center; justify-content: flex-end; }
   :is(#c-root, html) .c-grace .c-grace__foot > .c-btn { width: auto; min-width: 120px; }
 }
+/* Regression sweep Z (Nov 23, 2026): the unit inside the field ("minutes") grows with the text like the value beside it
+ * (the kit draws it at a fixed 15–16px), and stays centred in the field. */
+:is(#c-root, html) .c-grace .c-setb-unit .c-in__suffix { top: 50%; transform: translateY(-50%); font-size: 0.9375rem; line-height: 1.25rem; }
+@media (max-width: 767px) {
+  :is(#c-root, html) .c-grace .c-setb-unit .c-in__suffix { font-size: 1rem; line-height: 1.25rem; }
+}
