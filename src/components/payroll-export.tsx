@@ -197,7 +197,8 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
  // MG-010: one line says the one thing in the way. While the week is still open nobody can approve yet, so the line says
  // when they can (Timecards' own date); once it has ended the line names the steps left, as before.
  const notYet=!!today&&period.endDate>=today&&unapproved>0;
- const waitingLine=notYet?`Timecards for ${rangeText(period.startDate,period.endDate)} can be approved from ${dayText(addDays(period.endDate,1))}.`:waiting;
+ // Phase 2 (G8): the Week field above already names the dates, so the line doesn't repeat them.
+ const waitingLine=notYet?`Timecards can be approved from ${dayText(addDays(period.endDate,1))}.`:waiting;
  const weeks=weekChoices();
  const periodKey=`${period.startDate}|${period.endDate}`;
  const listed=weeks.some(w=>w.value===periodKey);
@@ -252,7 +253,9 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
     </ul>
     <div className="c-exp__ready">
      <b className="c-pay__strong">{finalized.length?<>{`${finalized.length} ${finalized.length===1?'person':'people'} · `}<span className="c-num">{hoursText(readyHours)}</span></>:'Nothing ready to export yet'}</b>
-     {waitingLine?<span className="c-exp__waiting">{notYet?`${waitingLine} `:`${waitingLine} · `}<a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></span>:null}
+     {/* Phase 2 (G8): a Manager arrives from Timecards and the back link already reads "Timecards", so only the Owner's
+       * line (back to Payroll) carries the link. */}
+     {waitingLine?<span className="c-exp__waiting">{payroll?<>{notYet?`${waitingLine} `:`${waitingLine} · `}<a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></>:waitingLine}</span>:null}
      {retry?<button type="button" className="c-btn c-btn--full" disabled={busy} onClick={()=>retry&&void send(retry)}>Retry same export</button>
       :<button type="button" className="c-btn c-btn--full" disabled={locked||!finalized.length||periodChanged} onClick={create}>Create export</button>}
      {!busy&&!retry&&!periodChanged&&!finalized.length&&waitingLine?null:<p className="c-note">{busy?'Preparing your files…':retry?'Retry to confirm the outcome of this export.':periodChanged?'Show the dates you chose before exporting.':!finalized.length?(waitingLine?null:<>No one has finalized time for these dates. <a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></>):selected.length?`Exports the ${selected.length} ${selected.length===1?'person':'people'} you chose.`:`Exports every finalized timecard${visibleSelection.overLimit?' (the first 100)':''}. Hours include breaks; your payroll system decides pay types.`}</p>}
