@@ -60,7 +60,18 @@ it('connects original shift reviews and explicit period history in owned Chromiu
       for (const actor of ['UI-COMPANY', 'UI-LOCAL']) {
         const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce' });
         const page = await context.newPage(); page.setDefaultTimeout(20000);
-        const pause = async () => { await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); };
+        const pendingRouterRequests = new Set<object>();
+        page.on('request', (request: { headers(): Record<string, string> }) => {
+          const headers = request.headers();
+          if (headers.rsc === '1' || headers['next-action']) pendingRouterRequests.add(request);
+        });
+        for (const event of ['requestfinished', 'requestfailed']) {
+          page.on(event, (request: object) => pendingRouterRequests.delete(request));
+        }
+        const pause = async () => {
+          await expect.poll(() => pendingRouterRequests.size, { timeout: 20000 }).toBe(0);
+          await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+        };
         const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(app.url + path); };
         failureShot = () => page.screenshot({ path: resolve(evidence, `${engine}-${actor}-failure.png`), fullPage: true });
         page.on('pageerror', (error: Error) => errors.push(`${engine} ${actor}: ${error.message}`));
