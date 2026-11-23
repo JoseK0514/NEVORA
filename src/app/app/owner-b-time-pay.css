@@ -512,3 +512,27 @@
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-sheet .b-callout a:not(#gq1):not(#gq2):not(#gq3) { display: inline-flex !important; align-items: center !important; min-height: var(--b-target) !important; }
 }
+
+/* The period's table at a large text size (G90 follow-up): with its text in rem, at 768px and 200% text the Person
+ * column (sized to what is left, for its ellipsis) shrank to one letter. Once the table card is narrow for its text
+ * (under 36rem: 576px at the default size, so the default layout is unchanged) names and statuses wrap whole words,
+ * the Person column keeps room for a name, the live dot sits beside the status's first line, and the Breaks column
+ * steps aside as it does on phones (each person's breaks are in their week). */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard:not(#gq1) { container: tc-table / inline-size !important; }
+    @container tc-table (max-width: 36rem) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table :is(th, td):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { padding-left: var(--b-space-8) !important; padding-right: var(--b-space-8) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table td[data-col="person"]:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { max-width: none !important; min-width: 7em !important; width: auto !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table .c-tc-person > span:not(.c-av):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word !important; text-align: left !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table .c-tc-person:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { align-items: flex-start !important; text-align: left !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table td[data-col="status"]:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { min-width: 0 !important; white-space: normal !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table :is(.c-tc-st, .c-tc-st > .b-status, .c-tc-st > .b-chip):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { white-space: normal !important; align-items: flex-start !important; text-align: right !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table .c-tc-st > .b-status > .b-ldot:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { margin-top: calc((var(--b-lh-meta) - var(--b-chip-dot)) / 2) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table [data-col="breaks"]:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { display: none !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table [data-col="person"]:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { width: auto !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table [data-col="status"]:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { width: auto !important; padding-right: var(--b-space-16) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc .c-tc-tablecard .c-tc-table .c-tc-st > :is(.b-status, .b-chip):not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { flex: 0 1 auto !important; min-width: 0 !important; }
+    }
+  }
+}

@@ -183,7 +183,9 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
       const owners=await listEmployees().then(list=>ownerNames(list.filter(e=>e.role==='OWNER'&&e.active!==false).map(e=>`${e.firstName} ${e.lastName}`.trim()))).catch(()=>null);
       const words=permissionCopy(lang);closed={title:words.leaveDeniedTitle,line:words.leaveDenied(owners??(lang==='es'?'Un dueño':'An Owner')),lang};
     }
-    return <OperationalUnavailable title="Team time off unavailable" reason={source.reason} scoped closed={closed}/>;
+    // Queue review (Nov 23, 2026): the closed card's way back is Home for every Manager (a company-wide Manager has no
+    // "your schedule" of places); a read that failed keeps the location Manager's schedule step.
+    return <OperationalUnavailable title="Team time off unavailable" reason={source.reason} scoped={!closed} closed={closed}/>;
   }
   const requests=source.data;
 

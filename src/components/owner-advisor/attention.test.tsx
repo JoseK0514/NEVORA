@@ -65,3 +65,15 @@ it("says what two items share once: one title by place, one day, time and basis 
   expect(html).toContain(">South</h4>");
   expect(html).not.toContain("b-rowact--quiet");
 });
+it("says a group's draft note and its shared source link once, and keeps each place's own choices", () => {
+  const snap = snapshot(), first = snap.attention!.items[0];
+  const gap = (id: string, place: string) => ({ ...first, id: id.repeat(64), fingerprint: id.repeat(64), kind: "coverage" as const, locationName: place, title: "Review today's planning gaps",
+    detail: "1 planning periods need review, starting 17:00. Maximum staffing shortfall: 1. Includes draft commitments; verify published staffing separately.", basis: "Current planning ledger, including drafts" as const,
+    source: { ...first.source, href: "/app/schedule?week=2026-10-19" } });
+  const html = renderToStaticMarkup(<AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }}
+    view={{ ...initialView, snapshot: { ...snap, attention: { ...snap.attention!, total: 2, items: [gap("c", "West"), gap("d", "Main")] } } }} actions={actions} />);
+  expect(html.match(/Includes draft commitments; verify published staffing separately\./g)).toHaveLength(1);
+  expect(html.match(/Review source/g)).toHaveLength(1);
+  expect(html.match(/Not relevant today/g)).toHaveLength(2);
+  expect(html).toContain("1 planning period needs review, starting 5:00 PM. Maximum staffing shortfall:\u00a01.</p>");
+});

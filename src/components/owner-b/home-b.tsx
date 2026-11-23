@@ -425,7 +425,7 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
   // period has ended, from the server's typed review facts. A card another reviewer approves is named on its own line
   // and never counted; cards whose facts are missing make the count a lower bound ("At least 2").
   const review = paydayReview(timecards, businessDay, nextPay.period?.endDate);
-  const closed = review.toReview, apart = review.otherReviewer + review.unknown, several = review.periods.length > 1;
+  const closed = review.toReview, several = review.periods.length > 1;
   const openEnd = review.openEnd;
   const away = nextPay.daysUntil <= 0 ? "Today" : nextPay.daysUntil === 1 ? "Tomorrow" : `In ${nextPay.daysUntil} days`;
   const href = week?.payrollHref ?? "/app/timecards";
@@ -440,7 +440,9 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     // Phase 8 (a.md #15, b.md #34): a date from the pay schedule is the "Scheduled payday" (DESIGN, payroll scope wording).
     const paydayLine = keepWhole(`Scheduled payday ${fmt(nextPay.payday, { weekday: "short", month: "short", day: "numeric" })}`);
     const view = !timecardsReady ? { big: "Timecards", detail: connection === "loading" || connection === "reconnecting" ? "Checking…" : "Not available right now", chip: null, go: false }
-      : closed ? { big: t.toApprove(closed, review.exact), detail: `${apart ? `${closed} of ${closed + apart} timecards` : plural(closed, "timecard", "timecards")} · ${several ? "Pay periods ended" : "Pay period ended"}`, chip: "Open now", go: true }
+      // Core check (Nov 23, 2026), each fact once: the count is the big line ("10 to approve"); the header already says
+      // Timecards, and the cards someone else reviews are their own line below, so the detail only says when.
+      : closed ? { big: t.toApprove(closed, review.exact), detail: several ? "Pay periods ended" : "Pay period ended", chip: "Open now", go: true }
       // Cards whose review facts are missing are not "none waiting": the tile says they could not be checked.
       : review.unknown ? { big: "Timecards", detail: "Pay period ended", chip: null, go: true }
       : opens ? { big: `Opens ${fmt(opens, { weekday: "short", month: "short", day: "numeric" })}`, detail: "Timecard approval", chip: untilOpen === null ? null : untilOpen <= 0 ? "Today" : untilOpen === 1 ? "Tomorrow" : `In ${untilOpen} days`, go: false }
@@ -466,7 +468,7 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     : openEnd ? { title: "Approve timecards", detail: `From ${fmt(nextDay(openEnd), { weekday: "short", month: "short", day: "numeric" })}`, done: false }
     : { title: "Timecards", detail: "None waiting", done: true };
   // Phase 8 (a.md #5): while a period with no payroll leads the column (PayrollNotice), its Prepare is the column's one
-  // strong action and this tile's button steps back to glass.
+  // strong action and this tile has no button of its own (Core check, Nov 23, 2026).
   const behind = payrollStatus?.state === "ready" && !!payrollStatus.overdue;
   return <BInk label="Scheduled payday">
     {/* Phase 9 (spec 3.1): how far away payday is ("In 9 days") is a time fact, so it is grey header text, not a chip; what
@@ -477,7 +479,9 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     {/* Review B2 (NV-007): the three unlabelled segments never lit, so they are gone; the line below says where payroll is. */}
     <div className="b-ink__r2"><span>{step.title}</span><span>{step.detail}</span></div>
     {routed}
-    <BButtonLink href={href} kind={behind ? "glass" : "white"} full label={href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}>{href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}</BButtonLink>
+    {/* Core check (Nov 23, 2026): one main action. While an overdue payroll leads the column, its "Prepare <period>" is
+      * the way in, so this tile has no second Prepare button. */}
+    {behind ? null : <BButtonLink href={href} kind="white" full label={href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}>{href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}</BButtonLink>}
   </BInk>;
 }
 

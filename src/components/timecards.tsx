@@ -120,7 +120,9 @@ const isApproved=(item:TimecardItem)=>item.state==='APPROVED'||item.state==='FIN
 // OW-014: "Waiting" is the one word for something that needs a decision, so the chip reads "Correction waiting".
 /** On the narrowest phones (under 360px) a long status in a row with a wide hours figure would be cut off ("Missing
  * clock-…"), so it uses a shorter word there; every other width keeps the full one (the full one is what is read aloud). */
-const NARROW_STATUS:Readonly<Record<string,string>>={'Missing clock-out':'No clock-out'};
+// Gate check (Nov 23, 2026): at 320px "Correction waiting" still ran out of room beside a three-figure total ("113 h 19")
+// and read "Correction wai…"; it takes a short form there too (screen readers keep the full words).
+const NARROW_STATUS:Readonly<Record<string,string>>={'Missing clock-out':'No clock-out','Correction waiting':'Correction'};
 /** Phase 9 (spec 3.1): the live dot for a card whose person is on the clock right now; every other quiet state has none. */
 const LIVE_DOT:Readonly<Record<string,'green'>>={'Clocked in now':'green'};
 const reasonNames:Partial<Record<TimecardIssue,string>>={open_entry:'Missing clock-out',open_break:'Check breaks',pending_correction:'Correction waiting',overlapping_time:'Overlapping recorded time'};
@@ -787,7 +789,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {/* Phase 9 (spec 3.4): timecards waiting for this person's approval lead with the timecards' Clock in amber (it was a
             * teal Check, the "done" glyph). */}
           {ready&&cards.length&&!open&&eligible.length?<BCard label="Ready to approve"><div className="b-notice"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon>
-            <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{/* Review B2 (NV-006): every count names its week. */}{`${rangeText(period)} · ${attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`}`}</span></span>
+            <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{/* Review B2 (NV-006): every count names its week. Gate check (Nov 23, 2026): whole parts (BSegs), so at 320px the
+              * line breaks after the week, never inside it ("Nov 16– / 22"). */}<BSegs parts={[rangeText(period),attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`]}/></span></span>
             <BButton onClick={()=>{setSelecting(true);selectAll(true);}}>Review</BButton></div></BCard>
           :ready&&cards.length&&open&&approvedCount?<BCard label="Approval"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{summaryTitle}</span><span className="b-notice__s">{`You can approve the rest from ${approveFrom(period)}`}</span></span></div></BCard>:null}
           {ready&&cards.length&&!open&&!allFinalized?<BNote>{stepsLine}</BNote>:null}
@@ -809,7 +812,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               // rewrites it; the face's initials are aria-hidden.
               return <BRow key={id} onClick={()=>setOpenId(id)} lead={<BAvatar name={name}/>}
                 title={name} chip={isOwn(item)?youChip:undefined}
-                sub={tone||liveDot||parts.length?<span className="c-tc-sub">{tone?<BChip tone={tone}>{NARROW_STATUS[row.text]?<><span className="c-tc-chip-full">{row.text}</span><span className="c-tc-chip-short" aria-hidden="true">{NARROW_STATUS[row.text]}</span></>:row.text}</BChip>:liveDot?<BStatusText dot={liveDot}>{row.text}</BStatusText>:null}{parts.map((part,index)=><span key={part}>{index||tone||liveDot?' · ':''}{part}</span>)}</span>:undefined}
+                sub={tone||liveDot||parts.length?<span className="c-tc-sub">{tone?<BChip tone={tone}>{NARROW_STATUS[row.text]?<><span className="c-tc-chip-full">{row.text}</span><span className="c-tc-chip-short" aria-hidden="true">{NARROW_STATUS[row.text]}</span></>:row.text}</BChip>:liveDot?<BStatusText dot={liveDot}>{row.text}</BStatusText>:null}{parts.map((part,index)=><span key={part}>{index||tone||liveDot?' · ':''}{/* Gate check (Nov 23, 2026): at 320px "Jose approves this one" read "Jose approves thi…"; there it says "Jose approves" (screen readers keep the full line). */}{/ approves this one$/.test(part)?<><span className="c-tc-chip-full">{part}</span><span className="c-tc-chip-short" aria-hidden="true">{part.replace(/ this one$/,'')}</span></>:part}</span>)}</span>:undefined}
                 end={hours?<b className="c-num c-tc-hours">{hours}</b>:undefined} chevron/>;
             })}</BList>
           </BCard>:null}

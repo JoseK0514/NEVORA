@@ -599,6 +599,11 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
    * positioned inside the entry; the outline it replaces was painted under the badge. */
   @media (min-width: 768px) {
     html body .app-shell[data-nv-b] aside.sidebar .nav-link { position: relative !important; }
+    /* Final fixes K (Nov 23, 2026): in the sidebar the ring is the band's dark teal (#08504C, 9.0:1 on the sidebar, 8.2:1
+     * on the current entry's tint; --b-focus was 5.9:1 and 5.4:1), on the entries, the brand, the collapse button and
+     * Help alike. Same 2px width and shape. */
+    html body .app-shell[data-nv-b] aside.sidebar { --b-focus: #08504C; }
+    html body .app-shell[data-nv-b] aside.sidebar :is(a, button, summary):not(.nav-link):focus-visible { outline-color: #08504C !important; }
     html body .app-shell[data-nv-b] aside.sidebar .nav-link:focus-visible { outline: none !important; }
     html body .app-shell[data-nv-b] aside.sidebar .nav-link:focus-visible::after {
       content: "" !important; display: block !important; position: absolute !important; inset: 0 !important; height: auto !important;
@@ -659,6 +664,18 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     height: var(--b-seg-item-h) !important; min-height: var(--b-seg-item-h) !important; margin: 0 !important; border-radius: var(--b-seg-item-r) !important;
     font-weight: 600 !important; line-height: 20px !important; white-space: nowrap !important;
   }
+  /* Final fixes K (Nov 23, 2026): at 200% text a segment's label wraps between words and its pill grows with it (the
+   * track grows too), instead of the labels running into each other. At the default size every label fits on one line,
+   * so the drawn 36px pill and 44px track are unchanged; the 44px hit area stays. The Employee and Lead band tabs carry
+   * the same values (employee-b CSS), so whichever rule wins draws the same. The id steps outrank the per-page rules
+   * that pin a segment's height (owner-b-desktop.css, owner-b-pages.css, owner-b-time-pay.css). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-seg, .q-seg, .c-seg, nav.c-pay-tabs):not(#ks1):not(#ks2):not(#ks3):not(#ks4):not(#ks5):not(#ks6):not(#ks7):not(#ks8):not(#ks9):not(#ks10):not(#ks11) {
+    height: auto !important; max-height: none !important; min-height: var(--b-seg-h) !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.b-seg, .q-seg, .c-seg, nav.c-pay-tabs) > :is(a, button):not(#ks1):not(#ks2):not(#ks3):not(#ks4):not(#ks5):not(#ks6):not(#ks7):not(#ks8):not(#ks9):not(#ks10):not(#ks11) {
+    height: auto !important; min-height: var(--b-seg-item-h) !important; padding-block: var(--b-space-4) !important; line-height: 1.25rem !important;
+    white-space: normal !important; overflow-wrap: break-word !important; text-align: center !important;
+  }
   /* The 44px hit area is the track's height; a thumb drawn by a pseudo-element is the item's own pill. */
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button)::after { content: "" !important; position: absolute !important; inset: calc(-1 * var(--b-seg-pad)) 0 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button)::before { inset: 0 !important; border-radius: var(--b-seg-item-r) !important; }
@@ -701,7 +718,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
  * Custom properties only: every rule that sets these reads the tokens. */
 @media (max-width: 359px) {
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters):has(> :nth-child(3)) {
-    --b-seg-fs: 12.5px; --b-seg-count-h: 18px; --b-seg-count-fs: 11px; --b-seg-count-px: 4px; --b-seg-count-gap: 4px;
+    --b-seg-fs: min(0.78125rem, 18px); --b-seg-count-h: 18px; --b-seg-count-fs: 11px; --b-seg-count-px: 4px; --b-seg-count-gap: 4px;
   }
 }
 /* NV-074: the main tabs' loaded band heights (the hero's height on a phone, from the top of the screen; on tablets and

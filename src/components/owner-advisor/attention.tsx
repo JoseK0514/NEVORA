@@ -9,6 +9,8 @@ import type { AttentionBriefing, AttentionDisposition, AttentionKind, AttentionR
 import { attentionDetail, dayText, whenText, type Clock } from "./format";
 
 /** QA S-09 recheck (Nov 22, 2026): the briefing's basis is a fixed contract value; the person reads plain words. */
+/** The closing sentence the server puts on every planning-gap item (src/lib/owner-advisor/briefing.ts). */
+const DRAFT_NOTE = "Includes draft commitments; verify published staffing separately.";
 const basisWords = (basis: string) => basis === "Current planning ledger, including drafts" ? "From the current schedule, including drafts" : basis;
 
 function reviewText(item: AttentionReviewed, clock: Clock) {
@@ -56,14 +58,24 @@ export function AttentionSection({ briefing, disabled, saving, review, refresh, 
     if (group) group.items.push(item); else groups.push({ title: item.title, items: [item] });
   }
   const observed = (at: string) => <>Observed <time dateTime={at}>{whenText(at, clock.timeZone, clock.today)}</time></>;
-  const itemBody = (item: (typeof items)[number], withPlace: boolean, groupBasis = false) => {
+  /* Follow-up (lead, Nov 23): in a group, a closing sentence every place shares (the draft-commitments note) and a source
+   * link every place shares are said once under the title. Track, Later and Not relevant stay with each place: each saves
+   * that place's own issue record, one save at a time. */
+  const groupShared = (group: { items: typeof items }) => {
+    const note = DRAFT_NOTE;
+    return { note: group.items.length > 1 && group.items.every(item => item.detail.endsWith(note)) ? note : null,
+      href: group.items.length > 1 && group.items.every(item => item.source.href === group.items[0].source.href) ? group.items[0].source.href : null };
+  };
+  const reviewLink = (href: string) => <CorpButtonLink native href={href} kind="secondary" size="md" className="b-rowact b-rowact--go">Review source</CorpButtonLink>;
+  const itemBody = (item: (typeof items)[number], withPlace: boolean, groupBasis = false, inGroup: { note: string | null; href: string | null } = { note: null, href: null }) => {
     const facts = [withPlace ? item.locationName : null, oneDay ? null : dayText(item.date, "en", year), oneTime ? null : observed(item.source.observedAt)];
+    const detail = inGroup.note ? item.detail.slice(0, -inGroup.note.length).trimEnd() : item.detail;
     return <>
       {facts.some(Boolean) ? <p className="oa-facts"><BSegs parts={facts} /></p> : null}
-      <p className="oa-item__d">{attentionDetail(item.detail)}</p>
+      <p className="oa-item__d">{attentionDetail(detail)}</p>
       {oneBasis || groupBasis ? null : <p className="oa-item__basis">{basisWords(item.basis)}</p>}
-      <div className="oa-acts oa-acts--att">
-        <CorpButtonLink native href={item.source.href} kind="secondary" size="md" className="b-rowact b-rowact--go">Review source</CorpButtonLink>
+      <div className={inGroup.href ? "oa-acts oa-acts--att oa-acts--three" : "oa-acts oa-acts--att"}>
+        {inGroup.href ? null : reviewLink(item.source.href)}
         <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" disabled={disabled || item.disposition === "tracking"} onClick={() => review(item.id, "tracking")}>{item.disposition === "tracking" ? "Tracking" : "Track this issue"}</CorpButton>
         <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" disabled={disabled} onClick={() => review(item.id, "deferred")}>Later · 1 hour</CorpButton>
         <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--go" disabled={disabled} onClick={() => review(item.id, "dismissed")}>Not relevant today</CorpButton>
@@ -89,11 +101,14 @@ export function AttentionSection({ briefing, disabled, saving, review, refresh, 
                   <h3 className="oa-item__t">{group.title}</h3>
                   {group.items.length === 1 ? itemBody(group.items[0], true) : (() => {
                     const groupBasis = !oneBasis && group.items.every(item => item.basis === group.items[0].basis);
+                    const inGroup = groupShared(group);
                     return <>
+                      {inGroup.note ? <p className="oa-item__d">{inGroup.note}</p> : null}
                       {groupBasis ? <p className="oa-item__basis">{basisWords(group.items[0].basis)}</p> : null}
+                      {inGroup.href ? <div className="oa-acts oa-acts--one">{reviewLink(inGroup.href)}</div> : null}
                       {group.items.map(item => <div key={item.id} className="oa-subitem">
                         <h4 className="oa-subitem__t">{item.locationName}</h4>
-                        {itemBody(item, false, groupBasis)}
+                        {itemBody(item, false, groupBasis, inGroup)}
                       </div>)}
                     </>;
                   })()}
