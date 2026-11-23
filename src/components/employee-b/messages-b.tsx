@@ -200,7 +200,7 @@ export type UpdatesBList = {items: ReadyUpdate[]; partial: boolean; search: stri
 
 const FILTER_LABEL: Record<MessageFilter, string> = {all: 'All', unread: 'Unread', action: 'Action needed'};
 const updateRow = (item: ReadyUpdate) => ({unread: !item.ownReadAt && !item.ownAcknowledgedAt, required: item.acknowledgement === 'REQUIRED' && !item.ownAcknowledgedAt,
-  status: item.ownAcknowledgedAt ? 'Acknowledged' : item.ownReadAt ? 'Read' : 'Unread', at: item.editedAt ?? item.publishedAt});
+  status: item.ownAcknowledgedAt ? 'Confirmed' : item.ownReadAt ? 'Read' : 'Unread', at: item.editedAt ?? item.publishedAt});
 
 /** Updates (board E-Updates): search and Show on glass; updates you must confirm first, each with its text and Open and
  * Confirm; the rest as rows; Write an update at the foot of the list. Search and Show are the page's own (this page). */
@@ -241,17 +241,17 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
             <p className="eb-upd__body">{item.body.replace(/\s*\n+\s*/g, ' ').trim().replace(/(\w)-(?=\w)/g, '$1\u2011')}</p>
             <div className="eb-upd__acts">
               <Link id={'b-message-' + item.id} className="b-btn b-btn--ghost" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)} aria-label={`Open ${item.title}`}>Open</Link>
-              <BButton kind="ghost" onClick={() => list.onConfirm(item)} disabled={list.busy} label={`Acknowledge ${item.title}`}><CheckIcon size={16} weight="bold" aria-hidden="true" />Acknowledge</BButton>
+              <BButton kind="ghost" onClick={() => list.onConfirm(item)} disabled={list.busy} label={`Confirm ${item.title}`}><CheckIcon size={16} weight="bold" aria-hidden="true" />Confirm</BButton>
             </div>
           </div></li>)}</ul>
         </BCard> : null}
         {earlier.length || !confirm.length ? <BCard title={confirm.length ? A.otherUpdates : undefined} label={confirm.length ? undefined : 'Your updates'} id="b-updates-list">
           {earlier.length ? <ul className="b-list" aria-label="Your updates">{earlier.map(({item, unread, status: state, at}) => <li className="b-li" key={item.id}>
-            <Link id={'b-message-' + item.id} className={unread ? 'b-row b-row--link eb-updrow eb-updrow--unread' : 'b-row b-row--link eb-updrow'} href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)}
-              aria-label={`${item.title}, ${state}, ${messageTime(at, list.timeZone)}`}>
+            <Link id={'b-message-' + item.id} className={unread ? 'b-row b-row--link eb-updrow eb-updrow--unread' : 'b-row b-row--link eb-updrow'} href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)}>
               <BIcon tone="grey"><MegaphoneIcon weight="bold" /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)}${unread ? '' : ` · ${state}`}`} /></span></span>
-              {unread ? <span className="b-row__end eb-when"><i className="eb-unread" aria-hidden="true" /></span> : null}
+              {/* Sweep Z (B6): the row is named by its own text; an unread row's state, drawn as the dot, is b-sr text. */}
+              {unread ? <span className="b-row__end eb-when"><i className="eb-unread" aria-hidden="true" /><span className="b-sr">{state}</span></span> : null}
               <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
             </Link></li>)}</ul>
           : <>
@@ -291,10 +291,10 @@ export function EmployeeUpdateB({back, item, busy, onAction, withdraw, onWithdra
         </article>
         <BCard title="Your reading status" id="b-update-status">
           <div className="eb-status">
-            <p className="eb-para">{item.ownAcknowledgedAt ? 'Acknowledged ' + messageTime(item.ownAcknowledgedAt, item.timeZone) : item.ownReadAt ? 'Read ' + messageTime(item.ownReadAt, item.timeZone) : 'You haven’t marked this update as read.'}</p>
+            <p className="eb-para">{item.ownAcknowledgedAt ? 'Confirmed ' + messageTime(item.ownAcknowledgedAt, item.timeZone) : item.ownReadAt ? 'Read ' + messageTime(item.ownReadAt, item.timeZone) : 'You haven’t marked this update as read.'}</p>
             {item.expiresAt ? <p className="eb-para">Available until {messageTime(item.expiresAt, item.timeZone)}.</p> : null}
-            {required ? <p className="eb-para">Your acknowledgement is required. Opening this update does not record it.</p> : null}
-            {item.acknowledgement !== 'NONE' && !item.ownAcknowledgedAt ? <BButton kind="teal" full disabled={busy} onClick={() => onAction('ACKNOWLEDGE')}>Acknowledge update</BButton> : null}
+            {required ? <p className="eb-para">Confirm that you’ve read it. Opening it doesn’t count.</p> : null}
+            {item.acknowledgement !== 'NONE' && !item.ownAcknowledgedAt ? <BButton kind="teal" full disabled={busy} onClick={() => onAction('ACKNOWLEDGE')}>Confirm I read it</BButton> : null}
             {item.acknowledgement !== 'REQUIRED' && !item.ownReadAt && !item.ownAcknowledgedAt ? <BButton kind={item.acknowledgement === 'NONE' ? 'teal' : 'quiet'} full disabled={busy} onClick={() => onAction('MARK_READ')}>Mark as read</BButton> : null}
           </div>
         </BCard>

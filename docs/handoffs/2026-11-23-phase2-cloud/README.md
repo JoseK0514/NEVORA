@@ -32,6 +32,26 @@ into its own branch first, pushes only to its own branch, and follows the Rules 
 Package P (billing pages A15–A19) is withdrawn: Jose set the sign-up and billing portal pages aside (gaps ledger G23,
 "focus just on nevora"). Don't change or capture them. (The public-pages session had already finished it before the withdrawal reached it; its commits b2a233d2 and 03b2c198 stay on its branch, unmerged, until Jose decides.)
 
+## Gap closure (Jose, Nov 23, 16:08 UTC): everything except the native app
+Jose's words: "lets do all of them except anything regarding native application since that will be later, everything
+else we do it now and approved to do it all, make sure we make multiple sessions we want to do this fast and also make
+sure quality is never compromised". This approves the items below, including the server change in G17, rebuilding the
+guides (G44), restoring the billing pages (package P), and the release once QA is green. Native app work is out.
+Same rules as above: merge the shared tip first, push only to your own branch, fictional data, tests and the whole
+src/components suite before every push, approved wording unchanged unless Jose decided otherwise.
+
+| Item | Session branch | Work |
+|---|---|---|
+| G44 guides | `claude-codex-collab-nevora-screens-final` | Rebuild the guides with scripts/manuals/build-manuals.mjs so manual-publication passes |
+| F3 live import | `claude-codex-collab-nevora-settings-final` | Run and capture the live import through the isolated-workspace lifecycle harness |
+| G17 | `claude-codex-collab-nevora-staff` | A location Manager can open a person at their own locations (server and UI, scoped) |
+| G98 and signed-in language | `claude-codex-collab-nevora-payroll-2` | Pages with Spanish copy follow the person's language; inventory the rest of the shell |
+| Package P, J18 | `claude-codex-collab-nevora-batch-public` | Restore A15–A19 (revert the reverts) and check J18 with billing configured (mocked) |
+| Flaky tests | `claude-codex-collab-nevora-sweep-1` | managed-runtime under load; shift-concurrency WebKit page errors; no skips |
+| Clocker and motion | `claude-codex-collab-nevora-clocker-states` | K13 sweep, the offline fallback page, reduced motion at 390 and 1440 |
+| Production re-verify | new session `claude-codex-collab-nevora-prodcheck` | Re-check on a production build everything verified only on a development build |
+| QA | `claude-codex-collab-nevora-qa` | WebKit re-run of the scoped read frame fix, then the final production-build QA |
+
 ## Read first
 1. `CLAUDE.md`, `DESIGN.MD`, `.claude/skills/nevora-design-os/SKILL.md` (with its references; the page done gate is at
    the end), `docs/design/voice.md`, `docs/design/component-picks.md`.

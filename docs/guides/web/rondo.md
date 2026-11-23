@@ -151,8 +151,8 @@ reads the schedule and changes nothing.
 2. Choose one of four questions: published shifts, drafts, scheduled hours or
    released shifts. Rondo shows the figure, what it counts, the location, the
    week and the time it checked.
-3. Read **Week by day** for each day's published shifts, drafts, released shifts
-   and planned hours.
+3. Read **Published shifts and planned hours** for each day's published shifts,
+   drafts, released shifts and planned hours.
 
 Hours are planned time from the schedule; timecards show hours worked. Released
 shifts followed an approved “Can’t work” request and are not in the draft or
