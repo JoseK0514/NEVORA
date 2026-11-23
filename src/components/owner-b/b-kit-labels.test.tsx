@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "@rstest/core";
-import { BCallout, BCard, BChip, BCount, BEmail, BGlyph, BIcon, BList, BRow, BStatusText, type BMeaning, type BTone } from "./b-kit";
+import { BCallout, BCard, BChip, BCount, BEmail, BGlyph, BIcon, BList, BLive, BRow, BStatusText, type BMeaning, type BTone } from "./b-kit";
 
 const html = (node: React.ReactElement) => renderToStaticMarkup(node);
 const sheet = readFileSync(join(__dirname, "owner-b.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
@@ -90,6 +90,22 @@ describe("Icons and rows", () => {
     const chevron = html(<BList><BRow title="Maria" href="/app/employees/1" /></BList>).match(/<svg[^>]*class="b-chev"[^>]*>/)?.[0] ?? "";
     expect(chevron).toContain('width="16"');
     expect(chevron).toContain('height="16"');
+  });
+});
+
+describe("BLive", () => {
+  // Gaps G45 (Nov 23, 2026): a tile's text, as a screen reader (and axe) joins it, has a space between the label, the
+  // figure and its line, and no aria-label rewrites it.
+  const text = (markup: string) => markup.replace(/<[^>]+>/g, "");
+  it("names a tile by what it shows, with a space between the label and the figure", () => {
+    const markup = html(<BLive label="Right now" items={[
+      { label: "Not clocked in", value: 0, href: "/app/inbox#todo-not-clocked-in", dot: "warn" },
+      { label: "Clocked in", value: 3, small: "/12" },
+      { label: "This week", value: "32 h", meta: "Mon to Sun" },
+    ]} />);
+    expect(markup).not.toContain('aria-label="Not clocked in');
+    const tiles = [...markup.matchAll(/<li class="b-live__i">([\s\S]*?)<\/li>/g)].map(match => text(match[1]));
+    expect(tiles).toEqual(["Not clocked in 0", "Clocked in 3/12", "This week 32 h Mon to Sun"]);
   });
 });
 
