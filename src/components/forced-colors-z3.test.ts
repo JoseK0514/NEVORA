@@ -45,4 +45,9 @@ describe('forced colours keep controls visible (Z3)', () => {
     expect(forced(read('src/components/team/team-forms.css'))).toMatch(/\.c-formhead__dots > i \{ border: 1\.5px solid CanvasText; box-shadow: none; \}/);
     expect(forced(read('src/components/passkeys/passkeys.css'))).toMatch(/\.pk-add \{ border: 1px solid ButtonText; \}/);
   });
+  it('shows which language is chosen on the Profile language switch', () => {
+    const css = forced(read('src/components/employee-b/account.css'));
+    expect(css).toMatch(/\.eb-lseg \{ border: 1px solid ButtonText; \}/);
+    expect(css).toMatch(/\.eb-lseg button\[aria-pressed="true"\] \{ forced-color-adjust: none; background: Highlight; color: HighlightText; \}/);
+  });
 });
