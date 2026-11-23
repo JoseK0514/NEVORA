@@ -145,3 +145,24 @@ Time off balances: the paid-time lines now say "días libres":
 That's 27 files.
 
 The scan used a scratch copy of the harness with three additions: the `nv-lang` cookie, a 200% text pass and axe. `tools/ui-scan` is unchanged; adding the same options there would be a kit-owner change.
+
+## Follow-ups from the lead (second round)
+- **Commits:** merge 0b78510a, then eb750176, then merge c24ef0d4 (shared tip at the time). Shots and report: the final commit.
+- **`owner-b/moments-copy.ts` Spanish now uses tú and "tarjeta(s) de tiempo", with feminine agreement.** Examples:
+  - "Tu gerente decide. Mantén tus turnos programados…"
+  - "Actualiza las tarjetas de tiempo antes de revisar otro grupo."
+  - "¿Finalizar la tarjeta de tiempo de {first}?"
+  - "{n} tarjetas de tiempo aprobadas"
+  - "{done} de {total} localidades publicadas"
+
+  A test checks there's no usted and no "registro de horas" left.
+- **`owner-b/b-loading.tsx`:** placeholder titles follow `usePortalLang()`. They use the shell's `navLabel` words, plus a small table for titles that aren't nav labels, e.g. "Tarifa por hora", "Balance de días libres", "Políticas de días libres", "Horas del bono de Navidad".
+- **`owner-b/b-route-error.tsx`:** "Try again" → "Intentar de nuevo" in Spanish.
+- **One line outside my area, as the lead allowed:** `src/app/app/employees/import/page.tsx` now takes its notice copy from `readPortalLanguage` (English if the read fails) instead of `rosterImportCopy.en`.
+- **Re-checked after the merge:**
+  - tsc clean; oxlint no errors; src/components 3282/3282.
+  - Spanish scan, Owner and Manager, at 390, 390 with 200% text and 1440, now including Import a staff list: 0 axe violations, no sideways scroll, nothing clipped, no two-line buttons.
+  - Import a staff list shows "Importar personal" (the not-available notice, since the scan has no routing config).
+- **Shots:** refreshed, and F3-import added for Owner and Manager.
+
+Correction to "For the lead" above: the import page item is done.
