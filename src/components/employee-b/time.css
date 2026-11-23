@@ -83,7 +83,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-hours-now > .b-callout { margin-top: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-flat { align-items: flex-start; padding: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-dayrange__trail { display: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-quiet { padding: 14px var(--b-inset); font-size: var(--b-fs-body); line-height: 20px; color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-quiet { padding: 14px var(--b-note-x, var(--b-inset)); /* Phase 2 gate: on the card's text edge, as the note under it */ font-size: var(--b-fs-body); line-height: 20px; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-teal { color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum { display: flex; flex-direction: column; gap: var(--b-space-2); padding: var(--b-space-2) var(--b-inset) var(--b-space-16); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum__big { font-size: var(--b-fs-display); line-height: var(--b-lh-display); font-weight: 700; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
