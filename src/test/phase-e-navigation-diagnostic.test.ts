@@ -9,7 +9,7 @@ async function fixture({verified=true,reloadVerified=false,sameUrl=false,engine=
  const binding=rs.fn();
  const context=Object.assign(new EventEmitter(),{exposeBinding:rs.fn(async(_name:string,fn:unknown)=>{binding.mockImplementation(fn as (...args:unknown[])=>unknown);}),addInitScript:rs.fn(async()=>{})});
  const page=Object.assign(new EventEmitter(),{url:()=>currentUrl,mainFrame:()=>frame});
- const cell=observeBrowserCell(execution,errors,{navigationDiagnosticVerified:verified,reloadDiagnosticVerified:reloadVerified,...(notificationOnly?{navigationReadKinds:['notification-read']}:{ }),requireNotificationGetWitness:requireWitness,routerReadsDuringNavigation:routerReads});await cell.observeContext(context,'primary');context.emit('page',page);cell.setPhase(phase);
+ const cell=observeBrowserCell(execution,errors,{navigationDiagnosticVerified:verified,reloadDiagnosticVerified:reloadVerified,...(notificationOnly?{navigationReadKinds:['notification-read']}:{ }),requireNotificationGetWitness:requireWitness,navigationCancelledReads:routerReads});await cell.observeContext(context,'primary');context.emit('page',page);cell.setPhase(phase);
  const destination=sameUrl?currentUrl:'http://127.0.0.1:43210/app/schedule';
  const request={isNavigationRequest:()=>true,resourceType:()=> 'document',method:()=> 'GET',frame:()=>frame,url:()=>destination};
  if(pending)page.emit('request',request);
@@ -184,4 +184,12 @@ it('keeps a navigation pending through a source-document URL change before its r
 });
 it('a different main-frame URL after the response is still unproven and fatal',async()=>{
  const f=await fixture({path:'/api/manager/today'});f.commit('http://127.0.0.1:43210/app/calendar');f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
+});
+
+it('with the opt-in, records a cancelled plain authority read during a pending navigation, and nothing else of that path',async()=>{
+ const ok=await fixture({path:'/api/company-access/operational-authority',routerReads:true});ok.page.emit('pageerror',ok.error);ok.cell.assertClean();
+ expect(ok.execution.navigationDiagnostics).toMatchObject([{type:'navigation-cancelled-read-diagnostic',diagnostic:{resourceKind:'authority-read',plainOwnRead:true}}]);
+ for(const options of [{routerReads:false},{routerReads:true,pending:false},{routerReads:true,engine:'chromium'},{routerReads:true,path:'/api/company-access/operational-authority?scope=PRIVATE_ACTOR_TOKEN'}]){
+  const f=await fixture({path:'/api/company-access/operational-authority',...options});f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
+ }
 });
