@@ -1,21 +1,23 @@
 import { timeZoneLabel } from '@/lib/time-zone-label';
 import type { ExchangeShift } from '@/lib/data/exchanges';
-import { addDays, formatDayLabel, formatTime } from '@/lib/date-utils';
+import type { PortalLang } from '@/lib/i18n/portal-lang';
+import { swapCopy } from './swap-copy';
 import { keepWhole } from '@/lib/keep-whole';
 import { MetaParts } from '@/components/kit/kit';
 
-export function swapDateLabel(date: string) {
-  return new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`));
+/** `lang` (Signed-in Spanish): the person's language; English when left out. */
+export function swapDateLabel(date: string, lang: PortalLang = 'en') {
+  return swapCopy(lang).dateLabel(date);
 }
 
-export function swapTimeLabel(shift: Pick<ExchangeShift,'date'|'startTime'|'endTime'>) {
+export function swapTimeLabel(shift: Pick<ExchangeShift,'date'|'startTime'|'endTime'>, lang: PortalLang = 'en') {
   const overnight = shift.endTime.slice(0, 5) < shift.startTime.slice(0, 5) || shift.endTime.slice(0, 5) === '24:00';
-  const endDate = formatDayLabel(addDays(shift.date, 1));
-  return `${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}${overnight ? ` (${endDate.weekday}, ${endDate.day})` : ''}`;
+  return swapCopy(lang).timeLabel(shift.date, shift.startTime, shift.endTime, overnight);
 }
 
-export function swapPositionLabel(shift: Pick<ExchangeShift,'positionName'|'positionId'>) {
-  return shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : 'No assigned position');
+export function swapPositionLabel(shift: Pick<ExchangeShift,'positionName'|'positionId'>, lang: PortalLang = 'en') {
+  const t = swapCopy(lang);
+  return shift.positionName ?? (shift.positionId ? t.position(shift.positionId) : t.noPosition);
 }
 
 /** One side of a swap: the label ("You give"), the day, the time, then who, where and what. Times never split. */
