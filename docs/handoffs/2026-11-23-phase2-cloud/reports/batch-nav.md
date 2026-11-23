@@ -11,13 +11,22 @@ throwaway local Postgres and the owned local app only. No notifications, deploys
 | `c8754a71` | C14 Offer for cover: no side padding on desktop |
 | `1fda32f0` | C14 inline Refresh stays text on touch screens (rule moved into layer `nv-b`, where the touch floor lives) |
 | `a4d74cfa` | B5 Requests error card: "We couldn't load your requests." (the Try again button follows, so the sentence no longer says it too) |
+| `c48d6436` | Screen-reader names match the visible text (2-hour target, no end sweep): B4 filter pills read "All, 14" through a hidden ", " instead of an aria-label, and B4 rows, B5 request rows, the B2 profile row and B9 Email support drop their differing aria-labels |
+| `772ff5a1` | B9 Employee Help: Email support's name matches its visible text |
 
-The shots commit follows these (webp captures, `rows.json` and this report).
+The shots commit `12d92752` came before the last three code commits, which change no visible pixels (two accessible
+names and one error sentence). A final docs commit updates `rows.json` and this report.
 
 Checks: `tsc --noEmit` clean; oxlint clean on the changed paths; `run-rstest` on `src/app/app/schedule/publish`,
 `src/app/app/exchange`, `src/app/app/requests`, `src/components/employee-mobile`: 0 failures. New or updated tests:
 `publish/page.test.tsx` (Published once when the week is done), `open-shift-board.test.tsx` (claimable rows, no quiet
-classes, one Claim, the one time format).
+classes, one Claim, the one time format); `manager-inbox-corp.test.tsx` and `requests-b.test.tsx` now assert names
+through visible text instead of aria-labels.
+
+Axe after `c48d6436` and `772ff5a1` (development build; Owner, location Manager and Employee; B2, B4, B5, B9 at 390 and
+1440): 0 violations, apart from Employee Help's Email support, which `772ff5a1` then fixed (unit-tested, not
+re-captured). The Owner's Things to do didn't fully load in that development run (the same per-person concurrency
+failure as below), so its rows are covered by the unit tests only.
 
 ## How it was captured
 
@@ -82,6 +91,9 @@ Blocking
 3. [Hierarchy] C11, C14, C15 for the location Manager land on C10/C12's "Company-wide access needed" card with a
    sentence about access. Owned by the Schedule tools package.
 
+Fixed in this package
+- [Accessibility] Screen-reader names on B2, B4, B5 and B9 rows and filters now contain the visible text.
+
 Should fix (Jose's call: earlier reviews chose these)
 4. [Density] B4: band "14 things need you" and filter "All 14" state one count; card titles repeat their filter counts
    (Open shifts 2 / Shifts 2). Set in reviews F5 and MG-005.
@@ -92,9 +104,10 @@ Polish
 7. [Spacing] C6: after the closing line went, the card's bottom inset is 29px against 20px at the top.
 8. [Spacing] C13 Employee/Lead phone: card gutter 16px (lined up with the band title) against 14px on other employee pages.
 
-Accessibility: no new failures. Existing, logged as end sweep: label-content-name-mismatch on B2, B4, B5, B9, C5, C11
-rows; B4 filter pills 36px tall; 1–2 colour-contrast nodes on B4 and C10 at 1440. Swap's Refresh is 18px inline text
-with a 44px hit area from its ::after.
+Accessibility: label-content-name-mismatch fixed on B2, B4, B5 and B9 (`c48d6436`, `772ff5a1`). Left, because they're in
+the kit or other packages: B4's filter pills (kit `BSeg`) are 36px tall and their count pill fails contrast at 1440
+(2 nodes); C5 and C10 findings belong to their packages. Swap's Refresh is 18px inline text with a 44px hit area from
+its ::after. Keyboard focus was not walked in this package.
 
 States: Empty ✓ (C13, B4 Mℓ short list) · Loading ✓ (harness waited it out; dev run showed skeletons) · Error ✓ (B4 M,
 B5 L seen by chance) · Success ✗ (not driven: no form was submitted) · Edge ✓ (notices, redirects, partial swap read)
@@ -118,8 +131,7 @@ Schedule (@sheet); submitting any form.
 | B2 More (Mℓ) | Profile line doesn't name the Manager's location(s) | Wording / blocking |
 | B4 Things to do | Band total and "All N" filter repeat; card titles repeat filter counts | Jose |
 | B5 Requests (L, E) | "Waiting N" in band tile and card | Jose |
-| B4 Things to do | Filter pills 36px tall | Accessibility, end sweep |
-| B2, B4, B5, B9, C5, C11 | label-content-name-mismatch nodes (1–21 per page) | Accessibility, end sweep |
+| B4 Things to do (kit `BSeg`) | Filter pills 36px tall; count pill contrast at 1440 (2 nodes) | Accessibility, kit |
 | C14 Swap shift (desktop) | Offer for cover ends 8px inside Send's right edge | Alignment, end sweep |
 | C6 Build and publish | Bottom inset 29px against 20px at top when the week is published | Spacing, end sweep |
 | C13 Open shifts (L, E phone) | 16px card gutter against 14px elsewhere | Spacing, end sweep |

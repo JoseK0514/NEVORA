@@ -4,7 +4,7 @@
   "row": "B2",
   "page": "More (phone menu) (Owner)",
   "section": "Home and navigation",
-  "note": "Owner and company-wide Manager menu: profile, then Insights/Updates/My pay, Settings and Help, then Sign out. Direction B at every width; one button style; edges line up with the band.",
+  "note": "Owner and company-wide Manager menu: profile, then Insights/Updates/My pay, Settings and Help, then Sign out. Direction B at every width; one button style; edges line up with the band. Screen-reader name now matches the visible text (c48d6436).",
   "shots": [
    {
     "label": "Phone",
@@ -21,16 +21,14 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "B2: label-content-name-mismatch on the profile row (screen-reader name differs from visible text)."
-  ]
+  "endSweep": []
  },
  {
   "id": "B2-manager",
   "row": "B2",
   "page": "More (phone menu) (Manager)",
   "section": "Home and navigation",
-  "note": "Owner and company-wide Manager menu: profile, then Insights/Updates/My pay, Settings and Help, then Sign out. Direction B at every width; one button style; edges line up with the band.",
+  "note": "Owner and company-wide Manager menu: profile, then Insights/Updates/My pay, Settings and Help, then Sign out. Direction B at every width; one button style; edges line up with the band. Screen-reader name now matches the visible text (c48d6436).",
   "shots": [
    {
     "label": "Phone",
@@ -47,16 +45,14 @@
    }
   ],
   "blocking": [],
-  "endSweep": [
-   "B2: label-content-name-mismatch on the profile row (screen-reader name differs from visible text)."
-  ]
+  "endSweep": []
  },
  {
   "id": "B2-loc-manager",
   "row": "B2",
   "page": "More (phone menu) (Location Manager)",
   "section": "Home and navigation",
-  "note": "Location Manager menu: profile, My pay, Help, Sign out. Clean, but the profile line says “Manager · Northside Café & Bakery” and never names Condado, the one place Daniel works.",
+  "note": "Location Manager menu: profile, My pay, Help, Sign out. Clean, but the profile line says “Manager · Northside Café & Bakery” and never names Condado, the one place Daniel works. Screen-reader name now matches the visible text (c48d6436).",
   "shots": [
    {
     "label": "Phone",
@@ -75,16 +71,14 @@
   "blocking": [
    "B2 Mℓ: the place Daniel works (Condado) isn’t on the profile line; needs the location name the page doesn’t read today (no new read added here)."
   ],
-  "endSweep": [
-   "B2: label-content-name-mismatch on the profile row (screen-reader name differs from visible text)."
-  ]
+  "endSweep": []
  },
  {
   "id": "B2-lead",
   "row": "B2",
   "page": "More (phone menu) (Lead)",
   "section": "Home and navigation",
-  "note": "Employee and Lead More: profile with work locations, Your work, Help and legal, Sign out. Direction B; at 1440 the profile sits in the band with Profile and settings as its pill.",
+  "note": "Employee and Lead More: profile with work locations, Your work, Help and legal, Sign out. Direction B; at 1440 the profile sits in the band with Profile and settings as its pill. Screen-reader name now matches the visible text (c48d6436).",
   "shots": [
    {
     "label": "Phone",
@@ -108,7 +102,7 @@
   "row": "B2",
   "page": "More (phone menu) (Employee)",
   "section": "Home and navigation",
-  "note": "Employee and Lead More: profile with work locations, Your work, Help and legal, Sign out. Direction B; at 1440 the profile sits in the band with Profile and settings as its pill.",
+  "note": "Employee and Lead More: profile with work locations, Your work, Help and legal, Sign out. Direction B; at 1440 the profile sits in the band with Profile and settings as its pill. Screen-reader name now matches the visible text (c48d6436).",
   "shots": [
    {
     "label": "Phone",
@@ -132,7 +126,7 @@
   "row": "B4",
   "page": "Things to do (Owner)",
   "section": "Home and navigation",
-  "note": "Owner’s Things to do: open shifts, time corrections, time off, shift requests, can’t work, timecards. Long but each row is one item; the band count and the “All 14” filter repeat the same total (set on purpose in reviews F5 and MG-005, so left for Jose).",
+  "note": "Owner’s Things to do: open shifts, time corrections, time off, shift requests, can’t work, timecards. Long but each row is one item; the band count and the “All 14” filter repeat the same total (set on purpose in reviews F5 and MG-005, so left for Jose). Filter pills and rows: screen-reader names now match the visible text (c48d6436).",
   "shots": [
    {
     "label": "Phone",
@@ -152,7 +146,7 @@
    "B4: band “14 things need you” and filter “All 14” repeat one count; card titles repeat the filter counts (Open shifts 2 / Shifts 2). Reviews F5 and MG-005 chose this; needs Jose’s call before changing."
   ],
   "endSweep": [
-   "B4: 21 label-content-name-mismatch nodes (row actions); 2 colour-contrast nodes at 1440.",
+   "B4 (kit BSeg): the filter pills are 36px tall and their count pills fail colour contrast at 1440 (2 nodes); kit change, not made here.",
    "B4 Owner at 768: “Couldn’t check the schedule” on 5 time off rows in this run (staffing check read failed; see Manager desktop note)."
   ]
  },
@@ -161,7 +155,7 @@
   "row": "B4",
   "page": "Things to do (Manager)",
   "section": "Home and navigation",
-  "note": "Company-wide Manager: same list as the Owner at 390 and 768. At 1440 this run showed “Things to do didn’t load” because /api/manager/action-center failed while Elena had three sessions open (phone, tablet, desktop); it failed the same way in the development run.",
+  "note": "Company-wide Manager: same list as the Owner at 390 and 768. At 1440 this run showed “Things to do didn’t load” because /api/manager/action-center failed while Elena had three sessions open (phone, tablet, desktop); it failed the same way in the development run. Filter pills and rows: screen-reader names now match the visible text (c48d6436).",
   "shots": [
    {
     "label": "Phone",
@@ -189,7 +183,7 @@
   "row": "B4",
   "page": "Things to do (Location Manager)",
   "section": "Home and navigation",
-  "note": "Location Manager now gets the real Things to do (the Nov 22 double “no access” notice is gone): Condado’s open shift with Find cover, plus Time off requests and Later and done.",
+  "note": "Location Manager now gets the real Things to do (the Nov 22 double “no access” notice is gone): Condado’s open shift with Find cover, plus Time off requests and Later and done. Filter pills and rows: screen-reader names now match the visible text (c48d6436).",
   "shots": [
    {
     "label": "Phone",
@@ -207,7 +201,7 @@
   ],
   "blocking": [],
   "endSweep": [
-   "B4 Mℓ: 4 label-content-name-mismatch nodes."
+   "B4 (kit BSeg): filter pills 36px tall."
   ]
  },
  {
@@ -335,7 +329,7 @@
   "row": "B5",
   "page": "Requests hub (Lead)",
   "section": "Home and navigation",
-  "note": "Employee and Lead Requests: Waiting and Needs your answer in the band, then Waiting, Decided and Shift requests cards. Direction B. The band’s “Waiting 5” and the card “Waiting 5” repeat one count.",
+  "note": "Employee and Lead Requests: Waiting and Needs your answer in the band, then Waiting, Decided and Shift requests cards. Direction B. The band’s “Waiting 5” and the card “Waiting 5” repeat one count. Request rows: screen-reader names match the visible text (c48d6436); the error card no longer says Try again twice (a4d74cfa).",
   "shots": [
    {
     "label": "Phone",
@@ -355,7 +349,6 @@
    "B5 L/E: “Waiting 5” in the band tile and as the Waiting card’s title and count. Approved Employee Requests layout, so left for Jose."
   ],
   "endSweep": [
-   "B5: 3–8 label-content-name-mismatch nodes on request rows.",
    "B5 Lead 1440 (B4 redirect shot only): first load showed the error card while three sessions of the same person were open; the next load was fine."
   ]
  },
@@ -364,7 +357,7 @@
   "row": "B5",
   "page": "Requests hub (Employee)",
   "section": "Home and navigation",
-  "note": "Employee and Lead Requests: Waiting and Needs your answer in the band, then Waiting, Decided and Shift requests cards. Direction B. The band’s “Waiting 5” and the card “Waiting 5” repeat one count.",
+  "note": "Employee and Lead Requests: Waiting and Needs your answer in the band, then Waiting, Decided and Shift requests cards. Direction B. The band’s “Waiting 5” and the card “Waiting 5” repeat one count. Request rows: screen-reader names match the visible text (c48d6436); the error card no longer says Try again twice (a4d74cfa).",
   "shots": [
    {
     "label": "Phone",
@@ -384,7 +377,6 @@
    "B5 L/E: “Waiting 5” in the band tile and as the Waiting card’s title and count. Approved Employee Requests layout, so left for Jose."
   ],
   "endSweep": [
-   "B5: 3–8 label-content-name-mismatch nodes on request rows.",
    "B5 Lead 1440 (B4 redirect shot only): first load showed the error card while three sessions of the same person were open; the next load was fine."
   ]
  },
@@ -393,7 +385,7 @@
   "row": "B9",
   "page": "Help (Owner)",
   "section": "Home and navigation",
-  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width.",
+  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width. Email support: screen-reader name matches the visible text (c48d6436, 772ff5a1).",
   "shots": [
    {
     "label": "Phone",
@@ -411,7 +403,6 @@
   ],
   "blocking": [],
   "endSweep": [
-   "B9: 1 label-content-name-mismatch on Email support.",
    "B9: the reply-times paragraph is 3–4 lines on phones; it is support wording, so it stays word for word."
   ]
  },
@@ -420,7 +411,7 @@
   "row": "B9",
   "page": "Help (Manager)",
   "section": "Home and navigation",
-  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width.",
+  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width. Email support: screen-reader name matches the visible text (c48d6436, 772ff5a1).",
   "shots": [
    {
     "label": "Phone",
@@ -438,7 +429,6 @@
   ],
   "blocking": [],
   "endSweep": [
-   "B9: 1 label-content-name-mismatch on Email support.",
    "B9: the reply-times paragraph is 3–4 lines on phones; it is support wording, so it stays word for word."
   ]
  },
@@ -447,7 +437,7 @@
   "row": "B9",
   "page": "Help (Location Manager)",
   "section": "Home and navigation",
-  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width.",
+  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width. Email support: screen-reader name matches the visible text (c48d6436, 772ff5a1).",
   "shots": [
    {
     "label": "Phone",
@@ -465,7 +455,6 @@
   ],
   "blocking": [],
   "endSweep": [
-   "B9: 1 label-content-name-mismatch on Email support.",
    "B9: the reply-times paragraph is 3–4 lines on phones; it is support wording, so it stays word for word."
   ]
  },
@@ -474,7 +463,7 @@
   "row": "B9",
   "page": "Help (Lead)",
   "section": "Home and navigation",
-  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width.",
+  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width. Email support: screen-reader name matches the visible text (c48d6436, 772ff5a1).",
   "shots": [
    {
     "label": "Phone",
@@ -492,7 +481,6 @@
   ],
   "blocking": [],
   "endSweep": [
-   "B9: 1 label-content-name-mismatch on Email support.",
    "B9: the reply-times paragraph is 3–4 lines on phones; it is support wording, so it stays word for word."
   ]
  },
@@ -501,7 +489,7 @@
   "row": "B9",
   "page": "Help (Employee)",
   "section": "Home and navigation",
-  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width.",
+  "note": "Help per role: Contact (support email, reply times, keep private details out of email), How to, Common questions, Privacy and terms. No buttons; Direction B; edges match the band at every width. Email support: screen-reader name matches the visible text (c48d6436, 772ff5a1).",
   "shots": [
    {
     "label": "Phone",
@@ -519,7 +507,6 @@
   ],
   "blocking": [],
   "endSweep": [
-   "B9: 1 label-content-name-mismatch on Email support.",
    "B9: the reply-times paragraph is 3–4 lines on phones; it is support wording, so it stays word for word."
   ]
  },
