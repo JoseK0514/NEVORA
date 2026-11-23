@@ -161,7 +161,8 @@ it('Phase 9: the shift card says its time fact as header meta, your clock state 
   const onCard = on.slice(on.indexOf('id="b-home-shift"'), on.indexOf('</section>', on.indexOf('id="b-home-shift"')));
   expect(onCard).not.toContain('b-callout');expect(onCard).not.toContain('data-tone="green"><svg');
   expect(onCard).toMatch(/<span class="b-notice__t eb-state"><span class="b-status" data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"><\/span>Clocked in at 9:02\sAM<\/span><\/span><span class="b-notice__s">Breaks and clock out on the Main\u00a0Office tablet<\/span>/);
-  expect(on).toContain('<span class="b-card__meta">Until 9:00 PM</span>');
+  // Each fact once: the range ends at 9:00 PM, so the card has no "Until 9:00 PM" meta.
+  expect(onCard).not.toContain('b-card__meta');expect(onCard).toContain('On shift now');
   // On break: amber live dot. A shift under way with no punch: Time's words from work-copy, "Not clocked in · 9 h" (the
   // shift started at 9 AM, Home was read at 6 PM), with the amber dot.
   const pause = renderToStaticMarkup(<HoursRead.Provider value={{current: {...(read as {current: object}).current, state: 'ON_BREAK'}} as typeof read}><EmployeeHomeB {...props({snapshot: current})}/></HoursRead.Provider>);
