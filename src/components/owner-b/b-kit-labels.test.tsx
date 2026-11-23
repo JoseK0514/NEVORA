@@ -96,7 +96,7 @@ describe("Icons and rows", () => {
 describe("BLive", () => {
   // Gaps G45 (Nov 23, 2026): a tile's text, as a screen reader (and axe) joins it, has a space between the label, the
   // figure and its line, and no aria-label rewrites it.
-  const text = (markup: string) => markup.replace(/<[^>]+>/g, "");
+  const text = (markup: string) => markup.replace(/<[^>]+>/g, "").replace(/\u00a0/g, " ");
   it("names a tile by what it shows, with a space between the label and the figure", () => {
     const markup = html(<BLive label="Right now" items={[
       { label: "Not clocked in", value: 0, href: "/app/inbox#todo-not-clocked-in", dot: "warn" },
@@ -104,6 +104,9 @@ describe("BLive", () => {
       { label: "This week", value: "32 h", meta: "Mon to Sun" },
     ]} />);
     expect(markup).not.toContain('aria-label="Not clocked in');
+    // Final fixes K7: the space is screen-reader text, so a flex tile's name keeps it; an item's `aria` is not read.
+    expect(markup).toContain('Not clocked in</span><span class="b-sr">\u00a0</span><span class="b-live__v">');
+    expect(html(<BLive label="x" items={[{ label: "Hours", value: "8 h", href: "/h", aria: "Hours, 8 worked" }]} />)).not.toContain("aria-label=\"Hours");
     const tiles = [...markup.matchAll(/<li class="b-live__i">([\s\S]*?)<\/li>/g)].map(match => text(match[1]));
     expect(tiles).toEqual(["Not clocked in 0", "Clocked in 3/12", "This week 32 h Mon to Sun"]);
   });
