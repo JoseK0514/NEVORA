@@ -90,7 +90,7 @@
   "row": "B4",
   "page": "Things to do",
   "section": "Home",
-  "note": "Owner: the band says the total once ('14 things need you · 11 timecards to approve') and All has no count. Fixed here: on phones the More card no longer moves while the list loads (layout shift 0.38 → 0 at 390).",
+  "note": "Owner: the band says the total once ('14 things need you · 11 timecards to approve') and All has no count. Fixed here: on phones the More card no longer moves while the list loads (layout shift 0.38 → 0 at 390). G87 fixed (f1e81e25): the band filter's counts are full white, 4.9:1 on the teal, and axe is clean at 390 and 1440.",
   "shots": [
    {
     "label": "Phone",
@@ -110,9 +110,7 @@
     "desk": true
    }
   ],
-  "blocking": [
-   "At 1440 the band filter's counts ('2', '10') are white at 62% on the teal, 2.9:1 (axe color-contrast). The cause is the kit's Premium-pass rule in b-foundation.css:1052 (opacity 0.62 !important), so it isn't fixed here: about 0.95 opacity is needed on the band for 4.5:1."
-  ],
+  "blocking": [],
   "endSweep": []
  },
  {
@@ -120,7 +118,7 @@
   "row": "B4",
   "page": "Things to do",
   "section": "Home",
-  "note": "Elena: the band says the total once and All has no count. Same loading fix (layout shift 0.38 → 0 at 390).",
+  "note": "Elena: the band says the total once and All has no count. Same loading fix (layout shift 0.38 → 0 at 390). G87 fixed (f1e81e25): the band filter's counts are full white, 4.9:1 on the teal, and axe is clean at 390 and 1440.",
   "shots": [
    {
     "label": "Phone",
@@ -140,9 +138,7 @@
     "desk": true
    }
   ],
-  "blocking": [
-   "At 1440 the band filter's counts ('2', '10') are white at 62% on the teal, 2.9:1 (axe color-contrast). The cause is the kit's Premium-pass rule in b-foundation.css:1052 (opacity 0.62 !important), so it isn't fixed here: about 0.95 opacity is needed on the band for 4.5:1."
-  ],
+  "blocking": [],
   "endSweep": []
  },
  {
