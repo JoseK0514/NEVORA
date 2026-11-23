@@ -40,19 +40,20 @@ const TOOLS: { key: keyof GuidedTools; href: string; title: string; icon: ReactN
 ];
 /** `evidence`: the answer's checked business evidence. A business citation that has some opens its figures as a card;
  * every other source, and a business citation without evidence, stays the plain link. */
-function Sources({ sources, evidence, clock = {} }: { sources: AdvisorSource[]; evidence?: BusinessModelEvidence[]; clock?: Clock }) {
+/** `shownAt`: the time the card already says; a source observed at that same time doesn't say it again (Rondo fix, Nov 23). */
+function Sources({ sources, evidence, clock = {}, shownAt }: { sources: AdvisorSource[]; evidence?: BusinessModelEvidence[]; clock?: Clock; shownAt?: string }) {
   if (!sources.length) return null;
   return (
     <ul className="oa-sources" aria-label="Sources">
       {sources.map((s, i) => isBusinessCitationHref(s.href) && evidence?.length ? <BusinessCitationItem key={i} source={s} evidence={evidence} /> : (
         <li key={i}>
           <a href={s.href}>{s.label}</a>
-          <span>
+          {shownAt !== undefined && whenText(s.observedAt, clock.timeZone, clock.today) === shownAt ? null : <span>
             Observed{" "}
             <time dateTime={s.observedAt}>
               {whenText(s.observedAt, clock.timeZone, clock.today)}
             </time>
-          </span>
+          </span>}
         </li>
       ))}
     </ul>
@@ -146,7 +147,7 @@ export function AdvisorScreen({
                 {current.briefing.partial && data && (
                   <div className="oa-pad"><BCallout tone="amber">Some operational information is unavailable.</BCallout></div>
                 )}
-                <Sources sources={current.briefing.sources} clock={clock} />
+                <Sources sources={current.briefing.sources} clock={clock} shownAt={data ? whenText(current.briefing.observedAt, clock.timeZone, clock.today) : undefined} />
               </CorpCard>
             </CorpSection>
             <WorkflowControls weeklyEnabled={tools.weekly} date={workDate} disabled={disabled} inspect={tool => actions.inspect?.(tool)} />

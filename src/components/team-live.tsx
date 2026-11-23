@@ -16,17 +16,21 @@ import { reviewCopy } from "@/components/review-details/copy";
  * 42 min", "Clocked in late" and "Off today" (Jose's attendance words, Nov 11, 2026). */
 /** `startsAt`: premium pass FA (final verification A #7, B #32): the clock time of the next shift today of someone who is
  * not on the clock yet ("1:30 PM", in the workplace's zone), so their row says when they start instead of nothing. */
-type Live = { ready: boolean; working: Set<string>; onBreak: Set<string>; late: Map<string, number>; clockedInLate: Map<string, number | null>; scheduled: Set<string>; startsAt?: Map<string, string> };
+/** `partial`: the reads cover only some of the company's places (a location Manager), so someone with nothing here today
+ * may be working elsewhere; their row says nothing instead of "Off today". */
+type Live = { partial?: boolean; ready: boolean; working: Set<string>; onBreak: Set<string>; late: Map<string, number>; clockedInLate: Map<string, number | null>; scheduled: Set<string>; startsAt?: Map<string, string> };
 const TeamLiveContext = createContext<Live>({ ready: false, working: new Set(), onBreak: new Set(), late: new Map(), clockedInLate: new Map(), scheduled: new Set(), startsAt: new Map() });
 export const useTeamLive = () => useContext(TeamLiveContext);
 
-export function TeamLiveProvider({ children }: { children: ReactNode }) {
+/** `locationId`: only that place's shifts and clock-ins (a location Manager's Team filtered to one of their places). */
+export function TeamLiveProvider({ children, partial, locationId }: { children: ReactNode; partial?: boolean; locationId?: string }) {
   const { snapshot } = useToday();
   const { monitor } = useClockMonitor();
   const monitorSettled = monitor !== null;
   const ready = snapshot?.state === "ready" && monitorSettled;
-  const shifts = ready ? snapshot.shifts : [];
-  const open = ready && monitor?.state === "ready" ? monitor.employees : [];
+  const here = (row: { locationId: string }) => !locationId || row.locationId === locationId;
+  const shifts = ready ? snapshot.shifts.filter(here) : [];
+  const open = ready && monitor?.state === "ready" ? monitor.employees.filter(here) : [];
   const onBreak = new Set([...shifts.filter(shift => shift.status === "on_break").map(shift => shift.employeeId),
     ...open.filter(entry => entry.state === "ON_BREAK").map(entry => entry.employeeId)]);
   const working = new Set([...shifts.filter(shift => shift.status === "clocked_in").map(shift => shift.employeeId),
@@ -51,7 +55,7 @@ export function TeamLiveProvider({ children }: { children: ReactNode }) {
     try { format = new Intl.DateTimeFormat("en-US", { timeZone: snapshot.timeZone, hour: "numeric", minute: "2-digit" }); } catch { format = null; }
     if (format) for (const [id, at] of next) startsAt.set(id, format.format(new Date(at)));
   }
-  return <TeamLiveContext.Provider value={{ ready, working, onBreak, late, clockedInLate, scheduled, startsAt }}>{children}</TeamLiveContext.Provider>;
+  return <TeamLiveContext.Provider value={{ partial, ready, working, onBreak, late, clockedInLate, scheduled, startsAt }}>{children}</TeamLiveContext.Provider>;
 }
 
 /** One person's state today from the Team live read: null until the reads are ready. "late" is a started shift with no
@@ -77,18 +81,15 @@ export function TeamLivePill({ employeeId }: { employeeId: string }) {
   if (state === "working") return live.clockedInLate.has(employeeId) ? <BChip tone="amber" dot>{clockedInText(live, employeeId)}</BChip> : <BStatusText dot="green">{clockedInText(live, employeeId)}</BStatusText>;
   if (state === "break") return <BStatusText>On break</BStatusText>;
   if (state === "late") return <BChip tone="amber" dot>{notClockedInText(live.late.get(employeeId) ?? 0)}</BChip>;
-  if (state === "off") return <BStatusText>Off today</BStatusText>;
+  if (state === "off") return live.partial ? null : <BStatusText>Off today</BStatusText>;
   const starts = live.startsAt?.get(employeeId);
   return starts ? <BStatusText>{`Starts ${starts}`}</BStatusText> : null;
 }
 
-/** " · 7 clocked in" (" · No one clocked in") for the subtitle, once the reads are ready. Premium pass FA (final
- * verification A #7, B #2): the attendance word set's "Clocked in", the word the filter under it uses ("Working" is
- * retired); someone on a break is still on the clock and counted, as the filter counts them. */
-export const clockedInSummary = (count: number) => count ? ` · ${count} clocked in` : " · No one clocked in";
+/** The Team title's live part. Jose (Nov 23, 2026: each count once), for every role (gaps G24): the filters under the
+ * title say how many are clocked in ("Clocked in 2"), so the title says only how many people and this adds nothing. Kept
+ * so the company Team page's title needs no change; it can drop it. */
 export function TeamWorkingNow() {
-  const live = useContext(TeamLiveContext);
-  if (!live.ready) return null;
-  return <>{clockedInSummary(live.working.size + live.onBreak.size)}</>;
+  return null;
 }
 

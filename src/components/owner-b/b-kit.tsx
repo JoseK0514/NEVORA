@@ -20,6 +20,7 @@ import { HourglassMediumIcon } from "@phosphor-icons/react/dist/ssr/HourglassMed
 import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
 import { faceTint } from "@/lib/face-tint";
 import { keepWhole } from "@/lib/keep-whole";
+import { joinTimeRange } from "@/lib/date-utils";
 
 /* Direction B (Jose approved Nov 5, 2026; mock "NEVORA mobile, Direction B"): the Owner and Manager phone screens. Each page
  * renders one `BScreen` as the first child of its CorpPage; on a phone under the shell's data-nv-b it replaces the page's
@@ -55,7 +56,7 @@ export function BHero({ title, titleId, eyebrow, sub, right, back, children, big
   </header>;
 }
 
-export type BLiveItem = { label: ReactNode; value: ReactNode; small?: ReactNode; dot?: "live" | "warn"; href?: string; aria?: string;
+export type BLiveItem = { label: ReactNode; value: ReactNode; small?: ReactNode; dot?: "live" | "warn"; href?: string;
   /** Closing F1 (NV-006): a figure that filters the list below it (a toggle; `pressed` while the filter is on). */
   onSelect?: () => void; pressed?: boolean;
   /** A short line under the figure; Employee desktop shows it (employee-b-desktop.css), phones don't. */
@@ -64,13 +65,18 @@ export type BLiveItem = { label: ReactNode; value: ReactNode; small?: ReactNode;
  * of tiles (a link may not sit between a <dl>'s group and its term), each label read before its value. */
 export function BLive({ items, label }: { items: BLiveItem[]; label: string }) {
   return <ul className="b-live b-glass" aria-label={label}>{items.map((item, index) => {
+    // Gaps G45 (Nov 23, 2026): a space between the label, the figure and its line, so a tile's name reads "Not clocked in 0",
+    // never "Not clocked in0". Final fixes K7: a bare space between flex items is dropped from the layout and from the name,
+    // so the space is screen-reader text (a no-break space, which nothing collapses); it draws nothing.
+    // The tile's name is its visible words (label in name), so a tile takes no aria-label.
+    const gap = <span className="b-sr">{"\u00a0"}</span>;
     const body = <>
-      <span className="b-live__l">{item.dot ? <span className={`b-dot b-dot--${item.dot}`} aria-hidden="true" /> : null}{item.label}</span>
+      <span className="b-live__l">{item.dot ? <span className={`b-dot b-dot--${item.dot}`} aria-hidden="true" /> : null}{item.label}</span>{gap}
       <span className="b-live__v">{item.value}{item.small ? <small>{item.small}</small> : null}</span>
-      {item.meta ? <span className="b-live__m">{item.meta}</span> : null}
+      {item.meta ? <>{gap}<span className="b-live__m">{item.meta}</span></> : null}
     </>;
-    return item.href ? <li key={index} className="b-live__i"><Link className="b-live__a" href={item.href} aria-label={item.aria}>{body}</Link></li>
-      : item.onSelect ? <li key={index} className="b-live__i"><button type="button" className="b-live__a b-live__btn" aria-pressed={item.pressed ? "true" : "false"} aria-label={item.aria} onClick={item.onSelect}>{body}</button></li>
+    return item.href ? <li key={index} className="b-live__i"><Link className="b-live__a" href={item.href}>{body}</Link></li>
+      : item.onSelect ? <li key={index} className="b-live__i"><button type="button" className="b-live__a b-live__btn" aria-pressed={item.pressed ? "true" : "false"} onClick={item.onSelect}>{body}</button></li>
       : <li key={index} className="b-live__i">{body}</li>;
   })}</ul>;
 }
@@ -290,27 +296,36 @@ export function BFilters({ label, items }: { label: string; items: { key: string
     <button key={item.key} type="button" aria-pressed={item.current ? "true" : "false"} onClick={item.onSelect}>{item.label}{item.count !== undefined ? <b>{item.count}</b> : null}</button>)}</div>;
 }
 
-/** "12:00 AM – 7:00 AM" reads "12–7 AM"; "3:30 PM – 11:00 PM" reads "3:30–11 PM"; "9:00 AM – 5:00 PM" reads "9 AM – 5 PM".
- * Anything it can't read is returned as it is. */
+/** Jose (Nov 23, 2026): one time format everywhere. A range of two times reads in full, "7:00 AM – 3:00 PM": minutes on
+ * both ends, AM or PM on both ends and a spaced en dash, whatever form it arrives in ("7–3 PM", "9 AM – 5 PM",
+ * "12:00 AM–7:00 AM"). A position before the times ("Barista 1:00 PM – 3:00 PM") stays. Anything it can't read is
+ * returned as it is. Text that came kept whole (keepWhole) goes back kept whole. (The name is older: until Nov 23 this
+ * wrote the short phone form "7–3 PM".) */
 export function compactRange(text: string) {
-  const times = [...text.matchAll(/(\d{1,2})(?::(\d{2}))?[\s\u00a0\u202f]*([AP]M)/g)];
-  if (times.length !== 2) return text;
-  const short = (match: RegExpMatchArray) => `${match[1]}${match[2] && match[2] !== "00" ? `:${match[2]}` : ""}`;
-  const [a, b] = times;
-  const compact = a[3] === b[3] ? `${short(a)}–${short(b)}\u00a0${b[3]}` : `${short(a)}\u00a0${a[3]} – ${short(b)}\u00a0${b[3]}`;
-  // Only the two times change: a position before them ("Barista 1:00 PM – 3:00 PM") stays.
-  return text.slice(0, a.index) + compact + text.slice((b.index ?? 0) + b[0].length);
+  const out = fullRange(text);
+  return out !== text && /[\u00a0\u202f]/.test(text) ? keepWhole(out) : out;
+}
+function fullRange(text: string) {
+  const times = [...text.matchAll(/(\d{1,2})(?::(\d{2}))?[\s\u00a0\u2009\u202f]*([AP]M)/g)];
+  if (times.length === 2) {
+    const [a, b] = times;
+    const full = (match: RegExpMatchArray) => `${Number(match[1])}:${match[2] ?? "00"} ${match[3]}`;
+    return text.slice(0, a.index) + joinTimeRange(full(a), full(b)) + text.slice((b.index ?? 0) + b[0].length);
+  }
+  // "7–3 PM", "3:30–11 PM": one AM/PM written for both ends.
+  const shared = text.match(/(\d{1,2})(?::(\d{2}))?[\s\u00a0\u2009\u202f]*[\u2013-][\s\u00a0\u2009\u202f]*(\d{1,2})(?::(\d{2}))?[\s\u00a0\u2009\u202f]*([AP]M)/);
+  if (times.length === 1 && shared && shared.index !== undefined && (shared.index === 0 || !/[\d:]/.test(text[shared.index - 1]))) {
+    const [, h1, m1, h2, m2, mark] = shared;
+    return text.slice(0, shared.index) + joinTimeRange(`${Number(h1)}:${m1 ?? "00"} ${mark}`, `${Number(h2)}:${m2 ?? "00"} ${mark}`) + text.slice(shared.index + shared[0].length);
+  }
+  return text;
 }
 
-/** Jose (Nov 15, 2026, item 5): a time range is short on a phone ("3–4:30 PM") and full from 768px ("3:00 PM – 4:30 PM").
- * Both forms are rendered and the B sheets show one (b-foundation.css), so nothing shifts after hydration. */
+/** A time range in a row or a title: the full form at every width ("3:00 PM – 4:30 PM"; Jose, Nov 23, 2026, replacing
+ * the Nov 15 short phone form). Each time stays whole and the line breaks only after the dash, so a narrow line shows
+ * "11:30 PM –" over "12:00 AM", never "11:30" over "PM" or a line that starts with the dash. */
 export function BWhen({ text }: { text: string }) {
-  // Phase 8 (b.md #26, #39): the full form always has the spaced en dash ("11:30 PM – 12:00 AM", never "PM–12"), and
-  // both forms keep each time whole and break only after the dash, so no line starts with "– 12 AM" or ends "5:00".
-  const full = keepWhole(text.replace(/([AP]M)[\s   ]*–[\s   ]*(?=\d)/g, "$1 – "));
-  const short = compactRange(text);
-  if (short === text) return <>{full}</>;
-  return <><span className="b-when-s">{keepWhole(short)}</span><span className="b-when-f">{full}</span></>;
+  return <>{keepWhole(compactRange(text))}</>;
 }
 
 /** Final polish (Nov 20, 2026): the two people of a swap in a row title, "Ana Colon ⇄ James Ortiz" with the glyph the

@@ -147,7 +147,9 @@
    * item the row's width: the place never joins the clock's row on a wide phone and squeezes the date. */
   .clock { order: 1; flex: none; margin-top: var(--b-space-12); }
   .band::before { content: ""; order: 3; flex: 0 0 100%; height: 0; }
-  .date { order: 2; margin-top: var(--b-space-12); flex: 1 1 0; min-width: 0; text-align: right; text-wrap: balance; }
+  /* G50: the date never shrinks below its longest word (it was cut to "Monday, Novem…" at 200% text); when it can't
+   * stand beside the clock it takes its own line under it. */
+  .date { order: 2; margin-top: var(--b-space-12); flex: 1 1 0; min-width: min-content; text-align: right; text-wrap: balance; }
   .location { order: 4; min-height: 34px; margin-top: 10px; font-size: .875rem; }
   .status { order: 5; max-width: 100%; margin-top: 10px; min-height: 34px; padding: 6px var(--b-gutter) 6px var(--b-space-12); }
   .card .title { font-size: 1.625rem; }
@@ -159,6 +161,9 @@
   .clock > span { font-size: min(var(--b-fs-title), .4em); }
   .date { font-size: .9375rem; line-height: 1.3; }
   .zone, .device { display: none; }
+  /* G50: at a large text size (the band under 16em of its own text: 200% text below about 550px) the date is a line of
+   * its own under the clock, on the band's left edge. At the default size every phone keeps it beside the clock. */
+  @container (max-width: 16em) { .date { flex-basis: 100%; text-align: left; } }
   .task { margin-top: -44px; padding: 0 max(14px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
   .card { padding: var(--b-space-24) var(--b-space-20) var(--b-space-20); }
 }
@@ -263,13 +268,16 @@
 @keyframes ckSpin { to { transform: rotate(360deg); } }
 
 /* Language switch (the existing English/Spanish choice, remembered per tablet). */
-.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-btn, 10px); background: var(--ck-soft); color: var(--ck-focus); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
+.lang { display: inline-flex; align-items: center; gap: 7px; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-btn, 10px); background: #FFFFFF; color: var(--ck-ink); box-shadow: 0 0 0 1px rgb(16 40 38 / 0.12), 0 1px 2px rgb(16 40 38 / 0.08); font-size: .9375rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; transition: transform var(--b-dur-press) var(--b-ease-out); }
 .lang:active { transform: scale(var(--b-press-scale)); }
 /* The same switch on a page outside the kiosk frame (the paused page and the Clocker's not-found page): a white pill that
  * reads on the teal band and on the canvas, with a ring that shows on both. It reads only the shared tokens. */
 .langSolid { display: inline-flex; align-items: center; gap: 7px; flex: none; min-height: 56px; padding: 0 var(--b-space-16); border: 0; border-radius: var(--b-radius-pill); background: #FFFFFF; color: var(--b-ink);
   box-shadow: 0 0 0 1px rgb(var(--b-shadow-rgb) / .08), 0 1px 2px rgb(var(--b-shadow-rgb) / .06); font: inherit; font-size: .9375rem; line-height: 1.25; font-weight: 600; white-space: nowrap; cursor: pointer; }
 .langSolid svg { display: block; flex: none; color: var(--b-teal); }
+/* The globe grows with the reader's text size on every Clocker screen with the switch (Phase 2): 18px at the default size,
+ * as before, and 36px at 200%. */
+.lang svg, .langSolid svg { flex: none; width: 1.125rem; height: 1.125rem; }
 .langSolid.langSolid:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; box-shadow: 0 0 0 6px var(--b-focus); }
 
 /* ---------- setup ---------- */
@@ -305,6 +313,9 @@
 .slots > span[data-filled=true] { background: var(--ck-focus); box-shadow: none; }
 .pin[data-error=true] { background: var(--ck-red-wash); box-shadow: inset 0 0 0 2px var(--ck-red); }
 .pin[data-error=true] .slots > span { box-shadow: inset 0 0 0 2px #C2554A; }
+/* K3/K4 (Phase 2): while a refusal shows, the red border holds the box-shadow, so focus is a teal outline outside it and
+ * stays visible (the box-shadow ring above was replaced by the red one). */
+.pin[data-error=true]:focus-within { outline: 3px solid var(--ck-focus); outline-offset: 3px; }
 .pin[data-shake=a] { animation: ckShakeA 220ms ease-in-out 1; }
 .pin[data-shake=b] { animation: ckShakeB 220ms ease-in-out 1; }
 @keyframes ckShakeA { 0%, 100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
@@ -339,6 +350,8 @@
 .idEntry input:focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: inset 0 0 0 2px var(--ck-focus), 0 0 0 4px rgb(11 110 105 / .18); }
 .pinForm fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .pinForm .continue { margin-top: var(--b-space-16); }
+/* The Continue arrow grows with the reader's text size (K3/K4, Phase 2): 20px at the default size, 40px at 200%. */
+.continue svg { flex: none; width: 1.25rem; height: 1.25rem; }
 /* A blocked ID or PIN step (premium pass, #5): the same anatomy as every state card, ring, title, message, one button and
  * the "clears" line, all on the white card (the grey inset with its off-scale 18px corner is gone). */
 .blocked { display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; margin: 0; }
@@ -391,13 +404,18 @@
 
 /* Confirm clock-out facts */
 /* Premium pass (Nov 21, 2026; Jose's facts pick): no grey panel. The two figures sit between two hairlines. */
-.facts { display: grid; grid-template-columns: 1fr 1fr; width: 100%; margin: 18px 0 0; border-top: 1px solid var(--ck-line); border-bottom: 1px solid var(--ck-line); text-align: left; }
-.facts > div { padding: 14px var(--b-inset); min-width: 0; }
-.facts > div + div { box-shadow: inset 1px 0 0 var(--ck-line); }
+/* G50 (Nov 23, 2026): two columns while each holds 7.5em of its own text (every kiosk and phone width at the default
+ * size), one above the other at a larger size (390px with 200% text broke "1:40 A / M"). Each fact draws its hairline on
+ * its left and top edge, and the list clips the ones on its outer edges, so the divider is vertical between two columns
+ * and horizontal between two rows. */
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5em), 1fr)); width: 100%; margin: 18px 0 0; border-top: 1px solid var(--ck-line); border-bottom: 1px solid var(--ck-line); overflow: clip; text-align: left; }
+.facts > div { padding: 14px var(--b-inset); min-width: 0; box-shadow: -1px 0 0 var(--ck-line), 0 -1px 0 var(--ck-line); }
 .facts dt { font-size: var(--b-fs-meta); color: var(--ck-grey); }
 /* One fact alone takes the row (a break with no suggested length on the receipt). */
 .facts > div:only-child { grid-column: 1 / -1; text-align: center; }
-.facts dd { text-wrap: balance; margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.facts dd { text-wrap: balance; margin: var(--b-space-2) 0 0; font-size: var(--b-fs-title); font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; overflow-wrap: break-word; }
+/* A time keeps its narrow no-break space (wholeTime): it may wrap only at the spaces around it ("Oct 19 · 10:02 PM"). */
+.facts dd time { overflow-wrap: normal; }
 
 /* ---------- recorded ---------- */
 /* The done mark (Nov 21, 2026): the app's one success mark (BDoneMark, b-moments.css) on the kiosk, from the same tokens.
@@ -415,7 +433,12 @@
 @keyframes ckPop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes ckDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes ckRing { from { opacity: .5; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
-.hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; container-type: inline-size; align-self: stretch; width: 100%; }
+/* G50: the hero spans the card (a size container that shrank to its content would measure 0 and draw nothing). The
+ * recorded time follows the text size up to the card's width: "12:40 PM" (and "12:40 p. m.") is about 4.2em, so
+ * 23% of the card's content width per em keeps it inside (at 390px with 200% text it was 112px and cut at "AM"). At the
+ * default size every kiosk and phone width keeps 3.5rem. */
+.hero > time { display: block; font-size: min(var(--ck-hero, 3.5rem), 23cqi); }
 .bye { margin: var(--b-space-8) 0 0; font-size: 1.125rem; font-weight: 600; color: var(--ck-green); }
 .saved { margin: var(--b-space-12) 0 0; font-size: var(--b-fs-body-sm); line-height: 1.45; color: var(--ck-ink2); overflow-wrap: anywhere; text-wrap: balance; }
 .saved time { font-weight: 600; color: var(--ck-ink); white-space: nowrap; } /* "1:41 AM" stays whole (Nov 21, 2026) */
@@ -518,6 +541,12 @@
 .content:has(> .privacy) .clears { visibility: hidden; }
 /* The privacy pill never covers a receipt. */
 .content:has([data-clocker-state=success]) > .privacy { display: none; }
+/* Nor Someone else's punch is waiting (K13, Phase 2): its one action is Done, which the pill covered on a portrait tablet,
+ * and there is no place to keep. The screen still clears on time. */
+.content:has([data-clocker-state=other-person]) > .privacy { display: none; }
+/* The paused page (K15, Phase 2): from 1024px the panel's "Powered by VELANI LLC" names the company, so the © line under
+ * the card steps aside; phones and portrait tablets have no panel and keep it. */
+@media (min-width: 1024px) { .pausedLegal { display: none; } }
 /* A small landscape tablet (800x600; Phase 6): the whole PIN step, with Continue and the language switch, fits the
  * screen. After the component rules it adjusts, like the phone block below. Keys and buttons hold the 56px floor; only the gaps, the card's padding and the headline give way.
  * Review 30 (D35): counted in lines of text (40em is 640px at the default size), so a 1024x768 tablet at 200% text takes it. */
@@ -533,6 +562,7 @@
   .card .title { font-size: 1.375rem; }
   .pin { height: 52px; margin-top: var(--b-space-8); }
   .idEntry input { height: 52px; }
+  .idEntry { margin-top: var(--b-space-8); }
   .pinMsg { min-height: 2.6em; margin-top: var(--b-space-4); font-size: .8125rem; }
   .keys { gap: 6px; margin-top: var(--b-space-4); }
   .pinForm .continue { margin-top: var(--b-space-8); }
@@ -540,7 +570,7 @@
   .ring { width: 52px; height: 52px; margin-bottom: 10px; }
   .check:not([data-size]) { width: 72px; height: 72px; margin: var(--b-space-12) auto 14px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 0 0 8px var(--b-done-halo), var(--b-done-glow); }
   .check:not([data-size]) svg { width: 40px; height: 40px; }
-  .hero { font-size: 2.75rem; }
+  .hero { --ck-hero: 2.75rem; }
   .acts { gap: 10px; margin-top: var(--b-space-16); }
   .act { min-height: 72px; }
   .stack { margin-top: var(--b-space-16); }
@@ -552,8 +582,8 @@
  * privacy reminder stays in view with its button wrapped under the line (NV-053). */
 @media (max-width: 599px) {
   .strow, .breakContext { margin-left: 0; }
-  .idEntry { margin-top: 14px; }
-  .idEntry input { height: 54px; }
+  /* K3 (Phase 2): the Employee ID field is the PIN field's size and place on a phone too, so the two steps line up
+   * (it was 54px and 6px lower than the 60px PIN field at 390x844). */
   .privacy { position: fixed; bottom: max(16px, env(safe-area-inset-bottom)); width: calc(100% - 32px); }
   .privacy .btn { flex: 1 0 100%; }
   /* A phone is read in the hand: the Employee ID help keeps 13.5px there and stays on one line (C2 is for tablets). */
@@ -576,6 +606,7 @@
   .card .title { font-size: 1.375rem; }
   .pin { height: 52px; margin-top: var(--b-space-8); }
   .idEntry input { height: 52px; }
+  .idEntry { margin-top: var(--b-space-8); }
   .pinMsg { min-height: 1.4em; margin-top: var(--b-space-4); font-size: .8125rem; }
   .keys { gap: 6px; margin-top: var(--b-space-4); }
   .pinForm .continue { margin-top: var(--b-space-8); }
@@ -594,8 +625,8 @@
   .card { padding: var(--b-space-16) var(--b-space-16) var(--b-space-12); }
   .card .title { font-size: 1.375rem; }
   .pin { height: 52px; margin-top: var(--b-space-8); }
-  .idEntry { margin-top: var(--b-space-12); }
   .idEntry input { height: 52px; }
+  .idEntry { margin-top: var(--b-space-8); }
   /* Final polish, round 2 (C4): the slot holds two full lines (2.8em; at 2.6em a two-line refusal pushed the keys down) and
    * the keys keep 12px under it, as on every other phone (a two-line refusal sat 4px over the keys). The refusal stays
    * centred text with its glyph in the line: its second line needs the card's whole width to stay on two lines at 320px
@@ -615,7 +646,7 @@
   .under { margin-top: var(--b-space-8); }
   .task { margin-top: -40px; }
   .card { padding-top: var(--b-space-20); }
-  .pin { margin-top: var(--b-space-8); }
+  .pin, .idEntry { margin-top: var(--b-space-8); }
   .pinMsg { margin-top: var(--b-space-4); }
   .pinForm .continue { margin-top: var(--b-space-8); }
   .meta { margin-top: 6px; }
@@ -653,3 +684,10 @@
   .content[data-clocker-step=pin]:has([data-clocker-keypad]) .keys { grid-area: 1 / 2 / 6 / 3; margin-top: 0; }
   .content[data-clocker-step=pin]:has([data-clocker-keypad]) > .meta { grid-area: 5 / 1; align-self: end; }
 }
+/* K12 kept-punches help (Nov 23): Back follows "Ask Owner to check" on the 8px step (the empty live line takes no
+ * gap), and Reference sits directly under Back. Both keep their 56px targets; only the extra air between them goes. */
+.helpStack { gap: var(--b-space-8); }
+/* Empty, the live line is out of the flow (a grid track can't shrink below 0) but stays in the accessibility tree, so the
+ * request's result is still announced the moment it fills. */
+.helpStack > .quietLine:empty { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); }
+.helpStack + .reference { margin-top: 0; }

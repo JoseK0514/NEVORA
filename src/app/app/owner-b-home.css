@@ -205,14 +205,22 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row__hit > :first-child:not(.b-row__tx):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen :is(#b-todo-swaps, #b-todo-cant-work) .b-row > :first-child:not(.b-row__tx, .b-row__hit):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { align-self: flex-start !important; }
   }
 
-  /* A #28, B #15: Team's four filters need about 400px in one row and a phone's card gives them 326 (256 at 320), so the
-   * row was cut mid-word under a fade. On phones they are two rows of two equal pills in the same quiet track, every label
-   * and count whole and nothing to scroll; from 768px they stay one row. Final regression review #5: 4px sides, so at 320
-   * "Not clocked in 3" keeps air inside its half (8px left the words 1px from the pill's edge). */
+  /* A #28, B #15: Team's filters need about 400px in one row and a phone's card gives them 326 (256 at 320), so the row
+   * was cut mid-word under a fade. Gaps G24 (Nov 23, 2026): on phones, for every role, they are one wrapping row of pills
+   * sized to their labels in the same quiet track (the 2×2 grid left an empty slot when there were three, and at 200% text
+   * "Not clocked in" ran past its half). Each pill grows with its text and its label wraps inside it only when a pill alone
+   * is wider than the card; the 44px hit area stays. From 768px they stay one row. */
   @media (max-width: 767px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: var(--b-space-8) var(--b-space-4) !important; width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; padding: var(--b-seg-pad) !important; overflow: visible !important; border-radius: var(--b-radius-field) !important; -webkit-mask-image: none !important; mask-image: none !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { justify-content: center !important; min-width: 0 !important; padding-left: var(--b-space-4) !important; padding-right: var(--b-space-4) !important; white-space: nowrap !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { display: flex !important; flex-wrap: wrap !important; gap: var(--b-space-8) var(--b-space-4) !important; width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; padding: var(--b-seg-pad) !important; overflow: visible !important; border-radius: var(--b-radius-field) !important; -webkit-mask-image: none !important; mask-image: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { flex: 1 1 auto !important; justify-content: center !important; min-width: 0 !important; max-width: 100% !important; height: auto !important; min-height: var(--b-seg-item-h) !important; line-height: 1.25 !important; padding-left: var(--b-space-12) !important; padding-right: var(--b-space-12) !important; white-space: normal !important; text-align: center !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { inset: -4px 0 !important; }
+    /* DEC2 / G68 (Jose, Nov 23, 2026): four filters are two rows of two equal pills while the card is at least 21rem wide, so
+     * "Off today" isn't alone on a row at 390px. The width is in rem, so at 320px or with 200% text the pills keep
+     * wrapping to their labels as today. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-card:has(> .b-filters) { container: g68 / inline-size; }
+    @container g68 (min-width: 21rem) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:has(> :nth-child(4)):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#g68) { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    }
   }
   /* B #19: a person's face in a list row is the one 36px lead (Team, Timecards and Availability drew 32px). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) :is(.c-page, .q-page) :is(.c-row, .c-tc-person) > .c-av:not(.c-av--l):not(.c-sched-av--open):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { width: 36px !important; height: 36px !important; border-radius: 18px !important; }
@@ -222,22 +230,20 @@
 
 /* SCRUM-218 (Nov 19, 2026): first-week setup, the Owner's setup slot. A five-part track under the heading, then the five
  * steps as the kit's rows, each opening its workflow: a done step is a green check with its "Complete" label, the next
- * step a teal ring named "Next step", later steps a grey ring with "To do". The loading card is the same shape. */
+ * step a teal ring named "Next step", later steps a grey ring with "To do".
+ * Gaps G56 (Nov 23, 2026): Home draws the card only once its read says setup applies. While the read checks, the card isn't
+ * drawn (it was a skeleton titled "First-week setup" that vanished for a finished workspace, moving Things to do and Today
+ * up), so a finished workspace never sees it and nothing under it moves. */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-card#fw-setup:has(> .fw-skel) { display: none !important; }
 :is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-count { font-variant-numeric: tabular-nums; white-space: nowrap; }
-:is(#c-root, html) .app-shell[data-nv-b] #fw-setup :is(.fw-track, .fw-skel__track) { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--b-space-4); margin: 0 var(--b-inset) var(--b-space-8); height: 6px; }
+:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-track { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--b-space-4); margin: 0 var(--b-inset) var(--b-space-8); height: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-track__seg { border-radius: var(--b-radius-pill); background: var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-track__seg[data-done] { background: var(--b-green); }
 :is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-mark { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: var(--b-line); color: var(--b-grey); font-size: 16px; }
 :is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-mark[data-next] { background: var(--b-teal-50, var(--b-line)); color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-mark svg { width: 16px; height: 16px; }
-:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel { display: flex; flex-direction: column; padding-bottom: var(--b-space-12); }
-:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__track { border-radius: var(--b-radius-pill); background: var(--b-line); }
-:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__row { display: flex; align-items: center; gap: var(--b-space-12); min-height: 56px; padding: 0 var(--b-inset); }
-:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__bar { display: block; height: 12px; border-radius: var(--b-radius-pill); background: var(--b-line); }
-:is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__bar--dot { flex: none; width: 36px; height: 36px; border-radius: 50%; }
 @media (min-width: 768px) {
-  :is(#c-root, html) .app-shell[data-nv-b] #fw-setup :is(.fw-track, .fw-skel__track) { margin-left: var(--b-inset-wide); margin-right: var(--b-inset-wide); }
-  :is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-skel__row { padding: 0 var(--b-inset-wide); }
+  :is(#c-root, html) .app-shell[data-nv-b] #fw-setup .fw-track { margin-left: var(--b-inset-wide); margin-right: var(--b-inset-wide); }
 }
 
 /* ---------- Final polish (Nov 20, 2026): Home's Today card and shortcuts ---------- */
@@ -324,4 +330,99 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#a4b) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr)) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#a4b) { height: auto !important; min-height: 36px !important; padding-block: var(--b-space-4) !important; }
   }
+}
+
+/* Home: alignment, buttons and large text (Jose, Nov 22, 2026: "buttons and text alignment are critical"; WCAG 1.4.4).
+ * - Phones: the band's title, date and figures start on the cards' left edge (the 14px gutter) and the figures end on
+ *   their right edge, as they already do from 768px.
+ * - Shortcut tiles: the icon is centred on the label's first line; a label never wraps or ends in "…": once two tiles
+ *   no longer fit their labels side by side, they stack one per row at full width.
+ * - Band shortcuts (desktop) and the location menu (phones): 44px, the height of every other button on Home.
+ * - Card and row titles wrap in balanced lines, so a title never leaves one word alone.
+ * - Large text only: the band's figures and their labels ("Not set up", "Not clocked in") wrap between words instead of
+ *   running into the next figure, and Today's three figures move to a second line. The band, the shortcuts and the Today
+ *   card are size containers measured in rem, which follow the reader's text size; every threshold is below a 320px
+ *   phone at the default size, so default layouts don't change. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { align-items: flex-start !important; white-space: nowrap !important; padding-block: max(var(--b-space-8), calc((56px - 1lh) / 2)) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__ic:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { margin-block: calc((1lh - 36px) / 2) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { overflow: visible !important; text-overflow: clip !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen :is(.b-card__h h2, .b-row__tt):not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { text-wrap: balance !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { container-type: inline-size; }
+  @container (max-width: 30rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  }
+  @container (max-width: 18rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack > ul:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { grid-template-columns: minmax(0, 1fr) !important; }
+  }
+  @container (max-width: 16rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live :is(.b-live__v, .b-live__l):not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { white-space: normal !important; overflow-wrap: normal !important; text-wrap: balance !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live .b-live__l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { align-items: baseline !important; }
+  }
+  @container (max-width: 15rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on .b-kv:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { flex-wrap: wrap !important; row-gap: var(--b-space-12) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen #b-home-on .b-kv > div:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { min-width: min-content !important; }
+  }
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero :is(.b-title, .b-hrow):not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { padding-left: var(--b-gutter) !important; padding-right: var(--b-gutter) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { margin-left: var(--b-gutter) !important; margin-right: var(--b-gutter) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-hrow .b-btn--glass:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { min-height: 44px !important; }
+  }
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--stack .b-qa__ic:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { margin-block: calc((1lh - 20px) / 2) !important; }
+  }
+  @media (min-width: 1024px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#t2x) { min-height: 44px !important; }
+  }
+}
+
+
+@layer nv-b {
+  /* Gaps G13 (Nov 23, 2026): Team's empty search on phones and tablets: Clear search under the sentence, on the card's
+   * inset, as the desktop card offers it. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-card > .b-team-clear:not(#g13a):not(#g13b) { margin: 0 !important; padding: 0 var(--b-inset) var(--b-space-16) !important; }
+  /* Gaps G40 (Nov 23, 2026): the band's figures (Clocked in, Not clocked in, Open shifts) draw their focus ring as a real
+   * 2px white outline inside the tile. The transparent outline with an inset shadow read as no ring where the tile's
+   * own rules drop the shadow. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live__a:focus-visible:not(#g40a):not(#g40b) { outline: var(--b-focus-width) solid var(--b-focus-on-band) !important; outline-offset: calc(-1 * var(--b-focus-width)) !important; box-shadow: none !important; }
+}
+
+/* QA A5-01 (Nov 23, 2026): an overdue payroll's card is drawn twice on Home; phones show the copy first under the band,
+ * 768 and up the one that leads the right column (its place before). The wrappers have no box of their own. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen :is(.b-home-payfirst, .b-home-paylate):not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5):not(#p3a6) { display: contents !important; }
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-paylate:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5):not(#p3a6):not(#p3a7) { display: none !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-payfirst:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5):not(#p3a6):not(#p3a7) { display: none !important; }
+  }
+  /* The wrapped card keeps what every other Home card gets from its column: the phone entrance and, from 768 to 1023px,
+   * the full width. */
+  @media (max-width: 1023px) {
+    @media (prefers-reduced-motion: no-preference) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > :is(.b-home-payfirst, .b-home-paylate) > *:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { animation: b-enter var(--b-dur-enter) var(--b-ease-out) 200ms both !important; } }
+    @media (prefers-reduced-motion: reduce) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > :is(.b-home-payfirst, .b-home-paylate) > *:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { animation: b-fade 200ms linear both !important; } }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > :is(.b-home-payfirst, .b-home-paylate) > *:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-column: 1 / -1 !important; grid-row: auto !important; }
+  }
+}
+
+/* Team's filters at large text on tablets and desktop (DS-17, Nov 23). From 768px they are one row; with 200% text the
+ * four labels don't fit and "Off today" ran under the control's edge. Once the reader enlarges text (--nv-rem, set in
+ * owner-b-pages.css), they wrap as the phone's pills do (G24 above). At the default size nothing changes. */
+@layer nv-b {
+  @container not style(--nv-rem: 16px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds1) { display: flex !important; flex-wrap: wrap !important; gap: var(--b-space-8) var(--b-space-4) !important; width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; padding: var(--b-seg-pad) !important; overflow: visible !important; border-radius: var(--b-radius-field) !important; -webkit-mask-image: none !important; mask-image: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds1) { flex: 1 1 auto !important; justify-content: center !important; min-width: 0 !important; max-width: 100% !important; height: auto !important; min-height: var(--b-seg-item-h) !important; line-height: 1.25 !important; padding-left: var(--b-space-12) !important; padding-right: var(--b-space-12) !important; white-space: normal !important; text-align: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds1)::after { inset: -4px 0 !important; }
+  }
+}
+
+/* Target size (release, Nov 23): Team's four filters are two rows of two with an 8px row gap. Each pill's 4px ring meets
+ * the other row's at the gap's midline, and the second row, later in the page, won that boundary, so the first row reached
+ * a sub-pixel under 44px below its centre. The first row sits above the second (z-index only), so each pill's ring is its
+ * own: 36 + 2 × 4 = 44 for both rows. Nothing drawn moves. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:has(> :nth-child(4)) > button:nth-child(-n+2):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 1 !important; }
 }

@@ -189,12 +189,11 @@ function entryName(entry: KnowledgeEntry | null) {
 }
 function heading(view: KnowledgeView, entry: KnowledgeEntry | null, ready: boolean): { node: ReactNode; sheet?: boolean } {
   const name = ready ? entryName(entry) : "";
-  const addHref = viewHref({ name: "document", documentId: null });
   switch (view.name) {
     case "library": return { node: <>
-      <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "Rondo AI" }} title="Company knowledge" titleId="kn-nav-title" right={<Link href={addHref}>Add</Link>} />
-      <CorpTitle wide id="kn-title" title="Company knowledge" sub="Only Owners can see this"
-        actions={<CorpButtonLink href={addHref} kind="primary" size="md">Add document</CorpButtonLink>} />
+      {/* Rondo fix (Nov 23): adding a document is the Documents card's last row only, not a second band button. */}
+      <CorpNav phoneOnly back={{ href: "/app/ai-manager", label: "Rondo AI" }} title="Company knowledge" titleId="kn-nav-title" />
+      <CorpTitle wide id="kn-title" title="Company knowledge" sub="Only Owners can see this" />
     </> };
     case "entry": {
       const edit = entry?.kind === "profile" ? viewHref({ name: "profile" }) : viewHref({ name: "document", documentId: view.documentId });
@@ -277,7 +276,7 @@ function Library({ ctx, problem }: { ctx: Ctx; problem: ReactNode }) {
     <CorpCard as="div" id="kn-profile"><CorpRows label="Business profile">
       {profile ? row(profile) : <li><CorpRow href={viewHref({ name: "profile" })} icon={<StorefrontIcon weight="bold" />} title="Write your business profile" detail="What Rondo reads first" /></li>}
     </CorpRows></CorpCard>
-    <CorpSection id="kn-docs" label="Documents" aside={<span className="kn-meta">{count} of {KNOWLEDGE_LIMITS.documents}</span>}>
+    <CorpSection id="kn-docs" label="Documents" aside={count ? <span className="kn-meta">{count} of {KNOWLEDGE_LIMITS.documents}</span> : undefined}>
       <CorpCard as="div"><CorpRows label="Documents">
         {documents.length ? documents.map(row) : <CorpEmptyRow as="li">No documents yet</CorpEmptyRow>}
         {full ? null : <li><Link className="kn-addrow" href={viewHref({ name: "document", documentId: null })}><PlusIcon weight="bold" aria-hidden="true" />Add document</Link></li>}

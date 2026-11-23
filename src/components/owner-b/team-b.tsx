@@ -8,7 +8,7 @@ import { UploadSimpleIcon } from "@phosphor-icons/react/dist/ssr/UploadSimple";
 import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
 import { UserMinusIcon } from "@phosphor-icons/react/dist/ssr/UserMinus";
 import { EmployeeDirectoryFilters, EmployeeSearchInput } from "@/components/employee-directory-filters";
-import { TeamLivePill, clockedInSummary, teamStateOf, useTeamLive } from "@/components/team-live";
+import { TeamLivePill, teamStateOf, useTeamLive } from "@/components/team-live";
 import { BAvatar, BButtonLink, BCard, BChip, BFilters, BHero, BIcon, BList, BRow, BScreen, BSegs, BStack } from "./b-kit";
 
 /* Direction B, Team on a phone (mock screen "Owner · Team"). The same people, links, search and tools as the corporate
@@ -16,18 +16,22 @@ import { BAvatar, BButtonLink, BCard, BChip, BFilters, BHero, BIcon, BList, BRow
  * Off today: Jose's attendance words, Nov 11, 2026). The chips above the list filter it on the device; search still goes
  * through the page's own search, as before. */
 
-export type TeamBPerson = { id: string; name: string; detail: string; href: string; active: boolean };
+/** `href`: the person's page; a location Manager's rows have none (that page needs company-wide access), so they aren't links. */
+export type TeamBPerson = { id: string; name: string; detail: string; href?: string; active: boolean };
 type Filter = "all" | "working" | "late" | "off";
 export type TeamBToolIcon = "hours" | "availability" | "import" | "key" | "inactive";
 
 
-export function TeamB({ people, inactive, total, query, filtered, people_word, person_word, seeAll, tools, searchHidden, status, limit }: {
+export function TeamB({ people, inactive, total, query, filtered, people_word, person_word, seeAll, tools, searchHidden, status, limit, right, clearHref = "/app/employees", searchPlaceholder = "Search people" }: {
   people: TeamBPerson[]; inactive: TeamBPerson[]; total: number; query: string; filtered: boolean; people_word: string; person_word: string;
-  /** "See all N" when the list is cut short. */ seeAll?: { href: string; label: string };
+  /** "See all" when the list is cut short (the band says how many). */ seeAll?: { href: string; label: string };
   tools: { href: string; title: string; detail: string; icon: TeamBToolIcon }[];
   /** Hidden fields the page's search keeps (role, location). */ searchHidden?: ReactNode;
   /** The directory's status filter, kept by the search's Apply button. */ status: string;
   /** Rows shown under All before "See all" (the filters count everyone). */ limit?: number;
+  /** The band's right-hand control: Add by default; a location Manager's place (its chip, or its filter). */ right?: ReactNode;
+  /** Where Clear search goes (the page without ?q, keeping a chosen place). */ clearHref?: string;
+  /** The search field's placeholder. */ searchPlaceholder?: string;
 }) {
   const live = useTeamLive();
   const [filter, setFilter] = useState<Filter>("all");
@@ -37,9 +41,9 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
   const off = people.filter(person => state(person.id) === "off").length;
   const shown = people.filter(person => filter === "all" || (filter === "working" ? ["working", "break"].includes(state(person.id) ?? "") : filter === "late" ? state(person.id) === "late" : state(person.id) === "off"));
   const lowerPeople = people_word.toLowerCase();
-  // Phase 8 (a.md #30): the band says one fact at every width, the one desktop's subtitle says (TeamWorkingNow).
-  // Premium pass FA (final verification A #7, B #2): "5 clocked in", the filter's own word ("Working" is retired).
-  const sub = `${total} ${total === 1 ? person_word : lowerPeople}${live.ready ? clockedInSummary(working) : ""}`;
+  // Jose (Nov 23, 2026: each count once), for every role (gaps G24): the band says how many people, the filters say how
+  // many are clocked in or not, so the band has no "clocked in" figure and All carries no count.
+  const sub = `${total} ${total === 1 ? person_word : lowerPeople}`;
   const row = (person: TeamBPerson) => {
     const now = person.active ? state(person.id) : null;
     // Phase 8 (a.md #11, #45; b.md #24): a late arrival is amber, as on Home; "Off today" is the normal state, so it is
@@ -52,40 +56,43 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
     // Final polish (Nov 20, 2026): one place for the state on every row. It was beside the name on one row, between the name
     // and its line on the next and inside the facts line for "Off today". On phones a status drops under the name and its
     // sub-line (DESIGN.MD, "Status labels"): the Team live label there, grey words for a normal state, a chip for an exception.
-    const status = !person.active ? <BChip>Inactive</BChip> : now ? <TeamLivePill employeeId={person.id} /> : undefined;
+    // A location Manager's reads cover only their places, so "nothing here today" is not "Off today" (team-live.tsx).
+    const status = !person.active ? <BChip>Inactive</BChip> : now && !(now === "off" && live.partial) ? <TeamLivePill employeeId={person.id} /> : undefined;
     return <BRow key={person.id} href={person.href} lead={<BAvatar name={person.name} size={40} ring={now === "late" || lateIn ? "late" : now === "working" || now === "break" ? "on" : undefined} />}
-      title={person.name} sub={<BSegs parts={person.detail ? person.detail.split(" · ") : []} />} extra={status ? <span className="b-row__state">{status}</span> : undefined} />;
+      title={person.name} sub={person.detail ? <BSegs parts={person.detail.split(" · ")} /> : undefined} extra={status ? <span className="b-row__state">{status}</span> : undefined} />;
   };
   // Premium pass FA (final verification A #15): Hours this week is the timer, the navigation's glyph for it (ChartBar is
   // Insights').
   const icon = (name: TeamBToolIcon) => name === "hours" ? <TimerIcon weight="bold" /> : name === "availability" ? <UserCheckIcon weight="bold" />
     : name === "import" ? <UploadSimpleIcon weight="bold" /> : name === "key" ? <KeyIcon weight="bold" /> : <UserMinusIcon weight="bold" />;
   return <BScreen>
-    <BHero title="Team" titleId="b-team-title" sub={sub} right={<BButtonLink href="/app/employees/new" kind="white" label={`Add ${person_word}`}><PlusIcon size={17} weight="bold" aria-hidden="true" />Add</BButtonLink>}>
+    <BHero title="Team" titleId="b-team-title" sub={sub} right={right ?? <BButtonLink href="/app/employees/new" kind="white" label={`Add ${person_word}`}><PlusIcon size={17} weight="bold" aria-hidden="true" />Add</BButtonLink>}>
       <EmployeeDirectoryFilters className="b-search b-glass">
         {/* Nov 14, 2026 inspection (BR-11): the magnifier is the Apply button, on a 44px target (employee-directory-corp.css);
           it was a 1px control. Search still applies as you type, and Enter still submits. */}
         <button type="submit" name="status" value={status} className="b-search__go" data-apply="" tabIndex={-1}><MagnifyingGlassIcon size={19} weight="bold" aria-hidden="true" /><span className="b-sr">Apply search</span></button>
         {searchHidden}
-        <label className="b-search__in"><span className="b-sr">{`Search ${lowerPeople}`}</span><EmployeeSearchInput query={query} placeholder="Search people" /></label>
+        <label className="b-search__in"><span className="b-sr">{`Search ${lowerPeople}`}</span><EmployeeSearchInput query={query} placeholder={searchPlaceholder} /></label>
       </EmployeeDirectoryFilters>
     </BHero>
     <BStack>
       <BCard label={filtered ? `${people.length} ${people.length === 1 ? "match" : "matches"}` : people_word}>
         {live.ready && people.length ? <BFilters label="Show" items={[
-          { key: "all", label: "All", count: people.length, current: filter === "all", onSelect: () => setFilter("all") },
-          { key: "working", label: "Clocked in", count: working, current: filter === "working", onSelect: () => setFilter("working") },
+          { key: "all", label: "All", current: filter === "all", onSelect: () => setFilter("all") },
+          { key: "working", label: "On the clock", count: working, current: filter === "working", onSelect: () => setFilter("working") },
           { key: "late", label: "Not clocked in", count: late, current: filter === "late", onSelect: () => setFilter("late") },
-          { key: "off", label: "Off today", count: off, current: filter === "off", onSelect: () => setFilter("off") },
+          ...(live.partial ? [] : [{ key: "off", label: "Off today", count: off, current: filter === "off", onSelect: () => setFilter("off") }]),
         ]} /> : null}
         {shown.length ? <BList label={people_word}>{(filter === "all" && limit ? shown.slice(0, limit) : shown).map(row)}
-          {seeAll && filter === "all" ? <BRow href={seeAll.href} lead={<span className="b-lead-space" aria-hidden="true" />} title={seeAll.label} label={seeAll.label} /> : null}</BList>
-          : <p className="b-state">{people.length ? (filter === "working" ? "No one is clocked in right now." : filter === "late" ? "Everyone on shift has clocked in." : "No one is off today.") : total ? `No ${lowerPeople} match “${query}”.` : `No ${lowerPeople} yet.`}</p>}
+          {seeAll && filter === "all" ? <BRow href={seeAll.href} lead={<span className="b-lead-space" aria-hidden="true" />} title={seeAll.label} /> : null}</BList>
+          : <><p className="b-state">{people.length ? (filter === "working" ? "No one is clocked in right now." : filter === "late" ? "Everyone on shift has clocked in." : "No one is off today.") : total ? (query ? `No ${lowerPeople} match “${query}”.` : "No one matches this search.") : `No ${lowerPeople} yet.`}</p>
+            {/* Gaps G13 (Nov 23, 2026): an empty search offers Clear search on phones too, as the desktop card does. */}
+            {!people.length && total && query ? <div className="b-state-actions b-team-clear"><BButtonLink href={clearHref} kind="ghost">Clear search</BButtonLink></div> : null}</>}
       </BCard>
       {inactive.length ? <BCard title="Inactive" count={inactive.length}><BList label={`Inactive ${lowerPeople}`}>{inactive.map(row)}</BList></BCard> : null}
-      <BCard label="Team tools"><BList label="Team tools">{tools.map(tool =>
+      {tools.length ? <BCard label="Team tools"><BList label="Team tools">{tools.map(tool =>
         // Phase 9 (spec 3.2): every tool row opens a page, so its circle is teal (Inactive people's was grey).
-        <BRow key={tool.href} href={tool.href} lead={<BIcon tone="teal">{icon(tool.icon)}</BIcon>} title={tool.title} sub={tool.detail} />)}</BList></BCard>
+        <BRow key={tool.href} href={tool.href} lead={<BIcon tone="teal">{icon(tool.icon)}</BIcon>} title={tool.title} sub={tool.detail} />)}</BList></BCard> : null}
     </BStack>
   </BScreen>;
 }

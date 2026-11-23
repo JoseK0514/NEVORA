@@ -5,10 +5,10 @@ import {
 } from "./time-clock-widget";
 
 describe("TimeClockWidget formatting", () => {
-  it("formats the live Puerto Rico clock with seconds", () => {
+  it("formats the live Puerto Rico clock in the one time format", () => {
     const value = new Date("2026-10-01T16:14:05.000Z");
 
-    expect(formatTimeClockDisplay(value, "America/Puerto_Rico")).toBe("12:14:05 PM");
+    expect(formatTimeClockDisplay(value, "America/Puerto_Rico")).toBe("12:14 PM");
   });
 
   it("formats a new active shift as zero hours and minutes", () => {
@@ -23,4 +23,4 @@ describe("TimeClockWidget formatting", () => {
   });
 });
 
-it('uses the supplied Tokyo clock zone',()=>expect(formatTimeClockDisplay(new Date('2026-10-01T16:14:05Z'),'Asia/Tokyo')).toBe('01:14:05 AM'));
+it('uses the supplied Tokyo clock zone',()=>expect(formatTimeClockDisplay(new Date('2026-10-01T16:14:05Z'),'Asia/Tokyo')).toBe("1:14 AM"));

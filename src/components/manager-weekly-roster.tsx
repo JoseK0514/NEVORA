@@ -23,7 +23,8 @@ import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
-import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
+import { addDays, formatDayLabel, formatTime, formatTimeRange } from "../lib/date-utils";
+import { keepWhole } from "../lib/keep-whole";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { faceTint } from "@/lib/face-tint";
@@ -47,16 +48,12 @@ function compactTime(time: string) {
 }
 /** The Quiet list's clock: "6:00 AM". */
 const clock = (time: string) => formatTime(time).replace(" ", " ");
-/** Quiet (v4): "12:30 – 4:00 PM", one AM/PM when both ends share it. */
-const span = (start: string, end: string) => { const a = clock(start), b = clock(end); const ma = a.slice(-2), mb = b.slice(-2); return /[AP]M/.test(ma) && ma === mb ? `${a.slice(0, -3)} – ${b}` : `${a} – ${b}`; };
-/** The roster block's clock: "6a", "2p", "6:30a", "12a". */
-function brief(time: string) {
-  const [hour, minute] = time.slice(0, 5).split(":").map(Number);
-  const h = hour % 24, shown = h % 12 || 12;
-  return `${shown}${minute ? `:${String(minute).padStart(2, "0")}` : ""}${h >= 12 ? "p" : "a"}`;
-}
-/** "6a – 2p"; a block that covers the whole day reads "All day" ("12a – 12a" was ambiguous — QA 48 and 50 of 50). */
-const range = (start: string, end: string) => { const h = (t: string) => t.slice(0, 5); return h(start) === "00:00" && (h(end) === "24:00" || h(end) === "00:00") ? "All day" : `${brief(start)} – ${brief(end)}`; };
+/** Quiet (v4): the open shift's range, in the one time format (Nov 23, 2026): "12:30 PM – 4:00 PM", each time whole. */
+const span = (start: string, end: string) => keepWhole(formatTimeRange(start, end));
+/** The roster block's range in the one time format (Nov 23, 2026; it was "6a – 2p"): "6:00 AM – 2:00 PM"; a block that
+ * covers the whole day reads "All day" ("12a – 12a" was ambiguous: QA 48 and 50 of 50). Where a grid cell is too
+ * narrow for the range on one line, CorpTime breaks it after the dash. */
+const range = (start: string, end: string) => formatTimeRange(start, end);
 const longWeekday = (date: string) => new Intl.DateTimeFormat("en-US", { weekday: "long", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
 const narrowWeekday = (date: string) => new Intl.DateTimeFormat("en-US", { weekday: "narrow", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
 const initials = (name: string) => name.split(" ").filter(Boolean).slice(0, 2).map(part => part[0]).join("");
@@ -85,7 +82,7 @@ const editHref = (shift: RosterShift) => `/app/schedule/edit?shiftId=${encodeURI
 function Block({ shift, person, onLeave = false, place }: { shift: RosterShift; person: string; onLeave?: boolean; place?: AxisPlace }) {
   const hint = [`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`, shift.position, shift.location, shift.status === "PUBLISHED" ? null : statusWord(shift.status), onLeave ? "Needs cover (time off)" : null].filter(Boolean).join(" · ");
   return <Link className={`cm-block${shift.status === "DRAFT" ? " draft" : ""}${onLeave ? " conflict" : ""}`} href={editHref(shift)} title={hint}
-    data-cut={place?.cut || undefined} style={place ? { left: `${place.left}%`, width: `${place.width}%` } : undefined}>
+    data-cut={place?.cut || undefined} style={place ? { [place.end ? "right" : "left"]: `${place.end ? place.right : place.left}%`, width: `${place.width}%` } : undefined}>
     {onLeave ? <WarningIcon className="cm-block__warn" size={13} weight="bold" aria-hidden="true" /> : null}
     <span aria-hidden="true"><CorpTime>{range(shift.startTime, shift.endTime)}</CorpTime></span>
     {onLeave ? <span className="cm-block__need">Needs cover</span> : null}
@@ -218,7 +215,9 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   const ended = (open: RosterOpenShift) => open.date < today
     || (open.date === today && nowClock !== null && !overnight(open) && !open.endTime.startsWith("00:00") && open.endTime.slice(0, 5) <= nowClock);
   // Quiet (v4, approved Oct 23): the week strip, then the chosen day: avatar, name, "8:00 AM – 4:00 PM · Front desk".
-  const shiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <QuietRow key={`shift-${shift.id}`} href={editHref(shift)} label={shiftLabel(shift, employee.name)} chevron={false}
+  // Gaps G12 (Nov 23, 2026): every roster row is named by what it shows (the person, the time, the place, the state), with no
+  // aria-label that says it in other words ("Edit …'s shift", "Find cover for the open shift…").
+  const shiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <QuietRow key={`shift-${shift.id}`} href={editHref(shift)} chevron={false}
     avatar={initials(employee.name).toUpperCase()} title={employee.name}
     detail={[`${clock(shift.startTime)} – ${clock(shift.endTime)}`, shift.position || shift.location || employee.role, shift.status === "PUBLISHED" ? null : statusWord(shift.status)].filter(Boolean).join(" · ")} />;
   const weekStrip = <div className="q-week" role="group" aria-label="Schedule day">
@@ -264,7 +263,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     <a className="c-sched-week__arrow" href={corp.previousHref} aria-label="Previous week"><CaretLeftIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></a>
     <span className="c-sched-week__label">{corp.weekLabel}</span>
     <a className="c-sched-week__arrow" href={corp.nextHref} aria-label="Next week"><CaretRightIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></a>
-    {corp.todayHref ? <a className="c-sched-week__today" href={corp.todayHref} aria-label="Go to this week">Today</a> : null}
+    {corp.todayHref ? <a className="c-sched-week__today" href={corp.todayHref} aria-label="Today, go to this week">Today</a> : null}
     {state}
   </span> : null;
   // Phones and tablets: the week card. Desktop (R11) moves the same bar into the grid's card, so this card hides there.
@@ -305,7 +304,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     if (live) return <span className="c-meta c-sched-state" data-tone={live.problem && redKey === shift.id ? "red" : undefined}>{live.text}</span>;
     return shift.status === "DRAFT" ? <span className="c-meta c-sched-state" data-tone="amber">Draft</span> : corp?.changedShiftIds?.includes(shift.id) ? <span className="c-meta c-sched-state" data-tone="amber">Changed</span> : null;
   };
-  const corpShiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <li key={`shift-${shift.id}`}><Link className="c-row c-sched-row" href={editHref(shift)} aria-label={shiftLabel(shift, employee.name)}>
+  const corpShiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <li key={`shift-${shift.id}`}><Link className="c-row c-sched-row" href={editHref(shift)}>
     <DayTime start={shift.startTime} end={shift.endTime} />
     <CorpAvatar name={employee.name} initials={initials(employee.name).toUpperCase()} />
     <span className="c-row__main">
@@ -331,7 +330,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       // desktop grid: it reads "Not filled", with no action.
       return { start: open.startTime, node: <li key={`open-${open.id}`}>{over
         ? <div className="c-row c-sched-row c-sched-row--open">{body}<span className="c-meta">Not filled</span></div>
-        : <Link className="c-row c-sched-row c-sched-row--open" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>
+        : <Link className="c-row c-sched-row c-sched-row--open" href={open.href}>
           {body}<CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" />
         </Link>}</li> };
     }),
@@ -362,6 +361,8 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   const axisStep = axis ? `${Math.round((axis.stepHours * 60 / (axis.end - axis.start)) * 1e6) / 1e4}%` : undefined;
   const shown = (employee: RosterEmployee) => employee.shifts.filter(shift => visibleDates.includes(shift.date));
   const scheduled = employees.filter(employee => shown(employee).length);
+  const shownStatuses = new Set(scheduled.flatMap(shown).map(shift => shift.status === "DRAFT"));
+  const mixedWeek = shownStatuses.size > 1;
   const unscheduled = employees.filter(employee => !shown(employee).length);
   const gridOpen = openShifts.filter(open => visibleDates.includes(open.date));
   const openOn = (date: string) => gridOpen.filter(open => open.date === date).sort((a, b) => a.startTime.localeCompare(b.startTime));
@@ -403,7 +404,10 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       left, the legend at the right. The week's state sits inside the stepper, on the band. */}
     {corp ? <div className="c-sched-gridbar">{weekNav(<>{corp.status ?? null}</>)}
       {b?.coverage ? <ScheduleCoverageLine coverage={b.coverage} label="Covered this week" /> : null}
-      <span className="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span></div> : null}
+      {/* Recheck (Nov 23, 2026): the key shows only when the week mixes published and draft blocks; otherwise the week's
+        state beside the stepper already says it ("Published" twice). Gaps G35 (Nov 23, 2026): with no key there is no key
+        element, so the bar keeps no empty strip (owner-b-schedule.css). */}
+      {mixedWeek ? <span className="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span> : null}</div> : null}
     {focus !== "all" ? <div className="cm-grid__focus">
       <span>{`${longWeekday(focus)}, ${formatDayLabel(focus).day}`}</span>
       <button type="button" className="cm-kbtn" onClick={() => setFocus("all")}>Full week</button>
@@ -417,7 +421,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
           {visibleDates.map(date => { const hours = durationRow(assignedMinutes(scheduled.flatMap(shown).filter(shift => shift.date === date)), "0 h"); // The day view's column head is the day axis; the day and its hours (said in the card's head and the corner) are read out.
             if (axis) return <th scope="col" key={date} className="cm-axis-head" data-today={date === today || undefined}>
               <span className="sr-only">{`${formatDayLabel(date).weekday} ${Number(date.slice(8))}${date === today ? ", today" : ""}, ${hours}`}</span>
-              <span className="cm-axis" aria-hidden="true">{axis.ticks.map(tick => <em key={tick.at} style={{ left: `${tick.at}%` }}>{tick.label}</em>)}</span>
+              <span className="cm-axis" aria-hidden="true">{axis.ticks.map(tick => <em key={tick.at} style={tick.at === 100 ? { right: 0 } : { left: `${tick.at}%` }}>{keepWhole(tick.label)}</em>)}</span>
             </th>;
             return <th scope="col" key={date} data-today={date === today || undefined}>
             <span>{formatDayLabel(date).weekday}</span> <b>{Number(date.slice(8))}</b>{date === today ? <span className="sr-only">, today</span> : null}
@@ -454,7 +458,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
                   <span className="sb-openlist__t c-num">{range(open.startTime, open.endTime) === "All day" ? "All day" : `${compactTime(open.startTime)} – ${compactTime(open.endTime)}`}</span>
                   <span className="sb-openlist__p">{open.location || "No one assigned"}</span>
                   {ended(open) ? <BStatusText>Not filled</BStatusText>
-                    : <Link className="b-rowact b-rowact--go sb-openlist__go" href={open.href} aria-label={`Find cover for an open shift, ${day.weekday} ${day.day}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Fill</Link>}
+                    : <Link className="b-rowact b-rowact--go sb-openlist__go" href={open.href} aria-label={`Fill the open shift, ${day.weekday} ${day.day}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Fill</Link>}
                 </li>; })}</ul>
               </div>
             </td>
@@ -487,17 +491,20 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       : live.tone === "late" ? { state: <BChip tone="amber" dot>{live.text}</BChip>, text: live.text, ring: "late" }
       : live.tone === "blue" ? { state: <BStatusText>{live.text}</BStatusText>, text: live.text, ring: "on" }
       : { state: <BChip tone="amber" dot={live.text !== ATTENDANCE_WORDS.missed}>{live.text}</BChip>, text: live.text, ring: "late" };
-    return shift.status === "DRAFT" ? { state: <BChip tone="amber">Draft</BChip>, text: "Draft" } : corp?.changedShiftIds?.includes(shift.id) ? { state: <BChip tone="amber">Changed</BChip>, text: "Changed" } : {};
+    // Recheck (Nov 23, 2026): a row says Draft only in a week that mixes drafts with published shifts; in an all-draft
+    // week the week's state on the band already says it.
+    return shift.status === "DRAFT" && mixedWeek ? { state: <BChip tone="amber">Draft</BChip>, text: "Draft" } : corp?.changedShiftIds?.includes(shift.id) ? { state: <BChip tone="amber">Changed</BChip>, text: "Changed" } : {};
   };
-  // A day's shifts at one place don't repeat it on every row (the open shifts keep theirs).
+  // A day's shifts at one place don't repeat it on every row. Open shifts keep theirs unless the page is for one location,
+  // which the band already names (recheck, Nov 23, 2026: "Condado" was said on the band and on every open shift).
   const bPlaces = new Set(dayShifts.map(entry => entry.shift.location)).size;
   const bRows = [
-    ...dayShifts.map(({ shift, employee }) => { const live = repairEmployeeId === employee.id && repairDay === shift.date ? { state: <BChip tone="amber">Approved time off</BChip>, ring: "late" as const } : bLive(shift, employee.id); return { start: shift.startTime, node: <BRow key={`shift-${shift.id}`} href={editHref(shift)} label={`${shiftLabel(shift, employee.name)}${repairEmployeeId === employee.id && repairDay === shift.date ? ", approved leave, needs a replacement" : ""}`}
+    ...dayShifts.map(({ shift, employee }) => { const live = repairEmployeeId === employee.id && repairDay === shift.date ? { state: <BChip tone="amber">Approved time off</BChip>, ring: "late" as const } : bLive(shift, employee.id); return { start: shift.startTime, node: <BRow key={`shift-${shift.id}`} href={editHref(shift)}
       lead={<BAvatar name={employee.name} ring={live.ring} />} title={employee.name} chip={live.state}
       sub={<BSegs parts={[range(shift.startTime, shift.endTime) === "All day" ? "All day" : compactRange(`${clock(shift.startTime)} – ${clock(shift.endTime)}`), shift.position || employee.role, !locationId && bPlaces > 1 ? shift.location : null]} />} chevron={false} /> }; }),
     ...dayOpen.map(open => { const over = ended(open); return { start: open.startTime, node: <BRow key={`open-${open.id}`} lead={<BAvatar open />} title="Open shift"
-      sub={<BSegs parts={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), open.location]} />}
-      href={over ? undefined : open.href} label={`${over ? "Open shift, not filled" : "Find cover for the open shift"}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}
+      sub={<BSegs parts={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), locationId ? null : open.location]} />}
+      href={over ? undefined : open.href}
       /* Final polish (Nov 20, 2026): no "Not filled" chip on a row titled "Open shift" (it said the title again, as a chip
          on a normal fact); a shift that can still be filled carries Fill, one that ended carries nothing. */
       trail={over ? undefined : <BButtonLink href={open.href} kind="ghost" label={`Fill the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}`}>Fill</BButtonLink>} /> }; }),
@@ -510,16 +517,19 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
         {/* Premium pass FA (final verification A #11, B #7): the dates and their state are one block, so at 320px "Published"
           * drops under the dates and the arrows keep the dates' row (they fell to a row of their own). */}
         <div className="b-week__h"><span className="b-week__label"><span className="b-week__date">{corp.weekLabel}</span>{b.weekState ? <span className={`b-chip b-chip--${b.weekState.tone}`} data-icon={b.weekState.tone === "ok" ? "check" : undefined}>{b.weekState.tone === "ok" ? <CheckIcon weight="bold" aria-hidden="true" /> : null}{b.weekState.text}</span> : null}</span>
-          <span>{corp.todayHref ? <a className="b-btn b-btn--glass" href={corp.todayHref} aria-label="Go to this week">Today</a> : null}
+          <span>{corp.todayHref ? <a className="b-btn b-btn--glass" href={corp.todayHref} aria-label="Today, go to this week">Today</a> : null}
             <a className="b-week__arrow" href={corp.previousHref} aria-label="Previous week"><CaretLeftIcon size={18} weight="bold" aria-hidden="true" /></a>
             <a className="b-week__arrow" href={corp.nextHref} aria-label="Next week"><CaretRightIcon size={18} weight="bold" aria-hidden="true" /></a></span></div>
         <div className="b-week__days" role="group" aria-label="Schedule day">{dates.map(date => {
           const shifts = shiftsOn(date).length, open = openShifts.filter(row => row.date === date && !ended(row)).length;
           const day = formatDayLabel(date);
+          // Recheck (Nov 23, 2026): the name starts with what the button shows ("Mon 16"), and the rest is hidden text, so the
+          // spoken name never differs from the visible one (axe label-content-name-mismatch on every day).
           return <button key={date} type="button" className="b-week__d" aria-pressed={phoneDay === date} data-today={date === today || undefined}
-            aria-label={`${longWeekday(date)}, ${day.day}${date === today ? ", today" : ""}, ${shifts + open ? plural(shifts + open, "shift", "shifts") : "no shifts"}${open ? `, ${plural(open, "open shift", "open shifts")}` : ""}`}
             onClick={() => setPhoneDay(date)}>
-            <span aria-hidden="true">{day.weekday}</span><b aria-hidden="true" className="c-num">{Number(date.slice(8))}</b><i aria-hidden="true" className={open ? "gap" : shifts ? "has" : undefined} />
+            <span>{day.weekday}</span><span className="sr-only"> </span><b className="c-num">{Number(date.slice(8))}</b>
+            <span className="sr-only">{`${date === today ? ", today" : ""}, ${shifts + open ? plural(shifts + open, "shift", "shifts") : "no shifts"}${open ? `, ${plural(open, "open shift", "open shifts")}` : ""}`}</span>
+            <i aria-hidden="true" className={open ? "gap" : shifts ? "has" : undefined} />
           </button>;
         })}</div>
         {/* Review B1 (NV-089): the amber dot is explained once. */}

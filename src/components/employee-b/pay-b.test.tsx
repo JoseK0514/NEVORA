@@ -48,10 +48,12 @@ it('P2: a replaced statement reads "Earlier version" under its correction, not a
   const rows = [...card.matchAll(/<li class="b-li">(.*?)<\/li>/g)].map(row => row[1]);
   // The correction keeps its date and "Corrected".
   expect(rows[0]).toContain('<span class="b-row__tt">Fri, Nov 13</span>');expect(rows[0]).toContain('Corrected');expect(rows[0]).toContain('For work Nov 2–8');
-  // The one it replaced: no date title, no chip, the correction's payday in its line; the link's name is unchanged.
-  expect(rows[1]).toContain('<span class="b-row__tt"><span class="ep-muted">Earlier version</span></span>');expect(rows[1]).toContain('<span class="b-row__s">Replaced by the Nov 13 correction</span>');
-  expect(rows[1]).not.toContain('b-chip');expect(rows[1]).not.toContain('>Fri, Nov 13<');
-  expect(rows[1]).toContain('aria-label="Friday, November 13, 2026, replaced statement for Nov 2–8"');
+  // The one it replaced: no date title, no chip, the correction's payday in its line.
+  // Batch 1 item 8: it keeps its payday, muted, and says once that a correction replaced it, in the approved words with its date.
+  expect(rows[1]).toContain('<span class="b-row__tt"><span class="ep-muted">Fri, Nov 13</span></span>');expect(rows[1]).toContain('<span class="b-row__s">Replaced by the Nov 13 correction</span>');
+  expect(rows[1]).not.toContain('b-chip');
+  // Sweep 1: the link's name is its visible text (no aria-label that differs from it).
+  expect(rows[1]).not.toContain('aria-label=');
   // The correction is not in the list this screen holds: the row keeps its date and "Replaced".
   const alone = draw({ordered: [list[0], old, ordered[1]], byId: new Map([list[0], old, ordered[1]].map(item => [item.id, item]))});
   expect(alone).toContain('<span class="ep-muted">Fri, Nov 13</span>');expect(alone).toContain('Replaced</span>');expect(alone).not.toContain('Earlier version');

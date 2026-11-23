@@ -18,13 +18,13 @@ const html = (node: Parameters<typeof renderToStaticMarkup>[0]) => renderToStati
 
 describe("Nov 1 upscale: one count style", () => {
   it("writes every count as \"Label N\", the figure in the kit's count style and never in parentheses", () => {
-    expect(html(<>{countLabel("Team (9)")}</>)).toBe('Team<span class="c-count c-num">9</span>');
+    expect(html(<>{countLabel("Team (9)")}</>)).toBe('Team<span class="c-count c-num"><span class="sr-only">\u00a0</span>9</span>');
     expect(html(<>{countLabel("Open shifts")}</>)).toBe("Open shifts");
-    expect(html(<CorpCard id="t" label="Tablets (2)"><p /></CorpCard>)).toContain('id="t-label">Tablets<span class="c-count c-num">2</span></h2>');
-    expect(html(<CorpCard id="w" label="Waiting" count={2}><p /></CorpCard>)).toContain('id="w-label">Waiting<span class="c-count c-num">2</span></h2>');
-    expect(html(<CorpSection id="s" label="Inactive (1)"><p /></CorpSection>)).toContain('id="s-label">Inactive<span class="c-count c-num">1</span></h2>');
+    expect(html(<CorpCard id="t" label="Tablets (2)"><p /></CorpCard>)).toContain('id="t-label">Tablets<span class="c-count c-num"><span class="sr-only">\u00a0</span>2</span></h2>');
+    expect(html(<CorpCard id="w" label="Waiting" count={2}><p /></CorpCard>)).toContain('id="w-label">Waiting<span class="c-count c-num"><span class="sr-only">\u00a0</span>2</span></h2>');
+    expect(html(<CorpSection id="s" label="Inactive (1)"><p /></CorpSection>)).toContain('id="s-label">Inactive<span class="c-count c-num"><span class="sr-only">\u00a0</span>1</span></h2>');
     const seg = html(<CorpSegments label="Filter" items={[{ key: "a", label: "Not sent (1)", current: true, onSelect: () => {} }, { key: "b", label: "Sent (2)", onSelect: () => {} }]} />);
-    expect(seg).toContain('>Not sent<span class="c-count c-num">1</span></button>');
+    expect(seg).toContain('>Not sent<span class="c-count c-num"><span class="sr-only">\u00a0</span>1</span></button>');
     expect(seg).not.toMatch(/\(\d+\)/);
     expect(kit).toMatch(/span\.c-count\.c-count \{[^}]*margin-left: 6px; font-size: 13px; line-height: 18px; font-weight: 600;[^}]*color: var\(--c-grey, #6B7075\)/);
   });
@@ -40,7 +40,7 @@ describe("Nov 1 upscale: section labels, rows and hover", () => {
     expect(kit).toMatch(/\.c-row \{[^}]*min-height: 60px;/);
     expect(kit).toContain(":is(#c-root, html) .c-row--one { min-height: 52px; }");
     expect(kit).toMatch(/\.c-row__title \{[^}]*font-size: 15px; line-height: 20px; font-weight: 500;/);
-    expect(kit).toMatch(/\.c-row__value \{[^}]*font-size: 15px; line-height: 20px; font-weight: 400; color: var\(--c-grey\);/);
+    expect(kit).toMatch(/\.c-row__value \{[^}]*font-size: 0\.9375rem; line-height: 1\.25rem; font-weight: 400; color: var\(--c-grey\);/);
     expect(quietBridge).toContain(".q-rt b { font-size: 15px; line-height: 20px; font-weight: 500; }");
     expect(quietBridge).toContain(".q-row { min-height: 60px;");
     // Employee rows: no 15/600 titles left (20/600 figures stay).

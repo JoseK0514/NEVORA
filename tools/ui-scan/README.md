@@ -22,8 +22,14 @@ replies only, no device or provider calls. Its states are saved as `native-<stat
 The scan runs as the system user named by `SCAN_USER` (default `pgtest`); any non-root user that can write
 `node_modules/.vitest-cache`, `.omo/evidence` and the output folder works, for example `SCAN_USER=postgres`. The output
 folder must be outside the repository and reachable by that user (the app fixture refuses a folder inside the checkout).
-The Clocker flow types the Employee ID before the PIN and runs through the receipts; three late steps (state
-unavailable, auth changed, sending and recovery) still look for older button names and are logged as `ckError`.
+The Clocker flow types the Employee ID before the PIN and runs through the receipts, with the kiosk's current button
+names (Done, Start over, Confirm clock out, Something didn’t save?, Check if it saved, Retry same clock action).
+
+A production build (`NEVORA_OWNED_APP_PRODUCTION=1`) sets up a Clocker tablet only on its https origin
+(`clockerOriginFailure`); over plain http setup stops at "Setup not confirmed" and the PIN entry never appears. A
+production Clocker run therefore serves the app at the owned test origin `https://collab.nevora.example.invalid` through
+the owned loopback TLS proxy (`src/test/integration/owned-tls-proxy.ts`, as the step 4 lifecycle test does), and signs in
+there too. The development build keeps plain http.
 
 ## Usage
 
@@ -38,7 +44,10 @@ W=390,1440 tools/ui-scan/desk.sh /tmp/scan-emp /app,/app/schedule \
 # Lead: NEVORA_SCAN_EMPROLE=LEAD.  Manager: NEVORA_SCAN_LOGIN=OWN-ELENA.
 # Owner rich data: NEVORA_SCAN_RICH_OWNER=1 (+ NEVORA_SCAN_STATES_OWNER=1 for states).
 # Signed-out public pages: NEVORA_SCAN_PUBLIC=1 NEVORA_SCAN_PUBLIC_W=390,1440 NEVORA_SCAN_PUBLIC_LANGS=en,es
-# Clocker kiosk flow: NEVORA_SCAN_CLOCKER_FLOW=1 (fictional tablet key scan-kiosk-main)
+# Clocker kiosk flow: NEVORA_SCAN_CLOCKER_FLOW=1 (fictional tablet key scan-kiosk-main); needs NEVORA_SCAN_PUNCH=1 and
+#   NEVORA_SCAN_PINKEY=1. NEVORA_SCAN_CLOCKER_FLOW=receipt: only clock in and clock out with a fictional PIN, each receipt
+#   at 390x844, 768x1024, 1024x768 and 390x844 with 200% text (ck-receipt-<clock-in|clock-out>-<size>.png), its times
+#   checked for the one time format (log entries `ckReceipt`: times, timesOk, leadingZero).
 # Phone app user agent: NEVORA_SCAN_UA=native-ios or native-android (NEVORA-Native/iOS/1, NEVORA-Native/Android/1)
 # Phone app alerts on (fictional NATIVE_PUSH_* test config): NEVORA_SCAN_NATIVE_ALERTS=1
 # Phone app Alerts page states with a simulated bridge: NEVORA_SCAN_NATIVE_FLOW=1 (NEVORA_SCAN_NATIVE_W=390,900,1440)
@@ -50,6 +59,8 @@ W=390,1440 tools/ui-scan/desk.sh /tmp/scan-emp /app,/app/schedule \
 #   Things to do and Home, the schedule from the task, draft vs published (NEVORA_SCAN_LEAVE_W=390,900,1440).
 #   NEVORA_SCAN_LEAVE_NEG=1: wrong actor, stale view, no intent, foreign origin, other role, colleague (employees);
 #   NEVORA_SCAN_LEAVE_REVOKE=1 then ends every session and captures the page's notice.
+# Rondo (Owner and Manager advisor pages, H1–H6): NEVORA_SCAN_ADVISOR=1 turns on the owner and manager advisor, weekly,
+#   knowledge and business-imports flags in the owned app. No provider or pilot is set, so nothing calls an AI provider.
 # Coverage rules not set up: NEVORA_SCAN_NO_COVERAGE=1.  Correction approval with punches compared: NEVORA_SCAN_CORRECTION_FLOW=1
 ```
 

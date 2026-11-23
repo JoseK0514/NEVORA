@@ -1,0 +1,242 @@
+/* Settings in Direction B (Nov 23, 2026): the few pieces the corporate kit has no rule for on these pages (the switch,
+ * radio and lock in a row, the band's Save, the card's note). Everything else is the kit's own look (corp.css and the
+ * Direction B layers that dress it). Rules follow the B8 layering rule: !important only inside @layer nv-b; values from
+ * src/app/b-tokens.css; media queries only the kit's 768px alias. */
+@layer nv-b {
+  /* The band's Save shows only once an entry differs from what was loaded (the form says so with data-dirty). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:has(form[data-save-on-change]:not([data-dirty])) > .c-nav .c-nav__right > .c-setb-save:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: none !important; }
+
+  /* Fields in a card: the card's inset, 16px between fields, one column that stops at the form width. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-fields:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; flex-direction: column !important; gap: var(--b-space-16) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-fieldset:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { min-width: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-fields + .c-rows:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { box-shadow: inset 0 1px 0 var(--b-line) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-opt:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-weight: 400 !important; color: var(--b-grey) !important; }
+
+  /* A field's error: the 16px bold warning glyph, 6px, then the words (DESIGN.MD Forms, OW-023). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-error:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; align-items: flex-start !important; gap: 6px !important; margin: 0 !important; }
+
+  /* A locked value: the grey value, then the 16px bold lock in the chevron's place. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-lock:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: block !important; width: 16px !important; height: 16px !important; color: var(--b-grey) !important; }
+
+  /* A card's one grey note, as its footer: the card's text edge, 12px above, 16px below. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card .c-setb-cardnote:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { margin: 0 !important; padding: var(--b-space-12) var(--b-inset) var(--b-space-16) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; font: 400 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", -apple-system, sans-serif !important; color: var(--b-grey) !important; }
+
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card .c-setb-cardnote:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+
+  /* The Settings hub on tablets (768–1023px): one column of cards. Two columns there cut a title beside its value
+   * ("Clocker ta…  • 1 not set up"). Desktop keeps its two columns. */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-settings.c-setb:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { display: flex !important; flex-direction: column !important; gap: var(--b-space-20) !important; columns: auto !important; }
+  }
+
+  /* Text that scales with the reader's setting (200% text): the kit's fixed 13 and 15px pieces on these pages take the
+   * rem type roles. A field's text stays at least 16px so iOS never zooms on focus. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-setb :is(.c-row__value, .c-btn):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body-sm) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-setb .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { height: auto !important; min-height: max(44px, 2.75rem) !important; padding-top: var(--b-space-8) !important; padding-bottom: var(--b-space-8) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-setb :is(.c-field__label, .c-section__label, .c-field__help, .c-error):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-setb .c-in:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: max(1rem, var(--b-fs-body)) !important; line-height: var(--b-lh-body-sm) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-setb .b-chip:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: var(--b-fs-caption) !important; line-height: var(--b-lh-caption) !important; height: auto !important; }
+
+  /* A switch row and a radio row: the whole row is the target; the control sits where the chevron would. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb :is(.c-setb-switch, .c-setb-radio):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { cursor: pointer !important; gap: var(--b-space-12) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb :is(.c-setb-switch, .c-setb-radio)[data-disabled]:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { cursor: default !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-switch > .c-switch:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: none !important; margin-left: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-switch[data-locked] > .c-switch:disabled:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { opacity: .6 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-switch .c-row__detail:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6),
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-switch .c-row__detail > span:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-radio__in:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { position: absolute !important; width: 1px !important; height: 1px !important; margin: 0 !important; opacity: 0 !important; pointer-events: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-radio__dot:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: none !important; box-sizing: border-box !important; width: 22px !important; height: 22px !important; margin-left: auto !important; border: 2px solid var(--b-field-edge) !important; border-radius: var(--b-radius-pill) !important; background: #FFFFFF !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-radio[data-checked] .c-setb-radio__dot:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { border-color: var(--b-teal) !important; box-shadow: inset 0 0 0 4px #FFFFFF !important; background: var(--b-teal) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-radio:has(> .c-setb-radio__in:focus-visible):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6),
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-switch:has(> .c-switch:focus-visible):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: -2px !important; }
+
+  /* The result of a save stands on the canvas under its card, 12px below. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-result:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { margin-top: var(--b-space-12) !important; outline: none !important; }
+}
+
+/* Branding: the colour's swatch and the logo in their rows; Upload is the kit's white secondary button on the row's
+ * right edge (44px, it was a 32px chip). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-swatch:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: block !important; flex: none !important; width: 22px !important; height: 22px !important; border-radius: var(--b-radius-pill) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-logo:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; align-items: center !important; height: 28px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-logo img:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: block !important; max-width: 120px !important; max-height: 28px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-upload:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { cursor: pointer !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-upload[aria-disabled]:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { cursor: default !important; opacity: .6 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-sr:focus-visible + .c-setb-upload:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+
+  /* What your team sees: the Employee's shift card in the company's colour, inert, inside a dashed preview edge. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-preview:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; flex-direction: column !important; gap: var(--b-space-2) !important; padding: var(--b-space-16) !important; border: 1.5px dashed var(--b-field-edge) !important; border-radius: var(--b-radius-field) !important; pointer-events: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-preview__t:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { margin-bottom: var(--b-space-8) !important; font: 600 var(--b-fs-body)/var(--b-lh-body) Inter, "Inter Fallback", -apple-system, sans-serif !important; color: var(--b-ink) !important; }
+  /* A feature that can't be turned off right now: its switch at 60% with the bold lock cut into the thumb. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-switch[data-locked] > .c-switch:disabled:checked:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6)::after {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M208,76H180V56A52,52,0,0,0,76,56V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Z'/%3E%3C/svg%3E") center / 16px 16px no-repeat, linear-gradient(#000 0 0) !important;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M208,76H180V56A52,52,0,0,0,76,56V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Z'/%3E%3C/svg%3E") center / 16px 16px no-repeat, linear-gradient(#000 0 0) !important;
+    -webkit-mask-composite: xor !important; mask-composite: exclude !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-preview__big:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font: 600 var(--b-fs-title)/var(--b-lh-title) Inter, "Inter Fallback", -apple-system, sans-serif !important; color: var(--b-ink) !important; font-variant-numeric: tabular-nums !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-preview__detail:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font: 400 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", -apple-system, sans-serif !important; color: var(--b-grey) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-preview__btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; align-items: center !important; justify-content: center !important; min-height: 44px !important; margin-top: var(--b-space-12) !important; padding: var(--b-space-8) var(--b-space-16) !important; border-radius: var(--b-radius-btn) !important; color: #FFFFFF !important; font: 600 var(--b-fs-body-sm)/var(--b-lh-body-sm) Inter, "Inter Fallback", -apple-system, sans-serif !important; text-align: center !important; }
+}
+
+/* Settings dialogs (the colour picker, a break type, a position): a white sheet from the bottom on phones and a centred
+ * 480px card from 768px, the kit's 20/26 title, the card's inset, one row of buttons. The open and close motion is
+ * b-motion.css's (dialog.wc-dialog). */
+:is(#c-root, html) .c-page.c-setb dialog.c-setb-dlg { position: fixed; inset: auto 0 0 0; width: 100%; max-width: 100%; max-height: 92dvh; margin: 0; padding: 0 0 calc(var(--b-space-24) + env(safe-area-inset-bottom, 0px)); border: 0; border-radius: var(--b-radius-card) var(--b-radius-card) 0 0; background: #FFFFFF; color: var(--b-ink); box-shadow: var(--b-elev-2); overflow: auto; overscroll-behavior: contain; font-family: Inter, "Inter Fallback", -apple-system, sans-serif; }
+:is(#c-root, html) .c-page.c-setb dialog.c-setb-dlg::backdrop { background: var(--b-scrim, rgba(17, 20, 19, .42)); }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__head { display: flex; align-items: flex-start; gap: var(--b-space-12); padding: var(--b-space-20) var(--b-space-20) 0; }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__head > div { flex: 1; min-width: 0; }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__title { margin: 0; font-size: var(--b-fs-title); line-height: var(--b-lh-title); font-weight: 700; letter-spacing: -0.02em; color: var(--b-ink); text-wrap: balance; }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__text { margin: var(--b-space-4) 0 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-grey); }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__close { display: grid; place-items: center; flex: none; width: 44px; height: 44px; margin: -10px -12px 0 0; padding: 0; border: 0; border-radius: var(--b-radius-pill); background: none; color: var(--b-grey); cursor: pointer; }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__close svg { width: 22px; height: 22px; }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__close:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: -2px; }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__body { display: flex; flex-direction: column; gap: var(--b-space-16); padding: var(--b-space-20) var(--b-space-20) 0; }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__body .c-setb-fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: var(--b-space-16); }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__acts { display: flex; flex-direction: column-reverse; gap: var(--b-space-8); padding: var(--b-space-24) var(--b-space-20) 0; }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg__acts > .c-btn { width: 100%; }
+:is(#c-root, html) .c-page.c-setb .c-setb-dlg .c-setb-result { margin: var(--b-space-16) var(--b-space-20) 0; }
+:is(#c-root, html) .c-page.c-setb .c-setb-swatches { display: grid; grid-template-columns: repeat(4, 56px); justify-content: space-between; row-gap: var(--b-space-16); }
+:is(#c-root, html) .c-page.c-setb .c-setb-swatches button { display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 0; border-radius: var(--b-radius-pill); color: #FFFFFF; cursor: pointer; }
+:is(#c-root, html) .c-page.c-setb .c-setb-swatches button svg { width: 24px; height: 24px; }
+:is(#c-root, html) .c-page.c-setb .c-setb-swatches button[aria-pressed="true"] { box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px var(--b-ink); }
+:is(#c-root, html) .c-page.c-setb .c-setb-swatches button:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: 6px; }
+/* The sheet's box wins over the shell's general dialog rules (layered, as they are). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb dialog.c-setb-dlg:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { position: fixed !important; inset: auto 0 0 0 !important; width: 100% !important; max-width: 100% !important; max-height: 92dvh !important; margin: 0 !important; border-radius: var(--b-radius-card) var(--b-radius-card) 0 0 !important; }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb dialog.c-setb-dlg:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { inset: 0 !important; width: min(480px, calc(100% - 48px)) !important; max-height: min(720px, calc(100dvh - 48px)) !important; margin: auto !important; border-radius: var(--b-radius-card) !important; }
+  }
+}
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page.c-setb dialog.c-setb-dlg { padding-bottom: var(--b-space-24); }
+  :is(#c-root, html) .c-page.c-setb .c-setb-dlg__acts { flex-direction: row; justify-content: flex-end; align-items: center; }
+  :is(#c-root, html) .c-page.c-setb .c-setb-dlg__acts > .c-btn { width: auto; min-width: 120px; }
+  :is(#c-root, html) .c-page.c-setb .c-setb-dlg__acts > .c-setb-dlg__danger { margin-right: auto; }
+  /* A form's fields stop at the form width (DESIGN.MD Phase 2: 560px); the rows under them keep the card's width. */
+  :is(#c-root, html) .c-page.c-setb .c-setb-fields { max-width: var(--b-frame-form, 560px); }
+}
+
+/* Locations (Nov 23, 2026; additive): an Add form that is done hides the band's Add; the next steps after an add as two
+ * equal buttons under the result (stacked full width on phones, right-aligned from 768px); a row whose title is a link
+ * (a location's Clocker link) with a button on its right. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:has(form[data-done]) > .c-nav .c-nav__right > .c-setb-save:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: none !important; }
+  /* The band's Save or Add is a 44px target (it drew 40px). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb > .c-nav .c-nav__right > .c-setb-save:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { min-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-acts:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; flex-direction: column-reverse !important; gap: var(--b-space-8) !important; margin-top: var(--b-space-12) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-acts > .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { width: 100% !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-rowlink:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: inline-flex !important; align-items: center !important; min-height: 44px !important; color: var(--b-teal) !important; font-weight: 600 !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-rowlink:focus-visible:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; border-radius: 4px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-linkrow > .c-row__trail:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: none !important; margin-left: auto !important; }
+}
+@media (min-width: 768px) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-acts:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: grid !important; grid-auto-flow: column !important; grid-auto-columns: 1fr !important; width: fit-content !important; margin-left: auto !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-acts > .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { width: auto !important; min-width: 120px !important; }
+  }
+}
+
+/* Shared form fixes (Nov 23, 2026; additive, from Locations): a field's error has 4px between its glyph and its words
+ * (it drew them touching), and a button's busy words take the idle words' place instead of following them
+ * ("AddAdding…"): the older Settings rule for ButtonLabel is scoped to the older page frame. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-error:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; align-items: flex-start !important; gap: var(--b-space-4) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .wc-swap:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: inline-grid !important; justify-items: center !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .wc-swap > span:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-area: 1 / 1 !important; display: block !important; text-align: center !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .wc-swap[data-state="idle"] > span:last-child:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .wc-swap[data-state="pending"] > span:first-child:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { visibility: hidden !important; }
+}
+
+/* 200% text (Nov 23, 2026; additive, from Locations): the form's and rows' words were fixed px, so they stayed small while
+ * the rest of the page grew. The same sizes in rem (16px root): no change at 100%. Buttons grow from 44px with the words. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb :is(.c-field__label, .c-error):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-field__help:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-in:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-size: 1rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-row__value:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-size: 0.9375rem !important; line-height: 1.25rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { height: auto !important; min-height: 44px !important; padding-top: 0 !important; padding-bottom: 0 !important; font-size: 0.9375rem !important; line-height: 1.25rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb > .c-nav .c-nav__right > .c-setb-save:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-size: 0.875rem !important; }
+}
+@media (min-width: 768px) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb :is(.c-field__label, .c-error):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-size: var(--b-fs-meta) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-row__value:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { font-size: 0.875rem !important; }
+  }
+}
+
+/* Large text (Nov 23, 2026; additive, from Locations): when a list card is narrower than 18rem's worth of text (about
+ * 200% text on a phone), a row's value moves under its title instead of squeezing it to a word per line; the icon and
+ * the chevron keep their places. At 100% text no phone or wider card matches. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb > .c-card:not(form):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { container-type: inline-size !important; }
+}
+@container (max-width: 18rem) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb > .c-card .c-row:has(> .c-row__value):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; grid-template-areas: "main chev" "value chev" !important; row-gap: var(--b-space-2) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb > .c-card .c-row:has(> .c-row__value):has(> .c-row__icon):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-template-columns: auto minmax(0, 1fr) auto !important; grid-template-areas: "icon main chev" ". value chev" !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb > .c-card .c-row:has(> .c-row__value) > .c-row__icon:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-area: icon !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb > .c-card .c-row:has(> .c-row__value) > .c-row__main:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-area: main !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb > .c-card .c-row:has(> .c-row__value) > .c-row__value:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-area: value !important; justify-self: start !important; text-align: left !important; width: auto !important; max-width: none !important; min-width: 0 !important; overflow-wrap: normal !important; word-break: normal !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb > .c-card .c-row:has(> .c-row__value) > .c-chev:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { grid-area: chev !important; }
+  }
+}
+
+/* Positions and Break types (Nov 23, 2026), additive: from 768px rows use the wide inset (22px, owner-b-desktop.css), so a
+ * card's note does too and its text starts on the rows' text edge (it sat 4px left of it). */
+@layer nv-b {
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card .c-setb-cardnote:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+  /* A row inside a Settings dialog (a switch, the item an Archive confirms) starts on the dialog's text edge, like its fields. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-dlg .c-rows > li > .c-row:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-left: 0 !important; padding-right: 0 !important; }
+}
+
+/* Added for Time off policies and Company policies (Nov 23, 2026, additive). A choice of kinds as radio rows under a
+ * field label; a form's error summary inside its card; an in-page editor's Cancel and Save on phones, stacked full width
+ * at the card's end (the band has no Back while the editor is open); a row list that follows another inside one card. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-choice:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { min-width: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-legend:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { float: left !important; width: 100% !important; margin: 0 !important; padding: var(--b-space-16) var(--b-inset) var(--b-space-4) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-legend + .c-rows:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { clear: both !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card > .c-setb-sum:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { margin: 0 !important; padding: var(--b-space-12) var(--b-inset) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card > .c-rows + .c-rows:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6),
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-card > .c-empty + .c-rows:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { box-shadow: inset 0 1px 0 var(--b-line) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-phoneacts:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: flex !important; flex-direction: column !important; gap: var(--b-space-8) !important; padding: var(--b-space-16) var(--b-inset) !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-phoneacts > .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { width: 100% !important; }
+}
+@layer nv-b {
+  /* A field stack the page hides (a rule that is off) stays hidden: the stack's flex rule above must not undo [hidden]. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-fields[hidden]:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { display: none !important; }
+  /* Time off policies and Company policies: a field stack directly in a card (or under a rule's switch row) takes the
+   * card's inset, 16px above and below. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:is(.pto, .cp) :is(.c-card > .c-setb-fields, .c-setb-fieldset > .c-setb-fields):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding: var(--b-space-16) var(--b-inset) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:is(.pto, .cp) .c-setb-fieldset > .c-setb-fields:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-top: var(--b-space-4) !important; }
+}
+@media (min-width: 768px) {
+  @layer nv-b {
+    /* Tablets and desktop: the field stacks and the card's note take the wide inset (22px), on the rows' text edge. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb:is(.pto, .cp) :is(.c-card > .c-setb-fields, .c-setb-fieldset > .c-setb-fields, .c-card .c-setb-cardnote, .c-card > .c-setb-sum, .c-setb-legend):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-left: var(--b-inset-wide) !important; padding-right: var(--b-inset-wide) !important; }
+  }
+}
+
+/* Final fixes S2 (G85, J5): a result's icon lines up with its first line (the title), not the middle of two lines. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-result .b-notice:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { align-items: flex-start !important; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-setb-result .b-notice__tx:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { padding-top: max(0px, calc((36px - 1.25rem) / 2)) !important; }
+
+/* Forced colours (Z3, A4-05, Nov 23, 2026): the switch is painted by its background alone, so under Windows contrast
+ * themes its track and thumb vanished and on, off and locked looked the same. It keeps an edge and a thumb in system
+ * colours; on is the Highlight track. The branding swatch is content (the chosen colour), so it keeps its colour with an
+ * edge. Nothing changes outside forced colours. */
+@media (forced-colors: active) {
+  @layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border: 1px solid ButtonText !important; forced-color-adjust: none !important; background-color: Canvas !important; opacity: 1 !important; filter: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { forced-color-adjust: none !important; background-color: ButtonText !important; box-shadow: none !important; top: 1px !important; left: 1px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:is(:checked, [aria-checked="true"]):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { background-color: Highlight !important; border-color: Highlight !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:is(:checked, [aria-checked="true"]):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { background-color: HighlightText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:disabled:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border-color: GrayText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:disabled:not(:checked):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { background-color: GrayText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:disabled:checked:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { background-color: GrayText !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page.c-setb, .ck-owner) .c-switch:disabled:checked:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7)::after { background-color: Canvas !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb :is(.c-setb-swatch, .c-setb-swatches button):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { forced-color-adjust: none !important; border: 1px solid CanvasText !important; }
+  }
+}

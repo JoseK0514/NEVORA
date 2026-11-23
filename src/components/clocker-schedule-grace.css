@@ -8,20 +8,28 @@
 :is(#c-root, html) .c-grace .c-grace__fields { display: flex; flex-direction: column; min-width: 0; margin: 0; padding: 0; border: 0; }
 :is(#c-root, html) .c-grace .c-grace__field { padding: 16px; }
 :is(#c-root, html) .c-grace :is(.c-grace__field, .c-grace__note, .c-grace__result) { padding-left: var(--b-inset, 16px) !important; padding-right: var(--b-inset, 16px) !important; }
-:is(#c-root, html) .c-grace .c-grace__minutes { display: flex; align-items: center; gap: 8px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
-:is(#c-root, html) .c-grace input[type="number"].c-in { max-width: 160px; font-variant-numeric: tabular-nums; }
-:is(#c-root, html) .c-grace .c-field__help { display: block; font-size: 13px; line-height: 18px; color: var(--c-grey); }
-:is(#c-root, html) .c-grace .c-grace__note { margin: 0; padding: 14px 16px 16px; font-size: 13px; line-height: 18px; color: var(--c-grey); box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-grace .c-grace__minutes { display: flex; align-items: center; gap: 8px; font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink2); }
+:is(#c-root, html) .c-grace input[type="number"].c-in { font-variant-numeric: tabular-nums; }
+/* Final fixes S2: the FieldB unit ("minutes") sits inside the field at its right, so the field keeps its 10rem width as a whole. */
+:is(#c-root, html) .c-grace .c-setb-unit { max-width: 10rem; }
+:is(#c-root, html) .c-grace .c-field__help { display: block; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
+:is(#c-root, html) .c-grace .c-grace__note { margin: 0; padding: 14px 16px 16px; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-grace .c-grace__result { padding-bottom: var(--b-space-16, 16px); }
 /* Review 30: the result takes focus when the button that was pressed has gone; like a focused title, it draws no ring. */
 :is(#c-root, html) .c-grace .c-grace__result:focus { outline: none; }
 :is(#c-root, html) .c-grace .c-grace__whole { white-space: nowrap; }
 :is(#c-root, html) .c-grace .c-grace__foot { flex-direction: column-reverse; align-items: stretch; justify-content: flex-end; }
 :is(#c-root, html) .c-grace .c-grace__foot > .c-btn { flex: none; width: 100%; }
-@media (max-width: 767px) { :is(#c-root, html) .c-grace .c-in { font-size: 16px; } }
+@media (max-width: 767px) { :is(#c-root, html) .c-grace .c-in { font-size: 1rem; } }
 @media (min-width: 768px) {
   :is(#c-root, html) .c-page.c-embed.c-grace { padding: 16px 16px 0; }
   :is(#c-root, html) .c-grace :is(.c-grace__field, .c-grace__note, .c-grace__result) { padding-left: var(--b-inset-wide, 22px) !important; padding-right: var(--b-inset-wide, 22px) !important; }
   :is(#c-root, html) .c-grace .c-grace__foot { flex-direction: row; align-items: center; justify-content: flex-end; }
   :is(#c-root, html) .c-grace .c-grace__foot > .c-btn { width: auto; min-width: 120px; }
+}
+/* Regression sweep Z (Nov 23, 2026): the unit inside the field ("minutes") grows with the text like the value beside it
+ * (the kit draws it at a fixed 15–16px), and stays centred in the field. */
+:is(#c-root, html) .c-grace .c-setb-unit .c-in__suffix { top: 50%; transform: translateY(-50%); font-size: 0.9375rem; line-height: 1.25rem; }
+@media (max-width: 767px) {
+  :is(#c-root, html) .c-grace .c-setb-unit .c-in__suffix { font-size: 1rem; line-height: 1.25rem; }
 }

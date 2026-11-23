@@ -20,7 +20,7 @@ it('withholds both recovery bodies and workspace reads after company access deni
  m.denied=true;
  for(const page of [AccountRecoveryPage,ClockerRecoveryPage]){
   const html=renderToStaticMarkup(await page({searchParams:Promise.resolve({from:'settings',employee:'worker'})}));
-  expect(html).toContain('This page needs company-wide management access. An Owner can give it to you.');
+  expect(html).toContain('Company-wide access needed');
   expect(html).not.toContain('data-recovery');
  }
  expect(m.workspace).not.toHaveBeenCalled();

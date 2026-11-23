@@ -24,8 +24,9 @@ describe('presented action items (Phase 7)', () => {
     expect(`${target.title} ${target.detail} ${gap.title} ${gap.detail}`).not.toMatch(/missing/i);
   });
   it('keeps each time whole and breaks a range only after its dash', () => {
-    expect(spacedRanges('12:00 AM–7:00 AM')).toBe('midnight\u00a0– 7:00\u00a0AM');
-    expect(spacedRanges('4:00 PM–midnight')).toBe('4:00 PM – midnight');
+    expect(spacedRanges('12:00 AM–7:00 AM')).toBe('12:00\u00a0AM\u00a0– 7:00\u00a0AM');
+    expect(spacedRanges('4:00 PM–midnight')).toBe('4:00\u00a0PM\u00a0– 12:00\u00a0AM');
+    expect(spacedRanges('midnight–6:00 AM')).toBe('12:00\u00a0AM\u00a0– 6:00\u00a0AM');
   });
   it('writes period dates the way people read them (TC-P3-19)', () => {
     const card = presentItem(item({type: 'TIMECARD', category: 'timekeeping', priority: 'REVIEW', title: 'Period timecard needs review', detail: 'Casey Rivera · 2026-10-19–2026-10-25 · Resolve recorded-time exceptions before finalizing.'}), 'Open timecard review');

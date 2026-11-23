@@ -87,7 +87,7 @@ it.each(['EMPLOYEE','LEAD'])('closes the report to %s and reads nothing',async r
 it('withholds the report without current company-wide access, and says when the read failed',async()=>{
  fixture.denied=true;
  const denied=renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})}));
- expect(denied).toContain('This page needs company-wide management access. An Owner can give it to you.');expect(denied).not.toContain('Ana Rivera');expect(fixture.read).not.toHaveBeenCalled();
+ expect(denied).toContain('Company-wide access needed');expect(denied).not.toContain('Ana Rivera');expect(fixture.read).not.toHaveBeenCalled();
  fixture.denied=false;fixture.unavailable=true;
  const failed=renderToStaticMarkup(await ChristmasBonusPage({searchParams:Promise.resolve({})}));
  // Review 30 (D08): a failed read says so in the kit's failed state, with one Try again and the way back to Insights.

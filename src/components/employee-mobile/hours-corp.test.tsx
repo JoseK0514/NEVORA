@@ -15,7 +15,7 @@ const ready=(patch:Partial<EmployeeTimeReady>={}):EmployeeTimeReady=>({state:'re
 describe('corporate Time formats',()=>{
  it('writes durations and times like the boards',()=>{
   expect(boardDuration(27120)).toBe('7 h 32 min');expect(boardDuration(115200)).toBe('32 h');expect(boardDuration(2700)).toBe('45 min');expect(boardDuration(0)).toBe('0 min');
-  expect(clockRange('2026-10-26T16:00:00Z','2026-10-26T16:30:00Z',zone).replace(/\s/g,' ')).toBe('12:00 – 12:30 PM');
+  expect(clockRange('2026-10-26T16:00:00Z','2026-10-26T16:30:00Z',zone).replace(/\s/g,' ')).toBe('12:00 PM – 12:30 PM');
   expect(clockRange('2026-10-26T11:59:00Z',null,zone).replace(/\s/g,' ')).toBe('7:59 AM – now');
  });
  it('reads typed times without a native time picker',()=>{

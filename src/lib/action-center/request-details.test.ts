@@ -38,7 +38,7 @@ describe('a swap shows both shifts, or says the second one is not available', ()
   it('a midnight end belongs to the same shift day (24:00 occupies no minutes after midnight)', () => {
     const late = requestShift('2030-10-07', '16:00', '24:00', 'Office', 'America/Puerto_Rico');
     expect(late.endDate).toBe('2030-10-08');
-    expect(shiftText(late, en, '2030')).toBe('Mon, Oct 7 · 4:00 PM – midnight · Office');
+    expect(shiftText(late, en, '2030')).toBe('Mon, Oct 7 · 4:00 PM – 12:00 AM · Office');
   });
   it('daylight saving: the schedule’s nominal clocks are shown as written, in the shift’s own place', () => {
     // Spring forward in New York (2030-03-10): 2:30 AM does not exist on the wall clock, and the nominal times are kept.

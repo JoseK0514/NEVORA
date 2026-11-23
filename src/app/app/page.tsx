@@ -11,8 +11,13 @@ import {ManagerCorrectionRecoveryBoundary} from '@/components/manager-correction
 import {managerReviewRecoveryKey} from '@/lib/time-corrections/review-recovery';
 import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
 import {ScopedManagementHome} from '@/components/company-access/scoped-operational-views';
-import {ScopedHomeB} from '@/components/company-access/scoped-b';
-import {readScopedCoverageGaps} from '@/lib/data/coverage-repair.server';
+import {ScopedHomeLive,ScopedWhosWorking} from '@/components/company-access/scoped-home';
+import {readOperationalSchedule} from '@/lib/company-access/operational-read.server';
+import {ActionMenu} from '@/components/action-menu';
+import {MapPinIcon} from '@phosphor-icons/react/dist/ssr/MapPin';
+import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
+import Link from 'next/link';
+import type {HomeShortcut} from '@/components/owner-b/home-b';
 import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {businessDate} from '@/lib/business-time';
@@ -26,7 +31,7 @@ import {homeAuthority} from '@/lib/data/employee-home.server';
 import {isManagerRole} from '@/lib/auth/permissions';
 import {currentPresentation} from '@/lib/workspace-presentation/current.server';
 import {requestTypeAllowed} from '@/lib/workspace-presentation/modules';
-import {addDays,formatWeekRange,isValidWeekStart,weekStartFor} from '@/lib/date-utils';
+import {addDays,durationMinutes,formatWeekRange,isValidWeekStart,weekDates,weekStartFor} from '@/lib/date-utils';
 import {redirect} from 'next/navigation';
 import {readHomePayrollStatus,readNextPay} from './my-pay/next-pay';
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
@@ -88,12 +93,39 @@ export default async function DashboardPage({
   if(authority.state==='unavailable')return <OperationalUnavailable title="Home unavailable" reason={authority.reason}/>;
   if(authority.scope?.mode!=='COMPANY'){
     if(authority.scope?.mode!=='LOCATIONS'||!authority.locations.length)return <ScopedManagementHome view={authority}/>;
-    // Phase 2 direction A (Nov 22, 2026): the location Manager's Home, with this week's open shifts from the read the
-    // Schedule already uses. A failed read shows "Couldn't check open shifts" instead of hiding the card.
-    const week=weekStartFor(businessDate(new Date(),(await getWorkspace()).timeZone));
-    const gaps=await readScopedCoverageGaps(proof,week).catch(()=>null);
-    const openShifts=gaps&&gaps.state==='ready'&&gaps.authority===authority.authority?gaps.data:null;
-    return <ScopedHomeB view={authority} openShifts={openShifts} scheduleHref={`/app/schedule?week=${week}`}/>;
+    // Nov 22, 2026 (Jose: the same screens other Managers have, limited to their place): the location Manager's Home is
+    // the company Manager's Direction B Home, fed by the reads that already follow this Manager's scope. The band names the
+    // place; with several places, a menu chooses one (as on the Schedule). Payroll and timecard counts have no scoped
+    // read, so they are left out; nothing company-wide is read.
+    const one=authority.locations.length===1?authority.locations[0]:null;
+    const chosen=one?undefined:authority.locations.find(location=>location.id===params.location);
+    const placeName=(location:{name:string;shortName:string})=>location.shortName||location.name;
+    const homeHref=chosen?`/app?location=${encodeURIComponent(chosen.id)}`:'/app';
+    // Home's own "Who's working" view, from the same scoped reads (the company view's attendance review is company-wide).
+    if(params.view==='attendance')return <ScopedReadFrame observation={authority}><ScopedWhosWorking homeHref={homeHref} locationId={chosen?.id} place={one?placeName(one):chosen?placeName(chosen):undefined}/></ScopedReadFrame>;
+    const place=one?<span className="b-date b-place"><MapPinIcon size={15} weight="bold" aria-hidden="true"/>{placeName(one)}</span>
+      :<ActionMenu id="b-home-location-menu" label="Location" title="Location" ariaLabel={`Location: ${chosen?placeName(chosen):'All your locations'}`} align="start"
+        triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="bold" aria-hidden="true"/>{chosen?placeName(chosen):'All your locations'}<CaretDownIcon size={13} weight="bold" aria-hidden="true"/></>}>
+        <Link className="nevora-action-menu-item" href="/app?location=all" aria-current={chosen?undefined:'page'}><strong>All your locations</strong></Link>
+        {authority.locations.map(location=><Link key={location.id} className="nevora-action-menu-item" href={`/app?location=${encodeURIComponent(location.id)}`} aria-current={chosen?.id===location.id?'page':undefined}><strong>{placeName(location)}</strong></Link>)}
+      </ActionMenu>;
+    // This week: the week's shifts at this Manager's places (drafts included, as on the company Home), from the scoped
+    // schedule read the Schedule uses. A failed read leaves the card out rather than drawing zeros.
+    const source=await readOperationalSchedule(proof,{weekStart:currentWeek,...(chosen?{locationId:chosen.id}:{})}).catch(()=>null);
+    const shifts=source?.state==='ready'&&source.authority===authority.authority?source.data.shifts:null;
+    const {modules}=await currentPresentation();
+    const homeB={firstName:session.firstName,place,
+      days:weekDates(currentWeek).map(date=>({date,weekday:new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US',{weekday:'short',timeZone:'UTC'}),shiftCount:(shifts??[]).filter(shift=>shift.date===date).length})),
+      scheduledHours:(shifts??[]).reduce((total,shift)=>total+durationMinutes(shift.startTime,shift.endTime),0)/60,
+      people:new Set((shifts??[]).map(shift=>shift.employeeId)).size,
+      ...(shifts?{}:{thisWeek:false as const}),
+      // Add shift opens the scoped shift form; Time off opens the requests this Manager may decide (a closed page says who
+      // decides when they may not). Add employee and Send update are company-wide, so they aren't offered.
+      shortcuts:['shift',...(modules.timeOff?['timeOff' as const]:[])] as HomeShortcut[]};
+    const dateLabel=new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'long',month:'long',day:'numeric'}).format(new Date(`${currentDate}T12:00:00Z`));
+    return <ScopedReadFrame observation={authority}><ScopedHomeLive key={`${authority.authority}:${chosen?.id??'all'}`} greeting={`Welcome back, ${session.firstName}`} dateLabel={dateLabel}
+      timeZone={workspace.timeZone} workspaceName={workspace.name} weekStart={currentWeek} actorId={session.id} locationId={chosen?.id} homeB={homeB}
+      week={{weekStart:currentWeek,weekLabel:formatWeekRange(currentWeek),plannedShifts:shifts?.length??0,availabilitySubmitted:0,availabilityEligible:0,locations:[]}}/></ScopedReadFrame>;
   }
   const retired = retiredViewDestination(params);
   if (retired) redirect(retired);

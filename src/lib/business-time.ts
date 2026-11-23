@@ -53,9 +53,6 @@ export function formatBusinessDateTime(iso: string, timeZone: string): string {
   return `${value('month')} ${value('day')}, ${value('hour')}:${value('minute')} ${value('dayPeriod')}`;
 }
 
-export function formatBusinessClock(now: Date, timeZone: string): string {
-  return new Intl.DateTimeFormat('en-US', { timeZone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).format(now);
-}
 export function formatBusinessTimestamp(iso: string, timeZone: string): string {
   return formatBusinessDateTime(iso, timeZone);
 }

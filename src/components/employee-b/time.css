@@ -83,7 +83,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-hours-now > .b-callout { margin-top: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-flat { align-items: flex-start; padding: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-dayrange__trail { display: none; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-quiet { padding: 14px var(--b-inset); font-size: var(--b-fs-body); line-height: 20px; color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-quiet { padding: 14px var(--b-note-x, var(--b-inset)); /* Phase 2 gate: on the card's text edge, as the note under it */ font-size: var(--b-fs-body); line-height: 20px; color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-teal { color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum { display: flex; flex-direction: column; gap: var(--b-space-2); padding: var(--b-space-2) var(--b-inset) var(--b-space-16); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum__big { font-size: var(--b-fs-display); line-height: var(--b-lh-display); font-weight: 700; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
@@ -175,6 +175,10 @@
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__name { flex: 1 0 auto; width: auto; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours { flex: 0 1 auto; min-width: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); text-align: right; font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours--off { color: var(--b-grey); }
+/* C10 Availability (Phase 2 gate, Nov 23): with large text a day's hours wrap after the dash instead of ending in "…"
+ * ("7:00 AM – …" at 390 with 200% text); at normal sizes they still sit on one line at the right. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__name { flex: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours { flex: 1 1 0; white-space: normal; overflow: visible; text-overflow: clip; text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day > .c-chev { flex: none; width: 18px; height: 18px; color: var(--b-field-edge); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn {
   display: flex; align-items: center; justify-content: center; width: auto; height: auto; min-height: 48px; padding: 0 var(--b-space-16); border: 0; border-radius: 16px; background: var(--b-teal); color: #FFFFFF; box-shadow: none;
@@ -218,3 +222,13 @@
 :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:first-child { border-radius: var(--b-radius-field) var(--b-radius-field) 0 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:last-child { border-radius: 0 0 var(--b-radius-field) var(--b-radius-field); }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:only-child { border-radius: var(--b-radius-field); }
+/* Phase 2 gate (Nov 23, lead review of D4 at 390): in This week the card's footer note follows the "Fix a missed punch"
+ * row, whose own 16px bottom padding is the gap; the footer rule's 12px on top made it 28px, off the card's rhythm.
+ * It sits in @layer nv-b, as the footer rule does (an important declaration in a layer outranks an unlayered one). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen #b-hours-week.b-card > .b-list + .eb-cardnote:not(#h-none):not(#h-none2):not(#h-none3):not(#h-none4):not(#h-none5):not(#h-none6) { padding-top: 0 !important; }
+}
+/* Phase 2 gate (Nov 23, 200% text at 390): a time row's range ("7:02 AM –" / "now") never shrinks under its own width,
+ * so when the range and the hours don't both fit, the hours move to the next line instead of drawing over the range. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row:has(> .b-row__tx [id^="b-hours-"] .eb-nb) { flex-wrap: wrap; row-gap: var(--b-space-4); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row:has(> .b-row__tx [id^="b-hours-"] .eb-nb) > .b-row__tx { min-width: min-content; }

@@ -1,23 +1,25 @@
 import Link from 'next/link';
 import type {ReactNode} from 'react';
 import {workCopy} from './work-copy';
+import {formatTime} from '@/lib/date-utils';
 
 /* Small shared pieces for the Employee Direction B phone screens. */
 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 
-/** "08:00" → "8:00 AM"; "24:00" → "12:00 AM". */
+/** "08:00" → "8:00 AM"; "24:00" → "12:00 AM" (the one time format, date-utils formatTime). */
 export function wallTime(time: string) {
-  const [h, m] = time.split(':').map(Number);
-  return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
+  return formatTime(time);
 }
 
 /** A day as a row's lead: "SAT" over "7". Today's number is teal. */
-export function BDay({date, today, past, pick}: {date: string; today?: boolean; past?: boolean;
-  /** Phase 4 (EM-013): the day the desktop Schedule's day card shows (the chosen day, else today). */ pick?: boolean}) {
+export function BDay({date, today, past, pick, spoken}: {date: string; today?: boolean; past?: boolean;
+  /** Phase 4 (EM-013): the day the desktop Schedule's day card shows (the chosen day, else today). */ pick?: boolean;
+  /** Gaps G66: the day is part of its row's name ("Tue 24 9:00 AM – 5:00 PM …"), for a row named by what it shows. A row
+   * with its own label keeps the day hidden. */ spoken?: boolean}) {
   const at = utcDay(date);
-  return <span className={`b-day eb-day${today ? ' eb-day--today' : ''}${past ? ' eb-day--past' : ''}${pick ? ' eb-day--pick' : ''}`} aria-hidden="true">
-    <span>{new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short'}).format(at)}</span><b>{at.getUTCDate()}</b>
+  return <span className={`b-day eb-day${today ? ' eb-day--today' : ''}${past ? ' eb-day--past' : ''}${pick ? ' eb-day--pick' : ''}`} aria-hidden={spoken ? undefined : 'true'}>
+    <span>{new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short'}).format(at)}</span>{spoken ? <span className="b-sr"> </span> : null}<b>{at.getUTCDate()}</b>
   </span>;
 }
 
@@ -40,15 +42,14 @@ export function Dotted({text}: {text: string}) {
       {part === 'Shift lead' ? <><span className="eb-lead-l">Shift lead</span><span className="eb-lead-s">{workCopy().leadShort}</span></> : part}</span>)}</span></span>;
 }
 
-/** Phase 8 (review C, rows 14 and 24): one rule for a time range on the Employee and Lead screens. Each half stays whole
- * and, where the line is too short for the range, it breaks before the dash ("9:02 AM" over "– now"), never after it,
- * as the Schedule's day blocks already did (EM-014). `text` is a range as the kit writes it ("9:00 AM – 5:00 PM", also
- * after keepWhole or compactRange); anything else is drawn as it is. Screen readers hear the dash between the halves. */
+/** Phase 8 (review C, rows 14 and 24), Nov 23, 2026: one rule for a time range on every screen. Each half stays whole
+ * and, where the line is too short for the range, it breaks after the dash ("9:02 AM –" over "now"), never before it
+ * or inside a time. `text` is a range as the kit writes it ("9:00 AM – 5:00 PM", also after keepWhole or compactRange);
+ * anything else is drawn as it is. Screen readers hear the dash between the halves. */
 export function Range({text}: {text: string}) {
-  // A compact range written without spaces ("12–8 PM") is one token and stays whole.
   const halves = text.split(/[\s\u00a0]+–[\s\u00a0]+/);
   if (halves.length !== 2 || !halves[0] || !halves[1]) return <>{text}</>;
-  return <><span className="eb-nb">{halves[0]}</span> <span className="eb-nb">{`–\u00a0${halves[1]}`}</span></>;
+  return <><span className="eb-nb">{`${halves[0]}\u00a0–`}</span> <span className="eb-nb">{halves[1]}</span></>;
 }
 
 /** "2026-11-17 22:20": an instant as the wall clock reads it in `zone`. */

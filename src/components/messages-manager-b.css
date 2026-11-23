@@ -1,0 +1,173 @@
+/* Messages for Owners and Managers, Direction B (Phase 2, package Messages, Nov 23, 2026): Updates, an update, New update
+ * and Notifications. The band is the kit's (BHero on a phone, the page's CorpTitle from 768px); the cards are drawn once in
+ * `.mb-cards` (a b-keep block), so on a phone they lift over the hero as a BStack does and from 768px they follow the band.
+ * Kit pieces (cards, rows, chips, state cards, buttons) keep the kit's own look. Same cascade layer as the kit. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-page.mb-page > .b-keep.mb-cards { position: relative; z-index: 2; display: flex !important; flex-direction: column !important;
+    gap: var(--b-space-12) !important; min-width: 0; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; overflow: visible !important; }
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-page.mb-page > .b-keep.mb-cards { margin: -40px 0 0 !important; padding: 0 var(--b-gutter) 22px !important; }
+  }
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-page.mb-page > .b-keep.mb-cards { gap: var(--b-space-20) !important; }
+  }
+  /* A note on the canvas keeps the cards' text edge. */
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-cards > .b-note.mb-note { margin: 0; padding: 0 calc(var(--b-inset) + 1px); }
+}
+
+/* ---------- An update (B7) ---------- */
+@layer nv-b {
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-surface { display: flex; flex-direction: column; gap: var(--b-space-12); outline: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-surface > .mb-skel { display: flex; flex-direction: column; gap: var(--b-space-12); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-skel > .b-card { display: grid; gap: var(--b-space-12); padding: var(--b-space-20) var(--b-inset); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-skel > .b-card > i { display: block; height: 12px; border-radius: var(--b-radius-pill); background: var(--b-line); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-skel > .b-card > i:first-child { width: 40%; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-skel > .b-card > i:last-child:not(:first-child) { width: 64%; }
+  /* The message: its facts on one grey line, the text with its line breaks, then Edit and Withdraw. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-card.mb-msg { display: flex; flex-direction: column; gap: var(--b-space-12); padding: var(--b-space-16) var(--b-inset) var(--b-space-16); outline: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-card.mb-msg:focus-visible { outline: 2px solid var(--b-teal); outline-offset: 2px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-cards .mb-msg__meta { margin: 0 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-cards .mb-msg__body { margin: 0 !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; color: var(--b-ink) !important; white-space: pre-wrap; overflow-wrap: break-word; text-wrap: pretty; }
+  /* Two quiet buttons of one height, side by side; full width each on a phone. */
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-acts { display: flex; flex-wrap: wrap; gap: var(--b-space-8); padding-top: var(--b-space-4); }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-cards .mb-acts > .b-btn { display: inline-flex !important; flex: 1 1 0 !important; width: auto !important; min-width: 0 !important; min-height: 44px !important;
+    align-items: center !important; justify-content: center !important; gap: var(--b-space-8) !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-cards .mb-acts > .b-btn.mb-danger { color: var(--b-red) !important; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-confirm { display: flex; flex-direction: column; gap: var(--b-space-12); padding-top: var(--b-space-12); box-shadow: inset 0 1px 0 var(--b-line); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-confirm__t { margin: 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); text-wrap: pretty; }
+  @media (min-width: 768px) {
+    :is(#c-root, html) .app-shell[data-nv-b] .b-card.mb-msg { padding: var(--b-space-20) var(--b-inset); }
+    /* Buttons in a row share one width (the wider label's), right-aligned. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-cards .mb-acts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(128px, 1fr); width: max-content; max-width: 100%; margin-left: auto; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-cards .mb-acts > .b-btn { flex: none !important; width: 100% !important; min-width: 0 !important; }
+  }
+  /* A manager who is also a recipient: Acknowledge (with its check) or Mark read. */
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-own__ask { display: flex; flex-direction: column; gap: var(--b-space-12); padding: var(--b-space-16) var(--b-inset); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-check { display: flex; align-items: center; gap: var(--b-space-12); min-height: 44px; font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-ink); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-check > input { width: 22px; height: 22px; flex: none; accent-color: var(--b-teal); }
+}
+
+/* ---------- Notifications (B3) ---------- */
+@layer nv-b {
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .mb-when { display: inline-flex; align-items: center; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .mb-dot { display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--b-teal); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .mb-caret { transition: transform var(--b-dur-hover) var(--b-ease-out); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .mb-caret[data-open] { transform: rotate(180deg); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .mb-fold > .b-list { margin: 0; padding: 0; list-style: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .b-li.mb-fold { box-shadow: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .mb-fold .b-li { box-shadow: inset 0 1px 0 var(--b-line); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-segn { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 6px; padding: 0 6px; border-radius: var(--b-radius-pill);
+    background: rgb(255 255 255 / .22); font-size: .75rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  :is(#c-root, html) .app-shell[data-nv-b] [aria-pressed="true"] > .mb-segn { background: var(--b-teal); color: #FFFFFF; }
+  @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .mb-caret { transition: none; } }
+}
+
+/* ---------- New update and Edit update (B8) ---------- */
+@layer nv-b {
+  /* The form's fieldsets carry no frame of their own; the cards are the kit's. */
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-compose :is(form.wb-form, fieldset.wb-form, .wb-form[role="group"]) { display: flex; flex-direction: column; gap: inherit; min-width: 0; margin: 0; padding: 0; border: 0; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-compose form.wb-form { gap: var(--b-space-12); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-compose form.wb-form > fieldset.wb-form { gap: var(--b-space-12); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-compose .wb-form[role="group"]:not(:has(> :not(.wb-error:empty, .b-sr, .nv-sr))) { display: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-compose .wb-form[role="group"] { gap: var(--b-space-12); outline: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-compose .wb-error:empty { display: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-compose p.wb-error { display: flex; gap: var(--b-space-8); margin: 0; padding: 0 var(--b-inset); font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-red); }
+  @media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] .mb-compose :is(form.wb-form, form.wb-form > fieldset.wb-form, .wb-form[role="group"]) { gap: var(--b-space-20); } }
+
+  /* Outlined fields (Jose's pick): a 13.5px label 6px above a 48px field with a 1px #838A8F edge (3:1) and 14px corners. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-card.mb-form { display: flex; flex-direction: column; gap: var(--b-space-16); padding: var(--b-space-16) var(--b-inset) var(--b-space-20); overflow: visible; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-field__row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--b-space-12); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-field label, :is(#c-root, html) .app-shell[data-nv-b] .mb-field__row > label { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); font-weight: 600; color: var(--b-ink2); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-field__count { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); font-variant-numeric: tabular-nums; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-field__count[data-over] { color: var(--b-red); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-field__help { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-wrap: pretty; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-field__error { display: flex; align-items: flex-start; gap: 6px; margin: 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-red); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-field__error > svg { flex: none; margin-top: 1px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-in { box-sizing: border-box; display: block; width: 100%; min-width: 0; min-height: 48px; margin: 0; padding: 12px 14px; border: 1px solid var(--b-field-edge); border-radius: var(--b-radius-field);
+    background: #FFFFFF; color: var(--b-ink); font: inherit; font-size: var(--b-fs-body); line-height: var(--b-lh-body); appearance: none; -webkit-appearance: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-in::placeholder { color: var(--b-grey); opacity: 1; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-in:focus-visible { outline: 2px solid var(--b-teal); outline-offset: 0; border-color: var(--b-teal); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-in[aria-invalid="true"] { border-color: var(--b-red); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-in--area { min-height: 132px; resize: vertical; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-select { position: relative; display: block; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-select > select.mb-in { padding-right: 42px; text-overflow: ellipsis; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-select > svg { position: absolute; top: 50%; right: 14px; translate: 0 -50%; color: var(--b-ink2); pointer-events: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-fixed { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-12); min-height: 48px; font-size: var(--b-fs-body); color: var(--b-ink); }
+  /* Ask them to confirm: the words, then the pill switch on their first line. */
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-switch { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--b-space-16); min-height: 44px; cursor: pointer; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-switch__tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-switch__tx > b { font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-switch__tx > span { font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-tog { position: relative; flex: none; width: 51px; height: 31px; margin: 0; border-radius: var(--b-radius-pill); background: #C9CED1; appearance: none; -webkit-appearance: none; cursor: pointer;
+    transition: background-color var(--b-dur-hover) var(--b-ease-out); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-tog::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 2px 4px rgb(0 0 0 / .2);
+    transition: translate var(--b-dur-hover) var(--b-ease-out); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-tog:checked { background: var(--b-teal); }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-tog:checked::after { translate: 20px 0; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-tog:focus-visible { outline: 2px solid var(--b-teal); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .app-shell[data-nv-b] :is(.mb-tog, .mb-tog::after) { transition: none; } }
+  /* The card's footer: Cancel and Next (step 1), Back and Publish (step 2), one height, full width each on a phone. On a
+   * phone the hero's Cancel is the way out, so the footer keeps Next alone (Cancel isn't said twice). */
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-foot { padding-top: var(--b-space-4); }
+  @media (max-width: 767px) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-cards .mb-foot > a.b-btn { display: none !important; } }
+  @media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] .b-card.mb-form { padding: var(--b-space-20) var(--b-inset) var(--b-space-20); } }
+
+  /* Step 2, the review: the message as it will read, Edit beside its title, who gets it, the note, then Back and Publish. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review { display: flex !important; flex-direction: column !important; margin: 0 !important; padding: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__msg { display: flex !important; flex-direction: column !important; gap: var(--b-space-8) !important; padding: var(--b-space-16) var(--b-inset) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__head { display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: var(--b-space-12) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__t { margin: 0 !important; min-width: 0 !important; font-size: 1.125rem !important; line-height: 1.5rem !important; font-weight: 600 !important; color: var(--b-ink) !important; overflow-wrap: anywhere !important; text-wrap: balance !important; outline: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__edit { flex: none !important; min-height: 44px !important; margin-top: calc((1.5rem - 44px) / 2) !important; }
+  /* Gaps item F9 (Nov 23, 2026): Edit centres on the title's first line (1.5rem), not on a two-line title's middle. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__body { margin: 0 !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; color: var(--b-ink) !important; white-space: pre-wrap !important; overflow-wrap: break-word !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__facts { margin: 0 !important; font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; color: var(--b-grey) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__who { margin: 0 !important; padding: 0 !important; list-style: none !important; box-shadow: inset 0 1px 0 var(--b-line) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__note { margin: 0 !important; padding: var(--b-space-4) var(--b-inset) 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__foot { display: flex !important; flex-wrap: wrap !important; gap: var(--b-space-8) !important; padding: var(--b-space-16) var(--b-inset) var(--b-space-20) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__foot > .b-btn { display: inline-flex !important; flex: 1 1 0 !important; width: auto !important; min-width: 0 !important; min-height: 44px !important; align-items: center !important; justify-content: center !important; white-space: nowrap !important; }
+  @media (min-width: 768px) {
+    :is(#c-root, html) .app-shell[data-nv-b] .mb-compose :is(.b-cmp-review__msg) { padding: var(--b-space-20) var(--b-inset) var(--b-space-16); }
+    /* Back and Publish: one width (the wider label's), right-aligned. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__foot { display: grid !important; grid-auto-flow: column; grid-auto-columns: minmax(128px, 1fr); width: max-content; margin-left: auto;
+      padding: var(--b-space-16) var(--b-inset) var(--b-space-20) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-compose .b-cmp-review__foot > .b-btn { flex: none !important; width: 100% !important; min-width: 0 !important; }
+  }
+}
+
+/* Recipients: a name never breaks inside a word to make room for Remind; when both don't fit on one line (a narrow phone,
+ * 200% text), Remind moves under the name. Queue review (Nov 23): it stays on the row while the name's longest word fits
+ * beside it (the name took a 12rem basis, so Remind dropped at 390 even at 100% text). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row:has(> .b-row__trail) { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row > .b-row__hit { flex: 1 1 0 !important; min-width: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] #update-recipients .b-row > .b-row__trail { margin-left: auto !important; padding-left: 0 !important; flex-basis: auto !important; }
+  :is(#c-root, html) .app-shell[data-nv-b] #update-recipients .b-row__tt { overflow-wrap: normal; word-break: normal; }
+}
+
+/* A fold is a button row: it keeps the link rows' look (no button frame or fill; text from the left). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-notifs .mb-cards button.b-row { margin: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important;
+    color: inherit !important; font: inherit !important; text-align: left !important; justify-content: flex-start !important; min-height: 64px !important; height: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-notifs .mb-cards button.b-row:hover { background: var(--b-press-tint) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .mb-notifs .mb-cards button.b-row .b-row__tx { align-items: flex-start !important; text-align: left !important; }
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-notifs .mb-cards button.b-row:focus-visible { outline: 2px solid var(--b-teal); outline-offset: -2px; }
+}
+
+/* 2-hour target (Nov 23): every target on these pages is at least 44px tall: Remind on a recipient row and the hero's
+ * New update on a phone (the kit draws both at 36 and 40px). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients .b-rem :is(.b-rem__go, .b-rem__act) { height: auto !important; min-height: 44px !important; }
+  /* Prodcheck (Nov 23, 2026): a row's state in words ("This changed while you were looking." with Refresh) wraps inside
+   * the card. At 390 with 200% text it stayed on one line and the card cut it off, Refresh with it. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients :is(.b-rem-slot, .b-rem) { max-width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients :is(.b-rem__tx, .b-rem__tx > span) { white-space: normal !important; min-width: 0 !important; }
+  /* The row's trail (flex: none) held the words at their full length. On phones a trail with words takes its own line
+   * under the name, as wide as the row, and the words and their button wrap inside it. */
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients .b-row__trail:has(.b-rem__tx) { flex: 1 1 100% !important; min-width: 0 !important; max-width: 100% !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2):not(#mb-3):not(#mb-4):not(#mb-5) #update-recipients .b-rem:has(.b-rem__tx) { flex-wrap: wrap !important; justify-content: flex-start !important; }
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2) .c-page.mb-page > .b-screen .b-hero .b-seg > * { height: auto !important; min-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.mb-page > .b-screen .b-title__right .b-btn { min-height: 44px !important; }
+}

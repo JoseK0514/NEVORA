@@ -1,6 +1,8 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, rs } from '@rstest/core';
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ManagerWeeklyRoster } from "./manager-weekly-roster";
 import { assignedHours, filterRoster, type RosterEmployee } from "../lib/scheduling/manager-roster-presentation";
 import { weekDates } from "../lib/date-utils";
@@ -43,10 +45,12 @@ it("respects an Action Center day focus while keeping full-week totals and contr
   expect(output).toContain("12 h assigned this week");
   expect(output).toContain("Full week");
   expect(output).toContain("No assignments on this day");
-  // Nov 21, 2026: the day view is a timeline. 8p to midnight on a 4p–12a axis starts halfway and fills the rest; the
-  // link keeps its name. The week grid carries no axis.
-  expect(output).toMatch(/<span class="cm-tl"><a class="cm-block draft"[^>]*style="left:50%;width:50%"/);
-  expect(output).toContain('<span class="cm-axis" aria-hidden="true"><em style="left:0%">4p</em>');
+  // Nov 21, 2026: the day view is a timeline. 8:00 PM to midnight on a 4:00 PM–12:00 AM axis starts halfway and fills the rest; the
+  // link keeps its name. The week grid carries no axis. G8 (Nov 23, 2026): a capsule in the later half is placed from the axis
+  // end (right:0), so if its time needs more room than its hours it grows toward earlier hours, never out of the card.
+  expect(output).toMatch(/<span class="cm-tl"><a class="cm-block draft"[^>]*style="right:0%;width:50%"/);
+  expect(output).toContain('<span class="cm-axis" aria-hidden="true"><em style="left:0%">4:00\u00a0PM</em>');
+  expect(output).toContain('<em style="right:0">12:00\u00a0AM</em>');
   expect(output).toMatch(/Edit Avery Taylor’s shift, [^<]*Main Office, draft/);
   expect(html()).not.toContain("cm-axis");
   expect(html()).not.toContain("cm-tl");
@@ -147,7 +151,9 @@ it("corporate (board G-O-Schedule): a week card with the week and its state, the
   // Owner premium: one time format; midnight reads 12:00 AM.
   // R2: each end is the kit's time (CorpTime: a quieter AM/PM joined by a narrow no-break space).
   expect(output).toMatch(/c-sched-row__time" aria-hidden="true"><b><span class="c-time">8:00\s<span class="c-ampm">PM<\/span><\/span><\/b><span><span class="c-time">12:00\s<span class="c-ampm">AM<\/span>/);
-  expect(output).toMatch(/<a class="c-row c-sched-row c-sched-row--open" href="\/app\/schedule\/coverage\?repair=x" aria-label="Find cover for the open shift, 1:00\sPM to 3:00\sPM, Main Office">/);
+  // Gaps G12 (Nov 23, 2026): roster rows are named by what they show; no aria-label words them differently.
+  expect(output).toMatch(/<a class="c-row c-sched-row c-sched-row--open" href="\/app\/schedule\/coverage\?repair=x">/);
+  expect(output).not.toMatch(/aria-label="(Find cover for the open shift|Edit [^"]*’s shift)/);
   expect(output).not.toContain(">Find cover</a>");
   expect(output).not.toContain("c-sched-row__cover");
   // Nov 1 upscale: "Open shift" in ink when it isn't the day's one problem; the grid's day headers carry the day's hours.
@@ -193,7 +199,7 @@ it("corporate: today's open shifts that already ended say Not filled, and anothe
   expect(out).toMatch(/<button type="button" class="sb-openchip" id="[^"]+" aria-expanded="false">/);
   expect(out).not.toContain("sb-openlist");
   expect(out).toContain('<span class="cm-person__sub sb-opencount"><b class="c-num">4</b><span> this week</span></span>');
-  expect(out).toContain('<a class="c-sched-week__today" href="/app/schedule?week=2026-10-12" aria-label="Go to this week">Today</a>');
+  expect(out).toContain('<a class="c-sched-week__today" href="/app/schedule?week=2026-10-12" aria-label="Today, go to this week">Today</a>');
   // Without the read time, today's open shifts all stay open.
   const unknown = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
     absences: { state: "ready", employeeIds: ["fictional", "unassigned"], rows: [] } as never, openShifts,
@@ -230,4 +236,37 @@ it("grid: whole-minute durations, one coverage line and the week's state beside 
   expect(bar).toMatch(/aria-label="Next week">.*?<\/a><span class="c-meta c-sched-weekstate" data-tone="green">Published<\/span><\/span>/);
   // A day already over: a grey chip that still opens its list.
   expect(out).toContain('data-over="true" aria-expanded="false"><span aria-hidden="true">1 open</span><span class="sr-only">1 open shift, Mon Oct 5, day already over</span>');
+});
+
+// Recheck (Nov 23, 2026), the gate's point 4: each fact once. A page for one location names it on the band, so its open
+// shifts don't repeat it; the grid's key shows only when the week mixes published and draft blocks.
+it("says one location once and keeps the key for a mixed week", () => {
+  const openShifts = [{ id: "gap", date: "2026-10-06", startTime: "13:00", endTime: "15:00", location: "Main Office", href: "/app/schedule/coverage?repair=x" }];
+  const corp = { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05" };
+  const b = { sub: null, actions: null, location: null, weekState: null, toPlan: [] };
+  const render = (roster: RosterEmployee[], locationId?: string) => renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees: roster, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
+    absences: { state: "ready", employeeIds: ["fictional", "unassigned"], rows: [] } as never, openShifts, locationId, corp, b }));
+  const day = (out: string) => { const from = out.indexOf('id="b-schedule-day"'); return out.slice(from, out.indexOf("</section>", from)).replace(/<[^>]+>/g, " "); };
+  expect(day(render(employees, "main"))).not.toContain("Main Office");
+  expect(day(render(employees))).toContain("Main Office");
+  // Avery's week has a published and a draft shift: the key explains the two looks.
+  expect(render(employees)).toContain('<span class="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span>');
+  const published = employees.map(person => ({ ...person, shifts: person.shifts.map(shift => ({ ...shift, status: "PUBLISHED" as const })) }));
+  // Gaps G35 (Nov 23, 2026): with no key there is no key element, so the grid card keeps no empty strip.
+  expect(render(published)).not.toContain('class="cm-legend"');
+  // A row says Draft in a mixed week; in an all-draft week the week's state says it once.
+  expect(day(render(employees))).toContain(" Draft ");
+  const drafts = employees.map(person => ({ ...person, shifts: person.shifts.map(shift => ({ ...shift, status: "DRAFT" as const })) }));
+  expect(day(render(drafts))).not.toContain(" Draft ");
+  // The week strip's days are named by what they show, then hidden text (no aria-label that differs from it).
+  const strip = render(employees);
+  expect(strip).not.toMatch(/class="b-week__d"[^>]*aria-label/);
+  expect(strip).toMatch(/<span>Tue<\/span><span class="sr-only"> <\/span><b class="c-num">6<\/b><span class="sr-only">, today, 2 shifts, 1 open shift<\/span>/);
+});
+
+// Release sweep (Nov 23, WCAG 2.5.3): both "Today" links name themselves starting with the word they show.
+it('names the week Today links starting with their visible word', () => {
+  const src = readFileSync(join(__dirname, 'manager-weekly-roster.tsx'), 'utf8');
+  expect(src).not.toContain('aria-label="Go to this week"');
+  expect(src.match(/aria-label="Today, go to this week">Today<\/a>/g)).toHaveLength(2);
 });

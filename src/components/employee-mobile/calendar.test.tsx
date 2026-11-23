@@ -10,7 +10,7 @@ const base={status:ready,url:null,paused:false,busy:false,notice:'',onCommand:()
 // B7 wording (glossary "Calendar feed"): Reset/Revoke link are now "Get a new link" and "Turn off link".
 it('board E-Calendar: link card with status, setup per calendar app, then Reset link in red',()=>{
  const html=corp(<CalendarSubscriptionView {...base}/>);
- expect(html).toContain('Your calendar link');expect(html).toContain('>Active<');expect(html).toContain('Your shifts, in your calendar');expect(html).toContain('Or add it straight to');
+ expect(html).toContain('Subscription');expect(html).toContain('>Active<');expect(html).not.toContain('Your calendar link');expect(html).toContain('Or add it straight to');
  expect(html).toContain('Apple Calendar');expect(html).toContain('Google Calendar');expect(html).toContain('>Get a new link<');expect(html).toContain('The old link stops working right away.');expect(html).toContain('>Turn off link<');
  expect(html).toContain('aria-controls="calendar-link-confirmation"');expect(html).not.toContain('Example week');expect(html).not.toContain('Check NEVORA');
  expect(html.match(/class="c-btn"/g)??[]).toHaveLength(0);
@@ -37,7 +37,7 @@ it('does not render private URL/provider or management actions after pause or de
 });
 it('Direction B phone screen: the link card with its chip, the keep-it-private note and one primary; providers; Reset and Revoke',()=>{
  const none=phone(<CalendarSubscriptionView {...base} status={{...ready,state:'none',id:null,generation:null,issuedAt:null,allowedLocationIds:[]}}/>);
- for(const value of ['Add to calendar','Keep your shifts in the calendar you already use','Your calendar link','>Off<','picks up schedule changes the next time it refreshes','Keep the link to yourself','Anyone with it can see your shift times and locations.','>Create calendar link<','Or add it straight to','Apple Calendar','Google Calendar','Outlook'])expect(none).toContain(value);
+ for(const value of ['Add to calendar','Keep your shifts in the calendar you already use','Subscription','>Off<','Keep the link to yourself','Anyone with it can see your shift times and locations.','>Create calendar link<','Or add it straight to','Apple Calendar','Google Calendar','Outlook'])expect(none).toContain(value);
  expect(none).toContain('href="/app/more"');expect(none.match(/class="b-btn b-btn--teal b-btn--full b-btn--big"/g)).toHaveLength(1);expect(none).not.toContain('>Get a new link<');
  // Final polish, round 2 (M2): a setting's state in a card header is one chip: grey while off, teal while Active.
  expect(none).toContain('b-chip--grey">Off<');expect(none).not.toContain('class="b-status"');

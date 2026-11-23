@@ -349,10 +349,10 @@ const es: RestrictionsCopy = {
 const words: Record<RestrictionsLang, RestrictionsCopy> = { en, es };
 export const restrictionsCopy = (lang: RestrictionsLang): RestrictionsCopy => words[lang];
 
-/** "8:00 AM", "10:30 p. m."; midnight (0 or 1440) is the word, so a range reads "10:00 PM – midnight". */
+/** "8:00 AM", "10:30 p. m."; midnight (0 or 1440) is "12:00 AM" like every other time (the one time format, Nov 23,
+ * 2026), so a range reads "10:00 PM – 12:00 AM". */
 export function clockText(minutes: number, t: RestrictionsCopy): string {
-  if (minutes === 0 || minutes === 1440) return t.midnight;
-  const hour = Math.floor(minutes / 60), rest = minutes % 60;
+  const hour = Math.floor(minutes / 60) % 24, rest = minutes % 60;
   return `${hour % 12 || 12}:${String(rest).padStart(2, "0")} ${hour < 12 ? t.am : t.pm}`;
 }
 export const spanText = (span: { start: number; end: number }, t: RestrictionsCopy) => `${clockText(span.start, t)} – ${clockText(span.end, t)}`;

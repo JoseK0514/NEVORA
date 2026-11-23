@@ -152,6 +152,9 @@ export default async function SchedulePage({
       // with avatars and live states), built from the scoped read. Same reads and links as before; nothing company-wide.
       const data = source.data;
       const scopedDates = weekDates(weekStart);
+      // G27 (Nov 23, 2026): after a save the address names the day (`day=`, the actions' redirect); open on it, as the
+      // company Schedule does. Only a day of the week on screen is taken.
+      const scopedDay = scopedDates.includes(params.day ?? "") ? params.day : undefined;
       const shortName = (id: string) => { const l = data.locations.find(x => x.id === id); return l ? (l.shortName || l.name) : ""; };
       // Everyone on the location's roster, plus anyone holding a shift here who isn't on it (a recorded shift always shows).
       const people = [...data.roster.map(person => ({ id: person.id, name: `${person.firstName} ${person.lastName}`, role: person.role as string })),
@@ -176,12 +179,14 @@ export default async function SchedulePage({
       const scopedStateCorp = scopedState.tone === "due" ? <span className="c-meta c-sched-weekstate" data-tone="amber">{scopedState.text}</span>
         : scopedState.tone === "ok" ? <span className="c-meta c-sched-weekstate" data-tone="green"><CheckIcon className="c-sched-weekstate__ic" weight="bold" aria-hidden="true" />Published</span>
         : <span className="c-meta c-sched-weekstate">{scopedState.text}</span>;
+      // Recheck (Nov 23, 2026): one place is a fact, not a control. It is the band's plain label (pin and name), never a
+      // button; the menu stays for a Manager with more than one location.
       const locationControl = (b: boolean) => one
-        ? <span className={b ? "b-btn b-btn--glass" : "c-select-btn c-sched-loc"} aria-label={`Location: ${placeName}`}>{b ? <MapPinIcon size={15} weight="bold" aria-hidden="true" /> : null}{placeName}</span>
+        ? <span className={b ? "b-date" : "c-sched-place"}><MapPinIcon size={15} weight="bold" aria-hidden="true" /><span className="sr-only">Location: </span>{placeName}</span>
         : <ActionMenu id={b ? "b-scoped-location-menu" : "scoped-location-menu"} label="Location" title="Location" ariaLabel={`Location: ${placeName}`} align="end"
             triggerClassName={b ? "b-btn b-btn--glass" : "c-select-btn c-sched-loc"} triggerContent={<>{b ? <MapPinIcon size={15} weight="bold" aria-hidden="true" /> : null}{placeName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>
-            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=all`}><strong>All your locations</strong></Link>
-            {data.locations.map(l => <Link key={l.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(l.id)}`}><strong>{l.shortName || l.name}</strong></Link>)}
+            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=all`} aria-current={selected ? undefined : "page"}><strong>All your locations</strong></Link>
+            {data.locations.map(l => <Link key={l.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(l.id)}`} aria-current={selected?.id === l.id ? "page" : undefined}><strong>{l.shortName || l.name}</strong></Link>)}
           </ActionMenu>;
       const scopedTodayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
       const marketplace = (await currentPresentation()).modules.marketplace;
@@ -204,13 +209,16 @@ export default async function SchedulePage({
         {/* As on the company page: the print title (and the first block under the title on desktop, so the roster keeps its
           place under the week stepper instead of being lifted into the band). */}
         <p className="mws-print-title" aria-hidden="true">{workspace.name} · {formatWeekRange(weekStart)} · {placeName} · Times in {workspace.timeZone.replaceAll("_", " ")}</p>
-        <ManagerWeeklyRoster key={`${weekStart}:${data.selectedLocationId ?? "all"}`} employees={scopedRoster} dates={scopedDates} today={today} timeZone={workspace.timeZone}
+        <ManagerWeeklyRoster key={`${weekStart}:${data.selectedLocationId ?? "all"}:${scopedDay ?? "all"}`} employees={scopedRoster} dates={scopedDates} today={today} reviewDay={scopedDay} timeZone={workspace.timeZone}
           locationId={data.selectedLocationId ?? one?.id} openShifts={scopedOpen} absences={scopedAbsences}
           corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${addDays(weekStart, -7)}${locQuery}`, nextHref: `/app/schedule?week=${addDays(weekStart, 7)}${locQuery}`,
             status: scopedStateCorp, addShiftHref: scopedAdd, todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locQuery}`, observedAt: observedAt.toISOString() }}
-          b={{ sub: scopedTodayLong, weekState: scopedState, toPlan: [],
+          // Recheck (Nov 23, 2026), each fact once on phones: the day card already names the day ("Today · Sun, Nov 22") and
+          // ends with Add shift for that day, so the band has no date line and no second Add shift (it keeps one when the
+          // roster is empty and the card offers Go to Team instead).
+          b={{ sub: null, weekState: scopedState, toPlan: [],
             actions: <>{scopedMore(true)}{scopedPublish ? <BButtonLink href={scopedPublish} kind="white" label={`Publish, ${formatWeekRange(weekStart)}`}>Publish</BButtonLink>
-              : <BButtonLink href={scopedAdd} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>}</>,
+              : !scopedRoster.length ? <BButtonLink href={scopedAdd} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink> : null}</>,
             location: locationControl(true),
             notes: <>{repairNote("b")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'} dismissHref={dismissHref}/>{openShifts === null ? <CorpNote>Couldn’t check open shifts. Reload to try again.</CorpNote> : null}</> }}
           notices={<>
@@ -318,7 +326,9 @@ export default async function SchedulePage({
       confirmationNeeded={employeeAcknowledgement.needsAcknowledgement}
       error={params.error ? params.error === 'conflict' ? 'The schedule changed. Review the current week before confirming.' : params.error === 'blocked' ? 'This review is no longer authorized. Sign in and review the schedule again.' : 'The result could not be confirmed. Retry the original confirmation to check its outcome.' : false}
       receipt={!!params.acknowledged && employeeAcknowledgement.acknowledged}
-      changes={<SchedulePublicationChange changes={publicationChanges} locationNames={Object.fromEntries(locations.map(location => [location.id, location.shortName]))} />}
+      // Gaps G80 (Nov 23, 2026): no changes means no "changes" row (an empty element drew a blank row under the open
+      // shifts and titled the card "Open shifts and changes").
+      changes={publicationChanges.length ? <SchedulePublicationChange changes={publicationChanges} locationNames={Object.fromEntries(locations.map(location => [location.id, location.shortName]))} /> : null}
     />;
   }
   // Status chips and hour targets are optional context: a failed read hides them, never shows zero.
@@ -481,7 +491,7 @@ export default async function SchedulePage({
                 <Link className="nevora-action-menu-item" href={publishHref}><strong>Build and publish</strong></Link>
                 {/* Review Nov 14 (AR-9): team Availability had no menu entry for an Owner or Manager; it opens here, on the
                   week being planned, before the week is built. */}
-                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`} aria-label="Availability: who can work and when"><strong>Availability</strong><span className="c-menu-value">Who can work and when</span></Link>
+                <Link className="nevora-action-menu-item" href={`/app/availability?week=${weekStart}`}><strong>Availability</strong><span className="b-sr">, </span><span className="c-menu-value">Who can work and when</span></Link>
                 <ScheduleCopyForm actorId={session.id} className="nevora-action-menu-item c-sched-menu-copy" label={<strong>Copy previous week</strong>} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
                 <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Week templates</strong></Link>
                 <PrintScheduleButton />
@@ -491,7 +501,7 @@ export default async function SchedulePage({
                 <p className="c-menu-label" id="schedule-options-settings">Settings</p>
                 <div className="c-menu-card">
                 <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong></Link>
-                <Link className="nevora-action-menu-item manager-issue-target" id="schedule-deadline" href={`/app/schedule/settings?week=${weekStart}&open=deadline#rules-deadline`} aria-label={`Availability deadline, ${deadlineText}`}><strong>Availability deadline</strong><span className="c-menu-value">{deadlineText}</span></Link>
+                <Link className="nevora-action-menu-item manager-issue-target" id="schedule-deadline" href={`/app/schedule/settings?week=${weekStart}&open=deadline#rules-deadline`} ><strong>Availability deadline</strong><span className="b-sr">, </span><span className="c-menu-value">{deadlineText}</span></Link>
                 <Link className="nevora-action-menu-item" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><strong>Activity</strong></Link>
                 </div>
               </div>
@@ -505,7 +515,10 @@ export default async function SchedulePage({
     : counts.published ? { text: `${counts.published} of ${inView.length} published`, tone: "glass" as const }
     : { text: "Not started", tone: "glass" as const };
   const bSchedule = publicationReview || params.publishCheck || params.plan === "1" ? undefined : {
-    sub: todayLong,
+    // Gaps G33 (Nov 23, 2026), each fact once on phones, as on the location Manager's Schedule: the day card already names
+    // the day ("Today · Mon, Nov 23") and ends with Add shift for that day, so the band has no date line and adds a shift
+    // only when the roster is empty (the card then offers Go to Team instead). Publish stays while something waits.
+    sub: null,
     // Nov 9, 2026: the week's coverage from canonical schedule health, for the chosen location (or all of them).
     coverage: reviewDay ? undefined : weekRead?.coverageMinutes ? (selectedLocation === "all" ? weekRead.coverageMinutes.all : weekRead.coverageMinutes.byLocation[selectedLocation] ?? null) : null,
     actions: <>
@@ -514,7 +527,7 @@ export default async function SchedulePage({
       </ActionMenu>
       {/* Review B2 (NV-013): the band's white pill publishes while something waits, otherwise it adds a shift. */}
       {publishLabel ? <BButtonLink href={publishHref} kind="white" label={`${publishLabel}, ${formatWeekRange(weekStart)}`}>{publishLabel}</BButtonLink>
-        : <BButtonLink href={addShiftHref} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>}
+        : !roster.length ? <BButtonLink href={addShiftHref} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink> : null}
     </>,
     location: <ActionMenu id="b-schedule-location-menu" label="Location" title="Location" ariaLabel={`Location: ${locationName}`}
       triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="bold" aria-hidden="true" />{locationName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>

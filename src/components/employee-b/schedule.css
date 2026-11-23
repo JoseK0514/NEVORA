@@ -21,7 +21,7 @@
    * row buttons (Pick up, Review). The three ids outrank the desktop layer's 40px Approve pill (owner-b-desktop.css D6)
    * and stay under the Employee coarse-pointer rule, so a touch screen keeps the 48px floor, as Pick up and Review do. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen:not(#fc1):not(#fc2):not(#fc3) .es-confirm__act :is(.q-bs, .employee-action) { min-height: var(--b-btn-h) !important; height: var(--b-btn-h) !important; padding: 0 var(--b-gutter) !important; border-radius: var(--b-radius-pill) !important; border: 0 !important;
-    background: var(--b-teal) !important; color: #FFFFFF !important; font: 600 14px/20px Inter, "Inter Fallback", sans-serif !important; box-shadow: var(--b-elev-glow) !important; width: auto !important; }
+    background: var(--b-teal) !important; color: #FFFFFF !important; font: 600 0.875rem/1.25rem Inter, "Inter Fallback", sans-serif !important; box-shadow: var(--b-elev-glow) !important; width: auto !important; }
   @media (min-width: 768px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen:not(#fc1):not(#fc2):not(#fc3) .es-confirm__act :is(.q-bs, .employee-action) { padding: 0 18px !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; }
   }
@@ -160,4 +160,14 @@
   /* The caret keeps the row's right edge now that the long title is out of the line. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-chg summary .em-publication-caret { margin-left: auto; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-chg__short { position: absolute; top: 0; left: calc(var(--b-inset) + var(--eb-text-in, var(--b-space-48))); display: flex; align-items: center; height: 56px; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); pointer-events: none; }
+}
+
+/* Gaps round (Nov 23, 2026), the same as the Managers' Schedule (owner-b-schedule.css). G32: on phones the glass week strip
+ * takes the white cards' edges (the 14px gutter). G34: each day keeps at least 2.25rem, so with large text the days wrap
+ * into a second row instead of their numbers running together. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-screen .b-hero > .b-week:not(#g32a):not(#g32b) { margin-left: var(--b-gutter) !important; margin-right: var(--b-gutter) !important; }
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-screen .b-week > .b-week__days:not(#g34a):not(#g34b) { grid-template-columns: repeat(auto-fit, minmax(2.25rem, 1fr)) !important; row-gap: var(--b-space-4) !important; }
 }

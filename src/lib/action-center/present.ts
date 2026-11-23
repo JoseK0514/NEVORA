@@ -12,12 +12,15 @@ import {dateRange} from '../duration-format';
 const NBSP = ' ', NBHY = '‑';
 const WAITING = / is waiting for review\.?$/;
 
-/** "8:00 AM–4:00 PM" → "8:00 AM – 4:00 PM", with the times kept whole. */
+/** "8:00 AM–4:00 PM" → "8:00 AM – 4:00 PM", with the times kept whole. The one time format (Nov 23, 2026): a range
+ * that ends or starts at "midnight" reads "12:00 AM" there, and "noon" "12:00 PM", like every other time. */
 export function spacedRanges(text: string) {
+  const word = (value: string) => value.toLowerCase() === 'noon' ? '12:00 PM' : '12:00 AM';
   return text
-    .replace(/\b12:00 ?AM\b/g, 'midnight')
+    .replace(/([AP]M)\s*[–-]\s*(midnight|noon)\b/gi, (_, mark: string, end: string) => `${mark} – ${word(end)}`)
+    .replace(/\b(midnight|noon)\s*[–-]\s*(?=\d)/gi, (_, start: string) => `${word(start)} – `)
     .replace(/(\d{1,2}:\d{2}) ([AP]M)/g, `$1${NBSP}$2`)
-    .replace(/(\d{1,2}:\d{2} [AP]M|midnight|noon)\s*[–-]\s*/gi, `$1${NBSP}– `);
+    .replace(/(\d{1,2}:\d{2} [AP]M)\s*[–-]\s*/g, `$1${NBSP}– `);
 }
 
 /** TC-P3-19: "2026-10-19–2026-10-25" → "Oct 19–25" (the app's one date-range form, each date whole); a plain ISO date

@@ -1,0 +1,156 @@
+[
+ {
+  "id": "k13-en",
+  "row": "K13",
+  "page": "Someone else's punch in progress",
+  "section": "Clocker",
+  "note": "James's Clock in was cut off before it saved, then Ana entered her PIN on the same tablet in a second tab; Check if it saved shows this screen. The 'Clears in' pill no longer covers Done on a portrait tablet.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k13-someone-elses-punch-en-390.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k13-someone-elses-punch-en-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k13-someone-elses-punch-en-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Keyboard focus on Done",
+    "after": "img/k13-someone-elses-punch-focus-en-1024.webp"
+   },
+   {
+    "label": "Ana's second tab",
+    "after": "img/k13-second-tab-en-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "A second tab on the same tablet (Ana) opens a normal Clock in screen while James's punch is still waiting in the first tab; only the tab that holds the waiting punch shows this state. A kiosk runs one tab, so it is low risk; behaviour, not layout (no change made).",
+   "Spanish band clock reads '9:18 a. m.' while the one time format is '7:00 AM' (kiosk-wide band, not this state's file; for Jose to decide)."
+  ]
+ },
+ {
+  "id": "k13-es",
+  "row": "K13",
+  "page": "Someone else's punch in progress (Spanish)",
+  "section": "Clocker",
+  "note": "Same state with the tablet set to Spanish: 'La marcación de otra persona está pendiente' and one Listo button. The text fits at every width.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k13-someone-elses-punch-es-390.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k13-someone-elses-punch-es-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k13-someone-elses-punch-es-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Keyboard focus on Listo",
+    "after": "img/k13-someone-elses-punch-focus-es-1024.webp"
+   },
+   {
+    "label": "Ana's second tab",
+    "after": "img/k13-second-tab-es-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "A second tab on the same tablet (Ana) opens a normal Clock in screen while James's punch is still waiting in the first tab; only the tab that holds the waiting punch shows this state. A kiosk runs one tab, so it is low risk; behaviour, not layout (no change made).",
+   "Spanish band clock reads '9:18 a. m.' while the one time format is '7:00 AM' (kiosk-wide band, not this state's file; for Jose to decide)."
+  ]
+ },
+ {
+  "id": "k15-en",
+  "row": "K15",
+  "page": "Clocker paused",
+  "section": "Clocker",
+  "note": "Reached with commerce on and no billing connection (the commerce recovery test setup); no billing provider was contacted. The 'Time clock' eyebrow is gone, and from 1024 the panel no longer shows the sign-in line 'Your week, in one place.'",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k15-clocker-paused-en-390.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k15-clocker-paused-en-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k15-clocker-paused-en-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Access could not be checked",
+    "after": "img/k15-clocker-access-unchecked-en-390.webp"
+   },
+   {
+    "label": "Access could not be checked, tablet",
+    "after": "img/k15-clocker-access-unchecked-en-1024.webp"
+   },
+   {
+    "label": "Keyboard focus on Try again",
+    "after": "img/k15-clocker-paused-focus-en-1024.webp"
+   },
+   {
+    "label": "Sign-in at 1440 (unchanged)",
+    "after": "img/k15-neighbour-login-en-1440.webp"
+   },
+   {
+    "label": "Billing recovery at 1440 (unchanged)",
+    "after": "img/k15-neighbour-billing-en-1440.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 1024x768 the shared frame's panel shows the wordmark and 'Powered by VELANI LLC' with nothing between; a kiosk band there (clock, place) would match K1–K14. Left for Jose."
+  ]
+ },
+ {
+  "id": "k15-es",
+  "row": "K15",
+  "page": "Clocker paused (Spanish)",
+  "section": "Clocker",
+  "note": "Spanish: 'dueño' like the rest of the Clocker, no repeated 'Registro de tiempo' eyebrow, and no sign-in line beside the card at 1024. Nothing overflows.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k15-clocker-paused-es-390.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k15-clocker-paused-es-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k15-clocker-paused-es-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "No se puede comprobar el acceso",
+    "after": "img/k15-clocker-access-unchecked-es-390.webp"
+   },
+   {
+    "label": "No se puede comprobar el acceso, tablet",
+    "after": "img/k15-clocker-access-unchecked-es-1024.webp"
+   },
+   {
+    "label": "Keyboard focus on Intentar de nuevo",
+    "after": "img/k15-clocker-paused-focus-es-1024.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "At 1024x768 the shared frame's panel shows the wordmark and 'Powered by VELANI LLC' with nothing between; a kiosk band there (clock, place) would match K1–K14. Left for Jose."
+  ]
+ }
+]

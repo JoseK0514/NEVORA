@@ -197,7 +197,8 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
  // MG-010: one line says the one thing in the way. While the week is still open nobody can approve yet, so the line says
  // when they can (Timecards' own date); once it has ended the line names the steps left, as before.
  const notYet=!!today&&period.endDate>=today&&unapproved>0;
- const waitingLine=notYet?`Timecards for ${rangeText(period.startDate,period.endDate)} can be approved from ${dayText(addDays(period.endDate,1))}.`:waiting;
+ // Batch 1 item 5: the Week field names the period, so the line doesn't repeat it; without Payroll the back link is Timecards.
+ const waitingLine=notYet?`Timecards can be approved from ${dayText(addDays(period.endDate,1))}.`:waiting;
  const weeks=weekChoices();
  const periodKey=`${period.startDate}|${period.endDate}`;
  const listed=weeks.some(w=>w.value===periodKey);
@@ -213,7 +214,9 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
  const anotherExport=()=>{setResult(null);setNotice('');setTimeout(()=>document.getElementById('time-export-send')?.focus(),0);};
  return <div className={`c-page c-payroll c-pay c-exp c-page--narrow${payroll?'':' c-exp--time'}`} data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
   <CorpNav back={payroll?{href:'/app/payroll',label:'Payroll'}:{href:'/app/timecards',label:'Timecards'}} title="Time exports" phoneOnly/>
-  <CorpTitle id="time-exports-title" title="Time exports" wide/>
+  {/* Phase 2 (G8): with Payroll's tabs (from 768) the band names the section and the selected tab names this page, so
+    * "Time exports" isn't said twice; a Manager without the tabs keeps "Time exports". The phone band is unchanged. */}
+  <CorpTitle id="time-exports-title" title={payroll?'Payroll':'Time exports'} wide/>
   <PayrollTabs items={tabs} current="/app/payroll-export"/>
   <div className="c-field">
    <label className="c-field__label" htmlFor="time-export-period">Week</label>
@@ -252,7 +255,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
     </ul>
     <div className="c-exp__ready">
      <b className="c-pay__strong">{finalized.length?<>{`${finalized.length} ${finalized.length===1?'person':'people'} · `}<span className="c-num">{hoursText(readyHours)}</span></>:'Nothing ready to export yet'}</b>
-     {waitingLine?<span className="c-exp__waiting">{notYet?`${waitingLine} `:`${waitingLine} · `}<a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></span>:null}
+     {waitingLine?<span className="c-exp__waiting">{payroll?<>{notYet?`${waitingLine} `:`${waitingLine} · `}<a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></>:waitingLine}</span>:null}
      {retry?<button type="button" className="c-btn c-btn--full" disabled={busy} onClick={()=>retry&&void send(retry)}>Retry same export</button>
       :<button type="button" className="c-btn c-btn--full" disabled={locked||!finalized.length||periodChanged} onClick={create}>Create export</button>}
      {!busy&&!retry&&!periodChanged&&!finalized.length&&waitingLine?null:<p className="c-note">{busy?'Preparing your files…':retry?'Retry to confirm the outcome of this export.':periodChanged?'Show the dates you chose before exporting.':!finalized.length?(waitingLine?null:<>No one has finalized time for these dates. <a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></>):selected.length?`Exports the ${selected.length} ${selected.length===1?'person':'people'} you chose.`:`Exports every finalized timecard${visibleSelection.overLimit?' (the first 100)':''}. Hours include breaks; your payroll system decides pay types.`}</p>}
@@ -268,7 +271,7 @@ export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPe
    <details className="c-exp__item" open={selected.length>0||undefined}>
     <summary className="c-row"><span className="c-row__main"><span className="c-row__title">People in this export</span><span className="c-row__detail"><span>{`${selected.length} selected · ${visibleSelection.excluded} not finalized.${visibleSelection.overLimit?' Select up to 100 people at a time.':''}`}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
     <div className="c-exp__body">
-     <div className="c-exp__bar"><button type="button" className="c-link c-link--l" aria-label="Select visible finalized timecards" disabled={locked||finalized.length===0} onClick={()=>{setSelected(visibleSelection.selected);setResult(null);}}>Select all finalized</button><button type="button" className="c-link c-link--l" aria-label="Clear employee selection" disabled={locked||selected.length===0} onClick={()=>{setSelected([]);setResult(null);}}>Clear</button></div>
+     <div className="c-exp__bar"><button type="button" className="c-link c-link--l" aria-label="Select all finalized timecards" disabled={locked||finalized.length===0} onClick={()=>{setSelected(visibleSelection.selected);setResult(null);}}>Select all finalized</button><button type="button" className="c-link c-link--l" aria-label="Clear employee selection" disabled={locked||selected.length===0} onClick={()=>{setSelected([]);setResult(null);}}>Clear</button></div>
      {cards?.length===0?<p className="c-note">No one has time in this period.</p>:<ul className="c-exp__people">{cards?.map(c=><li key={c.card.employeeId}><label className="c-exp__person" data-off={c.state!=='FINALIZED'||undefined}>
       <input type="checkbox" aria-label={`Export ${c.card.employeeName}`} disabled={c.state!=='FINALIZED'||locked||(!selected.includes(c.card.employeeId)&&selected.length>=100)} checked={selected.includes(c.card.employeeId)} onChange={e=>{setSelected(ids=>changeExportSelection(cards??[],ids,c.card.employeeId,e.target.checked));setResult(null);}}/>
       <span className="c-row__main"><span className="c-row__title">{c.card.employeeName}</span><span className="c-row__detail"><span>{c.state==='FINALIZED'?'Finalized':c.state==='APPROVED'?'Approved · not finalized':c.state==='DRAFT'?'Draft':c.state.charAt(0)+c.state.slice(1).toLowerCase().replaceAll('_',' ')}</span></span></span>

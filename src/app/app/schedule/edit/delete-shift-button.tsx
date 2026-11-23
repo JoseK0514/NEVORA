@@ -9,15 +9,16 @@ export function DeleteShiftButton() {
   const { pending } = useFormStatus();
   const ref = useRef<HTMLButtonElement>(null);
   useEffect(() => { ref.current?.focus(); }, []);
-  return <button ref={ref} className="c-btn c-btn--danger c-shift__ask-go" type="submit" aria-disabled={pending || undefined} onClick={event => { if (pending) event.preventDefault(); }}><PendingLabel pending={pending} pendingText="Deleting…">Delete this shift</PendingLabel></button>;
+  return <button ref={ref} className="c-btn c-btn--danger c-shift__ask-go" type="submit" aria-disabled={pending || undefined} onClick={event => { if (pending) event.preventDefault(); }}><PendingLabel pending={pending} pendingText="Deleting…">Delete</PendingLabel></button>;
 }
 
 /** Board O-EditShift, Nov 1 upscale: Delete shift is a red text row in its own card under the form (red text at the footer's
  * left on desktop). The first tap says what will happen; the second deletes.
  * Final polish (Nov 20, 2026; confirmations review A #6, #11): the question is one block, as "Cancel this time off?" is:
  * a 600 title, the consequence, then quiet Keep shift and the red-edged commit on one row. From 768px it is the form
- * card's last section (owner-b-schedule.css); on phones it is the card the Delete shift row was. The commit keeps its own
- * name ("Delete this shift"), so a second tap on "Delete shift" never lands on a button of the same name. */
+ * card's last section (owner-b-schedule.css); on phones it is the card the Delete shift row was. The title asks
+ * the question and the commit says "Delete" (gaps G30: "Delete this shift" repeated the title); it still differs from the
+ * "Delete shift" row, so a second tap never lands on a button of the same name. */
 export function DeleteShiftConfirm({ warning }: { warning: ReactNode }) {
   const [asked, setAsked] = useState(false);
   const title = useId();

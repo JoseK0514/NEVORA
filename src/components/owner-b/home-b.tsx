@@ -31,6 +31,7 @@ import { HomeSetupProgress } from "@/components/owner-setup-card";
 import type { HomePayrollStatus } from "@/lib/payroll/backlog-read";
 import { payDay, periodRange } from "@/components/payroll/payroll-format";
 import { keepWhole } from "@/lib/keep-whole";
+import { formatClockTime, wholeTime } from "@/lib/date-utils";
 import { workCopy } from "@/components/employee-b/work-copy";
 import { notClockedInText } from "@/components/team-live";
 import { BAvatar, BButtonLink, BCard, BChip, BFaces, BGlyph, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, BStatusText, BSwapNames, BWhen, partOfDay, type BLiveItem } from "./b-kit";
@@ -53,6 +54,14 @@ export type HomeBWeek = {
   coverage?: CoverageMinutes;
   /** Final polish (Nov 20, 2026): Home's shortcuts, the pages this person may open (the caller leaves out a module that is off). */
   shortcuts?: HomeShortcut[];
+  /** Location Manager (Nov 22, 2026): the place this Home is limited to, on the band beside the date (a location menu
+   * when the Manager has more than one). Company-wide Homes have none. */
+  place?: ReactNode;
+  /** False when the week's schedule couldn't be read: This week is left out rather than drawn with zeros. */
+  thisWeek?: false;
+  /** Gaps G41 (Nov 23, 2026): Who's working for the place this Home shows (a location Manager's chosen place keeps its
+   * `?location=`). Defaults to the company view. */
+  attendanceHref?: string;
 };
 
 export type HomeShortcut = "shift" | "employee" | "update" | "timeOff";
@@ -104,7 +113,8 @@ const requestWord: Partial<Record<ActionItem["type"], string>> = { TIME_OFF: "Ti
 const kindWord = (item: ActionItem) => item.type === "EXCHANGE" && item.request?.exchangeKind === "COVERAGE" ? t.coverRequest : requestWord[item.type];
 /** Phase 3 (MG-011): On now shows up to six people. */
 const ON_NOW_ROWS = 6;
-const clockText = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+/** "7:02 AM", kept whole (the one time format). */
+const clockText = (iso: string, timeZone: string) => wholeTime(formatClockTime(iso, timeZone));
 /** Phase 8 (a.md #11, #36): Team's live word, and Employee Home's sentence for a punch that runs past the shift's end. */
 const CLOCKED_IN = "Clocked in";
 const stillOn = (time: string | null) => time ? workCopy().stillClockedIn(time) : "Still clocked in";
@@ -125,15 +135,19 @@ export function HomeB(props: HomeBProps) {
   // waiting to clock in is the amber dot, as an open shift is; on narrow phones the dots sit beside the figures instead
   // (owner-b-home.css), so the label keeps its one line.
   const attendance: BLiveItem = !noClockIn || today?.state === "unavailable" ? { label: ATTENDANCE_WORDS.notClockedIn, value: CORP_NO_VALUE }
-    : missedOnly ? { label: ATTENDANCE_WORDS.missed, dot: "warn", value: noClockIn.ended.length, href: "/app/inbox#todo-missed", aria: `Missed clock-ins: ${noClockIn.ended.length}` }
-    : { label: ATTENDANCE_WORDS.notClockedIn, dot: noClockIn.running.length ? "warn" : undefined, value: noClockIn.running.length, href: "/app/inbox#todo-not-clocked-in",
-      aria: `Not clocked in: ${noClockIn.running.length}${noClockIn.ended.length ? `. Missed clock-ins: ${noClockIn.ended.length}` : ""}` };
+    // Gaps G39 (Nov 23, 2026): a tile's spoken name is what it shows ("Missed 2"), with no label that says it differently.
+    : missedOnly ? { label: ATTENDANCE_WORDS.missed, dot: "warn", value: noClockIn.ended.length, href: "/app/inbox#todo-missed" }
+    : { label: ATTENDANCE_WORDS.notClockedIn, dot: noClockIn.running.length ? "warn" : undefined, value: noClockIn.running.length, href: "/app/inbox#todo-not-clocked-in" };
   // BR-16 with the backend's clockerRegistered (Nov 15, 2026): while no time clock tablet is registered, the two attendance
   // tiles would report punches that can't happen yet, so one tile says the time clock isn't set up. Registration is a
   // stored fact, not proof that punching is on, so a registered tablet changes nothing here. Unknown keeps the tiles.
   // Only an Owner's Home carries the setup card, so only an Owner's tile links to the time clock settings.
-  const noClock = ready?.clockerRegistered === false;
-  const clockTile: BLiveItem = { label: "Time clock", value: "Not set up", ...(props.setup ? { href: "/app/settings/clocker", aria: "Time clock not set up. Set up your time clock" } : {}) };
+  // Gaps G38 (Nov 23, 2026): people can clock in without a tablet (on their phone), so once anyone has clocked in today the
+  // band shows the live figures; "Not set up" would contradict Today's list.
+  const clockedInToday = !!ready && (ready.shifts.some(shift => shift.firstClockInAt || working(shift) || shift.status === "done") || !!open?.length || ready.counts.clockedIn > 0);
+  const noClock = ready?.clockerRegistered === false && !clockedInToday;
+  const clockTile: BLiveItem = { label: "Time clock", value: "Not set up", ...(props.setup ? { href: "/app/settings/clocker" } : {}) };
+  const attendanceHref = props.week?.attendanceHref ?? "/app?view=attendance";
   const first = props.week?.firstName ?? props.greeting.replace(/^Welcome back,\s*/, "");
   const eyebrow = `${partOfDay(ready?.timeZone)}, ${first}`;
   // Phase 4 (U03): the count with its completeness. With today's clock-ins unread (or review facts missing) the count is
@@ -143,17 +157,22 @@ export function HomeB(props: HomeBProps) {
     : offline ? "You’re offline" : connection === "paused" ? "Paused while you’re away" : "Checking today…";
   const gapRows = ready && gaps ? gaps.map(item => gapRow(item, ready.timeZone, ready.today)) : [];
   const openHref = gaps?.length === 1 && gapRows[0] ? gapRows[0].href : "/app/schedule";
+  // Gaps G73 (Nov 23, 2026): while Things to do (and the Timecards facts that come with it) is still being read, the
+  // cards that would sit below it wait, so its growth from the loading line moves nothing (phones) and the Timecards
+  // tile doesn't switch content mid-load (desktop). A failed or offline read releases them at once.
+  const overduePay = props.payrollStatus?.state === "ready" && !!props.payrollStatus.overdue;
+  const holdBelow = (connection === "loading" || connection === "reconnecting") && (!value || !props.timecardsReady);
 
   return <BScreen>
     <BHero big eyebrow={eyebrow} title={title} offlineInTitle={!value && offline} sub={<><span role="status" className="b-sr">{props.summary}</span></>}>
       {/* Review B1 (NV-117): the date is a fact on the band, not a glass button. */}
-      <div className="b-hrow"><span className="b-date" aria-hidden="true"><CalendarBlankIcon size={15} weight="bold" />{props.dateLabel}</span></div>
+      <div className="b-hrow"><span className="b-date" aria-hidden="true"><CalendarBlankIcon size={15} weight="bold" />{props.dateLabel}</span>{props.week?.place ?? null}</div>
       <div className="b-home-strip">
       <BLive label="Right now" items={[
         ...(noClock ? [clockTile] : [{ label: "Clocked in", dot: "live" as const, value: checking ? CORP_NO_VALUE : onShift, small: !checking && scheduled ? `/${scheduled}` : undefined,
-          href: checking ? undefined : "/app?view=attendance", aria: checking ? undefined : `Clocked in: ${onShift} of ${scheduled}. Who’s working` },
+          href: checking ? undefined : attendanceHref },
         attendance]),
-        { label: "Open shifts", dot: gaps?.length ? "warn" : undefined, value: gaps ? gaps.length : CORP_NO_VALUE, href: gaps ? openHref : undefined, aria: gaps ? `Open shifts: ${gaps.length}` : undefined },
+        { label: "Open shifts", dot: gaps?.length ? "warn" : undefined, value: gaps ? gaps.length : CORP_NO_VALUE, href: gaps ? openHref : undefined },
       ]} />
       {props.week?.shortcuts ? <Shortcuts items={props.week.shortcuts} place="band" /> : null}
       </div>
@@ -163,6 +182,11 @@ export function HomeB(props: HomeBProps) {
         other: what to do and who is on now at the left, Payday and This week at the right. On phones and tablets the
         two wrappers have no box (owner-b-home.css) and the cards stack in this order. */}
       <div className="b-home-col b-home-col--a">
+        {/* QA A5-01 (Nov 23, 2026): on phones a payroll that is overdue is the first card under the band, before Things to
+          * do (the Owner's one main action, "Prepare <period>"). Payroll status comes with the page, so it is never held
+          * for Things to do's read and nothing moves when that arrives (G73). From 768 the same card leads the right
+          * column as before (owner-b-home.css shows one copy per width). */}
+        {overduePay ? <div className="b-home-payfirst"><PayrollNotice status={props.payrollStatus} /></div> : null}
         {/* Nov 14, 2026 inspection (BR-16): until setup is done its card leads the page (the card hides itself once the
           steps are complete), so a new workplace sees what to finish before the day's figures. */}
         {/* Backend (Nov 15, 2026): the Owner's plan and billing notice leads while it applies. */}
@@ -172,13 +196,18 @@ export function HomeB(props: HomeBProps) {
         {props.setupCard ? props.setup
           : props.setup ? <BCard label="Finish setting up"><div className="b-setup"><HomeSetupProgress.Provider value={ready?.setupProgress ?? null}>{props.setup}</HomeSetupProgress.Provider></div></BCard> : null}
         <NeedsYouCard {...props} gapRows={gapRows} openHref={openHref} />
-        {props.week?.shortcuts ? <Shortcuts items={props.week.shortcuts} place="stack" /> : null}
-        {ready ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} /> : null}
+        {props.week?.shortcuts && !holdBelow ? <Shortcuts items={props.week.shortcuts} place="stack" /> : null}
+        {/* Jose (Nov 22, 2026: no fact twice): once Things to do lists who hasn't clocked in, Today doesn't list them again.
+          Gaps G56 (Nov 23, 2026): while Things to do's read is on its way, Today waits for it, so it doesn't list those
+          people, then drop them and move. A read that failed (or offline) keeps them on Today. */}
+        {ready && (value || (connection !== "loading" && connection !== "reconnecting")) ? <OnNow shifts={ready.shifts} open={open} timeZone={ready.timeZone} observedAt={ready.observedAt} waitingListed={!!value} attendanceHref={attendanceHref} /> : null}
       </div>
       <div className="b-home-col b-home-col--b">
-        <PayrollNotice status={props.payrollStatus} />
+        {holdBelow ? null : <>
+        {overduePay ? <div className="b-home-paylate"><PayrollNotice status={props.payrollStatus} /></div> : <PayrollNotice status={props.payrollStatus} />}
         <PaydayTile {...props} />
-        {props.week ? <ThisWeek week={props.week} today={ready?.today ?? props.businessDay} /> : null}
+        {props.week && props.week.thisWeek !== false ? <ThisWeek week={props.week} today={ready?.today ?? props.businessDay} /> : null}
+        </>}
       </div>
     </BStack>
   </BScreen>;
@@ -195,8 +224,8 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   if (gapRows.length) {
     const next = gapRows[0];
     // Phase 8 (b.md #46): a row's button is the tinted pill, as on Things to do; the filled teal stays the page's one main action.
-    rows.push(<BRow key="gaps" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={`Cover ${plural(gapRows.length, "open shift", "open shifts")}`}
-      sub={<>{`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}`}<BWhen text={next.title} /></>} href={openHref} label={`Open shifts, ${gapRows.length}`}
+    rows.push(<BRow key="gaps" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={gapRows.length === 1 ? "Cover an open shift" : "Cover open shifts"}
+      sub={<>{`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}`}<BWhen text={next.title} /></>} href={openHref}
       trail={<BButtonLink href={next.href} kind="ghost" label={`Find cover: ${next.title}`}>Find cover</BButtonLink>} />);
   }
   // Nov 9, 2026: approved leave over a published shift: "Fill Maria Rivera’s shift" (one) or "Fill 2 shifts for approved
@@ -210,11 +239,14 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
       label={repairs.length === 1 ? `${shown.title}, ${repairWhen(first)}` : `Shifts to fill for approved time off, ${repairs.length}`} />);
   }
   // One row for shifts in progress with no punch ("Not clocked in") and one for shifts that ended with none ("Missed").
+  // Gaps G39 (Nov 23, 2026): these rows, the corrections row and the request rows are named by what they show (no
+  // aria-label that orders or words it differently).
   // Phase 8 (a.md #13): the row's title is the person (or the people); the line under it says what and when, in Jose's
   // attendance words, with the shift's start or end when it is one person.
   const noClockIn = splitNoClockIn(value.noClockIn);
   const zone = today?.state === "ready" ? today.timeZone : undefined;
-  // The second part of the line stays whole ("shift ended 11:30 PM"), so a narrow phone breaks only after " · ".
+  // Each part of the line stays whole ("shift ended", "11:30 PM"), so a narrow phone or 200% text breaks only after " · "
+  // or before the time, never inside it (one time format, Nov 23, 2026).
   const at = (iso: string) => zone ? clockText(iso, zone).replace(" ", "\u00a0") : null;
   const whole = (text: string) => text.replace(/ /g, "\u00a0");
   if (noClockIn.running.length) {
@@ -222,21 +254,21 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
     // Premium pass FA (final verification A #19, B #25): a row that names several people leads with what they share, the
     // amber attendance circle (a person and a clock), not the first person's face alone; one person keeps their face.
     rows.push(<BRow key="not-clocked-in" lead={names.length > 1 ? <BIcon tone="amber"><ClockUserIcon weight="bold" /></BIcon> : <BAvatar name={names[0]} ring="late" />} title={firstNames(names)}
-      sub={noClockIn.running.length > 1 ? `${ATTENDANCE_WORDS.notClockedIn} \u00b7 ${noClockIn.running.length}\u00a0people` : began ? `${ATTENDANCE_WORDS.notClockedIn}\u00a0\u00b7 ${whole(`shift began ${began}`)}` : ATTENDANCE_WORDS.notClockedIn}
-      href="/app/inbox#todo-not-clocked-in" label={`${ATTENDANCE_WORDS.notClockedIn}: ${names.join(", ")}`} />);
+      sub={noClockIn.running.length > 1 ? `${ATTENDANCE_WORDS.notClockedIn} \u00b7 ${noClockIn.running.length}\u00a0people` : began ? `${ATTENDANCE_WORDS.notClockedIn}\u00a0\u00b7 ${`${whole("shift began")} ${began}`}` : ATTENDANCE_WORDS.notClockedIn}
+      href="/app/inbox#todo-not-clocked-in" />);
   }
   if (noClockIn.ended.length) {
     const names = noClockIn.ended.map(shift => shift.employeeName), ended = noClockIn.ended.length === 1 ? at(noClockIn.ended[0].endAt) : null;
     rows.push(<BRow key="missed" lead={names.length > 1 ? <BIcon tone="amber"><ClockUserIcon weight="bold" /></BIcon> : <BAvatar name={names[0]} ring="late" />} title={firstNames(names)}
-      sub={noClockIn.ended.length > 1 ? plural(noClockIn.ended.length, "missed clock-in", "missed clock-ins") : ended ? `Missed clock-in\u00a0\u00b7 ${whole(`shift ended ${ended}`)}` : "Missed clock-in"}
-      href="/app/inbox#todo-missed" label={`Missed clock-ins: ${names.join(", ")}`} />);
+      sub={noClockIn.ended.length > 1 ? plural(noClockIn.ended.length, "missed clock-in", "missed clock-ins") : ended ? `Missed clock-in\u00a0\u00b7 ${`${whole("shift ended")} ${ended}`}` : "Missed clock-in"}
+      href="/app/inbox#todo-missed" />);
   }
   // Phase 3 (MG-005): corrections that wait on this person are part of the count, so they have their row here.
   // Premium pass FA (coordinator, with FC): fixing time is the pencil on every page and for every role.
   if (value.corrections.length) {
     const names = value.corrections.map(item => item.detail.split(" · ")[0]?.trim()).filter((name): name is string => !!name);
     rows.push(<BRow key="corrections" lead={<BIcon tone="amber"><PencilSimpleIcon weight="bold" /></BIcon>} title={plural(value.corrections.length, "time correction", "time corrections")}
-      sub={firstNames(names)} href="/app/inbox#todo-corrections" label={`Time corrections to review, ${value.corrections.length}${names.length ? `: ${names.join(", ")}` : ""}`} />);
+      sub={firstNames(names)} href="/app/inbox#todo-corrections" />);
   }
   const requests = [...value.now.filter(item => item.category === "requests"), ...value.requests];
   for (const item of requests.slice(0, Math.max(0, NEEDS_ROWS - rows.length))) {
@@ -245,21 +277,20 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
     // Nov 14, 2026 inspection (BR-7): a shift request names both people when the read carries the other one. Phase 3
     // (OW-002, OW-007): the person is the title, the kind and the dates are the line under it, and every lead is 36px.
     const who = person && facts?.counterpartName ? <BSwapNames a={person} b={facts.counterpartName} /> : person;
-    const spoken = person && facts?.counterpartName ? `${person} and ${facts.counterpartName}` : person;
     const kind = kindWord(item);
     rows.push(<BRow key={item.id} lead={person ? <BAvatar name={person} /> : <BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>}
       title={who ?? requestKind[item.type] ?? item.title} sub={[who ? kind : null, facts ? shortRange(facts.startDate, facts.endDate) : null].filter(Boolean).join(" · ") || undefined}
-      href={facts?.reviewHref ?? "/app/inbox#todo-requests"} label={`${requestKind[item.type] ?? item.title}${spoken ? `, ${spoken}` : ""}`} />);
+      href={facts?.reviewHref ?? "/app/inbox#todo-requests"} />);
   }
   const others = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !isStaffingRepair(item));
   // Phase 9 (spec 3.2): these wait on this person, so the circle is amber, with the timecards' Clock (it was a grey calendar).
   if (rows.length < NEEDS_ROWS && others.length) rows.push(<BRow key="others" lead={<BIcon tone="amber"><ClockIcon weight="bold" /></BIcon>}
     title={plural(others.length, "item to review", "items to review")} sub="Time corrections and timecards" href="/app/inbox#todo-review" />);
-  // Phase 4 (U03): a lower bound reads "At least N" in the count pill, and an empty card with a source unread says what
-  // could not be checked instead of "Nothing needs you".
+  // Phase 4 (U03): an empty card with a source unread says what could not be checked instead of "Nothing needs you".
+  // Jose (Nov 22, 2026: no fact twice): the band's title already says how many things need you ("At least N" when it is
+  // a lower bound), so the card carries no count pill; the open-shift row's count is the band's Open shifts figure.
   const total = needsYouTotal(value, { clockInsUnavailable: today?.state === "unavailable" });
-  const count = total.exact ? value.count : value.count ? t.atLeast(value.count) : undefined;
-  return <BCard title="Things to do" count={count} id="b-home-needs" link={{ href: "/app/inbox", label: "See all", aria: "See all things to do" }}>
+  return <BCard title="Things to do" id="b-home-needs" link={{ href: "/app/inbox", label: "See all", aria: "See all things to do" }}>
     {rows.length ? <BList label="Things to do">{rows.slice(0, NEEDS_ROWS)}</BList>
       : <p className="b-state">{total.clockInsUnchecked ? "Clock-ins can’t be checked right now." : total.exact ? "Nothing needs you right now." : t.notAllCheckedLine}</p>}
     {rows.length && !total.exact ? <p className="b-card__note b-home-partial" role="note">{total.clockInsUnchecked ? t.clockInsUnchecked : t.correctionsUnchecked(total.uncheckedReviews)}</p> : null}
@@ -269,25 +300,26 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
 /** Phase 3 (MG-011, OW-031): who is working right now, from Today's shifts (the read Home already has). People on the
  * clock first (a late arrival says so in Jose's words), then people whose shift began with no clock-in. No estimate: a
  * shift that hasn't started isn't listed, and when nobody is on the card says so and names the next start. */
-function OnNow({ shifts, open, timeZone, observedAt }: { shifts: TodayShift[]; open: ClockMonitorEmployee[] | null; timeZone: string; observedAt: string }) {
+function OnNow({ shifts, open, timeZone, observedAt, waitingListed = false, attendanceHref = "/app?view=attendance" }: { shifts: TodayShift[]; open: ClockMonitorEmployee[] | null; timeZone: string; observedAt: string; waitingListed?: boolean; attendanceHref?: string }) {
   const byStart = (a: TodayShift, b: TodayShift) => a.startAt.localeCompare(b.startAt) || a.employeeName.localeCompare(b.employeeName);
   const seen = new Set<string>();
   const once = (shift: TodayShift) => seen.has(shift.employeeId) ? false : (seen.add(shift.employeeId), true);
-  const on = [...shifts.filter(working).sort(byStart), ...shifts.filter(shift => shift.status === "not_clocked_in").sort(byStart)].filter(once);
+  const on = [...shifts.filter(working).sort(byStart), ...(waitingListed ? [] : shifts.filter(shift => shift.status === "not_clocked_in").sort(byStart))].filter(once);
   // A real clock-in can have no scheduled match. Keep that person visible, with the actual start only;
   // a matching Today row remains the single row for that person. Retired monitor data supplies no extras.
   const extra = (open ?? []).filter(person => !seen.has(person.employeeId)).filter(person => (seen.add(person.employeeId), true))
     .sort((a, b) => a.clockInAt.localeCompare(b.clockInAt) || a.employeeName.localeCompare(b.employeeName));
   const total = on.length + extra.length;
   const next = shifts.filter(shift => shift.status === "upcoming" || shift.status === "starting").sort(byStart)[0];
-  const places = new Set(shifts.map(shift => shift.locationName)).size > 1;
+  // A row names its place only when the card shows more than one (a single place is named once, on the band or nowhere).
+  const places = new Set([...shifts.map(shift => shift.locationName), ...(open ?? []).map(person => person.locationName)]).size > 1;
   const onClock = [...on.filter(working).map(shift => shift.employeeName), ...extra.map(person => person.employeeName)];
-  return <BCard title="Today" id="b-home-on" link={{ href: "/app?view=attendance", label: "See everyone", aria: "See everyone working today" }}>
+  return <BCard title="Today" id="b-home-on" link={{ href: attendanceHref, label: "See everyone", aria: "See everyone working today" }}>
     <DayChart shifts={shifts} timeZone={timeZone} observedAt={observedAt} />
     {/* Phones: the people on the clock are one row of faces that opens the list of everyone; from 768px each has a row. */}
     {onClock.length ? <div className="b-tdy-faces"><BList label="Clocked in now"><BRow lead={<BFaces names={onClock.slice(0, 4)} />} title={`${onClock.length} clocked in`}
       sub={firstNames(onClock.map(name => name.split(" ")[0]))}
-      href="/app?view=attendance" label={`${onClock.length} clocked in. See everyone working today`} /></BList></div> : null}
+      href={attendanceHref} /></BList></div> : null}
     {total ? <BList label="On now">{[...on.map(shift => {
       const waiting = shift.status === "not_clocked_in";
       // Phase 8 (a.md #36): someone still on the clock after their shift ended says so in amber, in the words Employee
@@ -305,12 +337,14 @@ function OnNow({ shifts, open, timeZone, observedAt }: { shifts: TodayShift[]; o
         end={exception ? <BChip tone="amber" dot>{exception}</BChip> : <BStatusText dot={shift.status === "on_break" ? undefined : "green"}>{state}</BStatusText>}
         label={`${shift.employeeName}, ${state}, ${when}${places ? `, ${shift.locationName}` : ""}`} />;
     }), ...extra.map(person => <BRow key={`clock:${person.timeEntryId}`} lead={<BAvatar name={person.employeeName} ring="on" />} title={person.employeeName}
-      sub={keepWhole(`Clocked in ${clockText(person.clockInAt, timeZone)} · ${person.locationName}`)}
+      // Jose (Nov 22, 2026: no wording twice): the row's status already says "Clocked in", so the line says since when
+      // (Who's working's words).
+      sub={keepWhole(places ? `In since ${clockText(person.clockInAt, timeZone)} · ${person.locationName}` : `In since ${clockText(person.clockInAt, timeZone)}`)}
       end={<BStatusText dot={person.state === "ON_BREAK" ? undefined : "green"}>{person.state === "ON_BREAK" ? "On break" : CLOCKED_IN}</BStatusText>} />)].slice(0, ON_NOW_ROWS)}</BList>
       : <p className="b-state">{next ? `Nobody is working right now. Next shift starts ${clockText(next.startAt, timeZone)}.` : "Nobody is working right now."}</p>}
     {/* Premium pass FA (final verification A #22, B #25): the people the card leaves out are one teal action to the list of
       * everyone, on the rows' text edge (it was grey "+1 more" text that did nothing). */}
-    {total > ON_NOW_ROWS ? <Link className="b-on-more" href="/app?view=attendance" aria-label={`See ${total - ON_NOW_ROWS} more working today`}>{`See ${total - ON_NOW_ROWS} more`}</Link> : null}
+    {total > ON_NOW_ROWS ? <Link className="b-on-more" href={attendanceHref} aria-label={`See ${total - ON_NOW_ROWS} more working today`}>{`See ${total - ON_NOW_ROWS} more`}</Link> : null}
   </BCard>;
 }
 
@@ -336,15 +370,17 @@ export function dayHours(shifts: TodayShift[], observedAt: string) {
 function DayChart({ shifts, timeZone, observedAt }: { shifts: TodayShift[]; timeZone: string; observedAt: string }) {
   const day = dayHours(shifts, observedAt);
   if (!day) return null;
-  const hourText = (at: number) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric" }).format(new Date(at)).replace(" ", "\u00a0");
+  // The one time format (Nov 23, 2026): "7:00 AM", kept whole (it was "7 AM").
+  const hourText = (at: number) => keepWhole(formatClockTime(at, timeZone));
   const max = Math.max(1, day.peak.people);
-  // A label under the first hour, then every third (every fourth on a long day), so the labels never touch.
-  const every = day.hours.length > 15 ? 4 : 3;
-  // A label is about three bars wide on a narrow phone: the hours beside "Now" and the last bar carry none.
+  // A label under the first hour, then every fourth (every fifth on a long day), so the labels never touch. Nov 23, 2026:
+  // the one time format ("11:00 AM") is about three bars wide on a 320px phone, so the three hours either side of "Now"
+  // and the last three bars carry none.
+  const every = day.hours.length > 15 ? 5 : 4;
   const nowAt = day.hours.findIndex(hour => hour.state === "now");
   return <div className="b-tdy">
     <div className="b-kv">
-      <div><b className="c-num">{day.people}</b><span>{day.people === 1 ? "Person today" : "People today"}</span></div>
+      <div><b className="c-num">{day.people}</b><span>{day.people === 1 ? "Person" : "People"}</span></div>
       <div><b className="c-num">{durationTotal(day.minutes).replace(" ", "\u00a0")}</b><span>Scheduled</span></div>
       <div><b className="c-num">{day.peak.people}</b><span>{`Peak, ${hourText(day.peak.at)}`}</span></div>
     </div>
@@ -355,7 +391,7 @@ function DayChart({ shifts, timeZone, observedAt }: { shifts: TodayShift[]; time
     </div>
     <div className="b-tdy-l" aria-hidden="true" style={{ "--n": day.hours.length } as CSSProperties}>
       {day.hours.map((hour, index) => <span key={hour.at} data-state={hour.state}>{hour.state === "now" ? "Now"
-        : index % every === 0 && index < day.hours.length - 1 && (nowAt < 0 || Math.abs(index - nowAt) > 2) ? hourText(hour.at) : ""}</span>)}
+        : index % every === 0 && index < day.hours.length - 3 && (nowAt < 0 || Math.abs(index - nowAt) > 3) ? hourText(hour.at) : ""}</span>)}
     </div>
   </div>;
 }
@@ -395,7 +431,7 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
   // period has ended, from the server's typed review facts. A card another reviewer approves is named on its own line
   // and never counted; cards whose facts are missing make the count a lower bound ("At least 2").
   const review = paydayReview(timecards, businessDay, nextPay.period?.endDate);
-  const closed = review.toReview, apart = review.otherReviewer + review.unknown, several = review.periods.length > 1;
+  const closed = review.toReview, several = review.periods.length > 1;
   const openEnd = review.openEnd;
   const away = nextPay.daysUntil <= 0 ? "Today" : nextPay.daysUntil === 1 ? "Tomorrow" : `In ${nextPay.daysUntil} days`;
   const href = week?.payrollHref ?? "/app/timecards";
@@ -410,7 +446,9 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     // Phase 8 (a.md #15, b.md #34): a date from the pay schedule is the "Scheduled payday" (DESIGN, payroll scope wording).
     const paydayLine = keepWhole(`Scheduled payday ${fmt(nextPay.payday, { weekday: "short", month: "short", day: "numeric" })}`);
     const view = !timecardsReady ? { big: "Timecards", detail: connection === "loading" || connection === "reconnecting" ? "Checking…" : "Not available right now", chip: null, go: false }
-      : closed ? { big: t.toApprove(closed, review.exact), detail: `${apart ? `${closed} of ${closed + apart} timecards` : plural(closed, "timecard", "timecards")} · ${several ? "Pay periods ended" : "Pay period ended"}`, chip: "Open now", go: true }
+      // Core check (Nov 23, 2026), each fact once: the count is the big line ("10 to approve"); the header already says
+      // Timecards, and the cards someone else reviews are their own line below, so the detail only says when.
+      : closed ? { big: t.toApprove(closed, review.exact), detail: several ? "Pay periods ended" : "Pay period ended", chip: "Open now", go: true }
       // Cards whose review facts are missing are not "none waiting": the tile says they could not be checked.
       : review.unknown ? { big: "Timecards", detail: "Pay period ended", chip: null, go: true }
       : opens ? { big: `Opens ${fmt(opens, { weekday: "short", month: "short", day: "numeric" })}`, detail: "Timecard approval", chip: untilOpen === null ? null : untilOpen <= 0 ? "Today" : untilOpen === 1 ? "Tomorrow" : `In ${untilOpen} days`, go: false }
@@ -436,7 +474,7 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     : openEnd ? { title: "Approve timecards", detail: `From ${fmt(nextDay(openEnd), { weekday: "short", month: "short", day: "numeric" })}`, done: false }
     : { title: "Timecards", detail: "None waiting", done: true };
   // Phase 8 (a.md #5): while a period with no payroll leads the column (PayrollNotice), its Prepare is the column's one
-  // strong action and this tile's button steps back to glass.
+  // strong action and this tile has no button of its own (Core check, Nov 23, 2026).
   const behind = payrollStatus?.state === "ready" && !!payrollStatus.overdue;
   return <BInk label="Scheduled payday">
     {/* Phase 9 (spec 3.1): how far away payday is ("In 9 days") is a time fact, so it is grey header text, not a chip; what
@@ -447,7 +485,9 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     {/* Review B2 (NV-007): the three unlabelled segments never lit, so they are gone; the line below says where payroll is. */}
     <div className="b-ink__r2"><span>{step.title}</span><span>{step.detail}</span></div>
     {routed}
-    <BButtonLink href={href} kind={behind ? "glass" : "white"} full label={href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}>{href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}</BButtonLink>
+    {/* Core check (Nov 23, 2026): one main action. While an overdue payroll leads the column, its "Prepare <period>" is
+      * the way in, so this tile has no second Prepare button. */}
+    {behind ? null : <BButtonLink href={href} kind="white" full label={href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}>{href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}</BButtonLink>}
   </BInk>;
 }
 
@@ -480,9 +520,11 @@ function ThisWeek({ week, today }: { week: HomeBWeek; today?: string }) {
     <div className="b-wk">
       <div className="b-wk__a">
         <div className="b-kv">
-          <div><b className="c-num">{hoursText(week.scheduledHours)}</b><span>Scheduled</span></div>
+          {/* Jose (Nov 22, 2026: no label twice): Today's card says "Scheduled" and "People"; the week's hours include drafts
+            * (planned), and its people are the staff on the week's schedule. */}
+          <div><b className="c-num">{hoursText(week.scheduledHours)}</b><span>Planned</span></div>
           <div><b className="c-num">{shifts}</b><span>{shifts === 1 ? "Shift" : "Shifts"}</span></div>
-          <div><b className="c-num">{week.people}</b><span>{week.people === 1 ? "Person" : "People"}</span></div>
+          <div><b className="c-num">{week.people}</b><span>Staff</span></div>
         </div>
         {week.coverage ? <CoverageLine coverage={week.coverage} /> : null}
       </div>

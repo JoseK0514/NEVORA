@@ -15,6 +15,9 @@ const when = (iso: string) => new Date(iso).toLocaleString("en-US", { month: "sh
 
 const headersFor = (actorId: string) => ({ "content-type": "application/json", "x-nevora-payroll-export": "1", "x-nevora-actor": actorId });
 
+/** A reply this card won't read: cancel its body so the request ends (an unread body keeps it open). */
+function release(response: Response) { void response.body?.cancel().catch(() => {}); }
+
 function save(text: string, type: string, name: string) {
   const url = URL.createObjectURL(new Blob([text], { type })), a = document.createElement("a");
   a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 0);
@@ -33,19 +36,23 @@ export function PayrollExportReceipts({ actorId, refreshKey }: { actorId: string
 
   useEffect(() => {
     let active = true;
+    // G59 (Nov 23, 2026): when the card leaves (the page pauses on blur, or the period changes) its read is cancelled, and
+    // a reply it won't read is released. An unread reply body kept the request open for good: a paused Time exports page
+    // never went network-idle, and each one held a connection.
+    const abort = new AbortController();
     const load = async () => {
       if (document.visibilityState === "hidden") { setList({ state: "loading" }); return; }
       try {
-        const response = await fetch("/api/payroll-export/receipts", { method: "GET", cache: "no-store", credentials: "same-origin", headers: headersFor(actorId) });
-        if (!active) return;
-        if (!response.ok) { setList({ state: "unavailable", notAllowed: denialOf(nevoraFailure(response), response.status) === "not_allowed" }); return; }
+        const response = await fetch("/api/payroll-export/receipts", { method: "GET", cache: "no-store", credentials: "same-origin", headers: headersFor(actorId), signal: abort.signal });
+        if (!active) { release(response); return; }
+        if (!response.ok) { release(response); setList({ state: "unavailable", notAllowed: denialOf(nevoraFailure(response), response.status) === "not_allowed" }); return; }
         const body = await response.json() as { state?: string; receipts?: Receipt[] };
         setList(body.state === "ready" && Array.isArray(body.receipts) ? { state: "ready", receipts: body.receipts } : { state: "unavailable", notAllowed: false });
       } catch { if (active) setList({ state: "unavailable", notAllowed: false }); }
     };
     void load();
     document.addEventListener("visibilitychange", load);
-    return () => { active = false; document.removeEventListener("visibilitychange", load); };
+    return () => { active = false; abort.abort(); document.removeEventListener("visibilitychange", load); };
   }, [actorId, refreshKey]);
 
   async function again(receipt: Receipt, file: "csv" | "record") {
@@ -53,6 +60,7 @@ export function PayrollExportReceipts({ actorId, refreshKey }: { actorId: string
     try {
       const response = await fetch("/api/payroll-export/receipts", { method: "POST", cache: "no-store", credentials: "same-origin", headers: headersFor(actorId), body: JSON.stringify({ operationId: receipt.operationId }) });
       if (!response.ok) {
+        release(response);
         const denial = denialOf(nevoraFailure(response), response.status);
         setMessage(denial === "not_allowed" ? "You don’t have access to exports. Ask the Owner if you need it." : denial === "signed_out" ? "Your session ended. Sign in again to download it." : "The file didn’t download. Try again.");
         return;

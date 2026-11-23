@@ -1,11 +1,11 @@
 'use client';
-import Link from 'next/link';
+import {NavigationLink} from '../navigation-link';
 import {useCallback,useEffect,useId,useRef,useState,useSyncExternalStore,type ReactNode} from 'react';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpField,CorpNote,CorpPill,CorpRow,CorpRows,CorpSegments,CorpStats,CorpTitle} from '../corp/corp';
 import {BState} from '../owner-b/b-kit';
 import {momentsCopy} from '../owner-b/moments-copy';
-import {addDays,weekStartFor} from '@/lib/date-utils';
+import {addDays,formatTime,weekStartFor} from '@/lib/date-utils';
 import type {EmployeeTimeEntry} from '@/lib/employee-time';
 import type {EmployeeHoursSnapshot,HoursView,HoursDecision,HoursCorrectionPayload} from '@/lib/employee-hours';
 import type {PrivatePanelState} from '@/lib/private-snapshot-client';
@@ -56,12 +56,12 @@ export function CorpHoursFrame({contextKey,view,state,ready,refresh,head,headIns
 }
 /** A pushed page's white bar: "‹ Back" left, the title centred. */
 export function CorpHoursNav({back,title}:{back:{href:string;label:string};title:string}){
- return <div className="c-nav"><Link className="c-nav__back" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/>{back.label}</Link>
+ return <div className="c-nav"><NavigationLink className="c-nav__back" href={back.href} intent="auto"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/>{back.label}</NavigationLink>
   <h1 className="c-nav__title" id="hours-title" tabIndex={-1}>{title}</h1><span className="c-nav__right"/></div>;
 }
 /** The correction sheet's bar: Cancel · Fix my time · Send. */
 export function CorpHoursSheetHead({cancel,cancelLabel='Cancel',send}:{cancel:string;cancelLabel?:string;send?:ReactNode}){
- return <div className="c-nav c-hours-sheet"><Link className="c-nav__back c-hours-cancel" href={cancel}>{cancelLabel}</Link>
+ return <div className="c-nav c-hours-sheet"><NavigationLink className="c-nav__back c-hours-cancel" href={cancel} intent="auto">{cancelLabel}</NavigationLink>
   <h1 className="c-nav__title" id="hours-title" tabIndex={-1}>Fix my time</h1><span className="c-nav__right">{send??null}</span></div>;
 }
 /** The Time tab's title: Past timecards on the right, the date and location under it. */
@@ -276,7 +276,8 @@ export function parseClock(text:string){
  if(half){if(hour<1||hour>12)return null;hour=hour%12+(half.startsWith('p')?12:0);}else if(hour>23)return null;
  return String(hour).padStart(2,'0')+':'+String(minute).padStart(2,'0');
 }
-export function formatClock(value:string){const [h,m]=value.split(':').map(Number);return `${h%12||12}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}`;}
+/** A stored time in the field: "7:00 AM" (the one time format; 24:00 is "12:00 AM"). */
+export function formatClock(value:string){return formatTime(value);}
 function TimeInput({id,name,value,onValue,invalid,describedBy,placeholder}:{id:string;name:string;value:string;onValue:(value:string)=>void;invalid:boolean;describedBy?:string;placeholder:string}){
  const [text,setText]=useState(()=>value?formatClock(value):''),[seen,setSeen]=useState(value);
  // A value set from outside (Use current times) replaces what is typed unless the typing already means it.

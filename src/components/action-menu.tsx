@@ -1,9 +1,21 @@
 "use client";
 import { isPopoverOpen } from "./kit/popover-open";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { actionMenuGeometry } from "./action-menu-geometry";
 import { CaretDownIcon, DotsThreeIcon } from "@phosphor-icons/react/ssr";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { SHELL_WORDS } from "./shell-copy";
+
+/** G51 (Nov 23, 2026): the trigger's accessible name starts with what it shows (WCAG 2.5.3, label in name). Menus that
+ * show a value are named "<label>: <value>" ("Location: Condado", "Bonus year: Oct 2025 – Sep 2026") while the button
+ * draws only the value, so the name is turned round to "<value>, <label>" ("Condado, Location"). Other names are kept. */
+export function actionMenuTriggerName(label: string, ariaLabel?: string): string {
+  if (!ariaLabel) return label;
+  const prefix = `${label}: `;
+  const value = ariaLabel.startsWith(prefix) ? ariaLabel.slice(prefix.length).trim() : "";
+  return value ? `${value}, ${label}` : ariaLabel;
+}
 
 type ActionMenuProps = {
   id: string;
@@ -41,9 +53,12 @@ export function ActionMenu({
   width,
   triggerCurrent = false,
 }: ActionMenuProps) {
+  const W = SHELL_WORDS[usePortalLang()];
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const keyboardOpenRef = useRef(false);
+  // G51: the trigger says whether its menu is open (aria-expanded), from the popover's own toggle event.
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const trigger = triggerRef.current;
@@ -111,6 +126,7 @@ export function ActionMenu({
     };
     const onToggle = () => {
       position();
+      setOpen(isPopoverOpen(menu));
       if (!isPopoverOpen(menu)) {
         release();
         keyboardOpenRef.current = false;
@@ -152,7 +168,8 @@ export function ActionMenu({
         type="button"
         className={triggerClassName ?? "button ghost nevora-action-menu-trigger"}
         popoverTarget={id}
-        aria-label={ariaLabel ?? label}
+        aria-label={actionMenuTriggerName(label, ariaLabel)}
+        aria-expanded={open}
         aria-current={triggerCurrent ? "true" : undefined}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
@@ -177,7 +194,7 @@ export function ActionMenu({
         // Review B2 (NV-324): a menu popover is a named group (a label on a role-less div is ignored); a sheet is a dialog.
         role={sheet ? "dialog" : "group"}
         aria-modal={sheet || undefined}
-        aria-label={ariaLabel ?? `${label} actions`}
+        aria-label={ariaLabel ?? W.actionsFor(label)}
       >
         {/* Owner premium (phone-native M4, visual-craft O): on a phone the menu is a sheet with a titled header and Done.
           The header is hidden wherever the menu is a popover (CSS), so desktop menus are unchanged. */}
@@ -188,7 +205,7 @@ export function ActionMenu({
         {/* Round 2 (R8): one sheet pattern, "Done" on the right of the centred title (Close and its × retired). */}
         <button className="mobile-workforce-sheet-close" type="button"
           onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
-          <span>Done</span>
+          <span>{W.done}</span>
         </button>
       </div>
     </div>

@@ -39,11 +39,11 @@ describe("Rondo AI for a Manager", () => {
     const html = renderToStaticMarkup(<WeekCard summary={{ data: { weekStart: "2026-11-30", location: place, days, observedAt: at, validForMs: 14980 }, until: Date.now() + 14980 }}
       state="idle" hidden={false} now={Date.now()} onRetry={() => {}} onShow={() => {}} />);
     expect(html).toContain("Mon, Nov 30");
-    expect(html).toContain("3 shifts published");
+    expect(html).toContain("3 shifts");
+    expect(html).not.toContain("shifts published");
     expect(html).toContain("1 released");
     expect(html).toContain("No shifts");
     expect(html).toContain("24 h");
-    expect(html).toContain("Timecards show hours worked");
   });
 
   it("gives every closed state one way on", () => {

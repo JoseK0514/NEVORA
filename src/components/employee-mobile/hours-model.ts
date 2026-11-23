@@ -1,4 +1,4 @@
-import {addDays,weekStartFor} from '@/lib/date-utils';
+import {addDays,formatClockRange,formatClockTime,weekStartFor} from '@/lib/date-utils';
 import {dateRange,durationRow,durationSentence} from '@/lib/duration-format';
 import type {EmployeeTime,EmployeeTimeEntry} from '@/lib/employee-time';
 import type {Period,TimecardIssue} from '@/lib/timecards/project';
@@ -21,12 +21,10 @@ export function compactDuration(seconds:number){
  const minutes=Math.floor(Math.max(0,seconds)/60);if(seconds>0&&minutes===0)return '<1 min';
  return durationRow(minutes);
 }
-export const clockAt=(at:string,zone:string)=>fmt(zone,{hour:'numeric',minute:'2-digit'}).format(new Date(at));
-/** "7:59 AM – 4:01 PM", or "12:00 – 12:30 PM" when both halves share AM or PM; an open end reads "now". */
+export const clockAt=(at:string,zone:string)=>formatClockTime(at,zone);
+/** "7:59 AM – 4:01 PM", AM or PM on both ends (the one time format, Nov 23, 2026); an open end reads "now". */
 export function clockRange(start:string,end:string|null,zone:string){
- const a=clockAt(start,zone);if(!end)return `${a} – now`;
- const b=clockAt(end,zone),suffix=(value:string)=>/[AP]M$/.test(value)?value.slice(-2):null;
- return suffix(a)&&suffix(a)===suffix(b)?`${a.slice(0,-3)} – ${b}`:`${a} – ${b}`;
+ return formatClockRange(start,end,zone);
 }
 /** The business date (YYYY-MM-DD) of an instant in the workspace zone. */
 export const dateKey=(at:string,zone:string)=>new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(at));

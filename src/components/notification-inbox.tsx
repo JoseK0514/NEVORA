@@ -36,14 +36,14 @@ import {KeepSelectedVisible} from './kit/keep-selected-visible';
 /* Premium pass FA (final verification A #14): one glyph per meaning. "Things to do are waiting" is Things to do's tray (the
  * sidebar's glyph; ListChecks drew a checklist), and a can't-work notice is the person stepping out (UserMinus), as on
  * Things to do; the red WarningCircle is the stop glyph. */
-const icons={schedule:CalendarBlankIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:UserMinusIcon,device:DeviceMobileIcon,operations:TrayIcon,payroll:WalletIcon,statement:ReceiptIcon};
-const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:'Read',confirmed:'Confirmed',unavailable:'Review status unavailable'};
+export const notificationIcons={schedule:CalendarBlankIcon,timeOff:CalendarMinusIcon,exchange:ArrowsLeftRightIcon,update:MegaphoneIcon,availability:UserCheckIcon,callout:UserMinusIcon,device:DeviceMobileIcon,operations:TrayIcon,payroll:WalletIcon,statement:ReceiptIcon};
+export const reviewLabels:Record<NotificationReviewState,string>={unread:'Unread',read:'Read',confirmed:'Confirmed',unavailable:'Review status unavailable'};
 const actionLabels:Record<NotificationActionState,string>={required:'Action required',available:'Action available',complete:'Action complete',none:'No action required',unavailable:'Action status unavailable'};
 const filters:{value:NotificationFilter;label:string}[]=[{value:'all',label:'All'},{value:'unread',label:'Unread'},{value:'required',label:'Needs action'}];
 
 /* RA-16: a row's time and day are the workplace's. The snapshot carries the workplace zone (backend, Nov 15, 2026); an
  * older snapshot without one keeps the device's. */
-const whenLong=(at:string,timeZone?:string)=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',...(timeZone?{timeZone}:{})}).format(new Date(at));
+export const whenLong=(at:string,timeZone?:string)=>new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',...(timeZone?{timeZone}:{})}).format(new Date(at));
 
 /** Phase 8 (a.md #29, b.md #25): a manager summary carries the count of what it gathered when it was sent: open shifts
  * ahead, requests and availability not sent in. That is a wider scope, at an earlier time, than Things to do's count
@@ -53,12 +53,12 @@ const SUMMARY_EVENTS=['MANAGER_REVIEW','COVERAGE_ATTENTION'];
 const SUMMARY_SCOPE='Open shifts, requests or missing availability';
 function summaryCount(item:EmployeeNotificationItem){return SUMMARY_EVENTS.includes(item.eventType??'')&&Number.isSafeInteger(item.count)&&(item.count??-1)>=0?item.count as number:null;}
 const summaryWords=(n:number)=>`${n} ${n===1?'item was':'items were'} waiting`;
-function rowText(item:EmployeeNotificationItem):{title:string;detail:string|null}{
+export function rowText(item:EmployeeNotificationItem):{title:string;detail:string|null}{
  const n=summaryCount(item);
  return n===null?notificationTitle(item):{title:summaryWords(n),detail:SUMMARY_SCOPE};
 }
 /** A held row's facts, each whole (premium pass: drawn with BSegs, so no line starts or ends on the middle dot). */
-function rowFacts(item:EmployeeNotificationItem){
+export function rowFacts(item:EmployeeNotificationItem){
  const n=summaryCount(item);
  return [notificationName(item),notificationOutcomeNote(item),n===null?notificationCountNote(item):summaryWords(n)].filter((fact):fact is string=>!!fact);
 }
@@ -117,7 +117,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
    </Link>;
   };
   const oneRow=(item:EmployeeNotificationItem)=>{
-   const Icon=icons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=rowText(item);
+   const Icon=notificationIcons[notificationPresentation(item.label,item.eventType).icon],review=item.reviewState??'unavailable',text=rowText(item);
    return <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${[text.title,text.detail].filter(Boolean).join(', ')}, ${reviewLabels[review]}, ${whenLong(item.at,zone)}`}
     onClick={()=>{if(review==='unread')void markRead(item.id);}}>
     <span className="q-av" aria-hidden="true"><Icon weight="bold" className="q-ic" aria-hidden="true"/></span>
@@ -148,7 +148,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
       if(count===1)return <li key={item.id} data-inbox-row>{oneRow(item)}</li>;
       // Phase 3 (OW-002) fold: the row says how many and the latest; opening it lists each one under it, so every
       // notification is seen and read on its own. Nothing is marked read by opening the fold.
-      const Icon=icons[notificationPresentation(item.label,item.eventType).icon];
+      const Icon=notificationIcons[notificationPresentation(item.label,item.eventType).icon];
       const open=expanded.includes(item.id),listId=`notif-fold-${item.id}`;
       const text=notificationTitle(item);
       return <li key={item.id} data-inbox-row>
@@ -194,7 +194,7 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
    {groups.length?<div className={styles.groups}>{groups.map(group=><section className={styles.group} key={group.key} aria-label={group.label}>
     <h3 className={styles.groupHeading}>{keepWhole(group.label)}</h3>
     <ul className={styles.list}>{group.items.map(item=>{
-     const presentation=notificationPresentation(item.label,item.eventType),Icon=icons[presentation.icon];
+     const presentation=notificationPresentation(item.label,item.eventType),Icon=notificationIcons[presentation.icon];
      const review=item.reviewState??'unavailable',action=item.actionState??'unavailable';
      return <li key={item.id} data-inbox-row><Link className={styles.row} data-unread={review==='unread'} href={item.href} prefetch={false}>
       <span className={styles.icon}><Icon size={22} weight="bold" aria-hidden="true"/></span>

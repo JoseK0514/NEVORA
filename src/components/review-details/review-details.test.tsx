@@ -51,7 +51,9 @@ describe("U03: Payday counts the same two timecards on every Home", () => {
   it("Manager frame (Direction B, every width): 2 to approve of 3, and the other card stays visible", () => {
     const out = text(onlyB(home()));
     expect(out).toContain("2 to approve");
-    expect(out).toContain("2 of 3 timecards · Pay period ended");
+    // Core check (Nov 23, 2026), each fact once: the count is the big line; the detail says when.
+    expect(out).toContain("Pay period ended");
+    expect(out).not.toContain("2 of 3 timecards");
     expect(out).toContain("Another reviewer approves your timecard");
     expect(out).not.toMatch(/3 to approve|3 timecards to review|An Owner approves/);
   });
@@ -77,7 +79,7 @@ describe("U03: Payday counts the same two timecards on every Home", () => {
   it("another person's card that needs another reviewer is counted apart, and no name or date is invented", () => {
     const delegated = [card("a", "Ana Colón"), { ...card("x", "Luis Ortiz"), review: reviewFacts(false, false, "TIMECARD", { startDate: "2026-10-19", endDate: "2026-10-25" }) }, card("me", "Carmen Ruiz", true), card("me2", "Elena Ruiz", true)];
     const out = text(onlyB(home({ timecards: delegated, value: needsYou(delegated, "2026-10-30", []) })));
-    expect(out).toContain("2 of 4 timecards");
+    expect(out).toContain("2 to approve");
     expect(out).toContain("Another reviewer approves 2 timecards");
     expect(out).not.toMatch(/by (Mon|Tue|Wed|Thu|Fri|Sat|Sun)|approves by|due/i);
   });
@@ -99,7 +101,8 @@ describe("U03: totals say how complete they are", () => {
     const items = [request("r1", "Ana Colón"), request("r2", "Luis Ortiz")];
     const out = onlyB(home({ today: unavailable, value: needsYou(items, "2026-10-30", []), timecards: [] }));
     expect(text(out)).toContain("At least 2 things need you");
-    expect(out).toContain('<span class="b-pill">At least 2</span>');
+    // The band's title carries the lower bound; the card repeats no count (Jose, Nov 22, 2026: no fact twice).
+    expect(out).not.toContain('<span class="b-pill">At least 2</span>');
     expect(text(out)).toContain(t.clockInsUnchecked);
     expect(text(out)).not.toContain("You’re all set");
   });
@@ -172,7 +175,9 @@ describe("U03: the item another reviewer approves stays visible in Things to do"
     // The reviewer's own correction and one they sent for someone else: listed, each with whose it is.
     expect(out).toContain("Your time correction");
     expect(out).toContain("James Ortiz");
-    expect(html).toMatch(/aria-label="Your timecard, Oct 19–25\. Another reviewer approves this one\. It needs an Owner or a Manager with company access\."/);
+    // Label in name (Nov 23, 2026): a Direction B row is named by its visible text; the older card keeps its label.
+    if (name === "Direction B") expect(html).not.toMatch(/aria-label="Your timecard, /);
+    else expect(html).toMatch(/aria-label="Your timecard, Oct 19–25\. Another reviewer approves this one\. It needs an Owner or a Manager with company access\."/);
     expect(out).not.toMatch(/approves it by|due /i);
   });
   it("the band counts what this person can decide, and says the timecards apart", () => {

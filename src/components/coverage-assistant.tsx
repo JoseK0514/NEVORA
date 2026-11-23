@@ -6,6 +6,7 @@ import { durationText } from "@/lib/duration-text";
 import { CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpRows,CorpTime,CorpTitle } from "./corp/corp";
 import { ManagerIssueFocus } from "./manager-issue-focus";
 import { ScheduleCoverPick } from "./schedule-cover-pick";
+import { KeptSaved, UnlessSaved } from "./coverage-saved";
 import "./coverage-assistant.css";
 
 export type CoverageEmployee = {
@@ -60,16 +61,18 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
   const shortDate = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${props.date}T12:00:00Z`));
   const count = props.candidates.length;
   // R3 / copy table 28: no "Not filled" pill (the card already says Open shift); a change of state is plain grey text.
-  const state = props.status === "RESOLVED" ? <span className="c-meta c-cover__state">Covered</span> : props.status === "STALE" ? <span className="c-meta c-cover__state">Changed</span> : null;
+  // G63 (Nov 23, 2026): each fact once. After a save, "Replacement saved." says it; otherwise the Covered state does. A
+  // stale gap says "Coverage changed" in its own card, so the shift card carries no second "Changed".
+  const state = props.status === "RESOLVED" ? <UnlessSaved saved={!!props.saved}><span className="c-meta c-cover__state">Covered</span></UnlessSaved> : null;
   const facts = [props.positionName, shortDate, props.locationName, props.designatedLead ? "Shift lead needed" : null, nextDay ? `Ends ${nextDay.weekday},\u00a0${nextDay.day}` : null].filter(Boolean).join(" · ");
   const needs = props.requirements?.length && (props.status === "READY" || props.status === "CHOOSE") && (props.requirements.length > 1 || props.status === "CHOOSE") ? props.requirements : null;
   return <CorpPage className="c-cover c-page--narrow" labelledBy="coverage-title">
     <CorpNav back={{ href: props.backHref, label: "Schedule" }} title="Find cover" titleId="coverage-title" phoneOnly />
     <CorpTitle title="Find cover" wide />
     <ManagerIssueFocus prefix="coverage-" />
-    {props.saved ? <CorpNote icon={<BDoneMark />}>Replacement saved. What’s below is the schedule as it is now.</CorpNote> : null}
+    <KeptSaved saved={!!props.saved}><CorpNote icon={<BDoneMark />}>Replacement saved.</CorpNote></KeptSaved>
     <div className="wa-target" id="coverage-issue" tabIndex={-1}>
-      <CorpCard id="coverage-shift" label="Open shift" aside={state ?? undefined}>
+      <CorpCard id="coverage-shift" label={props.status === "RESOLVED" ? "Shift" : "Open shift"} aside={state ?? undefined}>
         <CorpBody>
           <span className="c-big"><CorpTime start={formatTime(props.startTime)} end={formatTime(props.endTime)} /></span>
           <span className="c-line3">{facts}</span>
@@ -92,19 +95,19 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
           {/* Owner premium (structure-experience F1/F2): a decision, not a dead end. The same read; the next steps are the
             existing Add shift form (its review checks the person) and the coverage need in Scheduling rules. */}
           <p className="c-cover__empty">No one is free</p>
-          <p className="c-line3">{`Everyone is busy, off or not set up for ${props.locationName}.`}{props.addShiftHref ? " You can still give the shift to someone." : ""}</p>
+          {/* G63: the place is on the shift card and "Give to someone" is the button, so the line says neither again. */}
+          <p className="c-line3">Everyone is busy, off or not set up for this location.</p>
           {props.addShiftHref || props.rulesHref ? <div className="c-cover__next">
             {props.addShiftHref ? <CorpButtonLink href={props.addShiftHref} kind="secondary" size="md">Give to someone</CorpButtonLink> : null}
             {props.rulesHref ? <Link className="c-link c-link--l" href={props.rulesHref}>Change what’s needed</Link> : null}
           </div> : null}
         </CorpBody>}
-    </CorpCard> : <CorpCard id="coverage-people" label={props.status === "RESOLVED" ? "This shift is covered" : props.status === "STALE" ? "Coverage changed" : "Choose what to fill"}>
-      <CorpBody>
-        <p className="c-cover__text">{props.status === "RESOLVED" ? "No replacement is needed for this gap anymore." : props.status === "STALE" ? "The schedule changed since you opened this. Refresh to see who can cover it now." : "Pick a need above to see who can fill it."}</p>
-        {props.status === "STALE" && props.refreshHref ? <CorpButtonLink href={props.refreshHref} full><ArrowClockwiseIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />Refresh</CorpButtonLink>
-          : props.status === "RESOLVED" ? <CorpButtonLink href={props.backHref} kind="secondary" full>Back to schedule</CorpButtonLink> : null}
-      </CorpBody>
-    </CorpCard>}
+    </CorpCard>
+      // G63: a covered shift needs nothing more (the band's "‹ Schedule" is the way back), and a choice of needs is already
+      // asked in the shift card. Only a stale gap gets a second card: what happened, and Refresh.
+      : props.status === "STALE" ? <CorpCard id="coverage-people" label="Coverage changed">
+        {props.refreshHref ? <CorpBody><CorpButtonLink href={props.refreshHref} full><ArrowClockwiseIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />Refresh</CorpButtonLink></CorpBody> : null}
+      </CorpCard> : null}
     {props.status === "READY" && props.candidates.some(candidate => candidate.href) && !props.reviewOnly
       ? <CorpNote center>You review the shift before it’s saved.</CorpNote> : null}
   </CorpPage>;

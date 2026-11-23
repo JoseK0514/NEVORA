@@ -37,10 +37,12 @@ describe('Time tab (e-time)',()=>{
   expect(plain).toContain('This week · Oct 26–Nov 1');expect(plain).toContain('In progress');
   expect(b).toContain('href="/app/my-time?entry=own-1"');expect(b).toContain('id="b-hours-entry-own-1"');expect(plain).toContain('30 min break');
   expect(b).toContain('href="/app/my-time?view=corrections&amp;edit=new"');expect(plain).toContain('Fix a missed punch');expect(plain).toContain('Hours include breaks.');
-  // Final polish, round 2 (T1): a day row's range carries both dashes (time.css shows the leading one from 360px and the
-  // trailing one under it, so a 320px row reads "7:59 AM –" over "4:01 PM"); the link's spoken label is the plain range.
-  expect(b).toContain('<span id="b-hours-entry-own-1"><span class="eb-nb">7:59\u00a0AM<span class="eb-dayrange__trail">\u00a0–</span></span> <span class="eb-nb"><span class="eb-dayrange__lead">–\u00a0</span>4:01\u00a0PM</span></span>');
-  expect(b).toContain('aria-label="Monday, October 26, 7:59 AM – 4:01 PM, 8 h 2 min, 30 min break"');
+  // Final polish, round 2 (T1), Nov 23, 2026: a day row's range is Range, which breaks only after the dash, so a 320px row
+  // reads "7:59 AM –" over "4:01 PM"; the link's spoken label is the plain range.
+  expect(b).toContain('<span id="b-hours-entry-own-1"><span class="b-sr">Monday, October 26, </span><span class="eb-nb">7:59\u00a0AM\u00a0–</span> <span class="eb-nb">4:01\u00a0PM</span></span>');
+  // Phase 2 gate (Nov 23): the row is named by what it shows, with the day (drawn aria-hidden) said first for screen readers.
+  expect(b).not.toContain('aria-label="Monday, October 26');
+  expect(b).toContain('<span id="b-hours-entry-own-1"><span class="b-sr">Monday, October 26, </span>');
   // Last week is its own private read: hidden until it arrives.
   expect(plain).not.toContain('Last week');
  });
@@ -54,7 +56,7 @@ describe('Time tab (e-time)',()=>{
   expect(b).toContain('<span class="b-status" data-dot="amber"><span class="b-ldot" data-tone="amber" aria-hidden="true"></span>Clocked in</span>');expect(b).not.toContain('b-chip--amber');
   expect(b).toContain('<div class="b-callout" data-tone="amber" role="status">');expect(b).not.toContain('b-ico b-ico--amber');
   expect(b).toMatch(/<p class="b-callout__t">Still clocked in since 9:02\sAM<\/p>/);
-  expect(plain).toContain('Still clocked in since 9:02 AM');expect(plain).toContain('Your 9 AM – 5 PM shift has ended. Clock out on the Condado tablet.');
+  expect(plain).toContain('Still clocked in since 9:02 AM');expect(plain).toContain('Your 9:00 AM – 5:00 PM shift has ended. Clock out on the Condado tablet.');
   // Without today's shifts the card says Clocked in (green live dot), never guessing that a shift ended.
   const plainB=onlyB(inPage(timeHead,<CorpTimeTab data={data}/>));
   expect(plainB).toContain('<span class="b-status" data-dot="green"><span class="b-ldot" data-tone="green" aria-hidden="true"></span>Clocked in</span>');expect(text(plainB)).not.toContain('Still clocked in');expect(plainB).not.toContain('b-callout');

@@ -2,20 +2,21 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition, type FormEvent } from "react";
-import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import type { CatalogLocation } from "@/lib/data/locations";
 import type { ConfigurationResult } from "./configuration-form";
 import { DiscardGuard } from "./kit/discard-dialog";
 import { lower } from "@/lib/workspace-presentation/words";
 
+import { CorpFormFooter, CorpLink, CorpRow, CorpRows } from "./corp/corp";
+import { FieldB, ResultB, SwitchRowB } from "@/app/app/settings/settings-b-form";
+import { ButtonLabel, FieldErrors, useFieldErrors } from "@/app/app/settings/wave-c-form";
+
 /** TC-17: the notice title already says it was updated; keep only what the server adds. */
 const successBody = (text?: string) => text?.replace(/^[^.]*updated\.\s*/i, "") || undefined;
-import { Notice } from "@/app/app/settings/wave-c-kit";
-import { Field, FieldErrors, SwitchRow, useFieldErrors } from "@/app/app/settings/wave-c-form";
 
 type Draft = Pick<CatalogLocation, "name" | "shortName" | "active">;
 
-/** Wave C: Edit location on the kit form pattern. Save stays off until something changes;
+/** Edit location in Settings' Direction B form. Save shows once something changes;
  * a lost answer keeps the entries and asks to check Locations before trying again. */
 export function EditLocationForm({ location, action, words = { location: "Location", locations: "Locations" }, staffing, eligible }: {
   /** Quiet (v4): "1 per shift", from Scheduling rules. */
@@ -46,6 +47,18 @@ export function EditLocationForm({ location, action, words = { location: "Locati
   useEffect(() => {
     if (result.error || result.success) feedback.current?.focus();
   }, [result]);
+
+  // The page refreshes after a save (or when the place changed elsewhere): take the server's values in place, without
+  // remounting, so the result under the card stays; edits in progress are never overwritten.
+  const server = `${location.name}\u0000${location.shortName}\u0000${location.active}\u0000${location.updatedAt ?? ""}`;
+  const [seen, setSeen] = useState(server);
+  if (seen !== server) {
+    setSeen(server);
+    if (!dirty && !pending) {
+      const next = { name: location.name, shortName: location.shortName, active: location.active };
+      setDraft(next); setSaved(next);
+    }
+  }
 
   function change(next: Partial<Draft>) {
     setDraft((current) => ({ ...current, ...next }));
@@ -94,43 +107,45 @@ export function EditLocationForm({ location, action, words = { location: "Locati
   }
 
   // Quiet (v4, approved Oct 23): Name and Short name, then Active, the Clocker link, staffing and who can work here as rows.
-  // The page's Save (top right) submits this form; it stays off until something changes. Review F4 (NV-102): on tablets
-  // and desktop the fields and rows are one card and its footer holds the same Save (phones keep the top bar's).
+  // Phase 2 (Nov 23, 2026): Settings' Direction B form. The form is the white card itself (a direct child of the page):
+  // the outlined fields, the kit's rows under them, and on tablets and desktop Save in its footer once something
+  // changed. Phones save from the band (the page's Save, shown by the same rule once the form is dirty).
   return (
-    <form noValidate id="edit-location-form" onSubmit={submit} aria-busy={pending} className="wc-form" aria-label={`Edit ${place}`} data-dirty={dirty || undefined} {...handlers}>
-      <div className="wc-savecard">
-      <fieldset disabled={pending} className="q-fieldset">
-        <input type="hidden" name="id" value={location.id} />
-        <input type="hidden" name="expectedUpdatedAt" value={location.updatedAt ?? ""} />
-        <FieldErrors errors={errors}>
-          <Field label="Name" id="edit-location-name" name="name" required maxLength={160} value={draft.name}
-            onChange={(event) => change({ name: event.target.value })} autoComplete="off" />
-          <Field label="Short name" id="edit-location-short-name" name="shortName" required maxLength={48} value={draft.shortName}
-            onChange={(event) => change({ shortName: event.target.value })} autoComplete="off" />
-          <ul className="q-list" style={{ marginTop: 24 }}>
-            <li><SwitchRow id="edit-location-active" name="active" label="Active" checked={draft.active} onChange={(active) => change({ active })} describedBy="edit-location-active-help" /></li>
-            {/* The Clocker only works at an active location, so an inactive one shows no link to open or copy. */}
-            <li>{location.active ? <div className="q-row q-row--one"><span className="q-rt"><b><Link href={clockerHref}>Clocker link</Link></b></span>
-              <button type="button" className="q-bs q-bs--hit" onClick={copyLink} aria-label="Copy Clocker link">Copy</button></div>
-              : <div className="q-row q-row--one"><span className="q-rt"><b>Clocker link</b></span><span className="q-rv q-rv--l">Unavailable while inactive</span></div>}</li>
-            <li><Link className="q-row q-row--one" href="/app/schedule/settings#coverage-staffing"><span className="q-rt"><b>Staffing</b></span><span className="q-rv q-rv--l">{staffing ?? "Not set"}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>
-            <li><Link className="q-row q-row--one" href="/app/employees"><span className="q-rt"><b>Who can work here</b></span>{eligible === undefined ? null : <span className="q-rv q-rv--l">{eligible}</span>}<CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>
-          </ul>
-          <p className="q-sr" id="edit-location-active-help">{draft.active ? "Turning this off keeps history. The Clocker stops working here." : "Inactive: new assignments and the Clocker are unavailable."}</p>
-        </FieldErrors>
-      </fieldset>
-      <div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn" disabled={pending}>{pending ? "Saving…" : "Save"}</button></div>
-      </div>
-      {result.error || result.success ? (
-        <div ref={feedback} tabIndex={-1} role={result.error ? "alert" : "status"} className="wc-feedback">
-          <Notice tone={result.error ? "urgent" : "done"} title={result.error ? (unconfirmed ? "Not saved yet" : "Changes not saved") : `${words.location} updated`}
-            action={unconfirmed ? <Link className="q-btn q-btn--quiet" href="/app/settings/locations">Check {Places}</Link> : undefined}>{result.error || successBody(result.success)}</Notice>
-        </div>
-      ) : null}
-      <p role="status" className="q-sr">{dirty ? "Unsaved changes" : "Saved"}{copyStatus ? `. ${copyStatus}` : ""}</p>
-      <noscript><p className="q-help">JavaScript is needed to save changes. Turn it on, then reload this page.</p></noscript>
-      {/* Leaving with edits that are not saved asks first (Nov 21, 2026). */}
-      <DiscardGuard dirty={dirty} />
-    </form>
+    <>
+      <form noValidate id="edit-location-form" onSubmit={submit} aria-busy={pending} className="c-card c-setb-form" aria-label={`Edit ${place}`}
+        data-save-on-change="" data-dirty={dirty || pending ? "" : undefined} {...handlers}>
+        <fieldset disabled={pending} className="c-setb-fieldset">
+          <input type="hidden" name="id" value={location.id} />
+          <input type="hidden" name="expectedUpdatedAt" value={location.updatedAt ?? ""} />
+          <FieldErrors errors={errors}>
+            <div className="c-card__body c-setb-fields">
+              <FieldB label="Name" id="edit-location-name" name="name" required maxLength={160} value={draft.name}
+                onChange={(event) => change({ name: event.target.value })} autoComplete="off" />
+              <FieldB label="Short name" id="edit-location-short-name" name="shortName" required maxLength={48} value={draft.shortName}
+                onChange={(event) => change({ shortName: event.target.value })} autoComplete="off" />
+            </div>
+            <CorpRows>
+              <li><SwitchRowB id="edit-location-active" name="active" label="Active" checked={draft.active} onChange={(active) => change({ active })} describedBy="edit-location-active-help" /></li>
+              {/* The Clocker only works at an active location, so an inactive one shows no link to open or copy. */}
+              <li>{location.active ? <div className="c-row c-row--one c-setb-linkrow">
+                <span className="c-row__main"><Link className="c-row__title c-setb-rowlink" href={clockerHref}>Clocker link</Link></span>
+                <span className="c-row__trail"><button type="button" className="c-btn c-btn--secondary c-btn--sm c-setb-copy" onClick={copyLink} aria-label="Copy Clocker link">Copy</button></span>
+              </div> : <CorpRow title="Clocker link" value="Unavailable while inactive" valueTone="soft" one />}</li>
+              <li><CorpRow href="/app/schedule/settings#coverage-staffing" title="Staffing" value={staffing ?? "Not set"} valueTone="soft" one chevron /></li>
+              <li><CorpRow href="/app/employees" title="Who can work here" value={eligible === undefined ? undefined : String(eligible)} valueTone="soft" one chevron /></li>
+            </CorpRows>
+            <p className="c-sr" id="edit-location-active-help">{draft.active ? "Turning this off keeps history. The Clocker stops working here." : "Inactive: new assignments and the Clocker are unavailable."}</p>
+          </FieldErrors>
+        </fieldset>
+        {dirty || pending ? <CorpFormFooter><button type="submit" className="c-btn" disabled={pending}><ButtonLabel pending={pending} idle="Save" busy="Saving…" /></button></CorpFormFooter> : null}
+        <p role="status" className="c-sr">{dirty ? "Unsaved changes" : "Saved"}{copyStatus ? `. ${copyStatus}` : ""}</p>
+        <noscript><p className="c-setb-cardnote">JavaScript is needed to save changes. Turn it on, then reload this page.</p></noscript>
+        {/* Leaving with edits that are not saved asks first (Nov 21, 2026). */}
+        <DiscardGuard dirty={dirty} />
+      </form>
+      {result.error || result.success ? <ResultB innerRef={feedback} tone={result.error ? "urgent" : "done"}
+        title={result.error ? (unconfirmed ? "Not saved yet" : "Changes not saved") : `${words.location} updated`}
+        action={unconfirmed ? <CorpLink large href="/app/settings/locations">{`Check ${Places}`}</CorpLink> : undefined}>{result.error || successBody(result.success)}</ResultB> : null}
+    </>
   );
 }

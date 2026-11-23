@@ -4,7 +4,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { readPresentationHistory } from "@/lib/workspace-presentation/service";
 import { storedBrand } from "@/lib/workspace-presentation/model";
 import { BrandEditor } from "@/components/brand-editor";
-import { SettingsFrame } from "../wave-c-kit";
+import { SettingsPageB } from "../settings-b";
 import { listLocations } from "@/lib/data/locations";
 import { listPositions } from "@/lib/data/positions";
 
@@ -21,8 +21,8 @@ export default async function BrandingPage() {
   const latest = history[0];
   const current = storedBrand(latest?.settings);
   return (
-    // Review F4 (NV-102): on tablets and desktop Save is in the settings card's footer; phones keep it in the top bar.
-    <SettingsFrame title="Branding" save={{ form: "brand-form", card: true }}>
+    // Review F4 (NV-102): on tablets and desktop Save is in the settings card's footer; phones save from the band.
+    <SettingsPageB title="Branding" phoneRight={<button type="submit" form="brand-form" className="c-setb-save">Save</button>}>
       <BrandEditor key={latest?.revision ?? 0}
         workspaceName={workspace.name}
         revision={latest?.revision ?? 0}
@@ -32,6 +32,6 @@ export default async function BrandingPage() {
         timeZone={workspace.timeZone}
         sample={{ place: locations[0]?.shortName || undefined, position: positions[0]?.name || undefined }}
       />
-    </SettingsFrame>
+    </SettingsPageB>
   );
 }

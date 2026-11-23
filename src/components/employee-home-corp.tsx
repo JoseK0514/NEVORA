@@ -7,6 +7,7 @@ import {HOME_SOURCES} from '../lib/employee-home/project';
 import type {HomeSnapshot, PublishedAssignment} from '../lib/employee-home/types';
 import {homePublishedNames, unpublishedNote} from '../lib/publication-note';
 import {keepWhole} from '../lib/keep-whole';
+import {formatTime} from '../lib/date-utils';
 import Link from 'next/link';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {useAccessJourney} from './mobile-access/journey';
@@ -24,10 +25,9 @@ import {businessDate, clock, confirmsWeek, dayWord, fmt, isComplete, sourceDesti
  * right after activation. */
 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
-/** "08:00" → "8:00 AM". */
+/** "08:00" → "8:00 AM" (the one time format, date-utils formatTime). */
 function wall(time: string) {
-  const [h, m] = time.split(':').map(Number);
-  return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 || h === 24 ? 'AM' : 'PM'}`;
+  return formatTime(time);
 }
 
 /** "2026-10-30 19:45": the read's moment as wall time in the workspace zone, comparable with "<date> <HH:mm>". */

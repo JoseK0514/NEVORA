@@ -160,8 +160,8 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
 
   const [deviceBefore, deviceAfter = ''] = t('{device} is connected to this location.', { device: '\u0000' }).split('\u0000');
   // Phase 8 (#20): the location reads as one name. A short name keeps its words on one line; a long one may still wrap.
-  const [placeBefore, placeAfter = ''] = t('This tablet will be the time clock for {location}.', { location: '\u0000' }).split('\u0000');
-  const place = <strong>{locationLabel.length <= 28 ? locationLabel.replace(/ /g, '\u00a0') : locationLabel}</strong>;
+  // Gate check (Nov 23): the band's pill already names the location, so the card doesn't repeat it.
+  const placeLine = t('This tablet becomes this location’s time clock.');
   const [readyBefore, readyAfter = ''] = t('{device} is ready. Your team can clock in now.', { device: '\u0000' }).split('\u0000');
   const fieldError = error && view === 'type';
   const punchNote = <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20} mark/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Punching in isn’t turned on yet. Don’t use this tablet to record time.")} {t("Ask your Owner to contact NEVORA support.")}</p></div>;
@@ -192,7 +192,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
       </> : view === 'received' ? <>
         <span className={styles.ring}><ClockerIcon name="tablet" size={28} mark/></span>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t('Setup code received')}</h1>
-        <p className={styles.lead}>{placeBefore}{place}{placeAfter} {keep(t('Tap Connect tablet to finish. The code works one time.'))}</p>
+        <p className={styles.lead}>{placeLine} {keep(t('Tap Connect tablet to finish. The code works one time.'))}</p>
         <form onSubmit={connect} className={styles.form}>
           <fieldset disabled={pending}>
             {feedback && !uncertain ? <p role="alert" className={`${styles.msg} ${setup.center}`}><ClockerIcon name={feedback.offline ? 'offline' : 'stop'} size={18}/><span><ClockerText text={feedback.message}/></span></p> : null}
@@ -203,7 +203,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
       </> : <>
         <p className={`${styles.eyebrow} ${setup.eyebrow}`}>{t("One-time setup")}</p>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t("Set up this tablet")}</h1>
-        <p className={`${styles.lead} ${setup.lead}`}>{placeBefore}{place}{placeAfter}</p>
+        <p className={`${styles.lead} ${setup.lead}`}>{placeLine}</p>
         <ol className={setup.steps} aria-label={t('How to set it up')}>
           <li><span className={setup.n} aria-hidden="true">1</span><span>{t('On another device, the Owner opens Settings → Clocker tablets.')}</span></li>
           <li><span className={setup.n} aria-hidden="true">2</span><span>{t('The Owner adds this tablet and gets its setup code.')}</span></li>

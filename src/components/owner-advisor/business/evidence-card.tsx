@@ -59,7 +59,7 @@ export function BusinessCitationItem({ source, evidence, lang = "en", initialOpe
   // Judged once, at a fixed moment, so the card's words don't change between two renders.
   const [judgedAt] = useState(() => initialOpenAt ?? Date.now());
   const model = evidenceCardModel(source.href, evidence, t, locale, openAt ?? judgedAt);
-  const observed = <span>Observed <time dateTime={source.observedAt}>{new Date(source.observedAt).toLocaleString()}</time></span>;
+  const observed = <span>Observed <time dateTime={source.observedAt}>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(source.observedAt))}</time></span>;
   if (!model) return <li><a href={source.href}>{source.label}</a>{observed}</li>;
   const close = () => { setOpenAt(null); trigger.current?.focus(); };
   const open = () => { setOpenAt(Date.now()); requestAnimationFrame(() => card.current?.focus()); };

@@ -5,7 +5,7 @@ import { payrollFeatureEnabled } from "@/lib/payroll/service";
 import { readModuleBlockers, readPresentationHistory, updatesActivationHeld } from "@/lib/workspace-presentation/service";
 import { readSettings } from "@/lib/workspace-presentation/model";
 import { FeaturesEditor } from "@/components/features-editor";
-import { SettingsFrame } from "../wave-c-kit";
+import { SettingsPageB } from "../settings-b";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
 export const metadata = { title: "Features" };
@@ -19,7 +19,7 @@ export default async function FeaturesPage() {
   const latest = history[0];
   const settings = readSettings(latest?.settings);
   return (
-    <SettingsFrame title="Features and team terms" back={{ href: "/app/settings", label: "Settings" }}>
+    <SettingsPageB title="Features and team terms">
       <FeaturesEditor
         key={latest?.revision ?? 0}
         revision={latest?.revision ?? 0}
@@ -29,6 +29,6 @@ export default async function FeaturesPage() {
         payrollEnabled={payrollFeatureEnabled()}
         updatesHeld={updatesHeld}
       />
-    </SettingsFrame>
+    </SettingsPageB>
   );
 }

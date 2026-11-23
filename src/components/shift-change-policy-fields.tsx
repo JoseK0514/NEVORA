@@ -1,4 +1,3 @@
-import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { SelectField } from "./select-field";
 import type { ShiftChangePolicy } from "../lib/shift-changes/types";
 import { PolicyForm, PolicyOrderError } from "./wave-b-forms";
@@ -12,12 +11,10 @@ export function ShiftChangePolicyFields({
   canEdit: boolean;
 }) {
   return (
-    <details className="wb-disclosure wb-disclosure--ruled wb-policy">
-      <summary><span>How trades and coverage work</span><CaretDownIcon size={20} weight="bold" aria-hidden="true" /></summary>
-      <p className="wb-note wb-card-lead">
-        {canEdit ? "Owners can edit these settings; managers can view them." : "Owners edit these settings; you can view them."} Until a rule is set, trades and coverage requests
-        wait for a manager. Trades and coverage save separately.
-      </p>
+    // Phase 2 (C9, Nov 23, 2026): Trades and Coverage straight under the rule's row (the rule's row already names it), with
+    // one line that matters: who sets them for a Manager, what happens before they are set for the Owner.
+    <div className="c-rf-policy">
+      <p className="c-rf-help">{canEdit ? "Until a rule is set, trades and cover wait for a manager." : "An Owner sets these."}</p>
       {(["swap", "coverage"] as const).map((scope) => {
         const current = policy?.[scope];
         const content = (
@@ -26,6 +23,7 @@ export function ShiftChangePolicyFields({
             <SelectField
               name="mode"
               label="How requests are approved"
+              className="c-field c-rf-selectfield"
               defaultValue={current?.mode ?? ""}
               options={[
                 { value: "", label: "Not set yet" },
@@ -33,9 +31,10 @@ export function ShiftChangePolicyFields({
                 { value: "MANAGER_REVIEW", label: "Manager reviews" },
               ]}
             />
-            <label className="wb-field">
-              <span>Ask at least this many minutes before the shift</span>
+            <label className="c-field">
+              <span className="c-field__label">Ask at least this many minutes before the shift</span>
               <input
+                className="c-in"
                 name="submissionAdvanceMinutes"
                 type="number"
                 min="0"
@@ -43,11 +42,12 @@ export function ShiftChangePolicyFields({
                 step="1"
                 defaultValue={current?.submissionAdvanceMinutes ?? ""}
               />
-              <span className="wb-help">Leave blank if you haven’t decided. 0 means right up to the start.</span>
+              <span className="c-field__help">Leave blank if you haven’t decided. 0 means right up to the start.</span>
             </label>
-            <label className="wb-field">
-              <span>Finish at least this many minutes before the shift</span>
+            <label className="c-field">
+              <span className="c-field__label">Finish at least this many minutes before the shift</span>
               <input
+                className="c-in"
                 name="completionAdvanceMinutes"
                 type="number"
                 min="0"
@@ -56,7 +56,7 @@ export function ShiftChangePolicyFields({
                 defaultValue={current?.completionAdvanceMinutes ?? ""}
               />
               {canEdit ? <PolicyOrderError /> : null}
-              <span className="wb-help">
+              <span className="c-field__help">
                 Use the same number or less than the time to ask. Requests
                 already sent keep their earlier deadline.
               </span>
@@ -64,8 +64,8 @@ export function ShiftChangePolicyFields({
           </>
         );
         return (
-          <section key={scope} className="wb-policy-scope">
-            <h3 className="wb-strong">{scope === "swap" ? "Trades" : "Coverage"}</h3>
+          <section key={scope} className="c-rf-scope">
+            <h2 className="c-rf-scope__t">{scope === "swap" ? "Trades" : "Coverage"}</h2>
             {canEdit ? (
               <PolicyForm
                 revision={current?.revision ?? 0}
@@ -75,7 +75,7 @@ export function ShiftChangePolicyFields({
                 {content}
               </PolicyForm>
             ) : (
-              <dl className="wb-facts">
+              <dl className="c-rf-facts">
                 <div><dt>How requests are approved</dt>
                 <dd>
                   {current?.mode === "AUTOMATIC_WHEN_VALID"
@@ -101,6 +101,6 @@ export function ShiftChangePolicyFields({
           </section>
         );
       })}
-    </details>
+    </div>
   );
 }

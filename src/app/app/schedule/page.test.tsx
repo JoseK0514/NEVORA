@@ -159,12 +159,40 @@ it('a location Manager with Publish schedules gets Publish; one without it gets 
  expect(plain).not.toMatch(/href="\/app\/schedule\/publish/);
  expect(plain).toContain('Add shift');
 });
+// Recheck (Nov 23, 2026), the gate's point 4: one location is plain band text, not a button with an aria-label; the phone
+// band has no date line and no second Add shift (the day card names the day and ends with Add shift).
+it('a one-location Manager sees the place once, as text, and one Add shift per layout',async()=>{
+ f.role='MANAGER';operationalPageFixture.scoped=true;
+ const output=await html();
+ expect(output).toContain('<span class="c-sched-place">');
+ expect(output).toContain('<span class="b-date">');
+ expect(output).toContain('<span class="sr-only">Location: </span>Managed</span>');
+ expect(output).not.toContain('aria-label="Location: Managed"');
+ const hero=output.slice(output.indexOf('<header class="b-hero'),output.indexOf('</header>',output.indexOf('<header class="b-hero')));
+ expect(hero).not.toContain('Add shift');
+ expect(hero).not.toContain('class="b-sub"');
+ expect(output).toMatch(/class="b-add"[^>]*>.*?Add shift<\/a>/);
+});
 
 it('company denial withholds global schedule rows and all editing controls',async()=>{f.role='MANAGER';operationalPageFixture.denied=true;const output=await html();expect(output).toContain('Company-wide access needed');expect(output).not.toContain('Add shift');expect(output).not.toContain('Publish');expect(f.managerReads).not.toHaveBeenCalled();});
 it('an operational company denial does not remove the Employee self schedule',async()=>{operationalPageFixture.denied=true;const output=await html();expect(output).toContain('c-esched');expect(output).toContain('aria-label="Days in this week"');expect(output).not.toContain('Company-wide access needed');expect(f.managerReads).not.toHaveBeenCalled();});
 
 rs.mock('@/lib/company-access/operational-read.server',()=>({readSchedulePendingChanges:async()=>f.pending?{state:'ready',data:f.pending}:{state:'unavailable',reason:'read_failed'},readOperationalSchedule:async(_proof:unknown,query:{weekStart:string;locationId?:string})=>({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{weekStart:query.weekStart,selectedLocationId:query.locationId??null,locations:[{id:'loc',name:'Managed location',shortName:'Managed',active:true}],shifts:[{id:'local-shift',scheduleId:'local-week',employeeId:'local',employeeName:'Local Shift',locationId:'loc',date:'2026-10-05',startTime:'08:00',endTime:'12:00',positionName:'Recorded position',isDesignatedLead:false,isCalloutApproved:false,scheduleStatus:'PUBLISHED'}],roster:[],companyControls:{state:'requires_company'}}})}));
-it('uses the actual scoped schedule DTO without loading the canonical full roster',async()=>{f.role='MANAGER';operationalPageFixture.scoped=true;const output=await html();expect(output).toContain('Local Shift');expect(output).toContain('Recorded position');const future=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2030-10-07'})}));expect(future).toContain('/app/schedule/coverage?repair=local&amp;date=2030-10-07');expect(future).toContain('Find cover');expect(output).not.toContain('Build and publish');expect(output).not.toContain('Copy previous week');expect(f.managerReads).not.toHaveBeenCalled();});
+it('uses the actual scoped schedule DTO without loading the canonical full roster',async()=>{f.role='MANAGER';operationalPageFixture.scoped=true;const output=await html();expect(output).toContain('Local Shift');expect(output).toContain('Recorded position');const future=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2030-10-07'})}));expect(future).toContain('/app/schedule/coverage?repair=local&amp;date=2030-10-07');expect(future).toContain('aria-label="Fill the open shift');expect(output).not.toContain('Build and publish');expect(output).not.toContain('Copy previous week');expect(f.managerReads).not.toHaveBeenCalled();});
+
+// G27 (Nov 23, 2026): after a save the scoped Schedule opens on the saved day (`day=` from the actions' redirect), on the
+// phone's week strip and as the desktop day view; a day outside the week on screen is ignored.
+it('a scoped Schedule opens on the day named by day=',async()=>{
+ f.role='MANAGER';operationalPageFixture.scoped=true;
+ const pressed=(output:string)=>[...output.matchAll(/<button type="button" class="b-week__d" aria-pressed="true"[^>]*><span>(\w+)<\/span><span class="sr-only"> <\/span><b class="c-num">(\d+)<\/b>/g)].map(m=>`${m[1]} ${m[2]}`);
+ const thursday=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc',day:'2026-10-08'})}));
+ expect(pressed(thursday)).toEqual(['Thu 8']);
+ expect(thursday).toContain('data-days="1"');
+ expect(thursday).toContain('Full week');
+ const outside=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc',day:'2026-10-15'})}));
+ expect(pressed(outside)).toEqual(['Mon 5']);
+ expect(outside).not.toContain('data-days="1"');
+});
 
 it.each([
  ['error','INVALID_SHIFT','Couldn’t open that shift. Pick it again from this week.','alert'],
@@ -218,7 +246,9 @@ it('Corporate: the week card names the week and its state, open shifts offer Fin
  expect(output).toContain('href="/app/schedule?week=2026-10-05&amp;location=west&amp;plan=1#schedule-planning"');
  expect(output).toContain(`href="${repair.replaceAll('&','&amp;')}"`);
  // Nov 1 upscale: the open shift's whole row opens Find cover (a chevron, no teal link in the list).
- expect(output).toMatch(/<a class="c-row c-sched-row c-sched-row--open" href="[^"]*repair=x" aria-label="Find cover for the open shift/);
+ // Gaps G12 (Nov 23, 2026): the row is named by what it shows ("Open shift"), with no aria-label that says it differently.
+ expect(output).toMatch(/<a class="c-row c-sched-row c-sched-row--open" href="[^"]*repair=x">/);
+ expect(output).not.toContain('aria-label="Find cover for the open shift');
  expect(output).not.toContain('>Find cover</a>');
  // The subtitle is the date alone (no "· 2 locations"); the location control and "…" share the title row.
  expect(output).not.toMatch(/· \d+ locations/);
@@ -237,7 +267,7 @@ it('Corporate: the week card names the week and its state, open shifts offer Fin
  rs.setSystemTime(new Date('2026-10-13T12:00:00Z'));
  const past=(await html()).replace(/ /g,' ');
  expect(past).toContain('<span class="c-meta">Not filled</span>');
- expect(past).not.toContain('aria-label="Find cover for the open shift');
+ expect(past).not.toMatch(/<a class="c-row c-sched-row c-sched-row--open"/);
  // Another week than this one: the week bar offers Today.
  expect(past).toContain('class="c-sched-week__today" href="/app/schedule?week=2026-10-12"');
  rs.useRealTimers();
@@ -343,6 +373,20 @@ it('names the title action by state: Publish changes while edits wait, nothing o
  expect(await page({})).toMatch(/aria-label="Publish changes, [^"]*" class="c-btn c-btn--sm">Publish changes</);
  f.pending=null; // a failed read: unknown, so Publish stays
  expect(await page({})).toMatch(/aria-label="Publish, [^"]*" class="c-btn c-btn--sm">Publish</);
+});
+// Gaps G33 (Nov 23, 2026): the company phone band does what the location Manager's does. The day card names the day and
+// ends with Add shift, so the band has no date line and no second Add shift; Publish stays on the band while edits wait.
+it('the company phone band has no date line and no second Add shift; Publish stays while edits wait',async()=>{
+ twoPublished();f.pending={...moved(),hasPendingChanges:false,pendingCount:0,locations:[],changes:[],changedShiftIds:[]};
+ const band=(out:string)=>out.slice(out.indexOf('<header class="b-hero'),out.indexOf('</header>',out.indexOf('<header class="b-hero')));
+ const quiet=await page({});
+ expect(band(quiet)).toContain('Schedule</h1>');
+ expect(band(quiet)).not.toContain('class="b-sub"');
+ // Add shift stays in the band's "…" menu (This week), as before; only the white button goes.
+ expect(band(quiet)).not.toContain('aria-label="Add shift, ');
+ expect(quiet).toMatch(/class="b-add"[^>]*>.*?Add shift<\/a>/);
+ f.pending=moved();
+ expect(band(await page({}))).toMatch(/aria-label="Publish changes, [^"]*"[^>]*>Publish changes</);
 });
 it('the "…" menu opens Schedule activity for the week shown',async()=>{
  f.role='OWNER';f.locations=[{id:'main',shortName:'Main Office'}];

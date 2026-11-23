@@ -1,0 +1,40 @@
+/* Copy receipt (Phase 2, queue C8, Nov 22, 2026). Corp/Direction B cards; text sizes in rem so 200% text scales.
+ * Every text line in a card starts on the card's inset (--b-inset, --b-inset-wide from 768px), like the kit's rows. */
+:is(#c-root, html) .c-copy :is(.c-title h1, .c-nav__title, .c-copy__big, .c-copy__kind, .b-statecard__t) { text-wrap: balance; }
+:is(#c-root, html) .c-copy .c-copy__done { display: flex; align-items: center; gap: 12px; }
+:is(#c-root, html) .c-copy .c-copy__done > .b-donemark { flex: none; }
+:is(#c-root, html) .c-copy .c-copy__line { display: flex; flex-direction: column; gap: 2px; min-width: 0; margin: 0; }
+:is(#c-root, html) .c-copy .c-copy__big { font-size: 1.25rem; line-height: 1.625rem; font-weight: 600; color: var(--c-ink); font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-copy .c-copy__sub { font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink2); font-variant-numeric: tabular-nums; }
+/* A list's count sits at the card's right edge, in tabular figures, so the counts of both lists share one edge. */
+:is(#c-root, html) .c-copy .c-copy__count { font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); font-variant-numeric: tabular-nums; }
+
+/* The main action sits under the result, before the lists, so it stays in reach on a phone. */
+:is(#c-root, html) .c-copy .c-copy__action { display: flex; margin: 4px 0; }
+:is(#c-root, html) .c-copy .c-copy__action > .c-btn { width: 100%; min-height: 44px; height: auto; white-space: nowrap; text-decoration: none; }
+
+/* One heading per kind of warning or reason, then its shifts. The icon is centred on the heading's first line. */
+:is(#c-root, html) .c-copy .c-copy__group + .c-copy__group { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-copy .c-copy__kind { display: flex; align-items: flex-start; gap: 8px; margin: 0; padding: 12px var(--b-inset, 16px) 4px; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-copy .c-copy__warn { width: 1.125rem; height: 1.125rem; margin-top: 0.0625rem; flex: none; color: var(--b-amber, #8A4B00); }
+:is(#c-root, html) .c-copy .c-copy__group .c-rows > li:first-child > .c-row { box-shadow: none; }
+:is(#c-root, html) .c-copy .c-copy__group .c-row__title { white-space: normal; }
+:is(#c-root, html) .c-copy .c-copy__group .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; font-variant-numeric: tabular-nums; }
+
+/* Not confirmed: Review schedule, then the retry; stacked full width on a phone, two equal buttons from 768px. */
+:is(#c-root, html) .c-copy .c-copy__buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+:is(#c-root, html) .c-copy .c-copy__buttons > *, :is(#c-root, html) .c-copy .c-copy__buttons .c-btn { width: 100%; }
+:is(#c-root, html) .c-copy .c-copy__buttons .c-btn { min-height: 44px; height: auto; white-space: nowrap; text-decoration: none; }
+:is(#c-root, html) .c-copy .c-copy__buttons p { grid-column: 1 / -1; margin: 8px 0 0; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-ink2); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-copy .b-statecard__main > .c-copy__buttons { justify-self: stretch; align-self: stretch; }
+/* The desktop kit draws buttons 40px high from its nv-b layer (a layered !important beats unlayered ones), so this page
+ * keeps the 44px target inside the same layer, where the more specific rule wins. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-copy :is(.c-btn, a.c-btn):not(#cr1) { box-sizing: border-box !important; height: auto !important; min-height: 44px !important; white-space: nowrap; }
+}
+
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-copy .c-copy__kind { padding-inline: var(--b-inset-wide, 22px); }
+  :is(#c-root, html) .c-copy .c-copy__action > .c-btn { width: auto; min-width: 10rem; }
+  :is(#c-root, html) .c-copy .c-copy__buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 12rem)); }
+}

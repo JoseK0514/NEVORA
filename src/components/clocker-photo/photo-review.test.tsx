@@ -14,20 +14,24 @@ const render = (page: unknown) => renderToStaticMarkup(createElement(ClockerPhot
 }));
 
 describe('Photo review', () => {
-  it('lists records as kit rows with one small Review each and a text Refresh in the card head', () => {
+  it('lists records as kit rows with one white Review each and a text Refresh in the card head', () => {
     const html = render({records: [record('7d6f2a3e-1b2c-4d5e-8f90-123456789abc', 'Alexandra Rivera'), record('8e7f3b4f-2c3d-4e6f-9a01-23456789abcd', 'Dana Kim')], total: 3,
       nextCursor: {deviceId: 'tablet-1', commandId: '8e7f3b4f-2c3d-4e6f-9a01-23456789abcd', performedAt: '2026-10-30T12:00:00.000Z'}});
-    expect(html).toContain('<h2 class="c-card__label" id="punch-photo-review-title">Company punch photos</h2>');
-    expect(html).toContain('aria-label="Refresh photo records">Refresh</button>');
+    // The count stands beside the card's label once; no line says what is always true (only an Owner opens this page).
+    expect(html).toContain('<h2 class="c-card__label" id="punch-photo-review-title">Clock actions<span class="c-count c-num">3</span></h2>');
+    expect(html).not.toContain('Only an authorized Owner');
+    // Each button's name starts with its visible word.
+    expect(html).toContain('>Refresh<span class="c-sr"> photo records</span></button>');
     expect(html.match(/<li><div class="c-row c-photo-review__row">/g)).toHaveLength(2);
-    expect(html).toMatch(/class="c-btn c-btn--secondary c-btn--sm" aria-label="Review Alexandra Rivera, Clock in, [^"]+">Review<\/button>/);
-    expect(html).toContain('3 original clock actions in the current company.');
+    expect(html).toMatch(/class="c-btn c-btn--secondary c-btn--md">Review<span class="c-sr">, Alexandra Rivera, Clock in, [^<]+<\/span><\/button>/);
     expect(html).toContain('Load more photo records');
     expect(html).not.toContain('No punch photo records yet');
   });
-  it('keeps the empty state as one line of text inside the card, with no extra button', () => {
+  it('shows the kit’s empty state inside the card, with no extra button', () => {
     const html = render({records: [], total: 0, nextCursor: null});
-    expect(html).toContain('<div class="c-photo-review__empty"><h3>No punch photo records yet</h3>');
+    expect(html).toContain('data-kind="empty"'); expect(html).toContain('No punch photo records yet'); expect(html).toContain('Photo records appear after an authorized clock action. No camera or employee photo collection is started by this page.');
+    // Approved privacy wording, said once, in the card.
+    expect(html.split('Private company photos. Removing a photo preserves its time record.').length).toBe(2);
     expect(html).not.toContain('Load more');
     expect(html.match(/<button/g)).toHaveLength(1);
   });

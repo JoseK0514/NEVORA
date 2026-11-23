@@ -1,15 +1,21 @@
 /* The Schedule day view's timeline (Jose's pick "A: a timeline", Nov 21, 2026). Presentation only: where a shift's capsule
  * sits on the day's axis. All figures are minutes from the day's midnight. */
 
+import { formatTime } from "../date-utils";
+
 export type DayAxis = {
   /** First and last minute of the axis, both on whole hours. */
   start: number; end: number;
   /** Hours between labels (and gridlines). */
   stepHours: number;
-  /** A label every `stepHours` from the start: where it sits (0–100) and what it says ("6a", "2p", "12a"). */
+  /** A label every `stepHours` from the start: where it sits (0–100) and what it says ("6:00 AM", "2:00 PM", "12:00 AM"). */
   ticks: { at: number; label: string }[];
 };
-export type AxisPlace = { left: number; width: number; /** The shift runs past midnight: its capsule is cut flat at the axis end. */ cut: boolean };
+export type AxisPlace = { left: number; width: number; /** The shift runs past midnight: its capsule is cut flat at the axis end. */ cut: boolean;
+  /** G8 (Nov 23, 2026): a capsule is never narrower than its time, so a short shift's capsule can need more room than its
+   * hours. One whose middle is in the later half of the axis is held at its end (`right`, from the axis end) and grows
+   * toward earlier hours, so it never runs past the axis end and out of the card; the others grow toward later hours. */
+  end: boolean; right: number };
 
 const MIN_HOURS = 8;
 const DAY = 24 * 60;
@@ -24,8 +30,9 @@ export function shiftSpan(startTime: string, endTime: string): { start: number; 
   return rawEnd <= start ? { start, end: DAY, cut: true } : { start, end: rawEnd, cut: false };
 }
 
-/** "6a", "2p", "12p"; midnight at either end reads "12a". */
-export function axisHour(hour: number) { const h = hour % 24; return `${h % 12 || 12}${h >= 12 ? "p" : "a"}`; }
+/** "6:00 AM", "2:00 PM", "12:00 PM"; midnight at either end reads "12:00 AM" (the one time format, Nov 23, 2026; it was
+ * "6a"). */
+export function axisHour(hour: number) { return formatTime(`${String(hour % 24).padStart(2, "0")}:00`); }
 
 /** The day's axis: from the earliest start to the latest end among the day's shifts, rounded out to whole hours and at
  * least eight hours wide (a short day grows evenly on both sides, inside the day). No shifts: 8a to 4p. */
@@ -46,5 +53,6 @@ export function dayAxis(shifts: readonly { startTime: string; endTime: string }[
 export function axisPlace(axis: DayAxis, startTime: string, endTime: string): AxisPlace {
   const span = shiftSpan(startTime, endTime), total = axis.end - axis.start;
   const from = Math.max(axis.start, Math.min(span.start, axis.end)), to = Math.max(from, Math.min(span.end, axis.end));
-  return { left: round(((from - axis.start) / total) * 100), width: round(((to - from) / total) * 100), cut: span.cut || span.end > axis.end };
+  const left = round(((from - axis.start) / total) * 100), width = round(((to - from) / total) * 100);
+  return { left, width, cut: span.cut || span.end > axis.end, end: left + width / 2 > 50, right: round(100 - left - width) };
 }

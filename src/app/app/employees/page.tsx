@@ -1,6 +1,6 @@
 import {scopedObservation} from '@/lib/company-access/observation';
 import {readOperationalDirectory} from '@/lib/company-access/operational-read.server';
-import {ScopedEmployeeDirectory} from '@/components/company-access/scoped-operational-views';
+import {ScopedTeam} from '@/components/company-access/scoped-team';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
@@ -24,7 +24,14 @@ export default async function EmployeesPage({ searchParams }: {
   const params=await(searchParams??Promise.resolve({}));
   const source=await readOperationalDirectory(await requireSessionMutationProof());
   if(source.state==='unavailable')return <OperationalUnavailable title="Employees unavailable" reason={source.reason}/>;
-  if(source.data.mode==='LOCATIONS')return <ScopedEmployeeDirectory data={source.data} observation={scopedObservation(source)}/>;
+  // Phase 2 (Nov 22, 2026): a location Manager's Team is the company Manager's Team with the scoped read's people. The
+  // search and the place filter only choose among those people; the place must be one of the Manager's own.
+  if(source.data.mode==='LOCATIONS'){
+    const search=params as DirectorySearchParams,one=(value:string|string[]|undefined)=>typeof value==='string'?value:'';
+    const location=one(search.location),place=source.data.locations.length>1?source.data.locations.find(item=>item.id===location)?.id:undefined;
+    return <ScopedReadFrame observation={scopedObservation(source)}><ScopedTeam data={source.data} query={one(search.q).trim().slice(0,128)} locationId={place}
+      showAll={one(search.all)==='1'} words={wordPreset((await currentPresentation()).words).en}/></ScopedReadFrame>;
+  }
   const {employees,locations}=source.data;
   const filters = readDirectoryFilters(params, locations);
   // Position names drive both the detail line and search. A failed source must

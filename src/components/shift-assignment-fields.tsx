@@ -15,7 +15,7 @@ export function positionAfterEmployeeChange({
   positionId: string;
   nextEmployeeId: string;
   employees: ShiftFormEmployee[];
-  positions: Position[];
+  positions: Pick<Position, "id" | "active">[];
 }) {
   if (!positionId) return "";
   const nextEmployee = employees.find((item) => item.id === nextEmployeeId);
@@ -148,7 +148,7 @@ export function ShiftAssignmentFields({
           onSelectionChange?.({ employeeId: selectedEmployee, positionId: event.target.value });
         }}
         options={[
-          { value: "", label: "No position" },
+          { value: "", label: "None" },
           ...choices.map((position) => ({
             value: position.id,
             label: position.name,

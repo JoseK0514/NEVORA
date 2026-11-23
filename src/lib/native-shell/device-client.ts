@@ -61,7 +61,7 @@ export class NativeDeviceController {
         this.metadata=native;
         if(native.maintenance){
             this.maintenanceUntil??=performance.now()+18000;
-            if(performance.now()>=this.maintenanceUntil){this.publish({state:'error',message:'App setup is taking longer. Check again.'});return;}
+            if(performance.now()>=this.maintenanceUntil){this.publish({state:'error',message:'App setup is taking longer than usual.'});return;}
             this.publish({state:'loading'});
             this.retry=setTimeout(()=>{this.retry=undefined;void this.start();},1000);
             return;
@@ -73,7 +73,7 @@ export class NativeDeviceController {
         this.metadata = native;
         if (this.turnOffPending && generation === null)
             this.turnOffPending = undefined;
-        this.publish({ state: this.turnOffPending ? 'error' : native.permission === 'denied' ? 'denied' : generation ? native.permission === 'granted' && native.generation === generation ? 'enabled' : 'revoked' : 'ready', generation: generation ?? undefined, message: this.turnOffPending ? 'Turn-off is still pending. Check again or block NEVORA alerts in your phone settings.' : undefined });
+        this.publish({ state: this.turnOffPending ? 'error' : native.permission === 'denied' ? 'denied' : generation ? native.permission === 'granted' && native.generation === generation ? 'enabled' : 'revoked' : 'ready', generation: generation ?? undefined, message: this.turnOffPending ? 'Turn-off is still pending. You can also block NEVORA alerts in your phone settings.' : undefined });
     }
     async start() { if (this.dead || this.busy)
         return; if(this.retry){clearTimeout(this.retry);this.retry=undefined;}this.busy = true; const epoch = ++this.epoch; this.publish({ state: 'loading' }); try {
@@ -81,7 +81,7 @@ export class NativeDeviceController {
     }
     catch {
         if (this.current(epoch))
-            this.publish({ state: 'error', message: 'We could not verify this device. Check again.' });
+            this.publish({ state: 'error' });
     }
     finally {
         if (epoch === this.epoch)
@@ -129,7 +129,7 @@ export class NativeDeviceController {
         }
         catch {
             if (this.current(epoch))
-                this.publish({ state: 'error', message: 'Setup did not finish. Check again before starting a new request.' });
+                this.publish({ state: 'error', message: 'Setup didn’t finish.' });
         }
         finally {
             if (epoch === this.epoch)
@@ -140,7 +140,7 @@ export class NativeDeviceController {
         if (this.dead || this.busy)
             return;
         if (!uuid.test(expected) || expected !== this.snapshot.generation) {
-            this.publish({ ...this.snapshot, state: 'error', message: 'Device setup changed. Check again before turning alerts off.' });
+            this.publish({ ...this.snapshot, state: 'error', message: 'Device setup changed before alerts could turn off.' });
             return;
         }
         const epoch = ++this.epoch;
@@ -157,7 +157,7 @@ export class NativeDeviceController {
         }
         catch {
             if (this.current(epoch))
-                this.publish({ state: 'error', generation: expected, message: 'Turn-off is still pending. Check again or block NEVORA alerts in your phone settings.' });
+                this.publish({ state: 'error', generation: expected, message: 'Turn-off is still pending. You can also block NEVORA alerts in your phone settings.' });
         }
         finally {
             if (epoch === this.epoch)

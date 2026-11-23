@@ -65,5 +65,9 @@
 @layer nv-b {
   :is(#c-root, html) body .app-shell[data-nv-b] .b-explain > summary:not(#fa-x1):not(#fa-x2) { position: relative !important; box-sizing: border-box !important; min-height: var(--b-btn-h-compact) !important; }
   :is(#c-root, html) body .app-shell[data-nv-b] .b-explain--compact > summary:not(#fa-x1):not(#fa-x2) { width: var(--b-btn-h-compact) !important; height: var(--b-btn-h-compact) !important; }
-  :is(#c-root, html) body .app-shell[data-nv-b] .b-explain > summary:not(#fa-x1):not(#fa-x2)::after { content: "" !important; position: absolute !important; inset: -4px !important; border-radius: var(--b-radius-pill) !important; }
+  /* Target size (Nov 23): the kit's .b-btn::after centres its ring with top 50% and a -50% translate; with only an inset
+   * here, that translate moved this ring half above the button (the drawn 36px was the whole tap area at its centre
+   * line). The ring is now centred the kit's way, 4px beyond the button on every side (44px for the 36px button). Its
+   * corners are square: it is transparent, and a rounded ring left its corners outside the tap area. */
+  :is(#c-root, html) body .app-shell[data-nv-b] .b-explain > summary:not(#fa-x1):not(#fa-x2)::after { content: "" !important; position: absolute !important; top: 50% !important; bottom: auto !important; left: -4px !important; right: -4px !important; width: auto !important; height: calc(100% + 8px) !important; translate: 0 -50% !important; transform: none !important; border-radius: 0 !important; }
 }

@@ -421,7 +421,9 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
       })}</ul></Card> : null}
       {/* Phase 8 (review C, row 7): for an Employee the note is the agreement card's footer (above); the management
         * screens keep their note under the cards. */}
-      {management ? <BNote>{t.separateManagement}</BNote> : null}
+      {/* Phase 2 gate (Nov 23): the "Not confirmed yet" note already says the schedule follows their Availability, so the
+        * separate note is left out there, as it is on the Employee's empty state. */}
+      {management && !snapshot!.legacyUnconfirmed ? <BNote>{t.separateManagement}</BNote> : null}
     </>;
   }
 

@@ -1,3 +1,5 @@
+import { formatClockRange } from './date-utils';
+
 /** One way to write time (Review B7, NV-068; BR-1, Nov 14, 2026). Screens read these functions instead of formatting
  * for themselves, so the same minutes always print the same way.
  *
@@ -11,11 +13,11 @@
  *   "382 h 51 min", "8 h", "45 min".
  * A screen that shows both a headline and an exact total for the same period uses Total for the first and Sentence for
  * the second, so "383 h" always sits over "382 h 51 min" and never over another rounding.
- * Dense grids (the schedule's "8a–4p") and frozen payroll documents keep their own compact forms.
+ * Frozen payroll documents keep their own forms; every clock time on a screen is the one time format (date-utils.ts).
  *
  * Dates and clock times (the Nov 11 plan's formatter set):
  * - dateRangeText: "Nov 9–15", "Sep 28–Oct 4", one day "Nov 9"; years only when the range crosses one.
- * - timeRangeText: "9:00 AM – 5:00 PM" in the zone given; an open end reads "now".
+ * - timeRangeText: "9:00 AM – 5:00 PM" in the zone given (date-utils formatClockRange); an open end reads "now".
  * - relativeTimeText: "Just now", "12 min ago", "2 h ago", "Yesterday", "Monday", then "Oct 19". */
 const whole = (minutes: number) => Math.max(0, Math.floor(minutes));
 
@@ -82,8 +84,7 @@ export function dateRangeText(startDate: string, endDate: string) {
 
 /** A span of clock time in one zone: "9:00 AM – 5:00 PM". An entry with no end yet reads "9:00 AM – now". */
 export function timeRangeText(startAt: string, endAt: string | null, timeZone: string, open = 'now') {
-  const time = (at: string) => new Intl.DateTimeFormat('en-US', { timeZone, hour: 'numeric', minute: '2-digit' }).format(new Date(at));
-  return `${time(startAt)} – ${endAt ? time(endAt) : open}`;
+  return formatClockRange(startAt, endAt || null, timeZone, open);
 }
 
 /** How long ago something happened: "Just now", "12 min ago", "2 h ago", "Yesterday", "Monday", then "Oct 19" (with the

@@ -39,17 +39,25 @@ it("lists every location with its people and status", async () => {
   // Release 1 (board O-Locations): the full name and state under the short name; how many people on the right.
   // Final polish D3 (#30): the line is the kit's facts line (BSegs), each fact whole.
   const facts = html.replace(/<[^>]+>/g, "");
-  expect(facts).toContain("East Office · Needs setup");
-  expect(html).toContain('<span class="wc-meta">1 employee</span>');
-  expect(facts).toContain("Old Office · Inactive");
-  // Owner premium R7: the header counts places only; each row already says how many people.
-  expect(html).toContain("<span>Locations<span class=\"wc-count c-num\">2</span></span>");
+  // Final fixes S2 (G85): a full name that only repeats the short name ("East" / "East Office") is left out; one that
+  // says more ("Studio" / "West Office") stays.
+  expect(facts).toContain("EastNeeds setup");
+  expect(facts).not.toContain("East Office");
+  expect(facts).toContain("West Office");
+  expect(html).toContain('<span class="c-row__value c-row__value--soft">1 employee</span>');
+  expect(facts).toContain("OldInactive");
+  // Phase 2 (Nov 23, 2026): Settings' Direction B frame and the kit's card; the band says "Locations" once, so the card
+  // has no title repeating it, and the always-true line under the card is gone. Rows have no aria-label of their own.
+  expect(html).toContain('class="c-page c-page--narrow c-setb"');
+  expect(html.match(/>Locations</g)).toHaveLength(2); // the phone band's title and the wide title, never both shown
+  expect(html).not.toContain("Each location keeps its own schedule.");
+  expect(html).not.toContain('aria-label="Edit ');
   expect(html).not.toContain("2 locations · 1 employee");
   for (const path of ["/app/settings/locations/east", "/app/settings/locations/west", "/app/settings/locations/old", "/app/settings/locations/new"]) expect(html).toContain(`href="${path}"`);
 });
 it("matches a short name without case sensitivity", async () => {
   const html = await render("  STUDIO  ");
-  expect(html).toContain('aria-label="Edit West Office"'); expect(html).not.toContain('aria-label="Edit East Office"');
+  expect(html).toContain('data-location="west"'); expect(html).not.toContain('data-location="east"');
   expect(html.match(/data-location="/g)).toHaveLength(1);
 });
 it.each([["setup", "east"], ["ready", "west"], ["inactive", "old"]])("filters %s using the existing readiness evaluator", async (status, id) => {
@@ -58,7 +66,7 @@ it.each([["setup", "east"], ["ready", "west"], ["inactive", "old"]])("filters %s
 });
 it("combines filters with search and offers a way back to every location", async () => {
   const html = await render("East", "ready");
-  expect(html).toContain("No matching locations"); expect(html).toContain('href="/app/settings/locations">Show all</a>');
+  expect(html).toContain("No matching locations"); expect(html).toContain('<a class="c-btn c-btn--secondary" href="/app/settings/locations">Show all</a>');
   expect(html).not.toContain('data-location="');
 });
 it("handles repeated or unknown URL parameters without crashing or hiding the directory", async () => {
@@ -70,7 +78,7 @@ it("distinguishes a true empty directory from a search without matches", async (
   data.locations.mockResolvedValueOnce([]);
   const html = await render();
   expect(html).toContain("Add the places your team works."); expect(html).not.toContain("No matching locations");
-  expect(html).toContain('<a class="q-btn" href="/app/settings/locations/new">Add location</a>');
+  expect(html).toContain('<a class="c-btn" href="/app/settings/locations/new">Add location</a>');
 });
 it("fails before data reads when Owner authorization is rejected", async () => {
   data.requireRoles.mockRejectedValueOnce(new Error("Forbidden"));

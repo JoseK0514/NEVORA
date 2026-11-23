@@ -192,33 +192,35 @@ describe("public policy pages", () => {
 
 describe("Delete my account", () => {
   const account = { name: "Fictional Person", role: "Employee", employeeId: "FICTIONAL-E1" };
-  it("reviews the account and effects, then asks for the password before the destructive action", () => {
+  // Phase 2 (Nov 23, 2026): every role gets the Employee's Direction B screen (employee-mobile/deletion.tsx).
+  it("says what is deleted and kept, then asks for the password before the destructive action", () => {
     const html = renderToStaticMarkup(createElement(AccountDeletionForm, { account, period: null, retention: null, existing: null }));
-    for (const text of ["Fictional Person", "FICTIONAL-E1", "<b>Your access ends now</b>", "What is removed", "What may be kept", "Read the full details", "Delete my account", "This can’t be undone.", "Keep my account"]) expect(html).toContain(text);
+    for (const text of ["What we delete", "Your access ends right away", "What may be kept", "Delete my account", "This can’t be undone.", "Confirm it’s you"]) expect(html).toContain(text);
+    expect(html).toContain('name="account" value="FICTIONAL-E1"');
     expect(html).toMatch(/<input[^>]*type="password"[^>]*autoComplete="current-password"|<input[^>]*autoComplete="current-password"[^>]*type="password"/);
     // Phase 8 (review B, row 4; DESIGN.MD B6): a working red pill from the start; the consent box is checked in the page
     // before anything is sent, so the button is never drawn disabled at rest.
-    expect(html).toContain('<button type="submit" class="q-btn q-deletion__confirm">Delete my account</button>');
+    expect(html).toMatch(/<button type="submit" class="c-btn c-btn--danger c-btn--full em-delete-confirm">Delete my account<\/button>/);
     expect(html).toContain('id="deletion-understand"');expect(html).not.toContain('placeholder="Password"');
-    expect(html.match(/<h1[ >]/g)).toHaveLength(1);
     expect(html).toContain("[CONFIRM_DELETION_COMPLETION_PERIOD]");
+    expect(html).toContain("I understand my NEVORA account will be deleted and I won’t be able to sign in again.");
   });
 
-  it("draws the review on Quiet rows with gutters, not the shell-scoped settings cards (inspection Oct 24)", () => {
-    const html = renderToStaticMarkup(createElement(AccountDeletionForm, { account, period: "Confirmed period", retention: "Fictional retention.", existing: null }));
-    expect(html).toContain('class="q-deletion"');
-    expect(html).toMatch(/<h2 id="deletion-account-title">Your account<\/h2>/);
-    expect(html.match(/class="q-row/g)?.length).toBeGreaterThanOrEqual(4);
-    expect(html).not.toMatch(/nv-card|wc-facts|wc-check/);
-    expect(html).toContain("I understand my NEVORA account will be deleted and I won’t be able to sign in again.");
+  it("gives an Owner the same screen with the workspace sentence and the public policy", () => {
+    const html = renderToStaticMarkup(createElement(AccountDeletionForm, { account: { ...account, role: "Owner", roleKey: "OWNER" as const }, period: "Confirmed period", retention: null, existing: null, owner: true }));
+    expect(html).toContain("em-delete--team");
+    expect(html).toContain("Your company’s workspace stays open for the rest of your team.");
+    expect(html).toContain('href="/account-deletion"');
+    expect(html).toContain('href="/app/profile#profile-privacy"');
+    expect(html).not.toMatch(/q-deletion|q-row/);
   });
 
   it("shows an open request with its reference instead of a second form", () => {
     const html = renderToStaticMarkup(createElement(AccountDeletionForm, { account, period: "Confirmed period", retention: null,
       existing: { kind: "duplicate", reference: "DEL-7KQ2M9XA", confirmedAt: "2030-01-01" } }));
-    expect(html).toContain("A deletion request is already in progress.");
+    expect(html).toContain("A deletion request is already in progress");
     expect(html).toContain("DEL-7KQ2M9XA");
     expect(html).toContain("Confirmed period");
-    expect(html).not.toContain("q-deletion__confirm");
+    expect(html).not.toContain("em-delete-confirm");
   });
 });

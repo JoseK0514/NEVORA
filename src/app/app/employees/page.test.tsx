@@ -41,7 +41,7 @@ it("keeps inactive employees discoverable with an explicit status", async () => 
   const html = renderToStaticMarkup(await EmployeesPage({ searchParams: Promise.resolve({ all: "1" }) }));
   // Inactive people keep their own group, labelled above its card (Owner premium R5); the label says it once, so the
   // rows carry no pill (R3) and say so to assistive tech.
-  expect(html).toContain('id="team-inactive-label">Inactive<span class="c-count c-num">1</span></h2>');
+  expect(html).toContain('id="team-inactive-label">Inactive<span class="c-count c-num"><span class="sr-only">\u00a0</span>1</span></h2>');
   expect(html).not.toContain('class="c-pill c-pill--neutral">Inactive</span>');
   // QA A4-03 (Nov 21, 2026): a row's visible content is its spoken name, so no label replaces it (dropping the live
   // status) or adds the phone number, which no Team row shows.
@@ -80,7 +80,7 @@ it("renders the retained inactive primary location truthfully in the employee di
   expect(html).toMatch(/Main[^<]*Inactive/);
   expect(html).not.toContain("Location not assigned");
   expect(html).toContain('href="/app/employees/inactive"');
-  expect(html).toContain('id="team-inactive-label">Inactive<span class="c-count c-num">1</span></h2>');
+  expect(html).toContain('id="team-inactive-label">Inactive<span class="c-count c-num"><span class="sr-only">\u00a0</span>1</span></h2>');
 });
 
 it("authorizes before loading any employee data", async () => {
@@ -121,25 +121,63 @@ it("distinguishes no matches from a genuinely empty workforce", async () => {
 });
 
 // Server composition tests; actual mounted finite-body behavior is checked separately.
-const operationalPageFixture=rs.hoisted(()=>({denied:false,scoped:false}));
+const operationalPageFixture=rs.hoisted(()=>({denied:false,scoped:false,multi:false}));
 rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>operationalPageFixture.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
 
-beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;});
+beforeEach(()=>{operationalPageFixture.denied=false;operationalPageFixture.scoped=false;operationalPageFixture.multi=false;});
 
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'actor',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 
-it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({}));expect(html).toContain('This page needs company-wide management access. An Owner can give it to you.');expect(fixture.events).toEqual(['authorize']);expect(html).not.toContain('Active Person');});
+it('withholds protected body and commands after current company-scope denial',async()=>{operationalPageFixture.denied=true;const {default:GuardedPage}=await import('./page');const html=renderToStaticMarkup(await GuardedPage({}));expect(html).toContain('Company-wide access needed');expect(fixture.events).toEqual(['authorize']);expect(html).not.toContain('Active Person');});
 
 it('uses the released minimal directory projection for a location-scoped Manager',async()=>{
  operationalPageFixture.scoped=true;
  const html=renderToStaticMarkup(await EmployeesPage());
  expect(html).toContain('Local Person');expect(html).not.toContain('Active Person');
- expect(html).not.toContain('href="/app/employees/local"');expect(html).not.toContain('href="/app/employees/new"');
+ expect(html).toContain('href="/app/employees/local"');expect(html).not.toContain('href="/app/employees/new"');
  expect(fixture.events).toEqual(['authorize']);
+});
+
+it('gives a location Manager the Direction B Team with their place in the band and no access paragraph',async()=>{
+ // Phase 2 (Nov 22, 2026): the company Manager's Team (the phone band and the desktop People card) with the scoped people.
+ operationalPageFixture.scoped=true;
+ const html=renderToStaticMarkup(await EmployeesPage());
+ expect(html).toContain('id="b-team-title"');expect(html).toContain('id="team-title"');
+ expect(html).toContain('class="b-search b-glass"');expect(html).toContain('form class="c-team-search"');
+ // One place: a chip in the band on both layouts, no filter.
+  expect(html.match(/placeholder="Search by name"/g)).toHaveLength(2);
+ expect(html.match(/<span class="b-sr">Location: <\/span>Main<\/span>/g)).toHaveLength(1);
+ expect(html.match(/<span class="c-sr">Location: <\/span>Main<\/span>/g)).toHaveLength(1);
+ expect(html).not.toContain('team-location-menu');
+ // The role on the row; the place is said once, in the band; nothing company-wide.
+ // The role only where it differs from Employee (Jose, Nov 23: no repeated wording).
+ expect(html).not.toContain('>EMPLOYEE<');expect(html).not.toMatch(/company-wide|Team at your locations|local<\/|Team tools|\/app\/availability|\/app\/account-recovery/);
+ // Release sweep (Nov 23): each row opens the person's page, which G17 (4745f4f2) serves to a location Manager for anyone
+ // on the scoped roster, so the rows are links with a chevron.
+ expect(html).toContain('href="/app/employees/local"');expect(html).toContain('c-chev');
+});
+
+it('filters a location Manager with several places by place and keeps the place in the search',async()=>{
+ operationalPageFixture.scoped=true;operationalPageFixture.multi=true;
+ const all=renderToStaticMarkup(await EmployeesPage());
+ expect(all).toContain('aria-label="Location: All your locations"');expect(all).toContain('>LEAD<');expect(all).toContain('Local Person');expect(all).toContain('Other Person');
+ // Under all places, each row names its places.
+ expect(all).toContain('Main');expect(all).toContain('East');
+ const east=renderToStaticMarkup(await EmployeesPage({searchParams:Promise.resolve({location:'east'})}));
+ expect(east).toContain('aria-label="Location: East"');expect(east).toContain('Other Person');expect(east).not.toContain('Local Person');
+ expect(east).toContain('<input type="hidden" name="location" value="east"/>');
+ // A place that isn't the Manager's is ignored.
+ const foreign=renderToStaticMarkup(await EmployeesPage({searchParams:Promise.resolve({location:'elsewhere'})}));
+ expect(foreign).toContain('aria-label="Location: All your locations"');expect(foreign).not.toContain('value="elsewhere"');
+ const searched=renderToStaticMarkup(await EmployeesPage({searchParams:Promise.resolve({q:'zz'})}));
+ // Gaps G13 (Nov 23, 2026): the empty search names the search and offers Clear search at every width (phones too).
+ expect(searched).toContain('No employees match “zz”.');expect(searched).not.toContain('No one matches this search.');
+ expect(searched).toContain('<div class="b-state-actions b-team-clear"><a href="/app/employees" class="b-btn b-btn--ghost">Clear search</a></div>');expect(searched).toMatch(/c-btn[^"]*"[^>]*>Clear search</);
 });
 rs.mock('@/lib/company-access/operational-read.server',()=>({readOperationalDirectory:async()=>{
  if(operationalPageFixture.denied)return {state:'unavailable',reason:'access_denied'};
+ if(operationalPageFixture.scoped&&operationalPageFixture.multi)return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc','east']},data:{mode:'LOCATIONS',employees:[{id:'local',firstName:'Local',lastName:'Person',role:'EMPLOYEE',locationIds:['loc']},{id:'other',firstName:'Other',lastName:'Person',role:'LEAD',locationIds:['east']}],locations:[{id:'loc',name:'Main',shortName:'Main',active:true},{id:'east',name:'East',shortName:'East',active:true}]}};
  if(operationalPageFixture.scoped)return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'LOCATIONS',locationIds:['loc']},data:{mode:'LOCATIONS',employees:[{id:'local',firstName:'Local',lastName:'Person',role:'EMPLOYEE',locationIds:['loc']}],locations:[{id:'loc',name:'Main',shortName:'Main',active:true}]}};
  const source=await import('@/lib/data/employees');return {state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},data:{mode:'COMPANY',employees:await source.listEmployees(),locations:await source.listLocations({includeInactive:true})}};
 }}));

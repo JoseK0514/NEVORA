@@ -50,7 +50,7 @@
 
 /* Dates: one field-shaped disclosure that says what is set; the three pickers open under it. */
 :is(#c-root, html) .kn .kn-dates__toggle { display: flex; align-items: center; justify-content: space-between; gap: var(--b-space-12); width: 100%; min-height: 48px; margin: 0; padding: 0 14px;
-  border: 1px solid var(--b-field-edge); border-radius: var(--b-radius-field); background: #FFFFFF; box-shadow: none; color: var(--b-ink); font: inherit; font-size: 16px; line-height: 22px; text-align: left; cursor: pointer; }
+  border: 1px solid var(--b-field-edge); border-radius: var(--b-radius-field); background: #FFFFFF; box-shadow: none; color: var(--b-ink); font: inherit; font-size: 1rem; line-height: 1.375rem; text-align: left; cursor: pointer; }
 :is(#c-root, html) .kn .kn-dates__toggle:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset, 2px); }
 :is(#c-root, html) .kn .kn-dates__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--b-ink); }
 :is(#c-root, html) .kn .kn-dates__caret { flex: none; width: 16px; height: 16px; color: var(--b-grey); }
@@ -84,3 +84,20 @@
 :is(#c-root, html) .kn .kn-confirm__list { display: flex; flex-direction: column; gap: var(--b-space-8); margin: 0; padding-left: 20px; list-style: disc; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); color: var(--b-ink2); }
 :is(#c-root, html) .kn .kn-check { display: flex; align-items: center; gap: var(--b-space-12); min-height: 48px; font-size: var(--b-fs-body); line-height: var(--b-lh-body); color: var(--b-ink); cursor: pointer; }
 :is(#c-root, html) .kn .kn-check input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--b-teal); }
+
+/* Rondo follow-up (Nov 23, 2026): the kit labels on this page in rem at their current sizes, so 200% text keeps the
+ * hierarchy (section labels, stat labels and figures, field labels and help, buttons, empty rows, row values). Same px
+ * at 100%. Inside nv-b so it outranks the B layers' fixed sizes. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .kn :is(.c-section__label, .c-stat__label, .c-field__label, .c-field__help, .c-card__sub, .c-empty__body):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .kn .c-stat__label:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .kn .c-stat__value:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1.25rem !important; line-height: 1.625rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .kn :is(.c-row__value, .c-empty--row, .c-empty__title):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.9375rem !important; line-height: 1.25rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .kn .c-btn:is(.c-btn--md, .c-btn--sm, .c-btn--xs):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.9375rem !important; line-height: 1.25rem !important; height: auto !important; min-height: 2.75rem !important; }
+}
+
+/* Rondo follow-up (Nov 23, 2026): the phone band title in rem at its current 28/34px (the shell sets px), so it grows with
+ * 200% text like the rest of the page. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .kn.c-page .c-nav--phone .c-nav__title:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1.75rem !important; line-height: 2.125rem !important; }
+}

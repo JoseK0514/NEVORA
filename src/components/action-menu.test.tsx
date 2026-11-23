@@ -57,3 +57,26 @@ it("marks the trigger as current only when asked", async () => {
   expect(plain).not.toContain("aria-current");
   expect(current.split("</button>")[0]).toContain('aria-current="true"');
 });
+
+// G51 (Nov 23, 2026): every menu's trigger says whether it is open, its name starts with what it shows, and its items
+// take the kit's teal ring (the menu is white wherever its trigger sits, the band included).
+it("tells whether the menu is open and names a value trigger by what it shows first", async () => {
+  const { ActionMenu, actionMenuTriggerName } = await import("./action-menu");
+  expect(actionMenuTriggerName("Location", "Location: All your locations")).toBe("All your locations, Location");
+  expect(actionMenuTriggerName("Bonus year", "Bonus year: Oct 2025 – Sep 2026")).toBe("Oct 2025 – Sep 2026, Bonus year");
+  expect(actionMenuTriggerName("More", "More schedule actions")).toBe("More schedule actions");
+  expect(actionMenuTriggerName("Sam Cruz", "Sam Cruz, account menu")).toBe("Sam Cruz, account menu");
+  expect(actionMenuTriggerName("Menu")).toBe("Menu");
+  const html = renderToStaticMarkup(<ActionMenu id="loc" label="Location" ariaLabel="Location: Condado"
+    triggerContent={<>Condado</>}><a href="/a" className="nevora-action-menu-item">All your locations</a></ActionMenu>);
+  const trigger = html.split("</button>")[0];
+  expect(trigger).toContain('aria-label="Condado, Location"');
+  expect(trigger).toContain('aria-expanded="false"');
+  expect(trigger).toContain(">Condado");
+});
+
+it("rings a focused menu item in teal inside its box, over any band rule", () => {
+  const foundation = readFileSync(fileURLToPath(new URL("../app/app/b-foundation.css", import.meta.url)), "utf8");
+  const layer = foundation.slice(foundation.indexOf("@layer nv-b {"));
+  expect(layer).toMatch(/:is\(#c-root, html\) :is\(#c-root, body\) :is\(#c-root, \.app-shell\)\[data-nv-b\] \.nevora-action-menu-popover :is\(a, button, \[tabindex\]\):focus-visible \{\s*outline: var\(--b-focus-width\) solid var\(--b-focus\) !important; outline-offset: calc\(-1 \* var\(--b-focus-width\)\) !important; \}/);
+});

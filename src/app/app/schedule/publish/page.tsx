@@ -5,7 +5,7 @@ import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import type { ReactNode } from "react";
-import { BDoneMark, BSegs, BWhen } from "@/components/owner-b/b-kit";
+import { BSegs, BWhen } from "@/components/owner-b/b-kit";
 import { CorpBody, CorpButtonLink, CorpCard, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows } from "@/components/corp/corp";
 import { ScheduleCopyForm } from "@/components/schedule-copy-form";
 import { OperationalUnavailable } from "@/components/company-access/operational-unavailable";
@@ -45,8 +45,8 @@ const hm = (value: string) => { const [h, m] = value.split(":").map(Number); ret
 const shortDay = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${date}T12:00:00Z`));
 /** Final polish (Nov 20, 2026; confirmations review A #19): a held change's facts, each whole and none said twice. The
  * chip already says Added or Removed, so those rows read "Wed, Nov 4 · 8:00 AM – 4:00 PM"; a changed shift names what
- * changed ("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM"). A time range is short on phones and
- * full from 768px (`BWhen`) and never splits inside a time. */
+ * changed ("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM"). A time range is full at every
+ * width (`BWhen`, Nov 23, 2026) and never splits inside a time. */
 function ChangeDetail({ change }: { change: SchedulePendingChange }) {
   const span = (value: SchedulePendingChange["before"]) => value ? `${hm(value.startTime)} – ${hm(value.endTime)}` : "";
   const what = change.kind === "CHANGED" ? change.fields.map(field => FIELD_TEXT[field]).join(", ") : null;
@@ -110,6 +110,8 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
   const statePill = (value: string | null) => {
     return value === "PUBLISHED" ? <CorpPill tone="green">Published</CorpPill> : value === "DRAFT" ? <CorpPill tone="amber">Draft</CorpPill> : value === null ? null : <CorpPill tone="neutral">Not started</CorpPill>;
   };
+  // Batch nav gate (Nov 23, 2026): once the whole week is published, the week's green Published says it once; the
+  // location rows keep their shift counts without the same pill, and no closing line repeats it.
   const scheduleHref = `/app/schedule?week=${encodeURIComponent(weekStart)}`;
   // Closing F1 (NV-088): the week's state as the Schedule band says it: amber while something waits, green once published.
   const allPublished = !drafts.length && !pending?.hasPendingChanges && locations.some(location => location.status === "PUBLISHED");
@@ -154,7 +156,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
             <CorpRows label="Locations this week">{locations.map(location => {
               const count = location.shiftCount;
               return <li key={location.id}><CorpRow href={`${scheduleHref}&location=${encodeURIComponent(location.id)}`} bold title={location.shortName}
-                detail={count ? plural(count, "shift", "shifts") : "Nothing scheduled"} trail={statePill(location.status)} chevron={false} /></li>;
+                detail={count ? plural(count, "shift", "shifts") : "Nothing scheduled"} trail={allPublished ? undefined : statePill(location.status)} chevron={false} /></li>;
             })}</CorpRows>
           </CorpCard>
           {pending?.hasPendingChanges ? <CorpCard id="publish-changes" label={`Changes not published (${pending.pendingCount})`}>
@@ -200,7 +202,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
               {`Publish ${drafts.length === 1 ? drafts[0].shortName : plural(drafts.length, "draft", "drafts")}${pending?.hasPendingChanges ? " and changes" : ""}${review.length ? " anyway" : ""}`}
             </EmployeeSubmitButton>
             </div>
-          </UnconfirmedActionForm> : <CorpNote icon={allPublished ? <BDoneMark still /> : <CheckCircleIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>{locations.some(location => location.status === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>)}
+          </UnconfirmedActionForm> : allPublished ? null : <CorpNote icon={<CheckCircleIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>Nothing is planned yet. Build the week to start a draft.</CorpNote>)}
         </div>
       </div>
     </CorpPage>

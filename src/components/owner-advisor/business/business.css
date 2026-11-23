@@ -158,3 +158,20 @@
 :is(#c-root, html) .be .be-results:empty { display: none; }
 :is(#c-root, html) .be .be-results .c-section > .c-card + .c-card { margin-top: var(--b-space-12); }
 :is(#c-root, html) .be .be-notice { margin: 0; }
+
+/* Rondo follow-up (Nov 23, 2026): the kit labels on this page in rem at their current sizes, so 200% text keeps the
+ * hierarchy (section labels, stat labels and figures, field labels and help, buttons, empty rows, row values). Same px
+ * at 100%. Inside nv-b so it outranks the B layers' fixed sizes. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .be :is(.c-section__label, .c-stat__label, .c-field__label, .c-field__help, .c-card__sub, .c-empty__body):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .be .c-stat__label:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .be .c-stat__value:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1.25rem !important; line-height: 1.625rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .be :is(.c-row__value, .c-empty--row, .c-empty__title):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.9375rem !important; line-height: 1.25rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .be .c-btn:is(.c-btn--md, .c-btn--sm, .c-btn--xs):not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 0.9375rem !important; line-height: 1.25rem !important; height: auto !important; min-height: 2.75rem !important; }
+}
+
+/* Rondo follow-up (Nov 23, 2026): the phone band title in rem at its current 28/34px (the shell sets px), so it grows with
+ * 200% text like the rest of the page. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .be.c-page .c-nav--phone .c-nav__title:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1.75rem !important; line-height: 2.125rem !important; }
+}

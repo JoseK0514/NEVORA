@@ -21,7 +21,9 @@ import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
  * glyph is gone); the Lead role is on hold, so the lead line names Owners and Managers only.
  * Owner premium (A7, P9/P10): one Save. Phones keep the header's Cancel · title · Save; tablets and desktop have the card's
  * footer (Cancel and Save on the right) instead. Missing fields are all flagged at once by the shell's form validation
- * (form-validation.tsx), drawn in the kit's one red style. */
+ * (form-validation.tsx), drawn in the kit's one red style.
+ * Each word once, for every role (Jose, Nov 23, 2026; gaps G28): an empty Location, Start or End shows no text (its label
+ * says it), the position list's empty choice is "None", and the Note says only "Optional" (Person names who it is for). */
 
 
 
@@ -43,16 +45,25 @@ function eightHoursAfter(start: string) {
   return `${String((hours + 8) % 24).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
+/** A person the form can choose. `locationIds` (a location Manager's scoped read) limits them to those places. */
+export type ShiftFormChoice = ShiftFormEmployee & { locationIds?: string[] };
+
 export type ScheduleShiftFormProps = {
   mode: "add" | "edit";
   formId: string;
   action: (data: FormData) => Promise<ConfigurationResult>;
-  employees: ShiftFormEmployee[];
-  positions: Position[];
+  employees: ShiftFormChoice[];
+  positions: Pick<Position, "id" | "name" | "active">[];
   /** Add: the locations to choose from. */
   locations?: { id: string; shortName: string }[];
-  /** Edit: the shift's location, shown as it is (a shift keeps its location). */
+  /** Edit: the shift's location, shown as it is (a shift keeps its location). Add: a location Manager's one place. */
   fixedLocation?: string;
+  /** The line under a fixed location; null for none (a location Manager's one place needs no reason). */
+  fixedLocationHelp?: string | null;
+  /** A stored end of 24:00 is sent back as 24:00 while End shows midnight (the scoped editor kept it this way). */
+  keepMidnightEnd?: boolean;
+  /** A location Manager's sheet: after an unconfirmed save the fields stay locked until the schedule is checked. */
+  holdAfterUnconfirmed?: boolean;
   weekStart: string;
   date: string;
   employeeId?: string;
@@ -68,7 +79,7 @@ export type ScheduleShiftFormProps = {
   cancelHref: string;
   /** Edit: a line above the fields (the held edit's "Was 12:00 PM – 8:00 PM"). */
   status?: ReactNode;
-  /** Edit: the header's 13px line under the title, the shift's state and day ("Published · Sun, Nov 1"). */
+  /** Edit: the line under the title, the shift's state only ("Draft", "Published"); the Date field holds the day. */
   subtitle?: ReactNode;
   /** A save that came back with an error (from the page's ?error=). */
   error?: { title: string; body: string };
@@ -80,10 +91,13 @@ export type ScheduleShiftFormProps = {
 
 export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
   const { mode, formId, employees, positions, weekStart } = props;
-  const active = employees.filter(item => item.active);
+  const everyone = employees.filter(item => item.active);
   const [person, setPerson] = useState(props.employeeId ?? "");
   const [position, setPosition] = useState(props.positionId ?? "");
   const [location, setLocation] = useState(props.locationId ?? "");
+  // A location Manager's people are limited to the chosen place (each carries the places they can work).
+  const worksAt = (item: ShiftFormChoice, place: string) => !place || !item.locationIds || item.locationIds.includes(place);
+  const active = everyone.filter(item => worksAt(item, location));
   const [day, setDay] = useState(props.date);
   const [start, setStart] = useState(props.startTime ?? "");
   // Closing F1 (NV-227): a start passed in without an end (Schedule's "+ Add" offers the person's usual start) ends 8 h later.
@@ -98,11 +112,18 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
   const nextDay = overnight && isValidIsoDate(day) ? dayText(addDays(day, 1)) : null;
   const title = mode === "edit" ? "Edit shift" : "Add shift";
   const id = (field: string) => `${formId}-${field}`;
+  const midnightKept = !!props.keepMidnightEnd && props.endTime === "24:00" && end === "00:00";
+  const fixedHelp = props.fixedLocationHelp === undefined ? "A shift keeps its location. To move it, delete it and add a new one." : props.fixedLocationHelp;
 
   const changePerson = (next: string) => {
     setPerson(next);
     setPosition(current => positionAfterEmployeeChange({ positionId: current, nextEmployeeId: next, employees, positions }));
     setLead(current => designatedLeadAfterEmployeeChange({ checked: current, nextEmployeeId: next, employees }));
+  };
+  const changeLocation = (next: string) => {
+    setLocation(next);
+    // Someone who can't work at the newly chosen place is no longer chosen.
+    if (person && !everyone.some(item => item.id === person && worksAt(item, next))) changePerson("");
   };
 
   return <div className="c-shift">
@@ -115,7 +136,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
         : <h1 className="c-shift__title">{title}</h1>}
       <button type="submit" form={formId} className="c-shift__save c-only-phone" disabled={!!props.blocked}>Save</button>
     </header>
-    <ConfigurationForm action={props.action} reviewedShiftVersion={props.reviewedShiftVersion} id={formId} className="c-shift__form">
+    <ConfigurationForm action={props.action} reviewedShiftVersion={props.reviewedShiftVersion} id={formId} className="c-shift__form" holdAfterUnconfirmed={props.holdAfterUnconfirmed}>
       {Object.entries(props.hidden).map(([field, value]) => <input key={field} type="hidden" name={field} value={value} />)}
       {/* Premium pass (Nov 21, 2026; Jose's board pick 3A): the kit's red note, not a pink box. Words and alert role unchanged. */}
       {props.blocked ? <BCallout tone="red" role="alert">{props.blocked}</BCallout> : null}
@@ -131,6 +152,9 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
             <option value="" disabled>Choose someone</option>
             {active.map(item => <option key={item.id} value={item.id}>{`${item.firstName} ${item.lastName}`}</option>)}
           </select>
+          {/* Gaps G62: a native select can't wrap. Where the field is narrow for its text (a phone, 200% text) the chosen
+            * name is drawn here, wrapping, over the select (schedule-shift-form.css); the select stays the control. */}
+          <span className={name ? "c-shift__person-v" : "c-shift__person-v c-shift__person-v--none"} aria-hidden="true">{name || "Choose someone"}</span>
         </span>
         {/* A native select can cut a long name; the full name is read and shown here. */}
         {name.length > 24 ? <span className="c-field__help" aria-live="polite">{`Selected employee: ${name}`}</span> : null}
@@ -142,18 +166,18 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
           {props.fixedLocation !== undefined
             ? <>
               {/* Review B5 (NV-085): one read-only look (the Company profile pattern): a grey value with a lock and the reason. */}
-              <span className="c-readonly"><input id={id("location")} className="c-in c-shift__fixed" value={props.fixedLocation} readOnly tabIndex={-1} aria-describedby={id("location-help")} /><LockSimpleIcon className="c-readonly__lock" size={16} weight="bold" aria-hidden="true" /></span>
-              <span className="c-field__help" id={id("location-help")}>A shift keeps its location. To move it, delete it and add a new one.</span>
+              <span className="c-readonly"><input id={id("location")} className="c-in c-shift__fixed" value={props.fixedLocation} readOnly tabIndex={-1} aria-describedby={fixedHelp ? id("location-help") : undefined} /><LockSimpleIcon className="c-readonly__lock" size={16} weight="bold" aria-hidden="true" /></span>
+              {fixedHelp ? <span className="c-field__help" id={id("location-help")}>{fixedHelp}</span> : null}
             </>
-            : <><select id={id("location")} className={location ? "c-in" : "c-in c-shift__empty"} name="locationId" value={location} required onChange={event => { setLocation(event.target.value); }}>
-              <option value="" disabled>Choose a location</option>
+            : <><select id={id("location")} className={location ? "c-in" : "c-in c-shift__empty"} name="locationId" value={location} required onChange={event => { changeLocation(event.target.value); }}>
+              <option value="" disabled></option>
               {(props.locations ?? []).map(item => <option key={item.id} value={item.id}>{item.shortName}</option>)}
             </select></>}
         </div>
         <div className="c-field">
           <label className="c-field__label" htmlFor={id("position")}>Position</label>
           <select id={id("position")} className="c-in" name="positionId" value={position} onChange={event => setPosition(event.target.value)}>
-            <option value="">No position</option>
+            <option value="">None</option>
             {choices.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
             {retained ? <option value={position} disabled>{`${positions.find(item => item.id === position)?.name ?? "Existing position"} (unavailable)`}</option> : null}
           </select>
@@ -175,16 +199,17 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
         <div className="c-field">
           <label className="c-field__label" htmlFor={id("start")}>Start</label>
           <select id={id("start")} className={start ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name="startTime" value={start} required onChange={event => { const next = event.target.value; setStart(next); if (!end && next) setEnd(eightHoursAfter(next)); }}>
-            <option value="" disabled>Choose a time</option>
+            <option value="" disabled></option>
             {timeChoices(start).map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </div>
         <div className="c-field">
           <label className="c-field__label" htmlFor={id("end")}>End</label>
-          <select id={id("end")} className={end ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name="endTime" value={end} required aria-describedby={nextDay ? id("next-day") : undefined} onChange={event => { setEnd(event.target.value); }}>
-            <option value="" disabled>Choose a time</option>
+          <select id={id("end")} className={end ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name={midnightKept ? undefined : "endTime"} value={end} required aria-describedby={nextDay ? id("next-day") : undefined} onChange={event => { setEnd(event.target.value); }}>
+            <option value="" disabled></option>
             {timeChoices(end).map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
+          {midnightKept ? <input type="hidden" name="endTime" value="24:00" /> : null}
         </div>
       </div>
       {nextDay ? <p className="c-field__help c-shift__next" id={id("next-day")} aria-live="polite">{`Ends ${nextDay}`}</p> : null}
@@ -197,7 +222,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
       <div className="c-field">
         <label className="c-field__label" htmlFor={id("note")}>Note</label>
         <textarea id={id("note")} className="c-in c-shift__note" name="notes" rows={1} defaultValue={props.notes ?? ""} enterKeyHint="done" autoComplete="off"
-          placeholder={employee ? `Add a note for ${employee.firstName} (optional)` : "Add a note (optional)"} />
+          placeholder="Optional" />
       </div>
 
       {/* Tablets and desktop: the one Save, with Cancel, in the card's footer (phones use the header's). */}

@@ -78,7 +78,7 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__links { justify-content: center !important; gap: var(--b-space-24) !important; margin-top: 22px !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__links a, .q-auth__col > a, .q-auth__col form a:not(.q-btn)) { color: var(--b-teal) !important; font-weight: 600 !important; }
 /* Status: red stops you, amber means wait, green is done. */
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__alert { position: relative; z-index: 2; margin: 0 0 14px !important; padding: var(--b-space-12) var(--b-gutter) !important; border-radius: var(--b-radius-field) !important; font-size: 14px !important; line-height: 20px !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__alert { position: relative; z-index: 2; margin: 0 0 14px !important; padding: var(--b-space-12) var(--b-gutter) !important; border-radius: var(--b-radius-field) !important; font-size: 0.875rem !important; line-height: 1.25rem !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__alert.q-error { background: var(--b-red-50) !important; color: #8F1C13 !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__alert.q-help { background: var(--b-green-50) !important; color: var(--b-green) !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__foot { color: var(--b-grey) !important; }
@@ -100,6 +100,11 @@
     margin: 96px auto 72px !important; padding: var(--b-space-32) !important; border-radius: var(--b-radius-card) !important; background: #FFFFFF !important;
     box-shadow: 0 0 0 1px rgb(var(--b-shadow-rgb) / .05), 0 1px 2px rgb(var(--b-shadow-rgb) / .06), 0 24px 48px -24px rgb(var(--b-shadow-rgb) / .24) !important; }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__foot { grid-column: 2; grid-row: 2; padding: 0 var(--b-space-24) 28px !important; text-align: center !important; }
+  /* Final fixes K (Nov 23, 2026; Jose's decision): the legal footer is in the flow, in the page's last row under the
+   * card and its links, instead of absolute over that row. At the default size the row was empty and the footer hung in
+   * it, so it draws where it did; when 200% text makes the column taller, the footer moves down below the links instead
+   * of covering them. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):not(#mobile-access-page) > .q-auth__foot:not(#af1):not(#af2) { position: static !important; }
   /* Phase 9: a footer that carries Mobile Access's "Need help?" line is two rows tall, so it takes its own grid row
      under the card instead of sitting absolute over the page's foot, where tall cards (Set up, Reset and Forgot, most
      in Spanish) ran under "¿Necesitas ayuda?". The one-row legal footer keeps its place. */
@@ -132,7 +137,7 @@
   box-shadow: var(--b-elev-1) !important; }
 @media (min-width: 1024px) {
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc > .q-auth__col { padding: 0 var(--b-space-24) 56px !important; }
-  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-hd h1 { font-size: 32px !important; line-height: 38px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc .q-hd h1 { font-size: 2rem !important; line-height: 2.375rem !important; }
 }
 
 /* Policy pages on a desktop: the page spans the screen; the band and the 860px card are centred. */
@@ -207,13 +212,13 @@
   /* The title reads in ink on the card (no band behind it). */
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd { position: static !important; background: none !important; border-image-source: none !important; border-image-outset: 0 !important; border-image-width: 0 !important; margin: 0 0 var(--b-space-20) !important; padding: 0 !important; color: var(--b-ink) !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd h1 { font-size: var(--b-fs-figure) !important; line-height: var(--b-lh-figure) !important; font-weight: 700 !important; letter-spacing: -0.025em !important; color: var(--b-ink) !important; }
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .ma-welcome .q-hd h1 { font-size: 28px !important; line-height: 34px !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .ma-welcome .q-hd h1 { font-size: 1.75rem !important; line-height: 2.125rem !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd > :is(p, span, b, a) { color: var(--b-grey) !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd h1 * { color: inherit !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd p { margin-top: 6px !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; }
   /* Sign in: the workspace is a grey chip under the title, as on the desktop card. */
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-auth__hd > p { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: 32px !important; margin: var(--b-space-8) auto 0 !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important;
-    background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-size: 14px !important; font-weight: 600 !important; }
+    background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-size: 0.875rem !important; font-weight: 600 !important; }
   /* The passkey button joins the card's foot. */
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card > .q-passkey { margin: var(--b-space-12) 0 0 !important; padding: 0 !important; background: none !important; box-shadow: none !important; clip-path: none !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .q-passkey .q-btn { margin: 0 !important; }
@@ -277,12 +282,12 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__invalid:has(> span:empty) { display: none; }
 
 /* Password rules: grey "not yet", green "done", red "check" (NV-195, NV-312). */
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__rules, .ma-rules):not(#ab-none) { display: flex; flex-direction: column; gap: 6px; padding: 0; list-style: none; font-size: 14px !important; line-height: 20px; color: var(--b-grey) !important; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__rules, .ma-rules):not(#ab-none) { display: flex; flex-direction: column; gap: 6px; padding: 0; list-style: none; font-size: 0.875rem !important; line-height: 1.25rem; color: var(--b-grey) !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__rules, .ma-rules) li { display: flex; align-items: flex-start; gap: var(--b-space-8); }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__rules, .ma-rules) li > svg { flex: none; margin-top: 0 !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :is(.q-auth__rules [data-state="ok"], .ma-rules [data-met="true"]):not(#ab-none) { color: var(--b-green) !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__rules [data-state="bad"]:not(#ab-none) { color: var(--b-red) !important; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__hint { display: block; margin: 6px 0 0; font-size: 14px; line-height: 20px; color: var(--b-grey); letter-spacing: 0; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__hint { display: block; margin: 6px 0 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--b-grey); letter-spacing: 0; }
 
 /* The password eye: Direction B grey (NV-193). */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-in__eye:not(.q-in__copy) { color: var(--b-grey) !important; }
@@ -294,7 +299,7 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav > .q-auth__back { grid-column: 1; justify-self: start; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav > .q-auth__navmark { grid-column: 2; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__nav > .q-auth__lang { grid-column: 3; justify-self: end; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: var(--b-fs-body) !important; line-height: 20px !important; font-weight: 600 !important; text-decoration: none; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: var(--b-fs-body) !important; line-height: 1.25rem !important; font-weight: 600 !important; text-decoration: none; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__navmark .brand-wordmark { display: block; width: 104px; height: auto; }
 @media (max-width: 767px) { :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__navmark { display: none !important; } }
 
@@ -323,7 +328,7 @@
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__back:not(#ab-none) svg { color: var(--b-teal) !important; }
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__back::after { content: ""; position: absolute; inset: -2px 0; }
   /* The brand line never outweighs the form and never breaks inside a half (NV-310). */
-  :is(#q-root, html) .q-auth__line { font-size: clamp(36px, 3.4vw, 46px) !important; }
+  :is(#q-root, html) .q-auth__line { font-size: clamp(2.25rem, 3.4vw, 2.875rem) !important; }
   :is(#q-root, html) .q-auth__half { white-space: nowrap; }
   /* Welcome's illustration lives in the brand panel (NV-197). */
   :is(#q-root, html) .q-auth__brandart img { display: block; width: 100%; max-width: 440px; height: auto; margin: 0 auto; }
@@ -353,7 +358,7 @@
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content form:not(#ab-none) { margin: 0 !important; padding: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd:not(.q-auth__hd):not(#ab-none) { position: static !important; background: none !important; border-image-source: none !important; border-image-outset: 0 !important; border-image-width: 0 !important; margin: 0 0 var(--b-space-20) !important; padding: 0 !important; color: var(--b-ink) !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd:not(.q-auth__hd) h1:not(#ab-none) { font-size: var(--b-fs-figure) !important; line-height: var(--b-lh-figure) !important; font-weight: 700 !important; letter-spacing: -0.025em !important; color: var(--b-ink) !important; max-width: none !important; }
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .ma-welcome .q-hd h1:not(#ab-none) { font-size: 28px !important; line-height: 34px !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .ma-welcome .q-hd h1:not(#ab-none) { font-size: 1.75rem !important; line-height: 2.125rem !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd:not(.q-auth__hd) > :is(p, span, b, a):not(#ab-none) { color: var(--b-grey) !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd:not(.q-auth__hd) h1 *:not(#ab-none) { color: inherit !important; }
   /* Sign in: the greeting and the workspace on the band above the card, as without Access (mock 7, NV-192). */
@@ -363,7 +368,7 @@
     border-image: linear-gradient(var(--b-band-solid), var(--b-band-solid)) fill 0 / 0 / 0 100vw 0 100vw !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content > .q-auth__hd h1:not(#ab-none) { margin: 0; font-size: var(--b-fs-display) !important; line-height: var(--b-lh-display) !important; font-weight: 700 !important; letter-spacing: -0.03em !important; color: var(--b-on-band) !important; text-align: left; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content > .q-auth__hd > p:not(#ab-none) { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: 34px !important; margin: var(--b-space-12) 0 0 !important; padding: 0 var(--b-gutter) !important; border-radius: var(--b-radius-pill) !important;
-    background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; font-size: 14px !important; font-weight: 600 !important; }
+    background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; font-size: 0.875rem !important; font-weight: 600 !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content > .ma-card { position: relative; z-index: 1; }
   /* Welcome: the illustration sits on the band above the card; its dark edges melt into the teal (NV-197). */
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__col > .ma-hero { position: relative; z-index: 0; display: block; padding: 0 0 56px; background: var(--b-band-solid); border-image: linear-gradient(var(--b-band-solid), var(--b-band-solid)) fill 0 / 0 / 0 100vw 0 100vw; }
@@ -371,13 +376,13 @@
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-hero img { display: block; width: 100%; max-width: 360px; height: auto; margin: 0 auto; }
   /* An error at the top of the card lines up with the fields (NV-189). */
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .q-auth__form > .q-auth__alert:not(#ab-none) { margin: 0 0 var(--b-space-16) !important; }
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__alert:not(#ab-none) { padding: var(--b-space-12) var(--b-gutter) !important; border-radius: var(--b-radius-field) !important; font-size: 14px !important; line-height: 20px !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__alert:not(#ab-none) { padding: var(--b-space-12) var(--b-gutter) !important; border-radius: var(--b-radius-field) !important; font-size: 0.875rem !important; line-height: 1.25rem !important; }
 }
 @media (min-width: 1024px) { :is(#q-root, html) .ma-hero { display: none; } }
 /* Access help: Direction B rows, a bold glyph in a teal-tinted circle; no box inside the card (NV-198). */
 :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-choices:not(#ab-none) { margin: 0 !important; padding: 0 !important; border: 0 !important; }
 :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-choice:not(#ab-none) { gap: 14px; padding: 14px 0; color: var(--b-ink); text-decoration: none; }
-:is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-choice b { font-size: 16px; line-height: 22px; font-weight: 600; }
+:is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-choice b { font-size: 1rem; line-height: 1.375rem; font-weight: 600; }
 :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-choice small:not(#ab-none) { font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm); color: var(--b-grey) !important; }
 :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-choice__icon { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal); }
 :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-choice > svg { color: var(--b-grey) !important; }
@@ -538,8 +543,6 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__links:not(#ab-none) { column-gap: var(--b-space-20) !important; margin: var(--b-space-24) var(--b-space-16) 0 !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__under { display: flex; flex-direction: column; align-items: stretch; margin: var(--b-space-24) var(--b-space-16) 0; text-align: center; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__under > .q-auth__links:not(#ab-none) { margin: 0 !important; }
-/* PB-009 (Spanish only): the app after sign-in is in English for now, said in one grey line before the person signs in. */
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__langnote { margin: var(--b-space-8) 0 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); letter-spacing: 0; text-wrap: balance; }
 @media (min-width: 1024px) {
   /* The column is the card, so what sits under it hangs from its foot; it may be a little wider than the card so the
    * Spanish links stay on one row. The card keeps room for it above the legal line. */
@@ -635,7 +638,6 @@
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside:has(> .q-auth__links) { position: absolute; top: 100%; left: -56px; right: -56px; margin: var(--b-space-24) 0 0 !important; gap: 0 !important; text-align: center; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside > .q-auth__links:not(#ab-none) { margin: 0 !important; flex-direction: row !important; flex-wrap: wrap !important; justify-content: center !important; column-gap: var(--b-space-20) !important; row-gap: 0 !important; }
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.ma-outside > .q-auth__links) { margin-bottom: 104px !important; }
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside > .q-auth__langnote { margin-top: var(--b-space-8) !important; }
 }
 
 /* Welcome in short touch landscape: the illustration (.ma-hero) is not drawn there, so the band keeps its own 56px under
@@ -720,7 +722,6 @@
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth:not(.q-doc) .q-auth__col .ma-outside:has(> .q-auth__links):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { left: 0 !important; right: 0 !important; }
   @layer nv-b {
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.q-auth__links > :nth-child(3)):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-bottom: 208px !important; }
-    :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.q-auth__langnote):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-bottom: 256px !important; }
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) > .q-auth__col:has(.ar-under__more:not([hidden])):not(#p8a):not(#p8b):not(#p8c):not(#p8d) { margin-bottom: 304px !important; }
   }
 }
@@ -755,7 +756,7 @@
  * text on glass and was invisible on white. */
 @media (min-width: 768px) and (max-width: 1023px) {
   :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd:not(.q-auth__hd):not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e) { padding-left: 0 !important; padding-right: 0 !important; }
-  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd > .ar-ws > p:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e) { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: 32px !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-size: 14px !important; font-weight: 600 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd > .ar-ws > p:not(#p9a):not(#p9b):not(#p9c):not(#p9d):not(#p9e) { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: 32px !important; padding: 0 var(--b-space-12) !important; border-radius: var(--b-radius-pill) !important; background: var(--b-quiet) !important; box-shadow: none !important; color: var(--b-ink2) !important; font-size: 0.875rem !important; font-weight: 600 !important; }
 }
 
 /* ---------- Premium pass FD (Nov 18, 2026): final verification of the signed-out pages ----------
@@ -772,8 +773,6 @@
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):has(> .q-auth__foot > .ma-footer-help) > .q-auth__col:not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { --fd-hang: 0px; margin-bottom: calc(var(--fd-hang) + var(--b-space-12)) !important; }
     /* 24px to the links, then one 44px row of links (Sign in in English, Find your Employee ID). */
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):has(> .q-auth__foot > .ma-footer-help) > .q-auth__col:has(.ma-outside > .q-auth__links):not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { --fd-hang: 68px; }
-    /* Spanish Sign in: the two links take two rows, then 8px and the two lines that say the app is in English for now. */
-    :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):has(> .q-auth__foot > .ma-footer-help) > .q-auth__col:has(.ma-outside > .q-auth__links):has(.q-auth__langnote):not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { --fd-hang: 156px; }
     /* Welcome: the link, then its one-line note. */
     :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):has(> .q-auth__foot > .ma-footer-help) > .q-auth__col:has(.ma-outside > .ma-note):not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { --fd-hang: 119px; }
   }
@@ -870,10 +869,8 @@
 /* It takes its line's colour (the band's rule for spans would paint it white on the white card). */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-whole:not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { color: inherit !important; }
 
-/* Row 8 is the markup's order (the error right under its field, then the helper). Row 11: Sign in's Spanish line is
- * centred under its centred links at every width. Row 12: "Need help?" is a link, teal 600 like the links under the
+/* Row 8 is the markup's order (the error right under its field, then the helper). Row 12: "Need help?" is a link, teal 600 like the links under the
  * card. */
-:is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-outside > .q-auth__langnote:not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { text-align: center !important; }
 :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-footer-help:not(#fd1):not(#fd2):not(#fd3):not(#fd4):not(#fd5):not(#fd6) { color: var(--b-teal) !important; font-weight: 600 !important; }
 
 /* Row 9. "You're set" on a phone: the Employee ID is a plain field with its label above it, as at every other width;
@@ -953,4 +950,25 @@
   @keyframes q-done-settle { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
   @keyframes q-done-check { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
   @keyframes q-done-ring { from { opacity: .5; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
+}
+
+/* Public batch (Nov 23, 2026): text follows the reader's size setting. The Quiet base (quiet.css, shared) sets these in
+ * px; on signed-out pages the same values apply in rem (identical at the default size), and the language pill and the
+ * main buttons keep their drawn height as a minimum so 200% text grows them instead of spilling out. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) .q-hd h1 { font-size: 2.125rem; line-height: 2.5625rem; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) .q-hd p { font-size: 0.9375rem; line-height: 1.25rem; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) .q-rt b { font-size: 1.0625rem; line-height: 1.375rem; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) :is(.q-rt i, .q-rt p) { font-size: 0.9375rem; line-height: 1.25rem; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) .q-auth__lang { font-size: 0.9375rem; line-height: 1.25rem; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem) .ma-text { font-size: 1.0625rem; }
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__lang:not(#ab-rem) { min-height: 36px; height: auto !important; }
+@media (min-width: 1024px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc) .q-auth__lang:not(#ab-rem) { min-height: 40px; }
+}
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__col form .q-btn:not(.q-btn--sec, .q-btn--quiet, .q-btn--link):not(#ab-rem) { min-height: 52px; height: auto !important; }
+/* The workspace chip: the same 34px (32px from 1024px) built from a 20px line plus padding, so it grows and wraps with
+ * larger text instead of holding the old fixed height. */
+:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem):not(#ab-rem2):not(#ab-rem3):not(#ab-rem4):not(#ab-rem5):not(#ab-rem6):not(#ab-rem7):not(#ab-rem8) :is(.q-auth__hd > p, .q-hd > .ar-ws > p) { height: auto !important; min-height: 0 !important; padding-top: 7px !important; padding-bottom: 7px !important; line-height: 1.25rem !important; }
+@media (min-width: 1024px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):not(#ab-rem):not(#ab-rem2):not(#ab-rem3):not(#ab-rem4):not(#ab-rem5):not(#ab-rem6):not(#ab-rem7):not(#ab-rem8) .q-auth__hd > p { padding-top: 6px !important; padding-bottom: 6px !important; }
 }

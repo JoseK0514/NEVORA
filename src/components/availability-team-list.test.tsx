@@ -33,7 +33,8 @@ describe("availability review filters", () => {
     expect(html).toContain("10:00 AM");
     expect(html).toContain("6:00 PM");
     expect(html).toContain("12:00 AM");
-    expect(html.match(/<li>/g)).toHaveLength(2);
+    // Phase 2 (C10): the hours are one quiet block of day and time, a pair per window.
+    expect(html.match(/<dt>/g)).toHaveLength(2);
   });
   it("preserves the server-formatted update label across browser locales", () => {
     const html = renderToStaticMarkup(<AvailabilityTeamList employees={[{ ...base, updatedAt: "2026-10-12T12:15:00Z", updatedLabel: "Oct 12, 8:15 AM" }]} />);

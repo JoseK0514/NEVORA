@@ -139,7 +139,7 @@ describe('NEVORA routine notifications', () => {
     const { buildAcknowledgementReminderNotification } = await import('./notification-events');
     expect(buildAcknowledgementReminderNotification('E-1', 'rev-1')).toEqual({
       employeeId: 'E-1', type: 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', title: 'Schedule review reminder',
-      body: 'Open NEVORA to review and acknowledge your schedule.', actionHref: '/app/schedule',
+      body: 'Open NEVORA to review and confirm your schedule.', actionHref: '/app/schedule',
       eventKey: 'schedule-reminder:rev-1:E-1',
     });
   });
@@ -187,5 +187,5 @@ it.each(['APPROVED','DENIED'] as const)('persists can’t-work wording for %s no
 });
 
 it('keeps coverage invitation context and uses Shift lead without absence details',()=>{
- expect(buildCoverageInvitationNotification({employeeId:'E-1',date:'2030-01-01',startTime:'09:00',endTime:'17:00',locationName:'Fictional',positionName:'Server',isDesignatedLead:true})).toEqual({employeeId:'E-1',type:'COVERAGE_INVITATION',title:'Coverage available',body:'2030-01-01 · 09:00–17:00 · Fictional · Server · Shift lead. View shift details before volunteering.',eventKey:''});
+ expect(buildCoverageInvitationNotification({employeeId:'E-1',date:'2030-01-01',startTime:'09:00',endTime:'17:00',locationName:'Fictional',positionName:'Server',isDesignatedLead:true})).toEqual({employeeId:'E-1',type:'COVERAGE_INVITATION',title:'Coverage available',body:'2030-01-01 · 9:00 AM – 5:00 PM · Fictional · Server · Shift lead. View shift details before volunteering.',eventKey:''});
 });

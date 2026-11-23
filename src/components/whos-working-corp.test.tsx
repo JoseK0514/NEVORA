@@ -16,7 +16,7 @@ const html = (props: Partial<ComponentProps<typeof WhosWorkingView>>) => renderT
 it("lists who is clocked in (earliest first), who isn't in yet with how late, and shifts that ended with no clock-in", () => {
   const out = html({ monitor: monitor([person("b", "2026-10-30T11:58:00Z"), person("a", "2026-10-30T09:54:00Z", { state: "ON_BREAK", breakStartAt: "2026-10-30T12:10:00Z" })]),
     today: today([shift("c", "not_clocked_in", "2026-10-30T12:00:00Z"), shift("d", "no_punches", "2026-10-30T04:00:00Z")]) });
-  expect(out).toContain('>Clocked in<span class="c-count c-num">2</span><');
+  expect(out).toContain('>Clocked in<span class="c-count c-num"><span class="sr-only">\u00a0</span>2</span><');
   expect(out.replace(/\u202f/g, " ")).toContain('<span class="c-meta c-num">Updated 8:24 AM</span>');
   expect(out).not.toContain(">Live<");
   expect(out).not.toContain("c-pill");
@@ -25,10 +25,10 @@ it("lists who is clocked in (earliest first), who isn't in yet with how late, an
   const words = out.replace(/[\u00a0\u202f]/g, " ");
   expect(words).toContain("On break since 8:10 AM");
   expect(words).toContain("In since 7:58 AM");
-  expect(out).toContain('>Not clocked in<span class="c-count c-num">1</span><');
+  expect(out).toContain('>Not clocked in<span class="c-count c-num"><span class="sr-only">\u00a0</span>1</span><');
   expect(words).toContain("Due 8:00 AM");
   expect(out).toContain("c-row__value--amber\">24 min<");
-  expect(out).toContain('>Missed clock-ins<span class="c-count c-num">1</span><');
+  expect(out).toContain('>Missed clock-ins<span class="c-count c-num"><span class="sr-only">\u00a0</span>1</span><');
   expect(out).toContain('href="/app/timecards#timecard-d"');
   expect(out).toContain('<a class="c-nav__back" href="/app">');
 });
@@ -58,6 +58,20 @@ it("says the day of an earlier clock-in and shows the 12-hour flag with the coun
   expect(out).toContain('<span class="c-who__name">Person m</span><span class="b-chip b-chip--red">No clock-out after 12 hours</span>');
   expect(out).not.toContain('<span class="c-who__name">Person s</span>');
   // Final polish D3 (#25): the count stays beside the heading; the chip follows the sub-line.
-  expect(out).toMatch(/Clock-ins to check<\/span><span class="b-count">2<\/span><\/span><span class="c-row__detail"><span>[^<]*<\/span><span class="b-chip b-chip--red">No clock-out after 12 hours<\/span>/);
-  expect(out).toContain('aria-label="Clock-ins to check, 2 to review, 1 with no clock-out after 12 hours, collapsed"');
+  expect(out).toMatch(/Clock-ins to check<\/span> <span class="b-count">2<\/span><\/span> <span class="c-row__detail"><span>[^<]*<\/span> <span class="b-chip b-chip--red">No clock-out after 12 hours<\/span>/);
+  // Gaps G65 (Nov 23, 2026): the row is named by what it shows; open or closed is aria-expanded, not a rewording.
+  const row = out.match(/<button type="button" class="c-row"[^>]*>[\s\S]*?<\/button>/)?.[0] ?? "";
+  expect(row).toContain('aria-expanded="false"');
+  expect(row).not.toContain("aria-label");
+  expect(row).not.toContain("aria-controls");
+  expect(row.replace(/<[^>]+>/g, "")).toBe("Clock-ins to check 2 Times that don’t match the schedule or breaks No clock-out after 12 hours");
+});
+
+// Gaps G41: a location Manager's Who's working names the place once, beside the date, on desktop and phones.
+it("names the place beside the date when one is given, and only the date otherwise", () => {
+  const withPlace = html({ today: today([]), place: "Condado" });
+  expect(withPlace.match(/Fri, Oct 30 · Condado/g)).toHaveLength(2);
+  const plain = html({ today: today([]) });
+  expect(plain).toContain("Fri, Oct 30");
+  expect(plain).not.toContain("Fri, Oct 30 ·");
 });

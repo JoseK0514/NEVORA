@@ -30,7 +30,8 @@ it('gives the band the card’s tone: a setup with no connection is the red stop
  const shell=(status:'offline'|'unconfirmed'|'connected',locale:'en'|'es'='en')=>renderToStaticMarkup(<ClockerPresentation initialLocale={locale}><ClockerShell locationLabel="Office" timeZone="UTC" status={status}>Task</ClockerShell></ClockerPresentation>);
  expect(shell('offline')).toMatch(/data-tone="stop"[^>]*>.*No connection/);
  expect(shell('offline','es')).toContain('Sin conexión');
- expect(shell('unconfirmed')).toMatch(/data-tone="attn"[^>]*>.*Setup not confirmed/);
+ // Gate check (Nov 23): the card's heading says "Setup not confirmed"; the band's pill doesn't repeat it.
+ expect(shell('unconfirmed')).toMatch(/data-tone="attn"[^>]*>.*Check needed/);
  expect(shell('connected')).toContain('data-tone="ok"');
  const source=readFileSync(new URL('./clocker-shell.tsx',import.meta.url),'utf8');
  // No connection, NEVORA not reached, a tablet to set up again and punches that can't be saved stop every punch; a pause waits.

@@ -4,10 +4,10 @@ import { CorpDuration, CorpSegments, CorpTime, timeRangeText } from "./corp";
 import { hoursText, payDay, periodRange } from "./corp-format";
 
 describe("round 2 kit helpers", () => {
-  it("sets a range with thin spaces round the en dash and a quiet AM/PM", () => {
+  it("sets a range with thin spaces round the en dash (held to the first time) and a quiet AM/PM", () => {
     const html = renderToStaticMarkup(<CorpTime>{"8:00 AM – 4:00 PM"}</CorpTime>);
-    expect(html).toBe('<span class="c-time">8:00 <span class="c-ampm">AM</span> – 4:00 <span class="c-ampm">PM</span></span>');
-    expect(renderToStaticMarkup(<CorpTime start="12a" end="6a" />)).toBe('<span class="c-time">12<span class="c-ampm">a</span> – 6<span class="c-ampm">a</span></span>');
+    expect(html).toBe('<span class="c-time">8:00 <span class="c-ampm">AM</span>⁠ ⁠– 4:00 <span class="c-ampm">PM</span></span>');
+    expect(renderToStaticMarkup(<CorpTime start="12a" end="6a" />)).toBe('<span class="c-time">12<span class="c-ampm">a</span>⁠ ⁠– 6<span class="c-ampm">a</span></span>');
     expect(timeRangeText("9:00 AM", "5:00 PM")).toBe("9:00 AM – 5:00 PM");
   });
   it("leaves words alone", () => {

@@ -72,7 +72,8 @@ describe("the business records page", () => {
     expect(html).toContain("No records yet");
     expect(html).toContain("Add sales or cash records for Rondo to use.");
     expect(html).toContain('href="/app/ai-manager/business?view=new"');
-    expect(html.match(/Add a record/g)).toHaveLength(1);
+    expect(html.match(/Add record/g)).toHaveLength(1);
+    expect(html).not.toContain("Add a record");
   });
   it("lists records with mixed states: plain words for the normal ones, a chip only for what needs a look", () => {
     const html = renderToStaticMarkup(<Library ctx={businessContext(catalog, "en", uiNow)} />);

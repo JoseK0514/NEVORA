@@ -6,7 +6,7 @@ import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {readNotificationConfig} from '@/lib/notifications/config';
 import {EmployeeAccountPanel} from '@/components/employee-account-panel';
 import {EmployeeAccountFrame} from '@/components/employee-mobile/profile';
-import {QuietHeader,QuietNav,QuietPage} from '@/components/quiet/quiet';
+import {ManagerNotifications} from '@/components/notifications-manager-b';
 import {OwnerBillingNotice} from '@/components/owner-b/billing-notice-card';
 import {getWorkspace} from '@/lib/data/workspaces';
 export const metadata = { title: "Notifications" };
@@ -24,9 +24,8 @@ export default async function NotificationsPage(){
    </EmployeeAccountFrame>
   </ResponsiveEmployeeMessages>;
  }
- // Quiet (v4, approved Oct 23): back to Today, the title, then the list.
- return <QuietPage className="c-page--narrow"><QuietNav back={{href:'/app',label:'Home'}} title="Notifications"/><QuietHeader title="Notifications"/>
-  {/* Backend (Nov 15, 2026): an Owner's plan and billing notice also leads their notifications, while it applies. */}
-  {proof.employee.role==='OWNER'?<OwnerBillingNotice timeZone={await getWorkspace().then(workspace=>workspace.timeZone).catch(()=>undefined)}/>:null}
-  <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" markReadAllowed/></QuietPage>;
+ // Phase 2 (package Messages, Nov 23, 2026): Owners and Managers get the Direction B Notifications (the Lead's and
+ // Employee's band and day cards) with the same read, Mark read on open and folds. An Owner's plan and billing notice
+ // (backend, Nov 15, 2026) leads the cards while it applies.
+ return <ManagerNotifications key={authority} authority={authority} notice={proof.employee.role==='OWNER'?<OwnerBillingNotice timeZone={await getWorkspace().then(workspace=>workspace.timeZone).catch(()=>undefined)}/>:null}/>;
 }

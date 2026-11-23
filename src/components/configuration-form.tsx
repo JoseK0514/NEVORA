@@ -4,6 +4,7 @@ import { BCallout } from '@/components/owner-b/b-kit';
 import { unstable_rethrow } from "next/navigation";
 import { useRef, useState, type ReactNode, type FormEvent } from "react";
 import { ShiftReviewRecovery, shiftDraftText } from "./shift-review-recovery";
+import { serverActionStarted } from "@/lib/server-action-flight";
 export type ConfigurationResult = { error?: string; success?: string; updatedAt?: string; issueCode?: string };
 
 /** QA A3-01 (Nov 21, 2026): a lost or failed reply doesn't tell us whether the server saved. The shift may already be on
@@ -35,6 +36,8 @@ export function ConfigurationForm({
   reviewedUpdatedAt,
   reviewedShiftVersion,
   id,
+  holdAfterUnconfirmed = false,
+  unconfirmedCheck,
 }: {
   action: (data: FormData) => Promise<ConfigurationResult>;
   children: ReactNode;
@@ -43,6 +46,12 @@ export function ConfigurationForm({
   reviewedShiftVersion?: string;
   /** Quiet (v4): lets a submit in the page's top bar (form="…") send this form. */
   id?: string;
+  /** A location Manager's shift form: after an unconfirmed save the fields stay locked until the schedule is checked
+   * (the scoped editor's rule; the check link opens the shift's day). */
+  holdAfterUnconfirmed?: boolean;
+  /** A form that knows a better place to check after an unconfirmed outcome (G58: Review replacement checks Find cover):
+   * its note and its check link replace the generic ones. */
+  unconfirmedCheck?: { title: string; label: string; href: string };
 }) {
   const [result, setResult] = useState<ConfigurationResult>({});
   const [pending, setPending] = useState(false);
@@ -57,7 +66,7 @@ export function ConfigurationForm({
   const [unconfirmed, setUnconfirmed] = useState<{ href: string | null } | null>(null);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (inFlight.current) return;
+    if (inFlight.current || (holdAfterUnconfirmed && unconfirmed)) return;
     inFlight.current = true;
     const data = new FormData(event.currentTarget);
     if (draftUpdatedAt !== undefined) data.set('expectedUpdatedAt', draftUpdatedAt);
@@ -66,6 +75,8 @@ export function ConfigurationForm({
     const checkHref = shiftCheckHref(data);
     setPending(true);
     setResult({});
+    // G58: the scoped read frame queues its refresh behind this action instead of discarding the action's redirect.
+    const settled = serverActionStarted();
     try {
       const saved = await action(data);
       // An overlap right after an unconfirmed save may be the person's own shift: say so instead of implying someone else's.
@@ -76,16 +87,17 @@ export function ConfigurationForm({
       // A redirect or not-found from the action is Next.js navigation, which the router is already handling: not a failure,
       // and not ours to rethrow from this event handler (nothing awaits it, so it would be an unhandled rejection).
       if (isNavigation(error)) return;
-      setUnconfirmed({ href: checkHref });
-      setResult({ error: checkHref ? UNCONFIRMED_SHIFT : UNCONFIRMED_CHANGE });
+      setUnconfirmed({ href: unconfirmedCheck?.href ?? checkHref });
+      setResult({ error: unconfirmedCheck?.title ?? (checkHref ? UNCONFIRMED_SHIFT : UNCONFIRMED_CHANGE) });
     } finally {
+      settled();
       inFlight.current = false;
       setPending(false);
     }
   }
   return (
     <form id={id} onSubmit={submit} className={className} aria-busy={pending}>
-      <fieldset disabled={pending} className="configuration-fields">
+      <fieldset disabled={pending || (holdAfterUnconfirmed && !!unconfirmed)} className="configuration-fields">
         {draftUpdatedAt !== undefined ? <input type="hidden" name="expectedUpdatedAt" value={draftUpdatedAt} /> : null}
         {shiftVersion !== undefined ? <input type="hidden" name="expectedReviewVersion" value={shiftVersion} /> : null}
         {children}
@@ -95,7 +107,7 @@ export function ConfigurationForm({
         * red mark, the reason as its title), announced once. */}
       {result.error ? <div className="form-result">{unconfirmed
         // Unknown outcome: amber means "wait or check" (DESIGN.MD status colours); the action opens the shift's own day.
-        ? <BCallout tone="amber" role="alert" title={result.error} action={unconfirmed.href ? { label: "Check the schedule", href: unconfirmed.href } : undefined} />
+        ? <BCallout tone="amber" role="alert" title={result.error} action={unconfirmed.href ? { label: unconfirmedCheck?.label ?? "Check the schedule", href: unconfirmed.href } : undefined} />
         : <BCallout tone="red" role="alert" title={result.error} />}</div> : null}
       {shiftVersion !== undefined && (result.issueCode === 'SHIFT_REVIEW_CONFLICT' || result.issueCode === 'ACCESS_DENIED') ? <ShiftReviewRecovery draft={submittedShift} /> : null}
       {result.success ? <div className="form-result"><BCallout tone="green" role="status" title={result.success} /></div> : null}

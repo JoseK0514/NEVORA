@@ -7,7 +7,7 @@ import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
 import type { AvailabilityState } from "@/lib/availability-presets";
 import { saveAvailabilityAction, saveWeeklyAvailabilityAction } from "@/app/app/availability/actions";
-import { formatTime } from "@/lib/date-utils";
+import { formatTime, joinTimeRange } from "@/lib/date-utils";
 import { revealFeedback } from "@/lib/reveal-feedback";
 import { EmployeeSubmitButton } from "./employee-submit-button";
 import { CorpCard } from "./corp/corp";
@@ -28,7 +28,8 @@ function spanOf(value: AvailabilityState[number]) {
   const start = toMinutes(value.startTime), raw = toMinutes(value.endTime), end = raw === 0 ? 1440 : raw;
   return Number.isFinite(start) && Number.isFinite(end) && end > start ? { start, end } : null;
 }
-const hoursText = (value: AvailabilityState[number]) => `${formatTime(value.startTime)} – ${value.endTime === "00:00" ? "midnight" : formatTime(value.endTime)}`;
+/** "9:00 AM – 5:00 PM"; an end at midnight is "12:00 AM" (the one time format, Nov 23, 2026). */
+const hoursText = (value: AvailabilityState[number]) => joinTimeRange(formatTime(value.startTime), formatTime(value.endTime));
 
 export type AvailabilityCard = { label: string; aside?: ReactNode };
 

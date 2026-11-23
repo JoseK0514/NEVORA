@@ -106,10 +106,10 @@ const at='2026-11-17T21:30:00Z',zone='America/Puerto_Rico';
 const entry={id:'te-1',locationId:'loc-1',clockInAt:'2026-11-17T13:04:00Z',status:'CLOCKED_IN' as const,version:2};
 it('adds the next useful fact from what the reply and the screen already hold',()=>{
  const out=receiptFacts({action:'CLOCK_OUT',performedAt:at,timeEntryId:'te-1',breakEntryId:null},{revision:4,entry,break:null},zone);
- expect(out).toEqual([{label:'Clocked in at',value:'9:04 AM',dateTime:entry.clockInAt},{label:'Clocked in for',value:'8 h 26 min',translate:false}]);
+ expect(out).toEqual([{label:'Clocked in at',value:'9:04\u202fAM',dateTime:entry.clockInAt},{label:'Clocked in for',value:'8 h 26 min',translate:false}]);
  const pause={id:'br-1',breakStartAt:'2026-11-17T21:18:20Z',version:1,type:null};
  expect(receiptFacts({action:'END_BREAK',performedAt:at,timeEntryId:'te-1',breakEntryId:'br-1'},{revision:5,entry:{...entry,status:'ON_BREAK'},break:pause},zone))
-  .toEqual([{label:'Break started at',value:'5:18 PM',dateTime:pause.breakStartAt},{label:'Break length',value:'11 min',translate:false}]);
+  .toEqual([{label:'Break started at',value:'5:18\u202fPM',dateTime:pause.breakStartAt},{label:'Break length',value:'11 min',translate:false}]);
  const type={id:'bt-1',version:1,name:'Rest break',category:'REST' as const,targetMinutes:10};
  expect(receiptFacts({action:'START_BREAK',performedAt:at,timeEntryId:'te-1',breakEntryId:'br-2',breakType:type},{revision:4,entry,break:null},zone))
   .toEqual([{label:'Break type',value:'Rest break'},{label:'Suggested length',value:'{minutes} min',translate:true,params:{minutes:10}}]);

@@ -137,9 +137,9 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
   }
 
   const listLabel = chosen ? keepWhole(dayFmt(chosen, { weekday: 'long', month: 'short', day: 'numeric' })) : weekStart === currentWeek ? 'Coming up' : weekStart < currentWeek ? 'This week' : 'Shifts';
+  // DEC1 (Jose, Nov 23, 2026; each fact once): the band says the week's hours; the Confirm row under it keeps the shift count.
   const subText = state === 'unavailable' ? 'Your schedule couldn’t be checked'
-    : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}</>;
-  const rowLabel = (shift: Shift) => keepWhole(`${dayFmt(shift.date, { weekday: 'long', month: 'long', day: 'numeric' })}, ${hours(shift)}, ${[shift.positionName, nameOf(shift.locationId) || 'Location unavailable'].filter(Boolean).join(', ')}`);
+    : <>{shifts.length ? hoursLabel(total) : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}</>;
   // Review B6 (NV-163, NV-289): "Shift lead" leads the row's sub-line, so the one chip slot (Now, Starts in, Tomorrow) never
   // hides it; when every shift this week is led, the list's header says so once and the rows don't repeat it.
   const allLed = allLedNote(props.lead === true, shifts) !== null;
@@ -162,7 +162,8 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
   const wideDay = chosen ? null : weekStart === currentWeek ? today : shifts[0]?.date ?? null;
   const wideRows = wideDay ? listed.filter(shift => shift.date === wideDay).length : 0;
   // The shift's length is the day card's trailing value on desktop ("8 h"); other widths leave it out.
-  const bLead = (shift: Shift) => <><BDay date={shift.date} today={shift.date === today} past={shift.date < today} pick={shift.date === wideDay}/><span className="es-len" aria-hidden="true">{hoursLabel(shiftMinutes(shift))}</span></>;
+  // Gaps G66: both are part of the row's name, as drawn (the day on phones, the length on the desktop day card).
+  const bLead = (shift: Shift) => <><BDay date={shift.date} today={shift.date === today} past={shift.date < today} pick={shift.date === wideDay} spoken/><span className="es-len">{hoursLabel(shiftMinutes(shift))}</span></>;
   // Phase 4 (TB-002): a tablet's day block is too narrow for "Starts in 4 h"; it reads "In 4 h" there, never clipped.
   const weekChip = (shift: Shift) => {
     const soon = startsIn(shift, today, observedAt, timeZone);
@@ -194,8 +195,8 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
         : calloutIntent ? { title: calloutCount ? 'Choose the shift you can’t work' : 'No shifts to report this week', detail: calloutCount ? 'Tap the shift, then Can’t work this shift.' : 'Only shifts that haven’t ended can be reported.', doneHref: `/app/schedule?week=${weekStart}` } : null}
       error={error ? <>Confirmation could not be completed. {typeof error === 'string' ? error : 'Review the current schedule and try again.'}</> : null}
       receipt={null}
+      // Gaps G66: the row is named by what it shows (title, then detail); it had a label of its own that differed.
       open={modules.marketplace && view === 'mine' ? { count: openCount, href: `/app/schedule?week=${weekStart}&view=open`,
-        label: openCount === null ? 'Open shifts, couldn’t be checked' : openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up` : 'Open shifts, none right now',
         detail: openCount === null ? 'Couldn’t check right now' : openCount ? keepWhole([...new Set(props.openShifts!.available.slice(0, 2).map(shift => dayFmt(shift.date, { weekday: 'short', month: 'short', day: 'numeric' })))].join(' and ')) : 'None right now' } : null}
       unavailable={state === 'unavailable' ? { retryHref: `/app/schedule?week=${weekStart}` } : null}
       list={{ label: listLabel, wholeWeekHref: chosen ? `/app/schedule?week=${weekStart}${keep}` : null,
@@ -207,11 +208,12 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
           meta: wideDay === today ? keepWhole(dayFmt(wideDay, { weekday: 'short', month: 'short', day: 'numeric' })) : null,
           empty: wideRows ? null : state === 'published' ? (shifts.some(shift => shift.date === wideDay) ? t.noMoreToday : 'Day off today.')
             : shifts.some(shift => shift.date === wideDay) ? t.noMorePublishedToday : emptyScheduleLabel(state) } : null,
-        rows: listed.map(shift => <PhoneOnly key={shift.id} fallback={<li className="b-li"><Link className="b-row b-row--link" href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} scroll={false} aria-label={rowLabel(shift)}>
+        // Gaps G66: a row is named by what it shows ("Tue 24 9:00 AM – 5:00 PM Barista, Condado"); its own label differed.
+        rows: listed.map(shift => <PhoneOnly key={shift.id} fallback={<li className="b-li"><Link className="b-row b-row--link" href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} scroll={false}>
           {bLead(shift)}<span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{hours(shift)}</span>{bChip(shift) ?? null}</span><span className="b-row__s">{bSub(shift)}</span></span>
           <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" /></Link></li>}>
           <ShiftSheetCorpRow shift={sheetShift(shift)} title={hours(shift)} detail={rowDetail(shift)} href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} closeHref={listHref} initiallyOpen={props.selectedShift === shift.id}
-            b={{ lead: bLead(shift), chip: bChip(shift), sub: bSub(shift), label: rowLabel(shift) }} />
+            b={{ lead: bLead(shift), chip: bChip(shift), sub: bSub(shift) }} />
         </PhoneOnly>) }}
       unpublished={state === 'unpublished' ? (shifts.length ? unpublishedNote(unpublishedNames, publishedNames) : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`) : null}
       // Employee desktop, Direction B (Nov 8, 2026): the whole week as seven days; each day opens as the strip's chosen day.
@@ -234,10 +236,10 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
             // Phase 4 (EM-014): the compact range ("9 AM – 5 PM") keeps one line in a day block; no dash is left hanging.
             return { key: shift.id, time: compactRange(hours(shift)), tomorrow: !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) === 'Tomorrow', position: shift.positionName ?? null, place: `${keepWhole(nameOf(shift.locationId) || 'Location unavailable')} · ${keepWhole(hoursLabel(shiftMinutes(shift)))}`,
               kind, chip: leads && !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) !== 'Tomorrow' ? null : chip,
-              label: props.lead === true && shift.isDesignatedLead === true ? `${rowLabel(shift)}, shift lead` : rowLabel(shift), lead: leads };
+              rest: `${dayFmt(shift.date, { weekday: 'long', month: 'long', day: 'numeric' })}${props.lead === true && shift.isDesignatedLead === true && !leads ? ', shift lead' : ''}`, lead: leads };
           }) })) }} />
     <CorpTitle title="Schedule" sub={state === 'unavailable' ? 'Your schedule couldn’t be checked'
-      : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}</>}
+      : <>{shifts.length ? hoursLabel(total) : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}</>}
       actions={<CorpButtonLink href="/app/availability" kind="neutral" size="sm">Availability</CorpButtonLink>} />
 
     <CorpCard as="div" ariaLabel="Week">
@@ -301,9 +303,10 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
 
     {/* Upscale S13: open shifts are one row to the Open shifts page (no View button, even when there are none). */}
     {modules.marketplace && view === 'mine' ? <CorpCard as="div" ariaLabel="Open shifts">
-      <CorpRows><li><CorpRow href={`/app/schedule?week=${weekStart}&view=open`} label={openCount === null ? 'Open shifts, couldn’t be checked' : openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up` : 'Open shifts, none right now'}
+      {/* Gaps G66: the row is named by its title and detail, as drawn. */}
+      <CorpRows><li><CorpRow href={`/app/schedule?week=${weekStart}&view=open`}
         title={openCount === null ? 'Open shifts' : openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up` : 'Open shifts'}
-        // QA D10: each detail fits one line on a 320px phone; the row's label still says the whole thing.
+        // QA D10: each detail fits one line on a 320px phone.
         detail={openCount === null ? 'Couldn’t check right now'
           : openCount ? keepWhole(`${[...new Set(props.openShifts!.available.slice(0, 2).map(shift => dayFmt(shift.date, { weekday: 'short', month: 'short', day: 'numeric' })))].join(' and ')}${(() => { const places = [...new Set(props.openShifts!.available.map(shift => shift.location))]; return places.length === 1 ? ` · ${places[0]}` : ''; })()}`)
           : 'None right now'} /></li></CorpRows>

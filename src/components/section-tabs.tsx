@@ -1,14 +1,17 @@
 "use client";
 
-import Link from "next/link";
+import { NavigationLink as Link } from "./navigation-link";
 import { useEffect, useRef } from "react";
 import type { SectionTabGroup } from "@/lib/navigation";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { SHELL_WORDS, navLabel } from "./shell-copy";
 
 /** Tabs between pages that share one place in the navigation (Requests, Pay,
  * Time and pay). Each tab is a real URL, so back, refresh and links keep
  * working. On phones the row scrolls sideways and keeps the current tab in view. */
 export function SectionTabs({ group, pathname }: { group: SectionTabGroup; pathname: string }) {
   const track = useRef<HTMLDivElement>(null);
+  const lang = usePortalLang();
   useEffect(() => {
     const row = track.current;
     if (!row) return;
@@ -34,12 +37,12 @@ export function SectionTabs({ group, pathname }: { group: SectionTabGroup; pathn
     window.addEventListener("resize", edges);
     return () => { observer?.disconnect(); row.removeEventListener("scroll", edges); window.removeEventListener("resize", edges); };
   }, [pathname]);
-  return <nav className="section-tabs" aria-label={`${group.label} pages`}>
+  return <nav className="section-tabs" aria-label={SHELL_WORDS[lang].sectionPages(navLabel(group.label, lang))}>
     {/* A tab reached with the keyboard comes fully out from under the edge fade (scroll-margin-inline clears it). */}
     <div className="section-tabs-track" ref={track}
       onFocus={event => { const tab = (event.target as HTMLElement).closest(".section-tab"); tab?.scrollIntoView({ block: "nearest", inline: "nearest" }); }}>
-      {group.items.map(item => <Link key={item.href} href={item.href} className="section-tab"
-        aria-current={item.href === pathname ? "page" : undefined}>{item.label}</Link>)}
+      {group.items.map(item => <Link key={item.href} href={item.href} intent="auto" className="section-tab"
+        aria-current={item.href === pathname ? "page" : undefined}>{navLabel(item.label, lang)}</Link>)}
     </div>
   </nav>;
 }

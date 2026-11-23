@@ -1,10 +1,7 @@
 import {scopedObservation} from '@/lib/company-access/observation';
-import accessStyles from '@/components/company-access/company-access.module.css';
 import {readOperationalShiftEditor} from '@/lib/company-access/operational-read.server';
-import {ScopedManualShiftForm} from '@/components/company-access/scoped-manual-shift-form';
-import {ScopedShiftReadOnly} from '@/components/company-access/scoped-operational-views';
-import {SelectField} from '@/components/select-field';
-import {RootChrome} from '@/components/root-chrome';
+import type {OperationalShiftEditorData} from '@/lib/company-access/model';
+import {ScopedShiftDetails,scopedShiftChoices,scopedShiftPositions,scopedShiftReason} from '@/components/company-access/scoped-shift-sheet';
 import {assertOperationalAccess,isOperationalAuthorizationError,readOperationalAuthority,withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {assertWorkforcePermission} from '@/lib/workforce/authority.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
@@ -14,6 +11,7 @@ import { ScheduleShiftForm } from "@/components/schedule-shift-form";
 import {shiftFormEmployees} from '@/lib/scheduling/shift-form-employee';
 import { CorpBody, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpTitle } from "@/components/corp/corp";
 import { CoverageReview, type CoverageReviewMode } from "@/components/coverage-review";
+import { HeldReviewNote } from "@/components/coverage-review-hold";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { businessDate } from "@/lib/business-time";
 import { keepWhole } from "@/lib/keep-whole";
@@ -78,12 +76,15 @@ export default async function NewShiftPage({
       <CorpPage className="c-cover c-page--narrow" labelledBy="review-title">
         <CorpNav back={{ href: source.data.href, label: "Coverage" }} title="Coverage changed" titleId="review-title" phoneOnly />
         <CorpTitle title="Coverage changed" wide />
-        <CorpCard label="Nothing was saved">
+        {/* G58 (Nov 23, 2026): this page can't know who changed the shift; after a slow Publish it was the person's own
+          * save. So no "Nothing was saved" and no "Someone": only what is true either way. */}
+        {/* G71: after a reply that never came, this tab keeps the review's unconfirmed note and Check coverage here. */}
+        <HeldReviewNote token={reviewToken}><CorpCard>
           <CorpBody>
-            <p className="c-cover__text">Someone changed this shift after you opened the review.</p>
+            <p className="c-cover__text">This shift was updated after you opened the review.</p>
             <CorpButtonLink href={source.data.href} full>Open current review</CorpButtonLink>
           </CorpBody>
-        </CorpCard>
+        </CorpCard></HeldReviewNote>
       </CorpPage></ScopedReadFrame>;
     const selected=source.data.selected;
     // QA S-06 (Nov 21, 2026): on a published week this replacement is a published change, which the writer allows only with
@@ -120,13 +121,41 @@ export default async function NewShiftPage({
   if(access.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={access.reason}/>;
   if(access.scope?.mode!=='COMPANY'){
     if(access.scope?.mode!=='LOCATIONS'||!access.locations.length)return <OperationalUnavailable title="Shift creation unavailable" reason="access_denied"/>;
-    if(params.locationId===undefined)return <ScopedReadFrame observation={scopedObservation(access)}><section className={'panel '+accessStyles.stack}><RootChrome/><h1>Choose a location</h1><p>Select a managed location before assigning a shift.</p><form className={accessStyles.stack} method="get" action="/app/schedule/new"><input type="hidden" name="week" value={weekStart}/><SelectField className={accessStyles.search} name="locationId" label="Location" defaultValue="" required options={[{value:'',label:'Select a managed location',disabled:true},...access.locations.map(l=>({value:l.id,label:l.name}))]}/><button className="button primary" type="submit">Continue</button></form></section></ScopedReadFrame>;
-    const source=await readOperationalShiftEditor(proof,{weekStart,locationId:params.locationId});
-    if(source.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={source.reason} scoped/>;
-    if(source.authority!==access.authority)return <OperationalUnavailable title="Shift creation unavailable" reason="source_changed" scoped/>;
-    const observation={authority:source.authority,observedAt:access.observedAt,validForMs:Math.min(access.validForMs,source.validForMs)};
-    if(source.data.saveAvailability!=='available')return <ScopedShiftReadOnly data={source.data} observation={observation}/>;
-    return <ScopedReadFrame observation={observation}><ScopedManualShiftForm data={source.data} action={createShiftAction} locationName={access.locations.find(l=>l.id===source.data.locationId)?.name} prefill={{date,employeeId:params.employeeId,positionId:params.positionId,startTime:params.start,endTime:params.end,lead:params.lead==='1'}}/></ScopedReadFrame>;
+    // Phase 2 (queue C2-Ml): a location Manager gets the Owner's Add shift sheet, fed by the scoped editor read of each of
+    // their places. One place is fixed in the sheet; several are its Location field (no separate "Choose a location" step).
+    // An explicit destination that isn't theirs still goes to the guarded read, which refuses it; it is never swapped.
+    const explicit=params.locationId!==undefined;
+    const placeIds=explicit&&!access.locations.some(l=>l.id===params.locationId)?[params.locationId!]:access.locations.map(l=>l.id);
+    const sources=await Promise.all(placeIds.map(locationId=>readOperationalShiftEditor(proof,{weekStart,locationId})));
+    const reads:OperationalShiftEditorData[]=[];let validForMs=access.validForMs;
+    for(const source of sources){
+      if(source.state==='unavailable')return <OperationalUnavailable title="Shift creation unavailable" reason={source.reason} scoped/>;
+      if(source.authority!==access.authority)return <OperationalUnavailable title="Shift creation unavailable" reason="source_changed" scoped/>;
+      reads.push(source.data);validForMs=Math.min(validForMs,source.validForMs);
+    }
+    const observation={authority:access.authority,observedAt:access.observedAt,validForMs};
+    const placeName=(id:string)=>{const place=access.locations.find(l=>l.id===id);return place?(place.shortName||place.name):id;};
+    const open=reads.filter(read=>read.saveAvailability==='available');
+    if(!open.length){
+      const shown=reads.find(read=>read.locationId===params.locationId)??reads[0];
+      return <ScopedReadFrame observation={observation}><CorpPage className="c-shift-page" label="Add shift">
+        <ScopedShiftDetails data={shown} title="Add shift" placeName={placeName(shown.locationId)} backHref={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(shown.locationId)}`} reason={scopedShiftReason(shown,placeName(shown.locationId))}/>
+      </CorpPage></ScopedReadFrame>;
+    }
+    const fixed=open.length===1?open[0].locationId:null;
+    const chosen=fixed??(open.some(read=>read.locationId===params.locationId)?params.locationId!:'');
+    const employees=scopedShiftChoices(open),positions=scopedShiftPositions(open);
+    // Prefills only what the scoped read offers at the chosen place.
+    const person=employees.find(item=>item.id===params.employeeId&&(!chosen||item.locationIds?.includes(chosen)));
+    const positionId=person&&params.positionId&&person.positionIds?.includes(params.positionId)&&positions.some(item=>item.id===params.positionId)?params.positionId:undefined;
+    const cancelHref=`/app/schedule?week=${weekStart}${chosen?`&location=${encodeURIComponent(chosen)}`:''}${params.date===date?`&day=${date}`:''}${person?`#schedule-employee-${encodeURIComponent(person.id)}`:''}`;
+    const blocked=employees.length?undefined:`No one works at ${fixed?placeName(fixed):'your locations'} yet. Ask an Owner to add people.`;
+    return <ScopedReadFrame observation={observation}><CorpPage className="c-shift-page" label={`Add shift, ${keepWhole(formatWeekRange(weekStart))}`}>
+      <ScheduleShiftForm mode="add" formId={CREATE_SHIFT_FORM_ID} action={createShiftAction} employees={employees} positions={positions}
+        {...(fixed?{fixedLocation:placeName(fixed),fixedLocationHelp:null}:{locations:open.map(read=>({id:read.locationId,shortName:placeName(read.locationId)}))})}
+        weekStart={weekStart} date={date} employeeId={person?.id} positionId={positionId} locationId={chosen}
+        startTime={params.start} endTime={params.end} isDesignatedLead={params.lead==="1"} hidden={fixed?{weekStart,locationId:fixed}:{weekStart}} cancelHref={cancelHref} blocked={blocked} holdAfterUnconfirmed/>
+    </CorpPage></ScopedReadFrame>;
   }
   const source=await withOperationalCompany(proof,()=>Promise.all([
     listEmployees(),

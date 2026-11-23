@@ -70,6 +70,6 @@ describe("the words", () => {
   });
   it("lists a day's shifts without zero facts", () => {
     expect(dayFacts(day("2026-11-30"))).toEqual(["No shifts"]);
-    expect(dayFacts(day("2026-11-30", { publishedShifts: 3, draftShifts: 1, releasedShifts: 1 }))).toEqual(["3 shifts published", "1 draft", "1 released"]);
+    expect(dayFacts(day("2026-11-30", { publishedShifts: 3, draftShifts: 1, releasedShifts: 1 }))).toEqual(["3 shifts", "1 draft", "1 released"]);
   });
 });

@@ -9,8 +9,8 @@ it("says the server's attention sentences with correct plurals and a 12-hour clo
   expect(attentionDetail("1 finished published shifts have no recorded punches. Review the records before correcting time."))
     .toBe("1 finished published shift has no recorded punches. Review the records before correcting time.");
   expect(attentionDetail("1 planning periods need review, starting 23:30. Maximum staffing shortfall: 1. Includes draft commitments; verify published staffing separately."))
-    .toBe("1 planning period needs review, starting 11:30 PM. Maximum staffing shortfall: 1. Includes draft commitments; verify published staffing separately.");
-  expect(attentionDetail("3 planning periods need review, starting 09:00. Maximum staffing shortfall: 2.")).toBe("3 planning periods need review, starting 9:00 AM. Maximum staffing shortfall: 2.");
+    .toBe("1 planning period needs review, starting 11:30 PM. Maximum staffing shortfall:\u00a01. Includes draft commitments; verify published staffing separately.");
+  expect(attentionDetail("3 planning periods need review, starting 09:00. Maximum staffing shortfall: 2.")).toBe("3 planning periods need review, starting 9:00 AM. Maximum staffing shortfall:\u00a02.");
   const other = "Coverage cannot be fully assessed until missing or invalid staffing and coverage rules are reviewed.";
   expect(attentionDetail(other)).toBe(other);
 });
@@ -21,11 +21,12 @@ it("reads dates, periods, clock ranges and instants the way people say them, in 
   expect(periodText("2026-10-01", "2026-10-07")).toBe("Oct 1–7");
   expect(periodText("2026-10-01", "2026-10-01")).toBe("Thu, Oct 1");
   expect(clockRange("08:00", "12:00")).toBe("8:00 AM – 12:00 PM");
-  expect(clockRange("22:00", "24:00")).toBe("10:00 PM – midnight");
+  expect(clockRange("22:00", "24:00")).toBe("10:00 PM – 12:00 AM");
   expect(clockRange("00:00", "24:00")).toBe("All day");
-  // A person's shift never reads "All day": its hours and length are said outright.
-  expect(shiftRange("00:00", "24:00")).toBe("12:00 AM – midnight");
-  expect(shiftRange("18:45", "24:00")).toBe("6:45 PM – midnight");
+  // One time format (Nov 23, 2026): a whole-day shift reads "All day" and an end at midnight "12:00 AM"; the length
+  // (shiftLength) is said beside it, so neither reads as zero hours.
+  expect(shiftRange("00:00", "24:00")).toBe("All day");
+  expect(shiftRange("18:45", "24:00")).toBe("6:45 PM – 12:00 AM");
   expect(shiftLength("00:00", "24:00")).toBe("24 h");
   expect(shiftLength("18:45", "24:00")).toBe("5 h 15 min");
   expect(hoursText(2880)).toBe("48 h");

@@ -42,7 +42,8 @@ const items = [
   item('target2', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT', {href: '/app/schedule/settings#target-hours'}),
 ];
 
-const count = (title: string, n: number) => `>${title}<span class="c-count c-num">${n}</span><`;
+// Final fixes K: the count carries a spoken space (a no-break space; some tests here turn those into plain spaces).
+const count = (title: string, n: number) => new RegExp(`>${title}<span class="c-count c-num"><span class="sr-only">[\\u00a0 ]</span>${n}</span><`);
 
 it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at most, and closes with More requests', () => {
   const html = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true}).replace(/\u00a0/g, ' ');
@@ -51,12 +52,12 @@ it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at mo
   expect(html.match(/class="c-card c-todo__card"/g)).toHaveLength(4);
   expect(html).toContain('id="todo-waiting-label">Waiting for review</h2>');
   // R3: one count voice, the label then the figure in grey, no brackets; the counts add up to the badge (1 + 1 + 1 + 1).
-  expect(html).toContain(count('Open shifts', 1));
+  expect(html).toMatch(count('Open shifts', 1));
   // Jose's attendance words (Nov 11, 2026): a shift still running with no punch is "Not clocked in", never "Missed".
-  expect(html).toContain(count('Not clocked in', 1));
+  expect(html).toMatch(count('Not clocked in', 1));
   expect(html).not.toContain('Missed clock-ins');
-  expect(html).toContain(count('Time off', 1));
-  expect(html).toContain(count('Shift requests', 1));
+  expect(html).toMatch(count('Time off', 1));
+  expect(html).toMatch(count('Shift requests', 1));
   expect(html).not.toMatch(/\(\d+\)</);
   expect(html).not.toContain('c-badge');
   const order = ['todo-card-open', 'todo-open', 'todo-review', 'todo-not-clocked-in', 'todo-card-requests', 'todo-time-off', 'todo-swaps', 'todo-more'].map(id => html.indexOf(`id="${id}"`));
@@ -91,18 +92,18 @@ it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at mo
   expect(more).toContain('>Later and done<');
   expect(more).toMatch(/<a class="c-nav__back" href="\/app\/inbox">.*Things to do<\/a>/);
   // The waiting reviews are on Things to do, counted under Waiting for review.
-  expect(html).toContain(count('Time corrections', 1));
-  expect(html).toContain(count('Timecards to approve', 2));
+  expect(html).toMatch(count('Time corrections', 1));
+  expect(html).toMatch(count('Timecards to approve', 2));
   // Plan ahead: one row per kind; two missing hour targets are one row with its count in grey.
-  expect(more).toContain(count('Plan ahead', 2));
+  expect(more).toMatch(count('Plan ahead', 2));
   expect(more).toMatch(/People without hour targets<\/span><\/span><span class="c-row__value c-row__value--soft">2</);
   // A Manager sees the time card (who is not clocked in) first.
   const manager = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')])});
   expect(manager.indexOf('id="todo-not-clocked-in"')).toBeLessThan(manager.indexOf('id="todo-open"'));
   // A shift that ended with no punch is the only thing called missed; the two kinds sit under their own headings.
   const both = page({snapshot: ready([]), today: today([shift('s1', 'not_clocked_in'), shift('s2', 'no_punches')])}).replace(/\u00a0/g, ' ');
-  expect(both).toContain(count('Not clocked in', 1));
-  expect(both).toContain(count('Missed clock-ins', 1));
+  expect(both).toMatch(count('Not clocked in', 1));
+  expect(both).toMatch(count('Missed clock-ins', 1));
   expect(both.indexOf('id="todo-not-clocked-in"')).toBeLessThan(both.indexOf('id="todo-missed"'));
   expect(both.slice(both.indexOf('id="todo-missed"'))).toContain('Shift ended 4:00 PM');
 });
@@ -115,7 +116,7 @@ it('puts urgent corrections with missed clock-ins in the Time card, and More req
   const time = html.slice(html.indexOf('id="todo-review"'), html.indexOf('id="todo-card-requests"'));
   expect(time).toContain('id="todo-not-clocked-in"');
   expect(time).toContain('id="todo-corrections"');
-  expect(html).toContain(count('Can’t work', 1));
+  expect(html).toMatch(count('Can’t work', 1));
   // No request waiting: the More card follows the two cards, and lists Time off requests too.
   const noRequests = page({snapshot: ready(urgent.filter(entry => entry.category !== 'requests')), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true});
   expect(noRequests.match(/class="c-card c-todo__card"/g)).toHaveLength(3);
@@ -197,7 +198,7 @@ it('reads "Need 1 employee" as "Needs 1 person", midnight as 12:00 AM and a whol
 it('groups a week of earlier coverage gaps into one row with its count', () => {
   const past = (id: string) => item(id, 'COVERAGE_GAP', 'scheduling', 'URGENT', {title: 'Coverage gap at Condado', detail: '2026-10-13 · midnight–6:00 AM · Need 1 employee', dateTime: '2026-10-13T00:00', href: `/app/schedule?shift=${id}`});
   const html = page({snapshot: ready([past('p1'), past('p2'), past('p3')]), view: 'more'});
-  expect(html).toContain(count('Earlier this week', 3));
+  expect(html).toMatch(count('Earlier this week', 3));
   expect(html).toMatch(/Coverage gaps<\/span><\/span><span class="c-row__value c-row__value--soft">3</);
   expect(page({snapshot: ready([past('p1'), past('p2'), past('p3')])})).toContain('You’re all set');
 });
@@ -207,8 +208,10 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
   const html = onlyB(page({snapshot: ready(withReview), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true})).replace(/\u00a0/g, ' ');
   expect(html).toContain('<h1 id="b-todo-title" tabindex="-1">Things to do</h1>');
   // Review F5 (NV-103): each filter's count is the segmented control's count pill; its name still reads "Shifts, 1".
-  expect(html).toMatch(/aria-pressed="true" aria-label="All, \d+">All<span class="c-count c-num">\d+<\/span><\/button>/);
-  expect(html).toContain('aria-label="Shifts, 1">Shifts<span class="c-count c-num">1</span></button>');
+  // Final fixes K: a filter's name is its visible words with a spoken space ("All 4"), not an aria-label.
+  // Navigation check (Nov 23, 2026), each fact once: the band says the total, so "All" carries no count.
+  expect(html).toMatch(/aria-pressed="true">All<\/button>/);
+  expect(html).toMatch(/aria-pressed="false">Shifts<span class="c-count c-num"><span class="sr-only">[\u00a0 ]<\/span>1<\/span><\/button>/);
   // Review B1 (NV-078): one teal primary per screen, so a row's Find cover is a ghost pill.
   expect(html).toMatch(/class="b-btn b-btn--ghost"[^>]*>Find cover<\/a>/);
   expect(html).toContain('<input type="hidden" name="requestId" value="r1"/><input type="hidden" name="returnTo" value="inbox"/><input type="hidden" name="returnFilter" value="all"/>');
@@ -248,7 +251,8 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   // Final polish (Nov 20, 2026): the two names sit round the bold swap glyph and read "Ana Colon and James Ortiz".
   expect(html).toMatch(/<span class="b-swapnames"><span class="b-swapnames__a">Ana Colon<svg[^>]*aria-hidden="true"[^>]*>.*?<\/svg><\/span><span class="b-sr"> and <\/span><span>James Ortiz<\/span><\/span>/);
   expect(html).not.toContain('⇄');
-  expect(html).toContain('with James Ortiz"');
+  // Batch nav gate (Nov 23, 2026): the row's name is its visible text (no aria-label that differs from it).
+  expect(html).not.toContain('with James Ortiz"');
   expect(html).toContain('>Luis Torres<');
   expect(html).not.toContain('can’t work Tue');
   expect(html.replace(/\u2060/g, '').replace(/<[^>]+>/g, '')).toContain('Tue, Oct 20 · 9:00 AM – 5:00 PM · Condado');
@@ -276,7 +280,7 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   // The band counts the two requests and the correction; the tabs add up to it; the timecards to approve are named after it.
   // Final regression review: the band's line is the kit's facts line (BSegs); the dot belongs to the second fact.
   expect(html).toContain('<p class="b-sub"><span class="b-segs"><span class="b-segs__i">3 things need you</span><span class="b-segs__i"><span class="b-sr"> · </span>1 timecard to approve</span></span><span');
-  expect(html).toContain('aria-label="All, 3"');
-  expect(html).toContain('aria-label="Time, 1"');
-  expect(html).toContain('aria-label="Requests, 2"');
+  expect(html).toMatch(/>All<\/button>/);
+  expect(html).toMatch(/>Time<span class="c-count c-num"><span class="sr-only">[\u00a0 ]<\/span>1<\/span>/);
+  expect(html).toMatch(/>Requests<span class="c-count c-num"><span class="sr-only">[\u00a0 ]<\/span>2<\/span>/);
 });

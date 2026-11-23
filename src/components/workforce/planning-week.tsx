@@ -18,13 +18,14 @@ const words = {
 };
 type Command = { kind: "PLANNING_CALENDAR"; operationId: string; startsOn: number; expectedRevision: number };
 
-export function PlanningWeekFields({ startsOn, revision, canEdit, owner, lang = "en" }: { startsOn: number; revision: number; canEdit: boolean; owner: string; lang?: "en" | "es" }) {
+export function PlanningWeekFields({ startsOn, revision, canEdit, owner, lang = "en", labelHidden = false }: { startsOn: number; revision: number; canEdit: boolean; owner: string; lang?: "en" | "es";
+  /** Phase 2 (C9): the rule's own row already names it ("Week starts on"), so the field's label is read only. */ labelHidden?: boolean }) {
   const t = words[lang], days = WEEKDAYS[lang], router = useRouter();
   const [value, setValue] = useState(startsOn);
   const [saved, setSaved] = useState({ startsOn, revision });
   const [state, setState] = useState<"idle" | "saving" | "saved" | "unknown" | "conflict" | "failed">("idle");
   const command = useRef<Command | null>(null);
-  if (!canEdit) return <div lang={lang} className="q-rule-form"><p className="q-help">{t.readOnly(owner)}</p></div>;
+  if (!canEdit) return <div lang={lang} className="c-rf"><p className="c-rf-help">{t.readOnly(owner)}</p></div>;
 
   async function send(again: boolean) {
     if (!again) command.current = { kind: "PLANNING_CALENDAR", operationId: crypto.randomUUID(), startsOn: value, expectedRevision: saved.revision };
@@ -44,15 +45,15 @@ export function PlanningWeekFields({ startsOn, revision, canEdit, owner, lang = 
     } catch { setState("unknown"); }
   }
   const locked = state === "saving" || state === "unknown";
-  return <form lang={lang} className="q-rule-form" onSubmit={event => { event.preventDefault(); if (value !== saved.startsOn && !locked) void send(false); }}>
-    <div className="q-fl"><label htmlFor="planning-week-start">{t.label}</label>
-      <select id="planning-week-start" className="q-in" value={value} disabled={locked} aria-describedby="planning-week-help" onChange={event => { setValue(Number(event.target.value)); if (state !== "unknown") setState("idle"); }}>
-        {[1, 2, 3, 4, 5, 6, 0].map(day => <option key={day} value={day}>{days[day][0].toUpperCase() + days[day].slice(1)}</option>)}</select></div>
-    <p className="q-help" id="planning-week-help">{t.help}</p>
-    {state === "saved" ? <p className="q-help q-ok" role="status">{t.saved}</p>
-      : state === "unknown" ? <p className="q-error" role="alert">{t.unknown} <button type="button" className="q-btn q-btn--quiet" onClick={() => void send(true)}>{t.check}</button></p>
-      : state === "conflict" ? <p className="q-error" role="alert">{t.conflict} <button type="button" className="q-btn q-btn--quiet" onClick={() => window.location.reload()}>{t.reload}</button></p>
-      : state === "failed" ? <p className="q-error" role="alert">{t.failed}</p> : null}
-    {state !== "unknown" ? <button type="submit" className="q-btn" disabled={locked || value === saved.startsOn} aria-busy={state === "saving" || undefined}>{state === "saving" ? t.saving : t.save}</button> : null}
+  return <form lang={lang} className="c-rf c-rf-inline" onSubmit={event => { event.preventDefault(); if (value !== saved.startsOn && !locked) void send(false); }}>
+    <div className="c-field"><label className={labelHidden ? "sr-only" : "c-field__label"} htmlFor="planning-week-start">{t.label}</label>
+      <select id="planning-week-start" className="c-in" value={value} disabled={locked} aria-describedby="planning-week-help" onChange={event => { setValue(Number(event.target.value)); if (state !== "unknown") setState("idle"); }}>
+        {[1, 2, 3, 4, 5, 6, 0].map(day => <option key={day} value={day}>{days[day][0].toUpperCase() + days[day].slice(1)}</option>)}</select>
+      <span className="c-field__help" id="planning-week-help">{t.help}</span></div>
+    {state === "saved" ? <p className="c-rf-saved" role="status"><span>{t.saved}</span></p>
+      : state === "unknown" ? <p className="c-rf-error" role="alert"><span>{t.unknown}</span> <button type="button" className="c-btn c-btn--secondary" onClick={() => void send(true)}>{t.check}</button></p>
+      : state === "conflict" ? <p className="c-rf-error" role="alert"><span>{t.conflict}</span> <button type="button" className="c-btn c-btn--secondary" onClick={() => window.location.reload()}>{t.reload}</button></p>
+      : state === "failed" ? <p className="c-rf-error" role="alert"><span>{t.failed}</span></p> : null}
+    {state !== "unknown" ? <button type="submit" className="c-btn c-btn--secondary" disabled={locked || value === saved.startsOn} aria-busy={state === "saving" || undefined}>{state === "saving" ? t.saving : t.save}</button> : null}
   </form>;
 }

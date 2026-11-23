@@ -26,7 +26,7 @@ const query={searchParams:Promise.resolve({})};
 beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.company.mockReset();});
 it('current company denial withholds management communication, attendance, export, report and recovery surfaces',async()=>{
  fixture.denied=true;
- for(const read of [()=>Updates(),()=>Detail({params:Promise.resolve({id:'fictional'})}),()=>Compose(query),()=>Timecards(query),()=>Reports(query),()=>Export(query),()=>Recovery(),()=>DeviceRecovery()]){const html=renderToStaticMarkup(await read());expect(html).toContain('This page needs company-wide management access. An Owner can give it to you.');expect(html).not.toMatch(/Protected |Updates:|Detail:|Compose:|Team timecards/);}
+ for(const read of [()=>Updates(),()=>Detail({params:Promise.resolve({id:'fictional'})}),()=>Compose(query),()=>Timecards(query),()=>Reports(query),()=>Export(query),()=>Recovery(),()=>DeviceRecovery()]){const html=renderToStaticMarkup(await read());expect(html).toContain('Company-wide access needed');expect(html).not.toMatch(/Protected |Updates:|Detail:|Compose:|Team timecards/);}
  expect(fixture.company).toHaveBeenCalledTimes(8);
 });
 it.each(['EMPLOYEE','LEAD'])('retains %s self timecards and recipient communications without company management authority',async role=>{

@@ -61,10 +61,12 @@ it("distinguishes missing, intentionally unavailable and submitted windows witho
   const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"})).replace(/\u00a0/g, " ");
   // Quiet (v4): Not sent and Sent carry the counts; seeded hours on someone who hasn't sent don't count or show.
   // R12 / copy table 14: the kit's segmented control. Nov 1 upscale: counts read "Not sent 1", the figure in the kit's count style.
-  expect(html).toContain(">Not sent<span class=\"c-count c-num\">1</span></button>"); expect(html).toContain(">Sent<span class=\"c-count c-num\">2</span></button>");
+  // Phase 2 (C10): Not sent and Sent are the people card's filter chips (as on Team), each count said there only.
+  expect(html).toContain(">Not sent<b>1</b></button>"); expect(html).toContain(">Sent<b>2</b></button>");
   expect(html).not.toMatch(/\(\d+\)<\/button>/);
-  expect(html).toContain("2 of 3 sent");
-  expect(html).toContain('aria-label="Missing Person, No primary location, not sent"'); expect(html).not.toContain("7:00 AM");
+  expect(html).not.toContain("2 of 3 sent");
+  expect(html).not.toMatch(/class="[^"]*\b(?:q-(?!sheet|page q-sheet|sr")|wb-|wc-|wa-|sig-|nv-)/);
+  expect(html).toMatch(/Missing Person<\/span><span class="c-row__detail"><span>No primary location<\/span>/); expect(html).not.toContain("7:00 AM");
   // A link to someone who has sent opens the Sent list with their hours.
   const sent = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28",employeeId:"available"})).replace(/\u00a0/g, " ");
   expect(sent).toContain("6:00 AM – 2:00 PM"); expect(sent).toContain("Unavailable all week"); expect(sent).not.toContain("7:00 AM");
@@ -98,7 +100,8 @@ it('unknown mandatory rules never expose a generic management Approve',async()=>
 });
 
 rs.mock('@/lib/data/shift-changes',()=>({readShiftChangeAvailability:rs.fn(async()=>({allowed:false,notice:'Needs Owner rule review'}))}));
-rs.mock('@/lib/data/shift-change-views',()=>({readShiftChangeHistoryView:async()=>[]}));
+const history=rs.hoisted(()=>({events:[] as unknown[]}));
+rs.mock('@/lib/data/shift-change-views',()=>({readShiftChangeHistoryView:async()=>history.events}));
 
 it('missing current revision never fabricates a mutation identity',async()=>{
  rs.mocked(listPendingCallouts).mockResolvedValue([{id:'missing-revision',shiftId:'s',employeeId:'e1',employeeName:'Fictional',locationId:'loc',locationName:'North',weekStart:'2026-10-05',date:'2026-10-05',startTime:'08:00',endTime:'12:00',reasonCode:'OTHER',status:'PENDING',createdAt:'2026-10-03T00:00:00Z'}]);
@@ -111,7 +114,9 @@ it('H12 actionable manager exception explains its reason outside the action grid
  rs.mocked(readShiftChangeAvailability).mockResolvedValueOnce({allowed:true,notice:'Projected scheduled overtime needs manager review.'});
  const html=renderToStaticMarkup(await ManagerShiftRequests({timeZone:'America/Puerto_Rico'}));
  expect(html).toContain('>Approve<');expect(html).toContain('Projected scheduled overtime needs manager review.');
- expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="q-acts"'));
+ // Phase 2 (C12): Direction B for real, so a waiting request carries no older-kit parts (Quiet, Wave, Signature).
+ expect(html).not.toMatch(/class="[^"]*\b(?:q-(?!sheet|page q-sheet|sr")|wb-|wc-|wa-|sig-|nv-)/);
+ expect(html.indexOf('Projected scheduled overtime')).toBeLessThan(html.indexOf('class="c-shreq__acts"'));
  expect(html).not.toMatch(/operationalProfile|weeklyMinutes|classification/);
 });
 
@@ -155,7 +160,9 @@ describe("management sees every shift in full before deciding (Codex review, Oct
     const html = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
     // Phase 3 (OW-029, OW-003): the shifts are a two-column list, one line each; the year shows only when it is not this one.
     const facts = text(html.slice(html.indexOf('class="b-req-facts"'), html.indexOf('class="q-acts"')));
-    expect(facts).toContain("Fictional Ana’s shift Mon, Oct 5 · 8:00 AM – 12:00 PM · North Office");
+    // Gaps G87 (Nov 23, 2026): the row says the request's day and hours, so the opened shift adds only where it is.
+    expect(facts).toContain("Fictional Ana’s shift North Office");
+    expect(facts).not.toContain("Mon, Oct 5");
     expect(facts).toContain("Fictional Ben’s shift Thu, Oct 8 · 2:00 PM – 6:00 PM · South Office");
     expect(facts).not.toContain("2026");
     expect(html).toContain(">Approve<");
@@ -169,35 +176,58 @@ describe("management sees every shift in full before deciding (Codex review, Oct
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([{ ...cover, targetEmployeeId: "e2", targetEmployeeName: "Fictional Ben" }]);
     const named = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
     const namedFacts = text(named.slice(named.indexOf('class="b-req-facts"'), named.indexOf('class="q-acts"')));
-    expect(namedFacts).toContain("Fictional Ana’s shift Mon, Oct 5 · 6:00 PM – 2:00 AM, ends Tue, Oct 6 · North Office");
-    expect(namedFacts).toContain("Picked up by Fictional Ben");
+    expect(namedFacts).toContain("Fictional Ana’s shift Ends Tue, Oct 6 · North Office");
+    expect(namedFacts).not.toContain("6:00 PM");
+    expect(namedFacts).not.toContain("Picked up by Fictional Ben");
+    expect(text(named)).toContain("Picked up by Fictional Ben");
     // OW-011: a request over a day old carries its age under the dates (phones and tablets show that line).
-    expect(named).toContain('<span class="q-rt__line b-req-age">11 d ago</span>');
+    expect(named).toContain('<span class="c-shreq__age">11 d ago</span>');
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([cover]);
-    expect(text(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" }))))).toContain("Result Nobody has picked it up yet");
+    expect(text(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" }))))).toContain("Nobody has picked it up yet");
   });
   it("an “Unable to work” report shows the affected shift with its reason and note", async () => {
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([]);
     rs.mocked(listPendingCallouts).mockResolvedValue([{ id: "callout", requestRevision: 4, shiftId: "s", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2026-10-05", date: "2026-10-05", startTime: "08:00", endTime: "12:00", reasonCode: "TRANSPORTATION", reasonNote: "Fictional bus strike", status: "PENDING", createdAt: "2026-10-03T00:00:00Z" }]);
     const html = plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" })));
     const facts = text(html.slice(html.indexOf('class="b-req-facts"'), html.indexOf('class="q-acts"')));
-    expect(facts).toContain("Fictional Ana’s shift Mon, Oct 5 · 8:00 AM – 12:00 PM · North Office");
+    expect(facts).toContain("Fictional Ana’s shift North Office");
+    expect(facts).not.toContain("8:00 AM");
     expect(facts).toContain("Reason Transportation issue"); expect(facts).toContain("Note Fictional bus strike");
     // The collapsed line is the shift only (OW-011); the reason shows once the row opens.
     const summary = html.slice(html.indexOf("<summary"), html.indexOf("</summary>"));
-    expect(text(summary)).toContain("Can’t work · Mon, Oct 5 · 8:00 AM – 12:00 PM");
+    // Jose (Nov 23): the kind is a label beside the name, and the day and hours are their own line.
+    expect(summary).toContain('<span class="b-chip b-chip--amber">Can’t work</span>');
+    expect(text(summary)).toContain("Can’t work Mon, Oct 5 · 8:00 AM – 12:00 PM");
     expect(summary.slice(summary.indexOf(">"))).not.toContain("Fictional bus strike");
   });
   it("a shift in another year carries its year, in the row and in the opened list", async () => {
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([]);
     rs.mocked(listPendingCallouts).mockResolvedValue([{ id: "callout", requestRevision: 4, shiftId: "s", employeeId: "e1", employeeName: "Fictional Ana", locationId: "north", locationName: "North Office", weekStart: "2027-01-04", date: "2027-01-04", startTime: "22:00", endTime: "24:00", reasonCode: "OTHER", status: "PENDING", createdAt: "2026-10-03T00:00:00Z" }]);
     const words = text(plain(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico" }))));
-    expect(words).toContain("Can’t work · Mon, Jan 4, 2027 · 10:00 PM – midnight");
-    expect(words).toContain("Fictional Ana’s shift Mon, Jan 4, 2027 · 10:00 PM – midnight · North Office");
+    expect(words).toContain("Can’t work Mon, Jan 4, 2027 · 10:00 PM – 12:00 AM");
+    expect(words).toContain("Fictional Ana’s shift North Office");
+    expect(words.split("Mon, Jan 4, 2027").length).toBe(2);
   });
   it("a deep-linked request opens with its shifts showing", async () => {
     rs.mocked(listPendingCallouts).mockResolvedValue([]);
     rs.mocked(listManagerPendingExchanges).mockResolvedValue([{ id: "linked", requestRevision: 1, kind: "COVERAGE", status: "MANAGER_PENDING", requestedByEmployeeId: "e1", requestedByName: "Fictional Ana", requestedByRole: "EMPLOYEE", createdAt: "2026-10-03T00:00:00Z", sourceShift: shift({}) as never }]);
-    expect(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", requestId: "linked" }))).toMatch(/<details class="q-details q-request__details" open="">/);
+    expect(renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", requestId: "linked" }))).toMatch(/<details class="c-shreq__details" open="">/);
   });
+});
+
+it("Phase 2 (C12): a decided request's history reads in plain words, each shift once", async () => {
+  rs.mocked(listTeamExchangeActivity).mockResolvedValueOnce([]);
+  const { listTeamCalloutHistory } = await import("@/lib/data/callouts");
+  rs.mocked(listTeamCalloutHistory).mockResolvedValueOnce([{ id: "done-1", shiftId: "s", employeeId: "e1", employeeName: "Fictional Blair", locationId: "loc", locationName: "North", weekStart: "2026-12-07", date: "2026-12-09", startTime: "08:00", endTime: "16:00", reasonCode: "ILLNESS", status: "APPROVED", releaseApplies: true, createdAt: "2026-11-23T11:42:37.000Z", coverage: [] }] as never);
+  history.events = [
+    { revision: 1, event: "created", at: "2026-11-23T11:42:37.000Z", source: "2026-12-09 · 08:00 – 16:00 · Location loc-2 · Position qa-pos2 · No shift lead", target: null, mode: null },
+    { revision: 2, event: "completed", at: "2026-11-23T12:28:16.000Z", source: "2026-12-10 · 09:00 – 17:00 · Location loc-2 · Position qa-pos2 · Shift lead", target: null, mode: "MANAGER" },
+  ];
+  const html = renderToStaticMarkup(await ManagerShiftRequests({ timeZone: "America/Puerto_Rico", tab: "activity" })).replace(/\u00a0/g, " ");
+  history.events = [];
+  expect(html).toContain("Created · Nov 23, 7:42 AM");
+  expect(html).toContain("Completed by a manager · Nov 23, 8:28 AM");
+  // The first step's shift is the row's own line, so it isn't repeated; the changed one is said in full.
+  expect(html).toContain("Thu, Dec 10 · 9:00 AM – 5:00 PM · Shift lead");
+  expect(html).not.toMatch(/revision \d|loc-2|qa-pos2|2026-11-23T|16:00/);
 });

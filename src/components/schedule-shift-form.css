@@ -5,21 +5,23 @@
 :is(#c-root, html) .c-shift-page .c-shift { display: flex; flex-direction: column; min-width: 0; }
 :is(#c-root, html) .c-shift-page .c-shift__head { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px;
   min-height: 52px; margin: 0 -16px; padding: var(--q-safe-top, env(safe-area-inset-top, 0px)) 16px 0; background: #FFFFFF; box-shadow: inset 0 -1px 0 var(--c-line); }
-:is(#c-root, html) .c-shift-page .c-shift__cancel, :is(#c-root, html) .c-shift-page .c-shift__save { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0; border: 0; background: none; color: var(--c-teal); font-size: 15px; line-height: 20px; cursor: pointer; }
+:is(#c-root, html) .c-shift-page .c-shift__cancel, :is(#c-root, html) .c-shift-page .c-shift__save { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0; border: 0; background: none; color: var(--c-teal); font-size: 0.9375rem; line-height: 1.25rem; cursor: pointer; }
 :is(#c-root, html) .c-shift-page .c-shift__cancel { justify-self: start; font-weight: 500; }
 :is(#c-root, html) .c-shift-page .c-shift__save { justify-self: end; justify-content: flex-end; min-width: 44px; font-weight: 600; }
 :is(#c-root, html) .c-shift-page .c-shift__save:disabled { color: var(--c-faint); cursor: default; }
-:is(#c-root, html) .c-shift-page .c-shift__title { font-size: 17px; line-height: 22px; font-weight: 600; text-align: center; white-space: nowrap; }
+:is(#c-root, html) .c-shift-page .c-shift__title { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 600; text-align: center; white-space: nowrap; }
 
 /* The form: ConfigurationForm's fieldset holds the fields; its Saving… and error lines sit under the save. */
 :is(#c-root, html) .c-shift-page .c-shift__form { margin: 0; }
 :is(#c-root, html) .c-shift-page .c-shift__form > fieldset { display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: 0; padding: 16px 0 0; border: 0; }
-:is(#c-root, html) .c-shift-page .c-shift__form > p { margin: 12px 0 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-shift-page .c-shift__form > p { margin: 12px 0 0; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-shift-page .c-shift__form > p.form-error { color: var(--c-red); }
 :is(#c-root, html) .c-shift-page .c-shift__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 :is(#c-root, html) .c-shift-page .c-shift__control { position: relative; display: block; }
 :is(#c-root, html) .c-shift-page .c-shift__person > .c-av { position: absolute; left: 8px; top: 8px; pointer-events: none; }
 :is(#c-root, html) .c-shift-page .c-shift__person > select.c-in { padding-left: 52px; }
+/* The chosen name drawn over a narrow Person field (gaps G62, below); hidden where the select's own text fits. */
+:is(#c-root, html) .c-shift-page .c-shift__person-v { display: none; }
 :is(#c-root, html) .c-shift-page .c-shift select.c-in { text-overflow: ellipsis; cursor: pointer; }
 /* Nov 1 upscale: every select, date and times included, keeps the kit's caret (one select look). */
 :is(#c-root, html) .c-shift-page .c-shift .c-shift__empty { color: var(--c-grey); }
@@ -27,26 +29,26 @@
 :is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed:focus { box-shadow: none; }
 :is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed:focus-visible { box-shadow: inset 0 0 0 2px var(--c-teal); }
 :is(#c-root, html) .c-shift-page .c-shift__next { margin-top: -10px; }
-:is(#c-root, html) .c-shift-page .c-shift textarea.c-shift__note { display: block; height: auto; min-height: 48px; max-height: 144px; padding: 13px 12px; field-sizing: content; }
+:is(#c-root, html) .c-shift-page .c-shift textarea.c-shift__note { display: block; height: auto; min-height: 3rem; max-height: 9rem; padding: 13px 12px; field-sizing: content; }
 
 /* Shift lead: the label and its line on the left, the switch on the right; the whole row toggles it. */
 :is(#c-root, html) .c-shift-page .c-shift__lead { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; cursor: pointer; }
 :is(#c-root, html) .c-shift-page .c-shift__lead-text { display: flex; flex-direction: column; min-width: 0; }
-:is(#c-root, html) .c-shift-page .c-shift__lead-text b { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
-:is(#c-root, html) .c-shift-page .c-shift__lead-text span { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-shift-page .c-shift__lead-text b { font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-shift-page .c-shift__lead-text span { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-shift-page .c-shift__submit { margin-top: 8px; }
 
 /* The shift's state ("Not published · Was 12:00 PM – 8:00 PM") and a save that came back with a problem. */
 :is(#c-root, html) .c-shift-page .c-shift__state { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-height: 22px; }
-:is(#c-root, html) .c-shift-page .c-shift__was { font-size: 13px; line-height: 18px; color: var(--c-grey); }
-:is(#c-root, html) .c-shift-page .c-shift__alert { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 12px 14px; border-radius: 8px; background: var(--c-red-bg); color: var(--c-red); font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-shift-page .c-shift__was { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
+:is(#c-root, html) .c-shift-page .c-shift__alert { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 12px 14px; border-radius: 8px; background: var(--c-red-bg); color: var(--c-red); font-size: 0.8125rem; line-height: 1.125rem; }
 :is(#c-root, html) .c-shift-page .c-shift__alert b { font-weight: 600; }
 
 /* Delete shift (Nov 1 upscale): on phones a red text row in its own card, 32px under the last field; a second tap confirms
  * inside the same card. Tablets and desktop keep it as red text at the form footer's left (below). */
 :is(#c-root, html) .c-shift-page .c-shift__delete { display: flex; flex-direction: column; gap: 10px; margin: 32px 0 0; }
 :is(#c-root, html) .c-shift-page .c-shift__delete-row { display: flex; align-items: center; width: 100%; min-height: 48px; margin: 0; padding: 0 16px; border: 0; border-radius: 12px;
-  background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); color: var(--c-red); font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; text-align: left; cursor: pointer;
+  background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); color: var(--c-red); font: 500 0.9375rem/1.25rem Inter, "Inter Fallback", -apple-system, sans-serif; text-align: left; cursor: pointer;
   -webkit-tap-highlight-color: transparent; transition: background-color var(--c-dur-press, 120ms) ease-out; }
 :is(#c-root, html) .c-shift-page .c-shift__delete-row:active { background: #EDEEEF; transition: none; }
 :is(#c-root, html) .c-shift-page .c-shift__delete-row:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; }
@@ -55,9 +57,9 @@
 }
 /* The title with the shift's state under it ("Published · Sun, Nov 1"), centred in the header's middle column. */
 :is(#c-root, html) .c-shift-page .c-shift__titles { display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 4px 0; }
-:is(#c-root, html) .c-shift-page .c-shift__sub { font-size: 13px; line-height: 18px; color: var(--c-grey); white-space: nowrap; }
+:is(#c-root, html) .c-shift-page .c-shift__sub { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); white-space: nowrap; }
 :is(#c-root, html) .c-shift-page .c-shift__sub [data-tone="amber"] { color: var(--c-amber); }
-:is(#c-root, html) .c-shift-page .c-shift__warn { font-size: 13px; line-height: 18px; color: var(--c-ink2); }
+:is(#c-root, html) .c-shift-page .c-shift__warn { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-ink2); }
 
 @media (min-width: 768px) {
   :is(#c-root, html) .c-page.c-shift-page { min-height: 100%; padding-top: 24px; background: var(--c-bg); }
@@ -75,11 +77,11 @@
  * (the kit hides .c-form-foot and shows .c-only-phone there). Tablets and desktop: the header shows the title only, and the
  * card ends with the kit's form footer, Cancel and Save on the right, Delete shift as red text on the left (its own form,
  * placed on the footer's row). */
-:is(#c-root, html) .c-shift-page .c-shift .field-error { margin-top: 4px; font-size: 13px; line-height: 18px; color: var(--c-red); }
+:is(#c-root, html) .c-shift-page .c-shift .field-error { margin-top: 4px; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-red); }
 :is(#c-root, html) .c-shift-page .c-shift .c-in[aria-invalid="true"], :is(#c-root, html) .c-shift-page .c-shift .c-in[aria-invalid="true"]:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--c-red); }
 @media (max-width: 767px) {
   /* 16px fields so iOS never zooms on focus (P1). */
-  :is(#c-root, html) .c-shift-page .c-shift .c-in { font-size: 16px; }
+  :is(#c-root, html) .c-shift-page .c-shift .c-in { font-size: 1rem; }
 }
 @media (min-width: 768px) {
   :is(#c-root, html) .c-shift-page .c-shift { position: relative; }
@@ -90,7 +92,7 @@
   :is(#c-root, html) .c-shift-page .c-shift__submit { margin-top: 0; }
   /* Delete shift: red text at the footer's left. Once tapped, its confirmation opens under the card's footer. */
   :is(#c-root, html) .c-shift-page .c-shift__delete:has(> [aria-expanded="false"]) { position: absolute; left: 24px; bottom: 24px; margin: 0; }
-  :is(#c-root, html) .c-shift-page .c-shift__delete > [aria-expanded="false"].c-shift__delete-row { width: auto; min-width: 0; height: 44px; min-height: 44px; padding: 0; border-radius: 8px; background: none; box-shadow: none; color: var(--c-red); font-size: 15px; font-weight: 600; }
+  :is(#c-root, html) .c-shift-page .c-shift__delete > [aria-expanded="false"].c-shift__delete-row { width: auto; min-width: 0; height: 44px; min-height: 44px; padding: 0; border-radius: 8px; background: none; box-shadow: none; color: var(--c-red); font-size: 0.9375rem; font-weight: 600; }
   :is(#c-root, html) .c-shift-page .c-shift__delete:not(:has(> [aria-expanded="false"])) { margin-top: 16px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--c-line); align-items: flex-start; }
   :is(#c-root, html) .c-shift-page .c-shift__delete:not(:has(> [aria-expanded="false"])) > .c-btn { width: auto; min-width: 160px; }
 }
@@ -98,3 +100,71 @@
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .c-shift-page .c-shift__delete-row { transition: none; }
 }
+
+/* Shift details (Phase 2, queue C4-Ml): a location Manager's shift they can't change. The same sheet with no form: the
+ * reason line with its lock, then the facts as label and value rows under a hairline (the request page's facts), and
+ * Done. Sizes in rem so 200% text scales; spacing on the 4/8 scale. */
+:is(#c-root, html) .c-shift-page .c-shift__view { display: flex; flex-direction: column; gap: var(--b-space-16, 16px); padding-top: var(--b-space-16, 16px); }
+:is(#c-root, html) .c-shift-page .c-shift__view > p.c-shift__why { display: flex; align-items: flex-start; gap: var(--b-space-8, 8px); margin: 0; font-size: var(--b-fs-body-sm, 0.90625rem); line-height: var(--b-lh-body-sm, 1.25rem); color: var(--b-ink2, #3F464B); }
+:is(#c-root, html) .c-shift-page .c-shift__why-ic { flex: none; width: 1rem; height: 1rem; margin-top: 0.125rem; color: var(--b-grey, #6A7176); }
+:is(#c-root, html) .c-shift-page .c-shift__facts { display: grid; margin: 0; box-shadow: inset 0 1px 0 var(--b-line, #ECEEEF); }
+:is(#c-root, html) .c-shift-page .c-shift__facts > div:last-child { padding-bottom: 0; }
+:is(#c-root, html) .c-shift-page .c-shift__facts > div { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--b-space-2, 2px); padding: var(--b-space-12, 12px) 0; }
+:is(#c-root, html) .c-shift-page .c-shift__facts > div + div { box-shadow: inset 0 1px 0 var(--b-line, #ECEEEF); }
+:is(#c-root, html) .c-shift-page .c-shift__facts dt { margin: 0; font-size: var(--b-fs-meta, 0.84375rem); line-height: var(--b-lh-meta, 1.125rem); font-weight: 500; color: var(--b-grey, #6A7176); }
+:is(#c-root, html) .c-shift-page .c-shift__facts dd { display: flex; flex-direction: column; min-width: 0; margin: 0; font-size: var(--b-fs-body, 0.96875rem); line-height: var(--b-lh-body, 1.375rem); font-weight: 600; color: var(--b-ink, #111517); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-shift-page .c-shift__facts dd.c-shift__fact-person { flex-direction: row; align-items: center; gap: var(--b-space-12, 12px); }
+:is(#c-root, html) .c-shift-page .c-shift__facts dd.c-shift__fact-note { font-weight: 400; color: var(--b-ink2, #3F464B); white-space: pre-line; }
+:is(#c-root, html) .c-shift-page .c-shift__fact-sub { font-size: var(--b-fs-meta, 0.84375rem); line-height: var(--b-lh-meta, 1.125rem); font-weight: 400; color: var(--b-grey, #6A7176); }
+:is(#c-root, html) .c-shift-page .c-shift__view > .c-form-foot { justify-content: flex-end; }
+/* The band's state word and the phone head of Shift details are Direction B !important rules: owner-b-schedule.css. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-shift-page .c-shift__facts > div { grid-template-columns: 11.25rem minmax(0, 1fr); gap: var(--b-space-16, 16px); align-items: baseline; }
+  :is(#c-root, html) .c-shift-page .c-shift__facts > div:has(> .c-shift__fact-person) { align-items: center; }
+}
+
+/* Direction B rules for the sheet (gaps round, Nov 23, 2026). Layered !important (DESIGN.MD, "CSS layering"): plain
+ * selectors, no fake ids or repeated classes; each is at least one class stronger than the Direction B rule it replaces
+ * (the field height beats owner-b-desktop.css's 48px rule by its path through the form). */
+@layer nv-b {
+  /* G26: at 200% text the fields and their labels grow with the text. The kit's one field size (16px text, 48px tall;
+   * b-foundation.css, owner-b-desktop.css) and the corp label (13px) are in px; on the sheet they are the same sizes in
+   * rem, and a field's height is a minimum, so a field is never shorter than its text. */
+  html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form :is(select, input:not([type="checkbox"], [type="hidden"]), textarea) { font-size: 1rem !important; line-height: 1.25rem !important; }
+  /* The kit's select rule (b-foundation.css, "One select") is two classes stronger than the line above. */
+  html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field select.c-in { font-size: 1rem !important; line-height: 1.25rem !important; }
+  html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field :is(select, input:not([type="checkbox"], [type="hidden"])) { box-sizing: border-box !important; height: auto !important; min-height: 3rem !important; }
+  html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form .c-shift__person > .c-av { top: 50% !important; transform: translateY(-50%) !important; }
+  html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form .c-field__help { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form .c-field__label { font-size: 0.8125rem !important; line-height: 1.125rem !important; }
+  }
+  /* G62: a native select can't wrap, so at 200% text "Choose someone" (and a long name) was cut to "Choose someo…".
+   * Where the Person field is narrower than 19rem (304px at the default size: a 320px phone; at 200% text, phones and
+   * tablets) the chosen name is drawn by the span after the select, wrapping, and the field grows with it. The select
+   * covers the field (it is still the control: tap, keyboard and screen readers) with its text made transparent (the text
+   * fill too: the unchosen select's grey is an id-weighted rule). The side insets stay in px, as the avatar and the caret
+   * they clear are px; only the text grows. Wider
+   * fields keep the select's own text. Forced colours keep the plain select. */
+  html body .app-shell[data-nv-b] .c-shift-page > .c-shift .c-shift__form .c-shift__person { container-type: inline-size !important; }
+  @media not (forced-colors: active) {
+    @container (max-width: 19rem) {
+      html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field .c-shift__person > select.c-in { position: absolute !important; inset: 0 !important; z-index: 0 !important; width: 100% !important; height: 100% !important; min-height: 0 !important; color: transparent !important; -webkit-text-fill-color: transparent !important; }
+      html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field .c-shift__person > .c-shift__person-v { position: relative !important; z-index: 1 !important; display: block !important; box-sizing: border-box !important; min-height: 3rem !important; padding: 0.875rem 40px 0.875rem 52px !important; font-size: 1rem !important; line-height: 1.25rem !important; font-weight: 400 !important; color: var(--b-ink, #111517) !important; overflow-wrap: anywhere !important; pointer-events: none !important; }
+      html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field .c-shift__person > .c-shift__person-v--none { color: var(--b-grey, #6A7176) !important; }
+      html body .app-shell[data-nv-b] .c-shift-page > .c-shift > .c-shift__form > .configuration-fields .c-field .c-shift__person > .c-av { z-index: 2 !important; }
+    }
+  }
+  /* G29: from 768px the card fits the field block (--b-frame-form, 560px, plus the card's 22px insets), so the fields fill
+   * the card and the footer's Cancel and Save end on the card's content edge. The card and the Delete shift card under it
+   * start on the title's left edge. The sheet itself keeps the page's width (owner-b-desktop.css lets every page child
+   * span the column), so the cards inside it carry the limit: the field block, the card's two insets and its 1px edge.
+   * Both cards stretch to it and start on the column's left edge (no auto margins, which would shrink them). Build and
+   * publish (.c-pub) keeps its own width. */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] .c-shift-page:not(.c-pub) > .c-shift > :is(.c-shift__form, form.c-shift__delete) { box-sizing: border-box !important; max-width: calc(var(--b-frame-form, 560px) + 2 * var(--b-inset-wide, 22px) + 2px) !important; }
+  }
+}
+/* Desktop at 200% text (DS-7, Nov 23): the kit's .c-btn sets 15/20px, so Save shift stayed put while the page grew. The
+ * same 15/20px in rem here, so the sheet's buttons grow with the reader's text size. */
+:is(#c-root, html) .c-shift-page .c-btn { font-size: 0.9375rem; line-height: 1.25rem; }

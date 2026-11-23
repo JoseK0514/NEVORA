@@ -75,15 +75,11 @@ export function HoursRecoveryB({href}:{href:string}){
 function Dur({value}:{value:number}){
  return <><span aria-hidden="true">{compactDuration(value)}</span><span className="b-sr">{boardDuration(value)}</span></>;
 }
-/** Final polish, round 2 (T1): a day row's range on Time. It is the Employee screens' `Range` (each half whole, the break
- * before the dash) at every width from 360px. Under 360px the title column cannot hold a range with minutes on one line
- * (measured: 118px against 127px), and every row of the week then started its second line with a dash; there the dash
- * ends the first line instead ("8:58 AM –" over "5:28 PM"). Both dashes are in the markup and time.css shows one, so
- * nothing shifts after hydration; the row's link keeps its spoken label. Anything that is not a two-part range is `Range`'s. */
+/** Final polish, round 2 (T1): a day row's range on Time. Nov 23, 2026 (one time format): it is the Employee screens'
+ * `Range` at every width, which breaks only after the dash ("8:58 AM –" over "5:28 PM") where the title column cannot hold
+ * the range on one line (under 360px, measured 118px against 127px). The row's link keeps its spoken label. */
 function DayRange({text}:{text:string}){
- const halves=text.split(/[\s\u00a0]+–[\s\u00a0]+/);
- if(halves.length!==2||!halves[0]||!halves[1])return <Range text={text}/>;
- return <><span className="eb-nb">{halves[0]}<span className="eb-dayrange__trail">{'\u00a0–'}</span></span> <span className="eb-nb"><span className="eb-dayrange__lead">{'–\u00a0'}</span>{halves[1]}</span></>;
+ return <Range text={text}/>;
 }
 const M=momentsCopy(),W=workCopy();
 const chip=(status:{word:string;tone:StatusTone})=><BChip tone={status.tone}>{status.word}</BChip>;
@@ -114,7 +110,7 @@ export function TimeTabB({data}:{data:Ready}){
  // far"), and it stays whole: the line breaks after the place's dot, never inside the total or before "far".
  const line:ReactNode=current?m.onBreak?keepWhole(`${current.locationName} · clocked in at ${clockAt(current.clockInAt,zone)}`)
   :<>{current.locationName}{'\u00a0· '}<span className="eb-nb eb-sofar"><Dur value={current.elapsedSeconds}/>{'\u00a0so\u00a0far'}</span></>:'Take breaks and clock out there too';
- const hint=overrun&&current?W.shiftEnded(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`),current.locationName):current?m.onBreak?'End your break on your location’s tablet.':'Take breaks and clock out on your location’s tablet.':null;
+ const hint=overrun&&current?W.shiftEnded(keepWhole(compactRange(`${wallTime(overrun.startTime)} – ${wallTime(overrun.endTime)}`)),current.locationName):current?m.onBreak?'End your break on your location’s tablet.':'Take breaks and clock out on your location’s tablet.':null;
  return <HoursBScreen hero={m.week.length?<BLive label="This week at a glance" items={[{label:'This week',value:figure(m.worked)},{label:'Breaks',value:figure(m.breaks)}]}/>:null}>
   <BCard title="Right now" id="b-hours-now" chip={status}>
    {/* Phase 9 (spec 2.2): a punch left open after the shift ended is the kit's amber callout (Warning glyph, a hairline,
@@ -125,11 +121,11 @@ export function TimeTabB({data}:{data:Ready}){
    </span></div>}
   </BCard>
   <BCard title={<span><span className="eb-wide">This week · </span><span className="eb-nowrap">{rangeLabel(m.weekStart,m.weekEnd)}</span></span>} id="b-hours-week" chip={<BStatusText>In progress</BStatusText>}>
-   <BList label="This week’s time">
+   {/* Phase 2 gate (Nov 23): rows are named by what they show (no aria-label that differs from the visible text). */}
+  <BList label="This week’s time">
     {m.week.map(entry=>{const date=dateKey(entry.clockInAt,zone),range=clockRange(entry.clockInAt,entry.clockOutAt,zone);
-     return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date}/>} title={<span id={'b-hours-entry-'+entry.id}><DayRange text={keepWhole(range)}/></span>}
-      sub={entry.breakSeconds?`${boardDuration(entry.breakSeconds)} break`:undefined} end={<BValue><span className={entry.clockOutAt?undefined:'eb-teal'}><Dur value={entry.elapsedSeconds}/></span></BValue>}
-      label={`${dayLong(date)}, ${range}, ${boardDuration(entry.elapsedSeconds)}${entry.breakSeconds?`, ${boardDuration(entry.breakSeconds)} break`:''}`}/>;})}
+     return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date}/>} title={<span id={'b-hours-entry-'+entry.id}><span className="b-sr">{dayLong(date)}, </span><DayRange text={keepWhole(range)}/></span>}
+      sub={entry.breakSeconds?`${boardDuration(entry.breakSeconds)} break`:undefined} end={<BValue><span className={entry.clockOutAt?undefined:'eb-teal'}><Dur value={entry.elapsedSeconds}/></span></BValue>}/>;})}
     {m.week.length?null:<li className="b-li"><p className="eb-quiet">No time recorded yet this week</p></li>}
     <BAddRow href="/app/my-time?view=corrections&edit=new" icon={<PencilSimpleIcon weight="bold"/>}>Fix a missed punch</BAddRow>
    </BList>
@@ -158,7 +154,7 @@ function LastWeekB({authority,date}:{authority:string;date:string}){
  // Last week is over: an open period reads as not approved yet.
  const status=item.state==='DRAFT'?{word:'Not approved yet',tone:'grey' as const}:cardStatus(item.state,card.issues),total=seconds(card.recordedNanoseconds);
  return <BCard title="Last week" id="b-hours-last" chip={headChip(status)}><BList>
-  <BRow href={cardsHref(period)} title={range} sub={shiftCount(card.entries.length)} end={<BValue><Dur value={total}/></BValue>} label={`Last week, ${range}, ${status.word}, ${shiftCount(card.entries.length)}, ${boardDuration(total)}`}/>
+  <BRow href={cardsHref(period)} title={range} sub={shiftCount(card.entries.length)} end={<BValue><Dur value={total}/></BValue>}/>
  </BList></BCard>;
 }
 
@@ -190,7 +186,7 @@ export type WeekState={data:TimecardsResult|null;paused:boolean};
 function WeekRowB({period,state}:{period:Period;state:WeekState|undefined}){
  const range=rangeLabel(period.startDate,period.endDate),data=state?.data??null;
  if(!data)return <BRow title={range} sub={state?.paused?'Paused':'Loading…'}/>;
- if(data.state!=='ready')return <BRow href={cardsHref(period)} title={range} sub="Couldn’t be checked" label={`${range}, couldn’t be checked`}/>;
+ if(data.state!=='ready')return <BRow href={cardsHref(period)} title={range} sub="Couldn’t be checked"/>;
  const item=data.cards[0],card=item?.card;
  // The week under way says so (as on Time), with nothing recorded yet; a past week with none says it recorded none.
  if(!item||!card||!card.entries.length){const open=!!item&&!!card&&cardStatus(item.state,card.issues).open;
@@ -199,7 +195,7 @@ function WeekRowB({period,state}:{period:Period;state:WeekState|undefined}){
  // A closed week says its state in grey; one that needs attention carries a chip. Phase 9 (spec 1.4): the week under way is
  // the expected state, so its sub-line ("3 shifts so far") says it and no teal chip does.
  return <BRow href={cardsHref(period)} title={range} chip={status.flag?chip(status):undefined} sub={status.open?`${count} so far`:status.flag?count:`${count} · ${status.word}`}
-  end={<BValue><Dur value={total}/></BValue>} label={`${range}, ${status.word}, ${count}, ${boardDuration(total)}`}/>;
+  end={<BValue><Dur value={total}/></BValue>}/>;
 }
 /** The chosen week (?start&end): its total and its days. */
 function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}>;period:Period}){
@@ -211,8 +207,8 @@ function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}
    <div className="eb-sum"><p className="eb-sum__big"><Dur value={seconds(card.recordedNanoseconds)}/></p><p className="eb-sum__line">Hours · includes {boardDuration(seconds(card.breakNanoseconds))} of breaks</p>
     {notes.map(note=><p className="eb-sum__line eb-sum__line--warn" key={note}>{note}</p>)}</div>
    <BList label="Days">{entries.map(entry=>{const length=span(entry.startAt,entry.endAt),date=dateKey(entry.startAt,card.timeZone),times=clockRange(entry.startAt,entry.endAt,card.timeZone);
-    return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date}/>} title={<span id={'b-hours-card-entry-'+entry.id}><DayRange text={keepWhole(times)}/></span>}
-     end={length===null?<span className="eb-val eb-val--teal">In progress</span>:<BValue><Dur value={length}/></BValue>} label={`${dayLong(date)}, ${times}, ${length===null?'in progress':boardDuration(length)}`}/>;})}</BList>
+    return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date}/>} title={<span id={'b-hours-card-entry-'+entry.id}><span className="b-sr">{dayLong(date)}, </span><DayRange text={keepWhole(times)}/></span>}
+     end={length===null?<span className="eb-val eb-val--teal">In progress</span>:<BValue><Dur value={length}/></BValue>}/>;})}</BList>
   </>:<p className="eb-quiet">No hours this week</p>}
  </BCard>;
 }
@@ -246,9 +242,9 @@ export function CorrectionsB({snapshot,decided}:{snapshot:Extract<EmployeeTimeCo
  return <HoursBScreen right={<span className="eb-desk"><BButtonLink href="/app/my-time?view=corrections&edit=new" kind="white"><PencilSimpleIcon size={16} weight="bold" aria-hidden="true"/>Fix a missed punch</BButtonLink></span>} hero={<BSeg label="Correction requests" items={[{key:'waiting',label:'Waiting',href:'/app/my-time?view=corrections',current:!decided},{key:'decided',label:'Decided',href:'/app/my-time?view=corrections&filter=decided',current:decided}]}/>}>
   <BCard label={decided?'Decisions':'Waiting for review'}>
    <BList label={decided?'Decisions':'Waiting for review'}>
-    {rows.map(r=>{const day=dateKey(r.proposedStartAt,zone),times=clockRange(r.proposedStartAt,r.proposedEndAt,zone),word=correctionStatus(r.status).word;
+    {rows.map(r=>{const day=dateKey(r.proposedStartAt,zone),times=clockRange(r.proposedStartAt,r.proposedEndAt,zone);
      return <BRow key={r.id} href={'/app/my-time?view=corrections&requestId='+r.id+(decided?'&filter=decided':'')} title={<span id={'b-hours-request-'+r.id}>{kindLabel[r.kind]}</span>}
-      sub={keepWhole(`${dayMedium(day)} · ${times}`)} end={correctionChip(r.status)} label={`${kindLabel[r.kind]}, ${dayLong(day)}, ${times}, ${word}`}/>;})}
+      sub={keepWhole(`${dayMedium(day)} · ${times}`)} end={correctionChip(r.status)}/>;})}
     {rows.length?null:<li className="b-li"><div className="eb-none">
      <BIcon tone="grey"><ClockCounterClockwiseIcon weight="bold"/></BIcon>
      <p className="eb-none__t">{decided?'No decided requests':'Nothing waiting for review'}</p>

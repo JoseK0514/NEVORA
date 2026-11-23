@@ -1,4 +1,5 @@
 import { NUVORA_BRAND } from "../brand";
+import { formatTimeRange } from "../date-utils";
 export type NotificationEvent = {
   employeeId: string;
   type: string;
@@ -30,7 +31,7 @@ export function buildSchedulePublicationNotification(input: {
     title: changed ? "Schedule updated" : "Schedule published",
     body: changed
       ? "Your published schedule changed. Review your latest shifts."
-      : "Your schedule is ready to review and acknowledge.",
+      : "Your schedule is ready to review and confirm.",
     actionHref: "/app/schedule",
     eventKey: eventKey("schedule", input.revisionId, input.employeeId),
   };
@@ -127,7 +128,7 @@ export function buildExchangeOutcomeNotification(input: {
 
 /** Routine workflow events share this vocabulary with the durable outbox. */
 export function buildAcknowledgementReminderNotification(employeeId: string, revisionId: string): NotificationEvent {
-  return { employeeId, type: 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', title: 'Schedule review reminder', body: `Open ${NUVORA_BRAND.platformLabel} to review and acknowledge your schedule.`, actionHref: '/app/schedule', eventKey: eventKey('schedule-reminder',revisionId,employeeId) };
+  return { employeeId, type: 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', title: 'Schedule review reminder', body: `Open ${NUVORA_BRAND.platformLabel} to review and confirm your schedule.`, actionHref: '/app/schedule', eventKey: eventKey('schedule-reminder',revisionId,employeeId) };
 }
 export function buildAvailabilityReminderNotification(employeeId: string, weekStart: string): NotificationEvent {
   return { employeeId, type: 'AVAILABILITY_REMINDER', title: 'Availability reminder', body: `Open ${NUVORA_BRAND.platformLabel} to review and submit your availability.`, actionHref: '/app/availability', eventKey: eventKey('availability-reminder',weekStart,employeeId) };
@@ -144,6 +145,6 @@ export function buildSelfTestNotification(employeeId: string, sourceId: string):
 
 /** Peer invitation uses reviewed shift context only, never an absence reason. */
 export function buildCoverageInvitationNotification(input:{employeeId:string;date:string;startTime:string;endTime:string;locationName:string;positionName?:string;isDesignatedLead?:boolean}):NotificationEvent {
- const context=[input.date,`${input.startTime}–${input.endTime}`,input.locationName,input.positionName,input.isDesignatedLead?'Shift lead':undefined].filter(Boolean).join(' · ');
+ const context=[input.date,formatTimeRange(input.startTime,input.endTime),input.locationName,input.positionName,input.isDesignatedLead?'Shift lead':undefined].filter(Boolean).join(' · ');
  return {employeeId:input.employeeId,type:'COVERAGE_INVITATION',title:'Coverage available',body:`${context}. View shift details before volunteering.`,eventKey:''};
 }
