@@ -159,6 +159,8 @@ try{
       await ep.goto('about:blank');
       await ep.setViewportSize({width,height:1000});
       await ep.goto(app.url+url,{waitUntil:'commit'});await pastCards();
+      // The chosen period and the adjacent week's genuine read settle independently.
+      await laterLink.waitFor({state:'visible'});
       assert.match(await periodCard.locator('.c-big,.eb-sum__big').locator('[aria-hidden="true"]:visible').innerText(),/^8\s*h$/,'Every width keeps the recorded total');
       const geometry=await ep.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,
         controls:[...document.querySelectorAll('.c-hours[data-hours-view="cards"] a,.c-hours[data-hours-view="cards"] button,.c-hours[data-hours-view="cards"] input')].map(e=>{const box=e.getBoundingClientRect(),style=getComputedStyle(e),after=getComputedStyle(e,'::after'),top=parseFloat(after.top),bottom=parseFloat(after.bottom),height=after.content!=='none'&&after.content!=='normal'&&after.position==='absolute'&&style.position!=='static'&&Number.isFinite(top)&&Number.isFinite(bottom)?Math.max(box.height,box.height-top-bottom):box.height;return {tag:e.tagName,type:e.getAttribute('type'),href:e.getAttribute('href'),label:e.getAttribute('aria-label')??e.textContent?.trim(),className:typeof e.className==='string'?e.className:'',height,visualHeight:box.height,width:box.width,display:style.display,visibility:style.visibility,minimum:style.minHeight,rendered:e.getClientRects().length>0&&style.visibility!=='hidden'&&style.visibility!=='collapse'};})}));

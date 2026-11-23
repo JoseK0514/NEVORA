@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "6b79dd25a86858ccf237490e998192eefd9b9a42",
+      "sha": "72f807880d10a020f7c5aaadaf2baed407105b21",
       "disposition": "reference",
-      "reason": "Review source for the English assembly over b5264836. Reviewed English content was reconciled from this tree into a linear Development candidate. The new signed-in Spanish shell and provider are reserved for SCRUM-91. See 2026-11-23-english-development-assembly.md for source custody and gates."
+      "reason": "Current remote Collab tip adds only a planning handoff to reviewed English 6b79dd25 and its existing Development base b5264836. The English assembly still uses reviewed 6b79dd25. The signed-in Spanish shell and provider remain reserved for SCRUM-91. See 2026-11-23-english-development-assembly.md for source custody and gates."
     },
     {
       "branch": "claude/eager-meitner-wioy6k",
@@ -844,6 +844,7 @@
     "previousRecordedCollab": "ece147e7f6160f1feeb8c640a09fe3b95eeef439",
     "previousReviewedMergeBase": "b15cf3d81b7ce2a6d72164db83dbb94c81fcf74f",
     "reviewedCollab": "6b79dd25a86858ccf237490e998192eefd9b9a42",
+    "observedCollabHead": "72f807880d10a020f7c5aaadaf2baed407105b21",
     "spanishIssue": "SCRUM-91",
     "remoteHeadCount": 41,
     "remoteBranchCeilingRetained": 3,

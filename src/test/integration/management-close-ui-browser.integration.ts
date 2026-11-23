@@ -49,7 +49,10 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     await context.route('**/*',async(route:{request():{url():string};abort():Promise<void>;continue():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==app.url){errors.push('External origin '+url.origin);await route.abort();}else await route.continue();});
     failureShot=async isActive=>{if(!isActive())return;await page.screenshot({path:resolve(evidence,engine+'-'+actor+'-failure.png'),fullPage:true,timeout:1500});if(!isActive())return;const focus=await page.evaluate(()=>(window as Window&{__r10Focus?:unknown[]}).__r10Focus);if(isActive())await writeFile(resolve(evidence,engine+'-'+actor+'-focus-events.json'),JSON.stringify(focus,null,2));};
     await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
-    const signedInReads=Promise.all(['/api/notifications','/api/manager/inbox-count'].map(path=>page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname===path&&response.status()===200).then((response:{finished():Promise<unknown>})=>response.finished())));
+    // Release the fixture's initial Home document only after its actual startup reads finish.
+    const homePaths=['/api/notifications','/api/manager/inbox-count','/api/manager/today','/api/manager/action-center','/api/manager/clock-monitor'];
+    if(actor==='QAOWNER')homePaths.push('/api/commerce/status','/api/setup/first-week');
+    const signedInReads=Promise.all(homePaths.map(path=>page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname===path&&response.status()===200).then(async(response:{finished():Promise<unknown>})=>expect(await response.finished(),path).toBeNull())));
     await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await signedInReads;
     surfacePhase='timecards';await mark('timecards:start');
     // Use the supported person deep link from the Inbox so recovery after a blur
