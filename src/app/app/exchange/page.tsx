@@ -83,7 +83,8 @@ export default async function ExchangePage({
   const today = businessDate(new Date(), workspace.timeZone);
   const params = await searchParams;
 
-  if (manager) return ManagerShiftRequests({ ...params, timeZone: workspace.timeZone });
+  // Signed-in Spanish: an Owner's or Manager's Shift requests follows their language too, read the same way. English if that read fails.
+  if (manager) { let lang:'en'|'es'='en';try{lang=(await readPortalLanguage(await requireSessionMutationProof())).language;}catch{/* English */} return ManagerShiftRequests({ ...params, timeZone: workspace.timeZone, lang }); }
   // G98 (Phase 2): an Employee's or Lead's page follows their language (saved choice, else the nv-lang cookie or the
   // browser's), read with the session proof this page already holds. English if that read fails.
   let lang:'en'|'es'='en';try{lang=(await readPortalLanguage(proof!)).language;}catch{/* English */}
